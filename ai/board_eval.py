@@ -202,6 +202,16 @@ def _eval_evoke(game, me, a: BoardAssessment, ctx: dict) -> float:
     if 'removal' in tags and card.template.is_creature:
         if not opp.creatures and not opp.battlefield:
             return -10.0  # No targets to remove
+        # Removal ETBs that heal the opponent (oracle: "gains life equal to its power")
+        # are a poor trade when the target is small: 2 cards spent to exile a 1/1
+        # while healing the opponent. Only worthwhile against meaningful threats.
+        heals_opponent = "gains life" in oracle and "power" in oracle
+        if heals_opponent and opp.creatures:
+            best_target = max(opp.creatures, key=lambda c: (c.power or 0, c.template.cmc))
+            target_power = best_target.power or best_target.template.power or 0
+            target_cmc = best_target.template.cmc or 0
+            if target_power <= 2 and target_cmc <= 2:
+                return -2.0  # Not worth evoking for small threats
 
     if a.mana_available >= cmc:
         # Can hard-cast NOW — always prefer body + ETB

@@ -526,24 +526,21 @@ def _concern_survive(ctx: _DecisionContext) -> Optional[SpellDecision]:
     if removal and blockers:
         r_card, r_target, r_reason = removal
         b_card = blockers[0]
-        # Check if the best blocker also has ETB life gain or high value
-        # (e.g., Omnath: 4/4 body + 4 life gain is worth more than removing a 3/3)
+        # Check if the best blocker is a gameplan payoff with ETB value.
+        # Deploying a payoff that gains life/draws AND blocks is sometimes
+        # better than removing a single creature, if we can't afford both.
         b_tags = getattr(b_card.template, 'tags', set())
+        b_is_payoff = any(
+            b_card.name in goal.card_roles.get('payoffs', set())
+            for goal in ctx.engine.gameplan.goals
+        )
         b_has_etb_value = 'etb_value' in b_tags
-        b_toughness = b_card.template.toughness or 0
-        b_prio = ctx.goal.card_priorities.get(b_card.name, 0.0)
         r_cmc = r_card.template.cmc or 0
-
-        # Prefer the blocker over removal when:
-        # 1. Blocker has ETB value (life gain, card draw) AND
-        # 2. Blocker is a high-priority payoff (prio >= 20) AND
-        # 3. Blocker has meaningful toughness (can actually block) AND
-        # 4. Removal costs enough that we can't do both in the same turn
         can_do_both = ctx.assessment.my_mana >= (b_card.template.cmc or 0) + r_cmc
-        if b_has_etb_value and b_prio >= 20.0 and b_toughness >= 3 and not can_do_both:
+        if b_is_payoff and b_has_etb_value and not can_do_both:
             return SpellDecision(
                 card=b_card, concern="survive",
-                reasoning=f"Dying — deploying {b_card.name} (ETB value + {b_toughness} toughness blocker, priority {b_prio})",
+                reasoning=f"Dying — deploying payoff {b_card.name} (ETB value + blocker)",
                 alternatives=[(r_card.name, f"could remove {r_target} instead")]
             )
         # Otherwise, removal permanently removes the threat — usually better
@@ -770,14 +767,17 @@ def _advance_reactive(ctx: _DecisionContext) -> Optional[SpellDecision]:
                 reasoning=f"Deploying {best.name} while holding up {available_after} mana for interaction",
                 alternatives=[])
         else:
-            # Check if this is a high-priority payoff from the gameplan
-            # (e.g., Omnath at priority 26 should be deployed even without holdback)
-            goal = ctx.goal
-            prio = goal.card_priorities.get(best.name, 0.0)
-            if prio >= 20.0:
+            # Deploy if this is a gameplan payoff — payoffs are the deck's
+            # primary win condition and should be deployed when castable,
+            # even without mana holdback for interaction.
+            is_payoff = any(
+                best.name in goal.card_roles.get('payoffs', set())
+                for goal in ctx.engine.gameplan.goals
+            )
+            if is_payoff:
                 return SpellDecision(
                     card=best, concern="advance",
-                    reasoning=f"High-priority payoff {best.name} (prio={prio}) — deploying despite limited mana holdback",
+                    reasoning=f"Deploying gameplan payoff {best.name}",
                     alternatives=[])
 
     # Turning the corner: control has stabilized, deploy threats

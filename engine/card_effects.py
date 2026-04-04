@@ -589,17 +589,31 @@ def ephemerate_resolve(game, card, controller, targets=None, item=None):
         game.log.append(f"T{game.turn_number} P{controller+1}: "
                         f"Ephemerate fizzles (no creatures to target)")
         return
-    # Prefer creatures with valuable ETBs
-    ETB_VALUE_CARDS = {
-        "Solitude": 10, "Fury": 10, "Grief": 9, "Endurance": 8,
-        "Omnath, Locus of Creation": 8, "Snapcaster Mage": 7,
-        "Stoneforge Mystic": 7, "Ice-Fang Coatl": 6,
-        "Blade Splicer": 5, "Wall of Omens": 4,
-    }
-    best = max(my_creatures, key=lambda c: (
-        ETB_VALUE_CARDS.get(c.name, 0),  # ETB value first
-        c.template.cmc,                   # then CMC
-    ))
+    # Prefer creatures with valuable ETBs.
+    # Use tags to identify ETB value, then score by card impact.
+    def _blink_value(c):
+        tags = getattr(c.template, 'tags', set())
+        score = 0
+        if 'etb_value' in tags:
+            score += 5
+        # Life gain on ETB is especially valuable (e.g., Omnath +4 life)
+        oracle = (c.template.oracle_text or "").lower()
+        if 'gain' in oracle and 'life' in oracle:
+            score += 3
+        # Card draw on ETB
+        if 'cantrip' in tags or ('draw' in oracle and 'enter' in oracle):
+            score += 2
+        # Removal on ETB (Solitude, Fury): value depends on opponent board
+        if 'removal' in tags:
+            opp_idx = 1 - controller
+            if game.players[opp_idx].creatures:
+                score += 4
+            else:
+                score += 1  # No targets: removal ETB is wasted
+        # Higher CMC creatures are generally more impactful to blink
+        score += (c.template.cmc or 0) * 0.5
+        return score
+    best = max(my_creatures, key=_blink_value)
     game._blink_permanent(best, controller)
 
 
