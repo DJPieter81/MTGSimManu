@@ -682,6 +682,13 @@ def _concern_advance(ctx: _DecisionContext) -> Optional[SpellDecision]:
         for role_name, card_names in goal.card_roles.items():
             for card in ctx.castable:
                 if card.name in card_names:
+                    # Skip interaction/removal cards when there are no targets
+                    if role_name == "interaction" and not ctx.opp.creatures:
+                        # Also check for planeswalkers as valid removal targets
+                        opp_pws = [c for c in ctx.opp.battlefield
+                                   if not c.template.is_land and not c.template.is_creature]
+                        if not opp_pws:
+                            continue
                     role_cards.append((card, role_name))
 
         if role_cards:
@@ -1453,7 +1460,13 @@ def _can_kill(removal: "CardInstance", target: "CardInstance",
     import re
     
     # Check for energy scaling (e.g., Galvanic Discharge)
-    if 'energy_scaling' in getattr(removal.template, 'tags', set()):
+    # Galvanic Discharge grants 2 energy then spends all: effective = 2 + min(E+2, 5)
+    if 'energy' in getattr(removal.template, 'tags', set()) and 'removal' in getattr(removal.template, 'tags', set()):
+        energy = 0
+        if hasattr(ctx, 'game') and ctx.game:
+            energy = ctx.game.players[ctx.player_idx].energy_counters
+        dmg = 2 + min(energy + 2, 5)
+    elif 'energy_scaling' in getattr(removal.template, 'tags', set()):
         energy = getattr(ctx.engine, '_player_energy', 0)
         base = removal.template.cmc or 1
         dmg = base + min(energy, 5)

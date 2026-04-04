@@ -425,10 +425,8 @@
     "types": [
      "Sorcery"
     ],
-    "text": "Galvanic Discharge deals 3 damage to target creature or planeswalker.\nOverload {1}{R}",
-    "keywords": [
-     "Overload"
-    ],
+    "text": "Galvanic Discharge deals 2 damage to target creature or planeswalker. You get {E}{E}, then you may pay any amount of {E}. Galvanic Discharge deals that much additional damage to that permanent.",
+    "keywords": [],
     "colorIdentity": [
      "R"
     ],

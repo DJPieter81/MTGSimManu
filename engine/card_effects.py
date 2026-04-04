@@ -493,6 +493,11 @@ def galvanic_relay_resolve(game, card, controller, targets=None, item=None):
 def galvanic_discharge_resolve(game, card, controller, targets=None, item=None):
     opponent = 1 - controller
     player = game.players[controller]
+    # Real oracle: "deals 2 damage ... You get {E}{E}, then you may pay any
+    # amount of {E}. Galvanic Discharge deals that much additional damage."
+    # Step 1: gain 2 energy
+    player.energy_counters += 2
+    # Step 2: spend as much energy as useful (up to 5)
     energy_to_spend = min(player.energy_counters, 5)
     if energy_to_spend > 0:
         player.spend_energy(energy_to_spend)
