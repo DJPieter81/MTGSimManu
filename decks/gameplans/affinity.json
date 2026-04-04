@@ -1,0 +1,73 @@
+{
+  "deck_name": "Affinity",
+  "archetype": "aggro",
+  "goals": [
+    {
+      "goal_type": "DEPLOY_ENGINE",
+      "description": "Deploy artifact count enablers: Mox Opal, Springleaf Drum, 0-drops",
+      "card_priorities": {
+        "Mox Opal": 25.0,
+        "Springleaf Drum": 22.0,
+        "Ornithopter": 20.0,
+        "Memnite": 20.0,
+        "Signal Pest": 18.0
+      },
+      "card_roles": {
+        "engines": [
+          "Mox Opal",
+          "Springleaf Drum"
+        ],
+        "enablers": [
+          "Memnite",
+          "Ornithopter"
+        ]
+      }
+    },
+    {
+      "goal_type": "CURVE_OUT",
+      "description": "Deploy threats and equipment: Cranial Plating, Nettlecyst",
+      "card_priorities": {
+        "Cranial Plating": 22.0,
+        "Nettlecyst": 20.0,
+        "Thought Monitor": 18.0,
+        "Sojourner's Companion": 16.0,
+        "Frogmite": 14.0,
+        "Signal Pest": 12.0
+      },
+      "card_roles": {
+        "payoffs": [
+          "Cranial Plating",
+          "Nettlecyst"
+        ],
+        "enablers": [
+          "Frogmite",
+          "Sojourner's Companion",
+          "Thought Monitor"
+        ]
+      }
+    },
+    {
+      "goal_type": "PUSH_DAMAGE",
+      "description": "Equip and attack for massive damage",
+      "card_priorities": {
+        "Cranial Plating": 20.0,
+        "Signal Pest": 15.0
+      }
+    }
+  ],
+  "mulligan_keys": [
+    "Cranial Plating",
+    "Memnite",
+    "Mox Opal",
+    "Ornithopter",
+    "Springleaf Drum"
+  ],
+  "mulligan_min_lands": 1,
+  "mulligan_max_lands": 3,
+  "always_early": [
+    "Memnite",
+    "Mox Opal",
+    "Ornithopter",
+    "Springleaf Drum"
+  ]
+}

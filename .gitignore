@@ -1,0 +1,10 @@
+ModernAtomic.json
+__pycache__/
+*.pyc
+.pytest_cache/
+output/
+tests_baseline.json
+replay-viewer
+mtg-replay-viewer/
+node_modules/
+.DS_Store

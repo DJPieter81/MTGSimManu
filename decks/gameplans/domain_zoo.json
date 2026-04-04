@@ -1,0 +1,69 @@
+{
+  "deck_name": "Domain Zoo",
+  "archetype": "aggro",
+  "goals": [
+    {
+      "goal_type": "CURVE_OUT",
+      "description": "Deploy efficient threats: Ragavan \u2192 Kavu/Brawler \u2192 Scion",
+      "card_priorities": {
+        "Ragavan, Nimble Pilferer": 22.0,
+        "Territorial Kavu": 20.0,
+        "Nishoba Brawler": 20.0,
+        "Scion of Draco": 16.0,
+        "Orcish Bowmasters": 18.0,
+        "Stubborn Denial": 5.0
+      },
+      "card_roles": {
+        "enablers": [
+          "Ragavan, Nimble Pilferer"
+        ],
+        "payoffs": [
+          "Nishoba Brawler",
+          "Scion of Draco",
+          "Territorial Kavu"
+        ],
+        "interaction": [
+          "Orcish Bowmasters"
+        ]
+      }
+    },
+    {
+      "goal_type": "PUSH_DAMAGE",
+      "description": "Attack with domain-powered creatures, remove blockers",
+      "card_priorities": {
+        "Lightning Bolt": 15.0,
+        "Tribal Flames": 18.0,
+        "Leyline Binding": 14.0,
+        "Phlage, Titan of Fire's Fury": 16.0
+      },
+      "card_roles": {
+        "interaction": [
+          "Leyline Binding",
+          "Lightning Bolt",
+          "Tribal Flames"
+        ]
+      }
+    },
+    {
+      "goal_type": "CLOSE_GAME",
+      "description": "Burn face to close out the game",
+      "card_priorities": {
+        "Lightning Bolt": 18.0,
+        "Tribal Flames": 20.0
+      }
+    }
+  ],
+  "mulligan_keys": [
+    "Nishoba Brawler",
+    "Ragavan, Nimble Pilferer",
+    "Territorial Kavu"
+  ],
+  "mulligan_effective_cmc": {
+    "Scion of Draco": 3,
+    "Leyline Binding": 1
+  },
+  "mulligan_require_creature_cmc": 2,
+  "always_early": [
+    "Ragavan, Nimble Pilferer"
+  ]
+}

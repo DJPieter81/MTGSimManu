@@ -1,0 +1,113 @@
+{
+  "deck_name": "Living End",
+  "archetype": "combo",
+  "goals": [
+    {
+      "goal_type": "FILL_RESOURCE",
+      "description": "Cycle creatures into GY while ramping to 3 mana for cascade",
+      "card_priorities": {
+        "Street Wraith": 28.0,
+        "Striped Riverwinder": 26.0,
+        "Architects of Will": 26.0,
+        "Curator of Mysteries": 26.0,
+        "Waker of Waves": 24.0,
+        "Shardless Agent": 15.0,
+        "Demonic Dread": 15.0
+      },
+      "card_roles": {
+        "fillers": [
+          "Architects of Will",
+          "Curator of Mysteries",
+          "Street Wraith",
+          "Striped Riverwinder",
+          "Waker of Waves"
+        ],
+        "payoffs": [
+          "Demonic Dread",
+          "Shardless Agent"
+        ]
+      },
+      "prefer_cycling": true,
+      "resource_target": 2
+    },
+    {
+      "goal_type": "EXECUTE_PAYOFF",
+      "description": "Cascade into Living End NOW \u2014 cast Shardless Agent or Demonic Dread",
+      "card_priorities": {
+        "Shardless Agent": 30.0,
+        "Demonic Dread": 30.0,
+        "Street Wraith": 12.0,
+        "Striped Riverwinder": 10.0,
+        "Architects of Will": 10.0,
+        "Curator of Mysteries": 10.0,
+        "Waker of Waves": 10.0
+      },
+      "card_roles": {
+        "payoffs": [
+          "Demonic Dread",
+          "Shardless Agent"
+        ],
+        "fillers": [
+          "Architects of Will",
+          "Curator of Mysteries",
+          "Street Wraith",
+          "Striped Riverwinder",
+          "Waker of Waves"
+        ]
+      },
+      "prefer_cycling": true
+    },
+    {
+      "goal_type": "PUSH_DAMAGE",
+      "description": "Attack with reanimated creatures to close the game",
+      "card_priorities": {
+        "Shardless Agent": 15.0,
+        "Demonic Dread": 15.0
+      }
+    }
+  ],
+  "mulligan_keys": [
+    "Architects of Will",
+    "Demonic Dread",
+    "Shardless Agent",
+    "Street Wraith",
+    "Striped Riverwinder"
+  ],
+  "mulligan_min_lands": 1,
+  "mulligan_combo_sets": [
+    [
+      "Demonic Dread",
+      "Shardless Agent"
+    ],
+    [
+      "Architects of Will",
+      "Curator of Mysteries",
+      "Street Wraith",
+      "Striped Riverwinder",
+      "Waker of Waves"
+    ]
+  ],
+  "land_priorities": {
+    "Blooming Marsh": 5.0,
+    "Botanical Sanctum": 5.0,
+    "Verdant Catacombs": 4.0,
+    "Misty Rainforest": 4.0,
+    "Zagoth Triome": 2.0,
+    "Forest": 2.0
+  },
+  "reactive_only": [
+    "Force of Negation",
+    "Subtlety"
+  ],
+  "combo_readiness_check": "generic_combo_readiness",
+  "fallback_goals": [
+    {
+      "goal_type": "PUSH_DAMAGE",
+      "description": "Plan B: attack with cycled creatures if cascade is unavailable"
+    }
+  ],
+  "critical_pieces": [
+    "Demonic Dread",
+    "Shardless Agent"
+  ]
+}

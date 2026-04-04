@@ -1,0 +1,42 @@
+{
+  "deck_name": "4c Omnath",
+  "mainboard": {
+    "Arena of Glory": 1,
+    "Breeding Pool": 1,
+    "Elegant Parlor": 1,
+    "Flooded Strand": 4,
+    "Hallowed Fountain": 1,
+    "Hedge Maze": 1,
+    "Island": 1,
+    "Lush Portico": 1,
+    "Misty Rainforest": 3,
+    "Plains": 1,
+    "Sacred Foundry": 1,
+    "Steam Vents": 1,
+    "Stomping Ground": 1,
+    "Temple Garden": 1,
+    "Thundering Falls": 1,
+    "Windswept Heath": 3,
+    "Endurance": 2,
+    "Eternal Witness": 1,
+    "Omnath, Locus of Creation": 4,
+    "Phlage, Titan of Fire's Fury": 2,
+    "Quantum Riddler": 2,
+    "Solitude": 4,
+    "Ephemerate": 4,
+    "Galvanic Discharge": 3,
+    "Orim's Chant": 1,
+    "Prismatic Ending": 4,
+    "Stock Up": 2,
+    "Teferi, Time Raveler": 3,
+    "Wrath of the Skies": 2,
+    "Wrenn and Six": 3
+  },
+  "sideboard": {
+    "Boseiju, Who Endures": 2,
+    "Consign to Memory": 3,
+    "Mystical Dispute": 4,
+    "Surgical Extraction": 3,
+    "Wear // Tear": 3
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "deck_name": "Izzet Prowess",
+  "mainboard": {
+    "Dragon's Rage Channeler": 4,
+    "Monastery Swiftspear": 4,
+    "Slickshot Show-Off": 4,
+    "Lightning Bolt": 4,
+    "Lava Dart": 4,
+    "Unholy Heat": 2,
+    "Mutagenic Growth": 4,
+    "Violent Urge": 2,
+    "Mishra's Bauble": 4,
+    "Expressive Iteration": 4,
+    "Preordain": 4,
+    "Cori-Steel Cutter": 2,
+    "Scalding Tarn": 3,
+    "Wooded Foothills": 3,
+    "Arid Mesa": 2,
+    "Bloodstained Mire": 2,
+    "Steam Vents": 2,
+    "Stomping Ground": 1,
+    "Fiery Islet": 1,
+    "Thundering Falls": 2,
+    "Mountain": 2
+  },
+  "sideboard": {
+    "Consign to Memory": 4,
+    "Pick Your Poison": 3,
+    "Murktide Regent": 2,
+    "Spell Pierce": 2,
+    "Surgical Extraction": 2,
+    "Meltdown": 1,
+    "Spell Snare": 1
+  }
+}

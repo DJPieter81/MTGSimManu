@@ -1,0 +1,121 @@
+{
+  "deck_name": "Goryo's Vengeance",
+  "archetype": "combo",
+  "goals": [
+    {
+      "goal_type": "DISRUPT",
+      "description": "Early disruption with Thoughtseize while setting up",
+      "card_priorities": {
+        "Thoughtseize": 18.0,
+        "Unmarked Grave": 22.0,
+        "Faithful Mending": 20.0
+      },
+      "card_roles": {
+        "enablers": [
+          "Faithful Mending",
+          "Thoughtseize",
+          "Unmarked Grave"
+        ]
+      },
+      "min_turns": 1
+    },
+    {
+      "goal_type": "FILL_RESOURCE",
+      "description": "Get Griselbrand or Atraxa into the graveyard",
+      "card_priorities": {
+        "Unmarked Grave": 25.0,
+        "Faithful Mending": 22.0,
+        "Thoughtseize": 8.0
+      },
+      "card_roles": {
+        "enablers": [
+          "Faithful Mending",
+          "Unmarked Grave"
+        ]
+      },
+      "resource_target": 1,
+      "resource_min_cmc": 5
+    },
+    {
+      "goal_type": "EXECUTE_PAYOFF",
+      "description": "Reanimate with Goryo's Vengeance or Persist",
+      "card_priorities": {
+        "Goryo's Vengeance": 25.0,
+        "Persist": 22.0,
+        "Unburial Rites": 18.0,
+        "Undying Evil": 15.0,
+        "Ephemerate": 14.0
+      },
+      "card_roles": {
+        "payoffs": [
+          "Goryo's Vengeance",
+          "Persist",
+          "Unburial Rites"
+        ],
+        "protection": [
+          "Ephemerate",
+          "Undying Evil"
+        ]
+      },
+      "resource_min_cmc": 5
+    },
+    {
+      "goal_type": "PUSH_DAMAGE",
+      "description": "Attack with reanimated creature, protect with blink",
+      "card_priorities": {
+        "Ephemerate": 15.0,
+        "Undying Evil": 12.0,
+        "Solitude": 10.0
+      },
+      "card_roles": {
+        "protection": [
+          "Ephemerate",
+          "Undying Evil"
+        ],
+        "interaction": [
+          "Solitude"
+        ]
+      }
+    }
+  ],
+  "mulligan_keys": [
+    "Archon of Cruelty",
+    "Faithful Mending",
+    "Goryo's Vengeance",
+    "Griselbrand",
+    "Persist",
+    "Unmarked Grave"
+  ],
+  "mulligan_min_lands": 1,
+  "mulligan_combo_sets": [
+    [
+      "Goryo's Vengeance",
+      "Persist",
+      "Unburial Rites"
+    ],
+    [
+      "Archon of Cruelty",
+      "Faithful Mending",
+      "Griselbrand",
+      "Tainted Indulgence",
+      "Unmarked Grave"
+    ]
+  ],
+  "reactive_only": [
+    "Ephemerate",
+    "Solitude",
+    "Undying Evil"
+  ],
+  "always_early": [
+    "Faithful Mending",
+    "Thoughtseize",
+    "Unmarked Grave"
+  ],
+  "critical_pieces": [
+    "Archon of Cruelty",
+    "Goryo's Vengeance",
+    "Griselbrand",
+    "Persist",
+    "Unburial Rites"
+  ]
+}

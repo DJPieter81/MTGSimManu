@@ -1,0 +1,78 @@
+{
+  "deck_name": "Boros Energy",
+  "archetype": "aggro",
+  "goals": [
+    {
+      "goal_type": "CURVE_OUT",
+      "description": "Deploy efficient creatures on curve while interacting",
+      "card_priorities": {
+        "Guide of Souls": 20.0,
+        "Ocelot Pride": 20.0,
+        "Ragavan, Nimble Pilferer": 22.0,
+        "Ajani, Nacatl Pariah // Ajani, Nacatl Avenger": 18.0,
+        "Galvanic Discharge": 19.0,
+        "Thraben Charm": 15.0,
+        "Voice of Victory": 16.0,
+        "Goblin Bombardment": 14.0,
+        "Seasoned Pyromancer": 12.0,
+        "Ranger-Captain of Eos": 12.0
+      },
+      "card_roles": {
+        "enablers": [
+          "Guide of Souls",
+          "Ocelot Pride",
+          "Ragavan, Nimble Pilferer"
+        ],
+        "payoffs": [
+          "Ajani, Nacatl Pariah // Ajani, Nacatl Avenger",
+          "Ranger-Captain of Eos",
+          "Seasoned Pyromancer"
+        ],
+        "interaction": [
+          "Galvanic Discharge",
+          "Thraben Charm"
+        ]
+      }
+    },
+    {
+      "goal_type": "PUSH_DAMAGE",
+      "description": "Attack aggressively, use removal to clear blockers",
+      "card_priorities": {
+        "Galvanic Discharge": 15.0,
+        "Thraben Charm": 12.0,
+        "Phlage, Titan of Fire's Fury": 18.0,
+        "Blood Moon": 10.0
+      },
+      "card_roles": {
+        "interaction": [
+          "Galvanic Discharge",
+          "Thraben Charm"
+        ],
+        "payoffs": [
+          "Phlage, Titan of Fire's Fury"
+        ]
+      }
+    },
+    {
+      "goal_type": "CLOSE_GAME",
+      "description": "Convert board advantage into lethal damage",
+      "card_priorities": {
+        "Goblin Bombardment": 15.0,
+        "Phlage, Titan of Fire's Fury": 12.0
+      }
+    }
+  ],
+  "mulligan_keys": [
+    "Ajani, Nacatl Pariah // Ajani, Nacatl Avenger",
+    "Guide of Souls",
+    "Ocelot Pride",
+    "Ragavan, Nimble Pilferer"
+  ],
+  "mulligan_max_lands": 3,
+  "mulligan_require_creature_cmc": 2,
+  "always_early": [
+    "Guide of Souls",
+    "Ocelot Pride",
+    "Ragavan, Nimble Pilferer"
+  ]
+}

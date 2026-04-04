@@ -1,0 +1,82 @@
+{
+  "deck_name": "Jeskai Blink",
+  "archetype": "control",
+  "goals": [
+    {
+      "goal_type": "INTERACT",
+      "description": "Establish board control with removal, counters, and evoke",
+      "card_priorities": {
+        "Lightning Bolt": 22.0,
+        "Solitude": 22.0,
+        "Prismatic Ending": 20.0,
+        "Ragavan, Nimble Pilferer": 20.0,
+        "Snapcaster Mage": 15.0,
+        "Ephemerate": 14.0,
+        "Teferi, Time Raveler": 16.0
+      },
+      "card_roles": {
+        "interaction": [
+          "Counterspell",
+          "Lightning Bolt",
+          "Prismatic Ending",
+          "Solitude",
+          "Spell Snare"
+        ],
+        "enablers": [
+          "Ephemerate",
+          "Ragavan, Nimble Pilferer",
+          "Snapcaster Mage"
+        ]
+      },
+      "min_turns": 2,
+      "hold_mana": true
+    },
+    {
+      "goal_type": "GRIND_VALUE",
+      "description": "Generate value with blink effects and ETB creatures",
+      "card_priorities": {
+        "Solitude": 20.0,
+        "Ephemerate": 18.0,
+        "Subtlety": 16.0,
+        "Quantum Riddler": 15.0,
+        "Teferi, Time Raveler": 14.0,
+        "Spell Queller": 14.0
+      },
+      "card_roles": {
+        "payoffs": [
+          "Quantum Riddler",
+          "Solitude",
+          "Subtlety"
+        ],
+        "enablers": [
+          "Ephemerate"
+        ],
+        "interaction": [
+          "Spell Queller",
+          "Teferi, Time Raveler"
+        ]
+      },
+      "hold_mana": true
+    },
+    {
+      "goal_type": "CLOSE_GAME",
+      "description": "Close with Solitude beats or Snapcaster value",
+      "card_priorities": {
+        "Solitude": 15.0,
+        "Snapcaster Mage": 12.0
+      }
+    }
+  ],
+  "mulligan_keys": [
+    "Counterspell",
+    "Lightning Bolt",
+    "Prismatic Ending",
+    "Ragavan, Nimble Pilferer",
+    "Solitude"
+  ],
+  "reactive_only": [
+    "Counterspell",
+    "Force of Negation",
+    "Spell Snare"
+  ]
+}

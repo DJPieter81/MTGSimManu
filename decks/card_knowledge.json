@@ -1,0 +1,160 @@
+{
+  "_description": "Card-specific knowledge for AI decision making. Tags here supplement MTGJSON oracle text parsing. Properties like threat_value and burn_damage give the AI explicit knowledge about cards that are hard to derive from oracle text alone.",
+
+  "Ragavan, Nimble Pilferer": {
+    "tags": ["high_value_threat", "treasure_maker"],
+    "threat_value": 5.0,
+    "notes": "Generates massive value over time"
+  },
+  "Orcish Bowmasters": {
+    "tags": ["high_value_threat", "token_maker", "pinger"],
+    "threat_value": 4.0,
+    "notes": "Kills small creatures + grows Orc Army token"
+  },
+  "Psychic Frog": {
+    "tags": ["high_value_threat", "self_pump", "discard_outlet"],
+    "threat_value": 3.5,
+    "pump_cost": "discard",
+    "notes": "Card filtering + grows via discard"
+  },
+  "Murktide Regent": {
+    "tags": ["high_value_threat", "delve_creature", "evasion"],
+    "threat_value": 5.0,
+    "notes": "Huge flyer, fueled by graveyard"
+  },
+  "Omnath, Locus of Creation": {
+    "tags": ["high_value_threat", "value_engine", "landfall_payoff"],
+    "threat_value": 6.0,
+    "notes": "Multi-color value engine, needs WURG"
+  },
+  "Phlage, Titan of Fire's Fury": {
+    "tags": ["high_value_threat", "recursive", "etb_damage", "etb_lifegain"],
+    "threat_value": 5.0,
+    "burn_damage": 3,
+    "notes": "ETB 3 damage + 3 life, escapes from graveyard"
+  },
+  "Primeval Titan": {
+    "tags": ["high_value_threat", "land_tutor"],
+    "threat_value": 6.0,
+    "notes": "Searches lands on ETB and attack"
+  },
+  "Griselbrand": {
+    "tags": ["high_value_threat", "card_draw_engine"],
+    "threat_value": 8.0,
+    "notes": "Draw 7 for 7 life, lifelink"
+  },
+
+  "Lightning Bolt": {
+    "tags": ["burn", "removal"],
+    "burn_damage": 3
+  },
+  "Tribal Flames": {
+    "tags": ["burn", "domain_scaling"],
+    "burn_damage": 5,
+    "notes": "Damage equals domain count, usually 4-5"
+  },
+  "Galvanic Discharge": {
+    "tags": ["burn", "removal"],
+    "burn_damage": 3
+  },
+  "Lightning Helix": {
+    "tags": ["burn", "removal", "lifegain"],
+    "burn_damage": 3
+  },
+  "Lava Spike": {
+    "tags": ["burn", "face_only"],
+    "burn_damage": 3
+  },
+  "Rift Bolt": {
+    "tags": ["burn", "suspend"],
+    "burn_damage": 3
+  },
+  "Boros Charm": {
+    "tags": ["burn", "protection", "modal"],
+    "burn_damage": 4
+  },
+  "Searing Blaze": {
+    "tags": ["burn", "removal", "landfall"],
+    "burn_damage": 3
+  },
+  "Unholy Heat": {
+    "tags": ["burn", "removal", "delirium"],
+    "burn_damage": 6,
+    "notes": "6 damage with delirium, 2 without"
+  },
+  "Galvanic Blast": {
+    "tags": ["burn", "removal"],
+    "burn_damage": 4,
+    "notes": "4 with metalcraft, 2 without"
+  },
+
+  "Solitude": {
+    "tags": ["evoke_pitch", "removal", "exile_removal"],
+    "requires_target": true,
+    "notes": "Evoke: exile a white card to exile a creature"
+  },
+  "Subtlety": {
+    "tags": ["evoke_pitch", "bounce"],
+    "requires_target": true,
+    "notes": "Evoke: bounce creature/PW to top of library"
+  },
+  "Endurance": {
+    "tags": ["evoke_pitch", "graveyard_hate"],
+    "notes": "Shuffles graveyard into library"
+  },
+  "Grief": {
+    "tags": ["evoke_pitch", "discard"],
+    "requires_target": true,
+    "notes": "Thoughtseize on ETB"
+  },
+  "Fury": {
+    "tags": ["evoke_pitch", "removal", "damage_spread"],
+    "burn_damage": 4,
+    "notes": "Distributes 4 damage among creatures/PWs"
+  },
+
+  "Undying Evil": {
+    "tags": ["protection", "blink_adjacent"],
+    "notes": "Returns creature from death with +1/+1 counter"
+  },
+  "Ephemerate": {
+    "tags": ["protection", "blink", "etb_retrigger"],
+    "notes": "Blinks creature, rebounds next turn"
+  },
+
+  "Nishoba Brawler": {
+    "tags": ["domain_power_creature"],
+    "notes": "Power equals domain count"
+  },
+  "Territorial Kavu": {
+    "tags": ["domain_power_creature"],
+    "notes": "Power/toughness equal domain count"
+  },
+  "Scion of Draco": {
+    "tags": ["domain_power_creature", "lord"],
+    "notes": "Gives keywords based on domain"
+  },
+
+  "Amulet of Vigor": {
+    "tags": ["engine", "untap_enabler"],
+    "notes": "Lands enter untapped, critical for Amulet Titan"
+  },
+  "Ruby Medallion": {
+    "tags": ["engine", "cost_reducer"],
+    "notes": "Reduces red spell costs by 1"
+  },
+
+  "Fatal Push": {
+    "tags": ["removal", "conditional"],
+    "notes": "Kills CMC<=2, or CMC<=4 with revolt"
+  },
+  "Prismatic Ending": {
+    "tags": ["removal", "exile_removal", "convergence"],
+    "notes": "Exiles nonland CMC<=X where X=colors spent"
+  },
+
+  "Signal Pest": {
+    "tags": ["battle_cry"],
+    "notes": "Battle cry: attacking creatures get +1/+0"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "deck_name": "Affinity",
+  "mainboard": {
+    "Mox Opal": 4,
+    "Ornithopter": 4,
+    "Springleaf Drum": 4,
+    "Signal Pest": 4,
+    "Memnite": 4,
+    "Thought Monitor": 4,
+    "Cranial Plating": 4,
+    "Sojourner's Companion": 4,
+    "Nettlecyst": 2,
+    "Engineered Explosives": 2,
+    "Darksteel Citadel": 4,
+    "Treasure Vault": 2,
+    "Urza's Saga": 4,
+    "Silverbluff Bridge": 2,
+    "Razortide Bridge": 2,
+    "Tanglepool Bridge": 2,
+    "Mistvault Bridge": 2,
+    "Island": 1,
+    "Spire of Industry": 3,
+    "Frogmite": 2
+  },
+  "sideboard": {
+    "Metallic Rebuke": 2,
+    "Haywire Mite": 2,
+    "Dispatch": 2,
+    "Ethersworn Canonist": 2,
+    "Relic of Progenitus": 2,
+    "Hurkyl's Recall": 2,
+    "Spell Pierce": 2,
+    "Torpor Orb": 1
+  }
+}

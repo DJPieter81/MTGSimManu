@@ -1,0 +1,127 @@
+{
+  "deck_name": "Ruby Storm",
+  "archetype": "combo",
+  "goals": [
+    {
+      "goal_type": "DEPLOY_ENGINE",
+      "description": "Deploy Ruby Medallion or Ral, or accumulate rituals in hand",
+      "card_priorities": {
+        "Ruby Medallion": 25.0,
+        "Ral, Monsoon Mage // Ral, Leyline Prodigy": 20.0,
+        "Opt": 14.0,
+        "Sleight of Hand": 14.0,
+        "Manamorphose": 15.0
+      },
+      "card_roles": {
+        "engines": [
+          "Ral, Monsoon Mage // Ral, Leyline Prodigy",
+          "Ruby Medallion"
+        ],
+        "fillers": [
+          "Manamorphose",
+          "Reckless Impulse",
+          "Wrenn's Resolve",
+          "Glimpse the Impossible",
+          "Sleight of Hand"
+        ]
+      }
+    },
+    {
+      "goal_type": "EXECUTE_PAYOFF",
+      "description": "Chain ALL rituals + cantrips in one turn, then fire Grapeshot/Empty the Warrens",
+      "card_priorities": {
+        "Pyretic Ritual": 30.0,
+        "Desperate Ritual": 30.0,
+        "Manamorphose": 28.0,
+        "Reckless Impulse": 26.0,
+        "Wrenn's Resolve": 26.0,
+        "Glimpse the Impossible": 26.0,
+        "Past in Flames": 24.0,
+        "Wish": 22.0,
+        "Valakut Awakening // Valakut Stoneforge": 20.0,
+        "March of Reckless Joy": 20.0,
+        "Grapeshot": 18.0,
+        "Empty the Warrens": 17.0,
+        "Galvanic Relay": 12.0
+      },
+      "card_roles": {
+        "payoffs": [
+          "Empty the Warrens",
+          "Grapeshot"
+        ],
+        "enablers": [
+          "Desperate Ritual",
+          "Pyretic Ritual",
+          "Manamorphose",
+          "Reckless Impulse",
+          "Wrenn's Resolve",
+          "Glimpse the Impossible",
+          "Past in Flames",
+          "Wish",
+          "Valakut Awakening // Valakut Stoneforge",
+          "March of Reckless Joy"
+        ],
+        "rituals": [
+          "Desperate Ritual",
+          "Manamorphose",
+          "Pyretic Ritual"
+        ]
+      },
+      "resource_target": 5,
+      "resource_zone": "storm"
+    }
+  ],
+  "mulligan_keys": [
+    "Desperate Ritual",
+    "Manamorphose",
+    "Past in Flames",
+    "Pyretic Ritual",
+    "Reckless Impulse",
+    "Ruby Medallion",
+    "Wish",
+    "Wrenn's Resolve"
+  ],
+  "mulligan_min_lands": 1,
+  "mulligan_max_lands": 3,
+  "mulligan_combo_sets": [
+    [
+      "Desperate Ritual",
+      "Manamorphose",
+      "Pyretic Ritual",
+      "Ral, Monsoon Mage // Ral, Leyline Prodigy",
+      "Ruby Medallion"
+    ],
+    [
+      "Reckless Impulse",
+      "Wrenn's Resolve",
+      "Glimpse the Impossible",
+      "Past in Flames",
+      "Wish"
+    ]
+  ],
+  "land_priorities": {
+    "Spirebluff Canal": 5.0,
+    "Steam Vents": 3.0,
+    "Scalding Tarn": 4.0,
+    "Mountain": 2.0,
+    "Island": 1.0
+  },
+  "always_early": [
+    "Ruby Medallion"
+  ],
+  "combo_readiness_check": "generic_combo_readiness",
+  "fallback_goals": [
+    {
+      "goal_type": "PUSH_DAMAGE",
+      "description": "Plan B: attack with Ral or any creatures",
+      "card_priorities": {
+        "Ral, Monsoon Mage // Ral, Leyline Prodigy": 20.0
+      }
+    }
+  ],
+  "critical_pieces": [
+    "Grapeshot",
+    "Empty the Warrens",
+    "Past in Flames"
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "deck_name": "Eldrazi Tron",
+  "archetype": "midrange",
+  "goals": [
+    {
+      "goal_type": "RAMP",
+      "description": "Assemble Tron lands or deploy Eldrazi Temple for fast mana",
+      "card_priorities": {
+        "Expedition Map": 22.0,
+        "Chalice of the Void": 20.0,
+        "Eldrazi Mimic": 15.0,
+        "Matter Reshaper": 12.0
+      },
+      "card_roles": {
+        "engines": [
+          "Expedition Map"
+        ],
+        "enablers": [
+          "Chalice of the Void"
+        ]
+      },
+      "resource_target": 5,
+      "resource_zone": "mana"
+    },
+    {
+      "goal_type": "CURVE_OUT",
+      "description": "Deploy Eldrazi threats: Thought-Knot, Reality Smasher",
+      "card_priorities": {
+        "Thought-Knot Seer": 22.0,
+        "Reality Smasher": 22.0,
+        "Endbringer": 18.0,
+        "Walking Ballista": 15.0,
+        "Matter Reshaper": 12.0,
+        "Eldrazi Mimic": 10.0
+      },
+      "card_roles": {
+        "payoffs": [
+          "Endbringer",
+          "Reality Smasher",
+          "Thought-Knot Seer"
+        ],
+        "enablers": [
+          "Matter Reshaper",
+          "Walking Ballista"
+        ]
+      }
+    },
+    {
+      "goal_type": "PUSH_DAMAGE",
+      "description": "Attack with Eldrazi, use Ugin or All Is Dust as finishers",
+      "card_priorities": {
+        "Ugin, the Spirit Dragon": 20.0,
+        "All Is Dust": 18.0,
+        "Kozilek's Command": 15.0
+      },
+      "card_roles": {
+        "payoffs": [
+          "All Is Dust",
+          "Ugin, the Spirit Dragon"
+        ]
+      }
+    }
+  ],
+  "mulligan_keys": [
+    "Chalice of the Void",
+    "Eldrazi Mimic",
+    "Expedition Map",
+    "Reality Smasher",
+    "Thought-Knot Seer"
+  ],
+  "mulligan_max_lands": 5,
+  "land_priorities": {
+    "Urza's Tower": 8.0,
+    "Urza's Mine": 8.0,
+    "Urza's Power Plant": 8.0,
+    "Eldrazi Temple": 10.0,
+    "Cavern of Souls": 5.0
+  },
+  "always_early": [
+    "Chalice of the Void",
+    "Expedition Map"
+  ]
+}

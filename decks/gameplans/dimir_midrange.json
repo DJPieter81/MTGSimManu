@@ -1,0 +1,73 @@
+{
+  "deck_name": "Dimir Midrange",
+  "archetype": "midrange",
+  "goals": [
+    {
+      "goal_type": "DISRUPT",
+      "description": "Disrupt opponent's hand and deploy efficient threats",
+      "card_priorities": {
+        "Thoughtseize": 22.0,
+        "Fatal Push": 22.0,
+        "Orcish Bowmasters": 22.0,
+        "Dauthi Voidwalker": 20.0,
+        "Psychic Frog": 18.0
+      },
+      "card_roles": {
+        "interaction": [
+          "Fatal Push",
+          "Thoughtseize"
+        ],
+        "enablers": [
+          "Dauthi Voidwalker",
+          "Orcish Bowmasters",
+          "Psychic Frog"
+        ]
+      },
+      "hold_mana": true
+    },
+    {
+      "goal_type": "GRIND_VALUE",
+      "description": "Grind with Psychic Frog, Bowmasters, and card advantage",
+      "card_priorities": {
+        "Psychic Frog": 20.0,
+        "Orcish Bowmasters": 18.0,
+        "Archmage's Charm": 16.0,
+        "Consider": 12.0,
+        "Murktide Regent": 18.0,
+        "Subtlety": 14.0
+      },
+      "card_roles": {
+        "payoffs": [
+          "Murktide Regent",
+          "Psychic Frog"
+        ],
+        "interaction": [
+          "Archmage's Charm",
+          "Drown in the Loch"
+        ]
+      },
+      "hold_mana": true
+    },
+    {
+      "goal_type": "CLOSE_GAME",
+      "description": "Close with Murktide or Psychic Frog",
+      "card_priorities": {
+        "Murktide Regent": 20.0,
+        "Psychic Frog": 15.0
+      }
+    }
+  ],
+  "mulligan_keys": [
+    "Dauthi Voidwalker",
+    "Fatal Push",
+    "Orcish Bowmasters",
+    "Psychic Frog",
+    "Thoughtseize"
+  ],
+  "reactive_only": [
+    "Counterspell",
+    "Drown in the Loch",
+    "Spell Pierce",
+    "Subtlety"
+  ]
+}
