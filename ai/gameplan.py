@@ -89,6 +89,13 @@ class Goal:
     resource_zone: str = "graveyard"  # "graveyard", "storm", "mana", "battlefield"
     resource_min_cmc: int = 0  # minimum CMC for creatures to count toward resource_target
 
+    # Combo dig/hold control: which spell roles to cast vs hold when waiting.
+    # dig_roles: roles that are safe to cast while digging (default: draw + tutor)
+    # hold_roles: roles to save for the combo turn (default: fuel + finisher)
+    # New combo decks only need to set these if they differ from defaults.
+    dig_roles: Optional[Set[str]] = None   # None = {"draw", "tutor"}
+    hold_roles: Optional[Set[str]] = None  # None = {"fuel", "finisher", "rebuy"}
+
 
 # ═══════════════════════════════════════════════════════════════════
 # DeckGameplan — static per-deck configuration

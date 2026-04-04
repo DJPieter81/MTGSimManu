@@ -945,20 +945,27 @@ def _advance_combo(ctx: _DecisionContext) -> Optional[SpellDecision]:
 
     # ═══ Layer 3: EXECUTE ═══
     from ai.combo_readiness import ComboAction
+    from ai.spell_sequencer import classify_role, SpellRole
+
+    # Role names from gameplan → SpellRole mapping
+    _ROLE_MAP = {
+        "draw": SpellRole.DRAW, "tutor": SpellRole.TUTOR,
+        "fuel": SpellRole.FUEL, "finisher": SpellRole.FINISHER,
+        "rebuy": SpellRole.REBUY, "reducer": SpellRole.REDUCER,
+    }
+
     if action == ComboAction.WAIT_AND_DIG:
-        # DIG: only cast draw spells (cantrips) to find missing pieces.
-        # Do NOT cast fuel (rituals) — that wastes them across turns.
-        from ai.spell_sequencer import classify_role, SpellRole
-        dig_spells = [c for c in castable_spells
-                      if classify_role(c) in (SpellRole.DRAW, SpellRole.TUTOR)]
+        # DIG: only cast roles the gameplan says are safe while waiting.
+        # Default: draw + tutor. Prevents wasting fuel across turns.
+        dig_role_names = ctx.goal.dig_roles or {"draw", "tutor"}
+        allowed = {_ROLE_MAP[r] for r in dig_role_names if r in _ROLE_MAP}
+        dig_spells = [c for c in castable_spells if classify_role(c) in allowed]
         if dig_spells:
             return _execute_combo_sequenced(ctx, dig_spells, available_mana,
                                             "wait_dig")
-        return None  # nothing to dig with — hold
+        return None
 
     if action == ComboAction.DEPLOY_ENABLER:
-        # DEPLOY: only cost reducers
-        from ai.spell_sequencer import classify_role, SpellRole
         reducers = [c for c in castable_spells
                     if classify_role(c) == SpellRole.REDUCER]
         if reducers:
