@@ -52,6 +52,9 @@ class ManaNeeds:
     cheapest_proactive_cmc: int = 99
     # Number of domain-scaling cards in hand (affects land subtype priority)
     domain_card_count: int = 0
+    # Colors needed by high-CMC multi-color payoffs (e.g., Omnath WURG)
+    # These get extra weight in fetch/shock decisions
+    payoff_missing_colors: Set[str] = field(default_factory=set)
 
 
 def analyze_mana_needs(game: "GameState", player_idx: int,
@@ -123,6 +126,23 @@ def analyze_mana_needs(game: "GameState", player_idx: int,
     # ── What colors are missing? ──
     needs.missing_colors = set(needs.needed_colors.keys()) - needs.existing_colors
 
+    # ── Track colors needed by high-CMC multi-color payoffs ──
+    # These colors get extra priority in fetch/shock decisions (e.g., Omnath WURG)
+    all_land_colors = set()
+    for bf_card in player.battlefield:
+        if bf_card.template.is_land:
+            all_land_colors.update(bf_card.template.produces_mana)
+    for card in player.hand:
+        if card.template.is_land:
+            continue
+        cmc = card.template.cmc or 0
+        if cmc >= 3 and len(card.template.color_identity) >= 2:
+            card_colors = set()
+            for c in card.template.color_identity:
+                card_colors.add(c.value if hasattr(c, 'value') else str(c))
+            missing = card_colors - all_land_colors
+            needs.payoff_missing_colors |= missing
+
     # ── Which spells would become castable with 1 more mana of the right color? ──
     mana_if_one_more = needs.total_mana + 1
     for card in player.hand:
@@ -191,6 +211,9 @@ def score_land(land, needs: ManaNeeds, is_fetchable: bool = False,
     for c in produces:
         if c in needs.needed_colors:
             score += needs.needed_colors[c] * 3.0
+        # Extra boost for colors needed by high-CMC multi-color payoffs
+        if c in needs.payoff_missing_colors:
+            score += 10.0
 
     # ── (C) Enables a specific spell this turn ──
     # Huge bonus if this land lets us cast something we couldn't before

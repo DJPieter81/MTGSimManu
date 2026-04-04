@@ -714,6 +714,7 @@ class GameState:
                 and c.template.color_identity & template.color_identity
             ]
             if exile_candidates:
+                can_evoke = True
                 # Target validation: don't allow evoke if the card needs a target
                 # and no valid target exists (e.g., Solitude on empty board)
                 from decks.card_knowledge_loader import requires_target as _req_target

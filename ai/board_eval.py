@@ -207,10 +207,29 @@ def _eval_evoke(game, me, a: BoardAssessment, ctx: dict) -> float:
         # Can hard-cast NOW — always prefer body + ETB
         return -10.0
 
+    # Check if we can actually hard-cast with correct COLORS, not just land count
     total_lands = len(me.lands)
     if total_lands >= cmc:
-        # Can hard-cast next turn — only evoke under heavy pressure
-        return a.pressure - 0.7  # positive only when pressure > 0.7
+        # Have enough lands — but do we have the right colors?
+        existing_colors = set()
+        for land in me.lands:
+            existing_colors.update(land.template.produces_mana)
+        needed_colors = set()
+        mc = card.template.mana_cost
+        if mc.white > 0: needed_colors.add("W")
+        if mc.blue > 0: needed_colors.add("U")
+        if mc.black > 0: needed_colors.add("B")
+        if mc.red > 0: needed_colors.add("R")
+        if mc.green > 0: needed_colors.add("G")
+        has_all_colors = needed_colors <= existing_colors
+
+        if has_all_colors:
+            # Can hard-cast next turn — only evoke under heavy pressure
+            return a.pressure - 0.7  # positive only when pressure > 0.7
+        else:
+            # Have enough lands but wrong colors — may take several turns
+            # Evoke if under moderate pressure
+            return a.pressure - 0.4
 
     # Can't hard-cast for multiple turns — evoke for the ETB value
     return 1.0
