@@ -111,14 +111,12 @@ class DecisionThresholds:
     dying_clock: int = 4
     dying_min_board_power: int = 3
 
-    # --- ANSWER: must-answer creature thresholds ---
-    # Value threshold for creatures that MUST be answered. Lower = more aggressive removal.
-    # Under pressure: answer_val_pressured. Not under pressure: answer_val_relaxed.
-    answer_val_pressured: float = 3.0
-    answer_val_relaxed: float = 5.0
-    # Emergency "answer everything" clock threshold
+    # --- ANSWER: threat classification tuning ---
+    # Categorical threat classification (MUST/HIGH/MED/LOW) replaces
+    # float value thresholds. These control the MED-level checks:
+    # Emergency clock: answer ALL creatures when this close to dying
     answer_emergency_clock: int = 2
-    # Minimum power for a creature to be "meaningful" under pressure
+    # Minimum power for a "meaningful" creature under pressure (MED level)
     answer_min_power: int = 3
 
     # --- ADVANCE (reactive): mana holdback for interaction ---
@@ -162,8 +160,6 @@ _ARCHETYPE_THRESHOLDS = {
         # - taps out freely (deploy_mana_holdback=0)
         dying_clock=4,
         dying_min_board_power=3,
-        answer_val_pressured=4.0,
-        answer_val_relaxed=6.0,
         answer_min_power=4,
         deploy_mana_holdback=0,
         wrath_single_target_min_val=10.0,
@@ -183,8 +179,6 @@ _ARCHETYPE_THRESHOLDS = {
         # and ADVANCE gets more opportunities to deploy payoffs.
         dying_clock=4,
         dying_min_board_power=3,
-        answer_val_pressured=4.0,   # only answer creatures with value >= 4
-        answer_val_relaxed=6.0,
         deploy_mana_holdback=2,
         wrath_single_target_min_val=7.0,
         evoke_hardcast_next_turn=0.8,
@@ -195,8 +189,6 @@ _ARCHETYPE_THRESHOLDS = {
         # very high answer thresholds mean ANSWER rarely fires.
         dying_clock=4,
         dying_min_board_power=3,
-        answer_val_pressured=5.0,
-        answer_val_relaxed=8.0,
         deploy_mana_holdback=0,
         wrath_single_target_min_val=12.0,
         evoke_hardcast_next_turn=0.9,

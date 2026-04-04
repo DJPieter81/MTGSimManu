@@ -241,29 +241,45 @@ def _build_context(castable, game, player_idx, assessment, engine):
         and assessment.opp_board_power >= thresholds.dying_min_board_power
     )
 
-    # Must-answer threats: opponent creatures that are winning the game.
-    # Thresholds from gameplan control how aggressively we remove.
+    # Must-answer threats: property-based categorical classification.
+    # Instead of float value thresholds, classify by card properties:
+    #   MUST: win conditions, combo pieces
+    #   HIGH: engines, haste creatures, or high power under pressure
+    #   MED:  meaningful power under emergency
+    # This avoids arbitrary value thresholds while staying tag-driven.
     must_answer = []
     if opp.creatures:
-        from ai.evaluator import _permanent_value
         under_pressure = assessment.opp_clock <= thresholds.dying_clock or assessment.am_dead_next
-        val_threshold = thresholds.answer_val_pressured if under_pressure else thresholds.answer_val_relaxed
         for c in opp.creatures:
-            val = _permanent_value(c, opp, game, 1 - player_idx)
+            tags = getattr(c.template, 'tags', set())
             power = c.power if hasattr(c, 'power') and c.power else (c.template.power or 0)
-            toughness = c.toughness if hasattr(c, 'toughness') and c.toughness else (c.template.toughness or 0)
-            if val >= val_threshold or assessment.opp_clock <= thresholds.answer_emergency_clock:
+
+            # MUST: game-ending threats — always answer
+            if 'win_condition' in tags or 'combo_piece' in tags:
+                must_answer.append(c)
+                continue
+
+            # HIGH: value engines or big threats under pressure
+            is_engine = 'etb_value' in tags and 'token_maker' in tags  # e.g., Bowmasters
+            is_big_threat = power >= 4 and under_pressure
+            if is_engine or is_big_threat:
+                must_answer.append(c)
+                continue
+
+            # MED: meaningful power under emergency or pressure
+            if assessment.opp_clock <= thresholds.answer_emergency_clock:
                 must_answer.append(c)
             elif under_pressure and power >= thresholds.answer_min_power:
                 must_answer.append(c)
             elif engine.gameplan.archetype == 'aggro' and me.creatures:
+                toughness = c.toughness if hasattr(c, 'toughness') and c.toughness else (c.template.toughness or 0)
                 my_blocked_power = sum(
                     (a.power or a.template.power or 0)
                     for a in me.creatures
                     if (a.power or a.template.power or 0) <= toughness
                 )
                 if my_blocked_power >= 3:
-                    must_answer.append(c)  # Blocker prevents significant damage
+                    must_answer.append(c)
 
 
     # Opponent interaction likelihood
