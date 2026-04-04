@@ -1020,6 +1020,7 @@ def _execute_combo_sequenced(
         opponent_life=ctx.opp.life,
         am_dead_next=ctx.am_dying,
         medallion_count=medallion_count,
+        current_storm=getattr(ctx.game, '_global_storm_count', 0),
     )
 
     if result:

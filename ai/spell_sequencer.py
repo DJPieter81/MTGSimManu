@@ -108,6 +108,7 @@ def next_spell_to_cast(
     opponent_life: int,
     am_dead_next: bool,
     medallion_count: int = 0,
+    current_storm: int = 0,
 ) -> Optional[Tuple["CardInstance", SpellRole, str]]:
     """Pick the next spell to cast from the sequenced hand.
 
@@ -170,30 +171,29 @@ def next_spell_to_cast(
 
     # Finisher — fire when:
     # 1. No castable fuel remains (rituals exhausted), OR
-    # 2. We have enough storm count that the finisher is lethal.
-    # Count spells already cast by counting non-finisher/non-other roles
-    # that are NOT in the castable list (they've been cast already).
+    # 2. Current storm count already enough for lethal damage/tokens.
     if SpellRole.FINISHER in by_role:
         has_castable_fuel = any(
             role == SpellRole.FUEL
             and _effective_cost(c, medallion_count) <= available_mana
             for c, role in sequenced
         )
-        # Count castable spells (approximate storm so far = total spells - remaining)
-        # We know opponent_life and can count remaining fuel to estimate if firing now is lethal
-        remaining_fuel = sum(
-            1 for c, role in sequenced
-            if role == SpellRole.FUEL and _effective_cost(c, medallion_count) <= available_mana
-        )
-        # The finisher itself adds 1 to storm. Each remaining fuel adds 1 more.
-        # If (opponent_life - remaining_fuel - 1) <= 0 after casting all remaining fuel + finisher,
-        # that means we're already lethal. But simpler: just fire when no fuel left.
-        # Key insight: fire AFTER fuel but BEFORE draw. Draw doesn't add storm count.
-        if not has_castable_fuel:
-            for card in by_role[SpellRole.FINISHER]:
-                if _effective_cost(card, medallion_count) <= available_mana:
-                    return (card, SpellRole.FINISHER,
-                            f"Fuel exhausted — firing finisher (opp life: {opponent_life})")
+        for card in by_role[SpellRole.FINISHER]:
+            if _effective_cost(card, medallion_count) > available_mana:
+                continue
+
+            from engine.cards import Keyword
+            is_storm = Keyword.STORM in card.template.keywords
+
+            if is_storm and current_storm >= opponent_life:
+                # Storm count already lethal — fire immediately
+                return (card, SpellRole.FINISHER,
+                        f"Lethal storm ({current_storm} >= {opponent_life} life)")
+
+            if not has_castable_fuel:
+                # No more fuel — fire whatever we have
+                return (card, SpellRole.FINISHER,
+                        f"Fuel exhausted — firing (storm {current_storm}, opp {opponent_life})")
 
     # Nothing productive to cast — hold and pass
     return None
