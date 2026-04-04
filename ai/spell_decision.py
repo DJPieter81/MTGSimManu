@@ -518,29 +518,38 @@ def _concern_survive(ctx: _DecisionContext) -> Optional[SpellDecision]:
     # Best removal for their biggest creature
     removal = _best_removal_for_threats(safe_removal, ctx.opp.creatures, ctx)
 
-    # Best blocker: creature with highest toughness
+    # Best blocker: creature with highest toughness, prefer ETB value on ties
     blockers = [c for c in safe_threats
                 if c.template.is_creature and (c.template.toughness or 0) >= 2]
-    blockers.sort(key=lambda c: c.template.toughness or 0, reverse=True)
+    blockers.sort(key=lambda c: (
+        c.template.toughness or 0,
+        1 if 'etb_value' in getattr(c.template, 'tags', set()) else 0,
+    ), reverse=True)
 
     if removal and blockers:
         r_card, r_target, r_reason = removal
         b_card = blockers[0]
-        # Check if the best blocker is a gameplan payoff with ETB value.
-        # Deploying a payoff that gains life/draws AND blocks is sometimes
-        # better than removing a single creature, if we can't afford both.
-        b_tags = getattr(b_card.template, 'tags', set())
-        b_is_payoff = any(
-            b_card.name in goal.card_roles.get('payoffs', set())
-            for goal in ctx.engine.gameplan.goals
-        )
-        b_has_etb_value = 'etb_value' in b_tags
         r_cmc = r_card.template.cmc or 0
-        can_do_both = ctx.assessment.my_mana >= (b_card.template.cmc or 0) + r_cmc
-        if b_is_payoff and b_has_etb_value and not can_do_both:
+
+        # Check if any blocker is a gameplan payoff with ETB value.
+        # Deploying a payoff (like Omnath: +4 life, draw) that also blocks
+        # is often better than removal, if we can't afford both this turn.
+        payoff_blocker = None
+        for b in blockers:
+            b_tags = getattr(b.template, 'tags', set())
+            is_payoff = any(
+                b.name in goal.card_roles.get('payoffs', set())
+                for goal in ctx.engine.gameplan.goals
+            )
+            if is_payoff and 'etb_value' in b_tags:
+                can_do_both = ctx.assessment.my_mana >= (b.template.cmc or 0) + r_cmc
+                if not can_do_both:
+                    payoff_blocker = b
+                    break
+        if payoff_blocker:
             return SpellDecision(
-                card=b_card, concern="survive",
-                reasoning=f"Dying — deploying payoff {b_card.name} (ETB value + blocker)",
+                card=payoff_blocker, concern="survive",
+                reasoning=f"Dying — deploying payoff {payoff_blocker.name} (ETB value + blocker)",
                 alternatives=[(r_card.name, f"could remove {r_target} instead")]
             )
         # Otherwise, removal permanently removes the threat — usually better
@@ -557,8 +566,19 @@ def _concern_survive(ctx: _DecisionContext) -> Optional[SpellDecision]:
             alternatives=[]
         )
     elif blockers:
+        # Prefer a payoff with ETB value over a raw stat blocker
+        best_blocker = blockers[0]
+        for b in blockers:
+            b_tags = getattr(b.template, 'tags', set())
+            is_payoff = any(
+                b.name in goal.card_roles.get('payoffs', set())
+                for goal in ctx.engine.gameplan.goals
+            )
+            if is_payoff and 'etb_value' in b_tags:
+                best_blocker = b
+                break
         return SpellDecision(
-            card=blockers[0], concern="survive",
+            card=best_blocker, concern="survive",
             reasoning=f"Dying — deploying {blockers[0].name} as blocker (toughness {blockers[0].template.toughness})",
             alternatives=[]
         )
@@ -1320,8 +1340,11 @@ def _best_role_card(role_cards: List[Tuple["CardInstance", str]],
             "protection": 3, "interaction": 2, "payoffs": 1
         }
     else:
+        # Payoffs and engines at same priority: let card_priorities (from the
+        # gameplan data) break the tie. This lets each deck define whether its
+        # payoff or engine should come first via priority scores.
         role_priority = {
-            "engines": 6, "payoffs": 5, "enablers": 4,
+            "engines": 6, "payoffs": 6, "enablers": 4,
             "fillers": 3, "protection": 2, "interaction": 1
         }
     # Use card_priorities from gameplan as secondary tiebreaker
