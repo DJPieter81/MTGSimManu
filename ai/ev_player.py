@@ -359,6 +359,23 @@ class EVPlayer:
             else:
                 ev += 1.0  # marginal for non-combo
 
+        # ── Past in Flames — bonus for rich graveyard ──
+        if 'flashback' in tags and self.archetype == "combo":
+            gy_rituals = sum(1 for c in me.graveyard if 'ritual' in getattr(c.template, 'tags', set()))
+            gy_cantrips = sum(1 for c in me.graveyard if 'cantrip' in getattr(c.template, 'tags', set()))
+            ev += gy_rituals * 2.0 + gy_cantrips * 1.0  # scale with GY fuel
+
+        # ── Tutors (Wish) — find the finisher ──
+        if 'tutor' in tags and self.archetype == "combo":
+            # Wish finds the finisher from sideboard — critical combo piece
+            # Value scales with storm count: higher storm = tutor is more urgent
+            tutor_val = 6.0
+            if me.spells_cast_this_turn >= 3:
+                tutor_val += 8.0  # we're mid-chain, need to find finisher NOW
+            elif me.spells_cast_this_turn >= 1:
+                tutor_val += 4.0  # starting to chain, tutor is good
+            ev += tutor_val
+
         # ── Cost reducers / engines ──
         if 'cost_reducer' in tags:
             if self.archetype == "combo":
@@ -403,8 +420,7 @@ class EVPlayer:
 
         # ── Storm finisher sequencing ──
         # Storm finishers (Grapeshot, Empty the Warrens) should be cast LAST
-        # in the chain to maximize storm count. Penalize them when we have
-        # more chain fuel to cast first.
+        # in the chain to maximize storm count.
         if self.archetype == "combo":
             from engine.cards import Keyword as Kw
             if Kw.STORM in getattr(t, 'keywords', set()):
@@ -423,10 +439,12 @@ class EVPlayer:
                     )
                     if fuel_in_hand > 0:
                         ev -= 20.0  # HOLD the finisher — cast fuel first
-                    elif storm_copies >= 4:
-                        ev += 10.0  # no more fuel, fire at decent count
+                    elif storm_copies >= 8:
+                        ev += 15.0  # high storm count, fire for big tokens/damage
+                    elif storm_copies >= 5:
+                        ev += 5.0  # decent count, fire if no fuel left
                     else:
-                        ev -= 5.0  # too low storm count, not worth it
+                        ev -= 30.0  # storm 1-4 with no fuel = waste the finisher
 
         # ── Survival mode: when facing lethal, boost survival plays ──
         if snap.am_dead_next:
@@ -514,11 +532,15 @@ class EVPlayer:
                 mod += 2.0
 
         elif self.archetype == "combo":
-            # Combo: chain spells, build toward lethal
+            # Combo (Storm): chain spells aggressively, build toward lethal
             if 'cantrip' in tags or 'draw' in tags:
-                mod += 2.0  # dig for pieces
+                mod += 3.0  # dig for pieces / finisher
+            if 'ritual' in tags:
+                mod += 2.0  # rituals fuel the chain
             if me.spells_cast_this_turn >= 3:
-                mod += 2.0  # we're chaining — keep going!
+                mod += 4.0  # mid-chain — every spell matters
+            if me.spells_cast_this_turn >= 6:
+                mod += 4.0  # deep chain — very close to lethal
 
         elif self.archetype == "ramp":
             # Ramp: develop mana, deploy fatties
