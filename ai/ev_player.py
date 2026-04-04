@@ -260,24 +260,28 @@ class EVPlayer:
         # ── Evoke detection ──
         # If card has evoke and we can't hardcast it (not enough mana),
         # we're evoking — this costs us 2 cards (spell + pitched card).
-        # Only worth it if the target is very valuable.
+        # Worth it if the target is valuable OR we're under heavy pressure.
         is_evoke = False
         if 'evoke' in tags or 'evoke_pitch' in tags:
             hardcast_cost = cmc
             if snap.my_mana < hardcast_cost:
                 is_evoke = True
-                # Evoking costs 2 cards for 1 effect — big penalty
-                ev -= 8.0
-                # Only evoke if opponent has a very valuable target
+                # Base penalty for 2-for-1 card disadvantage
+                ev -= 6.0
                 if 'removal' in tags:
                     best_val = self._best_removal_target_value(card, game, opp)
-                    if best_val < 5.0:
-                        ev -= 10.0  # not worth evoking for small creatures
+                    if best_val < 4.0:
+                        ev -= 8.0  # not worth evoking for small creatures
                     else:
-                        ev += best_val  # valuable target, worth evoking
+                        ev += best_val  # valuable target
+                    # Under heavy pressure: evoking is more justified
+                    if snap.opp_power >= snap.my_life - 3 and snap.opp_power > 0:
+                        ev += 8.0  # survival evoke — worth the 2-for-1
+                    elif snap.am_dead_next:
+                        ev += 12.0  # absolutely must evoke to survive
                 # Never evoke with no targets
                 if snap.opp_creature_count == 0 and 'removal' in tags:
-                    ev -= 20.0  # absolutely don't evoke removal into empty board
+                    ev -= 20.0
 
         # ── Creature deployment ──
         is_creature = t.is_creature
@@ -758,14 +762,9 @@ class EVPlayer:
         tags = getattr(t, 'tags', set())
         opp = game.players[1 - self.player_idx]
 
-        # Removal: target best opponent creature
-        if 'removal' in tags and 'board_wipe' not in tags:
-            if opp.creatures:
-                best = max(opp.creatures, key=lambda c: creature_value(c))
-                return [best.instance_id]
-            return []
-
-        # Burn: compare face damage value vs creature kill value
+        # Burn spells FIRST — they can always target face as fallback
+        # Must check before removal, because burn cards often have removal tag
+        # but can go face when no creatures exist (Lightning Bolt, Tribal Flames)
         from decks.card_knowledge_loader import get_burn_damage
         dmg = get_burn_damage(t.name)
         if dmg > 0:
@@ -793,6 +792,13 @@ class EVPlayer:
             if best_kill_id and best_kill_val > face_val:
                 return [best_kill_id]  # kill the creature
             return [-1]  # go face
+
+        # Removal (non-burn): target best opponent creature
+        if 'removal' in tags and 'board_wipe' not in tags:
+            if opp.creatures:
+                best = max(opp.creatures, key=lambda c: creature_value(c))
+                return [best.instance_id]
+            return []
 
         # Blink effects: target our best ETB creature
         if 'blink' in tags:
