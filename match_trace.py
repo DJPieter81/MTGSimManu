@@ -75,6 +75,22 @@ def patched_main(self, game, excluded=None):
 
     result = orig_main(self, game, excluded)
 
+    # Score ALL candidates for reasoning display
+    all_candidates = []
+    for sp in me.hand:
+        if sp.template.is_land:
+            continue
+        if not game.can_cast(self.player_idx, sp):
+            continue
+        tags = getattr(sp.template, 'tags', set())
+        if 'counterspell' in tags and 'removal' not in tags:
+            continue
+        try:
+            sp_ev = self._score_spell(sp, snap, game, me, opp)
+            all_candidates.append((sp.name, sp_ev))
+        except Exception:
+            pass
+
     if result:
         action, card, targets = result
         if action == "play_land":
@@ -94,9 +110,18 @@ def patched_main(self, game, excluded=None):
                             target_desc = f" targeting {tc.name}"
             cmc = card.template.cmc or 0
             log(f"  ▶ {ds} casts {card.name} (CMC {cmc}){target_desc}")
-            log(f"    AI reasoning: EV={ev:.1f} — scored as best available play")
+            log(f"    EV={ev:.1f} — BEST available play")
+            # Show alternatives
+            alternatives = sorted(all_candidates, key=lambda x: -x[1])
+            alt_strs = [f"{n} ({v:.1f})" for n, v in alternatives if n != card.name][:3]
+            if alt_strs:
+                log(f"    Alternatives considered: {', '.join(alt_strs)}")
     else:
-        log(f"  ▶ {ds} passes (no profitable plays)")
+        if all_candidates:
+            best = max(all_candidates, key=lambda x: x[1])
+            log(f"  ▶ {ds} passes — best option {best[0]} (EV={best[1]:.1f}) below threshold")
+        else:
+            log(f"  ▶ {ds} passes — nothing castable")
 
     return result
 
@@ -161,7 +186,7 @@ EVPlayer.decide_response = patched_resp
 
 # ── Run the match ──
 
-random.seed(31415)
+random.seed(54321)
 d1_data = MODERN_DECKS["Domain Zoo"]
 d2_data = MODERN_DECKS["4c Omnath"]
 
