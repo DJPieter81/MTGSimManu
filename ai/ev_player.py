@@ -203,9 +203,11 @@ class EVPlayer:
             if not game.can_cast(self.player_idx, spell):
                 continue
 
-            # Skip counterspells in main phase
+            # Skip PURE counterspells in main phase (nothing to target).
+            # Multi-mode cards like Drown in the Loch (counter OR destroy)
+            # should still be considered for their non-counter mode.
             tags = getattr(spell.template, 'tags', set())
-            if 'counterspell' in tags:
+            if 'counterspell' in tags and 'removal' not in tags:
                 continue
 
             # Skip reactive-only unless dying
@@ -252,7 +254,8 @@ class EVPlayer:
         ev = 0.0
 
         # ── Creature deployment ──
-        if t.is_creature:
+        is_creature = t.is_creature
+        if is_creature:
             ev += creature_value(card) * 1.5
             # Haste: immediate attack value
             from engine.cards import Keyword
@@ -260,12 +263,14 @@ class EVPlayer:
                 ev += (card.power or 0) * 1.0
 
         # ── Removal ──
+        # Only penalize removal when NO creatures AND card isn't also a creature
+        # (Bowmasters is a 1/1 flash creature WITH an ETB that damages — always good)
         if 'removal' in tags:
             best_target_val = self._best_removal_target_value(card, game, opp)
             if best_target_val > 0:
                 ev += best_target_val * 1.2
-            elif snap.opp_creature_count == 0:
-                ev -= 3.0  # no targets = waste
+            elif snap.opp_creature_count == 0 and not is_creature:
+                ev -= 3.0  # pure removal with no targets = waste
 
         # ── Board wipe ──
         if 'board_wipe' in tags:
@@ -287,12 +292,28 @@ class EVPlayer:
 
         # ── Card draw / cantrips ──
         if 'cantrip' in tags or 'draw' in tags:
-            ev += 3.0  # card draw is always valuable
+            # Base draw value scales with how much we need cards
+            draw_val = 4.0
+            if snap.my_hand_size <= 2:
+                draw_val += 3.0  # desperately need cards
             oracle = (t.oracle_text or '').lower()
             if 'draw two' in oracle or 'draws two' in oracle:
-                ev += 3.0
+                draw_val += 4.0
             if 'draw three' in oracle:
-                ev += 6.0
+                draw_val += 7.0
+            # Multi-mode cards (Archmage's Charm): count draw mode even if
+            # card also has removal/counterspell tags
+            ev += draw_val
+
+        # ── Non-creature permanents (artifacts, enchantments, planeswalkers) ──
+        from engine.cards import CardType
+        if not is_creature and not t.is_land:
+            if CardType.PLANESWALKER in t.card_types:
+                ev += 6.0  # planeswalkers generate recurring value
+            elif CardType.ARTIFACT in t.card_types and 'equipment' not in tags:
+                ev += 2.0  # artifacts (medallions, etc.)
+            elif CardType.ENCHANTMENT in t.card_types:
+                ev += 2.0
 
         # ── Rituals (combo fuel) ──
         if 'ritual' in tags:
@@ -310,7 +331,7 @@ class EVPlayer:
 
         # ── ETB value ──
         if 'etb_value' in tags:
-            ev += 2.5
+            ev += 3.0
 
         # ── Gameplan role bonuses ──
         if card.name in self._payoff_names:
@@ -343,13 +364,32 @@ class EVPlayer:
                 if remaining_mana < 2:
                     ev -= 3.0  # penalty for tapping out with answers in hand
 
-        # ── Storm lethal override ──
+        # ── Storm finisher sequencing ──
+        # Storm finishers (Grapeshot, Empty the Warrens) should be cast LAST
+        # in the chain to maximize storm count. Penalize them when we have
+        # more chain fuel to cast first.
         if self.archetype == "combo":
             from engine.cards import Keyword as Kw
             if Kw.STORM in getattr(t, 'keywords', set()):
                 storm_copies = me.spells_cast_this_turn + 1
                 if storm_copies >= snap.opp_life:
-                    ev += 100.0  # lethal storm!
+                    ev += 100.0  # lethal storm! Cast now!
+                else:
+                    # Check if we have more fuel to chain first
+                    fuel_in_hand = sum(
+                        1 for c in me.hand
+                        if c.instance_id != card.instance_id
+                        and not c.template.is_land
+                        and game.can_cast(self.player_idx, c)
+                        and 'storm' not in {kw.value if hasattr(kw, 'value') else str(kw)
+                                             for kw in getattr(c.template, 'keywords', set())}
+                    )
+                    if fuel_in_hand > 0:
+                        ev -= 20.0  # HOLD the finisher — cast fuel first
+                    elif storm_copies >= 4:
+                        ev += 10.0  # no more fuel, fire at decent count
+                    else:
+                        ev -= 5.0  # too low storm count, not worth it
 
         return ev
 
@@ -370,11 +410,25 @@ class EVPlayer:
                     mod += 3.0  # burn when opponent is low
 
         elif self.archetype == "midrange":
-            # Midrange: trade efficiently, grind
+            # Midrange: interact first, deploy threats, grind value
             if 'removal' in tags and snap.opp_creature_count > 0:
-                mod += 2.0  # remove threats
-            if t.is_creature and 'card_advantage' in tags:
-                mod += 3.0  # value creatures
+                mod += 4.0  # PRIORITY: remove threats when they exist
+                # Extra urgency when opponent has high-power creatures
+                if snap.opp_power >= 4:
+                    mod += 3.0
+            if t.is_creature:
+                if (t.cmc or 0) <= 3:
+                    mod += 3.0  # cheap creatures should be deployed early
+                if 'card_advantage' in tags:
+                    mod += 3.0  # value creatures are great
+                if t.has_flash:
+                    mod += 2.0
+            # Discard (Thoughtseize) is best early, but still good later
+            if 'discard' in tags:
+                if snap.turn_number <= 4:
+                    mod += 4.0  # devastating early
+                elif snap.opp_hand_size >= 3:
+                    mod += 2.0  # still good if opponent has cards
 
         elif self.archetype == "control":
             # Control: answer everything, then deploy finisher
