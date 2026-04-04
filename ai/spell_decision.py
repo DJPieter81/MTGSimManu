@@ -209,6 +209,8 @@ def _build_context(castable, game, player_idx, assessment, engine):
 
     # Must-answer threats: opponent creatures that are winning the game
     # Threshold depends on pressure: when under pressure, more things need answering
+    # For control decks: limit must-answer to the BIGGEST threat, so the AI has
+    # bandwidth to deploy payoffs (e.g., Omnath) alongside removal.
     must_answer = []
     if opp.creatures:
         from ai.evaluator import _permanent_value
@@ -237,6 +239,7 @@ def _build_context(castable, game, player_idx, assessment, engine):
                 )
                 if my_blocked_power >= 3:
                     must_answer.append(c)  # Blocker prevents significant damage
+
 
     # Opponent interaction likelihood
     opp_mana = opp.available_mana_estimate
@@ -523,7 +526,27 @@ def _concern_survive(ctx: _DecisionContext) -> Optional[SpellDecision]:
     if removal and blockers:
         r_card, r_target, r_reason = removal
         b_card = blockers[0]
-        # Removal permanently removes the threat — usually better
+        # Check if the best blocker also has ETB life gain or high value
+        # (e.g., Omnath: 4/4 body + 4 life gain is worth more than removing a 3/3)
+        b_tags = getattr(b_card.template, 'tags', set())
+        b_has_etb_value = 'etb_value' in b_tags
+        b_toughness = b_card.template.toughness or 0
+        b_prio = ctx.goal.card_priorities.get(b_card.name, 0.0)
+        r_cmc = r_card.template.cmc or 0
+
+        # Prefer the blocker over removal when:
+        # 1. Blocker has ETB value (life gain, card draw) AND
+        # 2. Blocker is a high-priority payoff (prio >= 20) AND
+        # 3. Blocker has meaningful toughness (can actually block) AND
+        # 4. Removal costs enough that we can't do both in the same turn
+        can_do_both = ctx.assessment.my_mana >= (b_card.template.cmc or 0) + r_cmc
+        if b_has_etb_value and b_prio >= 20.0 and b_toughness >= 3 and not can_do_both:
+            return SpellDecision(
+                card=b_card, concern="survive",
+                reasoning=f"Dying — deploying {b_card.name} (ETB value + {b_toughness} toughness blocker, priority {b_prio})",
+                alternatives=[(r_card.name, f"could remove {r_target} instead")]
+            )
+        # Otherwise, removal permanently removes the threat — usually better
         return SpellDecision(
             card=r_card, concern="survive",
             reasoning=f"Dying — removing {r_target} with {r_card.name} ({r_reason})",
@@ -722,10 +745,11 @@ def _advance_reactive(ctx: _DecisionContext) -> Optional[SpellDecision]:
     # 1. Board is clear (safe to deploy)
     # 2. Under pressure and need blockers (survival deployment)
     # 3. Can deploy AND hold up interaction
+    # 4. High-priority payoff available (e.g., Omnath) and enough mana
     if ctx.my_threats:
         best = _best_on_curve(ctx.my_threats, ctx)
         available_after = ctx.assessment.my_mana - (best.template.cmc or 0)
-        
+
         if not ctx.opp.creatures:
             # Board clear — deploy freely
             if available_after >= 2 or not ctx.holding_mana_is_valuable:
@@ -739,6 +763,22 @@ def _advance_reactive(ctx: _DecisionContext) -> Optional[SpellDecision]:
                 card=best, concern="advance",
                 reasoning=f"Under pressure with no blockers — deploying {best.name}",
                 alternatives=[])
+        elif available_after >= 2 and not ctx.am_dying:
+            # Can deploy AND hold up interaction (2+ mana for removal/counter)
+            return SpellDecision(
+                card=best, concern="advance",
+                reasoning=f"Deploying {best.name} while holding up {available_after} mana for interaction",
+                alternatives=[])
+        else:
+            # Check if this is a high-priority payoff from the gameplan
+            # (e.g., Omnath at priority 26 should be deployed even without holdback)
+            goal = ctx.goal
+            prio = goal.card_priorities.get(best.name, 0.0)
+            if prio >= 20.0:
+                return SpellDecision(
+                    card=best, concern="advance",
+                    reasoning=f"High-priority payoff {best.name} (prio={prio}) — deploying despite limited mana holdback",
+                    alternatives=[])
 
     # Turning the corner: control has stabilized, deploy threats
     if ctx.turning_corner and ctx.my_threats:
