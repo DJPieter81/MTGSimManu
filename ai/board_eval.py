@@ -210,17 +210,27 @@ def _eval_evoke(game, me, a: BoardAssessment, ctx: dict) -> float:
             best_target = max(opp.creatures, key=lambda c: (c.power or 0, c.template.cmc))
             target_power = best_target.power or best_target.template.power or 0
             target_cmc = best_target.template.cmc or 0
-            if target_power <= 2 and target_cmc <= 2:
+            # Use per-deck thresholds for small-creature evoke check
+            from ai.gameplan import _ARCHETYPE_THRESHOLDS, DecisionThresholds, get_gameplan
+            gp = get_gameplan(getattr(me, 'deck_name', ''))
+            archetype = gp.archetype if gp else 'midrange'
+            th = _ARCHETYPE_THRESHOLDS.get(archetype, DecisionThresholds())
+            if target_power <= th.evoke_skip_small_power and target_cmc <= th.evoke_skip_small_cmc:
                 return -2.0  # Not worth evoking for small threats
 
     if a.mana_available >= cmc:
         # Can hard-cast NOW — always prefer body + ETB
         return -10.0
 
+    # Load evoke thresholds from archetype
+    from ai.gameplan import _ARCHETYPE_THRESHOLDS, DecisionThresholds, get_gameplan
+    gp = get_gameplan(getattr(me, 'deck_name', ''))
+    archetype = gp.archetype if gp else 'midrange'
+    th = _ARCHETYPE_THRESHOLDS.get(archetype, DecisionThresholds())
+
     # Check if we can actually hard-cast with correct COLORS, not just land count
     total_lands = len(me.lands)
     if total_lands >= cmc:
-        # Have enough lands — but do we have the right colors?
         existing_colors = set()
         for land in me.lands:
             existing_colors.update(land.template.produces_mana)
@@ -234,12 +244,9 @@ def _eval_evoke(game, me, a: BoardAssessment, ctx: dict) -> float:
         has_all_colors = needed_colors <= existing_colors
 
         if has_all_colors:
-            # Can hard-cast next turn — only evoke under heavy pressure
-            return a.pressure - 0.7  # positive only when pressure > 0.7
+            return a.pressure - th.evoke_hardcast_next_turn
         else:
-            # Have enough lands but wrong colors — may take several turns
-            # Evoke if under moderate pressure
-            return a.pressure - 0.4
+            return a.pressure - th.evoke_wrong_colors
 
     # Can't hard-cast for multiple turns — evoke for the ETB value
     return 1.0

@@ -95,10 +95,109 @@ class Goal:
 # ═══════════════════════════════════════════════════════════════════
 
 @dataclass
+@dataclass
+class DecisionThresholds:
+    """Per-deck tunable thresholds for the spell decision pipeline.
+
+    These replace the hardcoded magic numbers in spell_decision.py
+    and board_eval.py. Each deck archetype can set values that match
+    its strategic needs (e.g., control tolerates more pressure before
+    panic-removing; aggro answers blockers at lower thresholds).
+    """
+    # --- SURVIVE trigger ---
+    # "Am I dying?" fires when opp_clock <= this AND opp_board_power >= min_board_power.
+    # Aggro: high (4-5) — don't waste time removing, just race.
+    # Control: lower (3) — only panic when truly threatened, otherwise deploy payoffs.
+    dying_clock: int = 4
+    dying_min_board_power: int = 3
+
+    # --- ANSWER: must-answer creature thresholds ---
+    # Value threshold for creatures that MUST be answered. Lower = more aggressive removal.
+    # Under pressure: answer_val_pressured. Not under pressure: answer_val_relaxed.
+    answer_val_pressured: float = 3.0
+    answer_val_relaxed: float = 5.0
+    # Emergency "answer everything" clock threshold
+    answer_emergency_clock: int = 2
+    # Minimum power for a creature to be "meaningful" under pressure
+    answer_min_power: int = 3
+
+    # --- ADVANCE (reactive): mana holdback for interaction ---
+    # Minimum mana to leave untapped when deploying a threat.
+    # Control: 2+ (hold up counterspell/removal). Aggro: 0 (tap out freely).
+    deploy_mana_holdback: int = 2
+
+    # --- Board wipe conservation ---
+    # Don't use a board wipe on a single creature unless its value exceeds this.
+    # Higher = save wraths for bigger boards. Lower = wrath single threats.
+    wrath_single_target_min_val: float = 8.0
+
+    # --- Evoke thresholds ---
+    # Pressure level needed to evoke when we can hardcast next turn (0.0-1.0).
+    # Higher = more reluctant to evoke (wait for hardcast).
+    evoke_hardcast_next_turn: float = 0.7
+    # Pressure level needed to evoke when colors are wrong.
+    evoke_wrong_colors: float = 0.4
+    # Don't evoke removal against creatures with power AND cmc at or below these.
+    evoke_skip_small_power: int = 2
+    evoke_skip_small_cmc: int = 2
+
+
+# Archetype defaults — used when a deck doesn't specify custom thresholds
+_ARCHETYPE_THRESHOLDS = {
+    "aggro": DecisionThresholds(
+        dying_clock=5,              # aggro races, less concerned about dying
+        dying_min_board_power=4,
+        answer_val_pressured=4.0,   # only answer big blockers
+        answer_val_relaxed=6.0,
+        answer_min_power=4,
+        deploy_mana_holdback=0,     # tap out freely
+        wrath_single_target_min_val=10.0,  # almost never wrath
+        evoke_hardcast_next_turn=0.5,
+        evoke_wrong_colors=0.3,
+    ),
+    "midrange": DecisionThresholds(
+        dying_clock=4,
+        dying_min_board_power=3,
+        deploy_mana_holdback=1,
+        evoke_hardcast_next_turn=0.6,
+    ),
+    "control": DecisionThresholds(
+        dying_clock=3,              # control stabilizes, less trigger-happy
+        dying_min_board_power=4,
+        answer_val_pressured=4.0,   # higher bar — don't waste removal on small stuff
+        answer_val_relaxed=6.0,
+        deploy_mana_holdback=2,
+        wrath_single_target_min_val=7.0,
+        evoke_hardcast_next_turn=0.8,  # more willing to wait for hardcast
+        evoke_wrong_colors=0.5,
+    ),
+    "combo": DecisionThresholds(
+        dying_clock=4,
+        dying_min_board_power=3,
+        answer_val_pressured=5.0,   # combo mostly ignores the board
+        answer_val_relaxed=8.0,
+        deploy_mana_holdback=0,
+        wrath_single_target_min_val=12.0,
+        evoke_hardcast_next_turn=0.9,
+    ),
+}
+
+
+def get_thresholds(gameplan: "DeckGameplan") -> DecisionThresholds:
+    """Get decision thresholds for a deck, falling back to archetype defaults."""
+    if gameplan.thresholds:
+        return gameplan.thresholds
+    return _ARCHETYPE_THRESHOLDS.get(gameplan.archetype, DecisionThresholds())
+
+
+@dataclass
 class DeckGameplan:
     """Complete strategic plan for a deck archetype."""
     deck_name: str
     goals: List[Goal]
+
+    # Per-deck decision thresholds (None = use archetype defaults)
+    thresholds: Optional[DecisionThresholds] = None
 
     # Mulligan: card names that are essential to keep
     mulligan_keys: Set[str] = field(default_factory=set)

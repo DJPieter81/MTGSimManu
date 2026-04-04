@@ -145,15 +145,20 @@ class _DecisionContext:
     # Role/strategy
     role_cache: object = None
     turning_corner: bool = False
+
+    # Per-deck thresholds (replaces hardcoded magic numbers)
+    thresholds: object = None  # DecisionThresholds
     archetype: str = "midrange"
 
 
 def _build_context(castable, game, player_idx, assessment, engine):
     """Build the decision context from game state."""
     from engine.cards import CardType
+    from ai.gameplan import get_thresholds
     me = game.players[player_idx]
     opp = game.players[1 - player_idx]
     goal = engine.current_goal
+    thresholds = get_thresholds(engine.gameplan)
 
     # Categorize cards by what they DO (not by name)
     removal = []
@@ -200,37 +205,28 @@ def _build_context(castable, game, player_idx, assessment, engine):
             else:
                 other.append(card)
 
-    # Am I dying? (opponent can kill me next turn)
-    # Matches the old survival trigger: dead next turn OR under serious pressure
-    # (fast clock with meaningful board power)
+    # Am I dying? Uses per-deck thresholds instead of hardcoded values.
+    # Control decks (dying_clock=3) panic later than aggro (dying_clock=5).
     am_dying = assessment.am_dead_next or (
-        assessment.opp_clock <= 4 and assessment.opp_board_power >= 3
+        assessment.opp_clock <= thresholds.dying_clock
+        and assessment.opp_board_power >= thresholds.dying_min_board_power
     )
 
-    # Must-answer threats: opponent creatures that are winning the game
-    # Threshold depends on pressure: when under pressure, more things need answering
-    # For control decks: limit must-answer to the BIGGEST threat, so the AI has
-    # bandwidth to deploy payoffs (e.g., Omnath) alongside removal.
+    # Must-answer threats: opponent creatures that are winning the game.
+    # Thresholds from gameplan control how aggressively we remove.
     must_answer = []
     if opp.creatures:
         from ai.evaluator import _permanent_value
-        # Under pressure: any creature with meaningful power is a must-answer
-        # Not under pressure: only high-value engines/threats
-        under_pressure = assessment.opp_clock <= 4 or assessment.am_dead_next
-        val_threshold = 3.0 if under_pressure else 5.0
+        under_pressure = assessment.opp_clock <= thresholds.dying_clock or assessment.am_dead_next
+        val_threshold = thresholds.answer_val_pressured if under_pressure else thresholds.answer_val_relaxed
         for c in opp.creatures:
             val = _permanent_value(c, opp, game, 1 - player_idx)
             power = c.power if hasattr(c, 'power') and c.power else (c.template.power or 0)
             toughness = c.toughness if hasattr(c, 'toughness') and c.toughness else (c.template.toughness or 0)
-            # Must answer if:
-            # - High-value threat (engine, card advantage)
-            # - Under pressure and creature has meaningful power (3+)
-            # - Opponent has a very fast clock (2 turns or less)
-            if val >= val_threshold or assessment.opp_clock <= 2:
+            if val >= val_threshold or assessment.opp_clock <= thresholds.answer_emergency_clock:
                 must_answer.append(c)
-            elif under_pressure and power >= 3:
+            elif under_pressure and power >= thresholds.answer_min_power:
                 must_answer.append(c)
-            # Aggro: also answer blockers that prevent significant attack damage
             elif engine.gameplan.archetype == 'aggro' and me.creatures:
                 my_blocked_power = sum(
                     (a.power or a.template.power or 0)
@@ -292,6 +288,7 @@ def _build_context(castable, game, player_idx, assessment, engine):
         role_cache=engine._role_cache,
         turning_corner=engine.turning_the_corner,
         archetype=engine.gameplan.archetype,
+        thresholds=thresholds,
     )
 
 
@@ -767,9 +764,10 @@ def _advance_reactive(ctx: _DecisionContext) -> Optional[SpellDecision]:
         best = _best_on_curve(ctx.my_threats, ctx)
         available_after = ctx.assessment.my_mana - (best.template.cmc or 0)
 
+        holdback = ctx.thresholds.deploy_mana_holdback if ctx.thresholds else 2
         if not ctx.opp.creatures:
             # Board clear — deploy freely
-            if available_after >= 2 or not ctx.holding_mana_is_valuable:
+            if available_after >= holdback or not ctx.holding_mana_is_valuable:
                 return SpellDecision(
                     card=best, concern="advance",
                     reasoning=f"Board clear — deploying {best.name} while holding up {available_after} mana",
@@ -780,7 +778,7 @@ def _advance_reactive(ctx: _DecisionContext) -> Optional[SpellDecision]:
                 card=best, concern="advance",
                 reasoning=f"Under pressure with no blockers — deploying {best.name}",
                 alternatives=[])
-        elif available_after >= 2 and not ctx.am_dying:
+        elif available_after >= holdback and not ctx.am_dying:
             # Can deploy AND hold up interaction (2+ mana for removal/counter)
             return SpellDecision(
                 card=best, concern="advance",
@@ -1222,7 +1220,8 @@ def _best_removal_for_threats(
             # Only board wipes available
             if opp_creature_count <= 1:
                 # Don't waste a board wipe on 1 creature unless it's a must-answer
-                if threat_val < 8.0:
+                wrath_min = ctx.thresholds.wrath_single_target_min_val if ctx.thresholds else 8.0
+                if threat_val < wrath_min:
                     continue  # Skip: save the wrath for a better moment
             # Don't board-wipe when we have a payoff creature on board
             # and opponent has few creatures — the payoff is worth more
