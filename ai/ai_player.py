@@ -586,13 +586,14 @@ class AIPlayer:
             return damage_map[name]
         # Dynamic damage for energy-based removal
         if name == "Galvanic Discharge":
-            # Use actual player energy from game state if available
+            # Galvanic grants 2 energy on resolution, then spends all energy.
+            # Effective damage = 2 (base) + min(current_energy + 2, 5).
             energy = 0
             if game:
                 energy = game.players[self.player_idx].energy_counters
             else:
                 energy = getattr(self, '_current_energy', 0)
-            return 2 + min(energy, 5)
+            return 2 + min(energy + 2, 5)
         # Check ability descriptions for damage amounts
         for ab in spell.template.abilities:
             desc = ab.description.lower()
