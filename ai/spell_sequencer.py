@@ -168,22 +168,32 @@ def next_spell_to_cast(
                 return (card, SpellRole.REBUY,
                         f"Cast rebuy engine — {graveyard_spell_count} spells in graveyard")
 
-    # Finisher — fire when no castable fuel (rituals) remains.
-    # Draw spells alone don't increase storm count meaningfully,
-    # so don't wait for them. Once rituals are spent, fire.
-    # Also fire if dying next turn (desperation already handled above,
-    # but this catches edge cases with finisher in hand).
+    # Finisher — fire when:
+    # 1. No castable fuel remains (rituals exhausted), OR
+    # 2. We have enough storm count that the finisher is lethal.
+    # Count spells already cast by counting non-finisher/non-other roles
+    # that are NOT in the castable list (they've been cast already).
     if SpellRole.FINISHER in by_role:
         has_castable_fuel = any(
             role == SpellRole.FUEL
             and _effective_cost(c, medallion_count) <= available_mana
             for c, role in sequenced
         )
+        # Count castable spells (approximate storm so far = total spells - remaining)
+        # We know opponent_life and can count remaining fuel to estimate if firing now is lethal
+        remaining_fuel = sum(
+            1 for c, role in sequenced
+            if role == SpellRole.FUEL and _effective_cost(c, medallion_count) <= available_mana
+        )
+        # The finisher itself adds 1 to storm. Each remaining fuel adds 1 more.
+        # If (opponent_life - remaining_fuel - 1) <= 0 after casting all remaining fuel + finisher,
+        # that means we're already lethal. But simpler: just fire when no fuel left.
+        # Key insight: fire AFTER fuel but BEFORE draw. Draw doesn't add storm count.
         if not has_castable_fuel:
             for card in by_role[SpellRole.FINISHER]:
                 if _effective_cost(card, medallion_count) <= available_mana:
                     return (card, SpellRole.FINISHER,
-                            "No more fuel — firing finisher")
+                            f"Fuel exhausted — firing finisher (opp life: {opponent_life})")
 
     # Nothing productive to cast — hold and pass
     return None

@@ -62,7 +62,7 @@ class ComboReadiness:
     # Resources
     mana_now: int               # available mana this turn
     library_fuel_density: float # fraction of library that is useful (0.0-1.0)
-    has_payoff: bool            # do we have a finisher?
+    has_payoff: bool            # finisher in hand?
     has_reducer_deployed: bool  # cost reducer on board?
     has_reducer_in_hand: bool   # cost reducer available to deploy?
 

@@ -943,10 +943,30 @@ def _advance_combo(ctx: _DecisionContext) -> Optional[SpellDecision]:
     action = decide_go_or_wait(readiness)
 
 
-    # ═══ Layer 3: EXECUTE — unified role-based sequencing ═══
-    # All actions use the same sequencer. The sequencer's role ordering
-    # naturally handles GO (enablers first, finisher last) and DIG
-    # (enablers only, finisher held). No separate code paths needed.
+    # ═══ Layer 3: EXECUTE ═══
+    from ai.combo_readiness import ComboAction
+    if action == ComboAction.WAIT_AND_DIG:
+        # DIG: only cast draw spells (cantrips) to find missing pieces.
+        # Do NOT cast fuel (rituals) — that wastes them across turns.
+        from ai.spell_sequencer import classify_role, SpellRole
+        dig_spells = [c for c in castable_spells
+                      if classify_role(c) in (SpellRole.DRAW, SpellRole.TUTOR)]
+        if dig_spells:
+            return _execute_combo_sequenced(ctx, dig_spells, available_mana,
+                                            "wait_dig")
+        return None  # nothing to dig with — hold
+
+    if action == ComboAction.DEPLOY_ENABLER:
+        # DEPLOY: only cost reducers
+        from ai.spell_sequencer import classify_role, SpellRole
+        reducers = [c for c in castable_spells
+                    if classify_role(c) == SpellRole.REDUCER]
+        if reducers:
+            return _execute_combo_sequenced(ctx, reducers, available_mana,
+                                            "deploy")
+        return None
+
+    # GO_NOW or WAIT_AND_HOLD: use full sequencer
     return _execute_combo_sequenced(ctx, castable_spells, available_mana,
                                     action.value)
 
