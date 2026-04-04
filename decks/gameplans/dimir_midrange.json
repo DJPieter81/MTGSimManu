@@ -6,11 +6,11 @@
       "goal_type": "DISRUPT",
       "description": "Disrupt opponent's hand and deploy efficient threats",
       "card_priorities": {
+        "Psychic Frog": 25.0,
         "Thoughtseize": 22.0,
-        "Fatal Push": 22.0,
-        "Orcish Bowmasters": 22.0,
-        "Dauthi Voidwalker": 20.0,
-        "Psychic Frog": 18.0
+        "Orcish Bowmasters": 20.0,
+        "Fatal Push": 20.0,
+        "Dauthi Voidwalker": 18.0
       },
       "card_roles": {
         "interaction": [
@@ -29,11 +29,11 @@
       "goal_type": "GRIND_VALUE",
       "description": "Grind with Psychic Frog, Bowmasters, and card advantage",
       "card_priorities": {
-        "Psychic Frog": 20.0,
+        "Psychic Frog": 22.0,
+        "Murktide Regent": 20.0,
         "Orcish Bowmasters": 18.0,
         "Archmage's Charm": 16.0,
         "Consider": 12.0,
-        "Murktide Regent": 18.0,
         "Subtlety": 14.0
       },
       "card_roles": {
@@ -58,11 +58,14 @@
     }
   ],
   "mulligan_keys": [
-    "Dauthi Voidwalker",
-    "Fatal Push",
-    "Orcish Bowmasters",
     "Psychic Frog",
-    "Thoughtseize"
+    "Orcish Bowmasters",
+    "Thoughtseize",
+    "Fatal Push",
+    "Dauthi Voidwalker"
+  ],
+  "always_early": [
+    "Psychic Frog"
   ],
   "reactive_only": [
     "Counterspell",

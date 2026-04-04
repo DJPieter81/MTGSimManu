@@ -665,6 +665,19 @@ def _advance_proactive(ctx: _DecisionContext) -> Optional[SpellDecision]:
         best_cmc = best.template.cmc or 0
         available = ctx.assessment.my_mana
 
+        # Flash creatures in reactive decks: prefer deploying at end of turn
+        # so we keep counterspell/removal mana up during opponent's turn.
+        # Only applies when we have meaningful instants to hold up.
+        if best.template.has_flash and ctx.holding_mana_is_valuable:
+            non_flash = [c for c in ctx.my_threats if not c.template.has_flash]
+            if non_flash:
+                # Deploy a non-flash threat instead; flash creature goes EOT
+                best = _best_on_curve(non_flash, ctx)
+                best_cmc = best.template.cmc or 0
+            else:
+                # All threats are flash — hold everything for end of turn
+                return None
+
         reason = f"Deploying {best.name} on curve"
         if best_cmc == available:
             reason += " (uses all mana)"
