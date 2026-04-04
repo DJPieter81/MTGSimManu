@@ -717,8 +717,11 @@ class EVPlayer:
         t = spell.template
         tags = getattr(t, 'tags', set())
 
-        # Creatures never require targets to CAST (ETB targeting is separate)
-        if t.is_creature:
+        # Creatures and planeswalkers never require targets to CAST.
+        # Creature ETB targeting happens on resolution, not on cast.
+        # Planeswalker loyalty abilities are activated after deployment.
+        from engine.cards import CardType
+        if t.is_creature or CardType.PLANESWALKER in t.card_types:
             return False
 
         if 'counterspell' in tags:
