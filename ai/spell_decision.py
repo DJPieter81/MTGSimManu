@@ -999,7 +999,8 @@ def _execute_combo_sequenced(
     )
     medallion_count = sum(
         1 for bf in ctx.me.battlefield
-        if bf.template.name == "Ruby Medallion"
+        if 'cost_reducer' in getattr(bf.template, 'tags', set())
+        and not bf.template.is_creature  # artifact/enchantment cost reducers
     )
     gy_spells = sum(1 for c in ctx.me.graveyard
                     if c.template.is_instant or c.template.is_sorcery)

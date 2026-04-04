@@ -705,31 +705,32 @@ class AIPlayer:
                     self.player_idx, [], game, "No valid attackers available")
             return []
 
-        # Psychic Frog: discard cards to pump +1/+1 per discard before attacking
+        # Discard-pump creatures: detect from oracle text ("Discard a card: ...+1/+1")
+        # Pre-combat pump maximizes damage dealt this turn.
         me = game.players[self.player_idx]
-        frogs = [c for c in valid if c.template.name == "Psychic Frog"]
-        if frogs:
-            frog = frogs[0]
-            opponent = game.players[1 - self.player_idx]
-            discardable = [c for c in me.hand
-                           if not c.template.is_land
-                           and c.template.cmc > len(me.untapped_lands) + 2]
-            land_count = len([c for c in me.battlefield if c.template.is_land])
-            if land_count >= 5:
-                extra_lands = [c for c in me.hand if c.template.is_land]
-                discardable.extend(extra_lands[:2])
-            pumps = min(len(discardable), 2)
-            for i in range(pumps):
-                card_to_discard = discardable[i]
-                if card_to_discard in me.hand:
-                    me.hand.remove(card_to_discard)
-                    card_to_discard.zone = "graveyard"
-                    me.graveyard.append(card_to_discard)
-                    frog.temp_power_mod += 1
-                    frog.temp_toughness_mod += 1
-                    game.log.append(f"T{game.turn_number} P{self.player_idx+1}: "
-                                    f"Psychic Frog discards {card_to_discard.name} "
-                                    f"(now {frog.power}/{frog.toughness})")
+        for creature in valid:
+            oracle = (creature.template.oracle_text or "").lower()
+            if "discard a card" in oracle and "+1/+1" in oracle:
+                discardable = [c for c in me.hand
+                               if not c.template.is_land
+                               and c.template.cmc > len(me.untapped_lands) + 2]
+                land_count = len([c for c in me.battlefield if c.template.is_land])
+                if land_count >= 5:
+                    extra_lands = [c for c in me.hand if c.template.is_land]
+                    discardable.extend(extra_lands[:2])
+                pumps = min(len(discardable), 2)
+                for i in range(pumps):
+                    card_to_discard = discardable[i]
+                    if card_to_discard in me.hand:
+                        me.hand.remove(card_to_discard)
+                        card_to_discard.zone = "graveyard"
+                        me.graveyard.append(card_to_discard)
+                        creature.temp_power_mod += 1
+                        creature.temp_toughness_mod += 1
+                        game.log.append(f"T{game.turn_number} P{self.player_idx+1}: "
+                                        f"{creature.name} discards {card_to_discard.name} "
+                                        f"(now {creature.power}/{creature.toughness})")
+                break  # Only pump one creature per combat
 
         opponent = game.players[1 - self.player_idx]
         me = game.players[self.player_idx]
