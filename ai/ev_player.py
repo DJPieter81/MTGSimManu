@@ -301,7 +301,12 @@ class EVPlayer:
         if 'board_wipe' in tags:
             opp_board = sum(creature_value(c) for c in opp.creatures)
             my_board = sum(creature_value(c) for c in me.creatures)
-            ev += opp_board - my_board  # good if we clear more than we lose
+            if snap.opp_creature_count == 0:
+                ev -= 15.0  # NEVER wrath an empty board
+            else:
+                ev += opp_board - my_board  # good if we clear more than we lose
+                if snap.opp_creature_count >= 3:
+                    ev += 5.0  # extra value for multi-kill
 
         # ── Burn (face damage) ──
         from decks.card_knowledge_loader import get_burn_damage
@@ -512,9 +517,16 @@ class EVPlayer:
         """Score a land play. Generally very high priority."""
         ev = 10.0  # lands are almost always correct to play
 
-        # Untapped is better
+        # Untapped is much better when we have spells to cast
+        has_castable_spells = any(
+            (s.template.cmc or 0) <= len(me.untapped_lands) + 1
+            for s in spells if not s.template.is_land
+        )
         if not land.template.enters_tapped:
-            ev += 3.0
+            ev += 5.0 if has_castable_spells else 2.0
+        else:
+            if has_castable_spells:
+                ev -= 3.0  # tapped land when we need mana NOW is bad
 
         # Color fixing
         existing_colors = set()
@@ -526,17 +538,26 @@ class EVPlayer:
         # Fetch lands: high priority for color fixing and deck thinning
         from engine.card_database import FETCH_LAND_COLORS
         if land.name in FETCH_LAND_COLORS:
-            ev += 2.0
+            ev += 3.0  # fetches fix colors AND thin deck
 
         return ev
 
     def _best_removal_target_value(self, removal, game, opp) -> float:
-        """Find the most valuable creature this removal can kill."""
+        """Find the most valuable creature this removal can kill.
+
+        Accounts for mana efficiency: cheap removal on cheap threats
+        is better than expensive removal on cheap threats.
+        """
         if not opp.creatures:
             return 0.0
+        removal_cmc = removal.template.cmc or 0
         best = 0.0
         for c in opp.creatures:
             val = creature_value(c)
+            # Penalize overkill: using 5-mana removal on a 1/1 is wasteful
+            target_cmc = c.template.cmc or 0
+            if removal_cmc > target_cmc + 2:
+                val *= 0.6  # 40% penalty for inefficient removal
             if val > best:
                 best = val
         return best
@@ -697,20 +718,34 @@ class EVPlayer:
                 return [best.instance_id]
             return []
 
-        # Burn: target face if aggro or lethal, else target creature
+        # Burn: compare face damage value vs creature kill value
         from decks.card_knowledge_loader import get_burn_damage
         dmg = get_burn_damage(t.name)
         if dmg > 0:
             if dmg >= opp.life:
-                return [-1]  # face = lethal
-            if self.archetype == "aggro":
-                return [-1]  # aggro goes face by default
+                return [-1]  # face = lethal, always go face
+
+            # Find best creature we can kill
+            best_kill_val = 0.0
+            best_kill_id = None
             if opp.creatures:
-                # Target the creature we can kill
-                for c in sorted(opp.creatures, key=lambda c: creature_value(c), reverse=True):
+                for c in opp.creatures:
                     if dmg >= (c.toughness or 0):
-                        return [c.instance_id]
-            return [-1]  # no good creature target, go face
+                        val = creature_value(c)
+                        if val > best_kill_val:
+                            best_kill_val = val
+                            best_kill_id = c.instance_id
+
+            # Compare: is killing a creature worth more than face damage?
+            # For aggro: face is worth ~1.5 per damage point when opp > 10
+            # A creature kill is worth its creature_value
+            face_val = dmg * 1.5 if self.archetype == "aggro" else dmg * 0.5
+            if opp.life <= 10 and self.archetype == "aggro":
+                face_val = dmg * 2.5  # burn is premium when opp is low
+
+            if best_kill_id and best_kill_val > face_val:
+                return [best_kill_id]  # kill the creature
+            return [-1]  # go face
 
         # Blink effects: target our best ETB creature
         if 'blink' in tags:
