@@ -1215,9 +1215,9 @@ def _best_removal_for_threats(
         single_target = [c for c in candidates if 'board_wipe' not in getattr(c.template, 'tags', set())]
 
         if single_target and opp_creature_count <= 2:
-            rm = single_target[0]
+            rm = _cheapest_effective_removal(single_target, ctx)
         elif single_target:
-            rm = single_target[0]  # Still prefer targeted if available
+            rm = _cheapest_effective_removal(single_target, ctx)
         else:
             # Only board wipes available
             if opp_creature_count <= 1:
@@ -1243,6 +1243,41 @@ def _best_removal_for_threats(
         return (rm, threat.name, reason)
 
     return None
+
+
+def _cheapest_effective_removal(candidates: List["CardInstance"],
+                                 ctx: _DecisionContext) -> "CardInstance":
+    """Pick the cheapest removal that can kill the threat.
+
+    When a payoff is in hand, prefer removal that leaves enough mana
+    to cast it this turn or next. This prevents the AI from always
+    using 3-mana removal when 1-mana removal would work and save
+    mana for Omnath or other payoffs.
+    """
+    if len(candidates) == 1:
+        return candidates[0]
+
+    # Check if hand has a castable-soon payoff worth saving mana for
+    payoff_cmc = 0
+    all_payoffs = set()
+    for goal in ctx.engine.gameplan.goals:
+        all_payoffs.update(goal.card_roles.get('payoffs', set()))
+    for card in ctx.me.hand:
+        if card.name in all_payoffs and not card.template.is_land:
+            cmc = card.template.cmc or 0
+            if cmc > payoff_cmc:
+                payoff_cmc = cmc
+
+    if payoff_cmc > 0:
+        available = ctx.assessment.my_mana
+        # Prefer removal that leaves enough mana for the payoff
+        for rm in sorted(candidates, key=lambda c: c.template.cmc or 0):
+            rm_cmc = rm.template.cmc or 0
+            if available - rm_cmc >= payoff_cmc:
+                return rm  # Can cast removal AND payoff this turn
+
+    # Default: cheapest removal
+    return min(candidates, key=lambda c: c.template.cmc or 0)
 
 
 def _can_kill(removal: "CardInstance", target: "CardInstance",
