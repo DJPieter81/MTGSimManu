@@ -30,8 +30,8 @@ class SpellRole(IntEnum):
     """Role of a spell in a combo sequence. Lower = cast first."""
     REDUCER = 0
     FUEL = 1
-    DRAW = 2
-    TUTOR = 3
+    TUTOR = 2    # tutor before draw — finding finisher > drawing more cards
+    DRAW = 3
     REBUY = 4
     FINISHER = 5
     OTHER = 6  # non-combo cards (creatures, interaction)
@@ -108,6 +108,7 @@ def next_spell_to_cast(
     opponent_life: int,
     am_dead_next: bool,
     medallion_count: int = 0,
+    current_storm: int = 0,
 ) -> Optional[Tuple["CardInstance", SpellRole, str]]:
     """Pick the next spell to cast from the sequenced hand.
 
@@ -148,17 +149,18 @@ def next_spell_to_cast(
             if _effective_cost(card, medallion_count) <= available_mana:
                 return (card, SpellRole.FUEL, "Cast fuel to build mana for chain")
 
+    # Cast tutor BEFORE draw — finding the finisher is more important
+    # than drawing more cards. Without Wish, all the cantrips are useless.
+    if SpellRole.TUTOR in by_role:
+        for card in by_role[SpellRole.TUTOR]:
+            if _effective_cost(card, medallion_count) <= available_mana:
+                return (card, SpellRole.TUTOR, "Cast tutor to find finisher")
+
     # Cast draw (cantrips) — dig for more fuel
     if SpellRole.DRAW in by_role:
         for card in by_role[SpellRole.DRAW]:
             if _effective_cost(card, medallion_count) <= available_mana:
                 return (card, SpellRole.DRAW, "Cast cantrip to dig for fuel")
-
-    # Cast tutor — find missing pieces
-    if SpellRole.TUTOR in by_role:
-        for card in by_role[SpellRole.TUTOR]:
-            if _effective_cost(card, medallion_count) <= available_mana:
-                return (card, SpellRole.TUTOR, "Cast tutor to find combo pieces")
 
     # Cast rebuy — replay graveyard (only if GY has enough spells)
     if SpellRole.REBUY in by_role and graveyard_spell_count >= 3:
@@ -167,26 +169,31 @@ def next_spell_to_cast(
                 return (card, SpellRole.REBUY,
                         f"Cast rebuy engine — {graveyard_spell_count} spells in graveyard")
 
-    # Finisher — fire when no other productive spells remain, OR when
-    # only draw spells remain and no fuel/tutor/rebuy is available
+    # Finisher — fire when:
+    # 1. No castable fuel remains (rituals exhausted), OR
+    # 2. Current storm count already enough for lethal damage/tokens.
     if SpellRole.FINISHER in by_role:
-        has_fuel_or_tutor = any(
-            role in (SpellRole.FUEL, SpellRole.TUTOR, SpellRole.REBUY)
+        has_castable_fuel = any(
+            role == SpellRole.FUEL
             and _effective_cost(c, medallion_count) <= available_mana
             for c, role in sequenced
         )
-        has_any_productive = any(
-            role not in (SpellRole.FINISHER, SpellRole.OTHER)
-            and _effective_cost(c, medallion_count) <= available_mana
-            for c, role in sequenced
-        )
-        # Fire finisher when: no fuel/tutor/rebuy left (draw alone won't help
-        # build storm count), OR no productive spells at all
-        if not has_fuel_or_tutor or not has_any_productive:
-            for card in by_role[SpellRole.FINISHER]:
-                if _effective_cost(card, medallion_count) <= available_mana:
-                    return (card, SpellRole.FINISHER,
-                            "Enablers exhausted — firing finisher")
+        for card in by_role[SpellRole.FINISHER]:
+            if _effective_cost(card, medallion_count) > available_mana:
+                continue
+
+            from engine.cards import Keyword
+            is_storm = Keyword.STORM in card.template.keywords
+
+            if is_storm and current_storm >= opponent_life:
+                # Storm count already lethal — fire immediately
+                return (card, SpellRole.FINISHER,
+                        f"Lethal storm ({current_storm} >= {opponent_life} life)")
+
+            if not has_castable_fuel:
+                # No more fuel — fire whatever we have
+                return (card, SpellRole.FINISHER,
+                        f"Fuel exhausted — firing (storm {current_storm}, opp {opponent_life})")
 
     # Nothing productive to cast — hold and pass
     return None
