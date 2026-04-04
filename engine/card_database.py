@@ -818,8 +818,10 @@ class CardDatabase:
         else:
             # Auto-discover ModernAtomic.json relative to this file or project root
             import os
+            project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
             candidates = [
-                os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'ModernAtomic.json'),
+                os.path.join(project_root, 'ModernAtomic.json'),
+                os.path.join(project_root, 'ModernAtomic_mini.json'),
                 os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'ModernAtomic.json'),
                 '/home/ubuntu/mtg_simulator/ModernAtomic.json',
             ]

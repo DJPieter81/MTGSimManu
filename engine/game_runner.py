@@ -32,21 +32,21 @@ class AICallbacks(GameCallbacks):
         has_spells_to_cast = needs.cheapest_spell_cmc <= needs.total_mana + 1
         fixes_missing_color = bool(land_colors & needs.missing_colors)
 
-        # Also shock if hand has expensive multi-color cards that need this color
-        # (e.g., Omnath needs WURG — aggressively fix colors for it)
+        # Also shock if hand has multi-color cards that need this color
+        # (e.g., Omnath needs WURG, Teferi needs WU — aggressively fix colors)
         player = game.players[player_idx]
+        existing_colors = set()
+        for l in player.lands:
+            existing_colors.update(l.template.produces_mana)
         for card in player.hand:
             if card.template.is_land:
                 continue
             cmc = card.template.cmc or 0
-            if cmc >= 4 and len(card.template.color_identity) >= 2:
-                # High-CMC multi-color card: check if this land fixes a needed color
+            if cmc >= 3 and len(card.template.color_identity) >= 2:
+                # Multi-color card: check if this land fixes a needed color
                 card_color_strs = set()
                 for c in card.template.color_identity:
                     card_color_strs.add(c.value if hasattr(c, 'value') else str(c))
-                existing_colors = set()
-                for l in player.lands:
-                    existing_colors.update(l.template.produces_mana)
                 missing_for_card = card_color_strs - existing_colors
                 if missing_for_card & land_colors:
                     return True  # Shock to fix colors for expensive card
