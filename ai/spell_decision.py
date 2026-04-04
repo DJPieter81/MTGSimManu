@@ -876,160 +876,109 @@ def _advance_setup(ctx: _DecisionContext) -> Optional[SpellDecision]:
 
 
 def _advance_combo(ctx: _DecisionContext) -> Optional[SpellDecision]:
-    """Combo execution via abstracted readiness evaluation.
+    """Combo execution driven by the chain simulator.
 
-    Three-layer architecture (no card names in decision logic):
-      1. GATHER FACTS — chain simulator + readiness evaluator
-      2. DECIDE — go/wait/dig via abstracted readiness assessment
-      3. EXECUTE — map abstract action to concrete card selection
+    Simple three-step decision:
+      1. Chain simulator finds a lethal line? → cast the first spell in that line
+      2. No lethal line but a viable chain with payoff? → cast the first spell
+      3. No viable chain? → deploy a reducer OR dig with cheapest draw spell
 
-    Design principle #7: No patch-fixing — all logic is general.
-    Design principle #8: Arithmetic is separate from decisions.
+    The chain simulator handles all mana arithmetic (ritual net-mana,
+    cost reductions, storm count). This function just picks which chain
+    to follow and returns the next spell to cast.
     """
-    from ai.combo_chain import find_all_chains, what_is_missing
-    from ai.combo_readiness import evaluate_readiness, decide_go_or_wait, ComboAction
-    # ═══ Layer 1: GATHER FACTS ═══
+    from ai.combo_chain import find_all_chains
+
+    hand_spells = [c for c in ctx.me.hand if not c.template.is_land]
+    castable = [c for c in ctx.castable if not c.template.is_land]
+    if not castable:
+        return None
+
     medallion_count = sum(
         1 for bf in ctx.me.battlefield
         if 'cost_reducer' in getattr(bf.template, 'tags', set())
     )
-    all_hand_spells = [c for c in ctx.me.hand if not c.template.is_land]
-    castable_spells = [c for c in ctx.castable if not c.template.is_land]
-
-    if not all_hand_spells:
-        return None
-
     available_mana = ctx.assessment.my_mana
     payoff_names = set(ctx.goal.card_roles.get('payoffs', set()))
-    if not payoff_names:
-        from engine.cards import Keyword
-        payoff_names = {
-            c.name for c in all_hand_spells
-            if Keyword.STORM in getattr(c.template, 'keywords', set())
-        }
-
-    # Include spells already cast this turn in storm count
     base_storm = getattr(ctx.game, '_global_storm_count', 0)
-    chains = find_all_chains(all_hand_spells, available_mana,
+
+    # ── Step 1: Ask the chain simulator what's possible ──
+    chains = find_all_chains(hand_spells, available_mana,
                              medallion_count, payoff_names, base_storm)
-    status = what_is_missing(all_hand_spells, available_mana,
-                             medallion_count, payoff_names)
 
-    # Classify chains by outcome (pure facts)
-    best_lethal = None   # best chain that kills with direct damage
-    best_tokens = None   # best chain that kills with tokens
-    best_chain = None    # best chain overall (by storm count)
+    # Find best chain: lethal damage > lethal tokens > highest storm with payoff > highest storm
+    best = None
     for chain in chains:
-        if chain.payoff_has_storm and chain.payoff_deals_damage \
-                and chain.storm_damage >= ctx.opp.life:
-            if not best_lethal or chain.storm_count > best_lethal.storm_count:
-                best_lethal = chain
-        elif chain.payoff_has_storm and not chain.payoff_deals_damage \
-                and chain.storm_tokens >= ctx.opp.life:
-            if not best_tokens or chain.storm_tokens > best_tokens.storm_tokens:
-                best_tokens = chain
-        if not best_chain or chain.storm_count > best_chain.storm_count:
-            best_chain = chain
+        if best is None:
+            best = chain
+            continue
+        # Prefer lethal damage chains
+        chain_lethal = chain.storm_damage >= ctx.opp.life
+        best_lethal = best.storm_damage >= ctx.opp.life
+        if chain_lethal and not best_lethal:
+            best = chain
+        # Prefer chains with payoffs
+        elif chain.payoff_name and not best.payoff_name:
+            best = chain
+        # Among chains with payoffs, prefer higher storm
+        elif chain.payoff_name and best.payoff_name and chain.storm_count > best.storm_count:
+            best = chain
+        # Among chains without payoffs, prefer higher storm
+        elif not chain.payoff_name and not best.payoff_name and chain.storm_count > best.storm_count:
+            best = chain
 
-    # Build abstracted readiness (no card names — just numbers)
-    readiness = evaluate_readiness(
-        me=ctx.me, opp=ctx.opp, chains=chains, status=status,
-        available_mana=available_mana, medallion_count=medallion_count,
-        opp_clock=ctx.assessment.opp_clock, am_dead_next=ctx.am_dying,
-        payoff_names=payoff_names,
-    )
+    # ── Step 2: If we have a chain, cast the first spell in its sequence ──
+    if best and best.sequence:
+        first_spell_name = best.sequence[0]
+        # Find the CardInstance matching this name
+        for card in castable:
+            if card.template.name == first_spell_name:
+                has_payoff = "→ " + best.payoff_name if best.payoff_name else "(building storm)"
+                return SpellDecision(
+                    card=card, concern="advance",
+                    reasoning=f"Chain: {' → '.join(best.sequence[:4])}... {has_payoff} "
+                              f"(storm {best.storm_count}, dmg {best.storm_damage})",
+                    alternatives=[])
 
-    # ═══ Layer 2: DECIDE (abstracted — no card names) ═══
-    action = decide_go_or_wait(readiness)
+    # ── Step 3: No viable chain — deploy reducer or dig ──
+    # Deploy cost reducer if available (makes future chains viable)
+    for card in castable:
+        tags = getattr(card.template, 'tags', set())
+        if 'cost_reducer' in tags:
+            return SpellDecision(
+                card=card, concern="advance",
+                reasoning=f"No viable chain — deploying {card.name} to enable future chains",
+                alternatives=[])
 
+    # Dig: consider casting a draw spell to find missing pieces.
+    # But only if:
+    #  - We have draw spells that aren't also fuel (don't waste Manamorphose)
+    #  - The board tempo demands it (opponent has a clock, we need to find
+    #    pieces before dying) OR we have excess mana we can't use otherwise
+    draw_only = [c for c in castable
+                 if ('cantrip' in getattr(c.template, 'tags', set())
+                     or 'card_advantage' in getattr(c.template, 'tags', set())
+                     or 'draw' in getattr(c.template, 'tags', set()))
+                 and 'ritual' not in getattr(c.template, 'tags', set())]
 
-    # ═══ Layer 3: EXECUTE ═══
-    from ai.combo_readiness import ComboAction
-    from ai.spell_sequencer import classify_role, SpellRole
+    if draw_only:
+        opp_clock = ctx.assessment.opp_clock
+        cheapest_draw_cost = min(c.template.cmc or 1 for c in draw_only)
 
-    # Role names from gameplan → SpellRole mapping
-    _ROLE_MAP = {
-        "draw": SpellRole.DRAW, "tutor": SpellRole.TUTOR,
-        "fuel": SpellRole.FUEL, "finisher": SpellRole.FINISHER,
-        "rebuy": SpellRole.REBUY, "reducer": SpellRole.REDUCER,
-    }
+        # Dig if: under pressure (opponent has a clock) OR we have excess
+        # mana that would go to waste (more mana than any spell in hand needs)
+        under_pressure = opp_clock <= 6
+        excess_mana = available_mana > cheapest_draw_cost + 1  # mana to spare
 
-    if action == ComboAction.WAIT_AND_DIG:
-        # DIG: only cast roles the gameplan says are safe while waiting.
-        # Default: draw + tutor. Prevents wasting fuel across turns.
-        dig_role_names = ctx.goal.dig_roles or {"draw", "tutor"}
-        allowed = {_ROLE_MAP[r] for r in dig_role_names if r in _ROLE_MAP}
-        dig_spells = [c for c in castable_spells if classify_role(c) in allowed]
-        if dig_spells:
-            return _execute_combo_sequenced(ctx, dig_spells, available_mana,
-                                            "wait_dig")
-        return None
+        if under_pressure or excess_mana:
+            best_draw = min(draw_only, key=lambda c: c.template.cmc or 1)
+            return SpellDecision(
+                card=best_draw, concern="advance",
+                reasoning=f"Digging with {best_draw.name} "
+                          f"(opp clock {opp_clock}, mana {available_mana})",
+                alternatives=[])
 
-    if action == ComboAction.DEPLOY_ENABLER:
-        reducers = [c for c in castable_spells
-                    if classify_role(c) == SpellRole.REDUCER]
-        if reducers:
-            return _execute_combo_sequenced(ctx, reducers, available_mana,
-                                            "deploy")
-        return None
-
-    # GO_NOW or WAIT_AND_HOLD: use full sequencer
-    return _execute_combo_sequenced(ctx, castable_spells, available_mana,
-                                    action.value)
-
-
-# ─── Combo execution helpers (Layer 3) ───
-# These map abstract actions to concrete card selections.
-# Uses the spell_sequencer for role-based ordering.
-# No card names — only roles derived from tags.
-
-
-def _execute_combo_sequenced(
-    ctx: _DecisionContext,
-    castable_spells: list,
-    available_mana: int,
-    action_label: str,
-) -> Optional[SpellDecision]:
-    """Unified combo execution using role-based sequencing.
-
-    The spell_sequencer assigns each card a role (REDUCER, FUEL, DRAW,
-    TUTOR, REBUY, FINISHER) based on tags, then orders them so enablers
-    come before finishers. This prevents firing Grapeshot at storm 1.
-
-    Works for any combo deck — no card names in the logic.
-    """
-    from ai.spell_sequencer import next_spell_to_cast
-
-    has_reducer = any(
-        'cost_reducer' in getattr(bf.template, 'tags', set())
-        for bf in ctx.me.battlefield
-    )
-    medallion_count = sum(
-        1 for bf in ctx.me.battlefield
-        if 'cost_reducer' in getattr(bf.template, 'tags', set())
-        and not bf.template.is_creature  # artifact/enchantment cost reducers
-    )
-    gy_spells = sum(1 for c in ctx.me.graveyard
-                    if c.template.is_instant or c.template.is_sorcery)
-
-    result = next_spell_to_cast(
-        castable=castable_spells,
-        available_mana=available_mana,
-        has_reducer_on_board=has_reducer,
-        graveyard_spell_count=gy_spells,
-        opponent_life=ctx.opp.life,
-        am_dead_next=ctx.am_dying,
-        medallion_count=medallion_count,
-        current_storm=getattr(ctx.game, '_global_storm_count', 0),
-    )
-
-    if result:
-        card, role, reason = result
-        return SpellDecision(
-            card=card, concern="advance",
-            reasoning=f"{action_label}: {reason} [{role.name}]",
-            alternatives=[])
-
+    # Nothing to do — pass and save mana for next turn
     return None
 
 
