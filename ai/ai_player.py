@@ -188,9 +188,12 @@ class AIPlayer:
                             pass  # skip this spell, fall through
                         else:
                             return ("cast_spell", card, targets)
-                # GoalEngine returned None — no good plays available.
-                # Do NOT fall through to legacy, as it would bypass
-                # reactive_only, combo_piece, and other GoalEngine filters.
+                # GoalEngine returned None — no good spell plays available.
+                # Check for equip actions before passing (equipment needs
+                # a separate action to attach to creatures).
+                equip_action = self._consider_equip(game, player)
+                if equip_action:
+                    return equip_action
                 return None
             except Exception as e:
                 import sys
