@@ -1093,6 +1093,13 @@ class CardDatabase:
                     targets_required=targets,
                 ))
 
+        # ── Supertype overrides (MTGJSON errata not yet reflected) ──
+        LEGENDARY_OVERRIDES = {
+            "Scion of Draco",  # Errataed to Legendary in 2023
+        }
+        if name in LEGENDARY_OVERRIDES:
+            template.supertypes.append(Supertype.LEGENDARY)
+
         return template
 
     def _detect_conditional_mana(self, oracle_text: str, name: str) -> Optional[dict]:
