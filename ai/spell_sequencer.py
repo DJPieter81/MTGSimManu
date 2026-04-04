@@ -186,14 +186,17 @@ def next_spell_to_cast(
             is_storm = Keyword.STORM in card.template.keywords
 
             if is_storm and current_storm >= opponent_life:
-                # Storm count already lethal — fire immediately
                 return (card, SpellRole.FINISHER,
                         f"Lethal storm ({current_storm} >= {opponent_life} life)")
 
             if not has_castable_fuel:
-                # No more fuel — fire whatever we have
-                return (card, SpellRole.FINISHER,
-                        f"Fuel exhausted — firing (storm {current_storm}, opp {opponent_life})")
+                # No fuel left — fire if storm count is at least meaningful
+                # Don't waste a finisher at storm 1-2 (2-4 goblins or 1-2 damage)
+                if not is_storm or current_storm >= 4:
+                    return (card, SpellRole.FINISHER,
+                            f"Fuel exhausted — firing (storm {current_storm}, opp {opponent_life})")
+                # Storm too low and no fuel — hold the finisher for a better turn
+                return None
 
     # Nothing productive to cast — hold and pass
     return None
