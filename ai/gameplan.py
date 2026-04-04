@@ -883,15 +883,43 @@ class GoalEngine:
     def _choose_spell(self, game: "GameState", player_idx: int,
                       player, spells: list,
                       assessment: BoardAssessment) -> Optional[Tuple]:
-        """Reactive spell selection using concerns-based decision making.
+        """EV-based spell selection — scores each candidate play by projected outcome.
 
-        Delegates to spell_decision.choose_spell() which walks through
-        concerns in priority order: SURVIVE → ANSWER → ADVANCE → EFFICIENT.
-        No scoring. Cards are compared within each concern, not across them.
+        Replaces the concern pipeline (SURVIVE > ANSWER > ADVANCE > EFFICIENT)
+        with a single EV-maximization loop. Each candidate spell is scored by
+        projecting the resulting board state and evaluating it with the
+        archetype's value function.
+
+        Falls back to the legacy concern pipeline if the EV system fails.
         """
-        from ai.spell_decision import choose_spell, SpellDecision
+        from ai.ev_decision import choose_spell_ev, EVSpellDecision
 
-        decision = choose_spell(self, spells, game, player_idx, assessment)
+        try:
+            ev_result = choose_spell_ev(self, spells, game, player_idx, assessment)
+            # Convert EVSpellDecision to the format expected by the rest of the system
+            decision_card = ev_result.card
+            decision_concern = "ev_best"
+            decision_reasoning = ev_result.reasoning
+            decision_alternatives = [(name, f"EV={ev:.1f}") for name, ev in ev_result.alternatives]
+        except Exception as e:
+            # Fallback to legacy concern pipeline on errors
+            import sys
+            print(f"[EV Decision ERROR] {type(e).__name__}: {e} — falling back to concern pipeline", file=sys.stderr)
+            from ai.spell_decision import choose_spell
+            legacy = choose_spell(self, spells, game, player_idx, assessment)
+            decision_card = legacy.card
+            decision_concern = legacy.concern
+            decision_reasoning = legacy.reasoning
+            decision_alternatives = legacy.alternatives
+
+        # Create a duck-typed decision object for the rest of the method
+        class _Decision:
+            pass
+        decision = _Decision()
+        decision.card = decision_card
+        decision.concern = decision_concern
+        decision.reasoning = decision_reasoning
+        decision.alternatives = decision_alternatives
 
         # Handle pass (no play)
         if decision.card is None:

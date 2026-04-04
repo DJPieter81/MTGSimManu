@@ -19,7 +19,7 @@ from engine.cards import CardTemplate, CardInstance, Keyword, CardType
 from engine.stack import StackItemType
 from engine.mana import ManaCost, ManaPool
 
-from ai.ai_player import AIPlayer
+from ai.ev_player import EVPlayer as AIPlayer
 from ai.strategic_logger import StrategicLogger
 from decks.modern_meta import MODERN_DECKS
 

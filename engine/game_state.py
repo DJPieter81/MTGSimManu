@@ -2573,7 +2573,8 @@ class GameState:
                 )
 
             # Ragavan: create Treasure token on combat damage to player
-            if attacker.template.name == "Ragavan, Nimble Pilferer" and total_damage_dealt > 0 and not blocked:
+            is_blocked = attacker.instance_id in blockers and bool(blockers[attacker.instance_id])
+            if attacker.template.name == "Ragavan, Nimble Pilferer" and total_damage_dealt > 0 and not is_blocked:
                 self.create_token(attacking_player, "treasure", count=1)
                 self.log.append(
                     f"T{self.turn_number} P{attacking_player+1}: "

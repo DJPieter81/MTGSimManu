@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MTG Simulator — Replay Viewer</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #1a1a2e; color: #e0e0e0; min-height: 100vh; }
+
+  header { background: linear-gradient(135deg, #16213e, #0f3460); padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e94560; }
+  header h1 { font-size: 1.3rem; color: #e94560; }
+  .match-info { font-size: 0.9rem; color: #aaa; }
+
+  .main { display: grid; grid-template-columns: 1fr 280px; gap: 0; min-height: calc(100vh - 50px); }
+
+  /* Board area */
+  .board { padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+
+  .player-zone { background: #16213e; border-radius: 8px; padding: 12px; border: 1px solid #333; }
+  .player-zone.active { border-color: #e94560; box-shadow: 0 0 12px rgba(233,69,96,0.2); }
+  .player-zone.p0 { }
+  .player-zone.p1 { }
+
+  .player-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .player-name { font-weight: 700; font-size: 1.1rem; }
+  .player-name.p0 { color: #e94560; }
+  .player-name.p1 { color: #0ea5e9; }
+
+  .stats { display: flex; gap: 16px; font-size: 0.85rem; color: #aaa; }
+  .stat { display: flex; align-items: center; gap: 4px; }
+  .stat .icon { font-size: 1rem; }
+  .life { color: #4ade80; font-weight: 700; font-size: 1.2rem; }
+  .life.danger { color: #ef4444; }
+
+  .zone-label { font-size: 0.7rem; text-transform: uppercase; color: #666; margin: 6px 0 4px; letter-spacing: 1px; }
+
+  .cards-row { display: flex; flex-wrap: wrap; gap: 6px; min-height: 36px; }
+
+  .card {
+    background: #0f3460; border: 1px solid #555; border-radius: 6px;
+    padding: 4px 8px; font-size: 0.75rem; cursor: default;
+    transition: all 0.2s; position: relative;
+  }
+  .card:hover { border-color: #e94560; transform: translateY(-2px); z-index: 10; }
+  .card.creature { border-left: 3px solid #4ade80; }
+  .card.land { border-left: 3px solid #a78bfa; background: #1a1a3e; }
+  .card.instant, .card.sorcery { border-left: 3px solid #f59e0b; }
+  .card.planeswalker { border-left: 3px solid #f97316; }
+  .card.artifact { border-left: 3px solid #94a3b8; }
+  .card.enchantment { border-left: 3px solid #c084fc; }
+  .card.tapped { opacity: 0.5; transform: rotate(6deg); }
+  .card .pt { color: #4ade80; font-weight: 700; margin-left: 4px; }
+  .card .loyalty { color: #f97316; font-weight: 700; margin-left: 4px; }
+  .card .cost { color: #aaa; font-size: 0.65rem; margin-left: 4px; }
+
+  .hand-cards .card { background: #1e3a5f; border-color: #445; }
+
+  /* Event / turn info */
+  .turn-bar {
+    background: linear-gradient(90deg, #16213e, #0f3460);
+    padding: 8px 16px; text-align: center;
+    font-size: 0.9rem; font-weight: 600;
+    border-top: 1px solid #333; border-bottom: 1px solid #333;
+  }
+  .turn-bar .phase { color: #e94560; }
+
+  .event-bar {
+    background: #0d1b2a; padding: 10px 16px; min-height: 48px;
+    font-size: 0.85rem; line-height: 1.5;
+    border-bottom: 1px solid #222;
+  }
+  .event-bar .event-text { color: #fbbf24; }
+
+  /* Sidebar */
+  .sidebar { background: #0d1b2a; border-left: 1px solid #333; display: flex; flex-direction: column; }
+  .sidebar h3 { padding: 12px; font-size: 0.9rem; color: #e94560; border-bottom: 1px solid #222; }
+
+  .event-log { flex: 1; overflow-y: auto; padding: 8px; font-size: 0.75rem; line-height: 1.6; }
+  .event-log .ev { padding: 2px 4px; border-bottom: 1px solid #1a1a2e; }
+  .ev.spell { color: #fbbf24; }
+  .ev.combat { color: #ef4444; }
+  .ev.land { color: #a78bfa; }
+  .ev.trigger { color: #4ade80; }
+  .ev.zone { color: #94a3b8; }
+  .ev.game { color: #666; }
+
+  /* Controls */
+  .controls {
+    display: flex; gap: 8px; padding: 12px; justify-content: center;
+    align-items: center; background: #0f3460; border-top: 2px solid #e94560;
+  }
+  .controls button {
+    background: #16213e; border: 1px solid #e94560; color: #e94560;
+    padding: 6px 16px; border-radius: 4px; cursor: pointer; font-size: 0.85rem;
+    transition: all 0.15s;
+  }
+  .controls button:hover { background: #e94560; color: white; }
+  .controls button:disabled { opacity: 0.3; cursor: default; }
+  .controls .snap-counter { color: #aaa; font-size: 0.8rem; min-width: 80px; text-align: center; }
+
+  .controls input[type=range] { width: 200px; accent-color: #e94560; }
+
+  /* Winner banner */
+  .winner-banner {
+    display: none; position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(15, 52, 96, 0.95); border: 2px solid #e94560;
+    border-radius: 12px; padding: 32px 48px; text-align: center;
+    z-index: 100; box-shadow: 0 0 40px rgba(233,69,96,0.4);
+  }
+  .winner-banner h2 { color: #e94560; font-size: 1.8rem; margin-bottom: 8px; }
+  .winner-banner p { color: #aaa; }
+  .winner-banner.show { display: block; }
+</style>
+</head>
+<body>
+<header>
+  <h1>MTG Game Simulator — Replay Viewer</h1>
+  <div class="match-info" id="matchInfo"></div>
+</header>
+
+<div class="main">
+  <div class="board-container">
+    <div class="turn-bar" id="turnBar">Loading...</div>
+    <div class="event-bar"><span class="event-text" id="eventText"></span></div>
+    <div class="board" id="board"></div>
+  </div>
+  <div class="sidebar">
+    <h3>Event Log</h3>
+    <div class="event-log" id="eventLog"></div>
+  </div>
+</div>
+
+<div class="controls">
+  <button id="btnFirst" title="First">⏮</button>
+  <button id="btnPrev" title="Previous">◀</button>
+  <button id="btnPlay" title="Play/Pause">▶ Play</button>
+  <button id="btnNext" title="Next">▶</button>
+  <button id="btnLast" title="Last">⏭</button>
+  <input type="range" id="slider" min="0" max="0" value="0">
+  <div class="snap-counter" id="snapCounter">0 / 0</div>
+</div>
+
+<div class="winner-banner" id="winnerBanner">
+  <h2 id="winnerText"></h2>
+  <p id="winnerDetails"></p>
+</div>
+
+<script>
+let replay = null;
+let currentIdx = 0;
+let playing = false;
+let playTimer = null;
+
+async function loadReplay() {
+  const resp = await fetch('replay_data.json');
+  replay = await resp.json();
+
+  document.getElementById('matchInfo').textContent =
+    `${replay.deck1} vs ${replay.deck2} — ${replay.total_turns} turns`;
+
+  const slider = document.getElementById('slider');
+  slider.max = replay.snapshots.length - 1;
+
+  render(0);
+}
+
+function render(idx) {
+  if (!replay) return;
+  currentIdx = Math.max(0, Math.min(idx, replay.snapshots.length - 1));
+  const snap = replay.snapshots[currentIdx];
+
+  // Turn bar
+  const active = snap.active_player;
+  const phaseName = snap.phase.replace('_', ' ').toUpperCase();
+  document.getElementById('turnBar').innerHTML =
+    `Turn <b>${snap.turn}</b> — <span class="phase">${phaseName}</span> — ${snap.players[active].name}'s turn`;
+
+  // Event text
+  document.getElementById('eventText').textContent = snap.event || '';
+
+  // Board
+  const boardEl = document.getElementById('board');
+  boardEl.innerHTML = '';
+
+  for (let pIdx = 0; pIdx < 2; pIdx++) {
+    const p = snap.players[pIdx];
+    const zone = document.createElement('div');
+    zone.className = `player-zone p${pIdx}` + (pIdx === active ? ' active' : '');
+
+    const lifeClass = p.life <= 5 ? 'life danger' : 'life';
+
+    zone.innerHTML = `
+      <div class="player-header">
+        <span class="player-name p${pIdx}">${p.name}</span>
+        <div class="stats">
+          <span class="stat"><span class="${lifeClass}">♥ ${p.life}</span></span>
+          <span class="stat">🃏 ${p.hand_count}</span>
+          <span class="stat">📚 ${p.library_count}</span>
+          ${p.energy ? `<span class="stat">⚡ ${p.energy}</span>` : ''}
+        </div>
+      </div>
+      <div class="zone-label">Battlefield</div>
+      <div class="cards-row">${renderCards(p.battlefield)}</div>
+      <div class="zone-label">Hand (${p.hand_count})</div>
+      <div class="cards-row hand-cards">${renderCards(p.hand)}</div>
+      <div class="zone-label">Graveyard (${p.graveyard.length})</div>
+      <div class="cards-row">${renderCards(p.graveyard.slice(0, 8))}</div>
+    `;
+    boardEl.appendChild(zone);
+  }
+
+  // Event log — show events for this snapshot
+  const logEl = document.getElementById('eventLog');
+  if (snap.events && snap.events.length > 0) {
+    for (const ev of snap.events) {
+      const div = document.createElement('div');
+      div.className = `ev ${ev.category || 'game'}`;
+      div.textContent = ev.text || ev.raw || '';
+      logEl.appendChild(div);
+    }
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  // Strategic annotations
+  if (snap.strategic_annotations) {
+    for (const ann of snap.strategic_annotations) {
+      const div = document.createElement('div');
+      div.className = 'ev game';
+      div.textContent = `🧠 ${ann.text || JSON.stringify(ann)}`;
+      div.style.color = '#e94560';
+      logEl.appendChild(div);
+    }
+  }
+
+  // Slider & counter
+  document.getElementById('slider').value = currentIdx;
+  document.getElementById('snapCounter').textContent =
+    `${currentIdx + 1} / ${replay.snapshots.length}`;
+
+  // Winner banner
+  if (snap.game_over && snap.winner !== null) {
+    document.getElementById('winnerText').textContent =
+      `${snap.players[snap.winner].name} Wins!`;
+    document.getElementById('winnerDetails').textContent =
+      `Turn ${snap.turn} — ${snap.players[snap.winner].life} life remaining`;
+    document.getElementById('winnerBanner').classList.add('show');
+  } else {
+    document.getElementById('winnerBanner').classList.remove('show');
+  }
+
+  // Button states
+  document.getElementById('btnFirst').disabled = currentIdx === 0;
+  document.getElementById('btnPrev').disabled = currentIdx === 0;
+  document.getElementById('btnNext').disabled = currentIdx >= replay.snapshots.length - 1;
+  document.getElementById('btnLast').disabled = currentIdx >= replay.snapshots.length - 1;
+}
+
+function renderCards(cards) {
+  if (!cards || cards.length === 0) return '<span style="color:#444;font-size:0.7rem">—</span>';
+  return cards.map(c => {
+    let cls = 'card';
+    if (c.is_creature) cls += ' creature';
+    else if (c.is_land) cls += ' land';
+    else if (c.is_instant) cls += ' instant';
+    else if (c.is_sorcery) cls += ' sorcery';
+    else if (c.is_planeswalker) cls += ' planeswalker';
+    else if (c.is_artifact) cls += ' artifact';
+    else if (c.is_enchantment) cls += ' enchantment';
+    if (c.tapped) cls += ' tapped';
+
+    let extra = '';
+    if (c.is_creature && c.power !== null) extra = `<span class="pt">${c.power}/${c.toughness}</span>`;
+    if (c.loyalty !== null && c.loyalty !== undefined) extra = `<span class="loyalty">[${c.loyalty}]</span>`;
+    let cost = c.mana_cost && c.mana_cost !== '0' ? `<span class="cost">${c.mana_cost}</span>` : '';
+
+    return `<div class="${cls}" title="${c.name}\n${c.types.join(', ')}\n${c.keywords.join(', ')}">${c.name}${extra}${cost}</div>`;
+  }).join('');
+}
+
+// Controls
+document.getElementById('btnFirst').addEventListener('click', () => { stopPlay(); render(0); });
+document.getElementById('btnPrev').addEventListener('click', () => { stopPlay(); render(currentIdx - 1); });
+document.getElementById('btnNext').addEventListener('click', () => { stopPlay(); render(currentIdx + 1); });
+document.getElementById('btnLast').addEventListener('click', () => { stopPlay(); render(replay.snapshots.length - 1); });
+document.getElementById('slider').addEventListener('input', e => { stopPlay(); render(parseInt(e.target.value)); });
+
+document.getElementById('btnPlay').addEventListener('click', () => {
+  if (playing) { stopPlay(); } else { startPlay(); }
+});
+
+function startPlay() {
+  playing = true;
+  document.getElementById('btnPlay').textContent = '⏸ Pause';
+  playTimer = setInterval(() => {
+    if (currentIdx >= replay.snapshots.length - 1) { stopPlay(); return; }
+    render(currentIdx + 1);
+  }, 1500);
+}
+
+function stopPlay() {
+  playing = false;
+  document.getElementById('btnPlay').textContent = '▶ Play';
+  if (playTimer) { clearInterval(playTimer); playTimer = null; }
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); render(currentIdx + 1); }
+  if (e.key === 'ArrowLeft') { render(currentIdx - 1); }
+  if (e.key === 'Home') { render(0); }
+  if (e.key === 'End') { render(replay.snapshots.length - 1); }
+});
+
+loadReplay();
+</script>
+</body>
+</html>
