@@ -186,7 +186,7 @@ EVPlayer.decide_response = patched_resp
 
 # ── Run the match ──
 
-random.seed(88888)
+random.seed(20000)
 d1_data = MODERN_DECKS["Domain Zoo"]
 d2_data = MODERN_DECKS["4c Omnath"]
 
