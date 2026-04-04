@@ -2572,6 +2572,14 @@ class GameState:
                     f"(life: {self.players[attacking_player].life})"
                 )
 
+            # Ragavan: create Treasure token on combat damage to player
+            if attacker.template.name == "Ragavan, Nimble Pilferer" and total_damage_dealt > 0 and not blocked:
+                self.create_token(attacking_player, "treasure", count=1)
+                self.log.append(
+                    f"T{self.turn_number} P{attacking_player+1}: "
+                    f"Ragavan creates Treasure token"
+                )
+
     def end_of_turn_cleanup(self):
         """Handle end-of-turn delayed triggers (e.g., Goryo's exile, Dash return)."""
         # Dash: return dashed creatures to their owner's hand

@@ -627,6 +627,94 @@ def undying_evil_resolve(game, card, controller, targets=None, item=None):
         best.temp_keywords.add(Keyword.UNDYING)
 
 
+# ═══════════════════════════════════════════════════════════════════
+# Boros Energy creatures
+# ═══════════════════════════════════════════════════════════════════
+
+@EFFECT_REGISTRY.register("Guide of Souls", EffectTiming.ETB,
+                           description="Get 1 energy")
+def guide_of_souls_etb(game, card, controller, targets=None, item=None):
+    game.produce_energy(controller, 1, "Guide of Souls")
+
+
+@EFFECT_REGISTRY.register("Ocelot Pride", EffectTiming.ETB,
+                           description="Get 1 energy")
+def ocelot_pride_etb(game, card, controller, targets=None, item=None):
+    game.produce_energy(controller, 1, "Ocelot Pride")
+
+
+@EFFECT_REGISTRY.register("Ajani, Nacatl Pariah // Ajani, Nacatl Avenger",
+                           EffectTiming.ETB,
+                           description="Create 2/1 Cat Warrior token and get 2 energy")
+def ajani_etb(game, card, controller, targets=None, item=None):
+    game.create_token(controller, "cat", count=1, power=2, toughness=1)
+    game.produce_energy(controller, 2, "Ajani")
+    game.log.append(f"T{game.turn_number} P{controller+1}: "
+                    f"Ajani creates 2/1 Cat Warrior token and gains 2 energy")
+
+
+@EFFECT_REGISTRY.register("Seasoned Pyromancer", EffectTiming.ETB,
+                           description="Discard 2, draw 2, create tokens for nonland discards")
+def seasoned_pyromancer_etb(game, card, controller, targets=None, item=None):
+    player = game.players[controller]
+    # Discard 2, draw 2 — count nonland discards for token creation
+    discarded_nonland = 0
+    for _ in range(min(2, len(player.hand))):
+        if player.hand:
+            # Discard worst card (lowest CMC land, or lowest priority spell)
+            worst = min(player.hand, key=lambda c: (
+                0 if c.template.is_land else 1,  # prefer discarding lands
+                c.template.cmc or 0
+            ))
+            if not worst.template.is_land:
+                discarded_nonland += 1
+            player.hand.remove(worst)
+            worst.zone = "graveyard"
+            player.graveyard.append(worst)
+    game.draw_cards(controller, 2)
+    # Create 1/1 Elemental tokens for each nonland discarded
+    if discarded_nonland > 0:
+        game.create_token(controller, "elemental", count=discarded_nonland)
+        game.log.append(f"T{game.turn_number} P{controller+1}: "
+                        f"Seasoned Pyromancer: discard 2, draw 2, create {discarded_nonland} Elemental(s)")
+    else:
+        game.log.append(f"T{game.turn_number} P{controller+1}: "
+                        f"Seasoned Pyromancer: discard 2, draw 2 (no nonland discards)")
+
+
+@EFFECT_REGISTRY.register("Ranger-Captain of Eos", EffectTiming.ETB,
+                           description="Search library for creature with MV 1 or less")
+def ranger_captain_etb(game, card, controller, targets=None, item=None):
+    player = game.players[controller]
+    # Find best 1-drop creature in library
+    targets_in_lib = [
+        c for c in player.library
+        if c.template.is_creature and (c.template.cmc or 0) <= 1
+    ]
+    if targets_in_lib:
+        # Prefer energy/value creatures
+        best = max(targets_in_lib, key=lambda c: (
+            1 if 'energy' in getattr(c.template, 'tags', set()) else 0,
+            c.template.power or 0,
+        ))
+        player.library.remove(best)
+        best.zone = "hand"
+        player.hand.append(best)
+        game.rng.shuffle(player.library)
+        game.log.append(f"T{game.turn_number} P{controller+1}: "
+                        f"Ranger-Captain tutors {best.name} to hand")
+    else:
+        game.rng.shuffle(player.library)
+
+
+@EFFECT_REGISTRY.register("Ragavan, Nimble Pilferer", EffectTiming.ETB,
+                           description="Create Treasure token on combat damage")
+def ragavan_etb(game, card, controller, targets=None, item=None):
+    # Ragavan's ETB does nothing — his ability triggers on combat damage.
+    # The combat damage trigger is handled in trigger_combat_damage.
+    pass
+
+
 @EFFECT_REGISTRY.register("Summoner's Pact", EffectTiming.SPELL_RESOLVE,
                            description="Search for a green creature")
 def summoners_pact_resolve(game, card, controller, targets=None, item=None):
