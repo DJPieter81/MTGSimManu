@@ -210,11 +210,15 @@ class EVPlayer:
             if 'counterspell' in tags and 'removal' not in tags:
                 continue
 
-            # Skip reactive-only unless dying
+            # Skip reactive-only INSTANTS/SORCERIES unless dying.
+            # Creatures in reactive_only (Endurance, Subtlety) can still be
+            # cast for their body — a 3/4 blocker is valuable even without
+            # the ETB triggering optimally.
             if spell.name in self._reactive_only:
-                if not (snap.am_dead_next or
-                        (snap.opp_power >= 3 and snap.opp_clock <= 3)):
-                    continue
+                if not spell.template.is_creature:
+                    if not (snap.am_dead_next or
+                            (snap.opp_power >= 3 and snap.opp_clock <= 3)):
+                        continue
 
             ev = self._score_spell(spell, snap, game, me, opp)
             targets = self._choose_targets(game, spell)
@@ -552,6 +556,11 @@ class EVPlayer:
         if total_power >= opp.life:
             return valid
 
+        # No blockers = free damage. Always attack into an empty board.
+        opp_blockers = game.get_valid_blockers(1 - self.player_idx)
+        if not opp_blockers and valid:
+            return valid
+
         # CombatPlanner
         try:
             vboard = extract_virtual_board(game, self.player_idx)
@@ -562,7 +571,7 @@ class EVPlayer:
             if self.archetype == "aggro":
                 threshold = -1.0  # aggro pushes damage
             elif self.archetype == "control":
-                threshold = 1.5  # control is conservative
+                threshold = 0.5  # control still needs to close games
 
             if attack_plan and score_delta > threshold:
                 attack_ids = {vc.instance_id for vc in attack_plan}
@@ -570,10 +579,10 @@ class EVPlayer:
         except Exception:
             pass
 
-        # Fallback: attack with everything if aggro, nothing if control
-        if self.archetype in ("aggro",):
-            return valid
-        return []
+        # Fallback: attack with everything unless control is facing blockers
+        if self.archetype == "control" and opp_blockers:
+            return []  # control holds back vs blockers
+        return valid  # everyone else attacks
 
     def decide_blockers(self, game, attackers) -> Dict[int, List[int]]:
         """Decide blocking assignments."""
@@ -699,9 +708,19 @@ class EVPlayer:
         return max(creatures, key=lambda c: creature_value(c))
 
     def _spell_requires_targets(self, spell) -> bool:
-        """Check if a spell needs targets."""
+        """Check if a spell needs targets to be cast legally.
+
+        IMPORTANT: Creatures with removal ETBs (Phlage, Bowmasters, Solitude)
+        do NOT require targets — they can be cast for the body alone.
+        The ETB targeting happens on resolution, not on cast.
+        """
         t = spell.template
         tags = getattr(t, 'tags', set())
+
+        # Creatures never require targets to CAST (ETB targeting is separate)
+        if t.is_creature:
+            return False
+
         if 'counterspell' in tags:
             return True
         if 'removal' in tags and 'board_wipe' not in tags:
