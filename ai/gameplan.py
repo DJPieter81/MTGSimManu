@@ -337,20 +337,36 @@ class GoalEngine:
         spells = [s for s in spells if not self._would_violate_legend_rule(s, player)]
 
         # Step 4: Play a land (always first priority)
+        # EXCEPTION: defer land play if we're about to cast a landfall payoff.
+        # Casting the payoff first lets the land trigger landfall (e.g., Omnath
+        # gains 4 life per landfall, adds WURG on 2nd, deals 4 on 3rd).
+        defer_land = False
         if lands and player.lands_played_this_turn < (1 + player.extra_land_drops):
-            # Filter out fetchlands that would kill us (auto-crack pays 1 life)
-            from engine.card_database import FETCH_LAND_COLORS
-            no_life_fetches = {"Prismatic Vista", "Fabled Passage", "Evolving Wilds", "Terramorphic Expanse"}
-            safe_lands = [
-                l for l in lands
-                if l.name not in FETCH_LAND_COLORS
-                or l.name in no_life_fetches
-                or player.life > 1
-            ]
-            if safe_lands:
-                land = self._choose_land(player, safe_lands, spells, assessment, game, player_idx)
-                if land:
-                    return ("play_land", land, [])
+            # Check if a landfall payoff is castable without the land drop
+            all_payoffs = set()
+            for g in self.gameplan.goals:
+                all_payoffs.update(g.card_roles.get('payoffs', set()))
+            for sp in spells:
+                if sp.name in all_payoffs:
+                    oracle = (sp.template.oracle_text or "").lower()
+                    if 'landfall' in oracle or 'land enters' in oracle or 'whenever a land' in oracle:
+                        if game.can_cast(player_idx, sp):
+                            defer_land = True
+                            break
+
+            if not defer_land:
+                from engine.card_database import FETCH_LAND_COLORS
+                no_life_fetches = {"Prismatic Vista", "Fabled Passage", "Evolving Wilds", "Terramorphic Expanse"}
+                safe_lands = [
+                    l for l in lands
+                    if l.name not in FETCH_LAND_COLORS
+                    or l.name in no_life_fetches
+                    or player.life > 1
+                ]
+                if safe_lands:
+                    land = self._choose_land(player, safe_lands, spells, assessment, game, player_idx)
+                    if land:
+                        return ("play_land", land, [])
 
         # Step 5: Override checks
         override = self._check_overrides(game, player_idx, spells, assessment)
