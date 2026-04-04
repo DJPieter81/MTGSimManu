@@ -1200,14 +1200,47 @@ def _best_removal_for_threats(
 
     # For each threat (most important first), find removal that can kill it
     for threat, threat_val in threat_values:
+        candidates = []
         for rm in removal_cards:
             if _can_kill(rm, threat, ctx):
-                reason = f"kills {threat.name} (value {threat_val:.1f})"
-                rm_cmc = rm.template.cmc or 1
-                threat_cmc = threat.template.cmc or 1
-                if rm_cmc < threat_cmc:
-                    reason += f", tempo advantage ({rm_cmc} mana vs {threat_cmc})"
-                return (rm, threat.name, reason)
+                candidates.append(rm)
+
+        if not candidates:
+            continue
+
+        # Prefer single-target removal over board wipes when only 1-2 threats.
+        # Board wiping to kill a single creature wastes a powerful resource and
+        # may kill our own creatures. Save board wipes for multi-creature boards.
+        opp_creature_count = len(ctx.opp.creatures)
+        single_target = [c for c in candidates if 'board_wipe' not in getattr(c.template, 'tags', set())]
+
+        if single_target and opp_creature_count <= 2:
+            rm = single_target[0]
+        elif single_target:
+            rm = single_target[0]  # Still prefer targeted if available
+        else:
+            # Only board wipes available
+            if opp_creature_count <= 1:
+                # Don't waste a board wipe on 1 creature unless it's a must-answer
+                if threat_val < 8.0:
+                    continue  # Skip: save the wrath for a better moment
+            # Don't board-wipe when we have a payoff creature on board
+            # and opponent has few creatures — the payoff is worth more
+            my_has_payoff = any(
+                c.name in goal.card_roles.get('payoffs', set())
+                for c in ctx.me.creatures
+                for goal in ctx.engine.gameplan.goals
+            )
+            if my_has_payoff and opp_creature_count <= 2:
+                continue  # Don't wrath away our own payoff for 1-2 creatures
+            rm = candidates[0]
+
+        reason = f"kills {threat.name} (value {threat_val:.1f})"
+        rm_cmc = rm.template.cmc or 1
+        threat_cmc = threat.template.cmc or 1
+        if rm_cmc < threat_cmc:
+            reason += f", tempo advantage ({rm_cmc} mana vs {threat_cmc})"
+        return (rm, threat.name, reason)
 
     return None
 
