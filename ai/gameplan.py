@@ -95,10 +95,130 @@ class Goal:
 # ═══════════════════════════════════════════════════════════════════
 
 @dataclass
+@dataclass
+class DecisionThresholds:
+    """Per-deck tunable thresholds for the spell decision pipeline.
+
+    These replace the hardcoded magic numbers in spell_decision.py
+    and board_eval.py. Each deck archetype can set values that match
+    its strategic needs (e.g., control tolerates more pressure before
+    panic-removing; aggro answers blockers at lower thresholds).
+    """
+    # --- SURVIVE trigger ---
+    # "Am I dying?" fires when opp_clock <= this AND opp_board_power >= min_board_power.
+    # Empirically measured: clock<=4,power>=3 triggers ~50-70% vs aggro (archetype-dependent).
+    # This is the baseline survival check — it's MEANT to trigger often.
+    dying_clock: int = 4
+    dying_min_board_power: int = 3
+
+    # --- ANSWER: must-answer creature thresholds ---
+    # Value threshold for creatures that MUST be answered. Lower = more aggressive removal.
+    # Under pressure: answer_val_pressured. Not under pressure: answer_val_relaxed.
+    answer_val_pressured: float = 3.0
+    answer_val_relaxed: float = 5.0
+    # Emergency "answer everything" clock threshold
+    answer_emergency_clock: int = 2
+    # Minimum power for a creature to be "meaningful" under pressure
+    answer_min_power: int = 3
+
+    # --- ADVANCE (reactive): mana holdback for interaction ---
+    # Minimum mana to leave untapped when deploying a threat.
+    # Control: 2+ (hold up counterspell/removal). Aggro: 0 (tap out freely).
+    deploy_mana_holdback: int = 2
+
+    # --- Board wipe conservation ---
+    # Don't use a board wipe on a single creature unless its value exceeds this.
+    # Higher = save wraths for bigger boards. Lower = wrath single threats.
+    wrath_single_target_min_val: float = 8.0
+
+    # --- Evoke thresholds ---
+    # Pressure level needed to evoke when we can hardcast next turn (0.0-1.0).
+    # Higher = more reluctant to evoke (wait for hardcast).
+    evoke_hardcast_next_turn: float = 0.7
+    # Pressure level needed to evoke when colors are wrong.
+    evoke_wrong_colors: float = 0.4
+    # Don't evoke removal against creatures with power AND cmc at or below these.
+    evoke_skip_small_power: int = 2
+    evoke_skip_small_cmc: int = 2
+
+
+# Archetype defaults — derived from empirical analysis of opp_clock
+# distributions across 50-game samples per matchup type.
+#
+# Measured SURVIVE trigger rates for (clock<=N AND power>=M) vs Zoo:
+#   clock<=4,power>=3: control 70%, midrange 49%, aggro 56%
+#   clock<=3,power>=3: control 57%, midrange 41%, aggro 47%
+#   clock<=2,power>=3: control 40%, midrange 33%, aggro 34%
+#
+# The dying_clock threshold controls how often SURVIVE fires.
+# It should be high enough to catch real danger but not so high that
+# it blocks payoff deployment. The legacy value (4) is well-tested
+# from the Zoo/Dimir bugfix session (0% → 33% Dimir win rate).
+# Per-archetype tuning adjusts OTHER parameters to compensate.
+_ARCHETYPE_THRESHOLDS = {
+    "aggro": DecisionThresholds(
+        # Aggro races — triggers at clock<=4 but:
+        # - only answers big stuff (answer_min_power=4)
+        # - taps out freely (deploy_mana_holdback=0)
+        dying_clock=4,
+        dying_min_board_power=3,
+        answer_val_pressured=4.0,
+        answer_val_relaxed=6.0,
+        answer_min_power=4,
+        deploy_mana_holdback=0,
+        wrath_single_target_min_val=10.0,
+        evoke_hardcast_next_turn=0.5,
+        evoke_wrong_colors=0.3,
+    ),
+    "midrange": DecisionThresholds(
+        # Midrange: balanced — clock<=4 trigger rate ~49%
+        dying_clock=4,
+        dying_min_board_power=3,
+        deploy_mana_holdback=1,
+        evoke_hardcast_next_turn=0.6,
+    ),
+    "control": DecisionThresholds(
+        # Control: clock<=4 triggers 70% vs aggro, which is high.
+        # Compensate with higher answer thresholds so ANSWER fires less
+        # and ADVANCE gets more opportunities to deploy payoffs.
+        dying_clock=4,
+        dying_min_board_power=3,
+        answer_val_pressured=4.0,   # only answer creatures with value >= 4
+        answer_val_relaxed=6.0,
+        deploy_mana_holdback=2,
+        wrath_single_target_min_val=7.0,
+        evoke_hardcast_next_turn=0.8,
+        evoke_wrong_colors=0.5,
+    ),
+    "combo": DecisionThresholds(
+        # Combo: triggers at clock<=4 but mostly ignores the board —
+        # very high answer thresholds mean ANSWER rarely fires.
+        dying_clock=4,
+        dying_min_board_power=3,
+        answer_val_pressured=5.0,
+        answer_val_relaxed=8.0,
+        deploy_mana_holdback=0,
+        wrath_single_target_min_val=12.0,
+        evoke_hardcast_next_turn=0.9,
+    ),
+}
+
+
+def get_thresholds(gameplan: "DeckGameplan") -> DecisionThresholds:
+    """Get decision thresholds for a deck, falling back to archetype defaults."""
+    if gameplan.thresholds:
+        return gameplan.thresholds
+    return _ARCHETYPE_THRESHOLDS.get(gameplan.archetype, DecisionThresholds())
+
+
+@dataclass
 class DeckGameplan:
     """Complete strategic plan for a deck archetype."""
     deck_name: str
     goals: List[Goal]
+
+    # Per-deck decision thresholds (None = use archetype defaults)
+    thresholds: Optional[DecisionThresholds] = None
 
     # Mulligan: card names that are essential to keep
     mulligan_keys: Set[str] = field(default_factory=set)
@@ -337,20 +457,36 @@ class GoalEngine:
         spells = [s for s in spells if not self._would_violate_legend_rule(s, player)]
 
         # Step 4: Play a land (always first priority)
+        # EXCEPTION: defer land play if we're about to cast a landfall payoff.
+        # Casting the payoff first lets the land trigger landfall (e.g., Omnath
+        # gains 4 life per landfall, adds WURG on 2nd, deals 4 on 3rd).
+        defer_land = False
         if lands and player.lands_played_this_turn < (1 + player.extra_land_drops):
-            # Filter out fetchlands that would kill us (auto-crack pays 1 life)
-            from engine.card_database import FETCH_LAND_COLORS
-            no_life_fetches = {"Prismatic Vista", "Fabled Passage", "Evolving Wilds", "Terramorphic Expanse"}
-            safe_lands = [
-                l for l in lands
-                if l.name not in FETCH_LAND_COLORS
-                or l.name in no_life_fetches
-                or player.life > 1
-            ]
-            if safe_lands:
-                land = self._choose_land(player, safe_lands, spells, assessment, game, player_idx)
-                if land:
-                    return ("play_land", land, [])
+            # Check if a landfall payoff is castable without the land drop
+            all_payoffs = set()
+            for g in self.gameplan.goals:
+                all_payoffs.update(g.card_roles.get('payoffs', set()))
+            for sp in spells:
+                if sp.name in all_payoffs:
+                    oracle = (sp.template.oracle_text or "").lower()
+                    if 'landfall' in oracle or 'land enters' in oracle or 'whenever a land' in oracle:
+                        if game.can_cast(player_idx, sp):
+                            defer_land = True
+                            break
+
+            if not defer_land:
+                from engine.card_database import FETCH_LAND_COLORS
+                no_life_fetches = {"Prismatic Vista", "Fabled Passage", "Evolving Wilds", "Terramorphic Expanse"}
+                safe_lands = [
+                    l for l in lands
+                    if l.name not in FETCH_LAND_COLORS
+                    or l.name in no_life_fetches
+                    or player.life > 1
+                ]
+                if safe_lands:
+                    land = self._choose_land(player, safe_lands, spells, assessment, game, player_idx)
+                    if land:
+                        return ("play_land", land, [])
 
         # Step 5: Override checks
         override = self._check_overrides(game, player_idx, spells, assessment)

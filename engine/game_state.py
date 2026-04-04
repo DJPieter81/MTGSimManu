@@ -1198,6 +1198,21 @@ class GameState:
                             score -= 5
                         return score
                     exile_card = min(safe_candidates, key=exile_priority)
+                    # If the best exile candidate is an important piece with no
+                    # redundant copies (exile_priority assigns +30 for sole copies
+                    # of IMPORTANT_PIECES), skip evoke to preserve synergy unless
+                    # under lethal pressure.
+                    if exile_card.name in IMPORTANT_PIECES and \
+                       sum(1 for h in player.hand if h.name == exile_card.name) < 2:
+                        opp_idx = 1 - player_idx
+                        opp_power = sum(
+                            (c.power or c.template.power or 0)
+                            for c in self.players[opp_idx].creatures
+                        )
+                        # Only sacrifice the synergy piece if opponent threatens
+                        # lethal next attack (power >= life)
+                        if opp_power < player.life:
+                            return False  # Don't waste important synergy pieces
                     player.hand.remove(exile_card)
                     exile_card.zone = "exile"
                     player.exile.append(exile_card)
@@ -2555,6 +2570,14 @@ class GameState:
                     f"T{self.turn_number} P{attacking_player+1}: "
                     f"{attacker.name} lifelink gains {total_damage_dealt} life "
                     f"(life: {self.players[attacking_player].life})"
+                )
+
+            # Ragavan: create Treasure token on combat damage to player
+            if attacker.template.name == "Ragavan, Nimble Pilferer" and total_damage_dealt > 0 and not blocked:
+                self.create_token(attacking_player, "treasure", count=1)
+                self.log.append(
+                    f"T{self.turn_number} P{attacking_player+1}: "
+                    f"Ragavan creates Treasure token"
                 )
 
     def end_of_turn_cleanup(self):

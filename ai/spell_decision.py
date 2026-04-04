@@ -79,35 +79,64 @@ def choose_spell(engine: "GoalEngine", castable: List["CardInstance"],
     if cycling_result:
         return cycling_result
 
-    # --- Concern 1: SURVIVE ---
-    if ctx.am_dying:
-        result = _concern_survive(ctx)
+    # --- Concern pipeline with outcome-based tiebreaking ---
+    # Combo decks use the strict pipeline (SURVIVE > ADVANCE) because
+    # their spells (rituals, cantrips) don't map to survival/advancement
+    # metrics. Fair decks use outcome comparison when multiple concerns fire.
+    from ai.gameplan import GoalType
+    is_combo_goal = ctx.goal.goal_type in (GoalType.EXECUTE_PAYOFF, GoalType.DEPLOY_ENGINE) \
+                    and ctx.archetype == 'combo'
+
+    if is_combo_goal:
+        # Strict pipeline for combo — unchanged behavior
+        if ctx.am_dying:
+            result = _concern_survive(ctx)
+            if result:
+                return result
+        if ctx.must_answer_threats:
+            result = _concern_answer(ctx)
+            if result:
+                return result
+        result = _concern_advance(ctx)
         if result:
             return result
-
-    # --- Concern 2: ANSWER ---
-    if ctx.must_answer_threats:
-        result = _concern_answer(ctx)
+        result = _concern_efficient(ctx)
         if result:
             return result
+    else:
+        # Outcome-based competition for fair decks
+        candidates = []
 
-    # --- Concern 3: ADVANCE ---
-    result = _concern_advance(ctx)
-    if result:
-        return result
+        if ctx.am_dying:
+            result = _concern_survive(ctx)
+            if result:
+                if ctx.assessment.am_dead_next:
+                    return result  # non-negotiable
+                candidates.append(result)
 
-    # --- Concern 4: EFFICIENT ---
-    result = _concern_efficient(ctx)
-    if result:
-        return result
+        if ctx.must_answer_threats:
+            result = _concern_answer(ctx)
+            if result:
+                candidates.append(result)
+
+        result = _concern_advance(ctx)
+        if result:
+            candidates.append(result)
+
+        if not candidates:
+            result = _concern_efficient(ctx)
+            if result:
+                candidates.append(result)
+
+        if candidates:
+            if len(candidates) == 1:
+                return candidates[0]
+            return max(candidates, key=lambda d: _evaluate_play_impact(d, ctx))
 
     # --- Nothing worth doing ---
     return SpellDecision(
-        card=None,
-        concern="pass",
-        reasoning=_pass_reasoning(ctx),
-        alternatives=[]
-    )
+        card=None, concern="pass",
+        reasoning=_pass_reasoning(ctx), alternatives=[])
 
 
 # ---------------------------------------------------------------------------
@@ -145,15 +174,20 @@ class _DecisionContext:
     # Role/strategy
     role_cache: object = None
     turning_corner: bool = False
+
+    # Per-deck thresholds (replaces hardcoded magic numbers)
+    thresholds: object = None  # DecisionThresholds
     archetype: str = "midrange"
 
 
 def _build_context(castable, game, player_idx, assessment, engine):
     """Build the decision context from game state."""
     from engine.cards import CardType
+    from ai.gameplan import get_thresholds
     me = game.players[player_idx]
     opp = game.players[1 - player_idx]
     goal = engine.current_goal
+    thresholds = get_thresholds(engine.gameplan)
 
     # Categorize cards by what they DO (not by name)
     removal = []
@@ -200,35 +234,28 @@ def _build_context(castable, game, player_idx, assessment, engine):
             else:
                 other.append(card)
 
-    # Am I dying? (opponent can kill me next turn)
-    # Matches the old survival trigger: dead next turn OR under serious pressure
-    # (fast clock with meaningful board power)
+    # Am I dying? Uses per-deck thresholds instead of hardcoded values.
+    # Control decks (dying_clock=3) panic later than aggro (dying_clock=5).
     am_dying = assessment.am_dead_next or (
-        assessment.opp_clock <= 4 and assessment.opp_board_power >= 3
+        assessment.opp_clock <= thresholds.dying_clock
+        and assessment.opp_board_power >= thresholds.dying_min_board_power
     )
 
-    # Must-answer threats: opponent creatures that are winning the game
-    # Threshold depends on pressure: when under pressure, more things need answering
+    # Must-answer threats: opponent creatures that are winning the game.
+    # Thresholds from gameplan control how aggressively we remove.
     must_answer = []
     if opp.creatures:
         from ai.evaluator import _permanent_value
-        # Under pressure: any creature with meaningful power is a must-answer
-        # Not under pressure: only high-value engines/threats
-        under_pressure = assessment.opp_clock <= 4 or assessment.am_dead_next
-        val_threshold = 3.0 if under_pressure else 5.0
+        under_pressure = assessment.opp_clock <= thresholds.dying_clock or assessment.am_dead_next
+        val_threshold = thresholds.answer_val_pressured if under_pressure else thresholds.answer_val_relaxed
         for c in opp.creatures:
             val = _permanent_value(c, opp, game, 1 - player_idx)
             power = c.power if hasattr(c, 'power') and c.power else (c.template.power or 0)
             toughness = c.toughness if hasattr(c, 'toughness') and c.toughness else (c.template.toughness or 0)
-            # Must answer if:
-            # - High-value threat (engine, card advantage)
-            # - Under pressure and creature has meaningful power (3+)
-            # - Opponent has a very fast clock (2 turns or less)
-            if val >= val_threshold or assessment.opp_clock <= 2:
+            if val >= val_threshold or assessment.opp_clock <= thresholds.answer_emergency_clock:
                 must_answer.append(c)
-            elif under_pressure and power >= 3:
+            elif under_pressure and power >= thresholds.answer_min_power:
                 must_answer.append(c)
-            # Aggro: also answer blockers that prevent significant attack damage
             elif engine.gameplan.archetype == 'aggro' and me.creatures:
                 my_blocked_power = sum(
                     (a.power or a.template.power or 0)
@@ -237,6 +264,7 @@ def _build_context(castable, game, player_idx, assessment, engine):
                 )
                 if my_blocked_power >= 3:
                     must_answer.append(c)  # Blocker prevents significant damage
+
 
     # Opponent interaction likelihood
     opp_mana = opp.available_mana_estimate
@@ -289,6 +317,7 @@ def _build_context(castable, game, player_idx, assessment, engine):
         role_cache=engine._role_cache,
         turning_corner=engine.turning_the_corner,
         archetype=engine.gameplan.archetype,
+        thresholds=thresholds,
     )
 
 
@@ -515,15 +544,41 @@ def _concern_survive(ctx: _DecisionContext) -> Optional[SpellDecision]:
     # Best removal for their biggest creature
     removal = _best_removal_for_threats(safe_removal, ctx.opp.creatures, ctx)
 
-    # Best blocker: creature with highest toughness
+    # Best blocker: creature with highest toughness, prefer ETB value on ties
     blockers = [c for c in safe_threats
                 if c.template.is_creature and (c.template.toughness or 0) >= 2]
-    blockers.sort(key=lambda c: c.template.toughness or 0, reverse=True)
+    blockers.sort(key=lambda c: (
+        c.template.toughness or 0,
+        1 if 'etb_value' in getattr(c.template, 'tags', set()) else 0,
+    ), reverse=True)
 
     if removal and blockers:
         r_card, r_target, r_reason = removal
         b_card = blockers[0]
-        # Removal permanently removes the threat — usually better
+        r_cmc = r_card.template.cmc or 0
+
+        # Check if any blocker is a gameplan payoff with ETB value.
+        # Deploying a payoff (like Omnath: +4 life, draw) that also blocks
+        # is often better than removal, if we can't afford both this turn.
+        payoff_blocker = None
+        for b in blockers:
+            b_tags = getattr(b.template, 'tags', set())
+            is_payoff = any(
+                b.name in goal.card_roles.get('payoffs', set())
+                for goal in ctx.engine.gameplan.goals
+            )
+            if is_payoff and 'etb_value' in b_tags:
+                can_do_both = ctx.assessment.my_mana >= (b.template.cmc or 0) + r_cmc
+                if not can_do_both:
+                    payoff_blocker = b
+                    break
+        if payoff_blocker:
+            return SpellDecision(
+                card=payoff_blocker, concern="survive",
+                reasoning=f"Dying — deploying payoff {payoff_blocker.name} (ETB value + blocker)",
+                alternatives=[(r_card.name, f"could remove {r_target} instead")]
+            )
+        # Otherwise, removal permanently removes the threat — usually better
         return SpellDecision(
             card=r_card, concern="survive",
             reasoning=f"Dying — removing {r_target} with {r_card.name} ({r_reason})",
@@ -537,8 +592,19 @@ def _concern_survive(ctx: _DecisionContext) -> Optional[SpellDecision]:
             alternatives=[]
         )
     elif blockers:
+        # Prefer a payoff with ETB value over a raw stat blocker
+        best_blocker = blockers[0]
+        for b in blockers:
+            b_tags = getattr(b.template, 'tags', set())
+            is_payoff = any(
+                b.name in goal.card_roles.get('payoffs', set())
+                for goal in ctx.engine.gameplan.goals
+            )
+            if is_payoff and 'etb_value' in b_tags:
+                best_blocker = b
+                break
         return SpellDecision(
-            card=blockers[0], concern="survive",
+            card=best_blocker, concern="survive",
             reasoning=f"Dying — deploying {blockers[0].name} as blocker (toughness {blockers[0].template.toughness})",
             alternatives=[]
         )
@@ -722,13 +788,15 @@ def _advance_reactive(ctx: _DecisionContext) -> Optional[SpellDecision]:
     # 1. Board is clear (safe to deploy)
     # 2. Under pressure and need blockers (survival deployment)
     # 3. Can deploy AND hold up interaction
+    # 4. High-priority payoff available (e.g., Omnath) and enough mana
     if ctx.my_threats:
         best = _best_on_curve(ctx.my_threats, ctx)
         available_after = ctx.assessment.my_mana - (best.template.cmc or 0)
-        
+
+        holdback = ctx.thresholds.deploy_mana_holdback if ctx.thresholds else 2
         if not ctx.opp.creatures:
             # Board clear — deploy freely
-            if available_after >= 2 or not ctx.holding_mana_is_valuable:
+            if available_after >= holdback or not ctx.holding_mana_is_valuable:
                 return SpellDecision(
                     card=best, concern="advance",
                     reasoning=f"Board clear — deploying {best.name} while holding up {available_after} mana",
@@ -739,6 +807,25 @@ def _advance_reactive(ctx: _DecisionContext) -> Optional[SpellDecision]:
                 card=best, concern="advance",
                 reasoning=f"Under pressure with no blockers — deploying {best.name}",
                 alternatives=[])
+        elif available_after >= holdback and not ctx.am_dying:
+            # Can deploy AND hold up interaction (2+ mana for removal/counter)
+            return SpellDecision(
+                card=best, concern="advance",
+                reasoning=f"Deploying {best.name} while holding up {available_after} mana for interaction",
+                alternatives=[])
+        else:
+            # Deploy if this is a gameplan payoff — payoffs are the deck's
+            # primary win condition and should be deployed when castable,
+            # even without mana holdback for interaction.
+            is_payoff = any(
+                best.name in goal.card_roles.get('payoffs', set())
+                for goal in ctx.engine.gameplan.goals
+            )
+            if is_payoff:
+                return SpellDecision(
+                    card=best, concern="advance",
+                    reasoning=f"Deploying gameplan payoff {best.name}",
+                    alternatives=[])
 
     # Turning the corner: control has stabilized, deploy threats
     if ctx.turning_corner and ctx.my_threats:
@@ -1113,6 +1200,122 @@ def _pass_reasoning(ctx: _DecisionContext) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Outcome-based play evaluation — compares actions by game-state impact
+# ---------------------------------------------------------------------------
+
+def _evaluate_play_impact(decision: SpellDecision, ctx: _DecisionContext) -> float:
+    """Estimate how much this play improves our position.
+
+    Instead of static concern urgency, compute:
+      1. survival_delta: how many turns does this buy me?
+      2. advancement_delta: how much closer to winning?
+
+    Returns a single float — higher is better. All values derived
+    from current game state, not hardcoded weights.
+    """
+    card = decision.card
+    if card is None:
+        return 0.0
+
+    my_life = ctx.assessment.my_life
+    opp_life = ctx.assessment.opp_life
+    opp_power = ctx.assessment.opp_board_power
+    my_power = ctx.assessment.my_board_power
+    opp_clock = ctx.assessment.opp_clock  # turns until I die
+
+    # Current clock: how many turns do I have?
+    current_turns_left = opp_clock if opp_power > 0 else 99
+
+    tags = getattr(card.template, 'tags', set())
+    card_power = card.template.power or 0
+    card_toughness = card.template.toughness or 0
+    oracle = (card.template.oracle_text or "").lower()
+
+    # ── 1. Survival delta: how many turns does this action buy? ──
+    survival_delta = 0.0
+
+    if decision.concern in ("survive", "answer"):
+        # Removal: estimate power removed from opponent's board
+        # The chosen removal targets the biggest threat (from _best_removal_for_threats)
+        if 'board_wipe' in tags:
+            power_removed = opp_power  # kills everything
+        else:
+            # Single-target removal: estimate target power from must-answer list
+            if ctx.must_answer_threats:
+                biggest = max(ctx.must_answer_threats,
+                              key=lambda c: c.power if hasattr(c, 'power') and c.power
+                              else (c.template.power or 0))
+                power_removed = biggest.power if hasattr(biggest, 'power') and biggest.power else (biggest.template.power or 0)
+            else:
+                power_removed = 3  # reasonable estimate
+
+        new_opp_power = max(1, opp_power - power_removed)
+        new_clock = max(1, (my_life + new_opp_power - 1) // new_opp_power)
+        survival_delta = new_clock - current_turns_left
+
+    elif card.template.is_creature:
+        # Deploying a creature: it can block, extending survival
+        # A creature with toughness T can absorb T damage once
+        # More importantly, a blocker with toughness >= attacker power
+        # prevents that attacker's damage EVERY turn
+        can_block_something = any(
+            card_toughness >= (c.power if hasattr(c, 'power') and c.power else (c.template.power or 0))
+            for c in ctx.opp.creatures
+        ) if ctx.opp.creatures else False
+
+        if can_block_something:
+            # Blocking one creature saves ~biggest_blockable power per turn
+            blockable_power = max(
+                (c.power if hasattr(c, 'power') and c.power else (c.template.power or 0))
+                for c in ctx.opp.creatures
+                if (c.power if hasattr(c, 'power') and c.power else (c.template.power or 0)) <= card_toughness
+            ) if ctx.opp.creatures else 0
+            new_effective_power = max(1, opp_power - blockable_power)
+            new_clock = max(1, (my_life + new_effective_power - 1) // new_effective_power)
+            survival_delta = new_clock - current_turns_left
+
+    # ETB life gain extends clock directly
+    if 'etb_value' in tags:
+        if 'gain' in oracle and 'life' in oracle:
+            # Estimate life gain from oracle (look for numbers)
+            import re
+            life_match = re.search(r'gain (\d+) life', oracle)
+            life_gain = int(life_match.group(1)) if life_match else 3
+            # Extra turns = life_gain / opp_power_per_turn
+            if opp_power > 0:
+                survival_delta += life_gain / opp_power
+
+    # ── 2. Advancement delta: how much closer to winning? ──
+    advancement = 0.0
+
+    if card.template.is_creature:
+        # Adding power to the board shortens our clock
+        if opp_life > 0:
+            current_my_clock = max(1, (opp_life + my_power - 1) // max(my_power, 1))
+            new_my_clock = max(1, (opp_life + my_power + card_power - 1) // max(my_power + card_power, 1))
+            advancement = current_my_clock - new_my_clock  # turns saved
+
+    # Gameplan priority: how much does the deck want this card?
+    card_prio = 0.0
+    for goal in ctx.engine.gameplan.goals:
+        p = goal.card_priorities.get(card.name, 0.0)
+        card_prio = max(card_prio, p)
+    # Normalize: 30 is typical max priority → maps to ~1.0 bonus
+    advancement += card_prio / 30.0
+
+    # ── 3. Combined score ──
+    # Both axes matter. A play that gains 5 survival turns is great.
+    # A play that advances the win by 3 turns is also great.
+    # Weight survival more when life is low (diminishing returns on advancement if dead).
+    life_fraction = min(my_life / 20.0, 1.0)  # 0.0 = dead, 1.0 = full health
+    # At low life: survival matters more. At high life: advancement matters more.
+    survival_weight = 2.0 - life_fraction  # 1.0 at 20 life, 2.0 at 0 life
+    advance_weight = 0.5 + life_fraction   # 1.5 at 20 life, 0.5 at 0 life
+
+    return survival_delta * survival_weight + advancement * advance_weight
+
+
+# ---------------------------------------------------------------------------
 # Helper: find the best removal for a set of threats
 # ---------------------------------------------------------------------------
 
@@ -1140,16 +1343,85 @@ def _best_removal_for_threats(
 
     # For each threat (most important first), find removal that can kill it
     for threat, threat_val in threat_values:
+        candidates = []
         for rm in removal_cards:
             if _can_kill(rm, threat, ctx):
-                reason = f"kills {threat.name} (value {threat_val:.1f})"
-                rm_cmc = rm.template.cmc or 1
-                threat_cmc = threat.template.cmc or 1
-                if rm_cmc < threat_cmc:
-                    reason += f", tempo advantage ({rm_cmc} mana vs {threat_cmc})"
-                return (rm, threat.name, reason)
+                candidates.append(rm)
+
+        if not candidates:
+            continue
+
+        # Prefer single-target removal over board wipes when only 1-2 threats.
+        # Board wiping to kill a single creature wastes a powerful resource and
+        # may kill our own creatures. Save board wipes for multi-creature boards.
+        opp_creature_count = len(ctx.opp.creatures)
+        single_target = [c for c in candidates if 'board_wipe' not in getattr(c.template, 'tags', set())]
+
+        if single_target and opp_creature_count <= 2:
+            rm = _cheapest_effective_removal(single_target, ctx)
+        elif single_target:
+            rm = _cheapest_effective_removal(single_target, ctx)
+        else:
+            # Only board wipes available
+            if opp_creature_count <= 1:
+                # Don't waste a board wipe on 1 creature unless it's a must-answer
+                wrath_min = ctx.thresholds.wrath_single_target_min_val if ctx.thresholds else 8.0
+                if threat_val < wrath_min:
+                    continue  # Skip: save the wrath for a better moment
+            # Don't board-wipe when we have a payoff creature on board
+            # and opponent has few creatures — the payoff is worth more
+            my_has_payoff = any(
+                c.name in goal.card_roles.get('payoffs', set())
+                for c in ctx.me.creatures
+                for goal in ctx.engine.gameplan.goals
+            )
+            if my_has_payoff and opp_creature_count <= 2:
+                continue  # Don't wrath away our own payoff for 1-2 creatures
+            rm = candidates[0]
+
+        reason = f"kills {threat.name} (value {threat_val:.1f})"
+        rm_cmc = rm.template.cmc or 1
+        threat_cmc = threat.template.cmc or 1
+        if rm_cmc < threat_cmc:
+            reason += f", tempo advantage ({rm_cmc} mana vs {threat_cmc})"
+        return (rm, threat.name, reason)
 
     return None
+
+
+def _cheapest_effective_removal(candidates: List["CardInstance"],
+                                 ctx: _DecisionContext) -> "CardInstance":
+    """Pick the cheapest removal that can kill the threat.
+
+    When a payoff is in hand, prefer removal that leaves enough mana
+    to cast it this turn or next. This prevents the AI from always
+    using 3-mana removal when 1-mana removal would work and save
+    mana for Omnath or other payoffs.
+    """
+    if len(candidates) == 1:
+        return candidates[0]
+
+    # Check if hand has a castable-soon payoff worth saving mana for
+    payoff_cmc = 0
+    all_payoffs = set()
+    for goal in ctx.engine.gameplan.goals:
+        all_payoffs.update(goal.card_roles.get('payoffs', set()))
+    for card in ctx.me.hand:
+        if card.name in all_payoffs and not card.template.is_land:
+            cmc = card.template.cmc or 0
+            if cmc > payoff_cmc:
+                payoff_cmc = cmc
+
+    if payoff_cmc > 0:
+        available = ctx.assessment.my_mana
+        # Prefer removal that leaves enough mana for the payoff
+        for rm in sorted(candidates, key=lambda c: c.template.cmc or 0):
+            rm_cmc = rm.template.cmc or 0
+            if available - rm_cmc >= payoff_cmc:
+                return rm  # Can cast removal AND payoff this turn
+
+    # Default: cheapest removal
+    return min(candidates, key=lambda c: c.template.cmc or 0)
 
 
 def _can_kill(removal: "CardInstance", target: "CardInstance",
@@ -1280,8 +1552,11 @@ def _best_role_card(role_cards: List[Tuple["CardInstance", str]],
             "protection": 3, "interaction": 2, "payoffs": 1
         }
     else:
+        # Payoffs and engines at same priority: let card_priorities (from the
+        # gameplan data) break the tie. This lets each deck define whether its
+        # payoff or engine should come first via priority scores.
         role_priority = {
-            "engines": 6, "payoffs": 5, "enablers": 4,
+            "engines": 6, "payoffs": 6, "enablers": 4,
             "fillers": 3, "protection": 2, "interaction": 1
         }
     # Use card_priorities from gameplan as secondary tiebreaker

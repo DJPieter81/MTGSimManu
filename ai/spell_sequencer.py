@@ -167,21 +167,26 @@ def next_spell_to_cast(
                 return (card, SpellRole.REBUY,
                         f"Cast rebuy engine — {graveyard_spell_count} spells in graveyard")
 
-    # Finisher — only if no other productive spells remain
+    # Finisher — fire when no other productive spells remain, OR when
+    # only draw spells remain and no fuel/tutor/rebuy is available
     if SpellRole.FINISHER in by_role:
-        # Check if there are any non-finisher, non-other spells we could cast
-        # REBUY counts as productive even with empty GY (it adds storm and
-        # may enable further chains after the flashback spells resolve)
-        has_productive_nonfin = any(
-            role not in (SpellRole.FINISHER, SpellRole.OTHER)
-            and _effective_cost(card, medallion_count) <= available_mana
-            for card, role in sequenced
+        has_fuel_or_tutor = any(
+            role in (SpellRole.FUEL, SpellRole.TUTOR, SpellRole.REBUY)
+            and _effective_cost(c, medallion_count) <= available_mana
+            for c, role in sequenced
         )
-        if not has_productive_nonfin:
+        has_any_productive = any(
+            role not in (SpellRole.FINISHER, SpellRole.OTHER)
+            and _effective_cost(c, medallion_count) <= available_mana
+            for c, role in sequenced
+        )
+        # Fire finisher when: no fuel/tutor/rebuy left (draw alone won't help
+        # build storm count), OR no productive spells at all
+        if not has_fuel_or_tutor or not has_any_productive:
             for card in by_role[SpellRole.FINISHER]:
                 if _effective_cost(card, medallion_count) <= available_mana:
                     return (card, SpellRole.FINISHER,
-                            "All enablers exhausted — firing finisher")
+                            "Enablers exhausted — firing finisher")
 
     # Nothing productive to cast — hold and pass
     return None

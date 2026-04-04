@@ -110,8 +110,11 @@ def analyze_mana_needs(game: "GameState", player_idx: int,
                 needs.cheapest_spell_cmc = cycle_mana
 
     # ── What colors does the battlefield already provide? ──
+    all_land_colors = set()  # colors from ALL lands (tapped or untapped)
     for bf_card in player.battlefield:
         if bf_card.template.is_land:
+            for c in bf_card.template.produces_mana:
+                all_land_colors.add(c)
             if not bf_card.tapped:
                 for c in bf_card.template.produces_mana:
                     needs.existing_colors.add(c)
@@ -124,14 +127,13 @@ def analyze_mana_needs(game: "GameState", player_idx: int,
     needs.total_mana = needs.untapped_land_count + player.mana_pool.total()
 
     # ── What colors are missing? ──
-    needs.missing_colors = set(needs.needed_colors.keys()) - needs.existing_colors
+    # Use ALL land colors (not just untapped) so tapped lands aren't treated as missing.
+    # This is critical for fetch decisions: a tapped Steam Vents still provides U/R next turn.
+    needs.missing_colors = set(needs.needed_colors.keys()) - all_land_colors
 
     # ── Track colors needed by high-CMC multi-color payoffs ──
     # These colors get extra priority in fetch/shock decisions (e.g., Omnath WURG)
-    all_land_colors = set()
-    for bf_card in player.battlefield:
-        if bf_card.template.is_land:
-            all_land_colors.update(bf_card.template.produces_mana)
+    # all_land_colors already computed above (includes tapped lands)
     for card in player.hand:
         if card.template.is_land:
             continue
@@ -212,8 +214,9 @@ def score_land(land, needs: ManaNeeds, is_fetchable: bool = False,
         if c in needs.needed_colors:
             score += needs.needed_colors[c] * 3.0
         # Extra boost for colors needed by high-CMC multi-color payoffs
+        # (e.g., Omnath WURG — fetching a Green source when we have WUR is critical)
         if c in needs.payoff_missing_colors:
-            score += 10.0
+            score += 15.0
 
     # ── (C) Enables a specific spell this turn ──
     # Huge bonus if this land lets us cast something we couldn't before

@@ -29,7 +29,10 @@ class AICallbacks(GameCallbacks):
     def should_shock_land(self, game, player_idx, land):
         needs = analyze_mana_needs(game, player_idx)
         land_colors = set(land.template.produces_mana)
-        has_spells_to_cast = needs.cheapest_spell_cmc <= needs.total_mana + 1
+        # Consider NEXT turn's mana: all current lands untap + this new land
+        # This prevents "no spells need mana" when lands are tapped mid-turn
+        total_lands = len(game.players[player_idx].lands) + 1  # +1 for this land
+        has_spells_to_cast = needs.cheapest_spell_cmc <= total_lands
         fixes_missing_color = bool(land_colors & needs.missing_colors)
 
         # Also shock if hand has multi-color cards that need this color

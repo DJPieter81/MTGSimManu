@@ -450,8 +450,14 @@ def unmarked_grave_resolve(game, card, controller, targets=None, item=None):
                            description="Deal 1 damage to any target")
 def grapeshot_resolve(game, card, controller, targets=None, item=None):
     opponent = 1 - controller
-    game.players[opponent].life -= 1
-    game.players[controller].damage_dealt_this_turn += 1
+    # Storm: Grapeshot deals 1 damage per storm copy + the original
+    storm_count = getattr(game, '_global_storm_count', 1)
+    total_damage = max(storm_count, 1)
+    game.players[opponent].life -= total_damage
+    game.players[controller].damage_dealt_this_turn += total_damage
+    game.log.append(f"T{game.turn_number} P{controller+1}: "
+                    f"Grapeshot deals {total_damage} damage (storm count {storm_count})"
+                    f" (opponent life: {game.players[opponent].life})")
 
 
 @EFFECT_REGISTRY.register("Past in Flames", EffectTiming.SPELL_RESOLVE,
@@ -467,7 +473,12 @@ def past_in_flames_resolve(game, card, controller, targets=None, item=None):
 @EFFECT_REGISTRY.register("Empty the Warrens", EffectTiming.SPELL_RESOLVE,
                            description="Create 2 Goblin tokens")
 def empty_the_warrens_resolve(game, card, controller, targets=None, item=None):
-    game.create_token(controller, "goblin", count=2)
+    # Storm: create 2 Goblin tokens per storm copy + the original
+    storm_count = getattr(game, '_global_storm_count', 1)
+    token_count = 2 * max(storm_count, 1)
+    game.create_token(controller, "goblin", count=token_count)
+    game.log.append(f"T{game.turn_number} P{controller+1}: "
+                    f"Empty the Warrens creates {token_count} Goblin tokens (storm {storm_count})")
 
 
 @EFFECT_REGISTRY.register("Galvanic Relay", EffectTiming.SPELL_RESOLVE,
@@ -589,17 +600,31 @@ def ephemerate_resolve(game, card, controller, targets=None, item=None):
         game.log.append(f"T{game.turn_number} P{controller+1}: "
                         f"Ephemerate fizzles (no creatures to target)")
         return
-    # Prefer creatures with valuable ETBs
-    ETB_VALUE_CARDS = {
-        "Solitude": 10, "Fury": 10, "Grief": 9, "Endurance": 8,
-        "Omnath, Locus of Creation": 8, "Snapcaster Mage": 7,
-        "Stoneforge Mystic": 7, "Ice-Fang Coatl": 6,
-        "Blade Splicer": 5, "Wall of Omens": 4,
-    }
-    best = max(my_creatures, key=lambda c: (
-        ETB_VALUE_CARDS.get(c.name, 0),  # ETB value first
-        c.template.cmc,                   # then CMC
-    ))
+    # Prefer creatures with valuable ETBs.
+    # Use tags to identify ETB value, then score by card impact.
+    def _blink_value(c):
+        tags = getattr(c.template, 'tags', set())
+        score = 0
+        if 'etb_value' in tags:
+            score += 5
+        # Life gain on ETB is especially valuable (e.g., Omnath +4 life)
+        oracle = (c.template.oracle_text or "").lower()
+        if 'gain' in oracle and 'life' in oracle:
+            score += 3
+        # Card draw on ETB
+        if 'cantrip' in tags or ('draw' in oracle and 'enter' in oracle):
+            score += 2
+        # Removal on ETB (Solitude, Fury): value depends on opponent board
+        if 'removal' in tags:
+            opp_idx = 1 - controller
+            if game.players[opp_idx].creatures:
+                score += 4
+            else:
+                score += 1  # No targets: removal ETB is wasted
+        # Higher CMC creatures are generally more impactful to blink
+        score += (c.template.cmc or 0) * 0.5
+        return score
+    best = max(my_creatures, key=_blink_value)
     game._blink_permanent(best, controller)
 
 
@@ -611,6 +636,94 @@ def undying_evil_resolve(game, card, controller, targets=None, item=None):
     if my_creatures:
         best = max(my_creatures, key=lambda c: c.template.cmc)
         best.temp_keywords.add(Keyword.UNDYING)
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Boros Energy creatures
+# ═══════════════════════════════════════════════════════════════════
+
+@EFFECT_REGISTRY.register("Guide of Souls", EffectTiming.ETB,
+                           description="Get 1 energy")
+def guide_of_souls_etb(game, card, controller, targets=None, item=None):
+    game.produce_energy(controller, 1, "Guide of Souls")
+
+
+@EFFECT_REGISTRY.register("Ocelot Pride", EffectTiming.ETB,
+                           description="Get 1 energy")
+def ocelot_pride_etb(game, card, controller, targets=None, item=None):
+    game.produce_energy(controller, 1, "Ocelot Pride")
+
+
+@EFFECT_REGISTRY.register("Ajani, Nacatl Pariah // Ajani, Nacatl Avenger",
+                           EffectTiming.ETB,
+                           description="Create 2/1 Cat Warrior token and get 2 energy")
+def ajani_etb(game, card, controller, targets=None, item=None):
+    game.create_token(controller, "cat", count=1, power=2, toughness=1)
+    game.produce_energy(controller, 2, "Ajani")
+    game.log.append(f"T{game.turn_number} P{controller+1}: "
+                    f"Ajani creates 2/1 Cat Warrior token and gains 2 energy")
+
+
+@EFFECT_REGISTRY.register("Seasoned Pyromancer", EffectTiming.ETB,
+                           description="Discard 2, draw 2, create tokens for nonland discards")
+def seasoned_pyromancer_etb(game, card, controller, targets=None, item=None):
+    player = game.players[controller]
+    # Discard 2, draw 2 — count nonland discards for token creation
+    discarded_nonland = 0
+    for _ in range(min(2, len(player.hand))):
+        if player.hand:
+            # Discard worst card (lowest CMC land, or lowest priority spell)
+            worst = min(player.hand, key=lambda c: (
+                0 if c.template.is_land else 1,  # prefer discarding lands
+                c.template.cmc or 0
+            ))
+            if not worst.template.is_land:
+                discarded_nonland += 1
+            player.hand.remove(worst)
+            worst.zone = "graveyard"
+            player.graveyard.append(worst)
+    game.draw_cards(controller, 2)
+    # Create 1/1 Elemental tokens for each nonland discarded
+    if discarded_nonland > 0:
+        game.create_token(controller, "elemental", count=discarded_nonland)
+        game.log.append(f"T{game.turn_number} P{controller+1}: "
+                        f"Seasoned Pyromancer: discard 2, draw 2, create {discarded_nonland} Elemental(s)")
+    else:
+        game.log.append(f"T{game.turn_number} P{controller+1}: "
+                        f"Seasoned Pyromancer: discard 2, draw 2 (no nonland discards)")
+
+
+@EFFECT_REGISTRY.register("Ranger-Captain of Eos", EffectTiming.ETB,
+                           description="Search library for creature with MV 1 or less")
+def ranger_captain_etb(game, card, controller, targets=None, item=None):
+    player = game.players[controller]
+    # Find best 1-drop creature in library
+    targets_in_lib = [
+        c for c in player.library
+        if c.template.is_creature and (c.template.cmc or 0) <= 1
+    ]
+    if targets_in_lib:
+        # Prefer energy/value creatures
+        best = max(targets_in_lib, key=lambda c: (
+            1 if 'energy' in getattr(c.template, 'tags', set()) else 0,
+            c.template.power or 0,
+        ))
+        player.library.remove(best)
+        best.zone = "hand"
+        player.hand.append(best)
+        game.rng.shuffle(player.library)
+        game.log.append(f"T{game.turn_number} P{controller+1}: "
+                        f"Ranger-Captain tutors {best.name} to hand")
+    else:
+        game.rng.shuffle(player.library)
+
+
+@EFFECT_REGISTRY.register("Ragavan, Nimble Pilferer", EffectTiming.ETB,
+                           description="Create Treasure token on combat damage")
+def ragavan_etb(game, card, controller, targets=None, item=None):
+    # Ragavan's ETB does nothing — his ability triggers on combat damage.
+    # The combat damage trigger is handled in trigger_combat_damage.
+    pass
 
 
 @EFFECT_REGISTRY.register("Summoner's Pact", EffectTiming.SPELL_RESOLVE,
