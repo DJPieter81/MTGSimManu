@@ -185,7 +185,7 @@ class EVPlayer:
 
         candidates: List[Play] = []
 
-        # Score land plays
+        # Score land plays — lands compete with spells for priority
         if lands and me.lands_played_this_turn < (1 + me.extra_land_drops):
             from engine.card_database import FETCH_LAND_COLORS
             safe_lands = [
@@ -210,14 +210,15 @@ class EVPlayer:
             if 'counterspell' in tags and 'removal' not in tags:
                 continue
 
-            # Skip reactive-only INSTANTS/SORCERIES unless dying.
-            # Creatures in reactive_only (Endurance, Subtlety) can still be
-            # cast for their body — a 3/4 blocker is valuable even without
-            # the ETB triggering optimally.
+            # Skip reactive-only NON-CREATURE spells unless:
+            # - We're dying (survival override)
+            # - It's removal with a high-value target (4+ power creature)
             if spell.name in self._reactive_only:
                 if not spell.template.is_creature:
-                    if not (snap.am_dead_next or
-                            (snap.opp_power >= 3 and snap.opp_clock <= 3)):
+                    is_dying = snap.am_dead_next or (snap.opp_power >= 3 and snap.opp_clock <= 3)
+                    has_big_target = ('removal' in tags and
+                                     any((c.power or 0) >= 4 for c in opp.creatures))
+                    if not is_dying and not has_big_target:
                         continue
 
             ev = self._score_spell(spell, snap, game, me, opp)
