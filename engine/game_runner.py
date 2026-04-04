@@ -18,7 +18,7 @@ from .priority_system import PrioritySystem
 from .combat_manager import CombatManager
 from .callbacks import GameCallbacks
 
-from ai.ai_player import AIPlayer
+from ai.ev_player import EVPlayer as AIPlayer
 from ai.board_eval import evaluate_action, Action, ActionType
 from ai.mana_planner import analyze_mana_needs, choose_fetch_target
 

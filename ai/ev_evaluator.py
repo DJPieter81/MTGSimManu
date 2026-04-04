@@ -301,31 +301,38 @@ def evaluate_board_combo(snap: EVSnapshot, dk: Optional[DeckKnowledge] = None) -
 
     value = combo_proximity * lethal_damage_potential
     Combo wants to assemble pieces and fire the combo.
+
+    Key insight: combo values CHAINING (casting multiple spells per turn)
+    over hand size. A ritual that costs a card but adds mana is GOOD because
+    it enables the chain. Hand size only matters for raw fuel count.
     """
-    # Storm count — how close to lethal combo?
-    storm_val = snap.storm_count * 2.0
+    # Storm count — the core metric. Each spell cast brings us closer to lethal.
+    # Non-linear: storm 5 is much better than 5x storm 1.
+    storm_val = snap.storm_count * 3.0
+    if snap.storm_count >= 5:
+        storm_val += snap.storm_count * 2.0  # acceleration bonus
 
     # Survival — combo needs to not die
     if snap.am_dead_next:
         return -50.0  # can't combo if dead
 
-    life_buffer = _life_value(snap.my_life) * 0.5
+    life_buffer = _life_value(snap.my_life) * 0.3  # combo doesn't care much about life
 
-    # Hand size — combo needs cards (fuel)
-    hand_val = snap.my_hand_size * 2.0
+    # Hand size — moderate value. Cards are fuel, but spending them to chain is fine.
+    hand_val = snap.my_hand_size * 1.0
 
     # Board — combo doesn't care much about creatures, but engines matter
-    # Cost reducers on board are very valuable (handled via card tags)
     board_val = snap.my_power * 0.3
 
-    # Mana — combo needs mana to chain spells
-    mana_val = snap.my_mana * 1.0
+    # Mana — combo needs available mana to chain. THIS is what rituals provide.
+    # Mana in pool is very valuable for combo — it means we can cast more spells.
+    mana_val = snap.my_mana * 2.0
 
-    # Cards drawn this turn — combo is chaining
-    chain_val = snap.cards_drawn_this_turn * 1.5
+    # Cards drawn this turn — combo is chaining, each draw = more fuel found
+    chain_val = snap.cards_drawn_this_turn * 3.0
 
     # Graveyard creatures (for Living End / reanimator)
-    gy_val = snap.my_gy_creatures * 1.0
+    gy_val = snap.my_gy_creatures * 2.0
 
     return storm_val + life_buffer + hand_val + board_val + mana_val + chain_val + gy_val
 
@@ -467,9 +474,15 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
             projected.my_hand_size += 2
             projected.cards_drawn_this_turn += 2
 
-    # Rituals — add mana
+    # Rituals — add mana (net positive: Pyretic Ritual costs 2, produces 3)
     if 'ritual' in tags:
-        projected.my_mana += 1  # net +1 mana for most rituals
+        # Most rituals produce 3 mana for 2 cost = net +1
+        # Manamorphose produces 2 for 2 = net 0 but draws a card
+        # We already subtracted the cost above, so add the gross production
+        projected.my_mana += 3  # Pyretic/Desperate produce 3R
+        # Manamorphose produces 2 + draws (already handled by cantrip)
+        if 'cantrip' in tags:
+            projected.my_mana -= 1  # Manamorphose only produces 2
 
     # ETB life gain (e.g., Omnath, Thragtusk)
     if 'etb_value' in tags and 'lifelink' not in tags:
@@ -489,46 +502,35 @@ def estimate_pass_ev(snap: EVSnapshot, archetype: str,
                      dk: Optional[DeckKnowledge] = None) -> float:
     """EV of passing (doing nothing this decision point).
 
-    Accounts for what we might draw next turn and future mana development.
+    Passing means we waste mana this turn. The opponent develops their board
+    while we stand still. This should be a PENALTY, not a bonus.
+
+    The only reason to pass is if all available plays are actively harmful.
     """
-    # Current board value
     current = evaluate_board(snap, archetype, dk)
 
-    # Future value: next turn we get +1 mana, +1 card
-    future_snap = EVSnapshot(
-        my_life=snap.my_life,
-        opp_life=snap.opp_life,
-        my_power=snap.my_power,
-        opp_power=snap.opp_power,
-        my_toughness=snap.my_toughness,
-        opp_toughness=snap.opp_toughness,
-        my_creature_count=snap.my_creature_count,
-        opp_creature_count=snap.opp_creature_count,
-        my_hand_size=snap.my_hand_size + 1,  # draw step
-        opp_hand_size=snap.opp_hand_size + 1,
-        my_mana=snap.my_total_lands + 1,  # assume land drop
-        opp_mana=snap.opp_total_lands + 1,
-        my_total_lands=snap.my_total_lands + 1,
-        opp_total_lands=snap.opp_total_lands + 1,
-        turn_number=snap.turn_number + 1,
-        storm_count=0,
-        my_gy_creatures=snap.my_gy_creatures,
-        my_energy=snap.my_energy,
-        my_evasion_power=snap.my_evasion_power,
-        my_lifelink_power=snap.my_lifelink_power,
-        opp_evasion_power=snap.opp_evasion_power,
-    )
+    # Passing wastes mana — penalty proportional to unused mana
+    # Having 3 mana and passing is worse than having 1 mana and passing
+    mana_waste_penalty = -snap.my_mana * 0.5
 
-    # Opponent gets to attack — we take damage
+    # Opponent develops: they get another turn to attack and deploy
+    opp_development_penalty = 0.0
     if snap.opp_power > 0:
-        future_snap.my_life = max(0, snap.my_life - snap.opp_power)
-        # But lifelink heals us on our attack
-        future_snap.my_life += snap.my_lifelink_power
+        # We'll take a hit from their creatures
+        damage_taken = snap.opp_power - snap.my_lifelink_power
+        if damage_taken > 0:
+            life_before = _life_value(snap.my_life)
+            life_after = _life_value(max(0, snap.my_life - damage_taken))
+            opp_development_penalty = -(life_before - life_after) * 0.3
 
-    future = evaluate_board(future_snap, archetype, dk)
+    # Combo decks: passing is especially bad — they need to chain spells NOW
+    combo_penalty = 0.0
+    if archetype == "combo":
+        combo_penalty = -snap.my_mana * 1.0  # wasting mana is terrible for combo
+        if snap.my_hand_size >= 5:
+            combo_penalty -= 2.0  # full hand + doing nothing = bad
 
-    # Discount future by 0.8 (uncertainty)
-    return current + 0.8 * (future - current)
+    return current + mana_waste_penalty + opp_development_penalty + combo_penalty
 
 
 # ─────────────────────────────────────────────────────────────

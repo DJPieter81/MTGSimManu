@@ -191,10 +191,30 @@ def _score_candidate(card: "CardInstance", snap: EVSnapshot,
     # Base EV: project board state after casting
     ev = estimate_spell_ev(card, snap, archetype, dk, game, player_idx)
 
+    # Baseline deployment bonus — casting ANY spell is usually better than passing.
+    # The board projection captures the strategic value, but we add a flat bonus
+    # to ensure that "deploy a creature" always beats "do nothing" when mana allows.
+    ev += 2.0  # baseline: playing a card is inherently good
+
+    # Creature deployment bonus — creatures provide board presence
+    if t.is_creature:
+        p = t.power if t.power else 0
+        tough = t.toughness if t.toughness else 0
+        # Creatures are worth deploying for board presence
+        ev += max(0, p) * 0.5 + max(0, tough) * 0.3
+
     # Combo chain bonus: if this is a combo piece, estimate chain value
     if archetype == "combo" and _is_combo_relevant(card, engine):
         chain_bonus = _estimate_chain_bonus(card, game, player_idx, engine, snap)
         ev += chain_bonus
+    # Even non-combo-tagged spells in combo decks should get a "chaining" bonus
+    elif archetype == "combo":
+        if 'ritual' in tags:
+            ev += 4.0  # rituals are always good for combo — they fuel the chain
+        if 'cantrip' in tags or 'draw' in tags:
+            ev += 3.0  # draw spells dig for payoffs
+        if 'cost_reducer' in tags:
+            ev += 6.0  # engines are critical
 
     # Removal targeting bonus: score based on WHAT we kill
     if 'removal' in tags and not 'board_wipe' in tags:
@@ -215,7 +235,7 @@ def _score_candidate(card: "CardInstance", snap: EVSnapshot,
     cmc = t.cmc or 0
     if snap.my_mana > 0 and cmc > 0:
         efficiency = cmc / snap.my_mana
-        ev += efficiency * 0.5  # small bonus for mana efficiency
+        ev += efficiency * 1.0  # bonus for mana efficiency
 
     # Haste bonus — creature can attack this turn
     kws = {kw.value if hasattr(kw, 'value') else str(kw).lower()
