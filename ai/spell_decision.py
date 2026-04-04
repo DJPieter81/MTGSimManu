@@ -79,35 +79,64 @@ def choose_spell(engine: "GoalEngine", castable: List["CardInstance"],
     if cycling_result:
         return cycling_result
 
-    # --- Concern 1: SURVIVE ---
-    if ctx.am_dying:
-        result = _concern_survive(ctx)
+    # --- Concern pipeline with outcome-based tiebreaking ---
+    # Combo decks use the strict pipeline (SURVIVE > ADVANCE) because
+    # their spells (rituals, cantrips) don't map to survival/advancement
+    # metrics. Fair decks use outcome comparison when multiple concerns fire.
+    from ai.gameplan import GoalType
+    is_combo_goal = ctx.goal.goal_type in (GoalType.EXECUTE_PAYOFF, GoalType.DEPLOY_ENGINE) \
+                    and ctx.archetype == 'combo'
+
+    if is_combo_goal:
+        # Strict pipeline for combo — unchanged behavior
+        if ctx.am_dying:
+            result = _concern_survive(ctx)
+            if result:
+                return result
+        if ctx.must_answer_threats:
+            result = _concern_answer(ctx)
+            if result:
+                return result
+        result = _concern_advance(ctx)
         if result:
             return result
-
-    # --- Concern 2: ANSWER ---
-    if ctx.must_answer_threats:
-        result = _concern_answer(ctx)
+        result = _concern_efficient(ctx)
         if result:
             return result
+    else:
+        # Outcome-based competition for fair decks
+        candidates = []
 
-    # --- Concern 3: ADVANCE ---
-    result = _concern_advance(ctx)
-    if result:
-        return result
+        if ctx.am_dying:
+            result = _concern_survive(ctx)
+            if result:
+                if ctx.assessment.am_dead_next:
+                    return result  # non-negotiable
+                candidates.append(result)
 
-    # --- Concern 4: EFFICIENT ---
-    result = _concern_efficient(ctx)
-    if result:
-        return result
+        if ctx.must_answer_threats:
+            result = _concern_answer(ctx)
+            if result:
+                candidates.append(result)
+
+        result = _concern_advance(ctx)
+        if result:
+            candidates.append(result)
+
+        if not candidates:
+            result = _concern_efficient(ctx)
+            if result:
+                candidates.append(result)
+
+        if candidates:
+            if len(candidates) == 1:
+                return candidates[0]
+            return max(candidates, key=lambda d: _evaluate_play_impact(d, ctx))
 
     # --- Nothing worth doing ---
     return SpellDecision(
-        card=None,
-        concern="pass",
-        reasoning=_pass_reasoning(ctx),
-        alternatives=[]
-    )
+        card=None, concern="pass",
+        reasoning=_pass_reasoning(ctx), alternatives=[])
 
 
 # ---------------------------------------------------------------------------
@@ -1168,6 +1197,122 @@ def _pass_reasoning(ctx: _DecisionContext) -> str:
     if reasons:
         return "Passing — " + "; ".join(reasons)
     return "Passing — no play worth making"
+
+
+# ---------------------------------------------------------------------------
+# Outcome-based play evaluation — compares actions by game-state impact
+# ---------------------------------------------------------------------------
+
+def _evaluate_play_impact(decision: SpellDecision, ctx: _DecisionContext) -> float:
+    """Estimate how much this play improves our position.
+
+    Instead of static concern urgency, compute:
+      1. survival_delta: how many turns does this buy me?
+      2. advancement_delta: how much closer to winning?
+
+    Returns a single float — higher is better. All values derived
+    from current game state, not hardcoded weights.
+    """
+    card = decision.card
+    if card is None:
+        return 0.0
+
+    my_life = ctx.assessment.my_life
+    opp_life = ctx.assessment.opp_life
+    opp_power = ctx.assessment.opp_board_power
+    my_power = ctx.assessment.my_board_power
+    opp_clock = ctx.assessment.opp_clock  # turns until I die
+
+    # Current clock: how many turns do I have?
+    current_turns_left = opp_clock if opp_power > 0 else 99
+
+    tags = getattr(card.template, 'tags', set())
+    card_power = card.template.power or 0
+    card_toughness = card.template.toughness or 0
+    oracle = (card.template.oracle_text or "").lower()
+
+    # ── 1. Survival delta: how many turns does this action buy? ──
+    survival_delta = 0.0
+
+    if decision.concern in ("survive", "answer"):
+        # Removal: estimate power removed from opponent's board
+        # The chosen removal targets the biggest threat (from _best_removal_for_threats)
+        if 'board_wipe' in tags:
+            power_removed = opp_power  # kills everything
+        else:
+            # Single-target removal: estimate target power from must-answer list
+            if ctx.must_answer_threats:
+                biggest = max(ctx.must_answer_threats,
+                              key=lambda c: c.power if hasattr(c, 'power') and c.power
+                              else (c.template.power or 0))
+                power_removed = biggest.power if hasattr(biggest, 'power') and biggest.power else (biggest.template.power or 0)
+            else:
+                power_removed = 3  # reasonable estimate
+
+        new_opp_power = max(1, opp_power - power_removed)
+        new_clock = max(1, (my_life + new_opp_power - 1) // new_opp_power)
+        survival_delta = new_clock - current_turns_left
+
+    elif card.template.is_creature:
+        # Deploying a creature: it can block, extending survival
+        # A creature with toughness T can absorb T damage once
+        # More importantly, a blocker with toughness >= attacker power
+        # prevents that attacker's damage EVERY turn
+        can_block_something = any(
+            card_toughness >= (c.power if hasattr(c, 'power') and c.power else (c.template.power or 0))
+            for c in ctx.opp.creatures
+        ) if ctx.opp.creatures else False
+
+        if can_block_something:
+            # Blocking one creature saves ~biggest_blockable power per turn
+            blockable_power = max(
+                (c.power if hasattr(c, 'power') and c.power else (c.template.power or 0))
+                for c in ctx.opp.creatures
+                if (c.power if hasattr(c, 'power') and c.power else (c.template.power or 0)) <= card_toughness
+            ) if ctx.opp.creatures else 0
+            new_effective_power = max(1, opp_power - blockable_power)
+            new_clock = max(1, (my_life + new_effective_power - 1) // new_effective_power)
+            survival_delta = new_clock - current_turns_left
+
+    # ETB life gain extends clock directly
+    if 'etb_value' in tags:
+        if 'gain' in oracle and 'life' in oracle:
+            # Estimate life gain from oracle (look for numbers)
+            import re
+            life_match = re.search(r'gain (\d+) life', oracle)
+            life_gain = int(life_match.group(1)) if life_match else 3
+            # Extra turns = life_gain / opp_power_per_turn
+            if opp_power > 0:
+                survival_delta += life_gain / opp_power
+
+    # ── 2. Advancement delta: how much closer to winning? ──
+    advancement = 0.0
+
+    if card.template.is_creature:
+        # Adding power to the board shortens our clock
+        if opp_life > 0:
+            current_my_clock = max(1, (opp_life + my_power - 1) // max(my_power, 1))
+            new_my_clock = max(1, (opp_life + my_power + card_power - 1) // max(my_power + card_power, 1))
+            advancement = current_my_clock - new_my_clock  # turns saved
+
+    # Gameplan priority: how much does the deck want this card?
+    card_prio = 0.0
+    for goal in ctx.engine.gameplan.goals:
+        p = goal.card_priorities.get(card.name, 0.0)
+        card_prio = max(card_prio, p)
+    # Normalize: 30 is typical max priority → maps to ~1.0 bonus
+    advancement += card_prio / 30.0
+
+    # ── 3. Combined score ──
+    # Both axes matter. A play that gains 5 survival turns is great.
+    # A play that advances the win by 3 turns is also great.
+    # Weight survival more when life is low (diminishing returns on advancement if dead).
+    life_fraction = min(my_life / 20.0, 1.0)  # 0.0 = dead, 1.0 = full health
+    # At low life: survival matters more. At high life: advancement matters more.
+    survival_weight = 2.0 - life_fraction  # 1.0 at 20 life, 2.0 at 0 life
+    advance_weight = 0.5 + life_fraction   # 1.5 at 20 life, 0.5 at 0 life
+
+    return survival_delta * survival_weight + advancement * advance_weight
 
 
 # ---------------------------------------------------------------------------
