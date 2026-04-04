@@ -325,14 +325,17 @@ class EVPlayer:
             # Base draw value scales with how much we need cards
             draw_val = 4.0
             if snap.my_hand_size <= 2:
-                draw_val += 3.0  # desperately need cards
+                draw_val += 4.0  # desperately need cards
+            elif snap.my_hand_size <= 4:
+                draw_val += 2.0  # could use more gas
             oracle = (t.oracle_text or '').lower()
             if 'draw two' in oracle or 'draws two' in oracle:
                 draw_val += 4.0
             if 'draw three' in oracle:
                 draw_val += 7.0
-            # Multi-mode cards (Archmage's Charm): count draw mode even if
-            # card also has removal/counterspell tags
+            # Control/midrange values card draw more — needs to find answers
+            if self.archetype in ("control", "midrange"):
+                draw_val += 2.0
             ev += draw_val
 
         # ── Non-creature permanents (artifacts, enchantments, planeswalkers) ──
@@ -420,6 +423,15 @@ class EVPlayer:
                         ev += 10.0  # no more fuel, fire at decent count
                     else:
                         ev -= 5.0  # too low storm count, not worth it
+
+        # ── Survival mode: when facing lethal, boost survival plays ──
+        if snap.am_dead_next:
+            if 'removal' in tags and snap.opp_creature_count > 0:
+                ev += 6.0  # removing the lethal threat
+            if t.is_creature and (t.toughness or 0) >= 3:
+                ev += 5.0  # deploying a blocker
+            if 'board_wipe' in tags and snap.opp_creature_count > 0:
+                ev += 8.0  # wrath saves us
 
         return ev
 
@@ -640,6 +652,41 @@ class EVPlayer:
         valid_blockers = game.get_valid_blockers(self.player_idx)
         if not valid_blockers or not attackers:
             return {}
+
+        me = game.players[self.player_idx]
+        total_incoming = sum(a.power or 0 for a in attackers)
+
+        # EMERGENCY: if incoming damage is lethal, we MUST block
+        # Use cheapest blockers first to preserve high-value creatures
+        if total_incoming >= me.life:
+            emergency_blocks: Dict[int, List[int]] = {}
+            e_used: Set[int] = set()
+            # Block biggest attackers with smallest blockers
+            for attacker in sorted(attackers, key=lambda a: a.power or 0, reverse=True):
+                best_chump = None
+                best_chump_val = 999
+                for blocker in valid_blockers:
+                    if blocker.instance_id in e_used:
+                        continue
+                    if Keyword.FLYING in attacker.keywords:
+                        if (Keyword.FLYING not in blocker.keywords and
+                                Keyword.REACH not in blocker.keywords):
+                            continue
+                    val = creature_value(blocker)
+                    if val < best_chump_val:
+                        best_chump_val = val
+                        best_chump = blocker
+                if best_chump:
+                    emergency_blocks[attacker.instance_id] = [best_chump.instance_id]
+                    e_used.add(best_chump.instance_id)
+                    # Check if we've blocked enough to survive
+                    blocked_damage = sum(
+                        a.power or 0 for a in attackers if a.instance_id in emergency_blocks
+                    )
+                    if total_incoming - blocked_damage < me.life:
+                        break  # we survive, stop blocking
+            if emergency_blocks:
+                return emergency_blocks
 
         blocks: Dict[int, List[int]] = {}
         used: Set[int] = set()
