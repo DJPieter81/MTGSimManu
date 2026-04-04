@@ -253,9 +253,31 @@ class EVPlayer:
         # Start with creature/permanent value
         ev = 0.0
 
+        # ── Evoke detection ──
+        # If card has evoke and we can't hardcast it (not enough mana),
+        # we're evoking — this costs us 2 cards (spell + pitched card).
+        # Only worth it if the target is very valuable.
+        is_evoke = False
+        if 'evoke' in tags or 'evoke_pitch' in tags:
+            hardcast_cost = cmc
+            if snap.my_mana < hardcast_cost:
+                is_evoke = True
+                # Evoking costs 2 cards for 1 effect — big penalty
+                ev -= 8.0
+                # Only evoke if opponent has a very valuable target
+                if 'removal' in tags:
+                    best_val = self._best_removal_target_value(card, game, opp)
+                    if best_val < 5.0:
+                        ev -= 10.0  # not worth evoking for small creatures
+                    else:
+                        ev += best_val  # valuable target, worth evoking
+                # Never evoke with no targets
+                if snap.opp_creature_count == 0 and 'removal' in tags:
+                    ev -= 20.0  # absolutely don't evoke removal into empty board
+
         # ── Creature deployment ──
         is_creature = t.is_creature
-        if is_creature:
+        if is_creature and not is_evoke:
             ev += creature_value(card) * 1.5
             # Haste: immediate attack value
             from engine.cards import Keyword
@@ -264,8 +286,7 @@ class EVPlayer:
 
         # ── Removal ──
         # Only penalize removal when NO creatures AND card isn't also a creature
-        # (Bowmasters is a 1/1 flash creature WITH an ETB that damages — always good)
-        if 'removal' in tags:
+        if 'removal' in tags and not is_evoke:
             best_target_val = self._best_removal_target_value(card, game, opp)
             if best_target_val > 0:
                 ev += best_target_val * 1.2
