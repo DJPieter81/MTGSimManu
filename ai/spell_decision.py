@@ -163,22 +163,10 @@ class _DecisionContext:
     archetype: str = "midrange"
 
 
-def _build_context(castable, game, player_idx, assessment, engine):
-    """Build the decision context from game state."""
+def _categorize_castable(castable, game, player_idx):
+    """Sort castable cards into functional categories by tags/properties."""
     from engine.cards import CardType
-    from ai.gameplan import get_thresholds
-    me = game.players[player_idx]
-    opp = game.players[1 - player_idx]
-    goal = engine.current_goal
-    thresholds = get_thresholds(engine.gameplan)
-
-    # Categorize cards by what they DO (not by name)
-    removal = []
-    threats = []
-    interaction = []
-    card_draw = []
-    acceleration = []
-    other = []
+    removal, threats, interaction, card_draw, acceleration, other = [], [], [], [], [], []
 
     for card in castable:
         if not game.can_cast(player_idx, card):
@@ -205,7 +193,7 @@ def _build_context(castable, game, player_idx, assessment, engine):
             categorized = True
 
         if not categorized:
-            # Check burn spells (both removal and threat)
+            # Untagged burn spells count as both removal and damage source
             oracle = (t.oracle_text or "").lower()
             if 'damage' in oracle and ('target' in oracle or 'any' in oracle):
                 if card not in removal:
@@ -217,79 +205,96 @@ def _build_context(castable, game, player_idx, assessment, engine):
             else:
                 other.append(card)
 
-    # Am I dying? Uses per-deck thresholds instead of hardcoded values.
-    # Control decks (dying_clock=3) panic later than aggro (dying_clock=5).
+    return removal, threats, interaction, card_draw, acceleration, other
+
+
+def _classify_must_answer(opp, me, assessment, thresholds, archetype):
+    """Classify opponent creatures as must-answer using categorical threat levels.
+
+    MUST: win_condition, combo_piece tags — always answer.
+    HIGH: value engines (etb_value + token_maker), power >= 4 under pressure.
+    MED:  meaningful power under emergency, or blockers for aggro.
+    """
+    must_answer = []
+    if not opp.creatures:
+        return must_answer
+
+    under_pressure = assessment.opp_clock <= thresholds.dying_clock or assessment.am_dead_next
+    for c in opp.creatures:
+        tags = getattr(c.template, 'tags', set())
+        power = c.power if hasattr(c, 'power') and c.power else (c.template.power or 0)
+
+        if 'win_condition' in tags or 'combo_piece' in tags:
+            must_answer.append(c)
+            continue
+
+        is_engine = 'etb_value' in tags and 'token_maker' in tags
+        is_big_threat = power >= 4 and under_pressure
+        if is_engine or is_big_threat:
+            must_answer.append(c)
+            continue
+
+        if assessment.opp_clock <= thresholds.answer_emergency_clock:
+            must_answer.append(c)
+        elif under_pressure and power >= thresholds.answer_min_power:
+            must_answer.append(c)
+        elif archetype == 'aggro' and me.creatures:
+            toughness = c.toughness if hasattr(c, 'toughness') and c.toughness else (c.template.toughness or 0)
+            my_blocked_power = sum(
+                (a.power or a.template.power or 0)
+                for a in me.creatures
+                if (a.power or a.template.power or 0) <= toughness
+            )
+            if my_blocked_power >= 3:
+                must_answer.append(c)
+
+    return must_answer
+
+
+def _build_context(castable, game, player_idx, assessment, engine):
+    """Build the decision context from game state."""
+    from ai.gameplan import get_thresholds, GoalType
+    from engine.game_state import CYCLING_COSTS
+
+    me = game.players[player_idx]
+    opp = game.players[1 - player_idx]
+    goal = engine.current_goal
+    thresholds = get_thresholds(engine.gameplan)
+
+    # Categorize cards
+    removal, threats, interaction, card_draw, acceleration, other = \
+        _categorize_castable(castable, game, player_idx)
+
+    # Assess survival state
     am_dying = assessment.am_dead_next or (
         assessment.opp_clock <= thresholds.dying_clock
         and assessment.opp_board_power >= thresholds.dying_min_board_power
     )
 
-    # Must-answer threats: property-based categorical classification.
-    # Instead of float value thresholds, classify by card properties:
-    #   MUST: win conditions, combo pieces
-    #   HIGH: engines, haste creatures, or high power under pressure
-    #   MED:  meaningful power under emergency
-    # This avoids arbitrary value thresholds while staying tag-driven.
-    must_answer = []
-    if opp.creatures:
-        under_pressure = assessment.opp_clock <= thresholds.dying_clock or assessment.am_dead_next
-        for c in opp.creatures:
-            tags = getattr(c.template, 'tags', set())
-            power = c.power if hasattr(c, 'power') and c.power else (c.template.power or 0)
-
-            # MUST: game-ending threats — always answer
-            if 'win_condition' in tags or 'combo_piece' in tags:
-                must_answer.append(c)
-                continue
-
-            # HIGH: value engines or big threats under pressure
-            is_engine = 'etb_value' in tags and 'token_maker' in tags  # e.g., Bowmasters
-            is_big_threat = power >= 4 and under_pressure
-            if is_engine or is_big_threat:
-                must_answer.append(c)
-                continue
-
-            # MED: meaningful power under emergency or pressure
-            if assessment.opp_clock <= thresholds.answer_emergency_clock:
-                must_answer.append(c)
-            elif under_pressure and power >= thresholds.answer_min_power:
-                must_answer.append(c)
-            elif engine.gameplan.archetype == 'aggro' and me.creatures:
-                toughness = c.toughness if hasattr(c, 'toughness') and c.toughness else (c.template.toughness or 0)
-                my_blocked_power = sum(
-                    (a.power or a.template.power or 0)
-                    for a in me.creatures
-                    if (a.power or a.template.power or 0) <= toughness
-                )
-                if my_blocked_power >= 3:
-                    must_answer.append(c)
-
+    # Classify must-answer threats
+    must_answer = _classify_must_answer(
+        opp, me, assessment, thresholds, engine.gameplan.archetype)
 
     # Opponent interaction likelihood
     opp_mana = opp.available_mana_estimate
     opp_has_interaction = opp_mana >= 1 and len(opp.hand) >= 1
 
-    # Is holding mana valuable? (do I have instants worth holding?)
+    # Is holding mana valuable?
     has_instants_in_hand = any(
-        c.template.is_instant for c in me.hand
-        if c not in castable  # instants not in the castable list
+        c.template.is_instant for c in me.hand if c not in castable
     )
     has_instant_castable = any(c.template.is_instant for c in castable)
     holding_valuable = has_instants_in_hand or has_instant_castable
 
-    # During EXECUTE_PAYOFF: everything is chain fuel or payoff.
-    # Clear fair-deck categorizations so only SURVIVE and ADVANCE fire.
-    # This is simpler than adding exceptions — removing data removes bugs.
-    from ai.gameplan import GoalType
-    is_combo_turn = goal.goal_type == GoalType.EXECUTE_PAYOFF
-    if is_combo_turn:
+    # During EXECUTE_PAYOFF: clear fair-deck categorizations so the
+    # combo sequencer has full control over play order.
+    if goal.goal_type == GoalType.EXECUTE_PAYOFF:
         removal = []
         interaction = []
         must_answer = []
         holding_valuable = False
 
-    # Include cards that can be cycled (cycling is a legal action, not casting)
-    from engine.game_state import CYCLING_COSTS
+    # Include cyclable cards
     castable_final = [c for c in castable if game.can_cast(player_idx, c)]
     for card in castable:
         if card not in castable_final and card.name in CYCLING_COSTS:
@@ -431,7 +436,7 @@ def _apply_pre_filters(ctx: _DecisionContext) -> List["CardInstance"]:
                 continue  # don't waste silence
 
         # Spells that target a creature you control: skip if no creatures
-        if 'targets_own_creature' in tags or card.name in ('Undying Evil', 'Ephemerate'):
+        if 'targets_own_creature' in tags or 'blink' in tags:
             if not me.creatures:
                 continue
 
