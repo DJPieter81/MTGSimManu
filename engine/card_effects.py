@@ -450,8 +450,14 @@ def unmarked_grave_resolve(game, card, controller, targets=None, item=None):
                            description="Deal 1 damage to any target")
 def grapeshot_resolve(game, card, controller, targets=None, item=None):
     opponent = 1 - controller
-    game.players[opponent].life -= 1
-    game.players[controller].damage_dealt_this_turn += 1
+    # Storm: Grapeshot deals 1 damage per storm copy + the original
+    storm_count = getattr(game, '_global_storm_count', 1)
+    total_damage = max(storm_count, 1)
+    game.players[opponent].life -= total_damage
+    game.players[controller].damage_dealt_this_turn += total_damage
+    game.log.append(f"T{game.turn_number} P{controller+1}: "
+                    f"Grapeshot deals {total_damage} damage (storm count {storm_count})"
+                    f" (opponent life: {game.players[opponent].life})")
 
 
 @EFFECT_REGISTRY.register("Past in Flames", EffectTiming.SPELL_RESOLVE,
@@ -467,7 +473,12 @@ def past_in_flames_resolve(game, card, controller, targets=None, item=None):
 @EFFECT_REGISTRY.register("Empty the Warrens", EffectTiming.SPELL_RESOLVE,
                            description="Create 2 Goblin tokens")
 def empty_the_warrens_resolve(game, card, controller, targets=None, item=None):
-    game.create_token(controller, "goblin", count=2)
+    # Storm: create 2 Goblin tokens per storm copy + the original
+    storm_count = getattr(game, '_global_storm_count', 1)
+    token_count = 2 * max(storm_count, 1)
+    game.create_token(controller, "goblin", count=token_count)
+    game.log.append(f"T{game.turn_number} P{controller+1}: "
+                    f"Empty the Warrens creates {token_count} Goblin tokens (storm {storm_count})")
 
 
 @EFFECT_REGISTRY.register("Galvanic Relay", EffectTiming.SPELL_RESOLVE,
