@@ -387,7 +387,7 @@ class EVPlayer:
             if has_instant and not t.is_instant:
                 remaining_mana = snap.my_mana - cmc
                 if remaining_mana < 2:
-                    ev -= 3.0  # penalty for tapping out with answers in hand
+                    ev -= 2.0  # penalty for tapping out with answers in hand
 
         # ── Storm finisher sequencing ──
         # Storm finishers (Grapeshot, Empty the Warrens) should be cast LAST
@@ -456,14 +456,41 @@ class EVPlayer:
                     mod += 2.0  # still good if opponent has cards
 
         elif self.archetype == "control":
-            # Control: answer everything, then deploy finisher
-            if 'removal' in tags and snap.opp_creature_count > 0:
-                mod += 3.0
-            if 'board_wipe' in tags and snap.opp_creature_count >= 2:
-                mod += 5.0
-            # Deploy payoffs when board is clear
-            if card.name in self._payoff_names and snap.opp_creature_count == 0:
-                mod += 5.0
+            # Control (Omnath/Jeskai): survive early, develop mana, deploy value engine
+            cmc = t.cmc or 0
+
+            # EARLY GAME (T1-6): removal is critical, cheap plays are priority
+            if snap.turn_number <= 6:
+                if 'removal' in tags and snap.opp_creature_count > 0:
+                    mod += 6.0  # MUST answer early threats
+                if cmc <= 2 and not t.is_land:
+                    mod += 3.0  # cheap plays develop the board early
+                # Planeswalkers are high priority early (Wrenn T3, Teferi T5)
+                from engine.cards import CardType as CT
+                if CT.PLANESWALKER in t.card_types:
+                    mod += 4.0  # early PW = recurring value
+
+            # MID GAME (T7-12): deploy payoffs, wraths, value
+            elif snap.turn_number <= 12:
+                if 'removal' in tags and snap.opp_creature_count > 0:
+                    mod += 4.0
+                if 'board_wipe' in tags and snap.opp_creature_count >= 2:
+                    mod += 6.0
+                if card.name in self._payoff_names:
+                    mod += 6.0  # deploy Omnath/Solitude/Quantum Riddler
+                if t.is_creature:
+                    mod += 3.0  # ANY creature is valuable for blocking
+
+            # LATE GAME (T13+): close it out
+            else:
+                if t.is_creature:
+                    mod += 4.0  # deploy threats to close
+                if card.name in self._payoff_names:
+                    mod += 5.0
+
+            # Card draw is always good for control — need to find answers
+            if 'draw' in tags or 'cantrip' in tags:
+                mod += 2.0
 
         elif self.archetype == "combo":
             # Combo: chain spells, build toward lethal
