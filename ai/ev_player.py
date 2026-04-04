@@ -478,7 +478,6 @@ class EVPlayer:
             # Midrange: interact first, deploy threats, grind value
             if 'removal' in tags and snap.opp_creature_count > 0:
                 mod += 4.0  # PRIORITY: remove threats when they exist
-                # Extra urgency when opponent has high-power creatures
                 if snap.opp_power >= 4:
                     mod += 3.0
             if t.is_creature:
@@ -488,12 +487,11 @@ class EVPlayer:
                     mod += 3.0  # value creatures are great
                 if t.has_flash:
                     mod += 2.0
-            # Discard (Thoughtseize) is best early, but still good later
             if 'discard' in tags:
                 if snap.turn_number <= 4:
-                    mod += 4.0  # devastating early
+                    mod += 4.0
                 elif snap.opp_hand_size >= 3:
-                    mod += 2.0  # still good if opponent has cards
+                    mod += 2.0
 
         elif self.archetype == "control":
             # Control (Omnath/Jeskai): survive early, develop mana, deploy value engine
