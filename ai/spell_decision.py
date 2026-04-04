@@ -1200,18 +1200,77 @@ def _pass_reasoning(ctx: _DecisionContext) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Outcome-based play evaluation — compares actions by game-state impact
+# Outcome-based play evaluation — board-state delta projection
 # ---------------------------------------------------------------------------
 
+def _estimate_deltas(card, ctx: _DecisionContext) -> tuple:
+    """Estimate a card's impact as board-state deltas.
+
+    Returns (opp_power_removed, my_power_added, my_toughness_added, life_gained).
+
+    Derived entirely from tags, oracle text, and board state — no
+    card-type branching. A card can contribute to multiple deltas
+    (e.g., Solitude is removal + creature + life gain on ETB).
+    """
+    import re
+    tags = getattr(card.template, 'tags', set())
+    oracle = (card.template.oracle_text or "").lower()
+
+    opp_power_removed = 0
+    my_power_added = 0
+    my_toughness_added = 0
+    life_gained = 0
+
+    # Removal effect: estimates power removed from opponent's board
+    if 'removal' in tags or 'board_wipe' in tags:
+        if 'board_wipe' in tags:
+            opp_power_removed = ctx.assessment.opp_board_power
+        elif ctx.must_answer_threats:
+            # Single-target: assumes we kill the biggest must-answer
+            biggest_power = max(
+                (c.power if hasattr(c, 'power') and c.power else (c.template.power or 0))
+                for c in ctx.must_answer_threats
+            )
+            opp_power_removed = biggest_power
+        elif ctx.opp.creatures:
+            biggest_power = max(
+                (c.power if hasattr(c, 'power') and c.power else (c.template.power or 0))
+                for c in ctx.opp.creatures
+            )
+            opp_power_removed = biggest_power
+
+    # Creature: adds power and toughness to our board
+    if card.template.is_creature:
+        my_power_added = card.template.power or 0
+        my_toughness_added = card.template.toughness or 0
+
+    # Life gain: from ETB, lifelink reference, or explicit oracle text
+    if 'gain' in oracle and 'life' in oracle:
+        m = re.search(r'gain (\d+) life', oracle)
+        if m:
+            life_gained += int(m.group(1))
+
+    # Burn/direct damage to opponent (treat as advancing the clock)
+    if 'damage' in oracle and ('target' in oracle or 'each opponent' in oracle or 'any target' in oracle):
+        m = re.search(r'deal[s]? (\d+) damage', oracle)
+        if m:
+            # We could model this as negative opp_life, but for simplicity
+            # treat burn as advancing the win clock via power_added proxy
+            my_power_added += int(m.group(1))
+
+    return opp_power_removed, my_power_added, my_toughness_added, life_gained
+
+
 def _evaluate_play_impact(decision: SpellDecision, ctx: _DecisionContext) -> float:
-    """Estimate how much this play improves our position.
+    """Score a play by projecting the board state after it resolves.
 
-    Instead of static concern urgency, compute:
-      1. survival_delta: how many turns does this buy me?
-      2. advancement_delta: how much closer to winning?
+    Projects new opp_clock and my_clock from the card's deltas,
+    then scores by how much the play improves our position on both
+    axes (survival and advancement). Weights shift dynamically
+    based on life total — low life favors survival, high life
+    favors advancement.
 
-    Returns a single float — higher is better. All values derived
-    from current game state, not hardcoded weights.
+    No card-type branching — works for any card via _estimate_deltas.
     """
     card = decision.card
     if card is None:
@@ -1221,98 +1280,55 @@ def _evaluate_play_impact(decision: SpellDecision, ctx: _DecisionContext) -> flo
     opp_life = ctx.assessment.opp_life
     opp_power = ctx.assessment.opp_board_power
     my_power = ctx.assessment.my_board_power
-    opp_clock = ctx.assessment.opp_clock  # turns until I die
 
-    # Current clock: how many turns do I have?
-    current_turns_left = opp_clock if opp_power > 0 else 99
+    # Current clocks
+    opp_clock_now = max(1, (my_life + opp_power - 1) // opp_power) if opp_power > 0 else 99
+    my_clock_now = max(1, (opp_life + my_power - 1) // max(my_power, 1)) if my_power > 0 else 99
 
-    tags = getattr(card.template, 'tags', set())
-    card_power = card.template.power or 0
-    card_toughness = card.template.toughness or 0
-    oracle = (card.template.oracle_text or "").lower()
+    # Estimate this card's board impact
+    opp_pwr_rm, my_pwr_add, my_tough_add, life_gain = _estimate_deltas(card, ctx)
 
-    # ── 1. Survival delta: how many turns does this action buy? ──
-    survival_delta = 0.0
+    # Project new board state
+    new_opp_power = max(0, opp_power - opp_pwr_rm)
+    new_my_power = my_power + my_pwr_add
+    new_my_life = my_life + life_gain
 
-    if decision.concern in ("survive", "answer"):
-        # Removal: estimate power removed from opponent's board
-        # The chosen removal targets the biggest threat (from _best_removal_for_threats)
-        if 'board_wipe' in tags:
-            power_removed = opp_power  # kills everything
-        else:
-            # Single-target removal: estimate target power from must-answer list
-            if ctx.must_answer_threats:
-                biggest = max(ctx.must_answer_threats,
-                              key=lambda c: c.power if hasattr(c, 'power') and c.power
-                              else (c.template.power or 0))
-                power_removed = biggest.power if hasattr(biggest, 'power') and biggest.power else (biggest.template.power or 0)
-            else:
-                power_removed = 3  # reasonable estimate
+    # Blocking: if our toughness can absorb an attacker, reduce effective opp power
+    if my_tough_add > 0 and ctx.opp.creatures:
+        blockable = max(
+            ((c.power if hasattr(c, 'power') and c.power else (c.template.power or 0))
+             for c in ctx.opp.creatures
+             if (c.power if hasattr(c, 'power') and c.power else (c.template.power or 0)) <= my_tough_add),
+            default=0
+        )
+        new_opp_power = max(0, new_opp_power - blockable)
 
-        new_opp_power = max(1, opp_power - power_removed)
-        new_clock = max(1, (my_life + new_opp_power - 1) // new_opp_power)
-        survival_delta = new_clock - current_turns_left
+    # Project new clocks
+    opp_clock_new = max(1, (new_my_life + new_opp_power - 1) // new_opp_power) if new_opp_power > 0 else 99
+    my_clock_new = max(1, (opp_life + new_my_power - 1) // max(new_my_power, 1)) if new_my_power > 0 else 99
 
-    elif card.template.is_creature:
-        # Deploying a creature: it can block, extending survival
-        # A creature with toughness T can absorb T damage once
-        # More importantly, a blocker with toughness >= attacker power
-        # prevents that attacker's damage EVERY turn
-        can_block_something = any(
-            card_toughness >= (c.power if hasattr(c, 'power') and c.power else (c.template.power or 0))
-            for c in ctx.opp.creatures
-        ) if ctx.opp.creatures else False
+    # Deltas: positive = improvement
+    survival_gained = min(opp_clock_new - opp_clock_now, 20)  # cap to avoid infinity
+    advancement_gained = min(my_clock_now - my_clock_new, 20)
 
-        if can_block_something:
-            # Blocking one creature saves ~biggest_blockable power per turn
-            blockable_power = max(
-                (c.power if hasattr(c, 'power') and c.power else (c.template.power or 0))
-                for c in ctx.opp.creatures
-                if (c.power if hasattr(c, 'power') and c.power else (c.template.power or 0)) <= card_toughness
-            ) if ctx.opp.creatures else 0
-            new_effective_power = max(1, opp_power - blockable_power)
-            new_clock = max(1, (my_life + new_effective_power - 1) // new_effective_power)
-            survival_delta = new_clock - current_turns_left
-
-    # ETB life gain extends clock directly
-    if 'etb_value' in tags:
-        if 'gain' in oracle and 'life' in oracle:
-            # Estimate life gain from oracle (look for numbers)
-            import re
-            life_match = re.search(r'gain (\d+) life', oracle)
-            life_gain = int(life_match.group(1)) if life_match else 3
-            # Extra turns = life_gain / opp_power_per_turn
-            if opp_power > 0:
-                survival_delta += life_gain / opp_power
-
-    # ── 2. Advancement delta: how much closer to winning? ──
-    advancement = 0.0
-
-    if card.template.is_creature:
-        # Adding power to the board shortens our clock
-        if opp_life > 0:
-            current_my_clock = max(1, (opp_life + my_power - 1) // max(my_power, 1))
-            new_my_clock = max(1, (opp_life + my_power + card_power - 1) // max(my_power + card_power, 1))
-            advancement = current_my_clock - new_my_clock  # turns saved
-
-    # Gameplan priority: how much does the deck want this card?
+    # Gameplan priority: how much does the deck WANT this card right now?
     card_prio = 0.0
     for goal in ctx.engine.gameplan.goals:
         p = goal.card_priorities.get(card.name, 0.0)
         card_prio = max(card_prio, p)
-    # Normalize: 30 is typical max priority → maps to ~1.0 bonus
-    advancement += card_prio / 30.0
+    priority_bonus = card_prio / 30.0  # normalize to ~0-1
 
-    # ── 3. Combined score ──
-    # Both axes matter. A play that gains 5 survival turns is great.
-    # A play that advances the win by 3 turns is also great.
-    # Weight survival more when life is low (diminishing returns on advancement if dead).
-    life_fraction = min(my_life / 20.0, 1.0)  # 0.0 = dead, 1.0 = full health
-    # At low life: survival matters more. At high life: advancement matters more.
-    survival_weight = 2.0 - life_fraction  # 1.0 at 20 life, 2.0 at 0 life
-    advance_weight = 0.5 + life_fraction   # 1.5 at 20 life, 0.5 at 0 life
+    # Dynamic weighting: life fraction shifts emphasis
+    # At 5 life: survival_weight=1.75, advance_weight=0.75
+    # At 15 life: survival_weight=1.25, advance_weight=1.25
+    # At 20 life: survival_weight=1.0, advance_weight=1.5
+    life_frac = min(my_life / 20.0, 1.0)
+    survival_weight = 2.0 - life_frac
+    advance_weight = 0.5 + life_frac
 
-    return survival_delta * survival_weight + advancement * advance_weight
+    return (survival_gained * survival_weight
+            + advancement_gained * advance_weight
+            + priority_bonus)
 
 
 # ---------------------------------------------------------------------------
