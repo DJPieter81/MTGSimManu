@@ -79,61 +79,44 @@ def choose_spell(engine: "GoalEngine", castable: List["CardInstance"],
     if cycling_result:
         return cycling_result
 
-    # --- Concern pipeline with outcome-based tiebreaking ---
-    # Combo decks use the strict pipeline (SURVIVE > ADVANCE) because
-    # their spells (rituals, cantrips) don't map to survival/advancement
-    # metrics. Fair decks use outcome comparison when multiple concerns fire.
-    from ai.gameplan import GoalType
-    is_combo_goal = ctx.goal.goal_type in (GoalType.EXECUTE_PAYOFF, GoalType.DEPLOY_ENGINE) \
-                    and ctx.archetype == 'combo'
-
-    if is_combo_goal:
-        # Strict pipeline for combo — unchanged behavior
-        if ctx.am_dying:
-            result = _concern_survive(ctx)
-            if result:
-                return result
-        if ctx.must_answer_threats:
-            result = _concern_answer(ctx)
-            if result:
-                return result
-        result = _concern_advance(ctx)
+    # --- Configurable concern pipeline ---
+    # The concern order comes from the deck's archetype thresholds.
+    # Each archetype defines which concerns matter and in what order:
+    #   aggro:   advance → answer → survive → efficient
+    #   control: survive → advance → answer → efficient
+    #   combo:   advance → survive → efficient
+    #   midrange: survive → answer → advance → efficient
+    #
+    # Universal override: am_dead_next always triggers immediate SURVIVE
+    # regardless of concern order (can't advance if dead next turn).
+    if ctx.assessment.am_dead_next:
+        result = _concern_survive(ctx)
         if result:
             return result
-        result = _concern_efficient(ctx)
-        if result:
-            return result
-    else:
-        # Outcome-based competition for fair decks
-        candidates = []
 
-        if ctx.am_dying:
-            result = _concern_survive(ctx)
+    # Map concern names to their functions and gate conditions
+    _concern_dispatch = {
+        "survive":  lambda: _concern_survive(ctx) if ctx.am_dying else None,
+        "answer":   lambda: _concern_answer(ctx) if ctx.must_answer_threats else None,
+        "advance":  lambda: _concern_advance(ctx),
+        "efficient": lambda: _concern_efficient(ctx),
+    }
+
+    # Get the concern order from the deck's thresholds
+    concern_order = ctx.thresholds.concern_order if ctx.thresholds else \
+        ("survive", "answer", "advance", "efficient")
+
+    # Walk through concerns in the configured order.
+    # The first concern that fires wins (strict priority from gameplan).
+    # The outcome evaluator is used WITHIN _concern_survive to compare
+    # removal vs deployment — not between concerns.
+    for concern_name in concern_order:
+        fn = _concern_dispatch.get(concern_name)
+        if fn:
+            result = fn()
             if result:
-                if ctx.assessment.am_dead_next:
-                    return result  # non-negotiable
-                candidates.append(result)
+                return result
 
-        if ctx.must_answer_threats:
-            result = _concern_answer(ctx)
-            if result:
-                candidates.append(result)
-
-        result = _concern_advance(ctx)
-        if result:
-            candidates.append(result)
-
-        if not candidates:
-            result = _concern_efficient(ctx)
-            if result:
-                candidates.append(result)
-
-        if candidates:
-            if len(candidates) == 1:
-                return candidates[0]
-            return max(candidates, key=lambda d: _evaluate_play_impact(d, ctx))
-
-    # --- Nothing worth doing ---
     return SpellDecision(
         card=None, concern="pass",
         reasoning=_pass_reasoning(ctx), alternatives=[])

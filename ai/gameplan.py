@@ -139,6 +139,18 @@ class DecisionThresholds:
     evoke_skip_small_power: int = 2
     evoke_skip_small_cmc: int = 2
 
+    # --- Concern pipeline ordering ---
+    # Defines which concerns fire and in what order. Each entry is a
+    # concern name: "survive", "answer", "advance", "efficient".
+    # The pipeline tries each concern in order; for fair decks,
+    # competing candidates are compared by outcome evaluation.
+    #
+    # Default (midrange): survive first, then answer, then advance.
+    # Control: advance before answer (deploy payoffs over removing)
+    # Aggro: advance first (deploy threats, answer only blockers)
+    # Combo: advance first (execute combo, survive only if lethal)
+    concern_order: tuple = ("survive", "answer", "advance", "efficient")
+
 
 # Archetype defaults — derived from empirical analysis of opp_clock
 # distributions across 50-game samples per matchup type.
@@ -155,9 +167,10 @@ class DecisionThresholds:
 # Per-archetype tuning adjusts OTHER parameters to compensate.
 _ARCHETYPE_THRESHOLDS = {
     "aggro": DecisionThresholds(
-        # Aggro races — triggers at clock<=4 but:
-        # - only answers big stuff (answer_min_power=4)
-        # - taps out freely (deploy_mana_holdback=0)
+        # Aggro: standard order works — answer blockers before deploying
+        # so creatures can attack through. The difference from midrange
+        # is in OTHER thresholds (deploy_mana_holdback=0, answer_min_power=4).
+        concern_order=("survive", "answer", "advance", "efficient"),
         dying_clock=4,
         dying_min_board_power=3,
         answer_min_power=4,
@@ -167,16 +180,19 @@ _ARCHETYPE_THRESHOLDS = {
         evoke_wrong_colors=0.3,
     ),
     "midrange": DecisionThresholds(
-        # Midrange: balanced — clock<=4 trigger rate ~49%
+        # Midrange: answer threats first, then deploy — classic reactive play.
+        # Legacy sim: Dimir-style "interact then deploy" maps to this order.
+        concern_order=("survive", "answer", "advance", "efficient"),
         dying_clock=4,
         dying_min_board_power=3,
         deploy_mana_holdback=1,
         evoke_hardcast_next_turn=0.6,
     ),
     "control": DecisionThresholds(
-        # Control: clock<=4 triggers 70% vs aggro, which is high.
-        # Compensate with higher answer thresholds so ANSWER fires less
-        # and ADVANCE gets more opportunities to deploy payoffs.
+        # Control: advance payoffs BEFORE answering non-critical threats.
+        # Key insight: Omnath (4 life ETB + 4/4 body) IS a survival play.
+        # Only survive if actually lethal, otherwise deploy the payoff.
+        concern_order=("survive", "advance", "answer", "efficient"),
         dying_clock=4,
         dying_min_board_power=3,
         deploy_mana_holdback=2,
@@ -185,8 +201,9 @@ _ARCHETYPE_THRESHOLDS = {
         evoke_wrong_colors=0.5,
     ),
     "combo": DecisionThresholds(
-        # Combo: triggers at clock<=4 but mostly ignores the board —
-        # very high answer thresholds mean ANSWER rarely fires.
+        # Combo: advance the combo first, survive only if lethal.
+        # Legacy sim: combo strategies execute their plan, not interact.
+        concern_order=("advance", "survive", "efficient"),
         dying_clock=4,
         dying_min_board_power=3,
         deploy_mana_holdback=0,
