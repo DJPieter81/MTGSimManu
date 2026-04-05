@@ -74,10 +74,11 @@
   .reason-bar.high { background: #9ece6a; }
   .reason-bar.mid { background: #e0af68; }
   .reason-bar.low { background: #565f89; }
-  .alt-list { margin-top: 3px; padding-left: 0; }
-  .alt-item { color: #565f89; font-size: 0.7rem; }
-  .alt-item .name { color: #7982a9; }
-  .alt-item .score { font-variant-numeric: tabular-nums; }
+  .chain-badge { display: inline-block; background: #f7768e22; color: #f7768e; border: 1px solid #f7768e44; border-radius: 3px; padding: 0 4px; font-size: 0.68rem; font-weight: 600; margin-right: 3px; }
+  .mana-badge { display: inline-block; background: #7aa2f722; color: #7aa2f7; border-radius: 3px; padding: 0 3px; font-size: 0.68rem; margin-right: 3px; }
+  .reason-text { color: #9aa5ce; }
+  .alt-note { margin-top: 3px; color: #565f89; font-size: 0.68rem; font-style: italic; }
+  .alt-name { color: #7982a9; }
 </style>
 </head>
 <body>
@@ -87,46 +88,33 @@
 <div id="panels"></div>
 
 <script>
-function describeEV(ev, action_type, action, alternatives, who) {
-  if (action_type === 'land') return '<span class="reason-neutral">Develop mana</span>';
-  if (action_type === 'attack') {
-    if (action.includes('LETHAL')) return '<span class="reason-good">Lethal damage on board</span>';
-    return '<span class="reason-neutral">Push damage</span>';
+function describeAction(r) {
+  // The reasoning is now generated server-side with full game context.
+  // Just format it nicely.
+  let html = '';
+
+  // Show storm/mana context for chain spells
+  if (r.storm_count !== undefined && r.storm_count >= 2) {
+    html += `<span class="chain-badge">⛓ Storm ${r.storm_count+1}</span> `;
+    if (r.mana_pool !== undefined) {
+      html += `<span class="mana-badge">💧${r.mana_after||0}</span> `;
+    }
   }
-  if (ev === undefined || ev === null) return '';
 
-  // Describe what the EV means in plain english
-  let quality, desc;
-  if (ev >= 100) { quality = 'high'; desc = 'Lethal — wins the game immediately'; }
-  else if (ev >= 30) { quality = 'high'; desc = 'Excellent play — high-impact spell'; }
-  else if (ev >= 20) { quality = 'high'; desc = 'Strong play — significant board impact'; }
-  else if (ev >= 12) { quality = 'mid'; desc = 'Good play — solid value for mana spent'; }
-  else if (ev >= 5) { quality = 'mid'; desc = 'Decent play — marginal advantage'; }
-  else if (ev >= 0) { quality = 'low'; desc = 'Marginal — barely worth casting'; }
-  else { quality = 'low'; desc = 'Suboptimal — may be forced play'; }
+  html += `<span class="reason-text">${r.reasoning || ''}</span>`;
 
-  // Bar width proportional to EV (cap at 100)
-  const barW = Math.min(Math.max(ev / 2, 3), 50);
-  let html = `<span class="reason-bar ${quality}" style="width:${barW}px"></span>`;
-  html += `<span class="reason-summary">${desc}</span>`;
-
-  // Alternatives in plain english
-  if (alternatives && alternatives.length > 0) {
-    html += '<div class="alt-list">';
-    alternatives.forEach(a => {
-      const diff = ev - a.ev;
-      let cmp;
-      if (diff > 10) cmp = 'much better than';
-      else if (diff > 3) cmp = 'better than';
-      else if (diff > -3) cmp = 'similar to';
-      else cmp = 'worse than';
-      // Only show if there's a meaningful alternative
-      if (Math.abs(diff) > 1) {
-        html += `<div class="alt-item">Chose over <span class="name">${a.name}</span> (${cmp})</div>`;
-      }
-    });
-    html += '</div>';
+  // Alternatives as a subtle note
+  if (r.alternatives && r.alternatives.length > 0) {
+    const meaningful = r.alternatives.filter(a => Math.abs((r.ev||0) - a.ev) > 2);
+    if (meaningful.length > 0) {
+      html += '<div class="alt-note">Also considered: ';
+      html += meaningful.map(a => `<span class="alt-name">${a.name}</span>`).join(', ');
+      html += '</div>';
+    }
   }
+
+  return html;
+}
   return html;
 }
 
@@ -193,7 +181,7 @@ async function load() {
       const sLife = r.storm_life;
       const bLife = r.boros_life;
 
-      const reason = describeEV(r.ev, r.action_type, r.reasoning || '', r.alternatives, r.who);
+      const reason = describeAction(r);
 
       rows += `<tr class="${cls}">
         <td class="turn-cell">${turnStart ? r.turn : ''}</td>
