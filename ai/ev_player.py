@@ -276,7 +276,7 @@ class EVPlayer:
                         ev += p.evoke_lethal_bonus
                 # Never evoke with no targets
                 if snap.opp_creature_count == 0 and 'removal' in tags:
-                    ev -= 20.0
+                    ev += p.evoke_empty_board_penalty
 
         # ── Creature deployment ──
         is_creature = t.is_creature
@@ -294,7 +294,7 @@ class EVPlayer:
             if best_target_val > 0:
                 ev += best_target_val * p.removal_target_mult
             elif snap.opp_creature_count == 0 and not is_creature:
-                ev -= 3.0  # pure removal with no targets = waste
+                ev += p.removal_no_target_penalty  # pure removal with no targets
 
         # ── Board wipe ──
         if 'board_wipe' in tags:
@@ -312,7 +312,7 @@ class EVPlayer:
         burn_dmg = get_burn_damage(t.name)
         if burn_dmg > 0:
             if burn_dmg >= snap.opp_life:
-                ev += 100.0  # lethal!
+                ev += p.lethal_burn_bonus  # lethal!
             elif p.burn_face_mult > 0.5:
                 ev += burn_dmg * p.burn_face_mult
             else:
@@ -341,7 +341,7 @@ class EVPlayer:
         from engine.cards import CardType
         if not is_creature and not t.is_land:
             if CardType.PLANESWALKER in t.card_types:
-                ev += 6.0  # planeswalkers generate recurring value
+                ev += p.planeswalker_bonus
             elif CardType.ARTIFACT in t.card_types and 'equipment' not in tags:
                 ev += p.artifact_bonus
             elif CardType.ENCHANTMENT in t.card_types:
@@ -393,11 +393,11 @@ class EVPlayer:
             if storm == 0:
                 ev += p.cost_reducer_pre_chain
                 if snap.turn_number <= 4 and p.cost_reducer_pre_chain > 5:
-                    ev += 6.0  # T2-3 engine enables everything
+                    ev += p.early_reducer_bonus
                 medallions_on_board = sum(1 for c in me.battlefield
                                           if 'cost_reducer' in getattr(c.template, 'tags', set()))
                 if medallions_on_board == 0 and p.cost_reducer_pre_chain > 5:
-                    ev += 4.0  # first reducer is critical
+                    ev += p.first_reducer_bonus
             elif storm >= 5:
                 ev += p.cost_reducer_mid_chain
             else:
@@ -446,7 +446,7 @@ class EVPlayer:
             if Kw.STORM in getattr(t, 'keywords', set()):
                 storm_copies = me.spells_cast_this_turn + 1
                 if storm_copies >= snap.opp_life:
-                    ev += 100.0  # lethal storm! Cast now!
+                    ev += p.lethal_storm_bonus  # lethal storm!
                 else:
                     fuel_in_hand = sum(
                         1 for c in me.hand
@@ -607,7 +607,7 @@ class EVPlayer:
             # Penalize overkill: using 5-mana removal on a 1/1 is wasteful
             target_cmc = c.template.cmc or 0
             if removal_cmc > target_cmc + 2:
-                val *= 0.6  # 40% penalty for inefficient removal
+                val *= self.profile.removal_overkill_mult  # overkill penalty for inefficient removal
             if val > best:
                 best = val
         return best

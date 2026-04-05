@@ -156,7 +156,16 @@ class StrategyProfile:
     wrath_multi_kill_bonus: float = 5.0  # 3+ creatures
 
     # ── Pass threshold ──
-    pass_threshold: float = -5.0         # only pass if best EV below this
+    pass_threshold: float = -5.0
+
+    # ── Scoring constants ──
+    evoke_empty_board_penalty: float = -20.0
+    removal_no_target_penalty: float = -3.0
+    lethal_burn_bonus: float = 100.0
+    lethal_storm_bonus: float = 100.0
+    first_reducer_bonus: float = 4.0
+    early_reducer_bonus: float = 6.0
+    removal_overkill_mult: float = 0.6  # penalty mult for expensive removal on cheap target
 
     # ── Archetype flags (enables/disables code paths) ──
     has_control_phases: bool = False   # enable early/mid/late phase logic
