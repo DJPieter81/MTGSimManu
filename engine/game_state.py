@@ -237,12 +237,8 @@ class PlayerState:
 
 
 # ─── Named card constants for special handling ───
-RITUAL_CARDS = {
-    "Pyretic Ritual": ("R", 3),       # costs 1R, adds RRR (net +1R)
-    "Desperate Ritual": ("R", 3),     # costs 1R, adds RRR (net +1R)
-    "Manamorphose": ("any", 2),       # costs 1R/G, adds 2 any + draw
-    "Simian Spirit Guide": ("R", 1),  # exile from hand for R
-}
+# RITUAL_CARDS removed — now derived from card.template.ritual_mana
+# (populated by oracle_parser.py at card load time)
 
 # Cycling costs: mana = total mana CMC, life = life to pay, colors = required color set
 CYCLING_COSTS = {
@@ -257,10 +253,7 @@ CYCLING_COSTS = {
     "Raugrin Triome":       {"mana": 3, "life": 0, "colors": set()},
     "Savai Triome":         {"mana": 3, "life": 0, "colors": set()},
 }
-CYCLING_CARDS = {name: cost["life"] for name, cost in CYCLING_COSTS.items()}
-
-# Cards with specific named mechanics
-LIVING_END_CASCADERS = {"Shardless Agent", "Demonic Dread"}
+# CYCLING_CARDS and LIVING_END_CASCADERS removed — now oracle-derived
 
 ENERGY_PRODUCERS = {
     "Guide of Souls": 1,       # ETB: get {E}

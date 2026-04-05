@@ -191,7 +191,7 @@ class EVPlayer:
             safe_lands = [
                 l for l in lands
                 if l.name not in FETCH_LAND_COLORS or me.life > 1
-                or l.name in {"Prismatic Vista", "Fabled Passage", "Evolving Wilds"}
+                or 'basic land' in (l.template.oracle_text or '').lower()  # free fetches
             ]
             for land in safe_lands:
                 ev = self._score_land(land, me, spells, game)
