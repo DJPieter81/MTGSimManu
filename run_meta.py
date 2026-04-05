@@ -17,6 +17,49 @@ from engine.game_runner import GameRunner
 from decks.modern_meta import MODERN_DECKS, get_all_deck_names, METAGAME_SHARES
 
 
+DECK_ALIASES = {
+    "zoo": "Domain Zoo",
+    "storm": "Ruby Storm",
+    "dimir": "Dimir Midrange",
+    "omnath": "4c Omnath",
+    "4c": "4c Omnath",
+    "5c": "4/5c Control",
+    "energy": "Boros Energy",
+    "boros": "Boros Energy",
+    "jeskai": "Jeskai Blink",
+    "blink": "Jeskai Blink",
+    "tron": "Eldrazi Tron",
+    "eldrazi": "Eldrazi Tron",
+    "amulet": "Amulet Titan",
+    "titan": "Amulet Titan",
+    "goryos": "Goryo's Vengeance",
+    "goryo": "Goryo's Vengeance",
+    "reanimator": "Goryo's Vengeance",
+    "living end": "Living End",
+    "cascade": "Living End",
+    "prowess": "Izzet Prowess",
+    "izzet": "Izzet Prowess",
+    "affinity": "Affinity",
+    "robots": "Affinity",
+}
+
+
+def resolve_deck_name(name: str) -> str:
+    """Resolve aliases and case-insensitive names to canonical deck name."""
+    # Exact match first
+    if name in MODERN_DECKS:
+        return name
+    # Case-insensitive alias
+    lower = name.lower().strip()
+    if lower in DECK_ALIASES:
+        return DECK_ALIASES[lower]
+    # Fuzzy: check if input is a substring of any deck name
+    for deck in get_all_deck_names():
+        if lower in deck.lower():
+            return deck
+    return name  # return as-is, will error later if invalid
+
+
 def _get_runner():
     db = CardDatabase()
     return GameRunner(db)
@@ -429,18 +472,22 @@ if __name__ == '__main__':
             print(f'  {name:25s} ({share:.1f}% meta share)')
         sys.exit(0)
 
+    # Resolve all deck name aliases
     if args.deck:
-        print(inspect_deck(args.deck))
+        print(inspect_deck(resolve_deck_name(args.deck)))
         sys.exit(0)
 
     if args.trace:
-        print(run_trace_game(args.trace[0], args.trace[1], seed=args.seed))
+        d1, d2 = resolve_deck_name(args.trace[0]), resolve_deck_name(args.trace[1])
+        print(run_trace_game(d1, d2, seed=args.seed))
     elif args.verbose:
-        print(run_verbose_game(args.verbose[0], args.verbose[1], seed=args.seed))
+        d1, d2 = resolve_deck_name(args.verbose[0]), resolve_deck_name(args.verbose[1])
+        print(run_verbose_game(d1, d2, seed=args.seed))
     elif args.matchup:
-        print_matchup(run_matchup(args.matchup[0], args.matchup[1], n_games=args.games))
+        d1, d2 = resolve_deck_name(args.matchup[0]), resolve_deck_name(args.matchup[1])
+        print_matchup(run_matchup(d1, d2, n_games=args.games))
     elif args.field:
-        print_field(run_field(args.field, n_games=args.games))
+        print_field(run_field(resolve_deck_name(args.field), n_games=args.games))
     else:
         # Default: run matrix
         result = run_meta_matrix(top_tier=args.decks, n_games=args.games)
