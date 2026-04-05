@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Match Play-by-Play</title>
+<style>
+body{font-family:system-ui,sans-serif;background:#1a1b26;color:#c0caf5;padding:20px;max-width:1400px;margin:0 auto}
+h1{color:#c0caf5;font-weight:400}
+.info{color:#565f89;margin-bottom:16px}
+.tabs{display:flex;gap:2px;margin-bottom:0}
+.tab{padding:8px 20px;background:#24283b;border:1px solid #3b4261;border-bottom:none;border-radius:6px 6px 0 0;cursor:pointer;color:#565f89;font-size:.85rem}
+.tab.active{background:#1f2335;color:#c0caf5;border-color:#7aa2f7}
+.panel{display:none;background:#1f2335;border:1px solid #3b4261;border-radius:0 6px 6px 6px;padding:16px}
+.panel.active{display:block}
+.header{display:flex;justify-content:space-between;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #3b4261}
+table{width:100%;border-collapse:collapse;font-size:.8rem}
+th{background:#24283b;color:#7aa2f7;padding:8px 6px;text-align:left;position:sticky;top:0;font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid #3b4261}
+td{padding:5px 6px;vertical-align:top;border-bottom:1px solid rgba(59,66,97,.4)}
+tr:hover{background:rgba(122,162,247,.04)}
+tr.atk{background:rgba(247,118,142,.06)}
+tr.lethal{background:rgba(158,206,106,.1)}
+tr.turn-start td{border-top:1px solid #3b4261}
+.p1{color:#f7768e}.p2{color:#e0af68}
+.danger{color:#f7768e;font-weight:700}
+.tag{display:inline-block;background:#24283b;border:1px solid #3b4261;border-radius:3px;padding:1px 5px;margin:1px;font-size:.7rem}
+.tag.c{border-left:2px solid #9ece6a}.tag.o{border-left:2px solid #bb9af7}
+.pt{color:#9ece6a;margin-left:2px}
+.ht{display:inline-block;background:#1a1b26;border-radius:3px;padding:1px 4px;margin:1px;font-size:.68rem;color:#7982a9}
+.ht.l{color:#bb9af7;opacity:.7}
+.act-l{color:#bb9af7}.act-s{color:#e0af68}.act-a{color:#f7768e}.act-k{color:#9ece6a;font-weight:600}
+.chain{display:inline-block;background:#f7768e22;color:#f7768e;border:1px solid #f7768e44;border-radius:3px;padding:0 4px;font-size:.68rem;font-weight:600;margin-right:3px}
+.mana{display:inline-block;background:#7aa2f722;color:#7aa2f7;border-radius:3px;padding:0 3px;font-size:.68rem;margin-right:3px}
+.reason{color:#9aa5ce;font-size:.76rem;line-height:1.4}
+.alts{color:#565f89;font-size:.68rem;font-style:italic;margin-top:2px}
+.badge{display:inline-block;background:#3b4261;color:#c0caf5;padding:2px 10px;border-radius:10px;font-weight:600;font-size:.75rem;margin-left:8px}
+</style>
+</head>
+<body>
+<h1>Match Play-by-Play</h1>
+<div class="info" id="info"></div>
+<div class="tabs" id="tabs"></div>
+<div id="panels"></div>
+<script>
+var DATA = /*__MATCH_DATA__*/null;/*__END_DATA__*/
+
+function board(cards) {
+  if (!cards || !cards.length) return '<span style="color:#3b4261;font-style:italic">empty</span>';
+  return cards.map(function(c) {
+    var cls = c.is_creature ? 'tag c' : 'tag o';
+    var pt = c.is_creature ? '<span class="pt">' + c.power + '/' + c.toughness + '</span>' : '';
+    return '<span class="' + cls + '">' + c.name + ' ' + pt + '</span>';
+  }).join('');
+}
+
+function hand(cards) {
+  if (!cards || !cards.length) return '';
+  var spells = cards.filter(function(c){return !c.is_land;});
+  var lands = cards.filter(function(c){return c.is_land;}).length;
+  var h = spells.slice(0,4).map(function(c){return '<span class="ht">' + c.name + '</span>';}).join('');
+  if (spells.length > 4) h += '<span class="ht">+' + (spells.length-4) + '</span>';
+  if (lands) h += '<span class="ht l">' + lands + 'L</span>';
+  return h;
+}
+
+function reason(r) {
+  var h = '';
+  if (r.storm_count !== undefined && r.storm_count >= 2) {
+    h += '<span class="chain">Storm ' + (r.storm_count+1) + '</span> ';
+    if (r.mana_after !== undefined) h += '<span class="mana">' + r.mana_after + ' mana</span> ';
+  }
+  h += '<span class="reason">' + (r.reasoning || '') + '</span>';
+  if (r.alternatives && r.alternatives.length > 0) {
+    var meaningful = r.alternatives.filter(function(a){return Math.abs((r.ev||0) - a.ev) > 2;});
+    if (meaningful.length > 0) {
+      h += '<div class="alts">Also considered: ' + meaningful.map(function(a){return a.name;}).join(', ') + '</div>';
+    }
+  }
+  return h;
+}
+
+function render() {
+  var d = DATA;
+  var p1 = d.p1_short;
+  var p2 = d.p2_short;
+  
+  document.getElementById('info').innerHTML = '<b>' + d.deck1 + '</b> vs <b>' + d.deck2 + '</b> &mdash; <b>' + d.match_winner + '</b> wins ' + Math.max(d.match_score[0],d.match_score[1]) + '&ndash;' + Math.min(d.match_score[0],d.match_score[1]);
+  
+  var tabs = document.getElementById('tabs');
+  var panels = document.getElementById('panels');
+  
+  d.games.forEach(function(g, gi) {
+    var isP1Win = g.winner === d.deck1;
+    
+    var tab = document.createElement('div');
+    tab.className = 'tab' + (gi===0?' active':'');
+    tab.innerHTML = 'Game ' + g.game_num + '<br><small style="color:' + (isP1Win?'#9ece6a':'#f7768e') + '">' + g.winner.split(' ').pop() + ' T' + g.turns + '</small>';
+    tab.onclick = function() {
+      var allTabs = document.querySelectorAll('.tab');
+      var allPanels = document.querySelectorAll('.panel');
+      for (var i=0;i<allTabs.length;i++) allTabs[i].className='tab';
+      for (var i=0;i<allPanels.length;i++) allPanels[i].className='panel';
+      tab.className='tab active';
+      document.getElementById('gp'+gi).className='panel active';
+    };
+    tabs.appendChild(tab);
+    
+    var panel = document.createElement('div');
+    panel.className = 'panel' + (gi===0?' active':'');
+    panel.id = 'gp' + gi;
+    
+    var rows = '';
+    var lastTurn = -1;
+    
+    g.rows.forEach(function(r) {
+      var isP1 = r.who_idx === 0;
+      var isAtk = r.action_type === 'attack';
+      var isLethal = r.reasoning && r.reasoning.indexOf('Lethal') >= 0;
+      var turnStart = r.turn !== lastTurn;
+      lastTurn = r.turn;
+      
+      var cls = isLethal ? 'lethal' : isAtk ? 'atk' : '';
+      if (turnStart) cls += ' turn-start';
+      
+      var actCls = r.action_type==='land' ? 'act-l' : isLethal ? 'act-k' : isAtk ? 'act-a' : 'act-s';
+      
+      var sl = r.p1_life;
+      var bl = r.p2_life;
+      
+      rows += '<tr class="' + cls + '">';
+      rows += '<td style="color:#565f89;text-align:center;width:28px">' + (turnStart ? r.turn : '') + '</td>';
+      rows += '<td class="' + (isP1?'p1':'p2') + '" style="font-weight:600;width:52px">' + r.who + '</td>';
+      rows += '<td style="text-align:center;width:32px" class="' + (sl<=5?'danger p1':'p1') + '">' + sl + '</td>';
+      rows += '<td style="text-align:center;width:32px" class="' + (bl<=5?'danger p2':'p2') + '">' + bl + '</td>';
+      rows += '<td>' + board(r.p1_board) + '</td>';
+      rows += '<td>' + board(r.p2_board) + '</td>';
+      rows += '<td>' + hand(r.hand) + '</td>';
+      rows += '<td class="' + actCls + '">' + r.action + '</td>';
+      rows += '<td style="max-width:320px">' + reason(r) + '</td>';
+      rows += '</tr>';
+    });
+    
+    panel.innerHTML = '<div class="header"><div style="font-weight:500">' + g.winner + ' wins in ' + g.turns + ' turns</div>' +
+      '<div style="color:#565f89;font-size:.8rem">' + p1 + ': ' + g.p1_spells + ' spells, ' + g.p1_final_life + '&#9829; | ' + p2 + ': ' + g.p2_spells + ' spells, ' + g.p2_final_life + '&#9829; <span class="badge">' + g.score[0] + '&ndash;' + g.score[1] + '</span></div></div>' +
+      '<table><thead><tr>' +
+      '<th style="width:28px">T</th>' +
+      '<th style="width:52px">Player</th>' +
+      '<th style="width:32px">' + p1[0] + '&#9829;</th>' +
+      '<th style="width:32px">' + p2[0] + '&#9829;</th>' +
+      '<th>' + p1 + ' Board</th>' +
+      '<th>' + p2 + ' Board</th>' +
+      '<th>Hand</th>' +
+      '<th>Action</th>' +
+      '<th>AI Reasoning</th>' +
+      '</tr></thead><tbody>' + rows + '</tbody></table>';
+    
+    panels.appendChild(panel);
+  });
+}
+
+render();
+</script>
+</body>
+</html>
