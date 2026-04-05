@@ -1506,9 +1506,15 @@ class GameState:
                                 f"(total: {self.players[controller].energy_counters})")
 
         # Dispatch to card effect registry for card-specific ETB logic
+        has_specific_handler = template.name in EFFECT_REGISTRY._handlers
         EFFECT_REGISTRY.execute(
             template.name, EffectTiming.ETB, self, card, controller
         )
+
+        # Generic oracle-text-based ETB resolution for cards WITHOUT specific handlers
+        if not has_specific_handler:
+            from .oracle_resolver import resolve_etb_from_oracle
+            resolve_etb_from_oracle(self, card, controller)
 
         # Generic ETB triggers
         self.trigger_etb(card, controller)
