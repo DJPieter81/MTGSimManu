@@ -94,6 +94,9 @@ class EVPlayer:
         self._response_decider = ResponseDecider(
             player_idx, TurnPlanner(), self.strategic_logger)
 
+        # Storm patience: track whether we've decided to "go off" this turn
+        self._going_off_turn: int = -1  # turn number when we decided to go off
+
         # Card role cache from gameplan (for combo sequencing)
         self._payoff_names: Set[str] = set()
         self._engine_names: Set[str] = set()
@@ -373,7 +376,11 @@ class EVPlayer:
 
         # ── Rituals (combo fuel) — only actual ritual spells, not creatures with "add mana" text ──
         if 'ritual' in tags and (t.is_instant or t.is_sorcery):
-            ev += p.ritual_bonus
+            # With storm patience, ritual_bonus only applies mid-chain (storm > 0)
+            if p.storm_patience and me.spells_cast_this_turn == 0:
+                pass  # Handled by patience gate in _archetype_modifier
+            else:
+                ev += p.ritual_bonus
 
         # ── Past in Flames — bonus for rich graveyard ──
         if 'flashback' in tags and p.pif_gy_fuel_mult > 0:
@@ -393,18 +400,22 @@ class EVPlayer:
 
         # ── Tutors (Wish) — find the finisher ──
         if 'tutor' in tags and p.tutor_base > 0:
-            tutor_val = p.tutor_base
             storm = me.spells_cast_this_turn
-            tutor_val += p.tutor_storm_bonus(storm)
-            # Hold Wish if we have actual chain fuel (rituals/cantrips) in hand or GY flashback
-            all_fuel_sources = list(me.hand) + [g for g in me.graveyard if getattr(g, 'has_flashback', False)]
-            chain_fuel = sum(1 for c in all_fuel_sources if c.instance_id != card.instance_id
-                            and not c.template.is_land and game.can_cast(self.player_idx, c)
-                            and ('ritual' in getattr(c.template, 'tags', set())
-                                 or 'cantrip' in getattr(c.template, 'tags', set())))
-            if chain_fuel > 0 and storm < p.tutor_fuel_storm_cap:
-                tutor_val += chain_fuel * p.tutor_fuel_penalty_mult
-            ev += tutor_val
+            # Storm patience: don't Wish at storm=0 (save for mid-chain)
+            if p.storm_patience and storm == 0:
+                ev += p.storm_hold_penalty
+            else:
+                tutor_val = p.tutor_base
+                tutor_val += p.tutor_storm_bonus(storm)
+                # Hold Wish if we have actual chain fuel (rituals/cantrips) in hand or GY flashback
+                all_fuel_sources = list(me.hand) + [g for g in me.graveyard if getattr(g, 'has_flashback', False)]
+                chain_fuel = sum(1 for c in all_fuel_sources if c.instance_id != card.instance_id
+                                and not c.template.is_land and game.can_cast(self.player_idx, c)
+                                and ('ritual' in getattr(c.template, 'tags', set())
+                                     or 'cantrip' in getattr(c.template, 'tags', set())))
+                if chain_fuel > 0 and storm < p.tutor_fuel_storm_cap:
+                    tutor_val += chain_fuel * p.tutor_fuel_penalty_mult
+                ev += tutor_val
 
         # ── Cost reducers / engines ──
         # Only for cards that ACTUALLY reduce other spells' costs (check oracle),
@@ -575,9 +586,71 @@ class EVPlayer:
         if p.has_combo_chain:
             storm = me.spells_cast_this_turn
             mana = snap.my_mana
+
+            # ── Storm patience: hold rituals until ready to go off ──
+            # At storm=0 (nothing cast yet this turn), check if we have enough
+            # resources to commit to a combo turn. If not, hold rituals.
+            # Once any spell is cast (storm >= 1), rituals fire freely —
+            # this models "cantrip → see what we draw → chain if good".
+            if p.storm_patience and storm == 0 and 'ritual' in tags:
+                # Count fuel in hand (rituals + cantrips, not counting this one)
+                fuel_in_hand = sum(
+                    1 for c in me.hand
+                    if c.instance_id != card.instance_id
+                    and not c.template.is_land
+                    and any(ft in getattr(c.template, 'tags', set())
+                            for ft in ('ritual', 'cantrip', 'draw'))
+                )
+                reducers = sum(
+                    1 for c in me.battlefield
+                    if 'cost_reducer' in getattr(c.template, 'tags', set())
+                )
+                # GY fuel via Past in Flames
+                has_pif = any(c.name == 'Past in Flames' for c in me.hand)
+                gy_fuel = 0
+                if has_pif:
+                    gy_fuel = sum(
+                        1 for c in me.graveyard
+                        if (c.template.is_instant or c.template.is_sorcery)
+                        and 'ritual' in getattr(c.template, 'tags', set())
+                    )
+                total_fuel = fuel_in_hand + gy_fuel + 1  # +1 for this ritual
+                has_finisher_access = any(
+                    c.name in ('Grapeshot', 'Empty the Warrens', 'Wish')
+                    for c in me.hand
+                )
+                # GO: enough fuel + finisher access + mana to start
+                min_fuel = p.storm_min_fuel_to_go if reducers > 0 else p.storm_min_fuel_to_go + 2
+                can_go = (has_finisher_access
+                          and total_fuel >= min_fuel
+                          and mana >= (1 if reducers > 0 else 2))
+                # Desperation: dying or close
+                if snap.am_dead_next and fuel_in_hand >= 1:
+                    can_go = True
+                # Opp at low life
+                if has_finisher_access and snap.opp_life <= total_fuel and total_fuel >= 2:
+                    can_go = True
+
+                if can_go:
+                    mod += p.storm_go_off_bonus
+                else:
+                    mod += p.storm_hold_penalty
+                    return mod
+
             if 'cantrip' in tags or 'draw' in tags:
                 if mana <= 2 and storm >= 3 and 'ritual' in tags:
                     pass  # rituals get priority below when mana-starved
+                elif p.storm_patience and storm == 0:
+                    # Cantrips while waiting: dig for pieces
+                    # Reduced value vs Bowmasters
+                    opp_has_draw_punisher = any(
+                        c.name in ('Orcish Bowmasters',)
+                        for c in opp.creatures
+                    )
+                    if opp_has_draw_punisher:
+                        mod += p.storm_cantrip_vs_bowmasters
+                    else:
+                        mod += p.storm_cantrip_while_waiting
                 else:
                     mod += p.chain_fuel_value(storm)
             if 'ritual' in tags:

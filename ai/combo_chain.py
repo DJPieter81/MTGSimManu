@@ -149,9 +149,9 @@ def _simulate_sequence(
             return None  # can't afford — chain breaks
 
         mana -= cost
-        ritual_info = _RITUAL_MANA.get(t.name)
-        if ritual_info:
-            mana += ritual_info[0]
+        ritual_data = getattr(t, 'ritual_mana', None)
+        if ritual_data:
+            mana += ritual_data[1]  # (color, amount) -> add amount
         if role.is_cost_reducer:
             medallions += 1
         if role.draws_card:
