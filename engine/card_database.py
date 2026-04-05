@@ -1095,6 +1095,19 @@ class CardDatabase:
                     targets_required=targets,
                 ))
 
+        # ── Populate oracle-derived properties ──
+        from .oracle_parser import (
+            parse_ritual_mana, parse_cycling_cost, parse_energy_production,
+            has_cascade, parse_x_cost,
+        )
+        oracle = template.oracle_text or ''
+        template.ritual_mana = parse_ritual_mana(oracle)
+        template.cycling_cost_data = parse_cycling_cost(oracle)
+        template.energy_production = parse_energy_production(oracle)
+        template.is_cascade = has_cascade(oracle)
+        template.x_cost_data = parse_x_cost(oracle, name)
+        template.is_cost_reducer = 'cost_reducer' in template.tags
+
         return template
 
     def _detect_conditional_mana(self, oracle_text: str, name: str) -> Optional[dict]:

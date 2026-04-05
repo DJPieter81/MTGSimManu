@@ -122,12 +122,13 @@ def has_cascade(oracle: str) -> bool:
 
 def parse_x_cost(oracle: str, name: str) -> Optional[Dict]:
     """Parse X-cost spell properties from oracle text."""
-    oracle = oracle.lower()
-    if '{x}' not in oracle:
+    oracle_lower = oracle.lower()
+    # Check both {X} in mana cost format and "X" in oracle text
+    if '{x}' not in oracle_lower and ' x ' not in oracle_lower and not oracle_lower.startswith('x '):
         return None
 
-    # Detect XX costs (Chalice of the Void)
-    multiplier = 2 if '{x}{x}' in oracle else 1
+    # Detect XX costs (Chalice of the Void — {X}{X} mana cost)
+    multiplier = 2 if '{x}{x}' in oracle_lower else 1
 
     return {
         'multiplier': multiplier,
