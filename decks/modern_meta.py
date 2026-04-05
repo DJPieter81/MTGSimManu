@@ -118,12 +118,14 @@ MODERN_DECKS: Dict[str, Dict[str, Dict[str, int]]] = {
             # Draw-2 spells (R each with Medallion — the combo engine)
             "Reckless Impulse": 4,
             "Wrenn's Resolve": 4,
-            "Glimpse the Impossible": 4,
+            "Glimpse the Impossible": 3,
             # Card selection
             "Valakut Awakening // Valakut Stoneforge": 2,
             # Rebuy + Finisher access
             "Past in Flames": 3,
             "Wish": 2,
+            # Storm finisher (1 main, extras in sideboard for Wish)
+            "Grapeshot": 1,
             # Lands (18)
             "Scalding Tarn": 3,
             "Arid Mesa": 3,

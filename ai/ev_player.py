@@ -420,14 +420,22 @@ class EVPlayer:
             else:
                 # PiF value scales with GY fuel — more fuel = more storm count gain
                 ev += p.pif_gy_value(gy_rituals, gy_cantrips)
-                # Mid-chain penalty: cast rituals from hand FIRST, then PiF
-                # Rituals in hand should fire before PiF (they go to GY, then PiF replays them)
+                # Mid-chain: cast rituals from hand FIRST, then PiF
                 hand_rituals = sum(1 for c in me.hand
                                    if c.instance_id != card.instance_id
                                    and 'ritual' in getattr(c.template, 'tags', set())
                                    and (c.template.is_instant or c.template.is_sorcery))
                 if hand_rituals >= 2:
                     ev += p.pif_wait_for_rituals_penalty
+                # (f) Mana check: PiF is useless if we can't afford GY spells after
+                reducers = sum(1 for c in me.battlefield
+                               if 'cost_reducer' in getattr(c.template, 'tags', set()))
+                pif_cost = max(0, (card.template.cmc or 4) - reducers)
+                mana_after_pif = snap.my_mana - pif_cost
+                # Need at least 1 mana to replay a ritual (with reducer) or 2 (without)
+                min_replay_cost = 1 if reducers > 0 else 2
+                if mana_after_pif < min_replay_cost:
+                    ev += p.pif_no_mana_penalty
 
         # ── Tutors (Wish) — find the finisher ──
         if 'tutor' in tags and p.tutor_base > 0:
@@ -693,6 +701,16 @@ class EVPlayer:
                     mod += p.chain_fuel_value(storm)
                 else:
                     mod += p.chain_fuel_value(storm) + storm * p.ritual_storm_scaling
+                # If mid-chain but no finisher access, reduce commitment
+                # (don't dump all rituals when we can't close the game)
+                if p.storm_patience and storm >= 1:
+                    has_finisher = any(
+                        c.name in ('Grapeshot', 'Empty the Warrens', 'Wish')
+                        for c in me.hand
+                        if c.instance_id != card.instance_id
+                    )
+                    if not has_finisher:
+                        mod -= p.chain_fuel_value(storm) * 0.5  # halve the bonus
             mod += p.chain_depth_value(storm)
             from engine.cards import CardType as CT2
             if CT2.PLANESWALKER in t.card_types:

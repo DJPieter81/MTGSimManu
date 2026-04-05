@@ -169,6 +169,7 @@ class StrategyProfile:
     pif_redundant_penalty: float = -30.0
     pif_empty_gy_penalty: float = -20.0    # penalty when GY has < 2 instants/sorceries
     pif_wait_for_rituals_penalty: float = -5.0  # delay PiF when hand still has 2+ rituals to cast first
+    pif_no_mana_penalty: float = -15.0   # penalty when not enough mana left to replay spells after PiF
 
     # ── Cost reducer (generalized curve) ──
     # reducer_ev(storm, fuel) computed by method
