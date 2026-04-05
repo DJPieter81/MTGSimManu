@@ -107,8 +107,18 @@ class ResponseDecider:
         for instant in instants:
             tags = instant.template.tags
 
-            # Counterspell
+            # Counterspell — check targeting restrictions
             if "counterspell" in tags and stack_item.source.template.is_spell:
+                # Noncreature-only counters (Spell Pierce, Negate, Stubborn Denial,
+                # Mystical Dispute, Flusterstorm) can't target creature spells
+                oracle = (instant.template.oracle_text or '').lower()
+                target_spell = stack_item.source.template
+                if 'noncreature' in oracle and target_spell.is_creature:
+                    continue  # Can't counter a creature spell with this
+                # "Counter target instant or sorcery" also can't hit creatures
+                if ('instant or sorcery' in oracle
+                    and not (target_spell.is_instant or target_spell.is_sorcery)):
+                    continue
                 response_value = threat
                 cost = instant.template.cmc
                 if response_value >= 3.0 or (response_value >= 1.5 and cost <= 2):

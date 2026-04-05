@@ -1988,9 +1988,24 @@ class GameState:
                             self._exile_permanent(target)
 
             elif "counter" in desc:
-                # Counter target spell: remove it from the stack
-                # The counterspell targets the spell below it on the stack
+                # Validate counterspell targeting restrictions
+                counter_oracle = (card.template.oracle_text or '').lower()
+                target_template = None
                 if item.targets:
+                    for tid in item.targets:
+                        for si in self.stack.items:
+                            if si.source.instance_id == tid:
+                                target_template = si.source.template
+                                break
+                elif not self.stack.is_empty:
+                    target_template = self.stack.top.source.template if self.stack.top else None
+
+                # Noncreature-only counters can't hit creatures
+                if target_template and 'noncreature' in counter_oracle and target_template.is_creature:
+                    self.log.append(f"T{self.turn_number}: {card.name} fizzles (can't counter creature)")
+                elif target_template and 'instant or sorcery' in counter_oracle and not (target_template.is_instant or target_template.is_sorcery):
+                    self.log.append(f"T{self.turn_number}: {card.name} fizzles (wrong target type)")
+                elif item.targets:
                     for tid in item.targets:
                         # Find the targeted spell on the stack
                         for i, stack_item in enumerate(self.stack.items):
