@@ -691,10 +691,12 @@ class GameRunner:
                 success = game.cast_spell(ai.player_idx, card, targets)
                 if not success:
                     # Track consecutive failed casts to prevent infinite loops
-                    if card == _last_failed_card:
+                    # Compare by card NAME (not identity) — multiple copies
+                    # of the same card would cycle the loop otherwise
+                    if _last_failed_card and card.name == _last_failed_card.name:
                         _consecutive_fails += 1
                         if _consecutive_fails >= 2:
-                            break  # Same card failing repeatedly — stop
+                            break  # Same card name failing repeatedly — stop
                     else:
                         _last_failed_card = card
                         _consecutive_fails = 1

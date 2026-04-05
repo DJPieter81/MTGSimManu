@@ -25,7 +25,10 @@ from ai.ev_evaluator import (
 
 # Archetype detection — single source of truth in strategy_profile.py
 def _get_archetype(deck_name: str) -> str:
-    from ai.strategy_profile import DECK_ARCHETYPES, ArchetypeStrategy
+    from ai.strategy_profile import DECK_ARCHETYPES, ArchetypeStrategy, DECK_ARCHETYPE_OVERRIDES
+    # Per-deck overrides (e.g., Ruby Storm → "storm" instead of generic "combo")
+    if deck_name in DECK_ARCHETYPE_OVERRIDES:
+        return DECK_ARCHETYPE_OVERRIDES[deck_name]
     arch = DECK_ARCHETYPES.get(deck_name)
     return arch.value if arch else "midrange"
 
@@ -754,6 +757,24 @@ class EVPlayer:
             triggers = 2 if is_fetch else 1
             ev += landfall_count * triggers * p.land_landfall_trigger_value
 
+        # Landfall deferral: if a landfall creature is in hand and castable
+        # with CURRENT mana (without this land), defer the land play so the
+        # creature resolves first — then the land triggers landfall.
+        # e.g., with 4 mana and Omnath in hand: cast Omnath THEN play land
+        # for +4 life from landfall.
+        current_mana = len(me.untapped_lands) + me.mana_pool.total() + me._tron_mana_bonus()
+        for spell in me.hand:
+            if spell.template.is_land:
+                continue
+            oracle = (spell.template.oracle_text or '').lower()
+            if 'landfall' not in oracle:
+                continue
+            # Check if this landfall creature is castable with current mana
+            if game.can_cast(self.player_idx, spell):
+                # Defer the land — make the spell get played first
+                ev += p.land_landfall_defer_penalty
+                break
+
         return ev
 
     def _score_cycling(self, card, snap, game, me, opp) -> float:
@@ -1077,6 +1098,16 @@ class EVPlayer:
                 best = max(etb_creatures, key=lambda c: creature_value(c))
                 return [best.instance_id]
 
+        # Reanimate: target best creature in our graveyard
+        if 'reanimate' in tags:
+            me = game.players[self.player_idx]
+            gy_creatures = [c for c in me.graveyard if c.template.is_creature]
+            if gy_creatures:
+                best = max(gy_creatures,
+                           key=lambda c: (c.template.power or 0) + (c.template.toughness or 0))
+                return [best.instance_id]
+            return []  # No targets = can't cast
+
         return []
 
     def _pick_best_removal_target(self, card, creatures, player,
@@ -1116,6 +1147,9 @@ class EVPlayer:
         if 'removal' in tags and 'board_wipe' not in tags:
             return True
         if 'blink' in tags:
+            return True
+        # Reanimate spells need a creature in the graveyard
+        if 'reanimate' in tags:
             return True
         for ability in t.abilities:
             if ability.targets_required > 0:

@@ -194,6 +194,7 @@ class StrategyProfile:
     land_new_color_bonus: float = 4.0
     land_fetch_bonus: float = 3.0
     land_landfall_trigger_value: float = 3.0
+    land_landfall_defer_penalty: float = -12.0  # defer land when landfall creature is castable
 
     # ── Cycling (Living End etc.) ──
     cycling_creature_gy_value: float = 4.0     # creature in GY for reanimation
@@ -337,6 +338,7 @@ CONTROL = StrategyProfile(
     phase_late=(0.0, 0.0, 0.0, 0.0, 5.0, 4.0),
     card_draw_archetype_bonus=2.0,
     holdback_penalty=-2.0,
+    burn_face_mult=0.0,  # Control saves burn spells as removal, not face damage
 )
 
 COMBO = StrategyProfile(
@@ -356,7 +358,30 @@ COMBO = StrategyProfile(
     planeswalker_mid_chain_penalty=-8.0,
     holdback_applies=False,
     attack_threshold=0.0,
-    # Storm patience: hold rituals until ready to go off
+    # Storm patience OFF by default for combo — only Ruby Storm enables it
+    # (Goryo's, Amulet Titan, Living End don't use storm count)
+    storm_patience=False,
+    card_draw_archetype_bonus=0.0,
+)
+
+# Storm-specific override: Ruby Storm uses storm_patience
+STORM = StrategyProfile(
+    has_combo_chain=True,
+    ritual_bonus=5.0,
+    reducer_base=3.0,
+    reducer_combo_mult=4.0,
+    reducer_mid_chain=-5.0,
+    reducer_early_chain=4.0,
+    reducer_early_turn_bonus=6.0,
+    reducer_first_bonus=4.0,
+    pre_chain_planeswalker_bonus=4.0,
+    zero_mana_combo_bonus=4.0,
+    chain_fuel_base=5.0,
+    chain_fuel_late_mult=0.6,
+    chain_depth_bonus=4.0,
+    planeswalker_mid_chain_penalty=-8.0,
+    holdback_applies=False,
+    attack_threshold=0.0,
     storm_patience=True,
     storm_hold_penalty=-15.0,
     storm_go_off_bonus=15.0,
@@ -383,8 +408,14 @@ PROFILES = {
     "midrange": MIDRANGE,
     "control": CONTROL,
     "combo": COMBO,
+    "storm": STORM,
     "ramp": RAMP,
     "tempo": TEMPO,
+}
+
+# Per-deck archetype overrides (deck_name -> archetype key in PROFILES)
+DECK_ARCHETYPE_OVERRIDES = {
+    "Ruby Storm": "storm",
 }
 
 

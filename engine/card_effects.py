@@ -1463,3 +1463,130 @@ def valakut_awakening_resolve(game, card, controller, targets=None, item=None):
 def march_of_reckless_joy_resolve(game, card, controller, targets=None, item=None):
     # Simplified: draw 2 (exile-play)
     game.draw_cards(controller, 2)
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Amulet Titan effects
+# ═══════════════════════════════════════════════════════════════════
+
+@EFFECT_REGISTRY.register("Explore", EffectTiming.SPELL_RESOLVE,
+                           description="Draw a card, may play an additional land this turn")
+def explore_resolve(game, card, controller, targets=None, item=None):
+    game.draw_cards(controller, 1)
+    game.players[controller].extra_land_drops += 1
+    game.log.append(f"T{game.turn_number} P{controller+1}: Explore — draw 1, extra land drop")
+
+
+@EFFECT_REGISTRY.register("Green Sun's Zenith", EffectTiming.SPELL_RESOLVE,
+                           description="Search library for green creature CMC <= X, put onto battlefield")
+def green_suns_zenith_resolve(game, card, controller, targets=None, item=None):
+    from .cards import Color
+    player = game.players[controller]
+    x_value = getattr(card, '_x_value', 0) or 0
+    # Find best green creature with CMC <= X
+    candidates = [
+        c for c in player.library
+        if c.template.is_creature
+        and Color.GREEN in c.template.color_identity
+        and (c.template.cmc or 0) <= x_value
+    ]
+    if candidates:
+        best = max(candidates, key=lambda c: (c.template.power or 0) + (c.template.toughness or 0))
+        player.library.remove(best)
+        game.rng.shuffle(player.library)
+        best.controller = controller
+        best.enter_battlefield()
+        player.battlefield.append(best)
+        game._handle_permanent_etb(best, controller)
+        game.log.append(f"T{game.turn_number} P{controller+1}: "
+                        f"Green Sun's Zenith finds {best.name}")
+    # Shuffle GSZ back into library (unique to this card)
+    # card is already in graveyard at this point; move it to library
+    if card in player.graveyard:
+        player.graveyard.remove(card)
+        card.zone = "library"
+        player.library.append(card)
+        game.rng.shuffle(player.library)
+
+
+@EFFECT_REGISTRY.register("Summoner's Pact", EffectTiming.SPELL_RESOLVE,
+                           description="Search library for a green creature, put into hand")
+def summoners_pact_resolve(game, card, controller, targets=None, item=None):
+    from .cards import Color
+    player = game.players[controller]
+    candidates = [
+        c for c in player.library
+        if c.template.is_creature
+        and Color.GREEN in c.template.color_identity
+    ]
+    if candidates:
+        best = max(candidates, key=lambda c: (c.template.power or 0) + (c.template.toughness or 0))
+        player.library.remove(best)
+        game.rng.shuffle(player.library)
+        best.zone = "hand"
+        player.hand.append(best)
+        game.log.append(f"T{game.turn_number} P{controller+1}: "
+                        f"Summoner's Pact finds {best.name}")
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Jeskai Blink / Control effects
+# ═══════════════════════════════════════════════════════════════════
+
+@EFFECT_REGISTRY.register("Teferi, Time Raveler", EffectTiming.ETB,
+                           description="Teferi ETB: bounce a permanent, draw a card")
+def teferi_time_raveler_etb(game, card, controller, targets=None, item=None):
+    """Teferi -3: bounce an opponent's nonland permanent, draw a card."""
+    opponent = 1 - controller
+    opp = game.players[opponent]
+    # Bounce best nonland permanent
+    nonlands = [c for c in opp.battlefield if not c.template.is_land]
+    if nonlands:
+        target = max(nonlands, key=lambda c: (c.template.cmc or 0))
+        game.zone_mgr.move_card(game, target, "battlefield", "hand",
+                                cause="Teferi bounce")
+        game.log.append(f"T{game.turn_number} P{controller+1}: "
+                        f"Teferi bounces {target.name}")
+    game.draw_cards(controller, 1)
+
+
+@EFFECT_REGISTRY.register("Snapcaster Mage", EffectTiming.ETB,
+                           description="Give flashback to an instant or sorcery in graveyard")
+def snapcaster_mage_etb(game, card, controller, targets=None, item=None):
+    player = game.players[controller]
+    candidates = [c for c in player.graveyard
+                  if (c.template.is_instant or c.template.is_sorcery)
+                  and not getattr(c, 'has_flashback', False)]
+    if candidates:
+        # Pick best: removal > counterspell > draw > other, then by CMC
+        def snap_priority(c):
+            tags = getattr(c.template, 'tags', set())
+            if 'removal' in tags: return (3, c.template.cmc or 0)
+            if 'counterspell' in tags: return (2, c.template.cmc or 0)
+            if 'cantrip' in tags: return (1, c.template.cmc or 0)
+            return (0, c.template.cmc or 0)
+        best = max(candidates, key=snap_priority)
+        best.has_flashback = True
+        game.log.append(f"T{game.turn_number} P{controller+1}: "
+                        f"Snapcaster gives flashback to {best.name}")
+
+
+@EFFECT_REGISTRY.register("Wall of Omens", EffectTiming.ETB,
+                           description="Draw a card")
+def wall_of_omens_etb(game, card, controller, targets=None, item=None):
+    game.draw_cards(controller, 1)
+
+
+@EFFECT_REGISTRY.register("Spell Queller", EffectTiming.ETB,
+                           description="Exile target spell with CMC 4 or less from stack")
+def spell_queller_etb(game, card, controller, targets=None, item=None):
+    # Simplified: exile top spell from stack if CMC <= 4
+    if not game.stack.is_empty:
+        top = game.stack.top
+        if top and (top.source.template.cmc or 0) <= 4:
+            spell_card = top.source
+            game.stack.remove_top()
+            game.zone_mgr.move_card(game, spell_card, spell_card.zone, "exile",
+                                    cause="Spell Queller exile")
+            game.log.append(f"T{game.turn_number} P{controller+1}: "
+                            f"Spell Queller exiles {spell_card.name}")

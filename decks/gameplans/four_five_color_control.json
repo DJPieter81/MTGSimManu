@@ -1,0 +1,87 @@
+{
+  "deck_name": "4/5c Control",
+  "archetype": "control",
+  "goals": [
+    {
+      "goal_type": "INTERACT",
+      "description": "Interact early, deploy Quantum Riddler or Teferi for card advantage",
+      "card_priorities": {
+        "Quantum Riddler": 24.0,
+        "Omnath, Locus of Creation": 26.0,
+        "Prismatic Ending": 22.0,
+        "Galvanic Discharge": 20.0,
+        "Teferi, Time Raveler": 20.0,
+        "Wrenn and Six": 18.0,
+        "Wrath of the Skies": 16.0,
+        "Solitude": 22.0,
+        "Orim's Chant": 10.0,
+        "Ephemerate": 15.0
+      },
+      "card_roles": {
+        "interaction": [
+          "Galvanic Discharge",
+          "Orim's Chant",
+          "Prismatic Ending",
+          "Solitude",
+          "Wrath of the Skies"
+        ],
+        "engines": [
+          "Teferi, Time Raveler",
+          "Wrenn and Six"
+        ],
+        "payoffs": [
+          "Omnath, Locus of Creation",
+          "Quantum Riddler"
+        ]
+      },
+      "min_turns": 2
+    },
+    {
+      "goal_type": "GRIND_VALUE",
+      "description": "Blink value creatures, Chant to protect combo turns",
+      "card_priorities": {
+        "Omnath, Locus of Creation": 25.0,
+        "Quantum Riddler": 24.0,
+        "Ephemerate": 22.0,
+        "Solitude": 22.0,
+        "Eternal Witness": 18.0,
+        "Stock Up": 12.0,
+        "Phlage, Titan of Fire's Fury": 16.0
+      },
+      "card_roles": {
+        "payoffs": [
+          "Omnath, Locus of Creation",
+          "Quantum Riddler"
+        ],
+        "enablers": [
+          "Ephemerate",
+          "Eternal Witness"
+        ],
+        "interaction": [
+          "Solitude"
+        ]
+      }
+    },
+    {
+      "goal_type": "CLOSE_GAME",
+      "description": "Close with Quantum Riddler beats, Omnath value, or Phlage",
+      "card_priorities": {
+        "Quantum Riddler": 22.0,
+        "Omnath, Locus of Creation": 20.0,
+        "Phlage, Titan of Fire's Fury": 18.0,
+        "Wrath of the Skies": 15.0
+      }
+    }
+  ],
+  "mulligan_keys": [
+    "Omnath, Locus of Creation",
+    "Quantum Riddler",
+    "Prismatic Ending",
+    "Solitude",
+    "Teferi, Time Raveler",
+    "Wrenn and Six"
+  ],
+  "reactive_only": [
+    "Orim's Chant"
+  ]
+}
