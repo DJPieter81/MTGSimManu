@@ -138,9 +138,9 @@ class EVPlayer:
         lands = [c for c in hand if c.template.is_land]
         spells = [c for c in hand if not c.template.is_land]
 
-        if cards_in_hand <= 5:
+        if cards_in_hand <= self.profile.mulligan_always_keep:
             return True
-        if len(lands) == 0 or len(lands) >= 6:
+        if len(lands) == 0 or len(lands) >= self.profile.mulligan_bad_land_count:
             return False
         return self._mulligan_decider.decide(hand, cards_in_hand)
 
@@ -221,9 +221,12 @@ class EVPlayer:
             # - It's removal with a high-value target (4+ power creature)
             if spell.name in self._reactive_only:
                 if not spell.template.is_creature:
-                    is_dying = snap.am_dead_next or (snap.opp_power >= 3 and snap.opp_clock <= 3)
+                    prof = self.profile
+                    is_dying = snap.am_dead_next or (snap.opp_power >= prof.dying_opp_power
+                                                     and snap.opp_clock <= prof.dying_opp_clock)
                     has_big_target = ('removal' in tags and
-                                     any((c.power or 0) >= 4 for c in opp.creatures))
+                                     any((c.power or 0) >= prof.big_creature_power
+                                         for c in opp.creatures))
                     if not is_dying and not has_big_target:
                         continue
 
@@ -279,7 +282,7 @@ class EVPlayer:
                         ev += p.evoke_small_target_penalty
                     else:
                         ev += best_val
-                    if snap.opp_power >= snap.my_life - 3 and snap.opp_power > 0:
+                    if snap.opp_power >= snap.my_life - p.evoke_pressure_life_buffer and snap.opp_power > 0:
                         ev += p.evoke_pressure_bonus
                     elif snap.am_dead_next:
                         ev += p.evoke_lethal_bonus
@@ -294,7 +297,7 @@ class EVPlayer:
             # Haste: immediate attack value
             from engine.cards import Keyword
             if Keyword.HASTE in getattr(t, 'keywords', set()):
-                ev += (card.power or 0) * 1.0
+                ev += (card.power or 0) * p.haste_damage_mult
 
         # ── Removal ──
         # Only penalize removal when NO creatures AND card isn't also a creature
@@ -313,7 +316,7 @@ class EVPlayer:
                 ev += p.wrath_empty_board_penalty
             else:
                 ev += opp_board - my_board
-                if snap.opp_creature_count >= 3:
+                if snap.opp_creature_count >= p.wrath_min_creatures + 1:
                     ev += p.wrath_multi_kill_bonus
 
         # ── Burn (face damage) ──
@@ -322,7 +325,7 @@ class EVPlayer:
         if burn_dmg > 0:
             if burn_dmg >= snap.opp_life:
                 ev += p.lethal_burn_bonus  # lethal!
-            elif p.burn_face_mult > 0.5:
+            elif p.burn_face_mult > 0:
                 ev += burn_dmg * p.burn_face_mult
             else:
                 # Non-aggro: prefer using as removal
@@ -334,9 +337,9 @@ class EVPlayer:
         if is_draw:
             # Base draw value scales with how much we need cards
             draw_val = p.card_draw_base
-            if snap.my_hand_size <= 2:
+            if snap.my_hand_size <= p.empty_hand_threshold:
                 draw_val += p.card_draw_empty_hand_bonus
-            elif snap.my_hand_size <= 4:
+            elif snap.my_hand_size <= p.low_hand_threshold:
                 draw_val += p.card_draw_low_hand_bonus
             oracle = (t.oracle_text or '').lower()
             if 'draw three' in oracle:
@@ -387,7 +390,7 @@ class EVPlayer:
                             and not c.template.is_land and game.can_cast(self.player_idx, c)
                             and ('ritual' in getattr(c.template, 'tags', set())
                                  or 'cantrip' in getattr(c.template, 'tags', set())))
-            if chain_fuel > 0 and storm < 6:
+            if chain_fuel > 0 and storm < p.tutor_fuel_storm_cap:
                 tutor_val += chain_fuel * p.tutor_fuel_penalty_mult
             ev += tutor_val
 
@@ -432,7 +435,7 @@ class EVPlayer:
 
         # ── Mana holdback penalty ──
         # Don't hold mana when opponent has no clock (opp_clock >= 10)
-        if p.holdback_applies and snap.turn_number >= p.holdback_min_turn and snap.opp_clock < 10:
+        if p.holdback_applies and snap.turn_number >= p.holdback_min_turn and snap.opp_clock < p.holdback_opp_clock_threshold:
             has_instant = any(
                 c.template.is_instant and (
                     'removal' in getattr(c.template, 'tags', set()) or
@@ -442,7 +445,7 @@ class EVPlayer:
             )
             if has_instant and not t.is_instant:
                 remaining_mana = snap.my_mana - cmc
-                if remaining_mana < 2:
+                if remaining_mana < p.holdback_min_remaining_mana:
                     ev += p.holdback_penalty
 
         # ── Storm finisher sequencing ──
@@ -496,13 +499,13 @@ class EVPlayer:
         if t.is_creature:
             if (t.cmc or 0) <= snap.turn_number:
                 mod += p.on_curve_creature_bonus
-            if (t.cmc or 0) <= 2:
+            if (t.cmc or 0) <= p.cheap_creature_cmc:
                 mod += p.cheap_creature_bonus
             if snap.my_creature_count == 0:
                 mod += p.empty_board_creature_bonus
             if t.has_flash:
                 mod += p.flash_creature_bonus
-            if (t.power or 0) >= 3:
+            if (t.power or 0) >= p.high_power_threshold:
                 mod += p.high_power_creature_bonus
             if 'card_advantage' in tags:
                 mod += p.card_advantage_creature_bonus
@@ -510,18 +513,18 @@ class EVPlayer:
         # ── Removal bonuses ──
         if 'removal' in tags and snap.opp_creature_count > 0:
             mod += p.removal_vs_creatures_bonus
-            if snap.opp_power >= 4:
+            if snap.opp_power >= p.big_creature_power:
                 mod += p.removal_vs_big_creatures_bonus
 
         # ── Discard (Thoughtseize) ──
         if 'discard' in tags:
-            if snap.turn_number <= 3:
+            if snap.turn_number <= p.discard_early_turns:
                 mod += p.discard_early_bonus
-            elif snap.opp_hand_size >= 3:
+            elif snap.opp_hand_size >= p.discard_min_opp_hand:
                 mod += p.discard_late_bonus
 
         # ── Burn at low life ──
-        if snap.opp_life <= 10 and p.burn_low_life_bonus > 0:
+        if snap.opp_life <= p.burn_low_life_threshold and p.burn_low_life_bonus > 0:
             from decks.card_knowledge_loader import get_burn_damage
             if get_burn_damage(t.name) > 0:
                 mod += p.burn_low_life_bonus
@@ -534,11 +537,11 @@ class EVPlayer:
             from engine.cards import CardType
             if 'removal' in tags and snap.opp_creature_count > 0:
                 mod += p.phase_bonus(turn, 0)
-            if cmc_val <= 2 and not t.is_land:
+            if cmc_val <= p.control_cheap_spell_cmc and not t.is_land:
                 mod += p.phase_bonus(turn, 1)
             if CardType.PLANESWALKER in t.card_types:
                 mod += p.phase_bonus(turn, 2)
-            if 'board_wipe' in tags and snap.opp_creature_count >= 2:
+            if 'board_wipe' in tags and snap.opp_creature_count >= p.wrath_min_creatures:
                 mod += p.phase_bonus(turn, 3)
             if card.name in self._payoff_names:
                 mod += p.phase_bonus(turn, 4)
@@ -613,24 +616,23 @@ class EVPlayer:
 
         # Cycling creatures into GY is the Living End gameplan
         if card.template.is_creature:
-            ev += 4.0  # creature in GY = future Living End value
-            # Bigger creatures are better in GY for Living End
+            ev += p.cycling_creature_gy_value
             power = card.template.power or 0
-            ev += power * 0.5
+            ev += power * p.cycling_power_scaling
 
         # Cycling cost matters — cheaper is better
         cost_data = card.template.cycling_cost_data
         if cost_data:
             if cost_data.get('life', 0) > 0:
-                ev += 2.0  # free cycling (pay life, not mana) — great tempo
+                ev += p.cycling_life_pay_bonus
             elif cost_data.get('mana', 0) <= 1:
-                ev += 1.0  # cheap cycling
+                ev += p.cycling_cheap_bonus
 
         # If we have a cascade spell in hand, cycling to fill GY is urgent
         has_cascade = any(getattr(c.template, 'is_cascade', False) for c in me.hand
                          if not c.template.is_land)
         if has_cascade:
-            ev += 3.0  # cascade is ready — fill GY fast
+            ev += p.cycling_cascade_ready_bonus
 
         return ev
 
@@ -648,7 +650,7 @@ class EVPlayer:
             val = creature_value(c)
             # Penalize overkill: using 5-mana removal on a 1/1 is wasteful
             target_cmc = c.template.cmc or 0
-            if removal_cmc > target_cmc + 2:
+            if removal_cmc > target_cmc + self.profile.removal_overkill_cmc_diff:
                 val *= self.profile.removal_overkill_mult  # overkill penalty for inefficient removal
             if val > best:
                 best = val
@@ -674,13 +676,14 @@ class EVPlayer:
         for creature in valid:
             oracle = (creature.template.oracle_text or "").lower()
             if "discard a card" in oracle and "+1/+1" in oracle:
+                prof = self.profile
                 discardable = [c for c in me.hand
                                if not c.template.is_land
-                               and c.template.cmc > len(me.untapped_lands) + 2]
-                if len(me.lands) >= 5:
+                               and c.template.cmc > len(me.untapped_lands) + prof.pump_uncastable_cmc_buffer]
+                if len(me.lands) >= prof.pump_extra_lands_threshold:
                     extra_lands = [c for c in me.hand if c.template.is_land]
-                    discardable.extend(extra_lands[:2])
-                pumps = min(len(discardable), 2)
+                    discardable.extend(extra_lands[:prof.pump_max_discards])
+                pumps = min(len(discardable), prof.pump_max_discards)
                 for i in range(pumps):
                     card_to_discard = discardable[i]
                     if card_to_discard in me.hand:
@@ -855,7 +858,7 @@ class EVPlayer:
 
             # Compare: is killing a creature worth more than face damage?
             face_val = dmg * self.profile.burn_face_mult
-            if opp.life <= 10:
+            if opp.life <= self.profile.burn_low_life_threshold:
                 face_val = dmg * self.profile.burn_face_low_life_mult
 
             # Prefer removing big creatures unless burn is near-lethal

@@ -79,10 +79,14 @@ class StrategyProfile:
     baseline_cast_bonus: float = 2.0
     mana_efficiency_mult: float = 2.0         # was hardcoded 2.0 in mana efficiency calc
 
+    haste_damage_mult: float = 1.0        # immediate attack value per power
+
     # ── Mana holdback ──
     holdback_penalty: float = -2.0
     holdback_min_turn: int = 0
     holdback_applies: bool = True
+    holdback_opp_clock_threshold: int = 10  # disable holdback when opp has no clock
+    holdback_min_remaining_mana: int = 2    # penalize if remaining mana < this
 
     # ── Combat thresholds ──
     attack_threshold: float = 0.0
@@ -91,6 +95,25 @@ class StrategyProfile:
     survival_removal_bonus: float = 6.0
     survival_blocker_bonus: float = 5.0
     survival_wrath_bonus: float = 8.0
+
+    # ── Thresholds ──
+    mulligan_always_keep: int = 5          # keep at this many cards or fewer
+    mulligan_bad_land_count: int = 6       # mulligan with this many or more lands
+    empty_hand_threshold: int = 2          # hand size <= this triggers empty hand bonus
+    low_hand_threshold: int = 4            # hand size <= this triggers low hand bonus
+    big_creature_power: int = 4            # power >= this = "big creature" for removal/burn
+    high_power_threshold: int = 3          # power >= this for high_power_creature_bonus
+    dying_opp_power: int = 3               # opp_power >= this + clock <= 3 = "dying"
+    dying_opp_clock: int = 3               # (paired with above)
+    burn_low_life_threshold: int = 10      # opp life <= this for burn bonuses
+    evoke_pressure_life_buffer: int = 3    # evoke pressure when opp_power >= life - this
+    discard_early_turns: int = 3           # T1-N = "early" for discard bonus
+    discard_min_opp_hand: int = 3          # late discard only if opp has >= this cards
+    cheap_creature_cmc: int = 2            # CMC <= this = "cheap creature"
+    control_cheap_spell_cmc: int = 2       # CMC <= this = "cheap play" in control phases
+    wrath_min_creatures: int = 2           # wrath bonus needs >= this many opp creatures
+    removal_overkill_cmc_diff: int = 2     # penalty when removal CMC > target CMC + this
+    tutor_fuel_storm_cap: int = 6          # only penalize tutor fuel when storm < this
 
     # ── Creature context bonuses ──
     on_curve_creature_bonus: float = 2.0
@@ -159,6 +182,18 @@ class StrategyProfile:
     land_new_color_bonus: float = 4.0
     land_fetch_bonus: float = 3.0
     land_landfall_trigger_value: float = 3.0
+
+    # ── Cycling (Living End etc.) ──
+    cycling_creature_gy_value: float = 4.0     # creature in GY for reanimation
+    cycling_power_scaling: float = 0.5         # per power point in GY
+    cycling_life_pay_bonus: float = 2.0        # free cycling (pay life)
+    cycling_cheap_bonus: float = 1.0           # mana cost <= 1
+    cycling_cascade_ready_bonus: float = 3.0   # GY filling when cascade in hand
+
+    # ── Pump (Psychic Frog etc.) ──
+    pump_uncastable_cmc_buffer: int = 2        # discard cards with CMC > lands + this
+    pump_extra_lands_threshold: int = 5        # discard extra lands when lands >= this
+    pump_max_discards: int = 2                 # max cards to discard per pump
 
     # ── Wrath ──
     wrath_empty_board_penalty: float = -15.0
