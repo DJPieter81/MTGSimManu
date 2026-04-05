@@ -827,8 +827,11 @@ def wish_resolve(game, card, controller, targets=None, item=None):
     # Grapeshot needs storm >= opponent_life for instant kill
     opp_life = game.players[1 - controller].life
     current_storm = game._global_storm_count
-    # Estimate: after Wish resolves + a few more spells, storm will be ~current+3
-    estimated_storm = current_storm + 3
+    # After Wish resolves, the found card is the next spell = storm + 1
+    # Plus maybe 1-2 more fuel spells if hand has them
+    fuel_in_hand = sum(1 for c in player.hand if not c.template.is_land
+                       and c.name != 'Wish' and c.name != 'Past in Flames')
+    estimated_storm = current_storm + 1 + min(fuel_in_hand, 2)
     if estimated_storm >= opp_life:
         # Grapeshot is lethal — prefer it (instant win, no need to survive a turn)
         finisher_priority = ["Grapeshot", "Empty the Warrens", "Galvanic Relay"]

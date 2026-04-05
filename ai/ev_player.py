@@ -326,7 +326,10 @@ class EVPlayer:
                 pass
 
         # ── Card draw / cantrips ──
-        if 'cantrip' in tags or 'draw' in tags:
+        # Also detect untagged draw spells via oracle text
+        oracle = (t.oracle_text or '').lower()
+        is_draw = 'cantrip' in tags or 'draw' in tags or 'draw' in oracle
+        if is_draw:
             # Base draw value scales with how much we need cards
             draw_val = 4.0
             if snap.my_hand_size <= 2:
@@ -361,26 +364,59 @@ class EVPlayer:
                 ev += 1.0  # marginal for non-combo
 
         # ── Past in Flames — bonus for rich graveyard ──
+        # CRITICAL: never cast PiF if already cast this turn (redundant flashback grant)
         if 'flashback' in tags and self.archetype == "combo":
-            gy_rituals = sum(1 for c in me.graveyard if 'ritual' in getattr(c.template, 'tags', set()))
-            gy_cantrips = sum(1 for c in me.graveyard if 'cantrip' in getattr(c.template, 'tags', set()))
-            ev += gy_rituals * 2.0 + gy_cantrips * 1.0  # scale with GY fuel
+            already_cast_pif = any(
+                c.name == 'Past in Flames' for c in me.graveyard
+                if me.spells_cast_this_turn > 0
+            )
+            if card.name == 'Past in Flames' and already_cast_pif and me.spells_cast_this_turn > 0:
+                ev -= 30.0  # redundant PiF — complete waste
+            else:
+                gy_rituals = sum(1 for c in me.graveyard if 'ritual' in getattr(c.template, 'tags', set()))
+                gy_cantrips = sum(1 for c in me.graveyard if 'cantrip' in getattr(c.template, 'tags', set()))
+                ev += gy_rituals * 2.0 + gy_cantrips * 1.0
 
         # ── Tutors (Wish) — find the finisher ──
         if 'tutor' in tags and self.archetype == "combo":
-            # Wish finds the finisher from sideboard — critical combo piece
-            # Value scales with storm count: higher storm = tutor is more urgent
             tutor_val = 6.0
-            if me.spells_cast_this_turn >= 3:
-                tutor_val += 8.0  # we're mid-chain, need to find finisher NOW
-            elif me.spells_cast_this_turn >= 1:
-                tutor_val += 4.0  # starting to chain, tutor is good
+            storm = me.spells_cast_this_turn
+            if storm >= 8:
+                tutor_val += 20.0  # HIGH storm — find finisher for lethal!
+            elif storm >= 5:
+                tutor_val += 12.0  # decent storm — finisher will be strong
+            elif storm >= 3:
+                tutor_val += 8.0  # mid-chain
+            elif storm >= 1:
+                tutor_val += 4.0
+            # But if we have more fuel to cast first, hold Wish
+            fuel = sum(1 for c in me.hand if c.instance_id != card.instance_id
+                       and not c.template.is_land and game.can_cast(self.player_idx, c)
+                       and 'tutor' not in getattr(c.template, 'tags', set())
+                       and c.name != 'Past in Flames')
+            if fuel > 0 and storm < 8:
+                tutor_val -= fuel * 3.0  # cast fuel first, then tutor
             ev += tutor_val
 
         # ── Cost reducers / engines ──
         if 'cost_reducer' in tags:
             if self.archetype == "combo":
-                ev += 8.0  # engine is the most important piece
+                storm = me.spells_cast_this_turn
+                if storm == 0:
+                    # Pre-chain: Medallion is THE most important play
+                    ev += 12.0
+                    if snap.turn_number <= 4:
+                        ev += 6.0  # T2-3 Medallion enables everything
+                    medallions_on_board = sum(1 for c in me.battlefield
+                                              if 'cost_reducer' in getattr(c.template, 'tags', set()))
+                    if medallions_on_board == 0:
+                        ev += 4.0  # first medallion is critical
+                elif storm >= 5:
+                    # Deep in chain: don't waste 2 mana on a reducer
+                    ev -= 5.0
+                else:
+                    # Early chain: might be worth it if we'll cast 3+ more spells
+                    ev += 4.0
             else:
                 ev += 3.0
 
@@ -401,8 +437,9 @@ class EVPlayer:
         ev += self._archetype_modifier(card, snap, game, me, opp)
 
         # ── Mana efficiency ──
-        if snap.my_mana > 0 and cmc > 0:
-            # Bonus for using mana efficiently (on-curve)
+        if cmc == 0 and self.archetype == "combo":
+            ev += 4.0  # 0-mana spells are free storm count!
+        elif snap.my_mana > 0 and cmc > 0:
             ev += min(cmc / snap.my_mana, 1.0) * 2.0
 
         # ── Mana holdback penalty (control/midrange with instants in hand) ──
@@ -531,15 +568,29 @@ class EVPlayer:
                 mod += 2.0
 
         elif self.archetype == "combo":
-            # Combo (Storm): chain spells aggressively, build toward lethal
+            # Combo (Storm): cantrips first (find fuel), then rituals (add mana)
+            storm = me.spells_cast_this_turn
             if 'cantrip' in tags or 'draw' in tags:
-                mod += 3.0  # dig for pieces / finisher
+                if storm <= 3:
+                    mod += 5.0  # early chain: cantrips find rituals and finisher
+                else:
+                    mod += 3.0  # late chain: still good but rituals more important
             if 'ritual' in tags:
-                mod += 2.0  # rituals fuel the chain
-            if me.spells_cast_this_turn >= 3:
-                mod += 4.0  # mid-chain — every spell matters
-            if me.spells_cast_this_turn >= 6:
-                mod += 4.0  # deep chain — very close to lethal
+                if storm <= 2:
+                    mod += 2.0  # early: save rituals for after cantrips dig
+                else:
+                    mod += 3.0 + storm * 0.5  # deep chain: rituals fuel the finish
+            if storm >= 3:
+                mod += 4.0  # mid-chain
+            if storm >= 6:
+                mod += 4.0  # deep chain
+            # Planeswalkers/cost reducers: great before chain, bad during chain
+            from engine.cards import CardType as CT2
+            if CT2.PLANESWALKER in t.card_types:
+                if storm == 0:
+                    mod += 4.0  # deploy Ral before chaining
+                elif storm >= 3:
+                    mod -= 8.0  # don't waste mana on Ral mid-chain
 
         elif self.archetype == "ramp":
             # Ramp: develop mana, deploy fatties
