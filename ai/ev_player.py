@@ -477,11 +477,14 @@ class EVPlayer:
                         ev += p.finisher_ev(damage_pct)
 
         # ── Survival mode: when facing lethal, boost survival plays ──
+        # Scale by threat size — big creatures need answers more urgently
         if snap.am_dead_next:
+            avg_opp_power = snap.opp_power / max(1, snap.opp_creature_count)
+            power_scale = min(1.0, avg_opp_power / 3.0)
             if 'removal' in tags and snap.opp_creature_count > 0:
-                ev += p.survival_removal_bonus
+                ev += p.survival_removal_bonus * power_scale
             if t.is_creature and (t.toughness or 0) >= 3:
-                ev += p.survival_blocker_bonus
+                ev += p.survival_blocker_bonus * power_scale
             if 'board_wipe' in tags and snap.opp_creature_count > 0:
                 ev += p.survival_wrath_bonus
 
@@ -677,12 +680,46 @@ class EVPlayer:
             oracle = (creature.template.oracle_text or "").lower()
             if "discard a card" in oracle and "+1/+1" in oracle:
                 prof = self.profile
-                discardable = [c for c in me.hand
-                               if not c.template.is_land
-                               and c.template.cmc > len(me.untapped_lands) + prof.pump_uncastable_cmc_buffer]
-                if len(me.lands) >= prof.pump_extra_lands_threshold:
-                    extra_lands = [c for c in me.hand if c.template.is_land]
-                    discardable.extend(extra_lands[:prof.pump_max_discards])
+                # Smart discard: protect removal/counters, discard excess lands/dupes/uncastable
+                hand_lands = [c for c in me.hand if c.template.is_land]
+                hand_spells = [c for c in me.hand if not c.template.is_land]
+                board_names = {c.name for c in me.battlefield}
+                protect_tags = {'removal', 'counterspell'}
+                discardable = []
+
+                # 1. Excess lands (keep 1 for next land drop)
+                if len(hand_lands) >= 2 and len(me.lands) >= 3:
+                    discardable.extend(hand_lands[1:])
+                elif len(hand_lands) >= 1 and len(me.lands) >= prof.pump_extra_lands_threshold:
+                    discardable.extend(hand_lands)
+
+                # 2. Duplicates of cards already on battlefield
+                for c in hand_spells:
+                    tags = getattr(c.template, 'tags', set())
+                    if c.name in board_names and not (tags & protect_tags):
+                        if c not in discardable:
+                            discardable.append(c)
+
+                # 3. High-CMC spells we can't cast soon
+                if len(hand_spells) >= 3:
+                    for c in hand_spells:
+                        tags = getattr(c.template, 'tags', set())
+                        if tags & protect_tags:
+                            continue
+                        if (c.template.cmc or 0) > len(me.lands) + prof.pump_uncastable_cmc_buffer:
+                            if c not in discardable:
+                                discardable.append(c)
+
+                # 4. When pumped and opp is low, also discard cheap cantrips
+                if getattr(creature, 'plus_counters', 0) >= 1 and opp.life <= prof.burn_low_life_threshold + 2:
+                    for c in sorted(hand_spells, key=lambda x: x.template.cmc or 0):
+                        tags = getattr(c.template, 'tags', set())
+                        if tags & protect_tags:
+                            continue
+                        if ('cantrip' in tags or 'draw' in tags) and c not in discardable:
+                            discardable.append(c)
+                            break
+
                 pumps = min(len(discardable), prof.pump_max_discards)
                 for i in range(pumps):
                     card_to_discard = discardable[i]
@@ -690,8 +727,12 @@ class EVPlayer:
                         me.hand.remove(card_to_discard)
                         card_to_discard.zone = "graveyard"
                         me.graveyard.append(card_to_discard)
-                        creature.temp_power_mod += 1
-                        creature.temp_toughness_mod += 1
+                        # Permanent +1/+1 counters, not temp mods
+                        if hasattr(creature, 'plus_counters'):
+                            creature.plus_counters += 1
+                        else:
+                            creature.temp_power_mod += 1
+                            creature.temp_toughness_mod += 1
                 break
 
         # Lethal: alpha strike
@@ -710,6 +751,9 @@ class EVPlayer:
             attack_plan, score_delta = self.combat_planner.plan_attack(vboard)
 
             threshold = self.profile.attack_threshold
+            # When opponent is low, attack more aggressively to close the game
+            if opp.life <= self.profile.burn_low_life_threshold and self.archetype in ('aggro', 'tempo'):
+                threshold -= self.profile.aggro_closing_threshold_reduction
 
             if attack_plan and score_delta > threshold:
                 attack_ids = {vc.instance_id for vc in attack_plan}

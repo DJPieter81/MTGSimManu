@@ -90,6 +90,7 @@ class StrategyProfile:
 
     # ── Combat thresholds ──
     attack_threshold: float = 0.0
+    aggro_closing_threshold_reduction: float = 2.0  # lower threshold when opp at low life
 
     # ── Survival mode ──
     survival_removal_bonus: float = 6.0
@@ -307,10 +308,15 @@ MIDRANGE = StrategyProfile(
     removal_vs_creatures_bonus=4.0,
     removal_vs_big_creatures_bonus=3.0,
     flash_creature_bonus=2.0,
+    high_power_creature_bonus=3.0,     # Murktide gets priority
+    on_curve_creature_bonus=3.0,       # deploy on curve
     cheap_creature_bonus=3.0,
-    discard_early_bonus=4.0,
+    discard_early_bonus=5.0,           # T1 Thoughtseize more urgent
     card_draw_archetype_bonus=2.0,
     holdback_penalty=-2.0,
+    survival_removal_bonus=7.0,
+    survival_blocker_bonus=6.0,
+    pass_threshold=-3.0,
 )
 
 CONTROL = StrategyProfile(

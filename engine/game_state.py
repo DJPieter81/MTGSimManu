@@ -2588,6 +2588,13 @@ class GameState:
                             f"T{self.turn_number} P{attacking_player+1}: "
                             f"{attacker.name} creates Treasure token"
                         )
+                    # Draw on combat damage (Psychic Frog, Ophiomancer etc.)
+                    if 'draw a card' in a_oracle:
+                        self.draw_cards(attacking_player, 1)
+                        self.log.append(
+                            f"T{self.turn_number} P{attacking_player+1}: "
+                            f"{attacker.name} deals combat damage — draw a card"
+                        )
 
     def end_of_turn_cleanup(self):
         """Handle end-of-turn delayed triggers (e.g., Goryo's exile, Dash return)."""
