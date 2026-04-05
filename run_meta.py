@@ -143,6 +143,99 @@ def run_meta_matrix(top_tier: int = None, n_games: int = 20,
     return {'matrix': matrix, 'rankings': rankings, 'names': names}
 
 
+def inspect_deck(deck_name: str) -> str:
+    """Show full deck profile: decklist, gameplan, strategy profile, card tags.
+
+    Usage:
+        python run_meta.py --deck "Ruby Storm"
+    """
+    from ai.gameplan import create_goal_engine, get_gameplan
+    from ai.strategy_profile import get_profile, DECK_ARCHETYPES, DECK_ARCHETYPE_OVERRIDES
+
+    lines = []
+    d = MODERN_DECKS.get(deck_name)
+    if not d:
+        return f'Deck "{deck_name}" not found. Use --list to see available decks.'
+
+    # Header
+    share = METAGAME_SHARES.get(deck_name, 0)
+    lines.append(f'=== {deck_name} ({share:.1f}% meta share) ===\n')
+
+    # Archetype + strategy profile
+    arch_enum = DECK_ARCHETYPES.get(deck_name)
+    arch_str = DECK_ARCHETYPE_OVERRIDES.get(deck_name) or (arch_enum.value if arch_enum else 'midrange')
+    profile = get_profile(arch_str)
+    lines.append(f'Archetype: {arch_str}')
+    lines.append(f'Strategy profile: pass_threshold={profile.pass_threshold}, '
+                 f'holdback={profile.holdback_applies}, '
+                 f'storm_patience={profile.storm_patience}')
+    lines.append(f'  burn_face_mult={profile.burn_face_mult}, '
+                 f'attack_threshold={profile.attack_threshold}')
+    lines.append('')
+
+    # Decklist
+    mainboard = d.get('mainboard', {})
+    sideboard = d.get('sideboard', {})
+
+    creatures = {}
+    spells = {}
+    lands = {}
+    db = CardDatabase()
+    for card_name, count in sorted(mainboard.items()):
+        t = db.get_card(card_name)
+        if t and t.is_land:
+            lands[card_name] = count
+        elif t and t.is_creature:
+            creatures[card_name] = (count, t.power, t.toughness, t.cmc)
+        else:
+            cmc = t.cmc if t else '?'
+            spells[card_name] = (count, cmc)
+
+    lines.append(f'Mainboard ({sum(mainboard.values())} cards):')
+    if creatures:
+        lines.append(f'  Creatures ({sum(v[0] for v in creatures.values())}):')
+        for name, (count, p, th, cmc) in sorted(creatures.items(), key=lambda x: x[1][3]):
+            lines.append(f'    {count}x {name} ({p}/{th}, CMC {cmc})')
+    if spells:
+        lines.append(f'  Spells ({sum(v[0] for v in spells.values())}):')
+        for name, (count, cmc) in sorted(spells.items(), key=lambda x: x[1][1]):
+            t = db.get_card(name)
+            tags = sorted(t.tags) if t else []
+            lines.append(f'    {count}x {name} (CMC {cmc}) [{", ".join(tags)}]')
+    if lands:
+        lines.append(f'  Lands ({sum(lands.values())}):')
+        for name, count in sorted(lands.items()):
+            lines.append(f'    {count}x {name}')
+    if sideboard:
+        lines.append(f'\n  Sideboard ({sum(sideboard.values())}):')
+        for name, count in sorted(sideboard.items()):
+            lines.append(f'    {count}x {name}')
+
+    # Gameplan
+    gp = get_gameplan(deck_name)
+    if gp:
+        lines.append(f'\nGameplan:')
+        lines.append(f'  Mulligan keys: {sorted(gp.mulligan_keys)}')
+        lines.append(f'  Mulligan lands: {gp.mulligan_min_lands}-{gp.mulligan_max_lands}')
+        if gp.reactive_only:
+            lines.append(f'  Reactive only: {sorted(gp.reactive_only)}')
+        if gp.always_early:
+            lines.append(f'  Always early: {sorted(gp.always_early)}')
+        if gp.critical_pieces:
+            lines.append(f'  Critical pieces: {sorted(gp.critical_pieces)}')
+        lines.append('')
+        for i, goal in enumerate(gp.goals):
+            lines.append(f'  Goal {i+1}: {goal.goal_type.value} — {goal.description}')
+            for role, cards in sorted(goal.card_roles.items()):
+                lines.append(f'    {role}: {sorted(cards)}')
+            if goal.resource_target:
+                lines.append(f'    resource: {goal.resource_zone} >= {goal.resource_target}')
+    else:
+        lines.append(f'\nNo gameplan found.')
+
+    return '\n'.join(lines)
+
+
 def run_verbose_game(deck1: str, deck2: str, seed: int = 42000) -> str:
     """Run a single verbose game, return the full log as string."""
     runner = _get_runner()
@@ -326,6 +419,7 @@ if __name__ == '__main__':
     parser.add_argument('--games', '-n', type=int, default=20, help='Games per matchup (default 20)')
     parser.add_argument('--decks', '-d', type=int, default=None, help='Top N decks for matrix')
     parser.add_argument('--seed', '-s', type=int, default=42000, help='Seed for verbose/trace game')
+    parser.add_argument('--deck', metavar='DECK', help='Show deck profile: list, gameplan, strategy')
     parser.add_argument('--list', action='store_true', help='List available decks')
     args = parser.parse_args()
 
@@ -333,6 +427,10 @@ if __name__ == '__main__':
         for name in get_all_deck_names():
             share = METAGAME_SHARES.get(name, 0)
             print(f'  {name:25s} ({share:.1f}% meta share)')
+        sys.exit(0)
+
+    if args.deck:
+        print(inspect_deck(args.deck))
         sys.exit(0)
 
     if args.trace:
