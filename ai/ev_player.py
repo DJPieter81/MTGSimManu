@@ -1,9 +1,7 @@
-"""EV-Based AI Player — clean replacement for AIPlayer.
+"""EV-Based AI Player — data-driven MTG decision engine.
 
-Architecture: get legal plays → score each → pick best.
-No concern pipeline. No GoalEngine. No hardcoded thresholds.
-
-Each archetype has a strategy function that scores candidate plays.
+Architecture: get legal plays → score each via StrategyProfile → pick best.
+All weights in ai/strategy_profile.py. All card effects from oracle text.
 Combat, blocking, and response decisions delegate to existing modules.
 """
 from __future__ import annotations
@@ -55,7 +53,8 @@ class Play:
 class EVPlayer:
     """EV-based AI player. All decisions are EV comparisons.
 
-    Interface matches what GameRunner expects from AIPlayer.
+    Scoring driven by StrategyProfile (ai/strategy_profile.py).
+    Card effects resolved from oracle text (engine/oracle_resolver.py).
     """
 
     def __init__(self, player_idx: int, deck_name: str,
@@ -277,7 +276,7 @@ class EVPlayer:
                         ev += p.evoke_lethal_bonus
                 # Never evoke with no targets
                 if snap.opp_creature_count == 0 and 'removal' in tags:
-                    ev -= 20.0
+                    ev += p.evoke_empty_board_penalty
 
         # ── Creature deployment ──
         is_creature = t.is_creature
@@ -295,7 +294,7 @@ class EVPlayer:
             if best_target_val > 0:
                 ev += best_target_val * p.removal_target_mult
             elif snap.opp_creature_count == 0 and not is_creature:
-                ev -= 3.0  # pure removal with no targets = waste
+                ev += p.removal_no_target_penalty  # pure removal with no targets
 
         # ── Board wipe ──
         if 'board_wipe' in tags:
@@ -313,7 +312,7 @@ class EVPlayer:
         burn_dmg = get_burn_damage(t.name)
         if burn_dmg > 0:
             if burn_dmg >= snap.opp_life:
-                ev += 100.0  # lethal!
+                ev += p.lethal_burn_bonus  # lethal!
             elif p.burn_face_mult > 0.5:
                 ev += burn_dmg * p.burn_face_mult
             else:
@@ -342,7 +341,7 @@ class EVPlayer:
         from engine.cards import CardType
         if not is_creature and not t.is_land:
             if CardType.PLANESWALKER in t.card_types:
-                ev += 6.0  # planeswalkers generate recurring value
+                ev += p.planeswalker_bonus
             elif CardType.ARTIFACT in t.card_types and 'equipment' not in tags:
                 ev += p.artifact_bonus
             elif CardType.ENCHANTMENT in t.card_types:
@@ -354,11 +353,13 @@ class EVPlayer:
 
         # ── Past in Flames — bonus for rich graveyard ──
         if 'flashback' in tags and p.pif_gy_ritual_mult > 0:
-            already_cast_pif = any(
-                c.name == 'Past in Flames' for c in me.graveyard
-                if me.spells_cast_this_turn > 0
-            )
-            if card.name == 'Past in Flames' and already_cast_pif and me.spells_cast_this_turn > 0:
+            # Check if a flashback-granting spell was already cast this turn (redundant)
+            already_cast_flashback_grant = any(
+                'flashback' in getattr(c.template, 'tags', set())
+                and c.zone == 'graveyard'
+                for c in me.graveyard
+            ) if me.spells_cast_this_turn > 0 else False
+            if 'flashback' in tags and already_cast_flashback_grant and me.spells_cast_this_turn > 0:
                 ev += p.pif_redundant_penalty
             else:
                 gy_rituals = sum(1 for c in me.graveyard if 'ritual' in getattr(c.template, 'tags', set()))
@@ -377,13 +378,13 @@ class EVPlayer:
                 tutor_val += p.tutor_storm_3_bonus
             elif storm >= 1:
                 tutor_val += p.tutor_storm_1_bonus
-            # But if we have more fuel to cast first, hold Wish
-            fuel = sum(1 for c in me.hand if c.instance_id != card.instance_id
-                       and not c.template.is_land and game.can_cast(self.player_idx, c)
-                       and 'tutor' not in getattr(c.template, 'tags', set())
-                       and c.name != 'Past in Flames')
-            if fuel > 0 and storm < 8:
-                tutor_val += fuel * p.tutor_fuel_penalty_mult
+            # Hold Wish if we have actual chain fuel (rituals/cantrips) to cast first
+            chain_fuel = sum(1 for c in me.hand if c.instance_id != card.instance_id
+                            and not c.template.is_land and game.can_cast(self.player_idx, c)
+                            and ('ritual' in getattr(c.template, 'tags', set())
+                                 or 'cantrip' in getattr(c.template, 'tags', set())))
+            if chain_fuel > 0 and storm < 6:
+                tutor_val += chain_fuel * p.tutor_fuel_penalty_mult
             ev += tutor_val
 
         # ── Cost reducers / engines ──
@@ -392,11 +393,11 @@ class EVPlayer:
             if storm == 0:
                 ev += p.cost_reducer_pre_chain
                 if snap.turn_number <= 4 and p.cost_reducer_pre_chain > 5:
-                    ev += 6.0  # T2-3 engine enables everything
+                    ev += p.early_reducer_bonus
                 medallions_on_board = sum(1 for c in me.battlefield
                                           if 'cost_reducer' in getattr(c.template, 'tags', set()))
                 if medallions_on_board == 0 and p.cost_reducer_pre_chain > 5:
-                    ev += 4.0  # first reducer is critical
+                    ev += p.first_reducer_bonus
             elif storm >= 5:
                 ev += p.cost_reducer_mid_chain
             else:
@@ -445,7 +446,7 @@ class EVPlayer:
             if Kw.STORM in getattr(t, 'keywords', set()):
                 storm_copies = me.spells_cast_this_turn + 1
                 if storm_copies >= snap.opp_life:
-                    ev += 100.0  # lethal storm! Cast now!
+                    ev += p.lethal_storm_bonus  # lethal storm!
                 else:
                     fuel_in_hand = sum(
                         1 for c in me.hand
@@ -606,7 +607,7 @@ class EVPlayer:
             # Penalize overkill: using 5-mana removal on a 1/1 is wasteful
             target_cmc = c.template.cmc or 0
             if removal_cmc > target_cmc + 2:
-                val *= 0.6  # 40% penalty for inefficient removal
+                val *= self.profile.removal_overkill_mult  # overkill penalty for inefficient removal
             if val > best:
                 best = val
         return best

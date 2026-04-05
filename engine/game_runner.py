@@ -948,9 +948,11 @@ class GameRunner:
         opponent = game.players[opponent_idx]
 
         # Check if player has Goblin Bombardment on the battlefield
+        # Generic: any permanent with "sacrifice a creature: deal 1 damage"
         has_bombardment = any(
-            c.name == "Goblin Bombardment" for c in player.battlefield
-            if not c.template.is_creature
+            'sacrifice a creature' in (c.template.oracle_text or '').lower()
+            and 'damage' in (c.template.oracle_text or '').lower()
+            for c in player.battlefield if not c.template.is_creature
         )
         if not has_bombardment:
             return
