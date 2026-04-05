@@ -754,6 +754,24 @@ class EVPlayer:
             triggers = 2 if is_fetch else 1
             ev += landfall_count * triggers * p.land_landfall_trigger_value
 
+        # Landfall deferral: if a landfall creature is in hand and castable
+        # with CURRENT mana (without this land), defer the land play so the
+        # creature resolves first — then the land triggers landfall.
+        # e.g., with 4 mana and Omnath in hand: cast Omnath THEN play land
+        # for +4 life from landfall.
+        current_mana = len(me.untapped_lands) + me.mana_pool.total() + me._tron_mana_bonus()
+        for spell in me.hand:
+            if spell.template.is_land:
+                continue
+            oracle = (spell.template.oracle_text or '').lower()
+            if 'landfall' not in oracle:
+                continue
+            # Check if this landfall creature is castable with current mana
+            if game.can_cast(self.player_idx, spell):
+                # Defer the land — make the spell get played first
+                ev += p.land_landfall_defer_penalty
+                break
+
         return ev
 
     def _score_cycling(self, card, snap, game, me, opp) -> float:

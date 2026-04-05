@@ -194,6 +194,7 @@ class StrategyProfile:
     land_new_color_bonus: float = 4.0
     land_fetch_bonus: float = 3.0
     land_landfall_trigger_value: float = 3.0
+    land_landfall_defer_penalty: float = -12.0  # defer land when landfall creature is castable
 
     # ── Cycling (Living End etc.) ──
     cycling_creature_gy_value: float = 4.0     # creature in GY for reanimation
