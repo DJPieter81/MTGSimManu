@@ -204,10 +204,13 @@ class EVPlayer:
                 continue
 
             # Skip PURE counterspells in main phase (nothing to target).
-            # Multi-mode cards like Drown in the Loch (counter OR destroy)
-            # should still be considered for their non-counter mode.
+            # Multi-mode cards (Drown in the Loch, Archmage's Charm) that can
+            # counter OR do something else should be allowed through.
             tags = getattr(spell.template, 'tags', set())
-            if 'counterspell' in tags and 'removal' not in tags:
+            oracle = (spell.template.oracle_text or '').lower()
+            is_pure_counter = ('counterspell' in tags and 'removal' not in tags
+                               and 'draw' not in oracle)
+            if is_pure_counter:
                 continue
 
             # Skip reactive-only NON-CREATURE spells unless:
@@ -834,10 +837,12 @@ class EVPlayer:
         opp = game.players[1 - self.player_idx]
 
         # Burn spells FIRST — they can always target face as fallback
-        # Must check before removal, because burn cards often have removal tag
-        # but can go face when no creatures exist (Lightning Bolt, Tribal Flames)
         from decks.card_knowledge_loader import get_burn_damage
+        from engine.cards import Keyword as Kw2
         dmg = get_burn_damage(t.name)
+        # Storm spells (Grapeshot) deal 1 damage × storm copies — always target face
+        if Kw2.STORM in getattr(t, 'keywords', set()) and 'removal' in tags:
+            return [-1]  # Grapeshot always goes face (storm copies auto-target)
         if dmg > 0:
             if dmg >= opp.life:
                 return [-1]  # face = lethal, always go face
@@ -910,7 +915,11 @@ class EVPlayer:
         if t.is_creature or CardType.PLANESWALKER in t.card_types:
             return False
 
+        # Modal spells with draw mode don't require targets (can choose draw)
+        oracle = (t.oracle_text or '').lower()
         if 'counterspell' in tags:
+            if 'draw' in oracle and ('choose' in oracle or '•' in oracle):
+                return False  # modal spell with draw mode (Archmage's Charm)
             return True
         if 'removal' in tags and 'board_wipe' not in tags:
             return True
