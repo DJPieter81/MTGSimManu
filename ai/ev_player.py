@@ -504,9 +504,15 @@ class EVPlayer:
         mod = 0.0
 
         if self.archetype == "aggro":
-            # Aggro: deploy threats fast, burn face
-            if t.is_creature and (t.cmc or 0) <= snap.turn_number:
-                mod += 2.0  # on-curve creature
+            # Aggro: curve out with creatures, burn to finish
+            if t.is_creature:
+                cmc_val = t.cmc or 0
+                if cmc_val <= snap.turn_number:
+                    mod += 3.0  # on-curve creature
+                if cmc_val <= 2:
+                    mod += 2.0  # cheap creatures are premium for aggro
+                if snap.my_creature_count == 0:
+                    mod += 3.0  # MUST deploy a creature if board is empty
             if snap.opp_life <= 10:
                 from decks.card_knowledge_loader import get_burn_damage
                 if get_burn_damage(t.name) > 0:
