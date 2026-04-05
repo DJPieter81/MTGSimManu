@@ -550,10 +550,16 @@ class EVPlayer:
         # ── Combo chain sequencing ──
         if p.has_combo_chain:
             storm = me.spells_cast_this_turn
+            mana = snap.my_mana
             if 'cantrip' in tags or 'draw' in tags:
-                mod += p.cantrip_early_chain if storm <= 3 else p.cantrip_late_chain
+                if mana <= 2 and storm >= 3 and 'ritual' in tags:
+                    pass  # rituals get priority below when mana-starved
+                else:
+                    mod += p.cantrip_early_chain if storm <= 3 else p.cantrip_late_chain
             if 'ritual' in tags:
-                if storm <= 2:
+                if mana <= 2 and storm >= 3:
+                    mod += 8.0  # MANA-STARVED: ritual produces mana to keep going!
+                elif storm <= 2:
                     mod += p.ritual_early_chain
                 else:
                     mod += p.ritual_late_chain + storm * p.ritual_storm_scaling
