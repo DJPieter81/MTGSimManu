@@ -141,6 +141,49 @@ def is_living_end_cascader(oracle: str, card_types: list) -> bool:
     return has_cascade(oracle)
 
 
+def parse_cost_reduction(oracle: str) -> Optional[Dict]:
+    """Parse cost reduction rules from oracle text.
+
+    Returns {'target': str, 'amount': int, 'color': str|None} or None.
+    """
+    oracle = oracle.lower()
+    if 'cost' not in oracle or 'less' not in oracle:
+        return None
+
+    amount = 1
+    m = re.search(r'cost\s*\{(\d+)\}\s*less', oracle)
+    if m:
+        amount = int(m.group(1))
+
+    target = 'all'
+    if 'instant and sorcery' in oracle or 'instants and sorceries' in oracle:
+        target = 'instant_sorcery'
+    elif 'creature spell' in oracle:
+        target = 'creature'
+    elif 'noncreature' in oracle:
+        target = 'noncreature'
+
+    color = None
+    for c_name, c_code in [('red','R'),('blue','U'),('black','B'),('white','W'),('green','G')]:
+        if c_name in oracle:
+            color = c_code
+            break
+
+    return {'target': target, 'amount': amount, 'color': color}
+
+
+def parse_domain_reduction(oracle: str) -> Optional[int]:
+    """Parse domain-based cost reduction.
+
+    Returns reduction per basic land type, or None.
+    """
+    oracle = oracle.lower()
+    if 'basic land type' not in oracle or 'less' not in oracle:
+        return None
+    m = re.search(r'costs?\s*\{(\d+)\}\s*less.*basic land type', oracle)
+    return int(m.group(1)) if m else 1
+
+
 def parse_planeswalker_abilities(oracle: str) -> Optional[Dict]:
     """Parse planeswalker loyalty abilities from oracle text.
 

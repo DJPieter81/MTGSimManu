@@ -1098,7 +1098,7 @@ class CardDatabase:
         # ── Populate oracle-derived properties ──
         from .oracle_parser import (
             parse_ritual_mana, parse_cycling_cost, parse_energy_production,
-            has_cascade, parse_x_cost,
+            has_cascade, parse_x_cost, parse_domain_reduction,
         )
         oracle = template.oracle_text or ''
         template.ritual_mana = parse_ritual_mana(oracle)
@@ -1107,6 +1107,7 @@ class CardDatabase:
         template.is_cascade = has_cascade(oracle)
         template.x_cost_data = parse_x_cost(oracle, name)
         template.is_cost_reducer = 'cost_reducer' in template.tags
+        template.domain_reduction = parse_domain_reduction(oracle) or 0
 
         return template
 

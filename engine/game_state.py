@@ -462,13 +462,14 @@ class GameState:
 
         # Cost reductions
         reduction = 0
-        # Domain cost reduction for specific cards
-        if card_name in ("Scion of Draco", "Leyline Binding"):
-            domain = self._count_domain(player_idx)
-            if card_name == "Scion of Draco":
-                reduction += 2 * domain  # Scion: costs {2} less per basic land type
-            else:
-                reduction += domain  # Leyline Binding: costs {1} less per basic land type
+        # Domain cost reduction (from oracle-derived template property)
+        # Replaces hardcoded "Scion of Draco" / "Leyline Binding" checks
+        if card_name:
+            for c in list(self.players[player_idx].hand) + list(self.players[player_idx].graveyard):
+                if c.template.name == card_name and c.template.domain_reduction > 0:
+                    domain = self._count_domain(player_idx)
+                    reduction += c.template.domain_reduction * domain
+                    break
         # Ruby Medallion and Affinity cost reductions
         player = self.players[player_idx]
         if card_name:
@@ -476,16 +477,9 @@ class GameState:
             all_cards = list(player.hand) + list(player.graveyard)
             for c in all_cards:
                 if c.template.name == card_name:
-                    # Ruby Medallion: red instants/sorceries cost {1} less
-                    # Ral, Monsoon Mage: instant and sorcery spells cost {1} less
-                    if (c.template.is_instant or c.template.is_sorcery) and \
-                       Color.RED in c.template.color_identity:
-                        medallion_count = sum(
-                            1 for b in player.battlefield
-                            if b.template.name == "Ruby Medallion"
-                            or b.template.name == "Ral, Monsoon Mage // Ral, Leyline Prodigy"
-                        )
-                        reduction += medallion_count
+                    # Generic cost reduction from permanents
+                    from .oracle_resolver import count_cost_reducers
+                    reduction += count_cost_reducers(self, player_idx, c.template)
                     # Affinity for artifacts
                     if Keyword.AFFINITY in c.template.keywords:
                         artifact_count = sum(
@@ -670,22 +664,16 @@ class GameState:
 
         # Cost reductions
         effective_cmc = template.mana_cost.cmc
-        # Domain cost reduction: Scion of Draco, Leyline Binding
-        if template.name in ("Scion of Draco", "Leyline Binding"):
+        # Domain cost reduction (from oracle-derived template property)
+        if template.domain_reduction > 0:
             domain = self._count_domain(player_idx)
-            if template.name == "Scion of Draco":
-                effective_cmc = max(0, effective_cmc - 2 * domain)  # Scion: costs {2} less per basic land type
-            else:
-                effective_cmc = max(0, effective_cmc - domain)  # Leyline Binding: costs {1} less per basic land type
-        # Ruby Medallion / Ral, Monsoon Mage: red instants/sorceries cost {1} less
-        if (template.is_instant or template.is_sorcery) and \
-           Color.RED in template.color_identity:
-            medallion_count = sum(
-                1 for c in player.battlefield
-                if c.template.name == "Ruby Medallion"
-                or c.template.name == "Ral, Monsoon Mage // Ral, Leyline Prodigy"
-            )
-            effective_cmc = max(0, effective_cmc - medallion_count)
+            effective_cmc = max(0, effective_cmc - template.domain_reduction * domain)
+        # Generic cost reduction from permanents on battlefield
+        # Replaces hardcoded Ruby Medallion / Ral checks
+        from .oracle_resolver import count_cost_reducers
+        generic_reduction = count_cost_reducers(self, player_idx, template)
+        if generic_reduction > 0:
+            effective_cmc = max(0, effective_cmc - generic_reduction)
         # Affinity for artifacts: reduce cost by artifact count
         if Keyword.AFFINITY in template.keywords:
             artifact_count = sum(

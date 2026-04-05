@@ -312,3 +312,49 @@ def check_static_ability(game: "GameState", card: "CardInstance",
     if not oracle:
         return False
     return False
+
+
+def count_cost_reducers(game, player_idx: int, card_template) -> int:
+    """Count how many cost reducers on the battlefield apply to a given spell.
+
+    Generic replacement for hardcoded Ruby Medallion / Ral checks.
+    Parses each permanent's oracle text for "cost {N} less" patterns
+    and checks if the spell being cast matches the reduction criteria.
+    """
+    from engine.oracle_parser import parse_cost_reduction
+    from engine.cards import CardType, Color
+    template = card_template
+    player = game.players[player_idx]
+    reduction = 0
+
+    for perm in player.battlefield:
+        oracle = (perm.template.oracle_text or '').lower()
+        if 'cost' not in oracle or 'less' not in oracle:
+            continue
+
+        rule = parse_cost_reduction(oracle)
+        if not rule:
+            continue
+
+        matches = False
+        if rule['target'] == 'all':
+            matches = True
+        elif rule['target'] == 'instant_sorcery':
+            matches = template.is_instant or template.is_sorcery
+        elif rule['target'] == 'creature':
+            matches = template.is_creature
+        elif rule['target'] == 'noncreature':
+            matches = not template.is_creature
+
+        # Check color restriction
+        if matches and rule.get('color'):
+            color_map = {'R': Color.RED, 'U': Color.BLUE, 'B': Color.BLACK,
+                         'W': Color.WHITE, 'G': Color.GREEN}
+            required = color_map.get(rule['color'])
+            if required and required not in template.color_identity:
+                matches = False
+
+        if matches:
+            reduction += rule['amount']
+
+    return reduction
