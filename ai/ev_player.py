@@ -245,8 +245,7 @@ class EVPlayer:
         candidates.sort(key=lambda p: p.ev, reverse=True)
         best = candidates[0]
 
-        # Only pass if best EV is very negative (all plays hurt us)
-        if best.ev < -5.0:
+        if best.ev < self.profile.pass_threshold:
             return None
 
         return (best.action, best.card, best.targets)
@@ -312,11 +311,11 @@ class EVPlayer:
             opp_board = sum(creature_value(c) for c in opp.creatures)
             my_board = sum(creature_value(c) for c in me.creatures)
             if snap.opp_creature_count == 0:
-                ev -= 15.0  # NEVER wrath an empty board
+                ev += p.wrath_empty_board_penalty
             else:
-                ev += opp_board - my_board  # good if we clear more than we lose
+                ev += opp_board - my_board
                 if snap.opp_creature_count >= 3:
-                    ev += 5.0  # extra value for multi-kill
+                    ev += p.wrath_multi_kill_bonus
 
         # ── Burn (face damage) ──
         from decks.card_knowledge_loader import get_burn_damage
@@ -342,9 +341,9 @@ class EVPlayer:
                 draw_val += p.card_draw_low_hand_bonus
             oracle = (t.oracle_text or '').lower()
             if 'draw two' in oracle or 'draws two' in oracle:
-                draw_val += 4.0
+                draw_val += p.draw_two_bonus
             if 'draw three' in oracle:
-                draw_val += 7.0
+                draw_val += p.draw_three_bonus
             draw_val += p.card_draw_archetype_bonus
             ev += draw_val
 
@@ -363,61 +362,54 @@ class EVPlayer:
             ev += p.ritual_bonus
 
         # ── Past in Flames — bonus for rich graveyard ──
-        # CRITICAL: never cast PiF if already cast this turn (redundant flashback grant)
-        if 'flashback' in tags and self.archetype == "combo":
+        if 'flashback' in tags and p.pif_gy_ritual_mult > 0:
             already_cast_pif = any(
                 c.name == 'Past in Flames' for c in me.graveyard
                 if me.spells_cast_this_turn > 0
             )
             if card.name == 'Past in Flames' and already_cast_pif and me.spells_cast_this_turn > 0:
-                ev -= 30.0  # redundant PiF — complete waste
+                ev += p.pif_redundant_penalty
             else:
                 gy_rituals = sum(1 for c in me.graveyard if 'ritual' in getattr(c.template, 'tags', set()))
                 gy_cantrips = sum(1 for c in me.graveyard if 'cantrip' in getattr(c.template, 'tags', set()))
-                ev += gy_rituals * 2.0 + gy_cantrips * 1.0
+                ev += gy_rituals * p.pif_gy_ritual_mult + gy_cantrips * p.pif_gy_cantrip_mult
 
         # ── Tutors (Wish) — find the finisher ──
-        if 'tutor' in tags and self.archetype == "combo":
-            tutor_val = 6.0
+        if 'tutor' in tags and p.tutor_base > 0:
+            tutor_val = p.tutor_base
             storm = me.spells_cast_this_turn
             if storm >= 8:
-                tutor_val += 20.0  # HIGH storm — find finisher for lethal!
+                tutor_val += p.tutor_storm_8_bonus
             elif storm >= 5:
-                tutor_val += 12.0  # decent storm — finisher will be strong
+                tutor_val += p.tutor_storm_5_bonus
             elif storm >= 3:
-                tutor_val += 8.0  # mid-chain
+                tutor_val += p.tutor_storm_3_bonus
             elif storm >= 1:
-                tutor_val += 4.0
+                tutor_val += p.tutor_storm_1_bonus
             # But if we have more fuel to cast first, hold Wish
             fuel = sum(1 for c in me.hand if c.instance_id != card.instance_id
                        and not c.template.is_land and game.can_cast(self.player_idx, c)
                        and 'tutor' not in getattr(c.template, 'tags', set())
                        and c.name != 'Past in Flames')
             if fuel > 0 and storm < 8:
-                tutor_val -= fuel * 3.0  # cast fuel first, then tutor
+                tutor_val += fuel * p.tutor_fuel_penalty_mult
             ev += tutor_val
 
         # ── Cost reducers / engines ──
         if 'cost_reducer' in tags:
-            if self.archetype == "combo":
-                storm = me.spells_cast_this_turn
-                if storm == 0:
-                    # Pre-chain: Medallion is THE most important play
-                    ev += 12.0
-                    if snap.turn_number <= 4:
-                        ev += 6.0  # T2-3 Medallion enables everything
-                    medallions_on_board = sum(1 for c in me.battlefield
-                                              if 'cost_reducer' in getattr(c.template, 'tags', set()))
-                    if medallions_on_board == 0:
-                        ev += 4.0  # first medallion is critical
-                elif storm >= 5:
-                    # Deep in chain: don't waste 2 mana on a reducer
-                    ev -= 5.0
-                else:
-                    # Early chain: might be worth it if we'll cast 3+ more spells
-                    ev += 4.0
+            storm = me.spells_cast_this_turn
+            if storm == 0:
+                ev += p.cost_reducer_pre_chain
+                if snap.turn_number <= 4 and p.cost_reducer_pre_chain > 5:
+                    ev += 6.0  # T2-3 engine enables everything
+                medallions_on_board = sum(1 for c in me.battlefield
+                                          if 'cost_reducer' in getattr(c.template, 'tags', set()))
+                if medallions_on_board == 0 and p.cost_reducer_pre_chain > 5:
+                    ev += 4.0  # first reducer is critical
+            elif storm >= 5:
+                ev += p.cost_reducer_mid_chain
             else:
-                ev += 3.0
+                ev += p.cost_reducer_mid_chain + 4.0 if p.cost_reducer_pre_chain > 5 else p.cost_reducer_mid_chain
 
         # ── ETB value ──
         if 'etb_value' in tags:
@@ -425,12 +417,11 @@ class EVPlayer:
 
         # ── Gameplan role bonuses ──
         if card.name in self._payoff_names:
-            ev += 6.0
+            ev += p.payoff_bonus
         elif card.name in self._engine_names:
-            ev += 5.0
+            ev += p.engine_bonus
         elif card.name in self._fuel_names:
-            if self.archetype == "combo":
-                ev += 3.0
+            ev += p.fuel_bonus
 
         # ── Archetype-specific adjustments ──
         ev += self._archetype_modifier(card, snap, game, me, opp)
@@ -458,7 +449,7 @@ class EVPlayer:
         # ── Storm finisher sequencing ──
         # Storm finishers (Grapeshot, Empty the Warrens) should be cast LAST
         # in the chain to maximize storm count.
-        if self.archetype == "combo":
+        if p.finisher_hold_penalty != 0:
             from engine.cards import Keyword as Kw
             if Kw.STORM in getattr(t, 'keywords', set()):
                 storm_copies = me.spells_cast_this_turn + 1
@@ -474,13 +465,13 @@ class EVPlayer:
                                              for kw in getattr(c.template, 'keywords', set())}
                     )
                     if fuel_in_hand > 0:
-                        ev -= 20.0  # HOLD: cast all fuel first
+                        ev += p.finisher_hold_penalty
                     elif storm_copies >= 8:
-                        ev += 15.0  # fire! big damage/tokens
+                        ev += p.finisher_storm_8_bonus
                     elif storm_copies >= 5:
-                        ev += 5.0  # decent count
+                        ev += p.finisher_storm_5_bonus
                     else:
-                        ev -= 30.0  # storm 1-4 = waste
+                        ev += p.finisher_low_storm_penalty
 
         # ── Survival mode: when facing lethal, boost survival plays ──
         if snap.am_dead_next:
@@ -584,30 +575,28 @@ class EVPlayer:
 
     def _score_land(self, land, me, spells, game) -> float:
         """Score a land play. Generally very high priority."""
-        ev = 10.0  # lands are almost always correct to play
+        p = self.profile
+        ev = p.land_base_ev
 
-        # Untapped is much better when we have spells to cast
         has_castable_spells = any(
             (s.template.cmc or 0) <= len(me.untapped_lands) + 1
             for s in spells if not s.template.is_land
         )
         if not land.template.enters_tapped:
-            ev += 5.0 if has_castable_spells else 2.0
+            ev += p.land_untapped_castable_bonus if has_castable_spells else p.land_untapped_base_bonus
         else:
             if has_castable_spells:
-                ev -= 3.0  # tapped land when we need mana NOW is bad
+                ev += p.land_tapped_castable_penalty
 
-        # Color fixing
         existing_colors = set()
         for l in me.lands:
             existing_colors.update(l.template.produces_mana)
         new_colors = set(land.template.produces_mana) - existing_colors
-        ev += len(new_colors) * 4.0  # each new color is very valuable
+        ev += len(new_colors) * p.land_new_color_bonus
 
-        # Fetch lands: high priority for color fixing and deck thinning
         from engine.card_database import FETCH_LAND_COLORS
         if land.name in FETCH_LAND_COLORS:
-            ev += 3.0  # fetches fix colors AND thin deck
+            ev += p.land_fetch_bonus
 
         return ev
 
@@ -683,12 +672,7 @@ class EVPlayer:
             vboard = extract_virtual_board(game, self.player_idx)
             attack_plan, score_delta = self.combat_planner.plan_attack(vboard)
 
-            # Archetype-based attack threshold
-            threshold = 0.0
-            if self.archetype == "aggro":
-                threshold = -1.0  # aggro pushes damage
-            elif self.archetype == "control":
-                threshold = 0.5  # control still needs to close games
+            threshold = self.profile.attack_threshold
 
             if attack_plan and score_delta > threshold:
                 attack_ids = {vc.instance_id for vc in attack_plan}
@@ -697,9 +681,7 @@ class EVPlayer:
             pass
 
         # Fallback: attack with everything unless control is facing blockers
-        if self.archetype == "control" and opp_blockers:
-            return []  # control holds back vs blockers
-        return valid  # everyone else attacks
+        return valid
 
     def decide_blockers(self, game, attackers) -> Dict[int, List[int]]:
         """Decide blocking assignments."""

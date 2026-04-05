@@ -6,9 +6,40 @@ weights for every decision dimension.
 
 Adding a new archetype or tuning an existing one requires changing
 DATA, not code.
+
+Also contains ArchetypeStrategy enum and DECK_ARCHETYPES mapping
+(moved from ai_player.py).
 """
 from __future__ import annotations
 from dataclasses import dataclass, field
+from enum import Enum
+
+
+class ArchetypeStrategy(Enum):
+    AGGRO = "aggro"
+    MIDRANGE = "midrange"
+    CONTROL = "control"
+    COMBO = "combo"
+    TEMPO = "tempo"
+    RAMP = "ramp"
+
+
+DECK_ARCHETYPES = {
+    "Boros Energy":       ArchetypeStrategy.AGGRO,
+    "Jeskai Blink":       ArchetypeStrategy.TEMPO,
+    "Ruby Storm":         ArchetypeStrategy.COMBO,
+    "Affinity":           ArchetypeStrategy.AGGRO,
+    "Eldrazi Tron":       ArchetypeStrategy.RAMP,
+    "Amulet Titan":       ArchetypeStrategy.COMBO,
+    "Goryo's Vengeance":  ArchetypeStrategy.COMBO,
+    "Neobrand":           ArchetypeStrategy.COMBO,
+    "Domain Zoo":         ArchetypeStrategy.AGGRO,
+    "Living End":         ArchetypeStrategy.COMBO,
+    "Belcher":            ArchetypeStrategy.COMBO,
+    "Dimir Midrange":     ArchetypeStrategy.MIDRANGE,
+    "Izzet Prowess":      ArchetypeStrategy.AGGRO,
+    "4c Omnath":          ArchetypeStrategy.MIDRANGE,
+}
 
 
 @dataclass
@@ -76,6 +107,49 @@ class StrategyProfile:
     mid_creature_bonus: float = 0.0
     late_creature_bonus: float = 0.0
     late_payoff_bonus: float = 0.0
+
+    # ── Card draw scaling ──
+    draw_two_bonus: float = 4.0
+    draw_three_bonus: float = 7.0
+
+    # ── Combo: Past in Flames ──
+    pif_gy_ritual_mult: float = 2.0    # EV per ritual in GY
+    pif_gy_cantrip_mult: float = 1.0   # EV per cantrip in GY
+    pif_redundant_penalty: float = -30.0
+
+    # ── Combo: Wish/tutor ──
+    tutor_base: float = 6.0
+    tutor_storm_8_bonus: float = 20.0
+    tutor_storm_5_bonus: float = 12.0
+    tutor_storm_3_bonus: float = 8.0
+    tutor_storm_1_bonus: float = 4.0
+    tutor_fuel_penalty_mult: float = -3.0  # per fuel card in hand
+
+    # ── Combo: storm finisher ──
+    finisher_hold_penalty: float = -20.0   # hold when fuel available
+    finisher_storm_8_bonus: float = 15.0
+    finisher_storm_5_bonus: float = 5.0
+    finisher_low_storm_penalty: float = -30.0
+
+    # ── Gameplan role bonuses ──
+    payoff_bonus: float = 6.0
+    engine_bonus: float = 5.0
+    fuel_bonus: float = 3.0              # only for combo
+
+    # ── Land scoring ──
+    land_base_ev: float = 10.0
+    land_untapped_castable_bonus: float = 5.0
+    land_untapped_base_bonus: float = 2.0
+    land_tapped_castable_penalty: float = -3.0
+    land_new_color_bonus: float = 4.0
+    land_fetch_bonus: float = 3.0
+
+    # ── Wrath ──
+    wrath_empty_board_penalty: float = -15.0
+    wrath_multi_kill_bonus: float = 5.0  # 3+ creatures
+
+    # ── Pass threshold ──
+    pass_threshold: float = -5.0         # only pass if best EV below this
 
     # ── Evoke ──
     evoke_base_penalty: float = -6.0
