@@ -149,6 +149,159 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
                 game.players[controller].life -= int(m.group(1))
 
 
+def resolve_attack_trigger(game: "GameState", attacker: "CardInstance",
+                            controller: int):
+    """Resolve attack triggers by parsing the attacker's oracle text.
+
+    Called when a creature is declared as an attacker.
+    """
+    oracle = (attacker.template.oracle_text or '').lower()
+    if not oracle:
+        return
+
+    opponent = 1 - controller
+
+    # ── Battle cry: "each other attacking creature gets +1/+0" ──
+    if 'battle cry' in oracle or ('attacks' in oracle and 'other attacking' in oracle
+                                   and '+1/+0' in oracle):
+        player = game.players[controller]
+        for c in player.creatures:
+            if c.instance_id != attacker.instance_id and c.attacking:
+                c.temp_power_mod += 1
+        game.log.append(
+            f"T{game.turn_number} P{controller+1}: "
+            f"{attacker.name} battle cry — other attackers get +1/+0")
+
+    # ── "Whenever this creature attacks, deal N damage" ──
+    if 'attacks' in oracle and 'damage' in oracle:
+        m = re.search(r'deals?\s+(\d+)\s+damage', oracle)
+        if m:
+            amount = int(m.group(1))
+            game.players[opponent].life -= amount
+            game.players[controller].damage_dealt_this_turn += amount
+
+    # ── "Whenever this creature attacks, gain N life" ──
+    if 'attacks' in oracle and 'gain' in oracle and 'life' in oracle:
+        m = re.search(r'gain\s+(\d+)\s+life', oracle)
+        if m:
+            game.gain_life(controller, int(m.group(1)), attacker.name)
+
+    # ── Mobilize: "create N tapped and attacking tokens" ──
+    if 'mobilize' in oracle:
+        m = re.search(r'mobilize\s+(\d+)', oracle)
+        if m:
+            count = int(m.group(1))
+            game.create_token(controller, "warrior", count=count,
+                              power=1, toughness=1)
+            game.log.append(
+                f"T{game.turn_number} P{controller+1}: "
+                f"{attacker.name} mobilize {count} — create {count} 1/1 tokens")
+
+    # ── "Whenever this creature attacks, create a token" ──
+    if ('attacks' in oracle and 'create' in oracle and 'token' in oracle
+            and 'mobilize' not in oracle):
+        m = re.search(r'create\s+(?:a|(\d+))\s+(\d+)/(\d+)', oracle)
+        if m:
+            count = int(m.group(1) or 1)
+            p, t = int(m.group(2)), int(m.group(3))
+            game.create_token(controller, "creature", count=count,
+                              power=p, toughness=t)
+
+
+def resolve_dies_trigger(game: "GameState", card: "CardInstance",
+                          controller: int):
+    """Resolve dies/leaves-the-battlefield triggers from oracle text.
+
+    Called when a creature dies or leaves the battlefield.
+    """
+    oracle = (card.template.oracle_text or '').lower()
+    if not oracle:
+        return
+
+    # ── "When this creature dies, draw a card" ──
+    if 'dies' in oracle and 'draw' in oracle:
+        game.draw_cards(controller, 1)
+
+    # ── "When this creature dies, create a token" ──
+    if 'dies' in oracle and 'create' in oracle and 'token' in oracle:
+        m = re.search(r'create\s+(?:a|(\d+))\s+(\d+)/(\d+)', oracle)
+        if m:
+            count = int(m.group(1) or 1)
+            p, t = int(m.group(2)), int(m.group(3))
+            game.create_token(controller, "creature", count=count,
+                              power=p, toughness=t)
+
+    # ── "When this creature leaves the battlefield, target opponent draws a card"
+    #     (Thought-Knot Seer LTB) ──
+    if 'leaves the battlefield' in oracle and 'draw' in oracle:
+        opponent = 1 - controller
+        if 'opponent' in oracle or 'that player' in oracle:
+            game.draw_cards(opponent, 1)
+        else:
+            game.draw_cards(controller, 1)
+
+    # ── "When this creature dies, return target card from graveyard to hand" ──
+    if 'dies' in oracle and 'return' in oracle and 'graveyard' in oracle and 'hand' in oracle:
+        player = game.players[controller]
+        if player.graveyard:
+            # Return the best non-land card
+            nonlands = [c for c in player.graveyard if not c.template.is_land
+                        and c.instance_id != card.instance_id]
+            if nonlands:
+                best = max(nonlands, key=lambda c: c.template.cmc or 0)
+                player.graveyard.remove(best)
+                best.zone = "hand"
+                player.hand.append(best)
+
+
+def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
+                                spell_cast: "CardInstance"):
+    """Resolve "whenever you cast a spell" triggers for all permanents.
+
+    Called after a spell is successfully cast (on the stack).
+    Handles triggers beyond prowess (which is in game_state.py).
+    """
+    player = game.players[caster_idx]
+    opponent = 1 - caster_idx
+
+    for permanent in player.battlefield:
+        oracle = (permanent.template.oracle_text or '').lower()
+        if not oracle or 'whenever' not in oracle:
+            continue
+
+        # ── "Whenever you cast a noncreature spell, create a token" ──
+        if ('noncreature spell' in oracle and 'create' in oracle
+                and 'token' in oracle and not spell_cast.template.is_creature):
+            m = re.search(r'create\s+(?:a|(\d+))\s+(\d+)/(\d+)', oracle)
+            if m:
+                count = int(m.group(1) or 1)
+                p, t = int(m.group(2)), int(m.group(3))
+                game.create_token(caster_idx, "creature", count=count,
+                                  power=p, toughness=t)
+
+        # ── "Whenever you cast a spell, [scry/surveil/draw]" ──
+        if ('cast a spell' in oracle or 'cast an instant or sorcery' in oracle):
+            if 'draw a card' in oracle and 'noncreature' not in oracle:
+                game.draw_cards(caster_idx, 1)
+
+        # ── "Whenever an opponent draws a card" (Orcish Bowmasters) ──
+        # Already handled by EFFECT_REGISTRY — skip to avoid double-fire
+
+    # Check OPPONENT's permanents for "whenever an opponent casts" triggers
+    opp_player = game.players[opponent]
+    for permanent in opp_player.battlefield:
+        oracle = (permanent.template.oracle_text or '').lower()
+        if not oracle or 'whenever' not in oracle:
+            continue
+
+        # ── "Whenever an opponent casts a spell, [effect]" ──
+        if 'opponent casts' in oracle:
+            if 'damage' in oracle:
+                m = re.search(r'deals?\s+(\d+)\s+damage', oracle)
+                if m:
+                    game.players[caster_idx].life -= int(m.group(1))
+
+
 def check_static_ability(game: "GameState", card: "CardInstance",
                           controller: int, event_type: str, **kwargs):
     """Check if a permanent's static/triggered ability fires for an event.
@@ -157,19 +310,5 @@ def check_static_ability(game: "GameState", card: "CardInstance",
     """
     oracle = (card.template.oracle_text or '').lower()
     if not oracle:
-        return
-
-    # ── Chalice of the Void: counter spells with CMC == charge counters ──
-    if (event_type == 'spell_cast' and 'charge counter' in oracle
-            and 'counter' in oracle and 'mana value' in oracle):
-        spell = kwargs.get('spell')
-        if spell and hasattr(card, 'counters'):
-            charge = card.counters.get('charge', 0)
-            spell_cmc = spell.template.cmc or 0
-            if spell_cmc == charge and charge > 0:
-                # Counter the spell
-                game.log.append(
-                    f"T{game.turn_number}: Chalice of the Void (X={charge}) "
-                    f"counters {spell.name}")
-                return True  # spell is countered
+        return False
     return False

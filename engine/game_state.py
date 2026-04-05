@@ -1402,6 +1402,10 @@ class GameState:
                         creature.temp_power_mod = max(creature.temp_power_mod, 2)
                         creature.temp_toughness_mod = max(creature.temp_toughness_mod, 2)
 
+        # Generic oracle-text-based spell-cast triggers
+        from .oracle_resolver import resolve_spell_cast_trigger
+        resolve_spell_cast_trigger(self, player_idx, card)
+
         return True
 
     # ─── SPELL RESOLUTION ────────────────────────────────────────
@@ -2152,6 +2156,11 @@ class GameState:
         self.players[owner].graveyard.append(creature)
         self.players[controller].creatures_died_this_turn += 1
 
+        # Generic oracle-text-based dies triggers
+        if creature.template.name not in EFFECT_REGISTRY._handlers:
+            from .oracle_resolver import resolve_dies_trigger
+            resolve_dies_trigger(self, creature, controller)
+
         self.log.append(f"T{self.turn_number}: {creature.name} dies")
 
     def _permanent_destroyed(self, permanent: CardInstance):
@@ -2316,7 +2325,12 @@ class GameState:
             from .card_effects import _primeval_titan_search
             _primeval_titan_search(self, controller)
 
-        # Generic attack triggers
+        # Generic oracle-text-based attack triggers (handles ALL cards)
+        if attacker.template.name not in ("Phlage, Titan of Fire's Fury", "Primeval Titan"):
+            from .oracle_resolver import resolve_attack_trigger
+            resolve_attack_trigger(self, attacker, controller)
+
+        # Generic attack triggers from ability objects
         for ability in attacker.template.abilities:
             if ability.ability_type == AbilityType.ATTACK:
                 self._triggers_queue.append((ability, attacker, controller))
