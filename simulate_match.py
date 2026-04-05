@@ -288,26 +288,12 @@ def simulate_match(deck1_name: str, deck2_name: str, seed: int = None,
         html_template = f.read()
 
     json_str = json.dumps(match_data)
+    # Embed JSON data directly, replacing the fetch() call
     html = html_template.replace(
         "const d = await (await fetch('match_playbyplay.json')).json();",
         f"const d = {json_str};"
     )
     html = html.replace("async function load() {", "function load() {")
-
-    # Also fix field names for generic deck support
-    html = html.replace("r.storm_life", "r.p1_life")
-    html = html.replace("r.boros_life", "r.p2_life")
-    html = html.replace("r.storm_board", "r.p1_board")
-    html = html.replace("r.boros_board", "r.p2_board")
-    html = html.replace("g.storm_spells", "g.p1_spells")
-    html = html.replace("g.boros_spells", "g.p2_spells")
-    html = html.replace("g.storm_final_life", "g.p1_final_life")
-    html = html.replace("g.boros_final_life", "g.p2_final_life")
-    html = html.replace("'Storm'", "d.p1_short")
-    html = html.replace("S&#9829;", f"{p1_short[:1]}&#9829;")
-    html = html.replace("B&#9829;", f"{p2_short[:1]}&#9829;")
-    html = html.replace(">Storm Board<", f">{p1_short} Board<")
-    html = html.replace(">Boros Board<", f">{p2_short} Board<")
 
     with open(output, 'w') as f:
         f.write(html)
