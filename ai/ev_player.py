@@ -76,6 +76,10 @@ class EVPlayer:
         self._pw_activated_this_turn: Set[int] = set()
         self.strategic_logger = None
 
+        # Strategy profile — data-driven weights for this archetype
+        from ai.strategy_profile import get_profile
+        self.profile = get_profile(self.archetype)
+
         # DeckKnowledge — initialized on first decision when we see the library
         self._dk: Optional[DeckKnowledge] = None
         self._dk_initialized = False
@@ -253,12 +257,12 @@ class EVPlayer:
 
     def _score_spell(self, card: "CardInstance", snap: EVSnapshot,
                      game: "GameState", me, opp) -> float:
-        """Score a spell. The archetype determines what matters."""
+        """Score a spell using the archetype's strategy profile."""
         t = card.template
         tags = getattr(t, 'tags', set())
         cmc = t.cmc or 0
+        p = self.profile  # strategy profile
 
-        # Start with creature/permanent value
         ev = 0.0
 
         # ── Evoke detection ──
@@ -270,19 +274,17 @@ class EVPlayer:
             hardcast_cost = cmc
             if snap.my_mana < hardcast_cost:
                 is_evoke = True
-                # Base penalty for 2-for-1 card disadvantage
-                ev -= 6.0
+                ev += p.evoke_base_penalty
                 if 'removal' in tags:
                     best_val = self._best_removal_target_value(card, game, opp)
-                    if best_val < 4.0:
-                        ev -= 8.0  # not worth evoking for small creatures
+                    if best_val < p.evoke_min_target_value:
+                        ev -= 8.0
                     else:
-                        ev += best_val  # valuable target
-                    # Under heavy pressure: evoking is more justified
+                        ev += best_val
                     if snap.opp_power >= snap.my_life - 3 and snap.opp_power > 0:
-                        ev += 8.0  # survival evoke — worth the 2-for-1
+                        ev += p.evoke_pressure_bonus
                     elif snap.am_dead_next:
-                        ev += 12.0  # absolutely must evoke to survive
+                        ev += p.evoke_lethal_bonus
                 # Never evoke with no targets
                 if snap.opp_creature_count == 0 and 'removal' in tags:
                     ev -= 20.0
@@ -290,7 +292,7 @@ class EVPlayer:
         # ── Creature deployment ──
         is_creature = t.is_creature
         if is_creature and not is_evoke:
-            ev += creature_value(card) * 1.5
+            ev += creature_value(card) * p.creature_value_mult
             # Haste: immediate attack value
             from engine.cards import Keyword
             if Keyword.HASTE in getattr(t, 'keywords', set()):
@@ -301,7 +303,7 @@ class EVPlayer:
         if 'removal' in tags and not is_evoke:
             best_target_val = self._best_removal_target_value(card, game, opp)
             if best_target_val > 0:
-                ev += best_target_val * 1.2
+                ev += best_target_val * p.removal_target_mult
             elif snap.opp_creature_count == 0 and not is_creature:
                 ev -= 3.0  # pure removal with no targets = waste
 
@@ -322,8 +324,8 @@ class EVPlayer:
         if burn_dmg > 0:
             if burn_dmg >= snap.opp_life:
                 ev += 100.0  # lethal!
-            elif self.archetype == "aggro":
-                ev += burn_dmg * 1.5  # aggro values face damage
+            elif p.burn_face_mult > 0.5:
+                ev += burn_dmg * p.burn_face_mult
             else:
                 # Non-aggro: prefer using as removal
                 pass
@@ -333,19 +335,17 @@ class EVPlayer:
         is_draw = 'cantrip' in tags or 'draw' in tags or ('draw' in oracle and 'card' in oracle)
         if is_draw:
             # Base draw value scales with how much we need cards
-            draw_val = 4.0
+            draw_val = p.card_draw_base
             if snap.my_hand_size <= 2:
-                draw_val += 4.0  # desperately need cards
+                draw_val += p.card_draw_empty_hand_bonus
             elif snap.my_hand_size <= 4:
-                draw_val += 2.0  # could use more gas
+                draw_val += p.card_draw_low_hand_bonus
             oracle = (t.oracle_text or '').lower()
             if 'draw two' in oracle or 'draws two' in oracle:
                 draw_val += 4.0
             if 'draw three' in oracle:
                 draw_val += 7.0
-            # Control/midrange values card draw more — needs to find answers
-            if self.archetype in ("control", "midrange"):
-                draw_val += 2.0
+            draw_val += p.card_draw_archetype_bonus
             ev += draw_val
 
         # ── Non-creature permanents (artifacts, enchantments, planeswalkers) ──
@@ -360,10 +360,7 @@ class EVPlayer:
 
         # ── Rituals (combo fuel) ──
         if 'ritual' in tags:
-            if self.archetype == "combo":
-                ev += 5.0  # rituals are critical for combo
-            else:
-                ev += 1.0  # marginal for non-combo
+            ev += p.ritual_bonus
 
         # ── Past in Flames — bonus for rich graveyard ──
         # CRITICAL: never cast PiF if already cast this turn (redundant flashback grant)
@@ -424,7 +421,7 @@ class EVPlayer:
 
         # ── ETB value ──
         if 'etb_value' in tags:
-            ev += 3.0
+            ev += p.etb_value_bonus
 
         # ── Gameplan role bonuses ──
         if card.name in self._payoff_names:
@@ -439,13 +436,13 @@ class EVPlayer:
         ev += self._archetype_modifier(card, snap, game, me, opp)
 
         # ── Mana efficiency ──
-        if cmc == 0 and self.archetype == "combo":
-            ev += 4.0  # 0-mana spells are free storm count!
+        if cmc == 0 and p.zero_mana_combo_bonus > 0:
+            ev += p.zero_mana_combo_bonus
         elif snap.my_mana > 0 and cmc > 0:
             ev += min(cmc / snap.my_mana, 1.0) * 2.0
 
-        # ── Mana holdback penalty (control/midrange with instants in hand) ──
-        if self.archetype in ("control", "midrange"):
+        # ── Mana holdback penalty ──
+        if p.holdback_applies and snap.turn_number >= p.holdback_min_turn:
             has_instant = any(
                 c.template.is_instant and (
                     'removal' in getattr(c.template, 'tags', set()) or
@@ -456,7 +453,7 @@ class EVPlayer:
             if has_instant and not t.is_instant:
                 remaining_mana = snap.my_mana - cmc
                 if remaining_mana < 2:
-                    ev -= 2.0  # penalty for tapping out with answers in hand
+                    ev += p.holdback_penalty
 
         # ── Storm finisher sequencing ──
         # Storm finishers (Grapeshot, Empty the Warrens) should be cast LAST
@@ -488,124 +485,100 @@ class EVPlayer:
         # ── Survival mode: when facing lethal, boost survival plays ──
         if snap.am_dead_next:
             if 'removal' in tags and snap.opp_creature_count > 0:
-                ev += 6.0  # removing the lethal threat
+                ev += p.survival_removal_bonus
             if t.is_creature and (t.toughness or 0) >= 3:
-                ev += 5.0  # deploying a blocker
+                ev += p.survival_blocker_bonus
             if 'board_wipe' in tags and snap.opp_creature_count > 0:
-                ev += 8.0  # wrath saves us
+                ev += p.survival_wrath_bonus
 
         return ev
 
     def _archetype_modifier(self, card, snap: EVSnapshot,
                             game: "GameState", me, opp) -> float:
-        """Per-archetype adjustments to spell EV."""
+        """Per-archetype adjustments using strategy profile data."""
         t = card.template
         tags = getattr(t, 'tags', set())
+        p = self.profile
         mod = 0.0
 
-        if self.archetype == "aggro":
-            # Aggro: curve out with creatures, burn to finish
-            if t.is_creature:
-                cmc_val = t.cmc or 0
-                if cmc_val <= snap.turn_number:
-                    mod += 3.0  # on-curve creature
-                if cmc_val <= 2:
-                    mod += 2.0  # cheap creatures are premium for aggro
-                if snap.my_creature_count == 0:
-                    mod += 3.0  # MUST deploy a creature if board is empty
-            if snap.opp_life <= 10:
-                from decks.card_knowledge_loader import get_burn_damage
-                if get_burn_damage(t.name) > 0:
-                    mod += 3.0  # burn when opponent is low
+        # ── Creature bonuses ──
+        if t.is_creature:
+            if (t.cmc or 0) <= snap.turn_number:
+                mod += p.on_curve_creature_bonus
+            if (t.cmc or 0) <= 2:
+                mod += p.cheap_creature_bonus
+            if snap.my_creature_count == 0:
+                mod += p.empty_board_creature_bonus
+            if t.has_flash:
+                mod += p.flash_creature_bonus
+            if (t.power or 0) >= 3:
+                mod += p.high_power_creature_bonus
+            if 'card_advantage' in tags:
+                mod += 3.0
 
-        elif self.archetype == "midrange":
-            # Midrange: interact first, deploy threats, grind value
-            if 'removal' in tags and snap.opp_creature_count > 0:
-                mod += 4.0  # PRIORITY: remove threats when they exist
-                if snap.opp_power >= 4:
-                    mod += 3.0
-            if t.is_creature:
-                if (t.cmc or 0) <= 3:
-                    mod += 3.0  # cheap creatures should be deployed early
-                if 'card_advantage' in tags:
-                    mod += 3.0  # value creatures are great
-                if t.has_flash:
-                    mod += 2.0
-            if 'discard' in tags:
-                if snap.turn_number <= 4:
-                    mod += 4.0
-                elif snap.opp_hand_size >= 3:
-                    mod += 2.0
+        # ── Removal bonuses ──
+        if 'removal' in tags and snap.opp_creature_count > 0:
+            mod += p.removal_vs_creatures_bonus
+            if snap.opp_power >= 4:
+                mod += p.removal_vs_big_creatures_bonus
 
-        elif self.archetype == "control":
-            # Control (Omnath/Jeskai): survive early, develop mana, deploy value engine
-            cmc = t.cmc or 0
+        # ── Discard (Thoughtseize) ──
+        if 'discard' in tags:
+            if snap.turn_number <= 3:
+                mod += p.discard_early_bonus
+            elif snap.opp_hand_size >= 3:
+                mod += p.discard_late_bonus
 
-            # EARLY GAME (T1-6): removal is critical, cheap plays are priority
+        # ── Burn at low life ──
+        if snap.opp_life <= 10 and p.burn_low_life_bonus > 0:
+            from decks.card_knowledge_loader import get_burn_damage
+            if get_burn_damage(t.name) > 0:
+                mod += p.burn_low_life_bonus
+
+        # ── Control phase-based ──
+        if self.archetype == "control":
+            cmc_val = t.cmc or 0
+            from engine.cards import CardType
             if snap.turn_number <= 6:
                 if 'removal' in tags and snap.opp_creature_count > 0:
-                    mod += 6.0  # MUST answer early threats
-                if cmc <= 2 and not t.is_land:
-                    mod += 3.0  # cheap plays develop the board early
-                # Planeswalkers are high priority early (Wrenn T3, Teferi T5)
-                from engine.cards import CardType as CT
-                if CT.PLANESWALKER in t.card_types:
-                    mod += 4.0  # early PW = recurring value
-
-            # MID GAME (T7-12): deploy payoffs, wraths, value
+                    mod += p.early_removal_bonus
+                if cmc_val <= 2 and not t.is_land:
+                    mod += p.early_cheap_play_bonus
+                if CardType.PLANESWALKER in t.card_types:
+                    mod += p.early_planeswalker_bonus
             elif snap.turn_number <= 12:
-                if 'removal' in tags and snap.opp_creature_count > 0:
-                    mod += 4.0
                 if 'board_wipe' in tags and snap.opp_creature_count >= 2:
-                    mod += 6.0
+                    mod += p.mid_wrath_bonus
                 if card.name in self._payoff_names:
-                    mod += 6.0  # deploy Omnath/Solitude/Quantum Riddler
+                    mod += p.mid_payoff_bonus
                 if t.is_creature:
-                    mod += 3.0  # ANY creature is valuable for blocking
-
-            # LATE GAME (T13+): close it out
+                    mod += p.mid_creature_bonus
             else:
                 if t.is_creature:
-                    mod += 4.0  # deploy threats to close
+                    mod += p.late_creature_bonus
                 if card.name in self._payoff_names:
-                    mod += 5.0
+                    mod += p.late_payoff_bonus
 
-            # Card draw is always good for control — need to find answers
-            if 'draw' in tags or 'cantrip' in tags:
-                mod += 2.0
-
-        elif self.archetype == "combo":
+        # ── Combo chain sequencing ──
+        if self.archetype == "combo":
             storm = me.spells_cast_this_turn
-            mana = snap.my_mana
-            # Chain sequencing: cantrips early to find fuel, rituals when mana-starved
             if 'cantrip' in tags or 'draw' in tags:
-                if storm <= 3:
-                    mod += 5.0  # early chain: cantrips find rituals/finisher
-                else:
-                    mod += 3.0  # late chain
+                mod += p.cantrip_early_chain if storm <= 3 else p.cantrip_late_chain
             if 'ritual' in tags:
                 if storm <= 2:
-                    mod += 2.0  # early: cantrips first
+                    mod += p.ritual_early_chain
                 else:
-                    mod += 3.0 + storm * 0.5  # deep chain: rituals fuel finish
+                    mod += p.ritual_late_chain + storm * 0.5
             if storm >= 3:
-                mod += 4.0
+                mod += p.chain_mid_bonus
             if storm >= 6:
-                mod += 4.0
-            # Planeswalkers/cost reducers: great before chain, bad during chain
+                mod += p.chain_deep_bonus
             from engine.cards import CardType as CT2
             if CT2.PLANESWALKER in t.card_types:
                 if storm == 0:
-                    mod += 4.0  # deploy Ral before chaining
+                    mod += 4.0
                 elif storm >= 3:
-                    mod -= 8.0  # don't waste mana on Ral mid-chain
-
-        elif self.archetype == "ramp":
-            # Ramp: develop mana, deploy fatties
-            if 'mana_source' in tags or 'ramp' in tags:
-                mod += 3.0
-            if (t.cmc or 0) >= 5 and t.is_creature:
-                mod += 4.0  # deploy finisher
+                    mod += p.planeswalker_mid_chain_penalty
 
         return mod
 
