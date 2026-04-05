@@ -384,19 +384,50 @@ class EVPlayer:
 
         # ── Past in Flames — bonus for rich graveyard ──
         if 'flashback' in tags and p.pif_gy_fuel_mult > 0:
-            # Check if a flashback-granting spell was already cast this turn
-            # Only block if PiF was cast THIS turn (spells_cast > 0 means we're chaining)
-            # and there's already a flashback-granter in GY from this chain
-            if me.spells_cast_this_turn >= 2:
+            storm = me.spells_cast_this_turn
+
+            # (a) Redundancy: don't cast a second PiF if one already resolved this turn
+            if storm >= 2:
                 pif_in_gy = any(
                     'flashback' in getattr(c.template, 'tags', set())
                     for c in me.graveyard
+                    if c.instance_id != card.instance_id
                 )
                 if pif_in_gy:
                     return p.pif_redundant_penalty
-            gy_rituals = sum(1 for c in me.graveyard if 'ritual' in getattr(c.template, 'tags', set()))
-            gy_cantrips = sum(1 for c in me.graveyard if 'cantrip' in getattr(c.template, 'tags', set()))
-            ev += p.pif_gy_value(gy_rituals, gy_cantrips)
+
+            # (b) Self-replay prevention: don't cast PiF from GY via its own flashback
+            #     (wastes 5 mana to do the same thing again)
+            if card.zone == "graveyard":
+                return p.pif_redundant_penalty
+
+            # (c) Count GY fuel (instants/sorceries, not PiF itself)
+            gy_rituals = sum(1 for c in me.graveyard
+                             if 'ritual' in getattr(c.template, 'tags', set())
+                             and (c.template.is_instant or c.template.is_sorcery))
+            gy_cantrips = sum(1 for c in me.graveyard
+                              if 'cantrip' in getattr(c.template, 'tags', set())
+                              and (c.template.is_instant or c.template.is_sorcery)
+                              and 'flashback' not in getattr(c.template, 'tags', set()))
+            gy_fuel_total = gy_rituals + gy_cantrips
+
+            # (d) Patience: hold PiF at storm=0 — it's useless before rituals fill GY
+            if p.storm_patience and storm == 0:
+                ev += p.storm_hold_penalty
+            # (e) Empty GY: heavy penalty if nothing useful to replay
+            elif gy_fuel_total < 2:
+                ev += p.pif_empty_gy_penalty
+            else:
+                # PiF value scales with GY fuel — more fuel = more storm count gain
+                ev += p.pif_gy_value(gy_rituals, gy_cantrips)
+                # Mid-chain penalty: cast rituals from hand FIRST, then PiF
+                # Rituals in hand should fire before PiF (they go to GY, then PiF replays them)
+                hand_rituals = sum(1 for c in me.hand
+                                   if c.instance_id != card.instance_id
+                                   and 'ritual' in getattr(c.template, 'tags', set())
+                                   and (c.template.is_instant or c.template.is_sorcery))
+                if hand_rituals >= 2:
+                    ev += p.pif_wait_for_rituals_penalty
 
         # ── Tutors (Wish) — find the finisher ──
         if 'tutor' in tags and p.tutor_base > 0:
@@ -637,7 +668,9 @@ class EVPlayer:
                     mod += p.storm_hold_penalty
                     return mod
 
-            if 'cantrip' in tags or 'draw' in tags:
+            is_actual_cantrip = (('cantrip' in tags or 'draw' in tags)
+                                and 'flashback' not in tags)  # PiF isn't a cantrip
+            if is_actual_cantrip:
                 if mana <= 2 and storm >= 3 and 'ritual' in tags:
                     pass  # rituals get priority below when mana-starved
                 elif p.storm_patience and storm == 0:

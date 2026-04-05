@@ -167,6 +167,8 @@ class StrategyProfile:
     pif_gy_fuel_mult: float = 1.5      # EV per GY fuel card (rituals weighted 1.33x)
     pif_ritual_weight: float = 1.33    # ritual multiplier vs cantrips
     pif_redundant_penalty: float = -30.0
+    pif_empty_gy_penalty: float = -20.0    # penalty when GY has < 2 instants/sorceries
+    pif_wait_for_rituals_penalty: float = -5.0  # delay PiF when hand still has 2+ rituals to cast first
 
     # ── Cost reducer (generalized curve) ──
     # reducer_ev(storm, fuel) computed by method
