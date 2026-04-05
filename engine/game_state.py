@@ -1897,12 +1897,14 @@ class GameState:
         player.life_gained_this_turn += amount
         self.log.append(f"T{self.turn_number} P{player_idx+1}: "
                         f"Gain {amount} life from {source} (life: {player.life})")
-        # ── Ocelot Pride trigger: create 1/1 Cat token when you gain life ──
-        # (once per lifegain event, not per point of life)
+        # Generic "whenever you gain life" triggers from oracle
         for creature in list(player.creatures):
-            if creature.name == "Ocelot Pride":
-                self.create_token(player_idx, "cat", count=1)
-                break  # Only one trigger per lifegain event even with multiple Ocelots
+            oracle = (creature.template.oracle_text or '').lower()
+            if 'whenever you gain life' in oracle and 'create' in oracle and 'token' in oracle:
+                # Parse token type from oracle if possible
+                token_type = "cat" if "cat" in oracle else "creature"
+                self.create_token(player_idx, token_type, count=1)
+                break  # once per lifegain event
 
     # ─── SPELL EFFECTS ───────────────────────────────────────────
 
@@ -2596,14 +2598,17 @@ class GameState:
                     f"(life: {self.players[attacking_player].life})"
                 )
 
-            # Ragavan: create Treasure token on combat damage to player
+            # Generic "deals combat damage to a player" triggers from oracle
             is_blocked = attacker.instance_id in blockers and bool(blockers[attacker.instance_id])
-            if attacker.template.name == "Ragavan, Nimble Pilferer" and total_damage_dealt > 0 and not is_blocked:
-                self.create_token(attacking_player, "treasure", count=1)
-                self.log.append(
-                    f"T{self.turn_number} P{attacking_player+1}: "
-                    f"Ragavan creates Treasure token"
-                )
+            if total_damage_dealt > 0 and not is_blocked:
+                a_oracle = (attacker.template.oracle_text or '').lower()
+                if 'combat damage to a player' in a_oracle or 'deals damage to' in a_oracle:
+                    if 'treasure' in a_oracle or 'create a treasure' in a_oracle:
+                        self.create_token(attacking_player, "treasure", count=1)
+                        self.log.append(
+                            f"T{self.turn_number} P{attacking_player+1}: "
+                            f"{attacker.name} creates Treasure token"
+                        )
 
     def end_of_turn_cleanup(self):
         """Handle end-of-turn delayed triggers (e.g., Goryo's exile, Dash return)."""
