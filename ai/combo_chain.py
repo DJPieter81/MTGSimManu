@@ -19,15 +19,8 @@ if TYPE_CHECKING:
     from engine.game_state import GameState
 
 
-# ─── Known mana production for ritual cards ───
-# These match RITUAL_CARDS in game_state.py.
-# This is arithmetic data (how much mana a card produces), not a preference.
-_RITUAL_MANA: Dict[str, Tuple[int, bool]] = {
-    "Pyretic Ritual": (3, False),
-    "Desperate Ritual": (3, False),
-    "Manamorphose": (2, True),
-    "Simian Spirit Guide": (1, False),
-}
+# ─── Mana production now derived from card.template.ritual_mana ───
+# (populated by oracle_parser.py at card load time)
 
 
 # ─── Data structures ───
@@ -88,10 +81,10 @@ def classify_card(card, available_mana: int, medallion_count: int,
         reduction = medallion_count
     effective_cost = max(0, cmc - reduction)
 
-    # Mana production
-    ritual_info = _RITUAL_MANA.get(t.name)
-    mana_produced = ritual_info[0] if ritual_info else 0
-    draws = (ritual_info[1] if ritual_info else False) or 'cantrip' in tags
+    # Mana production (from oracle-derived template property)
+    ritual_data = getattr(t, 'ritual_mana', None)
+    mana_produced = ritual_data[1] if ritual_data else 0
+    draws = ('cantrip' in tags) or (ritual_data and ritual_data[0] == 'any')
 
     # Cost reducer (permanent that reduces future costs)
     is_reducer = 'cost_reducer' in tags and not t.is_instant and not t.is_sorcery

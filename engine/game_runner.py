@@ -29,15 +29,22 @@ class AICallbacks(GameCallbacks):
     def should_shock_land(self, game, player_idx, land):
         needs = analyze_mana_needs(game, player_idx)
         land_colors = set(land.template.produces_mana)
+        player = game.players[player_idx]
+
+        # Life-aware shock decision: don't shock when it would kill us
+        if player.life <= 2:
+            return False  # shocking kills us
+        # At very low life, only shock for critical color fixing
+        if player.life <= 4:
+            fixes_critical = bool(land_colors & needs.missing_colors)
+            return fixes_critical
+
         # Consider NEXT turn's mana: all current lands untap + this new land
-        # This prevents "no spells need mana" when lands are tapped mid-turn
-        total_lands = len(game.players[player_idx].lands) + 1  # +1 for this land
+        total_lands = len(player.lands) + 1  # +1 for this land
         has_spells_to_cast = needs.cheapest_spell_cmc <= total_lands
         fixes_missing_color = bool(land_colors & needs.missing_colors)
 
         # Also shock if hand has multi-color cards that need this color
-        # (e.g., Omnath needs WURG, Teferi needs WU — aggressively fix colors)
-        player = game.players[player_idx]
         existing_colors = set()
         for l in player.lands:
             existing_colors.update(l.template.produces_mana)
@@ -46,13 +53,12 @@ class AICallbacks(GameCallbacks):
                 continue
             cmc = card.template.cmc or 0
             if cmc >= 3 and len(card.template.color_identity) >= 2:
-                # Multi-color card: check if this land fixes a needed color
                 card_color_strs = set()
                 for c in card.template.color_identity:
                     card_color_strs.add(c.value if hasattr(c, 'value') else str(c))
                 missing_for_card = card_color_strs - existing_colors
                 if missing_for_card & land_colors:
-                    return True  # Shock to fix colors for expensive card
+                    return True
 
         return has_spells_to_cast or fixes_missing_color
 

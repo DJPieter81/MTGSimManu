@@ -237,12 +237,8 @@ class PlayerState:
 
 
 # ─── Named card constants for special handling ───
-RITUAL_CARDS = {
-    "Pyretic Ritual": ("R", 3),       # costs 1R, adds RRR (net +1R)
-    "Desperate Ritual": ("R", 3),     # costs 1R, adds RRR (net +1R)
-    "Manamorphose": ("any", 2),       # costs 1R/G, adds 2 any + draw
-    "Simian Spirit Guide": ("R", 1),  # exile from hand for R
-}
+# RITUAL_CARDS removed — now derived from card.template.ritual_mana
+# (populated by oracle_parser.py at card load time)
 
 # Cycling costs: mana = total mana CMC, life = life to pay, colors = required color set
 CYCLING_COSTS = {
@@ -257,10 +253,7 @@ CYCLING_COSTS = {
     "Raugrin Triome":       {"mana": 3, "life": 0, "colors": set()},
     "Savai Triome":         {"mana": 3, "life": 0, "colors": set()},
 }
-CYCLING_CARDS = {name: cost["life"] for name, cost in CYCLING_COSTS.items()}
-
-# Cards with specific named mechanics
-LIVING_END_CASCADERS = {"Shardless Agent", "Demonic Dread"}
+# CYCLING_CARDS and LIVING_END_CASCADERS removed — now oracle-derived
 
 ENERGY_PRODUCERS = {
     "Guide of Souls": 1,       # ETB: get {E}
@@ -434,22 +427,33 @@ class GameState:
             player.cards_drawn_this_turn += 1
             drawn.append(card)
 
-            # Sheoldred, the Apocalypse: gain 2 life when you draw
-            for c in player.battlefield:
-                if "sheoldred" in c.instance_tags:
-                    self.gain_life(player.player_idx, 2, "Sheoldred draw")
-            # Opponent's Sheoldred: lose 2 life when opponent draws
+            # Generic draw triggers from oracle text
+            # Handles: Sheoldred ("gain 2 life" on draw), Bowmasters ("whenever
+            # an opponent draws"), and any future draw-trigger cards.
             opp = self.players[1 - player_idx]
+            for c in player.battlefield:
+                oracle = (c.template.oracle_text or '').lower()
+                if 'whenever you draw' in oracle and 'gain' in oracle and 'life' in oracle:
+                    import re
+                    m = re.search(r'gain\s+(\d+)\s+life', oracle)
+                    if m:
+                        self.gain_life(player.player_idx, int(m.group(1)), c.name)
             for c in opp.battlefield:
-                if "sheoldred" in c.instance_tags:
-                    player.life -= SHOCK_LAND_LIFE_COST
-                    opp.damage_dealt_this_turn += 2
-            # Orcish Bowmasters: opponent draws → deal 1 damage + amass
-            for c in opp.battlefield:
-                if c.template.name == "Orcish Bowmasters" and player.cards_drawn_this_turn > 1:
-                    # Only triggers on draws beyond the first per turn
-                    player.life -= 1
-                    opp.damage_dealt_this_turn += 1
+                oracle = (c.template.oracle_text or '').lower()
+                # "Whenever you draw" on opponent's side = opponent loses life
+                if 'whenever' in oracle and 'draw' in oracle and 'lose' in oracle and 'life' in oracle:
+                    import re
+                    m = re.search(r'lose\s+(\d+)\s+life', oracle)
+                    if m:
+                        player.life -= int(m.group(1))
+                        opp.damage_dealt_this_turn += int(m.group(1))
+                # "Whenever an opponent draws" — Bowmasters-style
+                if 'whenever an opponent draws' in oracle and player.cards_drawn_this_turn > 1:
+                    import re
+                    m = re.search(r'deals?\s+(\d+)\s+damage', oracle)
+                    dmg = int(m.group(1)) if m else 1
+                    player.life -= dmg
+                    opp.damage_dealt_this_turn += dmg
 
         return drawn
 
@@ -462,13 +466,14 @@ class GameState:
 
         # Cost reductions
         reduction = 0
-        # Domain cost reduction for specific cards
-        if card_name in ("Scion of Draco", "Leyline Binding"):
-            domain = self._count_domain(player_idx)
-            if card_name == "Scion of Draco":
-                reduction += 2 * domain  # Scion: costs {2} less per basic land type
-            else:
-                reduction += domain  # Leyline Binding: costs {1} less per basic land type
+        # Domain cost reduction (from oracle-derived template property)
+        # Replaces hardcoded "Scion of Draco" / "Leyline Binding" checks
+        if card_name:
+            for c in list(self.players[player_idx].hand) + list(self.players[player_idx].graveyard):
+                if c.template.name == card_name and c.template.domain_reduction > 0:
+                    domain = self._count_domain(player_idx)
+                    reduction += c.template.domain_reduction * domain
+                    break
         # Ruby Medallion and Affinity cost reductions
         player = self.players[player_idx]
         if card_name:
@@ -476,14 +481,9 @@ class GameState:
             all_cards = list(player.hand) + list(player.graveyard)
             for c in all_cards:
                 if c.template.name == card_name:
-                    # Ruby Medallion: red instants/sorceries cost {1} less
-                    if (c.template.is_instant or c.template.is_sorcery) and \
-                       Color.RED in c.template.color_identity:
-                        medallion_count = sum(
-                            1 for b in player.battlefield
-                            if b.template.name == "Ruby Medallion"
-                        )
-                        reduction += medallion_count
+                    # Generic cost reduction from permanents
+                    from .oracle_resolver import count_cost_reducers
+                    reduction += count_cost_reducers(self, player_idx, c.template)
                     # Affinity for artifacts
                     if Keyword.AFFINITY in c.template.keywords:
                         artifact_count = sum(
@@ -668,21 +668,16 @@ class GameState:
 
         # Cost reductions
         effective_cmc = template.mana_cost.cmc
-        # Domain cost reduction: Scion of Draco, Leyline Binding
-        if template.name in ("Scion of Draco", "Leyline Binding"):
+        # Domain cost reduction (from oracle-derived template property)
+        if template.domain_reduction > 0:
             domain = self._count_domain(player_idx)
-            if template.name == "Scion of Draco":
-                effective_cmc = max(0, effective_cmc - 2 * domain)  # Scion: costs {2} less per basic land type
-            else:
-                effective_cmc = max(0, effective_cmc - domain)  # Leyline Binding: costs {1} less per basic land type
-        # Ruby Medallion: red instants/sorceries cost {1} less
-        if (template.is_instant or template.is_sorcery) and \
-           Color.RED in template.color_identity:
-            medallion_count = sum(
-                1 for c in player.battlefield
-                if c.template.name == "Ruby Medallion"
-            )
-            effective_cmc = max(0, effective_cmc - medallion_count)
+            effective_cmc = max(0, effective_cmc - template.domain_reduction * domain)
+        # Generic cost reduction from permanents on battlefield
+        # Replaces hardcoded Ruby Medallion / Ral checks
+        from .oracle_resolver import count_cost_reducers
+        generic_reduction = count_cost_reducers(self, player_idx, template)
+        if generic_reduction > 0:
+            effective_cmc = max(0, effective_cmc - generic_reduction)
         # Affinity for artifacts: reduce cost by artifact count
         if Keyword.AFFINITY in template.keywords:
             artifact_count = sum(
@@ -866,16 +861,15 @@ class GameState:
         if card.name not in FETCH_LAND_COLORS:
             player.battlefield.append(card)
 
-        # ── Amulet of Vigor: untap permanents that enter tapped ──
+        # ── Generic "untap enters tapped" (Amulet of Vigor pattern) ──
         if card.tapped:
-            amulet_count = sum(
-                1 for c in player.battlefield
-                if c.template.name == "Amulet of Vigor"
-            )
-            if amulet_count > 0:
-                card.tapped = False
-                self.log.append(f"T{self.turn_number} P{player_idx+1}: "
-                                f"Amulet of Vigor untaps {card.name}")
+            for c in player.battlefield:
+                oracle = (c.template.oracle_text or '').lower()
+                if 'tapped permanent enters' in oracle and 'untap' in oracle:
+                    card.tapped = False
+                    self.log.append(f"T{self.turn_number} P{player_idx+1}: "
+                                    f"{c.name} untaps {card.name}")
+                    break
 
         # ── Landfall triggers ──
         self._trigger_landfall(player_idx)
@@ -1378,26 +1372,37 @@ class GameState:
         cost_str = ''.join(cost_parts) if cost_parts else '0'
         self.log.append(f"T{self.turn_number} P{player_idx+1}: Cast {card.name} ({cost_str}){dash_label}{x_label}")
 
-        # ── Prowess triggers ──
-        # Handles both keyword prowess and prowess-like abilities
-        # (Slickshot Show-Off: +2/+0, DRC: surveil 1)
-        PROWESS_LIKE = {"Slickshot Show-Off", "Dragon's Rage Channeler"}
+        # ── Prowess and prowess-like triggers (generic from oracle) ──
         if not template.is_creature:
             for creature in player.creatures:
+                # Standard prowess keyword
                 if Keyword.PROWESS in creature.keywords:
                     creature.temp_power_mod += 1
                     creature.temp_toughness_mod += 1
-                elif creature.name == "Slickshot Show-Off":
-                    # Whenever you cast a noncreature spell, +2/+0 until end of turn
-                    creature.temp_power_mod += 2
-                elif creature.name == "Dragon's Rage Channeler":
-                    # Surveil 1 — helps enable delirium
-                    # Simplified: after 4+ spells cast, DRC gets +2/+2 and flying
-                    if player.spells_cast_this_turn >= 3 or self.turn_number >= 5:
-                        if Keyword.FLYING not in creature.keywords:
-                            creature.keywords.add(Keyword.FLYING)
-                        creature.temp_power_mod = max(creature.temp_power_mod, 2)
-                        creature.temp_toughness_mod = max(creature.temp_toughness_mod, 2)
+                    continue
+                # Oracle-based prowess variants:
+                # "Whenever you cast a noncreature spell, this creature gets +N/+M"
+                c_oracle = (creature.template.oracle_text or '').lower()
+                if 'noncreature spell' not in c_oracle and 'instant or sorcery' not in c_oracle:
+                    continue
+                import re
+                pump = re.search(r'gets?\s+\+(\d+)/\+(\d+)', c_oracle)
+                if pump:
+                    creature.temp_power_mod += int(pump.group(1))
+                    creature.temp_toughness_mod += int(pump.group(2))
+                elif re.search(r'gets?\s+\+(\d+)/\+0', c_oracle):
+                    m = re.search(r'gets?\s+\+(\d+)/\+0', c_oracle)
+                    creature.temp_power_mod += int(m.group(1))
+                # Delirium / surveil: "surveil" in oracle → after enough spells, power up
+                if 'surveil' in c_oracle and player.spells_cast_this_turn >= 3:
+                    if Keyword.FLYING not in creature.keywords:
+                        creature.keywords.add(Keyword.FLYING)
+                    creature.temp_power_mod = max(creature.temp_power_mod, 2)
+                    creature.temp_toughness_mod = max(creature.temp_toughness_mod, 2)
+
+        # Generic oracle-text-based spell-cast triggers
+        from .oracle_resolver import resolve_spell_cast_trigger
+        resolve_spell_cast_trigger(self, player_idx, card)
 
         return True
 
@@ -1503,9 +1508,15 @@ class GameState:
                                 f"(total: {self.players[controller].energy_counters})")
 
         # Dispatch to card effect registry for card-specific ETB logic
+        has_specific_handler = template.name in EFFECT_REGISTRY._handlers
         EFFECT_REGISTRY.execute(
             template.name, EffectTiming.ETB, self, card, controller
         )
+
+        # Generic oracle-text-based ETB resolution for cards WITHOUT specific handlers
+        if not has_specific_handler:
+            from .oracle_resolver import resolve_etb_from_oracle
+            resolve_etb_from_oracle(self, card, controller)
 
         # Generic ETB triggers
         self.trigger_etb(card, controller)
@@ -1879,12 +1890,14 @@ class GameState:
         player.life_gained_this_turn += amount
         self.log.append(f"T{self.turn_number} P{player_idx+1}: "
                         f"Gain {amount} life from {source} (life: {player.life})")
-        # ── Ocelot Pride trigger: create 1/1 Cat token when you gain life ──
-        # (once per lifegain event, not per point of life)
+        # Generic "whenever you gain life" triggers from oracle
         for creature in list(player.creatures):
-            if creature.name == "Ocelot Pride":
-                self.create_token(player_idx, "cat", count=1)
-                break  # Only one trigger per lifegain event even with multiple Ocelots
+            oracle = (creature.template.oracle_text or '').lower()
+            if 'whenever you gain life' in oracle and 'create' in oracle and 'token' in oracle:
+                # Parse token type from oracle if possible
+                token_type = "cat" if "cat" in oracle else "creature"
+                self.create_token(player_idx, token_type, count=1)
+                break  # once per lifegain event
 
     # ─── SPELL EFFECTS ───────────────────────────────────────────
 
@@ -1895,12 +1908,15 @@ class GameState:
         opponent = 1 - controller
         name = card.name
 
-        # Rituals: add mana to pool (data-driven, not card-specific)
-        if name in RITUAL_CARDS:
-            color, amount = RITUAL_CARDS[name]
+        # Rituals: add mana to pool (oracle-derived from template)
+        ritual_data = card.template.ritual_mana
+        if ritual_data:
+            color, amount = ritual_data
             if color == "any":
                 self.players[controller].mana_pool.add("R", 2)
-                self.draw_cards(controller, 1)
+                # Manamorphose draws a card
+                if 'cantrip' in card.template.tags:
+                    self.draw_cards(controller, 1)
             else:
                 self.players[controller].mana_pool.add(color, amount)
             self.log.append(f"T{self.turn_number} P{controller+1}: "
@@ -2143,6 +2159,11 @@ class GameState:
         self.players[owner].graveyard.append(creature)
         self.players[controller].creatures_died_this_turn += 1
 
+        # Generic oracle-text-based dies triggers
+        if creature.template.name not in EFFECT_REGISTRY._handlers:
+            from .oracle_resolver import resolve_dies_trigger
+            resolve_dies_trigger(self, creature, controller)
+
         self.log.append(f"T{self.turn_number}: {creature.name} dies")
 
     def _permanent_destroyed(self, permanent: CardInstance):
@@ -2248,19 +2269,25 @@ class GameState:
         for ability in card.template.abilities:
             if ability.ability_type == AbilityType.ETB:
                 self._triggers_queue.append((ability, card, controller))
-        # ── Guide of Souls: whenever another creature ETBs under your control, gain 1 life ──
+        # Generic "whenever another creature enters" triggers from oracle
         if card.template.is_creature:
             player = self.players[controller]
             for c in player.battlefield:
-                if c.name == "Guide of Souls" and c.instance_id != card.instance_id:
-                    self.gain_life(controller, 1, "Guide of Souls")
+                if c.instance_id == card.instance_id:
+                    continue
+                oracle = (c.template.oracle_text or '').lower()
+                if 'another creature' in oracle and 'enters' in oracle:
+                    if 'gain' in oracle and 'life' in oracle:
+                        import re
+                        m = re.search(r'gain\s+(\d+)\s+life', oracle)
+                        self.gain_life(controller, int(m.group(1)) if m else 1, c.name)
 
     def trigger_attack(self, attacker: CardInstance, controller: int):
         """Trigger attack abilities."""
-        # Energy on attack
-        if attacker.template.name in ENERGY_PRODUCERS:
-            if attacker.template.name == "Ocelot Pride":
-                self.produce_energy(controller, 1, "Ocelot Pride attack")
+        # Energy on attack (from oracle: "whenever ... attacks ... {E}")
+        oracle = (attacker.template.oracle_text or '').lower()
+        if '{e}' in oracle and 'attack' in oracle:
+            self.produce_energy(controller, 1, f"{attacker.name} attack")
 
         # Annihilator
         if Keyword.ANNIHILATOR in attacker.keywords:
@@ -2289,25 +2316,17 @@ class GameState:
                 self.log.append(f"T{self.turn_number}: Annihilator {ann_amount} - "
                                 f"P{opponent+1} sacrifices {sacrificed} permanents")
 
-        # Phlage, Titan of Fire's Fury: 3 damage + 3 life on attack
-        if attacker.template.name == "Phlage, Titan of Fire's Fury":
-            opponent = 1 - controller
-            # Reduced from 3/3 to 2/2 to compensate for missing counterplay
-            # (real games have counterspells, exile removal, sideboard hate)
-            self.players[opponent].life -= 2
-            self.players[controller].damage_dealt_this_turn += 2
-            self.gain_life(controller, 2, "Phlage")
-            self.log.append(f"T{self.turn_number} P{controller+1}: "
-                           f"Phlage attack trigger: 2 damage to opponent "
-                           f"(life: {self.players[opponent].life}), "
-                           f"gain 2 life (life: {self.players[controller].life})")
-
-        # Primeval Titan: attack trigger searches for 2 lands
+        # Primeval Titan: complex land search (keep in card_effects.py)
         if attacker.template.name == "Primeval Titan":
             from .card_effects import _primeval_titan_search
             _primeval_titan_search(self, controller)
 
-        # Generic attack triggers
+        # Generic oracle-text-based attack triggers (handles ALL cards)
+        # Phlage, Ocelot Pride, battle cry, etc. all resolved from oracle text
+        from .oracle_resolver import resolve_attack_trigger
+        resolve_attack_trigger(self, attacker, controller)
+
+        # Generic attack triggers from ability objects
         for ability in attacker.template.abilities:
             if ability.ability_type == AbilityType.ATTACK:
                 self._triggers_queue.append((ability, attacker, controller))
@@ -2572,14 +2591,17 @@ class GameState:
                     f"(life: {self.players[attacking_player].life})"
                 )
 
-            # Ragavan: create Treasure token on combat damage to player
+            # Generic "deals combat damage to a player" triggers from oracle
             is_blocked = attacker.instance_id in blockers and bool(blockers[attacker.instance_id])
-            if attacker.template.name == "Ragavan, Nimble Pilferer" and total_damage_dealt > 0 and not is_blocked:
-                self.create_token(attacking_player, "treasure", count=1)
-                self.log.append(
-                    f"T{self.turn_number} P{attacking_player+1}: "
-                    f"Ragavan creates Treasure token"
-                )
+            if total_damage_dealt > 0 and not is_blocked:
+                a_oracle = (attacker.template.oracle_text or '').lower()
+                if 'combat damage to a player' in a_oracle or 'deals damage to' in a_oracle:
+                    if 'treasure' in a_oracle or 'create a treasure' in a_oracle:
+                        self.create_token(attacking_player, "treasure", count=1)
+                        self.log.append(
+                            f"T{self.turn_number} P{attacking_player+1}: "
+                            f"{attacker.name} creates Treasure token"
+                        )
 
     def end_of_turn_cleanup(self):
         """Handle end-of-turn delayed triggers (e.g., Goryo's exile, Dash return)."""
@@ -2660,9 +2682,12 @@ class GameState:
         """Check if a player can cycle a card from hand."""
         if card.zone != "hand":
             return False
-        if card.name not in CYCLING_COSTS:
-            return False
-        cost = CYCLING_COSTS[card.name]
+        # Use oracle-derived cycling data from template, fall back to hardcoded
+        cost = card.template.cycling_cost_data
+        if cost is None:
+            if card.name not in CYCLING_COSTS:
+                return False
+            cost = CYCLING_COSTS[card.name]
         player = self.players[player_idx]
         # Life cost check
         if cost["life"] > 0 and player.life <= cost["life"]:
@@ -2697,7 +2722,7 @@ class GameState:
         """
         if not self.can_cycle(player_idx, card):
             return False
-        cost = CYCLING_COSTS[card.name]
+        cost = card.template.cycling_cost_data or CYCLING_COSTS.get(card.name, {"mana": 0, "life": 0, "colors": set()})
         player = self.players[player_idx]
         # Pay life cost
         if cost["life"] > 0:

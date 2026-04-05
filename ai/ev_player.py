@@ -76,6 +76,10 @@ class EVPlayer:
         self._pw_activated_this_turn: Set[int] = set()
         self.strategic_logger = None
 
+        # Strategy profile — data-driven weights for this archetype
+        from ai.strategy_profile import get_profile
+        self.profile = get_profile(self.archetype)
+
         # DeckKnowledge — initialized on first decision when we see the library
         self._dk: Optional[DeckKnowledge] = None
         self._dk_initialized = False
@@ -185,13 +189,13 @@ class EVPlayer:
 
         candidates: List[Play] = []
 
-        # Score land plays
+        # Score land plays — lands compete with spells for priority
         if lands and me.lands_played_this_turn < (1 + me.extra_land_drops):
             from engine.card_database import FETCH_LAND_COLORS
             safe_lands = [
                 l for l in lands
                 if l.name not in FETCH_LAND_COLORS or me.life > 1
-                or l.name in {"Prismatic Vista", "Fabled Passage", "Evolving Wilds"}
+                or 'basic land' in (l.template.oracle_text or '').lower()  # free fetches
             ]
             for land in safe_lands:
                 ev = self._score_land(land, me, spells, game)
@@ -204,20 +208,24 @@ class EVPlayer:
                 continue
 
             # Skip PURE counterspells in main phase (nothing to target).
-            # Multi-mode cards like Drown in the Loch (counter OR destroy)
-            # should still be considered for their non-counter mode.
+            # Multi-mode cards (Drown in the Loch, Archmage's Charm) that can
+            # counter OR do something else should be allowed through.
             tags = getattr(spell.template, 'tags', set())
-            if 'counterspell' in tags and 'removal' not in tags:
+            oracle = (spell.template.oracle_text or '').lower()
+            is_pure_counter = ('counterspell' in tags and 'removal' not in tags
+                               and 'draw' not in oracle)
+            if is_pure_counter:
                 continue
 
-            # Skip reactive-only INSTANTS/SORCERIES unless dying.
-            # Creatures in reactive_only (Endurance, Subtlety) can still be
-            # cast for their body — a 3/4 blocker is valuable even without
-            # the ETB triggering optimally.
+            # Skip reactive-only NON-CREATURE spells unless:
+            # - We're dying (survival override)
+            # - It's removal with a high-value target (4+ power creature)
             if spell.name in self._reactive_only:
                 if not spell.template.is_creature:
-                    if not (snap.am_dead_next or
-                            (snap.opp_power >= 3 and snap.opp_clock <= 3)):
+                    is_dying = snap.am_dead_next or (snap.opp_power >= 3 and snap.opp_clock <= 3)
+                    has_big_target = ('removal' in tags and
+                                     any((c.power or 0) >= 4 for c in opp.creatures))
+                    if not is_dying and not has_big_target:
                         continue
 
             ev = self._score_spell(spell, snap, game, me, opp)
@@ -249,40 +257,42 @@ class EVPlayer:
 
     def _score_spell(self, card: "CardInstance", snap: EVSnapshot,
                      game: "GameState", me, opp) -> float:
-        """Score a spell. The archetype determines what matters."""
+        """Score a spell using the archetype's strategy profile."""
         t = card.template
         tags = getattr(t, 'tags', set())
         cmc = t.cmc or 0
+        p = self.profile  # strategy profile
 
-        # Start with creature/permanent value
         ev = 0.0
 
         # ── Evoke detection ──
         # If card has evoke and we can't hardcast it (not enough mana),
         # we're evoking — this costs us 2 cards (spell + pitched card).
-        # Only worth it if the target is very valuable.
+        # Worth it if the target is valuable OR we're under heavy pressure.
         is_evoke = False
         if 'evoke' in tags or 'evoke_pitch' in tags:
             hardcast_cost = cmc
             if snap.my_mana < hardcast_cost:
                 is_evoke = True
-                # Evoking costs 2 cards for 1 effect — big penalty
-                ev -= 8.0
-                # Only evoke if opponent has a very valuable target
+                ev += p.evoke_base_penalty
                 if 'removal' in tags:
                     best_val = self._best_removal_target_value(card, game, opp)
-                    if best_val < 5.0:
-                        ev -= 10.0  # not worth evoking for small creatures
+                    if best_val < p.evoke_min_target_value:
+                        ev -= 8.0
                     else:
-                        ev += best_val  # valuable target, worth evoking
+                        ev += best_val
+                    if snap.opp_power >= snap.my_life - 3 and snap.opp_power > 0:
+                        ev += p.evoke_pressure_bonus
+                    elif snap.am_dead_next:
+                        ev += p.evoke_lethal_bonus
                 # Never evoke with no targets
                 if snap.opp_creature_count == 0 and 'removal' in tags:
-                    ev -= 20.0  # absolutely don't evoke removal into empty board
+                    ev -= 20.0
 
         # ── Creature deployment ──
         is_creature = t.is_creature
         if is_creature and not is_evoke:
-            ev += creature_value(card) * 1.5
+            ev += creature_value(card) * p.creature_value_mult
             # Haste: immediate attack value
             from engine.cards import Keyword
             if Keyword.HASTE in getattr(t, 'keywords', set()):
@@ -293,7 +303,7 @@ class EVPlayer:
         if 'removal' in tags and not is_evoke:
             best_target_val = self._best_removal_target_value(card, game, opp)
             if best_target_val > 0:
-                ev += best_target_val * 1.2
+                ev += best_target_val * p.removal_target_mult
             elif snap.opp_creature_count == 0 and not is_creature:
                 ev -= 3.0  # pure removal with no targets = waste
 
@@ -301,7 +311,12 @@ class EVPlayer:
         if 'board_wipe' in tags:
             opp_board = sum(creature_value(c) for c in opp.creatures)
             my_board = sum(creature_value(c) for c in me.creatures)
-            ev += opp_board - my_board  # good if we clear more than we lose
+            if snap.opp_creature_count == 0:
+                ev -= 15.0  # NEVER wrath an empty board
+            else:
+                ev += opp_board - my_board  # good if we clear more than we lose
+                if snap.opp_creature_count >= 3:
+                    ev += 5.0  # extra value for multi-kill
 
         # ── Burn (face damage) ──
         from decks.card_knowledge_loader import get_burn_damage
@@ -309,25 +324,28 @@ class EVPlayer:
         if burn_dmg > 0:
             if burn_dmg >= snap.opp_life:
                 ev += 100.0  # lethal!
-            elif self.archetype == "aggro":
-                ev += burn_dmg * 1.5  # aggro values face damage
+            elif p.burn_face_mult > 0.5:
+                ev += burn_dmg * p.burn_face_mult
             else:
                 # Non-aggro: prefer using as removal
                 pass
 
         # ── Card draw / cantrips ──
-        if 'cantrip' in tags or 'draw' in tags:
+        oracle = (t.oracle_text or '').lower()
+        is_draw = 'cantrip' in tags or 'draw' in tags or ('draw' in oracle and 'card' in oracle)
+        if is_draw:
             # Base draw value scales with how much we need cards
-            draw_val = 4.0
+            draw_val = p.card_draw_base
             if snap.my_hand_size <= 2:
-                draw_val += 3.0  # desperately need cards
+                draw_val += p.card_draw_empty_hand_bonus
+            elif snap.my_hand_size <= 4:
+                draw_val += p.card_draw_low_hand_bonus
             oracle = (t.oracle_text or '').lower()
             if 'draw two' in oracle or 'draws two' in oracle:
                 draw_val += 4.0
             if 'draw three' in oracle:
                 draw_val += 7.0
-            # Multi-mode cards (Archmage's Charm): count draw mode even if
-            # card also has removal/counterspell tags
+            draw_val += p.card_draw_archetype_bonus
             ev += draw_val
 
         # ── Non-creature permanents (artifacts, enchantments, planeswalkers) ──
@@ -342,21 +360,68 @@ class EVPlayer:
 
         # ── Rituals (combo fuel) ──
         if 'ritual' in tags:
-            if self.archetype == "combo":
-                ev += 5.0  # rituals are critical for combo
+            ev += p.ritual_bonus
+
+        # ── Past in Flames — bonus for rich graveyard ──
+        # CRITICAL: never cast PiF if already cast this turn (redundant flashback grant)
+        if 'flashback' in tags and self.archetype == "combo":
+            already_cast_pif = any(
+                c.name == 'Past in Flames' for c in me.graveyard
+                if me.spells_cast_this_turn > 0
+            )
+            if card.name == 'Past in Flames' and already_cast_pif and me.spells_cast_this_turn > 0:
+                ev -= 30.0  # redundant PiF — complete waste
             else:
-                ev += 1.0  # marginal for non-combo
+                gy_rituals = sum(1 for c in me.graveyard if 'ritual' in getattr(c.template, 'tags', set()))
+                gy_cantrips = sum(1 for c in me.graveyard if 'cantrip' in getattr(c.template, 'tags', set()))
+                ev += gy_rituals * 2.0 + gy_cantrips * 1.0
+
+        # ── Tutors (Wish) — find the finisher ──
+        if 'tutor' in tags and self.archetype == "combo":
+            tutor_val = 6.0
+            storm = me.spells_cast_this_turn
+            if storm >= 8:
+                tutor_val += 20.0  # HIGH storm — find finisher for lethal!
+            elif storm >= 5:
+                tutor_val += 12.0  # decent storm — finisher will be strong
+            elif storm >= 3:
+                tutor_val += 8.0  # mid-chain
+            elif storm >= 1:
+                tutor_val += 4.0
+            # But if we have more fuel to cast first, hold Wish
+            fuel = sum(1 for c in me.hand if c.instance_id != card.instance_id
+                       and not c.template.is_land and game.can_cast(self.player_idx, c)
+                       and 'tutor' not in getattr(c.template, 'tags', set())
+                       and c.name != 'Past in Flames')
+            if fuel > 0 and storm < 8:
+                tutor_val -= fuel * 3.0  # cast fuel first, then tutor
+            ev += tutor_val
 
         # ── Cost reducers / engines ──
         if 'cost_reducer' in tags:
             if self.archetype == "combo":
-                ev += 8.0  # engine is the most important piece
+                storm = me.spells_cast_this_turn
+                if storm == 0:
+                    # Pre-chain: Medallion is THE most important play
+                    ev += 12.0
+                    if snap.turn_number <= 4:
+                        ev += 6.0  # T2-3 Medallion enables everything
+                    medallions_on_board = sum(1 for c in me.battlefield
+                                              if 'cost_reducer' in getattr(c.template, 'tags', set()))
+                    if medallions_on_board == 0:
+                        ev += 4.0  # first medallion is critical
+                elif storm >= 5:
+                    # Deep in chain: don't waste 2 mana on a reducer
+                    ev -= 5.0
+                else:
+                    # Early chain: might be worth it if we'll cast 3+ more spells
+                    ev += 4.0
             else:
                 ev += 3.0
 
         # ── ETB value ──
         if 'etb_value' in tags:
-            ev += 3.0
+            ev += p.etb_value_bonus
 
         # ── Gameplan role bonuses ──
         if card.name in self._payoff_names:
@@ -371,12 +436,13 @@ class EVPlayer:
         ev += self._archetype_modifier(card, snap, game, me, opp)
 
         # ── Mana efficiency ──
-        if snap.my_mana > 0 and cmc > 0:
-            # Bonus for using mana efficiently (on-curve)
+        if cmc == 0 and p.zero_mana_combo_bonus > 0:
+            ev += p.zero_mana_combo_bonus
+        elif snap.my_mana > 0 and cmc > 0:
             ev += min(cmc / snap.my_mana, 1.0) * 2.0
 
-        # ── Mana holdback penalty (control/midrange with instants in hand) ──
-        if self.archetype in ("control", "midrange"):
+        # ── Mana holdback penalty ──
+        if p.holdback_applies and snap.turn_number >= p.holdback_min_turn:
             has_instant = any(
                 c.template.is_instant and (
                     'removal' in getattr(c.template, 'tags', set()) or
@@ -387,12 +453,11 @@ class EVPlayer:
             if has_instant and not t.is_instant:
                 remaining_mana = snap.my_mana - cmc
                 if remaining_mana < 2:
-                    ev -= 3.0  # penalty for tapping out with answers in hand
+                    ev += p.holdback_penalty
 
         # ── Storm finisher sequencing ──
         # Storm finishers (Grapeshot, Empty the Warrens) should be cast LAST
-        # in the chain to maximize storm count. Penalize them when we have
-        # more chain fuel to cast first.
+        # in the chain to maximize storm count.
         if self.archetype == "combo":
             from engine.cards import Keyword as Kw
             if Kw.STORM in getattr(t, 'keywords', set()):
@@ -400,7 +465,6 @@ class EVPlayer:
                 if storm_copies >= snap.opp_life:
                     ev += 100.0  # lethal storm! Cast now!
                 else:
-                    # Check if we have more fuel to chain first
                     fuel_in_hand = sum(
                         1 for c in me.hand
                         if c.instance_id != card.instance_id
@@ -410,74 +474,111 @@ class EVPlayer:
                                              for kw in getattr(c.template, 'keywords', set())}
                     )
                     if fuel_in_hand > 0:
-                        ev -= 20.0  # HOLD the finisher — cast fuel first
-                    elif storm_copies >= 4:
-                        ev += 10.0  # no more fuel, fire at decent count
+                        ev -= 20.0  # HOLD: cast all fuel first
+                    elif storm_copies >= 8:
+                        ev += 15.0  # fire! big damage/tokens
+                    elif storm_copies >= 5:
+                        ev += 5.0  # decent count
                     else:
-                        ev -= 5.0  # too low storm count, not worth it
+                        ev -= 30.0  # storm 1-4 = waste
+
+        # ── Survival mode: when facing lethal, boost survival plays ──
+        if snap.am_dead_next:
+            if 'removal' in tags and snap.opp_creature_count > 0:
+                ev += p.survival_removal_bonus
+            if t.is_creature and (t.toughness or 0) >= 3:
+                ev += p.survival_blocker_bonus
+            if 'board_wipe' in tags and snap.opp_creature_count > 0:
+                ev += p.survival_wrath_bonus
 
         return ev
 
     def _archetype_modifier(self, card, snap: EVSnapshot,
                             game: "GameState", me, opp) -> float:
-        """Per-archetype adjustments to spell EV."""
+        """Per-archetype adjustments using strategy profile data."""
         t = card.template
         tags = getattr(t, 'tags', set())
+        p = self.profile
         mod = 0.0
 
-        if self.archetype == "aggro":
-            # Aggro: deploy threats fast, burn face
-            if t.is_creature and (t.cmc or 0) <= snap.turn_number:
-                mod += 2.0  # on-curve creature
-            if snap.opp_life <= 10:
-                from decks.card_knowledge_loader import get_burn_damage
-                if get_burn_damage(t.name) > 0:
-                    mod += 3.0  # burn when opponent is low
-
-        elif self.archetype == "midrange":
-            # Midrange: interact first, deploy threats, grind value
-            if 'removal' in tags and snap.opp_creature_count > 0:
-                mod += 4.0  # PRIORITY: remove threats when they exist
-                # Extra urgency when opponent has high-power creatures
-                if snap.opp_power >= 4:
-                    mod += 3.0
-            if t.is_creature:
-                if (t.cmc or 0) <= 3:
-                    mod += 3.0  # cheap creatures should be deployed early
-                if 'card_advantage' in tags:
-                    mod += 3.0  # value creatures are great
-                if t.has_flash:
-                    mod += 2.0
-            # Discard (Thoughtseize) is best early, but still good later
-            if 'discard' in tags:
-                if snap.turn_number <= 4:
-                    mod += 4.0  # devastating early
-                elif snap.opp_hand_size >= 3:
-                    mod += 2.0  # still good if opponent has cards
-
-        elif self.archetype == "control":
-            # Control: answer everything, then deploy finisher
-            if 'removal' in tags and snap.opp_creature_count > 0:
+        # ── Creature bonuses ──
+        if t.is_creature:
+            if (t.cmc or 0) <= snap.turn_number:
+                mod += p.on_curve_creature_bonus
+            if (t.cmc or 0) <= 2:
+                mod += p.cheap_creature_bonus
+            if snap.my_creature_count == 0:
+                mod += p.empty_board_creature_bonus
+            if t.has_flash:
+                mod += p.flash_creature_bonus
+            if (t.power or 0) >= 3:
+                mod += p.high_power_creature_bonus
+            if 'card_advantage' in tags:
                 mod += 3.0
-            if 'board_wipe' in tags and snap.opp_creature_count >= 2:
-                mod += 5.0
-            # Deploy payoffs when board is clear
-            if card.name in self._payoff_names and snap.opp_creature_count == 0:
-                mod += 5.0
 
-        elif self.archetype == "combo":
-            # Combo: chain spells, build toward lethal
+        # ── Removal bonuses ──
+        if 'removal' in tags and snap.opp_creature_count > 0:
+            mod += p.removal_vs_creatures_bonus
+            if snap.opp_power >= 4:
+                mod += p.removal_vs_big_creatures_bonus
+
+        # ── Discard (Thoughtseize) ──
+        if 'discard' in tags:
+            if snap.turn_number <= 3:
+                mod += p.discard_early_bonus
+            elif snap.opp_hand_size >= 3:
+                mod += p.discard_late_bonus
+
+        # ── Burn at low life ──
+        if snap.opp_life <= 10 and p.burn_low_life_bonus > 0:
+            from decks.card_knowledge_loader import get_burn_damage
+            if get_burn_damage(t.name) > 0:
+                mod += p.burn_low_life_bonus
+
+        # ── Control phase-based ──
+        if self.archetype == "control":
+            cmc_val = t.cmc or 0
+            from engine.cards import CardType
+            if snap.turn_number <= 6:
+                if 'removal' in tags and snap.opp_creature_count > 0:
+                    mod += p.early_removal_bonus
+                if cmc_val <= 2 and not t.is_land:
+                    mod += p.early_cheap_play_bonus
+                if CardType.PLANESWALKER in t.card_types:
+                    mod += p.early_planeswalker_bonus
+            elif snap.turn_number <= 12:
+                if 'board_wipe' in tags and snap.opp_creature_count >= 2:
+                    mod += p.mid_wrath_bonus
+                if card.name in self._payoff_names:
+                    mod += p.mid_payoff_bonus
+                if t.is_creature:
+                    mod += p.mid_creature_bonus
+            else:
+                if t.is_creature:
+                    mod += p.late_creature_bonus
+                if card.name in self._payoff_names:
+                    mod += p.late_payoff_bonus
+
+        # ── Combo chain sequencing ──
+        if self.archetype == "combo":
+            storm = me.spells_cast_this_turn
             if 'cantrip' in tags or 'draw' in tags:
-                mod += 2.0  # dig for pieces
-            if me.spells_cast_this_turn >= 3:
-                mod += 2.0  # we're chaining — keep going!
-
-        elif self.archetype == "ramp":
-            # Ramp: develop mana, deploy fatties
-            if 'mana_source' in tags or 'ramp' in tags:
-                mod += 3.0
-            if (t.cmc or 0) >= 5 and t.is_creature:
-                mod += 4.0  # deploy finisher
+                mod += p.cantrip_early_chain if storm <= 3 else p.cantrip_late_chain
+            if 'ritual' in tags:
+                if storm <= 2:
+                    mod += p.ritual_early_chain
+                else:
+                    mod += p.ritual_late_chain + storm * 0.5
+            if storm >= 3:
+                mod += p.chain_mid_bonus
+            if storm >= 6:
+                mod += p.chain_deep_bonus
+            from engine.cards import CardType as CT2
+            if CT2.PLANESWALKER in t.card_types:
+                if storm == 0:
+                    mod += 4.0
+                elif storm >= 3:
+                    mod += p.planeswalker_mid_chain_penalty
 
         return mod
 
@@ -485,9 +586,16 @@ class EVPlayer:
         """Score a land play. Generally very high priority."""
         ev = 10.0  # lands are almost always correct to play
 
-        # Untapped is better
+        # Untapped is much better when we have spells to cast
+        has_castable_spells = any(
+            (s.template.cmc or 0) <= len(me.untapped_lands) + 1
+            for s in spells if not s.template.is_land
+        )
         if not land.template.enters_tapped:
-            ev += 3.0
+            ev += 5.0 if has_castable_spells else 2.0
+        else:
+            if has_castable_spells:
+                ev -= 3.0  # tapped land when we need mana NOW is bad
 
         # Color fixing
         existing_colors = set()
@@ -499,17 +607,26 @@ class EVPlayer:
         # Fetch lands: high priority for color fixing and deck thinning
         from engine.card_database import FETCH_LAND_COLORS
         if land.name in FETCH_LAND_COLORS:
-            ev += 2.0
+            ev += 3.0  # fetches fix colors AND thin deck
 
         return ev
 
     def _best_removal_target_value(self, removal, game, opp) -> float:
-        """Find the most valuable creature this removal can kill."""
+        """Find the most valuable creature this removal can kill.
+
+        Accounts for mana efficiency: cheap removal on cheap threats
+        is better than expensive removal on cheap threats.
+        """
         if not opp.creatures:
             return 0.0
+        removal_cmc = removal.template.cmc or 0
         best = 0.0
         for c in opp.creatures:
             val = creature_value(c)
+            # Penalize overkill: using 5-mana removal on a 1/1 is wasteful
+            target_cmc = c.template.cmc or 0
+            if removal_cmc > target_cmc + 2:
+                val *= 0.6  # 40% penalty for inefficient removal
             if val > best:
                 best = val
         return best
@@ -593,6 +710,41 @@ class EVPlayer:
         if not valid_blockers or not attackers:
             return {}
 
+        me = game.players[self.player_idx]
+        total_incoming = sum(a.power or 0 for a in attackers)
+
+        # EMERGENCY: if incoming damage is lethal, we MUST block
+        # Use cheapest blockers first to preserve high-value creatures
+        if total_incoming >= me.life:
+            emergency_blocks: Dict[int, List[int]] = {}
+            e_used: Set[int] = set()
+            # Block biggest attackers with smallest blockers
+            for attacker in sorted(attackers, key=lambda a: a.power or 0, reverse=True):
+                best_chump = None
+                best_chump_val = 999
+                for blocker in valid_blockers:
+                    if blocker.instance_id in e_used:
+                        continue
+                    if Keyword.FLYING in attacker.keywords:
+                        if (Keyword.FLYING not in blocker.keywords and
+                                Keyword.REACH not in blocker.keywords):
+                            continue
+                    val = creature_value(blocker)
+                    if val < best_chump_val:
+                        best_chump_val = val
+                        best_chump = blocker
+                if best_chump:
+                    emergency_blocks[attacker.instance_id] = [best_chump.instance_id]
+                    e_used.add(best_chump.instance_id)
+                    # Check if we've blocked enough to survive
+                    blocked_damage = sum(
+                        a.power or 0 for a in attackers if a.instance_id in emergency_blocks
+                    )
+                    if total_incoming - blocked_damage < me.life:
+                        break  # we survive, stop blocking
+            if emergency_blocks:
+                return emergency_blocks
+
         blocks: Dict[int, List[int]] = {}
         used: Set[int] = set()
 
@@ -663,27 +815,45 @@ class EVPlayer:
         tags = getattr(t, 'tags', set())
         opp = game.players[1 - self.player_idx]
 
-        # Removal: target best opponent creature
+        # Burn spells FIRST — they can always target face as fallback
+        from decks.card_knowledge_loader import get_burn_damage
+        from engine.cards import Keyword as Kw2
+        dmg = get_burn_damage(t.name)
+        # Storm spells (Grapeshot) deal 1 damage × storm copies — always target face
+        if Kw2.STORM in getattr(t, 'keywords', set()) and 'removal' in tags:
+            return [-1]  # Grapeshot always goes face (storm copies auto-target)
+        if dmg > 0:
+            if dmg >= opp.life:
+                return [-1]  # face = lethal, always go face
+
+            # Find best creature we can kill
+            best_kill_val = 0.0
+            best_kill_id = None
+            if opp.creatures:
+                for c in opp.creatures:
+                    if dmg >= (c.toughness or 0):
+                        val = creature_value(c)
+                        if val > best_kill_val:
+                            best_kill_val = val
+                            best_kill_id = c.instance_id
+
+            # Compare: is killing a creature worth more than face damage?
+            # For aggro: face is worth ~1.5 per damage point when opp > 10
+            # A creature kill is worth its creature_value
+            face_val = dmg * 1.5 if self.archetype == "aggro" else dmg * 0.5
+            if opp.life <= 10 and self.archetype == "aggro":
+                face_val = dmg * 2.5  # burn is premium when opp is low
+
+            if best_kill_id and best_kill_val > face_val:
+                return [best_kill_id]  # kill the creature
+            return [-1]  # go face
+
+        # Removal (non-burn): target best opponent creature
         if 'removal' in tags and 'board_wipe' not in tags:
             if opp.creatures:
                 best = max(opp.creatures, key=lambda c: creature_value(c))
                 return [best.instance_id]
             return []
-
-        # Burn: target face if aggro or lethal, else target creature
-        from decks.card_knowledge_loader import get_burn_damage
-        dmg = get_burn_damage(t.name)
-        if dmg > 0:
-            if dmg >= opp.life:
-                return [-1]  # face = lethal
-            if self.archetype == "aggro":
-                return [-1]  # aggro goes face by default
-            if opp.creatures:
-                # Target the creature we can kill
-                for c in sorted(opp.creatures, key=lambda c: creature_value(c), reverse=True):
-                    if dmg >= (c.toughness or 0):
-                        return [c.instance_id]
-            return [-1]  # no good creature target, go face
 
         # Blink effects: target our best ETB creature
         if 'blink' in tags:
@@ -724,7 +894,11 @@ class EVPlayer:
         if t.is_creature or CardType.PLANESWALKER in t.card_types:
             return False
 
+        # Modal spells with draw mode don't require targets (can choose draw)
+        oracle = (t.oracle_text or '').lower()
         if 'counterspell' in tags:
+            if 'draw' in oracle and ('choose' in oracle or '•' in oracle):
+                return False  # modal spell with draw mode (Archmage's Charm)
             return True
         if 'removal' in tags and 'board_wipe' not in tags:
             return True

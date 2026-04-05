@@ -69,8 +69,8 @@ def analyze_mana_needs(game: "GameState", player_idx: int,
 
     # ── What colors does the hand need? ──
     from engine.cards import DOMAIN_POWER_CREATURES
-    domain_cost_cards = {"Scion of Draco", "Leyline Binding"}  # cards with domain cost reduction
-    domain_damage_cards = {"Tribal Flames"}  # cards with domain-scaled damage
+    # Domain cards detected from template.domain_reduction (oracle-derived)
+    # and 'domain' tag for domain-scaled effects
     for card in player.hand:
         if card.template.is_land:
             continue
@@ -88,12 +88,13 @@ def analyze_mana_needs(game: "GameState", player_idx: int,
             needs.cheapest_spell_cmc = cmc
         # Count domain-scaling cards in hand
         if (card.name in DOMAIN_POWER_CREATURES or
-            card.name in domain_cost_cards or
-            card.name in domain_damage_cards):
+            getattr(card.template, 'domain_reduction', 0) > 0 or
+            'domain' in getattr(card.template, 'tags', set())):
             needs.domain_card_count += 1
     # Also count domain creatures already on battlefield
     for bf_card in player.battlefield:
-        if bf_card.name in DOMAIN_POWER_CREATURES:
+        if (bf_card.name in DOMAIN_POWER_CREATURES or
+            getattr(bf_card.template, 'domain_reduction', 0) > 0):
             needs.domain_card_count += 1
 
     # ── Cycling cost awareness: cards with cycling need specific colors ──

@@ -139,6 +139,16 @@ class CardTemplate:
     # Format: {"condition": "tron", "bonus": 2} means +2C when Tron assembled
     # Parsed from oracle text patterns like "If you control an Urza's..."
     conditional_mana: Optional[Dict] = None
+    # Oracle-derived properties (populated by oracle_parser at load time)
+    # These replace hardcoded data tables in game_state.py
+    ritual_mana: Optional[tuple] = None       # (color, amount) e.g. ("R", 3)
+    cycling_cost_data: Optional[Dict] = None  # {mana, life, colors}
+    energy_production: int = 0                # number of {E} symbols
+    is_cascade: bool = False                  # has cascade keyword
+    x_cost_data: Optional[Dict] = None        # {multiplier, min_x}
+    is_cost_reducer: bool = False             # reduces spell costs (from tags)
+    domain_reduction: int = 0                 # cost reduction per basic land type
+    power_scales_with: str = ""               # "domain", "tarmogoyf", "delirium", "graveyard"
 
     @property
     def is_creature(self) -> bool:
