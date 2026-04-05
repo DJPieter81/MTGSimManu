@@ -1,1 +1,0 @@
-# MTG Deck Database
