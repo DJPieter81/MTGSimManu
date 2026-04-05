@@ -9,6 +9,7 @@ Usage:
     python simulate_match.py "Ruby Storm" "Domain Zoo" --seed 55555
 """
 import json
+import os
 import random
 import sys
 from engine.card_database import CardDatabase
@@ -16,6 +17,19 @@ from engine.game_runner import GameRunner
 from decks.modern_meta import MODERN_DECKS
 from ai.ev_player import EVPlayer
 from ai.ev_evaluator import snapshot_from_game
+
+# HTML viewer template path (relative to this file)
+_HTML_TEMPLATE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'match_viewer_template.html')
+
+
+def _build_standalone_html(json_str: str, p1_short: str, p2_short: str) -> str:
+    """Build a self-contained HTML file with embedded match data."""
+    template_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                  'match_viewer_template.html')
+    with open(template_path) as f:
+        template = f.read()
+    return template.replace('/*__MATCH_DATA__*/null;/*__END_DATA__*/',
+                            json_str + ';')
 
 
 def _short(name):
@@ -79,7 +93,7 @@ def _describe_spell(card, tags, ev, snap, me, opp, alternatives):
         return "Ritual — produces mana for combo (net +1 red mana)"
     if ev >= 100:
         return "Lethal damage — wins the game"
-    if 'removal' in tags:
+    if 'removal' in tags and not t.is_creature:
         if snap.opp_creature_count > 0:
             return f"Remove opponent's threat ({snap.opp_power} power on board)"
         return "Removal spell (no creature targets currently)"
@@ -283,17 +297,9 @@ def simulate_match(deck1_name: str, deck2_name: str, seed: int = None,
         'seed': seed,
     }
 
-    # Build standalone HTML
-    with open('match_playbyplay.html') as f:
-        html_template = f.read()
-
+    # Build standalone HTML directly (no template — avoids escaping issues)
     json_str = json.dumps(match_data)
-    # Embed JSON data directly, replacing the fetch() call
-    html = html_template.replace(
-        "const d = await (await fetch('match_playbyplay.json')).json();",
-        f"const d = {json_str};"
-    )
-    html = html.replace("async function load() {", "function load() {")
+    html = _build_standalone_html(json_str, p1_short, p2_short)
 
     with open(output, 'w') as f:
         f.write(html)
