@@ -477,11 +477,13 @@ class GameState:
             for c in all_cards:
                 if c.template.name == card_name:
                     # Ruby Medallion: red instants/sorceries cost {1} less
+                    # Ral, Monsoon Mage: instant and sorcery spells cost {1} less
                     if (c.template.is_instant or c.template.is_sorcery) and \
                        Color.RED in c.template.color_identity:
                         medallion_count = sum(
                             1 for b in player.battlefield
                             if b.template.name == "Ruby Medallion"
+                            or b.template.name == "Ral, Monsoon Mage // Ral, Leyline Prodigy"
                         )
                         reduction += medallion_count
                     # Affinity for artifacts
@@ -675,12 +677,13 @@ class GameState:
                 effective_cmc = max(0, effective_cmc - 2 * domain)  # Scion: costs {2} less per basic land type
             else:
                 effective_cmc = max(0, effective_cmc - domain)  # Leyline Binding: costs {1} less per basic land type
-        # Ruby Medallion: red instants/sorceries cost {1} less
+        # Ruby Medallion / Ral, Monsoon Mage: red instants/sorceries cost {1} less
         if (template.is_instant or template.is_sorcery) and \
            Color.RED in template.color_identity:
             medallion_count = sum(
                 1 for c in player.battlefield
                 if c.template.name == "Ruby Medallion"
+                or c.template.name == "Ral, Monsoon Mage // Ral, Leyline Prodigy"
             )
             effective_cmc = max(0, effective_cmc - medallion_count)
         # Affinity for artifacts: reduce cost by artifact count
