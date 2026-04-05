@@ -378,13 +378,13 @@ class EVPlayer:
                 tutor_val += p.tutor_storm_3_bonus
             elif storm >= 1:
                 tutor_val += p.tutor_storm_1_bonus
-            # But if we have more fuel to cast first, hold Wish
-            fuel = sum(1 for c in me.hand if c.instance_id != card.instance_id
-                       and not c.template.is_land and game.can_cast(self.player_idx, c)
-                       and 'tutor' not in getattr(c.template, 'tags', set())
-                       and c.name != 'Past in Flames')
-            if fuel > 0 and storm < 8:
-                tutor_val += fuel * p.tutor_fuel_penalty_mult
+            # Hold Wish if we have actual chain fuel (rituals/cantrips) to cast first
+            chain_fuel = sum(1 for c in me.hand if c.instance_id != card.instance_id
+                            and not c.template.is_land and game.can_cast(self.player_idx, c)
+                            and ('ritual' in getattr(c.template, 'tags', set())
+                                 or 'cantrip' in getattr(c.template, 'tags', set())))
+            if chain_fuel > 0 and storm < 6:
+                tutor_val += chain_fuel * p.tutor_fuel_penalty_mult
             ev += tutor_val
 
         # ── Cost reducers / engines ──
