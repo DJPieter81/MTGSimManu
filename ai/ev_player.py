@@ -353,18 +353,19 @@ class EVPlayer:
 
         # ── Past in Flames — bonus for rich graveyard ──
         if 'flashback' in tags and p.pif_gy_ritual_mult > 0:
-            # Check if a flashback-granting spell was already cast this turn (redundant)
-            already_cast_flashback_grant = any(
-                'flashback' in getattr(c.template, 'tags', set())
-                and c.zone == 'graveyard'
-                for c in me.graveyard
-            ) if me.spells_cast_this_turn > 0 else False
-            if 'flashback' in tags and already_cast_flashback_grant and me.spells_cast_this_turn > 0:
-                ev += p.pif_redundant_penalty
-            else:
-                gy_rituals = sum(1 for c in me.graveyard if 'ritual' in getattr(c.template, 'tags', set()))
-                gy_cantrips = sum(1 for c in me.graveyard if 'cantrip' in getattr(c.template, 'tags', set()))
-                ev += gy_rituals * p.pif_gy_ritual_mult + gy_cantrips * p.pif_gy_cantrip_mult
+            # Check if a flashback-granting spell was already cast this turn
+            # Only block if PiF was cast THIS turn (spells_cast > 0 means we're chaining)
+            # and there's already a flashback-granter in GY from this chain
+            if me.spells_cast_this_turn >= 2:
+                pif_in_gy = any(
+                    'flashback' in getattr(c.template, 'tags', set())
+                    for c in me.graveyard
+                )
+                if pif_in_gy:
+                    return p.pif_redundant_penalty
+            gy_rituals = sum(1 for c in me.graveyard if 'ritual' in getattr(c.template, 'tags', set()))
+            gy_cantrips = sum(1 for c in me.graveyard if 'cantrip' in getattr(c.template, 'tags', set()))
+            ev += gy_rituals * p.pif_gy_ritual_mult + gy_cantrips * p.pif_gy_cantrip_mult
 
         # ── Tutors (Wish) — find the finisher ──
         if 'tutor' in tags and p.tutor_base > 0:
@@ -378,8 +379,9 @@ class EVPlayer:
                 tutor_val += p.tutor_storm_3_bonus
             elif storm >= 1:
                 tutor_val += p.tutor_storm_1_bonus
-            # Hold Wish if we have actual chain fuel (rituals/cantrips) to cast first
-            chain_fuel = sum(1 for c in me.hand if c.instance_id != card.instance_id
+            # Hold Wish if we have actual chain fuel (rituals/cantrips) in hand or GY flashback
+            all_fuel_sources = list(me.hand) + [g for g in me.graveyard if getattr(g, 'has_flashback', False)]
+            chain_fuel = sum(1 for c in all_fuel_sources if c.instance_id != card.instance_id
                             and not c.template.is_land and game.can_cast(self.player_idx, c)
                             and ('ritual' in getattr(c.template, 'tags', set())
                                  or 'cantrip' in getattr(c.template, 'tags', set())))
@@ -448,22 +450,29 @@ class EVPlayer:
                 if storm_copies >= snap.opp_life:
                     ev += p.lethal_storm_bonus  # lethal storm!
                 else:
-                    fuel_in_hand = sum(
-                        1 for c in me.hand
+                    # Count castable fuel in hand + GY flashback (only if we have mana)
+                    gy_flashback = [g for g in me.graveyard
+                                    if getattr(g, 'has_flashback', False)
+                                    and game.can_cast(self.player_idx, g)]
+                    fuel_available = sum(
+                        1 for c in list(me.hand) + gy_flashback
                         if c.instance_id != card.instance_id
                         and not c.template.is_land
                         and game.can_cast(self.player_idx, c)
                         and 'storm' not in {kw.value if hasattr(kw, 'value') else str(kw)
                                              for kw in getattr(c.template, 'keywords', set())}
                     )
-                    if fuel_in_hand > 0:
+                    if fuel_available > 0:
                         ev += p.finisher_hold_penalty
-                    elif storm_copies >= 8:
-                        ev += p.finisher_storm_8_bonus
-                    elif storm_copies >= 5:
-                        ev += p.finisher_storm_5_bonus
                     else:
-                        ev += p.finisher_low_storm_penalty
+                        # Scale bonus by how close to lethal (vs actual opp life, not 20)
+                        damage_pct = storm_copies / max(1, snap.opp_life)
+                        if damage_pct >= 0.7:
+                            ev += p.finisher_storm_8_bonus  # 70%+ of lethal = fire
+                        elif damage_pct >= 0.4:
+                            ev += p.finisher_storm_5_bonus  # 40%+ = decent
+                        else:
+                            ev += p.finisher_low_storm_penalty  # waste
 
         # ── Survival mode: when facing lethal, boost survival plays ──
         if snap.am_dead_next:
@@ -545,10 +554,16 @@ class EVPlayer:
         # ── Combo chain sequencing ──
         if p.has_combo_chain:
             storm = me.spells_cast_this_turn
+            mana = snap.my_mana
             if 'cantrip' in tags or 'draw' in tags:
-                mod += p.cantrip_early_chain if storm <= 3 else p.cantrip_late_chain
+                if mana <= 2 and storm >= 3 and 'ritual' in tags:
+                    pass  # rituals get priority below when mana-starved
+                else:
+                    mod += p.cantrip_early_chain if storm <= 3 else p.cantrip_late_chain
             if 'ritual' in tags:
-                if storm <= 2:
+                if mana <= 2 and storm >= 3:
+                    mod += 8.0  # MANA-STARVED: ritual produces mana to keep going!
+                elif storm <= 2:
                     mod += p.ritual_early_chain
                 else:
                     mod += p.ritual_late_chain + storm * p.ritual_storm_scaling

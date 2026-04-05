@@ -827,17 +827,29 @@ def wish_resolve(game, card, controller, targets=None, item=None):
     # Grapeshot needs storm >= opponent_life for instant kill
     opp_life = game.players[1 - controller].life
     current_storm = game._global_storm_count
-    # After Wish resolves, the found card is the next spell = storm + 1
-    # Plus maybe 1-2 more fuel spells if hand has them
+    # Count ALL available fuel: hand + GY flashback
     fuel_in_hand = sum(1 for c in player.hand if not c.template.is_land
                        and c.name != 'Wish' and c.name != 'Past in Flames')
-    estimated_storm = current_storm + 1 + min(fuel_in_hand, 2)
-    if estimated_storm >= opp_life:
-        # Grapeshot is lethal — prefer it (instant win, no need to survive a turn)
+    fuel_in_gy = sum(1 for c in player.graveyard
+                     if getattr(c, 'has_flashback', False)
+                     and (c.template.is_instant or c.template.is_sorcery))
+    total_fuel = fuel_in_hand + fuel_in_gy
+    # After Wish resolves: Grapeshot is the next spell, then remaining fuel
+    estimated_storm = current_storm + 1 + min(total_fuel, 8)
+
+    # Grapeshot is the PRIMARY plan — it's an instant kill, no waiting a turn.
+    # Only fall back to Empty the Warrens when Grapeshot can't get close.
+    # "Close" means storm covers 60%+ of opponent's life.
+    grapeshot_damage = estimated_storm  # 1 damage per copy
+    if grapeshot_damage >= opp_life:
+        # Lethal! Always Grapeshot.
+        finisher_priority = ["Grapeshot", "Empty the Warrens", "Galvanic Relay"]
+    elif grapeshot_damage >= opp_life * 0.6:
+        # Close to lethal — Grapeshot still best (leaves opp at low life,
+        # Ral/tokens finish next turn). Better than tokens that might get blocked.
         finisher_priority = ["Grapeshot", "Empty the Warrens", "Galvanic Relay"]
     else:
-        # Not lethal with Grapeshot — Empty the Warrens creates 2*storm tokens
-        # which is often enough to attack for lethal next turn
+        # Not close — Empty creates a board that threatens lethal next turn
         finisher_priority = ["Empty the Warrens", "Grapeshot", "Galvanic Relay"]
 
     # Search sideboard first (real Wish behavior)

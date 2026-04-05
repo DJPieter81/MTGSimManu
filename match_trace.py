@@ -186,9 +186,9 @@ EVPlayer.decide_response = patched_resp
 
 # ── Run the match ──
 
-random.seed(20000)
-d1_data = MODERN_DECKS["Domain Zoo"]
-d2_data = MODERN_DECKS["4c Omnath"]
+random.seed(10097)
+d1_data = MODERN_DECKS["Ruby Storm"]
+d2_data = MODERN_DECKS["Domain Zoo"]
 
 d1_main = dict(d1_data["mainboard"])
 d1_side = dict(d1_data.get("sideboard", {}))
@@ -196,7 +196,7 @@ d2_main = dict(d2_data["mainboard"])
 d2_side = dict(d2_data.get("sideboard", {}))
 
 match_score = [0, 0]
-deck_names = ["Domain Zoo", "4c Omnath"]
+deck_names = ["Ruby Storm", "Domain Zoo"]
 
 for game_num in range(1, 4):
     events.clear()
@@ -205,7 +205,7 @@ for game_num in range(1, 4):
     log("")
     log("=" * 60)
     log(f"  GAME {game_num} OF 3: {deck_names[0]} vs {deck_names[1]}")
-    log(f"  Match score: Zoo {match_score[0]} — Omnath {match_score[1]}")
+    log(f"  Match score: Storm {match_score[0]} — Zoo {match_score[1]}")
     log("=" * 60)
 
     result = runner.run_game(
