@@ -47,6 +47,13 @@ from run_meta import print_matrix, print_matchup, print_field
 
 **Standard seeds:** matchups start at 50000 (step 500), matrix at 40000 (step 500).
 
+**Import a new deck:**
+```bash
+python import_deck.py "Deck Name" decklist.txt
+python import_deck.py "Deck Name" --archetype control < decklist.txt
+```
+Auto-detects archetype, generates gameplan, prints code to paste into modern_meta.py.
+
 ## Available Decks (13)
 
 Boros Energy, Jeskai Blink, Ruby Storm, Affinity, Eldrazi Tron, Amulet Titan, Goryo's Vengeance, Domain Zoo, Living End, Izzet Prowess, Dimir Midrange, 4c Omnath, 4/5c Control
