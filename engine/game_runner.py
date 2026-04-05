@@ -329,6 +329,17 @@ class GameRunner:
 
                 elif step == TurnStep.UPKEEP:
                     game.current_phase = Phase.UPKEEP
+                    # Rebound: cast exiled rebound spells for free
+                    if hasattr(game, '_rebound_cards'):
+                        to_cast = [c for c in game._rebound_cards
+                                   if getattr(c, '_rebound_controller', -1) == active]
+                        for rc in to_cast:
+                            game._rebound_cards.remove(rc)
+                            if rc in game.players[active].exile:
+                                game.players[active].exile.remove(rc)
+                            game.cast_spell(active, rc, free_cast=True)
+                            game.log.append(f"T{game.turn_number} P{active+1}: "
+                                            f"Rebound {rc.name}")
                     game.process_triggers()
                     self._resolve_stack_loop(game)
 
@@ -352,6 +363,9 @@ class GameRunner:
 
                 elif step == TurnStep.BEGIN_COMBAT:
                     game.current_phase = Phase.BEGIN_COMBAT
+                    # Per CR 500.4: empty mana pools between phases
+                    for p in game.players:
+                        p.mana_pool.empty()
                     # Priority window: opponent can cast instants before combat
                     self._opponent_instant_window(game, opponent_ai, ai)
 
@@ -395,6 +409,9 @@ class GameRunner:
 
                 elif step == TurnStep.MAIN2:
                     game.current_phase = Phase.MAIN2
+                    # Per CR 500.4: empty mana pools between phases
+                    for p in game.players:
+                        p.mana_pool.empty()
                     self._execute_main_phase(game, ai, opponent_ai)
                     if game.game_over:
                         break

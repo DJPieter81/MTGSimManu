@@ -1223,11 +1223,16 @@ class GameState:
                 delve_exiled = min(len(exile_targets), generic_portion)
                 # Exile least valuable cards first
                 exile_targets.sort(key=lambda c: c.template.cmc)
+                delved_spells = 0
                 for i in range(delve_exiled):
                     ex = exile_targets[i]
                     player.graveyard.remove(ex)
                     ex.zone = "exile"
                     player.exile.append(ex)
+                    if ex.template.is_instant or ex.template.is_sorcery:
+                        delved_spells += 1
+                # Store count for Murktide Regent ETB (+1/+1 per delved spell)
+                card._delved_spells = delved_spells
                 if delve_exiled > 0:
                     self.log.append(f"T{self.turn_number} P{player_idx+1}: "
                                    f"Delve {delve_exiled} cards for {card.name}")
@@ -1427,6 +1432,13 @@ class GameState:
                     card.zone = "exile"
                     self.players[card.owner].exile.append(card)
                     card.has_flashback = False  # no longer has flashback
+                elif hasattr(card, '_rebound_controller'):
+                    # Rebound: exile instead of graveyard, cast for free next upkeep
+                    card.zone = "exile"
+                    self.players[card.owner].exile.append(card)
+                    if not hasattr(self, '_rebound_cards'):
+                        self._rebound_cards = []
+                    self._rebound_cards.append(card)
                 else:
                     card.zone = "graveyard"
                     self.players[card.owner].graveyard.append(card)
@@ -1988,9 +2000,24 @@ class GameState:
                             self._exile_permanent(target)
 
             elif "counter" in desc:
-                # Counter target spell: remove it from the stack
-                # The counterspell targets the spell below it on the stack
+                # Validate counterspell targeting restrictions
+                counter_oracle = (card.template.oracle_text or '').lower()
+                target_template = None
                 if item.targets:
+                    for tid in item.targets:
+                        for si in self.stack.items:
+                            if si.source.instance_id == tid:
+                                target_template = si.source.template
+                                break
+                elif not self.stack.is_empty:
+                    target_template = self.stack.top.source.template if self.stack.top else None
+
+                # Noncreature-only counters can't hit creatures
+                if target_template and 'noncreature' in counter_oracle and target_template.is_creature:
+                    self.log.append(f"T{self.turn_number}: {card.name} fizzles (can't counter creature)")
+                elif target_template and 'instant or sorcery' in counter_oracle and not (target_template.is_instant or target_template.is_sorcery):
+                    self.log.append(f"T{self.turn_number}: {card.name} fizzles (wrong target type)")
+                elif item.targets:
                     for tid in item.targets:
                         # Find the targeted spell on the stack
                         for i, stack_item in enumerate(self.stack.items):

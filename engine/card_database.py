@@ -885,8 +885,10 @@ class CardDatabase:
         text_lower = oracle_text.lower()
         for kw_str, kw_enum in KEYWORD_MAP.items():
             if kw_str.lower() in text_lower and kw_enum not in keywords:
-                # Only add if it appears as a keyword (start of line or after newline)
-                if re.search(r'(?:^|\n)' + re.escape(kw_str.lower()), text_lower):
+                # Only add if it appears as a standalone keyword (not a substring
+                # of another keyword, e.g., "flash" must not match "flashback")
+                pattern = r'(?:^|\n)' + re.escape(kw_str.lower()) + r'(?:\s|$|,|\n)'
+                if re.search(pattern, text_lower):
                     keywords.add(kw_enum)
 
         # Parse power/toughness
