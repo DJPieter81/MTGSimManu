@@ -25,20 +25,11 @@ from ai.ev_evaluator import (
 # Archetype detection
 # ─────────────────────────────────────────────────────────────
 
-DECK_ARCHETYPES = {
-    "Boros Energy":       "aggro",
-    "Domain Zoo":         "aggro",
-    "Affinity":           "aggro",
-    "Izzet Prowess":      "aggro",
-    "Dimir Midrange":     "midrange",
-    "4c Omnath":          "control",
-    "Jeskai Blink":       "control",
-    "Eldrazi Tron":       "ramp",
-    "Ruby Storm":         "combo",
-    "Amulet Titan":       "combo",
-    "Goryo's Vengeance":  "combo",
-    "Living End":         "combo",
-}
+# Archetype detection — single source of truth in strategy_profile.py
+def _get_archetype(deck_name: str) -> str:
+    from ai.strategy_profile import DECK_ARCHETYPES, ArchetypeStrategy
+    arch = DECK_ARCHETYPES.get(deck_name)
+    return arch.value if arch else "midrange"
 
 
 # ─────────────────────────────────────────────────────────────
@@ -71,7 +62,7 @@ class EVPlayer:
                  rng: random.Random = None):
         self.player_idx = player_idx
         self.deck_name = deck_name
-        self.archetype = DECK_ARCHETYPES.get(deck_name, "midrange")
+        self.archetype = _get_archetype(deck_name)
         self.rng = rng or random.Random()
         self._pw_activated_this_turn: Set[int] = set()
         self.strategic_logger = None
@@ -277,7 +268,7 @@ class EVPlayer:
                 if 'removal' in tags:
                     best_val = self._best_removal_target_value(card, game, opp)
                     if best_val < p.evoke_min_target_value:
-                        ev -= 8.0
+                        ev += p.evoke_small_target_penalty
                     else:
                         ev += best_val
                     if snap.opp_power >= snap.my_life - 3 and snap.opp_power > 0:
@@ -353,9 +344,9 @@ class EVPlayer:
             if CardType.PLANESWALKER in t.card_types:
                 ev += 6.0  # planeswalkers generate recurring value
             elif CardType.ARTIFACT in t.card_types and 'equipment' not in tags:
-                ev += 2.0  # artifacts (medallions, etc.)
+                ev += p.artifact_bonus
             elif CardType.ENCHANTMENT in t.card_types:
-                ev += 2.0
+                ev += p.enchantment_bonus
 
         # ── Rituals (combo fuel) ──
         if 'ritual' in tags:
@@ -409,7 +400,7 @@ class EVPlayer:
             elif storm >= 5:
                 ev += p.cost_reducer_mid_chain
             else:
-                ev += p.cost_reducer_mid_chain + 4.0 if p.cost_reducer_pre_chain > 5 else p.cost_reducer_mid_chain
+                ev += p.cost_reducer_early_chain
 
         # ── ETB value ──
         if 'etb_value' in tags:
@@ -505,7 +496,7 @@ class EVPlayer:
             if (t.power or 0) >= 3:
                 mod += p.high_power_creature_bonus
             if 'card_advantage' in tags:
-                mod += 3.0
+                mod += p.card_advantage_creature_bonus
 
         # ── Removal bonuses ──
         if 'removal' in tags and snap.opp_creature_count > 0:
@@ -527,7 +518,7 @@ class EVPlayer:
                 mod += p.burn_low_life_bonus
 
         # ── Control phase-based ──
-        if self.archetype == "control":
+        if p.has_control_phases:
             cmc_val = t.cmc or 0
             from engine.cards import CardType
             if snap.turn_number <= 6:
@@ -551,7 +542,7 @@ class EVPlayer:
                     mod += p.late_payoff_bonus
 
         # ── Combo chain sequencing ──
-        if self.archetype == "combo":
+        if p.has_combo_chain:
             storm = me.spells_cast_this_turn
             if 'cantrip' in tags or 'draw' in tags:
                 mod += p.cantrip_early_chain if storm <= 3 else p.cantrip_late_chain
@@ -559,7 +550,7 @@ class EVPlayer:
                 if storm <= 2:
                     mod += p.ritual_early_chain
                 else:
-                    mod += p.ritual_late_chain + storm * 0.5
+                    mod += p.ritual_late_chain + storm * p.ritual_storm_scaling
             if storm >= 3:
                 mod += p.chain_mid_bonus
             if storm >= 6:
@@ -567,7 +558,7 @@ class EVPlayer:
             from engine.cards import CardType as CT2
             if CT2.PLANESWALKER in t.card_types:
                 if storm == 0:
-                    mod += 4.0
+                    mod += p.pre_chain_planeswalker_bonus
                 elif storm >= 3:
                     mod += p.planeswalker_mid_chain_penalty
 
@@ -822,9 +813,9 @@ class EVPlayer:
             # Compare: is killing a creature worth more than face damage?
             # For aggro: face is worth ~1.5 per damage point when opp > 10
             # A creature kill is worth its creature_value
-            face_val = dmg * 1.5 if self.archetype == "aggro" else dmg * 0.5
-            if opp.life <= 10 and self.archetype == "aggro":
-                face_val = dmg * 2.5  # burn is premium when opp is low
+            face_val = dmg * self.profile.burn_face_mult
+            if opp.life <= 10:
+                face_val = dmg * self.profile.burn_face_low_life_mult
 
             if best_kill_id and best_kill_val > face_val:
                 return [best_kill_id]  # kill the creature

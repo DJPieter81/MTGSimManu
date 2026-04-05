@@ -255,28 +255,10 @@ CYCLING_COSTS = {
 }
 # CYCLING_CARDS and LIVING_END_CASCADERS removed — now oracle-derived
 
-ENERGY_PRODUCERS = {
-    "Guide of Souls": 1,       # ETB: get {E}
-    "Ocelot Pride": 1,         # attack trigger: get {E}
-    "Ajani, Nacatl Pariah": 2, # ETB: get {E}{E}
-    "Galvanic Discharge": 0,   # spends energy for damage
-    "Aetherworks Marvel": 0,   # spends energy
-}
+# ENERGY_PRODUCERS and ENERGY_SPENDERS removed — now oracle-derived
+# (template.energy_production populated by oracle_parser.py)
 
-ENERGY_SPENDERS = {
-    "Galvanic Discharge": (1, "damage_per_energy"),  # 1 base + 1 per energy spent
-    "Guide of Souls": (1, "gain_life_and_fly"),      # pay E: +1/+1 flying until eot
-}
-
-# X-cost spells: maps card name to (x_multiplier, min_x, card_type)
-# x_multiplier: how many X's in the cost (Walking Ballista = XX = 2, Chalice = XX = 2)
-# min_x: minimum X value the AI should use (0 = allow X=0)
-# card_type: how to apply X on resolution
-X_COST_SPELLS = {
-    "Walking Ballista": {"multiplier": 2, "min_x": 1, "effect": "plus1_counters"},
-    "Chalice of the Void": {"multiplier": 2, "min_x": 1, "effect": "charge_counters"},
-    "Engineered Explosives": {"multiplier": 1, "min_x": 0, "effect": "sunburst"},  # X but sunburst
-}
+# X_COST_SPELLS removed — now oracle-derived (template.x_cost_data)
 
 # Planeswalker loyalty ability definitions: (plus_amount, minus_amount, ult_amount)
 PLANESWALKER_ABILITIES = {
@@ -660,8 +642,8 @@ class GameState:
         total_mana = len(untapped_lands) + player.mana_pool.total() + player._tron_mana_bonus()
 
         # X-cost spells: require minimum mana to cast meaningfully
-        if template.name in X_COST_SPELLS:
-            x_info = X_COST_SPELLS[template.name]
+        if template.x_cost_data:
+            x_info = template.x_cost_data
             min_mana = x_info["multiplier"] * max(x_info["min_x"], 1)
             if total_mana < min_mana:
                 return False
@@ -1290,8 +1272,8 @@ class GameState:
 
         # Calculate X value for X-cost spells
         x_value = 0
-        if template.name in X_COST_SPELLS and not free_cast and not evoked:
-            x_info = X_COST_SPELLS[template.name]
+        if template.x_cost_data and not free_cast and not evoked:
+            x_info = template.x_cost_data
             # X = (total mana available) / multiplier
             # For XX spells, X = mana / 2; for X spells, X = mana
             available_for_x = len(player.untapped_lands) + player.mana_pool.total() + player._tron_mana_bonus()
@@ -1363,7 +1345,7 @@ class GameState:
         cost_parts = []
         mc = card.template.mana_cost
         if x_value > 0:
-            x_info = X_COST_SPELLS.get(template.name, {})
+            x_info = template.x_cost_data or {}
             actual_paid = x_value * x_info.get("multiplier", 1)
             cost_parts.append(str(actual_paid))
         elif mc.generic > 0:
@@ -1442,8 +1424,8 @@ class GameState:
                 card.enter_battlefield()
                 self.players[item.controller].battlefield.append(card)
                 # Place counters for X-cost permanents
-                if item.x_value > 0 and template.name in X_COST_SPELLS:
-                    x_info = X_COST_SPELLS[template.name]
+                if item.x_value > 0 and template.x_cost_data:
+                    x_info = template.x_cost_data
                     effect = x_info.get("effect", "")
                     if effect == "charge_counters":
                         card.other_counters["charge"] = item.x_value
@@ -1498,14 +1480,12 @@ class GameState:
             else:
                 card.loyalty_counters = template.loyalty or 0
 
-        # Energy production on ETB (data-driven, not card-specific)
-        if template.name in ENERGY_PRODUCERS:
-            amount = ENERGY_PRODUCERS[template.name]
-            if amount > 0:
-                self.players[controller].add_energy(amount)
-                self.log.append(f"T{self.turn_number} P{controller+1}: "
-                                f"{template.name} produces {amount} energy "
-                                f"(total: {self.players[controller].energy_counters})")
+        # Energy production on ETB (from oracle-derived template property)
+        if template.energy_production > 0:
+            self.players[controller].add_energy(template.energy_production)
+            self.log.append(f"T{self.turn_number} P{controller+1}: "
+                            f"{template.name} produces {template.energy_production} energy "
+                            f"(total: {self.players[controller].energy_counters})")
 
         # Dispatch to card effect registry for card-specific ETB logic
         has_specific_handler = template.name in EFFECT_REGISTRY._handlers

@@ -60,6 +60,13 @@ class StrategyProfile:
     cost_reducer_mid_chain: float = 3.0  # EV for cost reducers during combo
     etb_value_bonus: float = 3.0         # ETB creature bonus
     planeswalker_bonus: float = 6.0      # planeswalker deployment bonus
+    enchantment_bonus: float = 2.0       # enchantment deployment bonus
+    artifact_bonus: float = 2.0          # non-equipment artifact bonus
+    card_advantage_creature_bonus: float = 3.0  # creatures with card_advantage tag
+    evoke_small_target_penalty: float = -8.0    # evoke vs small creatures
+    ritual_storm_scaling: float = 0.5    # extra ritual value per storm count
+    pre_chain_planeswalker_bonus: float = 0.0   # deploy PW before chaining
+    cost_reducer_early_chain: float = 4.0       # reducer at storm 1-4
     baseline_cast_bonus: float = 2.0     # baseline "casting is good" bonus
     zero_mana_combo_bonus: float = 0.0   # bonus for 0-mana spells (combo only)
 
@@ -151,6 +158,10 @@ class StrategyProfile:
     # ── Pass threshold ──
     pass_threshold: float = -5.0         # only pass if best EV below this
 
+    # ── Archetype flags (enables/disables code paths) ──
+    has_control_phases: bool = False   # enable early/mid/late phase logic
+    has_combo_chain: bool = False      # enable storm chain sequencing
+
     # ── Evoke ──
     evoke_base_penalty: float = -6.0
     evoke_min_target_value: float = 4.0
@@ -186,6 +197,7 @@ MIDRANGE = StrategyProfile(
 )
 
 CONTROL = StrategyProfile(
+    has_control_phases=True,
     early_removal_bonus=6.0,
     early_cheap_play_bonus=3.0,
     early_planeswalker_bonus=4.0,
@@ -199,9 +211,12 @@ CONTROL = StrategyProfile(
 )
 
 COMBO = StrategyProfile(
+    has_combo_chain=True,
     ritual_bonus=5.0,
     cost_reducer_pre_chain=12.0,
     cost_reducer_mid_chain=-5.0,
+    cost_reducer_early_chain=4.0,
+    pre_chain_planeswalker_bonus=4.0,
     zero_mana_combo_bonus=4.0,
     chain_mid_bonus=4.0,
     chain_deep_bonus=4.0,
