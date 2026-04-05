@@ -434,22 +434,33 @@ class GameState:
             player.cards_drawn_this_turn += 1
             drawn.append(card)
 
-            # Sheoldred, the Apocalypse: gain 2 life when you draw
-            for c in player.battlefield:
-                if "sheoldred" in c.instance_tags:
-                    self.gain_life(player.player_idx, 2, "Sheoldred draw")
-            # Opponent's Sheoldred: lose 2 life when opponent draws
+            # Generic draw triggers from oracle text
+            # Handles: Sheoldred ("gain 2 life" on draw), Bowmasters ("whenever
+            # an opponent draws"), and any future draw-trigger cards.
             opp = self.players[1 - player_idx]
+            for c in player.battlefield:
+                oracle = (c.template.oracle_text or '').lower()
+                if 'whenever you draw' in oracle and 'gain' in oracle and 'life' in oracle:
+                    import re
+                    m = re.search(r'gain\s+(\d+)\s+life', oracle)
+                    if m:
+                        self.gain_life(player.player_idx, int(m.group(1)), c.name)
             for c in opp.battlefield:
-                if "sheoldred" in c.instance_tags:
-                    player.life -= SHOCK_LAND_LIFE_COST
-                    opp.damage_dealt_this_turn += 2
-            # Orcish Bowmasters: opponent draws → deal 1 damage + amass
-            for c in opp.battlefield:
-                if c.template.name == "Orcish Bowmasters" and player.cards_drawn_this_turn > 1:
-                    # Only triggers on draws beyond the first per turn
-                    player.life -= 1
-                    opp.damage_dealt_this_turn += 1
+                oracle = (c.template.oracle_text or '').lower()
+                # "Whenever you draw" on opponent's side = opponent loses life
+                if 'whenever' in oracle and 'draw' in oracle and 'lose' in oracle and 'life' in oracle:
+                    import re
+                    m = re.search(r'lose\s+(\d+)\s+life', oracle)
+                    if m:
+                        player.life -= int(m.group(1))
+                        opp.damage_dealt_this_turn += int(m.group(1))
+                # "Whenever an opponent draws" — Bowmasters-style
+                if 'whenever an opponent draws' in oracle and player.cards_drawn_this_turn > 1:
+                    import re
+                    m = re.search(r'deals?\s+(\d+)\s+damage', oracle)
+                    dmg = int(m.group(1)) if m else 1
+                    player.life -= dmg
+                    opp.damage_dealt_this_turn += dmg
 
         return drawn
 
@@ -857,16 +868,15 @@ class GameState:
         if card.name not in FETCH_LAND_COLORS:
             player.battlefield.append(card)
 
-        # ── Amulet of Vigor: untap permanents that enter tapped ──
+        # ── Generic "untap enters tapped" (Amulet of Vigor pattern) ──
         if card.tapped:
-            amulet_count = sum(
-                1 for c in player.battlefield
-                if c.template.name == "Amulet of Vigor"
-            )
-            if amulet_count > 0:
-                card.tapped = False
-                self.log.append(f"T{self.turn_number} P{player_idx+1}: "
-                                f"Amulet of Vigor untaps {card.name}")
+            for c in player.battlefield:
+                oracle = (c.template.oracle_text or '').lower()
+                if 'tapped permanent enters' in oracle and 'untap' in oracle:
+                    card.tapped = False
+                    self.log.append(f"T{self.turn_number} P{player_idx+1}: "
+                                    f"{c.name} untaps {card.name}")
+                    break
 
         # ── Landfall triggers ──
         self._trigger_landfall(player_idx)
@@ -1369,26 +1379,33 @@ class GameState:
         cost_str = ''.join(cost_parts) if cost_parts else '0'
         self.log.append(f"T{self.turn_number} P{player_idx+1}: Cast {card.name} ({cost_str}){dash_label}{x_label}")
 
-        # ── Prowess triggers ──
-        # Handles both keyword prowess and prowess-like abilities
-        # (Slickshot Show-Off: +2/+0, DRC: surveil 1)
-        PROWESS_LIKE = {"Slickshot Show-Off", "Dragon's Rage Channeler"}
+        # ── Prowess and prowess-like triggers (generic from oracle) ──
         if not template.is_creature:
             for creature in player.creatures:
+                # Standard prowess keyword
                 if Keyword.PROWESS in creature.keywords:
                     creature.temp_power_mod += 1
                     creature.temp_toughness_mod += 1
-                elif creature.name == "Slickshot Show-Off":
-                    # Whenever you cast a noncreature spell, +2/+0 until end of turn
-                    creature.temp_power_mod += 2
-                elif creature.name == "Dragon's Rage Channeler":
-                    # Surveil 1 — helps enable delirium
-                    # Simplified: after 4+ spells cast, DRC gets +2/+2 and flying
-                    if player.spells_cast_this_turn >= 3 or self.turn_number >= 5:
-                        if Keyword.FLYING not in creature.keywords:
-                            creature.keywords.add(Keyword.FLYING)
-                        creature.temp_power_mod = max(creature.temp_power_mod, 2)
-                        creature.temp_toughness_mod = max(creature.temp_toughness_mod, 2)
+                    continue
+                # Oracle-based prowess variants:
+                # "Whenever you cast a noncreature spell, this creature gets +N/+M"
+                c_oracle = (creature.template.oracle_text or '').lower()
+                if 'noncreature spell' not in c_oracle and 'instant or sorcery' not in c_oracle:
+                    continue
+                import re
+                pump = re.search(r'gets?\s+\+(\d+)/\+(\d+)', c_oracle)
+                if pump:
+                    creature.temp_power_mod += int(pump.group(1))
+                    creature.temp_toughness_mod += int(pump.group(2))
+                elif re.search(r'gets?\s+\+(\d+)/\+0', c_oracle):
+                    m = re.search(r'gets?\s+\+(\d+)/\+0', c_oracle)
+                    creature.temp_power_mod += int(m.group(1))
+                # Delirium / surveil: "surveil" in oracle → after enough spells, power up
+                if 'surveil' in c_oracle and player.spells_cast_this_turn >= 3:
+                    if Keyword.FLYING not in creature.keywords:
+                        creature.keywords.add(Keyword.FLYING)
+                    creature.temp_power_mod = max(creature.temp_power_mod, 2)
+                    creature.temp_toughness_mod = max(creature.temp_toughness_mod, 2)
 
         # Generic oracle-text-based spell-cast triggers
         from .oracle_resolver import resolve_spell_cast_trigger
@@ -2257,19 +2274,25 @@ class GameState:
         for ability in card.template.abilities:
             if ability.ability_type == AbilityType.ETB:
                 self._triggers_queue.append((ability, card, controller))
-        # ── Guide of Souls: whenever another creature ETBs under your control, gain 1 life ──
+        # Generic "whenever another creature enters" triggers from oracle
         if card.template.is_creature:
             player = self.players[controller]
             for c in player.battlefield:
-                if c.name == "Guide of Souls" and c.instance_id != card.instance_id:
-                    self.gain_life(controller, 1, "Guide of Souls")
+                if c.instance_id == card.instance_id:
+                    continue
+                oracle = (c.template.oracle_text or '').lower()
+                if 'another creature' in oracle and 'enters' in oracle:
+                    if 'gain' in oracle and 'life' in oracle:
+                        import re
+                        m = re.search(r'gain\s+(\d+)\s+life', oracle)
+                        self.gain_life(controller, int(m.group(1)) if m else 1, c.name)
 
     def trigger_attack(self, attacker: CardInstance, controller: int):
         """Trigger attack abilities."""
-        # Energy on attack
-        if attacker.template.name in ENERGY_PRODUCERS:
-            if attacker.template.name == "Ocelot Pride":
-                self.produce_energy(controller, 1, "Ocelot Pride attack")
+        # Energy on attack (from oracle: "whenever ... attacks ... {E}")
+        oracle = (attacker.template.oracle_text or '').lower()
+        if '{e}' in oracle and 'attack' in oracle:
+            self.produce_energy(controller, 1, f"{attacker.name} attack")
 
         # Annihilator
         if Keyword.ANNIHILATOR in attacker.keywords:
@@ -2298,28 +2321,15 @@ class GameState:
                 self.log.append(f"T{self.turn_number}: Annihilator {ann_amount} - "
                                 f"P{opponent+1} sacrifices {sacrificed} permanents")
 
-        # Phlage, Titan of Fire's Fury: 3 damage + 3 life on attack
-        if attacker.template.name == "Phlage, Titan of Fire's Fury":
-            opponent = 1 - controller
-            # Reduced from 3/3 to 2/2 to compensate for missing counterplay
-            # (real games have counterspells, exile removal, sideboard hate)
-            self.players[opponent].life -= 2
-            self.players[controller].damage_dealt_this_turn += 2
-            self.gain_life(controller, 2, "Phlage")
-            self.log.append(f"T{self.turn_number} P{controller+1}: "
-                           f"Phlage attack trigger: 2 damage to opponent "
-                           f"(life: {self.players[opponent].life}), "
-                           f"gain 2 life (life: {self.players[controller].life})")
-
-        # Primeval Titan: attack trigger searches for 2 lands
+        # Primeval Titan: complex land search (keep in card_effects.py)
         if attacker.template.name == "Primeval Titan":
             from .card_effects import _primeval_titan_search
             _primeval_titan_search(self, controller)
 
         # Generic oracle-text-based attack triggers (handles ALL cards)
-        if attacker.template.name not in ("Phlage, Titan of Fire's Fury", "Primeval Titan"):
-            from .oracle_resolver import resolve_attack_trigger
-            resolve_attack_trigger(self, attacker, controller)
+        # Phlage, Ocelot Pride, battle cry, etc. all resolved from oracle text
+        from .oracle_resolver import resolve_attack_trigger
+        resolve_attack_trigger(self, attacker, controller)
 
         # Generic attack triggers from ability objects
         for ability in attacker.template.abilities:
