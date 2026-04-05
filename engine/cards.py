@@ -148,6 +148,7 @@ class CardTemplate:
     x_cost_data: Optional[Dict] = None        # {multiplier, min_x}
     is_cost_reducer: bool = False             # reduces spell costs (from tags)
     domain_reduction: int = 0                 # cost reduction per basic land type
+    power_scales_with: str = ""               # "domain", "tarmogoyf", "delirium", "graveyard"
 
     @property
     def is_creature(self) -> bool:

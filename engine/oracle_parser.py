@@ -184,6 +184,24 @@ def parse_domain_reduction(oracle: str) -> Optional[int]:
     return int(m.group(1)) if m else 1
 
 
+def detect_power_scaling(oracle: str) -> str:
+    """Detect dynamic P/T scaling from oracle text.
+
+    Returns: "domain", "tarmogoyf", "delirium", "graveyard", or "".
+    """
+    oracle = oracle.lower()
+    if 'basic land type' in oracle and ('power' in oracle or 'toughness' in oracle or 'equal' in oracle):
+        return "domain"
+    if 'card type' in oracle and ('power' in oracle or 'equal' in oracle) and 'graveyard' in oracle:
+        return "tarmogoyf"
+    if ('delirium' in oracle or 'four or more card types' in oracle) and 'graveyard' in oracle:
+        return "delirium"
+    if ('exile' in oracle and ('instant' in oracle or 'sorcery' in oracle)
+            and ('graveyard' in oracle or 'from your graveyard' in oracle)):
+        return "graveyard"
+    return ""
+
+
 def parse_planeswalker_abilities(oracle: str) -> Optional[Dict]:
     """Parse planeswalker loyalty abilities from oracle text.
 
