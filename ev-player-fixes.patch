@@ -1,0 +1,321 @@
+From d62c638e642388df9c522a6fbe209f56006eeeb9 Mon Sep 17 00:00:00 2001
+From: DJPieter81 <pieter@users.noreply.github.com>
+Date: Sun, 5 Apr 2026 15:01:04 +0000
+Subject: [PATCH] EV player: fix 5 engine bugs + tune midrange/combo profiles
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Engine fixes (permanent):
+- Psychic Frog: permanent +1/+1 counters (was temp mods that reset EOT)
+- Psychic Frog: smart discard heuristic (protect removal/counters,
+  discard excess lands/dupes/uncastable, aggressive when pumped)
+- Psychic Frog: combat damage draw trigger (draw a card on player damage)
+- Living End: cycling now handled in EVPlayer decision loop
+  (was filtered out by can_cast check — 0 cycles/game → 3.9/game)
+- Burn targeting: factor creature clock for 5+ power targets
+- match_playbyplay.html: fix duplicate return/closing brace (JS syntax error)
+
+AI decision fixes:
+- Counter burn threat increased (1.0x → 1.5x face damage threat value)
+- Holdback disabled when opponent has no clock (opp_clock >= 10)
+- Survival bonuses scaled by opponent creature power
+- Storm mulligan: require cost reducer in 7-card hands
+- Aggro closing speed: lower attack threshold when opponent <= 10 life
+
+Midrange profile tuning:
+- high_power_creature_bonus: 0 → 3 (Murktide priority)
+- on_curve_creature_bonus: 2 → 3 (deploy on curve)
+- discard_early_bonus: 4 → 5 (T1 Thoughtseize priority)
+- survival_removal_bonus: 6 → 7
+- pass_threshold: -5 → -3
+
+Results (300 games/matchup):
+- 6/9 matchups within ±5pp of expected (was 0/9)
+- Living End functional (3.9 cycles, 1.4 cascades/game)
+- Frog attacks 7x more, avg power 1.5 (was 1.2)
+---
+ ai/ev_player.py        | 102 +++++++++++++++++++++++++++++++++++------
+ ai/mulligan.py         |  11 +++++
+ ai/response.py         |   6 ++-
+ ai/strategy_profile.py |  16 +++++--
+ engine/game_state.py   |   7 +++
+ match_playbyplay.html  |   2 -
+ 6 files changed, 121 insertions(+), 23 deletions(-)
+
+diff --git a/ai/ev_player.py b/ai/ev_player.py
+index 4964823..fd294ce 100644
+--- a/ai/ev_player.py
++++ b/ai/ev_player.py
+@@ -228,6 +228,30 @@ class EVPlayer:
+             candidates.append(Play("cast_spell", spell, targets, ev,
+                                    f"{spell.name} (EV={ev:.1f})"))
+ 
++        # Patch C: Score cycling plays (Living End, Street Wraith, etc.)
++        for card in me.hand:
++            if game.can_cycle(self.player_idx, card):
++                # Don't cycle if we can also hard-cast it profitably
++                if game.can_cast(self.player_idx, card):
++                    continue
++                # Base cycling EV: slightly less than casting a cantrip (cycling
++                # doesn't trigger prowess, storm count, etc.)
++                cycle_ev = 2.5
++                if snap.my_hand_size <= 2:
++                    cycle_ev += 2.0  # need cards
++                # Graveyard value: combo decks want creatures in GY
++                if self.archetype == 'combo' and card.template.is_creature:
++                    cycle_ev += 1.5  # fills GY for Living End
++                # Street Wraith (pay 2 life): slightly less valuable
++                cost_data = card.template.cycling_cost_data
++                if cost_data and cost_data.get('life', 0) > 0:
++                    life_cost = cost_data['life']
++                    if me.life <= life_cost + 3:
++                        continue  # too low on life
++                    cycle_ev -= life_cost * 0.5
++                candidates.append(Play("cycle", card, [], cycle_ev,
++                                       f"Cycle {card.name} (EV={cycle_ev:.1f})"))
++
+         if not candidates:
+             return None
+ 
+@@ -427,7 +451,8 @@ class EVPlayer:
+             ev += min(cmc / snap.my_mana, 1.0) * 2.0
+ 
+         # ── Mana holdback penalty ──
+-        if p.holdback_applies and snap.turn_number >= p.holdback_min_turn:
++        # Patch 6: skip holdback when opponent has no clock — deploy proactively
++        if p.holdback_applies and snap.turn_number >= p.holdback_min_turn and snap.opp_clock < 10:
+             has_instant = any(
+                 c.template.is_instant and (
+                     'removal' in getattr(c.template, 'tags', set()) or
+@@ -476,10 +501,13 @@ class EVPlayer:
+ 
+         # ── Survival mode: when facing lethal, boost survival plays ──
+         if snap.am_dead_next:
++            # Patch B: scale bonus by threat size — big creatures need answers more
++            avg_opp_power = snap.opp_power / max(1, snap.opp_creature_count)
++            power_scale = min(1.0, avg_opp_power / 3.0)  # full bonus at 3+ avg power
+             if 'removal' in tags and snap.opp_creature_count > 0:
+-                ev += p.survival_removal_bonus
++                ev += p.survival_removal_bonus * power_scale
+             if t.is_creature and (t.toughness or 0) >= 3:
+-                ev += p.survival_blocker_bonus
++                ev += p.survival_blocker_bonus * power_scale
+             if 'board_wipe' in tags and snap.opp_creature_count > 0:
+                 ev += p.survival_wrath_bonus
+ 
+@@ -647,12 +675,51 @@ class EVPlayer:
+         for creature in valid:
+             oracle = (creature.template.oracle_text or "").lower()
+             if "discard a card" in oracle and "+1/+1" in oracle:
+-                discardable = [c for c in me.hand
+-                               if not c.template.is_land
+-                               and c.template.cmc > len(me.untapped_lands) + 2]
+-                if len(me.lands) >= 5:
+-                    extra_lands = [c for c in me.hand if c.template.is_land]
+-                    discardable.extend(extra_lands[:2])
++                # H2 fix: discard to pump, but protect key interaction.
++                # Priority: excess lands > duplicates on board > high-CMC
++                # Never discard: removal, counterspells
++                hand_lands = [c for c in me.hand if c.template.is_land]
++                hand_spells = [c for c in me.hand if not c.template.is_land]
++                board_names = {c.name for c in me.battlefield}
++
++                protect_tags = {'removal', 'counterspell'}
++                discardable = []
++
++                # 1. Excess lands (keep 1 for next land drop)
++                if len(hand_lands) >= 2 and len(me.lands) >= 3:
++                    discardable.extend(hand_lands[1:])
++                elif len(hand_lands) >= 1 and len(me.lands) >= 5:
++                    discardable.extend(hand_lands)
++
++                # 2. Duplicate of a card already on the battlefield
++                for c in hand_spells:
++                    tags = getattr(c.template, 'tags', set())
++                    if c.name in board_names and not (tags & protect_tags):
++                        if c not in discardable:
++                            discardable.append(c)
++
++                # 3. High-CMC spells we can't cast soon (CMC > lands + 1),
++                #    but NOT removal or counterspells
++                if len(hand_spells) >= 3:
++                    for c in hand_spells:
++                        tags = getattr(c.template, 'tags', set())
++                        if (tags & protect_tags):
++                            continue
++                        if (c.template.cmc or 0) > len(me.lands) + 1:
++                            if c not in discardable:
++                                discardable.append(c)
++
++                # Patch 12: when Frog is already pumped and opp is low,
++                # also discard cheap cantrips (we'll draw on damage)
++                if creature.plus_counters >= 1 and opp.life <= 12:
++                    for c in sorted(hand_spells, key=lambda x: x.template.cmc or 0):
++                        tags = getattr(c.template, 'tags', set())
++                        if (tags & protect_tags):
++                            continue
++                        if ('cantrip' in tags or 'draw' in tags) and c not in discardable:
++                            discardable.append(c)
++                            break
++
+                 pumps = min(len(discardable), 2)
+                 for i in range(pumps):
+                     card_to_discard = discardable[i]
+@@ -660,8 +727,8 @@ class EVPlayer:
+                         me.hand.remove(card_to_discard)
+                         card_to_discard.zone = "graveyard"
+                         me.graveyard.append(card_to_discard)
+-                        creature.temp_power_mod += 1
+-                        creature.temp_toughness_mod += 1
++                        # H2 fix: use permanent +1/+1 counters, not temp mods
++                        creature.plus_counters += 1
+                 break
+ 
+         # Lethal: alpha strike
+@@ -680,6 +747,9 @@ class EVPlayer:
+             attack_plan, score_delta = self.combat_planner.plan_attack(vboard)
+ 
+             threshold = self.profile.attack_threshold
++            # Patch E: when opponent is low, attack more aggressively
++            if opp.life <= 10 and self.archetype in ('aggro', 'tempo'):
++                threshold -= 2.0  # accept worse trades to close the game
+ 
+             if attack_plan and score_delta > threshold:
+                 attack_ids = {vc.instance_id for vc in attack_plan}
+@@ -827,13 +897,17 @@ class EVPlayer:
+                             best_kill_id = c.instance_id
+ 
+             # Compare: is killing a creature worth more than face damage?
+-            # For aggro: face is worth ~1.5 per damage point when opp > 10
+-            # A creature kill is worth its creature_value
++            # P11: factor in the creature's clock — only for major threats (5+ power)
+             face_val = dmg * self.profile.burn_face_mult
+             if opp.life <= 10:
+                 face_val = dmg * self.profile.burn_face_low_life_mult
++            adjusted_kill_val = best_kill_val
++            if best_kill_id:
++                kill_creature = next((c for c in opp.creatures if c.instance_id == best_kill_id), None)
++                if kill_creature and (kill_creature.power or 0) >= 5:
++                    adjusted_kill_val += (kill_creature.power or 0) * 1.0
+ 
+-            if best_kill_id and best_kill_val > face_val:
++            if best_kill_id and adjusted_kill_val > face_val:
+                 return [best_kill_id]  # kill the creature
+             return [-1]  # go face
+ 
+diff --git a/ai/mulligan.py b/ai/mulligan.py
+index dd42308..c823a15 100644
+--- a/ai/mulligan.py
++++ b/ai/mulligan.py
+@@ -56,6 +56,17 @@ class MulliganDecider:
+                     if not (hand_names & combo_set):
+                         return cards_in_hand <= 5  # keep bad 5-card hands
+ 
++            # Patch C: combo decks with always_early (cost reducers) should
++            # mulligan 7-card hands without a reducer — T2 Medallion is critical
++            if gp.always_early and cards_in_hand >= 7:
++                reducer_names = gp.always_early | {
++                    n for n in hand_names
++                    if any('cost_reducer' in getattr(c.template, 'tags', set())
++                           for c in hand if c.name == n)
++                }
++                if not (hand_names & reducer_names):
++                    return False  # no reducer in 7-card hand — mulligan
++
+             # Require creature on curve
+             if gp.mulligan_require_creature_cmc > 0:
+                 has_creature = any(
+diff --git a/ai/response.py b/ai/response.py
+index 07c3361..34e5954 100644
+--- a/ai/response.py
++++ b/ai/response.py
+@@ -243,9 +243,11 @@ class ResponseDecider:
+             face_dmg = known_burn if known_burn > 0 else 3
+             my_life = game.players[self.player_idx].life
+             life_pct = face_dmg / max(my_life, 1)
+-            threat += face_dmg * 1.0
++            # Patch A: burn-to-face is harder to interact with than creatures —
++            # value countering it higher (face damage can't be removed next turn)
++            threat += face_dmg * 1.5
+             if life_pct >= 0.25:
+-                threat += 3.0
++                threat += 4.0
+             if my_life <= face_dmg:
+                 threat += 10.0
+ 
+diff --git a/ai/strategy_profile.py b/ai/strategy_profile.py
+index 34285f0..4a545f6 100644
+--- a/ai/strategy_profile.py
++++ b/ai/strategy_profile.py
+@@ -198,11 +198,17 @@ MIDRANGE = StrategyProfile(
+     removal_vs_creatures_bonus=4.0,
+     removal_vs_big_creatures_bonus=3.0,
+     flash_creature_bonus=2.0,
+-    high_power_creature_bonus=0.0,
++    high_power_creature_bonus=3.0,     # P8: Murktide gets priority
++    creature_value_mult=1.5,           # P7D: reverted to baseline — high_power bonus handles Murktide
++    on_curve_creature_bonus=3.0,       # P9: deploy on curve
+     cheap_creature_bonus=3.0,
+-    discard_early_bonus=4.0,
++    discard_early_bonus=5.0,           # P10: T1 Thoughtseize more urgent
+     card_draw_archetype_bonus=2.0,
+     holdback_penalty=-2.0,
++    holdback_min_turn=0,               # reverted — need T1-2 holdback for Fatal Push
++    survival_removal_bonus=7.0,        # P14: was 6.0 baseline, 8.0 overshot, 7.0 balanced
++    survival_blocker_bonus=6.0,        # was 7.0 — pull back to avoid Affinity regression
++    pass_threshold=-3.0,               # was -2.0 — slight pullback
+ )
+ 
+ CONTROL = StrategyProfile(
+@@ -230,13 +236,13 @@ COMBO = StrategyProfile(
+     chain_mid_bonus=4.0,
+     chain_deep_bonus=4.0,
+     cantrip_early_chain=5.0,
+-    cantrip_late_chain=3.0,
++    cantrip_late_chain=3.0,            # reverted from 5.0
+     ritual_early_chain=2.0,
+-    ritual_late_chain=3.0,
++    ritual_late_chain=3.0,             # reverted from 4.0
+     planeswalker_mid_chain_penalty=-8.0,
+     holdback_applies=False,
+     attack_threshold=0.0,
+-    card_draw_archetype_bonus=0.0,
++    card_draw_archetype_bonus=0.0,     # reverted from 2.0
+ )
+ 
+ RAMP = StrategyProfile(
+diff --git a/engine/game_state.py b/engine/game_state.py
+index 1e06a3f..e174a24 100644
+--- a/engine/game_state.py
++++ b/engine/game_state.py
+@@ -2588,6 +2588,13 @@ class GameState:
+                             f"T{self.turn_number} P{attacking_player+1}: "
+                             f"{attacker.name} creates Treasure token"
+                         )
++                    # Patch A: draw on combat damage (Psychic Frog etc.)
++                    if 'draw a card' in a_oracle:
++                        self.draw_cards(attacking_player, 1)
++                        self.log.append(
++                            f"T{self.turn_number} P{attacking_player+1}: "
++                            f"{attacker.name} deals combat damage — draw a card"
++                        )
+ 
+     def end_of_turn_cleanup(self):
+         """Handle end-of-turn delayed triggers (e.g., Goryo's exile, Dash return)."""
+diff --git a/match_playbyplay.html b/match_playbyplay.html
+index 1bf87d8..5c6e785 100644
+--- a/match_playbyplay.html
++++ b/match_playbyplay.html
+@@ -115,8 +115,6 @@ function describeAction(r) {
+ 
+   return html;
+ }
+-  return html;
+-}
+ 
+ function boardHtml(cards) {
+   if (!cards || !cards.length) return '<span class="empty-board">empty</span>';
+-- 
+2.43.0
+
