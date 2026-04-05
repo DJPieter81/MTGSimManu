@@ -146,7 +146,7 @@ async function load() {
   const panels = document.getElementById('panels');
 
   d.games.forEach((g, gi) => {
-    const isP1Win = g.winner.includes('Storm');
+    const isP1Win = g.winner === d.deck1;
     const tab = document.createElement('div');
     tab.className = `game-tab ${gi === 0 ? 'active' : ''}`;
     tab.innerHTML = `Game ${g.game_num} <span class="sub ${isP1Win ? 'win' : 'loss'}">${g.winner.replace('Ruby ','').replace('Boros ','')} T${g.turns}</span>`;
@@ -165,7 +165,7 @@ async function load() {
     let rows = '';
     let lastTurn = -1;
     g.rows.forEach(r => {
-      const isP1 = r.who === 'Storm';
+      const isP1 = r.who_idx === 0;
       const isAtk = r.action_type === 'attack';
       const isLethal = r.reasoning && r.reasoning.includes('LETHAL');
       const turnStart = r.turn !== lastTurn;
@@ -178,8 +178,8 @@ async function load() {
 
       const actCls = r.action_type === 'land' ? 'act-land' : isLethal ? 'act-lethal' : isAtk ? 'act-attack' : 'act-spell';
 
-      const sLife = r.storm_life;
-      const bLife = r.boros_life;
+      const sLife = r.p1_life;
+      const bLife = r.p2_life;
 
       const reason = describeAction(r);
 
@@ -188,8 +188,8 @@ async function load() {
         <td class="who-cell ${isP1 ? 'who-p1' : 'who-p2'}">${r.who}</td>
         <td class="life-cell life-p1 ${sLife <= 5 ? 'life-danger' : ''}">${sLife}</td>
         <td class="life-cell life-p2 ${bLife <= 5 ? 'life-danger' : ''}">${bLife}</td>
-        <td class="board-cell">${boardHtml(r.storm_board)}</td>
-        <td class="board-cell">${boardHtml(r.boros_board)}</td>
+        <td class="board-cell">${boardHtml(r.p1_board)}</td>
+        <td class="board-cell">${boardHtml(r.p2_board)}</td>
         <td class="hand-cell">${handHtml(r.hand)}</td>
         <td class="action-cell ${actCls}">${r.action}</td>
         <td class="reason-cell">${reason}</td>
@@ -200,8 +200,8 @@ async function load() {
       <div class="game-header">
         <div class="game-result">${g.winner} wins in ${g.turns} turns</div>
         <div class="game-stats">
-          Storm: ${g.storm_spells} spells, ${g.storm_final_life}&#9829;
-          &nbsp;|&nbsp; Boros: ${g.boros_spells} spells, ${g.boros_final_life}&#9829;
+          ${d.p1_short}: ${g.p1_spells} spells, ${g.p1_final_life}&#9829;
+          &nbsp;|&nbsp; ${d.p2_short}: ${g.p2_spells} spells, ${g.p2_final_life}&#9829;
           <span class="score-badge">${g.score[0]}&ndash;${g.score[1]}</span>
         </div>
       </div>
@@ -209,10 +209,10 @@ async function load() {
         <thead><tr>
           <th style="width:28px">T</th>
           <th style="width:52px">Player</th>
-          <th style="width:32px">S&#9829;</th>
-          <th style="width:32px">B&#9829;</th>
-          <th>Storm Board</th>
-          <th>Boros Board</th>
+          <th style="width:32px">${d.p1_short[0]}&#9829;</th>
+          <th style="width:32px">${d.p2_short[0]}&#9829;</th>
+          <th>${d.p1_short} Board</th>
+          <th>${d.p2_short} Board</th>
           <th>Hand</th>
           <th>Action</th>
           <th>AI Reasoning</th>
