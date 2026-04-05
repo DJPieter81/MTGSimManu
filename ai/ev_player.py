@@ -353,18 +353,19 @@ class EVPlayer:
 
         # ── Past in Flames — bonus for rich graveyard ──
         if 'flashback' in tags and p.pif_gy_ritual_mult > 0:
-            # Check if a flashback-granting spell was already cast this turn (redundant)
-            already_cast_flashback_grant = any(
-                'flashback' in getattr(c.template, 'tags', set())
-                and c.zone == 'graveyard'
-                for c in me.graveyard
-            ) if me.spells_cast_this_turn > 0 else False
-            if 'flashback' in tags and already_cast_flashback_grant and me.spells_cast_this_turn > 0:
-                ev += p.pif_redundant_penalty
-            else:
-                gy_rituals = sum(1 for c in me.graveyard if 'ritual' in getattr(c.template, 'tags', set()))
-                gy_cantrips = sum(1 for c in me.graveyard if 'cantrip' in getattr(c.template, 'tags', set()))
-                ev += gy_rituals * p.pif_gy_ritual_mult + gy_cantrips * p.pif_gy_cantrip_mult
+            # Check if a flashback-granting spell was already cast this turn
+            # Only block if PiF was cast THIS turn (spells_cast > 0 means we're chaining)
+            # and there's already a flashback-granter in GY from this chain
+            if me.spells_cast_this_turn >= 2:
+                pif_in_gy = any(
+                    'flashback' in getattr(c.template, 'tags', set())
+                    for c in me.graveyard
+                )
+                if pif_in_gy:
+                    return p.pif_redundant_penalty
+            gy_rituals = sum(1 for c in me.graveyard if 'ritual' in getattr(c.template, 'tags', set()))
+            gy_cantrips = sum(1 for c in me.graveyard if 'cantrip' in getattr(c.template, 'tags', set()))
+            ev += gy_rituals * p.pif_gy_ritual_mult + gy_cantrips * p.pif_gy_cantrip_mult
 
         # ── Tutors (Wish) — find the finisher ──
         if 'tutor' in tags and p.tutor_base > 0:
