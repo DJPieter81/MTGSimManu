@@ -326,9 +326,8 @@ class EVPlayer:
                 pass
 
         # ── Card draw / cantrips ──
-        # Also detect untagged draw spells via oracle text
         oracle = (t.oracle_text or '').lower()
-        is_draw = 'cantrip' in tags or 'draw' in tags or 'draw' in oracle
+        is_draw = 'cantrip' in tags or 'draw' in tags or ('draw' in oracle and 'card' in oracle)
         if is_draw:
             # Base draw value scales with how much we need cards
             draw_val = 4.0
@@ -466,7 +465,6 @@ class EVPlayer:
                 if storm_copies >= snap.opp_life:
                     ev += 100.0  # lethal storm! Cast now!
                 else:
-                    # Check if we have more fuel to chain first
                     fuel_in_hand = sum(
                         1 for c in me.hand
                         if c.instance_id != card.instance_id
@@ -476,13 +474,13 @@ class EVPlayer:
                                              for kw in getattr(c.template, 'keywords', set())}
                     )
                     if fuel_in_hand > 0:
-                        ev -= 20.0  # HOLD the finisher — cast fuel first
+                        ev -= 20.0  # HOLD: cast all fuel first
                     elif storm_copies >= 8:
-                        ev += 15.0  # high storm count, fire for big tokens/damage
+                        ev += 15.0  # fire! big damage/tokens
                     elif storm_copies >= 5:
-                        ev += 5.0  # decent count, fire if no fuel left
+                        ev += 5.0  # decent count
                     else:
-                        ev -= 30.0  # storm 1-4 with no fuel = waste the finisher
+                        ev -= 30.0  # storm 1-4 = waste
 
         # ── Survival mode: when facing lethal, boost survival plays ──
         if snap.am_dead_next:
@@ -568,22 +566,23 @@ class EVPlayer:
                 mod += 2.0
 
         elif self.archetype == "combo":
-            # Combo (Storm): cantrips first (find fuel), then rituals (add mana)
             storm = me.spells_cast_this_turn
+            mana = snap.my_mana
+            # Chain sequencing: cantrips early to find fuel, rituals when mana-starved
             if 'cantrip' in tags or 'draw' in tags:
                 if storm <= 3:
-                    mod += 5.0  # early chain: cantrips find rituals and finisher
+                    mod += 5.0  # early chain: cantrips find rituals/finisher
                 else:
-                    mod += 3.0  # late chain: still good but rituals more important
+                    mod += 3.0  # late chain
             if 'ritual' in tags:
                 if storm <= 2:
-                    mod += 2.0  # early: save rituals for after cantrips dig
+                    mod += 2.0  # early: cantrips first
                 else:
-                    mod += 3.0 + storm * 0.5  # deep chain: rituals fuel the finish
+                    mod += 3.0 + storm * 0.5  # deep chain: rituals fuel finish
             if storm >= 3:
-                mod += 4.0  # mid-chain
+                mod += 4.0
             if storm >= 6:
-                mod += 4.0  # deep chain
+                mod += 4.0
             # Planeswalkers/cost reducers: great before chain, bad during chain
             from engine.cards import CardType as CT2
             if CT2.PLANESWALKER in t.card_types:
