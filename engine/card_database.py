@@ -971,67 +971,50 @@ class CardDatabase:
             conditional_mana=conditional_mana,
         )
 
-        # ── Card-specific keyword overrides ──
-        # Ragavan has Dash {1}{R} (alternative cost: haste + return to hand at end of turn)
-        # Do NOT give permanent haste — only gets haste when cast via Dash
-        if name == "Ragavan, Nimble Pilferer":
-            template.dash_cost = 2  # {1}{R} = 2 CMC
-        # Goblin Guide has haste
-        if name == "Goblin Guide":
-            template.keywords.add(Keyword.HASTE)
-        # Monastery Swiftspear has haste
-        if name == "Monastery Swiftspear":
-            template.keywords.add(Keyword.HASTE)
-        # Soul-Scar Mage has prowess (should already be there but ensure)
-        if name == "Soul-Scar Mage":
-            template.keywords.add(Keyword.PROWESS)
-        # Dragon's Rage Channeler has prowess-like surveil (simplified as prowess)
-        if name == "Dragon's Rage Channeler":
-            template.keywords.add(Keyword.PROWESS)
-        # Psychic Frog has flying (discard to pump, grows +1/+1 per discard)
-        if name == "Psychic Frog":
-            template.keywords.add(Keyword.FLYING)
-            template.tags.add("threat")
-        # Murktide Regent has delve — {5}{U}{U} but effectively {U}{U} with 5+ cards in GY
-        if name == "Murktide Regent":
-            template.has_delve = True
-            template.tags.add("threat")
-        # Gurmag Angler, Tasigur, Hooting Mandrills also have delve
-        if name in ("Gurmag Angler", "Tasigur, the Golden Fang", "Hooting Mandrills"):
-            template.has_delve = True
-        # Azusa, Lost but Seeking: play 2 extra lands per turn
-        if name == "Azusa, Lost but Seeking":
-            template.extra_land_drops = 2
-        # Dryad of the Ilysian Grove: play 1 extra land per turn + all lands are every basic type
-        if name == "Dryad of the Ilysian Grove":
-            template.extra_land_drops = 1
-        # Arboreal Grazer: ETB put a land from hand onto battlefield
-        if name == "Arboreal Grazer":
-            template.tags.add("ramp")
-        # Primeval Titan: ETB and attack trigger search for 2 lands
-        if name == "Primeval Titan":
-            template.tags.update({"threat", "ramp"})
-        # Amulet of Vigor: untap permanents that enter tapped
-        if name == "Amulet of Vigor":
-            template.tags.add("ramp")
-        # Orcish Bowmasters: creates an Orc Army token that grows
-        if name == "Orcish Bowmasters":
-            template.tags.update({"threat", "token_maker"})
+        # ── Oracle-derived properties (replaces per-card if/elif) ──
+        from .oracle_parser import (
+            has_delve, parse_dash_cost, parse_extra_land_drops,
+            parse_escape_cost, parse_equip_cost, derive_tags_from_oracle,
+        )
+        oracle_text = template.oracle_text or ''
+        oracle_lower = oracle_text.lower()
 
-        # Phlage has Escape {R}{R}{W}{W}, exile 5 other cards from graveyard
-        # When cast normally, Phlage is sacrificed on ETB (only stays if escaped)
-        if name == "Phlage, Titan of Fire's Fury":
-            template.escape_cost = 4  # {R}{R}{W}{W} = 4 CMC
-            template.escape_exile_count = 5
+        # Delve
+        if has_delve(oracle_text):
+            template.has_delve = True
 
-        # ── Equipment costs ──
-        EQUIP_COSTS = {
-            "Cranial Plating": 1,   # Equip {1} (also has {B}{B} instant equip)
-            "Nettlecyst": 2,        # Equip {2}
-        }
-        if name in EQUIP_COSTS:
-            template.equip_cost = EQUIP_COSTS[name]
+        # Dash
+        dash = parse_dash_cost(oracle_text)
+        if dash is not None:
+            template.dash_cost = dash
+
+        # Extra land drops
+        extra_lands = parse_extra_land_drops(oracle_text)
+        if extra_lands > 0:
+            template.extra_land_drops = extra_lands
+
+        # Escape
+        escape_data = parse_escape_cost(oracle_text)
+        if escape_data:
+            template.escape_cost = escape_data['cmc']
+            template.escape_exile_count = escape_data['exile']
+
+        # Equip cost
+        equip = parse_equip_cost(oracle_text)
+        if equip is not None:
+            template.equip_cost = equip
             template.tags.add("equipment")
+
+        # Prowess from oracle (backup: "noncreature spell" + surveil/+1/+1)
+        if ('noncreature spell' in oracle_lower
+                and ('+1/+1' in oracle_lower or 'surveil' in oracle_lower)):
+            template.keywords.add(Keyword.PROWESS)
+
+        # Oracle-derived tags (threat, ramp, token_maker, etb_value, etc.)
+        derived_tags = derive_tags_from_oracle(
+            oracle_text, template.keywords, template.card_types,
+            template.subtypes, template.power or 0)
+        template.tags.update(derived_tags)
 
         # ── Tag overrides for cards whose oracle text wasn't parsed correctly ──
         TAG_OVERRIDES = {
