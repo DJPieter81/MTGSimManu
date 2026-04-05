@@ -199,12 +199,12 @@ def endurance_etb(game, card, controller, targets=None, item=None):
 
 
 @EFFECT_REGISTRY.register("Omnath, Locus of Creation", EffectTiming.ETB,
-                           description="Gain 4 life")
+                           description="Draw a card")
 def omnath_etb(game, card, controller, targets=None, item=None):
-    game.players[controller].life += 4
-    game.players[controller].life_gained_this_turn += 4
+    """Omnath ETB: draw a card. The +4 life is the 1st LANDFALL trigger, not ETB."""
+    game.draw_cards(controller, 1)
     game.log.append(f"T{game.turn_number} P{controller+1}: "
-                    f"Omnath ETB: gain 4 life (now {game.players[controller].life})")
+                    f"Omnath ETB: draw a card")
 
 
 @EFFECT_REGISTRY.register("Murktide Regent", EffectTiming.ETB,
@@ -1533,21 +1533,9 @@ def summoners_pact_resolve(game, card, controller, targets=None, item=None):
 # Jeskai Blink / Control effects
 # ═══════════════════════════════════════════════════════════════════
 
-@EFFECT_REGISTRY.register("Teferi, Time Raveler", EffectTiming.ETB,
-                           description="Teferi ETB: bounce a permanent, draw a card")
-def teferi_time_raveler_etb(game, card, controller, targets=None, item=None):
-    """Teferi -3: bounce an opponent's nonland permanent, draw a card."""
-    opponent = 1 - controller
-    opp = game.players[opponent]
-    # Bounce best nonland permanent
-    nonlands = [c for c in opp.battlefield if not c.template.is_land]
-    if nonlands:
-        target = max(nonlands, key=lambda c: (c.template.cmc or 0))
-        game.zone_mgr.move_card(game, target, "battlefield", "hand",
-                                cause="Teferi bounce")
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
-                        f"Teferi bounces {target.name}")
-    game.draw_cards(controller, 1)
+# Teferi, Time Raveler: NO ETB handler needed.
+# His -3 (bounce + draw) is a loyalty ability handled by PLANESWALKER_ABILITIES
+# in game_state.py. Adding a fake ETB here was a bug — it caused double-bounce.
 
 
 @EFFECT_REGISTRY.register("Snapcaster Mage", EffectTiming.ETB,
