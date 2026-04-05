@@ -940,29 +940,36 @@ class GameState:
         player._landfall_count_this_turn += 1
         landfall_num = player._landfall_count_this_turn
 
+        # Generic multi-landfall triggers from oracle text
+        # Handles: "first time...gain life", "second time...add mana", "third time...damage"
         for perm in player.battlefield:
-            if perm.template.name == "Omnath, Locus of Creation":
-                if landfall_num == 1:
-                    # First landfall: gain 4 life
-                    self.gain_life(player_idx, 4, "Omnath landfall")
+            oracle = (perm.template.oracle_text or '').lower()
+            if 'landfall' not in oracle and 'land enters' not in oracle and 'whenever a land' not in oracle:
+                continue
+            if 'first time' in oracle or 'second time' in oracle or 'third time' in oracle:
+                # Multi-trigger landfall (Omnath pattern)
+                import re
+                if landfall_num == 1 and 'first time' in oracle:
+                    m = re.search(r'gain\s+(\d+)\s+life', oracle)
+                    if m:
+                        self.gain_life(player_idx, int(m.group(1)), f"{perm.name} landfall")
+                        self.log.append(f"T{self.turn_number} P{player_idx+1}: "
+                                       f"{perm.name} 1st landfall: +{m.group(1)} life")
+                elif landfall_num == 2 and 'second time' in oracle:
+                    # Add mana — parse colors from oracle
+                    for color in ['R', 'G', 'W', 'U', 'B']:
+                        if '{' + color.lower() + '}' in oracle:
+                            player.mana_pool.add(color, 1)
                     self.log.append(f"T{self.turn_number} P{player_idx+1}: "
-                                   f"Omnath 1st landfall: +4 life (now {player.life})")
-                elif landfall_num == 2:
-                    # Second landfall: add RGWU
-                    player.mana_pool.add("R", 1)
-                    player.mana_pool.add("G", 1)
-                    player.mana_pool.add("W", 1)
-                    player.mana_pool.add("U", 1)
-                    self.log.append(f"T{self.turn_number} P{player_idx+1}: "
-                                   f"Omnath 2nd landfall: +RGWU mana")
-                elif landfall_num == 3:
-                    # Third landfall: deal 4 damage to each opponent
-                    self.players[opponent_idx].life -= 4
-                    player.damage_dealt_this_turn += 4
-                    self.log.append(f"T{self.turn_number} P{player_idx+1}: "
-                                   f"Omnath 3rd landfall: 4 damage to opponent "
-                                   f"(opp life: {self.players[opponent_idx].life})")
-                # 4th+ landfall: no additional Omnath triggers
+                                   f"{perm.name} 2nd landfall: add mana")
+                elif landfall_num == 3 and 'third time' in oracle:
+                    m = re.search(r'deals?\s+(\d+)\s+damage', oracle)
+                    if m:
+                        dmg = int(m.group(1))
+                        self.players[opponent_idx].life -= dmg
+                        player.damage_dealt_this_turn += dmg
+                        self.log.append(f"T{self.turn_number} P{player_idx+1}: "
+                                       f"{perm.name} 3rd landfall: {dmg} damage")
 
     def equip_creature(self, player_idx: int, equipment: CardInstance,
                        creature: CardInstance) -> bool:
@@ -1169,8 +1176,8 @@ class GameState:
                         if hasattr(c.template, 'tags') and c.template.tags:
                             if 'counterspell' in c.template.tags or 'interaction' in c.template.tags:
                                 score -= 3
-                        # Street Wraith is fine to exile (it's just a 3/4)
-                        if c.name == "Street Wraith":
+                        # Cycling creatures are fine to exile (already used their value)
+                        if getattr(c.template, 'cycling_cost_data', None):
                             score -= 5
                         return score
                     exile_card = min(safe_candidates, key=exile_priority)
@@ -1278,17 +1285,14 @@ class GameState:
             # For XX spells, X = mana / 2; for X spells, X = mana
             available_for_x = len(player.untapped_lands) + player.mana_pool.total() + player._tron_mana_bonus()
             x_value = available_for_x // x_info["multiplier"]
-            # AI chooses optimal X:
-            if template.name == "Chalice of the Void":
-                # Chalice on 1 is best vs aggro (shuts down 1-drops)
-                # Chalice on 0 is good vs cascade/suspend
-                opp = self.players[1 - player_idx]
-                opp_1drops = sum(1 for c in opp.hand if c.template.cmc == 1)
+            # AI chooses optimal X based on oracle text:
+            oracle = (template.oracle_text or '').lower()
+            if 'charge counter' in oracle and 'whenever' in oracle:
+                # Hate permanent (Chalice-style): X=1 shuts down 1-drops
                 if x_value >= 1:
-                    x_value = 1  # Default: Chalice on 1
-            elif template.name == "Walking Ballista":
-                # Use all available mana for maximum counters
-                pass  # x_value already set to max
+                    x_value = 1
+            # +1/+1 counter creatures: use max mana (Ballista-style)
+            # (default x_value is already max)
             # Pay the actual X cost
             actual_cost = x_value * x_info["multiplier"]
             remaining = actual_cost
@@ -1327,18 +1331,19 @@ class GameState:
         # If opponent controls Chalice with charge counters == spell's CMC, counter it
         opp_idx = 1 - player_idx
         opp = self.players[opp_idx]
+        # Generic "counter spell with mana value equal to charge counters" check
         for perm in opp.battlefield:
-            if perm.name == "Chalice of the Void":
+            perm_oracle = (perm.template.oracle_text or '').lower()
+            if 'charge counter' in perm_oracle and 'mana value' in perm_oracle and 'counter' in perm_oracle:
                 charge = perm.other_counters.get("charge", 0)
                 if charge == template.cmc and template.cmc >= 0:
-                    # Counter the spell
-                    self.stack.pop()  # remove from stack
+                    self.stack.pop()
                     card.zone = "graveyard"
                     player.graveyard.append(card)
                     self.log.append(
                         f"T{self.turn_number} P{opp_idx+1}: "
-                        f"Chalice of the Void (X={charge}) counters {card.name}")
-                    return True  # spell was countered
+                        f"{perm.name} (X={charge}) counters {card.name}")
+                    return True
 
         dash_label = " (Dash)" if dashed else ""
         x_label = f" (X={x_value})" if x_value > 0 else ""
@@ -2296,8 +2301,9 @@ class GameState:
                 self.log.append(f"T{self.turn_number}: Annihilator {ann_amount} - "
                                 f"P{opponent+1} sacrifices {sacrificed} permanents")
 
-        # Primeval Titan: complex land search (keep in card_effects.py)
-        if attacker.template.name == "Primeval Titan":
+        # Complex attack-trigger land search (oracle: "search...two land cards")
+        oracle = (attacker.template.oracle_text or '').lower()
+        if 'attack' in oracle and 'search' in oracle and 'two land' in oracle:
             from .card_effects import _primeval_titan_search
             _primeval_titan_search(self, controller)
 

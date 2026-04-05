@@ -1,9 +1,7 @@
-"""EV-Based AI Player — clean replacement for AIPlayer.
+"""EV-Based AI Player — data-driven MTG decision engine.
 
-Architecture: get legal plays → score each → pick best.
-No concern pipeline. No GoalEngine. No hardcoded thresholds.
-
-Each archetype has a strategy function that scores candidate plays.
+Architecture: get legal plays → score each via StrategyProfile → pick best.
+All weights in ai/strategy_profile.py. All card effects from oracle text.
 Combat, blocking, and response decisions delegate to existing modules.
 """
 from __future__ import annotations
@@ -55,7 +53,8 @@ class Play:
 class EVPlayer:
     """EV-based AI player. All decisions are EV comparisons.
 
-    Interface matches what GameRunner expects from AIPlayer.
+    Scoring driven by StrategyProfile (ai/strategy_profile.py).
+    Card effects resolved from oracle text (engine/oracle_resolver.py).
     """
 
     def __init__(self, player_idx: int, deck_name: str,
@@ -354,11 +353,13 @@ class EVPlayer:
 
         # ── Past in Flames — bonus for rich graveyard ──
         if 'flashback' in tags and p.pif_gy_ritual_mult > 0:
-            already_cast_pif = any(
-                c.name == 'Past in Flames' for c in me.graveyard
-                if me.spells_cast_this_turn > 0
-            )
-            if card.name == 'Past in Flames' and already_cast_pif and me.spells_cast_this_turn > 0:
+            # Check if a flashback-granting spell was already cast this turn (redundant)
+            already_cast_flashback_grant = any(
+                'flashback' in getattr(c.template, 'tags', set())
+                and c.zone == 'graveyard'
+                for c in me.graveyard
+            ) if me.spells_cast_this_turn > 0 else False
+            if 'flashback' in tags and already_cast_flashback_grant and me.spells_cast_this_turn > 0:
                 ev += p.pif_redundant_penalty
             else:
                 gy_rituals = sum(1 for c in me.graveyard if 'ritual' in getattr(c.template, 'tags', set()))

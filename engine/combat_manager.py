@@ -287,7 +287,8 @@ class CombatManager:
         Signal Pest has battle cry. This is extensible for other
         battle cry sources.
         """
-        battle_cry_sources = [a for a in attackers if a.name == "Signal Pest"]
+        battle_cry_sources = [a for a in attackers
+                              if 'battle cry' in (a.template.oracle_text or '').lower()]
         for source in battle_cry_sources:
             for other in attackers:
                 if other != source:
