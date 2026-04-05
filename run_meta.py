@@ -8,6 +8,8 @@ Usage:
     python run_meta.py --field "Ruby Storm" --games 30
     python run_meta.py --verbose "Domain Zoo" "Dimir Midrange" --seed 42000
 """
+import multiprocessing as mp
+import os
 import random
 import sys
 from typing import Dict, List, Optional, Tuple
@@ -15,6 +17,9 @@ from typing import Dict, List, Optional, Tuple
 from engine.card_database import CardDatabase
 from engine.game_runner import GameRunner
 from decks.modern_meta import MODERN_DECKS, get_all_deck_names, METAGAME_SHARES
+
+# Default worker count: use all cores but leave 1 free
+_DEFAULT_WORKERS = max(1, (os.cpu_count() or 4) - 1)
 
 
 DECK_ALIASES = {
@@ -76,6 +81,55 @@ def _run_game(runner, d1_name, d2_name, seed):
     )
 
 
+_worker_runner = None  # Per-process cached runner
+
+
+def _init_worker():
+    """Initialize a GameRunner once per worker process."""
+    global _worker_runner
+    import logging
+    logging.disable(logging.WARNING)
+    db = CardDatabase()
+    _worker_runner = GameRunner(db)
+
+
+def _worker_matchup(args):
+    """Worker function for parallel matchup execution.
+    Uses the pre-initialized _worker_runner (one DB load per process).
+    """
+    d1_name, d2_name, n_games, seed_start = args
+    runner = _worker_runner
+    wins = {d1_name: 0, d2_name: 0}
+    for i in range(n_games):
+        seed = seed_start + i * 500
+        d1 = MODERN_DECKS[d1_name]
+        d2 = MODERN_DECKS[d2_name]
+        random.seed(seed)
+        try:
+            r = runner.run_game(
+                d1_name, d1['mainboard'], d2_name, d2['mainboard'],
+                deck1_sideboard=d1.get('sideboard', {}),
+                deck2_sideboard=d2.get('sideboard', {}),
+            )
+            wins[r.winner_deck] = wins.get(r.winner_deck, 0) + 1
+        except Exception:
+            pass
+    pct = round(wins.get(d1_name, 0) / max(n_games, 1) * 100)
+    return (d1_name, d2_name, pct)
+
+
+def _run_game_no_runner(d1_name, d2_name, seed):
+    """Standalone single game for parallel matchup execution."""
+    d1 = MODERN_DECKS[d1_name]
+    d2 = MODERN_DECKS[d2_name]
+    random.seed(seed)
+    return runner.run_game(
+        d1_name, d1['mainboard'], d2_name, d2['mainboard'],
+        deck1_sideboard=d1.get('sideboard', {}),
+        deck2_sideboard=d2.get('sideboard', {}),
+    )
+
+
 # ─── Core functions ───────────────────────────────────────────
 
 
@@ -114,67 +168,85 @@ def run_matchup(deck1: str, deck2: str, n_games: int = 50,
     }
 
 
-def run_field(deck: str, n_games: int = 30, opponents: List[str] = None) -> Dict:
+def run_field(deck: str, n_games: int = 30, opponents: List[str] = None,
+              parallel: bool = True) -> Dict:
     """Run one deck against all others. Returns {opponent: win_pct}."""
-    runner = _get_runner()
     if opponents is None:
         opponents = [n for n in get_all_deck_names() if n != deck]
 
-    results = {}
-    for opp in opponents:
-        wins = {deck: 0, opp: 0}
-        for i in range(n_games):
-            seed = 50000 + i * 500
-            r = _run_game(runner, deck, opp, seed)
-            wins[r.winner_deck] = wins.get(r.winner_deck, 0) + 1
-        results[opp] = round(wins[deck] / n_games * 100)
+    if parallel and len(opponents) > 1:
+        args = [(deck, opp, n_games, 50000) for opp in opponents]
+        with mp.Pool(_DEFAULT_WORKERS, initializer=_init_worker) as pool:
+            worker_results = pool.map(_worker_matchup, args)
+        results = {d2: pct for d1, d2, pct in worker_results}
+    else:
+        runner = _get_runner()
+        results = {}
+        for opp in opponents:
+            wins = {deck: 0, opp: 0}
+            for i in range(n_games):
+                seed = 50000 + i * 500
+                r = _run_game(runner, deck, opp, seed)
+                wins[r.winner_deck] = wins.get(r.winner_deck, 0) + 1
+            results[opp] = round(wins[deck] / n_games * 100)
 
-    avg = sum(results.values()) / len(results)
+    avg = sum(results.values()) / len(results) if results else 0
     return {'deck': deck, 'matchups': results, 'average': round(avg, 1)}
 
 
 def run_meta_matrix(top_tier: int = None, n_games: int = 20,
-                    seed_start: int = 40000) -> Dict:
+                    seed_start: int = 40000, parallel: bool = True) -> Dict:
     """Run full metagame matrix. Returns matrix dict + rankings.
 
     Args:
         top_tier: Only include top N decks by metagame share (None = all)
         n_games: Games per matchup pair
         seed_start: Starting seed
+        parallel: Use multiprocessing (default True)
 
     Returns dict with:
         'matrix': {(deck1, deck2): win_pct}
         'rankings': [(avg_pct, deck_name), ...] sorted desc
         'names': list of deck names included
     """
-    runner = _get_runner()
     names = get_all_deck_names()
     if top_tier and top_tier < len(names):
-        # Sort by metagame share, take top N
         names = sorted(names, key=lambda n: METAGAME_SHARES.get(n, 0), reverse=True)[:top_tier]
 
-    matrix = {}
-    total = len(names) * (len(names) - 1) // 2
-    done = 0
-
+    # Build all matchup pairs
+    pairs = []
     for i, d1_name in enumerate(names):
         for j, d2_name in enumerate(names):
-            if i >= j:
-                continue
+            if i < j:
+                pairs.append((d1_name, d2_name, n_games, seed_start))
+
+    total = len(pairs)
+    matrix = {}
+
+    if parallel and total > 1:
+        workers = min(_DEFAULT_WORKERS, total)
+        print(f'Running {total} matchups × {n_games} games = {total * n_games} total '
+              f'({workers} workers)', file=sys.stderr)
+        with mp.Pool(workers, initializer=_init_worker) as pool:
+            for i, (d1, d2, pct) in enumerate(pool.imap_unordered(_worker_matchup, pairs)):
+                matrix[(d1, d2)] = pct
+                matrix[(d2, d1)] = 100 - pct
+                print(f'  [{i+1}/{total}] {d1} vs {d2}: {pct}%-{100-pct}%', file=sys.stderr)
+    else:
+        runner = _get_runner()
+        for idx, (d1_name, d2_name, ng, ss) in enumerate(pairs):
             wins = {d1_name: 0, d2_name: 0}
-            for g in range(n_games):
-                seed = seed_start + g * 500
+            for g in range(ng):
+                seed = ss + g * 500
                 try:
                     r = _run_game(runner, d1_name, d2_name, seed)
                     wins[r.winner_deck] = wins.get(r.winner_deck, 0) + 1
                 except Exception:
                     pass
-            w1 = wins.get(d1_name, 0)
-            pct = round(w1 / n_games * 100)
+            pct = round(wins.get(d1_name, 0) / ng * 100)
             matrix[(d1_name, d2_name)] = pct
             matrix[(d2_name, d1_name)] = 100 - pct
-            done += 1
-            print(f'  [{done}/{total}] {d1_name} vs {d2_name}: {pct}%-{100-pct}%', file=sys.stderr)
+            print(f'  [{idx+1}/{total}] {d1_name} vs {d2_name}: {pct}%-{100-pct}%', file=sys.stderr)
 
     rankings = []
     for d in names:
