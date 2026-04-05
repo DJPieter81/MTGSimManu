@@ -1908,12 +1908,15 @@ class GameState:
         opponent = 1 - controller
         name = card.name
 
-        # Rituals: add mana to pool (data-driven, not card-specific)
-        if name in RITUAL_CARDS:
-            color, amount = RITUAL_CARDS[name]
+        # Rituals: add mana to pool (oracle-derived from template)
+        ritual_data = card.template.ritual_mana
+        if ritual_data:
+            color, amount = ritual_data
             if color == "any":
                 self.players[controller].mana_pool.add("R", 2)
-                self.draw_cards(controller, 1)
+                # Manamorphose draws a card
+                if 'cantrip' in card.template.tags:
+                    self.draw_cards(controller, 1)
             else:
                 self.players[controller].mana_pool.add(color, amount)
             self.log.append(f"T{self.turn_number} P{controller+1}: "
@@ -2683,9 +2686,12 @@ class GameState:
         """Check if a player can cycle a card from hand."""
         if card.zone != "hand":
             return False
-        if card.name not in CYCLING_COSTS:
-            return False
-        cost = CYCLING_COSTS[card.name]
+        # Use oracle-derived cycling data from template, fall back to hardcoded
+        cost = card.template.cycling_cost_data
+        if cost is None:
+            if card.name not in CYCLING_COSTS:
+                return False
+            cost = CYCLING_COSTS[card.name]
         player = self.players[player_idx]
         # Life cost check
         if cost["life"] > 0 and player.life <= cost["life"]:
@@ -2720,7 +2726,7 @@ class GameState:
         """
         if not self.can_cycle(player_idx, card):
             return False
-        cost = CYCLING_COSTS[card.name]
+        cost = card.template.cycling_cost_data or CYCLING_COSTS.get(card.name, {"mana": 0, "life": 0, "colors": set()})
         player = self.players[player_idx]
         # Pay life cost
         if cost["life"] > 0:
