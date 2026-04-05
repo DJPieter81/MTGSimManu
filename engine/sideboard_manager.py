@@ -49,10 +49,19 @@ def sideboard(mainboard: Dict[str, int], sideboard_cards: Dict[str, int],
                 board_in_priority.append((card_name, count, 8))
 
         # Board wipes vs creature decks
-        if any(w in opp_lower for w in ["energy", "zoo", "affinity"]):
+        if any(w in opp_lower for w in ["energy", "zoo", "affinity", "prowess"]):
             if any(w in card_lower for w in ["wrath", "verdict", "damnation",
                                                "explosives", "ratchet"]):
                 board_in_priority.append((card_name, count, 7))
+
+        # Counterspells + lifegain vs burn/aggro
+        if any(w in opp_lower for w in ["energy", "zoo", "prowess", "affinity"]):
+            if any(w in card_lower for w in ["flusterstorm", "mystical dispute",
+                                               "spell pierce", "negate"]):
+                board_in_priority.append((card_name, count, 8))
+            # Sheoldred is a house vs aggro (lifegain + drain)
+            if "sheoldred" in card_lower:
+                board_in_priority.append((card_name, count, 9))
 
         # Generic good cards
         if any(w in card_lower for w in ["celestial purge"]) and \
@@ -72,9 +81,12 @@ def sideboard(mainboard: Dict[str, int], sideboard_cards: Dict[str, int],
                 board_out_priority.append((card_name, min(count, 2), 8))
 
         # Board out slow cards vs aggro
-        if any(w in opp_lower for w in ["energy", "zoo"]):
+        if any(w in opp_lower for w in ["energy", "zoo", "prowess"]):
             if any(w in card_lower for w in ["charm", "command"]):
                 board_out_priority.append((card_name, min(count, 2), 5))
+            # Board out conditional removal and cantrips vs aggro
+            if any(w in card_lower for w in ["drown in the loch", "consider"]):
+                board_out_priority.append((card_name, min(count, 2), 6))
 
     board_out_priority.sort(key=lambda x: -x[2])
 
