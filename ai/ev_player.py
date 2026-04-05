@@ -378,8 +378,9 @@ class EVPlayer:
                 tutor_val += p.tutor_storm_3_bonus
             elif storm >= 1:
                 tutor_val += p.tutor_storm_1_bonus
-            # Hold Wish if we have actual chain fuel (rituals/cantrips) to cast first
-            chain_fuel = sum(1 for c in me.hand if c.instance_id != card.instance_id
+            # Hold Wish if we have actual chain fuel (rituals/cantrips) in hand or GY flashback
+            all_fuel_sources = list(me.hand) + [g for g in me.graveyard if getattr(g, 'has_flashback', False)]
+            chain_fuel = sum(1 for c in all_fuel_sources if c.instance_id != card.instance_id
                             and not c.template.is_land and game.can_cast(self.player_idx, c)
                             and ('ritual' in getattr(c.template, 'tags', set())
                                  or 'cantrip' in getattr(c.template, 'tags', set())))
@@ -448,15 +449,19 @@ class EVPlayer:
                 if storm_copies >= snap.opp_life:
                     ev += p.lethal_storm_bonus  # lethal storm!
                 else:
-                    fuel_in_hand = sum(
-                        1 for c in me.hand
+                    # Count castable fuel in hand + GY flashback (only if we have mana)
+                    gy_flashback = [g for g in me.graveyard
+                                    if getattr(g, 'has_flashback', False)
+                                    and game.can_cast(self.player_idx, g)]
+                    fuel_available = sum(
+                        1 for c in list(me.hand) + gy_flashback
                         if c.instance_id != card.instance_id
                         and not c.template.is_land
                         and game.can_cast(self.player_idx, c)
                         and 'storm' not in {kw.value if hasattr(kw, 'value') else str(kw)
                                              for kw in getattr(c.template, 'keywords', set())}
                     )
-                    if fuel_in_hand > 0:
+                    if fuel_available > 0:
                         ev += p.finisher_hold_penalty
                     elif storm_copies >= 8:
                         ev += p.finisher_storm_8_bonus
