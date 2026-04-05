@@ -177,6 +177,8 @@ class GameRunner:
             result = self.run_game(
                 deck1_name, d1_main,
                 deck2_name, d2_main,
+                deck1_sideboard=d1_side,
+                deck2_sideboard=d2_side,
                 verbose=verbose,
             )
             result.game_number = game_num

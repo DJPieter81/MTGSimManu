@@ -264,6 +264,18 @@ class EVPlayer:
         cmc = t.cmc or 0
         p = self.profile  # strategy profile
 
+        # Delve-aware effective CMC: Murktide Regent costs 7 face but 2 with
+        # a full graveyard. Score it at the effective cost so it gets on-curve
+        # bonuses and deploys T3-5 instead of T10.
+        effective_cmc = cmc
+        if getattr(t, 'has_delve', False):
+            gy_spells = sum(1 for c in me.graveyard
+                           if c.template.is_instant or c.template.is_sorcery)
+            mc = t.mana_cost
+            colored_cost = (cmc - getattr(mc, 'generic', 0)) if mc else 2
+            generic = max(0, cmc - colored_cost)
+            effective_cmc = max(colored_cost, cmc - min(gy_spells, generic))
+
         ev = 0.0
 
         # ── Evoke detection ──
@@ -431,7 +443,7 @@ class EVPlayer:
         if cmc == 0 and p.zero_mana_combo_bonus > 0:
             ev += p.zero_mana_combo_bonus
         elif snap.my_mana > 0 and cmc > 0:
-            ev += min(cmc / snap.my_mana, 1.0) * p.mana_efficiency_mult
+            ev += min(effective_cmc / snap.my_mana, 1.0) * p.mana_efficiency_mult
 
         # ── Mana holdback penalty ──
         # Don't hold mana when opponent has no clock (opp_clock >= 10)
@@ -500,9 +512,17 @@ class EVPlayer:
 
         # ── Creature bonuses ──
         if t.is_creature:
-            if (t.cmc or 0) <= snap.turn_number:
+            # Delve-aware effective CMC for on-curve check
+            ecmc = t.cmc or 0
+            if getattr(t, 'has_delve', False):
+                gy_spells = sum(1 for c in me.graveyard
+                               if c.template.is_instant or c.template.is_sorcery)
+                mc = t.mana_cost
+                cc = (ecmc - getattr(mc, 'generic', 0)) if mc else 2
+                ecmc = max(cc, ecmc - min(gy_spells, max(0, ecmc - cc)))
+            if ecmc <= snap.turn_number:
                 mod += p.on_curve_creature_bonus
-            if (t.cmc or 0) <= p.cheap_creature_cmc:
+            if ecmc <= p.cheap_creature_cmc:
                 mod += p.cheap_creature_bonus
             if snap.my_creature_count == 0:
                 mod += p.empty_board_creature_bonus
