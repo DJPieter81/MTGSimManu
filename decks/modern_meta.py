@@ -122,8 +122,8 @@ MODERN_DECKS: Dict[str, Dict[str, Dict[str, int]]] = {
             # Card selection
             "Valakut Awakening // Valakut Stoneforge": 2,
             # Rebuy + Finisher access
-            "Past in Flames": 3,
-            "Wish": 2,
+            "Past in Flames": 2,
+            "Wish": 3,
             # Lands (18)
             "Scalding Tarn": 3,
             "Arid Mesa": 3,
