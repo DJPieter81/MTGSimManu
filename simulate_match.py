@@ -93,7 +93,7 @@ def _describe_spell(card, tags, ev, snap, me, opp, alternatives):
         return "Ritual — produces mana for combo (net +1 red mana)"
     if ev >= 100:
         return "Lethal damage — wins the game"
-    if 'removal' in tags:
+    if 'removal' in tags and not t.is_creature:
         if snap.opp_creature_count > 0:
             return f"Remove opponent's threat ({snap.opp_power} power on board)"
         return "Removal spell (no creature targets currently)"

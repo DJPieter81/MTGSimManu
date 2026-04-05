@@ -174,10 +174,19 @@ class EVPlayer:
         lands = [c for c in legal if c.template.is_land]
         spells = [c for c in legal if not c.template.is_land]
 
+        # Identify cycling cards (special action, not casting)
+        cycling_cards = [c for c in me.hand if game.can_cycle(self.player_idx, c)]
+
         # Filter legends we already control
         spells = self._filter_legend_rule(me, spells)
 
         candidates: List[Play] = []
+
+        # Score cycling plays (Living End style — cycle creatures to GY, then cascade)
+        for card in cycling_cards:
+            ev = self._score_cycling(card, snap, game, me, opp)
+            candidates.append(Play("cycle", card, [], ev,
+                                   f"Cycle: {card.name}"))
 
         # Score land plays — lands compete with spells for priority
         if lands and me.lands_played_this_turn < (1 + me.extra_land_drops):
@@ -347,8 +356,8 @@ class EVPlayer:
             elif CardType.ENCHANTMENT in t.card_types:
                 ev += p.enchantment_bonus
 
-        # ── Rituals (combo fuel) ──
-        if 'ritual' in tags:
+        # ── Rituals (combo fuel) — only actual ritual spells, not creatures with "add mana" text ──
+        if 'ritual' in tags and (t.is_instant or t.is_sorcery):
             ev += p.ritual_bonus
 
         # ── Past in Flames — bonus for rich graveyard ──
@@ -390,16 +399,32 @@ class EVPlayer:
             ev += tutor_val
 
         # ── Cost reducers / engines ──
-        if 'cost_reducer' in tags:
+        # Only for cards that ACTUALLY reduce other spells' costs (check oracle),
+        # not cards with domain self-reduction (Scion, Leyline Binding)
+        oracle_lower = (t.oracle_text or '').lower()
+        is_real_reducer = ('cost_reducer' in tags and
+                           'cost' in oracle_lower and 'less' in oracle_lower and
+                           t.domain_reduction == 0)
+        if is_real_reducer:
             storm = me.spells_cast_this_turn
+            # Count fuel spells in hand (rituals, cantrips, draw)
+            fuel_in_hand = sum(1 for c in me.hand
+                               if c.instance_id != card.instance_id
+                               and not c.template.is_land
+                               and any(ft in getattr(c.template, 'tags', set())
+                                       for ft in ('ritual', 'cantrip', 'draw')))
             if storm == 0:
-                ev += p.cost_reducer_pre_chain
-                if snap.turn_number <= 4 and p.cost_reducer_pre_chain > 5:
-                    ev += p.early_reducer_bonus
-                medallions_on_board = sum(1 for c in me.battlefield
-                                          if 'cost_reducer' in getattr(c.template, 'tags', set()))
-                if medallions_on_board == 0 and p.cost_reducer_pre_chain > 5:
-                    ev += p.first_reducer_bonus
+                if fuel_in_hand >= 2:
+                    ev += p.cost_reducer_pre_chain
+                    if snap.turn_number <= 4 and p.cost_reducer_pre_chain > 5:
+                        ev += p.early_reducer_bonus
+                    medallions_on_board = sum(1 for c in me.battlefield
+                                              if 'cost_reducer' in getattr(c.template, 'tags', set()))
+                    if medallions_on_board == 0 and p.cost_reducer_pre_chain > 5:
+                        ev += p.first_reducer_bonus
+                else:
+                    # No fuel — reducer is a dead investment, small value only
+                    ev += p.cost_reducer_pre_chain * 0.3
             elif storm >= 5:
                 ev += p.cost_reducer_mid_chain
             else:
@@ -427,7 +452,8 @@ class EVPlayer:
             ev += min(cmc / snap.my_mana, 1.0) * 2.0
 
         # ── Mana holdback penalty ──
-        if p.holdback_applies and snap.turn_number >= p.holdback_min_turn:
+        # Don't hold mana when opponent has no clock (opp_clock >= 10)
+        if p.holdback_applies and snap.turn_number >= p.holdback_min_turn and snap.opp_clock < 10:
             has_instant = any(
                 c.template.is_instant and (
                     'removal' in getattr(c.template, 'tags', set()) or
@@ -602,8 +628,44 @@ class EVPlayer:
         ev += len(new_colors) * p.land_new_color_bonus
 
         from engine.card_database import FETCH_LAND_COLORS
-        if land.name in FETCH_LAND_COLORS:
+        is_fetch = land.name in FETCH_LAND_COLORS
+        if is_fetch:
             ev += p.land_fetch_bonus
+
+        # Landfall value — fetch lands trigger landfall twice (fetch ETB + fetched land ETB)
+        landfall_count = sum(1 for c in me.battlefield
+                             if 'landfall' in (c.template.oracle_text or '').lower())
+        if landfall_count > 0:
+            triggers = 2 if is_fetch else 1
+            ev += landfall_count * triggers * 3.0  # each landfall trigger is worth ~3 EV
+
+        return ev
+
+    def _score_cycling(self, card, snap, game, me, opp) -> float:
+        """Score a cycling activation. Cycling costs 1-2 mana, puts card in GY, draws 1."""
+        p = self.profile
+        ev = p.card_draw_base  # cycling draws a card
+
+        # Cycling creatures into GY is the Living End gameplan
+        if card.template.is_creature:
+            ev += 4.0  # creature in GY = future Living End value
+            # Bigger creatures are better in GY for Living End
+            power = card.template.power or 0
+            ev += power * 0.5
+
+        # Cycling cost matters — cheaper is better
+        cost_data = card.template.cycling_cost_data
+        if cost_data:
+            if cost_data.get('life', 0) > 0:
+                ev += 2.0  # free cycling (pay life, not mana) — great tempo
+            elif cost_data.get('mana', 0) <= 1:
+                ev += 1.0  # cheap cycling
+
+        # If we have a cascade spell in hand, cycling to fill GY is urgent
+        has_cascade = any(getattr(c.template, 'is_cascade', False) for c in me.hand
+                         if not c.template.is_land)
+        if has_cascade:
+            ev += 3.0  # cascade is ready — fill GY fast
 
         return ev
 
@@ -827,14 +889,19 @@ class EVPlayer:
                             best_kill_id = c.instance_id
 
             # Compare: is killing a creature worth more than face damage?
-            # For aggro: face is worth ~1.5 per damage point when opp > 10
-            # A creature kill is worth its creature_value
             face_val = dmg * self.profile.burn_face_mult
             if opp.life <= 10:
                 face_val = dmg * self.profile.burn_face_low_life_mult
 
+            # Prefer removing big creatures (power >= 4) unless burn is near-lethal
             if best_kill_id and best_kill_val > face_val:
                 return [best_kill_id]  # kill the creature
+            if best_kill_id:
+                best_kill_card = next((c for c in opp.creatures
+                                       if c.instance_id == best_kill_id), None)
+                if (best_kill_card and (best_kill_card.power or 0) >= 4
+                        and opp.life > dmg * 2):
+                    return [best_kill_id]  # big threat, burn not near lethal
             return [-1]  # go face
 
         # Removal (non-burn): target best opponent creature
