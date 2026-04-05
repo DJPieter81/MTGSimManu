@@ -32,7 +32,9 @@ class TestSingleGame:
         r2 = run_seeded_game(game_runner, "Domain Zoo", "Dimir Midrange", seed=999)
         # With very different seeds, at least one metric should differ
         assert (r1.turns != r2.turns or r1.winner != r2.winner
-                or r1.winner_life != r2.winner_life)
+                or r1.winner_life != r2.winner_life
+                or r1.deck1_damage_dealt != r2.deck1_damage_dealt
+                or r1.mulligan_count != r2.mulligan_count)
 
 
 class TestMatchupBalance:

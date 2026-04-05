@@ -139,6 +139,14 @@ class StrategyProfile:
     planeswalker_mid_chain_penalty: float = 0.0
     zero_mana_combo_bonus: float = 0.0
 
+    # ── Storm patience (hold fuel until ready to go off) ──
+    storm_patience: bool = False        # enable hold-fuel-until-ready logic
+    storm_hold_penalty: float = -15.0   # penalty for casting ritual at storm=0 when NOT ready
+    storm_go_off_bonus: float = 15.0    # bonus for starting the chain when ready to go lethal
+    storm_min_fuel_to_go: int = 2       # minimum ritual/fuel cards in hand to consider going off (with reducer)
+    storm_cantrip_while_waiting: float = 3.0  # cantrips are OK to cast while waiting (dig)
+    storm_cantrip_vs_bowmasters: float = -3.0  # reduced cantrip value when opp has draw-punishers
+
     # ── Storm scaling (generalized) ──
     # storm_bonus(storm) = base + storm * per_storm, capped at cap
     tutor_base: float = 6.0
@@ -159,6 +167,8 @@ class StrategyProfile:
     pif_gy_fuel_mult: float = 1.5      # EV per GY fuel card (rituals weighted 1.33x)
     pif_ritual_weight: float = 1.33    # ritual multiplier vs cantrips
     pif_redundant_penalty: float = -30.0
+    pif_empty_gy_penalty: float = -20.0    # penalty when GY has < 2 instants/sorceries
+    pif_wait_for_rituals_penalty: float = -5.0  # delay PiF when hand still has 2+ rituals to cast first
 
     # ── Cost reducer (generalized curve) ──
     # reducer_ev(storm, fuel) computed by method
@@ -345,6 +355,13 @@ COMBO = StrategyProfile(
     planeswalker_mid_chain_penalty=-8.0,
     holdback_applies=False,
     attack_threshold=0.0,
+    # Storm patience: hold rituals until ready to go off
+    storm_patience=True,
+    storm_hold_penalty=-15.0,
+    storm_go_off_bonus=15.0,
+    storm_min_fuel_to_go=2,
+    storm_cantrip_while_waiting=3.0,
+    storm_cantrip_vs_bowmasters=-3.0,
     card_draw_archetype_bonus=0.0,
 )
 
