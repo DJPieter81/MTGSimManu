@@ -36,6 +36,19 @@ python run_meta.py --verbose zoo omnath -s 42000        # game log
 python run_meta.py --trace zoo omnath -s 42000          # full AI reasoning
 ```
 
+| Tool | Command |
+|------|---------|
+| **List decks** | `python run_meta.py --list` |
+| **Deck profile** | `python run_meta.py --deck storm` |
+| **Head-to-head** | `python run_meta.py --matchup storm dimir -n 50` |
+| **Field sweep** | `python run_meta.py --field storm -n 30` |
+| **Meta matrix** | `python run_meta.py --matrix --decks 8 -n 30` |
+| **Game log** | `python run_meta.py --verbose storm dimir -s 42000` |
+| **AI reasoning** | `python run_meta.py --trace storm dimir -s 42000` |
+| **HTML Bo3** | `python simulate_match.py "Ruby Storm" "Domain Zoo" --seed 55555` |
+| **Import deck** | `python import_deck.py "Deck Name" decklist.txt` |
+| **Run tests** | `python -m pytest tests/ -q` |
+
 **Aliases work:** storm, zoo, dimir, omnath, 4c, 5c, energy, boros, jeskai, blink, tron, amulet, goryos, prowess, affinity, cascade
 
 **Python API:**
