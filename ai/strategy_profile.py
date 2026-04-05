@@ -51,6 +51,8 @@ class StrategyProfile:
     removal_target_mult: float = 1.2     # how much to weight removal target value
     burn_face_mult: float = 0.5          # weight for face damage (non-lethal)
     burn_face_low_life_mult: float = 1.0 # weight for face damage when opp <= 10
+    burn_kill_min_power: int = 4         # prefer killing creatures with power >= this
+    burn_kill_life_ratio: float = 2.0    # only prefer kill when opp.life > dmg * this
     card_draw_base: float = 4.0          # base EV for draw spells
     card_draw_empty_hand_bonus: float = 4.0  # bonus when hand <= 2
     card_draw_low_hand_bonus: float = 2.0    # bonus when hand <= 4
@@ -150,6 +152,7 @@ class StrategyProfile:
     land_tapped_castable_penalty: float = -3.0
     land_new_color_bonus: float = 4.0
     land_fetch_bonus: float = 3.0
+    land_landfall_trigger_value: float = 3.0  # EV per landfall trigger per permanent
 
     # ── Wrath ──
     wrath_empty_board_penalty: float = -15.0

@@ -637,7 +637,7 @@ class EVPlayer:
                              if 'landfall' in (c.template.oracle_text or '').lower())
         if landfall_count > 0:
             triggers = 2 if is_fetch else 1
-            ev += landfall_count * triggers * 3.0  # each landfall trigger is worth ~3 EV
+            ev += landfall_count * triggers * p.land_landfall_trigger_value
 
         return ev
 
@@ -893,14 +893,15 @@ class EVPlayer:
             if opp.life <= 10:
                 face_val = dmg * self.profile.burn_face_low_life_mult
 
-            # Prefer removing big creatures (power >= 4) unless burn is near-lethal
+            # Prefer removing big creatures unless burn is near-lethal
             if best_kill_id and best_kill_val > face_val:
                 return [best_kill_id]  # kill the creature
             if best_kill_id:
                 best_kill_card = next((c for c in opp.creatures
                                        if c.instance_id == best_kill_id), None)
-                if (best_kill_card and (best_kill_card.power or 0) >= 4
-                        and opp.life > dmg * 2):
+                if (best_kill_card
+                        and (best_kill_card.power or 0) >= self.profile.burn_kill_min_power
+                        and opp.life > dmg * self.profile.burn_kill_life_ratio):
                     return [best_kill_id]  # big threat, burn not near lethal
             return [-1]  # go face
 
