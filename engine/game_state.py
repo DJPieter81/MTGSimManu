@@ -1223,11 +1223,16 @@ class GameState:
                 delve_exiled = min(len(exile_targets), generic_portion)
                 # Exile least valuable cards first
                 exile_targets.sort(key=lambda c: c.template.cmc)
+                delved_spells = 0
                 for i in range(delve_exiled):
                     ex = exile_targets[i]
                     player.graveyard.remove(ex)
                     ex.zone = "exile"
                     player.exile.append(ex)
+                    if ex.template.is_instant or ex.template.is_sorcery:
+                        delved_spells += 1
+                # Store count for Murktide Regent ETB (+1/+1 per delved spell)
+                card._delved_spells = delved_spells
                 if delve_exiled > 0:
                     self.log.append(f"T{self.turn_number} P{player_idx+1}: "
                                    f"Delve {delve_exiled} cards for {card.name}")
@@ -1427,6 +1432,13 @@ class GameState:
                     card.zone = "exile"
                     self.players[card.owner].exile.append(card)
                     card.has_flashback = False  # no longer has flashback
+                elif hasattr(card, '_rebound_controller'):
+                    # Rebound: exile instead of graveyard, cast for free next upkeep
+                    card.zone = "exile"
+                    self.players[card.owner].exile.append(card)
+                    if not hasattr(self, '_rebound_cards'):
+                        self._rebound_cards = []
+                    self._rebound_cards.append(card)
                 else:
                     card.zone = "graveyard"
                     self.players[card.owner].graveyard.append(card)

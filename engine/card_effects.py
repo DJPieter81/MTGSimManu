@@ -209,24 +209,16 @@ def omnath_etb(game, card, controller, targets=None, item=None):
 
 @EFFECT_REGISTRY.register("Murktide Regent", EffectTiming.ETB,
                            description="Delve instants/sorceries from GY, enter with +1/+1 counters")
-def murktide_etb(game, card, controller, targets=None, item=None):
-    from .cards import CardType
-    player = game.players[controller]
-    exiled_count = 0
-    gy_spells = [c for c in player.graveyard
-                 if CardType.INSTANT in c.template.card_types
-                 or CardType.SORCERY in c.template.card_types]
-    for spell in gy_spells[:5]:
-        player.graveyard.remove(spell)
-        spell.zone = "exile"
-        player.exile.append(spell)
-        exiled_count += 1
-    if exiled_count > 0:
-        card.temp_power_mod += exiled_count
-        card.temp_toughness_mod += exiled_count
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
-                        f"Murktide Regent delves {exiled_count} cards, "
-                        f"enters as {card.power}/{card.toughness}")
+def murktike_etb(game, card, controller, targets=None, item=None):
+    # Murktide enters with +1/+1 counters for each instant/sorcery
+    # exiled WITH IT during delve (not additional exiles).
+    delved_spells = getattr(card, '_delved_spells', 0)
+    if delved_spells > 0:
+        card.temp_power_mod += delved_spells
+        card.temp_toughness_mod += delved_spells
+    game.log.append(f"T{game.turn_number} P{controller+1}: "
+                    f"Murktide Regent enters as {card.power}/{card.toughness}"
+                    f" ({delved_spells} instants/sorceries delved)")
 
 
 @EFFECT_REGISTRY.register("Eternal Witness", EffectTiming.ETB,
@@ -629,6 +621,9 @@ def ephemerate_resolve(game, card, controller, targets=None, item=None):
         return score
     best = max(my_creatures, key=_blink_value)
     game._blink_permanent(best, controller)
+    # Mark for rebound — the actual zone move happens after resolution
+    # (in resolve_stack, which puts the card in GY, then we intercept)
+    card._rebound_controller = controller
 
 
 @EFFECT_REGISTRY.register("Undying Evil", EffectTiming.SPELL_RESOLVE,
