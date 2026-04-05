@@ -4,14 +4,14 @@
   "goals": [
     {
       "goal_type": "CURVE_OUT",
-      "description": "Deploy efficient threats: Ragavan \u2192 Kavu/Brawler \u2192 Scion",
+      "description": "T1 Ragavan, T2 Kavu/Brawler, T3 Scion/Phlage — maximize early pressure",
       "card_priorities": {
-        "Ragavan, Nimble Pilferer": 22.0,
-        "Territorial Kavu": 20.0,
-        "Nishoba Brawler": 20.0,
-        "Scion of Draco": 16.0,
-        "Orcish Bowmasters": 18.0,
-        "Stubborn Denial": 5.0
+        "Ragavan, Nimble Pilferer": 24.0,
+        "Territorial Kavu": 22.0,
+        "Nishoba Brawler": 22.0,
+        "Orcish Bowmasters": 20.0,
+        "Scion of Draco": 18.0,
+        "Phlage, Titan of Fire's Fury": 18.0
       },
       "card_roles": {
         "enablers": [
@@ -19,6 +19,7 @@
         ],
         "payoffs": [
           "Nishoba Brawler",
+          "Phlage, Titan of Fire's Fury",
           "Scion of Draco",
           "Territorial Kavu"
         ],
@@ -29,35 +30,40 @@
     },
     {
       "goal_type": "PUSH_DAMAGE",
-      "description": "Attack with domain-powered creatures, remove blockers",
+      "description": "Remove blockers with Binding/Bolt, attack with domain creatures",
       "card_priorities": {
-        "Lightning Bolt": 15.0,
-        "Tribal Flames": 18.0,
-        "Leyline Binding": 14.0,
-        "Phlage, Titan of Fire's Fury": 16.0
+        "Tribal Flames": 20.0,
+        "Leyline Binding": 18.0,
+        "Phlage, Titan of Fire's Fury": 16.0,
+        "Lightning Bolt": 15.0
       },
       "card_roles": {
         "interaction": [
           "Leyline Binding",
           "Lightning Bolt",
+          "Stubborn Denial",
           "Tribal Flames"
         ]
       }
     },
     {
       "goal_type": "CLOSE_GAME",
-      "description": "Burn face to close out the game",
+      "description": "Burn face with Tribal Flames + Lightning Bolt to finish",
       "card_priorities": {
-        "Lightning Bolt": 18.0,
-        "Tribal Flames": 20.0
+        "Tribal Flames": 22.0,
+        "Lightning Bolt": 20.0,
+        "Phlage, Titan of Fire's Fury": 16.0
       }
     }
   ],
   "mulligan_keys": [
+    "Leyline Binding",
     "Nishoba Brawler",
     "Ragavan, Nimble Pilferer",
     "Territorial Kavu"
   ],
+  "mulligan_min_lands": 1,
+  "mulligan_max_lands": 3,
   "mulligan_effective_cmc": {
     "Scion of Draco": 3,
     "Leyline Binding": 1

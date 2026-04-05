@@ -96,8 +96,7 @@
     "Forest": 2.0
   },
   "reactive_only": [
-    "Force of Negation",
-    "Subtlety"
+    "Force of Negation"
   ],
   "combo_readiness_check": "generic_combo_readiness",
   "fallback_goals": [
