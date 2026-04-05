@@ -338,6 +338,7 @@ CONTROL = StrategyProfile(
     phase_late=(0.0, 0.0, 0.0, 0.0, 5.0, 4.0),
     card_draw_archetype_bonus=2.0,
     holdback_penalty=-2.0,
+    burn_face_mult=0.0,  # Control saves burn spells as removal, not face damage
 )
 
 COMBO = StrategyProfile(
