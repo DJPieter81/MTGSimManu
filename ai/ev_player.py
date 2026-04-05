@@ -463,12 +463,15 @@ class EVPlayer:
                     )
                     if fuel_available > 0:
                         ev += p.finisher_hold_penalty
-                    elif storm_copies >= 8:
-                        ev += p.finisher_storm_8_bonus
-                    elif storm_copies >= 5:
-                        ev += p.finisher_storm_5_bonus
                     else:
-                        ev += p.finisher_low_storm_penalty
+                        # Scale bonus by how close to lethal (vs actual opp life, not 20)
+                        damage_pct = storm_copies / max(1, snap.opp_life)
+                        if damage_pct >= 0.7:
+                            ev += p.finisher_storm_8_bonus  # 70%+ of lethal = fire
+                        elif damage_pct >= 0.4:
+                            ev += p.finisher_storm_5_bonus  # 40%+ = decent
+                        else:
+                            ev += p.finisher_low_storm_penalty  # waste
 
         # ── Survival mode: when facing lethal, boost survival plays ──
         if snap.am_dead_next:
