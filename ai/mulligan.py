@@ -56,6 +56,17 @@ class MulliganDecider:
                     if not (hand_names & combo_set):
                         return cards_in_hand <= 5  # keep bad 5-card hands
 
+            # Combo decks with always_early (cost reducers): mulligan 7-card
+            # hands without a reducer — T2 Medallion is critical for Storm
+            if gp.always_early and cards_in_hand >= 7:
+                reducer_names = gp.always_early | {
+                    n for n in hand_names
+                    if any('cost_reducer' in getattr(c.template, 'tags', set())
+                           for c in hand if c.name == n)
+                }
+                if not (hand_names & reducer_names):
+                    return False  # no reducer in 7-card hand — mulligan
+
             # Require creature on curve
             if gp.mulligan_require_creature_cmc > 0:
                 has_creature = any(

@@ -243,9 +243,11 @@ class ResponseDecider:
             face_dmg = known_burn if known_burn > 0 else 3
             my_life = game.players[self.player_idx].life
             life_pct = face_dmg / max(my_life, 1)
-            threat += face_dmg * 1.0
+            # Burn-to-face is harder to interact with than creatures —
+            # value countering it higher (face damage can't be removed next turn)
+            threat += face_dmg * 1.5
             if life_pct >= 0.25:
-                threat += 3.0
+                threat += 4.0
             if my_life <= face_dmg:
                 threat += 10.0
 
