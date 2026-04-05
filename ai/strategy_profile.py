@@ -9,10 +9,18 @@ DATA, not code.
 
 Also contains ArchetypeStrategy enum and DECK_ARCHETYPES mapping
 (moved from ai_player.py).
+
+Generalization patterns used:
+- storm_scaling(storm, base, per_storm) replaces 4-tier if/elif ladders
+- draw_extra_card_mult replaces separate draw_two/draw_three bonuses
+- chain_fuel_base + chain_fuel_late_mult replaces cantrip/ritual early/late pairs
+- phase_weights dict replaces 8 separate early/mid/late fields
+- reducer_curve(storm) replaces pre/early/mid chain + first/early reducer bonuses
 """
 from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
+from typing import Dict, Tuple
 
 
 class ArchetypeStrategy(Enum):
@@ -44,104 +52,104 @@ DECK_ARCHETYPES = {
 
 @dataclass
 class StrategyProfile:
-    """Numerical weights for all AI decision dimensions."""
+    """Numerical weights for all AI decision dimensions.
+
+    Methods provide derived values so callers don't need if/elif ladders.
+    """
 
     # ── Spell scoring weights ──
-    creature_value_mult: float = 1.5     # how much to weight creature_value()
-    removal_target_mult: float = 1.2     # how much to weight removal target value
-    burn_face_mult: float = 0.5          # weight for face damage (non-lethal)
-    burn_face_low_life_mult: float = 1.0 # weight for face damage when opp <= 10
-    card_draw_base: float = 4.0          # base EV for draw spells
-    card_draw_empty_hand_bonus: float = 4.0  # bonus when hand <= 2
-    card_draw_low_hand_bonus: float = 2.0    # bonus when hand <= 4
-    card_draw_archetype_bonus: float = 0.0   # extra draw value for this archetype
-    ritual_bonus: float = 1.0            # EV bonus for ritual spells
-    cost_reducer_pre_chain: float = 3.0  # EV for cost reducers before combo
-    cost_reducer_mid_chain: float = 3.0  # EV for cost reducers during combo
-    etb_value_bonus: float = 3.0         # ETB creature bonus
-    planeswalker_bonus: float = 6.0      # planeswalker deployment bonus
-    enchantment_bonus: float = 2.0       # enchantment deployment bonus
-    artifact_bonus: float = 2.0          # non-equipment artifact bonus
-    card_advantage_creature_bonus: float = 3.0  # creatures with card_advantage tag
-    evoke_small_target_penalty: float = -8.0    # evoke vs small creatures
-    ritual_storm_scaling: float = 0.5    # extra ritual value per storm count
-    pre_chain_planeswalker_bonus: float = 0.0   # deploy PW before chaining
-    cost_reducer_early_chain: float = 4.0       # reducer at storm 1-4
-    baseline_cast_bonus: float = 2.0     # baseline "casting is good" bonus
-    zero_mana_combo_bonus: float = 0.0   # bonus for 0-mana spells (combo only)
+    creature_value_mult: float = 1.5
+    removal_target_mult: float = 1.2
+    burn_face_mult: float = 0.5
+    burn_face_low_life_mult: float = 1.0
+    burn_kill_min_power: int = 4
+    burn_kill_life_ratio: float = 2.0
+    card_draw_base: float = 4.0
+    card_draw_empty_hand_bonus: float = 4.0   # hand <= 2
+    card_draw_low_hand_bonus: float = 2.0     # hand <= 4
+    card_draw_archetype_bonus: float = 0.0
+    draw_extra_card_mult: float = 3.5         # per extra card drawn (draw 2 = +3.5, draw 3 = +7.0)
+    ritual_bonus: float = 1.0
+    etb_value_bonus: float = 3.0
+    planeswalker_bonus: float = 6.0
+    enchantment_bonus: float = 2.0
+    artifact_bonus: float = 2.0
+    card_advantage_creature_bonus: float = 3.0
+    evoke_small_target_penalty: float = -8.0
+    baseline_cast_bonus: float = 2.0
+    mana_efficiency_mult: float = 2.0         # was hardcoded 2.0 in mana efficiency calc
 
     # ── Mana holdback ──
-    holdback_penalty: float = -2.0       # penalty for tapping out with instants
-    holdback_min_turn: int = 0           # don't apply holdback before this turn
-    holdback_applies: bool = True        # does this archetype hold mana?
+    holdback_penalty: float = -2.0
+    holdback_min_turn: int = 0
+    holdback_applies: bool = True
 
     # ── Combat thresholds ──
-    attack_threshold: float = 0.0        # CombatPlanner score needed to attack
-    empty_board_always_attack: bool = True  # attack into no blockers?
+    attack_threshold: float = 0.0
 
     # ── Survival mode ──
     survival_removal_bonus: float = 6.0
     survival_blocker_bonus: float = 5.0
     survival_wrath_bonus: float = 8.0
 
-    # ── Archetype modifier weights ──
+    # ── Creature context bonuses ──
     on_curve_creature_bonus: float = 2.0
     cheap_creature_bonus: float = 0.0
     empty_board_creature_bonus: float = 0.0
     flash_creature_bonus: float = 2.0
-    high_power_creature_bonus: float = 0.0  # bonus for power >= 3
+    high_power_creature_bonus: float = 0.0
     removal_vs_creatures_bonus: float = 4.0
-    removal_vs_big_creatures_bonus: float = 3.0  # extra when opp power >= 4
-    discard_early_bonus: float = 4.0     # T1-3 Thoughtseize
-    discard_late_bonus: float = 2.0      # T4+ with cards in opp hand
-    burn_low_life_bonus: float = 0.0     # extra burn when opp <= 10
+    removal_vs_big_creatures_bonus: float = 3.0
+    discard_early_bonus: float = 4.0
+    discard_late_bonus: float = 2.0
+    burn_low_life_bonus: float = 0.0
 
-    # ── Combo-specific ──
-    chain_mid_bonus: float = 0.0         # bonus per spell at storm 3+
-    chain_deep_bonus: float = 0.0        # bonus per spell at storm 6+
-    cantrip_early_chain: float = 3.0     # cantrip value early in chain
-    cantrip_late_chain: float = 3.0      # cantrip value late in chain
-    ritual_early_chain: float = 2.0
-    ritual_late_chain: float = 2.0
-    planeswalker_mid_chain_penalty: float = 0.0  # penalty for PW during chain
+    # ── Combo chain (generalized) ──
+    has_combo_chain: bool = False
+    chain_fuel_base: float = 3.0       # base value for cantrip/ritual in chain
+    chain_fuel_late_mult: float = 1.0  # multiplier on fuel value at storm >= 4
+    chain_ritual_mana_starved: float = 8.0  # ritual value when mana <= 2 and storm >= 3
+    ritual_storm_scaling: float = 0.5  # extra ritual value per storm count
+    chain_depth_bonus: float = 4.0     # bonus per depth tier (storm 3+ and 6+)
+    pre_chain_planeswalker_bonus: float = 0.0
+    planeswalker_mid_chain_penalty: float = 0.0
+    zero_mana_combo_bonus: float = 0.0
 
-    # ── Control phase-based (early T1-6, mid T7-12, late T13+) ──
-    early_removal_bonus: float = 4.0
-    early_cheap_play_bonus: float = 0.0
-    early_planeswalker_bonus: float = 0.0
-    mid_wrath_bonus: float = 5.0
-    mid_payoff_bonus: float = 0.0
-    mid_creature_bonus: float = 0.0
-    late_creature_bonus: float = 0.0
-    late_payoff_bonus: float = 0.0
+    # ── Storm scaling (generalized) ──
+    # storm_bonus(storm) = base + storm * per_storm, capped at cap
+    tutor_base: float = 6.0
+    tutor_storm_per: float = 2.0       # EV per storm count for tutors
+    tutor_storm_cap: float = 20.0      # max storm bonus for tutors
+    tutor_fuel_penalty_mult: float = -3.0
 
-    # ── Card draw scaling ──
-    draw_two_bonus: float = 4.0
-    draw_three_bonus: float = 7.0
+    finisher_hold_penalty: float = -20.0
+    finisher_lethal_pct: float = 0.7       # damage_pct >= this → fire
+    finisher_decent_pct: float = 0.4       # damage_pct >= this → decent
+    finisher_high_bonus: float = 15.0      # bonus when >= lethal_pct
+    finisher_mid_bonus: float = 5.0        # bonus when >= decent_pct
+    finisher_low_penalty: float = -30.0    # penalty when below decent_pct
+    lethal_burn_bonus: float = 100.0
+    lethal_storm_bonus: float = 100.0
 
-    # ── Combo: Past in Flames ──
-    pif_gy_ritual_mult: float = 2.0    # EV per ritual in GY
-    pif_gy_cantrip_mult: float = 1.0   # EV per cantrip in GY
+    # ── Past in Flames ──
+    pif_gy_fuel_mult: float = 1.5      # EV per GY fuel card (rituals weighted 1.33x)
+    pif_ritual_weight: float = 1.33    # ritual multiplier vs cantrips
     pif_redundant_penalty: float = -30.0
 
-    # ── Combo: Wish/tutor ──
-    tutor_base: float = 6.0
-    tutor_storm_8_bonus: float = 20.0
-    tutor_storm_5_bonus: float = 12.0
-    tutor_storm_3_bonus: float = 8.0
-    tutor_storm_1_bonus: float = 4.0
-    tutor_fuel_penalty_mult: float = -3.0  # per fuel card in hand
-
-    # ── Combo: storm finisher ──
-    finisher_hold_penalty: float = -20.0   # hold when fuel available
-    finisher_storm_8_bonus: float = 15.0
-    finisher_storm_5_bonus: float = 5.0
-    finisher_low_storm_penalty: float = -30.0
+    # ── Cost reducer (generalized curve) ──
+    # reducer_ev(storm, fuel) computed by method
+    reducer_base: float = 3.0          # base value when deployed
+    reducer_combo_mult: float = 4.0    # multiplier for combo archetypes (pre-chain)
+    reducer_first_bonus: float = 4.0   # first reducer on board
+    reducer_early_turn_bonus: float = 6.0  # deployed T1-4
+    reducer_no_fuel_mult: float = 0.3  # multiplier when no fuel in hand
+    reducer_mid_chain: float = -5.0    # value during active chain (storm >= 5)
+    reducer_early_chain: float = 4.0   # value at storm 1-4
 
     # ── Gameplan role bonuses ──
     payoff_bonus: float = 6.0
     engine_bonus: float = 5.0
-    fuel_bonus: float = 3.0              # only for combo
+    fuel_bonus: float = 3.0
 
     # ── Land scoring ──
     land_base_ev: float = 10.0
@@ -150,10 +158,11 @@ class StrategyProfile:
     land_tapped_castable_penalty: float = -3.0
     land_new_color_bonus: float = 4.0
     land_fetch_bonus: float = 3.0
+    land_landfall_trigger_value: float = 3.0
 
     # ── Wrath ──
     wrath_empty_board_penalty: float = -15.0
-    wrath_multi_kill_bonus: float = 5.0  # 3+ creatures
+    wrath_multi_kill_bonus: float = 5.0
 
     # ── Pass threshold ──
     pass_threshold: float = -5.0
@@ -161,15 +170,16 @@ class StrategyProfile:
     # ── Scoring constants ──
     evoke_empty_board_penalty: float = -20.0
     removal_no_target_penalty: float = -3.0
-    lethal_burn_bonus: float = 100.0
-    lethal_storm_bonus: float = 100.0
-    first_reducer_bonus: float = 4.0
-    early_reducer_bonus: float = 6.0
-    removal_overkill_mult: float = 0.6  # penalty mult for expensive removal on cheap target
+    removal_overkill_mult: float = 0.6
 
-    # ── Archetype flags (enables/disables code paths) ──
-    has_control_phases: bool = False   # enable early/mid/late phase logic
-    has_combo_chain: bool = False      # enable storm chain sequencing
+    # ── Control phases (generalized) ──
+    # phase_bonus(turn, card_role) uses phase_weights dict
+    has_control_phases: bool = False
+    # (removal, cheap_play, planeswalker, wrath, payoff, creature) per phase
+    # Phase boundaries: early <= 6, mid <= 12, late > 12
+    phase_early: Tuple[float, ...] = (4.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+    phase_mid: Tuple[float, ...] = (0.0, 0.0, 0.0, 5.0, 0.0, 0.0)
+    phase_late: Tuple[float, ...] = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 
     # ── Evoke ──
     evoke_base_penalty: float = -6.0
@@ -177,9 +187,73 @@ class StrategyProfile:
     evoke_pressure_bonus: float = 8.0
     evoke_lethal_bonus: float = 12.0
 
+    # ── Derived methods ──
+
+    def tutor_storm_bonus(self, storm: int) -> float:
+        """Storm-scaled tutor bonus: linear scaling with cap."""
+        return min(storm * self.tutor_storm_per, self.tutor_storm_cap)
+
+    def chain_fuel_value(self, storm: int) -> float:
+        """Value of a fuel card (cantrip/ritual) at given storm count."""
+        if storm <= 3:
+            return self.chain_fuel_base
+        return self.chain_fuel_base * self.chain_fuel_late_mult
+
+    def chain_depth_value(self, storm: int) -> float:
+        """Cumulative bonus for chain depth."""
+        val = 0.0
+        if storm >= 3:
+            val += self.chain_depth_bonus
+        if storm >= 6:
+            val += self.chain_depth_bonus
+        return val
+
+    def draw_multi_bonus(self, extra_cards: int) -> float:
+        """Bonus for drawing multiple cards. extra_cards = total drawn - 1."""
+        return max(0, extra_cards) * self.draw_extra_card_mult
+
+    def reducer_ev(self, storm: int, fuel_count: int,
+                   on_board: int, turn: int) -> float:
+        """Cost reducer EV based on game state."""
+        if storm >= 5:
+            return self.reducer_mid_chain
+        if storm >= 1:
+            return self.reducer_early_chain
+        # Pre-chain
+        base = self.reducer_base * self.reducer_combo_mult
+        if fuel_count < 2:
+            return base * self.reducer_no_fuel_mult
+        ev = base
+        if turn <= 4:
+            ev += self.reducer_early_turn_bonus
+        if on_board == 0:
+            ev += self.reducer_first_bonus
+        return ev
+
+    def pif_gy_value(self, gy_rituals: int, gy_cantrips: int) -> float:
+        """Past in Flames bonus from GY fuel."""
+        return (gy_rituals * self.pif_ritual_weight +
+                gy_cantrips) * self.pif_gy_fuel_mult
+
+    def finisher_ev(self, damage_pct: float) -> float:
+        """Storm finisher EV based on damage percentage of opponent's life."""
+        if damage_pct >= self.finisher_lethal_pct:
+            return self.finisher_high_bonus
+        if damage_pct >= self.finisher_decent_pct:
+            return self.finisher_mid_bonus
+        return self.finisher_low_penalty
+
+    def phase_bonus(self, turn: int, role_idx: int) -> float:
+        """Control phase bonus. role_idx: 0=removal, 1=cheap, 2=pw, 3=wrath, 4=payoff, 5=creature."""
+        if turn <= 6:
+            return self.phase_early[role_idx] if role_idx < len(self.phase_early) else 0.0
+        if turn <= 12:
+            return self.phase_mid[role_idx] if role_idx < len(self.phase_mid) else 0.0
+        return self.phase_late[role_idx] if role_idx < len(self.phase_late) else 0.0
+
 
 # ═══════════════════════════════════════════════════════════════════
-# Archetype profiles
+# Archetype profiles — only override what differs from defaults
 # ═══════════════════════════════════════════════════════════════════
 
 AGGRO = StrategyProfile(
@@ -198,7 +272,6 @@ MIDRANGE = StrategyProfile(
     removal_vs_creatures_bonus=4.0,
     removal_vs_big_creatures_bonus=3.0,
     flash_creature_bonus=2.0,
-    high_power_creature_bonus=0.0,
     cheap_creature_bonus=3.0,
     discard_early_bonus=4.0,
     card_draw_archetype_bonus=2.0,
@@ -207,14 +280,9 @@ MIDRANGE = StrategyProfile(
 
 CONTROL = StrategyProfile(
     has_control_phases=True,
-    early_removal_bonus=6.0,
-    early_cheap_play_bonus=3.0,
-    early_planeswalker_bonus=4.0,
-    mid_wrath_bonus=6.0,
-    mid_payoff_bonus=6.0,
-    mid_creature_bonus=3.0,
-    late_creature_bonus=4.0,
-    late_payoff_bonus=5.0,
+    phase_early=(6.0, 3.0, 4.0, 0.0, 0.0, 0.0),
+    phase_mid=(0.0, 0.0, 0.0, 6.0, 6.0, 3.0),
+    phase_late=(0.0, 0.0, 0.0, 0.0, 5.0, 4.0),
     card_draw_archetype_bonus=2.0,
     holdback_penalty=-2.0,
 )
@@ -222,17 +290,17 @@ CONTROL = StrategyProfile(
 COMBO = StrategyProfile(
     has_combo_chain=True,
     ritual_bonus=5.0,
-    cost_reducer_pre_chain=12.0,
-    cost_reducer_mid_chain=-5.0,
-    cost_reducer_early_chain=4.0,
+    reducer_base=3.0,
+    reducer_combo_mult=4.0,
+    reducer_mid_chain=-5.0,
+    reducer_early_chain=4.0,
+    reducer_early_turn_bonus=6.0,
+    reducer_first_bonus=4.0,
     pre_chain_planeswalker_bonus=4.0,
     zero_mana_combo_bonus=4.0,
-    chain_mid_bonus=4.0,
-    chain_deep_bonus=4.0,
-    cantrip_early_chain=5.0,
-    cantrip_late_chain=3.0,
-    ritual_early_chain=2.0,
-    ritual_late_chain=3.0,
+    chain_fuel_base=5.0,
+    chain_fuel_late_mult=0.6,
+    chain_depth_bonus=4.0,
     planeswalker_mid_chain_penalty=-8.0,
     holdback_applies=False,
     attack_threshold=0.0,
@@ -242,7 +310,6 @@ COMBO = StrategyProfile(
 RAMP = StrategyProfile(
     on_curve_creature_bonus=2.0,
     holdback_applies=False,
-    # Ramp-specific: mana sources and fatties
 )
 
 TEMPO = StrategyProfile(

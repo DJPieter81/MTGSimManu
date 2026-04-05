@@ -339,10 +339,10 @@ class EVPlayer:
             elif snap.my_hand_size <= 4:
                 draw_val += p.card_draw_low_hand_bonus
             oracle = (t.oracle_text or '').lower()
-            if 'draw two' in oracle or 'draws two' in oracle:
-                draw_val += p.draw_two_bonus
             if 'draw three' in oracle:
-                draw_val += p.draw_three_bonus
+                draw_val += p.draw_multi_bonus(2)  # 3 cards = 2 extra
+            elif 'draw two' in oracle or 'draws two' in oracle:
+                draw_val += p.draw_multi_bonus(1)  # 2 cards = 1 extra
             draw_val += p.card_draw_archetype_bonus
             ev += draw_val
 
@@ -361,7 +361,7 @@ class EVPlayer:
             ev += p.ritual_bonus
 
         # ── Past in Flames — bonus for rich graveyard ──
-        if 'flashback' in tags and p.pif_gy_ritual_mult > 0:
+        if 'flashback' in tags and p.pif_gy_fuel_mult > 0:
             # Check if a flashback-granting spell was already cast this turn
             # Only block if PiF was cast THIS turn (spells_cast > 0 means we're chaining)
             # and there's already a flashback-granter in GY from this chain
@@ -374,20 +374,13 @@ class EVPlayer:
                     return p.pif_redundant_penalty
             gy_rituals = sum(1 for c in me.graveyard if 'ritual' in getattr(c.template, 'tags', set()))
             gy_cantrips = sum(1 for c in me.graveyard if 'cantrip' in getattr(c.template, 'tags', set()))
-            ev += gy_rituals * p.pif_gy_ritual_mult + gy_cantrips * p.pif_gy_cantrip_mult
+            ev += p.pif_gy_value(gy_rituals, gy_cantrips)
 
         # ── Tutors (Wish) — find the finisher ──
         if 'tutor' in tags and p.tutor_base > 0:
             tutor_val = p.tutor_base
             storm = me.spells_cast_this_turn
-            if storm >= 8:
-                tutor_val += p.tutor_storm_8_bonus
-            elif storm >= 5:
-                tutor_val += p.tutor_storm_5_bonus
-            elif storm >= 3:
-                tutor_val += p.tutor_storm_3_bonus
-            elif storm >= 1:
-                tutor_val += p.tutor_storm_1_bonus
+            tutor_val += p.tutor_storm_bonus(storm)
             # Hold Wish if we have actual chain fuel (rituals/cantrips) in hand or GY flashback
             all_fuel_sources = list(me.hand) + [g for g in me.graveyard if getattr(g, 'has_flashback', False)]
             chain_fuel = sum(1 for c in all_fuel_sources if c.instance_id != card.instance_id
@@ -407,28 +400,14 @@ class EVPlayer:
                            t.domain_reduction == 0)
         if is_real_reducer:
             storm = me.spells_cast_this_turn
-            # Count fuel spells in hand (rituals, cantrips, draw)
             fuel_in_hand = sum(1 for c in me.hand
                                if c.instance_id != card.instance_id
                                and not c.template.is_land
                                and any(ft in getattr(c.template, 'tags', set())
                                        for ft in ('ritual', 'cantrip', 'draw')))
-            if storm == 0:
-                if fuel_in_hand >= 2:
-                    ev += p.cost_reducer_pre_chain
-                    if snap.turn_number <= 4 and p.cost_reducer_pre_chain > 5:
-                        ev += p.early_reducer_bonus
-                    medallions_on_board = sum(1 for c in me.battlefield
-                                              if 'cost_reducer' in getattr(c.template, 'tags', set()))
-                    if medallions_on_board == 0 and p.cost_reducer_pre_chain > 5:
-                        ev += p.first_reducer_bonus
-                else:
-                    # No fuel — reducer is a dead investment, small value only
-                    ev += p.cost_reducer_pre_chain * 0.3
-            elif storm >= 5:
-                ev += p.cost_reducer_mid_chain
-            else:
-                ev += p.cost_reducer_early_chain
+            reducers_on_board = sum(1 for c in me.battlefield
+                                    if 'cost_reducer' in getattr(c.template, 'tags', set()))
+            ev += p.reducer_ev(storm, fuel_in_hand, reducers_on_board, snap.turn_number)
 
         # ── ETB value ──
         if 'etb_value' in tags:
@@ -449,7 +428,7 @@ class EVPlayer:
         if cmc == 0 and p.zero_mana_combo_bonus > 0:
             ev += p.zero_mana_combo_bonus
         elif snap.my_mana > 0 and cmc > 0:
-            ev += min(cmc / snap.my_mana, 1.0) * 2.0
+            ev += min(cmc / snap.my_mana, 1.0) * p.mana_efficiency_mult
 
         # ── Mana holdback penalty ──
         # Don't hold mana when opponent has no clock (opp_clock >= 10)
@@ -491,14 +470,8 @@ class EVPlayer:
                     if fuel_available > 0:
                         ev += p.finisher_hold_penalty
                     else:
-                        # Scale bonus by how close to lethal (vs actual opp life, not 20)
                         damage_pct = storm_copies / max(1, snap.opp_life)
-                        if damage_pct >= 0.7:
-                            ev += p.finisher_storm_8_bonus  # 70%+ of lethal = fire
-                        elif damage_pct >= 0.4:
-                            ev += p.finisher_storm_5_bonus  # 40%+ = decent
-                        else:
-                            ev += p.finisher_low_storm_penalty  # waste
+                        ev += p.finisher_ev(damage_pct)
 
         # ── Survival mode: when facing lethal, boost survival plays ──
         if snap.am_dead_next:
@@ -554,28 +527,23 @@ class EVPlayer:
                 mod += p.burn_low_life_bonus
 
         # ── Control phase-based ──
+        # role_idx: 0=removal, 1=cheap_play, 2=planeswalker, 3=wrath, 4=payoff, 5=creature
         if p.has_control_phases:
+            turn = snap.turn_number
             cmc_val = t.cmc or 0
             from engine.cards import CardType
-            if snap.turn_number <= 6:
-                if 'removal' in tags and snap.opp_creature_count > 0:
-                    mod += p.early_removal_bonus
-                if cmc_val <= 2 and not t.is_land:
-                    mod += p.early_cheap_play_bonus
-                if CardType.PLANESWALKER in t.card_types:
-                    mod += p.early_planeswalker_bonus
-            elif snap.turn_number <= 12:
-                if 'board_wipe' in tags and snap.opp_creature_count >= 2:
-                    mod += p.mid_wrath_bonus
-                if card.name in self._payoff_names:
-                    mod += p.mid_payoff_bonus
-                if t.is_creature:
-                    mod += p.mid_creature_bonus
-            else:
-                if t.is_creature:
-                    mod += p.late_creature_bonus
-                if card.name in self._payoff_names:
-                    mod += p.late_payoff_bonus
+            if 'removal' in tags and snap.opp_creature_count > 0:
+                mod += p.phase_bonus(turn, 0)
+            if cmc_val <= 2 and not t.is_land:
+                mod += p.phase_bonus(turn, 1)
+            if CardType.PLANESWALKER in t.card_types:
+                mod += p.phase_bonus(turn, 2)
+            if 'board_wipe' in tags and snap.opp_creature_count >= 2:
+                mod += p.phase_bonus(turn, 3)
+            if card.name in self._payoff_names:
+                mod += p.phase_bonus(turn, 4)
+            if t.is_creature:
+                mod += p.phase_bonus(turn, 5)
 
         # ── Combo chain sequencing ──
         if p.has_combo_chain:
@@ -585,18 +553,15 @@ class EVPlayer:
                 if mana <= 2 and storm >= 3 and 'ritual' in tags:
                     pass  # rituals get priority below when mana-starved
                 else:
-                    mod += p.cantrip_early_chain if storm <= 3 else p.cantrip_late_chain
+                    mod += p.chain_fuel_value(storm)
             if 'ritual' in tags:
                 if mana <= 2 and storm >= 3:
-                    mod += 8.0  # MANA-STARVED: ritual produces mana to keep going!
+                    mod += p.chain_ritual_mana_starved
                 elif storm <= 2:
-                    mod += p.ritual_early_chain
+                    mod += p.chain_fuel_value(storm)
                 else:
-                    mod += p.ritual_late_chain + storm * p.ritual_storm_scaling
-            if storm >= 3:
-                mod += p.chain_mid_bonus
-            if storm >= 6:
-                mod += p.chain_deep_bonus
+                    mod += p.chain_fuel_value(storm) + storm * p.ritual_storm_scaling
+            mod += p.chain_depth_value(storm)
             from engine.cards import CardType as CT2
             if CT2.PLANESWALKER in t.card_types:
                 if storm == 0:
@@ -637,7 +602,7 @@ class EVPlayer:
                              if 'landfall' in (c.template.oracle_text or '').lower())
         if landfall_count > 0:
             triggers = 2 if is_fetch else 1
-            ev += landfall_count * triggers * 3.0  # each landfall trigger is worth ~3 EV
+            ev += landfall_count * triggers * p.land_landfall_trigger_value
 
         return ev
 
@@ -893,14 +858,15 @@ class EVPlayer:
             if opp.life <= 10:
                 face_val = dmg * self.profile.burn_face_low_life_mult
 
-            # Prefer removing big creatures (power >= 4) unless burn is near-lethal
+            # Prefer removing big creatures unless burn is near-lethal
             if best_kill_id and best_kill_val > face_val:
                 return [best_kill_id]  # kill the creature
             if best_kill_id:
                 best_kill_card = next((c for c in opp.creatures
                                        if c.instance_id == best_kill_id), None)
-                if (best_kill_card and (best_kill_card.power or 0) >= 4
-                        and opp.life > dmg * 2):
+                if (best_kill_card
+                        and (best_kill_card.power or 0) >= self.profile.burn_kill_min_power
+                        and opp.life > dmg * self.profile.burn_kill_life_ratio):
                     return [best_kill_id]  # big threat, burn not near lethal
             return [-1]  # go face
 
