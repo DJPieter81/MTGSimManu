@@ -163,6 +163,107 @@ def run_verbose_game(deck1: str, deck2: str, seed: int = 42000) -> str:
     return '\n'.join(lines)
 
 
+def run_trace_game(deck1: str, deck2: str, seed: int = 42000) -> str:
+    """Run a single game with full AI reasoning — shows hand, castable
+    spells, EV scores, and chosen play each decision point.
+
+    Usage:
+        python run_meta.py --trace "Ruby Storm" "Dimir Midrange" --seed 42000
+    """
+    from ai.ev_player import EVPlayer
+    from ai.ev_evaluator import snapshot_from_game
+
+    runner = _get_runner()
+    lines = []
+
+    orig_main = EVPlayer.decide_main_phase
+    orig_atk = EVPlayer.decide_attackers
+
+    def traced_main(self, game, excluded_cards=None):
+        me = game.players[self.player_idx]
+        opp = game.players[1 - self.player_idx]
+        hand_spells = [c.name for c in me.hand if not c.template.is_land]
+        hand_lands = sum(1 for c in me.hand if c.template.is_land)
+        mana = me.available_mana_estimate + me.mana_pool.total()
+        bf_creatures = [f'{c.name} ({c.power}/{c.toughness})' for c in me.creatures]
+        bf_other = [c.name for c in me.battlefield
+                    if not c.template.is_creature and not c.template.is_land]
+        opp_creatures = [f'{c.name} ({c.power}/{c.toughness})' for c in opp.creatures]
+        castable = [c.name for c in me.hand
+                    if not c.template.is_land and game.can_cast(self.player_idx, c)]
+        gy_count = len(me.graveyard)
+
+        lines.append(f'')
+        lines.append(f'T{game.turn_number} {self.deck_name} | '
+                     f'life={me.life} mana={mana} hand={len(hand_spells)}+{hand_lands}L gy={gy_count}')
+        lines.append(f'  Hand: {hand_spells}')
+        lines.append(f'  Castable: {castable}')
+        if bf_creatures:
+            lines.append(f'  Board: {bf_creatures}')
+        if bf_other:
+            lines.append(f'  Permanents: {bf_other}')
+        lines.append(f'  Opp board: {opp_creatures} (life={opp.life})')
+
+        # Score all candidates
+        snap = snapshot_from_game(game, self.player_idx)
+        legal = game.get_legal_plays(self.player_idx)
+        if excluded_cards:
+            legal = [c for c in legal if c.instance_id not in excluded_cards]
+        scored = []
+        for c in legal:
+            if c.template.is_land:
+                ev = self._score_land(c, me, [x for x in legal if not x.template.is_land], game)
+                scored.append((ev, f'play_land: {c.name}'))
+            elif game.can_cast(self.player_idx, c):
+                ev = self._score_spell(c, snap, game, me, opp)
+                scored.append((ev, f'cast: {c.name}'))
+        scored.sort(reverse=True)
+        if scored:
+            lines.append(f'  EV scores:')
+            for ev, desc in scored[:6]:
+                marker = ' <--' if scored and desc == scored[0][1] else ''
+                lines.append(f'    {ev:+6.1f}  {desc}{marker}')
+            if len(scored) > 6:
+                lines.append(f'    ... +{len(scored)-6} more')
+
+        result = orig_main(self, game, excluded_cards)
+        if result:
+            lines.append(f'  >>> {result[0].upper()}: {result[1].name}')
+        else:
+            lines.append(f'  >>> PASS (threshold={self.profile.pass_threshold})')
+        return result
+
+    def traced_atk(self, game):
+        result = orig_atk(self, game)
+        if result:
+            names = [c.name for c in result]
+            lines.append(f'  >>> ATTACK: {names}')
+        return result
+
+    EVPlayer.decide_main_phase = traced_main
+    EVPlayer.decide_attackers = traced_atk
+
+    try:
+        d1 = MODERN_DECKS[deck1]
+        d2 = MODERN_DECKS[deck2]
+        random.seed(seed)
+        r = runner.run_game(
+            deck1, d1['mainboard'], deck2, d2['mainboard'],
+            deck1_sideboard=d1.get('sideboard', {}),
+            deck2_sideboard=d2.get('sideboard', {}),
+            verbose=True,
+        )
+        header = [f'=== {deck1} vs {deck2} (seed {seed}) ===',
+                  f'Result: {r.winner_deck} wins T{r.turns} via {r.win_condition}',
+                  f'Life: P1={r.winner_life if r.winner==0 else r.loser_life} '
+                  f'P2={r.winner_life if r.winner==1 else r.loser_life}',
+                  '']
+        return '\n'.join(header + lines)
+    finally:
+        EVPlayer.decide_main_phase = orig_main
+        EVPlayer.decide_attackers = orig_atk
+
+
 # ─── Pretty printing ─────────────────────────────────────────
 
 
@@ -220,10 +321,11 @@ if __name__ == '__main__':
     parser.add_argument('--matrix', action='store_true', help='Run full metagame matrix')
     parser.add_argument('--matchup', nargs=2, metavar=('DECK1', 'DECK2'), help='Run matchup between two decks')
     parser.add_argument('--field', metavar='DECK', help='Run one deck vs all others')
-    parser.add_argument('--verbose', nargs=2, metavar=('DECK1', 'DECK2'), help='Run single verbose game')
+    parser.add_argument('--verbose', nargs=2, metavar=('DECK1', 'DECK2'), help='Run single game log (actions only)')
+    parser.add_argument('--trace', nargs=2, metavar=('DECK1', 'DECK2'), help='Run single game with full AI reasoning')
     parser.add_argument('--games', '-n', type=int, default=20, help='Games per matchup (default 20)')
     parser.add_argument('--decks', '-d', type=int, default=None, help='Top N decks for matrix')
-    parser.add_argument('--seed', '-s', type=int, default=42000, help='Seed for verbose game')
+    parser.add_argument('--seed', '-s', type=int, default=42000, help='Seed for verbose/trace game')
     parser.add_argument('--list', action='store_true', help='List available decks')
     args = parser.parse_args()
 
@@ -233,7 +335,9 @@ if __name__ == '__main__':
             print(f'  {name:25s} ({share:.1f}% meta share)')
         sys.exit(0)
 
-    if args.verbose:
+    if args.trace:
+        print(run_trace_game(args.trace[0], args.trace[1], seed=args.seed))
+    elif args.verbose:
         print(run_verbose_game(args.verbose[0], args.verbose[1], seed=args.seed))
     elif args.matchup:
         print_matchup(run_matchup(args.matchup[0], args.matchup[1], n_games=args.games))
