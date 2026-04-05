@@ -519,28 +519,35 @@ class GameState:
                 needed[color] = remaining - use_pool
         
         # Collect colors that still need land sources
-        colors_needed = [(color, needed.get(color, 0)) for color in ["W", "U", "B", "R", "G", "C"]
-                         if needed.get(color, 0) > 0]
-        
-        # Sort by number of available untapped land sources (ascending = most constrained first)
+        colors_needed_list = []
+        for color in ["W", "U", "B", "R", "G", "C"]:
+            for _ in range(needed.get(color, 0)):
+                colors_needed_list.append(color)
+
+        # Assign with re-sorting: most constrained color first each step
         used_lands = set()
-        def count_sources(color):
-            return sum(1 for l in untapped if l not in used_lands and color in l.template.produces_mana)
-        
-        colors_needed.sort(key=lambda x: count_sources(x[0]))
-        
-        for color, remaining in colors_needed:
+
+        while colors_needed_list:
+            # Re-sort by scarcity each step (fixes 4-color dual land issues)
+            colors_needed_list.sort(
+                key=lambda c: sum(1 for l in untapped if l not in used_lands and c in l.template.produces_mana)
+            )
+            color = colors_needed_list.pop(0)
+            # Find least-flexible unused land for this color
+            best_land = None
+            best_flex = 999
             for land in untapped:
-                if remaining <= 0:
-                    break
                 if land in used_lands:
                     continue
                 if color in land.template.produces_mana:
-                    lands_to_tap.append((land, color))
-                    used_lands.add(land)
-                    remaining -= 1
-            if remaining > 0:
+                    flex = len(land.template.produces_mana)
+                    if flex < best_flex:
+                        best_flex = flex
+                        best_land = land
+            if best_land is None:
                 return False
+            lands_to_tap.append((best_land, color))
+            used_lands.add(best_land)
 
         # Pay generic
         generic_remaining = needed.get("generic", 0)
@@ -748,19 +755,19 @@ class GameState:
         if len(sources) < effective_cmc:
             return False
 
-        # Greedy assignment: assign most-constrained color needs first
-        # (colors that fewer sources can produce), using sources with
-        # fewest options first (to preserve flexible sources for later).
+        # Color assignment: greedy with re-sorting after each step.
+        # Re-sorting fixes the classic 4-color dual land problem where
+        # a stale sort order causes greedy misassignment (e.g., Omnath WURG).
         used = [False] * len(sources)
 
-        # Sort color needs by how many unused sources can produce them
-        def source_count_for(c):
-            return sum(1 for i, s in enumerate(sources) if c in s and not used[i])
-
-        color_needs.sort(key=source_count_for)
-
-        for c in color_needs:
-            # Find the least-flexible unused source that can produce this color
+        remaining_needs = list(color_needs)
+        while remaining_needs:
+            # Re-sort by scarcity: colors with fewest remaining sources first
+            remaining_needs.sort(
+                key=lambda c: sum(1 for i, s in enumerate(sources) if c in s and not used[i])
+            )
+            c = remaining_needs.pop(0)
+            # Find least-flexible unused source for this color
             best_idx = -1
             best_flex = 999
             for i, s in enumerate(sources):

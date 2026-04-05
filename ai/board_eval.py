@@ -219,8 +219,19 @@ def _eval_evoke(game, me, a: BoardAssessment, ctx: dict) -> float:
                 return -2.0  # Not worth evoking for small threats
 
     if a.mana_available >= cmc:
-        # Can hard-cast NOW — always prefer body + ETB
-        return -10.0
+        # Can hard-cast NOW — but only if we have the right colors
+        existing_colors = set()
+        for land in me.lands:
+            existing_colors.update(land.template.produces_mana)
+        needed_colors = set()
+        mc = card.template.mana_cost
+        if mc.white > 0: needed_colors.add("W")
+        if mc.blue > 0: needed_colors.add("U")
+        if mc.black > 0: needed_colors.add("B")
+        if mc.red > 0: needed_colors.add("R")
+        if mc.green > 0: needed_colors.add("G")
+        if needed_colors <= existing_colors:
+            return -10.0  # Can actually hardcast — prefer body + ETB
 
     # Load evoke thresholds from archetype
     from ai.gameplan import _ARCHETYPE_THRESHOLDS, DecisionThresholds, get_gameplan
