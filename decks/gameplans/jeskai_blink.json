@@ -4,23 +4,20 @@
   "goals": [
     {
       "goal_type": "INTERACT",
-      "description": "Establish board control with removal, counters, and evoke",
+      "description": "Early removal + deploy Ragavan or Snapcaster for tempo",
       "card_priorities": {
+        "Ragavan, Nimble Pilferer": 24.0,
         "Lightning Bolt": 22.0,
         "Solitude": 22.0,
         "Prismatic Ending": 20.0,
-        "Ragavan, Nimble Pilferer": 20.0,
-        "Snapcaster Mage": 15.0,
-        "Ephemerate": 14.0,
-        "Teferi, Time Raveler": 16.0
+        "Snapcaster Mage": 16.0,
+        "Ephemerate": 14.0
       },
       "card_roles": {
         "interaction": [
-          "Counterspell",
           "Lightning Bolt",
           "Prismatic Ending",
-          "Solitude",
-          "Spell Snare"
+          "Solitude"
         ],
         "enablers": [
           "Ephemerate",
@@ -33,13 +30,14 @@
     },
     {
       "goal_type": "GRIND_VALUE",
-      "description": "Generate value with blink effects and ETB creatures",
+      "description": "Blink ETB creatures for value — Solitude re-exiles, Riddler redraws",
       "card_priorities": {
+        "Quantum Riddler": 22.0,
         "Solitude": 20.0,
         "Ephemerate": 18.0,
         "Subtlety": 16.0,
-        "Quantum Riddler": 15.0,
-        "Teferi, Time Raveler": 14.0,
+        "Teferi, Time Raveler": 15.0,
+        "Snapcaster Mage": 14.0,
         "Spell Queller": 14.0
       },
       "card_roles": {
@@ -49,7 +47,8 @@
           "Subtlety"
         ],
         "enablers": [
-          "Ephemerate"
+          "Ephemerate",
+          "Snapcaster Mage"
         ],
         "interaction": [
           "Spell Queller",
@@ -60,19 +59,20 @@
     },
     {
       "goal_type": "CLOSE_GAME",
-      "description": "Close with Solitude beats or Snapcaster value",
+      "description": "Close with Quantum Riddler beats or Solitude + Ephemerate lock",
       "card_priorities": {
+        "Quantum Riddler": 18.0,
         "Solitude": 15.0,
         "Snapcaster Mage": 12.0
       }
     }
   ],
   "mulligan_keys": [
-    "Counterspell",
+    "Ephemerate",
     "Lightning Bolt",
-    "Prismatic Ending",
     "Ragavan, Nimble Pilferer",
-    "Solitude"
+    "Solitude",
+    "Quantum Riddler"
   ],
   "reactive_only": [
     "Counterspell",

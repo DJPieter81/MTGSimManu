@@ -34,7 +34,7 @@ class ArchetypeStrategy(Enum):
 
 DECK_ARCHETYPES = {
     "Boros Energy":       ArchetypeStrategy.AGGRO,
-    "Jeskai Blink":       ArchetypeStrategy.TEMPO,
+    "Jeskai Blink":       ArchetypeStrategy.CONTROL,
     "Ruby Storm":         ArchetypeStrategy.COMBO,
     "Affinity":           ArchetypeStrategy.AGGRO,
     "Eldrazi Tron":       ArchetypeStrategy.RAMP,
@@ -47,6 +47,7 @@ DECK_ARCHETYPES = {
     "Dimir Midrange":     ArchetypeStrategy.MIDRANGE,
     "Izzet Prowess":      ArchetypeStrategy.AGGRO,
     "4c Omnath":          ArchetypeStrategy.MIDRANGE,
+    "4/5c Control":       ArchetypeStrategy.CONTROL,
 }
 
 

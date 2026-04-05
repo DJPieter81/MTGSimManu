@@ -1,22 +1,24 @@
 {
   "deck_name": "Eldrazi Tron",
-  "archetype": "midrange",
+  "archetype": "ramp",
   "goals": [
     {
       "goal_type": "RAMP",
-      "description": "Assemble Tron lands or deploy Eldrazi Temple for fast mana",
+      "description": "Assemble Tron or deploy Eldrazi Temple + Chalice to lock out opponent",
       "card_priorities": {
-        "Expedition Map": 22.0,
-        "Chalice of the Void": 20.0,
+        "Expedition Map": 24.0,
+        "Chalice of the Void": 22.0,
         "Eldrazi Mimic": 15.0,
-        "Matter Reshaper": 12.0
+        "Matter Reshaper": 14.0
       },
       "card_roles": {
         "engines": [
           "Expedition Map"
         ],
         "enablers": [
-          "Chalice of the Void"
+          "Chalice of the Void",
+          "Eldrazi Mimic",
+          "Matter Reshaper"
         ]
       },
       "resource_target": 5,
@@ -24,14 +26,13 @@
     },
     {
       "goal_type": "CURVE_OUT",
-      "description": "Deploy Eldrazi threats: Thought-Knot, Reality Smasher",
+      "description": "Deploy Eldrazi threats: TKS strips hand, Smasher closes fast",
       "card_priorities": {
-        "Thought-Knot Seer": 22.0,
+        "Thought-Knot Seer": 24.0,
         "Reality Smasher": 22.0,
         "Endbringer": 18.0,
         "Walking Ballista": 15.0,
-        "Matter Reshaper": 12.0,
-        "Eldrazi Mimic": 10.0
+        "Matter Reshaper": 12.0
       },
       "card_roles": {
         "payoffs": [
@@ -46,11 +47,12 @@
       }
     },
     {
-      "goal_type": "PUSH_DAMAGE",
-      "description": "Attack with Eldrazi, use Ugin or All Is Dust as finishers",
+      "goal_type": "CLOSE_GAME",
+      "description": "Ugin or All Is Dust as sweepers, attack with Eldrazi",
       "card_priorities": {
         "Ugin, the Spirit Dragon": 20.0,
         "All Is Dust": 18.0,
+        "Reality Smasher": 16.0,
         "Kozilek's Command": 15.0
       },
       "card_roles": {
@@ -63,17 +65,18 @@
   ],
   "mulligan_keys": [
     "Chalice of the Void",
-    "Eldrazi Mimic",
+    "Eldrazi Temple",
     "Expedition Map",
-    "Reality Smasher",
+    "Matter Reshaper",
     "Thought-Knot Seer"
   ],
-  "mulligan_max_lands": 5,
+  "mulligan_min_lands": 2,
+  "mulligan_max_lands": 4,
   "land_priorities": {
+    "Eldrazi Temple": 10.0,
     "Urza's Tower": 8.0,
     "Urza's Mine": 8.0,
     "Urza's Power Plant": 8.0,
-    "Eldrazi Temple": 10.0,
     "Cavern of Souls": 5.0
   },
   "always_early": [

@@ -1564,12 +1564,13 @@ def wall_of_omens_etb(game, card, controller, targets=None, item=None):
                            description="Exile target spell with CMC 4 or less from stack")
 def spell_queller_etb(game, card, controller, targets=None, item=None):
     # Simplified: exile top spell from stack if CMC <= 4
+    # Only works when there's actually a spell on the stack (not from blink ETB)
     if not game.stack.is_empty:
         top = game.stack.top
-        if top and (top.source.template.cmc or 0) <= 4:
+        if top and top.source and (top.source.template.cmc or 0) <= 4:
             spell_card = top.source
-            game.stack.remove_top()
-            game.zone_mgr.move_card(game, spell_card, spell_card.zone, "exile",
-                                    cause="Spell Queller exile")
+            game.stack.pop()
+            spell_card.zone = "exile"
+            game.players[spell_card.owner].exile.append(spell_card)
             game.log.append(f"T{game.turn_number} P{controller+1}: "
                             f"Spell Queller exiles {spell_card.name}")

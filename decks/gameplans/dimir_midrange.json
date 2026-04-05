@@ -4,13 +4,14 @@
   "goals": [
     {
       "goal_type": "DISRUPT",
-      "description": "Disrupt opponent's hand and deploy efficient threats",
+      "description": "Disrupt opponent's hand, deploy cheap threats, fill GY for Murktide",
       "card_priorities": {
         "Psychic Frog": 25.0,
         "Thoughtseize": 22.0,
         "Orcish Bowmasters": 20.0,
         "Fatal Push": 20.0,
-        "Dauthi Voidwalker": 18.0
+        "Dauthi Voidwalker": 18.0,
+        "Consider": 15.0
       },
       "card_roles": {
         "interaction": [
@@ -18,6 +19,7 @@
           "Thoughtseize"
         ],
         "enablers": [
+          "Consider",
           "Dauthi Voidwalker",
           "Orcish Bowmasters",
           "Psychic Frog"
@@ -27,19 +29,23 @@
     },
     {
       "goal_type": "GRIND_VALUE",
-      "description": "Grind with Psychic Frog, Bowmasters, and card advantage",
+      "description": "Deploy Murktide, grind with Frog + Bowmasters, hold up counters",
       "card_priorities": {
-        "Psychic Frog": 22.0,
-        "Murktide Regent": 20.0,
+        "Murktide Regent": 22.0,
+        "Psychic Frog": 20.0,
         "Orcish Bowmasters": 18.0,
-        "Archmage's Charm": 16.0,
-        "Consider": 12.0,
-        "Subtlety": 14.0
+        "Subtlety": 16.0,
+        "Archmage's Charm": 14.0,
+        "Consider": 12.0
       },
       "card_roles": {
         "payoffs": [
           "Murktide Regent",
           "Psychic Frog"
+        ],
+        "enablers": [
+          "Consider",
+          "Subtlety"
         ],
         "interaction": [
           "Archmage's Charm",
@@ -50,27 +56,30 @@
     },
     {
       "goal_type": "CLOSE_GAME",
-      "description": "Close with Murktide or Psychic Frog",
+      "description": "Close with Murktide beats or Psychic Frog",
       "card_priorities": {
         "Murktide Regent": 20.0,
-        "Psychic Frog": 15.0
+        "Psychic Frog": 15.0,
+        "Subtlety": 12.0
       }
     }
   ],
   "mulligan_keys": [
-    "Psychic Frog",
-    "Orcish Bowmasters",
-    "Thoughtseize",
+    "Consider",
+    "Dauthi Voidwalker",
     "Fatal Push",
-    "Dauthi Voidwalker"
+    "Orcish Bowmasters",
+    "Psychic Frog",
+    "Thoughtseize"
   ],
   "always_early": [
+    "Consider",
     "Psychic Frog"
   ],
   "reactive_only": [
+    "Archmage's Charm",
     "Counterspell",
     "Drown in the Loch",
-    "Spell Pierce",
-    "Subtlety"
+    "Spell Pierce"
   ]
 }
