@@ -246,6 +246,11 @@ class EVPlayer:
             candidates.append(Play("cast_spell", spell, targets, ev,
                                    f"{spell.name} (EV={ev:.1f})"))
 
+        # Consider equipping unattached equipment
+        equip_play = self._consider_equip(game, me)
+        if equip_play:
+            candidates.append(equip_play)
+
         if not candidates:
             return None
 
@@ -1177,15 +1182,56 @@ class EVPlayer:
     # ═══════════════════════════════════════════════════════════
 
     def _consider_equip(self, game, player):
-        """Check if any equipment should be attached."""
-        from engine.cards import CardType
+        """Check if any unattached equipment should be attached.
+
+        Returns the best equip action as a Play candidate, or None.
+        Picks the equipment that gives the biggest damage boost and
+        attaches it to the best attacker (evasion preferred).
+        """
+        from engine.cards import CardType, Keyword
+
+        # Find unattached equipment we can afford to equip
         equipment = [c for c in player.battlefield
                      if CardType.ARTIFACT in c.template.card_types
                      and 'equipment' in getattr(c.template, 'tags', set())
-                     and not c.attached_to]
+                     and "equipment_unattached" in c.instance_tags]
+        if not equipment:
+            return None
+
         creatures = [c for c in player.creatures if not c.summoning_sick]
-        if equipment and creatures:
-            equip = equipment[0]
-            best = max(creatures, key=lambda c: c.power or 0)
-            return ("equip", equip, [best.instance_id])
+        if not creatures:
+            return None
+
+        # Available mana
+        available_mana = (len(player.untapped_lands)
+                          + player.mana_pool.total()
+                          + player._tron_mana_bonus())
+
+        results = []
+        for equip in equipment:
+            cost = equip.template.equip_cost
+            if cost is None or cost > available_mana:
+                continue
+
+            # Prefer evasive creatures (flying), then highest power
+            best = max(creatures, key=lambda c: (
+                1 if Keyword.FLYING in c.keywords else 0,
+                c.power or 0
+            ))
+
+            # Score: high priority — equipping Cranial Plating is game-winning
+            artifact_count = sum(1 for b in player.battlefield
+                                if CardType.ARTIFACT in b.template.card_types)
+            if "Cranial Plating" in equip.name:
+                ev = 15.0 + artifact_count * 2.0
+            elif "Nettlecyst" in equip.name:
+                ev = 12.0 + artifact_count * 1.5
+            else:
+                ev = 8.0
+
+            results.append(Play("equip", equip, [best.instance_id], ev,
+                                f"Equip {equip.name} to {best.name} (EV={ev:.1f})"))
+
+        if results:
+            return max(results, key=lambda p: p.ev)
         return None

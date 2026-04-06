@@ -340,6 +340,8 @@ class GameRunner:
                             game.cast_spell(active, rc, free_cast=True)
                             game.log.append(f"T{game.turn_number} P{active+1}: "
                                             f"Rebound {rc.name}")
+                    # Urza's Saga chapter triggers
+                    self._process_saga_chapters(game, active)
                     game.process_triggers()
                     self._resolve_stack_loop(game)
 
@@ -957,6 +959,88 @@ class GameRunner:
                 if game.game_over:
                     return
             break  # only activate one such creature per call
+
+    def _process_saga_chapters(self, game: GameState, active: int):
+        """Process Urza's Saga chapter triggers during upkeep.
+
+        Urza's Saga gains a lore counter each turn (starting the turn after it
+        enters). Chapter I: {C} mana (handled by land). Chapter II: create a
+        Construct token with P/T = artifact count. Chapter III: search library
+        for 0-1 CMC artifact, put on battlefield, then sacrifice the Saga.
+        """
+        from engine.cards import CardType
+        player = game.players[active]
+        sagas_to_sacrifice = []
+        for card in list(player.battlefield):
+            if card.template.name != "Urza's Saga":
+                continue
+            # Initialize lore counter on first upkeep
+            if not hasattr(card, 'other_counters') or card.other_counters is None:
+                card.other_counters = {}
+            lore = card.other_counters.get('lore', 0)
+            # Saga entered this turn — skip first upkeep (it gets chapter I on ETB)
+            if lore == 0:
+                card.other_counters['lore'] = 1
+                continue
+            lore += 1
+            card.other_counters['lore'] = lore
+
+            if lore == 2:
+                # Chapter II: create Construct token
+                tokens = game.create_token(active, "construct", count=1)
+                # Mark as artifact for artifact count
+                for t in tokens:
+                    if CardType.ARTIFACT not in t.template.card_types:
+                        t.template.card_types.append(CardType.ARTIFACT)
+                    t.template.tags.add("artifact")
+                game.log.append(f"T{game.turn_number} P{active+1}: "
+                                f"Urza's Saga Ch.II: Create Construct Token")
+            elif lore >= 3:
+                # Chapter III: create Construct + tutor 0-1 CMC artifact
+                tokens = game.create_token(active, "construct", count=1)
+                for t in tokens:
+                    if CardType.ARTIFACT not in t.template.card_types:
+                        t.template.card_types.append(CardType.ARTIFACT)
+                    t.template.tags.add("artifact")
+                game.log.append(f"T{game.turn_number} P{active+1}: "
+                                f"Urza's Saga Ch.III: Create Construct Token")
+                # Tutor for 0 or 1 CMC artifact from library
+                best = None
+                best_priority = -1
+                # Priority: Cranial Plating > Springleaf Drum > Mox Opal > others
+                tutor_priority = {
+                    "Cranial Plating": 10, "Springleaf Drum": 5,
+                    "Mox Opal": 8, "Engineered Explosives": 3,
+                }
+                for c in player.library:
+                    if (CardType.ARTIFACT in c.template.card_types
+                            and (c.template.cmc or 0) <= 1):
+                        prio = tutor_priority.get(c.name, 1)
+                        if prio > best_priority:
+                            best = c
+                            best_priority = prio
+                if best:
+                    player.library.remove(best)
+                    best.zone = "battlefield"
+                    best.controller = active
+                    player.battlefield.append(best)
+                    best._game_state = game
+                    game.log.append(f"T{game.turn_number} P{active+1}: "
+                                    f"Urza's Saga tutors {best.name}")
+                    # Fire ETB if registered
+                    game.trigger_etb(best, active)
+                # Sacrifice the saga
+                sagas_to_sacrifice.append(card)
+
+        for saga in sagas_to_sacrifice:
+            if saga in player.battlefield:
+                player.battlefield.remove(saga)
+                if saga in player.lands:
+                    player.lands.remove(saga)
+                saga.zone = "graveyard"
+                player.graveyard.append(saga)
+                game.log.append(f"T{game.turn_number} P{active+1}: "
+                                f"Sacrifice Urza's Saga (final chapter)")
 
     # Backward-compatible alias
     def _activate_griselbrand(self, game: GameState, active: int):
