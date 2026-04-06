@@ -334,6 +334,9 @@ class CardInstance:
         if name in GRAVEYARD_SCALING_CREATURES:
             return (self.template.power or 0) + self._get_gy_instants_sorceries()
         base = self.template.power or 0
+        # Construct Token (Urza's Saga): P/T = number of artifacts you control
+        if name == "Construct Token":
+            base = self._get_artifact_count()
         # Nettlecyst/Cranial Plating: +1/+1 or +N/+0 per artifact
         if "nettlecyst_equipped" in self.instance_tags:
             base += self._get_artifact_count()
@@ -356,6 +359,9 @@ class CardInstance:
         if name in GRAVEYARD_SCALING_CREATURES:
             return (self.template.toughness or 0) + self._get_gy_instants_sorceries()
         base = self.template.toughness or 0
+        # Construct Token (Urza's Saga): P/T = number of artifacts you control
+        if name == "Construct Token":
+            base = self._get_artifact_count()
         # Nettlecyst: +1/+1 per artifact
         if "nettlecyst_equipped" in self.instance_tags:
             base += self._get_artifact_count()

@@ -34,7 +34,7 @@ class ArchetypeStrategy(Enum):
 
 DECK_ARCHETYPES = {
     "Boros Energy":       ArchetypeStrategy.AGGRO,
-    "Jeskai Blink":       ArchetypeStrategy.CONTROL,
+    "Jeskai Blink":       ArchetypeStrategy.TEMPO,
     "Ruby Storm":         ArchetypeStrategy.COMBO,
     "Affinity":           ArchetypeStrategy.AGGRO,
     "Eldrazi Tron":       ArchetypeStrategy.RAMP,
