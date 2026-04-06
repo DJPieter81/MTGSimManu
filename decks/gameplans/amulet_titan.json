@@ -4,34 +4,29 @@
   "goals": [
     {
       "goal_type": "DEPLOY_ENGINE",
-      "description": "Deploy Amulet of Vigor ASAP \u2014 it's the deck's engine",
+      "description": "Deploy Amulet of Vigor or Spelunking ASAP — they're the deck's engine",
       "card_priorities": {
         "Amulet of Vigor": 25.0,
+        "Spelunking": 22.0,
         "Arboreal Grazer": 18.0,
-        "Explore": 15.0,
-        "Dryad of the Ilysian Grove": 14.0,
-        "Azusa, Lost but Seeking": 14.0
+        "Green Sun's Zenith": 14.0
       },
       "card_roles": {
         "engines": [
-          "Amulet of Vigor"
+          "Amulet of Vigor",
+          "Spelunking"
         ],
         "enablers": [
           "Arboreal Grazer",
-          "Azusa, Lost but Seeking",
-          "Dryad of the Ilysian Grove",
-          "Explore",
           "Green Sun's Zenith"
         ]
       }
     },
     {
       "goal_type": "RAMP",
-      "description": "Ramp to 5+ mana for Primeval Titan using bounce lands + Amulet",
+      "description": "Ramp to 5+ mana for Primeval Titan using bounce lands + Amulet/Spelunking",
       "card_priorities": {
-        "Dryad of the Ilysian Grove": 18.0,
-        "Azusa, Lost but Seeking": 18.0,
-        "Explore": 15.0,
+        "Spelunking": 18.0,
         "Summoner's Pact": 14.0,
         "Green Sun's Zenith": 14.0,
         "Arboreal Grazer": 12.0,
@@ -41,9 +36,7 @@
       "card_roles": {
         "enablers": [
           "Arboreal Grazer",
-          "Azusa, Lost but Seeking",
-          "Dryad of the Ilysian Grove",
-          "Explore"
+          "Spelunking"
         ],
         "payoffs": [
           "Cultivator Colossus",
@@ -55,17 +48,19 @@
     },
     {
       "goal_type": "EXECUTE_PAYOFF",
-      "description": "Deploy Primeval Titan or Cultivator Colossus to close the game",
+      "description": "Deploy Primeval Titan, Cultivator Colossus, or Scapeshift to close the game",
       "card_priorities": {
         "Primeval Titan": 25.0,
         "Cultivator Colossus": 22.0,
+        "Scapeshift": 20.0,
         "Summoner's Pact": 20.0,
         "Green Sun's Zenith": 18.0
       },
       "card_roles": {
         "payoffs": [
           "Cultivator Colossus",
-          "Primeval Titan"
+          "Primeval Titan",
+          "Scapeshift"
         ],
         "enablers": [
           "Green Sun's Zenith",
@@ -85,39 +80,37 @@
   "mulligan_keys": [
     "Amulet of Vigor",
     "Arboreal Grazer",
-    "Dryad of the Ilysian Grove",
     "Green Sun's Zenith",
+    "Spelunking",
     "Summoner's Pact"
   ],
   "mulligan_max_lands": 5,
   "land_priorities": {
     "Simic Growth Chamber": 10.0,
     "Gruul Turf": 10.0,
-    "Selesnya Sanctuary": 10.0,
-    "Boros Garrison": 10.0,
-    "Tolaria West": 5.0,
-    "Castle Garenbrig": 4.0,
     "Urza's Saga": 3.0,
     "Forest": 2.0,
-    "Cavern of Souls": 2.0
+    "Crumbling Vestige": 3.0,
+    "Lotus Field": 4.0
   },
   "always_early": [
     "Amulet of Vigor",
-    "Arboreal Grazer"
+    "Arboreal Grazer",
+    "Spelunking"
   ],
   "fallback_goals": [
     {
       "goal_type": "PUSH_DAMAGE",
-      "description": "Plan B: attack with ramp creatures (Dryad, Azusa, Grazer)",
+      "description": "Plan B: attack with ramp creatures (Grazer, Aftermath Analyst)",
       "card_priorities": {
-        "Dryad of the Ilysian Grove": 15.0,
-        "Azusa, Lost but Seeking": 12.0,
-        "Arboreal Grazer": 8.0
+        "Arboreal Grazer": 8.0,
+        "Aftermath Analyst": 12.0
       }
     }
   ],
   "critical_pieces": [
     "Cultivator Colossus",
-    "Primeval Titan"
+    "Primeval Titan",
+    "Scapeshift"
   ]
 }

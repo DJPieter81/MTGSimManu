@@ -14,8 +14,7 @@
         "Thraben Charm": 15.0,
         "Voice of Victory": 16.0,
         "Goblin Bombardment": 14.0,
-        "Seasoned Pyromancer": 12.0,
-        "Ranger-Captain of Eos": 12.0
+        "Seasoned Pyromancer": 12.0
       },
       "card_roles": {
         "enablers": [
@@ -25,11 +24,12 @@
         ],
         "payoffs": [
           "Ajani, Nacatl Pariah // Ajani, Nacatl Avenger",
-          "Ranger-Captain of Eos",
-          "Seasoned Pyromancer"
+          "Seasoned Pyromancer",
+          "Voice of Victory"
         ],
         "interaction": [
           "Galvanic Discharge",
+          "Static Prison",
           "Thraben Charm"
         ]
       }

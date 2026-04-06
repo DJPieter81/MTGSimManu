@@ -4,27 +4,25 @@
   "goals": [
     {
       "goal_type": "CURVE_OUT",
-      "description": "T1 Ragavan, T2 Kavu/Brawler, T3 Scion/Phlage — maximize early pressure",
+      "description": "T0 Leyline of the Guildpact, T1 Ragavan/Thrull, T2 Kavu, T3 Scion/Phlage — maximize early pressure",
       "card_priorities": {
         "Ragavan, Nimble Pilferer": 24.0,
+        "Doorkeeper Thrull": 22.0,
         "Territorial Kavu": 22.0,
-        "Nishoba Brawler": 22.0,
-        "Orcish Bowmasters": 20.0,
         "Scion of Draco": 18.0,
-        "Phlage, Titan of Fire's Fury": 18.0
+        "Phlage, Titan of Fire's Fury": 18.0,
+        "Leyline of the Guildpact": 20.0
       },
       "card_roles": {
         "enablers": [
-          "Ragavan, Nimble Pilferer"
+          "Ragavan, Nimble Pilferer",
+          "Leyline of the Guildpact"
         ],
         "payoffs": [
-          "Nishoba Brawler",
+          "Doorkeeper Thrull",
           "Phlage, Titan of Fire's Fury",
           "Scion of Draco",
           "Territorial Kavu"
-        ],
-        "interaction": [
-          "Orcish Bowmasters"
         ]
       }
     },
@@ -32,33 +30,32 @@
       "goal_type": "PUSH_DAMAGE",
       "description": "Remove blockers with Binding/Bolt, attack with domain creatures",
       "card_priorities": {
-        "Tribal Flames": 20.0,
         "Leyline Binding": 18.0,
+        "Lightning Bolt": 17.0,
         "Phlage, Titan of Fire's Fury": 16.0,
-        "Lightning Bolt": 15.0
+        "Consign to Memory": 14.0
       },
       "card_roles": {
         "interaction": [
           "Leyline Binding",
           "Lightning Bolt",
           "Stubborn Denial",
-          "Tribal Flames"
+          "Consign to Memory"
         ]
       }
     },
     {
       "goal_type": "CLOSE_GAME",
-      "description": "Burn face with Tribal Flames + Lightning Bolt to finish",
+      "description": "Burn face with Lightning Bolt + Phlage to finish",
       "card_priorities": {
-        "Tribal Flames": 22.0,
         "Lightning Bolt": 20.0,
         "Phlage, Titan of Fire's Fury": 16.0
       }
     }
   ],
   "mulligan_keys": [
+    "Doorkeeper Thrull",
     "Leyline Binding",
-    "Nishoba Brawler",
     "Ragavan, Nimble Pilferer",
     "Territorial Kavu"
   ],
