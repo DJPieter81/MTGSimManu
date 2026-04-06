@@ -249,14 +249,35 @@ def run_meta_matrix(top_tier: int = None, n_games: int = 20,
             matrix[(d2_name, d1_name)] = 100 - pct
             print(f'  [{idx+1}/{total}] {d1_name} vs {d2_name}: {pct}%-{100-pct}%', file=sys.stderr)
 
+    # Determine T1 (top 5) and T2 (next 6) by meta share
+    all_by_share = sorted(METAGAME_SHARES.keys(),
+                          key=lambda n: METAGAME_SHARES.get(n, 0), reverse=True)
+    tier1 = set(all_by_share[:5])
+    tier2 = set(all_by_share[5:11])
+    tier_decks = tier1 | tier2
+
     rankings = []
     for d in names:
+        # Flat average (all opponents in the matrix)
         rates = [matrix.get((d, opp), 50) for opp in names if opp != d]
         avg = sum(rates) / len(rates)
-        rankings.append((round(avg, 1), d))
-    rankings.sort(reverse=True)
 
-    return {'matrix': matrix, 'rankings': rankings, 'names': names}
+        # Meta-weighted WR against T1+T2 only
+        weighted_sum = 0.0
+        weight_total = 0.0
+        for opp in names:
+            if opp == d or opp not in tier_decks:
+                continue
+            share = METAGAME_SHARES.get(opp, 0)
+            weighted_sum += matrix.get((d, opp), 50) * share
+            weight_total += share
+        meta_wr = round(weighted_sum / weight_total, 1) if weight_total > 0 else avg
+
+        rankings.append((round(avg, 1), d, meta_wr))
+    rankings.sort(key=lambda x: x[2], reverse=True)
+
+    return {'matrix': matrix, 'rankings': rankings, 'names': names,
+            'tier1': sorted(tier1), 'tier2': sorted(tier2)}
 
 
 def inspect_deck(deck_name: str) -> str:
@@ -538,11 +559,21 @@ def print_matrix(result: Dict):
     """Pretty-print a metagame matrix result."""
     names = result['names']
     matrix = result['matrix']
+    tier1 = set(result.get('tier1', []))
+    tier2 = set(result.get('tier2', []))
 
-    print('\n=== METAGAME POWER RANKINGS ===\n')
-    for avg, deck in result['rankings']:
-        bar = '#' * int(avg / 2)
-        print(f'  {deck:25s}  {avg:4.0f}%  {bar}')
+    print('\n=== METAGAME POWER RANKINGS ===')
+    print(f'  (Meta-weighted WR uses T1+T2 opponents only)\n')
+    print(f'  {"Deck":25s}  {"Flat":>5s}  {"Meta":>5s}')
+    print(f'  {"":25s}  {"Avg":>5s}  {"WR":>5s}')
+    print(f'  {"-"*25}  {"-"*5}  {"-"*5}')
+    for avg, deck, meta_wr in result['rankings']:
+        tier_tag = '[T1]' if deck in tier1 else '[T2]' if deck in tier2 else '    '
+        bar = '#' * int(meta_wr / 2)
+        print(f'  {deck:25s}  {avg:4.0f}%  {meta_wr:4.0f}%  {tier_tag} {bar}')
+
+    print(f'\n  T1: {", ".join(sorted(tier1))}')
+    print(f'  T2: {", ".join(sorted(tier2))}')
 
     print('\n=== MATCHUP MATRIX ===\n')
     short = {n: n[:12] for n in names}
