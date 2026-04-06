@@ -8,6 +8,7 @@ Usage:
     python run_meta.py --field "Ruby Storm" --games 30
     python run_meta.py --verbose "Domain Zoo" "Dimir Midrange" --seed 42000
 """
+import json
 import multiprocessing as mp
 import os
 import random
@@ -472,6 +473,64 @@ def run_trace_game(deck1: str, deck2: str, seed: int = 42000) -> str:
         EVPlayer.decide_attackers = orig_atk
 
 
+RESULTS_FILE = os.path.join(os.path.dirname(__file__), 'metagame_results.json')
+
+
+def save_results(result: Dict, path: str = RESULTS_FILE):
+    """Save matrix/matchup/field results to JSON for later sessions."""
+    import datetime
+    # Convert tuple keys to strings for JSON
+    data = {
+        'timestamp': datetime.datetime.now().isoformat(),
+        'type': 'matrix' if 'matrix' in result else 'field' if 'matchups' in result else 'matchup',
+        'rankings': result.get('rankings', []),
+        'names': result.get('names', []),
+        'matrix': {f'{k[0]}|{k[1]}': v for k, v in result['matrix'].items()} if 'matrix' in result else {},
+    }
+    # Preserve any extra fields
+    for key in result:
+        if key not in ('matrix', 'rankings', 'names'):
+            data[key] = result[key]
+
+    with open(path, 'w') as f:
+        json.dump(data, f, indent=2)
+    print(f'Results saved to {path}', file=sys.stderr)
+
+
+def load_results(path: str = RESULTS_FILE) -> Optional[Dict]:
+    """Load saved results from JSON."""
+    if not os.path.exists(path):
+        return None
+    with open(path) as f:
+        data = json.load(f)
+    # Reconstruct tuple keys
+    if data.get('matrix'):
+        matrix = {}
+        for key, val in data['matrix'].items():
+            d1, d2 = key.split('|')
+            matrix[(d1, d2)] = val
+        data['matrix'] = matrix
+    return data
+
+
+def print_saved_results(path: str = RESULTS_FILE):
+    """Load and print the last saved metagame results."""
+    data = load_results(path)
+    if not data:
+        print(f'No saved results found at {path}')
+        print(f'Run: python run_meta.py --matrix -n 50 --save')
+        return
+
+    print(f'Last run: {data.get("timestamp", "unknown")}')
+
+    if data.get('matrix') and data.get('names'):
+        print_matrix(data)
+    elif data.get('matchups'):
+        print_field(data)
+    else:
+        print(json.dumps(data, indent=2))
+
+
 # ─── Pretty printing ─────────────────────────────────────────
 
 
@@ -536,7 +595,13 @@ if __name__ == '__main__':
     parser.add_argument('--seed', '-s', type=int, default=42000, help='Seed for verbose/trace game')
     parser.add_argument('--deck', metavar='DECK', help='Show deck profile: list, gameplan, strategy')
     parser.add_argument('--list', action='store_true', help='List available decks')
+    parser.add_argument('--save', action='store_true', help='Save results to metagame_results.json')
+    parser.add_argument('--results', action='store_true', help='Print last saved results (no sim)')
     args = parser.parse_args()
+
+    if args.results:
+        print_saved_results()
+        sys.exit(0)
 
     if args.list:
         for name in get_all_deck_names():
@@ -557,10 +622,18 @@ if __name__ == '__main__':
         print(run_verbose_game(d1, d2, seed=args.seed))
     elif args.matchup:
         d1, d2 = resolve_deck_name(args.matchup[0]), resolve_deck_name(args.matchup[1])
-        print_matchup(run_matchup(d1, d2, n_games=args.games))
+        result = run_matchup(d1, d2, n_games=args.games)
+        print_matchup(result)
+        if args.save:
+            save_results(result)
     elif args.field:
-        print_field(run_field(resolve_deck_name(args.field), n_games=args.games))
+        result = run_field(resolve_deck_name(args.field), n_games=args.games)
+        print_field(result)
+        if args.save:
+            save_results(result)
     else:
         # Default: run matrix
         result = run_meta_matrix(top_tier=args.decks, n_games=args.games)
         print_matrix(result)
+        if args.save:
+            save_results(result)

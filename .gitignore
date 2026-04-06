@@ -8,3 +8,4 @@ replay-viewer
 mtg-replay-viewer/
 node_modules/
 .DS_Store
+metagame_results.json

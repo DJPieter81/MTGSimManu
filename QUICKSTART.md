@@ -50,6 +50,12 @@ python run_meta.py --trace zoo omnath -s 42000
 # BO3 match → HTML play-by-play
 python simulate_match.py "Ruby Storm" "Domain Zoo" --seed 55555
 
+# Save results for future sessions
+python run_meta.py --matrix -n 50 --save
+
+# Load last saved results (instant, no sim)
+python run_meta.py --results
+
 # Import a new deck from pasted decklist
 python import_deck.py "Deck Name" decklist.txt
 python import_deck.py "Deck Name" --archetype control < decklist.txt
@@ -109,6 +115,7 @@ from run_meta import (
     print_field,        # pretty-print field
 )
 
+from run_meta import save_results, load_results, print_saved_results
 from import_deck import import_deck  # paste decklist → gameplan + meta entry
 
 matrix = run_meta_matrix(top_tier=8, n_games=100)

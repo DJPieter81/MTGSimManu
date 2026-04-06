@@ -29,6 +29,8 @@ with open('ModernAtomic.json', 'w') as f: json.dump({'meta': {}, 'data': merged}
 | **AI reasoning** | `python run_meta.py --trace storm dimir -s 42000` |
 | **HTML Bo3** | `python simulate_match.py "Ruby Storm" "Domain Zoo" --seed 55555` |
 | **Import deck** | `python import_deck.py "Deck Name" decklist.txt` |
+| **Save results** | `python run_meta.py --matrix -n 50 --save` |
+| **Load results** | `python run_meta.py --results` |
 | **Run tests** | `python -m pytest tests/ -q` |
 
 Aliases: `storm`, `zoo`, `dimir`, `omnath`, `4c`, `5c`, `energy`, `boros`, `jeskai`, `blink`, `tron`, `amulet`, `goryos`, `prowess`, `affinity`, `cascade`
