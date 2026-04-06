@@ -14,6 +14,7 @@ def sideboard(mainboard: Dict[str, int], sideboard_cards: Dict[str, int],
     """AI sideboarding: swap cards between mainboard and sideboard.
 
     Returns (new_mainboard, new_sideboard).
+    Also prints swap log to stderr for debugging.
     """
     if not sideboard_cards:
         return mainboard, sideboard_cards
@@ -33,7 +34,8 @@ def sideboard(mainboard: Dict[str, int], sideboard_cards: Dict[str, int],
         # Graveyard hate vs graveyard decks
         if any(w in opp_lower for w in ["goryo", "living end", "dredge"]):
             if any(w in card_lower for w in ["relic", "rest in peace", "leyline of the void",
-                                               "surgical", "nihil", "endurance"]):
+                                               "surgical", "nihil", "endurance",
+                                               "tormod", "crypt", "cling to dust"]):
                 board_in_priority.append((card_name, count, 10))
 
         # Artifact hate vs artifact decks
@@ -74,11 +76,17 @@ def sideboard(mainboard: Dict[str, int], sideboard_cards: Dict[str, int],
     for card_name, count in mainboard.items():
         card_lower = card_name.lower()
 
-        # Board out removal vs combo (no creatures to target)
-        if any(w in opp_lower for w in ["storm", "living end"]):
+        # Board out removal vs combo/creatureless decks
+        if any(w in opp_lower for w in ["storm", "living end", "amulet", "titan"]):
             if any(w in card_lower for w in ["bolt", "push", "discharge",
-                                               "dismember", "prismatic ending"]):
+                                               "dismember", "prismatic ending",
+                                               "fatal", "wrath", "damnation"]):
                 board_out_priority.append((card_name, min(count, 2), 8))
+
+        # Board out slow/conditional cards vs combo
+        if any(w in opp_lower for w in ["storm", "goryo", "living end"]):
+            if any(w in card_lower for w in ["consider", "drown", "charm"]):
+                board_out_priority.append((card_name, min(count, 2), 6))
 
         # Board out slow cards vs aggro
         if any(w in opp_lower for w in ["energy", "zoo", "prowess"]):
@@ -121,5 +129,18 @@ def sideboard(mainboard: Dict[str, int], sideboard_cards: Dict[str, int],
             in_idx += 1
         if out_count <= 0:
             out_idx += 1
+
+    # Log swaps
+    swap_log = []
+    for card_name in set(list(mainboard.keys()) + list(new_main.keys())):
+        old_count = mainboard.get(card_name, 0)
+        new_count = new_main.get(card_name, 0)
+        if new_count > old_count:
+            swap_log.append(f"+{new_count - old_count} {card_name}")
+        elif new_count < old_count:
+            swap_log.append(f"-{old_count - new_count} {card_name}")
+    if swap_log:
+        import sys
+        print(f"  Sideboard ({my_deck} vs {opponent_deck}): {', '.join(sorted(swap_log))}", file=sys.stderr)
 
     return new_main, new_side
