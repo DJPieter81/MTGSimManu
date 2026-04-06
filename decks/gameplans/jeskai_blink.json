@@ -1,28 +1,31 @@
 {
   "deck_name": "Jeskai Blink",
-  "archetype": "control",
+  "archetype": "tempo",
   "goals": [
     {
       "goal_type": "INTERACT",
-      "description": "Early removal + deploy Ragavan or Snapcaster for tempo",
+      "description": "Early removal + deploy Ragavan or Phelia for tempo",
       "card_priorities": {
         "Ragavan, Nimble Pilferer": 24.0,
-        "Lightning Bolt": 22.0,
+        "Galvanic Discharge": 22.0,
         "Solitude": 22.0,
         "Prismatic Ending": 20.0,
-        "Snapcaster Mage": 16.0,
+        "Phelia, Exuberant Shepherd": 18.0,
+        "Consign to Memory": 16.0,
         "Ephemerate": 14.0
       },
       "card_roles": {
         "interaction": [
-          "Lightning Bolt",
+          "Consign to Memory",
+          "Galvanic Discharge",
           "Prismatic Ending",
-          "Solitude"
+          "Solitude",
+          "Wrath of the Skies"
         ],
         "enablers": [
           "Ephemerate",
-          "Ragavan, Nimble Pilferer",
-          "Snapcaster Mage"
+          "Phelia, Exuberant Shepherd",
+          "Ragavan, Nimble Pilferer"
         ]
       },
       "min_turns": 2,
@@ -30,29 +33,28 @@
     },
     {
       "goal_type": "GRIND_VALUE",
-      "description": "Blink ETB creatures for value — Solitude re-exiles, Riddler redraws",
+      "description": "Blink ETB creatures for value — Solitude re-exiles, Riddler redraws, Phelia flickers",
       "card_priorities": {
         "Quantum Riddler": 22.0,
         "Solitude": 20.0,
         "Ephemerate": 18.0,
-        "Subtlety": 16.0,
-        "Teferi, Time Raveler": 15.0,
-        "Snapcaster Mage": 14.0,
-        "Spell Queller": 14.0
+        "Phelia, Exuberant Shepherd": 17.0,
+        "Phlage, Titan of Fire's Fury": 16.0,
+        "Casey Jones, Vigilante": 15.0
       },
       "card_roles": {
         "payoffs": [
           "Quantum Riddler",
           "Solitude",
-          "Subtlety"
+          "Phlage, Titan of Fire's Fury"
         ],
         "enablers": [
           "Ephemerate",
-          "Snapcaster Mage"
+          "Phelia, Exuberant Shepherd"
         ],
         "interaction": [
-          "Spell Queller",
-          "Teferi, Time Raveler"
+          "Casey Jones, Vigilante",
+          "Consign to Memory"
         ]
       },
       "hold_mana": true
@@ -63,20 +65,18 @@
       "card_priorities": {
         "Quantum Riddler": 18.0,
         "Solitude": 15.0,
-        "Snapcaster Mage": 12.0
+        "Phlage, Titan of Fire's Fury": 14.0
       }
     }
   ],
   "mulligan_keys": [
     "Ephemerate",
-    "Lightning Bolt",
+    "Galvanic Discharge",
     "Ragavan, Nimble Pilferer",
     "Solitude",
     "Quantum Riddler"
   ],
   "reactive_only": [
-    "Counterspell",
-    "Force of Negation",
-    "Spell Snare"
+    "Consign to Memory"
   ]
 }
