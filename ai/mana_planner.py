@@ -216,8 +216,20 @@ def score_land(land, needs: ManaNeeds, is_fetchable: bool = False,
     )
 
     # ── (A) Missing color match: highest priority ──
-    missing_match = sum(1 for c in produces if c in needs.missing_colors)
-    score += missing_match * MISSING_COLOR_WEIGHT
+    # Scale by demand intensity: the most-demanded missing color gets full weight,
+    # less-demanded missing colors get proportionally less.  This prevents a land
+    # covering two low-demand colors from beating one that covers the critical color.
+    if needs.missing_colors:
+        max_demand = max(
+            (needs.needed_colors.get(c, 1) for c in needs.missing_colors), default=1
+        )
+    else:
+        max_demand = 1
+    for c in produces:
+        if c in needs.missing_colors:
+            demand = needs.needed_colors.get(c, 1)
+            intensity = demand / max_demand  # 0..1
+            score += MISSING_COLOR_WEIGHT * (0.5 + 0.5 * intensity)
 
     # ── (B) Needed color match: still valuable even if we have it ──
     for c in produces:
