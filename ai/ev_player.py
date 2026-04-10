@@ -288,6 +288,7 @@ class EVPlayer:
             effective_cmc = max(colored_cost, cmc - min(gy_spells, generic))
 
         ev = 0.0
+        oracle = (t.oracle_text or '').lower()
 
         # ── Evoke detection ──
         # If card has evoke and we can't hardcast it (not enough mana),
@@ -324,12 +325,22 @@ class EVPlayer:
 
         # ── Removal ──
         # Only penalize removal when NO creatures AND card isn't also a creature
-        if 'removal' in tags and not is_evoke:
+        is_removal = 'removal' in tags
+        # Oracle-derived exile effects (March of Otherworldly Light, etc.)
+        if not is_removal and 'exile target' in oracle:
+            is_removal = True
+        if is_removal and not is_evoke:
             best_target_val = self._best_removal_target_value(card, game, opp)
             if best_target_val > 0:
                 ev += best_target_val * p.removal_target_mult
             elif snap.opp_creature_count == 0 and not is_creature:
-                ev += p.removal_no_target_penalty  # pure removal with no targets
+                # Check for non-creature targets (artifacts, enchantments)
+                from engine.cards import CardType as CT
+                nonland_perms = [c for c in opp.battlefield if not c.template.is_land]
+                if nonland_perms:
+                    ev += max(c.template.cmc for c in nonland_perms) * p.removal_target_mult
+                else:
+                    ev += p.removal_no_target_penalty
 
         # ── Board wipe ──
         if 'board_wipe' in tags:
@@ -355,22 +366,26 @@ class EVPlayer:
                 pass
 
         # ── Card draw / cantrips ──
-        oracle = (t.oracle_text or '').lower()
         is_draw = 'cantrip' in tags or 'draw' in tags or ('draw' in oracle and 'card' in oracle)
         if is_draw:
-            # Base draw value scales with how much we need cards
-            draw_val = p.card_draw_base
-            if snap.my_hand_size <= p.empty_hand_threshold:
-                draw_val += p.card_draw_empty_hand_bonus
-            elif snap.my_hand_size <= p.low_hand_threshold:
-                draw_val += p.card_draw_low_hand_bonus
-            oracle = (t.oracle_text or '').lower()
-            if 'draw three' in oracle:
-                draw_val += p.draw_multi_bonus(2)  # 3 cards = 2 extra
-            elif 'draw two' in oracle or 'draws two' in oracle:
-                draw_val += p.draw_multi_bonus(1)  # 2 cards = 1 extra
-            draw_val += p.card_draw_archetype_bonus
-            ev += draw_val
+            # Creatures with card_advantage tag already get bonuses in
+            # creature_value (+3.0) and archetype modifier (+3.0).
+            # Only add full draw bonus to non-creature draw spells to
+            # avoid double-counting.
+            if is_creature and 'card_advantage' in tags:
+                pass  # already counted in creature_value
+            else:
+                draw_val = p.card_draw_base
+                if snap.my_hand_size <= p.empty_hand_threshold:
+                    draw_val += p.card_draw_empty_hand_bonus
+                elif snap.my_hand_size <= p.low_hand_threshold:
+                    draw_val += p.card_draw_low_hand_bonus
+                if 'draw three' in oracle:
+                    draw_val += p.draw_multi_bonus(2)
+                elif 'draw two' in oracle or 'draws two' in oracle:
+                    draw_val += p.draw_multi_bonus(1)
+                draw_val += p.card_draw_archetype_bonus
+                ev += draw_val
 
         # ── Non-creature permanents (artifacts, enchantments, planeswalkers) ──
         from engine.cards import CardType
@@ -487,8 +502,8 @@ class EVPlayer:
                                     if 'cost_reducer' in getattr(c.template, 'tags', set()))
             ev += p.reducer_ev(storm, fuel_in_hand, reducers_on_board, snap.turn_number)
 
-        # ── ETB value ──
-        if 'etb_value' in tags:
+        # ── ETB value (non-creatures only — creatures already count this in creature_value) ──
+        if 'etb_value' in tags and not is_creature:
             ev += p.etb_value_bonus
 
         # ── Gameplan role bonuses ──
@@ -951,8 +966,18 @@ class EVPlayer:
         except Exception:
             pass
 
-        # Fallback: attack with everything unless control is facing blockers
-        return valid
+        # Fallback: only attack with creatures that won't die to blockers
+        # (evasion or power > max blocker toughness)
+        safe = []
+        max_blocker_power = max((b.power or 0 for b in opp_blockers), default=0)
+        for c in valid:
+            if Keyword.FLYING in c.keywords and not any(
+                    Keyword.FLYING in b.keywords or Keyword.REACH in b.keywords
+                    for b in opp_blockers):
+                safe.append(c)  # unblockable flyer
+            elif (c.toughness or 0) > max_blocker_power:
+                safe.append(c)  # survives any single block
+        return safe if safe else []
 
     def decide_blockers(self, game, attackers) -> Dict[int, List[int]]:
         """Decide blocking assignments."""
