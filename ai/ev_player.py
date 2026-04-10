@@ -572,7 +572,8 @@ class EVPlayer:
         # Scale by threat size — big creatures need answers more urgently
         if snap.am_dead_next:
             avg_opp_power = snap.opp_power / max(1, snap.opp_creature_count)
-            power_scale = min(1.0, avg_opp_power / 3.0)
+            from ai.constants import SURVIVAL_POWER_SCALING
+            power_scale = min(1.0, avg_opp_power / SURVIVAL_POWER_SCALING)
             if 'removal' in tags and snap.opp_creature_count > 0:
                 ev += p.survival_removal_bonus * power_scale
             if t.is_creature and (t.toughness or 0) >= 3:

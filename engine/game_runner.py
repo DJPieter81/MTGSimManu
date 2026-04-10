@@ -320,7 +320,8 @@ class GameRunner:
         # Game loop — driven by TurnManager
         import time as _time
         _game_start = _time.monotonic()
-        _max_game_time = 8.0  # seconds; safety valve for pathological game states
+        from ai.constants import GAME_TIMEOUT_SECONDS
+        _max_game_time = GAME_TIMEOUT_SECONDS
         game._game_deadline = _game_start + _max_game_time
         while not game.game_over and game.turn_number < game.max_turns:
             if _time.monotonic() > game._game_deadline:
@@ -692,10 +693,11 @@ class GameRunner:
         # Living End: cycling + cascade = 5-10 actions
         # Non-combo decks rarely exceed 5 actions per turn.
         deck_name = game.players[ai.player_idx].deck_name
+        from ai.constants import MAX_ACTIONS_COMBO, MAX_ACTIONS_NORMAL
         if deck_name in ('Ruby Storm', 'Living End', "Goryo's Vengeance"):
-            max_actions = 40  # Allow long combo chains
+            max_actions = MAX_ACTIONS_COMBO
         else:
-            max_actions = 20
+            max_actions = MAX_ACTIONS_NORMAL
         actions = 0
         _last_failed_card = None  # Track failed casts to prevent infinite loops
         _consecutive_fails = 0

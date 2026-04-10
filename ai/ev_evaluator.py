@@ -154,58 +154,36 @@ def creature_value(card: "CardInstance") -> float:
     """Evaluate a creature's worth on the battlefield.
 
     Based on P/T, keywords, and abilities. Returns life-point equivalents.
+    All weights come from ai/constants.py (KEYWORD_BONUSES, TAG_BONUSES).
     """
+    from ai.constants import (
+        CREATURE_POWER_MULT, CREATURE_TOUGHNESS_MULT,
+        KEYWORD_BONUSES, TAG_BONUSES,
+    )
     t = card.template
     p = card.power if card.power else 0
     tough = card.toughness if card.toughness else 0
 
     # Base: power + fractional toughness
-    val = max(0, p) * 1.0 + max(0, tough) * 0.3
+    val = max(0, p) * CREATURE_POWER_MULT + max(0, tough) * CREATURE_TOUGHNESS_MULT
 
-    # Keyword bonuses
+    # Keyword bonuses from constants dict
     kws = {kw.value if hasattr(kw, 'value') else str(kw).lower()
            for kw in getattr(t, 'keywords', set())}
-    if 'flying' in kws:
-        val += 2.0
-    if 'trample' in kws:
-        val += 1.0
+    for kw in kws:
+        if kw in KEYWORD_BONUSES:
+            val += KEYWORD_BONUSES[kw]
+    # Special per-power keywords
     if 'lifelink' in kws:
-        val += min(p, 5) * 0.5  # scales with power but caps
-    if 'haste' in kws:
-        val += 1.5
-    if 'deathtouch' in kws:
-        val += 2.0
-    if 'first_strike' in kws:
-        val += 1.5
+        val += min(p, KEYWORD_BONUSES.get("lifelink_power_cap", 5)) * KEYWORD_BONUSES.get("lifelink_per_power", 0.5)
     if 'double_strike' in kws:
-        val += max(0, p) * 1.0  # effectively doubles power
-    if 'hexproof' in kws:
-        val += 2.0
-    if 'indestructible' in kws:
-        val += 3.0
-    if 'menace' in kws:
-        val += 1.0
-    if 'vigilance' in kws:
-        val += 1.0
-    if 'undying' in kws:
-        val += 2.0
-    if 'annihilator' in kws:
-        val += 4.0
-    if 'prowess' in kws:
-        val += 1.5
-    if 'cascade' in kws:
-        val += 3.0
+        val += max(0, p) * KEYWORD_BONUSES.get("double_strike_per_power", 1.0)
 
-    # Tag-based ability bonuses (ETB value, card advantage, etc.)
+    # Tag-based ability bonuses from constants dict
     tags = getattr(t, 'tags', set())
-    if 'etb_value' in tags:
-        val += 2.0
-    if 'card_advantage' in tags:
-        val += 3.0
-    if 'cost_reducer' in tags:
-        val += 2.5
-    if 'token_maker' in tags:
-        val += 1.5
+    for tag, bonus in TAG_BONUSES.items():
+        if tag in tags:
+            val += bonus
 
     return val
 
@@ -215,125 +193,73 @@ def creature_value(card: "CardInstance") -> float:
 # ─────────────────────────────────────────────────────────────
 
 def evaluate_board_aggro(snap: EVSnapshot, dk: Optional[DeckKnowledge] = None) -> float:
-    """Aggro value function.
-
-    value = damage potential + (board power * survival turns) - opponent threat
-    Aggro wants to maximize damage output and minimize game length.
-    """
-    # Damage clock differential — how far ahead am I in the race?
-    my_clock = snap.my_clock
-    opp_clock = snap.opp_clock
-    clock_advantage = (opp_clock - my_clock) * 3.0  # being 1 turn faster = +3
-
-    # Board power — raw damage potential
-    board_power = snap.my_power * 1.5 - snap.opp_power * 0.5
-
-    # Evasion bonus — evasive damage is more reliable
-    evasion_bonus = snap.my_evasion_power * 0.5
-
-    # Life differential (non-linear)
+    """Aggro value function. All weights from ai/constants.py."""
+    from ai.constants import (
+        AGGRO_DAMAGE_BONUS, AGGRO_MY_POWER_MULT, AGGRO_OPP_POWER_MULT,
+        AGGRO_EVASION_BONUS, AGGRO_HAND_BONUS, AGGRO_LIFELINK_BONUS,
+    )
+    clock_advantage = (snap.opp_clock - snap.my_clock) * AGGRO_DAMAGE_BONUS
+    board_power = snap.my_power * AGGRO_MY_POWER_MULT - snap.opp_power * AGGRO_OPP_POWER_MULT
+    evasion_bonus = snap.my_evasion_power * AGGRO_EVASION_BONUS
     life_diff = _life_value(snap.my_life) - _life_value(snap.opp_life)
-
-    # Hand size — aggro cares less about cards, more about board
-    hand_bonus = snap.my_hand_size * 0.3
-
-    # Lifelink recovery
-    lifelink = snap.my_lifelink_power * 0.3
-
+    hand_bonus = snap.my_hand_size * AGGRO_HAND_BONUS
+    lifelink = snap.my_lifelink_power * AGGRO_LIFELINK_BONUS
     return clock_advantage + board_power + evasion_bonus + life_diff + hand_bonus + lifelink
 
 
 def evaluate_board_midrange(snap: EVSnapshot, dk: Optional[DeckKnowledge] = None) -> float:
-    """Midrange value function.
-
-    value = board_advantage + card_advantage + life_stability
-    Midrange wants to trade resources efficiently and grind.
-    """
-    # Board advantage — creature quality matters more than quantity
-    board_val = 0.0
-    board_val += snap.my_power * 1.0 - snap.opp_power * 1.2  # slightly overweight opp threats
-    board_val += snap.my_creature_count * 0.5 - snap.opp_creature_count * 0.5
-
-    # Card advantage — midrange thrives on cards in hand
-    card_advantage = (snap.my_hand_size - snap.opp_hand_size) * 1.5
-
-    # Life differential (non-linear)
+    """Midrange value function. All weights from ai/constants.py."""
+    from ai.constants import (
+        MIDRANGE_MY_POWER_MULT, MIDRANGE_OPP_POWER_MULT,
+        MIDRANGE_CREATURE_COUNT_MULT, MIDRANGE_CARD_ADVANTAGE_MULT,
+        MIDRANGE_MANA_MULT, MIDRANGE_CLOCK_MULT,
+    )
+    board_val = (snap.my_power * MIDRANGE_MY_POWER_MULT
+                 - snap.opp_power * MIDRANGE_OPP_POWER_MULT
+                 + (snap.my_creature_count - snap.opp_creature_count) * MIDRANGE_CREATURE_COUNT_MULT)
+    card_advantage = (snap.my_hand_size - snap.opp_hand_size) * MIDRANGE_CARD_ADVANTAGE_MULT
     life_diff = _life_value(snap.my_life) - _life_value(snap.opp_life)
-
-    # Mana advantage
-    mana_bonus = (snap.my_total_lands - snap.opp_total_lands) * 0.5
-
-    # Clock differential — moderate weight
-    my_clock = snap.my_clock
-    opp_clock = snap.opp_clock
-    clock_advantage = (opp_clock - my_clock) * 1.5
-
+    mana_bonus = (snap.my_total_lands - snap.opp_total_lands) * MIDRANGE_MANA_MULT
+    clock_advantage = (snap.opp_clock - snap.my_clock) * MIDRANGE_CLOCK_MULT
     return board_val + card_advantage + life_diff + mana_bonus + clock_advantage
 
 
 def evaluate_board_control(snap: EVSnapshot, dk: Optional[DeckKnowledge] = None) -> float:
-    """Control value function.
-
-    value = threats_answered + (payoff_potential * probability_of_casting)
-    Control wants to survive, answer threats, then deploy a finisher.
-    """
-    # Opponent's board should be EMPTY — penalize their presence heavily
-    opp_threat_penalty = -snap.opp_power * 2.0 - snap.opp_creature_count * 1.0
-
-    # My board — modest bonus (control has few creatures but they're high-value)
-    my_board = snap.my_power * 1.5 + snap.my_creature_count * 0.5
-
-    # Card advantage — control NEEDS cards
-    card_advantage = (snap.my_hand_size - snap.opp_hand_size) * 2.0
-    card_advantage += snap.my_hand_size * 0.5  # absolute hand size matters
-
-    # Life — control trades life as a resource but needs to stay alive
-    life_val = _life_value(snap.my_life) * 1.2 - _life_value(snap.opp_life) * 0.5
-
-    # Mana advantage — control needs mana more than others
-    mana_bonus = snap.my_total_lands * 0.8
-
-    return opp_threat_penalty + my_board + card_advantage + life_val + mana_bonus
+    """Control value function. All weights from ai/constants.py."""
+    from ai.constants import (
+        CONTROL_OPP_POWER_PENALTY, CONTROL_OPP_CREATURE_PENALTY,
+        CONTROL_MY_POWER_MULT, CONTROL_MY_CREATURE_MULT,
+        CONTROL_HAND_DIFF_MULT, CONTROL_HAND_SIZE_MULT,
+        CONTROL_MY_LIFE_MULT, CONTROL_OPP_LIFE_MULT, CONTROL_MANA_MULT,
+    )
+    opp_threat = -snap.opp_power * CONTROL_OPP_POWER_PENALTY - snap.opp_creature_count * CONTROL_OPP_CREATURE_PENALTY
+    my_board = snap.my_power * CONTROL_MY_POWER_MULT + snap.my_creature_count * CONTROL_MY_CREATURE_MULT
+    card_adv = ((snap.my_hand_size - snap.opp_hand_size) * CONTROL_HAND_DIFF_MULT
+                + snap.my_hand_size * CONTROL_HAND_SIZE_MULT)
+    life_val = _life_value(snap.my_life) * CONTROL_MY_LIFE_MULT - _life_value(snap.opp_life) * CONTROL_OPP_LIFE_MULT
+    mana_bonus = snap.my_total_lands * CONTROL_MANA_MULT
+    return opp_threat + my_board + card_adv + life_val + mana_bonus
 
 
 def evaluate_board_combo(snap: EVSnapshot, dk: Optional[DeckKnowledge] = None) -> float:
-    """Combo value function.
-
-    value = combo_proximity * lethal_damage_potential
-    Combo wants to assemble pieces and fire the combo.
-
-    Key insight: combo values CHAINING (casting multiple spells per turn)
-    over hand size. A ritual that costs a card but adds mana is GOOD because
-    it enables the chain. Hand size only matters for raw fuel count.
-    """
-    # Storm count — the core metric. Each spell cast brings us closer to lethal.
-    # Non-linear: storm 5 is much better than 5x storm 1.
-    storm_val = snap.storm_count * 3.0
-    if snap.storm_count >= 5:
-        storm_val += snap.storm_count * 2.0  # acceleration bonus
-
-    # Survival — combo needs to not die
+    """Combo value function. All weights from ai/constants.py."""
+    from ai.constants import (
+        COMBO_STORM_BASE, COMBO_STORM_ACCELERATION, COMBO_STORM_THRESHOLD,
+        COMBO_LIFE_MULT, COMBO_HAND_MULT, COMBO_BOARD_POWER_MULT,
+        COMBO_MANA_POOL_MULT, COMBO_CARDS_DRAWN_MULT, COMBO_GY_CREATURE_MULT,
+        DEAD_LIFE_VALUE,
+    )
+    storm_val = snap.storm_count * COMBO_STORM_BASE
+    if snap.storm_count >= COMBO_STORM_THRESHOLD:
+        storm_val += snap.storm_count * COMBO_STORM_ACCELERATION
     if snap.am_dead_next:
-        return -50.0  # can't combo if dead
-
-    life_buffer = _life_value(snap.my_life) * 0.3  # combo doesn't care much about life
-
-    # Hand size — moderate value. Cards are fuel, but spending them to chain is fine.
-    hand_val = snap.my_hand_size * 1.0
-
-    # Board — combo doesn't care much about creatures, but engines matter
-    board_val = snap.my_power * 0.3
-
-    # Mana — combo needs available mana to chain. THIS is what rituals provide.
-    # Mana in pool is very valuable for combo — it means we can cast more spells.
-    mana_val = snap.my_mana * 2.0
-
-    # Cards drawn this turn — combo is chaining, each draw = more fuel found
-    chain_val = snap.cards_drawn_this_turn * 3.0
-
-    # Graveyard creatures (for Living End / reanimator)
-    gy_val = snap.my_gy_creatures * 2.0
-
+        return DEAD_LIFE_VALUE
+    life_buffer = _life_value(snap.my_life) * COMBO_LIFE_MULT
+    hand_val = snap.my_hand_size * COMBO_HAND_MULT
+    board_val = snap.my_power * COMBO_BOARD_POWER_MULT
+    mana_val = snap.my_mana * COMBO_MANA_POOL_MULT
+    chain_val = snap.cards_drawn_this_turn * COMBO_CARDS_DRAWN_MULT
+    gy_val = snap.my_gy_creatures * COMBO_GY_CREATURE_MULT
     return storm_val + life_buffer + hand_val + board_val + mana_val + chain_val + gy_val
 
 
