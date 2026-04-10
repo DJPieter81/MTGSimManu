@@ -491,8 +491,13 @@ class GameState:
         if player.mana_pool.can_pay(cost):
             return player.mana_pool.pay(cost)
 
+        # Leyline of the Guildpact: all lands produce WUBRG
+        has_leyline = self._has_leyline_of_guildpact(player_idx)
+        def _produces(land):
+            return self.ALL_COLORS if has_leyline else land.template.produces_mana
+
         # Sort lands: most restrictive first (fewest colors produced)
-        untapped.sort(key=lambda l: len(l.template.produces_mana))
+        untapped.sort(key=lambda l: len(_produces(l)))
 
         needed = cost.to_dict()
         lands_to_tap = []
@@ -507,7 +512,7 @@ class GameState:
         #   Lands: Hallowed Fountain (W/U), Godless Shrine (W/B), Godless Shrine (W/B)
         #   Fixed order (W first): Fountain→W, then no U source → FAIL
         #   MRV order (U first, only 1 source): Fountain→U, then Shrine→W → SUCCESS
-        
+
         # First, use mana pool for colored costs
         pool_used = {}
         for color in ["W", "U", "B", "R", "G", "C"]:
@@ -517,7 +522,7 @@ class GameState:
                 use_pool = min(pool_avail, remaining)
                 pool_used[color] = use_pool
                 needed[color] = remaining - use_pool
-        
+
         # Collect colors that still need land sources
         colors_needed_list = []
         for color in ["W", "U", "B", "R", "G", "C"]:
@@ -530,7 +535,7 @@ class GameState:
         while colors_needed_list:
             # Re-sort by scarcity each step (fixes 4-color dual land issues)
             colors_needed_list.sort(
-                key=lambda c: sum(1 for l in untapped if l not in used_lands and c in l.template.produces_mana)
+                key=lambda c: sum(1 for l in untapped if l not in used_lands and c in _produces(l))
             )
             color = colors_needed_list.pop(0)
             # Find least-flexible unused land for this color
@@ -539,8 +544,9 @@ class GameState:
             for land in untapped:
                 if land in used_lands:
                     continue
-                if color in land.template.produces_mana:
-                    flex = len(land.template.produces_mana)
+                lp = _produces(land)
+                if color in lp:
+                    flex = len(lp)
                     if flex < best_flex:
                         best_flex = flex
                         best_land = land
@@ -570,8 +576,9 @@ class GameState:
             if generic_remaining <= 0:
                 break
             if land not in used_lands:
-                if land.template.produces_mana:
-                    lands_to_tap.append((land, land.template.produces_mana[0]))
+                lp = _produces(land)
+                if lp:
+                    lands_to_tap.append((land, lp[0]))
                     used_lands.add(land)
                     # Base 1 + any conditional bonus from oracle text
                     mana_from_land = 1 + cond_bonus_cache.get(id(land), 0)
@@ -743,9 +750,11 @@ class GameState:
                 color_needs.append(color)
 
         # Build list of mana sources: each is a set of colors it can produce
+        has_leyline = self._has_leyline_of_guildpact(player_idx)
+        all_colors_set = set(self.ALL_COLORS)
         sources = []
         for land in untapped_lands:
-            sources.append(set(land.template.produces_mana))
+            sources.append(all_colors_set if has_leyline else set(land.template.produces_mana))
         # Add mana pool as fixed-color sources
         for color in ["W", "U", "B", "R", "G", "C"]:
             pool_amount = player.mana_pool.get(color)
@@ -2792,8 +2801,28 @@ class GameState:
                        f"Cycle {card.name} ({cost_desc}, draw a card)")
         return True
 
+    ALL_COLORS = ["W", "U", "B", "R", "G"]
+
+    def _has_leyline_of_guildpact(self, player_idx: int) -> bool:
+        """Check if player controls Leyline of the Guildpact."""
+        return any(c.name == "Leyline of the Guildpact"
+                   for c in self.players[player_idx].battlefield)
+
+    def _effective_produces_mana(self, player_idx: int, land) -> list:
+        """Return effective mana colors a land produces, considering Leyline of the Guildpact."""
+        if self._has_leyline_of_guildpact(player_idx):
+            return self.ALL_COLORS
+        return land.template.produces_mana
+
     def _count_domain(self, player_idx: int) -> int:
         """Count basic land types among lands controlled by a player."""
+        # Leyline of the Guildpact makes all lands every basic land type
+        for c in self.players[player_idx].battlefield:
+            if c.name == "Leyline of the Guildpact":
+                # As long as we control at least one land, domain = 5
+                if any(l.template.is_land
+                       for l in self.players[player_idx].battlefield):
+                    return 5
         BASIC_TYPES = {"Plains", "Island", "Swamp", "Mountain", "Forest"}
         found = set()
         for land in self.players[player_idx].battlefield:

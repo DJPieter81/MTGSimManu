@@ -273,6 +273,11 @@ class CardInstance:
         if self._game_state is None:
             return 0
         player = self._game_state.players[self.controller]
+        # Leyline of the Guildpact makes all lands every basic land type
+        for c in player.battlefield:
+            if c.name == "Leyline of the Guildpact":
+                if any(l.template.is_land for l in player.battlefield):
+                    return 5
         found_types: set = set()
         for land in player.battlefield:
             if land.template.is_land:

@@ -288,6 +288,24 @@ class GameRunner:
                     game.draw_cards(p_idx, 7)
                     hand_size -= 1
 
+        # Leyline mechanic: cards with "begin the game with it on the
+        # battlefield" start in play if they're in the opening hand.
+        for p_idx in range(2):
+            player = game.players[p_idx]
+            leylines = [c for c in player.hand
+                        if c.template.oracle_text
+                        and "begin the game with it on the battlefield"
+                        in (c.template.oracle_text or "").lower()]
+            for card in leylines:
+                player.hand.remove(card)
+                card.zone = "battlefield"
+                card.tapped = False
+                card.summoning_sick = False
+                player.battlefield.append(card)
+                game.log.append(
+                    f"T0 P{p_idx+1}: {card.name} begins the game on the "
+                    f"battlefield (leyline)")
+
         stats = {
             "lands_played": [0, 0],
             "spells_cast": [0, 0],
