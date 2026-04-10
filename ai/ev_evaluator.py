@@ -578,29 +578,62 @@ def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
 
 def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
                     game: "GameState" = None, player_idx: int = 0,
-                    dk: Optional[DeckKnowledge] = None) -> float:
+                    dk: Optional[DeckKnowledge] = None,
+                    detailed: bool = False):
     """Compute the expected value of casting a spell using 1-ply lookahead.
 
     EV = E[V(state_after_play_and_response)] - V(current_state)
 
-    This replaces the additive bonus heuristic with proper state projection:
-    1. Project board state after casting the spell
-    2. Model opponent's most likely response (counter/removal/pass)
-    3. Evaluate the resulting state with the archetype-specific value function
-    4. Return the delta from current state
+    If detailed=True, returns (ev, info_dict) with projection breakdown.
+    Otherwise returns ev as a float.
     """
     current_value = evaluate_board(snap, archetype, dk)
 
     # Project state after casting
     projected = _project_spell(card, snap, dk, game, player_idx)
+    projected_value = evaluate_board(projected, archetype, dk)
 
     # Model opponent response (counter, removal, or pass)
     post_response = estimate_opponent_response(card, projected, snap, game, player_idx)
-
-    # Evaluate the post-response state
     after_value = evaluate_board(post_response, archetype, dk)
 
-    return after_value - current_value
+    ev = after_value - current_value
+
+    if not detailed:
+        return ev
+
+    # Recover response probabilities from the estimate function's logic
+    from ai.strategy_profile import DECK_ARCHETYPES
+    counter_pct = 0.0
+    removal_pct = 0.0
+    t = card.template
+    oracle = (t.oracle_text or '').lower()
+    can_counter = (projected.opp_mana >= 2
+                   and "can't be countered" not in oracle
+                   and "can\u2019t be countered" not in oracle)
+    if can_counter and game:
+        opp = game.players[1 - player_idx]
+        opp_arch = DECK_ARCHETYPES.get(opp.deck_name)
+        if opp_arch and opp_arch.value in ('control', 'tempo', 'midrange'):
+            counter_pct = 0.25 if projected.opp_mana >= 2 else 0.10
+        else:
+            counter_pct = 0.10 if projected.opp_mana >= 2 else 0.0
+    if t.is_creature and projected.opp_mana >= 1 and game:
+        opp_arch = DECK_ARCHETYPES.get(game.players[1 - player_idx].deck_name)
+        if opp_arch and opp_arch.value in ('control', 'midrange'):
+            removal_pct = 0.25
+        else:
+            removal_pct = 0.15
+
+    return ev, {
+        'current_value': current_value,
+        'projected_value': projected_value,
+        'raw_delta': projected_value - current_value,
+        'after_response_value': after_value,
+        'response_discount': (projected_value - current_value) - ev,
+        'counter_pct': counter_pct,
+        'removal_pct': removal_pct,
+    }
 
 
 def estimate_pass_ev(snap: EVSnapshot, archetype: str,
