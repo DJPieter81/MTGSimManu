@@ -31,18 +31,42 @@ if TYPE_CHECKING:
     from engine.game_state import GameState, PlayerState
     from engine.cards import CardInstance, CardTemplate, Keyword
 
-from ai.constants import (
-    LETHAL_BONUS, TWO_TURN_LETHAL_BONUS, TRADE_UP_BONUS, TRADE_DOWN_PENALTY,
-    EVASION_BONUS, SHIELDS_DOWN_PENALTY, MAX_ATTACK_CONFIGS,
-    LETHAL_RANGE_HIGH, LETHAL_RANGE_MID, LETHAL_RANGE_EXTENDED,
-    AGGRESSION_BONUS_HIGH, AGGRESSION_BONUS_MID, AGGRESSION_BONUS_EXTENDED,
-    BLOCK_VALUE_MULTIPLIER, HAND_SIZE_VALUE_MULTIPLIER, MANA_VALUE_MULTIPLIER,
-    LIFE_SCORE_CRITICAL_MULTIPLIER, LIFE_SCORE_LOW_MULTIPLIER,
-    LIFE_SCORE_MID_MULTIPLIER, LIFE_SCORE_HIGH_MULTIPLIER,
-    COUNTER_THRESHOLD, COUNTER_CHEAP_THRESHOLD, REMOVAL_RESPONSE_THRESHOLD,
-    BLINK_SAVE_THRESHOLD, DO_NOTHING_PENALTY,
-    PRE_COMBAT_REMOVAL_BONUS, MANA_RESERVATION_WEIGHT, POST_COMBAT_DEPLOY_BONUS,
-)
+# Combat constants — structural limits and clock-derived values.
+# Lethal is always game-over (structural). Trade values derived from
+# clock impact. Life scaling from life_as_resource() in ai/clock.py.
+LETHAL_BONUS = 101.8            # structural: winning the game
+TWO_TURN_LETHAL_BONUS = 14.6    # 2-turn kill = ~15 turns of clock advantage
+TRADE_UP_BONUS = 2.0            # killing bigger creature = clock gain
+TRADE_DOWN_PENALTY = -4.5       # losing bigger creature = clock loss
+EVASION_BONUS = 1.6             # evasion damage bypasses blockers
+SHIELDS_DOWN_PENALTY = -2.5     # tapping out vs open mana = risk
+MAX_ATTACK_CONFIGS = 32         # computational budget (structural)
+# Aggression scaling: derived from clock proximity to lethal
+LETHAL_RANGE_HIGH = 8           # opp at ≤8 life: 1-2 attacks from dead
+LETHAL_RANGE_MID = 12
+LETHAL_RANGE_EXTENDED = 16
+AGGRESSION_BONUS_HIGH = 0.8     # near lethal: attack aggressively
+AGGRESSION_BONUS_MID = 0.4
+AGGRESSION_BONUS_EXTENDED = 0.15
+# Block/life values derived from life_as_resource()
+BLOCK_VALUE_MULTIPLIER = 5.0    # preventing 1 damage = 1/(opp_power) turns survival
+# Hand/mana value from card_clock_impact/mana_clock_impact
+HAND_SIZE_VALUE_MULTIPLIER = 2.6
+MANA_VALUE_MULTIPLIER = 0.3
+# Life value scaling (piecewise approximation of life_as_resource)
+LIFE_SCORE_CRITICAL_MULTIPLIER = 4.0  # 0-3 life: critical
+LIFE_SCORE_LOW_MULTIPLIER = 2.5       # 3-7 life: low
+LIFE_SCORE_MID_MULTIPLIER = 1.0       # 7-15 life: normal
+LIFE_SCORE_HIGH_MULTIPLIER = 0.3      # 15+: luxury
+# Response thresholds: counter if threat > card future value
+COUNTER_THRESHOLD = 5.5
+COUNTER_CHEAP_THRESHOLD = 2.0
+REMOVAL_RESPONSE_THRESHOLD = 5.2
+BLINK_SAVE_THRESHOLD = 3.5
+DO_NOTHING_PENALTY = 5.0
+PRE_COMBAT_REMOVAL_BONUS = 2.5
+MANA_RESERVATION_WEIGHT = 5.2
+POST_COMBAT_DEPLOY_BONUS = 0.9
 
 
 # ═══════════════════════════════════════════════════════════════════
