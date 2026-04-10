@@ -164,11 +164,9 @@ class Stack:
              CardType.PLANESWALKER in template.card_types:
             # Permanent - enters the battlefield
             card.controller = item.controller
-            # Apply X-cost counters before entering
-            if item.x_value > 0:
-                from .game_state import X_COST_SPELLS
-                x_info = X_COST_SPELLS.get(card.name, {})
-                effect = x_info.get("effect", "")
+            # Apply X-cost counters before entering (uses oracle-derived x_cost_data)
+            if item.x_value > 0 and template.x_cost_data:
+                effect = template.x_cost_data.get("effect", "")
                 if effect == "plus1_counters":
                     card.plus_counters += item.x_value
                     game_state.log.append(

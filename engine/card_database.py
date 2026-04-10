@@ -1090,7 +1090,7 @@ class CardDatabase:
         template.cycling_cost_data = parse_cycling_cost(oracle)
         template.energy_production = parse_energy_production(oracle)
         template.is_cascade = has_cascade(oracle)
-        template.x_cost_data = parse_x_cost(oracle, name)
+        template.x_cost_data = parse_x_cost(oracle, name, data.get("manaCost", ""))
         template.is_cost_reducer = 'cost_reducer' in template.tags
         template.domain_reduction = parse_domain_reduction(oracle) or 0
         template.power_scales_with = detect_power_scaling(oracle)
