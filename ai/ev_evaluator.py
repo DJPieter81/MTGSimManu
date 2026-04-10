@@ -424,6 +424,185 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
     return projected
 
 
+def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
+                               snap: EVSnapshot, game: "GameState" = None,
+                               player_idx: int = 0) -> EVSnapshot:
+    """Estimate the board state after the opponent responds to our spell.
+
+    Models the opponent's most likely response:
+    1. Counter the spell (if they have mana for it) → revert to pre-cast state
+    2. Remove the creature we just deployed → lose the creature
+    3. Pass (no response) → projected state stands
+
+    Uses opponent's open mana and deck archetype to estimate response
+    probability. Does NOT require knowing the opponent's hand.
+
+    Returns the projected snapshot after opponent's best response.
+    """
+    from ai.strategy_profile import DECK_ARCHETYPES
+
+    t = card.template
+    tags = getattr(t, 'tags', set())
+
+    # If opponent has no mana open, they can't respond
+    if projected.opp_mana < 1:
+        return projected
+
+    # Estimate: can opponent counter this spell?
+    can_counter = projected.opp_mana >= 2
+
+    # "Can't be countered" — opponent can't counter these
+    oracle = (t.oracle_text or '').lower()
+    if "can't be countered" in oracle or "can\u2019t be countered" in oracle:
+        can_counter = False
+
+    # Estimate probability opponent HOLDS a counter, based on mana and deck
+    counter_probability = 0.0
+    if can_counter and game:
+        opp = game.players[1 - player_idx]
+        opp_deck = opp.deck_name
+        counter_archetypes = {'control', 'tempo', 'midrange'}
+        opp_archetype = DECK_ARCHETYPES.get(opp_deck)
+        if opp_archetype and opp_archetype.value in counter_archetypes:
+            counter_probability = 0.25 if projected.opp_mana >= 2 else 0.10
+        else:
+            counter_probability = 0.10 if projected.opp_mana >= 2 else 0.0
+
+    # Estimate: can opponent remove a creature we just deployed?
+    removal_probability = 0.0
+    if t.is_creature and projected.opp_mana >= 1:
+        # Most removal costs 1-2 mana (Bolt, Push, Ending, Discharge)
+        removal_probability = 0.15 if projected.opp_mana >= 1 else 0.0
+        if game:
+            opp = game.players[1 - player_idx]
+            opp_archetype = DECK_ARCHETYPES.get(opp.deck_name)
+            if opp_archetype and opp_archetype.value in ('control', 'midrange'):
+                removal_probability = 0.25
+
+    # Compute expected value as weighted average of outcomes:
+    # P(counter) * V(countered) + P(removal) * V(removed) + P(pass) * V(projected)
+
+    if counter_probability <= 0 and removal_probability <= 0:
+        return projected  # no response possible
+
+    # Build the "countered" state: spell fizzles, we lose the mana and card
+    countered = EVSnapshot(
+        my_life=snap.my_life,
+        opp_life=snap.opp_life,
+        my_power=snap.my_power,
+        opp_power=snap.opp_power,
+        my_toughness=snap.my_toughness,
+        opp_toughness=snap.opp_toughness,
+        my_creature_count=snap.my_creature_count,
+        opp_creature_count=snap.opp_creature_count,
+        my_hand_size=snap.my_hand_size - 1,  # card is gone
+        opp_hand_size=snap.opp_hand_size - 1,  # they used a counter
+        my_mana=max(0, snap.my_mana - (t.cmc or 0)),  # mana spent
+        opp_mana=max(0, snap.opp_mana - 2),  # opponent spent ~2 on counter
+        my_total_lands=snap.my_total_lands,
+        opp_total_lands=snap.opp_total_lands,
+        turn_number=snap.turn_number,
+        storm_count=snap.storm_count + 1,
+        my_gy_creatures=snap.my_gy_creatures,
+        my_energy=snap.my_energy,
+        my_evasion_power=snap.my_evasion_power,
+        my_lifelink_power=snap.my_lifelink_power,
+        opp_evasion_power=snap.opp_evasion_power,
+        cards_drawn_this_turn=snap.cards_drawn_this_turn,
+    )
+
+    # Build the "removed" state: creature resolves then dies to removal
+    removed = EVSnapshot(
+        my_life=projected.my_life,
+        opp_life=projected.opp_life,
+        my_power=projected.my_power - max(0, t.power or 0) if t.is_creature else projected.my_power,
+        opp_power=projected.opp_power,
+        my_toughness=projected.my_toughness - max(0, t.toughness or 0) if t.is_creature else projected.my_toughness,
+        opp_toughness=projected.opp_toughness,
+        my_creature_count=projected.my_creature_count - 1 if t.is_creature else projected.my_creature_count,
+        opp_creature_count=projected.opp_creature_count,
+        my_hand_size=projected.my_hand_size,
+        opp_hand_size=projected.opp_hand_size - 1,  # opponent used removal card
+        my_mana=projected.my_mana,
+        opp_mana=max(0, projected.opp_mana - 1),  # removal costs ~1
+        my_total_lands=projected.my_total_lands,
+        opp_total_lands=projected.opp_total_lands,
+        turn_number=projected.turn_number,
+        storm_count=projected.storm_count,
+        my_gy_creatures=projected.my_gy_creatures + (1 if t.is_creature else 0),
+        my_energy=projected.my_energy,
+        my_evasion_power=projected.my_evasion_power,
+        my_lifelink_power=projected.my_lifelink_power,
+        opp_evasion_power=projected.opp_evasion_power,
+        cards_drawn_this_turn=projected.cards_drawn_this_turn,
+    )
+
+    # Weighted expected snapshot
+    pass_probability = 1.0 - counter_probability - removal_probability
+    pass_probability = max(0, pass_probability)
+
+    # Blend the snapshots by probability
+    def blend(field: str) -> float:
+        v_pass = getattr(projected, field)
+        v_counter = getattr(countered, field) if counter_probability > 0 else v_pass
+        v_remove = getattr(removed, field) if removal_probability > 0 else v_pass
+        return (pass_probability * v_pass
+                + counter_probability * v_counter
+                + removal_probability * v_remove)
+
+    return EVSnapshot(
+        my_life=int(blend('my_life')),
+        opp_life=int(blend('opp_life')),
+        my_power=int(blend('my_power')),
+        opp_power=int(blend('opp_power')),
+        my_toughness=int(blend('my_toughness')),
+        opp_toughness=int(blend('opp_toughness')),
+        my_creature_count=int(blend('my_creature_count')),
+        opp_creature_count=int(blend('opp_creature_count')),
+        my_hand_size=int(blend('my_hand_size')),
+        opp_hand_size=int(blend('opp_hand_size')),
+        my_mana=int(blend('my_mana')),
+        opp_mana=int(blend('opp_mana')),
+        my_total_lands=int(blend('my_total_lands')),
+        opp_total_lands=int(blend('opp_total_lands')),
+        turn_number=projected.turn_number,
+        storm_count=int(blend('storm_count')),
+        my_gy_creatures=int(blend('my_gy_creatures')),
+        my_energy=int(blend('my_energy')),
+        my_evasion_power=int(blend('my_evasion_power')),
+        my_lifelink_power=int(blend('my_lifelink_power')),
+        opp_evasion_power=int(blend('opp_evasion_power')),
+        cards_drawn_this_turn=int(blend('cards_drawn_this_turn')),
+    )
+
+
+def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
+                    game: "GameState" = None, player_idx: int = 0,
+                    dk: Optional[DeckKnowledge] = None) -> float:
+    """Compute the expected value of casting a spell using 1-ply lookahead.
+
+    EV = E[V(state_after_play_and_response)] - V(current_state)
+
+    This replaces the additive bonus heuristic with proper state projection:
+    1. Project board state after casting the spell
+    2. Model opponent's most likely response (counter/removal/pass)
+    3. Evaluate the resulting state with the archetype-specific value function
+    4. Return the delta from current state
+    """
+    current_value = evaluate_board(snap, archetype, dk)
+
+    # Project state after casting
+    projected = _project_spell(card, snap, dk, game, player_idx)
+
+    # Model opponent response (counter, removal, or pass)
+    post_response = estimate_opponent_response(card, projected, snap, game, player_idx)
+
+    # Evaluate the post-response state
+    after_value = evaluate_board(post_response, archetype, dk)
+
+    return after_value - current_value
+
+
 def estimate_pass_ev(snap: EVSnapshot, archetype: str,
                      dk: Optional[DeckKnowledge] = None) -> float:
     """EV of passing (doing nothing this decision point).
