@@ -101,6 +101,7 @@ class PlayerState:
     # Deck composition densities (set at game start for lookahead)
     counter_density: float = 0.0    # fraction of deck that is counterspells
     removal_density: float = 0.0    # fraction of deck that is single-target removal
+    exile_density: float = 0.0      # fraction that exiles (ignores toughness)
 
     @property
     def is_alive(self) -> bool:

@@ -269,13 +269,20 @@ class GameRunner:
             p = game.players[p_idx]
             total = len(p.library) + len(p.hand)
             if total > 0:
-                counters = sum(1 for c in p.library + p.hand
+                all_cards = p.library + p.hand
+                counters = sum(1 for c in all_cards
                                if 'counterspell' in getattr(c.template, 'tags', set()))
-                removal = sum(1 for c in p.library + p.hand
+                removal = sum(1 for c in all_cards
                               if 'removal' in getattr(c.template, 'tags', set())
                               and 'board_wipe' not in getattr(c.template, 'tags', set()))
+                # Exile-based removal ignores toughness (Leyline Binding, Prismatic
+                # Ending, March, Static Prison, Solitude). Detected from oracle text.
+                exile = sum(1 for c in all_cards
+                            if 'removal' in getattr(c.template, 'tags', set())
+                            and 'exile' in (c.template.oracle_text or '').lower())
                 p.counter_density = counters / total
                 p.removal_density = removal / total
+                p.exile_density = exile / total
 
         # Mulligan phase
         mulligan_counts = [0, 0]

@@ -439,7 +439,10 @@ def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
 
     Returns the projected snapshot after opponent's best response.
     """
-    from ai.constants import COUNTER_ESTIMATED_COST, REMOVAL_ESTIMATED_COST
+    from ai.constants import (
+        COUNTER_ESTIMATED_COST, REMOVAL_ESTIMATED_COST,
+        DAMAGE_REMOVAL_EFF_HIGH_TOUGH, DAMAGE_REMOVAL_EFF_MID_TOUGH,
+    )
 
     t = card.template
     tags = getattr(t, 'tags', set())
@@ -468,7 +471,20 @@ def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
         if can_counter and opp.counter_density > 0:
             counter_probability = 1.0 - (1.0 - opp.counter_density) ** opp_hand_size
         if t.is_creature and projected.opp_mana >= REMOVAL_ESTIMATED_COST and opp.removal_density > 0:
-            removal_probability = 1.0 - (1.0 - opp.removal_density) ** opp_hand_size
+            # Split removal into exile-based (ignores toughness) and damage-based.
+            # High-toughness creatures (4+) survive most damage removal (Bolt=3,
+            # Push=CMC<=2) but NOT exile (Binding, Ending, March, Solitude).
+            creature_toughness = t.toughness or 0
+            if hasattr(card, 'toughness') and card.toughness is not None:
+                creature_toughness = card.toughness
+            exile_prob = 1.0 - (1.0 - opp.exile_density) ** opp_hand_size if opp.exile_density > 0 else 0.0
+            damage_density = opp.removal_density - opp.exile_density
+            damage_prob = 1.0 - (1.0 - max(0, damage_density)) ** opp_hand_size if damage_density > 0 else 0.0
+            if creature_toughness >= 4:
+                damage_prob *= DAMAGE_REMOVAL_EFF_HIGH_TOUGH
+            elif creature_toughness >= 3:
+                damage_prob *= DAMAGE_REMOVAL_EFF_MID_TOUGH
+            removal_probability = min(1.0, exile_prob + damage_prob * (1.0 - exile_prob))
 
     # Compute expected value as weighted average of outcomes:
     # P(counter) * V(countered) + P(removal) * V(removed) + P(pass) * V(projected)
@@ -594,7 +610,10 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
         return ev
 
     # Recover response probabilities (same logic as estimate_opponent_response)
-    from ai.constants import COUNTER_ESTIMATED_COST, REMOVAL_ESTIMATED_COST
+    from ai.constants import (
+        COUNTER_ESTIMATED_COST, REMOVAL_ESTIMATED_COST,
+        DAMAGE_REMOVAL_EFF_HIGH_TOUGH, DAMAGE_REMOVAL_EFF_MID_TOUGH,
+    )
     counter_pct = 0.0
     removal_pct = 0.0
     t = card.template
@@ -608,7 +627,17 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
         if can_counter and opp.counter_density > 0:
             counter_pct = 1.0 - (1.0 - opp.counter_density) ** opp_hand
         if t.is_creature and projected.opp_mana >= REMOVAL_ESTIMATED_COST and opp.removal_density > 0:
-            removal_pct = 1.0 - (1.0 - opp.removal_density) ** opp_hand
+            creature_toughness = t.toughness or 0
+            if hasattr(card, 'toughness') and card.toughness is not None:
+                creature_toughness = card.toughness
+            exile_prob = 1.0 - (1.0 - opp.exile_density) ** opp_hand if opp.exile_density > 0 else 0.0
+            damage_density = opp.removal_density - opp.exile_density
+            damage_prob = 1.0 - (1.0 - max(0, damage_density)) ** opp_hand if damage_density > 0 else 0.0
+            if creature_toughness >= 4:
+                damage_prob *= DAMAGE_REMOVAL_EFF_HIGH_TOUGH
+            elif creature_toughness >= 3:
+                damage_prob *= DAMAGE_REMOVAL_EFF_MID_TOUGH
+            removal_pct = min(1.0, exile_prob + damage_prob * (1.0 - exile_prob))
 
     return ev, {
         'current_value': current_value,
