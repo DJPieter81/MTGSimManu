@@ -276,3 +276,30 @@ MAX_ACTIONS_NORMAL = 20            # Max main phase actions for normal decks
 GAME_TIMEOUT_SECONDS = 8.0         # Safety timeout per game
 SHOCK_LETHAL_LIFE_THRESHOLD = 2    # Don't shock when life <= this
 SHOCK_LOW_LIFE_THRESHOLD = 4       # Only shock for critical colors at this life
+
+# ══════════════════════════════════════════════════════════════
+# 1-Ply Lookahead (ev_evaluator.py, ev_player.py)
+# ══════════════════════════════════════════════════════════════
+
+# Blend weights: final_ev = heuristic * HEURISTIC_WEIGHT + lookahead * LOOKAHEAD_WEIGHT
+HEURISTIC_WEIGHT = 0.7             # Weight for additive-bonus heuristic score
+LOOKAHEAD_WEIGHT = 0.3             # Weight for projected state delta
+
+# Clamp raw lookahead to this range before blending (prevents clock blow-ups)
+LOOKAHEAD_CLAMP_MIN = -20.0
+LOOKAHEAD_CLAMP_MAX = 20.0
+
+# Opponent response probabilities — estimated from open mana + deck archetype
+# Counter probabilities (opponent has 2+ mana open)
+COUNTER_PROB_REACTIVE_DECK = 0.25  # Control/tempo/midrange with 2+ mana
+COUNTER_PROB_REACTIVE_LOW = 0.10   # Control/tempo/midrange with 1 mana
+COUNTER_PROB_PROACTIVE_DECK = 0.10 # Aggro/combo/ramp with 2+ mana
+COUNTER_PROB_NO_MANA = 0.0         # No mana open
+
+# Removal probabilities (opponent has 1+ mana, we deployed a creature)
+REMOVAL_PROB_REACTIVE_DECK = 0.25  # Control/midrange
+REMOVAL_PROB_PROACTIVE_DECK = 0.15 # Aggro/combo/ramp
+
+# Estimated mana costs for opponent responses
+COUNTER_ESTIMATED_COST = 2         # Most counters cost 2
+REMOVAL_ESTIMATED_COST = 1         # Most removal costs 1
