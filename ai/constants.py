@@ -277,6 +277,12 @@ GAME_TIMEOUT_SECONDS = 8.0         # Safety timeout per game
 SHOCK_LETHAL_LIFE_THRESHOLD = 2    # Don't shock when life <= this
 SHOCK_LOW_LIFE_THRESHOLD = 4       # Only shock for critical colors at this life
 
+# Shock EV weights
+SHOCK_SPELL_URGENCY_BASE = 3.0     # Min value of enabling a spell this turn
+SHOCK_SPELL_URGENCY_CMC_BASE = 8.0 # Cheaper spells = more urgent (8 - cmc)
+SHOCK_COLOR_FIX_NEXT_TURN = 2.0    # Value of fixing a color for next turn's spell
+SHOCK_OPP_PRESSURE_PER_POWER = 0.5 # Value of mana per opponent power on board
+
 # ══════════════════════════════════════════════════════════════
 # 1-Ply Lookahead (ev_evaluator.py, ev_player.py)
 # ══════════════════════════════════════════════════════════════

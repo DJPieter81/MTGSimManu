@@ -27,40 +27,72 @@ class AICallbacks(GameCallbacks):
     """Wires engine callbacks to AI decision functions."""
 
     def should_shock_land(self, game, player_idx, land):
+        """EV-based shock decision: is paying 2 life worth having this land untapped?
+
+        Compares the value of untapped mana (spells enabled, tempo) against
+        the life cost (non-linear — 2 life at 20 is cheap, 2 life at 5 is expensive).
+        """
+        from ai.ev_evaluator import _life_value
+        from ai.constants import (
+            SHOCK_LETHAL_LIFE_THRESHOLD,
+            SHOCK_SPELL_URGENCY_BASE, SHOCK_SPELL_URGENCY_CMC_BASE,
+            SHOCK_COLOR_FIX_NEXT_TURN, SHOCK_OPP_PRESSURE_PER_POWER,
+        )
+
+        player = game.players[player_idx]
         needs = analyze_mana_needs(game, player_idx)
         land_colors = set(land.template.produces_mana)
-        player = game.players[player_idx]
 
-        # Life-aware shock decision: don't shock when it would kill us
-        if player.life <= 2:
-            return False  # shocking kills us
-        # At very low life, only shock for critical color fixing
-        if player.life <= 4:
-            fixes_critical = bool(land_colors & needs.missing_colors)
-            return fixes_critical
+        # Hard floor: never shock to death
+        if player.life <= SHOCK_LETHAL_LIFE_THRESHOLD:
+            return False
 
-        # Consider NEXT turn's mana: all current lands untap + this new land
-        total_lands = len(player.lands) + 1  # +1 for this land
-        has_spells_to_cast = needs.cheapest_spell_cmc <= total_lands
-        fixes_missing_color = bool(land_colors & needs.missing_colors)
+        # Cost of shocking: life value lost (non-linear)
+        life_cost = _life_value(player.life) - _life_value(player.life - 2)
 
-        # Also shock if hand has multi-color cards that need this color
+        # Value of untapped: count spells enabled this turn + next turn
         existing_colors = set()
         for l in player.lands:
             existing_colors.update(l.template.produces_mana)
+        combined_colors = existing_colors | land_colors
+
+        untapped_value = 0.0
+        total_mana_untapped = len(player.untapped_lands) + 1
+        total_mana_tapped = len(player.untapped_lands)
+
         for card in player.hand:
             if card.template.is_land:
                 continue
             cmc = card.template.cmc or 0
-            if cmc >= 3 and len(card.template.color_identity) >= 2:
-                card_color_strs = set()
-                for c in card.template.color_identity:
-                    card_color_strs.add(c.value if hasattr(c, 'value') else str(c))
-                missing_for_card = card_color_strs - existing_colors
-                if missing_for_card & land_colors:
-                    return True
+            if cmc == 0:
+                continue
+            mc = card.template.mana_cost
+            spell_colors = set()
+            for code, attr in [("W", "white"), ("U", "blue"), ("B", "black"),
+                               ("R", "red"), ("G", "green")]:
+                if getattr(mc, attr, 0) > 0:
+                    spell_colors.add(code)
 
-        return has_spells_to_cast or fixes_missing_color
+            # Spell enabled THIS turn by untapped but not tapped
+            if (cmc <= total_mana_untapped and cmc > total_mana_tapped
+                    and spell_colors <= combined_colors):
+                untapped_value += max(SHOCK_SPELL_URGENCY_BASE,
+                                      SHOCK_SPELL_URGENCY_CMC_BASE - cmc)
+
+            # Spell enabled NEXT turn that needs this color
+            next_turn_mana = len(player.lands) + 1
+            if cmc <= next_turn_mana:
+                missing_for_spell = spell_colors - existing_colors
+                if missing_for_spell and missing_for_spell <= land_colors:
+                    untapped_value += SHOCK_COLOR_FIX_NEXT_TURN
+
+        # Opponent pressure: if they have creatures, we need mana for answers
+        opp = game.players[1 - player_idx]
+        if opp.creatures:
+            untapped_value += sum(c.power or 0 for c in opp.creatures) * SHOCK_OPP_PRESSURE_PER_POWER
+
+        # Decision: shock if the untapped value exceeds the life cost
+        return untapped_value > life_cost
 
     def choose_fetch_target(self, game, player_idx, fetch_card, library, fetch_colors):
         player = game.players[player_idx]
@@ -284,10 +316,16 @@ class GameRunner:
                 p.removal_density = removal / total
                 p.exile_density = exile / total
 
+        # Log die roll
+        on_play = game.active_player
+        game.log.append(f"Die roll: {game.players[on_play].deck_name} wins the die roll (goes first)")
+
         # Mulligan phase
         mulligan_counts = [0, 0]
         for p_idx in range(2):
             hand_size = 7
+            opening = [c.name for c in game.players[p_idx].hand]
+            game.log.append(f"P{p_idx+1} ({game.players[p_idx].deck_name}) opening hand: {opening}")
             while hand_size >= 5:
                 player = game.players[p_idx]
                 keep = ais[p_idx].decide_mulligan(player.hand, hand_size)
@@ -295,13 +333,21 @@ class GameRunner:
                     if mulligan_counts[p_idx] > 0:
                         to_bottom = ais[p_idx].choose_cards_to_bottom(
                             player.hand, mulligan_counts[p_idx])
+                        bottom_names = [c.name for c in to_bottom]
                         for card in to_bottom:
                             player.hand.remove(card)
                             card.zone = "library"
                             player.library.append(card)
+                        kept = [c.name for c in player.hand]
+                        game.log.append(
+                            f"P{p_idx+1} mulligans to {hand_size}, "
+                            f"bottoms: {bottom_names}, keeps: {kept}")
+                    else:
+                        game.log.append(f"P{p_idx+1} keeps 7")
                     break
                 else:
                     mulligan_counts[p_idx] += 1
+                    game.log.append(f"P{p_idx+1} mulligans (hand {hand_size} -> {hand_size-1})")
                     for card in player.hand[:]:
                         player.hand.remove(card)
                         card.zone = "library"
