@@ -154,58 +154,36 @@ def creature_value(card: "CardInstance") -> float:
     """Evaluate a creature's worth on the battlefield.
 
     Based on P/T, keywords, and abilities. Returns life-point equivalents.
+    All weights come from ai/constants.py (KEYWORD_BONUSES, TAG_BONUSES).
     """
+    from ai.constants import (
+        CREATURE_POWER_MULT, CREATURE_TOUGHNESS_MULT,
+        KEYWORD_BONUSES, TAG_BONUSES,
+    )
     t = card.template
     p = card.power if card.power else 0
     tough = card.toughness if card.toughness else 0
 
     # Base: power + fractional toughness
-    val = max(0, p) * 1.0 + max(0, tough) * 0.3
+    val = max(0, p) * CREATURE_POWER_MULT + max(0, tough) * CREATURE_TOUGHNESS_MULT
 
-    # Keyword bonuses
+    # Keyword bonuses from constants dict
     kws = {kw.value if hasattr(kw, 'value') else str(kw).lower()
            for kw in getattr(t, 'keywords', set())}
-    if 'flying' in kws:
-        val += 2.0
-    if 'trample' in kws:
-        val += 1.0
+    for kw in kws:
+        if kw in KEYWORD_BONUSES:
+            val += KEYWORD_BONUSES[kw]
+    # Special per-power keywords
     if 'lifelink' in kws:
-        val += min(p, 5) * 0.5  # scales with power but caps
-    if 'haste' in kws:
-        val += 1.5
-    if 'deathtouch' in kws:
-        val += 2.0
-    if 'first_strike' in kws:
-        val += 1.5
+        val += min(p, KEYWORD_BONUSES.get("lifelink_power_cap", 5)) * KEYWORD_BONUSES.get("lifelink_per_power", 0.5)
     if 'double_strike' in kws:
-        val += max(0, p) * 1.0  # effectively doubles power
-    if 'hexproof' in kws:
-        val += 2.0
-    if 'indestructible' in kws:
-        val += 3.0
-    if 'menace' in kws:
-        val += 1.0
-    if 'vigilance' in kws:
-        val += 1.0
-    if 'undying' in kws:
-        val += 2.0
-    if 'annihilator' in kws:
-        val += 4.0
-    if 'prowess' in kws:
-        val += 1.5
-    if 'cascade' in kws:
-        val += 3.0
+        val += max(0, p) * KEYWORD_BONUSES.get("double_strike_per_power", 1.0)
 
-    # Tag-based ability bonuses (ETB value, card advantage, etc.)
+    # Tag-based ability bonuses from constants dict
     tags = getattr(t, 'tags', set())
-    if 'etb_value' in tags:
-        val += 2.0
-    if 'card_advantage' in tags:
-        val += 3.0
-    if 'cost_reducer' in tags:
-        val += 2.5
-    if 'token_maker' in tags:
-        val += 1.5
+    for tag, bonus in TAG_BONUSES.items():
+        if tag in tags:
+            val += bonus
 
     return val
 
@@ -215,125 +193,73 @@ def creature_value(card: "CardInstance") -> float:
 # ─────────────────────────────────────────────────────────────
 
 def evaluate_board_aggro(snap: EVSnapshot, dk: Optional[DeckKnowledge] = None) -> float:
-    """Aggro value function.
-
-    value = damage potential + (board power * survival turns) - opponent threat
-    Aggro wants to maximize damage output and minimize game length.
-    """
-    # Damage clock differential — how far ahead am I in the race?
-    my_clock = snap.my_clock
-    opp_clock = snap.opp_clock
-    clock_advantage = (opp_clock - my_clock) * 3.0  # being 1 turn faster = +3
-
-    # Board power — raw damage potential
-    board_power = snap.my_power * 1.5 - snap.opp_power * 0.5
-
-    # Evasion bonus — evasive damage is more reliable
-    evasion_bonus = snap.my_evasion_power * 0.5
-
-    # Life differential (non-linear)
+    """Aggro value function. All weights from ai/constants.py."""
+    from ai.constants import (
+        AGGRO_DAMAGE_BONUS, AGGRO_MY_POWER_MULT, AGGRO_OPP_POWER_MULT,
+        AGGRO_EVASION_BONUS, AGGRO_HAND_BONUS, AGGRO_LIFELINK_BONUS,
+    )
+    clock_advantage = (snap.opp_clock - snap.my_clock) * AGGRO_DAMAGE_BONUS
+    board_power = snap.my_power * AGGRO_MY_POWER_MULT - snap.opp_power * AGGRO_OPP_POWER_MULT
+    evasion_bonus = snap.my_evasion_power * AGGRO_EVASION_BONUS
     life_diff = _life_value(snap.my_life) - _life_value(snap.opp_life)
-
-    # Hand size — aggro cares less about cards, more about board
-    hand_bonus = snap.my_hand_size * 0.3
-
-    # Lifelink recovery
-    lifelink = snap.my_lifelink_power * 0.3
-
+    hand_bonus = snap.my_hand_size * AGGRO_HAND_BONUS
+    lifelink = snap.my_lifelink_power * AGGRO_LIFELINK_BONUS
     return clock_advantage + board_power + evasion_bonus + life_diff + hand_bonus + lifelink
 
 
 def evaluate_board_midrange(snap: EVSnapshot, dk: Optional[DeckKnowledge] = None) -> float:
-    """Midrange value function.
-
-    value = board_advantage + card_advantage + life_stability
-    Midrange wants to trade resources efficiently and grind.
-    """
-    # Board advantage — creature quality matters more than quantity
-    board_val = 0.0
-    board_val += snap.my_power * 1.0 - snap.opp_power * 1.2  # slightly overweight opp threats
-    board_val += snap.my_creature_count * 0.5 - snap.opp_creature_count * 0.5
-
-    # Card advantage — midrange thrives on cards in hand
-    card_advantage = (snap.my_hand_size - snap.opp_hand_size) * 1.5
-
-    # Life differential (non-linear)
+    """Midrange value function. All weights from ai/constants.py."""
+    from ai.constants import (
+        MIDRANGE_MY_POWER_MULT, MIDRANGE_OPP_POWER_MULT,
+        MIDRANGE_CREATURE_COUNT_MULT, MIDRANGE_CARD_ADVANTAGE_MULT,
+        MIDRANGE_MANA_MULT, MIDRANGE_CLOCK_MULT,
+    )
+    board_val = (snap.my_power * MIDRANGE_MY_POWER_MULT
+                 - snap.opp_power * MIDRANGE_OPP_POWER_MULT
+                 + (snap.my_creature_count - snap.opp_creature_count) * MIDRANGE_CREATURE_COUNT_MULT)
+    card_advantage = (snap.my_hand_size - snap.opp_hand_size) * MIDRANGE_CARD_ADVANTAGE_MULT
     life_diff = _life_value(snap.my_life) - _life_value(snap.opp_life)
-
-    # Mana advantage
-    mana_bonus = (snap.my_total_lands - snap.opp_total_lands) * 0.5
-
-    # Clock differential — moderate weight
-    my_clock = snap.my_clock
-    opp_clock = snap.opp_clock
-    clock_advantage = (opp_clock - my_clock) * 1.5
-
+    mana_bonus = (snap.my_total_lands - snap.opp_total_lands) * MIDRANGE_MANA_MULT
+    clock_advantage = (snap.opp_clock - snap.my_clock) * MIDRANGE_CLOCK_MULT
     return board_val + card_advantage + life_diff + mana_bonus + clock_advantage
 
 
 def evaluate_board_control(snap: EVSnapshot, dk: Optional[DeckKnowledge] = None) -> float:
-    """Control value function.
-
-    value = threats_answered + (payoff_potential * probability_of_casting)
-    Control wants to survive, answer threats, then deploy a finisher.
-    """
-    # Opponent's board should be EMPTY — penalize their presence heavily
-    opp_threat_penalty = -snap.opp_power * 2.0 - snap.opp_creature_count * 1.0
-
-    # My board — modest bonus (control has few creatures but they're high-value)
-    my_board = snap.my_power * 1.5 + snap.my_creature_count * 0.5
-
-    # Card advantage — control NEEDS cards
-    card_advantage = (snap.my_hand_size - snap.opp_hand_size) * 2.0
-    card_advantage += snap.my_hand_size * 0.5  # absolute hand size matters
-
-    # Life — control trades life as a resource but needs to stay alive
-    life_val = _life_value(snap.my_life) * 1.2 - _life_value(snap.opp_life) * 0.5
-
-    # Mana advantage — control needs mana more than others
-    mana_bonus = snap.my_total_lands * 0.8
-
-    return opp_threat_penalty + my_board + card_advantage + life_val + mana_bonus
+    """Control value function. All weights from ai/constants.py."""
+    from ai.constants import (
+        CONTROL_OPP_POWER_PENALTY, CONTROL_OPP_CREATURE_PENALTY,
+        CONTROL_MY_POWER_MULT, CONTROL_MY_CREATURE_MULT,
+        CONTROL_HAND_DIFF_MULT, CONTROL_HAND_SIZE_MULT,
+        CONTROL_MY_LIFE_MULT, CONTROL_OPP_LIFE_MULT, CONTROL_MANA_MULT,
+    )
+    opp_threat = -snap.opp_power * CONTROL_OPP_POWER_PENALTY - snap.opp_creature_count * CONTROL_OPP_CREATURE_PENALTY
+    my_board = snap.my_power * CONTROL_MY_POWER_MULT + snap.my_creature_count * CONTROL_MY_CREATURE_MULT
+    card_adv = ((snap.my_hand_size - snap.opp_hand_size) * CONTROL_HAND_DIFF_MULT
+                + snap.my_hand_size * CONTROL_HAND_SIZE_MULT)
+    life_val = _life_value(snap.my_life) * CONTROL_MY_LIFE_MULT - _life_value(snap.opp_life) * CONTROL_OPP_LIFE_MULT
+    mana_bonus = snap.my_total_lands * CONTROL_MANA_MULT
+    return opp_threat + my_board + card_adv + life_val + mana_bonus
 
 
 def evaluate_board_combo(snap: EVSnapshot, dk: Optional[DeckKnowledge] = None) -> float:
-    """Combo value function.
-
-    value = combo_proximity * lethal_damage_potential
-    Combo wants to assemble pieces and fire the combo.
-
-    Key insight: combo values CHAINING (casting multiple spells per turn)
-    over hand size. A ritual that costs a card but adds mana is GOOD because
-    it enables the chain. Hand size only matters for raw fuel count.
-    """
-    # Storm count — the core metric. Each spell cast brings us closer to lethal.
-    # Non-linear: storm 5 is much better than 5x storm 1.
-    storm_val = snap.storm_count * 3.0
-    if snap.storm_count >= 5:
-        storm_val += snap.storm_count * 2.0  # acceleration bonus
-
-    # Survival — combo needs to not die
+    """Combo value function. All weights from ai/constants.py."""
+    from ai.constants import (
+        COMBO_STORM_BASE, COMBO_STORM_ACCELERATION, COMBO_STORM_THRESHOLD,
+        COMBO_LIFE_MULT, COMBO_HAND_MULT, COMBO_BOARD_POWER_MULT,
+        COMBO_MANA_POOL_MULT, COMBO_CARDS_DRAWN_MULT, COMBO_GY_CREATURE_MULT,
+        DEAD_LIFE_VALUE,
+    )
+    storm_val = snap.storm_count * COMBO_STORM_BASE
+    if snap.storm_count >= COMBO_STORM_THRESHOLD:
+        storm_val += snap.storm_count * COMBO_STORM_ACCELERATION
     if snap.am_dead_next:
-        return -50.0  # can't combo if dead
-
-    life_buffer = _life_value(snap.my_life) * 0.3  # combo doesn't care much about life
-
-    # Hand size — moderate value. Cards are fuel, but spending them to chain is fine.
-    hand_val = snap.my_hand_size * 1.0
-
-    # Board — combo doesn't care much about creatures, but engines matter
-    board_val = snap.my_power * 0.3
-
-    # Mana — combo needs available mana to chain. THIS is what rituals provide.
-    # Mana in pool is very valuable for combo — it means we can cast more spells.
-    mana_val = snap.my_mana * 2.0
-
-    # Cards drawn this turn — combo is chaining, each draw = more fuel found
-    chain_val = snap.cards_drawn_this_turn * 3.0
-
-    # Graveyard creatures (for Living End / reanimator)
-    gy_val = snap.my_gy_creatures * 2.0
-
+        return DEAD_LIFE_VALUE
+    life_buffer = _life_value(snap.my_life) * COMBO_LIFE_MULT
+    hand_val = snap.my_hand_size * COMBO_HAND_MULT
+    board_val = snap.my_power * COMBO_BOARD_POWER_MULT
+    mana_val = snap.my_mana * COMBO_MANA_POOL_MULT
+    chain_val = snap.cards_drawn_this_turn * COMBO_CARDS_DRAWN_MULT
+    gy_val = snap.my_gy_creatures * COMBO_GY_CREATURE_MULT
     return storm_val + life_buffer + hand_val + board_val + mana_val + chain_val + gy_val
 
 
@@ -496,6 +422,218 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         projected.my_energy += 2  # conservative estimate
 
     return projected
+
+
+def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
+                               snap: EVSnapshot, game: "GameState" = None,
+                               player_idx: int = 0) -> EVSnapshot:
+    """Estimate the board state after the opponent responds to our spell.
+
+    Models the opponent's most likely response:
+    1. Counter the spell (if they have mana for it) → revert to pre-cast state
+    2. Remove the creature we just deployed → lose the creature
+    3. Pass (no response) → projected state stands
+
+    Uses opponent's open mana and deck archetype to estimate response
+    probability. Does NOT require knowing the opponent's hand.
+
+    Returns the projected snapshot after opponent's best response.
+    """
+    from ai.strategy_profile import DECK_ARCHETYPES
+
+    t = card.template
+    tags = getattr(t, 'tags', set())
+
+    # If opponent has no mana open, they can't respond
+    if projected.opp_mana < 1:
+        return projected
+
+    # Estimate: can opponent counter this spell?
+    can_counter = projected.opp_mana >= 2
+
+    # "Can't be countered" — opponent can't counter these
+    oracle = (t.oracle_text or '').lower()
+    if "can't be countered" in oracle or "can\u2019t be countered" in oracle:
+        can_counter = False
+
+    # Estimate probability opponent HOLDS a counter, based on mana and deck
+    counter_probability = 0.0
+    if can_counter and game:
+        opp = game.players[1 - player_idx]
+        opp_deck = opp.deck_name
+        counter_archetypes = {'control', 'tempo', 'midrange'}
+        opp_archetype = DECK_ARCHETYPES.get(opp_deck)
+        if opp_archetype and opp_archetype.value in counter_archetypes:
+            counter_probability = 0.25 if projected.opp_mana >= 2 else 0.10
+        else:
+            counter_probability = 0.10 if projected.opp_mana >= 2 else 0.0
+
+    # Estimate: can opponent remove a creature we just deployed?
+    removal_probability = 0.0
+    if t.is_creature and projected.opp_mana >= 1:
+        # Most removal costs 1-2 mana (Bolt, Push, Ending, Discharge)
+        removal_probability = 0.15 if projected.opp_mana >= 1 else 0.0
+        if game:
+            opp = game.players[1 - player_idx]
+            opp_archetype = DECK_ARCHETYPES.get(opp.deck_name)
+            if opp_archetype and opp_archetype.value in ('control', 'midrange'):
+                removal_probability = 0.25
+
+    # Compute expected value as weighted average of outcomes:
+    # P(counter) * V(countered) + P(removal) * V(removed) + P(pass) * V(projected)
+
+    if counter_probability <= 0 and removal_probability <= 0:
+        return projected  # no response possible
+
+    # Build the "countered" state: spell fizzles, we lose the mana and card
+    countered = EVSnapshot(
+        my_life=snap.my_life,
+        opp_life=snap.opp_life,
+        my_power=snap.my_power,
+        opp_power=snap.opp_power,
+        my_toughness=snap.my_toughness,
+        opp_toughness=snap.opp_toughness,
+        my_creature_count=snap.my_creature_count,
+        opp_creature_count=snap.opp_creature_count,
+        my_hand_size=snap.my_hand_size - 1,  # card is gone
+        opp_hand_size=snap.opp_hand_size - 1,  # they used a counter
+        my_mana=max(0, snap.my_mana - (t.cmc or 0)),  # mana spent
+        opp_mana=max(0, snap.opp_mana - 2),  # opponent spent ~2 on counter
+        my_total_lands=snap.my_total_lands,
+        opp_total_lands=snap.opp_total_lands,
+        turn_number=snap.turn_number,
+        storm_count=snap.storm_count + 1,
+        my_gy_creatures=snap.my_gy_creatures,
+        my_energy=snap.my_energy,
+        my_evasion_power=snap.my_evasion_power,
+        my_lifelink_power=snap.my_lifelink_power,
+        opp_evasion_power=snap.opp_evasion_power,
+        cards_drawn_this_turn=snap.cards_drawn_this_turn,
+    )
+
+    # Build the "removed" state: creature resolves then dies to removal
+    removed = EVSnapshot(
+        my_life=projected.my_life,
+        opp_life=projected.opp_life,
+        my_power=projected.my_power - max(0, t.power or 0) if t.is_creature else projected.my_power,
+        opp_power=projected.opp_power,
+        my_toughness=projected.my_toughness - max(0, t.toughness or 0) if t.is_creature else projected.my_toughness,
+        opp_toughness=projected.opp_toughness,
+        my_creature_count=projected.my_creature_count - 1 if t.is_creature else projected.my_creature_count,
+        opp_creature_count=projected.opp_creature_count,
+        my_hand_size=projected.my_hand_size,
+        opp_hand_size=projected.opp_hand_size - 1,  # opponent used removal card
+        my_mana=projected.my_mana,
+        opp_mana=max(0, projected.opp_mana - 1),  # removal costs ~1
+        my_total_lands=projected.my_total_lands,
+        opp_total_lands=projected.opp_total_lands,
+        turn_number=projected.turn_number,
+        storm_count=projected.storm_count,
+        my_gy_creatures=projected.my_gy_creatures + (1 if t.is_creature else 0),
+        my_energy=projected.my_energy,
+        my_evasion_power=projected.my_evasion_power,
+        my_lifelink_power=projected.my_lifelink_power,
+        opp_evasion_power=projected.opp_evasion_power,
+        cards_drawn_this_turn=projected.cards_drawn_this_turn,
+    )
+
+    # Weighted expected snapshot
+    pass_probability = 1.0 - counter_probability - removal_probability
+    pass_probability = max(0, pass_probability)
+
+    # Blend the snapshots by probability
+    def blend(field: str) -> float:
+        v_pass = getattr(projected, field)
+        v_counter = getattr(countered, field) if counter_probability > 0 else v_pass
+        v_remove = getattr(removed, field) if removal_probability > 0 else v_pass
+        return (pass_probability * v_pass
+                + counter_probability * v_counter
+                + removal_probability * v_remove)
+
+    return EVSnapshot(
+        my_life=int(blend('my_life')),
+        opp_life=int(blend('opp_life')),
+        my_power=int(blend('my_power')),
+        opp_power=int(blend('opp_power')),
+        my_toughness=int(blend('my_toughness')),
+        opp_toughness=int(blend('opp_toughness')),
+        my_creature_count=int(blend('my_creature_count')),
+        opp_creature_count=int(blend('opp_creature_count')),
+        my_hand_size=int(blend('my_hand_size')),
+        opp_hand_size=int(blend('opp_hand_size')),
+        my_mana=int(blend('my_mana')),
+        opp_mana=int(blend('opp_mana')),
+        my_total_lands=int(blend('my_total_lands')),
+        opp_total_lands=int(blend('opp_total_lands')),
+        turn_number=projected.turn_number,
+        storm_count=int(blend('storm_count')),
+        my_gy_creatures=int(blend('my_gy_creatures')),
+        my_energy=int(blend('my_energy')),
+        my_evasion_power=int(blend('my_evasion_power')),
+        my_lifelink_power=int(blend('my_lifelink_power')),
+        opp_evasion_power=int(blend('opp_evasion_power')),
+        cards_drawn_this_turn=int(blend('cards_drawn_this_turn')),
+    )
+
+
+def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
+                    game: "GameState" = None, player_idx: int = 0,
+                    dk: Optional[DeckKnowledge] = None,
+                    detailed: bool = False):
+    """Compute the expected value of casting a spell using 1-ply lookahead.
+
+    EV = E[V(state_after_play_and_response)] - V(current_state)
+
+    If detailed=True, returns (ev, info_dict) with projection breakdown.
+    Otherwise returns ev as a float.
+    """
+    current_value = evaluate_board(snap, archetype, dk)
+
+    # Project state after casting
+    projected = _project_spell(card, snap, dk, game, player_idx)
+    projected_value = evaluate_board(projected, archetype, dk)
+
+    # Model opponent response (counter, removal, or pass)
+    post_response = estimate_opponent_response(card, projected, snap, game, player_idx)
+    after_value = evaluate_board(post_response, archetype, dk)
+
+    ev = after_value - current_value
+
+    if not detailed:
+        return ev
+
+    # Recover response probabilities from the estimate function's logic
+    from ai.strategy_profile import DECK_ARCHETYPES
+    counter_pct = 0.0
+    removal_pct = 0.0
+    t = card.template
+    oracle = (t.oracle_text or '').lower()
+    can_counter = (projected.opp_mana >= 2
+                   and "can't be countered" not in oracle
+                   and "can\u2019t be countered" not in oracle)
+    if can_counter and game:
+        opp = game.players[1 - player_idx]
+        opp_arch = DECK_ARCHETYPES.get(opp.deck_name)
+        if opp_arch and opp_arch.value in ('control', 'tempo', 'midrange'):
+            counter_pct = 0.25 if projected.opp_mana >= 2 else 0.10
+        else:
+            counter_pct = 0.10 if projected.opp_mana >= 2 else 0.0
+    if t.is_creature and projected.opp_mana >= 1 and game:
+        opp_arch = DECK_ARCHETYPES.get(game.players[1 - player_idx].deck_name)
+        if opp_arch and opp_arch.value in ('control', 'midrange'):
+            removal_pct = 0.25
+        else:
+            removal_pct = 0.15
+
+    return ev, {
+        'current_value': current_value,
+        'projected_value': projected_value,
+        'raw_delta': projected_value - current_value,
+        'after_response_value': after_value,
+        'response_discount': (projected_value - current_value) - ev,
+        'counter_pct': counter_pct,
+        'removal_pct': removal_pct,
+    }
 
 
 def estimate_pass_ev(snap: EVSnapshot, archetype: str,

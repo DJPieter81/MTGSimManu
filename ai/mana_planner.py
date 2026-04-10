@@ -206,18 +206,25 @@ def score_land(land, needs: ManaNeeds, is_fetchable: bool = False,
     # Convert game turn to player turn (players alternate turns)
     player_turn = (turn + 1) // 2
 
+    from ai.constants import (
+        MISSING_COLOR_WEIGHT, NEEDED_COLOR_WEIGHT, PAYOFF_MISSING_COLOR_BONUS,
+        SPELL_ENABLEMENT_URGENCY, TAPPED_SPELL_ENABLE_EARLY, TAPPED_SPELL_ENABLE_LATE,
+        DOMAIN_WEIGHT_EARLY, DOMAIN_WEIGHT_LATE, DOMAIN_CARD_CAP,
+        TAPPED_LAND_PENALTY_T1, TAPPED_LAND_PENALTY_T2, TAPPED_LAND_PENALTY_T3,
+        TAPPED_LAND_PENALTY_T4_PLUS, UNTAPPED_LAND_BONUS, SHOCKLAND_BONUS,
+        FETCHLAND_FLEXIBILITY_BONUS, LAND_VERSATILITY_BONUS,
+    )
+
     # ── (A) Missing color match: highest priority ──
     missing_match = sum(1 for c in produces if c in needs.missing_colors)
-    score += missing_match * 20.0
+    score += missing_match * MISSING_COLOR_WEIGHT
 
     # ── (B) Needed color match: still valuable even if we have it ──
     for c in produces:
         if c in needs.needed_colors:
-            score += needs.needed_colors[c] * 3.0
-        # Extra boost for colors needed by high-CMC multi-color payoffs
-        # (e.g., Omnath WURG — fetching a Green source when we have WUR is critical)
+            score += needs.needed_colors[c] * NEEDED_COLOR_WEIGHT
         if c in needs.payoff_missing_colors:
-            score += 15.0
+            score += PAYOFF_MISSING_COLOR_BONUS
 
     # ── (C) Enables a specific spell this turn ──
     # Huge bonus if this land lets us cast something we couldn't before
@@ -228,11 +235,9 @@ def score_land(land, needs: ManaNeeds, is_fetchable: bool = False,
         spell, spell_colors = entry[0], entry[1]
         if spell_colors <= combined_colors:
             cmc = spell.template.cmc or 0
-            urgency = max(0, 8 - cmc) * 3.0
+            urgency = max(0, 8 - cmc) * SPELL_ENABLEMENT_URGENCY
             if enters_tapped and not is_shock:
-                # Tapped land: spell enablement is delayed by 1 turn
-                # On player T1-T2 this is devastating; on T5+ it matters less
-                urgency *= 0.15 if player_turn <= 2 else 0.4
+                urgency *= TAPPED_SPELL_ENABLE_EARLY if player_turn <= 2 else TAPPED_SPELL_ENABLE_LATE
             score += urgency
 
     # ── (D) Domain bonus: new basic land types ──
@@ -247,8 +252,8 @@ def score_land(land, needs: ManaNeeds, is_fetchable: bool = False,
     #   - Scion: -2 cost per domain = huge mana savings
     #   - Binding: -1 cost per domain
     #   - Tribal Flames: +1 damage per domain
-    base_domain_weight = 2.0 if player_turn <= 2 else 4.0
-    domain_scaling = min(needs.domain_card_count, 5) * 2.0  # cap at 5 cards
+    base_domain_weight = DOMAIN_WEIGHT_EARLY if player_turn <= 2 else DOMAIN_WEIGHT_LATE
+    domain_scaling = min(needs.domain_card_count, DOMAIN_CARD_CAP) * 2.0
     domain_weight = base_domain_weight + domain_scaling
     score += new_subtypes * domain_weight
 
@@ -256,28 +261,27 @@ def score_land(land, needs: ManaNeeds, is_fetchable: bool = False,
     if enters_tapped and not is_shock:
         # Heavy penalty for tapped lands, especially on player T1-T3
         if player_turn <= 1:
-            score -= 30.0  # T1 tapped land is almost always wrong for aggro
+            score -= TAPPED_LAND_PENALTY_T1
         elif player_turn <= 2:
-            score -= 20.0
+            score -= TAPPED_LAND_PENALTY_T2
         elif player_turn <= 3:
-            score -= 12.0
+            score -= TAPPED_LAND_PENALTY_T3
         else:
-            score -= 5.0
+            score -= TAPPED_LAND_PENALTY_T4_PLUS
     elif not enters_tapped:
-        score += 8.0  # Bonus for untapped
-    # Shocklands CAN enter untapped (with life payment) so treat as untapped
+        score += UNTAPPED_LAND_BONUS
     if is_shock:
-        score += 7.0  # strong untapped potential
+        score += SHOCKLAND_BONUS
 
     # ── (F) Fetchlands: bonus for flexibility (can find the right land) ──
     from engine.card_database import FETCH_LAND_COLORS
     if template.name in FETCH_LAND_COLORS and not is_fetchable:
         # Fetchlands are flexible — they find what you need
         # But they cost 1 life and require cracking, so slightly less than a direct shockland
-        score += 4.0
+        score += FETCHLAND_FLEXIBILITY_BONUS
 
     # ── (G) Versatility: more colors = more flexible ──
-    score += len(produces) * 1.0
+    score += len(produces) * LAND_VERSATILITY_BONUS
 
     # ── (H) Gameplan priority from deck config ──
     score += gameplan_priority

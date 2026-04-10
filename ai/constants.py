@@ -128,3 +128,151 @@ DO_NOTHING_PENALTY = 5.0          # Penalty for doing nothing
 PRE_COMBAT_REMOVAL_BONUS = 2.5    # Bonus for removing blockers before combat
 MANA_RESERVATION_WEIGHT = 5.2     # Value of holding up mana
 POST_COMBAT_DEPLOY_BONUS = 0.9    # Bonus for deploying after combat
+
+# ══════════════════════════════════════════════════════════════
+# Creature Value Weights (ev_evaluator.py creature_value)
+# ══════════════════════════════════════════════════════════════
+
+CREATURE_POWER_MULT = 1.0         # Base value per point of power
+CREATURE_TOUGHNESS_MULT = 0.3     # Base value per point of toughness
+
+# Keyword bonuses — keyed by Keyword enum value name (lowercase)
+KEYWORD_BONUSES = {
+    "flying": 2.0,
+    "trample": 1.0,
+    "haste": 1.5,
+    "deathtouch": 2.0,
+    "first_strike": 1.5,
+    "double_strike_per_power": 1.0,  # per point of power (effectively doubles it)
+    "hexproof": 2.0,
+    "indestructible": 3.0,
+    "menace": 1.0,
+    "vigilance": 1.0,
+    "undying": 2.0,
+    "annihilator": 4.0,
+    "prowess": 1.5,
+    "cascade": 3.0,
+    "reach": 0.5,
+    "lifelink_per_power": 0.5,  # per point of power, capped at 5 power
+    "lifelink_power_cap": 5,
+}
+
+# Tag-based ability bonuses
+TAG_BONUSES = {
+    "etb_value": 2.0,
+    "card_advantage": 3.0,
+    "cost_reducer": 2.5,
+    "token_maker": 1.5,
+}
+
+# ══════════════════════════════════════════════════════════════
+# Board Evaluation Weights (ev_evaluator.py)
+# ══════════════════════════════════════════════════════════════
+
+# Aggro board eval
+AGGRO_DAMAGE_BONUS = 3.0          # Per-turn clock advantage value
+AGGRO_MY_POWER_MULT = 1.5         # Weight for own power
+AGGRO_OPP_POWER_MULT = 0.5        # Weight for opponent power (negative)
+AGGRO_EVASION_BONUS = 0.5         # Per point of evasive damage
+AGGRO_HAND_BONUS = 0.3            # Per card in hand
+AGGRO_LIFELINK_BONUS = 0.3        # Per lifelink power
+
+# Midrange board eval
+MIDRANGE_MY_POWER_MULT = 1.0
+MIDRANGE_OPP_POWER_MULT = 1.2     # Overweight opponent threats
+MIDRANGE_CREATURE_COUNT_MULT = 0.5
+MIDRANGE_CARD_ADVANTAGE_MULT = 1.5
+MIDRANGE_MANA_MULT = 0.5
+MIDRANGE_CLOCK_MULT = 1.5
+
+# Control board eval
+CONTROL_OPP_POWER_PENALTY = 2.0   # Per opponent power (penalty)
+CONTROL_OPP_CREATURE_PENALTY = 1.0
+CONTROL_MY_POWER_MULT = 1.5
+CONTROL_MY_CREATURE_MULT = 0.5
+CONTROL_HAND_DIFF_MULT = 2.0
+CONTROL_HAND_SIZE_MULT = 0.5
+CONTROL_MY_LIFE_MULT = 1.2
+CONTROL_OPP_LIFE_MULT = 0.5
+CONTROL_MANA_MULT = 0.8
+
+# Combo board eval
+COMBO_STORM_BASE = 3.0            # Base value per storm count
+COMBO_STORM_ACCELERATION = 2.0    # Bonus when storm >= 5
+COMBO_STORM_THRESHOLD = 5         # Storm count for acceleration bonus
+COMBO_LIFE_MULT = 0.3             # Life matters less for combo
+COMBO_HAND_MULT = 1.0             # Hand matters moderately
+COMBO_BOARD_POWER_MULT = 0.3      # Board power matters little
+COMBO_MANA_POOL_MULT = 2.0        # Mana in pool is VERY valuable
+COMBO_CARDS_DRAWN_MULT = 3.0      # Cards drawn this turn
+COMBO_GY_CREATURE_MULT = 2.0      # Creatures in GY (for reanimate decks)
+
+# ══════════════════════════════════════════════════════════════
+# EV Evaluator Projections (ev_evaluator.py)
+# ══════════════════════════════════════════════════════════════
+
+RITUAL_AVERAGE_PRODUCTION = 3.0   # Average mana from a ritual spell
+MANAMORPHOSE_PRODUCTION = 2.0     # Net mana from Manamorphose (technically 2)
+ETB_LIFE_GAIN_ESTIMATE = 3.0      # Average life gained from ETB triggers
+ENERGY_PRODUCTION_ESTIMATE = 2.0  # Average energy per ETB card
+PASS_MANA_WASTE_MULT = 0.5        # Penalty per unused mana when passing
+PASS_OPP_DEVELOPMENT_DISCOUNT = 0.3  # Discount on opponent damage estimate
+COMBO_PASS_MANA_WASTE_MULT = 1.0  # Combo decks waste more when idle
+COMBO_FULL_HAND_PENALTY = 2.0     # Penalty when combo has full hand and doesn't act
+COMBO_FULL_HAND_THRESHOLD = 5     # Hand size triggering full hand penalty
+FUTURE_VALUE_DISCOUNT = 0.8       # Per-turn discount on future value
+SURVIVAL_POWER_SCALING = 3.0      # Divides opponent power for threat assessment
+
+# ══════════════════════════════════════════════════════════════
+# Threat Evaluation (response.py)
+# ══════════════════════════════════════════════════════════════
+
+THREAT_CMC_CAP = 5                 # Cap CMC contribution to threat
+THREAT_CMC_MULT = 0.5              # Multiplier for CMC-based threat
+BOARD_WIPE_BASE_THREAT = 6.0       # Base threat for board wipes
+COMBO_PIECE_THREAT = 7.0           # Threat value for combo pieces
+BURN_DEFAULT_DAMAGE = 3            # Default burn damage if unknown
+BURN_FACE_THREAT_MULT = 1.5        # Face burn threat multiplier
+BURN_LOW_LIFE_THRESHOLD_PCT = 0.25 # Below this life% = burn is very threatening
+BURN_LOW_LIFE_THREAT_BONUS = 4.0   # Bonus when burn threatens low life
+LETHAL_BURN_THREAT_BONUS = 10.0    # Bonus when burn is lethal
+CASCADE_THREAT = 8.0               # Threat from cascade spells
+REANIMATE_THREAT = 8.0             # Threat from reanimation spells
+REMOVAL_TARGET_THREAT_MULT = 0.5   # Fraction of target value as threat
+CREATURE_HIGH_POWER_THREAT = 0.8   # Multiplier for 4+ power creatures
+CREATURE_MID_POWER_THREAT = 0.6    # Multiplier for 2+ power creatures
+INSTANT_REMOVAL_RESPONSE_THRESHOLD = 3.0  # Min value to respond with removal
+
+# ══════════════════════════════════════════════════════════════
+# Mana Planning extras (mana_planner.py)
+# ══════════════════════════════════════════════════════════════
+
+PAYOFF_MISSING_COLOR_BONUS = 15.0  # Bonus for enabling multi-color payoffs
+TAPPED_SPELL_ENABLE_EARLY = 0.15   # Urgency discount T1-T2 for tapped lands
+TAPPED_SPELL_ENABLE_LATE = 0.4     # Urgency discount T5+ for tapped lands
+LAND_VERSATILITY_BONUS = 1.0       # Bonus per color a land produces
+FETCH_PROXY_PENALTY = 1.0          # Penalty for fetch land life cost
+
+# ══════════════════════════════════════════════════════════════
+# Turn Planner extras (turn_planner.py)
+# ══════════════════════════════════════════════════════════════
+
+DEAD_LIFE_VALUE = -50.0            # Board value when dead
+TRADE_DOWN_VALUE_RATIO = 1.5       # My lost > opp lost * this = bad trade
+EXPENDABLE_CREATURE_VALUE = 3.0    # Creatures below this are expendable
+SHIELDS_DOWN_VALUE_THRESHOLD = 5.0 # Min tapped value for shields-down penalty
+SHIELDS_DOWN_DAMAGE_REDUCTION = 0.6  # Reduce penalty by this per damage ratio
+SMALL_ATTACKER_VALUE = 4.0         # Tokens/small creatures below this
+COUNTER_TAPPING_OUT_PENALTY = -1.5 # Penalty for spending mana to counter
+BLINK_ETB_RETRIGGER_BONUS = 3.0    # Bonus for re-triggering ETB via blink
+REMOVAL_IMPROVEMENT_THRESHOLD = 2.0  # Min improvement to apply removal
+
+# ══════════════════════════════════════════════════════════════
+# Game Runner (engine layer, but AI-tuning adjacent)
+# ══════════════════════════════════════════════════════════════
+
+MAX_ACTIONS_COMBO = 40             # Max main phase actions for combo decks
+MAX_ACTIONS_NORMAL = 20            # Max main phase actions for normal decks
+GAME_TIMEOUT_SECONDS = 8.0         # Safety timeout per game
+SHOCK_LETHAL_LIFE_THRESHOLD = 2    # Don't shock when life <= this
+SHOCK_LOW_LIFE_THRESHOLD = 4       # Only shock for critical colors at this life

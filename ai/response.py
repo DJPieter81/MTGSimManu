@@ -210,30 +210,35 @@ class ResponseDecider:
         return []
 
     def evaluate_stack_threat(self, game: "GameState", stack_item: "StackItem") -> float:
-        """Evaluate how threatening a stack item is (0-10 scale)."""
+        """Evaluate how threatening a stack item is (0-10 scale).
+        All thresholds from ai/constants.py."""
         from ai.evaluator import estimate_permanent_value
         from decks.card_knowledge_loader import get_threat_value, get_burn_damage
+        from ai.constants import (
+            THREAT_CMC_CAP, THREAT_CMC_MULT, BOARD_WIPE_BASE_THREAT,
+            COMBO_PIECE_THREAT, CREATURE_HIGH_POWER_THREAT, CREATURE_MID_POWER_THREAT,
+            BURN_DEFAULT_DAMAGE, BURN_FACE_THREAT_MULT,
+            BURN_LOW_LIFE_THRESHOLD_PCT, BURN_LOW_LIFE_THREAT_BONUS,
+            LETHAL_BURN_THREAT_BONUS, REMOVAL_TARGET_THREAT_MULT,
+            CASCADE_THREAT, REANIMATE_THREAT,
+        )
 
         source = stack_item.source
         template = source.template
         threat = 0.0
 
         # Base threat from CMC
-        threat += min(template.cmc, 5) * 0.5
-
-        # Note: escape creatures (Phlage) go to GY whether countered or not.
-        # The decision engine should evaluate counter value based on what
-        # countering actually prevents, not hardcoded discounts.
+        threat += min(template.cmc, THREAT_CMC_CAP) * THREAT_CMC_MULT
 
         # Board wipes
         if "board_wipe" in template.tags:
             my_creatures = len(game.players[self.player_idx].creatures)
             if my_creatures >= 2:
-                threat += 6.0 + my_creatures
+                threat += BOARD_WIPE_BASE_THREAT + my_creatures
 
         # Combo pieces
         if "combo" in template.tags:
-            threat += 7.0
+            threat += COMBO_PIECE_THREAT
 
         # Creatures — use effective power
         effective_power = template.power or 0
@@ -249,23 +254,21 @@ class ResponseDecider:
             threat = max(threat, known_threat)
 
         if template.is_creature and effective_power >= 4:
-            threat += effective_power * 0.8
+            threat += effective_power * CREATURE_HIGH_POWER_THREAT
         elif template.is_creature and effective_power >= 2:
-            threat += effective_power * 0.6
+            threat += effective_power * CREATURE_MID_POWER_THREAT
 
         # Burn spells
         known_burn = get_burn_damage(source.name)
         if known_burn > 0 or 'burn' in template.tags or 'damage' in (template.tags or set()):
-            face_dmg = known_burn if known_burn > 0 else 3
+            face_dmg = known_burn if known_burn > 0 else BURN_DEFAULT_DAMAGE
             my_life = game.players[self.player_idx].life
             life_pct = face_dmg / max(my_life, 1)
-            # Burn-to-face is harder to interact with than creatures —
-            # value countering it higher (face damage can't be removed next turn)
-            threat += face_dmg * 1.5
-            if life_pct >= 0.25:
-                threat += 4.0
+            threat += face_dmg * BURN_FACE_THREAT_MULT
+            if life_pct >= BURN_LOW_LIFE_THRESHOLD_PCT:
+                threat += BURN_LOW_LIFE_THREAT_BONUS
             if my_life <= face_dmg:
-                threat += 10.0
+                threat += LETHAL_BURN_THREAT_BONUS
 
         # Removal targeting our stuff
         if "removal" in template.tags:
@@ -275,12 +278,12 @@ class ResponseDecider:
                            key=lambda c: estimate_permanent_value(
                                c, me, game, self.player_idx))
                 threat += estimate_permanent_value(
-                    best, me, game, self.player_idx) * 0.5
+                    best, me, game, self.player_idx) * REMOVAL_TARGET_THREAT_MULT
 
         # Cascade / reanimate
         if 'cascade' in getattr(source.template, 'tags', set()):
-            threat += 8.0
+            threat += CASCADE_THREAT
         if 'reanimate' in getattr(source.template, 'tags', set()):
-            threat += 8.0
+            threat += REANIMATE_THREAT
 
         return threat

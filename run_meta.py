@@ -446,7 +446,18 @@ def run_trace_game(deck1: str, deck2: str, seed: int = 42000) -> str:
             lines.append(f'  EV scores:')
             for play in candidates[:6]:
                 marker = ' <--' if play is candidates[0] else ''
-                lines.append(f'    {play.ev:+6.1f}  {play.action}: {play.card.name}{marker}')
+                base = f'    {play.ev:+6.1f}  {play.action}: {play.card.name}{marker}'
+                # Show lookahead breakdown for spells
+                if play.action == "cast_spell" and play.lookahead_ev != 0:
+                    h = play.heuristic_ev
+                    la = play.lookahead_ev
+                    parts = [f'h={h:+.1f} la={la:+.1f}']
+                    if play.counter_pct > 0:
+                        parts.append(f'ctr={play.counter_pct:.0%}')
+                    if play.removal_pct > 0:
+                        parts.append(f'rmv={play.removal_pct:.0%}')
+                    base += f'  [{" ".join(parts)}]'
+                lines.append(base)
             if len(candidates) > 6:
                 lines.append(f'    ... +{len(candidates)-6} more')
 

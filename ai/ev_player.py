@@ -38,8 +38,9 @@ def _get_archetype(deck_name: str) -> str:
 # ─────────────────────────────────────────────────────────────
 
 class Play:
-    """A candidate play with its EV score."""
-    __slots__ = ('action', 'card', 'targets', 'ev', 'reason')
+    """A candidate play with its EV score and lookahead reasoning."""
+    __slots__ = ('action', 'card', 'targets', 'ev', 'reason',
+                 'heuristic_ev', 'lookahead_ev', 'counter_pct', 'removal_pct')
 
     def __init__(self, action: str, card, targets: list, ev: float, reason: str):
         self.action = action  # "play_land", "cast_spell", "cycle"
@@ -47,6 +48,10 @@ class Play:
         self.targets = targets
         self.ev = ev
         self.reason = reason
+        self.heuristic_ev = ev      # original heuristic score (before blend)
+        self.lookahead_ev = 0.0     # raw lookahead delta
+        self.counter_pct = 0.0      # opponent counter probability
+        self.removal_pct = 0.0      # opponent removal probability
 
 
 # ─────────────────────────────────────────────────────────────
@@ -254,6 +259,26 @@ class EVPlayer:
         if not candidates:
             self._last_candidates = []
             return None
+
+        # 1-ply lookahead: adjust spell EV by projected state delta.
+        # The heuristic score handles card-specific quirks (storm sequencing,
+        # landfall deferral, etc.). The lookahead adds macro strategy by
+        # modeling "what does the board look like after I cast this AND
+        # the opponent responds?"
+        from ai.ev_evaluator import compute_play_ev
+        for play in candidates:
+            if play.action == "cast_spell":
+                raw_ev, info = compute_play_ev(
+                    play.card, snap, self.archetype, game, self.player_idx,
+                    detailed=True)
+                # Clamp lookahead to heuristic scale (-20 to +20) to avoid
+                # clock-based blow-ups, then blend with heuristic score
+                lookahead_clamped = max(-20.0, min(20.0, raw_ev))
+                play.heuristic_ev = play.ev
+                play.lookahead_ev = raw_ev
+                play.counter_pct = info['counter_pct']
+                play.removal_pct = info['removal_pct']
+                play.ev = play.ev * 0.7 + lookahead_clamped * 0.3
 
         # Sort by EV, pick the best
         candidates.sort(key=lambda p: p.ev, reverse=True)
@@ -572,7 +597,8 @@ class EVPlayer:
         # Scale by threat size — big creatures need answers more urgently
         if snap.am_dead_next:
             avg_opp_power = snap.opp_power / max(1, snap.opp_creature_count)
-            power_scale = min(1.0, avg_opp_power / 3.0)
+            from ai.constants import SURVIVAL_POWER_SCALING
+            power_scale = min(1.0, avg_opp_power / SURVIVAL_POWER_SCALING)
             if 'removal' in tags and snap.opp_creature_count > 0:
                 ev += p.survival_removal_bonus * power_scale
             if t.is_creature and (t.toughness or 0) >= 3:
