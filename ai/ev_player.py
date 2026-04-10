@@ -16,7 +16,6 @@ if TYPE_CHECKING:
 from ai.deck_knowledge import DeckKnowledge
 from ai.ev_evaluator import (
     EVSnapshot, snapshot_from_game, evaluate_board, creature_value,
-    _life_value,
 )
 
 # ─────────────────────────────────────────────────────────────

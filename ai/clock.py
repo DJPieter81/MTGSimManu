@@ -296,11 +296,14 @@ def position_value(snap: "EVSnapshot", archetype: str = "midrange") -> float:
 
     # Normalize clock diff to prevent extreme values when one clock is NO_CLOCK
     if my_clock >= NO_CLOCK and opp_clock >= NO_CLOCK:
-        clock_diff = 0.0  # neither player has a clock
+        clock_diff = 0.0  # neither player has a clock — stalled
     elif my_clock >= NO_CLOCK:
-        clock_diff = -opp_clock  # I have no clock, opponent does
+        # I have no clock, opponent does → I'm losing; worse as opp gets faster
+        clock_diff = -opp_clock
     elif opp_clock >= NO_CLOCK:
-        clock_diff = my_clock  # opponent has no clock, I do
+        # Opponent has no clock, I do → I'm winning; better as I get faster
+        # Invert: lower my_clock = bigger advantage
+        clock_diff = 20.0 / my_clock  # cap near 20 when I have lethal
 
     # Resource advantage: cards and mana as future clock changes
     card_diff = snap.my_hand_size - snap.opp_hand_size
