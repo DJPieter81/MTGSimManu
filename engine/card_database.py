@@ -1059,6 +1059,15 @@ class CardDatabase:
             "Griselbrand": {"creature", "threat", "card_advantage"},
             # Counterspells missing auto-detection
             "Flusterstorm": {"counterspell", "interaction", "instant_speed", "combo"},
+            # Affinity sideboard
+            "Dispatch": {"removal", "instant_speed"},
+            "Hurkyl's Recall": {"removal", "instant_speed"},
+            "Metallic Rebuke": {"counterspell", "interaction", "instant_speed"},
+            "Relic of Progenitus": {"graveyard_hate", "cantrip"},
+            "Torpor Orb": {"stax"},
+            "Ethersworn Canonist": {"creature", "stax", "early_play"},
+            "Haywire Mite": {"removal", "creature", "early_play"},
+            "Thought Monitor": {"creature", "etb_value", "card_advantage"},
         }
         if name in TAG_OVERRIDES:
             template.tags.update(TAG_OVERRIDES[name])
@@ -1071,6 +1080,8 @@ class CardDatabase:
             "Fury": [("Deal damage to creature", 1)],
             "Thoughtseize": [("Discard from opponent", 0)],
             "Inquisition of Kozilek": [("Discard from opponent", 0)],
+            "Dispatch": [("Exile creature", 1)],
+            "Hurkyl's Recall": [("Bounce all artifacts", 0)],
         }
         if name in ABILITY_OVERRIDES and not template.abilities:
             for desc, targets in ABILITY_OVERRIDES[name]:

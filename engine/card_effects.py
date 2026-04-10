@@ -1666,3 +1666,112 @@ def spell_queller_etb(game, card, controller, targets=None, item=None):
             game.players[spell_card.owner].exile.append(spell_card)
             game.log.append(f"T{game.turn_number} P{controller+1}: "
                             f"Spell Queller exiles {spell_card.name}")
+
+
+# ─── Affinity cards ─────────────────────────────────────────────────────
+
+@EFFECT_REGISTRY.register("Thought Monitor", EffectTiming.ETB,
+                           description="Draw 2 cards")
+def thought_monitor_etb(game, card, controller, targets=None, item=None):
+    game.draw_cards(controller, 2)
+    game.log.append(f"T{game.turn_number} P{controller+1}: "
+                    f"Thought Monitor ETB: draw 2 cards")
+
+
+@EFFECT_REGISTRY.register("Dispatch", EffectTiming.SPELL_RESOLVE,
+                           description="Tap creature; with metalcraft, exile it instead")
+def dispatch_resolve(game, card, controller, targets=None, item=None):
+    from .cards import CardType
+    opponent = 1 - controller
+    opp = game.players[opponent]
+    artifact_count = sum(1 for c in game.players[controller].battlefield
+                         if CardType.ARTIFACT in c.template.card_types)
+    has_metalcraft = artifact_count >= 3
+
+    if targets:
+        for tid in targets:
+            target = game.get_card_by_id(tid)
+            if target and target.zone == "battlefield" and target.template.is_creature:
+                if has_metalcraft:
+                    game._exile_permanent(target)
+                    game.log.append(f"T{game.turn_number} P{controller+1}: "
+                                    f"Dispatch exiles {target.name} (metalcraft)")
+                else:
+                    target.tapped = True
+                    game.log.append(f"T{game.turn_number} P{controller+1}: "
+                                    f"Dispatch taps {target.name}")
+                return
+    # Auto-target: pick best opponent creature
+    valid = [c for c in opp.creatures]
+    if valid:
+        target = max(valid, key=lambda c: (c.power or 0) + (c.toughness or 0))
+        if has_metalcraft:
+            game._exile_permanent(target)
+            game.log.append(f"T{game.turn_number} P{controller+1}: "
+                            f"Dispatch exiles {target.name} (metalcraft)")
+        else:
+            target.tapped = True
+            game.log.append(f"T{game.turn_number} P{controller+1}: "
+                            f"Dispatch taps {target.name}")
+
+
+@EFFECT_REGISTRY.register("Haywire Mite", EffectTiming.DIES,
+                           description="Gain 2 life on death")
+def haywire_mite_dies(game, card, controller, targets=None, item=None):
+    game.players[controller].life += 2
+    game.log.append(f"T{game.turn_number} P{controller+1}: "
+                    f"Haywire Mite dies: gain 2 life (now {game.players[controller].life})")
+
+
+@EFFECT_REGISTRY.register("Hurkyl's Recall", EffectTiming.SPELL_RESOLVE,
+                           description="Return all artifacts target player owns to hand")
+def hurkyls_recall_resolve(game, card, controller, targets=None, item=None):
+    from .cards import CardType
+    opponent = 1 - controller
+    opp = game.players[opponent]
+    artifacts = [c for c in opp.battlefield
+                 if CardType.ARTIFACT in c.template.card_types]
+    count = len(artifacts)
+    for a in artifacts:
+        game._bounce_permanent(a)
+    if count:
+        game.log.append(f"T{game.turn_number} P{controller+1}: "
+                        f"Hurkyl's Recall bounces {count} artifacts from P{opponent+1}")
+
+
+@EFFECT_REGISTRY.register("Relic of Progenitus", EffectTiming.ETB,
+                           description="Graveyard hate artifact")
+def relic_of_progenitus_etb(game, card, controller, targets=None, item=None):
+    # Simplified: on ETB, exile all cards from opponent's graveyard
+    # (models the activated "exile all graveyards" ability as immediate value)
+    opponent = 1 - controller
+    opp = game.players[opponent]
+    count = len(opp.graveyard)
+    if count:
+        for c in opp.graveyard:
+            c.zone = "exile"
+            opp.exile.append(c)
+        opp.graveyard.clear()
+        game.log.append(f"T{game.turn_number} P{controller+1}: "
+                        f"Relic of Progenitus exiles {count} cards from P{opponent+1}'s graveyard")
+    game.draw_cards(controller, 1)
+    game.log.append(f"T{game.turn_number} P{controller+1}: "
+                    f"Relic of Progenitus: draw 1 card")
+
+
+@EFFECT_REGISTRY.register("Ethersworn Canonist", EffectTiming.ETB,
+                           description="Each player can only cast one nonartifact spell per turn")
+def ethersworn_canonist_etb(game, card, controller, targets=None, item=None):
+    # Tag presence on battlefield restricts spellcasting (checked in can_cast)
+    card.instance_tags.add("canonist_active")
+    game.log.append(f"T{game.turn_number} P{controller+1}: "
+                    f"Ethersworn Canonist enters — nonartifact spell restriction active")
+
+
+@EFFECT_REGISTRY.register("Torpor Orb", EffectTiming.ETB,
+                           description="Creatures entering don't cause abilities to trigger")
+def torpor_orb_etb(game, card, controller, targets=None, item=None):
+    # Tag presence on battlefield suppresses creature ETBs (checked in _handle_etb)
+    card.instance_tags.add("torpor_orb_active")
+    game.log.append(f"T{game.turn_number} P{controller+1}: "
+                    f"Torpor Orb enters — creature ETB abilities suppressed")

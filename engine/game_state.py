@@ -85,6 +85,7 @@ class PlayerState:
     poison_counters: int = 0
     # Tracking
     spells_cast_this_turn: int = 0
+    nonartifact_spells_cast_this_turn: int = 0
     creatures_died_this_turn: int = 0
     life_gained_this_turn: int = 0
     damage_dealt_this_turn: int = 0
@@ -233,6 +234,7 @@ class PlayerState:
         self.lands_played_this_turn = 0
         self.extra_land_drops = 0
         self.spells_cast_this_turn = 0
+        self.nonartifact_spells_cast_this_turn = 0
         self.creatures_died_this_turn = 0
         self.life_gained_this_turn = 0
         self.damage_dealt_this_turn = 0
@@ -643,6 +645,15 @@ class GameState:
         if template.is_land:
             max_lands = 1 + player.extra_land_drops
             return player.lands_played_this_turn < max_lands
+
+        # Ethersworn Canonist: block nonartifact spells if one was already cast
+        if CardType.ARTIFACT not in template.card_types:
+            canonist_active = any(
+                "canonist_active" in c.instance_tags
+                for p in self.players for c in p.battlefield
+            )
+            if canonist_active and player.nonartifact_spells_cast_this_turn >= 1:
+                return False
 
         is_main_phase = self.current_phase in (Phase.MAIN1, Phase.MAIN2)
         is_active = self.active_player == player_idx
@@ -1376,6 +1387,8 @@ class GameState:
         )
         self.stack.push(stack_item)
         player.spells_cast_this_turn += 1
+        if CardType.ARTIFACT not in template.card_types:
+            player.nonartifact_spells_cast_this_turn += 1
         self._global_storm_count += 1
 
         # ── Chalice of the Void check ──
@@ -1550,19 +1563,29 @@ class GameState:
                             f"{template.name} produces {template.energy_production} energy "
                             f"(total: {self.players[controller].energy_counters})")
 
-        # Dispatch to card effect registry for card-specific ETB logic
-        has_specific_handler = template.name in EFFECT_REGISTRY._handlers
-        EFFECT_REGISTRY.execute(
-            template.name, EffectTiming.ETB, self, card, controller
+        # Torpor Orb: suppress creature ETB abilities
+        torpor_active = any(
+            "torpor_orb_active" in c.instance_tags
+            for p in self.players for c in p.battlefield
         )
+        is_creature = CardType.CREATURE in template.card_types
 
-        # Generic oracle-text-based ETB resolution for cards WITHOUT specific handlers
-        if not has_specific_handler:
-            from .oracle_resolver import resolve_etb_from_oracle
-            resolve_etb_from_oracle(self, card, controller)
+        if torpor_active and is_creature:
+            self.log.append(f"T{self.turn_number}: {template.name} ETB suppressed by Torpor Orb")
+        else:
+            # Dispatch to card effect registry for card-specific ETB logic
+            has_specific_handler = template.name in EFFECT_REGISTRY._handlers
+            EFFECT_REGISTRY.execute(
+                template.name, EffectTiming.ETB, self, card, controller
+            )
 
-        # Generic ETB triggers
-        self.trigger_etb(card, controller)
+            # Generic oracle-text-based ETB resolution for cards WITHOUT specific handlers
+            if not has_specific_handler:
+                from .oracle_resolver import resolve_etb_from_oracle
+                resolve_etb_from_oracle(self, card, controller)
+
+            # Generic ETB triggers
+            self.trigger_etb(card, controller)
 
     # ─── STORM ───────────────────────────────────────────────────
 
