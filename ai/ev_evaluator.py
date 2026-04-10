@@ -129,21 +129,7 @@ def snapshot_from_game(game: "GameState", player_idx: int) -> EVSnapshot:
     return snap
 
 
-# ─────────────────────────────────────────────────────────────
-# Life valuation — non-linear (low life is worth more)
-# ─────────────────────────────────────────────────────────────
-
-def _life_value(life: int) -> float:
-    """Non-linear life valuation. Going from 3->2 is much worse than 20->19."""
-    if life <= 0:
-        return -100.0
-    if life <= 3:
-        return life * 4.0      # 12.0 at 3 life
-    if life <= 7:
-        return 12.0 + (life - 3) * 2.5  # 22.0 at 7 life
-    if life <= 15:
-        return 22.0 + (life - 7) * 1.0  # 30.0 at 15 life
-    return 30.0 + (life - 15) * 0.3
+# Life valuation is now in ai/clock.py: life_as_resource()
 
 
 # ─────────────────────────────────────────────────────────────
@@ -192,91 +178,17 @@ def creature_value(card: "CardInstance") -> float:
 # Per-archetype value functions
 # ─────────────────────────────────────────────────────────────
 
-def evaluate_board_aggro(snap: EVSnapshot, dk: Optional[DeckKnowledge] = None) -> float:
-    """Aggro value function. All weights from ai/constants.py."""
-    from ai.constants import (
-        AGGRO_DAMAGE_BONUS, AGGRO_MY_POWER_MULT, AGGRO_OPP_POWER_MULT,
-        AGGRO_EVASION_BONUS, AGGRO_HAND_BONUS, AGGRO_LIFELINK_BONUS,
-    )
-    clock_advantage = (snap.opp_clock - snap.my_clock) * AGGRO_DAMAGE_BONUS
-    board_power = snap.my_power * AGGRO_MY_POWER_MULT - snap.opp_power * AGGRO_OPP_POWER_MULT
-    evasion_bonus = snap.my_evasion_power * AGGRO_EVASION_BONUS
-    life_diff = _life_value(snap.my_life) - _life_value(snap.opp_life)
-    hand_bonus = snap.my_hand_size * AGGRO_HAND_BONUS
-    lifelink = snap.my_lifelink_power * AGGRO_LIFELINK_BONUS
-    return clock_advantage + board_power + evasion_bonus + life_diff + hand_bonus + lifelink
-
-
-def evaluate_board_midrange(snap: EVSnapshot, dk: Optional[DeckKnowledge] = None) -> float:
-    """Midrange value function. All weights from ai/constants.py."""
-    from ai.constants import (
-        MIDRANGE_MY_POWER_MULT, MIDRANGE_OPP_POWER_MULT,
-        MIDRANGE_CREATURE_COUNT_MULT, MIDRANGE_CARD_ADVANTAGE_MULT,
-        MIDRANGE_MANA_MULT, MIDRANGE_CLOCK_MULT,
-    )
-    board_val = (snap.my_power * MIDRANGE_MY_POWER_MULT
-                 - snap.opp_power * MIDRANGE_OPP_POWER_MULT
-                 + (snap.my_creature_count - snap.opp_creature_count) * MIDRANGE_CREATURE_COUNT_MULT)
-    card_advantage = (snap.my_hand_size - snap.opp_hand_size) * MIDRANGE_CARD_ADVANTAGE_MULT
-    life_diff = _life_value(snap.my_life) - _life_value(snap.opp_life)
-    mana_bonus = (snap.my_total_lands - snap.opp_total_lands) * MIDRANGE_MANA_MULT
-    clock_advantage = (snap.opp_clock - snap.my_clock) * MIDRANGE_CLOCK_MULT
-    return board_val + card_advantage + life_diff + mana_bonus + clock_advantage
-
-
-def evaluate_board_control(snap: EVSnapshot, dk: Optional[DeckKnowledge] = None) -> float:
-    """Control value function. All weights from ai/constants.py."""
-    from ai.constants import (
-        CONTROL_OPP_POWER_PENALTY, CONTROL_OPP_CREATURE_PENALTY,
-        CONTROL_MY_POWER_MULT, CONTROL_MY_CREATURE_MULT,
-        CONTROL_HAND_DIFF_MULT, CONTROL_HAND_SIZE_MULT,
-        CONTROL_MY_LIFE_MULT, CONTROL_OPP_LIFE_MULT, CONTROL_MANA_MULT,
-    )
-    opp_threat = -snap.opp_power * CONTROL_OPP_POWER_PENALTY - snap.opp_creature_count * CONTROL_OPP_CREATURE_PENALTY
-    my_board = snap.my_power * CONTROL_MY_POWER_MULT + snap.my_creature_count * CONTROL_MY_CREATURE_MULT
-    card_adv = ((snap.my_hand_size - snap.opp_hand_size) * CONTROL_HAND_DIFF_MULT
-                + snap.my_hand_size * CONTROL_HAND_SIZE_MULT)
-    life_val = _life_value(snap.my_life) * CONTROL_MY_LIFE_MULT - _life_value(snap.opp_life) * CONTROL_OPP_LIFE_MULT
-    mana_bonus = snap.my_total_lands * CONTROL_MANA_MULT
-    return opp_threat + my_board + card_adv + life_val + mana_bonus
-
-
-def evaluate_board_combo(snap: EVSnapshot, dk: Optional[DeckKnowledge] = None) -> float:
-    """Combo value function. All weights from ai/constants.py."""
-    from ai.constants import (
-        COMBO_STORM_BASE, COMBO_STORM_ACCELERATION, COMBO_STORM_THRESHOLD,
-        COMBO_LIFE_MULT, COMBO_HAND_MULT, COMBO_BOARD_POWER_MULT,
-        COMBO_MANA_POOL_MULT, COMBO_CARDS_DRAWN_MULT, COMBO_GY_CREATURE_MULT,
-        DEAD_LIFE_VALUE,
-    )
-    storm_val = snap.storm_count * COMBO_STORM_BASE
-    if snap.storm_count >= COMBO_STORM_THRESHOLD:
-        storm_val += snap.storm_count * COMBO_STORM_ACCELERATION
-    if snap.am_dead_next:
-        return DEAD_LIFE_VALUE
-    life_buffer = _life_value(snap.my_life) * COMBO_LIFE_MULT
-    hand_val = snap.my_hand_size * COMBO_HAND_MULT
-    board_val = snap.my_power * COMBO_BOARD_POWER_MULT
-    mana_val = snap.my_mana * COMBO_MANA_POOL_MULT
-    chain_val = snap.cards_drawn_this_turn * COMBO_CARDS_DRAWN_MULT
-    gy_val = snap.my_gy_creatures * COMBO_GY_CREATURE_MULT
-    return storm_val + life_buffer + hand_val + board_val + mana_val + chain_val + gy_val
-
-
-# Archetype dispatcher
-_ARCHETYPE_EVALUATORS = {
-    "aggro": evaluate_board_aggro,
-    "midrange": evaluate_board_midrange,
-    "control": evaluate_board_control,
-    "combo": evaluate_board_combo,
-}
-
-
+# Archetype dispatcher — unified clock-based evaluation
 def evaluate_board(snap: EVSnapshot, archetype: str = "midrange",
                    dk: Optional[DeckKnowledge] = None) -> float:
-    """Evaluate a board state using the archetype-specific value function."""
-    fn = _ARCHETYPE_EVALUATORS.get(archetype, evaluate_board_midrange)
-    return fn(snap, dk)
+    """Evaluate a board state using clock-based position value.
+
+    All archetypes use the same unified evaluation: clock differential
+    + resource advantage. Archetype affects only combo/storm clock
+    override. No arbitrary per-archetype weights.
+    """
+    from ai.clock import position_value
+    return position_value(snap, archetype)
 
 
 # ─────────────────────────────────────────────────────────────
@@ -671,8 +583,9 @@ def estimate_pass_ev(snap: EVSnapshot, archetype: str,
         # We'll take a hit from their creatures
         damage_taken = snap.opp_power - snap.my_lifelink_power
         if damage_taken > 0:
-            life_before = _life_value(snap.my_life)
-            life_after = _life_value(max(0, snap.my_life - damage_taken))
+            from ai.clock import life_as_resource
+            life_before = life_as_resource(snap.my_life, snap.opp_power)
+            life_after = life_as_resource(max(0, snap.my_life - damage_taken), snap.opp_power)
             opp_development_penalty = -(life_before - life_after) * 0.3
 
     # Combo decks: passing is especially bad — they need to chain spells NOW
