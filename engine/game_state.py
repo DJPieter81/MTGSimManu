@@ -98,6 +98,9 @@ class PlayerState:
     deck_name: str = ""
     # Effective CMC overrides from gameplan (e.g. domain cost reduction)
     effective_cmc_overrides: Dict[str, int] = field(default_factory=dict)
+    # Deck composition densities (set at game start for lookahead)
+    counter_density: float = 0.0    # fraction of deck that is counterspells
+    removal_density: float = 0.0    # fraction of deck that is single-target removal
 
     @property
     def is_alive(self) -> bool:

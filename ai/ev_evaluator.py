@@ -439,13 +439,7 @@ def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
 
     Returns the projected snapshot after opponent's best response.
     """
-    from ai.strategy_profile import DECK_ARCHETYPES
-    from ai.constants import (
-        COUNTER_PROB_REACTIVE_DECK, COUNTER_PROB_REACTIVE_LOW,
-        COUNTER_PROB_PROACTIVE_DECK, COUNTER_PROB_NO_MANA,
-        REMOVAL_PROB_REACTIVE_DECK, REMOVAL_PROB_PROACTIVE_DECK,
-        COUNTER_ESTIMATED_COST, REMOVAL_ESTIMATED_COST,
-    )
+    from ai.constants import COUNTER_ESTIMATED_COST, REMOVAL_ESTIMATED_COST
 
     t = card.template
     tags = getattr(t, 'tags', set())
@@ -462,30 +456,19 @@ def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
     if "can't be countered" in oracle or "can\u2019t be countered" in oracle:
         can_counter = False
 
-    # Estimate probability opponent HOLDS a counter, based on mana and deck
-    reactive_archetypes = {'control', 'tempo', 'midrange'}
+    # Derive response probabilities from opponent's ACTUAL deck composition.
+    # P(holding >= 1 of type in H cards) = 1 - (1 - density)^H
+    # This replaces archetype-based guesses with data from the decklist.
+    opp_hand_size = snap.opp_hand_size if snap.opp_hand_size > 0 else 5
     counter_probability = 0.0
-    if can_counter and game:
-        opp = game.players[1 - player_idx]
-        opp_archetype = DECK_ARCHETYPES.get(opp.deck_name)
-        if opp_archetype and opp_archetype.value in reactive_archetypes:
-            counter_probability = (COUNTER_PROB_REACTIVE_DECK
-                                   if projected.opp_mana >= COUNTER_ESTIMATED_COST
-                                   else COUNTER_PROB_REACTIVE_LOW)
-        else:
-            counter_probability = (COUNTER_PROB_PROACTIVE_DECK
-                                   if projected.opp_mana >= COUNTER_ESTIMATED_COST
-                                   else COUNTER_PROB_NO_MANA)
-
-    # Estimate: can opponent remove a creature we just deployed?
     removal_probability = 0.0
-    if t.is_creature and projected.opp_mana >= REMOVAL_ESTIMATED_COST:
-        removal_probability = REMOVAL_PROB_PROACTIVE_DECK
-        if game:
-            opp = game.players[1 - player_idx]
-            opp_archetype = DECK_ARCHETYPES.get(opp.deck_name)
-            if opp_archetype and opp_archetype.value in reactive_archetypes:
-                removal_probability = REMOVAL_PROB_REACTIVE_DECK
+
+    if game:
+        opp = game.players[1 - player_idx]
+        if can_counter and opp.counter_density > 0:
+            counter_probability = 1.0 - (1.0 - opp.counter_density) ** opp_hand_size
+        if t.is_creature and projected.opp_mana >= REMOVAL_ESTIMATED_COST and opp.removal_density > 0:
+            removal_probability = 1.0 - (1.0 - opp.removal_density) ** opp_hand_size
 
     # Compute expected value as weighted average of outcomes:
     # P(counter) * V(countered) + P(removal) * V(removed) + P(pass) * V(projected)
@@ -611,14 +594,7 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
         return ev
 
     # Recover response probabilities (same logic as estimate_opponent_response)
-    from ai.strategy_profile import DECK_ARCHETYPES
-    from ai.constants import (
-        COUNTER_PROB_REACTIVE_DECK, COUNTER_PROB_REACTIVE_LOW,
-        COUNTER_PROB_PROACTIVE_DECK, COUNTER_PROB_NO_MANA,
-        REMOVAL_PROB_REACTIVE_DECK, REMOVAL_PROB_PROACTIVE_DECK,
-        COUNTER_ESTIMATED_COST, REMOVAL_ESTIMATED_COST,
-    )
-    reactive_archetypes = {'control', 'tempo', 'midrange'}
+    from ai.constants import COUNTER_ESTIMATED_COST, REMOVAL_ESTIMATED_COST
     counter_pct = 0.0
     removal_pct = 0.0
     t = card.template
@@ -626,22 +602,13 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
     can_counter = (projected.opp_mana >= COUNTER_ESTIMATED_COST
                    and "can't be countered" not in oracle
                    and "can\u2019t be countered" not in oracle)
-    if can_counter and game:
-        opp_arch = DECK_ARCHETYPES.get(game.players[1 - player_idx].deck_name)
-        if opp_arch and opp_arch.value in reactive_archetypes:
-            counter_pct = (COUNTER_PROB_REACTIVE_DECK
-                           if projected.opp_mana >= COUNTER_ESTIMATED_COST
-                           else COUNTER_PROB_REACTIVE_LOW)
-        else:
-            counter_pct = (COUNTER_PROB_PROACTIVE_DECK
-                           if projected.opp_mana >= COUNTER_ESTIMATED_COST
-                           else COUNTER_PROB_NO_MANA)
-    if t.is_creature and projected.opp_mana >= REMOVAL_ESTIMATED_COST and game:
-        opp_arch = DECK_ARCHETYPES.get(game.players[1 - player_idx].deck_name)
-        if opp_arch and opp_arch.value in reactive_archetypes:
-            removal_pct = REMOVAL_PROB_REACTIVE_DECK
-        else:
-            removal_pct = REMOVAL_PROB_PROACTIVE_DECK
+    opp_hand = snap.opp_hand_size if snap.opp_hand_size > 0 else 5
+    if game:
+        opp = game.players[1 - player_idx]
+        if can_counter and opp.counter_density > 0:
+            counter_pct = 1.0 - (1.0 - opp.counter_density) ** opp_hand
+        if t.is_creature and projected.opp_mana >= REMOVAL_ESTIMATED_COST and opp.removal_density > 0:
+            removal_pct = 1.0 - (1.0 - opp.removal_density) ** opp_hand
 
     return ev, {
         'current_value': current_value,

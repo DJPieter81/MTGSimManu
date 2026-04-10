@@ -262,6 +262,21 @@ class GameRunner:
                 game.players[p_idx].effective_cmc_overrides = dict(
                     ai.goal_engine.gameplan.mulligan_effective_cmc)
 
+        # Compute deck composition densities for lookahead opponent modeling.
+        # These let the AI estimate P(opponent holds counter/removal) from
+        # the actual deck, not archetype heuristics.
+        for p_idx in range(2):
+            p = game.players[p_idx]
+            total = len(p.library) + len(p.hand)
+            if total > 0:
+                counters = sum(1 for c in p.library + p.hand
+                               if 'counterspell' in getattr(c.template, 'tags', set()))
+                removal = sum(1 for c in p.library + p.hand
+                              if 'removal' in getattr(c.template, 'tags', set())
+                              and 'board_wipe' not in getattr(c.template, 'tags', set()))
+                p.counter_density = counters / total
+                p.removal_density = removal / total
+
         # Mulligan phase
         mulligan_counts = [0, 0]
         for p_idx in range(2):

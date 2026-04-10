@@ -289,17 +289,6 @@ LOOKAHEAD_WEIGHT = 0.3             # Weight for projected state delta
 LOOKAHEAD_CLAMP_MIN = -20.0
 LOOKAHEAD_CLAMP_MAX = 20.0
 
-# Opponent response probabilities — estimated from open mana + deck archetype
-# Counter probabilities (opponent has 2+ mana open)
-COUNTER_PROB_REACTIVE_DECK = 0.25  # Control/tempo/midrange with 2+ mana
-COUNTER_PROB_REACTIVE_LOW = 0.10   # Control/tempo/midrange with 1 mana
-COUNTER_PROB_PROACTIVE_DECK = 0.10 # Aggro/combo/ramp with 2+ mana
-COUNTER_PROB_NO_MANA = 0.0         # No mana open
-
-# Removal probabilities (opponent has 1+ mana, we deployed a creature)
-REMOVAL_PROB_REACTIVE_DECK = 0.25  # Control/midrange
-REMOVAL_PROB_PROACTIVE_DECK = 0.15 # Aggro/combo/ramp
-
 # Estimated mana costs for opponent responses
-COUNTER_ESTIMATED_COST = 2         # Most counters cost 2
-REMOVAL_ESTIMATED_COST = 1         # Most removal costs 1
+COUNTER_ESTIMATED_COST = 2         # Most counters cost 2 (Counterspell, Mana Leak)
+REMOVAL_ESTIMATED_COST = 1         # Most removal costs 1 (Bolt, Push, Ending)
