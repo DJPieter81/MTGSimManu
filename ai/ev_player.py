@@ -252,10 +252,12 @@ class EVPlayer:
             candidates.append(equip_play)
 
         if not candidates:
+            self._last_candidates = []
             return None
 
         # Sort by EV, pick the best
         candidates.sort(key=lambda p: p.ev, reverse=True)
+        self._last_candidates = candidates
         best = candidates[0]
 
         if best.ev < self.profile.pass_threshold:
