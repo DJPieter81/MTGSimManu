@@ -379,6 +379,7 @@ def inspect_deck(deck_name: str) -> str:
 def run_verbose_game(deck1: str, deck2: str, seed: int = 42000) -> str:
     """Run a single verbose game, return the full log as string."""
     runner = _get_runner()
+    runner.rng = random.Random(seed)
     d1 = MODERN_DECKS[deck1]
     d2 = MODERN_DECKS[deck2]
     random.seed(seed)
@@ -407,12 +408,17 @@ def run_trace_game(deck1: str, deck2: str, seed: int = 42000) -> str:
     from ai.ev_evaluator import snapshot_from_game
 
     runner = _get_runner()
+    runner.rng = random.Random(seed)
     lines = []
 
     orig_main = EVPlayer.decide_main_phase
     orig_atk = EVPlayer.decide_attackers
 
     def traced_main(self, game, excluded_cards=None):
+        # Run the real decision FIRST — no re-scoring, no RNG divergence
+        result = orig_main(self, game, excluded_cards)
+
+        # Read back the state and scored candidates from the decision
         me = game.players[self.player_idx]
         opp = game.players[1 - self.player_idx]
         hand_spells = [c.name for c in me.hand if not c.template.is_land]
@@ -422,44 +428,28 @@ def run_trace_game(deck1: str, deck2: str, seed: int = 42000) -> str:
         bf_other = [c.name for c in me.battlefield
                     if not c.template.is_creature and not c.template.is_land]
         opp_creatures = [f'{c.name} ({c.power}/{c.toughness})' for c in opp.creatures]
-        castable = [c.name for c in me.hand
-                    if not c.template.is_land and game.can_cast(self.player_idx, c)]
         gy_count = len(me.graveyard)
 
         lines.append(f'')
         lines.append(f'T{game.turn_number} {self.deck_name} | '
                      f'life={me.life} mana={mana} hand={len(hand_spells)}+{hand_lands}L gy={gy_count}')
         lines.append(f'  Hand: {hand_spells}')
-        lines.append(f'  Castable: {castable}')
         if bf_creatures:
             lines.append(f'  Board: {bf_creatures}')
         if bf_other:
             lines.append(f'  Permanents: {bf_other}')
         lines.append(f'  Opp board: {opp_creatures} (life={opp.life})')
 
-        # Score all candidates
-        snap = snapshot_from_game(game, self.player_idx)
-        legal = game.get_legal_plays(self.player_idx)
-        if excluded_cards:
-            legal = [c for c in legal if c.instance_id not in excluded_cards]
-        scored = []
-        for c in legal:
-            if c.template.is_land:
-                ev = self._score_land(c, me, [x for x in legal if not x.template.is_land], game)
-                scored.append((ev, f'play_land: {c.name}'))
-            elif game.can_cast(self.player_idx, c):
-                ev = self._score_spell(c, snap, game, me, opp)
-                scored.append((ev, f'cast: {c.name}'))
-        scored.sort(reverse=True)
-        if scored:
+        # Display candidates from the actual decision (no re-scoring)
+        candidates = getattr(self, '_last_candidates', [])
+        if candidates:
             lines.append(f'  EV scores:')
-            for ev, desc in scored[:6]:
-                marker = ' <--' if scored and desc == scored[0][1] else ''
-                lines.append(f'    {ev:+6.1f}  {desc}{marker}')
-            if len(scored) > 6:
-                lines.append(f'    ... +{len(scored)-6} more')
+            for play in candidates[:6]:
+                marker = ' <--' if play is candidates[0] else ''
+                lines.append(f'    {play.ev:+6.1f}  {play.action}: {play.card.name}{marker}')
+            if len(candidates) > 6:
+                lines.append(f'    ... +{len(candidates)-6} more')
 
-        result = orig_main(self, game, excluded_cards)
         if result:
             lines.append(f'  >>> {result[0].upper()}: {result[1].name}')
         else:
