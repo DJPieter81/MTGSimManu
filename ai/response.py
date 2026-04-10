@@ -37,6 +37,12 @@ class ResponseDecider:
         instants = [c for c in player.hand
                     if (c.template.is_instant or c.template.has_flash)
                     and game.can_cast(self.player_idx, c)]
+
+        # "Can't be countered" — don't try counterspells against these
+        threat_oracle = (stack_item.source.template.oracle_text or '').lower()
+        if "can't be countered" in threat_oracle or "can\u2019t be countered" in threat_oracle:
+            instants = [c for c in instants if "counterspell" not in c.template.tags]
+
         if not instants:
             if self.strategic_logger:
                 self.strategic_logger.log_no_response(

@@ -584,6 +584,30 @@ def prismatic_ending_resolve(game, card, controller, targets=None, item=None):
                         f"Prismatic Ending exiles {target.name}")
 
 
+@EFFECT_REGISTRY.register("March of Otherworldly Light", EffectTiming.SPELL_RESOLVE,
+                           description="Exile target artifact, creature, or enchantment with MV <= X")
+def march_otherworldly_light_resolve(game, card, controller, targets=None, item=None):
+    from .cards import CardType
+    opponent = 1 - controller
+    opp = game.players[opponent]
+    # X = mana spent beyond the base W cost (total lands available as proxy)
+    x_val = len(game.players[controller].lands)
+    exile_targets = [c for c in opp.battlefield
+                     if not c.template.is_land
+                     and (CardType.ARTIFACT in c.template.card_types
+                          or CardType.CREATURE in c.template.card_types
+                          or CardType.ENCHANTMENT in c.template.card_types)
+                     and c.template.cmc <= x_val]
+    if exile_targets:
+        target = max(exile_targets, key=lambda c: c.template.cmc)
+        game._exile_permanent(target)
+        game.log.append(f"T{game.turn_number} P{controller+1}: "
+                        f"March of Otherworldly Light exiles {target.name}")
+    else:
+        game.log.append(f"T{game.turn_number} P{controller+1}: "
+                        f"March of Otherworldly Light: no valid targets")
+
+
 @EFFECT_REGISTRY.register("Ephemerate", EffectTiming.SPELL_RESOLVE,
                            description="Blink target creature you control")
 def ephemerate_resolve(game, card, controller, targets=None, item=None):
@@ -1297,6 +1321,43 @@ def _primeval_titan_search(game, controller):
 # ═══════════════════════════════════════════════════════════════════
 # Dimir Midrange package
 # ═══════════════════════════════════════════════════════════════════
+
+@EFFECT_REGISTRY.register("Wan Shi Tong, Librarian", EffectTiming.ETB,
+                           description="Put X +1/+1 counters, draw half X cards (X = opponent's library searches)")
+def wan_shi_tong_etb(game, card, controller, targets=None, item=None):
+    """Wan Shi Tong enters with X +1/+1 counters where X = opponent searches."""
+    opponent = 1 - controller
+    x = game.players[opponent].library_searches_this_game
+    if x > 0:
+        card.plus_counters += x
+        draw_count = x // 2
+        if draw_count > 0:
+            game.draw_cards(controller, draw_count)
+        game.log.append(f"T{game.turn_number} P{controller+1}: "
+                        f"Wan Shi Tong enters with {x} +1/+1 counters "
+                        f"({card.power}/{card.toughness}), draws {draw_count} cards")
+    else:
+        game.log.append(f"T{game.turn_number} P{controller+1}: "
+                        f"Wan Shi Tong enters (no opponent searches yet)")
+
+
+@EFFECT_REGISTRY.register("Sanctifier en-Vec", EffectTiming.ETB,
+                           description="Exile all black and red cards from all graveyards")
+def sanctifier_en_vec_etb(game, card, controller, targets=None, item=None):
+    """Sanctifier en-Vec: exile all black/red cards from all graveyards."""
+    exiled = 0
+    for p in game.players:
+        to_exile = [c for c in p.graveyard
+                    if c.template.color_identity & {"B", "R"}]
+        for c in to_exile:
+            p.graveyard.remove(c)
+            c.zone = "exile"
+            p.exile.append(c)
+            exiled += 1
+    if exiled > 0:
+        game.log.append(f"T{game.turn_number} P{controller+1}: "
+                        f"Sanctifier en-Vec exiles {exiled} black/red cards from graveyards")
+
 
 @EFFECT_REGISTRY.register("Orcish Bowmasters", EffectTiming.ETB,
                            description="Deal 1 damage to any target, create Orc Army token")
