@@ -259,28 +259,17 @@ class EVPlayer:
             self._last_candidates = []
             return None
 
-        # 1-ply lookahead: adjust spell EV by projected state delta.
-        # The heuristic score handles card-specific quirks (storm sequencing,
-        # landfall deferral, etc.). The lookahead adds macro strategy by
-        # modeling "what does the board look like after I cast this AND
-        # the opponent responds?"
+        # Enrich spell candidates with counter/removal probabilities for trace output
         from ai.ev_evaluator import compute_play_ev
-        from ai.constants import (
-            HEURISTIC_WEIGHT, LOOKAHEAD_WEIGHT,
-            LOOKAHEAD_CLAMP_MIN, LOOKAHEAD_CLAMP_MAX,
-        )
         for play in candidates:
             if play.action == "cast_spell":
-                raw_ev, info = compute_play_ev(
+                _, info = compute_play_ev(
                     play.card, snap, self.archetype, game, self.player_idx,
                     detailed=True)
-                lookahead_clamped = max(LOOKAHEAD_CLAMP_MIN,
-                                        min(LOOKAHEAD_CLAMP_MAX, raw_ev))
                 play.heuristic_ev = play.ev
-                play.lookahead_ev = raw_ev
+                play.lookahead_ev = play.ev
                 play.counter_pct = info['counter_pct']
                 play.removal_pct = info['removal_pct']
-                play.ev = play.ev * HEURISTIC_WEIGHT + lookahead_clamped * LOOKAHEAD_WEIGHT
 
         # Sort by EV, pick the best
         candidates.sort(key=lambda p: p.ev, reverse=True)
