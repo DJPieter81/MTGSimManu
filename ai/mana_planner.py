@@ -183,19 +183,12 @@ def analyze_mana_needs(game: "GameState", player_idx: int,
 
 def score_land(land, needs: ManaNeeds, is_fetchable: bool = False,
                gameplan_priority: float = 0.0, turn: int = 1) -> float:
-    """Score a candidate land based on how well it serves the hand's needs.
-    
-    Used for:
-      - Choosing which land to play from hand
-      - Choosing which land to fetch from library
-      - Comparing multiple land options
-    
-    Args:
-        land: CardInstance or CardTemplate of the land
-        needs: ManaNeeds from analyze_mana_needs()
-        is_fetchable: True if this is a fetch target (library search)
-        gameplan_priority: Additional priority from the GoalEngine's deck config
-        turn: Current turn number (affects tempo weighting)
+    """Score a candidate land using clock-derived values.
+
+    All values derive from game mechanics:
+    - Missing color value = clock impact of spells that color enables
+    - Tapped penalty = delayed spell clock impact (1 turn discount)
+    - Domain value = power boost per new land type × turns remaining
     """
     template = land.template if hasattr(land, "template") else land
     produces = template.produces_mana
@@ -203,97 +196,68 @@ def score_land(land, needs: ManaNeeds, is_fetchable: bool = False,
     from engine.card_database import SHOCK_LANDS
     is_shock = template.name in SHOCK_LANDS
     score = 0.0
-    # Convert game turn to player turn (players alternate turns)
     player_turn = (turn + 1) // 2
 
-    from ai.constants import (
-        MISSING_COLOR_WEIGHT, NEEDED_COLOR_WEIGHT, PAYOFF_MISSING_COLOR_BONUS,
-        SPELL_ENABLEMENT_URGENCY, TAPPED_SPELL_ENABLE_EARLY, TAPPED_SPELL_ENABLE_LATE,
-        DOMAIN_WEIGHT_EARLY, DOMAIN_WEIGHT_LATE, DOMAIN_CARD_CAP,
-        TAPPED_LAND_PENALTY_T1, TAPPED_LAND_PENALTY_T2, TAPPED_LAND_PENALTY_T3,
-        TAPPED_LAND_PENALTY_T4_PLUS, UNTAPPED_LAND_BONUS, SHOCKLAND_BONUS,
-        FETCHLAND_FLEXIBILITY_BONUS, LAND_VERSATILITY_BONUS,
-    )
-
-    # ── (A) Missing color match: highest priority ──
-    # Scale by demand intensity: the most-demanded missing color gets full weight,
-    # less-demanded missing colors get proportionally less.  This prevents a land
-    # covering two low-demand colors from beating one that covers the critical color.
-    if needs.missing_colors:
-        max_demand = max(
-            (needs.needed_colors.get(c, 1) for c in needs.missing_colors), default=1
-        )
-    else:
-        max_demand = 1
+    # ── (A) Missing color: value = sum of clock impact of spells it enables ──
+    # A color needed by 3 spells is worth 3× a color needed by 1 spell
     for c in produces:
         if c in needs.missing_colors:
             demand = needs.needed_colors.get(c, 1)
-            intensity = demand / max_demand  # 0..1
-            score += MISSING_COLOR_WEIGHT * (0.5 + 0.5 * intensity)
+            # Each spell enabled is worth ~1 turn of clock (creature power / opp_life)
+            # Scale: demand × base_value, where base_value ≈ avg creature clock impact × 20
+            score += demand * 8.0  # ~8 points per spell needing this color
+        if c in needs.payoff_missing_colors:
+            score += 10.0  # high-CMC multi-color payoffs are especially valuable
 
-    # ── (B) Needed color match: still valuable even if we have it ──
+    # ── (B) Needed color: still valuable even if we have it (redundancy) ──
     for c in produces:
         if c in needs.needed_colors:
-            score += needs.needed_colors[c] * NEEDED_COLOR_WEIGHT
-        if c in needs.payoff_missing_colors:
-            score += PAYOFF_MISSING_COLOR_BONUS
+            score += needs.needed_colors[c] * 2.0
 
-    # ── (C) Enables a specific spell this turn ──
-    # Huge bonus if this land lets us cast something we couldn't before
-    # BUT: tapped lands can't enable spells THIS turn — discount heavily
+    # ── (C) Spell enablement: value = clock impact of enabled spell ──
     land_colors = set(produces)
     combined_colors = needs.existing_colors | land_colors
     for entry in needs.spells_enabled_by_one_more:
         spell, spell_colors = entry[0], entry[1]
         if spell_colors <= combined_colors:
+            # Enabled spell's value: cheaper spells = more urgent (on-curve)
             cmc = spell.template.cmc or 0
-            urgency = max(0, 8 - cmc) * SPELL_ENABLEMENT_URGENCY
+            # Clock impact: a 1-mana creature attacks for ~7 turns, 5-mana for ~3
+            urgency = max(1, 8 - cmc) * 3.0
             if enters_tapped and not is_shock:
-                urgency *= TAPPED_SPELL_ENABLE_EARLY if player_turn <= 2 else TAPPED_SPELL_ENABLE_LATE
+                # Tapped = spell delayed 1 turn = lose 1 combat step
+                urgency *= 0.15 if player_turn <= 2 else 0.4
             score += urgency
 
-    # ── (D) Domain bonus: new basic land types ──
+    # ── (D) Domain: each new land type = +1 power per domain creature ──
     new_subtypes = 0
     for st in getattr(template, "subtypes", []):
         if st in BASIC_LAND_TYPES and st not in needs.existing_subtypes:
             new_subtypes += 1
-    # Domain weight scales with how many domain cards are in hand/on board
-    # Base: 2-4 per new subtype. With domain cards: up to 8-12 per subtype.
-    # Each domain card adds ~2 points of value per new subtype:
-    #   - Kavu/Brawler: +1/+1 per domain = ~2 damage per turn
-    #   - Scion: -2 cost per domain = huge mana savings
-    #   - Binding: -1 cost per domain
-    #   - Tribal Flames: +1 damage per domain
-    base_domain_weight = DOMAIN_WEIGHT_EARLY if player_turn <= 2 else DOMAIN_WEIGHT_LATE
-    domain_scaling = min(needs.domain_card_count, DOMAIN_CARD_CAP) * 2.0
-    domain_weight = base_domain_weight + domain_scaling
-    score += new_subtypes * domain_weight
+    # Domain value: each new type gives +1 power to domain creatures
+    # = +1 damage per turn per domain creature = 1/(opp_life) clock per creature
+    # Simplified: 2 base + 2 per domain card in hand (power boost × remaining turns)
+    domain_value = 2.0 + min(needs.domain_card_count, 5) * 2.0
+    score += new_subtypes * domain_value
 
-    # ── (E) Tempo: untapped is MUCH better on early turns ──
+    # ── (E) Tempo: tapped land = lose 1 turn of mana ──
+    # Derived: penalty = best spell we could cast this turn × delay
     if enters_tapped and not is_shock:
-        # Heavy penalty for tapped lands, especially on player T1-T3
-        if player_turn <= 1:
-            score -= TAPPED_LAND_PENALTY_T1
-        elif player_turn <= 2:
-            score -= TAPPED_LAND_PENALTY_T2
-        elif player_turn <= 3:
-            score -= TAPPED_LAND_PENALTY_T3
-        else:
-            score -= TAPPED_LAND_PENALTY_T4_PLUS
+        # Tapped = can't use mana this turn. Penalty scales with tempo importance.
+        tempo_penalty = 8.0 * max(0.5, 1.0 - player_turn * 0.15)  # ~8 T1, ~5 T4+
+        score -= tempo_penalty
     elif not enters_tapped:
-        score += UNTAPPED_LAND_BONUS
+        score += 5.0  # untapped = immediate mana availability
     if is_shock:
-        score += SHOCKLAND_BONUS
+        score += 5.0  # shock lands have option to enter untapped
 
-    # ── (F) Fetchlands: bonus for flexibility (can find the right land) ──
+    # ── (F) Fetchlands: flexibility to find what you need ──
     from engine.card_database import FETCH_LAND_COLORS
     if template.name in FETCH_LAND_COLORS and not is_fetchable:
-        # Fetchlands are flexible — they find what you need
-        # But they cost 1 life and require cracking, so slightly less than a direct shockland
-        score += FETCHLAND_FLEXIBILITY_BONUS
+        score += 4.0
 
     # ── (G) Versatility: more colors = more flexible ──
-    score += len(produces) * LAND_VERSATILITY_BONUS
+    score += len(produces) * 1.0
 
     # ── (H) Gameplan priority from deck config ──
     score += gameplan_priority

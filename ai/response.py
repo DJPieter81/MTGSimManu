@@ -210,80 +210,50 @@ class ResponseDecider:
         return []
 
     def evaluate_stack_threat(self, game: "GameState", stack_item: "StackItem") -> float:
-        """Evaluate how threatening a stack item is (0-10 scale).
-        All thresholds from ai/constants.py."""
-        from ai.evaluator import estimate_permanent_value
+        """Evaluate how threatening a stack item is using clock impact.
+
+        Threat = how much this spell worsens our position if it resolves.
+        Derived from game mechanics, not arbitrary weights.
+        """
+        from ai.ev_evaluator import EVSnapshot, snapshot_from_game, evaluate_board
+        from ai.ev_evaluator import _project_spell
         from decks.card_knowledge_loader import get_threat_value, get_burn_damage
-        from ai.constants import (
-            THREAT_CMC_CAP, THREAT_CMC_MULT, BOARD_WIPE_BASE_THREAT,
-            COMBO_PIECE_THREAT, CREATURE_HIGH_POWER_THREAT, CREATURE_MID_POWER_THREAT,
-            BURN_DEFAULT_DAMAGE, BURN_FACE_THREAT_MULT,
-            BURN_LOW_LIFE_THRESHOLD_PCT, BURN_LOW_LIFE_THREAT_BONUS,
-            LETHAL_BURN_THREAT_BONUS, REMOVAL_TARGET_THREAT_MULT,
-            CASCADE_THREAT, REANIMATE_THREAT,
-        )
 
         source = stack_item.source
         template = source.template
-        threat = 0.0
+        opp_idx = 1 - self.player_idx
 
-        # Base threat from CMC
-        threat += min(template.cmc, THREAT_CMC_CAP) * THREAT_CMC_MULT
+        # Use projection: what does the board look like if this spell resolves?
+        # Score from OPPONENT's perspective (their spell improving their position)
+        snap = snapshot_from_game(game, opp_idx)
+        archetype = getattr(self, 'opp_archetype', 'midrange')
+        current = evaluate_board(snap, archetype)
+        projected = _project_spell(source, snap, None, game, opp_idx)
+        after = evaluate_board(projected, archetype)
+        threat = after - current  # positive = opponent's position improved
 
-        # Board wipes
-        if "board_wipe" in template.tags:
-            my_creatures = len(game.players[self.player_idx].creatures)
-            if my_creatures >= 2:
-                threat += BOARD_WIPE_BASE_THREAT + my_creatures
-
-        # Combo pieces
-        if "combo" in template.tags:
-            threat += COMBO_PIECE_THREAT
-
-        # Creatures — use effective power
-        effective_power = template.power or 0
-        if effective_power == 0 and template.is_creature:
-            if any(kw in (template.tags or set()) for kw in ('domain', 'domain_power')):
-                effective_power = 5
-            elif template.toughness and template.toughness >= 3:
-                effective_power = template.toughness - 1
-
-        # Card knowledge threat value
+        # Card knowledge can override if it's higher
         known_threat = get_threat_value(source.name)
         if known_threat > 0:
             threat = max(threat, known_threat)
 
-        if template.is_creature and effective_power >= 4:
-            threat += effective_power * CREATURE_HIGH_POWER_THREAT
-        elif template.is_creature and effective_power >= 2:
-            threat += effective_power * CREATURE_MID_POWER_THREAT
-
-        # Burn spells
+        # Lethal burn: huge threat
         known_burn = get_burn_damage(source.name)
-        if known_burn > 0 or 'burn' in template.tags or 'damage' in (template.tags or set()):
-            face_dmg = known_burn if known_burn > 0 else BURN_DEFAULT_DAMAGE
+        if known_burn > 0:
             my_life = game.players[self.player_idx].life
-            life_pct = face_dmg / max(my_life, 1)
-            threat += face_dmg * BURN_FACE_THREAT_MULT
-            if life_pct >= BURN_LOW_LIFE_THRESHOLD_PCT:
-                threat += BURN_LOW_LIFE_THREAT_BONUS
-            if my_life <= face_dmg:
-                threat += LETHAL_BURN_THREAT_BONUS
+            if my_life <= known_burn:
+                threat += 10.0  # lethal
 
-        # Removal targeting our stuff
-        if "removal" in template.tags:
-            me = game.players[self.player_idx]
-            if me.creatures:
-                best = max(me.creatures,
-                           key=lambda c: estimate_permanent_value(
-                               c, me, game, self.player_idx))
-                threat += estimate_permanent_value(
-                    best, me, game, self.player_idx) * REMOVAL_TARGET_THREAT_MULT
+        # Board wipes: scale with how many creatures we lose
+        if "board_wipe" in template.tags:
+            my_creatures = len(game.players[self.player_idx].creatures)
+            if my_creatures >= 2:
+                threat += my_creatures * 2.0
 
-        # Cascade / reanimate
-        if 'cascade' in getattr(source.template, 'tags', set()):
-            threat += CASCADE_THREAT
-        if 'reanimate' in getattr(source.template, 'tags', set()):
-            threat += REANIMATE_THREAT
+        # Cascade / reanimate: high variance, boost threat
+        if 'cascade' in getattr(template, 'tags', set()):
+            threat += 4.0
+        if 'reanimate' in getattr(template, 'tags', set()):
+            threat += 4.0
 
-        return threat
+        return max(0, threat)
