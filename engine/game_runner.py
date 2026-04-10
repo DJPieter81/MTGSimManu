@@ -27,72 +27,82 @@ class AICallbacks(GameCallbacks):
     """Wires engine callbacks to AI decision functions."""
 
     def should_shock_land(self, game, player_idx, land):
-        """EV-based shock decision: is paying 2 life worth having this land untapped?
+        """EV-based shock decision using board state projection.
 
-        Compares the value of untapped mana (spells enabled, tempo) against
-        the life cost (non-linear — 2 life at 20 is cheap, 2 life at 5 is expensive).
+        Projects two snapshots — one where we shock (untapped, lose 2 life)
+        and one where we don't (tapped, keep life) — and compares them
+        using the same evaluate_board() the rest of the AI uses.
+        No separate shock-specific weights needed.
         """
-        from ai.ev_evaluator import _life_value
-        from ai.constants import (
-            SHOCK_LETHAL_LIFE_THRESHOLD,
-            SHOCK_SPELL_URGENCY_BASE, SHOCK_SPELL_URGENCY_CMC_BASE,
-            SHOCK_COLOR_FIX_NEXT_TURN, SHOCK_OPP_PRESSURE_PER_POWER,
-        )
+        from ai.ev_evaluator import snapshot_from_game, evaluate_board
+        from ai.strategy_profile import DECK_ARCHETYPES
+        from ai.constants import SHOCK_LETHAL_LIFE_THRESHOLD
+        from engine.constants import SHOCK_LAND_LIFE_COST
 
         player = game.players[player_idx]
-        needs = analyze_mana_needs(game, player_idx)
-        land_colors = set(land.template.produces_mana)
 
         # Hard floor: never shock to death
         if player.life <= SHOCK_LETHAL_LIFE_THRESHOLD:
             return False
 
-        # Cost of shocking: life value lost (non-linear)
-        life_cost = _life_value(player.life) - _life_value(player.life - 2)
+        # Determine archetype for evaluation
+        deck_name = player.deck_name
+        arch_enum = DECK_ARCHETYPES.get(deck_name)
+        archetype = arch_enum.value if arch_enum else "midrange"
 
-        # Value of untapped: count spells enabled this turn + next turn
+        # Snapshot the current state
+        snap = snapshot_from_game(game, player_idx)
+
+        # Project "shocked" state: -2 life, +1 untapped mana
+        shocked = snap.__class__(
+            **{f.name: getattr(snap, f.name) for f in snap.__dataclass_fields__.values()}
+        )
+        shocked.my_life = snap.my_life - SHOCK_LAND_LIFE_COST
+        shocked.my_mana = snap.my_mana + 1
+        shocked.my_total_lands = snap.my_total_lands + 1
+
+        # Project "tapped" state: keep life, land is tapped (no mana this turn)
+        tapped = snap.__class__(
+            **{f.name: getattr(snap, f.name) for f in snap.__dataclass_fields__.values()}
+        )
+        tapped.my_total_lands = snap.my_total_lands + 1
+        # Tapped land: mana available doesn't increase this turn
+
+        # Compare board values
+        shocked_value = evaluate_board(shocked, archetype)
+        tapped_value = evaluate_board(tapped, archetype)
+
+        # Also factor in spell enablement: if shocking enables a spell
+        # we couldn't cast otherwise, that's a significant bonus
         existing_colors = set()
         for l in player.lands:
             existing_colors.update(l.template.produces_mana)
-        combined_colors = existing_colors | land_colors
+        land_colors = set(land.template.produces_mana)
+        combined = existing_colors | land_colors
 
-        untapped_value = 0.0
-        total_mana_untapped = len(player.untapped_lands) + 1
-        total_mana_tapped = len(player.untapped_lands)
-
+        enables_spell = False
+        mana_if_shocked = len(player.untapped_lands) + 1
+        mana_if_tapped = len(player.untapped_lands)
         for card in player.hand:
             if card.template.is_land:
                 continue
             cmc = card.template.cmc or 0
-            if cmc == 0:
+            if cmc == 0 or cmc > mana_if_shocked:
                 continue
-            mc = card.template.mana_cost
-            spell_colors = set()
-            for code, attr in [("W", "white"), ("U", "blue"), ("B", "black"),
-                               ("R", "red"), ("G", "green")]:
-                if getattr(mc, attr, 0) > 0:
-                    spell_colors.add(code)
+            if cmc > mana_if_tapped:
+                mc = card.template.mana_cost
+                spell_colors = set()
+                for code, attr in [("W", "white"), ("U", "blue"), ("B", "black"),
+                                   ("R", "red"), ("G", "green")]:
+                    if getattr(mc, attr, 0) > 0:
+                        spell_colors.add(code)
+                if spell_colors <= combined:
+                    enables_spell = True
+                    break
 
-            # Spell enabled THIS turn by untapped but not tapped
-            if (cmc <= total_mana_untapped and cmc > total_mana_tapped
-                    and spell_colors <= combined_colors):
-                untapped_value += max(SHOCK_SPELL_URGENCY_BASE,
-                                      SHOCK_SPELL_URGENCY_CMC_BASE - cmc)
-
-            # Spell enabled NEXT turn that needs this color
-            next_turn_mana = len(player.lands) + 1
-            if cmc <= next_turn_mana:
-                missing_for_spell = spell_colors - existing_colors
-                if missing_for_spell and missing_for_spell <= land_colors:
-                    untapped_value += SHOCK_COLOR_FIX_NEXT_TURN
-
-        # Opponent pressure: if they have creatures, we need mana for answers
-        opp = game.players[1 - player_idx]
-        if opp.creatures:
-            untapped_value += sum(c.power or 0 for c in opp.creatures) * SHOCK_OPP_PRESSURE_PER_POWER
-
-        # Decision: shock if the untapped value exceeds the life cost
-        return untapped_value > life_cost
+        # Shock if: projected board value is better shocked,
+        # OR shocking enables a spell we couldn't cast otherwise
+        return shocked_value > tapped_value or enables_spell
 
     def choose_fetch_target(self, game, player_idx, fetch_card, library, fetch_colors):
         player = game.players[player_idx]
