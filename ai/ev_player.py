@@ -378,7 +378,12 @@ class EVPlayer:
             if CardType.PLANESWALKER in t.card_types:
                 ev += p.planeswalker_bonus
             elif CardType.ARTIFACT in t.card_types and 'equipment' not in tags:
-                ev += p.artifact_bonus
+                # Lock pieces (Chalice-style: "counter that spell" + charge counters)
+                # score like planeswalkers — they warp the game
+                if 'counter' in oracle and 'charge counter' in oracle:
+                    ev += p.planeswalker_bonus
+                else:
+                    ev += p.artifact_bonus
             elif CardType.ENCHANTMENT in t.card_types:
                 ev += p.enchantment_bonus
 
@@ -513,7 +518,7 @@ class EVPlayer:
                 )
                 for c in me.hand if c.instance_id != card.instance_id
             )
-            if has_instant and not t.is_instant:
+            if has_instant and not t.is_instant and not t.has_flash:
                 remaining_mana = snap.my_mana - cmc
                 if remaining_mana < p.holdback_min_remaining_mana:
                     ev += p.holdback_penalty
@@ -749,6 +754,21 @@ class EVPlayer:
             existing_colors.update(l.template.produces_mana)
         new_colors = set(land.template.produces_mana) - existing_colors
         ev += len(new_colors) * p.land_new_color_bonus
+
+        # Bonus for colors that enable spells in hand we can't currently cast
+        land_colors = set(land.template.produces_mana)
+        for spell in spells:
+            if spell.template.is_land:
+                continue
+            mc = spell.template.mana_cost
+            spell_colors = set()
+            for code, attr in [("W", "white"), ("U", "blue"), ("B", "black"),
+                               ("R", "red"), ("G", "green")]:
+                if getattr(mc, attr, 0) > 0:
+                    spell_colors.add(code)
+            missing_for_spell = spell_colors - existing_colors
+            if missing_for_spell and missing_for_spell & land_colors:
+                ev += 3.0  # this land enables a spell we couldn't cast before
 
         from engine.card_database import FETCH_LAND_COLORS
         is_fetch = land.name in FETCH_LAND_COLORS
@@ -1087,10 +1107,20 @@ class EVPlayer:
                     return [best_kill_id]  # big threat, burn not near lethal
             return [-1]  # go face
 
-        # Removal (non-burn): target best opponent creature
+        # Removal (non-burn): target best opponent permanent
         if 'removal' in tags and 'board_wipe' not in tags:
             if opp.creatures:
                 best = max(opp.creatures, key=lambda c: creature_value(c))
+                return [best.instance_id]
+            return []
+
+        # Exile effects (March of Otherworldly Light, etc.): target best nonland permanent
+        oracle = (spell.template.oracle_text or '').lower()
+        if 'exile target' in oracle:
+            from engine.cards import CardType
+            nonland = [c for c in opp.battlefield if not c.template.is_land]
+            if nonland:
+                best = max(nonland, key=lambda c: c.template.cmc)
                 return [best.instance_id]
             return []
 
@@ -1150,6 +1180,9 @@ class EVPlayer:
                 return False  # modal spell with draw mode (Archmage's Charm)
             return True
         if 'removal' in tags and 'board_wipe' not in tags:
+            return True
+        # Exile effects that target opponent's permanents (March of Otherworldly Light, etc.)
+        if 'exile target' in oracle and ('artifact' in oracle or 'creature' in oracle or 'permanent' in oracle):
             return True
         if 'blink' in tags:
             return True
