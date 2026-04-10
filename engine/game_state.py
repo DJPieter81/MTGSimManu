@@ -93,6 +93,7 @@ class PlayerState:
     # Energy tracking
     energy_produced_this_game: int = 0
     energy_spent_this_game: int = 0
+    library_searches_this_game: int = 0
     silenced_this_turn: bool = False
     deck_name: str = ""
     # Effective CMC overrides from gameplan (e.g. domain cost reduction)
@@ -937,13 +938,38 @@ class GameState:
             player.battlefield.append(best_land)
             # Shuffle library
             self.rng.shuffle(player.library)
+            # Track library search and trigger opponent's search triggers
+            player.library_searches_this_game += 1
+            self._trigger_library_search(player_idx)
             # Trigger landfall for the fetched land
             self._trigger_landfall(player_idx)
         else:
             # No valid land found (shuffle anyway)
             self.rng.shuffle(player.library)
+            player.library_searches_this_game += 1
+            self._trigger_library_search(player_idx)
             self.log.append(f"T{self.turn_number} P{player_idx+1}: "
                            f"Crack {fetch_name} (no valid land found)")
+
+    def _trigger_library_search(self, searcher_idx: int):
+        """Trigger effects for opponents when a player searches their library.
+
+        Handles cards like Wan Shi Tong that grow when opponents search.
+        """
+        opp_idx = 1 - searcher_idx
+        opp = self.players[opp_idx]
+        for c in opp.battlefield:
+            oracle = (c.template.oracle_text or '').lower()
+            if 'whenever an opponent searches' in oracle and 'library' in oracle:
+                # +1/+1 counter
+                c.plus_counters += 1
+                # Draw a card if oracle says so
+                if 'draw a card' in oracle:
+                    self.draw_cards(opp_idx, 1)
+                self.log.append(
+                    f"T{self.turn_number} P{opp_idx+1}: "
+                    f"{c.name} triggers (opponent searched) — "
+                    f"+1/+1 counter ({c.power}/{c.toughness}), draw a card")
 
     def _trigger_landfall(self, player_idx: int):
         """Process landfall triggers for the given player."""

@@ -120,19 +120,33 @@ def has_cascade(oracle: str) -> bool:
     return 'cascade' in oracle.lower()
 
 
-def parse_x_cost(oracle: str, name: str) -> Optional[Dict]:
-    """Parse X-cost spell properties from oracle text."""
+def parse_x_cost(oracle: str, name: str, mana_cost_str: str = "") -> Optional[Dict]:
+    """Parse X-cost spell properties from oracle text and mana cost."""
     oracle_lower = oracle.lower()
+    mana_lower = mana_cost_str.lower() if mana_cost_str else ""
     # Check both {X} in mana cost format and "X" in oracle text
-    if '{x}' not in oracle_lower and ' x ' not in oracle_lower and not oracle_lower.startswith('x '):
+    if ('{x}' not in oracle_lower and ' x ' not in oracle_lower
+            and not oracle_lower.startswith('x ')
+            and '{x}' not in mana_lower):
         return None
 
-    # Detect XX costs (Chalice of the Void — {X}{X} mana cost)
-    multiplier = 2 if '{x}{x}' in oracle_lower else 1
+    # Detect XX costs from mana cost string (e.g. Chalice {X}{X})
+    multiplier = 2 if '{x}{x}' in mana_lower else 1
+    # Fallback: also check oracle text for {X}{X}
+    if multiplier == 1 and '{x}{x}' in oracle_lower:
+        multiplier = 2
+
+    # Determine counter type from oracle text
+    effect = ""
+    if 'charge counter' in oracle_lower:
+        effect = "charge_counters"
+    elif '+1/+1 counter' in oracle_lower:
+        effect = "plus1_counters"
 
     return {
         'multiplier': multiplier,
         'min_x': 1 if multiplier == 2 else 0,
+        'effect': effect,
     }
 
 
