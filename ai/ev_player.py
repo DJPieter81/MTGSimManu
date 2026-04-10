@@ -1219,15 +1219,9 @@ class EVPlayer:
                 c.power or 0
             ))
 
-            # Score: high priority — equipping Cranial Plating is game-winning
-            artifact_count = sum(1 for b in player.battlefield
-                                if CardType.ARTIFACT in b.template.card_types)
-            if "Cranial Plating" in equip.name:
-                ev = 15.0 + artifact_count * 2.0
-            elif "Nettlecyst" in equip.name:
-                ev = 12.0 + artifact_count * 1.5
-            else:
-                ev = 8.0
+            # Score equipping like deploying a creature with the bonus power
+            bonus = self._estimate_equip_bonus(equip, player)
+            ev = bonus * self.profile.creature_value_mult
 
             results.append(Play("equip", equip, [best.instance_id], ev,
                                 f"Equip {equip.name} to {best.name} (EV={ev:.1f})"))
@@ -1235,3 +1229,38 @@ class EVPlayer:
         if results:
             return max(results, key=lambda p: p.ev)
         return None
+
+    @staticmethod
+    def _estimate_equip_bonus(equip, player) -> float:
+        """Estimate power bonus from equipping, derived from oracle text.
+
+        Parses patterns like "+1/+0 for each artifact" or static "+2/+2".
+        Returns the effective power grant as a float.
+        """
+        import re
+        from engine.cards import CardType
+        oracle = (equip.template.oracle_text or '').lower()
+
+        # Dynamic: "+X/+Y for each artifact" or "+X/+Y for each artifact and/or enchantment"
+        m = re.search(r'\+(\d+)/[+\-]\d+ for each (artifact|enchantment)', oracle)
+        if m:
+            per_bonus = int(m.group(1))
+            if 'artifact and/or enchantment' in oracle or 'artifact or enchantment' in oracle:
+                count = sum(1 for b in player.battlefield
+                            if CardType.ARTIFACT in b.template.card_types
+                            or CardType.ENCHANTMENT in b.template.card_types)
+            elif 'artifact' in m.group(2):
+                count = sum(1 for b in player.battlefield
+                            if CardType.ARTIFACT in b.template.card_types)
+            else:
+                count = sum(1 for b in player.battlefield
+                            if CardType.ENCHANTMENT in b.template.card_types)
+            return per_bonus * count
+
+        # Static: "gets +X/+Y" or "+X/+Y"
+        m = re.search(r'\+(\d+)/[+\-]\d+', oracle)
+        if m:
+            return int(m.group(1))
+
+        # Fallback
+        return 2.0

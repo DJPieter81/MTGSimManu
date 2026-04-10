@@ -28,6 +28,7 @@ METAGAME_SHARES = {
     "Dimir Midrange": 2.8,
     "4c Omnath": 3.5,
     "4/5c Control": 3.5,
+    "Azorius Control": 2.5,
 }
 
 # Full decklists: mainboard + sideboard
@@ -538,6 +539,39 @@ MODERN_DECKS: Dict[str, Dict[str, Dict[str, int]]] = {
             "Mystical Dispute": 4,
             "Surgical Extraction": 2,
             "Wear // Tear": 3,
+        },
+    },
+    "Azorius Control": {
+        # Wan Shi Tong draw-go control
+        "mainboard": {
+            "Wan Shi Tong, Librarian": 4,
+            "March of Otherworldly Light": 4,
+            "Chalice of the Void": 4,
+            "Wrath of the Skies": 4,
+            "Counterspell": 4,
+            "Prismatic Ending": 4,
+            "Supreme Verdict": 3,
+            "Teferi, Time Raveler": 3,
+            "Sanctifier en-Vec": 3,
+            "Dovin's Veto": 2,
+            "Flooded Strand": 4,
+            "Marsh Flats": 4,
+            "Hallowed Fountain": 2,
+            "Steam Vents": 1,
+            "Sacred Foundry": 1,
+            "Meticulous Archive": 1,
+            "Island": 7,
+            "Plains": 5,
+        },
+        "sideboard": {
+            "Subtlety": 3,
+            "Damping Sphere": 3,
+            "Rest in Peace": 2,
+            "Engineered Explosives": 2,
+            "Consign to Memory": 2,
+            "Dovin's Veto": 1,
+            "Force of Negation": 1,
+            "Celestial Purge": 1,
         },
     },
 }

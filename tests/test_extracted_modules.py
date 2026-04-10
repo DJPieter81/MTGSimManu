@@ -157,7 +157,7 @@ class TestGameplanLoader:
     def test_load_all_gameplans(self):
         from decks.gameplan_loader import load_all_gameplans
         plans = load_all_gameplans()
-        assert len(plans) == 13
+        assert len(plans) == 14
 
     def test_load_specific_deck(self):
         from decks.gameplan_loader import load_gameplan

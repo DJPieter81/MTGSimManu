@@ -48,6 +48,7 @@ DECK_ARCHETYPES = {
     "Izzet Prowess":      ArchetypeStrategy.AGGRO,
     "4c Omnath":          ArchetypeStrategy.MIDRANGE,
     "4/5c Control":       ArchetypeStrategy.CONTROL,
+    "Azorius Control":    ArchetypeStrategy.CONTROL,
 }
 
 
