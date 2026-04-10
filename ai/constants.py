@@ -292,3 +292,9 @@ LOOKAHEAD_CLAMP_MAX = 20.0
 # Estimated mana costs for opponent responses
 COUNTER_ESTIMATED_COST = 2         # Most counters cost 2 (Counterspell, Mana Leak)
 REMOVAL_ESTIMATED_COST = 1         # Most removal costs 1 (Bolt, Push, Ending)
+
+# Damage removal effectiveness by creature toughness
+# High-toughness creatures survive most damage removal (Bolt=3, Push=CMC<=2)
+# but exile removal (Binding, Ending, March) always works
+DAMAGE_REMOVAL_EFF_HIGH_TOUGH = 0.3  # 4+ toughness: 30% of damage removal kills it
+DAMAGE_REMOVAL_EFF_MID_TOUGH = 0.6   # 3 toughness: 60% of damage removal kills it
