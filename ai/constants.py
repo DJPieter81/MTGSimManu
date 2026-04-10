@@ -276,3 +276,19 @@ MAX_ACTIONS_NORMAL = 20            # Max main phase actions for normal decks
 GAME_TIMEOUT_SECONDS = 8.0         # Safety timeout per game
 SHOCK_LETHAL_LIFE_THRESHOLD = 2    # Don't shock when life <= this
 SHOCK_LOW_LIFE_THRESHOLD = 4       # Only shock for critical colors at this life
+
+# ══════════════════════════════════════════════════════════════
+# 1-Ply Lookahead (ev_evaluator.py, ev_player.py)
+# ══════════════════════════════════════════════════════════════
+
+# Blend weights: final_ev = heuristic * HEURISTIC_WEIGHT + lookahead * LOOKAHEAD_WEIGHT
+HEURISTIC_WEIGHT = 0.7             # Weight for additive-bonus heuristic score
+LOOKAHEAD_WEIGHT = 0.3             # Weight for projected state delta
+
+# Clamp raw lookahead to this range before blending (prevents clock blow-ups)
+LOOKAHEAD_CLAMP_MIN = -20.0
+LOOKAHEAD_CLAMP_MAX = 20.0
+
+# Estimated mana costs for opponent responses
+COUNTER_ESTIMATED_COST = 2         # Most counters cost 2 (Counterspell, Mana Leak)
+REMOVAL_ESTIMATED_COST = 1         # Most removal costs 1 (Bolt, Push, Ending)

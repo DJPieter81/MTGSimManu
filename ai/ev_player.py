@@ -266,19 +266,22 @@ class EVPlayer:
         # modeling "what does the board look like after I cast this AND
         # the opponent responds?"
         from ai.ev_evaluator import compute_play_ev
+        from ai.constants import (
+            HEURISTIC_WEIGHT, LOOKAHEAD_WEIGHT,
+            LOOKAHEAD_CLAMP_MIN, LOOKAHEAD_CLAMP_MAX,
+        )
         for play in candidates:
             if play.action == "cast_spell":
                 raw_ev, info = compute_play_ev(
                     play.card, snap, self.archetype, game, self.player_idx,
                     detailed=True)
-                # Clamp lookahead to heuristic scale (-20 to +20) to avoid
-                # clock-based blow-ups, then blend with heuristic score
-                lookahead_clamped = max(-20.0, min(20.0, raw_ev))
+                lookahead_clamped = max(LOOKAHEAD_CLAMP_MIN,
+                                        min(LOOKAHEAD_CLAMP_MAX, raw_ev))
                 play.heuristic_ev = play.ev
                 play.lookahead_ev = raw_ev
                 play.counter_pct = info['counter_pct']
                 play.removal_pct = info['removal_pct']
-                play.ev = play.ev * 0.7 + lookahead_clamped * 0.3
+                play.ev = play.ev * HEURISTIC_WEIGHT + lookahead_clamped * LOOKAHEAD_WEIGHT
 
         # Sort by EV, pick the best
         candidates.sort(key=lambda p: p.ev, reverse=True)
