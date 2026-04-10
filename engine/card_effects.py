@@ -934,6 +934,37 @@ def force_of_vigor_resolve(game, card, controller, targets=None, item=None):
                         f"Force of Vigor: no valid targets")
 
 
+@EFFECT_REGISTRY.register("Wear // Tear", EffectTiming.SPELL_RESOLVE,
+                           description="Destroy target artifact and/or enchantment")
+def wear_tear_resolve(game, card, controller, targets=None, item=None):
+    from .cards import CardType
+    opponent = 1 - controller
+    opp = game.players[opponent]
+    destroyed = 0
+    # Wear: destroy best artifact
+    artifacts = [c for c in opp.battlefield
+                 if CardType.ARTIFACT in c.template.card_types]
+    if artifacts:
+        target = max(artifacts, key=lambda c: c.template.cmc)
+        game._permanent_destroyed(target)
+        game.log.append(f"T{game.turn_number} P{controller+1}: "
+                        f"Wear // Tear destroys {target.name}")
+        destroyed += 1
+    # Tear: destroy best enchantment
+    enchantments = [c for c in opp.battlefield
+                    if CardType.ENCHANTMENT in c.template.card_types
+                    and not c.template.is_creature]
+    if enchantments:
+        target = max(enchantments, key=lambda c: c.template.cmc)
+        game._permanent_destroyed(target)
+        game.log.append(f"T{game.turn_number} P{controller+1}: "
+                        f"Wear // Tear destroys {target.name}")
+        destroyed += 1
+    if destroyed == 0:
+        game.log.append(f"T{game.turn_number} P{controller+1}: "
+                        f"Wear // Tear: no valid targets")
+
+
 @EFFECT_REGISTRY.register("Pick Your Poison", EffectTiming.SPELL_RESOLVE,
                            description="Opponent sacrifices artifact/enchantment or creature with flying/reach")
 def pick_your_poison_resolve(game, card, controller, targets=None, item=None):

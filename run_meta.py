@@ -47,6 +47,9 @@ DECK_ALIASES = {
     "izzet": "Izzet Prowess",
     "affinity": "Affinity",
     "robots": "Affinity",
+    "azorius": "Azorius Control",
+    "uw": "Azorius Control",
+    "wst": "Azorius Control",
 }
 
 

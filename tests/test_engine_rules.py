@@ -89,6 +89,6 @@ class TestDeckLoading:
     def test_deck_names_match(self):
         from decks.modern_meta import get_all_deck_names
         names = get_all_deck_names()
-        assert len(names) == 13
+        assert len(names) == 14
         assert "Domain Zoo" in names
         assert "Dimir Midrange" in names

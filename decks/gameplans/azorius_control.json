@@ -1,0 +1,78 @@
+{
+  "deck_name": "Azorius Control",
+  "archetype": "control",
+  "goals": [
+    {
+      "goal_type": "INTERACT",
+      "description": "Counter threats, remove early creatures, deploy Chalice to lock 1-drops",
+      "card_priorities": {
+        "Chalice of the Void": 24.0,
+        "Prismatic Ending": 22.0,
+        "March of Otherworldly Light": 20.0,
+        "Counterspell": 18.0,
+        "Dovin's Veto": 16.0,
+        "Teferi, Time Raveler": 15.0
+      },
+      "card_roles": {
+        "interaction": [
+          "Chalice of the Void",
+          "Counterspell",
+          "Dovin's Veto",
+          "March of Otherworldly Light",
+          "Prismatic Ending"
+        ],
+        "enablers": [
+          "Teferi, Time Raveler"
+        ]
+      },
+      "min_turns": 2,
+      "hold_mana": true
+    },
+    {
+      "goal_type": "GRIND_VALUE",
+      "description": "Stabilize with sweepers, deploy Sanctifier vs red/black, Teferi for value",
+      "card_priorities": {
+        "Wrath of the Skies": 22.0,
+        "Supreme Verdict": 20.0,
+        "Sanctifier en-Vec": 18.0,
+        "Teferi, Time Raveler": 16.0,
+        "Wan Shi Tong, Librarian": 15.0
+      },
+      "card_roles": {
+        "interaction": [
+          "Supreme Verdict",
+          "Wrath of the Skies"
+        ],
+        "payoffs": [
+          "Sanctifier en-Vec",
+          "Teferi, Time Raveler"
+        ],
+        "engines": [
+          "Wan Shi Tong, Librarian"
+        ]
+      },
+      "hold_mana": true
+    },
+    {
+      "goal_type": "CLOSE_GAME",
+      "description": "Deploy Wan Shi Tong as finisher — grows from opponent's fetches, draws cards",
+      "card_priorities": {
+        "Wan Shi Tong, Librarian": 22.0,
+        "Sanctifier en-Vec": 14.0
+      }
+    }
+  ],
+  "mulligan_keys": [
+    "Chalice of the Void",
+    "Counterspell",
+    "Prismatic Ending",
+    "Teferi, Time Raveler",
+    "Wan Shi Tong, Librarian"
+  ],
+  "mulligan_min_lands": 2,
+  "mulligan_max_lands": 5,
+  "reactive_only": [
+    "Counterspell",
+    "Dovin's Veto"
+  ]
+}
