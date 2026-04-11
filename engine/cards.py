@@ -117,6 +117,11 @@ class CardTemplate:
     enters_tapped: bool = False
     # Life payment to enter untapped (shock lands = 2, derived from oracle text)
     untap_life_cost: int = 0
+    # Conditional untap: max other lands to enter untapped (fast lands = 2)
+    # -1 means no conditional check (always tapped or always untapped)
+    untap_max_other_lands: int = -1
+    # Self-damage when tapping for colored mana (pain lands = 1)
+    tap_damage: int = 0
     # For split/modal cards
     is_modal: bool = False
     modes: List[Dict] = field(default_factory=list)

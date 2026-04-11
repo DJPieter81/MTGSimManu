@@ -595,18 +595,16 @@ class GameState:
             return False
 
         # Tap lands and add mana
-        from .card_database import PAIN_LANDS
         for land, color in lands_to_tap:
             land.tap()
             player.mana_pool.add(color)
             # Add conditional mana bonus (e.g., Tron assembly)
-            # Uses the data-driven conditional_mana field from oracle text parsing
             bonus = cond_bonus_cache.get(id(land), 0)
             if bonus > 0:
                 player.mana_pool.add("C", bonus)
-            # Pain land: pay 1 life when tapping for colored mana
-            if land.name in PAIN_LANDS and color != "C":
-                player.life -= 1
+            # Pain land: self-damage when tapping for colored mana
+            if land.template.tap_damage > 0 and color != "C":
+                player.life -= land.template.tap_damage
 
         return player.mana_pool.pay(cost)
 
@@ -815,7 +813,7 @@ class GameState:
 
     def play_land(self, player_idx: int, card: CardInstance):
         """Play a land from hand to battlefield."""
-        from .card_database import FAST_LANDS, PAIN_LANDS, FETCH_LAND_COLORS
+        from .card_database import FETCH_LAND_COLORS
         player = self.players[player_idx]
         max_lands = 1 + player.extra_land_drops
         if player.lands_played_this_turn >= max_lands:
@@ -827,9 +825,8 @@ class GameState:
         player.lands_played_this_turn += 1
         card.controller = player_idx
 
-        # ── Always-tapped lands (triomes, etc.) ──
-        from .card_database import ALWAYS_TAPPED_LANDS
-        if card.name in ALWAYS_TAPPED_LANDS:
+        # ── Always-tapped lands (from oracle text: "enters tapped") ──
+        if card.template.enters_tapped and card.template.untap_life_cost == 0 and card.template.untap_max_other_lands < 0:
             card.enter_battlefield()
             card.tapped = True
             self.log.append(f"T{self.turn_number} P{player_idx+1}: Play {card.name} (enters tapped)")
@@ -848,11 +845,11 @@ class GameState:
                 card.entered_battlefield_this_turn = True
                 card.tapped = True
                 self.log.append(f"T{self.turn_number} P{player_idx+1}: Play {card.name} (tapped, no spells need mana)")
-        # ── Fast land: untapped if ≤ 2 other lands ──
-        elif card.name in FAST_LANDS:
+        # ── Conditional untap: untapped if ≤ N other lands (fast lands etc.) ──
+        elif card.template.untap_max_other_lands >= 0:
             other_lands = len([c for c in player.battlefield if c.template.is_land])
             card.enter_battlefield()
-            if other_lands <= 2:
+            if other_lands <= card.template.untap_max_other_lands:
                 card.tapped = False
                 self.log.append(f"T{self.turn_number} P{player_idx+1}: Play {card.name} (untapped, {other_lands} other lands)")
             else:

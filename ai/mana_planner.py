@@ -339,7 +339,7 @@ def choose_fetch_target(library: list, fetch_colors: list,
     Filters to only lands that match the fetch's color identity,
     then scores using the unified scoring system.
     """
-    from engine.card_database import SHOCK_LANDS, FETCH_LAND_COLORS
+    from engine.card_database import FETCH_LAND_COLORS
 
     prios = gameplan_priorities or {}
     best = None

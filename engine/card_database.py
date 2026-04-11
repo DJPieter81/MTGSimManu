@@ -931,17 +931,28 @@ class CardDatabase:
         produces_mana = []
         enters_tapped = False
         untap_life_cost = 0
+        untap_max_other_lands = -1
+        tap_damage = 0
         if CardType.LAND in card_types:
             produces_mana = OracleTextParser.detect_land_mana(oracle_text, subtypes, card_name=name)
             enters_tapped = OracleTextParser.detect_enters_tapped(oracle_text, card_name=name)
-            # Detect optional life payment for entering untapped (shock lands)
-            # Pattern: "you may pay N life. If you don't, it enters tapped"
+            # Detect land entry conditions from oracle text
             if oracle_text:
                 import re as _re
-                life_match = _re.search(r'you may pay (\d+) life.*enters tapped', oracle_text.lower())
+                ot = oracle_text.lower()
+                # Optional life payment: "you may pay N life. If you don't, it enters tapped"
+                life_match = _re.search(r'you may pay (\d+) life.*enters tapped', ot)
                 if life_match:
                     untap_life_cost = int(life_match.group(1))
-                    enters_tapped = False  # shock lands can enter untapped (default)
+                    enters_tapped = False  # can enter untapped (default)
+                # Conditional on land count: "enters tapped unless you control N or fewer other lands"
+                lands_match = _re.search(r'enters tapped unless you control (\w+) or fewer other lands', ot)
+                if lands_match:
+                    word_to_num = {"two": 2, "three": 3, "one": 1, "zero": 0, "four": 4}
+                    untap_max_other_lands = word_to_num.get(lands_match.group(1), 2)
+                # Pain land: "this land deals 1 damage to you"
+                if 'deals 1 damage to you' in ot or 'this land deals 1 damage' in ot:
+                    tap_damage = 1
 
         # Detect conditional mana production from oracle text
         # Pattern: "If you control an Urza's ... add {C}{C}{C} instead"
@@ -977,6 +988,8 @@ class CardDatabase:
             produces_mana=produces_mana,
             enters_tapped=enters_tapped,
             untap_life_cost=untap_life_cost,
+            untap_max_other_lands=untap_max_other_lands,
+            tap_damage=tap_damage,
             oracle_text=oracle_text,
             tags=tags,
             evoke_cost=evoke_cost,
