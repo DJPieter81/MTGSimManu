@@ -201,13 +201,6 @@ class EVPlayer:
         # Filter legends we already control
         spells = self._filter_legend_rule(me, spells)
 
-        # Compute combo assessment once per decision cycle (cached for all cards)
-        self._combo_assessment = None
-        if self.profile.has_combo_chain and self.goal_engine:
-            from ai.combo_calc import assess_combo
-            self._combo_assessment = assess_combo(
-                game, self.player_idx, self.goal_engine, snap, self.bhi)
-
         candidates: List[Play] = []
 
         # Score cycling plays (Living End style — cycle creatures to GY, then cascade)
@@ -289,27 +282,6 @@ class EVPlayer:
                 play.counter_pct = info['counter_pct']
                 play.removal_pct = info['removal_pct']
 
-        # ── Bait protocol: when P(counter) is significant, promote secondary
-        # spells that can draw out the counter, protecting the key threat.
-        # Bait bonus = P(counter) × (best_spell_EV_loss_from_counter).
-        # Fully derived from BHI posteriors — zero when tapped out or P=0.
-        # Skip for combo decks — they need tight sequencing, not baiting.
-        if (self.bhi and self.bhi._initialized
-                and len(candidates) >= 2
-                and not self.profile.has_combo_chain):
-            p_counter = self.bhi.get_counter_probability()
-            opp_mana = len(opp.untapped_lands) + opp.mana_pool.total()
-            if p_counter > 0 and opp_mana >= 2:
-                candidates.sort(key=lambda p: p.ev, reverse=True)
-                best_candidate = candidates[0]
-                if (hasattr(best_candidate, 'counter_pct')
-                        and best_candidate.counter_pct > 0):
-                    counter_loss = (best_candidate.ev * best_candidate.counter_pct
-                                    / (1.0 - best_candidate.counter_pct + 0.01))
-                    for spell in candidates[1:]:
-                        if spell.ev > self.profile.pass_threshold:
-                            spell.ev += p_counter * counter_loss
-
         # Sort by EV, pick the best
         candidates.sort(key=lambda p: p.ev, reverse=True)
         self._last_candidates = candidates
@@ -349,77 +321,221 @@ class EVPlayer:
 
         # ── Evoke overlay: projection doesn't model 2-card cost ──
         if ('evoke' in tags or 'evoke_pitch' in tags) and snap.my_mana < (t.cmc or 0):
-            # Evoke costs an extra card — derive from position_value delta
-            from ai.clock import position_value
-            snap_minus = EVSnapshot(
-                my_life=snap.my_life, opp_life=snap.opp_life,
-                my_power=snap.my_power, opp_power=snap.opp_power,
-                my_toughness=snap.my_toughness, opp_toughness=snap.opp_toughness,
-                my_creature_count=snap.my_creature_count,
-                opp_creature_count=snap.opp_creature_count,
-                my_hand_size=max(0, snap.my_hand_size - 1),
-                opp_hand_size=snap.opp_hand_size,
-                my_mana=snap.my_mana, opp_mana=snap.opp_mana,
-                my_total_lands=snap.my_total_lands,
-                opp_total_lands=snap.opp_total_lands,
-                turn_number=snap.turn_number, storm_count=snap.storm_count,
-                my_gy_creatures=snap.my_gy_creatures, my_energy=snap.my_energy,
-                my_evasion_power=snap.my_evasion_power,
-                my_lifelink_power=snap.my_lifelink_power,
-                opp_evasion_power=snap.opp_evasion_power,
-                cards_drawn_this_turn=snap.cards_drawn_this_turn,
-            )
-            evoke_cost = position_value(snap, self.archetype) - position_value(snap_minus, self.archetype)
-            ev -= evoke_cost
-            # Dying: survival value = combo_value (position swing from not dying)
+            # Evoking costs an extra card — subtract its future clock value
+            from ai.clock import card_clock_impact
+            ev -= card_clock_impact(snap) * 15  # losing a card is significant
+            # But if we're dying, evoking removal is still worth it
             if snap.am_dead_next:
-                combo_val = max(1.0, 100.0 - position_value(snap, self.archetype))
-                ev += combo_val
+                ev += 10.0
             elif snap.opp_creature_count == 0 and 'removal' in tags:
-                ev -= evoke_cost * 2  # wasting card + mana
+                ev -= 20.0  # never evoke removal with no targets
 
         # ── Combo sequencing overlay ──
         ev += self._combo_modifier(card, snap, game, me, opp)
 
-        # ── Mana holdback: derived opportunity cost of held instants ──
-        if p.holdback_applies and snap.opp_power > 0:
+        # ── Mana holdback: penalize tapping out when we hold instants ──
+        if p.holdback_applies and (snap.opp_power > 0 or snap.opp_hand_size >= 4):
             cmc = t.cmc or 0
-            if not t.is_instant and not t.has_flash:
+            has_instant = any(
+                c.template.is_instant and (
+                    'removal' in getattr(c.template, 'tags', set()) or
+                    'counterspell' in getattr(c.template, 'tags', set())
+                )
+                for c in me.hand if c.instance_id != card.instance_id
+            )
+            if has_instant and not t.is_instant and not t.has_flash:
                 remaining_mana = snap.my_mana - cmc
-                # Find best instant we'd lose access to by tapping out
-                best_instant_ev = 0.0
-                for c in me.hand:
-                    if c.instance_id == card.instance_id:
-                        continue
-                    c_tags = getattr(c.template, 'tags', set())
-                    if (c.template.is_instant
-                            and ('removal' in c_tags or 'counterspell' in c_tags)
-                            and (c.template.cmc or 0) > remaining_mana):
-                        instant_ev = compute_play_ev(c, snap, self.archetype,
-                                                     game, self.player_idx)
-                        best_instant_ev = max(best_instant_ev, instant_ev)
-                if best_instant_ev > 0:
-                    ev -= best_instant_ev
+                if remaining_mana < 2:
+                    ev -= 2.0  # tapping out loses instant-speed interaction
 
         return ev
 
     def _combo_modifier(self, card, snap: EVSnapshot,
                         game: "GameState", me, opp) -> float:
-        """Combo chain sequencing — delegates to combo_calc.
+        """Combo chain sequencing — logic the projection can't capture.
 
-        All values derived from position_value (combo_value = 100 - pos)
-        and chain outcomes (find_all_chains storm_damage). No arbitrary
-        constants — every scaling factor is a game-state quantity.
+        All values derived from clock impact:
+        - Lethal storm = game over = max value
+        - Fuel value = storm_count / opp_life (fraction of kill per spell)
+        - Hold penalty = negative of going-off value (opportunity cost)
         """
-        if not self.profile.has_combo_chain:
+        t = card.template
+        tags = getattr(t, 'tags', set())
+        p = self.profile
+
+        if not p.has_combo_chain:
             return 0.0
 
-        a = self._combo_assessment
-        if a is None or not a.resource_zone:
-            return 0.0
+        from engine.cards import Keyword as Kw
+        mod = 0.0
+        storm = me.spells_cast_this_turn
+        mana = snap.my_mana
+        opp_life = max(1, snap.opp_life)
 
-        from ai.combo_calc import card_combo_modifier
-        return card_combo_modifier(card, a, snap, me, game, self.player_idx)
+        # Helper: count fuel sources and check for finisher/PiF access
+        def _count_fuel():
+            return sum(1 for c in me.hand if c.instance_id != card.instance_id
+                       and not c.template.is_land
+                       and any(ft in getattr(c.template, 'tags', set())
+                               for ft in ('ritual', 'cantrip', 'draw')))
+
+        def _has_finisher():
+            return any(Kw.STORM in getattr(c.template, 'keywords', set())
+                       or 'tutor' in getattr(c.template, 'tags', set())
+                       for c in me.hand if c.instance_id != card.instance_id)
+
+        def _has_flashback_combo():
+            return any('flashback' in getattr(c.template, 'tags', set())
+                       and 'combo' in getattr(c.template, 'tags', set())
+                       for c in me.hand if c.instance_id != card.instance_id)
+
+        # ── Storm patience: hold rituals at storm=0 until ready ──
+        if p.storm_patience and storm == 0 and 'ritual' in tags:
+            fuel = _count_fuel()
+            reducers = sum(1 for c in me.battlefield
+                           if 'cost_reducer' in getattr(c.template, 'tags', set()))
+            has_pif = _has_flashback_combo()
+            gy_fuel = 0
+            if has_pif:
+                gy_fuel = sum(1 for c in me.graveyard
+                              if (c.template.is_instant or c.template.is_sorcery)
+                              and 'ritual' in getattr(c.template, 'tags', set()))
+            total_fuel = fuel + gy_fuel + 1
+            has_finisher = _has_finisher()
+            min_fuel = p.storm_min_fuel_to_go if reducers > 0 else p.storm_min_fuel_to_go + 2
+
+            can_go = (has_finisher and total_fuel >= min_fuel
+                      and mana >= (1 if reducers > 0 else 2))
+            if snap.am_dead_next and fuel >= 1:
+                can_go = True
+            if has_finisher and opp_life <= total_fuel and total_fuel >= 2:
+                can_go = True
+
+            # Value of going off = expected storm / opp_life (fraction of kill)
+            # Scaled to match spell scoring range (~10-20 for good plays)
+            go_value = total_fuel / opp_life * 20.0
+            if can_go:
+                mod += max(go_value, 10.0)
+            else:
+                mod -= go_value
+                return mod
+
+        # ── Finisher-access gate for mid-chain ──
+        if p.storm_patience and storm >= 1 and 'ritual' in tags:
+            if not _has_finisher() and not _has_flashback_combo():
+                if not snap.am_dead_next:
+                    # Wasting rituals = losing storm_potential / opp_life in clock value
+                    mod -= (storm + 2) / opp_life * 20.0
+
+        # ── Cantrips while waiting (storm=0): dig for pieces ──
+        is_cantrip = ('cantrip' in tags or 'draw' in tags) and 'flashback' not in tags
+        if is_cantrip and p.storm_patience and storm == 0:
+            # Draw punisher check from oracle text
+            opp_has_draw_punisher = any(
+                'draw' in (c.template.oracle_text or '').lower()
+                and 'opponent' in (c.template.oracle_text or '').lower()
+                and 'damage' in (c.template.oracle_text or '').lower()
+                for c in opp.creatures
+            )
+            # Cantrip value = P(finding missing piece) ≈ 1/cards_remaining
+            dig_value = 1.0 / max(1, len(me.library)) * opp_life
+            mod += -dig_value if opp_has_draw_punisher else dig_value * 3.0
+
+        # ── Storm finisher: cast LAST to maximize storm count ──
+        if Kw.STORM in getattr(t, 'keywords', set()):
+            storm_copies = storm + 1
+            if storm_copies >= opp_life:
+                # Lethal = game over. Value = position swing from losing to winning.
+                mod += 100.0
+            else:
+                gy_flashback = [g for g in me.graveyard
+                                if getattr(g, 'has_flashback', False)
+                                and game.can_cast(self.player_idx, g)]
+                fuel_available = sum(
+                    1 for c in list(me.hand) + gy_flashback
+                    if c.instance_id != card.instance_id
+                    and not c.template.is_land
+                    and game.can_cast(self.player_idx, c)
+                    and Kw.STORM not in getattr(c.template, 'keywords', set())
+                )
+                if fuel_available > 0:
+                    # Each fuel spell adds 1 storm copy = 1/opp_life clock change
+                    # Holding is worth fuel_available * (1/opp_life) more damage
+                    mod -= fuel_available / opp_life * 40.0
+                else:
+                    # No fuel left — fire now. Value = damage dealt / opp_life
+                    mod += storm_copies / opp_life * 40.0
+
+        # ── Flashback-granting spells (Past in Flames etc.) ──
+        if 'flashback' in tags and 'combo' in tags and t.is_sorcery:
+            if storm >= 2:
+                pif_in_gy = any('flashback' in getattr(c.template, 'tags', set())
+                                for c in me.graveyard if c.instance_id != card.instance_id)
+                if pif_in_gy:
+                    return -100.0 / opp_life  # redundant, waste of mana
+            if card.zone == "graveyard" and not getattr(card, '_cast_with_flashback', False):
+                return -100.0 / opp_life  # don't replay from GY (unless flashback)
+
+            gy_fuel = sum(1 for c in me.graveyard
+                          if (c.template.is_instant or c.template.is_sorcery)
+                          and any(ft in getattr(c.template, 'tags', set())
+                                  for ft in ('ritual', 'cantrip')))
+            if p.storm_patience and storm == 0:
+                mod -= gy_fuel / opp_life * 5.0  # hold pre-chain (reduced from 15)
+            elif gy_fuel < 2:
+                mod -= 10.0 / opp_life  # empty GY, not worth it
+            else:
+                # PiF value = GY spells it unlocks × their storm contribution
+                mod += gy_fuel / opp_life * 30.0
+                hand_rituals = sum(1 for c in me.hand
+                                   if c.instance_id != card.instance_id
+                                   and 'ritual' in getattr(c.template, 'tags', set())
+                                   and (c.template.is_instant or c.template.is_sorcery))
+                if hand_rituals >= 2:
+                    mod -= hand_rituals / opp_life * 10.0  # cast hand rituals first
+                reducers = sum(1 for c in me.battlefield
+                               if 'cost_reducer' in getattr(c.template, 'tags', set()))
+                pif_cost = max(0, (t.cmc or 4) - reducers)
+                if snap.my_mana - pif_cost < (1 if reducers > 0 else 2):
+                    mod -= 10.0 / opp_life  # can't afford replays
+
+        # ── Tutor sequencing ──
+        if 'tutor' in tags:
+            if p.storm_patience and storm == 0:
+                mod -= 5.0 / opp_life  # hold pre-chain
+            else:
+                # Tutor value = it finds the finisher, enabling storm/opp_life kill
+                mod += (storm + 1) / opp_life * 20.0
+                # Hold tutor if we have castable fuel (cast fuel first for more storm)
+                chain_fuel = sum(1 for c in me.hand
+                                 if c.instance_id != card.instance_id
+                                 and not c.template.is_land
+                                 and game.can_cast(self.player_idx, c)
+                                 and ('ritual' in getattr(c.template, 'tags', set())
+                                      or 'cantrip' in getattr(c.template, 'tags', set())))
+                if chain_fuel > 0 and storm < 6:
+                    mod -= chain_fuel / opp_life * 10.0
+
+        # ── Cost reducer timing ──
+        oracle = (t.oracle_text or '').lower()
+        is_reducer = ('cost_reducer' in tags and 'cost' in oracle
+                      and 'less' in oracle and t.domain_reduction == 0)
+        if is_reducer:
+            fuel = _count_fuel()
+            existing = sum(1 for c in me.battlefield
+                           if 'cost_reducer' in getattr(c.template, 'tags', set()))
+            if storm >= 3:
+                mod -= 3.0 / opp_life  # mid-chain, deploy spells not reducers
+            elif fuel > 0 or storm == 0:
+                # Reducer value = future mana saved × fuel count
+                # First reducer saves 1 mana per future spell = fuel / opp_life
+                saved_per_spell = 1.0
+                future_spells = fuel + 3  # hand fuel + expected draws
+                mod += saved_per_spell * future_spells / opp_life * 15.0
+                if existing > 0:
+                    mod *= 0.5  # diminishing returns on 2nd reducer
+
+        return mod
 
     def _score_land(self, land, me, spells, game) -> float:
         """Score a land play using clock-derived values.
@@ -434,43 +550,47 @@ class EVPlayer:
         # ~10 because spells typically score 5-15 and we want lands first
         ev = 10.0
 
+        current_untapped = len(me.untapped_lands)
+        hand_spells = [s for s in me.hand if not s.template.is_land]
         has_castable_spells = any(
-            (s.template.cmc or 0) <= len(me.untapped_lands) + 1
-            for s in spells if not s.template.is_land
+            (s.template.cmc or 0) <= current_untapped + 1
+            for s in hand_spells
         )
-        # Untapped land that enables a cast this turn = tempo advantage
+        has_one_drops = any((s.template.cmc or 0) <= 1 for s in hand_spells)
         if not land.template.enters_tapped:
             ev += 5.0 if has_castable_spells else 2.0
         else:
-            # Tapped land delays tempo — penalty if we have spells to cast
             if has_castable_spells:
-                ev -= 3.0
+                if current_untapped == 0 and has_one_drops:
+                    ev -= 10.0
+                else:
+                    ev -= 3.0
 
         # New colors: enables spells we couldn't cast → direct clock impact
         existing_colors = set()
         for l in me.lands:
             existing_colors.update(l.template.produces_mana)
-        new_colors = set(land.template.produces_mana) - existing_colors
-        # Each new color enables ~1-2 spells → clock impact of those spells
+        from engine.card_database import FETCH_LAND_COLORS
+        is_fetch = land.name in FETCH_LAND_COLORS
+        # Use FETCH_LAND_COLORS for fetch lands — template.produces_mana is not
+        # reliably populated on CardInstances in game context for fetches
+        land_produces = set(FETCH_LAND_COLORS[land.name]) if is_fetch else set(land.template.produces_mana)
+
+        new_colors = land_produces - existing_colors
         ev += len(new_colors) * 4.0
 
         # Specific spell enablement: this land's colors unlock a spell in hand
-        land_colors = set(land.template.produces_mana)
-        for spell in spells:
-            if spell.template.is_land:
-                continue
+        # Check me.hand (not just legal spells) so color-gated 1-drops count
+        for spell in me.hand:
+            if spell.template.is_land: continue
             mc = spell.template.mana_cost
             spell_colors = set()
-            for code, attr in [("W", "white"), ("U", "blue"), ("B", "black"),
-                               ("R", "red"), ("G", "green")]:
-                if getattr(mc, attr, 0) > 0:
-                    spell_colors.add(code)
+            for code, attr in [("W","white"),("U","blue"),("B","black"),("R","red"),("G","green")]:
+                if getattr(mc, attr, 0) > 0: spell_colors.add(code)
             missing_for_spell = spell_colors - existing_colors
-            if missing_for_spell and missing_for_spell & land_colors:
+            if missing_for_spell and missing_for_spell & land_produces:
                 ev += 3.0
 
-        from engine.card_database import FETCH_LAND_COLORS
-        is_fetch = land.name in FETCH_LAND_COLORS
         if is_fetch:
             ev += 3.0  # fetch flexibility
 
@@ -803,6 +923,10 @@ class EVPlayer:
             face_val = dmg * self.profile.burn_face_mult
             if opp.life <= self.profile.burn_low_life_threshold:
                 face_val = dmg * self.profile.burn_face_low_life_mult
+            # Don't burn face with no board presence unless opponent is low
+            me = game.players[self.player_idx]
+            if not me.creatures and opp.life > self.profile.burn_low_life_threshold:
+                face_val *= 0.1  # near-zero value without a clock
 
             # Prefer removing big creatures unless burn is near-lethal
             if best_kill_id and best_kill_val > face_val:

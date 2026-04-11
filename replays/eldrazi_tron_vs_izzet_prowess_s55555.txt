@@ -1,0 +1,1466 @@
+Loaded 21759 cards (0 errors)
+======================================================================
+  GAME 1: Eldrazi Tron (P1) vs Izzet Prowess (P2)  —  seed 55555
+  Series: Eldrazi Tron 0 - 0 Izzet Prowess
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Izzet Prowess wins → chooses to play first
+║ P1 (on play): Izzet Prowess
+║ P2 (on draw): Eldrazi Tron
+╚═══════════════════════════════════════════════════════
+
+P1 (Eldrazi Tron) opening hand (3 lands, 4 spells):
+  • Chalice of the Void [Spell, CMC 0]
+  • Reality Smasher [Creature, CMC 5]
+  • Eldrazi Mimic [Creature, CMC 2]
+  • All Is Dust [Spell, CMC 7]
+  • Urza's Power Plant [Land, CMC 0]
+  • Urza's Power Plant [Land, CMC 0]
+  • Ghost Quarter [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Chalice of the Void
+
+P2 (Izzet Prowess) opening hand (3 lands, 4 spells):
+  • Mutagenic Growth [Spell, CMC 1]
+  • Steam Vents [Land, CMC 0]
+  • Fiery Islet [Land, CMC 0]
+  • Wooded Foothills [Land, CMC 0]
+  • Unholy Heat [Spell, CMC 1]
+  • Monastery Swiftspear [Creature, CMC 1]
+  • Expressive Iteration [Spell, CMC 2]
+→ P2 KEEPS 7 — has key card(s): Monastery Swiftspear
+
+
+╔══ TURN 1 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 20  |  Eldrazi Tron 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Wooded Foothills
+T1 P2: Crack Wooded Foothills (pay 1 life) -> Stomping Ground (pay 2 life, untapped, life: 17)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Stomping Ground→R (paying for Monastery Swiftspear, 1 mana remaining)
+T1 P2: Cast Monastery Swiftspear (R)
+    [Priority] P1 passes (no response)
+T1: Resolve Monastery Swiftspear
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Monastery Swiftspear
+T1 P2: Attack with Monastery Swiftspear
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 1 damage dealt → P1 life: 20 → 19
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 19  |  Izzet Prowess 17
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2) [tapped]
+║   Lands: Stomping Ground [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wastes
+  [Main 1]
+T1 P1: Play Urza's Power Plant
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 17  |  Eldrazi Tron 19
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2)
+║   Lands: Stomping Ground
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Power Plant
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Lightning Bolt
+  [Main 1]
+T2 P2: Play Steam Vents (pay 2 life, untapped, life: 15)
+    → Goal: curve_out
+    [Mana] Tap Stomping Ground→R (paying for Unholy Heat, 2 mana remaining)
+T2 P2: Cast Unholy Heat (R)
+    [Priority] P1 passes (no response)
+T2: Resolve Unholy Heat
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→R (paying for Lightning Bolt, 1 mana remaining)
+T2 P2: Cast Lightning Bolt (R)
+    [Priority] P1 passes (no response)
+T2: Resolve Lightning Bolt
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Monastery Swiftspear
+T2 P2: Attack with Monastery Swiftspear
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 3 damage dealt → P1 life: 14 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 11  |  Izzet Prowess 15
+║ Hand: 7 cards  |  Opp hand: 3 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Power Plant
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2) [tapped]
+║   Lands: Stomping Ground [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Thought-Knot Seer
+  [Main 1]
+T2 P1: Play Urza's Power Plant
+    → Goal: ramp [enablers]
+    [Mana] Tap Urza's Power Plant→C, Urza's Power Plant→C (paying for Eldrazi Mimic, 2 mana remaining)
+T2 P1: Cast Eldrazi Mimic (2)
+    [Priority] P2 passes (no response)
+T2: Resolve Eldrazi Mimic
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 15  |  Eldrazi Tron 11
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 3
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2)
+║   Lands: Stomping Ground, Steam Vents
+║ Eldrazi Tron board:
+║   Creatures: Eldrazi Mimic (2/1)
+║   Lands: Urza's Power Plant [T], Urza's Power Plant [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Dragon's Rage Channeler
+  [Main 1]
+T3 P2: Play Fiery Islet
+    → Goal: curve_out [enablers]
+    [Mana] Tap Stomping Ground→R (paying for Dragon's Rage Channeler, 3 mana remaining)
+T3 P2: Cast Dragon's Rage Channeler (R)
+    [Priority] P1 passes (no response)
+T3: Resolve Dragon's Rage Channeler
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→U, Fiery Islet→R (paying for Expressive Iteration, 2 mana remaining)
+T3 P2: Cast Expressive Iteration (UR)
+    [Priority] P1 passes (no response)
+T3: Resolve Expressive Iteration
+T3 P2: Activate Fiery Islet (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Monastery Swiftspear
+T3 P2: Attack with Monastery Swiftspear
+  [Declare Blockers] P1 blocks: 
+T3: Eldrazi Mimic dies
+  [End Combat]
+  [Main 2]
+    → Goal: curve_out
+T3 P2: Cast Mishra's Bauble (0)
+    [Priority] P1 passes (no response)
+T3: Resolve Mishra's Bauble
+  [End Step]
+
+╔══ TURN 3 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 11  |  Izzet Prowess 15
+║ Hand: 6 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Power Plant, Urza's Power Plant
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2) [tapped], Dragon's Rage Channeler (1/1)
+║   Other: Mishra's Bauble
+║   Lands: Stomping Ground [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Thought-Knot Seer
+  [Main 1]
+T3 P1: Play Ghost Quarter
+    → Goal: ramp [enablers]
+T3 P1: Cast Chalice of the Void (2) (X=1)
+    [Priority] P2 passes (no response)
+T3: Resolve Chalice of the Void
+T3 P1: Chalice of the Void enters with 1 charge counter(s)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 15  |  Eldrazi Tron 11
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 5
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2), Dragon's Rage Channeler (1/1)
+║   Other: Mishra's Bauble
+║   Lands: Stomping Ground, Steam Vents
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant [T], Urza's Power Plant [T], Ghost Quarter
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Slickshot Show-Off
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Stomping Ground→R, Steam Vents→R (paying for Slickshot Show-Off, 2 mana remaining)
+T4 P2: Cast Slickshot Show-Off (1R)
+    [Priority] P1 passes (no response)
+T4: Resolve Slickshot Show-Off
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Monastery Swiftspear, Dragon's Rage Channeler, Slickshot Show-Off
+T4 P2: Attack with Monastery Swiftspear, Dragon's Rage Channeler, Slickshot Show-Off
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 3 damage dealt → P1 life: 11 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 8  |  Izzet Prowess 15
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 1
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant, Urza's Power Plant, Ghost Quarter
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2) [tapped], Dragon's Rage Channeler (1/1) [tapped], Slickshot Show-Off (1/2) [tapped]
+║   Other: Mishra's Bauble
+║   Lands: Stomping Ground [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Blast Zone
+  [Main 1]
+T4 P1: Play Wastes
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Urza's Power Plant→C, Ghost Quarter→C, Wastes→C (paying for Thought-Knot Seer, 4 mana remaining)
+T4 P1: Cast Thought-Knot Seer (3)
+    [Priority] P2 passes (no response)
+T4: Resolve Thought-Knot Seer
+T4 P1: Thought-Knot Seer exiles Slickshot Show-Off from opponent's hand
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Resolve Thought-Knot Seer
+
+╔══ TURN 5 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 15  |  Eldrazi Tron 8
+║ Hand: 1 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 5
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2), Dragon's Rage Channeler (1/1), Slickshot Show-Off (1/2)
+║   Other: Mishra's Bauble
+║   Lands: Stomping Ground, Steam Vents
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant [T], Urza's Power Plant [T], Ghost Quarter [T], Wastes [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Monastery Swiftspear
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Stomping Ground→R (paying for Monastery Swiftspear, 2 mana remaining)
+T5 P1: Chalice of the Void (X=1) counters Monastery Swiftspear
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Slickshot Show-Off
+T5 P2: Attack with Slickshot Show-Off
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 1 damage dealt → P1 life: 8 → 7
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 7  |  Izzet Prowess 15
+║ Hand: 5 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 1
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant, Urza's Power Plant, Ghost Quarter, Wastes
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2), Dragon's Rage Channeler (3/3), Slickshot Show-Off (1/2) [tapped]
+║   Other: Mishra's Bauble
+║   Lands: Stomping Ground [T], Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Expedition Map
+  [Main 1]
+T5 P1: Play Blast Zone
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Urza's Power Plant→C, Ghost Quarter→C, Wastes→C, Blast Zone→C (paying for Reality Smasher, 5 mana remaining)
+T5 P1: Cast Reality Smasher (4)
+    [Priority] P2 passes (no response)
+T5: Resolve Reality Smasher
+T5 P1: Activate Blast Zone (sacrifice)
+T5 P1:   destroys Chalice of the Void (MV=0)
+T5 P1:   destroys Mishra's Bauble (MV=0)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Thought-Knot Seer, Reality Smasher
+T5 P1: Attack with Thought-Knot Seer, Reality Smasher
+  [Declare Blockers] P2 blocks: 
+T5: Monastery Swiftspear dies
+T5: Dragon's Rage Channeler dies
+  [Combat Damage] 2 damage dealt → P2 life: 15 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 13  |  Eldrazi Tron 7
+║ Hand: 1 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 9
+║ Izzet Prowess board:
+║   Creatures: Slickshot Show-Off (1/2)
+║   Lands: Stomping Ground, Steam Vents
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4) [tapped], Reality Smasher (5/5) [tapped]
+║   Lands: Urza's Power Plant [T], Urza's Power Plant [T], Ghost Quarter [T], Wastes [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Monastery Swiftspear
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Stomping Ground→G (paying for Mutagenic Growth, 2 mana remaining)
+T6 P2: Cast Mutagenic Growth (G)
+    [Priority] P1 passes (no response)
+T6: Resolve Mutagenic Growth
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R (paying for Monastery Swiftspear, 1 mana remaining)
+T6 P2: Cast Monastery Swiftspear (R)
+    [Priority] P1 passes (no response)
+T6: Resolve Monastery Swiftspear
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Slickshot Show-Off, Monastery Swiftspear
+T6 P2: Attack with Slickshot Show-Off, Monastery Swiftspear
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 6 damage dealt → P1 life: 7 → 1
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 1  |  Izzet Prowess 11
+║ Hand: 4 cards  |  Opp hand: 0 cards
+║ Lands: 4  |  Opp lands: 2
+║ Library: 47  |  Graveyard: 3
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4), Reality Smasher (5/5)
+║   Lands: Urza's Power Plant, Urza's Power Plant, Ghost Quarter, Wastes
+║ Izzet Prowess board:
+║   Creatures: Slickshot Show-Off (1/2) [tapped], Monastery Swiftspear (1/2) [tapped]
+║   Lands: Stomping Ground [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Expedition Map
+  [Main 1]
+T6 P1: Play Eldrazi Temple
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Urza's Power Plant→C, Ghost Quarter→C, Wastes→C (paying for Thought-Knot Seer, 5 mana remaining)
+T6 P1: Cast Thought-Knot Seer (3)
+    [Priority] P2 passes (no response)
+T6: Resolve Thought-Knot Seer
+    → Goal: ramp [engines]
+    [Mana] Tap Eldrazi Temple→C (paying for Expedition Map, 1 mana remaining)
+T6 P1: Cast Expedition Map (1)
+    [Priority] P2 passes (no response)
+T6: Resolve Expedition Map
+T6 P1: Activate Expedition Map (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Thought-Knot Seer, Reality Smasher
+T6 P1: Attack with Thought-Knot Seer, Reality Smasher
+T6: Resolve Expedition Map
+T6: Resolve Thought-Knot Seer
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 9 damage dealt → P2 life: 11 → 2
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 2  |  Eldrazi Tron 1
+║ Hand: 0 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 10
+║ Izzet Prowess board:
+║   Creatures: Slickshot Show-Off (1/2), Monastery Swiftspear (1/2)
+║   Lands: Stomping Ground, Steam Vents
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4) [tapped], Reality Smasher (5/5) [tapped], Thought-Knot Seer (4/4)
+║   Lands: Urza's Power Plant [T], Urza's Power Plant [T], Ghost Quarter [T], Wastes [T], Eldrazi Temple [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Steam Vents
+  [Main 1]
+T7 P2: Play Steam Vents (tapped, no spells need mana)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Slickshot Show-Off, Monastery Swiftspear
+T7 P2: Attack with Slickshot Show-Off, Monastery Swiftspear
+  [Declare Blockers] P1 blocks: 
+P1 loses: life total 0
+  [Combat Damage] 1 damage dealt → P1 life: 1 → 0
+
+>>> Izzet Prowess wins Game 1 on turn 7 via damage
+    Final life: Eldrazi Tron=0  Izzet Prowess=2
+
+======================================================================
+  GAME 2: Eldrazi Tron (P1) vs Izzet Prowess (P2)  —  seed 55556
+  Series: Eldrazi Tron 0 - 1 Izzet Prowess
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Izzet Prowess wins → chooses to play first
+║ P1 (on play): Izzet Prowess
+║ P2 (on draw): Eldrazi Tron
+╚═══════════════════════════════════════════════════════
+
+P1 (Eldrazi Tron) opening hand (1 lands, 6 spells):
+  • Thought-Knot Seer [Creature, CMC 4]
+  • Expedition Map [Spell, CMC 1]
+  • Warping Wail [Spell, CMC 2]
+  • Eldrazi Temple [Land, CMC 0]
+  • Eldrazi Mimic [Creature, CMC 2]
+  • Thought-Knot Seer [Creature, CMC 4]
+  • Matter Reshaper [Creature, CMC 3]
+→ P1 MULLIGANS (too few lands (1 < 2))
+  New hand (1 lands, 6 spells): ['Cavern of Souls', 'Matter Reshaper', 'Thought-Knot Seer', 'All Is Dust', 'Chalice of the Void', 'Walking Ballista', 'Eldrazi Mimic']
+→ P1 MULLIGANS (too few lands (1 < 2))
+  New hand (2 lands, 5 spells): ['Reality Smasher', 'Eldrazi Temple', 'Reality Smasher', 'Matter Reshaper', 'Thought-Knot Seer', 'Thought-Knot Seer', 'Eldrazi Temple']
+→ P1 mulligans to 5, bottoms: ['Reality Smasher', 'Reality Smasher']
+  Keeps: ['Eldrazi Temple', 'Matter Reshaper', 'Thought-Knot Seer', 'Thought-Knot Seer', 'Eldrazi Temple']
+
+P2 (Izzet Prowess) opening hand (3 lands, 4 spells):
+  • Lightning Bolt [Spell, CMC 1]
+  • Mountain [Land, CMC 0]
+  • Preordain [Spell, CMC 1]
+  • Dragon's Rage Channeler [Creature, CMC 1]
+  • Arid Mesa [Land, CMC 0]
+  • Arid Mesa [Land, CMC 0]
+  • Dragon's Rage Channeler [Creature, CMC 1]
+→ P2 KEEPS 7 — has key card(s): Dragon's Rage Channeler, Lightning Bolt
+
+
+╔══ TURN 1 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 20  |  Eldrazi Tron 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Arid Mesa
+T1 P2: Crack Arid Mesa (pay 1 life) -> Steam Vents (pay 2 life, untapped, life: 17)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R (paying for Dragon's Rage Channeler, 1 mana remaining)
+T1 P2: Cast Dragon's Rage Channeler (R)
+    [Priority] P1 passes (no response)
+T1: Resolve Dragon's Rage Channeler
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Izzet Prowess 17
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 55  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (1/1)
+║   Lands: Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Mine
+  [Main 1]
+T1 P1: Play Eldrazi Temple
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 17  |  Eldrazi Tron 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (1/1)
+║   Lands: Steam Vents
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Eldrazi Temple
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Lightning Bolt
+  [Main 1]
+T2 P2: Play Arid Mesa
+T2 P2: Crack Arid Mesa -> Steam Vents (tapped, no spells need mana)
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→R (paying for Lightning Bolt, 1 mana remaining)
+T2 P2: Cast Lightning Bolt (R)
+    [Priority] P1 passes (no response)
+T2: Resolve Lightning Bolt
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Dragon's Rage Channeler
+T2 P2: Attack with Dragon's Rage Channeler
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 2 damage dealt → P1 life: 17 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 15  |  Izzet Prowess 16
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 54  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Eldrazi Temple
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (1/1) [tapped]
+║   Lands: Steam Vents [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Mine
+  [Main 1]
+T2 P1: Play Eldrazi Temple
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 16  |  Eldrazi Tron 15
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 3
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (1/1)
+║   Lands: Steam Vents, Steam Vents
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Eldrazi Temple, Eldrazi Temple
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thundering Falls
+  [Main 1]
+T3 P2: Play Mountain
+    → Goal: curve_out
+    [Mana] Tap Mountain→R (paying for Lightning Bolt, 3 mana remaining)
+T3 P2: Cast Lightning Bolt (R)
+    [Priority] P1 passes (no response)
+T3: Resolve Lightning Bolt
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→U (paying for Preordain, 2 mana remaining)
+T3 P2: Cast Preordain (U)
+    [Priority] P1 passes (no response)
+T3: Resolve Preordain
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R (paying for Dragon's Rage Channeler, 1 mana remaining)
+T3 P2: Cast Dragon's Rage Channeler (R)
+    [Priority] P1 passes (no response)
+T3: Resolve Dragon's Rage Channeler
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Dragon's Rage Channeler
+T3 P2: Attack with Dragon's Rage Channeler
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 3 damage dealt → P1 life: 12 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 9  |  Izzet Prowess 16
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 53  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Eldrazi Temple, Eldrazi Temple
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (1/1) [tapped], Dragon's Rage Channeler (1/1)
+║   Lands: Steam Vents [T], Steam Vents [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Chalice of the Void
+  [Main 1]
+T3 P1: Play Urza's Mine
+    → Goal: ramp [enablers]
+    [Mana] Tap Eldrazi Temple→C, Eldrazi Temple→C, Urza's Mine→C (paying for Matter Reshaper, 3 mana remaining)
+T3 P1: Cast Matter Reshaper (2)
+    [Priority] P2 passes (no response)
+T3: Resolve Matter Reshaper
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 16  |  Eldrazi Tron 9
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 5
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (1/1), Dragon's Rage Channeler (1/1)
+║   Lands: Steam Vents, Steam Vents, Mountain
+║ Eldrazi Tron board:
+║   Creatures: Matter Reshaper (3/2)
+║   Lands: Eldrazi Temple [T], Eldrazi Temple [T], Urza's Mine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Lava Dart
+  [Main 1]
+T4 P2: Play Wooded Foothills
+T4 P2: Crack Wooded Foothills -> Stomping Ground (tapped, no spells need mana)
+    → Goal: curve_out
+    [Mana] Tap Mountain→R (paying for Lava Dart, 3 mana remaining)
+T4 P2: Cast Lava Dart (R)
+    [Priority] P1 passes (no response)
+T4: Resolve Lava Dart
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Dragon's Rage Channeler, Dragon's Rage Channeler
+T4 P2: Attack with Dragon's Rage Channeler, Dragon's Rage Channeler
+  [Declare Blockers] P1 blocks: 
+T4: Matter Reshaper dies
+T4: Dragon's Rage Channeler dies
+  [Combat Damage] 2 damage dealt → P1 life: 9 → 7
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 7  |  Izzet Prowess 15
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 52  |  Graveyard: 1
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Eldrazi Temple, Eldrazi Temple, Urza's Mine
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (3/3) [tapped]
+║   Lands: Steam Vents, Steam Vents, Mountain [T], Stomping Ground [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Power Plant
+  [Main 1]
+T4 P1: Play Urza's Mine
+    → Goal: ramp
+    [Mana] Tap Eldrazi Temple→C, Eldrazi Temple→C, Urza's Mine→C, Urza's Mine→C (paying for Thought-Knot Seer, 4 mana remaining)
+T4 P1: Cast Thought-Knot Seer (3)
+    [Priority] P2 passes (no response)
+T4: Resolve Thought-Knot Seer
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Resolve Thought-Knot Seer
+
+╔══ TURN 5 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 15  |  Eldrazi Tron 7
+║ Hand: 1 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 8
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (3/3)
+║   Lands: Steam Vents, Steam Vents, Mountain, Stomping Ground
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4)
+║   Lands: Eldrazi Temple [T], Eldrazi Temple [T], Urza's Mine [T], Urza's Mine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mishra's Bauble
+  [Main 1]
+T5 P2: Play Thundering Falls (enters tapped)
+    → Goal: curve_out
+T5 P2: Cast Mishra's Bauble (0)
+    [Priority] P1 passes (no response)
+T5: Resolve Mishra's Bauble
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Dragon's Rage Channeler
+T5 P2: Attack with Dragon's Rage Channeler
+  [Declare Blockers] P1 blocks: 
+T5: Thought-Knot Seer dies
+T5: Dragon's Rage Channeler dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 7  |  Izzet Prowess 15
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 50  |  Graveyard: 2
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Eldrazi Temple, Eldrazi Temple, Urza's Mine, Urza's Mine
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble
+║   Lands: Steam Vents, Steam Vents, Mountain, Stomping Ground, Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Power Plant
+  [Main 1]
+T5 P1: Play Cavern of Souls
+    → Goal: ramp
+    [Mana] Tap Eldrazi Temple→C, Eldrazi Temple→C, Urza's Mine→C, Urza's Mine→C (paying for Thought-Knot Seer, 5 mana remaining)
+T5 P1: Cast Thought-Knot Seer (3)
+    [Priority] P2 passes (no response)
+T5: Resolve Thought-Knot Seer
+T5 P1: Thought-Knot Seer exiles Lava Dart from opponent's hand
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Resolve Thought-Knot Seer
+
+╔══ TURN 6 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 15  |  Eldrazi Tron 7
+║ Hand: 0 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 9
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble
+║   Lands: Steam Vents, Steam Vents, Mountain, Stomping Ground, Thundering Falls
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4)
+║   Lands: Eldrazi Temple [T], Eldrazi Temple [T], Urza's Mine [T], Urza's Mine [T], Cavern of Souls
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mishra's Bauble
+  [Main 1]
+    → Goal: curve_out
+T6 P2: Cast Mishra's Bauble (0)
+    [Priority] P1 passes (no response)
+T6: Resolve Mishra's Bauble
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 7  |  Izzet Prowess 15
+║ Hand: 4 cards  |  Opp hand: 0 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 2
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4)
+║   Lands: Eldrazi Temple, Eldrazi Temple, Urza's Mine, Urza's Mine, Cavern of Souls
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mishra's Bauble
+║   Lands: Steam Vents, Steam Vents, Mountain, Stomping Ground, Thundering Falls
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Matter Reshaper
+  [Main 1]
+T6 P1: Play Urza's Power Plant
+    → Goal: ramp
+    [Mana] Tap Eldrazi Temple→C, Eldrazi Temple→C, Urza's Mine→C, Urza's Mine→C, Urza's Power Plant→C, Cavern of Souls→B (paying for Endbringer, 6 mana remaining)
+T6 P1: Cast Endbringer (5)
+    [Priority] P2 passes (no response)
+T6: Resolve Endbringer
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Thought-Knot Seer
+T6 P1: Attack with Thought-Knot Seer
+T6: Resolve Endbringer
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 4 damage dealt → P2 life: 15 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 11  |  Eldrazi Tron 7
+║ Hand: 0 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 43  |  Graveyard: 9
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mishra's Bauble
+║   Lands: Steam Vents, Steam Vents, Mountain, Stomping Ground, Thundering Falls
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4) [tapped], Endbringer (5/5)
+║   Lands: Eldrazi Temple [T], Eldrazi Temple [T], Urza's Mine [T], Urza's Mine [T], Cavern of Souls [T], Urza's Power Plant [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Scalding Tarn
+  [Main 1]
+T7 P2: Play Scalding Tarn
+T7 P2: Crack Scalding Tarn -> Mountain (untapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 7  |  Izzet Prowess 10
+║ Hand: 3 cards  |  Opp hand: 0 cards
+║ Lands: 6  |  Opp lands: 6
+║ Library: 47  |  Graveyard: 2
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4), Endbringer (5/5)
+║   Lands: Eldrazi Temple, Eldrazi Temple, Urza's Mine, Urza's Mine, Cavern of Souls, Urza's Power Plant
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mishra's Bauble
+║   Lands: Steam Vents, Steam Vents, Mountain, Stomping Ground, Thundering Falls, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Mine
+  [Main 1]
+T7 P1: Play Urza's Power Plant
+    → Goal: ramp [enablers]
+    [Mana] Tap Eldrazi Temple→C, Eldrazi Temple→C, Urza's Mine→C (paying for Matter Reshaper, 7 mana remaining)
+T7 P1: Cast Matter Reshaper (2)
+    [Priority] P2 passes (no response)
+T7: Resolve Matter Reshaper
+    → Goal: ramp [enablers]
+T7 P1: Cast Chalice of the Void (2) (X=1)
+    [Priority] P2 passes (no response)
+T7: Resolve Chalice of the Void
+T7 P1: Chalice of the Void enters with 1 charge counter(s)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Thought-Knot Seer, Endbringer
+T7 P1: Attack with Thought-Knot Seer, Endbringer
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 9 damage dealt → P2 life: 10 → 1
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 1  |  Eldrazi Tron 7
+║ Hand: 0 cards  |  Opp hand: 1 cards
+║ Lands: 6  |  Opp lands: 7
+║ Library: 41  |  Graveyard: 10
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mishra's Bauble
+║   Lands: Steam Vents, Steam Vents, Mountain, Stomping Ground, Thundering Falls, Mountain
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4) [tapped], Endbringer (5/5) [tapped], Matter Reshaper (3/2)
+║   Other: Chalice of the Void
+║   Lands: Eldrazi Temple [T], Eldrazi Temple [T], Urza's Mine [T], Urza's Mine [T], Cavern of Souls [T], Urza's Power Plant, Urza's Power Plant
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Dragon's Rage Channeler
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Mountain→R (paying for Dragon's Rage Channeler, 6 mana remaining)
+T8 P1: Chalice of the Void (X=1) counters Dragon's Rage Channeler
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 7  |  Izzet Prowess 1
+║ Hand: 1 cards  |  Opp hand: 0 cards
+║ Lands: 7  |  Opp lands: 6
+║ Library: 46  |  Graveyard: 2
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4), Endbringer (5/5), Matter Reshaper (3/2)
+║   Other: Chalice of the Void
+║   Lands: Eldrazi Temple, Eldrazi Temple, Urza's Mine, Urza's Mine, Cavern of Souls, Urza's Power Plant, Urza's Power Plant
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mishra's Bauble
+║   Lands: Steam Vents, Steam Vents, Mountain [T], Stomping Ground, Thundering Falls, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ghost Quarter
+  [Main 1]
+T8 P1: Play Urza's Mine
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Thought-Knot Seer, Endbringer, Matter Reshaper
+T8 P1: Attack with Thought-Knot Seer, Endbringer, Matter Reshaper
+  [Declare Blockers] P2 does not block
+P2 loses: life total -11
+  [Combat Damage] 12 damage dealt → P2 life: 1 → -11
+
+>>> Eldrazi Tron wins Game 2 on turn 8 via damage
+    Final life: Eldrazi Tron=7  Izzet Prowess=-11
+
+======================================================================
+  GAME 3: Izzet Prowess (P1) vs Eldrazi Tron (P2)  —  seed 55557
+  Series: Eldrazi Tron 1 - 1 Izzet Prowess
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Izzet Prowess wins → chooses to play first
+║ P1 (on play): Izzet Prowess
+║ P2 (on draw): Eldrazi Tron
+╚═══════════════════════════════════════════════════════
+
+P1 (Izzet Prowess) opening hand (2 lands, 5 spells):
+  • Unholy Heat [Spell, CMC 1]
+  • Monastery Swiftspear [Creature, CMC 1]
+  • Mountain [Land, CMC 0]
+  • Mishra's Bauble [Spell, CMC 0]
+  • Mutagenic Growth [Spell, CMC 1]
+  • Lava Dart [Spell, CMC 1]
+  • Bloodstained Mire [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Monastery Swiftspear
+
+P2 (Eldrazi Tron) opening hand (5 lands, 2 spells):
+  • Urza's Mine [Land, CMC 0]
+  • Thought-Knot Seer [Creature, CMC 4]
+  • Blast Zone [Land, CMC 0]
+  • Wastes [Land, CMC 0]
+  • Urza's Power Plant [Land, CMC 0]
+  • Expedition Map [Spell, CMC 1]
+  • Urza's Tower [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Expedition Map, Thought-Knot Seer
+
+
+╔══ TURN 1 — Izzet Prowess (P1) ══════════════════════════
+║ Life: Izzet Prowess 20  |  Eldrazi Tron 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Bloodstained Mire
+T1 P1: Crack Bloodstained Mire (pay 1 life) -> Stomping Ground (pay 2 life, untapped, life: 17)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Stomping Ground→R (paying for Monastery Swiftspear, 1 mana remaining)
+T1 P1: Cast Monastery Swiftspear (R)
+    [Priority] P2 passes (no response)
+T1: Resolve Monastery Swiftspear
+    → Goal: curve_out
+T1 P1: Cast Mishra's Bauble (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Mishra's Bauble
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Monastery Swiftspear
+T1 P1: Attack with Monastery Swiftspear
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 2 damage dealt → P2 life: 20 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 18  |  Izzet Prowess 17
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2) [tapped]
+║   Other: Mishra's Bauble
+║   Lands: Stomping Ground [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Cavern of Souls
+  [Main 1]
+T1 P2: Play Cavern of Souls
+    → Goal: ramp [engines]
+    [Mana] Tap Cavern of Souls→B (paying for Expedition Map, 1 mana remaining)
+T1 P2: Cast Expedition Map (1)
+    [Priority] P1 passes (no response)
+T1: Resolve Expedition Map
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T1: Resolve Expedition Map
+
+╔══ TURN 2 — Izzet Prowess (P1) ══════════════════════════
+║ Life: Izzet Prowess 17  |  Eldrazi Tron 18
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2)
+║   Other: Mishra's Bauble
+║   Lands: Stomping Ground
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Expedition Map
+║   Lands: Cavern of Souls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Steam Vents
+  [Main 1]
+T2 P1: Play Steam Vents (tapped, no spells need mana)
+    → Goal: curve_out
+    [Mana] Tap Stomping Ground→R (paying for Unholy Heat, 1 mana remaining)
+T2 P1: Cast Unholy Heat (R)
+    [Priority] P2 passes (no response)
+T2: Resolve Unholy Heat
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Monastery Swiftspear
+T2 P1: Attack with Monastery Swiftspear
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 2 damage dealt → P2 life: 16 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 14  |  Izzet Prowess 17
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Expedition Map
+║   Lands: Cavern of Souls
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2) [tapped]
+║   Other: Mishra's Bauble
+║   Lands: Stomping Ground [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thought-Knot Seer
+  [Main 1]
+T2 P2: Play Urza's Mine
+T2 P2: Activate Expedition Map (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Izzet Prowess (P1) ══════════════════════════
+║ Life: Izzet Prowess 17  |  Eldrazi Tron 14
+║ Hand: 3 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 2
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2)
+║   Other: Mishra's Bauble
+║   Lands: Stomping Ground, Steam Vents
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Cavern of Souls, Urza's Mine
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Expressive Iteration
+  [Main 1]
+T3 P1: Play Mountain
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→U, Mountain→R (paying for Expressive Iteration, 3 mana remaining)
+T3 P1: Cast Expressive Iteration (UR)
+    [Priority] P2 passes (no response)
+T3: Resolve Expressive Iteration
+    → Goal: curve_out
+    [Mana] Tap Stomping Ground→G (paying for Mutagenic Growth, 1 mana remaining)
+T3 P1: Cast Mutagenic Growth (G)
+    [Priority] P2 passes (no response)
+T3: Resolve Mutagenic Growth
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Monastery Swiftspear
+T3 P1: Attack with Monastery Swiftspear
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 5 damage dealt → P2 life: 14 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 9  |  Izzet Prowess 15
+║ Hand: 7 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Cavern of Souls, Urza's Mine
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2) [tapped]
+║   Other: Mishra's Bauble
+║   Lands: Stomping Ground [T], Steam Vents [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Matter Reshaper
+  [Main 1]
+T3 P2: Play Blast Zone
+    → Goal: ramp [enablers]
+    [Mana] Tap Urza's Mine→C, Blast Zone→C, Cavern of Souls→B (paying for Matter Reshaper, 3 mana remaining)
+T3 P2: Cast Matter Reshaper (2)
+    [Priority] P1 passes (no response)
+T3: Resolve Matter Reshaper
+T3 P2: Activate Blast Zone (sacrifice)
+T3 P2:   destroys Mishra's Bauble (MV=0)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Izzet Prowess (P1) ══════════════════════════
+║ Life: Izzet Prowess 15  |  Eldrazi Tron 9
+║ Hand: 2 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 5
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2)
+║   Lands: Stomping Ground, Steam Vents, Mountain
+║ Eldrazi Tron board:
+║   Creatures: Matter Reshaper (3/2)
+║   Lands: Cavern of Souls [T], Urza's Mine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Bloodstained Mire
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Mountain→R (paying for Lava Dart, 3 mana remaining)
+T4 P1: Cast Lava Dart (R)
+    [Priority] P2 passes (no response)
+T4: Resolve Lava Dart
+T4 P1: Play Bloodstained Mire
+T4 P1: Crack Bloodstained Mire -> Steam Vents (tapped, no spells need mana)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Stomping Ground→R, Steam Vents→R (paying for Cori-Steel Cutter, 2 mana remaining)
+T4 P1: Cast Cori-Steel Cutter (1R)
+    [Priority] P2 passes (no response)
+T4: Resolve Cori-Steel Cutter
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Monastery Swiftspear
+T4 P1: Attack with Monastery Swiftspear
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 3 damage dealt → P2 life: 9 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 6  |  Izzet Prowess 14
+║ Hand: 6 cards  |  Opp hand: 0 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 2
+║ Eldrazi Tron board:
+║   Creatures: Matter Reshaper (3/2)
+║   Lands: Cavern of Souls, Urza's Mine
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2) [tapped]
+║   Other: Cori-Steel Cutter
+║   Lands: Stomping Ground [T], Steam Vents [T], Mountain [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Expedition Map
+  [Main 1]
+T4 P2: Play Wastes
+    → Goal: ramp [engines]
+    [Mana] Tap Urza's Mine→C (paying for Expedition Map, 3 mana remaining)
+T4 P2: Cast Expedition Map (1)
+    [Priority] P1 passes (no response)
+T4: Resolve Expedition Map
+T4 P2: Activate Expedition Map (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Matter Reshaper
+T4 P2: Attack with Matter Reshaper
+T4: Resolve Expedition Map
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 3 damage dealt → P1 life: 14 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Izzet Prowess (P1) ══════════════════════════
+║ Life: Izzet Prowess 11  |  Eldrazi Tron 6
+║ Hand: 0 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 7
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2)
+║   Other: Cori-Steel Cutter
+║   Lands: Stomping Ground, Steam Vents, Mountain, Steam Vents
+║ Eldrazi Tron board:
+║   Creatures: Matter Reshaper (3/2) [tapped]
+║   Lands: Cavern of Souls, Urza's Mine [T], Wastes
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Scalding Tarn
+  [Main 1]
+T5 P1: Play Scalding Tarn
+T5 P1: Crack Scalding Tarn -> Mountain (untapped)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Monastery Swiftspear
+T5 P1: Attack with Monastery Swiftspear
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 1 damage dealt → P2 life: 6 → 5
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 5  |  Izzet Prowess 10
+║ Hand: 6 cards  |  Opp hand: 0 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 3
+║ Eldrazi Tron board:
+║   Creatures: Matter Reshaper (3/2)
+║   Lands: Cavern of Souls, Urza's Mine, Wastes
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2) [tapped]
+║   Other: Cori-Steel Cutter
+║   Lands: Stomping Ground, Steam Vents, Mountain, Steam Vents, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Mine
+  [Main 1]
+T5 P2: Play Urza's Power Plant
+    → Goal: ramp
+    [Mana] Tap Urza's Mine→C, Wastes→C, Urza's Power Plant→C, Cavern of Souls→B (paying for Thought-Knot Seer, 4 mana remaining)
+T5 P2: Cast Thought-Knot Seer (3)
+    [Priority] P1 passes (no response)
+T5: Resolve Thought-Knot Seer
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Matter Reshaper
+T5 P2: Attack with Matter Reshaper
+T5: Resolve Thought-Knot Seer
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 3 damage dealt → P1 life: 10 → 7
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Izzet Prowess (P1) ══════════════════════════
+║ Life: Izzet Prowess 7  |  Eldrazi Tron 5
+║ Hand: 0 cards  |  Opp hand: 6 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 44  |  Graveyard: 8
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2)
+║   Other: Cori-Steel Cutter
+║   Lands: Stomping Ground, Steam Vents, Mountain, Steam Vents, Mountain
+║ Eldrazi Tron board:
+║   Creatures: Matter Reshaper (3/2) [tapped], Thought-Knot Seer (4/4)
+║   Lands: Cavern of Souls [T], Urza's Mine [T], Wastes [T], Urza's Power Plant [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Slickshot Show-Off
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Mountain→R, Mountain→R (paying for Slickshot Show-Off, 5 mana remaining)
+T6 P1: Cast Slickshot Show-Off (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Slickshot Show-Off
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Slickshot Show-Off
+T6 P1: Attack with Slickshot Show-Off
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 1 damage dealt → P2 life: 5 → 4
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 4  |  Izzet Prowess 7
+║ Hand: 6 cards  |  Opp hand: 0 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 3
+║ Eldrazi Tron board:
+║   Creatures: Matter Reshaper (3/2), Thought-Knot Seer (4/4)
+║   Lands: Cavern of Souls, Urza's Mine, Wastes, Urza's Power Plant
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2), Slickshot Show-Off (1/2) [tapped]
+║   Other: Cori-Steel Cutter
+║   Lands: Stomping Ground, Steam Vents, Mountain [T], Steam Vents, Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Walking Ballista
+  [Main 1]
+T6 P2: Play Urza's Tower
+    → Goal: ramp
+    [Mana] Tap Urza's Mine→C, Wastes→C, Urza's Power Plant→C (paying for Thought-Knot Seer, 7 mana remaining)
+T6 P2: Cast Thought-Knot Seer (3)
+    [Priority] P1 passes (no response)
+T6: Resolve Thought-Knot Seer
+    → Goal: ramp
+T6 P2: Cast Walking Ballista (4) (X=2)
+    [Priority] P1 passes (no response)
+T6: Resolve Walking Ballista
+T6 P2: Walking Ballista enters with 2 +1/+1 counter(s)
+T6: Slickshot Show-Off dies
+T6 P2: Walking Ballista deals 2 to Slickshot Show-Off
+T6: Walking Ballista dies
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Matter Reshaper, Thought-Knot Seer
+T6 P2: Attack with Matter Reshaper, Thought-Knot Seer
+T6: Resolve Walking Ballista
+T6: Resolve Thought-Knot Seer
+  [Declare Blockers] P1 blocks: 
+T6: Monastery Swiftspear dies
+  [Combat Damage] 3 damage dealt → P1 life: 7 → 4
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Izzet Prowess (P1) ══════════════════════════
+║ Life: Izzet Prowess 4  |  Eldrazi Tron 4
+║ Hand: 0 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 43  |  Graveyard: 10
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Other: Cori-Steel Cutter
+║   Lands: Stomping Ground, Steam Vents, Mountain, Steam Vents, Mountain
+║ Eldrazi Tron board:
+║   Creatures: Matter Reshaper (3/2) [tapped], Thought-Knot Seer (4/4) [tapped], Thought-Knot Seer (4/4)
+║   Lands: Cavern of Souls [T], Urza's Mine [T], Wastes [T], Urza's Power Plant [T], Urza's Tower [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Monastery Swiftspear
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Mountain→R (paying for Monastery Swiftspear, 5 mana remaining)
+T7 P1: Cast Monastery Swiftspear (R)
+    [Priority] P2 passes (no response)
+T7: Resolve Monastery Swiftspear
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 4  |  Izzet Prowess 4
+║ Hand: 5 cards  |  Opp hand: 0 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 43  |  Graveyard: 4
+║ Eldrazi Tron board:
+║   Creatures: Matter Reshaper (3/2), Thought-Knot Seer (4/4), Thought-Knot Seer (4/4)
+║   Lands: Cavern of Souls, Urza's Mine, Wastes, Urza's Power Plant, Urza's Tower
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2)
+║   Other: Cori-Steel Cutter
+║   Lands: Stomping Ground, Steam Vents, Mountain [T], Steam Vents, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Mine
+  [Main 1]
+T7 P2: Play Eldrazi Temple
+    → Goal: ramp
+    [Mana] Tap Urza's Mine→C, Wastes→C, Urza's Power Plant→C, Urza's Tower→C (paying for Reality Smasher, 10 mana remaining)
+T7 P2: Cast Reality Smasher (4)
+    [Priority] P1 passes (no response)
+T7: Resolve Reality Smasher
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Matter Reshaper, Thought-Knot Seer, Thought-Knot Seer, Reality Smasher
+T7 P2: Attack with Matter Reshaper, Thought-Knot Seer, Thought-Knot Seer, Reality Smasher
+  [Declare Blockers] P1 blocks: 
+P1 loses: life total -10
+  [Combat Damage] 14 damage dealt → P1 life: 4 → -10
+
+>>> Eldrazi Tron wins Game 3 on turn 7 via damage
+    Final life: Izzet Prowess=-10  Eldrazi Tron=4
+
+======================================================================
+  MATCH RESULT: Eldrazi Tron wins 2-1
+======================================================================

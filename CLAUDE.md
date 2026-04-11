@@ -1,21 +1,8 @@
 # CLAUDE.md — MTG Game Simulator
 
-## Critical Instructions (read first)
-
-**GAME LOG OUTPUT — NEVER SKIP THIS:**
-When the user asks to see a game, match, Bo3, simulation, play-by-play, or any game log:
-1. Run `python run_meta.py --bo3 <deck1> <deck2> -s <seed>`
-2. Output the COMPLETE raw text log — every single line
-3. NEVER summarize, paraphrase, abbreviate, or skip parts of the log
-4. NEVER replace log lines with your own narrative or commentary
-5. Show the log FIRST in full, then add commentary AFTER if needed
-6. If the output is too large for one message, split across multiple messages — do NOT truncate
-
-The user wants to read the actual log text with phases, draws, mana taps, priority passes, board states, goals, and mulligan rationale. This applies every time, without exception. Failure to show the full log is considered a regression.
-
 ## Project Overview
 
-Magic: The Gathering Modern-format game simulator with EV-based AI decision-making. Simulates full games between 13 competitive decks with strategic AI (mulligans, spell casting, combat, targeting, counterspells, evoke, storm chains, reanimation, cascade, blink).
+Magic: The Gathering Modern-format game simulator with EV-based AI decision-making. Simulates full games between 14 competitive decks with strategic AI (mulligans, spell casting, combat, targeting, counterspells, evoke, storm chains, reanimation, cascade, blink).
 
 **Python 3.11** — no external dependencies beyond the standard library.
 
@@ -39,11 +26,11 @@ print(f'Loaded {len(merged)} cards')
 ## Quick Reference — run_meta.py
 
 ```bash
-python run_meta.py --list                              # all available decks
+python run_meta.py --list                              # all 14 decks
 python run_meta.py --deck storm                        # deck profile + gameplan
 python run_meta.py --matchup storm dimir -n 50         # win rate (N games)
 python run_meta.py --field storm -n 30                 # one deck vs all
-python run_meta.py --matrix -n 20                      # full 13x13 matrix
+python run_meta.py --matrix -n 20                      # full 14x14 matrix
 python run_meta.py --matrix --decks 8 -n 50            # top 8 only
 python run_meta.py --verbose zoo omnath -s 42000        # game log
 python run_meta.py --trace zoo omnath -s 42000          # full AI reasoning
@@ -60,7 +47,7 @@ python run_meta.py --trace zoo omnath -s 42000          # full AI reasoning
 | **Deck audit** | `python run_meta.py --audit affinity -n 60` |
 | **Game log** | `python run_meta.py --verbose storm dimir -s 42000` |
 | **AI reasoning** | `python run_meta.py --trace storm dimir -s 42000` |
-| **HTML Bo3** | `python simulate_match.py "Ruby Storm" "Domain Zoo" --seed 55555` |
+| **HTML Bo3** | `python run_meta.py --bo3 "D1" "D2" -s SEED > replays/log.txt && python build_replay.py replays/log.txt out.html SEED` |
 | **Import deck** | `python import_deck.py "Deck Name" decklist.txt` |
 | **Save results** | `python run_meta.py --matrix -n 50 --save` |
 | **Load results** | `python run_meta.py --results` |
@@ -74,8 +61,6 @@ Synonyms: `--bo3`, `--match`, `--play-by-play`, `--pbp`, `--detailed`, `--game-l
 
 This produces a comprehensive log with: die roll, mulligan decisions, opening hands, turn-by-turn board states (creatures, permanents, life totals, hand sizes, lands), all spells cast, stack resolution, combat, and game result. Best-of-3 format with proper alternation.
 
-**(See Critical Instructions at top of file for game log output requirements.)**
-
 **Aliases work:** storm, zoo, dimir, omnath, 4c, 5c, energy, boros, jeskai, blink, tron, amulet, goryos, prowess, affinity, cascade
 
 **Python API:**
@@ -87,6 +72,33 @@ from run_meta import print_matrix, print_matchup, print_field
 
 **Standard seeds:** matchups start at 50000 (step 500), matrix at 40000 (step 500).
 
+**Before registering any new deck or updating meta shares — check DB freshness:**
+```bash
+# Check when the card DB was last updated
+python3 -c "
+import json, glob, os
+parts = sorted(glob.glob('ModernAtomic_part*.json'))
+if parts:
+    age_days = (os.path.getmtime(parts[0]))
+    import time
+    age = (time.time() - age_days) / 86400
+    print(f'ModernAtomic parts last modified: {age:.0f} days ago')
+    if age > 14:
+        print('WARNING: DB may be stale — new sets may be missing. Run update_modern_atomic.py')
+    else:
+        print('DB is recent — OK to proceed')
+else:
+    print('No ModernAtomic parts found — run update_modern_atomic.py')
+"
+# If stale or new sets released since last update:
+python3 update_modern_atomic.py
+git add ModernAtomic_part*.json
+git commit -m "chore: refresh ModernAtomic for new sets"
+git push origin main
+```
+
+**New Modern-legal sets to watch (2026):** Lorwyn Eclipsed (Jan 2026), TMNT (Feb 2026), Secrets of Strixhaven (Apr 24 2026). Run `update_modern_atomic.py` if any of these postdate your last DB refresh.
+
 **Import a new deck:**
 ```bash
 python import_deck.py "Deck Name" decklist.txt
@@ -94,9 +106,11 @@ python import_deck.py "Deck Name" --archetype control < decklist.txt
 ```
 Auto-detects archetype, generates gameplan, prints code to paste into modern_meta.py.
 
-## Available Decks
+## Available Decks (14)
 
-Run `python run_meta.py --list` to see all decks with meta shares. Decklists live in `decks/modern_meta.py`. Check WARNING lines in game output for cards missing from ModernAtomic.json (placeholder cards deflate WR).
+Boros Energy, Jeskai Blink, Ruby Storm, Affinity, Pinnacle Affinity, Eldrazi Tron, Amulet Titan, Goryo's Vengeance, Domain Zoo, Living End, Izzet Prowess, Dimir Midrange, 4c Omnath, 4/5c Control, Azorius Control
+
+**Known DB gaps:** ~~`The Legend of Roku` and `Sink into Stupor`~~ — both now resolved after ModernAtomic refresh (Apr 2026). All 14 decks sim correctly.
 
 ## Architecture
 
@@ -155,7 +169,7 @@ def bowmasters_etb(game, card, controller, targets=None, item=None):
 
 ### Layer 3: Deck Configuration
 
-**Decklists** (`decks/modern_meta.py`) — mainboard + sideboard for all decks
+**Decklists** (`decks/modern_meta.py`) — mainboard + sideboard for all 13 decks
 
 **Gameplans** (`decks/gameplans/*.json`) — per-deck strategy:
 ```json
@@ -216,30 +230,62 @@ python run_meta.py --verbose zoo omnath -s 42000
 # Legacy debug dump
 python dump_game.py
 
-# BO3 match → HTML play-by-play
-python simulate_match.py "Ruby Storm" "Domain Zoo" --seed 55555
+# BO3 match → HTML replay (correct pipeline)
+python run_meta.py --bo3 "Ruby Storm" "Domain Zoo" -s 55555 > replays/log.txt
+python build_replay.py replays/log.txt replay.html 55555
 ```
 
 ## Important Conventions
 
-- **NEVER hardcode card names, deck names, or card counts.** All card behavior must be derived from oracle text, template properties, tags, and keywords. If you find yourself writing `if card.name == "Something"`, stop — use a tag, keyword, or oracle pattern instead. Deck counts, land sets, and card lists must be discovered at runtime from `MODERN_DECKS`, `CardDatabase`, and oracle parsing. The CLAUDE.md itself should not list specific deck counts or card names that go stale — use `python run_meta.py --list` to discover what's available.
 - **Engine layer enforces rules; AI layer makes choices.** Never add strategic decisions to engine code.
 - **Card effects use EFFECT_REGISTRY decorator pattern.** Register with `@EFFECT_REGISTRY.register("Card Name", EffectTiming.ETB)`.
-- **All AI scoring derives from clock mechanics (`ai/clock.py`).** No arbitrary weight constants. Spell value = projected position change. Land value = spells it enables × clock impact. Creature value = power/opp_life × keyword modifiers.
-- **Strategy profiles are minimal.** Only fields that can't be derived from game mechanics: combo flags, burn mode, pass threshold, mulligan config. See `ai/strategy_profile.py`.
+- **Strategy profiles are pure data.** All AI weights live in `ai/strategy_profile.py`. Per-deck tuning goes in `decks/gameplans/*.json`.
 - **Seeds for reproducibility.** Standard: matchups=50000, matrix=40000, step=500.
 - **Sideboards must be passed** to `run_game()` for Wish/tutor effects to find sideboard cards.
-- **Land entry logic is oracle-derived.** `template.untap_life_cost`, `template.untap_max_other_lands`, `template.tap_damage`, `template.enters_tapped` — no hardcoded land sets.
-- **Fetch land colors parsed at DB load time** from oracle text `"search your library for a [type] card"`. See `FETCH_LAND_COLORS` in `card_database.py`.
-- **Opponent modeling uses Bayesian Hand Inference** (`ai/bhi.py`). Prior from deck density, updated on priority passes and spells cast.
 - **Keyword detection uses word boundaries** — "flash" won't match "flashback".
 - **Color solver uses re-sorting greedy** — handles 4-color WURG correctly.
+
+## Known Issues — LLM-Judge Strategy Audit
+
+See **`LLM_JUDGE_STRATEGY_AUDIT.md`** for the full 6-expert panel report (~168 games). Overall grade: **D+**.
+
+### P0 — Critical (game-breaking)
+
+| Issue | Location | Summary |
+|-------|----------|---------|
+| Removal projection kills creature deployment | `ai/ev_evaluator.py:539-572` | `estimate_opponent_response` makes all cheap creatures negative EV (Guide of Souls=-7.6, Memnite=-7.4). Aggro decks pass T1-T3. |
+| Storm finisher uncastable | `ai/ev_player.py:393-484` | PiF penalty `gy_fuel/opp_life*15` makes it -5.8 even with 7 mana + 9 GY spells. Storm at 39% WR. |
+| Goryo's combo non-functional | `engine/card_effects.py` discard | Faithful Mending never bins Griselbrand → Goryo's has no target. Combo never fires. |
+| Living End missing ETBs | `engine/game_state.py:~1710` | `_resolve_living_end()` skips `_handle_permanent_etb()`. Returned creatures get no ETB triggers. |
+| Chalice hardcoded X=1 | `engine/game_state.py:1349` | Always X=1 regardless of opponent. Locks Azorius out of own spells (-0.76 win delta). |
+
+### P1 — High (significant strategy errors)
+
+| Issue | Location | Summary |
+|-------|----------|---------|
+| Wrath on empty board | `ai/ev_evaluator.py:272` | Board wipes with 0 creatures pass the -5.0 threshold at EV=-0.1. |
+| Burn face with no clock | `ai/strategy_profile.py:102` | `burn_face_mult=1.5` makes face burn positive EV even on empty board T1. |
+| Fatal Push mis-targets | `ai/response.py:156-169` | Targets highest-value battlefield creature, not the incoming spell on the stack. |
+| Holdback broken vs spell decks | `ai/ev_player.py:337-349` | Only triggers on `opp_power>0`. Control taps out freely vs Storm. |
+| First strike missing from AI combat sim | `ai/turn_planner.py:398-478` | `_simulate_combat` applies all damage simultaneously. Engine is correct; AI evaluation is not. |
+
+### P2 — Medium
+
+- Living End mulligan too aggressive (`ai/mulligan.py:60`): combo_sets should relax at 6 cards, not 5
+- Tron lands not differentiated (`ai/ev_player.py:540-616`): no assembly bonus for missing piece
+- Empty the Warrens underutilized: Wish tutor too Grapeshot-biased
+- Ghost candidates in EV list: stale snapshot after spell resolution within same main phase
+- Duplicate EV trace blocks: Main1+Main2 without phase labels
+
+### Confirmed Working
+
+Turn structure, cascade, storm copies, counterspell restrictions, legend rule, Bowmasters ETB, Phlage ETB, ritual mana tracking, fetch land prioritization, land-before-spell sequencing.
 
 ## Dashboard — modern_meta_matrix_full.html
 
 The interactive metagame dashboard is a **standalone vanilla JS HTML file** (no React, no Babel).
 
-**Data source:** `metagame_14deck.jsx` (or current deck-count variant) — the canonical D object with:
+**Data source:** `metagame_14deck.jsx` — the canonical D object with:
 - `wins[i][j]` — win counts (out of `matches_per_pair=100`)
 - `matchup_cards["i,j"]` — per-matchup detail: insight, avg_turns, sweeps, went_to_3, g1_wins, comebacks, top_casts, finishers, top_damage, sideboard IN/OUT with cast counts + post-board WR delta
 - `deck_cards[idx]` — per-deck: mvp_casts, mvp_damage, finishers with descriptions, summary
@@ -247,12 +293,14 @@ The interactive metagame dashboard is a **standalone vanilla JS HTML file** (no 
 - `meta_shares` — tournament representation %
 
 **Build command (each session):**
-```python
-import re, json
-with open('metagame_14deck.jsx') as f: src = f.read()
-D = json.loads(re.search(r'const D = (\{.*?\});\nconst N', src, re.DOTALL).group(1))
-# ... embed into standalone HTML with vanilla JS render engine
+```bash
+# After a new matrix run — merge wins + preserve card detail, then build:
+python3 build_dashboard.py --merge
+
+# Without a new run — just rebuild HTML from existing JSX:
+python3 build_dashboard.py
 ```
+`--merge` reads `metagame_results.json`, merges wins into `metagame_14deck.jsx` (preserving all matchup_cards/deck_cards), recomputes WRs, then builds the HTML. Always use `--merge` after running `--matrix`.
 
 **Dashboard features:**
 - Slide-in detail panel (CSS `translateX` transition, 420px)
@@ -267,17 +315,29 @@ D = json.loads(re.search(r'const D = (\{.*?\});\nconst N', src, re.DOTALL).group
 - Fonts: Outfit (UI) + JetBrains Mono (numbers/cards)
 
 **Adding a new deck:**
-1. Run `run_meta.py --field "New Deck" -n 100 --save` to get win data
-2. Add wins row/col and basic `matchup_cards` entries to `metagame_14deck.jsx` D object
-3. Run verbose matchups for card-level detail: `run_meta.py --verbose "New Deck" opp -s SEED`
-4. Rebuild HTML from updated JSX
+1. **Check DB freshness first** — run the freshness check above. If any new sets have been released since last update, run `python3 update_modern_atomic.py` before proceeding.
+2. Run `run_meta.py --field "New Deck" -n 100 --save` to get win data
+3. Add wins row/col and basic `matchup_cards` entries to `metagame_14deck.jsx` D object
+4. Run verbose matchups for card-level detail: `run_meta.py --verbose "New Deck" opp -s SEED`
+5. Rebuild HTML: `python3 build_dashboard.py metagame_14deck.jsx`
 
-## Replay Viewer — simulate_match.py
+## Replay Viewer — Pipeline
 
-Produces standalone HTML Bo3 replay. GitHub-dark theme (`#0d1117`), collapsible turn cards (NOT tables), gradient header, game tabs with winner dots, opening hand pills, SVG life chart, numbered plays with category badges, board state grid, result box.
+**Do NOT use `simulate_match.py` output** — wrong color scheme and table layout.
 
+**Correct pipeline:**
 ```bash
-python simulate_match.py "Ruby Storm" "Domain Zoo" --seed 55555 -o replay.html
-```
+# 1. Run verbose Bo3 and save log
+python run_meta.py --bo3 "Ruby Storm" "Affinity" -s 55555 > replays/ruby_storm_vs_affinity_s55555.txt
 
-Debug outlier matchups: loop seeds until the underdog wins, save that seed. Check WARNING lines in output for missing cards (0/0 stats = card not in ModernAtomic.json).
+# 2. Build HTML replay
+python build_replay.py replays/ruby_storm_vs_affinity_s55555.txt /mnt/user-data/outputs/replay.html 55555
+```
+Always save logs to `replays/` and commit. `build_replay.py` is in the repo with the full parser — use it, never rewrite from scratch.
+
+**Parser rules (critical):**
+- Store board state keyed by **player name** (`boards['Boros Energy']`), never by `active`/`opp` — the active player swaps every turn, causing columns to flip if you use relative keys
+- Display end-of-turn board using **next turn's header** (turn N's header = state before N's plays; turn N+1's header = state after)
+- `╔══ TURN N ══╗` header sections are labelled `║ PlayerName board:` — match exactly
+
+**Design:** GitHub-dark (`#0d1117`), collapsible turn cards, 15 category badges, `.active` for keyboard nav, `boards` keyed by player name. See `/mtg-bo3-replayer-v2` skill for full spec.

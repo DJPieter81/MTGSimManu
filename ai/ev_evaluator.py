@@ -248,6 +248,13 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         if 'lifelink' in kws:
             projected.my_lifelink_power += max(0, p)
 
+        # Token makers: project future token value as bonus power.
+        # A token maker that attacks every turn generates ~1 token/turn.
+        # Model as +2 projected power (conservative: tokens arrive next turn onwards).
+        if 'token_maker' in tags:
+            projected.my_power += 2
+            projected.my_creature_count += 1
+
     # Removal — kills best opponent creature
     if 'removal' in tags and not 'board_wipe' in tags:
         if snap.opp_creature_count > 0 and game:
@@ -263,13 +270,17 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
 
     # Board wipe — kills all creatures
     if 'board_wipe' in tags:
-        projected.opp_power = 0
-        projected.opp_creature_count = 0
-        projected.opp_evasion_power = 0
-        projected.my_power = 0
-        projected.my_creature_count = 0
-        projected.my_evasion_power = 0
-        projected.my_lifelink_power = 0
+        if snap.opp_creature_count == 0:
+            # Opponent has no creatures — board wipe is pure waste
+            projected.opp_life += 100  # heavy penalty: makes EV deeply negative
+        else:
+            projected.opp_power = 0
+            projected.opp_creature_count = 0
+            projected.opp_evasion_power = 0
+            projected.my_power = 0
+            projected.my_creature_count = 0
+            projected.my_evasion_power = 0
+            projected.my_lifelink_power = 0
 
     # Burn damage to face
     if 'burn' in tags or ('damage' in (t.oracle_text or '').lower()):
@@ -278,8 +289,12 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         from decks.card_knowledge_loader import get_burn_damage
         dmg = get_burn_damage(t.name)
         if dmg > 0:
-            # Can go face — reduce opponent life
-            projected.opp_life -= dmg
+            # Only project face damage if we have board presence or opponent is low
+            if snap.my_creature_count > 0 or snap.opp_life <= 10:
+                projected.opp_life -= dmg
+            else:
+                # No clock and opponent healthy — burn face has minimal value
+                projected.opp_life -= dmg * 0.1
 
     # Card draw
     if 'cantrip' in tags or 'draw' in tags:
@@ -357,14 +372,28 @@ def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
     # Response probabilities: use BHI posteriors if available, else static density.
     # BHI updates based on observed priority passes — if opponent has been passing
     # with mana up, P(counter) decreases.
+    #
+    # Threat-proportional scaling: opponents save counters for high-impact spells.
+    # P(counter THIS) = P(has counter) × worthiness
+    # worthiness = raw_delta / (raw_delta + avg_card_value)
+    # This is derived from game theory: counter the spell that changes the
+    # game state the most. Both terms from existing clock math.
+    from ai.clock import card_clock_impact
+    raw_delta = abs(evaluate_board(projected, "midrange") - evaluate_board(snap, "midrange"))
+    avg_card_value = card_clock_impact(snap)
+    if avg_card_value > 0 and raw_delta > 0:
+        counter_worthiness = raw_delta / (raw_delta + avg_card_value)
+    else:
+        counter_worthiness = 1.0
+
     opp_hand_size = snap.opp_hand_size if snap.opp_hand_size > 0 else 5
     counter_probability = 0.0
     removal_probability = 0.0
 
     if bhi and bhi._initialized:
-        # Use Bayesian-updated beliefs
+        # Use Bayesian-updated beliefs, scaled by spell worthiness
         if can_counter:
-            counter_probability = bhi.get_counter_probability()
+            counter_probability = bhi.get_counter_probability() * counter_worthiness
         if t.is_creature and projected.opp_mana >= REMOVAL_ESTIMATED_COST:
             removal_probability = bhi.get_removal_probability()
             # Toughness adjustments: high toughness reduces damage-based removal
@@ -382,7 +411,7 @@ def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
         # Fallback: static deck density (no BHI tracker available)
         opp = game.players[1 - player_idx]
         if can_counter and opp.counter_density > 0:
-            counter_probability = 1.0 - (1.0 - opp.counter_density) ** opp_hand_size
+            counter_probability = (1.0 - (1.0 - opp.counter_density) ** opp_hand_size) * counter_worthiness
         if t.is_creature and projected.opp_mana >= REMOVAL_ESTIMATED_COST and opp.removal_density > 0:
             creature_toughness = t.toughness or 0
             if hasattr(card, 'toughness') and card.toughness is not None:
@@ -395,6 +424,17 @@ def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
             elif creature_toughness >= 3:
                 damage_prob *= DAMAGE_REMOVAL_EFF_MID_TOUGH
             removal_probability = min(1.0, exile_prob + damage_prob * (1.0 - exile_prob))
+
+    # Scale down removal probability for cheap creatures — opponents rarely
+    # waste premium removal on 0-1 CMC threats. Even if they do, the tempo
+    # trade favors the cheap creature's controller.
+    cmc = t.cmc or 0
+    if cmc == 0:
+        removal_probability *= 0.15
+    elif cmc == 1:
+        removal_probability *= 0.25
+    elif cmc == 2:
+        removal_probability *= 0.6
 
     # Compute expected value as weighted average of outcomes:
     # P(counter) * V(countered) + P(removal) * V(removed) + P(pass) * V(projected)

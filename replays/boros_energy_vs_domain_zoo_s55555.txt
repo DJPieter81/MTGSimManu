@@ -1,0 +1,1398 @@
+Loaded 21759 cards (0 errors)
+WARNING: 1 cards not in database (using placeholders): ['The Legend of Roku']
+WARNING: 1 cards not in database (using placeholders): ['The Legend of Roku']
+WARNING: 1 cards not in database (using placeholders): ['The Legend of Roku']
+WARNING: 1 cards not in database (using placeholders): ['The Legend of Roku']
+WARNING: 1 cards not in database (using placeholders): ['The Legend of Roku']
+WARNING: 1 cards not in database (using placeholders): ['The Legend of Roku']
+======================================================================
+  GAME 1: Boros Energy (P1) vs Domain Zoo (P2)  —  seed 55555
+  Series: Boros Energy 0 - 0 Domain Zoo
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Domain Zoo wins → chooses to play first
+║ P1 (on play): Domain Zoo
+║ P2 (on draw): Boros Energy
+╚═══════════════════════════════════════════════════════
+
+P1 (Boros Energy) opening hand (3 lands, 4 spells):
+  • Seasoned Pyromancer [Creature, CMC 3]
+  • Ocelot Pride [Creature, CMC 1]
+  • Phlage, Titan of Fire's Fury [Creature, CMC 3]
+  • Thraben Charm [Spell, CMC 2]
+  • Flooded Strand [Land, CMC 0]
+  • Flooded Strand [Land, CMC 0]
+  • Snow-Covered Mountain [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Ocelot Pride
+
+P2 (Domain Zoo) opening hand (3 lands, 4 spells):
+  • Consign to Memory [Spell, CMC 1]
+  • Blood Crypt [Land, CMC 0]
+  • Indatha Triome [Land, CMC 0]
+  • Flooded Strand [Land, CMC 0]
+  • Lightning Bolt [Spell, CMC 1]
+  • Doorkeeper Thrull [Creature, CMC 2]
+  • Leyline of the Guildpact [Spell, CMC 4]
+→ P2 KEEPS 7 — has key card(s): Doorkeeper Thrull
+
+T0 P2: Leyline of the Guildpact begins the game on the battlefield (leyline)
+
+╔══ TURN 1 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  Boros Energy 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Flooded Strand
+T1 P2: Crack Flooded Strand (pay 1 life) -> Steam Vents (pay 2 life, untapped, life: 17)
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→R (paying for Lightning Bolt, 1 mana remaining)
+T1 P2: Cast Lightning Bolt (R)
+    [Priority] P1 passes (no response)
+T1: Resolve Lightning Bolt
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 17  |  Domain Zoo 17
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Elegant Parlor
+  [Main 1]
+T2 P1: Play Flooded Strand
+T2 P1: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (pay 2 life, untapped, life: 14)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Ocelot Pride, 1 mana remaining)
+T2 P1: Cast Ocelot Pride (W)
+    [Priority] P2 passes (no response)
+T2: Resolve Ocelot Pride
+T2 P1: +1 energy from Ocelot Pride (total: 1)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 17  |  Boros Energy 14
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 2
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: Steam Vents
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Territorial Kavu
+  [Main 1]
+T3 P2: Play Indatha Triome (enters tapped)
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→U (paying for Consign to Memory, 1 mana remaining)
+T3 P2: Cast Consign to Memory (U)
+    [Priority] P1 passes (no response)
+T3: Resolve Consign to Memory
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 14  |  Domain Zoo 17
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Lands: Sacred Foundry
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: Steam Vents [T], Indatha Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Blood Moon
+  [Main 1]
+T4 P1: Play Flooded Strand
+T4 P1: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (pay 2 life, untapped, life: 11)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ocelot Pride
+T4 P1: Attack with Ocelot Pride
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 1 damage dealt → P2 life: 17 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 16  |  Boros Energy 12
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: Steam Vents, Indatha Triome
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped]
+║   Lands: Sacred Foundry, Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: The Legend of Roku
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→W, Indatha Triome→W (paying for The Legend of Roku, 2 mana remaining)
+T5 P2: Cast The Legend of Roku (2)
+    [Priority] P1 passes (no response)
+T5: Resolve The Legend of Roku
+T5 P2: Play Blood Crypt (tapped, no spells need mana)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 12  |  Domain Zoo 16
+║ Hand: 6 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ Domain Zoo board:
+║   Creatures: The Legend of Roku (2/2)
+║   Other: Leyline of the Guildpact
+║   Lands: Steam Vents [T], Indatha Triome [T], Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Guide of Souls
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Guide of Souls, 2 mana remaining)
+T6 P1: Cast Guide of Souls (W)
+    [Priority] P2 passes (no response)
+T6: Resolve Guide of Souls
+T6 P1: Guide of Souls produces 1 energy (total: 2)
+T6 P1: +1 energy from Guide of Souls (total: 3)
+T6 P1: Play Snow-Covered Mountain
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 16  |  Boros Energy 12
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: The Legend of Roku (2/2)
+║   Other: Leyline of the Guildpact
+║   Lands: Steam Vents, Indatha Triome, Blood Crypt
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Guide of Souls (1/2)
+║   Lands: Sacred Foundry [T], Sacred Foundry, Snow-Covered Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Territorial Kavu
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Steam Vents→W, Indatha Triome→W (paying for Doorkeeper Thrull, 3 mana remaining)
+T7 P2: Cast Doorkeeper Thrull (1W)
+    [Priority] P1 passes (no response)
+T7: Resolve Doorkeeper Thrull
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: The Legend of Roku
+T7 P2: Attack with The Legend of Roku
+  [Declare Blockers] P1 blocks: 
+T7: Ocelot Pride dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 12  |  Domain Zoo 16
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 3
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2)
+║   Lands: Sacred Foundry, Sacred Foundry, Snow-Covered Mountain
+║ Domain Zoo board:
+║   Creatures: The Legend of Roku (2/2) [tapped], Doorkeeper Thrull (1/2)
+║   Other: Leyline of the Guildpact
+║   Lands: Steam Vents [T], Indatha Triome [T], Blood Crypt
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Flooded Strand
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Sacred Foundry→W, Snow-Covered Mountain→R, Sacred Foundry→R (paying for Phlage, Titan of Fire's Fury, 3 mana remaining)
+T8 P1: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P2 passes (no response)
+T8: Resolve Phlage, Titan of Fire's Fury
+T8 P1: Phlage ETB: 3 damage to opponent (opponent life: 13)
+T8 P1: Phlage ETB: gain 3 life (life: 15)
+T8 P1: Gain 1 life from Guide of Souls (life: 16)
+T8 P1: Phlage, Titan of Fire's Fury sacrificed (not escaped)
+T8 P1: Play Flooded Strand
+T8 P1: Crack Flooded Strand -> Sacred Foundry (tapped, no spells need mana)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Guide of Souls
+T8 P1: +1 energy from Guide of Souls attack (total: 4)
+T8 P1: Attack with Guide of Souls
+T8: Resolve Phlage, Titan of Fire's Fury
+  [Declare Blockers] P2 blocks: 
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 13  |  Boros Energy 15
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: The Legend of Roku (2/2), Doorkeeper Thrull (1/2)
+║   Other: Leyline of the Guildpact
+║   Lands: Steam Vents, Indatha Triome, Blood Crypt
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2) [tapped]
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Snow-Covered Mountain [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Steam Vents
+  [Main 1]
+T9 P2: Play Steam Vents (tapped, no spells need mana)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Steam Vents→R, Indatha Triome→G (paying for Territorial Kavu, 3 mana remaining)
+T9 P2: Cast Territorial Kavu (RG)
+    [Priority] P1 passes (no response)
+T9: Resolve Territorial Kavu
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: The Legend of Roku, Doorkeeper Thrull
+T9 P2: Attack with The Legend of Roku, Doorkeeper Thrull
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 3 damage dealt → P1 life: 15 → 12
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 12  |  Domain Zoo 13
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 5
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2)
+║   Lands: Sacred Foundry, Sacred Foundry, Snow-Covered Mountain, Sacred Foundry
+║ Domain Zoo board:
+║   Creatures: The Legend of Roku (2/2) [tapped], Doorkeeper Thrull (1/2) [tapped], Territorial Kavu (4/4)
+║   Other: Leyline of the Guildpact
+║   Lands: Steam Vents [T], Indatha Triome [T], Blood Crypt, Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Main 1]
+T10 P1: Play Elegant Parlor (enters tapped)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Snow-Covered Mountain→R, Sacred Foundry→R, Sacred Foundry→R (paying for Seasoned Pyromancer, 4 mana remaining)
+T10 P1: Cast Seasoned Pyromancer (1RR)
+    [Priority] P2 passes (no response)
+T10: Resolve Seasoned Pyromancer
+T10 P1: Create 2x Elemental token(s)
+T10 P1: Seasoned Pyromancer: discard 2, draw 2, create 2 Elemental(s)
+T10 P1: Gain 1 life from Guide of Souls (life: 13)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T10 P1: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P2 passes (no response)
+T10: Resolve Ragavan, Nimble Pilferer
+T10 P1: Gain 1 life from Guide of Souls (life: 14)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T10: Resolve Seasoned Pyromancer
+
+╔══ TURN 11 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 13  |  Boros Energy 14
+║ Hand: 1 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: The Legend of Roku (2/2), Doorkeeper Thrull (1/2), Territorial Kavu (4/4)
+║   Other: Leyline of the Guildpact
+║   Lands: Steam Vents, Indatha Triome, Blood Crypt, Steam Vents
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2), Seasoned Pyromancer (2/2), Elemental Token (1/1), Elemental Token (1/1), Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Snow-Covered Mountain [T], Sacred Foundry [T], Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Phlage, Titan of Fire's Fury
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Steam Vents→W, Indatha Triome→R, Blood Crypt→W (paying for Phlage, Titan of Fire's Fury, 4 mana remaining)
+T11 P2: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P1 passes (no response)
+T11: Resolve Phlage, Titan of Fire's Fury
+T11 P2: Phlage ETB: 3 damage to opponent (opponent life: 11)
+T11 P2: Phlage ETB: gain 3 life (life: 16)
+T11 P2: Phlage, Titan of Fire's Fury sacrificed (not escaped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Doorkeeper Thrull, Territorial Kavu
+T11 P2: Attack with Doorkeeper Thrull, Territorial Kavu
+T11: Resolve Territorial Kavu
+T11: Resolve Phlage, Titan of Fire's Fury
+  [Declare Blockers] P1 blocks: 
+T11: Elemental Token dies
+  [Combat Damage] 1 damage dealt → P1 life: 11 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 10  |  Domain Zoo 16
+║ Hand: 2 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 43  |  Graveyard: 8
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2), Seasoned Pyromancer (2/2), Elemental Token (1/1), Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Snow-Covered Mountain, Sacred Foundry, Elegant Parlor
+║ Domain Zoo board:
+║   Creatures: The Legend of Roku (2/2), Doorkeeper Thrull (1/2) [tapped], Territorial Kavu (4/4) [tapped]
+║   Other: Leyline of the Guildpact
+║   Lands: Steam Vents [T], Indatha Triome [T], Blood Crypt [T], Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Galvanic Discharge
+  [Main 1]
+    → Goal: curve_out
+T12 P1: Escape Phlage, Titan of Fire's Fury (exile 5 cards)
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→W, Snow-Covered Mountain→R, Sacred Foundry→R (paying for Phlage, Titan of Fire's Fury, 5 mana remaining)
+T12 P1: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P2 passes (no response)
+T12: Resolve Phlage, Titan of Fire's Fury
+T12 P1: Phlage ETB: 3 damage to opponent (opponent life: 13)
+T12 P1: Phlage ETB: gain 3 life (life: 13)
+T12 P1: Gain 1 life from Guide of Souls (life: 14)
+    → Goal: curve_out [interaction]
+    [Mana] Tap Elegant Parlor→R (paying for Galvanic Discharge, 1 mana remaining)
+T12 P1: Cast Galvanic Discharge (R)
+    [Priority] P2 passes (no response)
+T12: Resolve Galvanic Discharge
+T12 P1: Galvanic Discharge deals 7 to opponent
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Guide of Souls, Seasoned Pyromancer, Elemental Token, Ragavan, Nimble Pilferer
+T12 P1: +1 energy from Guide of Souls attack (total: 2)
+T12 P1: Attack with Guide of Souls, Seasoned Pyromancer, Elemental Token, Ragavan, Nimble Pilferer
+T12: Resolve Phlage, Titan of Fire's Fury
+  [Declare Blockers] P2 blocks: 
+T12: Seasoned Pyromancer dies
+T12: The Legend of Roku dies
+  [Combat Damage] 4 damage dealt → P2 life: 6 → 2
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 13 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 2  |  Boros Energy 14
+║ Hand: 1 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 5
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2), Territorial Kavu (4/4)
+║   Other: Leyline of the Guildpact
+║   Lands: Steam Vents, Indatha Triome, Blood Crypt, Steam Vents
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2) [tapped], Elemental Token (1/1) [tapped], Ragavan, Nimble Pilferer (2/1) [tapped], Phlage, Titan of Fire's Fury (6/6)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Snow-Covered Mountain [T], Sacred Foundry [T], Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Leyline Binding
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→W (paying for Leyline Binding, 4 mana remaining)
+T13 P2: Cast Leyline Binding (5W)
+    [Priority] P1 passes (no response)
+T13: Resolve Leyline Binding
+T13: Phlage, Titan of Fire's Fury moved battlefield -> exile (exiled)
+T13 P2: Leyline Binding exiles Phlage, Titan of Fire's Fury
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Indatha Triome→R, Blood Crypt→G (paying for Territorial Kavu, 3 mana remaining)
+T13 P2: Cast Territorial Kavu (RG)
+    [Priority] P1 passes (no response)
+T13: Resolve Territorial Kavu
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Doorkeeper Thrull, Territorial Kavu
+T13 P2: Attack with Doorkeeper Thrull, Territorial Kavu
+T13: Resolve Territorial Kavu
+T13: Resolve Leyline Binding
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 5 damage dealt → P1 life: 14 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 14 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 9  |  Domain Zoo 2
+║ Hand: 2 cards  |  Opp hand: 0 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 42  |  Graveyard: 4
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2), Elemental Token (1/1), Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Snow-Covered Mountain, Sacred Foundry, Elegant Parlor
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2) [tapped], Territorial Kavu (4/4) [tapped], Territorial Kavu (4/4)
+║   Other: Leyline of the Guildpact, Leyline Binding
+║   Lands: Steam Vents [T], Indatha Triome [T], Blood Crypt [T], Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arid Mesa
+  [Main 1]
+T14 P1: Play Arid Mesa
+T14 P1: Crack Arid Mesa -> Snow-Covered Plains (untapped)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Snow-Covered Mountain→R, Sacred Foundry→R, Snow-Covered Plains→W (paying for Seasoned Pyromancer, 6 mana remaining)
+T14 P1: Cast Seasoned Pyromancer (1RR)
+    [Priority] P2 passes (no response)
+T14: Resolve Seasoned Pyromancer
+T14 P1: Create 1x Elemental token(s)
+T14 P1: Seasoned Pyromancer: discard 2, draw 2, create 1 Elemental(s)
+T14 P1: Gain 1 life from Guide of Souls (life: 9)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Ocelot Pride, 3 mana remaining)
+T14 P1: Cast Ocelot Pride (W)
+    [Priority] P2 passes (no response)
+T14: Resolve Ocelot Pride
+T14 P1: +1 energy from Ocelot Pride (total: 3)
+T14 P1: Gain 1 life from Guide of Souls (life: 10)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→W, Elegant Parlor→R (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 2 mana remaining)
+T14 P1: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P2 passes (no response)
+T14: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T14 P1: Create 1x Cat token(s)
+T14 P1: +2 energy from Ajani (total: 5)
+T14 P1: Ajani creates 2/1 Cat Warrior token and gains 2 energy
+T14 P1: Gain 1 life from Guide of Souls (life: 11)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Guide of Souls, Elemental Token, Ragavan, Nimble Pilferer
+T14 P1: +1 energy from Guide of Souls attack (total: 6)
+T14 P1: Attack with Guide of Souls, Elemental Token, Ragavan, Nimble Pilferer
+T14: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T14: Resolve Seasoned Pyromancer
+  [Declare Blockers] P2 blocks: 
+P2 loses: life total 0
+  [Combat Damage] 2 damage dealt → P2 life: 2 → 0
+
+>>> Boros Energy wins Game 1 on turn 14 via damage
+    Final life: Boros Energy=11  Domain Zoo=0
+
+======================================================================
+  GAME 2: Domain Zoo (P1) vs Boros Energy (P2)  —  seed 55556
+  Series: Boros Energy 1 - 0 Domain Zoo
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Boros Energy wins → chooses to play first
+║ P1 (on play): Boros Energy
+║ P2 (on draw): Domain Zoo
+╚═══════════════════════════════════════════════════════
+
+P1 (Domain Zoo) opening hand (1 lands, 6 spells):
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Consign to Memory [Spell, CMC 1]
+  • Leyline Binding [Spell, CMC 6]
+  • Steam Vents [Land, CMC 0]
+  • Scion of Draco [Creature, CMC 12]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Phlage, Titan of Fire's Fury [Creature, CMC 3]
+→ P1 KEEPS 7 — has key card(s): Leyline Binding, Ragavan, Nimble Pilferer
+
+P2 (Boros Energy) opening hand (3 lands, 4 spells):
+  • Ajani, Nacatl Pariah // Ajani, Nacatl Avenger [Creature, CMC 2]
+  • Snow-Covered Plains [Land, CMC 0]
+  • Blood Moon [Spell, CMC 3]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Arena of Glory [Land, CMC 0]
+  • Marsh Flats [Land, CMC 0]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+→ P2 KEEPS 7 — has key card(s): Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Ragavan, Nimble Pilferer
+
+
+╔══ TURN 1 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Domain Zoo 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Marsh Flats
+T1 P2: Crack Marsh Flats (pay 1 life) -> Sacred Foundry (pay 2 life, untapped, life: 17)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T1 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T1: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 20  |  Boros Energy 17
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wooded Foothills
+  [Main 1]
+T2 P1: Play Steam Vents (pay 2 life, untapped, life: 18)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T2 P1: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P2 passes (no response)
+T2: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 17  |  Domain Zoo 18
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Main 1]
+T3 P2: Play Snow-Covered Plains
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Snow-Covered Plains→W, Sacred Foundry→R (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 2 mana remaining)
+T3 P2: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P1 passes (no response)
+T3: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T3 P2: Create 1x Cat token(s)
+T3 P2: +2 energy from Ajani (total: 2)
+T3 P2: Ajani creates 2/1 Cat Warrior token and gains 2 energy
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T3: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+
+╔══ TURN 4 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 18  |  Boros Energy 17
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Steam Vents
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Lands: Sacred Foundry [T], Snow-Covered Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Blood Crypt
+  [Main 1]
+T4 P1: Play Wooded Foothills
+T4 P1: Crack Wooded Foothills -> Temple Garden (tapped, no spells need mana)
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→U (paying for Consign to Memory, 1 mana remaining)
+T4 P1: Cast Consign to Memory (U)
+    [Priority] P2 passes (no response)
+T4: Resolve Consign to Memory
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 17  |  Domain Zoo 17
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Lands: Sacred Foundry, Snow-Covered Plains
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Steam Vents [T], Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T5 P2: Play Flooded Strand
+T5 P2: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (pay 2 life, untapped, life: 14)
+    → Goal: curve_out
+    [Mana] Tap Sacred Foundry→R, Snow-Covered Plains→W, Sacred Foundry→R (paying for Blood Moon, 3 mana remaining)
+T5 P2: Cast Blood Moon (2R)
+    [Priority] P1 passes (no response)
+T5: Resolve Blood Moon
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 17  |  Boros Energy 14
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 2
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Steam Vents, Temple Garden
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Other: Blood Moon
+║   Lands: Sacred Foundry [T], Snow-Covered Plains [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Leyline of the Guildpact
+  [Main 1]
+T6 P1: Play Blood Crypt (pay 2 life, untapped, life: 15)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Temple Garden→W, Steam Vents→R, Blood Crypt→B (paying for Phlage, Titan of Fire's Fury, 3 mana remaining)
+T6 P1: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P2 passes (no response)
+T6: Resolve Phlage, Titan of Fire's Fury
+T6 P1: Phlage ETB: 3 damage to opponent (opponent life: 11)
+T6 P1: Phlage ETB: gain 3 life (life: 18)
+T6 P1: Phlage, Titan of Fire's Fury sacrificed (not escaped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T6: Resolve Phlage, Titan of Fire's Fury
+
+╔══ TURN 7 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 11  |  Domain Zoo 18
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Other: Blood Moon
+║   Lands: Sacred Foundry, Snow-Covered Plains, Sacred Foundry
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Steam Vents [T], Temple Garden [T], Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Phlage, Titan of Fire's Fury
+  [Main 1]
+T7 P2: Play Arena of Glory (enters tapped)
+    → Goal: curve_out
+    [Mana] Tap Sacred Foundry→R, Snow-Covered Plains→W, Sacred Foundry→R (paying for Phlage, Titan of Fire's Fury, 3 mana remaining)
+T7 P2: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P1 passes (no response)
+T7: Resolve Phlage, Titan of Fire's Fury
+T7 P2: Phlage ETB: 3 damage to opponent (opponent life: 15)
+T7 P2: Phlage ETB: gain 3 life (life: 14)
+T7 P2: Phlage, Titan of Fire's Fury sacrificed (not escaped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T7: Resolve Phlage, Titan of Fire's Fury
+
+╔══ TURN 8 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 15  |  Boros Energy 14
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Steam Vents, Temple Garden, Blood Crypt
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Other: Blood Moon
+║   Lands: Sacred Foundry [T], Snow-Covered Plains [T], Sacred Foundry [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wooded Foothills
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Steam Vents→R, Temple Garden→G (paying for Scion of Draco, 3 mana remaining)
+T8 P1: Cast Scion of Draco (12)
+    [Priority] P2 passes (no response)
+T8: Resolve Scion of Draco
+T8 P1: Play Wooded Foothills
+T8 P1: Crack Wooded Foothills -> Steam Vents (tapped, no spells need mana)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 14  |  Domain Zoo 14
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 3
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Other: Blood Moon
+║   Lands: Sacred Foundry, Snow-Covered Plains, Sacred Foundry, Arena of Glory
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Scion of Draco (4/4)
+║   Lands: Steam Vents [T], Temple Garden [T], Blood Crypt, Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Phlage, Titan of Fire's Fury
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Snow-Covered Plains→W, Arena of Glory→R, Sacred Foundry→R (paying for Phlage, Titan of Fire's Fury, 4 mana remaining)
+T9 P2: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P1 passes (no response)
+T9: Resolve Phlage, Titan of Fire's Fury
+T9 P2: Phlage ETB: 3 damage to opponent (opponent life: 11)
+T9 P2: Phlage ETB: gain 3 life (life: 17)
+T9 P2: Phlage, Titan of Fire's Fury sacrificed (not escaped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T9: Resolve Phlage, Titan of Fire's Fury
+
+╔══ TURN 10 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 11  |  Boros Energy 17
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 4
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Scion of Draco (4/4)
+║   Lands: Steam Vents, Temple Garden, Blood Crypt, Steam Vents
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Other: Blood Moon
+║   Lands: Sacred Foundry [T], Snow-Covered Plains [T], Sacred Foundry, Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Flooded Strand
+  [Main 1]
+T10 P1: Play Flooded Strand
+T10 P1: Crack Flooded Strand -> Plains (untapped)
+    → Goal: curve_out
+    [Mana] Tap Plains→W (paying for Leyline Binding, 5 mana remaining)
+T10 P1: Cast Leyline Binding (5W)
+    [Priority] P2 passes (no response)
+T10: Resolve Leyline Binding
+T10: Ragavan, Nimble Pilferer moved battlefield -> exile (exiled)
+T10 P1: Leyline Binding exiles Ragavan, Nimble Pilferer
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R, Temple Garden→G (paying for Leyline of the Guildpact, 4 mana remaining)
+T10 P1: Cast Leyline of the Guildpact (4)
+    [Priority] P2 passes (no response)
+T10: Resolve Leyline of the Guildpact
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Scion of Draco
+T10 P1: Attack with Scion of Draco
+T10: Resolve Leyline Binding
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 4 damage dealt → P2 life: 17 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 13  |  Domain Zoo 10
+║ Hand: 2 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 4
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Other: Blood Moon
+║   Lands: Sacred Foundry, Snow-Covered Plains, Sacred Foundry, Arena of Glory
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Scion of Draco (4/4) [tapped]
+║   Other: Leyline Binding, Leyline of the Guildpact
+║   Lands: Steam Vents [T], Temple Garden [T], Blood Crypt, Steam Vents, Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thraben Charm
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Arena of Glory→R, Snow-Covered Plains→W (paying for Ragavan, Nimble Pilferer, 4 mana remaining)
+T11 P2: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P1 passes (no response)
+T11: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T11: Ragavan, Nimble Pilferer moved battlefield -> hand (Dash return)
+T11: Ragavan, Nimble Pilferer returned to hand (Dash)
+
+╔══ TURN 12 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 10  |  Boros Energy 13
+║ Hand: 1 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 5
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Scion of Draco (4/4)
+║   Other: Leyline Binding, Leyline of the Guildpact
+║   Lands: Steam Vents, Temple Garden, Blood Crypt, Steam Vents, Plains
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Other: Blood Moon
+║   Lands: Sacred Foundry, Snow-Covered Plains [T], Sacred Foundry, Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Doorkeeper Thrull
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Steam Vents→W (paying for Doorkeeper Thrull, 5 mana remaining)
+T12 P1: Cast Doorkeeper Thrull (1W)
+    [Priority] P2 passes (no response)
+T12: Resolve Doorkeeper Thrull
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Scion of Draco
+T12 P1: Attack with Scion of Draco
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 4 damage dealt → P2 life: 13 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 13 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 9  |  Domain Zoo 10
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 4
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Other: Blood Moon
+║   Lands: Sacred Foundry, Snow-Covered Plains, Sacred Foundry, Arena of Glory
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Scion of Draco (4/4) [tapped], Doorkeeper Thrull (1/2)
+║   Other: Leyline Binding, Leyline of the Guildpact
+║   Lands: Steam Vents [T], Temple Garden, Blood Crypt, Steam Vents, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Goblin Bombardment
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Arena of Glory→R, Snow-Covered Plains→W (paying for Ragavan, Nimble Pilferer, 4 mana remaining)
+T13 P2: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P1 passes (no response)
+T13: Resolve Ragavan, Nimble Pilferer
+    → Goal: curve_out
+    [Mana] Tap Sacred Foundry→R, Sacred Foundry→R (paying for Goblin Bombardment, 2 mana remaining)
+T13 P2: Cast Goblin Bombardment (1R)
+    [Priority] P1 passes (no response)
+T13: Resolve Goblin Bombardment
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T13: Ragavan, Nimble Pilferer moved battlefield -> hand (Dash return)
+T13: Ragavan, Nimble Pilferer returned to hand (Dash)
+T13: Resolve Goblin Bombardment
+
+╔══ TURN 14 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 10  |  Boros Energy 9
+║ Hand: 1 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 44  |  Graveyard: 5
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Scion of Draco (4/4), Doorkeeper Thrull (1/2)
+║   Other: Leyline Binding, Leyline of the Guildpact
+║   Lands: Steam Vents, Temple Garden, Blood Crypt, Steam Vents, Plains
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Other: Blood Moon, Goblin Bombardment
+║   Lands: Sacred Foundry [T], Snow-Covered Plains [T], Sacred Foundry [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Lightning Bolt
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→R (paying for Lightning Bolt, 5 mana remaining)
+T14 P1: Cast Lightning Bolt (R)
+    [Priority] P2 passes (no response)
+T14: Resolve Lightning Bolt
+    → Goal: curve_out [payoffs]
+T14 P1: Escape Phlage, Titan of Fire's Fury (exile 5 cards)
+    [Mana] Tap Temple Garden→W, Blood Crypt→W, Steam Vents→R, Plains→R (paying for Phlage, Titan of Fire's Fury, 4 mana remaining)
+T14 P1: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P2 passes (no response)
+T14: Resolve Phlage, Titan of Fire's Fury
+T14 P1: Phlage ETB: 3 damage to opponent (opponent life: 3)
+T14 P1: Phlage ETB: gain 3 life (life: 13)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer, Scion of Draco, Doorkeeper Thrull
+T14 P1: Attack with Ragavan, Nimble Pilferer, Scion of Draco, Doorkeeper Thrull
+T14: Resolve Phlage, Titan of Fire's Fury
+  [Declare Blockers] P2 blocks: 
+P2 loses: life total -2
+  [Combat Damage] 5 damage dealt → P2 life: 3 → -2
+
+>>> Domain Zoo wins Game 2 on turn 14 via damage
+    Final life: Domain Zoo=13  Boros Energy=-2
+
+======================================================================
+  GAME 3: Boros Energy (P1) vs Domain Zoo (P2)  —  seed 55557
+  Series: Boros Energy 1 - 1 Domain Zoo
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Boros Energy wins → chooses to play first
+║ P1 (on play): Boros Energy
+║ P2 (on draw): Domain Zoo
+╚═══════════════════════════════════════════════════════
+
+P1 (Boros Energy) opening hand (2 lands, 5 spells):
+  • Seasoned Pyromancer [Creature, CMC 3]
+  • Ocelot Pride [Creature, CMC 1]
+  • Snow-Covered Mountain [Land, CMC 0]
+  • Galvanic Discharge [Spell, CMC 1]
+  • Galvanic Discharge [Spell, CMC 1]
+  • Phlage, Titan of Fire's Fury [Creature, CMC 3]
+  • Arena of Glory [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Galvanic Discharge, Ocelot Pride
+
+P2 (Domain Zoo) opening hand (4 lands, 3 spells):
+  • Arid Mesa [Land, CMC 0]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Temple Garden [Land, CMC 0]
+  • Thundering Falls [Land, CMC 0]
+  • Wooded Foothills [Land, CMC 0]
+  • Stubborn Denial [Spell, CMC 1]
+  • Fable of the Mirror-Breaker // Reflection of Kiki-Jiki [Spell, CMC 3]
+→ P2 KEEPS 7 — has key card(s): Ragavan, Nimble Pilferer
+
+
+╔══ TURN 1 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 20  |  Domain Zoo 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Snow-Covered Mountain
+    → Goal: curve_out [interaction]
+    [Mana] Tap Snow-Covered Mountain→R (paying for Galvanic Discharge, 1 mana remaining)
+T1 P1: Cast Galvanic Discharge (R)
+    [Priority] P2 passes (no response)
+T1: Resolve Galvanic Discharge
+T1 P1: Galvanic Discharge deals 4 to opponent
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 16  |  Boros Energy 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Snow-Covered Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Steam Vents
+  [Main 1]
+T2 P2: Play Arid Mesa
+T2 P2: Crack Arid Mesa (pay 1 life) -> Steam Vents (pay 2 life, untapped, life: 13)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T2 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T2: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 20  |  Domain Zoo 13
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Snow-Covered Mountain
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Flooded Strand
+  [Main 1]
+T3 P1: Play Flooded Strand
+T3 P1: Crack Flooded Strand -> Sacred Foundry (tapped, no spells need mana)
+    → Goal: curve_out [interaction]
+    [Mana] Tap Snow-Covered Mountain→R (paying for Galvanic Discharge, 1 mana remaining)
+T3 P1: Cast Galvanic Discharge (R)
+    [Priority] P2 passes (no response)
+T3: Resolve Galvanic Discharge
+T3 P1: Galvanic Discharge deals 4 to opponent
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 9  |  Boros Energy 19
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Steam Vents
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Snow-Covered Mountain [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T4 P2: Play Temple Garden (tapped, no spells need mana)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T4 P2: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 2 damage dealt → P1 life: 19 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 17  |  Domain Zoo 9
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 3
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Snow-Covered Mountain, Sacred Foundry
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped]
+║   Lands: Steam Vents, Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Voice of Victory
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→W, Snow-Covered Mountain→R (paying for Voice of Victory, 2 mana remaining)
+T5 P1: Cast Voice of Victory (1W)
+    [Priority] P2 passes (no response)
+T5: Resolve Voice of Victory
+T5 P1: Play Arena of Glory (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 9  |  Boros Energy 17
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Steam Vents, Temple Garden
+║ Boros Energy board:
+║   Creatures: Voice of Victory (1/3)
+║   Lands: Snow-Covered Mountain [T], Sacred Foundry [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Scion of Draco
+  [Main 1]
+T6 P2: Play Wooded Foothills
+T6 P2: Crack Wooded Foothills (pay 1 life) -> Blood Crypt (pay 2 life, untapped, life: 6)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Steam Vents→R, Temple Garden→G (paying for Scion of Draco, 3 mana remaining)
+T6 P2: Cast Scion of Draco (12)
+    [Priority] P1 passes (no response)
+T6: Resolve Scion of Draco
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 17  |  Domain Zoo 6
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 3
+║ Boros Energy board:
+║   Creatures: Voice of Victory (1/3)
+║   Lands: Snow-Covered Mountain, Sacred Foundry, Arena of Glory
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Scion of Draco (4/4)
+║   Lands: Steam Vents [T], Temple Garden [T], Blood Crypt
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Seasoned Pyromancer
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Sacred Foundry→W, Snow-Covered Mountain→R, Arena of Glory→R (paying for Phlage, Titan of Fire's Fury, 3 mana remaining)
+T7 P1: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P2 passes (no response)
+T7: Resolve Phlage, Titan of Fire's Fury
+T7 P1: Phlage ETB: 3 damage to opponent (opponent life: 3)
+T7 P1: Phlage ETB: gain 3 life (life: 20)
+T7 P1: Phlage, Titan of Fire's Fury sacrificed (not escaped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T7: Resolve Phlage, Titan of Fire's Fury
+
+╔══ TURN 8 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 3  |  Boros Energy 20
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 2
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Scion of Draco (4/4)
+║   Lands: Steam Vents, Temple Garden, Blood Crypt
+║ Boros Energy board:
+║   Creatures: Voice of Victory (1/3)
+║   Lands: Snow-Covered Mountain [T], Sacred Foundry [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Doorkeeper Thrull
+  [Main 1]
+T8 P2: Play Flooded Strand
+T8 P2: Crack Flooded Strand -> Plains (untapped)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Plains→W, Steam Vents→R (paying for Doorkeeper Thrull, 4 mana remaining)
+T8 P2: Cast Doorkeeper Thrull (1W)
+    [Priority] P1 passes (no response)
+T8: Resolve Doorkeeper Thrull
+    → Goal: curve_out
+    [Mana] Tap Blood Crypt→R, Temple Garden→G (paying for Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, 2 mana remaining)
+T8 P2: Cast Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2R)
+    [Priority] P1 passes (no response)
+T8: Resolve Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Scion of Draco
+T8 P2: Attack with Scion of Draco
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 4 damage dealt → P1 life: 20 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 16  |  Domain Zoo 2
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 4
+║ Boros Energy board:
+║   Creatures: Voice of Victory (1/3)
+║   Lands: Snow-Covered Mountain, Sacred Foundry, Arena of Glory
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Scion of Draco (4/4) [tapped], Doorkeeper Thrull (1/2)
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Steam Vents [T], Temple Garden [T], Blood Crypt [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Sacred Foundry
+  [Main 1]
+T9 P1: Play Sacred Foundry (tapped, no spells need mana)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Snow-Covered Mountain→R, Arena of Glory→R, Sacred Foundry→R (paying for Seasoned Pyromancer, 3 mana remaining)
+T9 P1: Cast Seasoned Pyromancer (1RR)
+    [Priority] P2 passes (no response)
+T9: Resolve Seasoned Pyromancer
+T9 P1: Create 2x Elemental token(s)
+T9 P1: Seasoned Pyromancer: discard 2, draw 2, create 2 Elemental(s)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Voice of Victory
+T9 P1: Create 2x Warrior token(s)
+T9 P1: Voice of Victory mobilize 2 — create 2 1/1 tokens
+T9 P1: Attack with Voice of Victory
+T9: Resolve Voice of Victory
+T9: Resolve Seasoned Pyromancer
+  [Declare Blockers] P2 blocks: 
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 2  |  Boros Energy 16
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Scion of Draco (4/4), Doorkeeper Thrull (1/2)
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Steam Vents, Temple Garden, Blood Crypt, Plains
+║ Boros Energy board:
+║   Creatures: Voice of Victory (1/3) [tapped], Seasoned Pyromancer (2/2), Elemental Token (1/1), Elemental Token (1/1), Warrior Token (1/1), Warrior Token (1/1)
+║   Lands: Snow-Covered Mountain [T], Sacred Foundry [T], Arena of Glory [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: The Legend of Roku
+  [Main 1]
+T10 P2: Play Steam Vents (tapped, no spells need mana)
+    → Goal: curve_out
+    [Mana] Tap Plains→W, Steam Vents→R (paying for The Legend of Roku, 4 mana remaining)
+T10 P2: Cast The Legend of Roku (2)
+    [Priority] P1 passes (no response)
+T10: Resolve The Legend of Roku
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Scion of Draco, Doorkeeper Thrull
+T10 P2: Attack with Scion of Draco, Doorkeeper Thrull
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 5 damage dealt → P1 life: 16 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 11  |  Domain Zoo 2
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 6
+║ Boros Energy board:
+║   Creatures: Voice of Victory (1/3), Seasoned Pyromancer (2/2), Elemental Token (1/1), Elemental Token (1/1), Warrior Token (1/1), Warrior Token (1/1)
+║   Lands: Snow-Covered Mountain, Sacred Foundry, Arena of Glory, Sacred Foundry
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Scion of Draco (4/4) [tapped], Doorkeeper Thrull (1/2) [tapped], The Legend of Roku (2/2)
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Steam Vents [T], Temple Garden, Blood Crypt, Plains [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Sacred Foundry→W, Snow-Covered Mountain→R, Arena of Glory→R (paying for Phlage, Titan of Fire's Fury, 4 mana remaining)
+T11 P1: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P2 passes (no response)
+T11: Resolve Phlage, Titan of Fire's Fury
+T11 P1: Phlage ETB: 3 damage to opponent (opponent life: -1)
+T11 P1: Phlage ETB: gain 3 life (life: 14)
+T11 P1: Phlage, Titan of Fire's Fury sacrificed (not escaped)
+
+>>> Boros Energy wins Game 3 on turn 11 via damage
+    Final life: Boros Energy=14  Domain Zoo=-1
+
+======================================================================
+  MATCH RESULT: Boros Energy wins 2-1
+======================================================================
