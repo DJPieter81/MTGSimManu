@@ -344,15 +344,24 @@ def choose_fetch_target(library: list, fetch_colors: list,
     best = None
     best_score = -999.0
 
+    # Map fetch colors to the basic land types they represent
+    _COLOR_TO_BASIC_TYPE = {
+        'W': 'Plains', 'U': 'Island', 'B': 'Swamp', 'R': 'Mountain', 'G': 'Forest',
+    }
+    fetchable_types = {_COLOR_TO_BASIC_TYPE[c] for c in fetch_colors
+                       if c in _COLOR_TO_BASIC_TYPE}
+
     for lib_card in library:
         if not lib_card.template.is_land:
             continue
         # Fetch lands cannot find other fetch lands
         if lib_card.template.name in FETCH_LAND_COLORS:
             continue
-        produces = lib_card.template.produces_mana
-        # Must produce at least one of the fetch's colors
-        if not any(c in fetch_colors for c in produces):
+        # Must have a matching basic land subtype (not just produce the color)
+        # e.g., Sacred Foundry has subtypes ['Mountain', 'Plains'], Mountain has ['Mountain']
+        # Gemstone Caverns has subtypes [] — NOT fetchable
+        land_subtypes = set(getattr(lib_card.template, 'subtypes', []))
+        if not fetchable_types & land_subtypes:
             continue
 
         gp = prios.get(lib_card.template.name, 0.0)
