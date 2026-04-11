@@ -767,13 +767,13 @@ class GameRunner:
         # Combo decks (Storm, Living End) need to chain many spells in one turn.
         # Storm: 10+ rituals + cantrips + finisher = 15-25 actions
         # Living End: cycling + cascade = 5-10 actions
-        # Non-combo decks rarely exceed 5 actions per turn.
-        deck_name = game.players[ai.player_idx].deck_name
+        # Combo decks may chain many spells per turn (storm, cascade).
         from ai.constants import MAX_ACTIONS_COMBO, MAX_ACTIONS_NORMAL
-        if deck_name in ('Ruby Storm', 'Living End', "Goryo's Vengeance"):
-            max_actions = MAX_ACTIONS_COMBO
-        else:
-            max_actions = MAX_ACTIONS_NORMAL
+        from ai.strategy_profile import DECK_ARCHETYPES, ArchetypeStrategy
+        deck_name = game.players[ai.player_idx].deck_name
+        arch = DECK_ARCHETYPES.get(deck_name)
+        is_combo = arch == ArchetypeStrategy.COMBO if arch else False
+        max_actions = MAX_ACTIONS_COMBO if is_combo else MAX_ACTIONS_NORMAL
         actions = 0
         _last_failed_card = None  # Track failed casts to prevent infinite loops
         _consecutive_fails = 0

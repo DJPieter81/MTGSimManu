@@ -72,9 +72,13 @@ class MulliganDecider:
                     has_cantrip = any('cantrip' in getattr(c.template, 'tags', set())
                                       or 'draw' in getattr(c.template, 'tags', set())
                                       for c in spells)
-                    has_finisher = any(c.name in ('Grapeshot', 'Empty the Warrens', 'Wish',
-                                                   'Past in Flames')
-                                       for c in spells)
+                    from engine.cards import Keyword
+                    has_finisher = any(
+                        Keyword.STORM in getattr(c.template, 'keywords', set())
+                        or 'tutor' in getattr(c.template, 'tags', set())
+                        or ('flashback' in getattr(c.template, 'tags', set())
+                            and 'combo' in getattr(c.template, 'tags', set()))
+                        for c in spells)
                     if not (has_ritual and has_cantrip and has_finisher):
                         return False  # no reducer AND no backup plan — mulligan
 
