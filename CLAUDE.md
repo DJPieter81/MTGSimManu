@@ -26,11 +26,11 @@ print(f'Loaded {len(merged)} cards')
 ## Quick Reference — run_meta.py
 
 ```bash
-python run_meta.py --list                              # all 13 decks
+python run_meta.py --list                              # all 14 decks
 python run_meta.py --deck storm                        # deck profile + gameplan
 python run_meta.py --matchup storm dimir -n 50         # win rate (N games)
 python run_meta.py --field storm -n 30                 # one deck vs all
-python run_meta.py --matrix -n 20                      # full 13x13 matrix
+python run_meta.py --matrix -n 20                      # full 14x14 matrix
 python run_meta.py --matrix --decks 8 -n 50            # top 8 only
 python run_meta.py --verbose zoo omnath -s 42000        # game log
 python run_meta.py --trace zoo omnath -s 42000          # full AI reasoning
@@ -47,7 +47,7 @@ python run_meta.py --trace zoo omnath -s 42000          # full AI reasoning
 | **Deck audit** | `python run_meta.py --audit affinity -n 60` |
 | **Game log** | `python run_meta.py --verbose storm dimir -s 42000` |
 | **AI reasoning** | `python run_meta.py --trace storm dimir -s 42000` |
-| **HTML Bo3** | `python simulate_match.py "Ruby Storm" "Domain Zoo" --seed 55555` |
+| **HTML Bo3** | `python run_meta.py --bo3 "D1" "D2" -s SEED > replays/log.txt && python build_replay.py replays/log.txt out.html SEED` |
 | **Import deck** | `python import_deck.py "Deck Name" decklist.txt` |
 | **Save results** | `python run_meta.py --matrix -n 50 --save` |
 | **Load results** | `python run_meta.py --results` |
@@ -108,9 +108,9 @@ Auto-detects archetype, generates gameplan, prints code to paste into modern_met
 
 ## Available Decks (14)
 
-Boros Energy, Jeskai Blink, Ruby Storm, Affinity, Eldrazi Tron, Amulet Titan, Goryo's Vengeance, Domain Zoo, Living End, Izzet Prowess, Dimir Midrange, 4c Omnath, 4/5c Control, Azorius Control
+Boros Energy, Jeskai Blink, Ruby Storm, Affinity, Pinnacle Affinity, Eldrazi Tron, Amulet Titan, Goryo's Vengeance, Domain Zoo, Living End, Izzet Prowess, Dimir Midrange, 4c Omnath, 4/5c Control, Azorius Control
 
-**Known DB gaps:** `The Legend of Roku` (Azorius Control) and `Sink into Stupor` missing from ModernAtomic.json — deflates WR for those decks.
+**Known DB gaps:** ~~`The Legend of Roku` and `Sink into Stupor`~~ — both now resolved after ModernAtomic refresh (Apr 2026). All 14 decks sim correctly.
 
 ## Architecture
 
@@ -230,8 +230,9 @@ python run_meta.py --verbose zoo omnath -s 42000
 # Legacy debug dump
 python dump_game.py
 
-# BO3 match → HTML play-by-play
-python simulate_match.py "Ruby Storm" "Domain Zoo" --seed 55555
+# BO3 match → HTML replay (correct pipeline)
+python run_meta.py --bo3 "Ruby Storm" "Domain Zoo" -s 55555 > replays/log.txt
+python build_replay.py replays/log.txt replay.html 55555
 ```
 
 ## Important Conventions
@@ -298,13 +299,14 @@ The interactive metagame dashboard is a **standalone vanilla JS HTML file** (no 
 - `meta_shares` — tournament representation %
 
 **Build command (each session):**
-```python
-# Extract D from JSX, embed in HTML template
-import re, json
-with open('metagame_14deck.jsx') as f: src = f.read()
-D = json.loads(re.search(r'const D = (\{.*?\});\nconst N', src, re.DOTALL).group(1))
-# ... embed into standalone HTML with vanilla JS render engine
+```bash
+# After a new matrix run — merge wins + preserve card detail, then build:
+python3 build_dashboard.py --merge
+
+# Without a new run — just rebuild HTML from existing JSX:
+python3 build_dashboard.py
 ```
+`--merge` reads `metagame_results.json`, merges wins into `metagame_14deck.jsx` (preserving all matchup_cards/deck_cards), recomputes WRs, then builds the HTML. Always use `--merge` after running `--matrix`.
 
 **Dashboard features:**
 - Slide-in detail panel (CSS `translateX` transition, 420px)
@@ -332,10 +334,12 @@ D = json.loads(re.search(r'const D = (\{.*?\});\nconst N', src, re.DOTALL).group
 **Correct pipeline:**
 ```bash
 # 1. Run verbose Bo3 and save log
-python run_meta.py --bo3 "Ruby Storm" "Affinity" -s 55555 > /tmp/bo3_log.txt
+python run_meta.py --bo3 "Ruby Storm" "Affinity" -s 55555 > replays/ruby_storm_vs_affinity_s55555.txt
 
-# 2. Parse log with Python → build HTML following replay_burn_vs_sneak_a.html spec
+# 2. Build HTML replay
+python build_replay.py replays/ruby_storm_vs_affinity_s55555.txt /mnt/user-data/outputs/replay.html 55555
 ```
+Always save logs to `replays/` and commit. `build_replay.py` is in the repo with the full parser — use it, never rewrite from scratch.
 
 **Parser rules (critical):**
 - Store board state keyed by **player name** (`boards['Boros Energy']`), never by `active`/`opp` — the active player swaps every turn, causing columns to flip if you use relative keys

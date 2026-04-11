@@ -1,0 +1,812 @@
+Loaded 21759 cards (0 errors)
+======================================================================
+  GAME 1: Jeskai Blink (P1) vs Affinity (P2)  —  seed 55555
+  Series: Jeskai Blink 0 - 0 Affinity
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Affinity wins → chooses to play first
+║ P1 (on play): Affinity
+║ P2 (on draw): Jeskai Blink
+╚═══════════════════════════════════════════════════════
+
+P1 (Jeskai Blink) opening hand (3 lands, 4 spells):
+  • Casey Jones, Vigilante [Creature, CMC 3]
+  • Phelia, Exuberant Shepherd [Creature, CMC 2]
+  • Phlage, Titan of Fire's Fury [Creature, CMC 3]
+  • Galvanic Discharge [Spell, CMC 1]
+  • Scalding Tarn [Land, CMC 0]
+  • Flooded Strand [Land, CMC 0]
+  • Thundering Falls [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Galvanic Discharge
+
+P2 (Affinity) opening hand (3 lands, 4 spells):
+  • Cranial Plating [Spell, CMC 2]
+  • Mistvault Bridge [Land, CMC 0]
+  • Spire of Industry [Land, CMC 0]
+  • Urza's Saga [Land, CMC 0]
+  • Thought Monitor [Creature, CMC 7]
+  • Ornithopter [Creature, CMC 0]
+  • Engineered Explosives [Spell, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Cranial Plating, Ornithopter
+
+
+╔══ TURN 1 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Jeskai Blink 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Spire of Industry
+    → Goal: deploy_engine
+T1 P2: Cast Engineered Explosives (1) (X=1)
+    [Priority] P1 passes (no response)
+T1: Resolve Engineered Explosives
+T1 P2: Engineered Explosives enters with 1 charge counter(s)
+T1 P2: Engineered Explosives enters with 5 charge counters
+    → Goal: deploy_engine [enablers]
+T1 P2: Cast Ornithopter (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Ornithopter
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: Ornithopter (0/2)
+║   Other: Engineered Explosives
+║   Lands: Spire of Industry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Meticulous Archive
+  [Main 1]
+T1 P1: Play Scalding Tarn
+T1 P1: Crack Scalding Tarn (pay 1 life) -> Sacred Foundry (pay 2 life, untapped, life: 17)
+    → Goal: interact [interaction]
+    [Mana] Tap Sacred Foundry→R (paying for Galvanic Discharge, 1 mana remaining)
+T1 P1: Cast Galvanic Discharge (R)
+    [Priority] P2 passes (no response)
+T1: Resolve Galvanic Discharge
+T1 P1: Galvanic Discharge deals 4 to Ornithopter
+T1: Ornithopter dies
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Jeskai Blink 17
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Engineered Explosives
+║   Lands: Spire of Industry
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Saga
+  [Main 1]
+T2 P2: Play Urza's Saga
+    → Goal: deploy_engine
+    [Mana] Tap Urza's Saga→C (paying for Cranial Plating, 2 mana remaining)
+T2 P2: Cast Cranial Plating (2)
+    [Priority] P1 passes (no response)
+T2: Resolve Cranial Plating
+T2 P2: Cranial Plating enters the battlefield (unattached)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 17  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 2
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Engineered Explosives, Cranial Plating
+║   Lands: Spire of Industry, Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Phelia, Exuberant Shepherd
+  [Main 1]
+T2 P1: Play Flooded Strand
+T2 P1: Crack Flooded Strand (pay 1 life) -> Hallowed Fountain (pay 2 life, untapped, life: 14)
+    → Goal: interact [enablers]
+    [Mana] Tap Sacred Foundry→W, Hallowed Fountain→U (paying for Phelia, Exuberant Shepherd, 2 mana remaining)
+T2 P1: Cast Phelia, Exuberant Shepherd (1W)
+    [Priority] P2 passes (no response)
+T2: Resolve Phelia, Exuberant Shepherd
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Jeskai Blink 14
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Engineered Explosives, Cranial Plating
+║   Lands: Spire of Industry, Urza's Saga
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Lands: Sacred Foundry [T], Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Signal Pest
+  [Main 1]
+T3 P2: Play Urza's Saga
+    → Goal: deploy_engine
+    [Mana] Tap Spire of Industry→U, Urza's Saga→C, Urza's Saga→C (paying for Thought Monitor, 3 mana remaining)
+T3 P2: Cast Thought Monitor (6U)
+    [Priority] P1 passes (no response)
+T3: Resolve Thought Monitor
+T3 P2: Thought Monitor ETB: draw 2 cards
+    → Goal: deploy_engine
+T3 P2: Cast Signal Pest (1)
+    [Priority] P1 passes (no response)
+T3: Resolve Signal Pest
+    → Goal: deploy_engine
+T3 P2: Cast Nettlecyst (3)
+    [Priority] P1 passes (no response)
+T3: Resolve Nettlecyst
+T3 P2: Create 1x Germ token(s)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T3: Resolve Nettlecyst
+T3: Resolve Thought Monitor
+
+╔══ TURN 3 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 14  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 3
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Lands: Sacred Foundry, Hallowed Fountain
+║ Affinity board:
+║   Creatures: Thought Monitor (2/2), Signal Pest (0/1), Germ Token (6/6)
+║   Other: Engineered Explosives, Cranial Plating, Nettlecyst
+║   Lands: Spire of Industry [T], Urza's Saga [T], Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Phlage, Titan of Fire's Fury
+  [Main 1]
+T3 P1: Play Thundering Falls (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Jeskai Blink 14
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Thought Monitor (2/2), Signal Pest (0/1), Germ Token (6/6)
+║   Other: Engineered Explosives, Cranial Plating, Nettlecyst
+║   Lands: Spire of Industry, Urza's Saga, Urza's Saga
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Lands: Sacred Foundry, Hallowed Fountain, Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T4 P2: Create 1x Construct token(s)
+T4 P2: Urza's Saga Ch.II: Create Construct Token
+  [Draw] P2 draws: Memnite
+  [Main 1]
+T4 P2: Play Darksteel Citadel
+T4 P2: Equip Cranial Plating to Thought Monitor (cost 1)
+    → Goal: deploy_engine [enablers]
+T4 P2: Cast Memnite (0)
+    [Priority] P1 passes (no response)
+T4: Resolve Memnite
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Thought Monitor, Signal Pest, Germ Token
+T4 P2: Signal Pest battle cry — other attackers get +1/+0
+T4 P2: Attack with Thought Monitor, Signal Pest, Germ Token
+T4: Resolve Signal Pest
+  [Declare Blockers] P1 blocks: 
+T4: Phelia, Exuberant Shepherd dies
+  [Combat Damage] 12 damage dealt → P1 life: 14 → 2
+  [End Combat]
+  [Main 2]
+  [End Step]
+    [Mana] Tap Sacred Foundry→W, Hallowed Fountain→U (paying for Phelia, Exuberant Shepherd, 2 mana remaining)
+T4 P1: Cast Phelia, Exuberant Shepherd (1W)
+T4: Resolve Phelia, Exuberant Shepherd
+
+╔══ TURN 4 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 2  |  Affinity 20
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 4
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Lands: Sacred Foundry, Hallowed Fountain, Thundering Falls
+║ Affinity board:
+║   Creatures: Thought Monitor (10/2) [tapped], Signal Pest (0/1) [tapped], Germ Token (9/9) [tapped], Construct Token (8/8), Memnite (1/1)
+║   Other: Engineered Explosives, Cranial Plating, Nettlecyst
+║   Lands: Spire of Industry [T], Urza's Saga, Urza's Saga, Darksteel Citadel
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Flooded Strand
+  [Main 1]
+T4 P1: Play Flooded Strand
+T4 P1: Crack Flooded Strand -> Steam Vents (tapped, no spells need mana)
+    → Goal: interact
+    [Mana] Tap Sacred Foundry→R, Thundering Falls→R, Hallowed Fountain→U (paying for Casey Jones, Vigilante, 3 mana remaining)
+T4 P1: Cast Casey Jones, Vigilante (1RR)
+    [Priority] P2 passes (no response)
+T4: Resolve Casey Jones, Vigilante
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Resolve Casey Jones, Vigilante
+
+╔══ TURN 5 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Jeskai Blink 1
+║ Hand: 1 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Thought Monitor (10/2), Signal Pest (0/1), Germ Token (9/9), Construct Token (8/8), Memnite (1/1)
+║   Other: Engineered Explosives, Cranial Plating, Nettlecyst
+║   Lands: Spire of Industry, Urza's Saga, Urza's Saga, Darksteel Citadel
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2), Casey Jones, Vigilante (4/3)
+║   Lands: Sacred Foundry [T], Hallowed Fountain [T], Thundering Falls [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T5 P2: Create 1x Construct token(s)
+T5 P2: Urza's Saga Ch.III: Create Construct Token
+T5 P2: Urza's Saga tutors Mox Opal
+T5 P2: Create 1x Construct token(s)
+T5 P2: Urza's Saga Ch.II: Create Construct Token
+T5 P2: Sacrifice Urza's Saga (final chapter)
+  [Draw] P2 draws: Sojourner's Companion
+  [Main 1]
+T5 P2: Cycle Sojourner's Companion (pay 2 mana, draw a card)
+T5 P2: Play Mistvault Bridge (enters tapped)
+    → Goal: deploy_engine [enablers]
+T5 P2: Cast Ornithopter (0)
+    [Priority] P1 passes (no response)
+T5: Resolve Ornithopter
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Thought Monitor, Signal Pest, Germ Token, Construct Token, Memnite
+T5 P2: Signal Pest battle cry — other attackers get +1/+0
+T5 P2: Attack with Thought Monitor, Signal Pest, Germ Token, Construct Token, Memnite
+T5: Resolve Signal Pest
+  [Declare Blockers] P1 blocks: 
+P1 loses: life total -18
+  [Combat Damage] 19 damage dealt → P1 life: 1 → -18
+
+>>> Affinity wins Game 1 on turn 5 via damage
+    Final life: Jeskai Blink=-18  Affinity=20
+
+======================================================================
+  GAME 2: Jeskai Blink (P1) vs Affinity (P2)  —  seed 55556
+  Series: Jeskai Blink 0 - 1 Affinity
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Affinity wins → chooses to play first
+║ P1 (on play): Affinity
+║ P2 (on draw): Jeskai Blink
+╚═══════════════════════════════════════════════════════
+
+P1 (Jeskai Blink) opening hand (1 lands, 6 spells):
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Consign to Memory [Spell, CMC 1]
+  • Ephemerate [Spell, CMC 1]
+  • Plains [Land, CMC 0]
+  • Phlage, Titan of Fire's Fury [Creature, CMC 3]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Solitude [Creature, CMC 5]
+→ P1 MULLIGANS (too few lands (1 < 2))
+  New hand (1 lands, 6 spells): ['Hallowed Fountain', 'Solitude', 'Ragavan, Nimble Pilferer', 'Galvanic Discharge', 'Consign to Memory', 'Quantum Riddler', "Phlage, Titan of Fire's Fury"]
+→ P1 MULLIGANS (too few lands (1 < 2))
+  New hand (2 lands, 5 spells): ['Phelia, Exuberant Shepherd', 'Arena of Glory', 'Phelia, Exuberant Shepherd', 'Solitude', 'Ragavan, Nimble Pilferer', 'Ragavan, Nimble Pilferer', 'Plains']
+→ P1 mulligans to 5, bottoms: ['Phelia, Exuberant Shepherd', 'Phelia, Exuberant Shepherd']
+  Keeps: ['Arena of Glory', 'Solitude', 'Ragavan, Nimble Pilferer', 'Ragavan, Nimble Pilferer', 'Plains']
+
+P2 (Affinity) opening hand (3 lands, 4 spells):
+  • Signal Pest [Creature, CMC 1]
+  • Frogmite [Creature, CMC 4]
+  • Darksteel Citadel [Land, CMC 0]
+  • Mox Opal [Spell, CMC 0]
+  • Razortide Bridge [Land, CMC 0]
+  • Razortide Bridge [Land, CMC 0]
+  • Mox Opal [Spell, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Mox Opal
+
+
+╔══ TURN 1 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Jeskai Blink 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Darksteel Citadel
+    → Goal: deploy_engine [engines]
+T1 P2: Cast Mox Opal (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Mox Opal
+    → Goal: deploy_engine
+    [Mana] Tap Darksteel Citadel→C (paying for Signal Pest, 1 mana remaining)
+T1 P2: Cast Signal Pest (1)
+    [Priority] P1 passes (no response)
+T1: Resolve Signal Pest
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 20  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 55  |  Graveyard: 0
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: Signal Pest (0/1)
+║   Other: Mox Opal
+║   Lands: Darksteel Citadel [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Flooded Strand
+  [Main 1]
+T1 P1: Play Flooded Strand
+T1 P1: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (pay 2 life, untapped, life: 17)
+    → Goal: interact [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T1 P1: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P2 passes (no response)
+T1: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Jeskai Blink 17
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Signal Pest (0/1)
+║   Other: Mox Opal
+║   Lands: Darksteel Citadel
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Sojourner's Companion
+  [Main 1]
+    → Goal: deploy_engine
+    [Mana] Tap Darksteel Citadel→C (paying for Frogmite, 1 mana remaining)
+T2 P2: Cast Frogmite (4)
+    [Priority] P1 passes (no response)
+T2: Resolve Frogmite
+T2 P2: Play Razortide Bridge (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 17  |  Affinity 20
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 53  |  Graveyard: 1
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry
+║ Affinity board:
+║   Creatures: Signal Pest (0/1), Frogmite (2/2)
+║   Other: Mox Opal
+║   Lands: Darksteel Citadel [T], Razortide Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Phelia, Exuberant Shepherd
+  [Main 1]
+    → Goal: interact [interaction]
+T2 P1: Evoke Solitude (exile Phelia, Exuberant Shepherd)
+T2 P1: Cast Solitude (3WW)
+    [Priority] P2 passes (no response)
+T2: Resolve Solitude
+T2: Frogmite moved battlefield -> exile (exiled)
+T2 P1: Solitude exiles Frogmite (opponent gains 2 life, now 22)
+T2 P1: Solitude sacrificed (evoke)
+T2 P1: Play Plains
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer
+T2 P1: Attack with Ragavan, Nimble Pilferer
+T2: Resolve Solitude
+  [Declare Blockers] P2 blocks: 
+T2: Signal Pest dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 22  |  Jeskai Blink 17
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal
+║   Lands: Darksteel Citadel, Razortide Bridge
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped]
+║   Lands: Sacred Foundry, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thought Monitor
+  [Main 1]
+T3 P2: Cycle Sojourner's Companion (pay 2 mana, draw a card)
+T3 P2: Play Mistvault Bridge (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 17  |  Affinity 22
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 52  |  Graveyard: 2
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry, Plains
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal
+║   Lands: Darksteel Citadel [T], Razortide Bridge [T], Mistvault Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Phlage, Titan of Fire's Fury
+  [Main 1]
+T3 P1: Play Arena of Glory (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer
+T3 P1: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P2 does not block
+T3 P1: Create 1x Treasure token(s)
+T3 P1: Ragavan, Nimble Pilferer exiles Frogmite from top of P2's library
+  [Combat Damage] 2 damage dealt → P2 life: 22 → 20
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Jeskai Blink 17
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal
+║   Lands: Darksteel Citadel, Razortide Bridge, Mistvault Bridge
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped]
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Plains, Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Saga
+  [Main 1]
+T4 P2: Play Urza's Saga
+    → Goal: deploy_engine
+    [Mana] Tap Razortide Bridge→U, Darksteel Citadel→C (paying for Thought Monitor, 4 mana remaining)
+T4 P2: Cast Thought Monitor (6U)
+    [Priority] P1 passes (no response)
+T4: Resolve Thought Monitor
+T4 P2: Thought Monitor ETB: draw 2 cards
+    → Goal: deploy_engine
+    [Mana] Tap Mistvault Bridge→U (paying for Thought Monitor, 2 mana remaining)
+T4 P2: Cast Thought Monitor (6U)
+    [Priority] P1 passes (no response)
+T4: Resolve Thought Monitor
+T4 P2: Thought Monitor ETB: draw 2 cards
+    → Goal: deploy_engine [enablers]
+T4 P2: Cast Memnite (0)
+    [Priority] P1 passes (no response)
+T4: Resolve Memnite
+    → Goal: deploy_engine
+T4 P2: Cast Nettlecyst (3)
+    [Priority] P1 passes (no response)
+T4: Resolve Nettlecyst
+T4 P2: Create 1x Germ token(s)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Resolve Nettlecyst
+T4: Resolve Thought Monitor
+T4: Resolve Thought Monitor
+
+╔══ TURN 4 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 17  |  Affinity 20
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 51  |  Graveyard: 2
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Plains, Arena of Glory
+║ Affinity board:
+║   Creatures: Thought Monitor (2/2), Thought Monitor (2/2), Memnite (1/1), Germ Token (9/9)
+║   Other: Mox Opal, Nettlecyst
+║   Lands: Darksteel Citadel [T], Razortide Bridge [T], Mistvault Bridge [T], Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+    → Goal: interact
+    [Mana] Tap Plains→W, Arena of Glory→R, Sacred Foundry→R (paying for Phlage, Titan of Fire's Fury, 3 mana remaining)
+T4 P1: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P2 passes (no response)
+T4: Resolve Phlage, Titan of Fire's Fury
+T4 P1: Phlage: 3 damage to opponent, gain 3 life
+T4 P1: Phlage sacrificed (not escaped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Resolve Phlage, Titan of Fire's Fury
+
+╔══ TURN 5 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 17  |  Jeskai Blink 20
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 44  |  Graveyard: 2
+║ Affinity board:
+║   Creatures: Thought Monitor (2/2), Thought Monitor (2/2), Memnite (1/1), Germ Token (9/9)
+║   Other: Mox Opal, Nettlecyst
+║   Lands: Darksteel Citadel, Razortide Bridge, Mistvault Bridge, Urza's Saga
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Plains [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Springleaf Drum
+  [Main 1]
+T5 P2: Play Urza's Saga
+    → Goal: deploy_engine [engines]
+T5 P2: Cast Springleaf Drum (1)
+    [Priority] P1 passes (no response)
+T5: Resolve Springleaf Drum
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Thought Monitor, Thought Monitor, Germ Token
+T5 P2: Attack with Thought Monitor, Thought Monitor, Germ Token
+  [Declare Blockers] P1 blocks: 
+T5: Ragavan, Nimble Pilferer dies
+  [Combat Damage] 4 damage dealt → P1 life: 20 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 16  |  Affinity 17
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 50  |  Graveyard: 4
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Plains, Arena of Glory
+║ Affinity board:
+║   Creatures: Thought Monitor (2/2) [tapped], Thought Monitor (2/2) [tapped], Memnite (1/1), Germ Token (10/10) [tapped]
+║   Other: Mox Opal, Nettlecyst, Springleaf Drum
+║   Lands: Darksteel Citadel, Razortide Bridge, Mistvault Bridge, Urza's Saga, Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wrath of the Skies
+  [Main 1]
+    → Goal: interact [interaction]
+    [Mana] Tap Plains→W, Sacred Foundry→W (paying for Wrath of the Skies, 3 mana remaining)
+T5 P1: Cast Wrath of the Skies (1WW) (X=1)
+    [Priority] P2 passes (no response)
+T5: Resolve Wrath of the Skies
+T5: Treasure Token moved battlefield -> graveyard (destroyed)
+T5: Mox Opal moved battlefield -> graveyard (destroyed)
+T5: Memnite dies
+T5: Nettlecyst falls off Germ Token (unattached)
+T5: Germ Token dies
+T5 P1: Wrath of the Skies (X=0) sweeps the board
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 17  |  Jeskai Blink 16
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 43  |  Graveyard: 5
+║ Affinity board:
+║   Creatures: Thought Monitor (2/2), Thought Monitor (2/2)
+║   Other: Nettlecyst, Springleaf Drum
+║   Lands: Darksteel Citadel, Razortide Bridge, Mistvault Bridge, Urza's Saga, Urza's Saga
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Plains [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T6 P2: Create 1x Construct token(s)
+T6 P2: Urza's Saga Ch.II: Create Construct Token
+  [Draw] P2 draws: Memnite
+  [Main 1]
+T6 P2: Equip Nettlecyst to Thought Monitor (cost 2)
+T6 P2: Play Razortide Bridge (enters tapped)
+    → Goal: deploy_engine [enablers]
+T6 P2: Cast Memnite (0)
+    [Priority] P1 passes (no response)
+T6: Resolve Memnite
+    → Goal: deploy_engine [engines]
+T6 P2: Cast Mox Opal (0)
+    [Priority] P1 passes (no response)
+T6: Resolve Mox Opal
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Thought Monitor, Thought Monitor
+T6 P2: Attack with Thought Monitor, Thought Monitor
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 15 damage dealt → P1 life: 16 → 1
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 1  |  Affinity 17
+║ Hand: 2 cards  |  Opp hand: 0 cards
+║ Lands: 3  |  Opp lands: 6
+║ Library: 49  |  Graveyard: 6
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Plains, Arena of Glory
+║ Affinity board:
+║   Creatures: Thought Monitor (13/13) [tapped], Thought Monitor (2/2) [tapped], Construct Token (11/11), Memnite (1/1)
+║   Other: Nettlecyst, Springleaf Drum, Mox Opal
+║   Lands: Darksteel Citadel [T], Razortide Bridge [T], Mistvault Bridge, Urza's Saga, Urza's Saga, Razortide Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Meticulous Archive
+  [Main 1]
+T6 P1: Play Meticulous Archive (enters tapped)
+    → Goal: interact [enablers]
+    [Mana] Tap Arena of Glory→R, Plains→W (paying for Ragavan, Nimble Pilferer, 3 mana remaining)
+T6 P1: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P2 passes (no response)
+T6: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T6: Ragavan, Nimble Pilferer moved battlefield -> hand (Dash return)
+T6: Ragavan, Nimble Pilferer returned to hand (Dash)
+
+╔══ TURN 7 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 17  |  Jeskai Blink 1
+║ Hand: 0 cards  |  Opp hand: 2 cards
+║ Lands: 6  |  Opp lands: 4
+║ Library: 42  |  Graveyard: 5
+║ Affinity board:
+║   Creatures: Thought Monitor (13/13), Thought Monitor (2/2), Construct Token (11/11), Memnite (1/1)
+║   Other: Nettlecyst, Springleaf Drum, Mox Opal
+║   Lands: Darksteel Citadel, Razortide Bridge, Mistvault Bridge, Urza's Saga, Urza's Saga, Razortide Bridge
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Plains [T], Arena of Glory [T], Meticulous Archive [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T7 P2: Create 1x Construct token(s)
+T7 P2: Urza's Saga Ch.III: Create Construct Token
+T7 P2: Urza's Saga tutors Mox Opal
+T7 P2: Create 1x Construct token(s)
+T7 P2: Urza's Saga Ch.II: Create Construct Token
+T7 P2: Sacrifice Urza's Saga (final chapter)
+  [Draw] P2 draws: Ornithopter
+  [Main 1]
+    → Goal: deploy_engine [enablers]
+T7 P2: Cast Ornithopter (0)
+    [Priority] P1 passes (no response)
+T7: Resolve Ornithopter
+T7: Mox Opal moved battlefield -> graveyard (SBA 704.5j: legend rule (Mox Opal))
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Thought Monitor, Thought Monitor, Construct Token, Memnite
+T7 P2: Attack with Thought Monitor, Thought Monitor, Construct Token, Memnite
+  [Declare Blockers] P1 does not block
+P1 loses: life total -32
+  [Combat Damage] 33 damage dealt → P1 life: 1 → -32
+
+>>> Affinity wins Game 2 on turn 7 via damage
+    Final life: Jeskai Blink=-32  Affinity=17
+
+======================================================================
+  MATCH RESULT: Affinity wins 2-0
+======================================================================
