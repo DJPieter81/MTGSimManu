@@ -98,10 +98,9 @@ def analyze_mana_needs(game: "GameState", player_idx: int,
             needs.domain_card_count += 1
 
     # ── Cycling cost awareness: cards with cycling need specific colors ──
-    from engine.game_state import CYCLING_COSTS
     for card in player.hand:
-        if card.name in CYCLING_COSTS:
-            cycle_cost = CYCLING_COSTS[card.name]
+        cycle_cost = card.template.cycling_cost_data
+        if cycle_cost:
             for color in cycle_cost.get("colors", set()):
                 # Add cycling color needs (weighted lower than casting needs)
                 needs.needed_colors[color] = needs.needed_colors.get(color, 0) + 1

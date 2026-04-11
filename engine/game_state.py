@@ -248,19 +248,7 @@ class PlayerState:
 # (populated by oracle_parser.py at card load time)
 
 # Cycling costs: mana = total mana CMC, life = life to pay, colors = required color set
-CYCLING_COSTS = {
-    "Street Wraith":        {"mana": 0, "life": 2, "colors": set()},
-    "Striped Riverwinder":  {"mana": 1, "life": 0, "colors": {"U"}},
-    "Architects of Will":   {"mana": 1, "life": 0, "colors": {"U", "B"}},
-    "Curator of Mysteries": {"mana": 1, "life": 0, "colors": {"U"}},
-    "Waker of Waves":       {"mana": 2, "life": 0, "colors": {"U"}},
-    "Ketria Triome":        {"mana": 3, "life": 0, "colors": set()},
-    "Indatha Triome":       {"mana": 3, "life": 0, "colors": set()},
-    "Zagoth Triome":        {"mana": 3, "life": 0, "colors": set()},
-    "Raugrin Triome":       {"mana": 3, "life": 0, "colors": set()},
-    "Savai Triome":         {"mana": 3, "life": 0, "colors": set()},
-}
-# CYCLING_CARDS and LIVING_END_CASCADERS removed — now oracle-derived
+# CYCLING_COSTS removed — now oracle-derived (template.cycling_cost_data)
 
 # ENERGY_PRODUCERS and ENERGY_SPENDERS removed — now oracle-derived
 # (template.energy_production populated by oracle_parser.py)
@@ -1075,13 +1063,10 @@ class GameState:
             remaining -= 1
 
         # Unequip from previous creature (if any)
-        equip_tag = None
-        if "Cranial Plating" in template.name:
-            equip_tag = "cranial_plating_equipped"
-        elif "Nettlecyst" in template.name:
-            equip_tag = "nettlecyst_equipped"
+        # Generate standard equip tag from equipment name
+        equip_tag = template.name.lower().replace(" ", "_").replace("'", "").replace(",", "") + "_equipped"
 
-        if equip_tag:
+        if 'equipment' in getattr(template, 'tags', set()) or 'pump' in getattr(template, 'tags', set()):
             # Remove from any currently equipped creature
             for c in player.creatures:
                 c.instance_tags.discard(equip_tag)
@@ -2216,20 +2201,16 @@ class GameState:
         if equip_tags_on_creature:
             for tag in equip_tags_on_creature:
                 # Find the equipment on the battlefield and mark it unattached
-                equip_name_map = {
-                    "cranial_plating_equipped": "Cranial Plating",
-                    "nettlecyst_equipped": "Nettlecyst",
-                }
-                equip_name = equip_name_map.get(tag)
-                if equip_name:
-                    for perm in self.players[controller].battlefield:
-                        if perm.template.name == equip_name:
-                            perm.instance_tags.discard("equipment_attached")
-                            perm.instance_tags.add("equipment_unattached")
-                            self.log.append(
-                                f"T{self.turn_number}: {equip_name} falls off "
-                                f"{creature.name} (unattached)")
-                            break
+                # Match by checking each equipment's generated tag
+                for perm in self.players[controller].battlefield:
+                    perm_tag = perm.template.name.lower().replace(" ", "_").replace("'", "").replace(",", "") + "_equipped"
+                    if perm_tag == tag:
+                        perm.instance_tags.discard("equipment_attached")
+                        perm.instance_tags.add("equipment_unattached")
+                        self.log.append(
+                            f"T{self.turn_number}: {perm.template.name} falls off "
+                            f"{creature.name} (unattached)")
+                        break
 
         creature.zone = "graveyard"
         creature.reset_combat()
@@ -2770,12 +2751,10 @@ class GameState:
         """Check if a player can cycle a card from hand."""
         if card.zone != "hand":
             return False
-        # Use oracle-derived cycling data from template, fall back to hardcoded
+        # Use oracle-derived cycling data from template
         cost = card.template.cycling_cost_data
         if cost is None:
-            if card.name not in CYCLING_COSTS:
-                return False
-            cost = CYCLING_COSTS[card.name]
+            return False
         player = self.players[player_idx]
         # Life cost check
         if cost["life"] > 0 and player.life <= cost["life"]:
@@ -2810,7 +2789,7 @@ class GameState:
         """
         if not self.can_cycle(player_idx, card):
             return False
-        cost = card.template.cycling_cost_data or CYCLING_COSTS.get(card.name, {"mana": 0, "life": 0, "colors": set()})
+        cost = card.template.cycling_cost_data or {"mana": 0, "life": 0, "colors": set()}
         player = self.players[player_idx]
         # Pay life cost
         if cost["life"] > 0:
@@ -2856,8 +2835,10 @@ class GameState:
     ALL_COLORS = ["W", "U", "B", "R", "G"]
 
     def _has_leyline_of_guildpact(self, player_idx: int) -> bool:
-        """Check if player controls Leyline of the Guildpact."""
-        return any(c.name == "Leyline of the Guildpact"
+        """Check if player controls a permanent that makes lands all basic types."""
+        # Detects "lands you control are every basic land type" from oracle text
+        return any('lands you control are every basic land type' in
+                    (c.template.oracle_text or '').lower()
                    for c in self.players[player_idx].battlefield)
 
     def _effective_produces_mana(self, player_idx: int, land) -> list:
@@ -2868,9 +2849,9 @@ class GameState:
 
     def _count_domain(self, player_idx: int) -> int:
         """Count basic land types among lands controlled by a player."""
-        # Leyline of the Guildpact makes all lands every basic land type
+        # Check for effects that make lands every basic land type
         for c in self.players[player_idx].battlefield:
-            if c.name == "Leyline of the Guildpact":
+            if 'lands you control are every basic land type' in (c.template.oracle_text or '').lower():
                 # As long as we control at least one land, domain = 5
                 if any(l.template.is_land
                        for l in self.players[player_idx].battlefield):
