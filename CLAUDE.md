@@ -229,3 +229,50 @@ python simulate_match.py "Ruby Storm" "Domain Zoo" --seed 55555
 - **Sideboards must be passed** to `run_game()` for Wish/tutor effects to find sideboard cards.
 - **Keyword detection uses word boundaries** — "flash" won't match "flashback".
 - **Color solver uses re-sorting greedy** — handles 4-color WURG correctly.
+
+## Dashboard — modern_meta_matrix_full.html
+
+The interactive metagame dashboard is a **standalone vanilla JS HTML file** (no React, no Babel).
+
+**Data source:** `metagame_14deck.jsx` — the canonical D object with:
+- `wins[i][j]` — win counts (out of `matches_per_pair=100`)
+- `matchup_cards["i,j"]` — per-matchup detail: insight, avg_turns, sweeps, went_to_3, g1_wins, comebacks, top_casts, finishers, top_damage, sideboard IN/OUT with cast counts + post-board WR delta
+- `deck_cards[idx]` — per-deck: mvp_casts, mvp_damage, finishers with descriptions, summary
+- `overall[idx]` — flat WR, weighted WR, meta share, delta
+- `meta_shares` — tournament representation %
+
+**Build command (each session):**
+```python
+import re, json
+with open('metagame_14deck.jsx') as f: src = f.read()
+D = json.loads(re.search(r'const D = (\{.*?\});\nconst N', src, re.DOTALL).group(1))
+# ... embed into standalone HTML with vanilla JS render engine
+```
+
+**Dashboard features:**
+- Slide-in detail panel (CSS `translateX` transition, 420px)
+- T1/T2/T3/T4 tier chips above matrix (clickable, weighted or flat toggle)
+- HSL heatmap color scale: red (0%) → amber (50%) → green (100%)
+- Hover tooltip: WR%, archetype labels, reverse WR, symmetry check
+- Sticky row headers + sticky avg WR column
+- Sort (weighted/flat/A-Z), archetype filter, highlight-deck, weighted toggle
+- Opacity dimming of non-selected rows/columns
+- Deck profile: tier badge, flat/weighted WR + delta pp, MVP cards, finishers, matchups by opponent tier
+- Matchup detail: large WR, insight narrative, stats grid, key cards per side, sideboard guide
+- Fonts: Outfit (UI) + JetBrains Mono (numbers/cards)
+
+**Adding a new deck:**
+1. Run `run_meta.py --field "New Deck" -n 100 --save` to get win data
+2. Add wins row/col and basic `matchup_cards` entries to `metagame_14deck.jsx` D object
+3. Run verbose matchups for card-level detail: `run_meta.py --verbose "New Deck" opp -s SEED`
+4. Rebuild HTML from updated JSX
+
+## Replay Viewer — simulate_match.py
+
+Produces standalone HTML Bo3 replay. GitHub-dark theme (`#0d1117`), collapsible turn cards (NOT tables), gradient header, game tabs with winner dots, opening hand pills, SVG life chart, numbered plays with category badges, board state grid, result box.
+
+```bash
+python simulate_match.py "Ruby Storm" "Domain Zoo" --seed 55555 -o replay.html
+```
+
+Debug outlier matchups: loop seeds until the underdog wins, save that seed. Check WARNING lines in output for missing cards (0/0 stats = card not in ModernAtomic.json).
