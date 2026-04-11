@@ -1,5 +1,18 @@
 # CLAUDE.md — MTG Game Simulator
 
+## Critical Instructions (read first)
+
+**GAME LOG OUTPUT — NEVER SKIP THIS:**
+When the user asks to see a game, match, Bo3, simulation, play-by-play, or any game log:
+1. Run `python run_meta.py --bo3 <deck1> <deck2> -s <seed>`
+2. Output the COMPLETE raw text log — every single line
+3. NEVER summarize, paraphrase, abbreviate, or skip parts of the log
+4. NEVER replace log lines with your own narrative or commentary
+5. Show the log FIRST in full, then add commentary AFTER if needed
+6. If the output is too large for one message, split across multiple messages — do NOT truncate
+
+The user wants to read the actual log text with phases, draws, mana taps, priority passes, board states, goals, and mulligan rationale. This applies every time, without exception. Failure to show the full log is considered a regression.
+
 ## Project Overview
 
 Magic: The Gathering Modern-format game simulator with EV-based AI decision-making. Simulates full games between 13 competitive decks with strategic AI (mulligans, spell casting, combat, targeting, counterspells, evoke, storm chains, reanimation, cascade, blink).
@@ -26,7 +39,7 @@ print(f'Loaded {len(merged)} cards')
 ## Quick Reference — run_meta.py
 
 ```bash
-python run_meta.py --list                              # all 13 decks
+python run_meta.py --list                              # all 14 decks
 python run_meta.py --deck storm                        # deck profile + gameplan
 python run_meta.py --matchup storm dimir -n 50         # win rate (N games)
 python run_meta.py --field storm -n 30                 # one deck vs all
@@ -61,7 +74,7 @@ Synonyms: `--bo3`, `--match`, `--play-by-play`, `--pbp`, `--detailed`, `--game-l
 
 This produces a comprehensive log with: die roll, mulligan decisions, opening hands, turn-by-turn board states (creatures, permanents, life totals, hand sizes, lands), all spells cast, stack resolution, combat, and game result. Best-of-3 format with proper alternation.
 
-**IMPORTANT: When showing game results to the user, ALWAYS output the full detailed text log from --bo3. Never summarize or paraphrase the log — show the raw output. The user wants to see every phase, every draw, every mana tap, every priority pass, every board state. This is a hard requirement.**
+**(See Critical Instructions at top of file for game log output requirements.)**
 
 **Aliases work:** storm, zoo, dimir, omnath, 4c, 5c, energy, boros, jeskai, blink, tron, amulet, goryos, prowess, affinity, cascade
 
@@ -81,9 +94,11 @@ python import_deck.py "Deck Name" --archetype control < decklist.txt
 ```
 Auto-detects archetype, generates gameplan, prints code to paste into modern_meta.py.
 
-## Available Decks (13)
+## Available Decks (14)
 
-Boros Energy, Jeskai Blink, Ruby Storm, Affinity, Eldrazi Tron, Amulet Titan, Goryo's Vengeance, Domain Zoo, Living End, Izzet Prowess, Dimir Midrange, 4c Omnath, 4/5c Control
+Boros Energy, Jeskai Blink, Ruby Storm, Affinity, Eldrazi Tron, Amulet Titan, Goryo's Vengeance, Domain Zoo, Living End, Izzet Prowess, Dimir Midrange, 4c Omnath, 4/5c Control, Azorius Control
+
+**Known DB gaps:** `The Legend of Roku` (Azorius Control) and `Sink into Stupor` missing from ModernAtomic.json — deflates WR for those decks.
 
 ## Architecture
 
@@ -142,7 +157,7 @@ def bowmasters_etb(game, card, controller, targets=None, item=None):
 
 ### Layer 3: Deck Configuration
 
-**Decklists** (`decks/modern_meta.py`) — mainboard + sideboard for all 13 decks
+**Decklists** (`decks/modern_meta.py`) — mainboard + sideboard for all 14 decks
 
 **Gameplans** (`decks/gameplans/*.json`) — per-deck strategy:
 ```json
@@ -216,3 +231,50 @@ python simulate_match.py "Ruby Storm" "Domain Zoo" --seed 55555
 - **Sideboards must be passed** to `run_game()` for Wish/tutor effects to find sideboard cards.
 - **Keyword detection uses word boundaries** — "flash" won't match "flashback".
 - **Color solver uses re-sorting greedy** — handles 4-color WURG correctly.
+
+## Dashboard — modern_meta_matrix_full.html
+
+The interactive metagame dashboard is a **standalone vanilla JS HTML file** (no React, no Babel).
+
+**Data source:** `metagame_14deck.jsx` — the canonical D object with:
+- `wins[i][j]` — win counts (out of `matches_per_pair=100`)
+- `matchup_cards["i,j"]` — per-matchup detail: insight, avg_turns, sweeps, went_to_3, g1_wins, comebacks, top_casts, finishers, top_damage, sideboard IN/OUT with cast counts + post-board WR delta
+- `deck_cards[idx]` — per-deck: mvp_casts, mvp_damage, finishers with descriptions, summary
+- `overall[idx]` — flat WR, weighted WR, meta share, delta
+- `meta_shares` — tournament representation %
+
+**Build command (each session):**
+```python
+import re, json
+with open('metagame_14deck.jsx') as f: src = f.read()
+D = json.loads(re.search(r'const D = (\{.*?\});\nconst N', src, re.DOTALL).group(1))
+# ... embed into standalone HTML with vanilla JS render engine
+```
+
+**Dashboard features:**
+- Slide-in detail panel (CSS `translateX` transition, 420px)
+- T1/T2/T3/T4 tier chips above matrix (clickable, weighted or flat toggle)
+- HSL heatmap color scale: red (0%) → amber (50%) → green (100%)
+- Hover tooltip: WR%, archetype labels, reverse WR, symmetry check
+- Sticky row headers + sticky avg WR column
+- Sort (weighted/flat/A-Z), archetype filter, highlight-deck, weighted toggle
+- Opacity dimming of non-selected rows/columns
+- Deck profile: tier badge, flat/weighted WR + delta pp, MVP cards, finishers, matchups by opponent tier
+- Matchup detail: large WR, insight narrative, stats grid, key cards per side, sideboard guide
+- Fonts: Outfit (UI) + JetBrains Mono (numbers/cards)
+
+**Adding a new deck:**
+1. Run `run_meta.py --field "New Deck" -n 100 --save` to get win data
+2. Add wins row/col and basic `matchup_cards` entries to `metagame_14deck.jsx` D object
+3. Run verbose matchups for card-level detail: `run_meta.py --verbose "New Deck" opp -s SEED`
+4. Rebuild HTML from updated JSX
+
+## Replay Viewer — simulate_match.py
+
+Produces standalone HTML Bo3 replay. GitHub-dark theme (`#0d1117`), collapsible turn cards (NOT tables), gradient header, game tabs with winner dots, opening hand pills, SVG life chart, numbered plays with category badges, board state grid, result box.
+
+```bash
+python simulate_match.py "Ruby Storm" "Domain Zoo" --seed 55555 -o replay.html
+```
+
+Debug outlier matchups: loop seeds until the underdog wins, save that seed. Check WARNING lines in output for missing cards (0/0 stats = card not in ModernAtomic.json).
