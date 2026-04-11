@@ -1138,6 +1138,7 @@ class CardDatabase:
         from .oracle_parser import (
             parse_ritual_mana, parse_cycling_cost, parse_energy_production,
             has_cascade, parse_x_cost, parse_domain_reduction, detect_power_scaling,
+            parse_splice_cost,
         )
         oracle = template.oracle_text or ''
         template.ritual_mana = parse_ritual_mana(oracle)
@@ -1147,6 +1148,7 @@ class CardDatabase:
         template.x_cost_data = parse_x_cost(oracle, name, data.get("manaCost", ""))
         template.is_cost_reducer = 'cost_reducer' in template.tags
         template.domain_reduction = parse_domain_reduction(oracle) or 0
+        template.splice_cost = parse_splice_cost(oracle)
         template.power_scales_with = detect_power_scaling(oracle)
 
         return template

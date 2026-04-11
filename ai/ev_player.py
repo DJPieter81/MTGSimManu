@@ -333,6 +333,18 @@ class EVPlayer:
         # ── Combo sequencing overlay ──
         ev += self._combo_modifier(card, snap, game, me, opp)
 
+        # ── Non-creature permanent overlay (Pattern B) ──
+        from engine.cards import CardType
+        if not t.is_creature and not t.is_instant and not t.is_sorcery:
+            if CardType.PLANESWALKER in t.card_types:
+                ev += 3.0 + (t.loyalty or 0)
+            elif 'cost_reducer' in tags:
+                ev += 4.0
+
+        # ── Board wipe hard gate ──
+        if 'board_wipe' in tags and snap.opp_creature_count == 0:
+            return min(ev, -50.0)
+
         # ── Mana holdback: penalize tapping out when we hold instants ──
         if p.holdback_applies and (snap.opp_power > 0 or snap.opp_hand_size >= 4):
             cmc = t.cmc or 0
@@ -424,8 +436,8 @@ class EVPlayer:
         if p.storm_patience and storm >= 1 and 'ritual' in tags:
             if not _has_finisher() and not _has_flashback_combo():
                 if not snap.am_dead_next:
-                    # Wasting rituals = losing storm_potential / opp_life in clock value
-                    mod -= (storm + 2) / opp_life * 20.0
+                    # Wasting rituals without finisher access (reduced from 20 to match PiF fix)
+                    mod -= (storm + 2) / opp_life * 5.0
 
         # ── Cantrips while waiting (storm=0): dig for pieces ──
         is_cantrip = ('cantrip' in tags or 'draw' in tags) and 'flashback' not in tags
@@ -975,13 +987,16 @@ class EVPlayer:
                 return [best.instance_id]
             return []
 
-        # Blink effects: target our best ETB creature
+        # Blink effects: target our best ETB creature, fall back to any creature
         if 'blink' in tags:
             me = game.players[self.player_idx]
             etb_creatures = [c for c in me.creatures
                              if 'etb_value' in getattr(c.template, 'tags', set())]
             if etb_creatures:
                 best = max(etb_creatures, key=lambda c: creature_value(c))
+                return [best.instance_id]
+            elif me.creatures:
+                best = max(me.creatures, key=lambda c: creature_value(c))
                 return [best.instance_id]
 
         # Reanimate: target best creature in our graveyard

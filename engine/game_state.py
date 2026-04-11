@@ -426,8 +426,14 @@ class GameState:
                     if m:
                         player.life -= int(m.group(1))
                         opp.damage_dealt_this_turn += int(m.group(1))
-                # "Whenever an opponent draws" — Bowmasters-style
-                if 'whenever an opponent draws' in oracle and player.cards_drawn_this_turn > 1:
+                # "Whenever an opponent draws a card except the first one they draw
+                # in each of their draw steps" — Bowmasters-style.
+                # Trigger on all draws EXCEPT the normal draw-step draw.
+                # The draw step sets current_phase = Phase.DRAW; any draw
+                # outside that phase always triggers.
+                is_draw_step = (self.current_phase == Phase.DRAW)
+                first_draw_step_draw = is_draw_step and player.cards_drawn_this_turn <= 1
+                if 'whenever an opponent draws' in oracle and not first_draw_step_draw:
                     import re
                     m = re.search(r'deals?\s+(\d+)\s+damage', oracle)
                     dmg = int(m.group(1)) if m else 1
@@ -1346,9 +1352,22 @@ class GameState:
             # AI chooses optimal X based on oracle text:
             oracle = (template.oracle_text or '').lower()
             if 'charge counter' in oracle and 'whenever' in oracle:
-                # Hate permanent (Chalice-style): X=1 shuts down 1-drops
-                if x_value >= 1:
-                    x_value = 1
+                # Hate permanent (Chalice-style): pick X to maximize disruption
+                opp = self.players[1 - player_idx]
+                # Count CMC distribution in opponent's known cards (library + hand estimate)
+                cmc_counts = {}
+                for c in opp.library:
+                    if not c.template.is_land:
+                        cm = c.template.cmc or 0
+                        if cm > 0:
+                            cmc_counts[cm] = cmc_counts.get(cm, 0) + 1
+                # Pick the CMC with the most spells, capped at available mana
+                if cmc_counts and x_value >= 1:
+                    best_x = max((cnt, cmc) for cmc, cnt in cmc_counts.items()
+                                 if cmc <= x_value)
+                    x_value = best_x[1]
+                elif x_value >= 1:
+                    x_value = 1  # fallback to X=1 if no data
             # +1/+1 counter creatures: use max mana (Ballista-style)
             # (default x_value is already max)
             # Pay the actual X cost
@@ -1381,6 +1400,37 @@ class GameState:
             targets=targets or [],
             x_value=x_value,
         )
+
+        # ── Splice onto Arcane: when casting an Arcane spell, splice cards
+        # from hand that have splice_cost. Pay splice cost, add their effects,
+        # spliced card stays in hand. ──
+        if 'Arcane' in template.subtypes and not free_cast:
+            from .oracle_resolver import count_cost_reducers
+            for sc in list(player.hand):
+                if sc.instance_id == card.instance_id:
+                    continue
+                splice = sc.template.splice_cost
+                if not splice:
+                    continue
+                # splice is total CMC (int) — apply cost reduction
+                reduction = count_cost_reducers(self, player_idx, sc.template)
+                reduction += player.temp_cost_reduction
+                effective_splice = max(0, splice - reduction)
+                available_mana = player.mana_pool.total() + len(player.untapped_lands)
+                if available_mana >= effective_splice:
+                    # Pay splice cost from mana pool/lands
+                    from .mana import ManaCost as MC
+                    # Splice for rituals: {1}{R} = generic + 1 red
+                    red_portion = min(1, effective_splice)
+                    generic_portion = max(0, effective_splice - red_portion)
+                    splice_mc = MC(generic=generic_portion, red=red_portion)
+                    if not self.tap_lands_for_mana(player_idx, splice_mc,
+                                                   sc.template.name):
+                        continue
+                    stack_item.spliced.append(sc.template)
+                    self.log.append(f"T{self.display_turn} P{player_idx+1}: "
+                                   f"  Splice {sc.name} onto {card.name}")
+
         self.stack.push(stack_item)
         player.spells_cast_this_turn += 1
         if CardType.ARTIFACT not in template.card_types:
@@ -1681,6 +1731,7 @@ class GameState:
                 creature.controller = p_idx
                 creature.enter_battlefield()
                 player.battlefield.append(creature)
+                self._handle_permanent_etb(creature, p_idx)
                 self.log.append(f"T{self.display_turn}: Living End returns "
                                 f"{creature.name} for P{p_idx+1}")
 
@@ -2009,6 +2060,18 @@ class GameState:
                 self.players[controller].mana_pool.add(color, amount)
             self.log.append(f"T{self.display_turn} P{controller+1}: "
                             f"{name} adds {amount} {color} mana")
+
+            # Splice: add mana from spliced card effects
+            for spliced_tmpl in item.spliced:
+                splice_ritual = spliced_tmpl.ritual_mana
+                if splice_ritual:
+                    sc, sa = splice_ritual
+                    if sc == "any":
+                        self.players[controller].mana_pool.add("R", 2)
+                    else:
+                        self.players[controller].mana_pool.add(sc, sa)
+                    self.log.append(f"T{self.display_turn} P{controller+1}: "
+                                    f"  Spliced {spliced_tmpl.name} adds {sa} {sc} mana")
             return
 
         # Dispatch to card effect registry
@@ -2351,8 +2414,10 @@ class GameState:
                 score += 20  # Counterspells less important in hand
             
             # Combo pieces and key spells should be kept (low discard score)
+            # Exception: high-CMC creatures are reanimation targets — they WANT the GY
             if any(tag in t.tags for tag in ('combo', 'tutor')):
-                score -= 30
+                if not (t.is_creature and t.cmc >= 5):
+                    score -= 30
             
             # Removal is moderately important
             if 'removal' in t.tags:
@@ -2383,10 +2448,17 @@ class GameState:
 
     def trigger_attack(self, attacker: CardInstance, controller: int):
         """Trigger attack abilities."""
-        # Energy on attack (from oracle: "whenever ... attacks ... {E}")
+        # Energy on attack: only if oracle says "get {E}" on attack, not "pay {E}".
+        # Cards that PAY energy on attack (Guide of Souls: "you may pay {E}{E}{E}")
+        # should NOT produce energy — that's handled by the pay/spend logic.
         oracle = (attacker.template.oracle_text or '').lower()
-        if '{e}' in oracle and 'attack' in oracle:
-            self.produce_energy(controller, 1, f"{attacker.name} attack")
+        if '{e}' in oracle and 'attack' in oracle and 'get' in oracle:
+            # Count {E} in the "get" clause, not the "pay" clause
+            import re
+            get_match = re.search(r'get\s+((?:\{e\})+)', oracle)
+            if get_match:
+                energy_count = get_match.group(1).count('{e}')
+                self.produce_energy(controller, energy_count, f"{attacker.name} attack")
 
         # Annihilator
         if Keyword.ANNIHILATOR in attacker.keywords:

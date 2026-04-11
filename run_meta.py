@@ -280,7 +280,8 @@ def run_meta_matrix(top_tier: int = None, n_games: int = 20,
     rankings.sort(key=lambda x: x[2], reverse=True)
 
     return {'matrix': matrix, 'rankings': rankings, 'names': names,
-            'tier1': sorted(tier1), 'tier2': sorted(tier2)}
+            'tier1': sorted(tier1), 'tier2': sorted(tier2),
+            'n_games': n_games}
 
 
 def inspect_deck(deck_name: str) -> str:
@@ -956,3 +957,9 @@ if __name__ == '__main__':
         print_matrix(result)
         if args.save:
             save_results(result)
+            # Auto-rebuild dashboard from saved results
+            try:
+                from build_dashboard import merge
+                merge()
+            except Exception as e:
+                print(f'Dashboard merge skipped: {e}', file=sys.stderr)
