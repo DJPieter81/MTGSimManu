@@ -72,6 +72,33 @@ from run_meta import print_matrix, print_matchup, print_field
 
 **Standard seeds:** matchups start at 50000 (step 500), matrix at 40000 (step 500).
 
+**Before registering any new deck or updating meta shares — check DB freshness:**
+```bash
+# Check when the card DB was last updated
+python3 -c "
+import json, glob, os
+parts = sorted(glob.glob('ModernAtomic_part*.json'))
+if parts:
+    age_days = (os.path.getmtime(parts[0]))
+    import time
+    age = (time.time() - age_days) / 86400
+    print(f'ModernAtomic parts last modified: {age:.0f} days ago')
+    if age > 14:
+        print('WARNING: DB may be stale — new sets may be missing. Run update_modern_atomic.py')
+    else:
+        print('DB is recent — OK to proceed')
+else:
+    print('No ModernAtomic parts found — run update_modern_atomic.py')
+"
+# If stale or new sets released since last update:
+python3 update_modern_atomic.py
+git add ModernAtomic_part*.json
+git commit -m "chore: refresh ModernAtomic for new sets"
+git push origin main
+```
+
+**New Modern-legal sets to watch (2026):** Lorwyn Eclipsed (Jan 2026), TMNT (Feb 2026), Secrets of Strixhaven (Apr 24 2026). Run `update_modern_atomic.py` if any of these postdate your last DB refresh.
+
 **Import a new deck:**
 ```bash
 python import_deck.py "Deck Name" decklist.txt
@@ -250,10 +277,11 @@ D = json.loads(re.search(r'const D = (\{.*?\});\nconst N', src, re.DOTALL).group
 - Fonts: Outfit (UI) + JetBrains Mono (numbers/cards)
 
 **Adding a new deck:**
-1. Run `run_meta.py --field "New Deck" -n 100 --save` to get win data
-2. Add wins row/col and basic `matchup_cards` entries to `metagame_14deck.jsx` D object
-3. Run verbose matchups for card-level detail: `run_meta.py --verbose "New Deck" opp -s SEED`
-4. Rebuild HTML from updated JSX
+1. **Check DB freshness first** — run the freshness check above. If any new sets have been released since last update, run `python3 update_modern_atomic.py` before proceeding.
+2. Run `run_meta.py --field "New Deck" -n 100 --save` to get win data
+3. Add wins row/col and basic `matchup_cards` entries to `metagame_14deck.jsx` D object
+4. Run verbose matchups for card-level detail: `run_meta.py --verbose "New Deck" opp -s SEED`
+5. Rebuild HTML: `python3 build_dashboard.py metagame_14deck.jsx`
 
 ## Replay Viewer — Pipeline
 
