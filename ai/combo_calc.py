@@ -40,6 +40,7 @@ class ComboAssessment:
     payoff_names: Set[str] = field(default_factory=set)
     _role_cache: Dict[str, str] = field(default_factory=dict)
     reason: str = ""
+    r_res: float = 0.0               # chain-reaction residue (mana surplus)
 
 
 def _null_assessment() -> ComboAssessment:
@@ -210,6 +211,7 @@ def _assess_storm_zone(game, player_idx, goal_engine, snap, zone, target,
         _role_cache=_build_role_cache(goal_engine),
         reason=f"storm: best_dmg={best_damage} proj={projected_damage} "
                f"r_res={r_res:.1f} opp_life={opp_life}",
+        r_res=r_res,
     )
 
 
@@ -485,14 +487,131 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
         if not has_access:
             # No payoff or tutor → wasting ritual
             return -a.combo_value / opp_life
+
+        # ── Reducer-first heuristic: rituals are worth more AFTER a reducer ──
+        # If no reducer deployed yet but one exists in hand and is castable,
+        # penalize casting rituals now — deploying the reducer first makes
+        # every subsequent ritual produce more net mana.
+        if a.resource_zone == "storm":
+            reducer_deployed = any(
+                'cost_reducer' in getattr(c.template, 'tags', set())
+                for c in me.battlefield)
+            if not reducer_deployed:
+                reducer_in_hand = [
+                    c for c in me.hand
+                    if c.instance_id != card.instance_id
+                    and 'cost_reducer' in getattr(c.template, 'tags', set())
+                    and not c.template.is_instant and not c.template.is_sorcery
+                ]
+                if reducer_in_hand:
+                    # Check if any reducer is castable with current mana
+                    castable_reducer = any(
+                        (c.template.cmc or 0) <= snap.my_mana
+                        for c in reducer_in_hand)
+                    if castable_reducer:
+                        # Penalty = the mana amplification we'd lose by not
+                        # deploying the reducer first. Each fuel spell in hand
+                        # saves 1 mana with a reducer, so the penalty scales
+                        # with how many fuel spells remain.
+                        fuel_count = sum(
+                            1 for c in me.hand
+                            if c.instance_id != card.instance_id
+                            and not c.template.is_land
+                            and 'cost_reducer' not in getattr(c.template, 'tags', set())
+                            and (c.template.is_instant or c.template.is_sorcery))
+                        # Each future spell saves 1 mana with reducer deployed
+                        amplification_loss = fuel_count / opp_life * a.combo_value
+                        return -amplification_loss
+
+        # ── Golden turn / divergence point: patience when R_res is poor ──
+        # The "divergence point" is when mana generated exceeds mana spent
+        # by enough to sustain the chain. If R_res is low, we haven't reached
+        # it yet — waiting for another land drop or reducer will multiply
+        # our chain's output significantly.
+        if a.resource_zone == "storm" and a.r_res < 3:
+            # Count lands (proxy for turn number / ramp)
+            land_count = snap.my_total_lands
+            # On early turns (few lands, no reducer), the chain can't sustain.
+            # Penalty scales with how far below the divergence threshold we are.
+            # At R_res=3 (divergence point), no penalty.
+            divergence_gap = (3 - a.r_res) / 3.0  # 0..1+
+            # Early game (fewer lands) means waiting is more valuable
+            # because the next land drop adds proportionally more mana
+            early_factor = max(0.0, (4 - land_count) / 4.0)  # peaks at 1 land
+            patience_penalty = divergence_gap * early_factor * a.combo_value * 0.2
+            if patience_penalty > 0:
+                return -patience_penalty
+
         # Has access — let projection's mana-production arithmetic handle it
         return 0.0
+
+    # ═══ FLIP-TRANSFORM STACK BATCHING ═══
+    # When a creature with a "flip a coin" on-cast trigger is on the
+    # battlefield (untransformed), cheap instant/sorcery spells get a bonus.
+    # Each additional spell cast = another flip chance. The probability of
+    # at least one successful flip in N tries = 1 - (1/2)^N.
+    # Bonus = marginal flip probability × transform value.
+    if (card.template.is_instant or card.template.is_sorcery) and role != 'payoff':
+        flip_creatures = [
+            c for c in me.battlefield
+            if c.template.is_creature
+            and not getattr(c, 'is_transformed', False)
+            and 'flip a coin' in (c.template.oracle_text or '').lower()
+            and ('instant or sorcery' in (c.template.oracle_text or '').lower()
+                 or 'instant and sorcery' in (c.template.oracle_text or '').lower())
+        ]
+        if flip_creatures:
+            # Marginal probability of getting the transform THIS spell:
+            # P(at least one flip in storm+1 tries) - P(at least one in storm tries)
+            # = (1 - 0.5^(storm+1)) - (1 - 0.5^storm) = 0.5^storm - 0.5^(storm+1)
+            # = 0.5^(storm+1)
+            marginal_p = 0.5 ** (storm + 1)
+            # Transform value: the creature becomes a planeswalker with
+            # loyalty = base + spells_cast. Use combo_value as proxy for
+            # how good transformation is (engines boost the combo turn).
+            transform_value = a.combo_value * 0.3  # fraction of combo win value
+            return marginal_p * transform_value * len(flip_creatures)
+
+    # ═══ SEARCH-TAX AWARENESS ═══
+    # When opponent has permanents with "whenever an opponent searches" or
+    # "whenever a player searches" triggers, tutoring gives them card
+    # advantage. Penalize tutor/search spells proportionally to how many
+    # search-punish permanents are on the opponent's board.
+    if 'tutor' in tags:
+        opp = game.players[1 - player_idx]
+        search_tax_count = sum(
+            1 for c in opp.battlefield
+            if _has_search_tax(c.template.oracle_text or ''))
+        if search_tax_count > 0:
+            # Each search-tax permanent draws the opponent a card (or worse)
+            # when we search. Penalty = cards given away × card_value.
+            # If the combo is near-lethal, searching may still be worth it
+            # — scale by (1 - payoff_value) so lethal combos override.
+            card_value = a.combo_value / opp_life * 3.0
+            non_lethal_factor = max(0.0, 1.0 - a.payoff_value)
+            return -search_tax_count * card_value * non_lethal_factor
 
     # ═══ EVERYTHING ELSE: no modifier ═══
     # Cantrips, engines (Medallion), enablers, tutors, PiF —
     # projection already models their effects correctly.
     # Don't interfere with natural card ordering.
     return 0.0
+
+
+def _has_search_tax(oracle_text: str) -> bool:
+    """Check if oracle text punishes the opponent for searching their library.
+
+    Detects patterns like:
+    - "whenever an opponent searches" → draws cards / gains counters
+    - "whenever a player searches" → similar punishment
+    - "if a player would search" → replacement effects (Aven Mindcensor-style)
+    """
+    lower = oracle_text.lower()
+    if not lower:
+        return False
+    return (('opponent' in lower or 'player' in lower)
+            and 'search' in lower
+            and ('whenever' in lower or 'if' in lower))
 
 
 def _card_marginal_value(card, me, snap, assessment):

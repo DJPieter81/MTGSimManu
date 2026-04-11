@@ -1011,6 +1011,7 @@ class CardDatabase:
         from .oracle_parser import (
             has_delve, parse_dash_cost, parse_extra_land_drops,
             parse_escape_cost, parse_equip_cost, derive_tags_from_oracle,
+            parse_splice_cost,
         )
         oracle_text = template.oracle_text or ''
         oracle_lower = oracle_text.lower()
@@ -1018,6 +1019,14 @@ class CardDatabase:
         # Delve
         if has_delve(oracle_text):
             template.has_delve = True
+
+        # Splice onto Arcane
+        splice = parse_splice_cost(oracle_text)
+        if splice is not None:
+            template.splice_cost = splice
+        # Arcane subtype
+        if 'Arcane' in template.subtypes:
+            template.is_arcane = True
 
         # Dash
         dash = parse_dash_cost(oracle_text)

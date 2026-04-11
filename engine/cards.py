@@ -158,6 +158,9 @@ class CardTemplate:
     back_face_oracle: str = ""                # oracle text for back face (transform cards)
     back_face_loyalty: int = 0                # starting loyalty for back face planeswalker
     power_scales_with: str = ""               # "domain", "tarmogoyf", "delirium", "graveyard"
+    # Splice onto Arcane: oracle-derived from "Splice onto Arcane {cost}"
+    splice_cost: Optional[int] = None          # mana cost to splice (None = no splice)
+    is_arcane: bool = False                    # True if subtype includes Arcane
 
     @property
     def is_creature(self) -> bool:

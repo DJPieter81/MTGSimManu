@@ -36,6 +36,9 @@ class CardRole:
     has_storm: bool           # has the Storm keyword
     is_payoff: bool           # is this a combo payoff (from goal's card_roles)
     deals_direct_damage: bool # does this deal damage without needing combat
+    is_arcane: bool = False   # has Arcane subtype (can receive splice)
+    splice_cost: int = 0      # cost to splice onto an Arcane spell (0 = no splice)
+    splice_mana: int = 0      # mana produced when spliced (from ritual_mana)
 
 
 @dataclass
@@ -101,6 +104,11 @@ def classify_card(card, available_mana: int, medallion_count: int,
     deals_direct = ('damage' in oracle and
                     ('target' in oracle or 'each' in oracle or 'any' in oracle))
 
+    # Splice onto Arcane: detect from template properties (set by oracle parser)
+    is_arcane = getattr(t, 'is_arcane', False)
+    splice_cost = getattr(t, 'splice_cost', None) or 0
+    splice_mana = ritual_data[1] if (ritual_data and splice_cost > 0) else 0
+
     return CardRole(
         name=t.name,
         effective_cost=effective_cost,
@@ -110,6 +118,9 @@ def classify_card(card, available_mana: int, medallion_count: int,
         has_storm=has_storm,
         is_payoff=is_payoff,
         deals_direct_damage=deals_direct,
+        is_arcane=is_arcane,
+        splice_cost=splice_cost,
+        splice_mana=splice_mana,
     )
 
 
@@ -120,10 +131,12 @@ def _simulate_sequence(
     starting_mana: int,
     starting_medallions: int,
     base_storm: int = 0,
+    all_classified: List[Tuple["CardInstance", CardRole]] = None,
 ) -> Optional[ChainOutcome]:
     """Simulate casting spells in order. Returns None if sequence is unaffordable.
 
     base_storm: spells already cast this turn (from game._global_storm_count).
+    all_classified: full classified hand for splice-onto-Arcane checks.
     """
     from engine.cards import Color
 
@@ -136,6 +149,16 @@ def _simulate_sequence(
     payoff_name = None
     payoff_damage = False
     payoff_storm = False
+
+    # Track which card instance_ids are in the sequence (consumed)
+    seq_ids = {id(card) for card, _ in sequence}
+
+    # Find spliceable cards NOT in the sequence (they stay in hand)
+    spliceable = []
+    if all_classified:
+        spliceable = [(c, r) for c, r in all_classified
+                       if r.splice_cost > 0 and r.splice_mana > 0
+                       and id(c) not in seq_ids]
 
     for card, role in sequence:
         # Recalculate cost with current medallion count
@@ -152,6 +175,21 @@ def _simulate_sequence(
         ritual_data = getattr(t, 'ritual_mana', None)
         if ritual_data:
             mana += ritual_data[1]  # (color, amount) -> add amount
+
+        # ── Splice onto Arcane: if this spell is Arcane, splice spliceable
+        # cards from hand. Splicing adds their effect (mana) without
+        # consuming the card. Pay splice cost (reduced by medallions).
+        if role.is_arcane and spliceable:
+            for splice_card, splice_role in spliceable:
+                s_reduction = 0
+                if Color.RED in splice_card.template.color_identity:
+                    s_reduction = medallions
+                splice_eff_cost = max(0, splice_role.splice_cost - s_reduction)
+                if splice_eff_cost <= mana:
+                    mana -= splice_eff_cost
+                    mana += splice_role.splice_mana
+                    # Splice doesn't count as casting a spell (no storm increment)
+
         if role.is_cost_reducer:
             medallions += 1
         if role.draws_card:
@@ -212,6 +250,10 @@ def find_all_chains(
     fuel = [(c, r) for c, r in classified if not r.is_payoff]
     payoffs = [(c, r) for c, r in classified if r.is_payoff]
 
+    # Check if any cards have splice (for passing full list to simulator)
+    has_splice = any(r.splice_cost > 0 and r.splice_mana > 0 for _, r in classified)
+    ac = classified if has_splice else None  # all_classified for splice checks
+
     results = []
 
     if len(fuel) <= 7:
@@ -230,7 +272,8 @@ def find_all_chains(
 
                     # Fuel-only chain (no payoff)
                     fuel_result = _simulate_sequence(list(perm), available_mana,
-                                                     medallion_count, base_storm)
+                                                     medallion_count, base_storm,
+                                                     all_classified=ac)
                     if fuel_result:
                         results.append(fuel_result)
 
@@ -238,14 +281,16 @@ def find_all_chains(
                     for pay_card, pay_role in payoffs:
                         full_seq = list(perm) + [(pay_card, pay_role)]
                         outcome = _simulate_sequence(full_seq, available_mana,
-                                                     medallion_count, base_storm)
+                                                     medallion_count, base_storm,
+                                                     all_classified=ac)
                         if outcome:
                             results.append(outcome)
 
         # Also try payoff-only (no fuel) if affordable
         for pay_card, pay_role in payoffs:
             outcome = _simulate_sequence([(pay_card, pay_role)], available_mana,
-                                         medallion_count, base_storm)
+                                         medallion_count, base_storm,
+                                         all_classified=ac)
             if outcome:
                 results.append(outcome)
     else:
@@ -263,14 +308,16 @@ def find_all_chains(
         base = cost_reducers + rituals + cantrips + other
 
         # Fuel-only
-        fuel_result = _simulate_sequence(base, available_mana, medallion_count, base_storm)
+        fuel_result = _simulate_sequence(base, available_mana, medallion_count,
+                                         base_storm, all_classified=ac)
         if fuel_result:
             results.append(fuel_result)
 
         # With each payoff
         for pay_card, pay_role in payoffs:
             outcome = _simulate_sequence(base + [(pay_card, pay_role)],
-                                         available_mana, medallion_count, base_storm)
+                                         available_mana, medallion_count,
+                                         base_storm, all_classified=ac)
             if outcome:
                 results.append(outcome)
 
