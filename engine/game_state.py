@@ -320,7 +320,7 @@ class GameState:
         self.active_player: int = 0
         self.priority_player: int = 0
         self.current_phase: Phase = Phase.UNTAP
-        self.turn_number: int = 1
+        self.turn_number: int = 1  # internal half-turn counter (increments each player turn)
         self.game_over: bool = False
         self.winner: Optional[int] = None
         self.rng = rng or random.Random()
@@ -822,7 +822,7 @@ class GameState:
         if card.template.enters_tapped and card.template.untap_life_cost == 0 and card.template.untap_max_other_lands < 0:
             card.enter_battlefield()
             card.tapped = True
-            self.log.append(f"T{self.turn_number} P{player_idx+1}: Play {card.name} (enters tapped)")
+            self.log.append(f"T{self.display_turn} P{player_idx+1}: Play {card.name} (enters tapped)")
         # ── Lands with optional life payment to enter untapped (shock lands etc.) ──
         elif card.template.untap_life_cost > 0:
             life_cost = card.template.untap_life_cost
@@ -831,28 +831,28 @@ class GameState:
                 player.life -= life_cost
                 card.enter_battlefield()
                 card.tapped = False
-                self.log.append(f"T{self.turn_number} P{player_idx+1}: Play {card.name} (pay {life_cost} life, untapped, life: {player.life})")
+                self.log.append(f"T{self.display_turn} P{player_idx+1}: Play {card.name} (pay {life_cost} life, untapped, life: {player.life})")
             else:
                 card.zone = "battlefield"
                 card.summoning_sick = True
                 card.entered_battlefield_this_turn = True
                 card.tapped = True
-                self.log.append(f"T{self.turn_number} P{player_idx+1}: Play {card.name} (tapped, no spells need mana)")
+                self.log.append(f"T{self.display_turn} P{player_idx+1}: Play {card.name} (tapped, no spells need mana)")
         # ── Conditional untap: untapped if ≤ N other lands (fast lands etc.) ──
         elif card.template.untap_max_other_lands >= 0:
             other_lands = len([c for c in player.battlefield if c.template.is_land])
             card.enter_battlefield()
             if other_lands <= card.template.untap_max_other_lands:
                 card.tapped = False
-                self.log.append(f"T{self.turn_number} P{player_idx+1}: Play {card.name} (untapped, {other_lands} other lands)")
+                self.log.append(f"T{self.display_turn} P{player_idx+1}: Play {card.name} (untapped, {other_lands} other lands)")
             else:
                 card.tapped = True
-                self.log.append(f"T{self.turn_number} P{player_idx+1}: Play {card.name} (tapped, {other_lands} other lands)")
+                self.log.append(f"T{self.display_turn} P{player_idx+1}: Play {card.name} (tapped, {other_lands} other lands)")
         # ── Fetchland: play then immediately crack ──
         elif card.name in FETCH_LAND_COLORS:
             card.enter_battlefield()
             player.battlefield.append(card)
-            self.log.append(f"T{self.turn_number} P{player_idx+1}: Play {card.name}")
+            self.log.append(f"T{self.display_turn} P{player_idx+1}: Play {card.name}")
             # Trigger landfall for the fetch itself
             self._trigger_landfall(player_idx)
             # Immediately crack the fetchland
@@ -860,7 +860,7 @@ class GameState:
             return  # Don't append again or trigger landfall again below
         else:
             card.enter_battlefield()
-            self.log.append(f"T{self.turn_number} P{player_idx+1}: Play {card.name}")
+            self.log.append(f"T{self.display_turn} P{player_idx+1}: Play {card.name}")
 
         # Add to battlefield (non-fetch path)
         if card.name not in FETCH_LAND_COLORS:
@@ -872,7 +872,7 @@ class GameState:
                 oracle = (c.template.oracle_text or '').lower()
                 if 'tapped permanent enters' in oracle and 'untap' in oracle:
                     card.tapped = False
-                    self.log.append(f"T{self.turn_number} P{player_idx+1}: "
+                    self.log.append(f"T{self.display_turn} P{player_idx+1}: "
                                     f"{c.name} untaps {card.name}")
                     break
 
@@ -893,7 +893,7 @@ class GameState:
             # Safety: if paying 1 life would kill us, don't crack the fetch
             # (This should be caught by AI land selection, but as a safety net)
             if player.life <= 1:
-                self.log.append(f"T{self.turn_number} P{player_idx+1}: "
+                self.log.append(f"T{self.display_turn} P{player_idx+1}: "
                                f"{fetch_name} not cracked (life too low: {player.life})")
                 return
             player.life -= 1
@@ -923,7 +923,7 @@ class GameState:
                     player.life -= life_cost
                     best_land.enter_battlefield()
                     best_land.tapped = False
-                    self.log.append(f"T{self.turn_number} P{player_idx+1}: "
+                    self.log.append(f"T{self.display_turn} P{player_idx+1}: "
                                    f"Crack {fetch_name} (pay 1 life) -> {best_land.name} "
                                    f"(pay {life_cost} life, untapped, life: {player.life})")
                 else:
@@ -931,14 +931,14 @@ class GameState:
                     best_land.summoning_sick = True
                     best_land.entered_battlefield_this_turn = True
                     best_land.tapped = True
-                    self.log.append(f"T{self.turn_number} P{player_idx+1}: "
+                    self.log.append(f"T{self.display_turn} P{player_idx+1}: "
                                    f"Crack {fetch_name} -> {best_land.name} (tapped, no spells need mana)")
             else:
                 # Fabled Passage: tapped if < 4 lands; Zendikar fetches: always untapped
                 best_land.enter_battlefield()
                 if fetch_name in no_life_fetches and len(player.lands) < 4:
                     best_land.tapped = True
-                self.log.append(f"T{self.turn_number} P{player_idx+1}: "
+                self.log.append(f"T{self.display_turn} P{player_idx+1}: "
                                f"Crack {fetch_name} -> {best_land.name} "
                                f"({'tapped' if best_land.tapped else 'untapped'})")
 
@@ -955,7 +955,7 @@ class GameState:
             self.rng.shuffle(player.library)
             player.library_searches_this_game += 1
             self._trigger_library_search(player_idx)
-            self.log.append(f"T{self.turn_number} P{player_idx+1}: "
+            self.log.append(f"T{self.display_turn} P{player_idx+1}: "
                            f"Crack {fetch_name} (no valid land found)")
 
     def _trigger_library_search(self, searcher_idx: int):
@@ -974,7 +974,7 @@ class GameState:
                 if 'draw a card' in oracle:
                     self.draw_cards(opp_idx, 1)
                 self.log.append(
-                    f"T{self.turn_number} P{opp_idx+1}: "
+                    f"T{self.display_turn} P{opp_idx+1}: "
                     f"{c.name} triggers (opponent searched) — "
                     f"+1/+1 counter ({c.power}/{c.toughness}), draw a card")
 
@@ -1002,14 +1002,14 @@ class GameState:
                     m = re.search(r'gain\s+(\d+)\s+life', oracle)
                     if m:
                         self.gain_life(player_idx, int(m.group(1)), f"{perm.name} landfall")
-                        self.log.append(f"T{self.turn_number} P{player_idx+1}: "
+                        self.log.append(f"T{self.display_turn} P{player_idx+1}: "
                                        f"{perm.name} 1st landfall: +{m.group(1)} life")
                 elif landfall_num == 2 and 'second time' in oracle:
                     # Add mana — parse colors from oracle
                     for color in ['R', 'G', 'W', 'U', 'B']:
                         if '{' + color.lower() + '}' in oracle:
                             player.mana_pool.add(color, 1)
-                    self.log.append(f"T{self.turn_number} P{player_idx+1}: "
+                    self.log.append(f"T{self.display_turn} P{player_idx+1}: "
                                    f"{perm.name} 2nd landfall: add mana")
                 elif landfall_num == 3 and 'third time' in oracle:
                     m = re.search(r'deals?\s+(\d+)\s+damage', oracle)
@@ -1017,7 +1017,7 @@ class GameState:
                         dmg = int(m.group(1))
                         self.players[opponent_idx].life -= dmg
                         player.damage_dealt_this_turn += dmg
-                        self.log.append(f"T{self.turn_number} P{player_idx+1}: "
+                        self.log.append(f"T{self.display_turn} P{player_idx+1}: "
                                        f"{perm.name} 3rd landfall: {dmg} damage")
 
     def equip_creature(self, player_idx: int, equipment: CardInstance,
@@ -1081,7 +1081,7 @@ class GameState:
             equipment.instance_tags.discard("equipment_unattached")
             equipment.instance_tags.add("equipment_attached")
 
-        self.log.append(f"T{self.turn_number} P{player_idx+1}: "
+        self.log.append(f"T{self.display_turn} P{player_idx+1}: "
                         f"Equip {equipment.name} to {creature.name} "
                         f"(cost {template.equip_cost})")
         return True
@@ -1132,7 +1132,7 @@ class GameState:
                         ex.zone = "exile"
                         player.exile.append(ex)
                     escaped = True
-                    self.log.append(f"T{self.turn_number} P{player_idx+1}: "
+                    self.log.append(f"T{self.display_turn} P{player_idx+1}: "
                                    f"Escape {card.name} (exile {template.escape_exile_count} cards)")
                 else:
                     return False
@@ -1246,7 +1246,7 @@ class GameState:
                     exile_card.zone = "exile"
                     player.exile.append(exile_card)
                     evoked = True
-                    self.log.append(f"T{self.turn_number} P{player_idx+1}: "
+                    self.log.append(f"T{self.display_turn} P{player_idx+1}: "
                                    f"Evoke {card.name} (exile {exile_card.name})")
                 else:
                     return False
@@ -1273,7 +1273,7 @@ class GameState:
                 # Store count for Murktide Regent ETB (+1/+1 per delved spell)
                 card._delved_spells = delved_spells
                 if delve_exiled > 0:
-                    self.log.append(f"T{self.turn_number} P{player_idx+1}: "
+                    self.log.append(f"T{self.display_turn} P{player_idx+1}: "
                                    f"Delve {delve_exiled} cards for {card.name}")
 
             # Pay mana
@@ -1394,7 +1394,7 @@ class GameState:
                     card.zone = "graveyard"
                     player.graveyard.append(card)
                     self.log.append(
-                        f"T{self.turn_number} P{opp_idx+1}: "
+                        f"T{self.display_turn} P{opp_idx+1}: "
                         f"{perm.name} (X={charge}) counters {card.name}")
                     return True
 
@@ -1410,7 +1410,7 @@ class GameState:
             cost_parts.append(str(mc.generic))
         cost_parts.extend('W' * mc.white + 'U' * mc.blue + 'B' * mc.black + 'R' * mc.red + 'G' * mc.green)
         cost_str = ''.join(cost_parts) if cost_parts else '0'
-        self.log.append(f"T{self.turn_number} P{player_idx+1}: Cast {card.name} ({cost_str}){dash_label}{x_label}")
+        self.log.append(f"T{self.display_turn} P{player_idx+1}: Cast {card.name} ({cost_str}){dash_label}{x_label}")
 
         # ── Prowess and prowess-like triggers (generic from oracle) ──
         if not template.is_creature:
@@ -1457,7 +1457,7 @@ class GameState:
         card = item.source
         template = card.template
 
-        self.log.append(f"T{self.turn_number}: Resolve {card.name}")
+        self.log.append(f"T{self.display_turn}: Resolve {card.name}")
 
         if item.item_type == StackItemType.SPELL:
             if CardType.INSTANT in template.card_types or CardType.SORCERY in template.card_types:
@@ -1495,12 +1495,12 @@ class GameState:
                     if effect == "charge_counters":
                         card.other_counters["charge"] = item.x_value
                         self.log.append(
-                            f"T{self.turn_number} P{item.controller+1}: "
+                            f"T{self.display_turn} P{item.controller+1}: "
                             f"{card.name} enters with {item.x_value} charge counter(s)")
                     elif effect == "plus1_counters":
                         card.plus_counters += item.x_value
                         self.log.append(
-                            f"T{self.turn_number} P{item.controller+1}: "
+                            f"T{self.display_turn} P{item.controller+1}: "
                             f"{card.name} enters with {item.x_value} +1/+1 counter(s)")
                 self._handle_permanent_etb(card, item.controller)
                 # Cascade on permanents too
@@ -1512,7 +1512,7 @@ class GameState:
                         self.players[item.controller].battlefield.remove(card)
                         card.zone = "graveyard"
                         self.players[card.owner].graveyard.append(card)
-                        self.log.append(f"T{self.turn_number} P{item.controller+1}: "
+                        self.log.append(f"T{self.display_turn} P{item.controller+1}: "
                                        f"{card.name} sacrificed (evoke)")
                 # Phlage sacrifice-unless-escaped: if cast normally (not escaped),
                 # sacrifice after ETB trigger resolves
@@ -1522,7 +1522,7 @@ class GameState:
                         self.players[item.controller].battlefield.remove(card)
                         card.zone = "graveyard"
                         self.players[card.owner].graveyard.append(card)
-                        self.log.append(f"T{self.turn_number} P{item.controller+1}: "
+                        self.log.append(f"T{self.display_turn} P{item.controller+1}: "
                                        f"{card.name} sacrificed (not escaped)")
 
         elif item.item_type in (StackItemType.ACTIVATED_ABILITY,
@@ -1543,7 +1543,7 @@ class GameState:
         # Energy production on ETB (from oracle-derived template property)
         if template.energy_production > 0:
             self.players[controller].add_energy(template.energy_production)
-            self.log.append(f"T{self.turn_number} P{controller+1}: "
+            self.log.append(f"T{self.display_turn} P{controller+1}: "
                             f"{template.name} produces {template.energy_production} energy "
                             f"(total: {self.players[controller].energy_counters})")
 
@@ -1555,7 +1555,7 @@ class GameState:
         is_creature = CardType.CREATURE in template.card_types
 
         if torpor_active and is_creature:
-            self.log.append(f"T{self.turn_number}: {template.name} ETB suppressed by Torpor Orb")
+            self.log.append(f"T{self.display_turn}: {template.name} ETB suppressed by Torpor Orb")
         else:
             # Dispatch to card effect registry for card-specific ETB logic
             has_specific_handler = template.name in EFFECT_REGISTRY._handlers
@@ -1581,7 +1581,7 @@ class GameState:
 
         controller = item.controller
         card = item.source
-        self.log.append(f"T{self.turn_number}: Storm copies: {copies}")
+        self.log.append(f"T{self.display_turn}: Storm copies: {copies}")
 
         for i in range(copies):
             # Execute the spell effect again for each copy
@@ -1599,7 +1599,7 @@ class GameState:
         exiled = []
         found_card = None
 
-        self.log.append(f"T{self.turn_number}: Cascade (CMC < {cascade_cmc})")
+        self.log.append(f"T{self.display_turn}: Cascade (CMC < {cascade_cmc})")
 
         while player.library:
             top = player.library.pop(0)
@@ -1613,7 +1613,7 @@ class GameState:
                 break
 
         if found_card:
-            self.log.append(f"T{self.turn_number}: Cascade hits {found_card.name}")
+            self.log.append(f"T{self.display_turn}: Cascade hits {found_card.name}")
 
             # Special: Living End
             if found_card.name == "Living End":
@@ -1649,7 +1649,7 @@ class GameState:
 
     def _resolve_living_end(self, controller: int):
         """Living End: exile all creatures from battlefield, return all from graveyard."""
-        self.log.append(f"T{self.turn_number}: Living End resolves!")
+        self.log.append(f"T{self.display_turn}: Living End resolves!")
 
         # For each player: exile battlefield creatures, return graveyard creatures
         for p_idx in range(2):
@@ -1674,7 +1674,7 @@ class GameState:
                 creature.controller = p_idx
                 creature.enter_battlefield()
                 player.battlefield.append(creature)
-                self.log.append(f"T{self.turn_number}: Living End returns "
+                self.log.append(f"T{self.display_turn}: Living End returns "
                                 f"{creature.name} for P{p_idx+1}")
 
     # ─── REANIMATION ─────────────────────────────────────────────
@@ -1693,7 +1693,7 @@ class GameState:
             target_card.temp_keywords.add(Keyword.HASTE)
         player.battlefield.append(target_card)
 
-        self.log.append(f"T{self.turn_number} P{controller+1}: "
+        self.log.append(f"T{self.display_turn} P{controller+1}: "
                         f"Reanimate {target_card.name}")
 
         if exile_at_eot:
@@ -1746,7 +1746,7 @@ class GameState:
             tokens.append(instance)
 
         if count > 0:
-            self.log.append(f"T{self.turn_number} P{controller+1}: "
+            self.log.append(f"T{self.display_turn} P{controller+1}: "
                             f"Create {count}x {t_name} token(s)")
         return tokens
 
@@ -1773,7 +1773,7 @@ class GameState:
         pw_card.loyalty_counters = new_loyalty
         opponent = 1 - controller
 
-        self.log.append(f"T{self.turn_number} P{controller+1}: "
+        self.log.append(f"T{self.display_turn} P{controller+1}: "
                         f"{pw_name} [{loyalty_change:+d}] -> {effect_desc}")
 
         # Execute effect based on description keywords
@@ -1789,7 +1789,7 @@ class GameState:
                 player.graveyard.remove(land)
                 land.zone = "hand"
                 player.hand.append(land)
-                self.log.append(f"T{self.turn_number} P{controller+1}: "
+                self.log.append(f"T{self.display_turn} P{controller+1}: "
                                f"Wrenn and Six returns {land.name} from GY to hand")
 
         elif "exile all colored" in effect_desc:
@@ -1887,7 +1887,7 @@ class GameState:
                         c.power or 0,    # then higher power
                     ))
                     target.damage_marked += dmg
-                    self.log.append(f"T{self.turn_number} P{controller+1}: "
+                    self.log.append(f"T{self.display_turn} P{controller+1}: "
                                    f"{pw_name} deals {dmg} to {target.name}")
                     if target.is_dead:
                         self._creature_dies(target)
@@ -1917,7 +1917,7 @@ class GameState:
     def produce_energy(self, player_idx: int, amount: int, source_name: str = ""):
         """Add energy counters to a player."""
         self.players[player_idx].add_energy(amount)
-        self.log.append(f"T{self.turn_number} P{player_idx+1}: "
+        self.log.append(f"T{self.display_turn} P{player_idx+1}: "
                         f"+{amount} energy from {source_name} "
                         f"(total: {self.players[player_idx].energy_counters})")
 
@@ -1925,7 +1925,7 @@ class GameState:
                                  effect_type: str = "") -> bool:
         """Spend energy for an effect. Returns True if successful."""
         if self.players[player_idx].spend_energy(amount):
-            self.log.append(f"T{self.turn_number} P{player_idx+1}: "
+            self.log.append(f"T{self.display_turn} P{player_idx+1}: "
                             f"Spend {amount} energy for {effect_type}")
             return True
         return False
@@ -1937,7 +1937,7 @@ class GameState:
         player = self.players[player_idx]
         player.life += amount
         player.life_gained_this_turn += amount
-        self.log.append(f"T{self.turn_number} P{player_idx+1}: "
+        self.log.append(f"T{self.display_turn} P{player_idx+1}: "
                         f"Gain {amount} life from {source} (life: {player.life})")
         # Generic "whenever you gain life" triggers from oracle
         for creature in list(player.creatures):
@@ -1968,7 +1968,7 @@ class GameState:
                     self.draw_cards(controller, 1)
             else:
                 self.players[controller].mana_pool.add(color, amount)
-            self.log.append(f"T{self.turn_number} P{controller+1}: "
+            self.log.append(f"T{self.display_turn} P{controller+1}: "
                             f"{name} adds {amount} {color} mana")
             return
 
@@ -2059,9 +2059,9 @@ class GameState:
 
                 # Noncreature-only counters can't hit creatures
                 if target_template and 'noncreature' in counter_oracle and target_template.is_creature:
-                    self.log.append(f"T{self.turn_number}: {card.name} fizzles (can't counter creature)")
+                    self.log.append(f"T{self.display_turn}: {card.name} fizzles (can't counter creature)")
                 elif target_template and 'instant or sorcery' in counter_oracle and not (target_template.is_instant or target_template.is_sorcery):
-                    self.log.append(f"T{self.turn_number}: {card.name} fizzles (wrong target type)")
+                    self.log.append(f"T{self.display_turn}: {card.name} fizzles (wrong target type)")
                 elif item.targets:
                     for tid in item.targets:
                         # Find the targeted spell on the stack
@@ -2072,7 +2072,7 @@ class GameState:
                                 countered_card.zone = "graveyard"
                                 self.players[countered_card.owner].graveyard.append(countered_card)
                                 self.log.append(
-                                    f"T{self.turn_number}: {countered_card.name} is countered")
+                                    f"T{self.display_turn}: {countered_card.name} is countered")
                                 break
                 elif not self.stack.is_empty:
                     # No explicit target — counter the next spell on the stack
@@ -2081,7 +2081,7 @@ class GameState:
                     countered_card.zone = "graveyard"
                     self.players[countered_card.owner].graveyard.append(countered_card)
                     self.log.append(
-                        f"T{self.turn_number}: {countered_card.name} is countered")
+                        f"T{self.display_turn}: {countered_card.name} is countered")
 
             elif "draw" in desc:
                 amount = 1
@@ -2154,7 +2154,7 @@ class GameState:
         card.enter_battlefield()
         self.players[controller].battlefield.append(card)
         self._handle_permanent_etb(card, controller)
-        self.log.append(f"T{self.turn_number}: Blink {card.name}")
+        self.log.append(f"T{self.display_turn}: Blink {card.name}")
 
     # ─── ZONE CHANGES ────────────────────────────────────────────
 
@@ -2176,7 +2176,7 @@ class GameState:
             creature.enter_battlefield()
             creature.plus_counters += 1
             self.players[controller].battlefield.append(creature)
-            self.log.append(f"T{self.turn_number}: {creature.name} returns (undying)")
+            self.log.append(f"T{self.display_turn}: {creature.name} returns (undying)")
             return
 
         # Persist: return with -1/-1 counter
@@ -2188,7 +2188,7 @@ class GameState:
             creature.enter_battlefield()
             creature.minus_counters += 1
             self.players[controller].battlefield.append(creature)
-            self.log.append(f"T{self.turn_number}: {creature.name} returns (persist)")
+            self.log.append(f"T{self.display_turn}: {creature.name} returns (persist)")
             return
 
         # Equipment falls off: when equipped creature dies, mark equipment
@@ -2207,7 +2207,7 @@ class GameState:
                         perm.instance_tags.discard("equipment_attached")
                         perm.instance_tags.add("equipment_unattached")
                         self.log.append(
-                            f"T{self.turn_number}: {perm.template.name} falls off "
+                            f"T{self.display_turn}: {perm.template.name} falls off "
                             f"{creature.name} (unattached)")
                         break
 
@@ -2224,7 +2224,7 @@ class GameState:
             from .oracle_resolver import resolve_dies_trigger
             resolve_dies_trigger(self, creature, controller)
 
-        self.log.append(f"T{self.turn_number}: {creature.name} dies")
+        self.log.append(f"T{self.display_turn}: {creature.name} dies")
 
     def _permanent_destroyed(self, permanent: CardInstance):
         if permanent.template.is_creature:
@@ -2373,7 +2373,7 @@ class GameState:
                     self.players[perm.owner].graveyard.append(perm)
                     sacrificed += 1
             if sacrificed:
-                self.log.append(f"T{self.turn_number}: Annihilator {ann_amount} - "
+                self.log.append(f"T{self.display_turn}: Annihilator {ann_amount} - "
                                 f"P{opponent+1} sacrifices {sacrificed} permanents")
 
         # Complex attack-trigger land search (oracle: "search...two land cards")
@@ -2580,7 +2580,7 @@ class GameState:
                         blocker.damage_marked += attacker.power
                         total_damage_dealt += attacker.power
                         self.log.append(
-                            f"T{self.turn_number} P{attacking_player+1}: "
+                            f"T{self.display_turn} P{attacking_player+1}: "
                             f"{attacker.name} ({attacker.power}/{attacker.toughness}) "
                             f"deals {attacker.power} combat damage to "
                             f"{blocker.name} ({blocker.power}/{blocker.toughness}){step_label}"
@@ -2594,7 +2594,7 @@ class GameState:
                            (not first_strike_step and Keyword.DOUBLE_STRIKE in blocker.keywords):
                             attacker.damage_marked += blocker.power
                             self.log.append(
-                                f"T{self.turn_number} P{defending_player+1}: "
+                                f"T{self.display_turn} P{defending_player+1}: "
                                 f"{blocker.name} ({blocker.power}/{blocker.toughness}) "
                                 f"deals {blocker.power} combat damage to "
                                 f"{attacker.name} ({attacker.power}/{attacker.toughness}){step_label}"
@@ -2604,12 +2604,12 @@ class GameState:
                         if Keyword.DEATHTOUCH in attacker.keywords and attacker.power > 0:
                             blocker.damage_marked = max(blocker.damage_marked, blocker.toughness)
                             self.log.append(
-                                f"T{self.turn_number}: {attacker.name} deathtouch kills {blocker.name}"
+                                f"T{self.display_turn}: {attacker.name} deathtouch kills {blocker.name}"
                             )
                         if Keyword.DEATHTOUCH in blocker.keywords and blocker.power > 0:
                             attacker.damage_marked = max(attacker.damage_marked, attacker.toughness)
                             self.log.append(
-                                f"T{self.turn_number}: {blocker.name} deathtouch kills {attacker.name}"
+                                f"T{self.display_turn}: {blocker.name} deathtouch kills {attacker.name}"
                             )
 
                 # Trample: excess damage goes to defending player
@@ -2625,7 +2625,7 @@ class GameState:
                         self.players[attacking_player].damage_dealt_this_turn += excess
                         total_damage_dealt += excess
                         self.log.append(
-                            f"T{self.turn_number} P{attacking_player+1}: "
+                            f"T{self.display_turn} P{attacking_player+1}: "
                             f"{attacker.name} tramples {excess} damage through to P{defending_player+1} "
                             f"(life: {self.players[defending_player].life})"
                         )
@@ -2637,7 +2637,7 @@ class GameState:
                     self.players[attacking_player].damage_dealt_this_turn += damage
                     total_damage_dealt = damage
                     self.log.append(
-                        f"T{self.turn_number} P{attacking_player+1}: "
+                        f"T{self.display_turn} P{attacking_player+1}: "
                         f"{attacker.name} ({attacker.power}/{attacker.toughness}) "
                         f"deals {damage} combat damage to P{defending_player+1} "
                         f"(life: {self.players[defending_player].life}){step_label}"
@@ -2647,7 +2647,7 @@ class GameState:
             if Keyword.LIFELINK in attacker.keywords and total_damage_dealt > 0:
                 self.gain_life(attacking_player, total_damage_dealt, f"{attacker.name} lifelink")
                 self.log.append(
-                    f"T{self.turn_number} P{attacking_player+1}: "
+                    f"T{self.display_turn} P{attacking_player+1}: "
                     f"{attacker.name} lifelink gains {total_damage_dealt} life "
                     f"(life: {self.players[attacking_player].life})"
                 )
@@ -2660,14 +2660,14 @@ class GameState:
                     if 'treasure' in a_oracle or 'create a treasure' in a_oracle:
                         self.create_token(attacking_player, "treasure", count=1)
                         self.log.append(
-                            f"T{self.turn_number} P{attacking_player+1}: "
+                            f"T{self.display_turn} P{attacking_player+1}: "
                             f"{attacker.name} creates Treasure token"
                         )
                     # Draw on combat damage (Psychic Frog, Ophiomancer etc.)
                     if 'draw a card' in a_oracle:
                         self.draw_cards(attacking_player, 1)
                         self.log.append(
-                            f"T{self.turn_number} P{attacking_player+1}: "
+                            f"T{self.display_turn} P{attacking_player+1}: "
                             f"{attacker.name} deals combat damage — draw a card"
                         )
 
@@ -2681,7 +2681,7 @@ class GameState:
                     self, card, "battlefield", "hand",
                     cause="Dash return"
                 )
-                self.log.append(f"T{self.turn_number}: {card.name} returned to hand (Dash)")
+                self.log.append(f"T{self.display_turn}: {card.name} returned to hand (Dash)")
 
         # Goryo's exile
         for card, controller in self._end_of_turn_exiles:
@@ -2690,7 +2690,7 @@ class GameState:
                     self, card, "battlefield", "exile",
                     cause="Goryo's end-of-turn exile"
                 )
-                self.log.append(f"T{self.turn_number}: {card.name} exiled (end of turn)")
+                self.log.append(f"T{self.display_turn}: {card.name} exiled (end of turn)")
         self._end_of_turn_exiles.clear()
 
     def cleanup_step(self):
@@ -2720,6 +2720,15 @@ class GameState:
         self.active_player = 1 - self.active_player
         self.priority_player = self.active_player
         self.turn_number += 1
+
+    @property
+    def display_turn(self) -> str:
+        """MTG-correct turn label: 'T1' means both players had turn 1.
+
+        Internal turn_number counts half-turns (each player switch).
+        Display: round = ceil(turn_number / 2), active player shown separately.
+        """
+        return str((self.turn_number + 1) // 2)
 
     # ─── QUERIES ─────────────────────────────────────────────────
 
@@ -2827,7 +2836,7 @@ class GameState:
         self.draw_cards(player_idx, 1)
         # Log
         cost_desc = f"pay {cost['life']} life" if cost["life"] > 0 else f"pay {cost['mana']} mana"
-        self.log.append(f"T{self.turn_number} P{player_idx+1}: "
+        self.log.append(f"T{self.display_turn} P{player_idx+1}: "
                        f"Cycle {card.name} ({cost_desc}, draw a card)")
         return True
 
@@ -2878,5 +2887,5 @@ class GameState:
         if player.life >= 8:  # Keep at least 1 life
             player.life -= 7
             self.draw_cards(controller, 7)
-            self.log.append(f"T{self.turn_number} P{controller+1}: "
+            self.log.append(f"T{self.display_turn} P{controller+1}: "
                             f"Griselbrand: pay 7 life, draw 7")

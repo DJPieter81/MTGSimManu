@@ -95,7 +95,7 @@ class CombatManager:
 
         if attackers:
             game.log.append(
-                f"T{game.turn_number} P{active_player+1}: Attack with "
+                f"T{game.display_turn} P{active_player+1}: Attack with "
                 f"{', '.join(a.name for a in attackers)}"
             )
 

@@ -454,7 +454,7 @@ class GameRunner:
                     p_name = p.deck_name or f'P{active+1}'
                     o_name = o.deck_name or f'P{1-active+1}'
                     _vlog('')
-                    _vlog(f'╔══ TURN {game.turn_number} — {p_name} (P{active+1}) ══════════════════════════')
+                    _vlog(f'╔══ TURN {game.display_turn} — {p_name} (P{active+1}) ══════════════════════════')
                     _vlog(f'║ Life: {p_name} {p.life}  |  {o_name} {o.life}')
                     _vlog(f'║ Hand: {len(p.hand)} cards  |  Opp hand: {len(o.hand)} cards')
                     _vlog(f'║ Lands: {len(p.lands)}  |  Opp lands: {len(o.lands)}')
@@ -495,7 +495,7 @@ class GameRunner:
                             if rc in game.players[active].exile:
                                 game.players[active].exile.remove(rc)
                             game.cast_spell(active, rc, free_cast=True)
-                            game.log.append(f"T{game.turn_number} P{active+1}: "
+                            game.log.append(f"T{game.display_turn} P{active+1}: "
                                             f"Rebound {rc.name}")
                     # Urza's Saga chapter triggers
                     self._process_saga_chapters(game, active)
@@ -662,7 +662,7 @@ class GameRunner:
             winner=winner,
             winner_deck=deck_names[winner] if winner is not None else "draw",
             loser_deck=deck_names[loser] if loser is not None else "draw",
-            turns=game.turn_number,
+            turns=int(game.display_turn),
             winner_life=game.players[winner].life if winner is not None else 0,
             loser_life=game.players[loser].life if loser is not None else 0,
             win_condition=win_condition,
@@ -1161,7 +1161,7 @@ class GameRunner:
             while player.life >= min_life and len(player.hand) < 14 and activations < max_activations:
                 player.life -= life_cost
                 game.draw_cards(active, draw_count)
-                game.log.append(f"T{game.turn_number} P{active+1}: "
+                game.log.append(f"T{game.display_turn} P{active+1}: "
                                 f"{creature.name}: pay {life_cost} life, draw {draw_count}")
                 activations += 1
                 if game.game_over:
@@ -1201,7 +1201,7 @@ class GameRunner:
                     if CardType.ARTIFACT not in t.template.card_types:
                         t.template.card_types.append(CardType.ARTIFACT)
                     t.template.tags.add("artifact")
-                game.log.append(f"T{game.turn_number} P{active+1}: "
+                game.log.append(f"T{game.display_turn} P{active+1}: "
                                 f"Urza's Saga Ch.II: Create Construct Token")
             elif lore >= 3:
                 # Chapter III: create Construct + tutor 0-1 CMC artifact
@@ -1210,7 +1210,7 @@ class GameRunner:
                     if CardType.ARTIFACT not in t.template.card_types:
                         t.template.card_types.append(CardType.ARTIFACT)
                     t.template.tags.add("artifact")
-                game.log.append(f"T{game.turn_number} P{active+1}: "
+                game.log.append(f"T{game.display_turn} P{active+1}: "
                                 f"Urza's Saga Ch.III: Create Construct Token")
                 # Tutor for 0 or 1 CMC artifact from library
                 best = None
@@ -1233,7 +1233,7 @@ class GameRunner:
                     best.controller = active
                     player.battlefield.append(best)
                     best._game_state = game
-                    game.log.append(f"T{game.turn_number} P{active+1}: "
+                    game.log.append(f"T{game.display_turn} P{active+1}: "
                                     f"Urza's Saga tutors {best.name}")
                     # Fire ETB if registered
                     game.trigger_etb(best, active)
@@ -1247,7 +1247,7 @@ class GameRunner:
                     player.lands.remove(saga)
                 saga.zone = "graveyard"
                 player.graveyard.append(saga)
-                game.log.append(f"T{game.turn_number} P{active+1}: "
+                game.log.append(f"T{game.display_turn} P{active+1}: "
                                 f"Sacrifice Urza's Saga (final chapter)")
 
     # Backward-compatible alias
@@ -1300,7 +1300,7 @@ class GameRunner:
                     opponent.life -= 1
                     player.damage_dealt_this_turn += 1
                     game.log.append(
-                        f"T{game.turn_number} P{active+1}: Goblin Bombardment "
+                        f"T{game.display_turn} P{active+1}: Goblin Bombardment "
                         f"sacrifice {creature.name} -> 1 damage to P{opponent_idx+1} "
                         f"(life: {opponent.life})"
                     )
@@ -1325,7 +1325,7 @@ class GameRunner:
                     player.damage_dealt_this_turn += 1
                     sacced += 1
                     game.log.append(
-                        f"T{game.turn_number} P{active+1}: Goblin Bombardment "
+                        f"T{game.display_turn} P{active+1}: Goblin Bombardment "
                         f"sacrifice {creature.name} -> 1 damage to P{opponent_idx+1} "
                         f"(life: {opponent.life})"
                     )

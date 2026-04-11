@@ -77,7 +77,7 @@ class ZoneManager:
                 "from": from_zone,
                 "to": to_zone,
                 "cause": cause,
-                "turn": game.turn_number,
+                "turn": game.display_turn,
             },
         )
         event, _ = self.event_bus.fire_event(event, game)
@@ -118,7 +118,7 @@ class ZoneManager:
                 event_type=EventType.ENTERS_BATTLEFIELD,
                 source=card,
                 player=card.controller,
-                extra={"turn": game.turn_number, "cause": cause},
+                extra={"turn": game.display_turn, "cause": cause},
             )
             _, etb_triggers = self.event_bus.fire_event(etb_event, game)
             triggered.extend(etb_triggers)
@@ -128,7 +128,7 @@ class ZoneManager:
                 event_type=EventType.LEAVES_BATTLEFIELD,
                 source=card,
                 player=card.controller,
-                extra={"turn": game.turn_number, "cause": cause},
+                extra={"turn": game.display_turn, "cause": cause},
             )
             _, ltb_triggers = self.event_bus.fire_event(ltb_event, game)
             triggered.extend(ltb_triggers)
@@ -139,7 +139,7 @@ class ZoneManager:
                     event_type=EventType.DIES,
                     source=card,
                     player=card.controller,
-                    extra={"turn": game.turn_number, "cause": cause},
+                    extra={"turn": game.display_turn, "cause": cause},
                 )
                 _, dies_triggers = self.event_bus.fire_event(dies_event, game)
                 triggered.extend(dies_triggers)
@@ -152,7 +152,7 @@ class ZoneManager:
         # Log the move
         if cause:
             game.log.append(
-                f"T{game.turn_number}: {card.name} moved "
+                f"T{game.display_turn}: {card.name} moved "
                 f"{from_zone} -> {actual_to} ({cause})"
             )
 

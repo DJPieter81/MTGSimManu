@@ -170,13 +170,13 @@ class Stack:
                 if effect == "plus1_counters":
                     card.plus_counters += item.x_value
                     game_state.log.append(
-                        f"T{game_state.turn_number} P{item.controller+1}: "
+                        f"T{game_state.display_turn} P{item.controller+1}: "
                         f"{card.name} enters with {item.x_value} +1/+1 counters "
                         f"({card.power}/{card.toughness})")
                 elif effect == "charge_counters":
                     card.other_counters["charge"] = item.x_value
                     game_state.log.append(
-                        f"T{game_state.turn_number} P{item.controller+1}: "
+                        f"T{game_state.display_turn} P{item.controller+1}: "
                         f"{card.name} enters with {item.x_value} charge counters")
             card.enter_battlefield()
             game_state.players[item.controller].battlefield.append(card)
