@@ -334,7 +334,7 @@ class EVPlayer:
         ev += self._combo_modifier(card, snap, game, me, opp)
 
         # ── Mana holdback: penalize tapping out when we hold instants ──
-        if p.holdback_applies and snap.opp_power > 0:
+        if p.holdback_applies and (snap.opp_power > 0 or snap.opp_hand_size >= 4):
             cmc = t.cmc or 0
             has_instant = any(
                 c.template.is_instant and (
@@ -473,15 +473,15 @@ class EVPlayer:
                                 for c in me.graveyard if c.instance_id != card.instance_id)
                 if pif_in_gy:
                     return -100.0 / opp_life  # redundant, waste of mana
-            if card.zone == "graveyard":
-                return -100.0 / opp_life  # don't replay from GY
+            if card.zone == "graveyard" and not getattr(card, '_cast_with_flashback', False):
+                return -100.0 / opp_life  # don't replay from GY (unless flashback)
 
             gy_fuel = sum(1 for c in me.graveyard
                           if (c.template.is_instant or c.template.is_sorcery)
                           and any(ft in getattr(c.template, 'tags', set())
                                   for ft in ('ritual', 'cantrip')))
             if p.storm_patience and storm == 0:
-                mod -= gy_fuel / opp_life * 15.0  # hold pre-chain
+                mod -= gy_fuel / opp_life * 5.0  # hold pre-chain (reduced from 15)
             elif gy_fuel < 2:
                 mod -= 10.0 / opp_life  # empty GY, not worth it
             else:
@@ -923,6 +923,10 @@ class EVPlayer:
             face_val = dmg * self.profile.burn_face_mult
             if opp.life <= self.profile.burn_low_life_threshold:
                 face_val = dmg * self.profile.burn_face_low_life_mult
+            # Don't burn face with no board presence unless opponent is low
+            me = game.players[self.player_idx]
+            if not me.creatures and opp.life > self.profile.burn_low_life_threshold:
+                face_val *= 0.1  # near-zero value without a clock
 
             # Prefer removing big creatures unless burn is near-lethal
             if best_kill_id and best_kill_val > face_val:
