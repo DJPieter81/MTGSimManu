@@ -1393,18 +1393,20 @@ class GameState:
                 splice = sc.template.splice_cost
                 if not splice:
                     continue
-                # splice = (generic, colored) — apply cost reduction
-                generic, colored = splice
+                # splice is total CMC (int) — apply cost reduction
                 reduction = count_cost_reducers(self, player_idx, sc.template)
                 reduction += player.temp_cost_reduction
-                effective_generic = max(0, generic - reduction)
-                total_splice_cost = effective_generic + colored
+                effective_splice = max(0, splice - reduction)
                 available_mana = player.mana_pool.total() + len(player.untapped_lands)
-                if available_mana >= total_splice_cost:
-                    # Pay splice cost
-                    if not self.tap_lands_for_mana(player_idx,
-                            type(template.mana_cost)(generic=effective_generic, red=colored),
-                            sc.template.name):
+                if available_mana >= effective_splice:
+                    # Pay splice cost from mana pool/lands
+                    from .mana import ManaCost as MC
+                    # Splice for rituals: {1}{R} = generic + 1 red
+                    red_portion = min(1, effective_splice)
+                    generic_portion = max(0, effective_splice - red_portion)
+                    splice_mc = MC(generic=generic_portion, red=red_portion)
+                    if not self.tap_lands_for_mana(player_idx, splice_mc,
+                                                   sc.template.name):
                         continue
                     stack_item.spliced.append(sc.template)
                     self.log.append(f"T{self.display_turn} P{player_idx+1}: "

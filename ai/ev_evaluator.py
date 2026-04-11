@@ -248,6 +248,13 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         if 'lifelink' in kws:
             projected.my_lifelink_power += max(0, p)
 
+        # Token makers: project future token value as bonus power.
+        # A token maker that attacks every turn generates ~1 token/turn.
+        # Model as +2 projected power (conservative: tokens arrive next turn onwards).
+        if 'token_maker' in tags:
+            projected.my_power += 2
+            projected.my_creature_count += 1
+
     # Removal — kills best opponent creature
     if 'removal' in tags and not 'board_wipe' in tags:
         if snap.opp_creature_count > 0 and game:

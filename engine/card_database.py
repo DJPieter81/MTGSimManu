@@ -846,6 +846,12 @@ class CardDatabase:
                     self.cards[card_name] = template
                     self._raw_data[card_name] = entry
                     count += 1
+                    # DFC/split: also register under front face name
+                    if " // " in card_name:
+                        front_face = card_name.split(" // ")[0]
+                        if front_face not in self.cards:
+                            self.cards[front_face] = template
+                            self._raw_data[front_face] = entry
             except Exception as e:
                 errors += 1
 
@@ -1005,6 +1011,7 @@ class CardDatabase:
         from .oracle_parser import (
             has_delve, parse_dash_cost, parse_extra_land_drops,
             parse_escape_cost, parse_equip_cost, derive_tags_from_oracle,
+            parse_splice_cost,
         )
         oracle_text = template.oracle_text or ''
         oracle_lower = oracle_text.lower()
@@ -1012,6 +1019,14 @@ class CardDatabase:
         # Delve
         if has_delve(oracle_text):
             template.has_delve = True
+
+        # Splice onto Arcane
+        splice = parse_splice_cost(oracle_text)
+        if splice is not None:
+            template.splice_cost = splice
+        # Arcane subtype
+        if 'Arcane' in template.subtypes:
+            template.is_arcane = True
 
         # Dash
         dash = parse_dash_cost(oracle_text)

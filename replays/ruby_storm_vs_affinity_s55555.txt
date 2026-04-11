@@ -1,0 +1,647 @@
+Loaded 21759 cards (0 errors)
+======================================================================
+  GAME 1: Ruby Storm (P1) vs Affinity (P2)  —  seed 55555
+  Series: Ruby Storm 0 - 0 Affinity
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Affinity wins → chooses to play first
+║ P1 (on play): Affinity
+║ P2 (on draw): Ruby Storm
+╚═══════════════════════════════════════════════════════
+
+P1 (Ruby Storm) opening hand (3 lands, 4 spells):
+  • Reckless Impulse [Spell, CMC 2]
+  • Ruby Medallion [Spell, CMC 2]
+  • Manamorphose [Spell, CMC 2]
+  • Glimpse the Impossible [Spell, CMC 3]
+  • Bloodstained Mire [Land, CMC 0]
+  • Arid Mesa [Land, CMC 0]
+  • Gemstone Caverns [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Manamorphose, Reckless Impulse, Ruby Medallion
+
+P2 (Affinity) opening hand (3 lands, 4 spells):
+  • Cranial Plating [Spell, CMC 2]
+  • Mistvault Bridge [Land, CMC 0]
+  • Spire of Industry [Land, CMC 0]
+  • Urza's Saga [Land, CMC 0]
+  • Thought Monitor [Creature, CMC 7]
+  • Ornithopter [Creature, CMC 0]
+  • Engineered Explosives [Spell, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Cranial Plating, Ornithopter
+
+
+╔══ TURN 1 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Ruby Storm 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Spire of Industry
+    → Goal: deploy_engine [enablers]
+T1 P2: Cast Ornithopter (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Ornithopter
+    → Goal: deploy_engine
+T1 P2: Cast Engineered Explosives (1) (X=1)
+    [Priority] P1 passes (no response)
+T1: Resolve Engineered Explosives
+T1 P2: Engineered Explosives enters with 1 charge counter(s)
+T1 P2: Engineered Explosives enters with 5 charge counters
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: Ornithopter (0/2)
+║   Other: Engineered Explosives
+║   Lands: Spire of Industry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Sacred Foundry
+  [Main 1]
+T2 P1: Play Gemstone Caverns
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Ruby Storm 20
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Ornithopter (0/2)
+║   Other: Engineered Explosives
+║   Lands: Spire of Industry
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Gemstone Caverns
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Saga
+  [Main 1]
+T3 P2: Play Urza's Saga
+    → Goal: deploy_engine
+    [Mana] Tap Urza's Saga→C (paying for Cranial Plating, 2 mana remaining)
+T3 P2: Cast Cranial Plating (2)
+    [Priority] P1 passes (no response)
+T3: Resolve Cranial Plating
+T3 P2: Cranial Plating enters the battlefield (unattached)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ornithopter
+T3 P2: Attack with Ornithopter
+  [Declare Blockers] P1 does not block
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 3 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Gemstone Caverns
+║ Affinity board:
+║   Creatures: Ornithopter (0/2) [tapped]
+║   Other: Engineered Explosives, Cranial Plating
+║   Lands: Spire of Industry, Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ral, Monsoon Mage // Ral, Leyline Prodigy
+  [Main 1]
+T4 P1: Play Bloodstained Mire
+T4 P1: Crack Bloodstained Mire -> Mountain (untapped)
+    → Goal: deploy_engine [fillers]
+    [Mana] Tap Mountain→R, Gemstone Caverns→B (paying for Manamorphose, 2 mana remaining)
+T4 P1: Cast Manamorphose (2)
+    [Priority] P2 passes (no response)
+T4: Resolve Manamorphose
+T4 P1: Manamorphose adds 2 any mana
+    → Goal: deploy_engine [fillers]
+T4 P1: Cast Manamorphose (2)
+    [Priority] P2 passes (no response)
+T4: Resolve Manamorphose
+T4 P1: Manamorphose adds 2 any mana
+    → Goal: deploy_engine [engines]
+T4 P1: Cast Ruby Medallion (2)
+    [Priority] P2 passes (no response)
+T4: Resolve Ruby Medallion
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Ruby Storm 19
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Ornithopter (0/2)
+║   Other: Engineered Explosives, Cranial Plating
+║   Lands: Spire of Industry, Urza's Saga
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Gemstone Caverns [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Signal Pest
+  [Main 1]
+T5 P2: Play Urza's Saga
+T5 P2: Equip Cranial Plating to Ornithopter (cost 1)
+    → Goal: deploy_engine
+T5 P2: Cast Signal Pest (1)
+    [Priority] P1 passes (no response)
+T5: Resolve Signal Pest
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ornithopter
+T5 P2: Attack with Ornithopter
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 4 damage dealt → P1 life: 19 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 15  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 3
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Gemstone Caverns, Mountain
+║ Affinity board:
+║   Creatures: Ornithopter (4/2) [tapped], Signal Pest (0/1)
+║   Other: Engineered Explosives, Cranial Plating
+║   Lands: Spire of Industry [T], Urza's Saga, Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Reckless Impulse
+  [Main 1]
+T6 P1: Play Arid Mesa
+T6 P1: Crack Arid Mesa -> Sunbaked Canyon (untapped)
+    → Goal: deploy_engine [fillers]
+    [Mana] Tap Mountain→R (paying for Reckless Impulse, 3 mana remaining)
+T6 P1: Cast Reckless Impulse (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Reckless Impulse
+    → Goal: deploy_engine [fillers]
+    [Mana] Tap Sunbaked Canyon→R, Gemstone Caverns→B (paying for Glimpse the Impossible, 2 mana remaining)
+T6 P1: Cast Glimpse the Impossible (2R)
+    [Priority] P2 passes (no response)
+T6: Resolve Glimpse the Impossible
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T6: Sacred Foundry moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 7 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Ruby Storm 14
+║ Hand: 2 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Ornithopter (4/2), Signal Pest (0/1)
+║   Other: Engineered Explosives, Cranial Plating
+║   Lands: Spire of Industry, Urza's Saga, Urza's Saga
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Gemstone Caverns [T], Mountain [T], Sunbaked Canyon [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T7 P2: Create 1x Construct token(s)
+T7 P2: Urza's Saga Ch.II: Create Construct Token
+  [Draw] P2 draws: Darksteel Citadel
+  [Main 1]
+T7 P2: Play Darksteel Citadel
+    → Goal: deploy_engine
+    [Mana] Tap Spire of Industry→U (paying for Thought Monitor, 4 mana remaining)
+T7 P2: Cast Thought Monitor (6U)
+    [Priority] P1 passes (no response)
+T7: Resolve Thought Monitor
+T7 P2: Thought Monitor ETB: draw 2 cards
+    → Goal: deploy_engine
+T7 P2: Cast Nettlecyst (3)
+    [Priority] P1 passes (no response)
+T7: Resolve Nettlecyst
+T7 P2: Create 1x Germ token(s)
+    → Goal: deploy_engine [enablers]
+T7 P2: Cast Memnite (0)
+    [Priority] P1 passes (no response)
+T7: Resolve Memnite
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ornithopter, Signal Pest
+T7 P2: Signal Pest battle cry — other attackers get +1/+0
+T7 P2: Attack with Ornithopter, Signal Pest
+T7: Resolve Signal Pest
+T7: Resolve Nettlecyst
+T7: Resolve Thought Monitor
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 11 damage dealt → P1 life: 14 → 3
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 3  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 1 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 42  |  Graveyard: 7
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Gemstone Caverns, Mountain, Sunbaked Canyon
+║ Affinity board:
+║   Creatures: Ornithopter (9/2) [tapped], Signal Pest (0/1) [tapped], Construct Token (9/9), Thought Monitor (2/2), Germ Token (10/10), Memnite (1/1)
+║   Other: Engineered Explosives, Cranial Plating, Nettlecyst
+║   Lands: Spire of Industry [T], Urza's Saga, Urza's Saga, Darksteel Citadel
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wooded Foothills
+  [Main 1]
+T8 P1: Play Wooded Foothills
+T8 P1: Crack Wooded Foothills -> Mountain (untapped)
+    → Goal: deploy_engine [fillers]
+    [Mana] Tap Mountain→R (paying for Manamorphose, 4 mana remaining)
+T8 P1: Cast Manamorphose (2)
+    [Priority] P2 passes (no response)
+T8: Resolve Manamorphose
+T8 P1: Manamorphose adds 2 any mana
+    → Goal: deploy_engine
+T8 P1: Cast Wish (2R)
+    [Priority] P2 passes (no response)
+T8: Resolve Wish
+T8 P1: Wish finds Empty the Warrens (from sideboard)
+    → Goal: deploy_engine [fillers]
+    [Mana] Tap Mountain→R (paying for Reckless Impulse, 3 mana remaining)
+T8 P1: Cast Reckless Impulse (1R)
+    [Priority] P2 passes (no response)
+T8: Resolve Reckless Impulse
+    → Goal: deploy_engine [fillers]
+    [Mana] Tap Sunbaked Canyon→R (paying for Wrenn's Resolve, 2 mana remaining)
+T8 P1: Cast Wrenn's Resolve (1R)
+    [Priority] P2 passes (no response)
+T8: Resolve Wrenn's Resolve
+    → Goal: deploy_engine
+    [Mana] Tap Gemstone Caverns→R (paying for Pyretic Ritual, 1 mana remaining)
+T8 P1: Cast Pyretic Ritual (1R)
+    [Priority] P2 passes (no response)
+T8: Resolve Pyretic Ritual
+T8 P1: Pyretic Ritual adds 3 R mana
+    → Goal: deploy_engine
+T8 P1: Cast Past in Flames (3R)
+    [Priority] P2 passes (no response)
+T8: Resolve Past in Flames
+T8 P1: Past in Flames grants flashback
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Ruby Storm 2
+║ Hand: 1 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Ornithopter (9/2), Signal Pest (0/1), Construct Token (9/9), Thought Monitor (2/2), Germ Token (10/10), Memnite (1/1)
+║   Other: Engineered Explosives, Cranial Plating, Nettlecyst
+║   Lands: Spire of Industry, Urza's Saga, Urza's Saga, Darksteel Citadel
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Gemstone Caverns [T], Mountain [T], Sunbaked Canyon [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T9 P2: Create 1x Construct token(s)
+T9 P2: Urza's Saga Ch.III: Create Construct Token
+T9 P2: Urza's Saga tutors Mox Opal
+T9 P2: Create 1x Construct token(s)
+T9 P2: Urza's Saga Ch.II: Create Construct Token
+T9 P2: Sacrifice Urza's Saga (final chapter)
+  [Draw] P2 draws: Sojourner's Companion
+  [Main 1]
+T9 P2: Cycle Sojourner's Companion (pay 2 mana, draw a card)
+T9 P2: Play Mistvault Bridge (enters tapped)
+    → Goal: deploy_engine [enablers]
+T9 P2: Cast Ornithopter (0)
+    [Priority] P1 passes (no response)
+T9: Resolve Ornithopter
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ornithopter, Signal Pest, Construct Token, Thought Monitor, Germ Token, Memnite
+T9 P2: Signal Pest battle cry — other attackers get +1/+0
+T9 P2: Attack with Ornithopter, Signal Pest, Construct Token, Thought Monitor, Germ Token, Memnite
+T9: Resolve Signal Pest
+  [Declare Blockers] P1 does not block
+P1 loses: life total -50
+  [Combat Damage] 52 damage dealt → P1 life: 2 → -50
+
+>>> Affinity wins Game 1 on turn 9 via damage
+    Final life: Ruby Storm=-50  Affinity=20
+
+======================================================================
+  GAME 2: Ruby Storm (P1) vs Affinity (P2)  —  seed 55556
+  Series: Ruby Storm 0 - 1 Affinity
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Affinity wins → chooses to play first
+║ P1 (on play): Affinity
+║ P2 (on draw): Ruby Storm
+╚═══════════════════════════════════════════════════════
+
+P1 (Ruby Storm) opening hand (1 lands, 6 spells):
+  • Ral, Monsoon Mage // Ral, Leyline Prodigy [Creature, CMC 2]
+  • Wrenn's Resolve [Spell, CMC 2]
+  • Glimpse the Impossible [Spell, CMC 3]
+  • Mountain [Land, CMC 0]
+  • Manamorphose [Spell, CMC 2]
+  • Ral, Monsoon Mage // Ral, Leyline Prodigy [Creature, CMC 2]
+  • Desperate Ritual [Spell, CMC 2]
+→ P1 KEEPS 7 — has key card(s): Desperate Ritual, Manamorphose, Wrenn's Resolve
+
+P2 (Affinity) opening hand (3 lands, 4 spells):
+  • Signal Pest [Creature, CMC 1]
+  • Frogmite [Creature, CMC 4]
+  • Darksteel Citadel [Land, CMC 0]
+  • Mox Opal [Spell, CMC 0]
+  • Razortide Bridge [Land, CMC 0]
+  • Razortide Bridge [Land, CMC 0]
+  • Mox Opal [Spell, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Mox Opal
+
+
+╔══ TURN 1 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Ruby Storm 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Darksteel Citadel
+    → Goal: deploy_engine [engines]
+T1 P2: Cast Mox Opal (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Mox Opal
+    → Goal: deploy_engine
+    [Mana] Tap Darksteel Citadel→C (paying for Signal Pest, 1 mana remaining)
+T1 P2: Cast Signal Pest (1)
+    [Priority] P1 passes (no response)
+T1: Resolve Signal Pest
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: Signal Pest (0/1)
+║   Other: Mox Opal
+║   Lands: Darksteel Citadel [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Bloodstained Mire
+  [Main 1]
+T2 P1: Play Mountain
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Ruby Storm 20
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Signal Pest (0/1)
+║   Other: Mox Opal
+║   Lands: Darksteel Citadel
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Sojourner's Companion
+  [Main 1]
+T3 P2: Play Razortide Bridge (enters tapped)
+    → Goal: deploy_engine
+T3 P2: Cast Frogmite (4)
+    [Priority] P1 passes (no response)
+T3: Resolve Frogmite
+    → Goal: deploy_engine
+    [Mana] Tap Darksteel Citadel→C (paying for Sojourner's Companion, 1 mana remaining)
+T3 P2: Cast Sojourner's Companion (7)
+    [Priority] P1 passes (no response)
+T3: Resolve Sojourner's Companion
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Signal Pest
+T3 P2: Signal Pest battle cry — other attackers get +1/+0
+T3 P2: Attack with Signal Pest
+T3: Resolve Signal Pest
+  [Declare Blockers] P1 does not block
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 2 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Mountain
+║ Affinity board:
+║   Creatures: Signal Pest (0/1) [tapped], Frogmite (2/2), Sojourner's Companion (4/4)
+║   Other: Mox Opal
+║   Lands: Darksteel Citadel [T], Razortide Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Thundering Falls
+  [Main 1]
+T4 P1: Play Bloodstained Mire
+T4 P1: Crack Bloodstained Mire (pay 1 life) -> Sacred Foundry (pay 2 life, untapped, life: 17)
+    → Goal: deploy_engine [fillers]
+    [Mana] Tap Mountain→R, Sacred Foundry→R (paying for Wrenn's Resolve, 2 mana remaining)
+T4 P1: Cast Wrenn's Resolve (1R)
+    [Priority] P2 passes (no response)
+T4: Resolve Wrenn's Resolve
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Thundering Falls moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 5 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Ruby Storm 17
+║ Hand: 2 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Signal Pest (0/1), Frogmite (2/2), Sojourner's Companion (4/4)
+║   Other: Mox Opal
+║   Lands: Darksteel Citadel, Razortide Bridge
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Mountain [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thought Monitor
+  [Main 1]
+T5 P2: Play Razortide Bridge (enters tapped)
+    → Goal: deploy_engine
+    [Mana] Tap Razortide Bridge→U (paying for Thought Monitor, 2 mana remaining)
+T5 P2: Cast Thought Monitor (6U)
+    [Priority] P1 passes (no response)
+T5: Resolve Thought Monitor
+T5 P2: Thought Monitor ETB: draw 2 cards
+    → Goal: deploy_engine
+T5 P2: Cast Frogmite (4)
+    [Priority] P1 passes (no response)
+T5: Resolve Frogmite
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Signal Pest, Frogmite, Sojourner's Companion
+T5 P2: Signal Pest battle cry — other attackers get +1/+0
+T5 P2: Attack with Signal Pest, Frogmite, Sojourner's Companion
+T5: Resolve Signal Pest
+T5: Resolve Thought Monitor
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 8 damage dealt → P1 life: 17 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 9  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 3
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Mountain, Sacred Foundry
+║ Affinity board:
+║   Creatures: Signal Pest (0/1) [tapped], Frogmite (2/2) [tapped], Sojourner's Companion (4/4) [tapped], Thought Monitor (2/2), Frogmite (2/2)
+║   Other: Mox Opal
+║   Lands: Darksteel Citadel, Razortide Bridge [T], Razortide Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Elegant Parlor
+  [Main 1]
+T6 P1: Play Gemstone Caverns
+    → Goal: deploy_engine [fillers]
+    [Mana] Tap Mountain→R, Sacred Foundry→R (paying for Manamorphose, 3 mana remaining)
+T6 P1: Cast Manamorphose (2)
+    [Priority] P2 passes (no response)
+T6: Resolve Manamorphose
+T6 P1: Manamorphose adds 2 any mana
+    → Goal: deploy_engine
+T6 P1: Cast Desperate Ritual (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Desperate Ritual
+T6 P1: Desperate Ritual adds 3 R mana
+    → Goal: deploy_engine
+    → Goal: deploy_engine
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Ruby Storm 9
+║ Hand: 2 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Signal Pest (0/1), Frogmite (2/2), Sojourner's Companion (4/4), Thought Monitor (2/2), Frogmite (2/2)
+║   Other: Mox Opal
+║   Lands: Darksteel Citadel, Razortide Bridge, Razortide Bridge
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Mountain [T], Sacred Foundry [T], Gemstone Caverns
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Saga
+  [Main 1]
+T7 P2: Play Mistvault Bridge (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Signal Pest, Frogmite, Sojourner's Companion, Thought Monitor, Frogmite
+T7 P2: Signal Pest battle cry — other attackers get +1/+0
+T7 P2: Attack with Signal Pest, Frogmite, Sojourner's Companion, Thought Monitor, Frogmite
+T7: Resolve Signal Pest
+  [Declare Blockers] P1 does not block
+P1 loses: life total -5
+  [Combat Damage] 14 damage dealt → P1 life: 9 → -5
+
+>>> Affinity wins Game 2 on turn 7 via damage
+    Final life: Ruby Storm=-5  Affinity=20
+
+======================================================================
+  MATCH RESULT: Affinity wins 2-0
+======================================================================
