@@ -39,7 +39,7 @@ print(f'Loaded {len(merged)} cards')
 ## Quick Reference — run_meta.py
 
 ```bash
-python run_meta.py --list                              # all 14 decks
+python run_meta.py --list                              # all available decks
 python run_meta.py --deck storm                        # deck profile + gameplan
 python run_meta.py --matchup storm dimir -n 50         # win rate (N games)
 python run_meta.py --field storm -n 30                 # one deck vs all
@@ -94,11 +94,9 @@ python import_deck.py "Deck Name" --archetype control < decklist.txt
 ```
 Auto-detects archetype, generates gameplan, prints code to paste into modern_meta.py.
 
-## Available Decks (14)
+## Available Decks
 
-Boros Energy, Jeskai Blink, Ruby Storm, Affinity, Eldrazi Tron, Amulet Titan, Goryo's Vengeance, Domain Zoo, Living End, Izzet Prowess, Dimir Midrange, 4c Omnath, 4/5c Control, Azorius Control
-
-**Known DB gaps:** `The Legend of Roku` (Azorius Control) and `Sink into Stupor` missing from ModernAtomic.json — deflates WR for those decks.
+Run `python run_meta.py --list` to see all decks with meta shares. Decklists live in `decks/modern_meta.py`. Check WARNING lines in game output for cards missing from ModernAtomic.json (placeholder cards deflate WR).
 
 ## Architecture
 
@@ -157,7 +155,7 @@ def bowmasters_etb(game, card, controller, targets=None, item=None):
 
 ### Layer 3: Deck Configuration
 
-**Decklists** (`decks/modern_meta.py`) — mainboard + sideboard for all 14 decks
+**Decklists** (`decks/modern_meta.py`) — mainboard + sideboard for all decks
 
 **Gameplans** (`decks/gameplans/*.json`) — per-deck strategy:
 ```json
@@ -224,11 +222,16 @@ python simulate_match.py "Ruby Storm" "Domain Zoo" --seed 55555
 
 ## Important Conventions
 
+- **NEVER hardcode card names, deck names, or card counts.** All card behavior must be derived from oracle text, template properties, tags, and keywords. If you find yourself writing `if card.name == "Something"`, stop — use a tag, keyword, or oracle pattern instead. Deck counts, land sets, and card lists must be discovered at runtime from `MODERN_DECKS`, `CardDatabase`, and oracle parsing. The CLAUDE.md itself should not list specific deck counts or card names that go stale — use `python run_meta.py --list` to discover what's available.
 - **Engine layer enforces rules; AI layer makes choices.** Never add strategic decisions to engine code.
 - **Card effects use EFFECT_REGISTRY decorator pattern.** Register with `@EFFECT_REGISTRY.register("Card Name", EffectTiming.ETB)`.
-- **Strategy profiles are pure data.** All AI weights live in `ai/strategy_profile.py`. Per-deck tuning goes in `decks/gameplans/*.json`.
+- **All AI scoring derives from clock mechanics (`ai/clock.py`).** No arbitrary weight constants. Spell value = projected position change. Land value = spells it enables × clock impact. Creature value = power/opp_life × keyword modifiers.
+- **Strategy profiles are minimal.** Only fields that can't be derived from game mechanics: combo flags, burn mode, pass threshold, mulligan config. See `ai/strategy_profile.py`.
 - **Seeds for reproducibility.** Standard: matchups=50000, matrix=40000, step=500.
 - **Sideboards must be passed** to `run_game()` for Wish/tutor effects to find sideboard cards.
+- **Land entry logic is oracle-derived.** `template.untap_life_cost`, `template.untap_max_other_lands`, `template.tap_damage`, `template.enters_tapped` — no hardcoded land sets.
+- **Fetch land colors parsed at DB load time** from oracle text `"search your library for a [type] card"`. See `FETCH_LAND_COLORS` in `card_database.py`.
+- **Opponent modeling uses Bayesian Hand Inference** (`ai/bhi.py`). Prior from deck density, updated on priority passes and spells cast.
 - **Keyword detection uses word boundaries** — "flash" won't match "flashback".
 - **Color solver uses re-sorting greedy** — handles 4-color WURG correctly.
 
@@ -236,7 +239,7 @@ python simulate_match.py "Ruby Storm" "Domain Zoo" --seed 55555
 
 The interactive metagame dashboard is a **standalone vanilla JS HTML file** (no React, no Babel).
 
-**Data source:** `metagame_14deck.jsx` — the canonical D object with:
+**Data source:** `metagame_14deck.jsx` (or current deck-count variant) — the canonical D object with:
 - `wins[i][j]` — win counts (out of `matches_per_pair=100`)
 - `matchup_cards["i,j"]` — per-matchup detail: insight, avg_turns, sweeps, went_to_3, g1_wins, comebacks, top_casts, finishers, top_damage, sideboard IN/OUT with cast counts + post-board WR delta
 - `deck_cards[idx]` — per-deck: mvp_casts, mvp_damage, finishers with descriptions, summary
