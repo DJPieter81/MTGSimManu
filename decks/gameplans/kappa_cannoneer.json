@@ -1,0 +1,56 @@
+{
+  "deck_name": "Kappa Cannoneer",
+  "archetype": "tempo",
+  "goals": [
+    {
+      "goal_type": "CURVE_OUT",
+      "description": "Deploy creatures on curve",
+      "card_roles": {
+        "enablers": [
+          "Arcbound Ravager",
+          "Ravenous Robots"
+        ],
+        "payoffs": [
+          "Kappa Cannoneer",
+          "Krang, Master Mind"
+        ],
+        "interaction": [
+          "Engineered Explosives",
+          "Weapons Manufacturing"
+        ]
+      }
+    },
+    {
+      "goal_type": "PUSH_DAMAGE",
+      "description": "Attack aggressively, remove blockers",
+      "card_roles": {
+        "interaction": [
+          "Engineered Explosives",
+          "Weapons Manufacturing",
+          "Metallic Rebuke"
+        ]
+      }
+    },
+    {
+      "goal_type": "CLOSE_GAME",
+      "description": "Close the game with damage"
+    }
+  ],
+  "mulligan_keys": [
+    "Arcbound Ravager",
+    "Emry, Lurker of the Loch",
+    "Engineered Explosives",
+    "Krang, Master Mind",
+    "Ravenous Robots",
+    "Weapons Manufacturing"
+  ],
+  "mulligan_min_lands": 2,
+  "mulligan_max_lands": 4,
+  "reactive_only": [
+    "Metallic Rebuke"
+  ],
+  "always_early": [
+    "Emry, Lurker of the Loch",
+    "Krang, Master Mind"
+  ]
+}
