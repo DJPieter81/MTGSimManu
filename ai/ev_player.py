@@ -101,6 +101,10 @@ class EVPlayer:
         self._response_decider = ResponseDecider(
             player_idx, TurnPlanner(), self.strategic_logger)
 
+        # Bayesian Hand Inference — track opponent hand probabilities
+        from ai.bhi import BayesianHandTracker
+        self.bhi = BayesianHandTracker(player_idx)
+
         # Storm patience: track whether we've decided to "go off" this turn
         self._going_off_turn: int = -1  # turn number when we decided to go off
 
@@ -304,7 +308,9 @@ class EVPlayer:
 
         # ── Base: projection-based EV ──
         # Projects board after cast + opponent response, returns clock delta
-        ev = compute_play_ev(card, snap, self.archetype, game, self.player_idx)
+        # Pass BHI for Bayesian-updated opponent response probabilities
+        ev = compute_play_ev(card, snap, self.archetype, game, self.player_idx,
+                             bhi=self.bhi)
 
         # ── Evoke overlay: projection doesn't model 2-card cost ──
         if ('evoke' in tags or 'evoke_pitch' in tags) and snap.my_mana < (t.cmc or 0):

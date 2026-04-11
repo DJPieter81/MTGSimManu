@@ -320,7 +320,8 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
 
 def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
                                snap: EVSnapshot, game: "GameState" = None,
-                               player_idx: int = 0) -> EVSnapshot:
+                               player_idx: int = 0,
+                               bhi: "BayesianHandTracker" = None) -> EVSnapshot:
     """Estimate the board state after the opponent responds to our spell.
 
     Models the opponent's most likely response:
@@ -353,21 +354,36 @@ def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
     if "can't be countered" in oracle or "can\u2019t be countered" in oracle:
         can_counter = False
 
-    # Derive response probabilities from opponent's ACTUAL deck composition.
-    # P(holding >= 1 of type in H cards) = 1 - (1 - density)^H
-    # This replaces archetype-based guesses with data from the decklist.
+    # Response probabilities: use BHI posteriors if available, else static density.
+    # BHI updates based on observed priority passes — if opponent has been passing
+    # with mana up, P(counter) decreases.
     opp_hand_size = snap.opp_hand_size if snap.opp_hand_size > 0 else 5
     counter_probability = 0.0
     removal_probability = 0.0
 
-    if game:
+    if bhi and bhi._initialized:
+        # Use Bayesian-updated beliefs
+        if can_counter:
+            counter_probability = bhi.get_counter_probability()
+        if t.is_creature and projected.opp_mana >= REMOVAL_ESTIMATED_COST:
+            removal_probability = bhi.get_removal_probability()
+            # Toughness adjustments: high toughness reduces damage-based removal
+            creature_toughness = t.toughness or 0
+            if hasattr(card, 'toughness') and card.toughness is not None:
+                creature_toughness = card.toughness
+            exile_fraction = (bhi.get_exile_removal_probability()
+                              / max(0.01, bhi.get_removal_probability()))
+            damage_fraction = 1.0 - exile_fraction
+            if creature_toughness >= 4:
+                removal_probability *= (exile_fraction + damage_fraction * DAMAGE_REMOVAL_EFF_HIGH_TOUGH)
+            elif creature_toughness >= 3:
+                removal_probability *= (exile_fraction + damage_fraction * DAMAGE_REMOVAL_EFF_MID_TOUGH)
+    elif game:
+        # Fallback: static deck density (no BHI tracker available)
         opp = game.players[1 - player_idx]
         if can_counter and opp.counter_density > 0:
             counter_probability = 1.0 - (1.0 - opp.counter_density) ** opp_hand_size
         if t.is_creature and projected.opp_mana >= REMOVAL_ESTIMATED_COST and opp.removal_density > 0:
-            # Split removal into exile-based (ignores toughness) and damage-based.
-            # High-toughness creatures (4+) survive most damage removal (Bolt=3,
-            # Push=CMC<=2) but NOT exile (Binding, Ending, March, Solitude).
             creature_toughness = t.toughness or 0
             if hasattr(card, 'toughness') and card.toughness is not None:
                 creature_toughness = card.toughness
@@ -480,7 +496,8 @@ def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
 def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
                     game: "GameState" = None, player_idx: int = 0,
                     dk: Optional[DeckKnowledge] = None,
-                    detailed: bool = False):
+                    detailed: bool = False,
+                    bhi: "BayesianHandTracker" = None):
     """Compute the expected value of casting a spell using 1-ply lookahead.
 
     EV = E[V(state_after_play_and_response)] - V(current_state)
@@ -495,7 +512,7 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
     projected_value = evaluate_board(projected, archetype, dk)
 
     # Model opponent response (counter, removal, or pass)
-    post_response = estimate_opponent_response(card, projected, snap, game, player_idx)
+    post_response = estimate_opponent_response(card, projected, snap, game, player_idx, bhi=bhi)
     after_value = evaluate_board(post_response, archetype, dk)
 
     ev = after_value - current_value

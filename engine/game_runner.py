@@ -826,6 +826,21 @@ class GameRunner:
                                 game.cast_spell(opponent_ai.player_idx,
                                                 resp_card, resp_targets)
                                 priority.take_action(game)
+                                # BHI: opponent cast a response — update beliefs
+                                if hasattr(ai, 'bhi'):
+                                    ai.bhi.observe_spell_cast(
+                                        game, getattr(resp_card.template, 'tags', set()))
+                            else:
+                                # BHI: opponent passed — update beliefs
+                                if hasattr(ai, 'bhi'):
+                                    opp = game.players[opponent_ai.player_idx]
+                                    opp_mana = len(opp.untapped_lands) + opp.mana_pool.total()
+                                    spell_template = top.source.template if top.source else None
+                                    ai.bhi.observe_priority_pass(
+                                        game,
+                                        spell_on_stack=True,
+                                        spell_is_creature=spell_template.is_creature if spell_template else False,
+                                        opp_mana_available=opp_mana)
 
                     # Both passed — resolve stack (CR 117.4)
                     self._resolve_stack_loop(game)
