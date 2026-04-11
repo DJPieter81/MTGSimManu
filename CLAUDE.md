@@ -1,5 +1,18 @@
 # CLAUDE.md — MTG Game Simulator
 
+## Critical Instructions (read first)
+
+**GAME LOG OUTPUT — NEVER SKIP THIS:**
+When the user asks to see a game, match, Bo3, simulation, play-by-play, or any game log:
+1. Run `python run_meta.py --bo3 <deck1> <deck2> -s <seed>`
+2. Output the COMPLETE raw text log — every single line
+3. NEVER summarize, paraphrase, abbreviate, or skip parts of the log
+4. NEVER replace log lines with your own narrative or commentary
+5. Show the log FIRST in full, then add commentary AFTER if needed
+6. If the output is too large for one message, split across multiple messages — do NOT truncate
+
+The user wants to read the actual log text with phases, draws, mana taps, priority passes, board states, goals, and mulligan rationale. This applies every time, without exception. Failure to show the full log is considered a regression.
+
 ## Project Overview
 
 Magic: The Gathering Modern-format game simulator with EV-based AI decision-making. Simulates full games between 13 competitive decks with strategic AI (mulligans, spell casting, combat, targeting, counterspells, evoke, storm chains, reanimation, cascade, blink).
@@ -61,7 +74,7 @@ Synonyms: `--bo3`, `--match`, `--play-by-play`, `--pbp`, `--detailed`, `--game-l
 
 This produces a comprehensive log with: die roll, mulligan decisions, opening hands, turn-by-turn board states (creatures, permanents, life totals, hand sizes, lands), all spells cast, stack resolution, combat, and game result. Best-of-3 format with proper alternation.
 
-**IMPORTANT: When showing game results to the user, ALWAYS output the full detailed text log from --bo3. Never summarize or paraphrase the log — show the raw output. The user wants to see every phase, every draw, every mana tap, every priority pass, every board state. This is a hard requirement.**
+**(See Critical Instructions at top of file for game log output requirements.)**
 
 **Aliases work:** storm, zoo, dimir, omnath, 4c, 5c, energy, boros, jeskai, blink, tron, amulet, goryos, prowess, affinity, cascade
 
