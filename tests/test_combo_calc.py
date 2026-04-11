@@ -217,8 +217,8 @@ class TestCardComboRole:
 # ─── card_combo_modifier ─────────────────────────────────────
 
 class TestCardComboModifier:
-    def test_payoff_fires_when_ready(self):
-        """Payoff should get positive modifier when combo is ready."""
+    def test_payoff_cascade_no_modifier_when_ready(self):
+        """Cascade payoff gets 0 modifier when ready (projection handles value)."""
         from engine.cards import Keyword
         a = ComboAssessment(
             resource_zone="graveyard", is_ready=True,
@@ -232,18 +232,18 @@ class TestCardComboModifier:
                            'graveyard': [], 'battlefield': []})()
         game = type('', (), {'players': [me, me], 'can_cast': lambda *a: True})()
         mod = card_combo_modifier(card, a, snap, me, game, 0)
-        assert mod > 0
+        assert mod == 0.0  # projection handles cascade payoff value
 
-    def test_payoff_held_when_not_ready(self):
-        """Payoff should get negative modifier when not ready."""
-        from engine.cards import Keyword
+    def test_non_storm_payoff_held_when_not_ready(self):
+        """Non-cascade, non-storm payoff gets negative modifier when not ready."""
         a = ComboAssessment(
             resource_zone="graveyard", is_ready=False,
-            payoff_value=0.5, combo_value=80.0, risk_discount=0.8,
-            has_payoff=True, _role_cache={"Cascade Spell": "payoffs"},
+            payoff_value=0.1, combo_value=80.0, risk_discount=0.8,
+            resource_target=2,
+            has_payoff=True, _role_cache={"Reanimate Spell": "payoffs"},
         )
-        card = MockCard(name="Cascade Spell", template=MockTemplate(
-            name="Cascade Spell", keywords={Keyword.CASCADE}))
+        card = MockCard(name="Reanimate Spell", template=MockTemplate(
+            name="Reanimate Spell"))
         snap = _make_snap()
         me = type('', (), {'spells_cast_this_turn': 0, 'hand': [], 'library': [None]*30,
                            'graveyard': [], 'battlefield': []})()
@@ -268,8 +268,8 @@ class TestCardComboModifier:
         mod = card_combo_modifier(card, a, snap, me, game, 0)
         assert mod < 0
 
-    def test_dig_positive_when_missing_pieces(self):
-        """Cantrips should have positive value when digging for combo pieces."""
+    def test_cantrip_no_modifier(self):
+        """Cantrips get 0 modifier — projection handles draw value."""
         a = ComboAssessment(
             resource_zone="storm", is_ready=False,
             payoff_value=0.0, combo_value=80.0,
@@ -283,7 +283,7 @@ class TestCardComboModifier:
         opp_player = type('', (), {'creatures': []})()
         game = type('', (), {'players': [me, opp_player]})()
         mod = card_combo_modifier(card, a, snap, me, game, 0)
-        assert mod > 0
+        assert mod == 0.0  # let projection handle cantrip value
 
     def test_null_assessment_returns_zero(self):
         """Null assessment should always return 0."""
