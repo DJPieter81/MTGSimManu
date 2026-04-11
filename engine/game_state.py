@@ -581,16 +581,23 @@ class GameState:
             return False
 
         # Tap lands and add mana
+        tapped_names = []
         for land, color in lands_to_tap:
             land.tap()
             player.mana_pool.add(color)
-            # Add conditional mana bonus (e.g., Tron assembly)
+            tapped_names.append(f'{land.name}→{color}')
             bonus = cond_bonus_cache.get(id(land), 0)
             if bonus > 0:
                 player.mana_pool.add("C", bonus)
             # Pain land: self-damage when tapping for colored mana
             if land.template.tap_damage > 0 and color != "C":
                 player.life -= land.template.tap_damage
+
+        # Verbose: log which lands were tapped for mana
+        if getattr(self, 'verbose', False) and tapped_names and card_name:
+            remaining_mana = len(player.untapped_lands) + player.mana_pool.total()
+            self.log.append(f'    [Mana] Tap {", ".join(tapped_names)} '
+                            f'(paying for {card_name}, {remaining_mana} mana remaining)')
 
         return player.mana_pool.pay(cost)
 
