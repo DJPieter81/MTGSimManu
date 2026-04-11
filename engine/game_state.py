@@ -36,7 +36,7 @@ from .continuous_effects import ContinuousEffectsManager
 from .callbacks import GameCallbacks, DefaultCallbacks
 from .constants import (
     STARTING_LIFE, MAX_HAND_SIZE, MAX_TURNS, SBA_MAX_ITERATIONS,
-    SHOCK_LAND_LIFE_COST, FETCH_LAND_LIFE_COST,
+    FETCH_LAND_LIFE_COST,
 )
 
 
@@ -815,7 +815,7 @@ class GameState:
 
     def play_land(self, player_idx: int, card: CardInstance):
         """Play a land from hand to battlefield."""
-        from .card_database import SHOCK_LANDS, FAST_LANDS, PAIN_LANDS, FETCH_LAND_COLORS
+        from .card_database import FAST_LANDS, PAIN_LANDS, FETCH_LAND_COLORS
         player = self.players[player_idx]
         max_lands = 1 + player.extra_land_drops
         if player.lands_played_this_turn >= max_lands:
@@ -833,14 +833,15 @@ class GameState:
             card.enter_battlefield()
             card.tapped = True
             self.log.append(f"T{self.turn_number} P{player_idx+1}: Play {card.name} (enters tapped)")
-        # ── Shockland: pay 2 life if hand needs the mana this turn ──
-        elif card.name in SHOCK_LANDS:
-            should_shock = self.callbacks.should_shock_land(self, player_idx, card)
-            if should_shock:
-                player.life -= SHOCK_LAND_LIFE_COST
+        # ── Lands with optional life payment to enter untapped (shock lands etc.) ──
+        elif card.template.untap_life_cost > 0:
+            life_cost = card.template.untap_life_cost
+            should_pay = self.callbacks.should_shock_land(self, player_idx, card)
+            if should_pay:
+                player.life -= life_cost
                 card.enter_battlefield()
                 card.tapped = False
-                self.log.append(f"T{self.turn_number} P{player_idx+1}: Play {card.name} (pay 2 life, untapped, life: {player.life})")
+                self.log.append(f"T{self.turn_number} P{player_idx+1}: Play {card.name} (pay {life_cost} life, untapped, life: {player.life})")
             else:
                 card.zone = "battlefield"
                 card.summoning_sick = True
@@ -890,7 +891,7 @@ class GameState:
 
     def _crack_fetchland(self, player_idx: int, fetch_card: CardInstance):
         """Sacrifice a fetchland, pay 1 life, search library for a land."""
-        from .card_database import FETCH_LAND_COLORS, SHOCK_LANDS
+        from .card_database import FETCH_LAND_COLORS
         player = self.players[player_idx]
         fetch_name = fetch_card.name
         fetch_colors = FETCH_LAND_COLORS.get(fetch_name, [])
@@ -924,16 +925,17 @@ class GameState:
             player.library.remove(best_land)
             best_land.controller = player_idx
 
-            # Shocklands fetched: use callback to decide shock
-            if best_land.name in SHOCK_LANDS:
-                should_shock = self.callbacks.should_shock_land(self, player_idx, best_land)
-                if should_shock:
-                    player.life -= SHOCK_LAND_LIFE_COST
+            # Lands with optional life payment to enter untapped
+            if best_land.template.untap_life_cost > 0:
+                life_cost = best_land.template.untap_life_cost
+                should_pay = self.callbacks.should_shock_land(self, player_idx, best_land)
+                if should_pay:
+                    player.life -= life_cost
                     best_land.enter_battlefield()
                     best_land.tapped = False
                     self.log.append(f"T{self.turn_number} P{player_idx+1}: "
                                    f"Crack {fetch_name} (pay 1 life) -> {best_land.name} "
-                                   f"(pay 2 life, untapped, life: {player.life})")
+                                   f"(pay {life_cost} life, untapped, life: {player.life})")
                 else:
                     best_land.zone = "battlefield"
                     best_land.summoning_sick = True

@@ -27,22 +27,20 @@ class AICallbacks(GameCallbacks):
     """Wires engine callbacks to AI decision functions."""
 
     def should_shock_land(self, game, player_idx, land):
-        """EV-based shock decision using board state projection.
+        """EV-based decision: pay life for untapped land?
 
-        Projects two snapshots — one where we shock (untapped, lose 2 life)
+        Projects two snapshots — one where we pay (untapped, lose life)
         and one where we don't (tapped, keep life) — and compares them
-        using the same evaluate_board() the rest of the AI uses.
-        No separate shock-specific weights needed.
+        using evaluate_board(). Works for any land with untap_life_cost.
         """
         from ai.ev_evaluator import snapshot_from_game, evaluate_board
         from ai.strategy_profile import DECK_ARCHETYPES
-        from ai.constants import SHOCK_LETHAL_LIFE_THRESHOLD
-        from engine.constants import SHOCK_LAND_LIFE_COST
 
         player = game.players[player_idx]
+        life_cost = land.template.untap_life_cost if hasattr(land, 'template') else 2
 
-        # Hard floor: never shock to death
-        if player.life <= SHOCK_LETHAL_LIFE_THRESHOLD:
+        # Hard floor: never pay life to death
+        if player.life <= life_cost:
             return False
 
         # Determine archetype for evaluation
@@ -53,11 +51,11 @@ class AICallbacks(GameCallbacks):
         # Snapshot the current state
         snap = snapshot_from_game(game, player_idx)
 
-        # Project "shocked" state: -2 life, +1 untapped mana
+        # Project "paid" state: -life_cost life, +1 untapped mana
         shocked = snap.__class__(
             **{f.name: getattr(snap, f.name) for f in snap.__dataclass_fields__.values()}
         )
-        shocked.my_life = snap.my_life - SHOCK_LAND_LIFE_COST
+        shocked.my_life = snap.my_life - life_cost
         shocked.my_mana = snap.my_mana + 1
         shocked.my_total_lands = snap.my_total_lands + 1
 

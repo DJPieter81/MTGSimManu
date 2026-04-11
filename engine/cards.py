@@ -115,6 +115,8 @@ class CardTemplate:
     # For lands
     produces_mana: List[str] = field(default_factory=list)  # e.g., ["W", "R"]
     enters_tapped: bool = False
+    # Life payment to enter untapped (shock lands = 2, derived from oracle text)
+    untap_life_cost: int = 0
     # For split/modal cards
     is_modal: bool = False
     modes: List[Dict] = field(default_factory=list)

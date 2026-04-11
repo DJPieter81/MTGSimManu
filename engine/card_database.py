@@ -930,9 +930,18 @@ class CardDatabase:
         subtypes = data.get("subtypes", [])
         produces_mana = []
         enters_tapped = False
+        untap_life_cost = 0
         if CardType.LAND in card_types:
             produces_mana = OracleTextParser.detect_land_mana(oracle_text, subtypes, card_name=name)
             enters_tapped = OracleTextParser.detect_enters_tapped(oracle_text, card_name=name)
+            # Detect optional life payment for entering untapped (shock lands)
+            # Pattern: "you may pay N life. If you don't, it enters tapped"
+            if oracle_text:
+                import re as _re
+                life_match = _re.search(r'you may pay (\d+) life.*enters tapped', oracle_text.lower())
+                if life_match:
+                    untap_life_cost = int(life_match.group(1))
+                    enters_tapped = False  # shock lands can enter untapped (default)
 
         # Detect conditional mana production from oracle text
         # Pattern: "If you control an Urza's ... add {C}{C}{C} instead"
@@ -967,6 +976,7 @@ class CardDatabase:
             color_identity=color_identity,
             produces_mana=produces_mana,
             enters_tapped=enters_tapped,
+            untap_life_cost=untap_life_cost,
             oracle_text=oracle_text,
             tags=tags,
             evoke_cost=evoke_cost,

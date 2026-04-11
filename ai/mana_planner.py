@@ -193,8 +193,8 @@ def score_land(land, needs: ManaNeeds, is_fetchable: bool = False,
     template = land.template if hasattr(land, "template") else land
     produces = template.produces_mana
     enters_tapped = getattr(template, "enters_tapped", False)
-    from engine.card_database import SHOCK_LANDS
-    is_shock = template.name in SHOCK_LANDS
+    # Lands with optional life payment can enter untapped (shock lands etc.)
+    is_optional_untap = getattr(template, "untap_life_cost", 0) > 0
     score = 0.0
     player_turn = (turn + 1) // 2
 
@@ -224,7 +224,7 @@ def score_land(land, needs: ManaNeeds, is_fetchable: bool = False,
             cmc = spell.template.cmc or 0
             # Clock impact: a 1-mana creature attacks for ~7 turns, 5-mana for ~3
             urgency = max(1, 8 - cmc) * 3.0
-            if enters_tapped and not is_shock:
+            if enters_tapped and not is_optional_untap:
                 # Tapped = spell delayed 1 turn = lose 1 combat step
                 urgency *= 0.15 if player_turn <= 2 else 0.4
             score += urgency
@@ -242,13 +242,13 @@ def score_land(land, needs: ManaNeeds, is_fetchable: bool = False,
 
     # ── (E) Tempo: tapped land = lose 1 turn of mana ──
     # Derived: penalty = best spell we could cast this turn × delay
-    if enters_tapped and not is_shock:
+    if enters_tapped and not is_optional_untap:
         # Tapped = can't use mana this turn. Penalty scales with tempo importance.
         tempo_penalty = 8.0 * max(0.5, 1.0 - player_turn * 0.15)  # ~8 T1, ~5 T4+
         score -= tempo_penalty
     elif not enters_tapped:
         score += 5.0  # untapped = immediate mana availability
-    if is_shock:
+    if is_optional_untap:
         score += 5.0  # shock lands have option to enter untapped
 
     # ── (F) Fetchlands: flexibility to find what you need ──
