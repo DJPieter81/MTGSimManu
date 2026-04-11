@@ -244,6 +244,42 @@ python simulate_match.py "Ruby Storm" "Domain Zoo" --seed 55555
 - **Keyword detection uses word boundaries** — "flash" won't match "flashback".
 - **Color solver uses re-sorting greedy** — handles 4-color WURG correctly.
 
+## Known Issues — LLM-Judge Strategy Audit
+
+See **`LLM_JUDGE_STRATEGY_AUDIT.md`** for the full 6-expert panel report (~168 games). Overall grade: **D+**.
+
+### P0 — Critical (game-breaking)
+
+| Issue | Location | Summary |
+|-------|----------|---------|
+| Removal projection kills creature deployment | `ai/ev_evaluator.py:539-572` | `estimate_opponent_response` makes all cheap creatures negative EV (Guide of Souls=-7.6, Memnite=-7.4). Aggro decks pass T1-T3. |
+| Storm finisher uncastable | `ai/ev_player.py:393-484` | PiF penalty `gy_fuel/opp_life*15` makes it -5.8 even with 7 mana + 9 GY spells. Storm at 39% WR. |
+| Goryo's combo non-functional | `engine/card_effects.py` discard | Faithful Mending never bins Griselbrand → Goryo's has no target. Combo never fires. |
+| Living End missing ETBs | `engine/game_state.py:~1710` | `_resolve_living_end()` skips `_handle_permanent_etb()`. Returned creatures get no ETB triggers. |
+| Chalice hardcoded X=1 | `engine/game_state.py:1349` | Always X=1 regardless of opponent. Locks Azorius out of own spells (-0.76 win delta). |
+
+### P1 — High (significant strategy errors)
+
+| Issue | Location | Summary |
+|-------|----------|---------|
+| Wrath on empty board | `ai/ev_evaluator.py:272` | Board wipes with 0 creatures pass the -5.0 threshold at EV=-0.1. |
+| Burn face with no clock | `ai/strategy_profile.py:102` | `burn_face_mult=1.5` makes face burn positive EV even on empty board T1. |
+| Fatal Push mis-targets | `ai/response.py:156-169` | Targets highest-value battlefield creature, not the incoming spell on the stack. |
+| Holdback broken vs spell decks | `ai/ev_player.py:337-349` | Only triggers on `opp_power>0`. Control taps out freely vs Storm. |
+| First strike missing from AI combat sim | `ai/turn_planner.py:398-478` | `_simulate_combat` applies all damage simultaneously. Engine is correct; AI evaluation is not. |
+
+### P2 — Medium
+
+- Living End mulligan too aggressive (`ai/mulligan.py:60`): combo_sets should relax at 6 cards, not 5
+- Tron lands not differentiated (`ai/ev_player.py:540-616`): no assembly bonus for missing piece
+- Empty the Warrens underutilized: Wish tutor too Grapeshot-biased
+- Ghost candidates in EV list: stale snapshot after spell resolution within same main phase
+- Duplicate EV trace blocks: Main1+Main2 without phase labels
+
+### Confirmed Working
+
+Turn structure, cascade, storm copies, counterspell restrictions, legend rule, Bowmasters ETB, Phlage ETB, ritual mana tracking, fetch land prioritization, land-before-spell sequencing.
+
 ## Dashboard — modern_meta_matrix_full.html
 
 The interactive metagame dashboard is a **standalone vanilla JS HTML file** (no React, no Babel).
