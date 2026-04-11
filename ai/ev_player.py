@@ -902,11 +902,29 @@ class EVPlayer:
             return [-1]  # go face
 
         # Removal (non-burn): target best opponent permanent
+        # For creature-only removal: pick best creature
+        # For "nonland permanent" removal: consider artifacts/enchantments too
         if 'removal' in tags and 'board_wipe' not in tags:
-            if opp.creatures:
-                best = max(opp.creatures, key=lambda c: creature_value(c))
-                return [best.instance_id]
-            return []
+            oracle = (spell.template.oracle_text or '').lower()
+            can_hit_noncreature = ('nonland permanent' in oracle
+                                   or 'nonland' in oracle
+                                   or 'permanent' in oracle
+                                   or 'artifact' in oracle)
+
+            if can_hit_noncreature:
+                # Evaluate all nonland permanents — equipment is high priority
+                from engine.cards import CardType
+                nonland = [c for c in opp.battlefield if not c.template.is_land]
+                if nonland:
+                    best = max(nonland, key=lambda c: self._permanent_threat_value(c, opp))
+                    return [best.instance_id]
+                return []
+            else:
+                # Creature-only removal
+                if opp.creatures:
+                    best = max(opp.creatures, key=lambda c: creature_value(c))
+                    return [best.instance_id]
+                return []
 
         # Exile effects (March of Otherworldly Light, etc.): target best nonland permanent
         oracle = (spell.template.oracle_text or '').lower()
@@ -938,6 +956,44 @@ class EVPlayer:
             return []  # No targets = can't cast
 
         return []
+
+    def _permanent_threat_value(self, perm, opp) -> float:
+        """Evaluate how threatening an opponent's permanent is.
+
+        Creatures: use creature_value().
+        Equipment: value = power bonus it grants (artifact count for Plating).
+        Planeswalkers: high value. Stax: high value. Other: CMC proxy.
+        """
+        from engine.cards import CardType
+        t = perm.template
+
+        if t.is_creature:
+            return creature_value(perm)
+
+        # Equipment giving power bonuses: value = power it adds to the board
+        if 'equipment' in getattr(t, 'tags', set()) or 'pump' in getattr(t, 'tags', set()):
+            oracle = (t.oracle_text or '').lower()
+            if 'artifact' in oracle and ('+1/+0' in oracle or 'gets' in oracle):
+                # Cranial Plating / Nettlecyst: value scales with artifact count
+                artifact_count = sum(1 for c in opp.battlefield
+                                     if CardType.ARTIFACT in c.template.card_types)
+                return artifact_count * 1.5
+            return (t.cmc or 0) + 2.0
+
+        # Planeswalkers
+        if CardType.PLANESWALKER in t.card_types:
+            return 8.0 + (getattr(perm, 'loyalty_counters', 0) or 0)
+
+        # Stax/lock pieces
+        if 'stax' in getattr(t, 'tags', set()):
+            return 7.0
+
+        # Mana sources
+        if getattr(t, 'produces_mana', None):
+            return 3.0
+
+        # Default: CMC proxy
+        return (t.cmc or 0) + 1.0
 
     def _pick_best_removal_target(self, card, creatures, player,
                                    game, player_idx) -> Optional["CardInstance"]:

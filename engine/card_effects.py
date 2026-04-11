@@ -578,7 +578,7 @@ def prismatic_ending_resolve(game, card, controller, targets=None, item=None):
     exile_targets = [c for c in opp.battlefield
                      if not c.template.is_land and c.template.cmc <= max_cmc]
     if exile_targets:
-        target = max(exile_targets, key=lambda c: c.template.cmc)
+        target = max(exile_targets, key=lambda c: _nonland_permanent_threat(c, opp.battlefield))
         game._exile_permanent(target)
         game.log.append(f"T{game.turn_number} P{controller+1}: "
                         f"Prismatic Ending exiles {target.name}")
@@ -1103,8 +1103,7 @@ def abrupt_decay_resolve(game, card, controller, targets=None, item=None):
     valid = [c for c in opp.battlefield
              if not c.template.is_land and c.template.cmc <= 3]
     if valid:
-        # Pick highest value target
-        target = max(valid, key=lambda c: c.template.cmc + (c.power or 0))
+        target = max(valid, key=lambda c: _nonland_permanent_threat(c, opp.battlefield))
         game._permanent_destroyed(target)
         game.log.append(f"T{game.turn_number} P{controller+1}: "
                         f"Abrupt Decay destroys {target.name}")
@@ -1126,7 +1125,7 @@ def assassins_trophy_resolve(game, card, controller, targets=None, item=None):
         # Auto-target: highest value nonland permanent
         nonlands = [c for c in opp.battlefield if not c.template.is_land]
         if nonlands:
-            target = max(nonlands, key=lambda c: c.template.cmc + (c.power or 0))
+            target = max(nonlands, key=lambda c: _nonland_permanent_threat(c, opp.battlefield))
             game._permanent_destroyed(target)
             game.log.append(f"T{game.turn_number} P{controller+1}: "
                             f"Assassin's Trophy destroys {target.name}")
@@ -1165,6 +1164,29 @@ def fatal_push_resolve(game, card, controller, targets=None, item=None):
                         f"Fatal Push destroys {target.name}")
 
 
+def _nonland_permanent_threat(c, opp_battlefield):
+    """Score a nonland permanent for removal targeting.
+
+    Equipment that scales with artifact count (Cranial Plating, Nettlecyst)
+    is valued by how much power it adds, not just CMC.
+    """
+    from .cards import CardType
+    t = c.template
+    score = (t.cmc or 0) + (c.power or 0)
+    # Equipment with artifact-scaling: value = artifact count on board
+    tags = getattr(t, 'tags', set())
+    if 'pump' in tags or 'equipment' in tags:
+        oracle = (t.oracle_text or '').lower()
+        if 'artifact' in oracle and ('+1/+0' in oracle or 'gets' in oracle):
+            artifact_count = sum(1 for b in opp_battlefield
+                                 if CardType.ARTIFACT in b.template.card_types)
+            score = artifact_count + 2  # Plating with 8 artifacts = 10
+    # Planeswalkers
+    if CardType.PLANESWALKER in t.card_types:
+        score += 5 + (getattr(c, 'loyalty_counters', 0) or 0)
+    return score
+
+
 @EFFECT_REGISTRY.register("Leyline Binding", EffectTiming.ETB,
                            description="Exile target nonland permanent")
 def leyline_binding_etb(game, card, controller, targets=None, item=None):
@@ -1172,7 +1194,7 @@ def leyline_binding_etb(game, card, controller, targets=None, item=None):
     opp = game.players[opponent]
     nonlands = [c for c in opp.battlefield if not c.template.is_land]
     if nonlands:
-        target = max(nonlands, key=lambda c: c.template.cmc + (c.power or 0))
+        target = max(nonlands, key=lambda c: _nonland_permanent_threat(c, opp.battlefield))
         game._exile_permanent(target)
         game.log.append(f"T{game.turn_number} P{controller+1}: "
                         f"Leyline Binding exiles {target.name}")
