@@ -396,6 +396,22 @@ class EVPlayer:
                 mod -= 15.0  # hold penalty
                 return mod
 
+        # ── Finisher-access gate for mid-chain ──
+        # Don't dump rituals if we have no way to convert storm into a kill.
+        # Cantrips are OK (they dig toward a finisher), but rituals waste cards.
+        if p.storm_patience and storm >= 1 and 'ritual' in tags:
+            has_finisher = any(
+                c.name in ('Grapeshot', 'Empty the Warrens', 'Wish')
+                for c in me.hand if c.instance_id != card.instance_id
+            )
+            has_pif = any(c.name == 'Past in Flames' for c in me.hand
+                          if c.instance_id != card.instance_id)
+            if not has_finisher and not has_pif:
+                # No finisher and no PiF — casting rituals is wasteful
+                # Only cast if we're truly desperate (dying next turn)
+                if not snap.am_dead_next:
+                    mod -= 12.0  # strong penalty: don't waste rituals
+
         # ── Cantrips while waiting (storm=0): dig for pieces ──
         is_cantrip = ('cantrip' in tags or 'draw' in tags) and 'flashback' not in tags
         if is_cantrip and p.storm_patience and storm == 0:
