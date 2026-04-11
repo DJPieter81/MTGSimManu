@@ -37,6 +37,7 @@ class HandBeliefs:
     p_exile_removal: float = 0.0  # P(has exile-based removal)
     p_burn: float = 0.0         # P(has burn spell)
     p_combat_trick: float = 0.0 # P(has pump/protection instant)
+    p_free_counter: float = 0.0 # P(has pitch/free counterspell)
 
     # Tracking
     observations: int = 0       # number of Bayesian updates applied
@@ -70,6 +71,12 @@ class BayesianHandTracker:
         all_cards = list(opp.library) + list(opp.hand)
         counters = sum(1 for c in all_cards
                        if 'counterspell' in getattr(c.template, 'tags', set()))
+        # Free/pitch counters: evoke_pitch counterspells or "without paying" in oracle
+        free_counters = sum(1 for c in all_cards
+                            if 'counterspell' in getattr(c.template, 'tags', set())
+                            and ('evoke_pitch' in getattr(c.template, 'tags', set())
+                                 or 'rather than pay' in (c.template.oracle_text or '').lower()
+                                 or 'without paying' in (c.template.oracle_text or '').lower()))
         removal = sum(1 for c in all_cards
                       if 'removal' in getattr(c.template, 'tags', set())
                       and c.template.is_instant)
@@ -95,6 +102,7 @@ class BayesianHandTracker:
             return 1.0 - (1.0 - density) ** hand_size
 
         self.beliefs.p_counter = prior(counters)
+        self.beliefs.p_free_counter = prior(free_counters)
         self.beliefs.p_removal = prior(removal)
         self.beliefs.p_exile_removal = prior(exile)
         self.beliefs.p_burn = prior(burn)

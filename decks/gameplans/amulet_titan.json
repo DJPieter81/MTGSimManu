@@ -112,5 +112,6 @@
     "Cultivator Colossus",
     "Primeval Titan",
     "Scapeshift"
-  ]
+  ],
+  "combo_readiness_check": "generic_combo_readiness"
 }
