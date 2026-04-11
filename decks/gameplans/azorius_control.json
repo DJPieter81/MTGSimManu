@@ -66,11 +66,14 @@
     "Chalice of the Void",
     "Counterspell",
     "Prismatic Ending",
-    "Teferi, Time Raveler",
-    "Wan Shi Tong, Librarian"
+    "March of Otherworldly Light",
+    "Teferi, Time Raveler"
   ],
   "mulligan_min_lands": 2,
   "mulligan_max_lands": 5,
+  "always_early": [
+    "Chalice of the Void"
+  ],
   "reactive_only": [
     "Counterspell",
     "Dovin's Veto"
