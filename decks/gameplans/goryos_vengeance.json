@@ -57,6 +57,7 @@
           "Undying Evil"
         ]
       },
+      "resource_zone": "graveyard",
       "resource_min_cmc": 5
     },
     {
