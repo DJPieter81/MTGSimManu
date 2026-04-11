@@ -882,6 +882,19 @@ class GameRunner:
                     if creature:
                         game.equip_creature(ai.player_idx, card, creature)
             elif action == "cast_spell":
+                # Tag with current goal and card role for detailed logging
+                if getattr(game, 'verbose', False) and hasattr(ai, 'goal_engine') and ai.goal_engine:
+                    ge = ai.goal_engine
+                    gp = ge.gameplan
+                    goal_name = gp.goals[ge.current_goal_idx].goal_type.value if gp and gp.goals and ge.current_goal_idx < len(gp.goals) else '?'
+                    card_role = None
+                    if gp and gp.goals and ge.current_goal_idx < len(gp.goals):
+                        for role, names in gp.goals[ge.current_goal_idx].card_roles.items():
+                            if card.name in names:
+                                card_role = role
+                                break
+                    role_str = f' [{card_role}]' if card_role else ''
+                    game.log.append(f'    → Goal: {goal_name}{role_str}')
                 success = game.cast_spell(ai.player_idx, card, targets)
                 if not success:
                     # Track failed casts to prevent infinite loops.
