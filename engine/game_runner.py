@@ -27,22 +27,20 @@ class AICallbacks(GameCallbacks):
     """Wires engine callbacks to AI decision functions."""
 
     def should_shock_land(self, game, player_idx, land):
-        """EV-based shock decision using board state projection.
+        """EV-based decision: pay life for untapped land?
 
-        Projects two snapshots — one where we shock (untapped, lose 2 life)
+        Projects two snapshots — one where we pay (untapped, lose life)
         and one where we don't (tapped, keep life) — and compares them
-        using the same evaluate_board() the rest of the AI uses.
-        No separate shock-specific weights needed.
+        using evaluate_board(). Works for any land with untap_life_cost.
         """
         from ai.ev_evaluator import snapshot_from_game, evaluate_board
         from ai.strategy_profile import DECK_ARCHETYPES
-        from ai.constants import SHOCK_LETHAL_LIFE_THRESHOLD
-        from engine.constants import SHOCK_LAND_LIFE_COST
 
         player = game.players[player_idx]
+        life_cost = land.template.untap_life_cost if hasattr(land, 'template') else 2
 
-        # Hard floor: never shock to death
-        if player.life <= SHOCK_LETHAL_LIFE_THRESHOLD:
+        # Hard floor: never pay life to death
+        if player.life <= life_cost:
             return False
 
         # Determine archetype for evaluation
@@ -53,11 +51,11 @@ class AICallbacks(GameCallbacks):
         # Snapshot the current state
         snap = snapshot_from_game(game, player_idx)
 
-        # Project "shocked" state: -2 life, +1 untapped mana
+        # Project "paid" state: -life_cost life, +1 untapped mana
         shocked = snap.__class__(
             **{f.name: getattr(snap, f.name) for f in snap.__dataclass_fields__.values()}
         )
-        shocked.my_life = snap.my_life - SHOCK_LAND_LIFE_COST
+        shocked.my_life = snap.my_life - life_cost
         shocked.my_mana = snap.my_mana + 1
         shocked.my_total_lands = snap.my_total_lands + 1
 
@@ -769,13 +767,13 @@ class GameRunner:
         # Combo decks (Storm, Living End) need to chain many spells in one turn.
         # Storm: 10+ rituals + cantrips + finisher = 15-25 actions
         # Living End: cycling + cascade = 5-10 actions
-        # Non-combo decks rarely exceed 5 actions per turn.
-        deck_name = game.players[ai.player_idx].deck_name
+        # Combo decks may chain many spells per turn (storm, cascade).
         from ai.constants import MAX_ACTIONS_COMBO, MAX_ACTIONS_NORMAL
-        if deck_name in ('Ruby Storm', 'Living End', "Goryo's Vengeance"):
-            max_actions = MAX_ACTIONS_COMBO
-        else:
-            max_actions = MAX_ACTIONS_NORMAL
+        from ai.strategy_profile import DECK_ARCHETYPES, ArchetypeStrategy
+        deck_name = game.players[ai.player_idx].deck_name
+        arch = DECK_ARCHETYPES.get(deck_name)
+        is_combo = arch == ArchetypeStrategy.COMBO if arch else False
+        max_actions = MAX_ACTIONS_COMBO if is_combo else MAX_ACTIONS_NORMAL
         actions = 0
         _last_failed_card = None  # Track failed casts to prevent infinite loops
         _consecutive_fails = 0
@@ -852,11 +850,11 @@ class GameRunner:
                 continue
 
             pw_name = pw.template.name
-            from .game_state import PLANESWALKER_ABILITIES
-            if pw_name not in PLANESWALKER_ABILITIES:
-                continue
-
-            pw_data = PLANESWALKER_ABILITIES[pw_name]
+            from .game_state import _parse_planeswalker_abilities
+            pw_data = _parse_planeswalker_abilities(
+                pw.template.oracle_text, pw.template.loyalty)
+            if not pw_data.get("plus") and not pw_data.get("minus"):
+                continue  # no parseable abilities
             opp = game.players[opponent]
 
             ability_type = self._choose_pw_ability(pw, pw_name, pw_data, player, opp, game)
@@ -871,8 +869,8 @@ class GameRunner:
         """Choose the best planeswalker ability to activate.
 
         Uses ability descriptions to make generic decisions rather than
-        hardcoding per-card logic. Any new planeswalker added to
-        PLANESWALKER_ABILITIES will automatically get reasonable behavior.
+        hardcoding per-card logic. Any planeswalker with standard loyalty
+        ability oracle text will automatically get reasonable behavior.
         """
         def can_afford(ability_key):
             if ability_key not in pw_data:

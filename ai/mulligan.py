@@ -56,8 +56,9 @@ class MulliganDecider:
                     if not (hand_names & combo_set):
                         return cards_in_hand <= 5  # keep bad 5-card hands
 
-            # Combo decks with always_early (cost reducers): mulligan 7-card
-            # hands without a reducer — T2 Medallion is critical for Storm
+            # Combo decks with always_early: prefer hands with a cost reducer,
+            # but don't force mulligan if hand has enough fuel to combo without one.
+            # Storm can go off without Medallion if it has rituals + cantrips + finisher.
             if gp.always_early and cards_in_hand >= 7:
                 reducer_names = gp.always_early | {
                     n for n in hand_names
@@ -65,7 +66,21 @@ class MulliganDecider:
                            for c in hand if c.name == n)
                 }
                 if not (hand_names & reducer_names):
-                    return False  # no reducer in 7-card hand — mulligan
+                    # No reducer — keep if we have ritual + cantrip + finisher access
+                    has_ritual = any('ritual' in getattr(c.template, 'tags', set())
+                                     for c in spells)
+                    has_cantrip = any('cantrip' in getattr(c.template, 'tags', set())
+                                      or 'draw' in getattr(c.template, 'tags', set())
+                                      for c in spells)
+                    from engine.cards import Keyword
+                    has_finisher = any(
+                        Keyword.STORM in getattr(c.template, 'keywords', set())
+                        or 'tutor' in getattr(c.template, 'tags', set())
+                        or ('flashback' in getattr(c.template, 'tags', set())
+                            and 'combo' in getattr(c.template, 'tags', set()))
+                        for c in spells)
+                    if not (has_ritual and has_cantrip and has_finisher):
+                        return False  # no reducer AND no backup plan — mulligan
 
             # Require creature on curve
             if gp.mulligan_require_creature_cmc > 0:

@@ -115,6 +115,13 @@ class CardTemplate:
     # For lands
     produces_mana: List[str] = field(default_factory=list)  # e.g., ["W", "R"]
     enters_tapped: bool = False
+    # Life payment to enter untapped (shock lands = 2, derived from oracle text)
+    untap_life_cost: int = 0
+    # Conditional untap: max other lands to enter untapped (fast lands = 2)
+    # -1 means no conditional check (always tapped or always untapped)
+    untap_max_other_lands: int = -1
+    # Self-damage when tapping for colored mana (pain lands = 1)
+    tap_damage: int = 0
     # For split/modal cards
     is_modal: bool = False
     modes: List[Dict] = field(default_factory=list)
@@ -304,6 +311,12 @@ class CardInstance:
         player = self._game_state.players[self.controller]
         return sum(1 for c in player.battlefield if CardType.ARTIFACT in c.template.card_types)
 
+    def _get_controller_battlefield(self):
+        """Get the controller's battlefield."""
+        if self._game_state is None:
+            return []
+        return self._game_state.players[self.controller].battlefield
+
     def _has_delirium(self) -> bool:
         """Check if controller has 4+ card types in graveyard (delirium)."""
         if self._game_state is None:
@@ -342,11 +355,19 @@ class CardInstance:
         # Construct Token (Urza's Saga): P/T = number of artifacts you control
         if name == "Construct Token":
             base = self._get_artifact_count()
-        # Nettlecyst/Cranial Plating: +1/+1 or +N/+0 per artifact
-        if "nettlecyst_equipped" in self.instance_tags:
-            base += self._get_artifact_count()
-        if "cranial_plating_equipped" in self.instance_tags:
-            base += self._get_artifact_count()
+        # Equipment that scales power by artifact count:
+        # any "_equipped" tag from equipment whose oracle says "for each artifact"
+        for tag in self.instance_tags:
+            if tag.endswith("_equipped"):
+                # Find the equipment template to check its oracle text
+                equip_name_prefix = tag[:-len("_equipped")]
+                for perm in self._get_controller_battlefield():
+                    perm_prefix = perm.template.name.lower().replace(" ", "_").replace("'", "").replace(",", "")
+                    if perm_prefix == equip_name_prefix:
+                        oracle = (perm.template.oracle_text or '').lower()
+                        if 'for each artifact' in oracle or 'artifact you control' in oracle:
+                            base += self._get_artifact_count()
+                        break
         return base
 
     def _dynamic_base_toughness(self) -> int:

@@ -36,7 +36,7 @@ from .continuous_effects import ContinuousEffectsManager
 from .callbacks import GameCallbacks, DefaultCallbacks
 from .constants import (
     STARTING_LIFE, MAX_HAND_SIZE, MAX_TURNS, SBA_MAX_ITERATIONS,
-    SHOCK_LAND_LIFE_COST, FETCH_LAND_LIFE_COST,
+    FETCH_LAND_LIFE_COST,
 )
 
 
@@ -248,19 +248,7 @@ class PlayerState:
 # (populated by oracle_parser.py at card load time)
 
 # Cycling costs: mana = total mana CMC, life = life to pay, colors = required color set
-CYCLING_COSTS = {
-    "Street Wraith":        {"mana": 0, "life": 2, "colors": set()},
-    "Striped Riverwinder":  {"mana": 1, "life": 0, "colors": {"U"}},
-    "Architects of Will":   {"mana": 1, "life": 0, "colors": {"U", "B"}},
-    "Curator of Mysteries": {"mana": 1, "life": 0, "colors": {"U"}},
-    "Waker of Waves":       {"mana": 2, "life": 0, "colors": {"U"}},
-    "Ketria Triome":        {"mana": 3, "life": 0, "colors": set()},
-    "Indatha Triome":       {"mana": 3, "life": 0, "colors": set()},
-    "Zagoth Triome":        {"mana": 3, "life": 0, "colors": set()},
-    "Raugrin Triome":       {"mana": 3, "life": 0, "colors": set()},
-    "Savai Triome":         {"mana": 3, "life": 0, "colors": set()},
-}
-# CYCLING_CARDS and LIVING_END_CASCADERS removed — now oracle-derived
+# CYCLING_COSTS removed — now oracle-derived (template.cycling_cost_data)
 
 # ENERGY_PRODUCERS and ENERGY_SPENDERS removed — now oracle-derived
 # (template.energy_production populated by oracle_parser.py)
@@ -268,44 +256,42 @@ CYCLING_COSTS = {
 # X_COST_SPELLS removed — now oracle-derived (template.x_cost_data)
 
 # Planeswalker loyalty ability definitions: (plus_amount, minus_amount, ult_amount)
-PLANESWALKER_ABILITIES = {
-    "Ugin, the Spirit Dragon": {
-        # Oracle: +2 deal 3 to any target, -X exile colored CMC<=X, -10 gain 7 draw 7 put 7
-        "plus": (2, "deal 3 damage to any target"),
-        "minus": (-7, "exile all colored permanents"),
-        "ult": (-10, "gain 7 life draw 7 cards put 7 permanents onto battlefield"),
-        "starting_loyalty": 7,
-    },
-    "Teferi, Time Raveler": {
-        # Oracle: +1 cast sorceries as flash until next turn, -3 bounce + draw a card
-        # Static: opponents cast at sorcery speed only (handled elsewhere)
-        "plus": (1, "cast sorceries as flash until next turn"),
-        "minus": (-3, "bounce target nonland permanent and draw a card"),
-        "starting_loyalty": 4,
-    },
-    "Jace, the Mind Sculptor": {
-        # Oracle: +2 scry opponent top, 0 brainstorm, -1 bounce creature, -12 exile library
-        "plus": (2, "look at top card of opponent library"),
-        "zero": (0, "brainstorm: draw 3 put 2 back"),
-        "minus": (-1, "bounce target creature to hand"),
-        "ult": (-12, "exile opponent library"),
-        "starting_loyalty": 3,
-    },
-    "Ral, Monsoon Mage": {
-        # Oracle (Ral, Leyline Prodigy back face): +1 instants/sorceries cost 1 less,
-        # -2 deal X damage divided among up to 2 targets (X = instants/sorceries cast this turn)
-        "plus": (1, "instants and sorceries cost 1 less until next turn"),
-        "minus": (-2, "deal damage equal to instants and sorceries cast this turn"),
-        "starting_loyalty": 2,
-    },
-    "Wrenn and Six": {
-        # Oracle: +1 return land from GY to hand, -1 deal 1 damage to any target, -7 retrace emblem
-        "plus": (1, "return land from graveyard to hand"),
-        "minus": (-1, "deal 1 damage to any target"),
-        "ult": (-7, "retrace on all instants and sorceries in graveyard"),
-        "starting_loyalty": 3,
-    },
-}
+def _parse_planeswalker_abilities(oracle_text: str, loyalty: int = 0) -> dict:
+    """Parse planeswalker abilities from oracle text.
+
+    Detects [+N], [-N], [0] loyalty ability patterns.
+    Returns dict with 'plus', 'minus', 'ult', 'zero', 'starting_loyalty'.
+    """
+    import re
+    result = {"starting_loyalty": loyalty or 0}
+    if not oracle_text:
+        return result
+
+    # Find all loyalty abilities: [+1]: text, [-3]: text, [0]: text
+    abilities = re.findall(r'\[([+\-−]?\d+)\]:\s*([^\[]+?)(?=\[|$)', oracle_text)
+
+    plus_found = False
+    for cost_str, desc in abilities:
+        cost_str = cost_str.replace('−', '-')  # unicode minus
+        cost = int(cost_str)
+        desc = desc.strip().rstrip('.')
+
+        if cost > 0 and not plus_found:
+            result["plus"] = (cost, desc)
+            plus_found = True
+        elif cost == 0:
+            result["zero"] = (0, desc)
+        elif cost < 0:
+            if "minus" not in result:
+                result["minus"] = (cost, desc)
+            else:
+                result["ult"] = (cost, desc)
+
+    return result
+
+
+# PLANESWALKER_ABILITIES removed — now parsed from oracle text via
+# _parse_planeswalker_abilities() called at ETB time.
 
 # Token definitions: (name, types, power, toughness, keywords)
 TOKEN_DEFS = {
@@ -595,18 +581,16 @@ class GameState:
             return False
 
         # Tap lands and add mana
-        from .card_database import PAIN_LANDS
         for land, color in lands_to_tap:
             land.tap()
             player.mana_pool.add(color)
             # Add conditional mana bonus (e.g., Tron assembly)
-            # Uses the data-driven conditional_mana field from oracle text parsing
             bonus = cond_bonus_cache.get(id(land), 0)
             if bonus > 0:
                 player.mana_pool.add("C", bonus)
-            # Pain land: pay 1 life when tapping for colored mana
-            if land.name in PAIN_LANDS and color != "C":
-                player.life -= 1
+            # Pain land: self-damage when tapping for colored mana
+            if land.template.tap_damage > 0 and color != "C":
+                player.life -= land.template.tap_damage
 
         return player.mana_pool.pay(cost)
 
@@ -815,7 +799,7 @@ class GameState:
 
     def play_land(self, player_idx: int, card: CardInstance):
         """Play a land from hand to battlefield."""
-        from .card_database import SHOCK_LANDS, FAST_LANDS, PAIN_LANDS, FETCH_LAND_COLORS
+        from .card_database import FETCH_LAND_COLORS
         player = self.players[player_idx]
         max_lands = 1 + player.extra_land_drops
         if player.lands_played_this_turn >= max_lands:
@@ -827,31 +811,31 @@ class GameState:
         player.lands_played_this_turn += 1
         card.controller = player_idx
 
-        # ── Always-tapped lands (triomes, etc.) ──
-        from .card_database import ALWAYS_TAPPED_LANDS
-        if card.name in ALWAYS_TAPPED_LANDS:
+        # ── Always-tapped lands (from oracle text: "enters tapped") ──
+        if card.template.enters_tapped and card.template.untap_life_cost == 0 and card.template.untap_max_other_lands < 0:
             card.enter_battlefield()
             card.tapped = True
             self.log.append(f"T{self.turn_number} P{player_idx+1}: Play {card.name} (enters tapped)")
-        # ── Shockland: pay 2 life if hand needs the mana this turn ──
-        elif card.name in SHOCK_LANDS:
-            should_shock = self.callbacks.should_shock_land(self, player_idx, card)
-            if should_shock:
-                player.life -= SHOCK_LAND_LIFE_COST
+        # ── Lands with optional life payment to enter untapped (shock lands etc.) ──
+        elif card.template.untap_life_cost > 0:
+            life_cost = card.template.untap_life_cost
+            should_pay = self.callbacks.should_shock_land(self, player_idx, card)
+            if should_pay:
+                player.life -= life_cost
                 card.enter_battlefield()
                 card.tapped = False
-                self.log.append(f"T{self.turn_number} P{player_idx+1}: Play {card.name} (pay 2 life, untapped, life: {player.life})")
+                self.log.append(f"T{self.turn_number} P{player_idx+1}: Play {card.name} (pay {life_cost} life, untapped, life: {player.life})")
             else:
                 card.zone = "battlefield"
                 card.summoning_sick = True
                 card.entered_battlefield_this_turn = True
                 card.tapped = True
                 self.log.append(f"T{self.turn_number} P{player_idx+1}: Play {card.name} (tapped, no spells need mana)")
-        # ── Fast land: untapped if ≤ 2 other lands ──
-        elif card.name in FAST_LANDS:
+        # ── Conditional untap: untapped if ≤ N other lands (fast lands etc.) ──
+        elif card.template.untap_max_other_lands >= 0:
             other_lands = len([c for c in player.battlefield if c.template.is_land])
             card.enter_battlefield()
-            if other_lands <= 2:
+            if other_lands <= card.template.untap_max_other_lands:
                 card.tapped = False
                 self.log.append(f"T{self.turn_number} P{player_idx+1}: Play {card.name} (untapped, {other_lands} other lands)")
             else:
@@ -890,7 +874,7 @@ class GameState:
 
     def _crack_fetchland(self, player_idx: int, fetch_card: CardInstance):
         """Sacrifice a fetchland, pay 1 life, search library for a land."""
-        from .card_database import FETCH_LAND_COLORS, SHOCK_LANDS
+        from .card_database import FETCH_LAND_COLORS
         player = self.players[player_idx]
         fetch_name = fetch_card.name
         fetch_colors = FETCH_LAND_COLORS.get(fetch_name, [])
@@ -924,16 +908,17 @@ class GameState:
             player.library.remove(best_land)
             best_land.controller = player_idx
 
-            # Shocklands fetched: use callback to decide shock
-            if best_land.name in SHOCK_LANDS:
-                should_shock = self.callbacks.should_shock_land(self, player_idx, best_land)
-                if should_shock:
-                    player.life -= SHOCK_LAND_LIFE_COST
+            # Lands with optional life payment to enter untapped
+            if best_land.template.untap_life_cost > 0:
+                life_cost = best_land.template.untap_life_cost
+                should_pay = self.callbacks.should_shock_land(self, player_idx, best_land)
+                if should_pay:
+                    player.life -= life_cost
                     best_land.enter_battlefield()
                     best_land.tapped = False
                     self.log.append(f"T{self.turn_number} P{player_idx+1}: "
                                    f"Crack {fetch_name} (pay 1 life) -> {best_land.name} "
-                                   f"(pay 2 life, untapped, life: {player.life})")
+                                   f"(pay {life_cost} life, untapped, life: {player.life})")
                 else:
                     best_land.zone = "battlefield"
                     best_land.summoning_sick = True
@@ -1076,13 +1061,10 @@ class GameState:
             remaining -= 1
 
         # Unequip from previous creature (if any)
-        equip_tag = None
-        if "Cranial Plating" in template.name:
-            equip_tag = "cranial_plating_equipped"
-        elif "Nettlecyst" in template.name:
-            equip_tag = "nettlecyst_equipped"
+        # Generate standard equip tag from equipment name
+        equip_tag = template.name.lower().replace(" ", "_").replace("'", "").replace(",", "") + "_equipped"
 
-        if equip_tag:
+        if 'equipment' in getattr(template, 'tags', set()) or 'pump' in getattr(template, 'tags', set()):
             # Remove from any currently equipped creature
             for c in player.creatures:
                 c.instance_tags.discard(equip_tag)
@@ -1547,14 +1529,9 @@ class GameState:
         """Handle all enter-the-battlefield effects for a permanent."""
         template = card.template
 
-        # Planeswalker: set loyalty counters (always runs, not card-specific)
+        # Planeswalker: set loyalty counters from template (oracle-derived)
         if CardType.PLANESWALKER in template.card_types:
-            pw_name = template.name
-            if pw_name in PLANESWALKER_ABILITIES:
-                card.loyalty_counters = PLANESWALKER_ABILITIES[pw_name].get(
-                    "starting_loyalty", template.loyalty or 0)
-            else:
-                card.loyalty_counters = template.loyalty or 0
+            card.loyalty_counters = template.loyalty or 0
 
         # Energy production on ETB (from oracle-derived template property)
         if template.energy_production > 0:
@@ -1772,9 +1749,8 @@ class GameState:
                                ability_type: str = "plus"):
         """Activate a planeswalker loyalty ability."""
         pw_name = pw_card.template.name
-        pw_data = PLANESWALKER_ABILITIES.get(pw_name)
-        if not pw_data:
-            return
+        pw_data = _parse_planeswalker_abilities(
+            pw_card.template.oracle_text, pw_card.template.loyalty)
 
         ability_info = pw_data.get(ability_type)
         if not ability_info:
@@ -2217,20 +2193,16 @@ class GameState:
         if equip_tags_on_creature:
             for tag in equip_tags_on_creature:
                 # Find the equipment on the battlefield and mark it unattached
-                equip_name_map = {
-                    "cranial_plating_equipped": "Cranial Plating",
-                    "nettlecyst_equipped": "Nettlecyst",
-                }
-                equip_name = equip_name_map.get(tag)
-                if equip_name:
-                    for perm in self.players[controller].battlefield:
-                        if perm.template.name == equip_name:
-                            perm.instance_tags.discard("equipment_attached")
-                            perm.instance_tags.add("equipment_unattached")
-                            self.log.append(
-                                f"T{self.turn_number}: {equip_name} falls off "
-                                f"{creature.name} (unattached)")
-                            break
+                # Match by checking each equipment's generated tag
+                for perm in self.players[controller].battlefield:
+                    perm_tag = perm.template.name.lower().replace(" ", "_").replace("'", "").replace(",", "") + "_equipped"
+                    if perm_tag == tag:
+                        perm.instance_tags.discard("equipment_attached")
+                        perm.instance_tags.add("equipment_unattached")
+                        self.log.append(
+                            f"T{self.turn_number}: {perm.template.name} falls off "
+                            f"{creature.name} (unattached)")
+                        break
 
         creature.zone = "graveyard"
         creature.reset_combat()
@@ -2771,12 +2743,10 @@ class GameState:
         """Check if a player can cycle a card from hand."""
         if card.zone != "hand":
             return False
-        # Use oracle-derived cycling data from template, fall back to hardcoded
+        # Use oracle-derived cycling data from template
         cost = card.template.cycling_cost_data
         if cost is None:
-            if card.name not in CYCLING_COSTS:
-                return False
-            cost = CYCLING_COSTS[card.name]
+            return False
         player = self.players[player_idx]
         # Life cost check
         if cost["life"] > 0 and player.life <= cost["life"]:
@@ -2811,7 +2781,7 @@ class GameState:
         """
         if not self.can_cycle(player_idx, card):
             return False
-        cost = card.template.cycling_cost_data or CYCLING_COSTS.get(card.name, {"mana": 0, "life": 0, "colors": set()})
+        cost = card.template.cycling_cost_data or {"mana": 0, "life": 0, "colors": set()}
         player = self.players[player_idx]
         # Pay life cost
         if cost["life"] > 0:
@@ -2857,8 +2827,10 @@ class GameState:
     ALL_COLORS = ["W", "U", "B", "R", "G"]
 
     def _has_leyline_of_guildpact(self, player_idx: int) -> bool:
-        """Check if player controls Leyline of the Guildpact."""
-        return any(c.name == "Leyline of the Guildpact"
+        """Check if player controls a permanent that makes lands all basic types."""
+        # Detects "lands you control are every basic land type" from oracle text
+        return any('lands you control are every basic land type' in
+                    (c.template.oracle_text or '').lower()
                    for c in self.players[player_idx].battlefield)
 
     def _effective_produces_mana(self, player_idx: int, land) -> list:
@@ -2869,9 +2841,9 @@ class GameState:
 
     def _count_domain(self, player_idx: int) -> int:
         """Count basic land types among lands controlled by a player."""
-        # Leyline of the Guildpact makes all lands every basic land type
+        # Check for effects that make lands every basic land type
         for c in self.players[player_idx].battlefield:
-            if c.name == "Leyline of the Guildpact":
+            if 'lands you control are every basic land type' in (c.template.oracle_text or '').lower():
                 # As long as we control at least one land, domain = 5
                 if any(l.template.is_land
                        for l in self.players[player_idx].battlefield):

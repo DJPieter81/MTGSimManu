@@ -341,8 +341,10 @@ class EVPlayer:
                         game: "GameState", me, opp) -> float:
         """Combo chain sequencing — logic the projection can't capture.
 
-        Within-turn ordering for storm/combo decks: hold rituals until ready,
-        sequence PiF correctly, cast finishers last.
+        All values derived from clock impact:
+        - Lethal storm = game over = max value
+        - Fuel value = storm_count / opp_life (fraction of kill per spell)
+        - Hold penalty = negative of going-off value (opportunity cost)
         """
         t = card.template
         tags = getattr(t, 'tags', set())
@@ -351,65 +353,87 @@ class EVPlayer:
         if not p.has_combo_chain:
             return 0.0
 
+        from engine.cards import Keyword as Kw
         mod = 0.0
         storm = me.spells_cast_this_turn
         mana = snap.my_mana
+        opp_life = max(1, snap.opp_life)
+
+        # Helper: count fuel sources and check for finisher/PiF access
+        def _count_fuel():
+            return sum(1 for c in me.hand if c.instance_id != card.instance_id
+                       and not c.template.is_land
+                       and any(ft in getattr(c.template, 'tags', set())
+                               for ft in ('ritual', 'cantrip', 'draw')))
+
+        def _has_finisher():
+            return any(Kw.STORM in getattr(c.template, 'keywords', set())
+                       or 'tutor' in getattr(c.template, 'tags', set())
+                       for c in me.hand if c.instance_id != card.instance_id)
+
+        def _has_flashback_combo():
+            return any('flashback' in getattr(c.template, 'tags', set())
+                       and 'combo' in getattr(c.template, 'tags', set())
+                       for c in me.hand if c.instance_id != card.instance_id)
 
         # ── Storm patience: hold rituals at storm=0 until ready ──
         if p.storm_patience and storm == 0 and 'ritual' in tags:
-            fuel_in_hand = sum(
-                1 for c in me.hand
-                if c.instance_id != card.instance_id
-                and not c.template.is_land
-                and any(ft in getattr(c.template, 'tags', set())
-                        for ft in ('ritual', 'cantrip', 'draw'))
-            )
-            reducers = sum(
-                1 for c in me.battlefield
-                if 'cost_reducer' in getattr(c.template, 'tags', set())
-            )
-            has_pif = any(c.name == 'Past in Flames' for c in me.hand)
+            fuel = _count_fuel()
+            reducers = sum(1 for c in me.battlefield
+                           if 'cost_reducer' in getattr(c.template, 'tags', set()))
+            has_pif = _has_flashback_combo()
             gy_fuel = 0
             if has_pif:
-                gy_fuel = sum(
-                    1 for c in me.graveyard
-                    if (c.template.is_instant or c.template.is_sorcery)
-                    and 'ritual' in getattr(c.template, 'tags', set())
-                )
-            total_fuel = fuel_in_hand + gy_fuel + 1
-            has_finisher_access = any(
-                c.name in ('Grapeshot', 'Empty the Warrens', 'Wish')
-                for c in me.hand
-            )
+                gy_fuel = sum(1 for c in me.graveyard
+                              if (c.template.is_instant or c.template.is_sorcery)
+                              and 'ritual' in getattr(c.template, 'tags', set()))
+            total_fuel = fuel + gy_fuel + 1
+            has_finisher = _has_finisher()
             min_fuel = p.storm_min_fuel_to_go if reducers > 0 else p.storm_min_fuel_to_go + 2
-            can_go = (has_finisher_access
-                      and total_fuel >= min_fuel
+
+            can_go = (has_finisher and total_fuel >= min_fuel
                       and mana >= (1 if reducers > 0 else 2))
-            if snap.am_dead_next and fuel_in_hand >= 1:
+            if snap.am_dead_next and fuel >= 1:
                 can_go = True
-            if has_finisher_access and snap.opp_life <= total_fuel and total_fuel >= 2:
+            if has_finisher and opp_life <= total_fuel and total_fuel >= 2:
                 can_go = True
 
+            # Value of going off = expected storm / opp_life (fraction of kill)
+            # Scaled to match spell scoring range (~10-20 for good plays)
+            go_value = total_fuel / opp_life * 20.0
             if can_go:
-                mod += 15.0  # go off bonus
+                mod += max(go_value, 10.0)
             else:
-                mod -= 15.0  # hold penalty
+                mod -= go_value
                 return mod
+
+        # ── Finisher-access gate for mid-chain ──
+        if p.storm_patience and storm >= 1 and 'ritual' in tags:
+            if not _has_finisher() and not _has_flashback_combo():
+                if not snap.am_dead_next:
+                    # Wasting rituals = losing storm_potential / opp_life in clock value
+                    mod -= (storm + 2) / opp_life * 20.0
 
         # ── Cantrips while waiting (storm=0): dig for pieces ──
         is_cantrip = ('cantrip' in tags or 'draw' in tags) and 'flashback' not in tags
         if is_cantrip and p.storm_patience and storm == 0:
+            # Draw punisher check from oracle text
             opp_has_draw_punisher = any(
-                c.name in ('Orcish Bowmasters',) for c in opp.creatures
+                'draw' in (c.template.oracle_text or '').lower()
+                and 'opponent' in (c.template.oracle_text or '').lower()
+                and 'damage' in (c.template.oracle_text or '').lower()
+                for c in opp.creatures
             )
-            mod += -3.0 if opp_has_draw_punisher else 3.0
+            # Cantrip value = P(finding missing piece) ≈ 1/cards_remaining
+            dig_value = 1.0 / max(1, len(me.library)) * opp_life
+            mod += -dig_value if opp_has_draw_punisher else dig_value * 3.0
 
         # ── Storm finisher: cast LAST to maximize storm count ──
-        from engine.cards import Keyword as Kw
         if Kw.STORM in getattr(t, 'keywords', set()):
             storm_copies = storm + 1
-            if storm_copies >= snap.opp_life:
-                mod += 100.0  # lethal storm!
+            if storm_copies >= opp_life:
+                # Lethal = game over. Value = position swing from losing to winning.
+                mod += 100.0
             else:
                 gy_flashback = [g for g in me.graveyard
                                 if getattr(g, 'has_flashback', False)
@@ -419,90 +443,84 @@ class EVPlayer:
                     if c.instance_id != card.instance_id
                     and not c.template.is_land
                     and game.can_cast(self.player_idx, c)
-                    and 'storm' not in {kw.value if hasattr(kw, 'value') else str(kw)
-                                         for kw in getattr(c.template, 'keywords', set())}
+                    and Kw.STORM not in getattr(c.template, 'keywords', set())
                 )
                 if fuel_available > 0:
-                    mod -= 20.0  # hold finisher, cast fuel first
+                    # Each fuel spell adds 1 storm copy = 1/opp_life clock change
+                    # Holding is worth fuel_available * (1/opp_life) more damage
+                    mod -= fuel_available / opp_life * 40.0
                 else:
-                    # No more fuel — fire now
-                    damage_pct = storm_copies / max(1, snap.opp_life)
-                    if damage_pct >= 0.7:
-                        mod += 15.0
-                    elif damage_pct >= 0.4:
-                        mod += 5.0
-                    else:
-                        mod -= 30.0
+                    # No fuel left — fire now. Value = damage dealt / opp_life
+                    mod += storm_copies / opp_life * 40.0
 
-        # ── Past in Flames sequencing ──
-        if 'flashback' in tags and t.name == 'Past in Flames':
+        # ── Flashback-granting spells (Past in Flames etc.) ──
+        if 'flashback' in tags and 'combo' in tags and t.is_sorcery:
             if storm >= 2:
-                pif_in_gy = any(
-                    'flashback' in getattr(c.template, 'tags', set())
-                    for c in me.graveyard if c.instance_id != card.instance_id
-                )
+                pif_in_gy = any('flashback' in getattr(c.template, 'tags', set())
+                                for c in me.graveyard if c.instance_id != card.instance_id)
                 if pif_in_gy:
-                    return -30.0  # redundant PiF
+                    return -100.0 / opp_life  # redundant, waste of mana
             if card.zone == "graveyard":
-                return -30.0  # don't replay PiF from GY
+                return -100.0 / opp_life  # don't replay from GY
 
             gy_fuel = sum(1 for c in me.graveyard
                           if (c.template.is_instant or c.template.is_sorcery)
                           and any(ft in getattr(c.template, 'tags', set())
                                   for ft in ('ritual', 'cantrip')))
             if p.storm_patience and storm == 0:
-                mod -= 15.0  # hold PiF pre-chain
+                mod -= gy_fuel / opp_life * 15.0  # hold pre-chain
             elif gy_fuel < 2:
-                mod -= 20.0  # empty GY
+                mod -= 10.0 / opp_life  # empty GY, not worth it
             else:
-                mod += gy_fuel * 1.5  # scale with GY fuel
+                # PiF value = GY spells it unlocks × their storm contribution
+                mod += gy_fuel / opp_life * 30.0
                 hand_rituals = sum(1 for c in me.hand
                                    if c.instance_id != card.instance_id
                                    and 'ritual' in getattr(c.template, 'tags', set())
                                    and (c.template.is_instant or c.template.is_sorcery))
                 if hand_rituals >= 2:
-                    mod -= 5.0  # cast hand rituals first
+                    mod -= hand_rituals / opp_life * 10.0  # cast hand rituals first
                 reducers = sum(1 for c in me.battlefield
                                if 'cost_reducer' in getattr(c.template, 'tags', set()))
                 pif_cost = max(0, (t.cmc or 4) - reducers)
                 if snap.my_mana - pif_cost < (1 if reducers > 0 else 2):
-                    mod -= 15.0  # can't afford to replay after PiF
+                    mod -= 10.0 / opp_life  # can't afford replays
 
-        # ── Tutor (Wish) sequencing ──
+        # ── Tutor sequencing ──
         if 'tutor' in tags:
             if p.storm_patience and storm == 0:
-                mod -= 15.0  # hold tutor pre-chain
+                mod -= 5.0 / opp_life  # hold pre-chain
             else:
-                mod += 6.0 + min(storm * 2.0, 20.0)
-                # Hold Wish if we have castable fuel
-                chain_fuel = sum(
-                    1 for c in me.hand
-                    if c.instance_id != card.instance_id
-                    and not c.template.is_land and game.can_cast(self.player_idx, c)
-                    and ('ritual' in getattr(c.template, 'tags', set())
-                         or 'cantrip' in getattr(c.template, 'tags', set()))
-                )
+                # Tutor value = it finds the finisher, enabling storm/opp_life kill
+                mod += (storm + 1) / opp_life * 20.0
+                # Hold tutor if we have castable fuel (cast fuel first for more storm)
+                chain_fuel = sum(1 for c in me.hand
+                                 if c.instance_id != card.instance_id
+                                 and not c.template.is_land
+                                 and game.can_cast(self.player_idx, c)
+                                 and ('ritual' in getattr(c.template, 'tags', set())
+                                      or 'cantrip' in getattr(c.template, 'tags', set())))
                 if chain_fuel > 0 and storm < 6:
-                    mod -= chain_fuel * 3.0  # cast fuel first
+                    mod -= chain_fuel / opp_life * 10.0
 
         # ── Cost reducer timing ──
         oracle = (t.oracle_text or '').lower()
         is_reducer = ('cost_reducer' in tags and 'cost' in oracle
                       and 'less' in oracle and t.domain_reduction == 0)
         if is_reducer:
-            fuel_in_hand = sum(1 for c in me.hand
-                               if c.instance_id != card.instance_id
-                               and not c.template.is_land
-                               and any(ft in getattr(c.template, 'tags', set())
-                                       for ft in ('ritual', 'cantrip', 'draw')))
+            fuel = _count_fuel()
             existing = sum(1 for c in me.battlefield
                            if 'cost_reducer' in getattr(c.template, 'tags', set()))
-            if fuel_in_hand > 0 or storm == 0:
-                mod += 8.0 if existing == 0 else 4.0  # first reducer is most valuable
-                if snap.turn_number <= 4:
-                    mod += 6.0  # early reducer enables whole chain
-            elif storm >= 3:
-                mod -= 5.0  # mid-chain reducer wastes tempo
+            if storm >= 3:
+                mod -= 3.0 / opp_life  # mid-chain, deploy spells not reducers
+            elif fuel > 0 or storm == 0:
+                # Reducer value = future mana saved × fuel count
+                # First reducer saves 1 mana per future spell = fuel / opp_life
+                saved_per_spell = 1.0
+                future_spells = fuel + 3  # hand fuel + expected draws
+                mod += saved_per_spell * future_spells / opp_life * 15.0
+                if existing > 0:
+                    mod *= 0.5  # diminishing returns on 2nd reducer
 
         return mod
 

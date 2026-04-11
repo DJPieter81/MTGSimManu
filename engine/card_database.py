@@ -100,66 +100,50 @@ BASIC_LAND_SUBTYPES = {
     "Forest": ["G"],
 }
 
-# Fetch lands: sacrifice to search for specific land types
-# We treat them as producing the colors they can fetch
-FETCH_LAND_COLORS = {
-    "Flooded Strand": ["W", "U"],
-    "Polluted Delta": ["U", "B"],
-    "Bloodstained Mire": ["B", "R"],
-    "Wooded Foothills": ["R", "G"],
-    "Windswept Heath": ["W", "G"],
-    "Scalding Tarn": ["U", "R"],
-    "Verdant Catacombs": ["B", "G"],
-    "Arid Mesa": ["W", "R"],
-    "Misty Rainforest": ["U", "G"],
-    "Marsh Flats": ["W", "B"],
-    # Prismatic Vista / Fabled Passage fetch any basic
-    "Prismatic Vista": ["W", "U", "B", "R", "G"],
-    "Fabled Passage": ["W", "U", "B", "R", "G"],
-    "Terramorphic Expanse": ["W", "U", "B", "R", "G"],
-    "Evolving Wilds": ["W", "U", "B", "R", "G"],
+# Fetch land colors: derived from oracle text at module load time.
+# Pattern: "Sacrifice this land: Search your library for a [types] card"
+# Populated by _build_fetch_land_colors() after DB loads.
+FETCH_LAND_COLORS: Dict[str, List[str]] = {}
+
+# Basic land type → color mapping for fetch target resolution
+_BASIC_TYPE_TO_COLOR = {
+    "plains": "W", "island": "U", "swamp": "B",
+    "mountain": "R", "forest": "G",
 }
 
-# Lands that should always enter untapped (shock lands pay 2 life)
-SHOCK_LANDS = {
-    "Hallowed Fountain", "Watery Grave", "Blood Crypt",
-    "Stomping Ground", "Temple Garden", "Godless Shrine",
-    "Steam Vents", "Overgrown Tomb", "Sacred Foundry",
-    "Breeding Pool",
-}
 
-# Fast lands (enter untapped if you control 2 or fewer other lands)
-FAST_LANDS = {
-    "Seachrome Coast", "Darkslick Shores", "Blackcleave Cliffs",
-    "Copperline Gorge", "Razorverge Thicket", "Concealed Courtyard",
-    "Spirebluff Canal", "Blooming Marsh", "Inspiring Vantage",
-    "Botanical Sanctum",
-}
+def _parse_fetch_colors_from_oracle(oracle_text: str) -> Optional[List[str]]:
+    """Parse fetchable colors from oracle text.
 
-# Pain lands (always untapped, pay 1 life for colored)
-PAIN_LANDS = {
-    "Adarkar Wastes", "Underground River", "Sulfurous Springs",
-    "Karplusan Forest", "Brushland", "Caves of Koilos",
-    "Shivan Reef", "Llanowar Wastes", "Battlefield Forge",
-    "Yavimaya Coast",
-}
+    Returns list of color codes, or None if not a fetch land.
+    """
+    if not oracle_text:
+        return None
+    ot = oracle_text.lower()
+    if 'sacrifice this land' not in ot or 'search your library' not in ot:
+        return None
 
-# Lands that always enter tapped (triomes, etc.)
-ALWAYS_TAPPED_LANDS = {
-    # Ikoria triomes
-    "Ketria Triome", "Indatha Triome", "Zagoth Triome",
-    "Raugrin Triome", "Savai Triome",
-    # Streets of New Capenna triomes
-    "Jetmir's Garden", "Ziatora's Proving Ground",
-    "Spara's Headquarters", "Raffine's Tower",
-    "Xander's Lounge",
-    # Other always-tapped lands
-    "Shelldock Isle",
-}
+    # "search your library for a basic land card" → all colors
+    if 'basic land card' in ot:
+        return ["W", "U", "B", "R", "G"]
 
-# Lands that always enter untapped (shock lands handled separately with life payment)
-# Fast lands removed — they need conditional checking based on land count
-ALWAYS_UNTAPPED_LANDS = SHOCK_LANDS | PAIN_LANDS | set(FETCH_LAND_COLORS.keys())
+    # "search your library for a Plains or Island card" → W, U
+    import re
+    m = re.search(r'search your library for (?:a|an) (.+?) card', ot)
+    if m:
+        type_text = m.group(1).lower()
+        colors = []
+        for basic_type, color in _BASIC_TYPE_TO_COLOR.items():
+            if basic_type in type_text:
+                colors.append(color)
+        if colors:
+            return colors
+
+    return None
+
+# Hardcoded land sets removed — all land entry logic is now derived from
+# oracle text via template properties: enters_tapped, untap_life_cost,
+# untap_max_other_lands, tap_damage.
 
 
 @dataclass
@@ -443,26 +427,32 @@ class OracleTextParser:
 
     @classmethod
     def detect_enters_tapped(cls, oracle_text: str, card_name: str = "") -> bool:
-        """Detect if a land enters the battlefield tapped."""
-        # Shock lands, pain lands, and fetch lands always enter untapped
-        # (shock lands: life payment handled in play_land)
-        # Fast lands are NOT in ALWAYS_UNTAPPED_LANDS — they need runtime checking
-        if card_name in ALWAYS_UNTAPPED_LANDS:
+        """Detect if a land enters the battlefield tapped, from oracle text.
+
+        Lands with optional life payment (shock lands) or conditional untap
+        (fast lands) are handled separately via untap_life_cost and
+        untap_max_other_lands template properties.
+        Fetch lands don't enter tapped (they sacrifice immediately).
+        """
+        if card_name in FETCH_LAND_COLORS:
             return False
-        # Fast lands: enters_tapped is set to True here, but play_land
-        # will override to untapped if controller has ≤ 2 other lands
-        if card_name in FAST_LANDS:
-            return True  # Default tapped; play_land checks land count
 
         if not oracle_text:
             return False
         text_lower = oracle_text.lower()
+
+        # "you may pay N life. If you don't, it enters tapped" → not tapped
+        # (handled by untap_life_cost; the default is untapped)
+        if 'you may pay' in text_lower and 'enters tapped' in text_lower:
+            return False
+
         for pattern in cls.ENTERS_TAPPED_PATTERNS:
             if re.search(pattern, text_lower):
-                # Check for conditional untapped
+                # Check for conditional untapped (fast lands, check lands, etc.)
                 for cond_pattern in cls.CONDITIONAL_UNTAPPED_PATTERNS:
                     if re.search(cond_pattern, text_lower):
-                        return False  # Has a way to enter untapped
+                        # Conditional: default tapped, runtime checks land count
+                        return True
                 return True
         return False
 
@@ -853,6 +843,15 @@ class CardDatabase:
             except Exception as e:
                 errors += 1
 
+        # Populate FETCH_LAND_COLORS from oracle text
+        global FETCH_LAND_COLORS
+        FETCH_LAND_COLORS.clear()
+        for cname, tmpl in self.cards.items():
+            if tmpl.is_land:
+                fetch_colors = _parse_fetch_colors_from_oracle(tmpl.oracle_text)
+                if fetch_colors:
+                    FETCH_LAND_COLORS[cname] = fetch_colors
+
         print(f"Loaded {count} cards ({errors} errors)")
 
     def _build_template(self, name: str, data: dict) -> Optional[CardTemplate]:
@@ -930,9 +929,29 @@ class CardDatabase:
         subtypes = data.get("subtypes", [])
         produces_mana = []
         enters_tapped = False
+        untap_life_cost = 0
+        untap_max_other_lands = -1
+        tap_damage = 0
         if CardType.LAND in card_types:
             produces_mana = OracleTextParser.detect_land_mana(oracle_text, subtypes, card_name=name)
             enters_tapped = OracleTextParser.detect_enters_tapped(oracle_text, card_name=name)
+            # Detect land entry conditions from oracle text
+            if oracle_text:
+                import re as _re
+                ot = oracle_text.lower()
+                # Optional life payment: "you may pay N life. If you don't, it enters tapped"
+                life_match = _re.search(r'you may pay (\d+) life.*enters tapped', ot)
+                if life_match:
+                    untap_life_cost = int(life_match.group(1))
+                    enters_tapped = False  # can enter untapped (default)
+                # Conditional on land count: "enters tapped unless you control N or fewer other lands"
+                lands_match = _re.search(r'enters tapped unless you control (\w+) or fewer other lands', ot)
+                if lands_match:
+                    word_to_num = {"two": 2, "three": 3, "one": 1, "zero": 0, "four": 4}
+                    untap_max_other_lands = word_to_num.get(lands_match.group(1), 2)
+                # Pain land: "this land deals 1 damage to you"
+                if 'deals 1 damage to you' in ot or 'this land deals 1 damage' in ot:
+                    tap_damage = 1
 
         # Detect conditional mana production from oracle text
         # Pattern: "If you control an Urza's ... add {C}{C}{C} instead"
@@ -967,6 +986,9 @@ class CardDatabase:
             color_identity=color_identity,
             produces_mana=produces_mana,
             enters_tapped=enters_tapped,
+            untap_life_cost=untap_life_cost,
+            untap_max_other_lands=untap_max_other_lands,
+            tap_damage=tap_damage,
             oracle_text=oracle_text,
             tags=tags,
             evoke_cost=evoke_cost,

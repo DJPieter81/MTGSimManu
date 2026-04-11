@@ -565,6 +565,9 @@ def audit_deck(deck_name: str, n_games: int = 30, opponents: List[str] = None,
             lines.append(f'{card:<30s} {rate_in_wins:>6.2f}x {rate_in_losses:>6.2f}x {delta:>+5.2f}')
 
     return '\n'.join(lines)
+
+
+def run_verbose_game(deck1: str, deck2: str, seed: int = 42000) -> str:
     """Run a single verbose game, return the full log as string."""
     runner = _get_runner()
     runner.rng = random.Random(seed)
@@ -582,6 +585,78 @@ def audit_deck(deck_name: str, n_games: int = 30, opponents: List[str] = None,
              f'P2={r.winner_life if r.winner==1 else r.loser_life}',
              '']
     lines.extend(r.game_log)
+    return '\n'.join(lines)
+
+
+def run_bo3(deck1: str, deck2: str, seed: int = 42000) -> str:
+    """Run a best-of-3 match with detailed text logs. Stops at 2 wins.
+
+    Usage:
+        python run_meta.py --bo3 affinity zoo -s 55555
+    """
+    runner = _get_runner()
+    d1 = MODERN_DECKS[deck1]
+    d2 = MODERN_DECKS[deck2]
+
+    lines = []
+    score = [0, 0]
+    game_num = 0
+
+    while score[0] < 2 and score[1] < 2:
+        game_num += 1
+        game_seed = seed + game_num - 1
+
+        # Alternate who's on the play: G1 die roll, G2 loser of G1, G3 loser of G2
+        if game_num == 1:
+            p1_name, p1_data, p2_name, p2_data = deck1, d1, deck2, d2
+        elif game_num == 2:
+            # Loser of G1 goes first
+            if last_winner == deck1:
+                p1_name, p1_data, p2_name, p2_data = deck2, d2, deck1, d1
+            else:
+                p1_name, p1_data, p2_name, p2_data = deck1, d1, deck2, d2
+        else:
+            # Loser of G2 goes first
+            if last_winner == deck1:
+                p1_name, p1_data, p2_name, p2_data = deck2, d2, deck1, d1
+            else:
+                p1_name, p1_data, p2_name, p2_data = deck1, d1, deck2, d2
+
+        lines.append('=' * 70)
+        lines.append(f'  GAME {game_num}: {p1_name} (P1) vs {p2_name} (P2)  —  seed {game_seed}')
+        lines.append(f'  Series: {deck1} {score[0]} - {score[1]} {deck2}')
+        lines.append('=' * 70)
+        lines.append('')
+
+        runner.rng = random.Random(game_seed)
+        random.seed(game_seed)
+        r = runner.run_game(
+            p1_name, p1_data['mainboard'], p2_name, p2_data['mainboard'],
+            deck1_sideboard=p1_data.get('sideboard', {}),
+            deck2_sideboard=p2_data.get('sideboard', {}),
+            verbose=True,
+        )
+
+        lines.extend(r.game_log)
+        lines.append('')
+
+        p1_life = r.winner_life if r.winner == 0 else r.loser_life
+        p2_life = r.winner_life if r.winner == 1 else r.loser_life
+        lines.append(f'>>> {r.winner_deck} wins Game {game_num} on turn {r.turns} via {r.win_condition}')
+        lines.append(f'    Final life: {p1_name}={p1_life}  {p2_name}={p2_life}')
+        lines.append('')
+
+        last_winner = r.winner_deck
+        if r.winner_deck == deck1:
+            score[0] += 1
+        else:
+            score[1] += 1
+
+    lines.append('=' * 70)
+    winner = deck1 if score[0] > score[1] else deck2
+    lines.append(f'  MATCH RESULT: {winner} wins {max(score)}-{min(score)}')
+    lines.append('=' * 70)
+
     return '\n'.join(lines)
 
 
@@ -813,6 +888,7 @@ if __name__ == '__main__':
     parser.add_argument('--field', metavar='DECK', help='Run one deck vs all others')
     parser.add_argument('--verbose', nargs=2, metavar=('DECK1', 'DECK2'), help='Run single game log (actions only)')
     parser.add_argument('--trace', nargs=2, metavar=('DECK1', 'DECK2'), help='Run single game with full AI reasoning')
+    parser.add_argument('--bo3', nargs=2, metavar=('DECK1', 'DECK2'), help='Run best-of-3 match with detailed text log')
     parser.add_argument('--games', '-n', type=int, default=20, help='Games per matchup (default 20)')
     parser.add_argument('--decks', '-d', type=int, default=None, help='Top N decks for matrix')
     parser.add_argument('--seed', '-s', type=int, default=42000, help='Seed for verbose/trace game')
@@ -842,7 +918,10 @@ if __name__ == '__main__':
         print(audit_deck(resolve_deck_name(args.audit), n_games=args.games))
         sys.exit(0)
 
-    if args.trace:
+    if args.bo3:
+        d1, d2 = resolve_deck_name(args.bo3[0]), resolve_deck_name(args.bo3[1])
+        print(run_bo3(d1, d2, seed=args.seed))
+    elif args.trace:
         d1, d2 = resolve_deck_name(args.trace[0]), resolve_deck_name(args.trace[1])
         print(run_trace_game(d1, d2, seed=args.seed))
     elif args.verbose:
