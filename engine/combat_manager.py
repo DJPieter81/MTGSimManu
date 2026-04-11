@@ -250,10 +250,12 @@ class CombatManager:
                         )
 
                 # CR 702.19c: Trample — excess damage to defending player
+                player_damage = 0
                 if has_trample and remaining_damage > 0:
                     game.players[self._defending_player].life -= remaining_damage
                     game.players[self._active_player].damage_dealt_this_turn += remaining_damage
                     total_damage_dealt += remaining_damage
+                    player_damage = remaining_damage
 
                 # Deathtouch from attacker — ensure blocker is marked as dead
                 if has_deathtouch:
@@ -269,11 +271,37 @@ class CombatManager:
                 game.players[self._defending_player].life -= attacker_power
                 game.players[self._active_player].damage_dealt_this_turn += attacker_power
                 total_damage_dealt = attacker_power
+                player_damage = attacker_power
 
             # CR 702.15: Lifelink — gain life equal to ALL damage dealt
             if has_lifelink and total_damage_dealt > 0:
                 game.players[self._active_player].life += total_damage_dealt
                 game.players[self._active_player].life_gained_this_turn += total_damage_dealt
+
+            # "Deals combat damage to a player" triggers (oracle-based)
+            if player_damage > 0:
+                a_oracle = (attacker.template.oracle_text or '').lower()
+                if 'combat damage to a player' in a_oracle:
+                    if 'treasure' in a_oracle:
+                        game.create_token(self._active_player, "treasure",
+                                          count=1)
+                    if 'exile the top card' in a_oracle:
+                        opp = game.players[self._defending_player]
+                        if opp.library:
+                            exiled = opp.library.pop(0)
+                            exiled.zone = "exile"
+                            opp.exile.append(exiled)
+                            game.log.append(
+                                f"T{game.display_turn} P{self._active_player+1}: "
+                                f"{attacker.name} exiles {exiled.name} "
+                                f"from top of P{self._defending_player+1}'s library"
+                            )
+                    if 'draw a card' in a_oracle:
+                        game.draw_cards(self._active_player, 1)
+                        game.log.append(
+                            f"T{game.display_turn} P{self._active_player+1}: "
+                            f"{attacker.name} deals combat damage — draw a card"
+                        )
 
         return total_player_damage + sum(
             max(0, game.players[self._defending_player].life - game.players[self._defending_player].life)
