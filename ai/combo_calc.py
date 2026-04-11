@@ -423,15 +423,18 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
             return a.combo_value  # lethal — fire immediately
 
         # Count ALL non-land non-storm spells in hand (not just currently castable).
-        # Rituals produce mana, so "can't cast now" doesn't mean "can't cast after ritual".
         total_fuel = sum(1 for c in me.hand
                          if c.instance_id != card.instance_id
                          and not c.template.is_land
                          and Kw.STORM not in getattr(c.template, 'keywords', set()))
         if total_fuel > 0:
-            # Hold: each remaining fuel potentially adds 1/opp_life of a kill
-            return -total_fuel / opp_life * a.combo_value
-        # Truly no fuel left — fire now, value = damage fraction × combo_value
+            # Hold penalty = wasted potential.
+            # Firing at storm=3 vs opp_life=17 wastes (17-4)/17 = 76% of the finisher.
+            # The penalty is the fraction of kill we LOSE by firing early × combo_value.
+            damage_now = storm + 1
+            fraction_wasted = (opp_life - damage_now) / opp_life
+            return -fraction_wasted * a.combo_value
+        # Truly no fuel left — fire now
         return (storm + 1) / opp_life * a.combo_value
 
     # ═══ NON-STORM PAYOFF: hold until resources ready ═══
@@ -443,6 +446,35 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
             return -wasted * a.combo_value
         # Ready — let projection handle the positive value
         return 0.0
+
+    # ═══ COST REDUCER: value from actual chain improvement ═══
+    # Run find_all_chains with medallions vs medallions+1 — the storm damage
+    # difference IS the reducer's value. No magic numbers.
+    if role == 'engine' and a.resource_zone == "storm":
+        from ai.combo_chain import find_all_chains
+        medallions = sum(1 for c in me.battlefield
+                         if 'cost_reducer' in getattr(c.template, 'tags', set()))
+        hand_after = [c for c in me.hand if c.instance_id != card.instance_id]
+        mana_after = max(0, snap.my_mana - (card.template.cmc or 0))
+
+        # Chain WITH the extra reducer deployed
+        chains_with = find_all_chains(hand_after, mana_after, medallions + 1,
+                                      a.payoff_names, storm)
+        best_with = max(chains_with, key=lambda c: c.storm_damage, default=None)
+        # Chain WITHOUT (current state, same hand minus the reducer card)
+        chains_without = find_all_chains(hand_after, mana_after, medallions,
+                                         a.payoff_names, storm)
+        best_without = max(chains_without, key=lambda c: c.storm_damage, default=None)
+
+        dmg_with = best_with.storm_damage if best_with else 0
+        dmg_without = best_without.storm_damage if best_without else 0
+        # The reducer's value = (damage with it - damage without) / opp_life × combo_value
+        improvement = (dmg_with - dmg_without) / opp_life * a.combo_value
+        # Even if no chain improvement yet, reducer has future value from
+        # spells we'll draw. Use storm count from best chain as floor.
+        if improvement <= 0 and dmg_with > 0:
+            improvement = dmg_with / opp_life * a.combo_value
+        return improvement
 
     # ═══ RITUAL CHAIN GATE: block at storm=0 without payoff access ═══
     if role == 'fuel' and storm == 0:
