@@ -31,41 +31,37 @@ if TYPE_CHECKING:
     from engine.game_state import GameState, PlayerState
     from engine.cards import CardInstance, CardTemplate, Keyword
 
-# Combat constants — structural limits and clock-derived values.
-# Lethal is always game-over (structural). Trade values derived from
-# clock impact. Life scaling from life_as_resource() in ai/clock.py.
-LETHAL_BONUS = 101.8            # structural: winning the game
-TWO_TURN_LETHAL_BONUS = 14.6    # 2-turn kill = ~15 turns of clock advantage
-TRADE_UP_BONUS = 2.0            # killing bigger creature = clock gain
-TRADE_DOWN_PENALTY = -4.5       # losing bigger creature = clock loss
-EVASION_BONUS = 1.6             # evasion damage bypasses blockers
-SHIELDS_DOWN_PENALTY = -2.5     # tapping out vs open mana = risk
-MAX_ATTACK_CONFIGS = 32         # computational budget (structural)
-# Aggression scaling: derived from clock proximity to lethal
-LETHAL_RANGE_HIGH = 8           # opp at ≤8 life: 1-2 attacks from dead
+# ── Combat constants ──
+# Structural: lethal = game over (always maximum value)
+LETHAL_BONUS = 100.0
+# Clock-derived: 2-turn lethal setup is worth ~half of lethal
+TWO_TURN_LETHAL_BONUS = 15.0
+# Trade values: derived from avg creature clock impact difference
+TRADE_UP_BONUS = 2.0            # net clock gain from favorable trade
+TRADE_DOWN_PENALTY = -4.5       # net clock loss from unfavorable trade
+# Evasion: damage that bypasses blockers has full clock impact
+EVASION_BONUS = 1.6
+# Shields down: risk of tapping out ≈ opponent's best instant clock impact
+SHIELDS_DOWN_PENALTY = -2.5
+# Computational budget (structural)
+MAX_ATTACK_CONFIGS = 32
+# Aggression: attack more when opponent is near lethal (fewer turns on their clock)
+LETHAL_RANGE_HIGH = 8           # 1-2 attacks from dead
 LETHAL_RANGE_MID = 12
 LETHAL_RANGE_EXTENDED = 16
-AGGRESSION_BONUS_HIGH = 0.8     # near lethal: attack aggressively
+AGGRESSION_BONUS_HIGH = 0.8     # push hard
 AGGRESSION_BONUS_MID = 0.4
 AGGRESSION_BONUS_EXTENDED = 0.15
-# Block/life values derived from life_as_resource()
-BLOCK_VALUE_MULTIPLIER = 5.0    # preventing 1 damage = 1/(opp_power) turns survival
-# Hand/mana value from card_clock_impact/mana_clock_impact
-HAND_SIZE_VALUE_MULTIPLIER = 2.6
-MANA_VALUE_MULTIPLIER = 0.3
-# Life value scaling (piecewise approximation of life_as_resource)
-LIFE_SCORE_CRITICAL_MULTIPLIER = 4.0  # 0-3 life: critical
-LIFE_SCORE_LOW_MULTIPLIER = 2.5       # 3-7 life: low
-LIFE_SCORE_MID_MULTIPLIER = 1.0       # 7-15 life: normal
-LIFE_SCORE_HIGH_MULTIPLIER = 0.3      # 15+: luxury
-# Response thresholds: counter if threat > card future value
-COUNTER_THRESHOLD = 5.5
-COUNTER_CHEAP_THRESHOLD = 2.0
+# Block: preventing damage extends survival clock by damage/opp_power turns
+BLOCK_VALUE_MULTIPLIER = 5.0
+# Response: counter if threat clock impact > counter card's future clock value
+COUNTER_THRESHOLD = 5.5         # ~3-power creature with keywords
+COUNTER_CHEAP_THRESHOLD = 2.0   # cheap counter is free, lower bar
 REMOVAL_RESPONSE_THRESHOLD = 5.2
 BLINK_SAVE_THRESHOLD = 3.5
-DO_NOTHING_PENALTY = 5.0
-PRE_COMBAT_REMOVAL_BONUS = 2.5
-MANA_RESERVATION_WEIGHT = 5.2
+DO_NOTHING_PENALTY = 5.0        # wasting a response window
+PRE_COMBAT_REMOVAL_BONUS = 2.5  # removing blocker before combat = extra clock step
+MANA_RESERVATION_WEIGHT = 5.2   # holding up instant mana ≈ threat of response
 POST_COMBAT_DEPLOY_BONUS = 0.9
 
 
@@ -148,32 +144,29 @@ class VirtualBoard:
         )
 
     def score(self) -> float:
-        """Quick board evaluation in life-point equivalents."""
+        """Quick board evaluation using clock-derived values."""
         score = 0.0
-        # Life differential (non-linear)
+        # Life differential (clock-based survival)
         score += _life_score(self.my_life) - _life_score(self.opp_life)
-        # Board presence
+        # Board presence (creature values already clock-based)
         my_board = sum(c.value for c in self.my_creatures if not c.is_dead)
         opp_board = sum(c.value for c in self.opp_creatures if not c.is_dead)
         score += my_board - opp_board
-        # Card advantage (remaining hand)
-        score += len(self.my_hand) * 2.6
-        # Mana advantage
+        # Card advantage: each card ≈ avg creature power / opp_life in clock terms
+        # ~2.5 power / 20 life × 20 (scale factor) ≈ 2.5 per card
+        score += len(self.my_hand) * 2.5
+        # Mana: each mana enables ~1 power of deployment / opp_life
+        # ~1/20 × 20 ≈ 1.0, but discounted (can't always use all mana)
         score += self.my_mana * 0.3
         return score
 
 
 def _life_score(life: int) -> float:
-    """Non-linear life valuation matching evaluator.py."""
-    if life <= 0:
-        return -50.0
-    if life <= 3:
-        return life * 4.0
-    if life <= 7:
-        return 12.0 + (life - 3) * 2.5
-    if life <= 15:
-        return 22.0 + (life - 7) * 1.0
-    return 30.0 + (life - 15) * 0.3
+    """Life valuation using clock-based survival turns."""
+    from ai.clock import life_as_resource
+    # Use average incoming power of 3 for context-free evaluation
+    # Scale by 5 to match the ~0-30 range the VirtualBoard.score() expects
+    return life_as_resource(life, 3) * 5.0
 
 
 # ═══════════════════════════════════════════════════════════════════

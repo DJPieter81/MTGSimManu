@@ -31,39 +31,3 @@ REMOVAL_ESTIMATED_COST = 1         # Most removal costs 1 (Bolt, Push, Ending)
 # Damage removal effectiveness by creature toughness
 DAMAGE_REMOVAL_EFF_HIGH_TOUGH = 0.3  # 4+ toughness: 30% of damage removal kills it
 DAMAGE_REMOVAL_EFF_MID_TOUGH = 0.6   # 3 toughness: 60% of damage removal kills it
-
-# ══════════════════════════════════════════════════════════════
-# Legacy Creature Value (ev_evaluator.py creature_value)
-# Used by blocking, targeting, and evoke decisions.
-# Will be replaced by creature_clock_impact() in a future phase.
-# ══════════════════════════════════════════════════════════════
-
-CREATURE_POWER_MULT = 1.0         # Base value per point of power
-CREATURE_TOUGHNESS_MULT = 0.3     # Base value per point of toughness
-
-KEYWORD_BONUSES = {
-    "flying": 2.0,
-    "trample": 1.0,
-    "haste": 1.5,
-    "deathtouch": 2.0,
-    "first_strike": 1.5,
-    "double_strike_per_power": 1.0,
-    "hexproof": 2.0,
-    "indestructible": 3.0,
-    "menace": 1.0,
-    "vigilance": 1.0,
-    "undying": 2.0,
-    "annihilator": 4.0,
-    "prowess": 1.5,
-    "cascade": 3.0,
-    "reach": 0.5,
-    "lifelink_per_power": 0.5,
-    "lifelink_power_cap": 5,
-}
-
-TAG_BONUSES = {
-    "etb_value": 2.0,
-    "card_advantage": 3.0,
-    "cost_reducer": 2.5,
-    "token_maker": 1.5,
-}
