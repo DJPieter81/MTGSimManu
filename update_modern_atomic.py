@@ -3,7 +3,7 @@
 Download the latest ModernAtomic.json from MTGJSON and split into 8 parts.
 
 Usage:
-    python update_modern_atomic.py
+    python3 update_modern_atomic.py
 
 This script:
 1. Downloads ModernAtomic.json.gz from mtgjson.com
