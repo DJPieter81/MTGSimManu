@@ -73,7 +73,7 @@ class StrategyProfile:
     dying_opp_clock: int = 3
 
     # ── Removal ──
-    removal_overkill_cmc_diff: int = 2    # penalty when removal CMC > target + this
+    removal_overkill_cmc_diff: int = 2
     removal_overkill_mult: float = 0.6
 
     # ── Combo chain ──
@@ -81,26 +81,8 @@ class StrategyProfile:
     storm_patience: bool = False
     storm_min_fuel_to_go: int = 2
 
-    # ── Card draw (used by _score_cycling and burn decision) ──
-    card_draw_base: float = 4.0
-    creature_value_mult: float = 1.5      # used in burn target comparison
-
-    # ── Land scoring ──
-    land_base_ev: float = 10.0
-    land_untapped_castable_bonus: float = 5.0
-    land_untapped_base_bonus: float = 2.0
-    land_tapped_castable_penalty: float = -3.0
-    land_new_color_bonus: float = 4.0
-    land_fetch_bonus: float = 3.0
-    land_landfall_trigger_value: float = 3.0
-    land_landfall_defer_penalty: float = -12.0
-
-    # ── Cycling (Living End etc.) ──
-    cycling_creature_gy_value: float = 4.0
-    cycling_power_scaling: float = 0.5
-    cycling_life_pay_bonus: float = 2.0
-    cycling_cheap_bonus: float = 1.0
-    cycling_cascade_ready_bonus: float = 3.0
+    # ── Burn target comparison ──
+    creature_value_mult: float = 1.5
 
     # ── Pump (Psychic Frog etc.) ──
     pump_uncastable_cmc_buffer: int = 2

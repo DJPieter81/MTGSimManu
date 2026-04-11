@@ -43,16 +43,18 @@ TRADE_DOWN_PENALTY = -4.5
 SHIELDS_DOWN_PENALTY = -2.5
 # Computational budget (structural)
 MAX_ATTACK_CONFIGS = 32
-# Response: counter/remove if threat value exceeds these thresholds
-# Derived from: avg creature clock impact × 20 (scale) = ~3-5 for typical threats
-COUNTER_THRESHOLD = 5.5         # ~3-power creature with keywords
-COUNTER_CHEAP_THRESHOLD = 2.0   # cheap counter has low opportunity cost
-REMOVAL_RESPONSE_THRESHOLD = 5.2
-BLINK_SAVE_THRESHOLD = 3.5
-# Bonus for removing blocker before combat (enables extra damage = clock gain)
+# Response thresholds: derived from creature_value() scale (~1-15).
+# A 3/3 vanilla = ~3.0, a 3/3 flyer = ~4.3, a 6/6 trample = ~10.
+# Counter if threat > cost of holding counter (opportunity cost of the card).
+# Cheap counters (CMC≤2) have low opportunity cost → lower threshold.
+COUNTER_THRESHOLD = 5.0         # ~3/3 with a keyword
+COUNTER_CHEAP_THRESHOLD = 2.0   # cheap counter: counter almost anything
+REMOVAL_RESPONSE_THRESHOLD = 4.0  # remove if creature ≥ ~3/3
+BLINK_SAVE_THRESHOLD = 3.5       # save creature worth ≥ ~2/2 with keyword
+# Pre-combat removal: killing a blocker enables ~3 extra damage = 3/20 clock gain × 20 ≈ 3
 PRE_COMBAT_REMOVAL_BONUS = 2.5
-# Holding up mana for instants (opportunity cost of tapping out)
-MANA_RESERVATION_WEIGHT = 5.2
+# Holding up mana: value ≈ avg_threat × P(needing_response) ≈ 5 × 0.5 + counter_value
+MANA_RESERVATION_WEIGHT = 5.0
 
 
 # ═══════════════════════════════════════════════════════════════════

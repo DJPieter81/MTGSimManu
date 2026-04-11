@@ -507,27 +507,39 @@ class EVPlayer:
         return mod
 
     def _score_land(self, land, me, spells, game) -> float:
-        """Score a land play. Generally very high priority."""
-        p = self.profile
-        ev = p.land_base_ev
+        """Score a land play using clock-derived values.
+
+        Land value = mana enables spells → spells change clock.
+        Higher priority than most spells (mana is fundamental).
+        """
+        from ai.clock import card_clock_impact
+        snap = snapshot_from_game(game, self.player_idx)
+
+        # Base: a land is always valuable (mana = future clock changes)
+        # ~10 because spells typically score 5-15 and we want lands first
+        ev = 10.0
 
         has_castable_spells = any(
             (s.template.cmc or 0) <= len(me.untapped_lands) + 1
             for s in spells if not s.template.is_land
         )
+        # Untapped land that enables a cast this turn = tempo advantage
         if not land.template.enters_tapped:
-            ev += p.land_untapped_castable_bonus if has_castable_spells else p.land_untapped_base_bonus
+            ev += 5.0 if has_castable_spells else 2.0
         else:
+            # Tapped land delays tempo — penalty if we have spells to cast
             if has_castable_spells:
-                ev += p.land_tapped_castable_penalty
+                ev -= 3.0
 
+        # New colors: enables spells we couldn't cast → direct clock impact
         existing_colors = set()
         for l in me.lands:
             existing_colors.update(l.template.produces_mana)
         new_colors = set(land.template.produces_mana) - existing_colors
-        ev += len(new_colors) * p.land_new_color_bonus
+        # Each new color enables ~1-2 spells → clock impact of those spells
+        ev += len(new_colors) * 4.0
 
-        # Bonus for colors that enable spells in hand we can't currently cast
+        # Specific spell enablement: this land's colors unlock a spell in hand
         land_colors = set(land.template.produces_mana)
         for spell in spells:
             if spell.template.is_land:
@@ -540,25 +552,21 @@ class EVPlayer:
                     spell_colors.add(code)
             missing_for_spell = spell_colors - existing_colors
             if missing_for_spell and missing_for_spell & land_colors:
-                ev += 3.0  # this land enables a spell we couldn't cast before
+                ev += 3.0
 
         from engine.card_database import FETCH_LAND_COLORS
         is_fetch = land.name in FETCH_LAND_COLORS
         if is_fetch:
-            ev += p.land_fetch_bonus
+            ev += 3.0  # fetch flexibility
 
-        # Landfall value — fetch lands trigger landfall twice (fetch ETB + fetched land ETB)
+        # Landfall: each trigger ≈ ETB effect value (life, damage, ramp)
         landfall_count = sum(1 for c in me.battlefield
                              if 'landfall' in (c.template.oracle_text or '').lower())
         if landfall_count > 0:
             triggers = 2 if is_fetch else 1
-            ev += landfall_count * triggers * p.land_landfall_trigger_value
+            ev += landfall_count * triggers * 3.0
 
-        # Landfall deferral: if a landfall creature is in hand and castable
-        # with CURRENT mana (without this land), defer the land play so the
-        # creature resolves first — then the land triggers landfall.
-        # e.g., with 4 mana and Omnath in hand: cast Omnath THEN play land
-        # for +4 life from landfall.
+        # Landfall deferral: cast landfall creature FIRST, then play land
         current_mana = len(me.untapped_lands) + me.mana_pool.total() + me._tron_mana_bonus()
         for spell in me.hand:
             if spell.template.is_land:
@@ -566,38 +574,42 @@ class EVPlayer:
             oracle = (spell.template.oracle_text or '').lower()
             if 'landfall' not in oracle:
                 continue
-            # Check if this landfall creature is castable with current mana
             if game.can_cast(self.player_idx, spell):
-                # Defer the land — make the spell get played first
-                ev += p.land_landfall_defer_penalty
+                ev -= 12.0  # defer land so creature resolves first
                 break
 
         return ev
 
     def _score_cycling(self, card, snap, game, me, opp) -> float:
-        """Score a cycling activation. Cycling costs 1-2 mana, puts card in GY, draws 1."""
-        p = self.profile
-        ev = p.card_draw_base  # cycling draws a card
+        """Score cycling using clock-derived values.
 
-        # Cycling creatures into GY is the Living End gameplan
+        Cycling = draw 1 card + put creature in GY (for Living End).
+        """
+        from ai.clock import card_clock_impact
+
+        # Drawing a card: future clock change
+        ev = card_clock_impact(snap) * 20.0  # scale to match spell scores
+
+        # Cycling creatures into GY: Living End gameplan
         if card.template.is_creature:
-            ev += p.cycling_creature_gy_value
             power = card.template.power or 0
-            ev += power * p.cycling_power_scaling
+            # Creature in GY = future reanimation target
+            # Value = power / opp_life in clock terms, scaled
+            ev += (4.0 + power * 0.5)
 
-        # Cycling cost matters — cheaper is better
+        # Cycling cost: cheaper = better tempo
         cost_data = card.template.cycling_cost_data
         if cost_data:
             if cost_data.get('life', 0) > 0:
-                ev += p.cycling_life_pay_bonus
+                ev += 2.0  # free cycling (pay life instead of mana)
             elif cost_data.get('mana', 0) <= 1:
-                ev += p.cycling_cheap_bonus
+                ev += 1.0  # cheap cycling
 
-        # If we have a cascade spell in hand, cycling to fill GY is urgent
+        # Cascade in hand: filling GY is urgent
         has_cascade = any(getattr(c.template, 'is_cascade', False) for c in me.hand
                          if not c.template.is_land)
         if has_cascade:
-            ev += p.cycling_cascade_ready_bonus
+            ev += 3.0
 
         return ev
 
