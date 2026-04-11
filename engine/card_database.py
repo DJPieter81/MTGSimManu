@@ -840,6 +840,12 @@ class CardDatabase:
                     self.cards[card_name] = template
                     self._raw_data[card_name] = entry
                     count += 1
+                    # DFC/split: also register under front face name
+                    if " // " in card_name:
+                        front_face = card_name.split(" // ")[0]
+                        if front_face not in self.cards:
+                            self.cards[front_face] = template
+                            self._raw_data[front_face] = entry
             except Exception as e:
                 errors += 1
 

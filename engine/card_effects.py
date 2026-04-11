@@ -744,8 +744,30 @@ def ranger_captain_etb(game, card, controller, targets=None, item=None):
                            description="Create Treasure token on combat damage")
 def ragavan_etb(game, card, controller, targets=None, item=None):
     # Ragavan's ETB does nothing — his ability triggers on combat damage.
-    # The combat damage trigger is handled in trigger_combat_damage.
+    # The combat damage trigger is handled in CombatManager._deal_combat_damage.
     pass
+
+
+@EFFECT_REGISTRY.register("The Legend of Roku // Avatar Roku", EffectTiming.ETB,
+                           description="Saga Ch.I: exile top 3, may play until end of next turn")
+def legend_of_roku_etb(game, card, controller, targets=None, item=None):
+    """Chapter I triggers on ETB: impulse draw 3."""
+    player = game.players[controller]
+    exiled = []
+    for _ in range(min(3, len(player.library))):
+        c = player.library.pop(0)
+        c.zone = "hand"
+        player.hand.append(c)
+        exiled.append(c.name)
+    if exiled:
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: "
+            f"The Legend of Roku Ch.I: impulse draws {', '.join(exiled)}"
+        )
+    # Initialize lore counter at 1 (Chapter I already fired)
+    if not hasattr(card, 'other_counters') or card.other_counters is None:
+        card.other_counters = {}
+    card.other_counters['lore'] = 1
 
 
 @EFFECT_REGISTRY.register("Summoner's Pact", EffectTiming.SPELL_RESOLVE,
