@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """
 build_dashboard.py — MTGSimManu metagame matrix dashboard builder.
-Usage: python build_dashboard.py [output_path]
+
+Usage:
+  python build_dashboard.py [jsx_path] [output_path]   # build from JSX
+  python build_dashboard.py --merge                     # merge metagame_results.json → JSX → HTML
 
 Reads D from metagame_14deck.jsx, embeds into standalone HTML dashboard.
 Output defaults to /mnt/user-data/outputs/modern_meta_matrix_full.html
@@ -37,6 +40,8 @@ def build(jsx_path='metagame_14deck.jsx', out_path=None):
     if out_path is None:
         out_path = '/mnt/user-data/outputs/modern_meta_matrix_full.html'
 
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+
     D = load_D(jsx_path)
     d_json = json.dumps(D, separators=(',', ':'))
     arch_json = json.dumps(ARCH, separators=(', ', ': '))
@@ -50,7 +55,121 @@ def build(jsx_path='metagame_14deck.jsx', out_path=None):
         f.write(html)
     print(f"Built: {out_path} ({len(html):,} chars)")
 
+# ── Merge: metagame_results.json → JSX → HTML ───────────────
+_HERE = os.path.dirname(os.path.abspath(__file__))
+_RESULTS_FILE = os.path.join(_HERE, 'metagame_results.json')
+_JSX_FILE = os.path.join(_HERE, 'metagame_14deck.jsx')
+_META_SHARES_FILE = os.path.join(_HERE, 'decks', 'metagame.json')
+
+
+def _load_meta_shares():
+    """Load tournament meta shares from decks/metagame.json."""
+    if os.path.exists(_META_SHARES_FILE):
+        with open(_META_SHARES_FILE) as f:
+            return json.load(f)
+    return {}
+
+
+def merge(results_path=None, jsx_path=None, out_path=None):
+    """Merge saved matrix results into the JSX data file and rebuild the HTML.
+
+    1. Reads metagame_results.json (from run_meta.py --save)
+    2. Converts win percentages → D object with wins matrix
+    3. Preserves matchup_cards / deck_cards from existing JSX if present
+    4. Writes updated metagame_14deck.jsx
+    5. Builds the HTML dashboard
+    """
+    results_path = results_path or _RESULTS_FILE
+    jsx_path = jsx_path or _JSX_FILE
+
+    # Load saved results
+    if not os.path.exists(results_path):
+        print(f"Error: {results_path} not found. Run: python run_meta.py --matrix -n 50 --save",
+              file=sys.stderr)
+        sys.exit(1)
+
+    with open(results_path) as f:
+        data = json.load(f)
+
+    names = data.get('names', [])
+    matrix_raw = data.get('matrix', {})
+    n_games = data.get('n_games', 50)
+    rankings = data.get('rankings', [])
+
+    if not names or not matrix_raw:
+        print("Error: saved results missing 'names' or 'matrix'", file=sys.stderr)
+        sys.exit(1)
+
+    # Build name→index map
+    idx = {name: i for i, name in enumerate(names)}
+    n = len(names)
+
+    # Convert "deck1|deck2" percentage matrix → wins[i][j] count matrix
+    wins = [[0] * n for _ in range(n)]
+    for key, pct in matrix_raw.items():
+        d1, d2 = key.split('|')
+        if d1 in idx and d2 in idx:
+            wins[idx[d1]][idx[d2]] = round(pct / 100 * n_games)
+
+    # Load meta shares
+    meta_shares_dict = _load_meta_shares()
+    meta_shares = [meta_shares_dict.get(name, 0) for name in names]
+
+    # Build overall array from rankings
+    rank_lookup = {}
+    for avg, deck, meta_wr in rankings:
+        rank_lookup[deck] = {'win_rate': avg, 'weighted_wr': meta_wr}
+
+    overall = []
+    for i, name in enumerate(names):
+        r = rank_lookup.get(name, {})
+        overall.append({
+            'idx': i,
+            'win_rate': r.get('win_rate', 50.0),
+            'weighted_wr': r.get('weighted_wr', 50.0),
+        })
+
+    # Try to preserve matchup_cards / deck_cards from existing JSX
+    matchup_cards = {}
+    deck_cards = []
+    if os.path.exists(jsx_path):
+        try:
+            old_D = load_D(jsx_path)
+            matchup_cards = old_D.get('matchup_cards', {})
+            deck_cards = old_D.get('deck_cards', [])
+        except Exception:
+            pass
+
+    # If no deck_cards, create minimal stubs
+    if not deck_cards:
+        deck_cards = [{'idx': i} for i in range(n)]
+
+    # Assemble D object
+    D = {
+        'decks': names,
+        'wins': wins,
+        'matches_per_pair': n_games,
+        'meta_shares': meta_shares,
+        'overall': overall,
+        'matchup_cards': matchup_cards,
+        'deck_cards': deck_cards,
+    }
+
+    # Write JSX
+    d_json = json.dumps(D, indent=2)
+    jsx_content = f'const D = {d_json};\nconst N = D.matches_per_pair;\n'
+    with open(jsx_path, 'w') as f:
+        f.write(jsx_content)
+    print(f"Merged: {jsx_path} ({n} decks, {n_games} games/pair)")
+
+    # Build HTML dashboard
+    build(jsx_path, out_path)
+
+
 if __name__ == '__main__':
-    jsx = sys.argv[1] if len(sys.argv) > 1 else 'metagame_14deck.jsx'
-    out = sys.argv[2] if len(sys.argv) > 2 else None
-    build(jsx, out)
+    if '--merge' in sys.argv:
+        merge()
+    else:
+        jsx = sys.argv[1] if len(sys.argv) > 1 else 'metagame_14deck.jsx'
+        out = sys.argv[2] if len(sys.argv) > 2 else None
+        build(jsx, out)
