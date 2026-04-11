@@ -100,6 +100,37 @@ def _get_oracle(oracle_db, card_name):
     return ''
 
 
+def _extract_draw_from_description(desc: str) -> int:
+    """Extract draw count from a handler description string."""
+    desc = desc.lower()
+    m = re.search(r'draw (\d+) cards?', desc)
+    if m:
+        return int(m.group(1))
+    if 'draw a card' in desc:
+        return 1
+    return 0
+
+
+def _extract_damage_from_description(desc: str) -> int:
+    """Extract fixed damage from a handler description string."""
+    desc = desc.lower()
+    m = re.search(r'deal (\d+) damage', desc)
+    if m:
+        return int(m.group(1))
+    return 0
+
+
+def _extract_energy_from_description(desc: str) -> int:
+    """Extract energy count from a handler description string."""
+    desc = desc.lower()
+    m = re.search(r'get (\d+) energy', desc)
+    if m:
+        return int(m.group(1))
+    if 'get 1 energy' in desc or 'get energy' in desc:
+        return 1
+    return 0
+
+
 # ─── Energy Validation ────────────────────────────────────────
 
 
@@ -132,26 +163,131 @@ class TestEnergyMatchesOracle:
 class TestDrawCountMatchesOracle:
     """Verify draw counts in handlers match oracle text."""
 
-    def test_key_draw_cards(self, oracle_db):
-        """Check specific cards known to have draw effects."""
-        from decks.modern_meta import MODERN_DECKS
+    def test_handler_draw_matches_oracle(self, oracle_db, all_deck_cards, effect_registry):
+        """Handler descriptions claiming 'Draw N' must match oracle draw count."""
+        mismatches = []
 
-        draw_mismatches = []
-        for deck_name, deck in MODERN_DECKS.items():
-            for card_name in deck.get("mainboard", {}):
-                oracle = _get_oracle(oracle_db, card_name)
-                if not oracle:
-                    continue
-                expected_draw = oracle_draw_count(oracle)
-                if expected_draw == 0:
-                    continue
-                # This card should draw exactly expected_draw cards
-                # (The actual handler check requires AST inspection, so we
-                # just record the oracle expectation for manual audit)
-                draw_mismatches.append((card_name, expected_draw, oracle[:80]))
+        for card_name in all_deck_cards:
+            oracle = _get_oracle(oracle_db, card_name)
+            if not oracle:
+                continue
+            oracle_draws = oracle_draw_count(oracle)
 
-        # Report all cards with draw effects for review
-        assert len(draw_mismatches) > 0, "Should find at least some draw cards"
+            handlers = effect_registry._handlers.get(card_name, [])
+            for handler in handlers:
+                desc = getattr(handler, 'description', '').lower()
+                # Extract draw count from handler description
+                handler_draws = _extract_draw_from_description(desc)
+                if handler_draws > 0 or oracle_draws > 0:
+                    if handler_draws != oracle_draws and handler_draws > 0:
+                        mismatches.append(
+                            f"{card_name}: handler draws {handler_draws}, "
+                            f"oracle draws {oracle_draws} "
+                            f"(desc='{getattr(handler, 'description', '')}')")
+
+        if mismatches:
+            pytest.fail("Draw count mismatches:\n" + "\n".join(mismatches))
+
+
+# ─── Damage Amount Validation ─────────────────────────────────
+
+
+class TestDamageMatchesOracle:
+    """Verify damage amounts in handlers match oracle text."""
+
+    def test_handler_damage_matches_oracle(self, oracle_db, all_deck_cards, effect_registry):
+        """Handler descriptions claiming 'Deal N damage' must match oracle."""
+        mismatches = []
+
+        for card_name in all_deck_cards:
+            oracle = _get_oracle(oracle_db, card_name)
+            if not oracle:
+                continue
+            oracle_dmg = oracle_damage_amount(oracle)
+
+            handlers = effect_registry._handlers.get(card_name, [])
+            for handler in handlers:
+                desc = getattr(handler, 'description', '')
+                handler_dmg = _extract_damage_from_description(desc)
+                # Only flag if BOTH have a damage claim and they disagree
+                if handler_dmg > 0 and oracle_dmg > 0 and handler_dmg != oracle_dmg:
+                    mismatches.append(
+                        f"{card_name}: handler deals {handler_dmg}, "
+                        f"oracle deals {oracle_dmg} "
+                        f"(desc='{desc}')")
+
+        if mismatches:
+            pytest.fail("Damage amount mismatches:\n" + "\n".join(mismatches))
+
+
+# ─── Duplicate Registration Detection ────────────────────────
+
+
+class TestNoDuplicateRegistrations:
+    """Detect cards registered multiple times for the same timing."""
+
+    def test_no_duplicate_handlers(self, effect_registry):
+        """Each card should have at most one handler per timing."""
+        from collections import Counter
+        duplicates = []
+
+        for card_name, handlers in effect_registry._handlers.items():
+            timing_counts = Counter(h.timing for h in handlers)
+            for timing, count in timing_counts.items():
+                if count > 1:
+                    duplicates.append(
+                        f"{card_name}: {count}x {timing.value} handlers")
+
+        if duplicates:
+            pytest.fail("Duplicate handler registrations:\n" + "\n".join(duplicates))
+
+
+# ─── Description vs Oracle Cross-Check ───────────────────────
+
+
+class TestDescriptionMatchesOracle:
+    """Handler descriptions should not claim effects absent from oracle."""
+
+    def test_no_phantom_damage_in_description(self, oracle_db, all_deck_cards, effect_registry):
+        """If handler description mentions damage but oracle doesn't, flag it."""
+        phantoms = []
+
+        for card_name in all_deck_cards:
+            oracle = _get_oracle(oracle_db, card_name)
+            if not oracle:
+                continue
+
+            handlers = effect_registry._handlers.get(card_name, [])
+            for handler in handlers:
+                desc = getattr(handler, 'description', '').lower()
+                # Handler claims damage but oracle doesn't mention damage
+                if 'damage' in desc and 'damage' not in oracle.lower():
+                    phantoms.append(
+                        f"{card_name}: handler mentions damage "
+                        f"but oracle doesn't (desc='{getattr(handler, 'description', '')}')")
+
+        if phantoms:
+            pytest.fail("Phantom damage in descriptions:\n" + "\n".join(phantoms))
+
+    def test_no_phantom_draw_in_description(self, oracle_db, all_deck_cards, effect_registry):
+        """If handler description says 'draw' but oracle doesn't mention draw."""
+        phantoms = []
+
+        for card_name in all_deck_cards:
+            oracle = _get_oracle(oracle_db, card_name)
+            if not oracle:
+                continue
+
+            handlers = effect_registry._handlers.get(card_name, [])
+            for handler in handlers:
+                desc = getattr(handler, 'description', '').lower()
+                if 'draw' in desc and 'draw' not in oracle.lower():
+                    phantoms.append(
+                        f"{card_name}: handler mentions draw "
+                        f"but oracle doesn't (desc='{getattr(handler, 'description', '')}')")
+
+        if phantoms:
+            pytest.fail("Phantom draw in descriptions:\n" + "\n".join(phantoms))
 
 
 # ─── Sacrifice Clause Validation ──────────────────────────────
