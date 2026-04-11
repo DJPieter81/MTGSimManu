@@ -218,15 +218,15 @@ def omnath_etb(game, card, controller, targets=None, item=None):
 @EFFECT_REGISTRY.register("Murktide Regent", EffectTiming.ETB,
                            description="Delve instants/sorceries from GY, enter with +1/+1 counters")
 def murktike_etb(game, card, controller, targets=None, item=None):
-    # Murktide enters with +1/+1 counters for each instant/sorcery
-    # exiled WITH IT during delve (not additional exiles).
+    # Oracle: "This creature enters with a +1/+1 counter on it for each
+    # instant and sorcery card exiled with it."
+    # These are PERMANENT +1/+1 counters, not temp mods that reset at cleanup.
     delved_spells = getattr(card, '_delved_spells', 0)
     if delved_spells > 0:
-        card.temp_power_mod += delved_spells
-        card.temp_toughness_mod += delved_spells
+        card.plus_counters += delved_spells
     game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Murktide Regent enters as {card.power}/{card.toughness}"
-                    f" ({delved_spells} instants/sorceries delved)")
+                    f" ({delved_spells} +1/+1 counters from delved instants/sorceries)")
 
 
 @EFFECT_REGISTRY.register("Eternal Witness", EffectTiming.ETB,
@@ -313,19 +313,29 @@ def springleaf_drum_etb(game, card, controller, targets=None, item=None):
 
 
 @EFFECT_REGISTRY.register("Phlage, Titan of Fire's Fury", EffectTiming.ETB,
-                           description="ETB: deal 3 damage to any target, gain 3 life")
+                           description="ETB: sacrifice unless escaped; deal 3 damage, gain 3 life")
 def phlage_etb(game, card, controller, targets=None, item=None):
+    # Oracle: "When Phlage enters, sacrifice it unless it escaped."
+    # "Whenever Phlage enters or attacks, it deals 3 damage to any target
+    # and you gain 3 life."
     opponent = 1 - controller
-    # Deal 3 damage to opponent
+
+    # Damage + lifegain triggers on enter (whether escaped or not)
     game.players[opponent].life -= 3
-    game.log.append(f"T{game.display_turn} P{controller+1}: "
-                    f"Phlage ETB: 3 damage to opponent "
-                    f"(opponent life: {game.players[opponent].life})")
-    # Gain 3 life
     game.players[controller].life += 3
     game.log.append(f"T{game.display_turn} P{controller+1}: "
-                    f"Phlage ETB: gain 3 life "
-                    f"(life: {game.players[controller].life})")
+                    f"Phlage: 3 damage to opponent, gain 3 life")
+
+    # Sacrifice unless escaped
+    escaped = getattr(card, '_escaped', False)
+    if not escaped:
+        if card in game.players[controller].battlefield:
+            game.players[controller].battlefield.remove(card)
+            card.zone = "graveyard"
+            game.players[controller].graveyard.append(card)
+            game.log.append(f"T{game.display_turn} P{controller+1}: "
+                            f"Phlage sacrificed (not escaped)")
+
     # Check if opponent is dead
     if game.players[opponent].life <= 0:
         game.game_over = True
@@ -560,10 +570,13 @@ def wrath_of_the_skies_resolve(game, card, controller, targets=None, item=None):
     x_val = min(player.energy_counters, 10)
     if x_val > 0:
         player.spend_energy(x_val)
+    # Oracle: "Destroy each artifact, creature, and enchantment with mana value
+    # less than or equal to the amount of {E} paid this way."
+    # NO phantom +2. Threshold = energy paid, period.
     for p in game.players:
         to_destroy = [c for c in p.battlefield
                       if not c.template.is_land
-                      and c.template.cmc <= (x_val + 2)
+                      and (c.template.cmc or 0) <= x_val
                       and Keyword.INDESTRUCTIBLE not in c.keywords]
         for creature in to_destroy:
             if creature.template.is_creature:
@@ -677,9 +690,14 @@ def undying_evil_resolve(game, card, controller, targets=None, item=None):
 # ═══════════════════════════════════════════════════════════════════
 
 @EFFECT_REGISTRY.register("Guide of Souls", EffectTiming.ETB,
-                           description="Get 1 energy")
+                           description="Whenever ANOTHER creature enters: gain 1 life, get {E}")
 def guide_of_souls_etb(game, card, controller, targets=None, item=None):
-    game.produce_energy(controller, 1, "Guide of Souls")
+    # Oracle: "Whenever ANOTHER creature you control enters, you gain 1 life and get {E}."
+    # This is a triggered ability, NOT an ETB on Guide itself.
+    # Guide does NOT trigger when it enters — only when OTHER creatures enter.
+    # The ETB handler here is a no-op; the trigger is handled by
+    # resolve_spell_cast_trigger / trigger_etb for other creatures.
+    pass
 
 
 @EFFECT_REGISTRY.register("Ocelot Pride", EffectTiming.ETB,

@@ -426,8 +426,14 @@ class GameState:
                     if m:
                         player.life -= int(m.group(1))
                         opp.damage_dealt_this_turn += int(m.group(1))
-                # "Whenever an opponent draws" — Bowmasters-style
-                if 'whenever an opponent draws' in oracle and player.cards_drawn_this_turn > 1:
+                # "Whenever an opponent draws a card except the first one they draw
+                # in each of their draw steps" — Bowmasters-style.
+                # Trigger on all draws EXCEPT the normal draw-step draw.
+                # The draw step sets current_phase = Phase.DRAW; any draw
+                # outside that phase always triggers.
+                is_draw_step = (self.current_phase == Phase.DRAW)
+                first_draw_step_draw = is_draw_step and player.cards_drawn_this_turn <= 1
+                if 'whenever an opponent draws' in oracle and not first_draw_step_draw:
                     import re
                     m = re.search(r'deals?\s+(\d+)\s+damage', oracle)
                     dmg = int(m.group(1)) if m else 1
@@ -2442,10 +2448,17 @@ class GameState:
 
     def trigger_attack(self, attacker: CardInstance, controller: int):
         """Trigger attack abilities."""
-        # Energy on attack (from oracle: "whenever ... attacks ... {E}")
+        # Energy on attack: only if oracle says "get {E}" on attack, not "pay {E}".
+        # Cards that PAY energy on attack (Guide of Souls: "you may pay {E}{E}{E}")
+        # should NOT produce energy — that's handled by the pay/spend logic.
         oracle = (attacker.template.oracle_text or '').lower()
-        if '{e}' in oracle and 'attack' in oracle:
-            self.produce_energy(controller, 1, f"{attacker.name} attack")
+        if '{e}' in oracle and 'attack' in oracle and 'get' in oracle:
+            # Count {E} in the "get" clause, not the "pay" clause
+            import re
+            get_match = re.search(r'get\s+((?:\{e\})+)', oracle)
+            if get_match:
+                energy_count = get_match.group(1).count('{e}')
+                self.produce_energy(controller, energy_count, f"{attacker.name} attack")
 
         # Annihilator
         if Keyword.ANNIHILATOR in attacker.keywords:

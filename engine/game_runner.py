@@ -1481,12 +1481,6 @@ class GameRunner:
                     c.zone = "battlefield"
                     c.tapped = True
                     player.battlefield.append(c)
-                if priority_val > 0:
-                    break  # Don't sacrifice real creatures if not going for lethal
-                if creature in player.battlefield:
-                    player.battlefield.remove(creature)
-                    creature.zone = "graveyard"
-                    player.graveyard.append(creature)
                     opponent.life -= 1
                     player.damage_dealt_this_turn += 1
                     sacced += 1
