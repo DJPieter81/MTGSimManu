@@ -156,43 +156,51 @@ def solitude_etb(game, card, controller, targets=None, item=None):
 
 
 @EFFECT_REGISTRY.register("Subtlety", EffectTiming.ETB,
-                           description="Put target creature on top of its owner's library")
+                           description="Put target creature spell or planeswalker spell on top/bottom of library")
 def subtlety_etb(game, card, controller, targets=None, item=None):
-    # Subtlety's oracle: "choose up to one target creature spell or planeswalker spell.
+    # Oracle: "choose up to one target creature spell or planeswalker spell.
     # Its owner puts it on their choice of the top or bottom of their library."
-    # Simplified: bounce the best opponent creature to top of library.
+    # This targets SPELLS ON THE STACK, not permanents on the battlefield.
+    # If there's a creature/PW spell on the stack, put it on top of library.
     opponent = 1 - controller
-    opp_creatures = game.players[opponent].creatures
-    if not opp_creatures:
-        return  # No valid targets — ETB fizzles
-    # Pick the most threatening creature (highest power + CMC)
-    target = max(opp_creatures, key=lambda c: (c.power or 0) + (c.template.cmc or 0))
-    # Remove from battlefield and put on top of library
-    if target in game.players[opponent].battlefield:
-        game.players[opponent].battlefield.remove(target)
-    target.zone = "library"
-    target.tapped = False
-    target.summoning_sick = False
-    target.damage_taken = 0
-    # Put on top of library
-    game.players[opponent].library.append(target)  # append = top
+    if not game.stack.is_empty:
+        # Check stack for creature or planeswalker spells from opponent
+        from engine.cards import CardType
+        for i in range(len(game.stack._items) - 1, -1, -1):
+            item_on_stack = game.stack._items[i]
+            if item_on_stack.controller != opponent:
+                continue
+            t = item_on_stack.source.template
+            if CardType.CREATURE in t.card_types or CardType.PLANESWALKER in t.card_types:
+                # Remove from stack, put on top of library
+                removed = game.stack._items.pop(i)
+                removed.source.zone = "library"
+                game.players[opponent].library.insert(0, removed.source)
+                game.log.append(f"T{game.display_turn} P{controller+1}: "
+                                f"Subtlety puts {removed.source.name} on top of library (from stack)")
+                return
+    # No valid spell on stack — ETB fizzles (up to one = optional)
     game.log.append(f"T{game.display_turn} P{controller+1}: "
-                    f"Subtlety puts {target.name} on top of opponent's library")
+                    f"Subtlety enters (no creature/PW spell on stack to target)")
 
 
 @EFFECT_REGISTRY.register("Endurance", EffectTiming.ETB,
-                           description="Target player shuffles graveyard into library")
+                           description="Target player puts graveyard on bottom of library in random order")
 def endurance_etb(game, card, controller, targets=None, item=None):
+    # Oracle: "up to one target player puts all the cards from their graveyard
+    # on the bottom of their library in a random order."
+    # Key: BOTTOM of library, random order. Library top is PRESERVED.
     opponent = 1 - controller
     target_idx = opponent if game.players[opponent].graveyard else controller
     target_player = game.players[target_idx]
     gy_count = len(target_player.graveyard)
     if gy_count > 0:
-        while target_player.graveyard:
-            card_gy = target_player.graveyard.pop()
+        gy_cards = list(target_player.graveyard)
+        target_player.graveyard.clear()
+        game.rng.shuffle(gy_cards)  # random order for the GY cards only
+        for card_gy in gy_cards:
             card_gy.zone = "library"
-            target_player.library.append(card_gy)
-        game.rng.shuffle(target_player.library)
+            target_player.library.append(card_gy)  # append = bottom
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Endurance ETB: P{target_idx+1} shuffles {gy_count} cards "
                         f"from GY into library")
@@ -239,11 +247,15 @@ def eternal_witness_etb(game, card, controller, targets=None, item=None):
 
 
 @EFFECT_REGISTRY.register("Quantum Riddler", EffectTiming.ETB,
-                           description="Draw 2 cards")
+                           description="Draw a card")
 def quantum_riddler_etb(game, card, controller, targets=None, item=None):
-    game.draw_cards(controller, 2)
+    # Oracle: "When this creature enters, draw a card."
+    # Static replacement: "As long as you have one or fewer cards in hand,
+    # if you would draw one or more cards, you draw that many cards plus one instead."
+    # The ETB draws 1. The static replacement (if applicable) is a separate effect.
+    game.draw_cards(controller, 1)
     game.log.append(f"T{game.display_turn} P{controller+1}: "
-                    f"Quantum Riddler ETB: draw 2 cards")
+                    f"Quantum Riddler ETB: draw a card")
 
 
 @EFFECT_REGISTRY.register("Mox Opal", EffectTiming.ETB,
@@ -671,19 +683,23 @@ def guide_of_souls_etb(game, card, controller, targets=None, item=None):
 
 
 @EFFECT_REGISTRY.register("Ocelot Pride", EffectTiming.ETB,
-                           description="Get 1 energy")
+                           description="First strike, lifelink, ascend (no ETB effect)")
 def ocelot_pride_etb(game, card, controller, targets=None, item=None):
-    game.produce_energy(controller, 1, "Ocelot Pride")
+    # Oracle: "At the beginning of your end step, if you gained life this turn,
+    # create a 1/1 white Cat creature token."
+    # NO energy, NO ETB trigger. End-step token creation is handled elsewhere.
+    pass
 
 
 @EFFECT_REGISTRY.register("Ajani, Nacatl Pariah // Ajani, Nacatl Avenger",
                            EffectTiming.ETB,
-                           description="Create 2/1 Cat Warrior token and get 2 energy")
+                           description="Create 2/1 Cat Warrior token")
 def ajani_etb(game, card, controller, targets=None, item=None):
+    # Oracle: "When Ajani enters, create a 2/1 white Cat Warrior creature token."
+    # NO energy production — oracle has 0 {E} symbols.
     game.create_token(controller, "cat", count=1, power=2, toughness=1)
-    game.produce_energy(controller, 2, "Ajani")
     game.log.append(f"T{game.display_turn} P{controller+1}: "
-                    f"Ajani creates 2/1 Cat Warrior token and gains 2 energy")
+                    f"Ajani creates 2/1 Cat Warrior token")
 
 
 @EFFECT_REGISTRY.register("Seasoned Pyromancer", EffectTiming.ETB,
@@ -770,26 +786,33 @@ def legend_of_roku_etb(game, card, controller, targets=None, item=None):
     card.other_counters['lore'] = 1
 
 
-@EFFECT_REGISTRY.register("Summoner's Pact", EffectTiming.SPELL_RESOLVE,
-                           description="Search for a green creature")
-def summoners_pact_resolve(game, card, controller, targets=None, item=None):
-    lib = game.players[controller].library
-    green_creatures = [c for c in lib if c.template.is_creature and
-                       any(ci.value == "G" for ci in c.template.color_identity)]
-    if not green_creatures:
-        green_creatures = [c for c in lib if c.template.is_creature]
-    if green_creatures:
-        best = max(green_creatures, key=lambda c: (c.template.power or 0))
-        lib.remove(best)
-        best.zone = "hand"
-        game.players[controller].hand.append(best)
-        game.rng.shuffle(lib)
-
+# Summoner's Pact: duplicate registration removed (kept at line ~1651)
+# Oracle: "Search your library for a green creature card, reveal it, put into hand."
 
 @EFFECT_REGISTRY.register("Stock Up", EffectTiming.SPELL_RESOLVE,
-                           description="Draw 2 cards")
+                           description="Look at top 5, put 2 in hand, rest on bottom")
 def stock_up_resolve(game, card, controller, targets=None, item=None):
-    game.draw_cards(controller, 2)
+    # Oracle: "Look at the top five cards of your library.
+    # Put two of them into your hand and the rest on the bottom in any order."
+    player = game.players[controller]
+    top_cards = player.library[:5]
+    if len(top_cards) <= 2:
+        # 2 or fewer cards: all go to hand
+        for c in top_cards:
+            player.library.remove(c)
+            c.zone = "hand"
+            player.hand.append(c)
+    else:
+        # Pick best 2 (highest CMC non-land, or any)
+        top_cards.sort(key=lambda c: (not c.template.is_land, c.template.cmc or 0), reverse=True)
+        for c in top_cards[:2]:
+            player.library.remove(c)
+            c.zone = "hand"
+            player.hand.append(c)
+        # Rest go to bottom
+        for c in top_cards[2:]:
+            player.library.remove(c)
+            player.library.append(c)
 
 
 @EFFECT_REGISTRY.register("Orim's Chant", EffectTiming.SPELL_RESOLVE,
@@ -813,21 +836,54 @@ def mutagenic_growth_resolve(game, card, controller, targets=None, item=None):
 
 
 @EFFECT_REGISTRY.register("Violent Urge", EffectTiming.SPELL_RESOLVE,
-                           description="Target creature gets +1/+0 and first strike, draw a card")
+                           description="Target creature gets +1/+0 and first strike until end of turn")
 def violent_urge_resolve(game, card, controller, targets=None, item=None):
+    # Oracle: "Target creature gets +1/+0 and gains first strike until end of turn.
+    # Delirium — If 4+ card types in graveyard, double strike instead."
+    # NO draw effect in oracle.
     from .cards import Keyword
     my_creatures = game.players[controller].creatures
     if my_creatures:
         best = max(my_creatures, key=lambda c: c.power or 0)
         best.temp_power_mod += 1
-        best.keywords.add(Keyword.FIRST_STRIKE)
-    game.draw_cards(controller, 1)
+        # Check delirium: 4+ card types in graveyard
+        player = game.players[controller]
+        gy_types = set()
+        for c in player.graveyard:
+            for ct in c.template.card_types:
+                gy_types.add(ct)
+        if len(gy_types) >= 4:
+            best.keywords.add(Keyword.DOUBLE_STRIKE)
+        else:
+            best.keywords.add(Keyword.FIRST_STRIKE)
 
 
 @EFFECT_REGISTRY.register("Expressive Iteration", EffectTiming.SPELL_RESOLVE,
-                           description="Look at top 3, exile 1, put 1 in hand (simplified: draw 1)")
+                           description="Look at top 3, put 1 in hand, exile 1, bottom 1")
 def expressive_iteration_resolve(game, card, controller, targets=None, item=None):
-    game.draw_cards(controller, 1)
+    # Oracle: "Look at the top three cards of your library. Put one of them
+    # into your hand, exile one of them, and put the rest on the bottom."
+    player = game.players[controller]
+    top = player.library[:3]
+    if not top:
+        return
+    # Pick best for hand (highest CMC non-land)
+    top.sort(key=lambda c: (not c.template.is_land, c.template.cmc or 0), reverse=True)
+    # Best → hand
+    best = top[0]
+    player.library.remove(best)
+    best.zone = "hand"
+    player.hand.append(best)
+    # Second best → exile (playable this turn — simplified as lost)
+    if len(top) > 1:
+        second = top[1]
+        player.library.remove(second)
+        second.zone = "exile"
+        player.exile.append(second)
+    # Rest → bottom
+    for c in top[2:]:
+        player.library.remove(c)
+        player.library.append(c)
 
 
 @EFFECT_REGISTRY.register("Preordain", EffectTiming.SPELL_RESOLVE,
