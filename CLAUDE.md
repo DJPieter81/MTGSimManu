@@ -106,14 +106,11 @@ python import_deck.py "Deck Name" --archetype control < decklist.txt
 ```
 Auto-detects archetype, generates gameplan, prints code to paste into modern_meta.py.
 
-## Available Decks (15)
+## Available Decks (14)
 
-Boros Energy, Jeskai Blink, Ruby Storm, Affinity, Eldrazi Tron, Amulet Titan, Goryo's Vengeance, Domain Zoo, Living End, Izzet Prowess, Dimir Midrange, 4c Omnath, 4/5c Control, Azorius Control, Azorius Control (WST)
+Boros Energy, Jeskai Blink, Ruby Storm, Affinity, Pinnacle Affinity, Eldrazi Tron, Amulet Titan, Goryo's Vengeance, Domain Zoo, Living End, Izzet Prowess, Dimir Midrange, 4c Omnath, 4/5c Control, Azorius Control
 
-**Notes:**
-- Azorius Control = Yuri Anichini Isochron Scepter + Orim's Chant build (1st place Modern Monster, Feb 2026). Isochron Scepter mechanic NOT simulated — WR deflated.
-- Azorius Control (WST) = Wan Shi Tong + Chalice of the Void draw-go build. Field run only (not in full matrix yet).
-- All DB gaps resolved (Apr 2026 refresh).
+**Known DB gaps:** ~~`The Legend of Roku` and `Sink into Stupor`~~ — both now resolved after ModernAtomic refresh (Apr 2026). All 14 decks sim correctly.
 
 ## Architecture
 
@@ -172,7 +169,7 @@ def bowmasters_etb(game, card, controller, targets=None, item=None):
 
 ### Layer 3: Deck Configuration
 
-**Decklists** (`decks/modern_meta.py`) — mainboard + sideboard for all 15 decks
+**Decklists** (`decks/modern_meta.py`) — mainboard + sideboard for all 13 decks
 
 **Gameplans** (`decks/gameplans/*.json`) — per-deck strategy:
 ```json
@@ -256,8 +253,6 @@ See **`LLM_JUDGE_STRATEGY_AUDIT.md`** for the full 6-expert panel report (~168 g
 
 | Issue | Location | Summary |
 |-------|----------|---------|
-| Wrath of the Skies X=0 kills all creatures | `engine/card_effects.py` | At X=0, should only destroy MV≤0. Instead destroys all. Ragavan (MV1) wrongly dies. Fix: compare creature MV against energy paid. |
-| Ocelot Pride energy trigger fires on ETB | `engine/card_effects.py` | Registered as ETB trigger giving 1{E}. Real trigger is "whenever you cast a noncreature spell." DB also has wrong oracle (Ixalan version). Fix: re-register as cast trigger + fix oracle. |
 | Removal projection kills creature deployment | `ai/ev_evaluator.py:539-572` | `estimate_opponent_response` makes all cheap creatures negative EV (Guide of Souls=-7.6, Memnite=-7.4). Aggro decks pass T1-T3. |
 | Storm finisher uncastable | `ai/ev_player.py:393-484` | PiF penalty `gy_fuel/opp_life*15` makes it -5.8 even with 7 mana + 9 GY spells. Storm at 39% WR. |
 | Goryo's combo non-functional | `engine/card_effects.py` discard | Faithful Mending never bins Griselbrand → Goryo's has no target. Combo never fires. |
@@ -268,8 +263,6 @@ See **`LLM_JUDGE_STRATEGY_AUDIT.md`** for the full 6-expert panel report (~168 g
 
 | Issue | Location | Summary |
 |-------|----------|---------|
-| Sanctifier en-Vec resolves after combat | `engine/game_runner.py` | Spells cast in Main 1 sometimes resolve after combat damage step. Stack should clear before Begin Combat. |
-| Ragavan never attacks | `ai/ev_player.py` | AI keeps Ragavan back; entire card value is combat damage triggers. Should prioritise attacking. |
 | Wrath on empty board | `ai/ev_evaluator.py:272` | Board wipes with 0 creatures pass the -5.0 threshold at EV=-0.1. |
 | Burn face with no clock | `ai/strategy_profile.py:102` | `burn_face_mult=1.5` makes face burn positive EV even on empty board T1. |
 | Fatal Push mis-targets | `ai/response.py:156-169` | Targets highest-value battlefield creature, not the incoming spell on the stack. |
@@ -347,4 +340,4 @@ Always save logs to `replays/` and commit. `build_replay.py` is in the repo with
 - Display end-of-turn board using **next turn's header** (turn N's header = state before N's plays; turn N+1's header = state after)
 - `╔══ TURN N ══╗` header sections are labelled `║ PlayerName board:` — match exactly
 
-**Design:** Light theme (white `#ffffff` bg, GitHub light palette), collapsible turn cards, 15 category badges, `.active` for keyboard nav, `boards` keyed by player name. P1 = `#0969da` (blue), P2 = `#d1242f` (red). See `/mtg-bo3-replayer-v2` skill for full spec.
+**Design:** GitHub-dark (`#0d1117`), collapsible turn cards, 15 category badges, `.active` for keyboard nav, `boards` keyed by player name. See `/mtg-bo3-replayer-v2` skill for full spec.
