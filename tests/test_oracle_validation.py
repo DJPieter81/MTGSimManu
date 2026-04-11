@@ -312,6 +312,242 @@ class TestSacrificeClause:
 # ─── Handler Existence Check ──────────────────────────────────
 
 
+# ─── Zone Destination Validation ──────────────────────────────
+
+
+class TestZoneDestination:
+    """Handler zone transitions must match oracle text."""
+
+    def test_bottom_of_library_not_shuffle(self, oracle_db, all_deck_cards, effect_registry):
+        """Cards that say 'on the bottom of their library' should NOT shuffle."""
+        mismatches = []
+        for card_name in all_deck_cards:
+            oracle = _get_oracle(oracle_db, card_name)
+            if not oracle:
+                continue
+            oracle_lower = oracle.lower()
+            handlers = effect_registry._handlers.get(card_name, [])
+            for handler in handlers:
+                desc = getattr(handler, 'description', '').lower()
+                # Oracle says "bottom of library" but description says "shuffle"
+                if 'bottom of' in oracle_lower and 'library' in oracle_lower:
+                    if 'shuffle' in desc and 'bottom' not in desc:
+                        mismatches.append(
+                            f"{card_name}: oracle says 'bottom of library' "
+                            f"but handler says 'shuffle' (desc='{getattr(handler, 'description', '')}')")
+
+        if mismatches:
+            pytest.fail("Zone destination mismatches:\n" + "\n".join(mismatches))
+
+    def test_exile_not_hand(self, oracle_db, all_deck_cards, effect_registry):
+        """Cards that say 'exile the top N' should exile, not put in hand."""
+        mismatches = []
+        for card_name in all_deck_cards:
+            oracle = _get_oracle(oracle_db, card_name)
+            if not oracle:
+                continue
+            oracle_lower = oracle.lower()
+            handlers = effect_registry._handlers.get(card_name, [])
+            for handler in handlers:
+                desc = getattr(handler, 'description', '').lower()
+                # Oracle says "exile" but handler description mentions "hand" or "draw"
+                if re.search(r'exile the top \w+ cards?', oracle_lower):
+                    if 'draw' in desc and 'exile' not in desc:
+                        mismatches.append(
+                            f"{card_name}: oracle says 'exile top cards' "
+                            f"but handler says 'draw' (desc='{getattr(handler, 'description', '')}')")
+
+        if mismatches:
+            pytest.fail("Exile vs draw mismatches:\n" + "\n".join(mismatches))
+
+
+# ─── Targeting Scope Validation ───────────────────────────────
+
+
+class TestTargetingScope:
+    """Handler targeting must match oracle's target restrictions."""
+
+    def test_spell_target_not_battlefield(self, oracle_db, all_deck_cards, effect_registry):
+        """Cards targeting 'creature spell' (stack) should not target battlefield."""
+        mismatches = []
+        for card_name in all_deck_cards:
+            oracle = _get_oracle(oracle_db, card_name)
+            if not oracle:
+                continue
+            oracle_lower = oracle.lower()
+            handlers = effect_registry._handlers.get(card_name, [])
+            for handler in handlers:
+                desc = getattr(handler, 'description', '').lower()
+                # Oracle targets spells on stack but handler targets permanents
+                if 'creature spell' in oracle_lower or 'planeswalker spell' in oracle_lower:
+                    if ('target creature' in desc and 'spell' not in desc):
+                        mismatches.append(
+                            f"{card_name}: oracle targets 'creature spell' (stack) "
+                            f"but handler targets battlefield creature")
+                    # Also check for "put on top of library" vs "counter"
+                    # Both are valid for stack interaction
+                    if ('creature' in desc and 'top' in desc
+                            and 'spell' not in desc and 'stack' not in desc):
+                        mismatches.append(
+                            f"{card_name}: oracle targets spell on stack "
+                            f"but handler bounces from battlefield (desc='{getattr(handler, 'description', '')}')")
+
+        if mismatches:
+            pytest.fail("Targeting scope mismatches:\n" + "\n".join(mismatches))
+
+
+# ─── Conditional Clause Validation ────────────────────────────
+
+
+class TestConditionalClauses:
+    """Cards with conditions must have them checked in handlers."""
+
+    def test_sacrifice_unless_clause(self, oracle_db, all_deck_cards):
+        """Cards with 'sacrifice it unless' in oracle need sacrifice logic."""
+        cards_needing = []
+        for card_name in all_deck_cards:
+            oracle = _get_oracle(oracle_db, card_name)
+            if 'sacrifice it unless' in oracle.lower():
+                cards_needing.append(card_name)
+        # Informational: list cards that need this check
+        if cards_needing:
+            print(f"\nCards with 'sacrifice it unless': {cards_needing}")
+
+    def test_until_leaves_clause(self, oracle_db, all_deck_cards):
+        """Cards with 'until this [permanent] leaves' need return-on-leave logic."""
+        cards_needing = []
+        for card_name in all_deck_cards:
+            oracle = _get_oracle(oracle_db, card_name)
+            if 'until this' in oracle.lower() and 'leaves the battlefield' in oracle.lower():
+                cards_needing.append(card_name)
+        if cards_needing:
+            print(f"\nCards with 'until this leaves': {cards_needing}")
+
+    def test_activate_only_if_clause(self, oracle_db, all_deck_cards):
+        """Cards with 'activate only if' need conditional activation."""
+        cards_needing = []
+        for card_name in all_deck_cards:
+            oracle = _get_oracle(oracle_db, card_name)
+            if 'activate only if' in oracle.lower():
+                cards_needing.append(card_name)
+        if cards_needing:
+            print(f"\nCards with 'activate only if': {cards_needing}")
+
+
+# ─── Counter Type Validation ─────────────────────────────────
+
+
+class TestCounterTypes:
+    """Handlers using temp mods for permanent counters are wrong."""
+
+    def test_plus_counters_not_temp_mod(self, oracle_db, all_deck_cards, effect_registry):
+        """Cards with '+1/+1 counter' in oracle should use plus_counters, not temp mods."""
+        suspects = []
+        for card_name in all_deck_cards:
+            oracle = _get_oracle(oracle_db, card_name)
+            if not oracle:
+                continue
+            oracle_lower = oracle.lower()
+            # Oracle says "+1/+1 counter" — this is permanent, not until-end-of-turn
+            if '+1/+1 counter' in oracle_lower:
+                handlers = effect_registry._handlers.get(card_name, [])
+                for handler in handlers:
+                    desc = getattr(handler, 'description', '').lower()
+                    # If description mentions "counter" it's likely correct,
+                    # but if it doesn't and the card has +1/+1 counters in oracle,
+                    # flag for review
+                    if 'counter' not in desc and ('+1' in desc or 'power' in desc):
+                        suspects.append(
+                            f"{card_name}: oracle says '+1/+1 counter' but handler "
+                            f"desc doesn't mention counters (desc='{getattr(handler, 'description', '')}')")
+        if suspects:
+            print(f"\nPossible temp-mod-instead-of-counter issues:")
+            for s in suspects:
+                print(f"  {s}")
+
+
+# ─── Activated Ability Coverage ───────────────────────────────
+
+
+class TestActivatedAbilityCoverage:
+    """Cards with activated abilities should have activation handlers."""
+
+    def test_sacrifice_abilities_have_handlers(self, oracle_db, all_deck_cards, effect_registry):
+        """Cards with '{N}, Sacrifice ~:' in oracle need activation handlers."""
+        missing = []
+        for card_name in all_deck_cards:
+            oracle = _get_oracle(oracle_db, card_name)
+            if not oracle:
+                continue
+            oracle_lower = oracle.lower()
+            # Pattern: "{N}, Sacrifice ~: effect" — activated sacrifice ability
+            if re.search(r'\{[\dwubrg]\}.*sacrifice .*(this|~)', oracle_lower):
+                # Check if there's any handler at all
+                handlers = effect_registry._handlers.get(card_name, [])
+                has_activation = any(
+                    'sacrifice' in getattr(h, 'description', '').lower()
+                    or 'activate' in getattr(h, 'description', '').lower()
+                    for h in handlers)
+                if not has_activation:
+                    # Extract the ability text for reporting
+                    ability = re.search(
+                        r'(\{[^}]+\}.*sacrifice[^.]+\.)',
+                        oracle_lower)
+                    ability_text = ability.group(1)[:80] if ability else 'sacrifice ability'
+                    missing.append(f"{card_name}: has '{ability_text}' but no handler")
+
+        if missing:
+            pytest.fail(
+                f"Cards with sacrifice abilities but no handler:\n"
+                + "\n".join(missing))
+
+
+# ─── Token Stat Validation ────────────────────────────────────
+
+
+class TestTokenStats:
+    """Token creation should match oracle P/T and count."""
+
+    def test_token_count_in_description(self, oracle_db, all_deck_cards, effect_registry):
+        """Handler token counts should match oracle 'create N tokens'."""
+        mismatches = []
+        for card_name in all_deck_cards:
+            oracle = _get_oracle(oracle_db, card_name)
+            if not oracle:
+                continue
+            oracle_lower = oracle.lower()
+
+            # Parse "create two 1/1 red Goblin" from oracle
+            m = re.search(r'create (a|an|one|two|three|four|\d+)\s+', oracle_lower)
+            if not m:
+                continue
+            oracle_count = _WORD_TO_NUM.get(m.group(1), 0)
+            if m.group(1).isdigit():
+                oracle_count = int(m.group(1))
+
+            handlers = effect_registry._handlers.get(card_name, [])
+            for handler in handlers:
+                desc = getattr(handler, 'description', '').lower()
+                if 'token' not in desc and 'create' not in desc:
+                    continue
+                # Extract count from description
+                dm = re.search(r'create (\d+|a|an|one|two|three)\s+', desc)
+                if dm:
+                    handler_count = _WORD_TO_NUM.get(dm.group(1), 0)
+                    if dm.group(1).isdigit():
+                        handler_count = int(dm.group(1))
+                    if handler_count != oracle_count and oracle_count > 0:
+                        mismatches.append(
+                            f"{card_name}: oracle creates {oracle_count} tokens, "
+                            f"handler creates {handler_count}")
+
+        if mismatches:
+            pytest.fail("Token count mismatches:\n" + "\n".join(mismatches))
+
+
+# ─── Handler Existence Check ──────────────────────────────────
+
+
 class TestHandlerCoverage:
     """Cards with significant effects should have handlers."""
 
