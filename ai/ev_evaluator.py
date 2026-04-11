@@ -364,14 +364,28 @@ def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
     # Response probabilities: use BHI posteriors if available, else static density.
     # BHI updates based on observed priority passes — if opponent has been passing
     # with mana up, P(counter) decreases.
+    #
+    # Threat-proportional scaling: opponents save counters for high-impact spells.
+    # P(counter THIS) = P(has counter) × worthiness
+    # worthiness = raw_delta / (raw_delta + avg_card_value)
+    # This is derived from game theory: counter the spell that changes the
+    # game state the most. Both terms from existing clock math.
+    from ai.clock import card_clock_impact
+    raw_delta = abs(evaluate_board(projected, "midrange") - evaluate_board(snap, "midrange"))
+    avg_card_value = card_clock_impact(snap)
+    if avg_card_value > 0 and raw_delta > 0:
+        counter_worthiness = raw_delta / (raw_delta + avg_card_value)
+    else:
+        counter_worthiness = 1.0
+
     opp_hand_size = snap.opp_hand_size if snap.opp_hand_size > 0 else 5
     counter_probability = 0.0
     removal_probability = 0.0
 
     if bhi and bhi._initialized:
-        # Use Bayesian-updated beliefs
+        # Use Bayesian-updated beliefs, scaled by spell worthiness
         if can_counter:
-            counter_probability = bhi.get_counter_probability()
+            counter_probability = bhi.get_counter_probability() * counter_worthiness
         if t.is_creature and projected.opp_mana >= REMOVAL_ESTIMATED_COST:
             removal_probability = bhi.get_removal_probability()
             # Toughness adjustments: high toughness reduces damage-based removal
@@ -389,7 +403,7 @@ def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
         # Fallback: static deck density (no BHI tracker available)
         opp = game.players[1 - player_idx]
         if can_counter and opp.counter_density > 0:
-            counter_probability = 1.0 - (1.0 - opp.counter_density) ** opp_hand_size
+            counter_probability = (1.0 - (1.0 - opp.counter_density) ** opp_hand_size) * counter_worthiness
         if t.is_creature and projected.opp_mana >= REMOVAL_ESTIMATED_COST and opp.removal_density > 0:
             creature_toughness = t.toughness or 0
             if hasattr(card, 'toughness') and card.toughness is not None:
