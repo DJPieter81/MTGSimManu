@@ -12,7 +12,7 @@ Design principle #8: Separate Arithmetic from Decisions.
 from __future__ import annotations
 from typing import TYPE_CHECKING, Optional, List, Tuple, Dict, Set
 from dataclasses import dataclass, field
-from itertools import permutations
+from itertools import permutations, combinations
 
 if TYPE_CHECKING:
     from engine.cards import CardInstance
@@ -215,25 +215,39 @@ def find_all_chains(
     results = []
 
     if len(fuel) <= 7:
-        # Exhaustive: try all fuel permutations, each payoff appended at end
+        # Exhaustive: try all SUBSETS of fuel (not just full set),
+        # each in all permutations, each with payoff appended at end.
+        # This finds short viable chains (e.g. Ritual→Grapeshot)
+        # that full-set permutations miss when mana is tight.
         seen = set()
-        for perm in (permutations(fuel) if fuel else [()]):
-            name_key = tuple(r.name for _, r in perm)
-            if name_key in seen:
-                continue
-            seen.add(name_key)
+        for k in range(1, len(fuel) + 1):
+            for subset in combinations(fuel, k):
+                for perm in permutations(subset):
+                    name_key = tuple(r.name for _, r in perm)
+                    if name_key in seen:
+                        continue
+                    seen.add(name_key)
 
-            # Fuel-only chain (no payoff)
-            fuel_result = _simulate_sequence(list(perm), available_mana, medallion_count, base_storm)
-            if fuel_result:
-                results.append(fuel_result)
+                    # Fuel-only chain (no payoff)
+                    fuel_result = _simulate_sequence(list(perm), available_mana,
+                                                     medallion_count, base_storm)
+                    if fuel_result:
+                        results.append(fuel_result)
 
-            # Fuel + each payoff at end
-            for pay_card, pay_role in payoffs:
-                full_seq = list(perm) + [(pay_card, pay_role)]
-                outcome = _simulate_sequence(full_seq, available_mana, medallion_count, base_storm)
-                if outcome:
-                    results.append(outcome)
+                    # Fuel + each payoff at end
+                    for pay_card, pay_role in payoffs:
+                        full_seq = list(perm) + [(pay_card, pay_role)]
+                        outcome = _simulate_sequence(full_seq, available_mana,
+                                                     medallion_count, base_storm)
+                        if outcome:
+                            results.append(outcome)
+
+        # Also try payoff-only (no fuel) if affordable
+        for pay_card, pay_role in payoffs:
+            outcome = _simulate_sequence([(pay_card, pay_role)], available_mana,
+                                         medallion_count, base_storm)
+            if outcome:
+                results.append(outcome)
     else:
         # Greedy: cost reducers → rituals → cantrips → other → each payoff
         cost_reducers = [(c, r) for c, r in fuel if r.is_cost_reducer]

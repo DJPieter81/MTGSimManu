@@ -88,12 +88,25 @@ def _collect_payoff_names(goal_engine):
 
 
 def _build_role_cache(goal_engine):
-    """Map card names to their combo roles from gameplan card_roles."""
+    """Map card names to their combo roles from gameplan card_roles.
+
+    Priority order: rituals > payoffs > engines > enablers > fillers.
+    This ensures cards appearing in multiple roles get the most
+    specific classification (e.g. Desperate Ritual in both 'enablers'
+    and 'rituals' gets 'rituals').
+    """
+    _ROLE_PRIORITY = {
+        'rituals': 0, 'payoffs': 1, 'finishers': 1, 'engines': 2,
+        'enablers': 3, 'protection': 4, 'interaction': 5, 'fillers': 6,
+        'fuel': 0,
+    }
     cache = {}
     for goal in goal_engine.gameplan.goals:
         for role, card_names in goal.card_roles.items():
             for name in card_names:
-                if name not in cache:
+                existing_priority = _ROLE_PRIORITY.get(cache.get(name, ''), 99)
+                new_priority = _ROLE_PRIORITY.get(role, 50)
+                if new_priority < existing_priority:
                     cache[name] = role
     return cache
 
@@ -129,7 +142,12 @@ class _NullPool:
 
 def _assess_storm_zone(game, player_idx, goal_engine, snap, zone, target,
                        min_cmc, me, opp, bhi):
-    """Storm zone: wraps find_all_chains() from combo_chain.py."""
+    """Storm zone: wraps find_all_chains() + R_res calculation.
+
+    R_res = (mana + ritual_mana) - (spell_costs - η × count)
+    When R_res >= 3 and have draw spells, projected storm includes
+    expected draws × fuel density in library.
+    """
     from ai.combo_chain import find_all_chains, what_is_missing
 
     payoff_names = _collect_payoff_names(goal_engine)
@@ -142,14 +160,38 @@ def _assess_storm_zone(game, player_idx, goal_engine, snap, zone, target,
     best = max(chains, key=lambda c: c.storm_damage, default=None)
     opp_life = max(1, snap.opp_life)
     best_damage = best.storm_damage if best else 0
-    payoff_value = best_damage / opp_life
 
     missing = what_is_missing(me.hand, mana, medallions, payoff_names)
+
+    # ── R_res: chain-reaction residue ──
+    # Compute available resources vs costs for the entire hand
+    r_res = _compute_r_res(me.hand, mana, medallions)
+
+    # ── Projected damage including expected draws ──
+    # If chain draws cards (cantrips), estimate additional storm from drawn fuel
+    projected_damage = best_damage
+    if best and best.cards_drawn > 0 and len(me.library) > 0:
+        # Fuel density: what fraction of library is castable fuel?
+        fuel_in_library = sum(1 for c in me.library
+                              if not c.template.is_land
+                              and any(ft in getattr(c.template, 'tags', set())
+                                      for ft in ('ritual', 'cantrip', 'draw')))
+        fuel_density = fuel_in_library / max(1, len(me.library))
+        # Each draw finds fuel with probability fuel_density
+        # Each fuel spell adds ~1 storm (and net-positive rituals add mana for more)
+        expected_extra = best.cards_drawn * fuel_density
+        # If R_res >= 3 (mana surplus), drawn fuel can be cast
+        if r_res >= 3:
+            projected_damage += int(expected_extra * 2)  # fuel chains into more fuel
+        elif r_res >= 0:
+            projected_damage += int(expected_extra)
+
+    payoff_value = projected_damage / opp_life
 
     combo_value = _compute_combo_value(snap, "storm")
     risk_discount = _compute_risk_discount(bhi, opp)
 
-    is_ready = (payoff_value >= 1.0
+    is_ready = (projected_damage >= opp_life
                 or (missing['has_payoff'] and best_damage > 0
                     and storm + best_damage >= opp_life))
 
@@ -166,8 +208,40 @@ def _assess_storm_zone(game, player_idx, goal_engine, snap, zone, target,
         best_chain=best,
         payoff_names=payoff_names,
         _role_cache=_build_role_cache(goal_engine),
-        reason=f"storm: best_dmg={best_damage}, opp_life={opp_life}",
+        reason=f"storm: best_dmg={best_damage} proj={projected_damage} "
+               f"r_res={r_res:.1f} opp_life={opp_life}",
     )
+
+
+def _compute_r_res(hand, mana, medallions):
+    """Chain-Reaction Residue: available mana minus costs after reduction.
+
+    R_res = (M_pool + Σ ritual_mana) - Σ (spell_cost - η)
+    Positive means mana surplus (chain can sustain).
+    """
+    available = mana
+    total_cost = 0
+    for c in hand:
+        if c.template.is_land:
+            continue
+        tags = getattr(c.template, 'tags', set())
+        cmc = c.template.cmc or 0
+
+        # Ritual mana production (from template, set by oracle parser)
+        ritual_data = getattr(c.template, 'ritual_mana', None)
+        if ritual_data:
+            available += ritual_data[1]  # (color, amount) → add amount
+
+        # Effective cost after reducer discount
+        from engine.cards import Color
+        reduction = 0
+        if (c.template.is_instant or c.template.is_sorcery):
+            if hasattr(c.template, 'color_identity') and Color.RED in c.template.color_identity:
+                reduction = medallions
+        effective_cost = max(0, cmc - reduction)
+        total_cost += effective_cost
+
+    return available - total_cost
 
 
 def _assess_graveyard_zone(game, player_idx, goal_engine, snap, zone, target,
@@ -319,14 +393,20 @@ def card_combo_role(card, assessment):
 
 
 def card_combo_modifier(card, assessment, snap, me, game, player_idx):
-    """Per-card combo modifier derived from ComboAssessment.
+    """Minimal combo modifier — only handles what projection CAN'T model.
 
-    All values computed from assessment.combo_value (position swing)
-    and assessment.payoff_value (expected effect / opp_life).
-    No arbitrary constants.
+    The projection (compute_play_ev) already handles:
+    - Cantrip value (draws cards → position improvement)
+    - Engine value (Medallion → mana spent, permanent deployed)
+    - Ritual value (mana production → position improvement)
+
+    This modifier ONLY intervenes for two things:
+    1. Storm finisher timing: hold until storm count maximized
+    2. Ritual chain gate: don't waste rituals without payoff access
+
+    Everything else returns 0.0 — let arithmetic flow naturally.
     """
     from engine.cards import Keyword as Kw
-    from ai.clock import mana_clock_impact
 
     a = assessment
     if not a or not a.resource_zone:
@@ -337,108 +417,49 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
     storm = me.spells_cast_this_turn
     role = card_combo_role(card, a)
 
-    # ── PAYOFF: fire when ready, hold when not ──
-    if role == 'payoff':
-        if Kw.STORM in getattr(card.template, 'keywords', set()):
-            # Storm payoffs: hold if castable fuel remains (maximize storm)
-            fuel = sum(1 for c in me.hand
-                       if c.instance_id != card.instance_id
-                       and not c.template.is_land
-                       and game.can_cast(player_idx, c)
-                       and Kw.STORM not in getattr(c.template, 'keywords', set()))
-            if storm + 1 >= opp_life:
-                return a.combo_value  # lethal
-            if fuel > 0:
-                # Each fuel adds 1 damage = 1/opp_life of a kill
-                return -fuel / opp_life * a.combo_value
-            # No fuel left — fire now
-            return (storm + 1) / opp_life * a.combo_value
+    # ═══ STORM FINISHER: hold until fuel exhausted ═══
+    if Kw.STORM in getattr(card.template, 'keywords', set()):
+        if storm + 1 >= opp_life:
+            return a.combo_value  # lethal — fire immediately
 
-        if a.is_ready:
-            # Non-storm payoff (cascade, reanimate): fire now
-            return a.payoff_value * a.combo_value * a.risk_discount
-        else:
-            # Not ready: penalty = wasted potential
-            # (what we'd get at target - what we get now) × combo_value
+        # Count ALL non-land non-storm spells in hand (not just currently castable).
+        # Rituals produce mana, so "can't cast now" doesn't mean "can't cast after ritual".
+        total_fuel = sum(1 for c in me.hand
+                         if c.instance_id != card.instance_id
+                         and not c.template.is_land
+                         and Kw.STORM not in getattr(c.template, 'keywords', set()))
+        if total_fuel > 0:
+            # Hold: each remaining fuel potentially adds 1/opp_life of a kill
+            return -total_fuel / opp_life * a.combo_value
+        # Truly no fuel left — fire now, value = damage fraction × combo_value
+        return (storm + 1) / opp_life * a.combo_value
+
+    # ═══ NON-STORM PAYOFF: hold until resources ready ═══
+    if role == 'payoff' and Kw.CASCADE not in getattr(card.template, 'keywords', set()):
+        if not a.is_ready:
+            # Wasted potential = (target - current) / opp_life × combo_value
             potential = a.resource_target / opp_life if a.resource_target > 0 else 0.5
-            current = a.payoff_value
-            wasted = max(0.01, potential - current)
+            wasted = max(0.01, potential - a.payoff_value)
             return -wasted * a.combo_value
+        # Ready — let projection handle the positive value
+        return 0.0
 
-    # ── FUEL (rituals): only when chain is viable ──
-    if role == 'fuel':
-        if storm == 0:
-            # Storm=0: deterministic gate
-            if a.resource_zone == "storm" and a.best_chain:
-                # Viable chain exists — card's marginal contribution
-                mv = _card_marginal_value(card, me, snap, a)
-                # Ensure positive when chain exists (card enables the chain)
-                return max(mv, a.combo_value / opp_life) * a.risk_discount
-            if not a.has_payoff:
-                return -a.combo_value / opp_life
-            if snap.am_dead_next:
-                return a.combo_value / opp_life
-            # Has payoff but no viable chain — ritual may unlock one
-            # Small positive: lets rituals compete with other plays
-            return a.combo_value / (opp_life * opp_life) * a.risk_discount
-        # Mid-chain: block if no payoff access
-        if not a.has_payoff and not a.has_enabler:
-            if not snap.am_dead_next:
-                return -a.combo_value / opp_life
-        return a.payoff_value * a.combo_value / opp_life
-
-    # ── ENGINE (cost reducer, Amulet-type): deploy for chain improvement ──
-    if role == 'engine':
-        if a.resource_zone == "storm" and a.best_chain:
-            return _card_marginal_value(card, me, snap, a)
-        return mana_clock_impact(snap) * a.combo_value
-
-    # ── ENABLER (GY access, discard outlets): progress toward threshold ──
-    if role == 'enabler':
-        if a.resource_zone == "graveyard":
-            gap = max(0, a.resource_target - a.resource_current)
-            return gap / max(1, a.resource_target) * a.combo_value / opp_life
-        return a.payoff_value * a.combo_value / opp_life
-
-    # ── DIG (cantrips): value from advancing toward combo ──
-    if role == 'dig':
-        opp_creatures = getattr(game.players[1 - player_idx], 'creatures', [])
-        has_punisher = any(
-            'draw' in (c.template.oracle_text or '').lower()
-            and 'opponent' in (c.template.oracle_text or '').lower()
-            and 'damage' in (c.template.oracle_text or '').lower()
-            for c in opp_creatures)
-        # Dig value scales with how far from ready we are
-        # Missing pieces → each draw is more valuable
-        resource_gap = max(0, a.resource_target - a.resource_current)
-        if not a.has_payoff:
-            resource_gap += 1  # missing payoff = extra urgency
-        # Value = gap_fraction * combo_value / opp_life
-        # This gives meaningful positive values (not just p_find)
-        gap_fraction = resource_gap / max(1, a.resource_target) if a.resource_target > 0 else 0.5
-        dig_value = gap_fraction * a.combo_value / opp_life
-        return -dig_value if has_punisher else dig_value
-
-    # ── FLASHBACK COMBO (PiF-style): GY fuel value ──
-    if 'flashback' in tags and 'combo' in tags and card.template.is_sorcery:
-        if card.zone == "graveyard":
+    # ═══ RITUAL CHAIN GATE: block at storm=0 without payoff access ═══
+    if role == 'fuel' and storm == 0:
+        # "Payoff access" includes tutors (Wish can find Grapeshot)
+        has_access = a.has_payoff or any(
+            'tutor' in getattr(c.template, 'tags', set())
+            for c in me.hand if c.instance_id != card.instance_id)
+        if not has_access:
+            # No payoff or tutor → wasting ritual
             return -a.combo_value / opp_life
-        gy_fuel = sum(1 for c in me.graveyard
-                      if (c.template.is_instant or c.template.is_sorcery)
-                      and any(ft in getattr(c.template, 'tags', set())
-                              for ft in ('ritual', 'cantrip')))
-        if storm == 0:
-            return -gy_fuel / opp_life * a.combo_value / opp_life
-        if gy_fuel < 2:
-            return -a.combo_value / (opp_life * opp_life)
-        return gy_fuel / opp_life * a.combo_value
+        # Has access — let projection's mana-production arithmetic handle it
+        return 0.0
 
-    # ── TUTOR: value of finding missing piece ──
-    if 'tutor' in tags:
-        if storm == 0:
-            return -a.combo_value / (opp_life * opp_life)
-        return (storm + 1) / opp_life * a.combo_value * a.risk_discount
-
+    # ═══ EVERYTHING ELSE: no modifier ═══
+    # Cantrips, engines (Medallion), enablers, tutors, PiF —
+    # projection already models their effects correctly.
+    # Don't interfere with natural card ordering.
     return 0.0
 
 
