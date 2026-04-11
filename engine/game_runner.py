@@ -850,11 +850,11 @@ class GameRunner:
                 continue
 
             pw_name = pw.template.name
-            from .game_state import PLANESWALKER_ABILITIES
-            if pw_name not in PLANESWALKER_ABILITIES:
-                continue
-
-            pw_data = PLANESWALKER_ABILITIES[pw_name]
+            from .game_state import _parse_planeswalker_abilities
+            pw_data = _parse_planeswalker_abilities(
+                pw.template.oracle_text, pw.template.loyalty)
+            if not pw_data.get("plus") and not pw_data.get("minus"):
+                continue  # no parseable abilities
             opp = game.players[opponent]
 
             ability_type = self._choose_pw_ability(pw, pw_name, pw_data, player, opp, game)
@@ -869,8 +869,8 @@ class GameRunner:
         """Choose the best planeswalker ability to activate.
 
         Uses ability descriptions to make generic decisions rather than
-        hardcoding per-card logic. Any new planeswalker added to
-        PLANESWALKER_ABILITIES will automatically get reasonable behavior.
+        hardcoding per-card logic. Any planeswalker with standard loyalty
+        ability oracle text will automatically get reasonable behavior.
         """
         def can_afford(ability_key):
             if ability_key not in pw_data:

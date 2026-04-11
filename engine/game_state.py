@@ -256,44 +256,42 @@ class PlayerState:
 # X_COST_SPELLS removed — now oracle-derived (template.x_cost_data)
 
 # Planeswalker loyalty ability definitions: (plus_amount, minus_amount, ult_amount)
-PLANESWALKER_ABILITIES = {
-    "Ugin, the Spirit Dragon": {
-        # Oracle: +2 deal 3 to any target, -X exile colored CMC<=X, -10 gain 7 draw 7 put 7
-        "plus": (2, "deal 3 damage to any target"),
-        "minus": (-7, "exile all colored permanents"),
-        "ult": (-10, "gain 7 life draw 7 cards put 7 permanents onto battlefield"),
-        "starting_loyalty": 7,
-    },
-    "Teferi, Time Raveler": {
-        # Oracle: +1 cast sorceries as flash until next turn, -3 bounce + draw a card
-        # Static: opponents cast at sorcery speed only (handled elsewhere)
-        "plus": (1, "cast sorceries as flash until next turn"),
-        "minus": (-3, "bounce target nonland permanent and draw a card"),
-        "starting_loyalty": 4,
-    },
-    "Jace, the Mind Sculptor": {
-        # Oracle: +2 scry opponent top, 0 brainstorm, -1 bounce creature, -12 exile library
-        "plus": (2, "look at top card of opponent library"),
-        "zero": (0, "brainstorm: draw 3 put 2 back"),
-        "minus": (-1, "bounce target creature to hand"),
-        "ult": (-12, "exile opponent library"),
-        "starting_loyalty": 3,
-    },
-    "Ral, Monsoon Mage": {
-        # Oracle (Ral, Leyline Prodigy back face): +1 instants/sorceries cost 1 less,
-        # -2 deal X damage divided among up to 2 targets (X = instants/sorceries cast this turn)
-        "plus": (1, "instants and sorceries cost 1 less until next turn"),
-        "minus": (-2, "deal damage equal to instants and sorceries cast this turn"),
-        "starting_loyalty": 2,
-    },
-    "Wrenn and Six": {
-        # Oracle: +1 return land from GY to hand, -1 deal 1 damage to any target, -7 retrace emblem
-        "plus": (1, "return land from graveyard to hand"),
-        "minus": (-1, "deal 1 damage to any target"),
-        "ult": (-7, "retrace on all instants and sorceries in graveyard"),
-        "starting_loyalty": 3,
-    },
-}
+def _parse_planeswalker_abilities(oracle_text: str, loyalty: int = 0) -> dict:
+    """Parse planeswalker abilities from oracle text.
+
+    Detects [+N], [-N], [0] loyalty ability patterns.
+    Returns dict with 'plus', 'minus', 'ult', 'zero', 'starting_loyalty'.
+    """
+    import re
+    result = {"starting_loyalty": loyalty or 0}
+    if not oracle_text:
+        return result
+
+    # Find all loyalty abilities: [+1]: text, [-3]: text, [0]: text
+    abilities = re.findall(r'\[([+\-−]?\d+)\]:\s*([^\[]+?)(?=\[|$)', oracle_text)
+
+    plus_found = False
+    for cost_str, desc in abilities:
+        cost_str = cost_str.replace('−', '-')  # unicode minus
+        cost = int(cost_str)
+        desc = desc.strip().rstrip('.')
+
+        if cost > 0 and not plus_found:
+            result["plus"] = (cost, desc)
+            plus_found = True
+        elif cost == 0:
+            result["zero"] = (0, desc)
+        elif cost < 0:
+            if "minus" not in result:
+                result["minus"] = (cost, desc)
+            else:
+                result["ult"] = (cost, desc)
+
+    return result
+
+
+# PLANESWALKER_ABILITIES removed — now parsed from oracle text via
+# _parse_planeswalker_abilities() called at ETB time.
 
 # Token definitions: (name, types, power, toughness, keywords)
 TOKEN_DEFS = {
@@ -1531,14 +1529,9 @@ class GameState:
         """Handle all enter-the-battlefield effects for a permanent."""
         template = card.template
 
-        # Planeswalker: set loyalty counters (always runs, not card-specific)
+        # Planeswalker: set loyalty counters from template (oracle-derived)
         if CardType.PLANESWALKER in template.card_types:
-            pw_name = template.name
-            if pw_name in PLANESWALKER_ABILITIES:
-                card.loyalty_counters = PLANESWALKER_ABILITIES[pw_name].get(
-                    "starting_loyalty", template.loyalty or 0)
-            else:
-                card.loyalty_counters = template.loyalty or 0
+            card.loyalty_counters = template.loyalty or 0
 
         # Energy production on ETB (from oracle-derived template property)
         if template.energy_production > 0:
@@ -1756,9 +1749,8 @@ class GameState:
                                ability_type: str = "plus"):
         """Activate a planeswalker loyalty ability."""
         pw_name = pw_card.template.name
-        pw_data = PLANESWALKER_ABILITIES.get(pw_name)
-        if not pw_data:
-            return
+        pw_data = _parse_planeswalker_abilities(
+            pw_card.template.oracle_text, pw_card.template.loyalty)
 
         ability_info = pw_data.get(ability_type)
         if not ability_info:
