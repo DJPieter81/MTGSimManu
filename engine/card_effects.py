@@ -150,7 +150,7 @@ def solitude_etb(game, card, controller, targets=None, item=None):
     life_gain = target.power or 0
     game._exile_permanent(target)
     game.players[opponent].life += life_gain
-    game.log.append(f"T{game.turn_number} P{controller+1}: "
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Solitude exiles {target.name} "
                     f"(opponent gains {life_gain} life, now {game.players[opponent].life})")
 
@@ -176,7 +176,7 @@ def subtlety_etb(game, card, controller, targets=None, item=None):
     target.damage_taken = 0
     # Put on top of library
     game.players[opponent].library.append(target)  # append = top
-    game.log.append(f"T{game.turn_number} P{controller+1}: "
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Subtlety puts {target.name} on top of opponent's library")
 
 
@@ -193,7 +193,7 @@ def endurance_etb(game, card, controller, targets=None, item=None):
             card_gy.zone = "library"
             target_player.library.append(card_gy)
         game.rng.shuffle(target_player.library)
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Endurance ETB: P{target_idx+1} shuffles {gy_count} cards "
                         f"from GY into library")
 
@@ -203,7 +203,7 @@ def endurance_etb(game, card, controller, targets=None, item=None):
 def omnath_etb(game, card, controller, targets=None, item=None):
     """Omnath ETB: draw a card. The +4 life is the 1st LANDFALL trigger, not ETB."""
     game.draw_cards(controller, 1)
-    game.log.append(f"T{game.turn_number} P{controller+1}: "
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Omnath ETB: draw a card")
 
 
@@ -216,7 +216,7 @@ def murktike_etb(game, card, controller, targets=None, item=None):
     if delved_spells > 0:
         card.temp_power_mod += delved_spells
         card.temp_toughness_mod += delved_spells
-    game.log.append(f"T{game.turn_number} P{controller+1}: "
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Murktide Regent enters as {card.power}/{card.toughness}"
                     f" ({delved_spells} instants/sorceries delved)")
 
@@ -234,7 +234,7 @@ def eternal_witness_etb(game, card, controller, targets=None, item=None):
         player.graveyard.remove(best)
         best.zone = "hand"
         player.hand.append(best)
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Eternal Witness returns {best.name} from GY")
 
 
@@ -242,7 +242,7 @@ def eternal_witness_etb(game, card, controller, targets=None, item=None):
                            description="Draw 2 cards")
 def quantum_riddler_etb(game, card, controller, targets=None, item=None):
     game.draw_cards(controller, 2)
-    game.log.append(f"T{game.turn_number} P{controller+1}: "
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Quantum Riddler ETB: draw 2 cards")
 
 
@@ -272,7 +272,7 @@ def cranial_plating_etb(game, card, controller, targets=None, item=None):
     # The AI must spend mana to equip via the "equip" action in main phase.
     # Mark this card as equipment so the game knows it can be equipped.
     card.instance_tags.add("equipment_unattached")
-    game.log.append(f"T{game.turn_number} P{controller+1}: "
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Cranial Plating enters the battlefield (unattached)")
 
 
@@ -306,12 +306,12 @@ def phlage_etb(game, card, controller, targets=None, item=None):
     opponent = 1 - controller
     # Deal 3 damage to opponent
     game.players[opponent].life -= 3
-    game.log.append(f"T{game.turn_number} P{controller+1}: "
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Phlage ETB: 3 damage to opponent "
                     f"(opponent life: {game.players[opponent].life})")
     # Gain 3 life
     game.players[controller].life += 3
-    game.log.append(f"T{game.turn_number} P{controller+1}: "
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Phlage ETB: gain 3 life "
                     f"(life: {game.players[controller].life})")
     # Check if opponent is dead
@@ -431,10 +431,10 @@ def unmarked_grave_resolve(game, card, controller, targets=None, item=None):
         best.zone = "graveyard"
         game.players[controller].graveyard.append(best)
         game.rng.shuffle(lib)
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Unmarked Grave puts {best.name} in graveyard")
     else:
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Unmarked Grave finds nothing (no nonlegendary creatures)")
 
 
@@ -446,7 +446,7 @@ def grapeshot_resolve(game, card, controller, targets=None, item=None):
     # by _handle_storm which calls this again for each copy.
     game.players[opponent].life -= 1
     game.players[controller].damage_dealt_this_turn += 1
-    game.log.append(f"T{game.turn_number} P{controller+1}: "
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Grapeshot deals 1 damage"
                     f" (opponent life: {game.players[opponent].life})")
 
@@ -457,7 +457,7 @@ def past_in_flames_resolve(game, card, controller, targets=None, item=None):
     for c in game.players[controller].graveyard:
         if c.template.is_instant or c.template.is_sorcery:
             c.has_flashback = True
-    game.log.append(f"T{game.turn_number} P{controller+1}: "
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Past in Flames grants flashback")
 
 
@@ -467,7 +467,7 @@ def empty_the_warrens_resolve(game, card, controller, targets=None, item=None):
     # Base effect: create 2 Goblin tokens. Storm copies are handled
     # by _handle_storm which calls this again for each copy.
     game.create_token(controller, "goblin", count=2)
-    game.log.append(f"T{game.turn_number} P{controller+1}: "
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Empty the Warrens creates 2 Goblin tokens")
 
 
@@ -513,14 +513,14 @@ def galvanic_discharge_resolve(game, card, controller, targets=None, item=None):
             target_creature = max(killable, key=lambda c: c.power or 0)
     if target_creature:
         target_creature.damage_marked += damage
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Galvanic Discharge deals {damage} to {target_creature.name}")
         if target_creature.is_dead:
             game._creature_dies(target_creature)
     else:
         opp.life -= damage
         game.players[controller].damage_dealt_this_turn += damage
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Galvanic Discharge deals {damage} to opponent")
 
 
@@ -558,7 +558,7 @@ def wrath_of_the_skies_resolve(game, card, controller, targets=None, item=None):
                 game._creature_dies(creature)
             else:
                 game._permanent_destroyed(creature)
-    game.log.append(f"T{game.turn_number} P{controller+1}: "
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Wrath of the Skies (X={x_val}) sweeps the board")
 
 
@@ -580,7 +580,7 @@ def prismatic_ending_resolve(game, card, controller, targets=None, item=None):
     if exile_targets:
         target = max(exile_targets, key=lambda c: _nonland_permanent_threat(c, opp.battlefield))
         game._exile_permanent(target)
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Prismatic Ending exiles {target.name}")
 
 
@@ -601,10 +601,10 @@ def march_otherworldly_light_resolve(game, card, controller, targets=None, item=
     if exile_targets:
         target = max(exile_targets, key=lambda c: c.template.cmc)
         game._exile_permanent(target)
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"March of Otherworldly Light exiles {target.name}")
     else:
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"March of Otherworldly Light: no valid targets")
 
 
@@ -616,7 +616,7 @@ def ephemerate_resolve(game, card, controller, targets=None, item=None):
     # Requires a creature target — if none, spell fizzles.
     my_creatures = game.players[controller].creatures
     if not my_creatures:
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Ephemerate fizzles (no creatures to target)")
         return
     # Prefer creatures with valuable ETBs.
@@ -682,7 +682,7 @@ def ocelot_pride_etb(game, card, controller, targets=None, item=None):
 def ajani_etb(game, card, controller, targets=None, item=None):
     game.create_token(controller, "cat", count=1, power=2, toughness=1)
     game.produce_energy(controller, 2, "Ajani")
-    game.log.append(f"T{game.turn_number} P{controller+1}: "
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Ajani creates 2/1 Cat Warrior token and gains 2 energy")
 
 
@@ -708,10 +708,10 @@ def seasoned_pyromancer_etb(game, card, controller, targets=None, item=None):
     # Create 1/1 Elemental tokens for each nonland discarded
     if discarded_nonland > 0:
         game.create_token(controller, "elemental", count=discarded_nonland)
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Seasoned Pyromancer: discard 2, draw 2, create {discarded_nonland} Elemental(s)")
     else:
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Seasoned Pyromancer: discard 2, draw 2 (no nonland discards)")
 
 
@@ -734,7 +734,7 @@ def ranger_captain_etb(game, card, controller, targets=None, item=None):
         best.zone = "hand"
         player.hand.append(best)
         game.rng.shuffle(player.library)
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Ranger-Captain tutors {best.name} to hand")
     else:
         game.rng.shuffle(player.library)
@@ -775,7 +775,7 @@ def stock_up_resolve(game, card, controller, targets=None, item=None):
 def orims_chant_resolve(game, card, controller, targets=None, item=None):
     opponent = 1 - controller
     game.players[opponent].silenced_this_turn = True
-    game.log.append(f"T{game.turn_number} P{controller+1}: "
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Orim's Chant silences opponent")
 
 
@@ -907,7 +907,7 @@ def wish_resolve(game, card, controller, targets=None, item=None):
             game.rng.shuffle(lib)
         chosen.zone = "hand"
         player.hand.append(chosen)
-        game.log.append(f"T{game.turn_number} P{controller+1}: Wish finds {chosen.name} (from {from_zone})")
+        game.log.append(f"T{game.display_turn} P{controller+1}: Wish finds {chosen.name} (from {from_zone})")
 
 
 @EFFECT_REGISTRY.register("Gifts Ungiven", EffectTiming.SPELL_RESOLVE,
@@ -926,7 +926,7 @@ def gifts_ungiven_resolve(game, card, controller, targets=None, item=None):
         game.players[controller].graveyard.append(card_found)
     game.rng.shuffle(lib)
     if found:
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Gifts Ungiven finds {', '.join(c.name for c in found)} to GY")
 
 
@@ -950,11 +950,11 @@ def force_of_vigor_resolve(game, card, controller, targets=None, item=None):
     destroyed = 0
     for target in valid_targets[:2]:
         game._permanent_destroyed(target)
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Force of Vigor destroys {target.name}")
         destroyed += 1
     if destroyed == 0:
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Force of Vigor: no valid targets")
 
 
@@ -971,7 +971,7 @@ def wear_tear_resolve(game, card, controller, targets=None, item=None):
     if artifacts:
         target = max(artifacts, key=lambda c: c.template.cmc)
         game._permanent_destroyed(target)
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Wear // Tear destroys {target.name}")
         destroyed += 1
     # Tear: destroy best enchantment
@@ -981,11 +981,11 @@ def wear_tear_resolve(game, card, controller, targets=None, item=None):
     if enchantments:
         target = max(enchantments, key=lambda c: c.template.cmc)
         game._permanent_destroyed(target)
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Wear // Tear destroys {target.name}")
         destroyed += 1
     if destroyed == 0:
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Wear // Tear: no valid targets")
 
 
@@ -1007,17 +1007,17 @@ def pick_your_poison_resolve(game, card, controller, targets=None, item=None):
         # Sacrifice highest value artifact/enchantment
         target = max(artifacts_enchantments, key=lambda c: c.template.cmc)
         game._permanent_destroyed(target)
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Pick Your Poison: opponent sacrifices {target.name}")
     elif flyers:
         target = max(flyers, key=lambda c: c.power or 0)
         game._creature_dies(target)
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Pick Your Poison: opponent sacrifices {target.name}")
     else:
         # Fallback: opponent loses 1 life (Toxic 1 mode)
         opp.life -= 1
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Pick Your Poison: opponent loses 1 life")
 
 
@@ -1038,7 +1038,7 @@ def meltdown_resolve(game, card, controller, targets=None, item=None):
                      and c.template.cmc <= x_val]
         for artifact in artifacts:
             game._permanent_destroyed(artifact)
-    game.log.append(f"T{game.turn_number} P{controller+1}: "
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Meltdown (X={x_val}) destroys artifacts with MV <= {x_val}")
 
 
@@ -1053,7 +1053,7 @@ def engineered_explosives_etb(game, card, controller, targets=None, item=None):
             colors.add(c)
     # Set charge counters = number of colors (max 5)
     card.other_counters["charge"] = min(len(colors), 5)
-    game.log.append(f"T{game.turn_number} P{controller+1}: "
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Engineered Explosives enters with {card.other_counters['charge']} charge counters")
 
 
@@ -1070,13 +1070,13 @@ def kolaghans_command_resolve(game, card, controller, targets=None, item=None):
     if artifacts:
         target = max(artifacts, key=lambda c: c.template.cmc)
         game._permanent_destroyed(target)
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Kolaghan's Command destroys {target.name}")
     else:
         # Deal 2 damage to opponent
         opp.life -= 2
         game.players[controller].damage_dealt_this_turn += 2
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Kolaghan's Command deals 2 to opponent")
 
     # Second mode: return creature from GY or force discard
@@ -1087,11 +1087,11 @@ def kolaghans_command_resolve(game, card, controller, targets=None, item=None):
         player.graveyard.remove(best)
         best.zone = "hand"
         player.hand.append(best)
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Kolaghan's Command returns {best.name} from GY")
     else:
         game._force_discard(opponent, 1)
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Kolaghan's Command: opponent discards")
 
 
@@ -1105,7 +1105,7 @@ def abrupt_decay_resolve(game, card, controller, targets=None, item=None):
     if valid:
         target = max(valid, key=lambda c: _nonland_permanent_threat(c, opp.battlefield))
         game._permanent_destroyed(target)
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Abrupt Decay destroys {target.name}")
 
 
@@ -1119,7 +1119,7 @@ def assassins_trophy_resolve(game, card, controller, targets=None, item=None):
             target = game.get_card_by_id(tid)
             if target and target.zone == "battlefield":
                 game._permanent_destroyed(target)
-                game.log.append(f"T{game.turn_number} P{controller+1}: "
+                game.log.append(f"T{game.display_turn} P{controller+1}: "
                                 f"Assassin's Trophy destroys {target.name}")
     else:
         # Auto-target: highest value nonland permanent
@@ -1127,7 +1127,7 @@ def assassins_trophy_resolve(game, card, controller, targets=None, item=None):
         if nonlands:
             target = max(nonlands, key=lambda c: _nonland_permanent_threat(c, opp.battlefield))
             game._permanent_destroyed(target)
-            game.log.append(f"T{game.turn_number} P{controller+1}: "
+            game.log.append(f"T{game.display_turn} P{controller+1}: "
                             f"Assassin's Trophy destroys {target.name}")
     # Opponent gets a basic land (simplified: just a small benefit)
     # In practice this is a downside but we don't model basic land search
@@ -1150,7 +1150,7 @@ def fatal_push_resolve(game, card, controller, targets=None, item=None):
                 target.template.is_creature and target.template.cmc <= max_cmc and
                 Keyword.INDESTRUCTIBLE not in target.keywords):
                 game._creature_dies(target)
-                game.log.append(f"T{game.turn_number} P{controller+1}: "
+                game.log.append(f"T{game.display_turn} P{controller+1}: "
                                 f"Fatal Push destroys {target.name}")
                 return
     # Auto-target
@@ -1160,7 +1160,7 @@ def fatal_push_resolve(game, card, controller, targets=None, item=None):
     if valid:
         target = max(valid, key=lambda c: c.power or 0)
         game._creature_dies(target)
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Fatal Push destroys {target.name}")
 
 
@@ -1196,7 +1196,7 @@ def leyline_binding_etb(game, card, controller, targets=None, item=None):
     if nonlands:
         target = max(nonlands, key=lambda c: _nonland_permanent_threat(c, opp.battlefield))
         game._exile_permanent(target)
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Leyline Binding exiles {target.name}")
 
 
@@ -1224,7 +1224,7 @@ def archon_of_cruelty_etb(game, card, controller, targets=None, item=None):
         opp.battlefield.remove(target)
         target.zone = "graveyard"
         game.players[target.owner].graveyard.append(target)
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Archon of Cruelty: P{opponent+1} sacrifices {target.name}")
 
     # Opponent discards a card
@@ -1234,12 +1234,12 @@ def archon_of_cruelty_etb(game, card, controller, targets=None, item=None):
         opp.hand.remove(discard)
         discard.zone = "graveyard"
         game.players[discard.owner].graveyard.append(discard)
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Archon of Cruelty: P{opponent+1} discards {discard.name}")
 
     # Opponent loses 3 life
     opp.life -= 3
-    game.log.append(f"T{game.turn_number} P{controller+1}: "
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Archon of Cruelty: P{opponent+1} loses 3 life (now {opp.life})")
 
     # You draw a card
@@ -1247,7 +1247,7 @@ def archon_of_cruelty_etb(game, card, controller, targets=None, item=None):
 
     # You gain 3 life
     game.gain_life(controller, 3, "Archon of Cruelty")
-    game.log.append(f"T{game.turn_number} P{controller+1}: "
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Archon of Cruelty: draw 1, gain 3 life (now {game.players[controller].life})")
 
     # Check if opponent is dead
@@ -1281,10 +1281,10 @@ def arboreal_grazer_etb(game, card, controller, targets=None, item=None):
                                if c.template.name == "Amulet of Vigor")
             if amulet_count > 0:
                 land.tapped = False
-                game.log.append(f"T{game.turn_number} P{controller+1}: "
+                game.log.append(f"T{game.display_turn} P{controller+1}: "
                                 f"Amulet of Vigor untaps {land.name}")
         game._trigger_landfall(controller)
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Arboreal Grazer puts {land.name} onto battlefield")
 
 
@@ -1330,10 +1330,10 @@ def _primeval_titan_search(game, controller):
                                if c.template.name == "Amulet of Vigor")
             if amulet_count > 0:
                 land.tapped = False
-                game.log.append(f"T{game.turn_number} P{controller+1}: "
+                game.log.append(f"T{game.display_turn} P{controller+1}: "
                                 f"Amulet of Vigor untaps {land.name}")
         game._trigger_landfall(controller)
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Primeval Titan searches for {land.name}")
 
     # Shuffle library
@@ -1355,11 +1355,11 @@ def wan_shi_tong_etb(game, card, controller, targets=None, item=None):
         draw_count = x // 2
         if draw_count > 0:
             game.draw_cards(controller, draw_count)
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Wan Shi Tong enters with {x} +1/+1 counters "
                         f"({card.power}/{card.toughness}), draws {draw_count} cards")
     else:
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Wan Shi Tong enters (no opponent searches yet)")
 
 
@@ -1377,7 +1377,7 @@ def sanctifier_en_vec_etb(game, card, controller, targets=None, item=None):
             p.exile.append(c)
             exiled += 1
     if exiled > 0:
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Sanctifier en-Vec exiles {exiled} black/red cards from graveyards")
 
 
@@ -1395,17 +1395,17 @@ def orcish_bowmasters_etb(game, card, controller, targets=None, item=None):
         if one_toughness:
             target = max(one_toughness, key=lambda c: c.power)
             target.damage_marked += 1
-            game.log.append(f"T{game.turn_number} P{controller+1}: "
+            game.log.append(f"T{game.display_turn} P{controller+1}: "
                             f"Bowmasters deals 1 damage to {target.name}")
         else:
             opp.life -= 1
             game.players[controller].damage_dealt_this_turn += 1
-            game.log.append(f"T{game.turn_number} P{controller+1}: "
+            game.log.append(f"T{game.display_turn} P{controller+1}: "
                             f"Bowmasters deals 1 damage to opponent (life: {opp.life})")
     else:
         opp.life -= 1
         game.players[controller].damage_dealt_this_turn += 1
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Bowmasters deals 1 damage to opponent (life: {opp.life})")
 
     # Create a 1/1 Orc Army token (simplified — in real MTG it grows)
@@ -1426,7 +1426,7 @@ def orcish_bowmasters_etb(game, card, controller, targets=None, item=None):
     token._game_state = game
     token.enter_battlefield()
     game.players[controller].battlefield.append(token)
-    game.log.append(f"T{game.turn_number} P{controller+1}: "
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Bowmasters creates 1/1 Orc Army token")
 
 
@@ -1446,7 +1446,7 @@ def damnation_resolve(game, card, controller, targets=None, item=None):
         all_creatures.extend(p.creatures)
     for creature in all_creatures:
         game._permanent_destroyed(creature)
-    game.log.append(f"T{game.turn_number} P{controller+1}: "
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Damnation destroys {len(all_creatures)} creatures")
 
 
@@ -1489,7 +1489,7 @@ def walking_ballista_etb(game, card, controller, targets=None, item=None):
         if target.damage_marked >= (target.toughness or 0):
             game._permanent_destroyed(target)
         game.log.append(
-            f"T{game.turn_number} P{controller+1}: "
+            f"T{game.display_turn} P{controller+1}: "
             f"Walking Ballista deals {damage_to_creature} to {target.name}")
         
         # Send remaining damage to opponent's face
@@ -1498,7 +1498,7 @@ def walking_ballista_etb(game, card, controller, targets=None, item=None):
             opp.life -= remaining
             game.players[controller].damage_dealt_this_turn += remaining
             game.log.append(
-                f"T{game.turn_number} P{controller+1}: "
+                f"T{game.display_turn} P{controller+1}: "
                 f"Walking Ballista deals {remaining} to opponent "
                 f"(life: {opp.life})")
     else:
@@ -1507,7 +1507,7 @@ def walking_ballista_etb(game, card, controller, targets=None, item=None):
         opp.life -= counters
         game.players[controller].damage_dealt_this_turn += counters
         game.log.append(
-            f"T{game.turn_number} P{controller+1}: "
+            f"T{game.display_turn} P{controller+1}: "
             f"Walking Ballista deals {counters} to opponent "
             f"(life: {opp.life})")
 
@@ -1583,7 +1583,7 @@ def march_of_reckless_joy_resolve(game, card, controller, targets=None, item=Non
 def explore_resolve(game, card, controller, targets=None, item=None):
     game.draw_cards(controller, 1)
     game.players[controller].extra_land_drops += 1
-    game.log.append(f"T{game.turn_number} P{controller+1}: Explore — draw 1, extra land drop")
+    game.log.append(f"T{game.display_turn} P{controller+1}: Explore — draw 1, extra land drop")
 
 
 @EFFECT_REGISTRY.register("Green Sun's Zenith", EffectTiming.SPELL_RESOLVE,
@@ -1607,7 +1607,7 @@ def green_suns_zenith_resolve(game, card, controller, targets=None, item=None):
         best.enter_battlefield()
         player.battlefield.append(best)
         game._handle_permanent_etb(best, controller)
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Green Sun's Zenith finds {best.name}")
     # Shuffle GSZ back into library (unique to this card)
     # card is already in graveyard at this point; move it to library
@@ -1634,7 +1634,7 @@ def summoners_pact_resolve(game, card, controller, targets=None, item=None):
         game.rng.shuffle(player.library)
         best.zone = "hand"
         player.hand.append(best)
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Summoner's Pact finds {best.name}")
 
 
@@ -1664,7 +1664,7 @@ def snapcaster_mage_etb(game, card, controller, targets=None, item=None):
             return (0, c.template.cmc or 0)
         best = max(candidates, key=snap_priority)
         best.has_flashback = True
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Snapcaster gives flashback to {best.name}")
 
 
@@ -1686,7 +1686,7 @@ def spell_queller_etb(game, card, controller, targets=None, item=None):
             game.stack.pop()
             spell_card.zone = "exile"
             game.players[spell_card.owner].exile.append(spell_card)
-            game.log.append(f"T{game.turn_number} P{controller+1}: "
+            game.log.append(f"T{game.display_turn} P{controller+1}: "
                             f"Spell Queller exiles {spell_card.name}")
 
 
@@ -1696,7 +1696,7 @@ def spell_queller_etb(game, card, controller, targets=None, item=None):
                            description="Draw 2 cards")
 def thought_monitor_etb(game, card, controller, targets=None, item=None):
     game.draw_cards(controller, 2)
-    game.log.append(f"T{game.turn_number} P{controller+1}: "
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Thought Monitor ETB: draw 2 cards")
 
 
@@ -1716,11 +1716,11 @@ def dispatch_resolve(game, card, controller, targets=None, item=None):
             if target and target.zone == "battlefield" and target.template.is_creature:
                 if has_metalcraft:
                     game._exile_permanent(target)
-                    game.log.append(f"T{game.turn_number} P{controller+1}: "
+                    game.log.append(f"T{game.display_turn} P{controller+1}: "
                                     f"Dispatch exiles {target.name} (metalcraft)")
                 else:
                     target.tapped = True
-                    game.log.append(f"T{game.turn_number} P{controller+1}: "
+                    game.log.append(f"T{game.display_turn} P{controller+1}: "
                                     f"Dispatch taps {target.name}")
                 return
     # Auto-target: pick best opponent creature
@@ -1729,11 +1729,11 @@ def dispatch_resolve(game, card, controller, targets=None, item=None):
         target = max(valid, key=lambda c: (c.power or 0) + (c.toughness or 0))
         if has_metalcraft:
             game._exile_permanent(target)
-            game.log.append(f"T{game.turn_number} P{controller+1}: "
+            game.log.append(f"T{game.display_turn} P{controller+1}: "
                             f"Dispatch exiles {target.name} (metalcraft)")
         else:
             target.tapped = True
-            game.log.append(f"T{game.turn_number} P{controller+1}: "
+            game.log.append(f"T{game.display_turn} P{controller+1}: "
                             f"Dispatch taps {target.name}")
 
 
@@ -1741,7 +1741,7 @@ def dispatch_resolve(game, card, controller, targets=None, item=None):
                            description="Gain 2 life on death")
 def haywire_mite_dies(game, card, controller, targets=None, item=None):
     game.players[controller].life += 2
-    game.log.append(f"T{game.turn_number} P{controller+1}: "
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Haywire Mite dies: gain 2 life (now {game.players[controller].life})")
 
 
@@ -1757,7 +1757,7 @@ def hurkyls_recall_resolve(game, card, controller, targets=None, item=None):
     for a in artifacts:
         game._bounce_permanent(a)
     if count:
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Hurkyl's Recall bounces {count} artifacts from P{opponent+1}")
 
 
@@ -1774,10 +1774,10 @@ def relic_of_progenitus_etb(game, card, controller, targets=None, item=None):
             c.zone = "exile"
             opp.exile.append(c)
         opp.graveyard.clear()
-        game.log.append(f"T{game.turn_number} P{controller+1}: "
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Relic of Progenitus exiles {count} cards from P{opponent+1}'s graveyard")
     game.draw_cards(controller, 1)
-    game.log.append(f"T{game.turn_number} P{controller+1}: "
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Relic of Progenitus: draw 1 card")
 
 
@@ -1786,7 +1786,7 @@ def relic_of_progenitus_etb(game, card, controller, targets=None, item=None):
 def ethersworn_canonist_etb(game, card, controller, targets=None, item=None):
     # Tag presence on battlefield restricts spellcasting (checked in can_cast)
     card.instance_tags.add("canonist_active")
-    game.log.append(f"T{game.turn_number} P{controller+1}: "
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Ethersworn Canonist enters — nonartifact spell restriction active")
 
 
@@ -1795,5 +1795,5 @@ def ethersworn_canonist_etb(game, card, controller, targets=None, item=None):
 def torpor_orb_etb(game, card, controller, targets=None, item=None):
     # Tag presence on battlefield suppresses creature ETBs (checked in _handle_etb)
     card.instance_tags.add("torpor_orb_active")
-    game.log.append(f"T{game.turn_number} P{controller+1}: "
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Torpor Orb enters — creature ETB abilities suppressed")

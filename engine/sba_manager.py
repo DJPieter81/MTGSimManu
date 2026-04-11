@@ -63,7 +63,7 @@ class SBAManager:
                 game.game_over = True
                 game.winner = 1 - p.player_idx
                 game.log.append(
-                    f"T{game.turn_number}: P{p.player_idx+1} loses "
+                    f"T{game.display_turn}: P{p.player_idx+1} loses "
                     f"(life={p.life}, SBA 704.5a)"
                 )
                 performed = True
@@ -77,7 +77,7 @@ class SBAManager:
                 game.game_over = True
                 game.winner = 1 - p.player_idx
                 game.log.append(
-                    f"T{game.turn_number}: P{p.player_idx+1} loses "
+                    f"T{game.display_turn}: P{p.player_idx+1} loses "
                     f"(drew from empty library, SBA 704.5b)"
                 )
                 p._drew_from_empty = False
@@ -92,7 +92,7 @@ class SBAManager:
                 game.game_over = True
                 game.winner = 1 - p.player_idx
                 game.log.append(
-                    f"T{game.turn_number}: P{p.player_idx+1} loses "
+                    f"T{game.display_turn}: P{p.player_idx+1} loses "
                     f"(poison={p.poison_counters}, SBA 704.5c)"
                 )
                 performed = True

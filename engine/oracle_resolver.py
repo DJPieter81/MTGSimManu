@@ -49,7 +49,7 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
                 best.zone = "exile"
                 game.players[opponent].exile.append(best)
                 game.log.append(
-                    f"T{game.turn_number} P{controller+1}: "
+                    f"T{game.display_turn} P{controller+1}: "
                     f"{card.name} exiles {best.name} from opponent's hand")
 
     # ── "When this creature enters, exile target creature/permanent
@@ -71,7 +71,7 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
                 life_gain = best.power or 0
                 opp.life += life_gain
             game.log.append(
-                f"T{game.turn_number} P{controller+1}: "
+                f"T{game.display_turn} P{controller+1}: "
                 f"{card.name} exiles {best.name}")
 
     # ── "When this creature enters, draw a card" ──
@@ -96,7 +96,7 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
             amount = int(m.group(1))
             game.gain_life(controller, amount, card.name)
             game.log.append(
-                f"T{game.turn_number} P{controller+1}: "
+                f"T{game.display_turn} P{controller+1}: "
                 f"{card.name} ETB: gain {amount} life (now {game.players[controller].life})")
 
     # ── "When this creature enters, deal N damage to any target / opponent" ──
@@ -109,7 +109,7 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
                 game.players[opponent].life -= amount
                 game.players[controller].damage_dealt_this_turn += amount
                 game.log.append(
-                    f"T{game.turn_number} P{controller+1}: "
+                    f"T{game.display_turn} P{controller+1}: "
                     f"{card.name} ETB: {amount} damage to opponent "
                     f"(life: {game.players[opponent].life})")
 
@@ -140,7 +140,7 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
                 best.zone = "graveyard"
                 game.players[opponent].graveyard.append(best)
                 game.log.append(
-                    f"T{game.turn_number} P{controller+1}: "
+                    f"T{game.display_turn} P{controller+1}: "
                     f"{card.name} discards {best.name}")
         # Life loss for Thoughtseize
         if 'you lose' in oracle and 'life' in oracle:
@@ -169,7 +169,7 @@ def resolve_attack_trigger(game: "GameState", attacker: "CardInstance",
             if c.instance_id != attacker.instance_id and c.attacking:
                 c.temp_power_mod += 1
         game.log.append(
-            f"T{game.turn_number} P{controller+1}: "
+            f"T{game.display_turn} P{controller+1}: "
             f"{attacker.name} battle cry — other attackers get +1/+0")
 
     # ── "Whenever this creature attacks, deal N damage" ──
@@ -194,7 +194,7 @@ def resolve_attack_trigger(game: "GameState", attacker: "CardInstance",
             game.create_token(controller, "warrior", count=count,
                               power=1, toughness=1)
             game.log.append(
-                f"T{game.turn_number} P{controller+1}: "
+                f"T{game.display_turn} P{controller+1}: "
                 f"{attacker.name} mobilize {count} — create {count} 1/1 tokens")
 
     # ── "Whenever this creature attacks, create a token" ──
