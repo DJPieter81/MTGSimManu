@@ -327,16 +327,28 @@ class GameRunner:
 
         # Log die roll
         on_play = game.active_player
-        game.log.append(f"Die roll: {game.players[on_play].deck_name} wins the die roll (goes first)")
+        on_draw = 1 - on_play
+        game.log.append(f'╔══ PRE-GAME ══════════════════════════════════════════════')
+        game.log.append(f'║ Die Roll: {game.players[on_play].deck_name} wins → chooses to play first')
+        game.log.append(f'║ P1 (on play): {game.players[on_play].deck_name}')
+        game.log.append(f'║ P2 (on draw): {game.players[on_draw].deck_name}')
+        game.log.append(f'╚{"═" * 55}')
 
         # Mulligan phase
         mulligan_counts = [0, 0]
         for p_idx in range(2):
             hand_size = 7
-            opening = [c.name for c in game.players[p_idx].hand]
-            game.log.append(f"P{p_idx+1} ({game.players[p_idx].deck_name}) opening hand: {opening}")
+            player = game.players[p_idx]
+            opening = [c.name for c in player.hand]
+            lands = sum(1 for c in player.hand if c.template.is_land)
+            spells = hand_size - lands
+            game.log.append(f'')
+            game.log.append(f'P{p_idx+1} ({player.deck_name}) opening hand ({lands} lands, {spells} spells):')
+            for c in player.hand:
+                cmc = c.template.cmc or 0
+                card_type = 'Land' if c.template.is_land else ('Creature' if c.template.is_creature else 'Spell')
+                game.log.append(f'  • {c.name} [{card_type}, CMC {cmc}]')
             while hand_size >= 5:
-                player = game.players[p_idx]
                 keep = ais[p_idx].decide_mulligan(player.hand, hand_size)
                 if keep:
                     if mulligan_counts[p_idx] > 0:
@@ -349,21 +361,28 @@ class GameRunner:
                             player.library.append(card)
                         kept = [c.name for c in player.hand]
                         game.log.append(
-                            f"P{p_idx+1} mulligans to {hand_size}, "
-                            f"bottoms: {bottom_names}, keeps: {kept}")
+                            f"→ P{p_idx+1} mulligans to {hand_size}, "
+                            f"bottoms: {bottom_names}")
+                        game.log.append(f"  Keeps: {kept}")
                     else:
-                        game.log.append(f"P{p_idx+1} keeps 7")
+                        game.log.append(f"→ P{p_idx+1} keeps 7")
                     break
                 else:
                     mulligan_counts[p_idx] += 1
-                    game.log.append(f"P{p_idx+1} mulligans (hand {hand_size} -> {hand_size-1})")
+                    reason = f'{lands} lands' if lands <= 1 or lands >= 5 else 'weak hand'
+                    game.log.append(f"→ P{p_idx+1} mulligans ({reason}, hand {hand_size} → {hand_size-1})")
                     for card in player.hand[:]:
                         player.hand.remove(card)
                         card.zone = "library"
                         player.library.append(card)
                     self.rng.shuffle(player.library)
                     game.draw_cards(p_idx, 7)
+                    # Show new hand
+                    lands = sum(1 for c in player.hand if c.template.is_land)
+                    spells = 7 - lands
+                    game.log.append(f'  New hand ({lands} lands, {spells} spells): {[c.name for c in player.hand]}')
                     hand_size -= 1
+        game.log.append('')
 
         # Leyline mechanic: cards with "begin the game with it on the
         # battlefield" start in play if they're in the opening hand.
@@ -410,6 +429,11 @@ class GameRunner:
 
             combat_mgr = CombatManager()
 
+            # ── Verbose helpers (defined once per turn) ──
+            def _vlog(msg):
+                if getattr(game, 'verbose', False):
+                    game.log.append(msg)
+
             for step in turn_mgr.iterate_turn(game):
                 if game.game_over:
                     break
@@ -417,31 +441,45 @@ class GameRunner:
                     game.game_over = True
                     break
 
+                def _board_summary():
+                    """Emit full board state summary."""
+                    p = game.players[active]
+                    o = game.players[1 - active]
+                    p_name = p.deck_name or f'P{active+1}'
+                    o_name = o.deck_name or f'P{1-active+1}'
+                    _vlog('')
+                    _vlog(f'╔══ TURN {game.turn_number} — {p_name} (P{active+1}) ══════════════════════════')
+                    _vlog(f'║ Life: {p_name} {p.life}  |  {o_name} {o.life}')
+                    _vlog(f'║ Hand: {len(p.hand)} cards  |  Opp hand: {len(o.hand)} cards')
+                    _vlog(f'║ Lands: {len(p.lands)}  |  Opp lands: {len(o.lands)}')
+                    _vlog(f'║ Library: {len(p.library)}  |  Graveyard: {len(p.graveyard)}')
+                    # Board creatures
+                    for pidx, pobj, label in [(active, p, p_name), (1-active, o, o_name)]:
+                        creatures = [f'{c.name} ({c.power}/{c.toughness})'
+                                     + (' [tapped]' if c.tapped else '')
+                                     for c in pobj.creatures]
+                        nonc = [c.name for c in pobj.battlefield
+                                if not c.template.is_land and not c.template.is_creature]
+                        lands = [c.name + (' [T]' if c.tapped else '')
+                                 for c in pobj.lands]
+                        _vlog(f'║ {label} board:')
+                        _vlog(f'║   Creatures: {", ".join(creatures) if creatures else "(empty)"}')
+                        if nonc:
+                            _vlog(f'║   Other: {", ".join(nonc)}')
+                        _vlog(f'║   Lands: {", ".join(lands) if lands else "(none)"}')
+                    _vlog(f'╚{"═" * 55}')
+
                 if step == TurnStep.UNTAP:
                     game.current_phase = Phase.UNTAP
                     game.untap_step(active)
-                    # Board state summary at turn start (verbose mode)
-                    if game.verbose:
-                        p = game.players[active]
-                        o = game.players[1 - active]
-                        creatures_p = ', '.join(f'{c.name} ({c.power}/{c.toughness})' for c in p.creatures) or 'none'
-                        creatures_o = ', '.join(f'{c.name} ({c.power}/{c.toughness})' for c in o.creatures) or 'none'
-                        perms_p = [c.name for c in p.battlefield if not c.template.is_land and not c.template.is_creature]
-                        perms_o = [c.name for c in o.battlefield if not c.template.is_land and not c.template.is_creature]
-                        game.log.append(f'--- Turn {game.turn_number} | '
-                                        f'P{active+1} ({p.deck_name}) | '
-                                        f'Life: {p.life} vs {o.life} | '
-                                        f'Hand: {len(p.hand)} vs {len(o.hand)} | '
-                                        f'Lands: {len(p.lands)} vs {len(o.lands)} ---')
-                        game.log.append(f'    Board P{active+1}: {creatures_p}'
-                                        + (f' + {", ".join(perms_p)}' if perms_p else ''))
-                        game.log.append(f'    Board P{1-active+1}: {creatures_o}'
-                                        + (f' + {", ".join(perms_o)}' if perms_o else ''))
+                    _board_summary()
+                    _vlog(f'  [Untap] P{active+1} untaps all permanents')
                     # Reset planeswalker activation tracking for this turn
                     ai._pw_activated_this_turn.clear()
 
                 elif step == TurnStep.UPKEEP:
                     game.current_phase = Phase.UPKEEP
+                    _vlog(f'  [Upkeep]')
                     # Rebound: cast exiled rebound spells for free
                     if hasattr(game, '_rebound_cards'):
                         to_cast = [c for c in game._rebound_cards
@@ -461,10 +499,16 @@ class GameRunner:
                 elif step == TurnStep.DRAW:
                     game.current_phase = Phase.DRAW
                     if not turn_mgr.should_skip_draw(game):
-                        game.draw_cards(active, 1)
+                        drawn = game.draw_cards(active, 1)
+                        if drawn and getattr(game, 'verbose', False):
+                            card_name = drawn[0].name if drawn else '?'
+                            _vlog(f'  [Draw] P{active+1} draws: {card_name}')
+                    else:
+                        _vlog(f'  [Draw] Skipped (first turn on play)')
 
                 elif step == TurnStep.MAIN1:
                     game.current_phase = Phase.MAIN1
+                    _vlog(f'  [Main 1]')
                     prev_lands = len(game.players[active].lands)
                     self._execute_main_phase(game, ai, opponent_ai)
                     if game.game_over:
@@ -478,17 +522,20 @@ class GameRunner:
 
                 elif step == TurnStep.BEGIN_COMBAT:
                     game.current_phase = Phase.BEGIN_COMBAT
-                    # Per CR 500.4: empty mana pools between phases
+                    _vlog(f'  [Begin Combat]')
                     for p in game.players:
                         p.mana_pool.empty()
-                    # Priority window: opponent can cast instants before combat
                     self._opponent_instant_window(game, opponent_ai, ai)
 
                 elif step == TurnStep.DECLARE_ATTACKERS:
                     game.current_phase = Phase.DECLARE_ATTACKERS
                     attackers = ai.decide_attackers(game)
                     if attackers:
+                        atk_names = [a.name for a in attackers]
+                        _vlog(f'  [Declare Attackers] P{active+1} attacks with: {", ".join(atk_names)}')
                         combat_mgr.declare_attackers(game, attackers, active)
+                    else:
+                        _vlog(f'  [Declare Attackers] P{active+1} does not attack')
 
                 elif step == TurnStep.AFTER_ATTACKERS_DECLARED:
                     if combat_mgr.attackers:
@@ -500,6 +547,11 @@ class GameRunner:
                     if combat_mgr.attackers:
                         game.current_phase = Phase.DECLARE_BLOCKERS
                         blocks = opponent_ai.decide_blockers(game, combat_mgr.attackers)
+                        if blocks:
+                            _vlog(f'  [Declare Blockers] P{1-active+1} blocks: '
+                                  + ', '.join(f'{b.name} blocks {next((a.name for a in combat_mgr.attackers if a.instance_id == getattr(b, "blocking", None)), "?")}' for b in blocks if getattr(b, 'blocking', None)))
+                        else:
+                            _vlog(f'  [Declare Blockers] P{1-active+1} does not block')
                         combat_mgr.declare_blockers(game, blocks)
 
                 elif step == TurnStep.AFTER_BLOCKERS_DECLARED:
@@ -515,16 +567,20 @@ class GameRunner:
                         combat_mgr.resolve_combat_damage(game)
                         damage = pre_life - game.players[opponent_idx].life
                         stats["damage_dealt"][active] += max(0, damage)
+                        if damage > 0:
+                            _vlog(f'  [Combat Damage] {damage} damage dealt → '
+                                  f'P{opponent_idx+1} life: {pre_life} → {game.players[opponent_idx].life}')
                         if game.game_over:
                             break
 
                 elif step == TurnStep.END_COMBAT:
                     game.current_phase = Phase.END_COMBAT
                     combat_mgr.end_combat(game)
+                    _vlog(f'  [End Combat]')
 
                 elif step == TurnStep.MAIN2:
                     game.current_phase = Phase.MAIN2
-                    # Per CR 500.4: empty mana pools between phases
+                    _vlog(f'  [Main 2]')
                     for p in game.players:
                         p.mana_pool.empty()
                     self._execute_main_phase(game, ai, opponent_ai)
@@ -541,6 +597,7 @@ class GameRunner:
 
                 elif step == TurnStep.END_STEP:
                     game.current_phase = Phase.END_STEP
+                    _vlog(f'  [End Step]')
                     # Goblin Bombardment: sacrifice tokens/small creatures to deal damage
                     self._activate_goblin_bombardment(game, active)
                     if game.game_over:
@@ -556,6 +613,10 @@ class GameRunner:
                 elif step == TurnStep.CLEANUP:
                     game.current_phase = Phase.CLEANUP
                     game.cleanup_step()
+                    # Discard to hand size
+                    p = game.players[active]
+                    if len(p.hand) > 7 and getattr(game, 'verbose', False):
+                        _vlog(f'  [Cleanup] P{active+1} discards to hand size 7')
 
             if game.game_over:
                 break
@@ -841,15 +902,17 @@ class GameRunner:
                             response = opponent_ai.decide_response(game, top)
                             if response:
                                 resp_card, resp_targets = response
+                                if getattr(game, 'verbose', False):
+                                    game.log.append(f'    [Priority] P{opponent_ai.player_idx+1} responds with {resp_card.name}')
                                 game.cast_spell(opponent_ai.player_idx,
                                                 resp_card, resp_targets)
                                 priority.take_action(game)
-                                # BHI: opponent cast a response — update beliefs
                                 if hasattr(ai, 'bhi'):
                                     ai.bhi.observe_spell_cast(
                                         game, getattr(resp_card.template, 'tags', set()))
                             else:
-                                # BHI: opponent passed — update beliefs
+                                if getattr(game, 'verbose', False):
+                                    game.log.append(f'    [Priority] P{opponent_ai.player_idx+1} passes (no response)')
                                 if hasattr(ai, 'bhi'):
                                     opp = game.players[opponent_ai.player_idx]
                                     opp_mana = len(opp.untapped_lands) + opp.mana_pool.total()
