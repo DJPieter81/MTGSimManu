@@ -23,42 +23,47 @@ class MulliganDecider:
         self.goal_engine = goal_engine
 
     def decide(self, hand: List["CardInstance"], cards_in_hand: int) -> bool:
-        """Return True to keep, False to mulligan."""
+        """Return True to keep, False to mulligan.
+
+        Also stores self.last_reason with the rationale (for logging).
+        """
         from engine.cards import CardType
         from ai.ai_player import ArchetypeStrategy
 
         lands = [c for c in hand if c.template.is_land]
         spells = [c for c in hand if not c.template.is_land]
         land_count = len(lands)
+        self.last_reason = ""
 
         # GoalEngine-aware mulligan
         if self.goal_engine and self.goal_engine.gameplan:
             gp = self.goal_engine.gameplan
             hand_names = {c.name for c in hand}
 
-            # Check for key engine cards — always keep hands with key cards
-            # even if land count is off, as long as we have 1+ lands
             has_key_card = bool(hand_names & gp.mulligan_keys) if gp.mulligan_keys else False
             has_always_early = bool(hand_names & gp.always_early) if gp.always_early else False
 
             if land_count < gp.mulligan_min_lands:
+                self.last_reason = f"too few lands ({land_count} < {gp.mulligan_min_lands})"
                 return False
             if land_count > gp.mulligan_max_lands:
-                # Exception: keep hands with key engine cards (Medallion etc.)
                 if has_always_early and land_count <= gp.mulligan_max_lands + 2:
                     pass  # keep — engine card is worth having extra lands
                 else:
+                    self.last_reason = f"too many lands ({land_count} > {gp.mulligan_max_lands})"
                     return False
 
             # Combo sets: need at least 1 card from each required set
             if gp.mulligan_combo_sets:
                 for combo_set in gp.mulligan_combo_sets:
                     if not (hand_names & combo_set):
-                        return cards_in_hand <= 5  # keep bad 5-card hands
+                        if cards_in_hand <= 5:
+                            self.last_reason = f"missing combo piece but only {cards_in_hand} cards"
+                            return True
+                        self.last_reason = f"missing combo piece from {combo_set}"
+                        return False
 
-            # Combo decks with always_early: prefer hands with a cost reducer,
-            # but don't force mulligan if hand has enough fuel to combo without one.
-            # Storm can go off without Medallion if it has rituals + cantrips + finisher.
+            # Combo decks with always_early: prefer reducer
             if gp.always_early and cards_in_hand >= 7:
                 reducer_names = gp.always_early | {
                     n for n in hand_names
@@ -66,7 +71,6 @@ class MulliganDecider:
                            for c in hand if c.name == n)
                 }
                 if not (hand_names & reducer_names):
-                    # No reducer — keep if we have ritual + cantrip + finisher access
                     has_ritual = any('ritual' in getattr(c.template, 'tags', set())
                                      for c in spells)
                     has_cantrip = any('cantrip' in getattr(c.template, 'tags', set())
@@ -80,7 +84,8 @@ class MulliganDecider:
                             and 'combo' in getattr(c.template, 'tags', set()))
                         for c in spells)
                     if not (has_ritual and has_cantrip and has_finisher):
-                        return False  # no reducer AND no backup plan — mulligan
+                        self.last_reason = "no cost reducer and no ritual+cantrip+finisher backup"
+                        return False
 
             # Require creature on curve
             if gp.mulligan_require_creature_cmc > 0:
@@ -89,20 +94,29 @@ class MulliganDecider:
                     for c in spells
                 )
                 if not has_creature and cards_in_hand >= 6:
+                    self.last_reason = f"no creature with CMC ≤ {gp.mulligan_require_creature_cmc}"
                     return False
 
             # Has key card?
             if gp.mulligan_keys:
                 hand_names = {c.name for c in hand}
-                if hand_names & gp.mulligan_keys:
+                found_keys = hand_names & gp.mulligan_keys
+                if found_keys:
+                    self.last_reason = f"has key card(s): {', '.join(sorted(found_keys))}"
                     return True
 
-            # Generic check: 2+ lands, 1+ castable spell
+            # Generic check
             cheap_spells = sum(1 for s in spells if (s.template.cmc or 0) <= 3)
-            return cheap_spells >= 1
+            if cheap_spells >= 1:
+                self.last_reason = f"{land_count} lands, {cheap_spells} castable spells"
+                return True
+            self.last_reason = "no castable spells"
+            return False
 
         # Fallback: generic heuristic
-        return self._generic(hand, lands, spells, cards_in_hand)
+        result = self._generic(hand, lands, spells, cards_in_hand)
+        self.last_reason = f"generic: {land_count} lands, {len(spells)} spells" + (" — keep" if result else " — mulligan")
+        return result
 
     def _generic(self, hand: List["CardInstance"], lands: List["CardInstance"], spells: List["CardInstance"], cards_in_hand: int) -> bool:
         """Generic mulligan heuristic when no gameplan is available."""

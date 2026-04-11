@@ -888,7 +888,15 @@ if __name__ == '__main__':
     parser.add_argument('--field', metavar='DECK', help='Run one deck vs all others')
     parser.add_argument('--verbose', nargs=2, metavar=('DECK1', 'DECK2'), help='Run single game log (actions only)')
     parser.add_argument('--trace', nargs=2, metavar=('DECK1', 'DECK2'), help='Run single game with full AI reasoning')
-    parser.add_argument('--bo3', nargs=2, metavar=('DECK1', 'DECK2'), help='Run best-of-3 match with detailed text log')
+    parser.add_argument('--bo3', nargs=2, metavar=('DECK1', 'DECK2'),
+                        help='Best-of-3 match with detailed play-by-play log (board states, life, phases)')
+    # Synonyms for --bo3 (so Claude and users can always find it)
+    parser.add_argument('--match', nargs=2, metavar=('DECK1', 'DECK2'), help=argparse.SUPPRESS)
+    parser.add_argument('--play-by-play', nargs=2, metavar=('DECK1', 'DECK2'), help=argparse.SUPPRESS)
+    parser.add_argument('--pbp', nargs=2, metavar=('DECK1', 'DECK2'), help=argparse.SUPPRESS)
+    parser.add_argument('--detailed', nargs=2, metavar=('DECK1', 'DECK2'), help=argparse.SUPPRESS)
+    parser.add_argument('--game-log', nargs=2, metavar=('DECK1', 'DECK2'), help=argparse.SUPPRESS)
+    parser.add_argument('--simulate', nargs=2, metavar=('DECK1', 'DECK2'), help=argparse.SUPPRESS)
     parser.add_argument('--games', '-n', type=int, default=20, help='Games per matchup (default 20)')
     parser.add_argument('--decks', '-d', type=int, default=None, help='Top N decks for matrix')
     parser.add_argument('--seed', '-s', type=int, default=42000, help='Seed for verbose/trace game')
@@ -918,8 +926,12 @@ if __name__ == '__main__':
         print(audit_deck(resolve_deck_name(args.audit), n_games=args.games))
         sys.exit(0)
 
-    if args.bo3:
-        d1, d2 = resolve_deck_name(args.bo3[0]), resolve_deck_name(args.bo3[1])
+    # Bo3 / detailed match (many synonyms)
+    bo3_args = (args.bo3 or args.match or getattr(args, 'play_by_play', None)
+                or args.pbp or args.detailed or getattr(args, 'game_log', None)
+                or args.simulate)
+    if bo3_args:
+        d1, d2 = resolve_deck_name(bo3_args[0]), resolve_deck_name(bo3_args[1])
         print(run_bo3(d1, d2, seed=args.seed))
     elif args.trace:
         d1, d2 = resolve_deck_name(args.trace[0]), resolve_deck_name(args.trace[1])

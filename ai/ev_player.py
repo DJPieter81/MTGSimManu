@@ -101,6 +101,10 @@ class EVPlayer:
         self._response_decider = ResponseDecider(
             player_idx, TurnPlanner(), self.strategic_logger)
 
+        # Bayesian Hand Inference — track opponent hand probabilities
+        from ai.bhi import BayesianHandTracker
+        self.bhi = BayesianHandTracker(player_idx)
+
         # Storm patience: track whether we've decided to "go off" this turn
         self._going_off_turn: int = -1  # turn number when we decided to go off
 
@@ -149,10 +153,17 @@ class EVPlayer:
         spells = [c for c in hand if not c.template.is_land]
 
         if cards_in_hand <= self.profile.mulligan_always_keep:
+            self.mulligan_reason = f"only {cards_in_hand} cards — always keep"
             return True
-        if len(lands) == 0 or len(lands) >= self.profile.mulligan_bad_land_count:
+        if len(lands) == 0:
+            self.mulligan_reason = "0 lands"
             return False
-        return self._mulligan_decider.decide(hand, cards_in_hand)
+        if len(lands) >= self.profile.mulligan_bad_land_count:
+            self.mulligan_reason = f"{len(lands)} lands (≥ {self.profile.mulligan_bad_land_count})"
+            return False
+        result = self._mulligan_decider.decide(hand, cards_in_hand)
+        self.mulligan_reason = getattr(self._mulligan_decider, 'last_reason', '')
+        return result
 
     def choose_cards_to_bottom(self, hand: List["CardInstance"],
                                 count: int) -> List["CardInstance"]:
@@ -304,7 +315,9 @@ class EVPlayer:
 
         # ── Base: projection-based EV ──
         # Projects board after cast + opponent response, returns clock delta
-        ev = compute_play_ev(card, snap, self.archetype, game, self.player_idx)
+        # Pass BHI for Bayesian-updated opponent response probabilities
+        ev = compute_play_ev(card, snap, self.archetype, game, self.player_idx,
+                             bhi=self.bhi)
 
         # ── Evoke overlay: projection doesn't model 2-card cost ──
         if ('evoke' in tags or 'evoke_pitch' in tags) and snap.my_mana < (t.cmc or 0):

@@ -26,12 +26,12 @@ from ai.mana_planner import analyze_mana_needs, choose_fetch_target
 class AICallbacks(GameCallbacks):
     """Wires engine callbacks to AI decision functions."""
 
-    def should_shock_land(self, game, player_idx, land):
-        """EV-based decision: pay life for untapped land?
+    def should_pay_life_for_untapped(self, game, player_idx, land):
+        """Should we pay life to enter this land untapped?
 
-        Projects two snapshots — one where we pay (untapped, lose life)
-        and one where we don't (tapped, keep life) — and compares them
-        using evaluate_board(). Works for any land with untap_life_cost.
+        Only pays if the extra mana enables a spell we couldn't cast
+        otherwise. Raw mana advantage without spell enablement isn't
+        worth life points. Derived from template.untap_life_cost.
         """
         from ai.ev_evaluator import snapshot_from_game, evaluate_board
         from ai.strategy_profile import DECK_ARCHETYPES
@@ -52,12 +52,12 @@ class AICallbacks(GameCallbacks):
         snap = snapshot_from_game(game, player_idx)
 
         # Project "paid" state: -life_cost life, +1 untapped mana
-        shocked = snap.__class__(
+        paid = snap.__class__(
             **{f.name: getattr(snap, f.name) for f in snap.__dataclass_fields__.values()}
         )
-        shocked.my_life = snap.my_life - life_cost
-        shocked.my_mana = snap.my_mana + 1
-        shocked.my_total_lands = snap.my_total_lands + 1
+        paid.my_life = snap.my_life - life_cost
+        paid.my_mana = snap.my_mana + 1
+        paid.my_total_lands = snap.my_total_lands + 1
 
         # Project "tapped" state: keep life, land is tapped (no mana this turn)
         tapped = snap.__class__(
@@ -67,7 +67,7 @@ class AICallbacks(GameCallbacks):
         # Tapped land: mana available doesn't increase this turn
 
         # Compare board values
-        shocked_value = evaluate_board(shocked, archetype)
+        paid_value = evaluate_board(paid, archetype)
         tapped_value = evaluate_board(tapped, archetype)
 
         # Also factor in spell enablement: if shocking enables a spell
@@ -79,13 +79,13 @@ class AICallbacks(GameCallbacks):
         combined = existing_colors | land_colors
 
         enables_spell = False
-        mana_if_shocked = len(player.untapped_lands) + 1
+        mana_if_paid = len(player.untapped_lands) + 1
         mana_if_tapped = len(player.untapped_lands)
         for card in player.hand:
             if card.template.is_land:
                 continue
             cmc = card.template.cmc or 0
-            if cmc == 0 or cmc > mana_if_shocked:
+            if cmc == 0 or cmc > mana_if_paid:
                 continue
             if cmc > mana_if_tapped:
                 mc = card.template.mana_cost
@@ -98,9 +98,14 @@ class AICallbacks(GameCallbacks):
                     enables_spell = True
                     break
 
-        # Shock if: projected board value is better shocked,
-        # OR shocking enables a spell we couldn't cast otherwise
-        return shocked_value > tapped_value or enables_spell
+        # Only pay life if it enables a spell we couldn't cast otherwise.
+        # Raw mana advantage without spell enablement isn't worth life.
+        if enables_spell:
+            return True
+
+        # No spell enabled — only pay if board eval strongly favors it
+        # (e.g., we have 0-cost spells that benefit from open mana for instants)
+        return paid_value > tapped_value + life_cost * 0.5
 
     def choose_fetch_target(self, game, player_idx, fetch_card, library, fetch_colors):
         player = game.players[player_idx]
@@ -269,6 +274,7 @@ class GameRunner:
         deck2 = self.build_deck(deck2_list)
 
         game = GameState(rng=self.rng, callbacks=AICallbacks())
+        game.verbose = verbose
         game.setup_game(deck1, deck2)
         game.players[0].deck_name = deck1_name
         game.players[1].deck_name = deck2_name
@@ -326,20 +332,34 @@ class GameRunner:
 
         # Log die roll
         on_play = game.active_player
-        game.log.append(f"Die roll: {game.players[on_play].deck_name} wins the die roll (goes first)")
+        on_draw = 1 - on_play
+        game.log.append(f'╔══ PRE-GAME ══════════════════════════════════════════════')
+        game.log.append(f'║ Die Roll: {game.players[on_play].deck_name} wins → chooses to play first')
+        game.log.append(f'║ P1 (on play): {game.players[on_play].deck_name}')
+        game.log.append(f'║ P2 (on draw): {game.players[on_draw].deck_name}')
+        game.log.append(f'╚{"═" * 55}')
 
         # Mulligan phase
         mulligan_counts = [0, 0]
         for p_idx in range(2):
             hand_size = 7
-            opening = [c.name for c in game.players[p_idx].hand]
-            game.log.append(f"P{p_idx+1} ({game.players[p_idx].deck_name}) opening hand: {opening}")
+            player = game.players[p_idx]
+            opening = [c.name for c in player.hand]
+            lands = sum(1 for c in player.hand if c.template.is_land)
+            spells = hand_size - lands
+            game.log.append(f'')
+            game.log.append(f'P{p_idx+1} ({player.deck_name}) opening hand ({lands} lands, {spells} spells):')
+            for c in player.hand:
+                cmc = c.template.cmc or 0
+                card_type = 'Land' if c.template.is_land else ('Creature' if c.template.is_creature else 'Spell')
+                game.log.append(f'  • {c.name} [{card_type}, CMC {cmc}]')
             while hand_size >= 5:
-                player = game.players[p_idx]
-                keep = ais[p_idx].decide_mulligan(player.hand, hand_size)
+                ai = ais[p_idx]
+                keep = ai.decide_mulligan(player.hand, hand_size)
+                reason = getattr(ai, 'mulligan_reason', '')
                 if keep:
                     if mulligan_counts[p_idx] > 0:
-                        to_bottom = ais[p_idx].choose_cards_to_bottom(
+                        to_bottom = ai.choose_cards_to_bottom(
                             player.hand, mulligan_counts[p_idx])
                         bottom_names = [c.name for c in to_bottom]
                         for card in to_bottom:
@@ -348,21 +368,27 @@ class GameRunner:
                             player.library.append(card)
                         kept = [c.name for c in player.hand]
                         game.log.append(
-                            f"P{p_idx+1} mulligans to {hand_size}, "
-                            f"bottoms: {bottom_names}, keeps: {kept}")
+                            f"→ P{p_idx+1} mulligans to {hand_size}, "
+                            f"bottoms: {bottom_names}")
+                        game.log.append(f"  Keeps: {kept}")
                     else:
-                        game.log.append(f"P{p_idx+1} keeps 7")
+                        game.log.append(f"→ P{p_idx+1} KEEPS {hand_size} — {reason}")
                     break
                 else:
                     mulligan_counts[p_idx] += 1
-                    game.log.append(f"P{p_idx+1} mulligans (hand {hand_size} -> {hand_size-1})")
+                    game.log.append(f"→ P{p_idx+1} MULLIGANS ({reason})")
                     for card in player.hand[:]:
                         player.hand.remove(card)
                         card.zone = "library"
                         player.library.append(card)
                     self.rng.shuffle(player.library)
                     game.draw_cards(p_idx, 7)
+                    # Show new hand
+                    lands = sum(1 for c in player.hand if c.template.is_land)
+                    spells = 7 - lands
+                    game.log.append(f'  New hand ({lands} lands, {spells} spells): {[c.name for c in player.hand]}')
                     hand_size -= 1
+        game.log.append('')
 
         # Leyline mechanic: cards with "begin the game with it on the
         # battlefield" start in play if they're in the opening hand.
@@ -409,6 +435,11 @@ class GameRunner:
 
             combat_mgr = CombatManager()
 
+            # ── Verbose helpers (defined once per turn) ──
+            def _vlog(msg):
+                if getattr(game, 'verbose', False):
+                    game.log.append(msg)
+
             for step in turn_mgr.iterate_turn(game):
                 if game.game_over:
                     break
@@ -416,14 +447,45 @@ class GameRunner:
                     game.game_over = True
                     break
 
+                def _board_summary():
+                    """Emit full board state summary."""
+                    p = game.players[active]
+                    o = game.players[1 - active]
+                    p_name = p.deck_name or f'P{active+1}'
+                    o_name = o.deck_name or f'P{1-active+1}'
+                    _vlog('')
+                    _vlog(f'╔══ TURN {game.turn_number} — {p_name} (P{active+1}) ══════════════════════════')
+                    _vlog(f'║ Life: {p_name} {p.life}  |  {o_name} {o.life}')
+                    _vlog(f'║ Hand: {len(p.hand)} cards  |  Opp hand: {len(o.hand)} cards')
+                    _vlog(f'║ Lands: {len(p.lands)}  |  Opp lands: {len(o.lands)}')
+                    _vlog(f'║ Library: {len(p.library)}  |  Graveyard: {len(p.graveyard)}')
+                    # Board creatures
+                    for pidx, pobj, label in [(active, p, p_name), (1-active, o, o_name)]:
+                        creatures = [f'{c.name} ({c.power}/{c.toughness})'
+                                     + (' [tapped]' if c.tapped else '')
+                                     for c in pobj.creatures]
+                        nonc = [c.name for c in pobj.battlefield
+                                if not c.template.is_land and not c.template.is_creature]
+                        lands = [c.name + (' [T]' if c.tapped else '')
+                                 for c in pobj.lands]
+                        _vlog(f'║ {label} board:')
+                        _vlog(f'║   Creatures: {", ".join(creatures) if creatures else "(empty)"}')
+                        if nonc:
+                            _vlog(f'║   Other: {", ".join(nonc)}')
+                        _vlog(f'║   Lands: {", ".join(lands) if lands else "(none)"}')
+                    _vlog(f'╚{"═" * 55}')
+
                 if step == TurnStep.UNTAP:
                     game.current_phase = Phase.UNTAP
                     game.untap_step(active)
+                    _board_summary()
+                    _vlog(f'  [Untap] P{active+1} untaps all permanents')
                     # Reset planeswalker activation tracking for this turn
                     ai._pw_activated_this_turn.clear()
 
                 elif step == TurnStep.UPKEEP:
                     game.current_phase = Phase.UPKEEP
+                    _vlog(f'  [Upkeep]')
                     # Rebound: cast exiled rebound spells for free
                     if hasattr(game, '_rebound_cards'):
                         to_cast = [c for c in game._rebound_cards
@@ -443,10 +505,16 @@ class GameRunner:
                 elif step == TurnStep.DRAW:
                     game.current_phase = Phase.DRAW
                     if not turn_mgr.should_skip_draw(game):
-                        game.draw_cards(active, 1)
+                        drawn = game.draw_cards(active, 1)
+                        if drawn and getattr(game, 'verbose', False):
+                            card_name = drawn[0].name if drawn else '?'
+                            _vlog(f'  [Draw] P{active+1} draws: {card_name}')
+                    else:
+                        _vlog(f'  [Draw] Skipped (first turn on play)')
 
                 elif step == TurnStep.MAIN1:
                     game.current_phase = Phase.MAIN1
+                    _vlog(f'  [Main 1]')
                     prev_lands = len(game.players[active].lands)
                     self._execute_main_phase(game, ai, opponent_ai)
                     if game.game_over:
@@ -460,17 +528,20 @@ class GameRunner:
 
                 elif step == TurnStep.BEGIN_COMBAT:
                     game.current_phase = Phase.BEGIN_COMBAT
-                    # Per CR 500.4: empty mana pools between phases
+                    _vlog(f'  [Begin Combat]')
                     for p in game.players:
                         p.mana_pool.empty()
-                    # Priority window: opponent can cast instants before combat
                     self._opponent_instant_window(game, opponent_ai, ai)
 
                 elif step == TurnStep.DECLARE_ATTACKERS:
                     game.current_phase = Phase.DECLARE_ATTACKERS
                     attackers = ai.decide_attackers(game)
                     if attackers:
+                        atk_names = [a.name for a in attackers]
+                        _vlog(f'  [Declare Attackers] P{active+1} attacks with: {", ".join(atk_names)}')
                         combat_mgr.declare_attackers(game, attackers, active)
+                    else:
+                        _vlog(f'  [Declare Attackers] P{active+1} does not attack')
 
                 elif step == TurnStep.AFTER_ATTACKERS_DECLARED:
                     if combat_mgr.attackers:
@@ -482,6 +553,11 @@ class GameRunner:
                     if combat_mgr.attackers:
                         game.current_phase = Phase.DECLARE_BLOCKERS
                         blocks = opponent_ai.decide_blockers(game, combat_mgr.attackers)
+                        if blocks:
+                            _vlog(f'  [Declare Blockers] P{1-active+1} blocks: '
+                                  + ', '.join(f'{b.name} blocks {next((a.name for a in combat_mgr.attackers if a.instance_id == getattr(b, "blocking", None)), "?")}' for b in blocks if getattr(b, 'blocking', None)))
+                        else:
+                            _vlog(f'  [Declare Blockers] P{1-active+1} does not block')
                         combat_mgr.declare_blockers(game, blocks)
 
                 elif step == TurnStep.AFTER_BLOCKERS_DECLARED:
@@ -497,16 +573,20 @@ class GameRunner:
                         combat_mgr.resolve_combat_damage(game)
                         damage = pre_life - game.players[opponent_idx].life
                         stats["damage_dealt"][active] += max(0, damage)
+                        if damage > 0:
+                            _vlog(f'  [Combat Damage] {damage} damage dealt → '
+                                  f'P{opponent_idx+1} life: {pre_life} → {game.players[opponent_idx].life}')
                         if game.game_over:
                             break
 
                 elif step == TurnStep.END_COMBAT:
                     game.current_phase = Phase.END_COMBAT
                     combat_mgr.end_combat(game)
+                    _vlog(f'  [End Combat]')
 
                 elif step == TurnStep.MAIN2:
                     game.current_phase = Phase.MAIN2
-                    # Per CR 500.4: empty mana pools between phases
+                    _vlog(f'  [Main 2]')
                     for p in game.players:
                         p.mana_pool.empty()
                     self._execute_main_phase(game, ai, opponent_ai)
@@ -523,6 +603,7 @@ class GameRunner:
 
                 elif step == TurnStep.END_STEP:
                     game.current_phase = Phase.END_STEP
+                    _vlog(f'  [End Step]')
                     # Goblin Bombardment: sacrifice tokens/small creatures to deal damage
                     self._activate_goblin_bombardment(game, active)
                     if game.game_over:
@@ -538,6 +619,10 @@ class GameRunner:
                 elif step == TurnStep.CLEANUP:
                     game.current_phase = Phase.CLEANUP
                     game.cleanup_step()
+                    # Discard to hand size
+                    p = game.players[active]
+                    if len(p.hand) > 7 and getattr(game, 'verbose', False):
+                        _vlog(f'  [Cleanup] P{active+1} discards to hand size 7')
 
             if game.game_over:
                 break
@@ -803,6 +888,19 @@ class GameRunner:
                     if creature:
                         game.equip_creature(ai.player_idx, card, creature)
             elif action == "cast_spell":
+                # Tag with current goal and card role for detailed logging
+                if getattr(game, 'verbose', False) and hasattr(ai, 'goal_engine') and ai.goal_engine:
+                    ge = ai.goal_engine
+                    gp = ge.gameplan
+                    goal_name = gp.goals[ge.current_goal_idx].goal_type.value if gp and gp.goals and ge.current_goal_idx < len(gp.goals) else '?'
+                    card_role = None
+                    if gp and gp.goals and ge.current_goal_idx < len(gp.goals):
+                        for role, names in gp.goals[ge.current_goal_idx].card_roles.items():
+                            if card.name in names:
+                                card_role = role
+                                break
+                    role_str = f' [{card_role}]' if card_role else ''
+                    game.log.append(f'    → Goal: {goal_name}{role_str}')
                 success = game.cast_spell(ai.player_idx, card, targets)
                 if not success:
                     # Track failed casts to prevent infinite loops.
@@ -823,9 +921,26 @@ class GameRunner:
                             response = opponent_ai.decide_response(game, top)
                             if response:
                                 resp_card, resp_targets = response
+                                if getattr(game, 'verbose', False):
+                                    game.log.append(f'    [Priority] P{opponent_ai.player_idx+1} responds with {resp_card.name}')
                                 game.cast_spell(opponent_ai.player_idx,
                                                 resp_card, resp_targets)
                                 priority.take_action(game)
+                                if hasattr(ai, 'bhi'):
+                                    ai.bhi.observe_spell_cast(
+                                        game, getattr(resp_card.template, 'tags', set()))
+                            else:
+                                if getattr(game, 'verbose', False):
+                                    game.log.append(f'    [Priority] P{opponent_ai.player_idx+1} passes (no response)')
+                                if hasattr(ai, 'bhi'):
+                                    opp = game.players[opponent_ai.player_idx]
+                                    opp_mana = len(opp.untapped_lands) + opp.mana_pool.total()
+                                    spell_template = top.source.template if top.source else None
+                                    ai.bhi.observe_priority_pass(
+                                        game,
+                                        spell_on_stack=True,
+                                        spell_is_creature=spell_template.is_creature if spell_template else False,
+                                        opp_mana_available=opp_mana)
 
                     # Both passed — resolve stack (CR 117.4)
                     self._resolve_stack_loop(game)
