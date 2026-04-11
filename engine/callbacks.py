@@ -17,10 +17,10 @@ if TYPE_CHECKING:
 class GameCallbacks(Protocol):
     """Protocol that the engine calls for strategic decisions."""
 
-    def should_shock_land(
+    def should_pay_life_for_untapped(
         self, game: GameState, player_idx: int, land: CardInstance
     ) -> bool:
-        """Should this shockland enter untapped (pay 2 life)?"""
+        """Should this land pay life to enter untapped?"""
         ...
 
     def choose_fetch_target(
@@ -47,7 +47,7 @@ class GameCallbacks(Protocol):
 class DefaultCallbacks:
     """Safe defaults: always tapped, first legal target, no evoke, no dash."""
 
-    def should_shock_land(
+    def should_pay_life_for_untapped(
         self, game: GameState, player_idx: int, land: CardInstance
     ) -> bool:
         return False

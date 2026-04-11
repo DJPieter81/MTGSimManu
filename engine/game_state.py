@@ -819,7 +819,7 @@ class GameState:
         # ── Lands with optional life payment to enter untapped (shock lands etc.) ──
         elif card.template.untap_life_cost > 0:
             life_cost = card.template.untap_life_cost
-            should_pay = self.callbacks.should_shock_land(self, player_idx, card)
+            should_pay = self.callbacks.should_pay_life_for_untapped(self, player_idx, card)
             if should_pay:
                 player.life -= life_cost
                 card.enter_battlefield()
@@ -911,7 +911,7 @@ class GameState:
             # Lands with optional life payment to enter untapped
             if best_land.template.untap_life_cost > 0:
                 life_cost = best_land.template.untap_life_cost
-                should_pay = self.callbacks.should_shock_land(self, player_idx, best_land)
+                should_pay = self.callbacks.should_pay_life_for_untapped(self, player_idx, best_land)
                 if should_pay:
                     player.life -= life_cost
                     best_land.enter_battlefield()

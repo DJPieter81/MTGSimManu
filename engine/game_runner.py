@@ -26,12 +26,12 @@ from ai.mana_planner import analyze_mana_needs, choose_fetch_target
 class AICallbacks(GameCallbacks):
     """Wires engine callbacks to AI decision functions."""
 
-    def should_shock_land(self, game, player_idx, land):
-        """EV-based decision: pay life for untapped land?
+    def should_pay_life_for_untapped(self, game, player_idx, land):
+        """Should we pay life to enter this land untapped?
 
-        Projects two snapshots — one where we pay (untapped, lose life)
-        and one where we don't (tapped, keep life) — and compares them
-        using evaluate_board(). Works for any land with untap_life_cost.
+        Only pays if the extra mana enables a spell we couldn't cast
+        otherwise. Raw mana advantage without spell enablement isn't
+        worth life points. Derived from template.untap_life_cost.
         """
         from ai.ev_evaluator import snapshot_from_game, evaluate_board
         from ai.strategy_profile import DECK_ARCHETYPES
@@ -52,12 +52,12 @@ class AICallbacks(GameCallbacks):
         snap = snapshot_from_game(game, player_idx)
 
         # Project "paid" state: -life_cost life, +1 untapped mana
-        shocked = snap.__class__(
+        paid = snap.__class__(
             **{f.name: getattr(snap, f.name) for f in snap.__dataclass_fields__.values()}
         )
-        shocked.my_life = snap.my_life - life_cost
-        shocked.my_mana = snap.my_mana + 1
-        shocked.my_total_lands = snap.my_total_lands + 1
+        paid.my_life = snap.my_life - life_cost
+        paid.my_mana = snap.my_mana + 1
+        paid.my_total_lands = snap.my_total_lands + 1
 
         # Project "tapped" state: keep life, land is tapped (no mana this turn)
         tapped = snap.__class__(
@@ -67,7 +67,7 @@ class AICallbacks(GameCallbacks):
         # Tapped land: mana available doesn't increase this turn
 
         # Compare board values
-        shocked_value = evaluate_board(shocked, archetype)
+        paid_value = evaluate_board(paid, archetype)
         tapped_value = evaluate_board(tapped, archetype)
 
         # Also factor in spell enablement: if shocking enables a spell
@@ -79,13 +79,13 @@ class AICallbacks(GameCallbacks):
         combined = existing_colors | land_colors
 
         enables_spell = False
-        mana_if_shocked = len(player.untapped_lands) + 1
+        mana_if_paid = len(player.untapped_lands) + 1
         mana_if_tapped = len(player.untapped_lands)
         for card in player.hand:
             if card.template.is_land:
                 continue
             cmc = card.template.cmc or 0
-            if cmc == 0 or cmc > mana_if_shocked:
+            if cmc == 0 or cmc > mana_if_paid:
                 continue
             if cmc > mana_if_tapped:
                 mc = card.template.mana_cost
@@ -98,9 +98,14 @@ class AICallbacks(GameCallbacks):
                     enables_spell = True
                     break
 
-        # Shock if: projected board value is better shocked,
-        # OR shocking enables a spell we couldn't cast otherwise
-        return shocked_value > tapped_value or enables_spell
+        # Only pay life if it enables a spell we couldn't cast otherwise.
+        # Raw mana advantage without spell enablement isn't worth life.
+        if enables_spell:
+            return True
+
+        # No spell enabled — only pay if board eval strongly favors it
+        # (e.g., we have 0-cost spells that benefit from open mana for instants)
+        return paid_value > tapped_value + life_cost * 0.5
 
     def choose_fetch_target(self, game, player_idx, fetch_card, library, fetch_colors):
         player = game.players[player_idx]
