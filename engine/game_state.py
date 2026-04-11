@@ -96,6 +96,7 @@ class PlayerState:
     energy_spent_this_game: int = 0
     library_searches_this_game: int = 0
     silenced_this_turn: bool = False
+    temp_cost_reduction: int = 0  # temporary "spells cost N less" (Ral PW +1), cleared end of turn
     deck_name: str = ""
     # Effective CMC overrides from gameplan (e.g. domain cost reduction)
     effective_cmc_overrides: Dict[str, int] = field(default_factory=dict)
@@ -110,7 +111,8 @@ class PlayerState:
 
     @property
     def creatures(self) -> List[CardInstance]:
-        return [c for c in self.battlefield if c.template.is_creature]
+        return [c for c in self.battlefield
+                if c.template.is_creature and not getattr(c, 'is_transformed', False)]
 
     @property
     def lands(self) -> List[CardInstance]:
@@ -119,7 +121,8 @@ class PlayerState:
     @property
     def planeswalkers(self) -> List[CardInstance]:
         return [c for c in self.battlefield
-                if CardType.PLANESWALKER in c.template.card_types]
+                if (CardType.PLANESWALKER in c.template.card_types
+                    or getattr(c, 'is_transformed', False))]
 
     @property
     def untapped_lands(self) -> List[CardInstance]:
@@ -240,6 +243,7 @@ class PlayerState:
         self.damage_dealt_this_turn = 0
         self.cards_drawn_this_turn = 0
         self.silenced_this_turn = False
+        self.temp_cost_reduction = 0
         self._landfall_count_this_turn = 0
 
 
@@ -459,6 +463,9 @@ class GameState:
                     # Generic cost reduction from permanents
                     from .oracle_resolver import count_cost_reducers
                     reduction += count_cost_reducers(self, player_idx, c.template)
+                    # Temporary cost reduction (Ral PW +1 "until your next turn")
+                    if c.template.is_instant or c.template.is_sorcery:
+                        reduction += player.temp_cost_reduction
                     # Affinity for artifacts
                     if Keyword.AFFINITY in c.template.keywords:
                         artifact_count = sum(
@@ -1756,8 +1763,13 @@ class GameState:
                                ability_type: str = "plus"):
         """Activate a planeswalker loyalty ability."""
         pw_name = pw_card.template.name
-        pw_data = _parse_planeswalker_abilities(
-            pw_card.template.oracle_text, pw_card.template.loyalty)
+        # Use back face oracle for transformed cards
+        oracle = pw_card.template.oracle_text
+        loyalty = pw_card.template.loyalty
+        if getattr(pw_card, 'is_transformed', False) and pw_card.template.back_face_oracle:
+            oracle = pw_card.template.back_face_oracle
+            loyalty = pw_card.template.back_face_loyalty
+        pw_data = _parse_planeswalker_abilities(oracle, loyalty)
 
         ability_info = pw_data.get(ability_type)
         if not ability_info:
@@ -1857,8 +1869,10 @@ class GameState:
 
         elif "instants and sorceries cost" in effect_desc:
             # Ral +1: instants/sorceries cost 1 less until next turn
-            # Simplified: minor mana advantage for storm
-            pass
+            player = self.players[controller]
+            player.temp_cost_reduction += 1
+            self.log.append(f"T{self.display_turn} P{controller+1}: "
+                           f"{pw_name} +1 — instants and sorceries cost {{1}} less")
 
         elif "damage" in effect_desc:
             import re
@@ -1909,6 +1923,31 @@ class GameState:
             if draw_match:
                 self.draw_cards(controller, int(draw_match.group(1)))
             # Simplified: skip the "put permanents onto battlefield" part
+
+        elif "exile the top" in effect_desc and "cast" in effect_desc:
+            # Ral -8 ultimate: exile top N, cast instants/sorceries for free
+            import re
+            n_match = re.search(r'top\s+(\d+)', effect_desc)
+            n_cards = int(n_match.group(1)) if n_match else 8
+            player = self.players[controller]
+            exiled = []
+            for _ in range(min(n_cards, len(player.library))):
+                card = player.library.pop(0)
+                card.zone = "exile"
+                player.exile.append(card)
+                exiled.append(card)
+            self.log.append(f"T{self.display_turn} P{controller+1}: "
+                           f"{pw_name} ultimate — exiles top {len(exiled)} cards")
+            # Cast all instants and sorceries for free
+            for card in list(exiled):
+                if card.template.is_instant or card.template.is_sorcery:
+                    if card in player.exile:
+                        player.exile.remove(card)
+                    card.zone = "hand"
+                    player.hand.append(card)
+                    self.log.append(f"T{self.display_turn} P{controller+1}: "
+                                   f"  Free-cast {card.name} from exile")
+                    self.cast_spell(controller, card, free_cast=True)
 
         # Planeswalker dies at 0 loyalty (SBA will catch this)
 

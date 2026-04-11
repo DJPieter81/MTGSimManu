@@ -254,6 +254,46 @@ def resolve_dies_trigger(game: "GameState", card: "CardInstance",
                 player.hand.append(best)
 
 
+def _handle_coin_flip_transform(game: "GameState", controller: int,
+                                creature: "CardInstance"):
+    """Handle Ral-style coin flip: flip a coin, on win → exile and return
+    transformed as a planeswalker with loyalty = 3 + spells cast this turn.
+
+    On loss: deals 1 damage to controller (from Ral's oracle text).
+    """
+    player = game.players[controller]
+    result = game.rng.choice(["win", "lose"])
+
+    if result == "lose":
+        # Ral deals 1 damage to controller on losing the flip
+        player.life -= 1
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
+                       f"{creature.name} — lost coin flip, takes 1 damage")
+        return
+
+    # Won the flip → transform creature into planeswalker
+    spells_this_turn = player.spells_cast_this_turn
+    base_loyalty = creature.template.back_face_loyalty or 2
+    starting_loyalty = base_loyalty + spells_this_turn
+
+    # Remove creature from battlefield
+    if creature in player.battlefield:
+        player.battlefield.remove(creature)
+
+    # Transform: set as planeswalker with loyalty
+    creature.is_transformed = True
+    creature.loyalty_counters = starting_loyalty
+    creature.damage_marked = 0
+
+    # Return to battlefield as planeswalker
+    creature.zone = "battlefield"
+    player.battlefield.append(creature)
+
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
+                   f"{creature.name} — won coin flip! Transforms with "
+                   f"{starting_loyalty} loyalty ({spells_this_turn} spells cast)")
+
+
 def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
                                 spell_cast: "CardInstance"):
     """Resolve "whenever you cast a spell" triggers for all permanents.
@@ -264,7 +304,7 @@ def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
     player = game.players[caster_idx]
     opponent = 1 - caster_idx
 
-    for permanent in player.battlefield:
+    for permanent in list(player.battlefield):  # copy: battlefield may change (transform)
         oracle = (permanent.template.oracle_text or '').lower()
         if not oracle or 'whenever' not in oracle:
             continue
@@ -283,6 +323,17 @@ def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
         if ('cast a spell' in oracle or 'cast an instant or sorcery' in oracle):
             if 'draw a card' in oracle and 'noncreature' not in oracle:
                 game.draw_cards(caster_idx, 1)
+
+        # ── Ral-style coin flip transform trigger ──
+        # "Whenever you cast an instant or sorcery spell, flip a coin"
+        # On winning flip: exile creature, return transformed as planeswalker
+        # Only triggers while still a creature (not already transformed)
+        if ('flip a coin' in oracle
+                and ('instant or sorcery' in oracle or 'instant and sorcery' in oracle)
+                and (spell_cast.template.is_instant or spell_cast.template.is_sorcery)
+                and permanent.template.is_creature
+                and not getattr(permanent, 'is_transformed', False)):
+            _handle_coin_flip_transform(game, caster_idx, permanent)
 
         # ── "Whenever an opponent draws a card" (Orcish Bowmasters) ──
         # Already handled by EFFECT_REGISTRY — skip to avoid double-fire

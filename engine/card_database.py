@@ -837,6 +837,12 @@ class CardDatabase:
                 entry = card_entries[0] if isinstance(card_entries, list) else card_entries
                 template = self._build_template(card_name, entry)
                 if template:
+                    # Store back face data for double-faced cards (transform)
+                    if (isinstance(card_entries, list) and len(card_entries) >= 2
+                            and 'Planeswalker' in card_entries[1].get('types', [])):
+                        back = card_entries[1]
+                        template.back_face_oracle = back.get('text', '')
+                        template.back_face_loyalty = int(back.get('loyalty', 0) or 0)
                     self.cards[card_name] = template
                     self._raw_data[card_name] = entry
                     count += 1
