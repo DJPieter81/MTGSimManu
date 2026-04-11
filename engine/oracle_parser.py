@@ -155,6 +155,28 @@ def is_living_end_cascader(oracle: str, card_types: list) -> bool:
     return has_cascade(oracle)
 
 
+def parse_splice_cost(oracle: str) -> Optional[Tuple[int, int]]:
+    """Parse splice onto Arcane cost from oracle text.
+
+    Returns (generic, colored) mana cost, e.g. {1}{R} → (1, 1).
+    """
+    oracle_lower = oracle.lower()
+    if 'splice onto arcane' not in oracle_lower:
+        return None
+    m = re.search(r'splice onto arcane\s*(\{[^)]+\})', oracle_lower)
+    if not m:
+        return None
+    cost_str = m.group(1)
+    generic = 0
+    colored = 0
+    for symbol in re.findall(r'\{([^}]+)\}', cost_str):
+        if symbol.isdigit():
+            generic = int(symbol)
+        else:
+            colored += 1
+    return (generic, colored)
+
+
 def parse_cost_reduction(oracle: str) -> Optional[Dict]:
     """Parse cost reduction rules from oracle text.
 

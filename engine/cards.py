@@ -157,6 +157,7 @@ class CardTemplate:
     domain_reduction: int = 0                 # cost reduction per basic land type
     back_face_oracle: str = ""                # oracle text for back face (transform cards)
     back_face_loyalty: int = 0                # starting loyalty for back face planeswalker
+    splice_cost: Optional[tuple] = None       # (generic, colored) splice onto Arcane cost
     power_scales_with: str = ""               # "domain", "tarmogoyf", "delirium", "graveyard"
 
     @property

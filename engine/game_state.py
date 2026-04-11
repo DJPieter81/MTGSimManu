@@ -1381,6 +1381,35 @@ class GameState:
             targets=targets or [],
             x_value=x_value,
         )
+
+        # ── Splice onto Arcane: when casting an Arcane spell, splice cards
+        # from hand that have splice_cost. Pay splice cost, add their effects,
+        # spliced card stays in hand. ──
+        if 'Arcane' in template.subtypes and not free_cast:
+            from .oracle_resolver import count_cost_reducers
+            for sc in list(player.hand):
+                if sc.instance_id == card.instance_id:
+                    continue
+                splice = sc.template.splice_cost
+                if not splice:
+                    continue
+                # splice = (generic, colored) — apply cost reduction
+                generic, colored = splice
+                reduction = count_cost_reducers(self, player_idx, sc.template)
+                reduction += player.temp_cost_reduction
+                effective_generic = max(0, generic - reduction)
+                total_splice_cost = effective_generic + colored
+                available_mana = player.mana_pool.total() + len(player.untapped_lands)
+                if available_mana >= total_splice_cost:
+                    # Pay splice cost
+                    if not self.tap_lands_for_mana(player_idx,
+                            type(template.mana_cost)(generic=effective_generic, red=colored),
+                            sc.template.name):
+                        continue
+                    stack_item.spliced.append(sc.template)
+                    self.log.append(f"T{self.display_turn} P{player_idx+1}: "
+                                   f"  Splice {sc.name} onto {card.name}")
+
         self.stack.push(stack_item)
         player.spells_cast_this_turn += 1
         if CardType.ARTIFACT not in template.card_types:
@@ -2009,6 +2038,18 @@ class GameState:
                 self.players[controller].mana_pool.add(color, amount)
             self.log.append(f"T{self.display_turn} P{controller+1}: "
                             f"{name} adds {amount} {color} mana")
+
+            # Splice: add mana from spliced card effects
+            for spliced_tmpl in item.spliced:
+                splice_ritual = spliced_tmpl.ritual_mana
+                if splice_ritual:
+                    sc, sa = splice_ritual
+                    if sc == "any":
+                        self.players[controller].mana_pool.add("R", 2)
+                    else:
+                        self.players[controller].mana_pool.add(sc, sa)
+                    self.log.append(f"T{self.display_turn} P{controller+1}: "
+                                    f"  Spliced {spliced_tmpl.name} adds {sa} {sc} mana")
             return
 
         # Dispatch to card effect registry
