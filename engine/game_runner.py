@@ -349,10 +349,12 @@ class GameRunner:
                 card_type = 'Land' if c.template.is_land else ('Creature' if c.template.is_creature else 'Spell')
                 game.log.append(f'  • {c.name} [{card_type}, CMC {cmc}]')
             while hand_size >= 5:
-                keep = ais[p_idx].decide_mulligan(player.hand, hand_size)
+                ai = ais[p_idx]
+                keep = ai.decide_mulligan(player.hand, hand_size)
+                reason = getattr(ai, 'mulligan_reason', '')
                 if keep:
                     if mulligan_counts[p_idx] > 0:
-                        to_bottom = ais[p_idx].choose_cards_to_bottom(
+                        to_bottom = ai.choose_cards_to_bottom(
                             player.hand, mulligan_counts[p_idx])
                         bottom_names = [c.name for c in to_bottom]
                         for card in to_bottom:
@@ -365,12 +367,11 @@ class GameRunner:
                             f"bottoms: {bottom_names}")
                         game.log.append(f"  Keeps: {kept}")
                     else:
-                        game.log.append(f"→ P{p_idx+1} keeps 7")
+                        game.log.append(f"→ P{p_idx+1} KEEPS {hand_size} — {reason}")
                     break
                 else:
                     mulligan_counts[p_idx] += 1
-                    reason = f'{lands} lands' if lands <= 1 or lands >= 5 else 'weak hand'
-                    game.log.append(f"→ P{p_idx+1} mulligans ({reason}, hand {hand_size} → {hand_size-1})")
+                    game.log.append(f"→ P{p_idx+1} MULLIGANS ({reason})")
                     for card in player.hand[:]:
                         player.hand.remove(card)
                         card.zone = "library"

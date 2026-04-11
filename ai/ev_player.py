@@ -153,10 +153,17 @@ class EVPlayer:
         spells = [c for c in hand if not c.template.is_land]
 
         if cards_in_hand <= self.profile.mulligan_always_keep:
+            self.mulligan_reason = f"only {cards_in_hand} cards — always keep"
             return True
-        if len(lands) == 0 or len(lands) >= self.profile.mulligan_bad_land_count:
+        if len(lands) == 0:
+            self.mulligan_reason = "0 lands"
             return False
-        return self._mulligan_decider.decide(hand, cards_in_hand)
+        if len(lands) >= self.profile.mulligan_bad_land_count:
+            self.mulligan_reason = f"{len(lands)} lands (≥ {self.profile.mulligan_bad_land_count})"
+            return False
+        result = self._mulligan_decider.decide(hand, cards_in_hand)
+        self.mulligan_reason = getattr(self._mulligan_decider, 'last_reason', '')
+        return result
 
     def choose_cards_to_bottom(self, hand: List["CardInstance"],
                                 count: int) -> List["CardInstance"]:
