@@ -37,6 +37,7 @@ DECK_ARCHETYPES = {
     "4c Omnath":          ArchetypeStrategy.MIDRANGE,
     "4/5c Control":       ArchetypeStrategy.CONTROL,
     "Azorius Control":    ArchetypeStrategy.CONTROL,
+    "Kappa Cannoneer":    ArchetypeStrategy.TEMPO,
 }
 
 
