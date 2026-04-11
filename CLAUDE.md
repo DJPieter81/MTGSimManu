@@ -43,6 +43,8 @@ python run_meta.py --trace zoo omnath -s 42000          # full AI reasoning
 | **Head-to-head** | `python run_meta.py --matchup storm dimir -n 50` |
 | **Field sweep** | `python run_meta.py --field storm -n 30` |
 | **Meta matrix** | `python run_meta.py --matrix --decks 8 -n 30` |
+| **Detailed Bo3** | `python run_meta.py --bo3 storm dimir -s 55555` |
+| **Deck audit** | `python run_meta.py --audit affinity -n 60` |
 | **Game log** | `python run_meta.py --verbose storm dimir -s 42000` |
 | **AI reasoning** | `python run_meta.py --trace storm dimir -s 42000` |
 | **HTML Bo3** | `python simulate_match.py "Ruby Storm" "Domain Zoo" --seed 55555` |
@@ -51,12 +53,20 @@ python run_meta.py --trace zoo omnath -s 42000          # full AI reasoning
 | **Load results** | `python run_meta.py --results` |
 | **Run tests** | `python -m pytest tests/ -q` |
 
+**Detailed game analysis:** When asked for a detailed game log, play-by-play, Bo3 match log, game simulation, or match audit, use:
+```bash
+python run_meta.py --bo3 storm affinity -s 55555
+```
+Synonyms: `--bo3`, `--match`, `--play-by-play`, `--pbp`, `--detailed`, `--game-log`, `--simulate`
+
+This produces a comprehensive log with: die roll, mulligan decisions, opening hands, turn-by-turn board states (creatures, permanents, life totals, hand sizes, lands), all spells cast, stack resolution, combat, and game result. Best-of-3 format with proper alternation.
+
 **Aliases work:** storm, zoo, dimir, omnath, 4c, 5c, energy, boros, jeskai, blink, tron, amulet, goryos, prowess, affinity, cascade
 
 **Python API:**
 ```python
 from run_meta import run_meta_matrix, run_matchup, run_field, inspect_deck
-from run_meta import run_verbose_game, run_trace_game
+from run_meta import run_verbose_game, run_trace_game, run_bo3, audit_deck
 from run_meta import print_matrix, print_matchup, print_field
 ```
 

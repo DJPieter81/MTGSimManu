@@ -269,6 +269,7 @@ class GameRunner:
         deck2 = self.build_deck(deck2_list)
 
         game = GameState(rng=self.rng, callbacks=AICallbacks())
+        game.verbose = verbose
         game.setup_game(deck1, deck2)
         game.players[0].deck_name = deck1_name
         game.players[1].deck_name = deck2_name
@@ -419,6 +420,23 @@ class GameRunner:
                 if step == TurnStep.UNTAP:
                     game.current_phase = Phase.UNTAP
                     game.untap_step(active)
+                    # Board state summary at turn start (verbose mode)
+                    if game.verbose:
+                        p = game.players[active]
+                        o = game.players[1 - active]
+                        creatures_p = ', '.join(f'{c.name} ({c.power}/{c.toughness})' for c in p.creatures) or 'none'
+                        creatures_o = ', '.join(f'{c.name} ({c.power}/{c.toughness})' for c in o.creatures) or 'none'
+                        perms_p = [c.name for c in p.battlefield if not c.template.is_land and not c.template.is_creature]
+                        perms_o = [c.name for c in o.battlefield if not c.template.is_land and not c.template.is_creature]
+                        game.log.append(f'--- Turn {game.turn_number} | '
+                                        f'P{active+1} ({p.deck_name}) | '
+                                        f'Life: {p.life} vs {o.life} | '
+                                        f'Hand: {len(p.hand)} vs {len(o.hand)} | '
+                                        f'Lands: {len(p.lands)} vs {len(o.lands)} ---')
+                        game.log.append(f'    Board P{active+1}: {creatures_p}'
+                                        + (f' + {", ".join(perms_p)}' if perms_p else ''))
+                        game.log.append(f'    Board P{1-active+1}: {creatures_o}'
+                                        + (f' + {", ".join(perms_o)}' if perms_o else ''))
                     # Reset planeswalker activation tracking for this turn
                     ai._pw_activated_this_turn.clear()
 
