@@ -69,7 +69,10 @@ def life_as_resource(life: int, incoming_power: int) -> float:
     if incoming_power <= 0:
         # No clock — life is a luxury resource, diminishing returns
         return min(10.0, life * 0.5)
-    return life / incoming_power
+    # Cap at no-threat value so deploying small creatures never makes
+    # opponent's survival score INCREASE (was: 1-power → 20.0 > no-threat 10.0)
+    no_threat_cap = min(10.0, life * 0.5)
+    return min(no_threat_cap, life / incoming_power)
 
 
 # ─────────────────────────────────────────────────────────────

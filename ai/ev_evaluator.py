@@ -270,13 +270,17 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
 
     # Board wipe — kills all creatures
     if 'board_wipe' in tags:
-        projected.opp_power = 0
-        projected.opp_creature_count = 0
-        projected.opp_evasion_power = 0
-        projected.my_power = 0
-        projected.my_creature_count = 0
-        projected.my_evasion_power = 0
-        projected.my_lifelink_power = 0
+        if snap.opp_creature_count == 0:
+            # Opponent has no creatures — board wipe is pure waste
+            projected.opp_life += 100  # heavy penalty: makes EV deeply negative
+        else:
+            projected.opp_power = 0
+            projected.opp_creature_count = 0
+            projected.opp_evasion_power = 0
+            projected.my_power = 0
+            projected.my_creature_count = 0
+            projected.my_evasion_power = 0
+            projected.my_lifelink_power = 0
 
     # Burn damage to face
     if 'burn' in tags or ('damage' in (t.oracle_text or '').lower()):
@@ -285,8 +289,12 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         from decks.card_knowledge_loader import get_burn_damage
         dmg = get_burn_damage(t.name)
         if dmg > 0:
-            # Can go face — reduce opponent life
-            projected.opp_life -= dmg
+            # Only project face damage if we have board presence or opponent is low
+            if snap.my_creature_count > 0 or snap.opp_life <= 10:
+                projected.opp_life -= dmg
+            else:
+                # No clock and opponent healthy — burn face has minimal value
+                projected.opp_life -= dmg * 0.1
 
     # Card draw
     if 'cantrip' in tags or 'draw' in tags:
@@ -416,6 +424,17 @@ def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
             elif creature_toughness >= 3:
                 damage_prob *= DAMAGE_REMOVAL_EFF_MID_TOUGH
             removal_probability = min(1.0, exile_prob + damage_prob * (1.0 - exile_prob))
+
+    # Scale down removal probability for cheap creatures — opponents rarely
+    # waste premium removal on 0-1 CMC threats. Even if they do, the tempo
+    # trade favors the cheap creature's controller.
+    cmc = t.cmc or 0
+    if cmc == 0:
+        removal_probability *= 0.15
+    elif cmc == 1:
+        removal_probability *= 0.25
+    elif cmc == 2:
+        removal_probability *= 0.6
 
     # Compute expected value as weighted average of outcomes:
     # P(counter) * V(countered) + P(removal) * V(removed) + P(pass) * V(projected)

@@ -106,8 +106,10 @@ class ResponseDecider:
                                 f"TurnPlanner: threat value {threat:.1f}, responding with {inst.name}")
                         return (inst, targets)
 
-        except Exception:
-            pass  # TurnPlanner response failed silently — fall through to legacy
+        except Exception as e:
+            import logging
+            logging.debug(f"TurnPlanner response failed: {e}")
+            # Fall through to legacy path
 
         # Legacy fallback
         for instant in instants:
@@ -153,10 +155,16 @@ class ResponseDecider:
                                        c, me, game, self.player_idx))
                         return (instant, [best.instance_id])
 
-            # Instant-speed removal
+            # Instant-speed removal — only use proactively if the target is
+            # genuinely threatening, not just because opponent cast a spell.
+            # Don't waste removal as a "response" to an unrelated creature spell
+            # when the real target (the stack spell) can't be hit by removal.
             if "removal" in tags and pick_removal_target_fn:
                 opponent = game.players[1 - self.player_idx]
-                if opponent.creatures:
+                # Only fire removal reactively if the stack spell is NOT a creature
+                # (if it IS a creature, save removal for after it resolves)
+                stack_is_creature = stack_item.source.template.is_creature
+                if opponent.creatures and not stack_is_creature:
                     target = pick_removal_target_fn(
                         instant, opponent.creatures, opponent,
                         game, 1 - self.player_idx)

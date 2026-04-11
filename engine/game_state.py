@@ -1346,9 +1346,22 @@ class GameState:
             # AI chooses optimal X based on oracle text:
             oracle = (template.oracle_text or '').lower()
             if 'charge counter' in oracle and 'whenever' in oracle:
-                # Hate permanent (Chalice-style): X=1 shuts down 1-drops
-                if x_value >= 1:
-                    x_value = 1
+                # Hate permanent (Chalice-style): pick X to maximize disruption
+                opp = self.players[1 - player_idx]
+                # Count CMC distribution in opponent's known cards (library + hand estimate)
+                cmc_counts = {}
+                for c in opp.library:
+                    if not c.template.is_land:
+                        cm = c.template.cmc or 0
+                        if cm > 0:
+                            cmc_counts[cm] = cmc_counts.get(cm, 0) + 1
+                # Pick the CMC with the most spells, capped at available mana
+                if cmc_counts and x_value >= 1:
+                    best_x = max((cnt, cmc) for cmc, cnt in cmc_counts.items()
+                                 if cmc <= x_value)
+                    x_value = best_x[1]
+                elif x_value >= 1:
+                    x_value = 1  # fallback to X=1 if no data
             # +1/+1 counter creatures: use max mana (Ballista-style)
             # (default x_value is already max)
             # Pay the actual X cost
@@ -1712,6 +1725,7 @@ class GameState:
                 creature.controller = p_idx
                 creature.enter_battlefield()
                 player.battlefield.append(creature)
+                self._handle_permanent_etb(creature, p_idx)
                 self.log.append(f"T{self.display_turn}: Living End returns "
                                 f"{creature.name} for P{p_idx+1}")
 
@@ -2394,8 +2408,10 @@ class GameState:
                 score += 20  # Counterspells less important in hand
             
             # Combo pieces and key spells should be kept (low discard score)
+            # Exception: high-CMC creatures are reanimation targets — they WANT the GY
             if any(tag in t.tags for tag in ('combo', 'tutor')):
-                score -= 30
+                if not (t.is_creature and t.cmc >= 5):
+                    score -= 30
             
             # Removal is moderately important
             if 'removal' in t.tags:

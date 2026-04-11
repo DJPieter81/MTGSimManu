@@ -395,55 +395,95 @@ class CombatPlanner:
         my_dead = []
         opp_dead = []
 
+        # Helper to process one attacker-blocker combat
+        def _process_combat_pair(attacker, actual_blockers, phase):
+            """Process combat for one attacker. phase='first' or 'normal'."""
+            nonlocal damage_to_opp, life_gained
+
+            att_has_fs = "first_strike" in attacker.keywords or "double_strike" in attacker.keywords
+            att_is_first_phase = att_has_fs  # attacker deals damage in first-strike phase
+
+            if actual_blockers:
+                # Attacker deals damage in this phase?
+                if (phase == 'first' and att_is_first_phase) or \
+                   (phase == 'normal' and (not att_is_first_phase or "double_strike" in attacker.keywords)):
+                    if not attacker.is_dead:  # skip if already killed by first strike
+                        remaining_power = attacker.power
+                        has_deathtouch = "deathtouch" in attacker.keywords
+                        has_trample = "trample" in attacker.keywords
+
+                        for blocker in actual_blockers:
+                            if remaining_power <= 0:
+                                break
+                            if blocker.is_dead:
+                                continue  # already killed in first-strike phase
+                            lethal = 1 if has_deathtouch else blocker.toughness - blocker.damage_marked
+                            dmg_to_blocker = min(lethal, remaining_power)
+                            blocker.damage_marked += dmg_to_blocker
+                            remaining_power -= dmg_to_blocker
+
+                        if has_trample and remaining_power > 0:
+                            damage_to_opp += remaining_power
+
+                        if has_deathtouch:
+                            for b in actual_blockers:
+                                if b.damage_marked > 0 and not b.is_dead:
+                                    b.damage_marked = b.toughness
+
+                # Blockers deal damage back in this phase?
+                for blocker in actual_blockers:
+                    blk_has_fs = "first_strike" in blocker.keywords or "double_strike" in blocker.keywords
+                    if (phase == 'first' and blk_has_fs) or \
+                       (phase == 'normal' and (not blk_has_fs or "double_strike" in blocker.keywords)):
+                        if not blocker.is_dead and not attacker.is_dead:
+                            attacker.damage_marked += blocker.power
+                            if "deathtouch" in blocker.keywords and blocker.power > 0:
+                                attacker.damage_marked = max(attacker.damage_marked, attacker.toughness)
+            else:
+                # Unblocked — damage to player (only in the phase this attacker acts)
+                if (phase == 'first' and att_is_first_phase) or \
+                   (phase == 'normal' and (not att_is_first_phase or "double_strike" in attacker.keywords)):
+                    if not attacker.is_dead:
+                        damage_to_opp += attacker.power
+
+            # Lifelink — only in the phase this attacker deals damage
+            if "lifelink" in attacker.keywords:
+                if (phase == 'first' and att_is_first_phase) or \
+                   (phase == 'normal' and (not att_is_first_phase or "double_strike" in attacker.keywords)):
+                    if not attacker.is_dead:
+                        life_gained += attacker.power
+
+        # Check if any creature has first strike or double strike
+        has_first_strike = any(
+            "first_strike" in a.keywords or "double_strike" in a.keywords
+            for a in sim_attackers
+        ) or any(
+            "first_strike" in b.keywords or "double_strike" in b.keywords
+            for b in sim_blockers
+        )
+
+        # Phase 1: First strike damage (only if relevant)
+        if has_first_strike:
+            for attacker in sim_attackers:
+                blocker_ids = blocks.get(attacker.instance_id, [])
+                actual_blockers = [b for b in sim_blockers if b.instance_id in blocker_ids]
+                _process_combat_pair(attacker, actual_blockers, 'first')
+
+        # Phase 2: Normal damage
         for attacker in sim_attackers:
             blocker_ids = blocks.get(attacker.instance_id, [])
             actual_blockers = [b for b in sim_blockers if b.instance_id in blocker_ids]
+            _process_combat_pair(attacker, actual_blockers, 'normal')
 
-            if actual_blockers:
-                # Blocked — assign damage
-                remaining_power = attacker.power
-                has_deathtouch = "deathtouch" in attacker.keywords
-                has_trample = "trample" in attacker.keywords
-
-                for blocker in actual_blockers:
-                    if remaining_power <= 0:
-                        break
-                    # Deathtouch: 1 damage is lethal
-                    lethal = 1 if has_deathtouch else blocker.toughness - blocker.damage_marked
-                    dmg_to_blocker = min(lethal, remaining_power)
-                    blocker.damage_marked += dmg_to_blocker
-                    remaining_power -= dmg_to_blocker
-
-                    # Blocker deals damage back
-                    attacker.damage_marked += blocker.power
-                    if "deathtouch" in blocker.keywords and blocker.power > 0:
-                        attacker.damage_marked = max(attacker.damage_marked, attacker.toughness)
-
-                # Trample overflow
-                if has_trample and remaining_power > 0:
-                    damage_to_opp += remaining_power
-
-                # Check deaths
-                if attacker.is_dead:
-                    my_dead.append(attacker)
-                for b in actual_blockers:
-                    if b.is_dead:
-                        opp_dead.append(b)
-
-                # Deathtouch ensures blocker death
-                if has_deathtouch:
-                    for b in actual_blockers:
-                        if b.damage_marked > 0 and not b.is_dead:
-                            b.damage_marked = b.toughness
-                            if b not in opp_dead:
-                                opp_dead.append(b)
-            else:
-                # Unblocked — damage to player
-                damage_to_opp += attacker.power
-
-            # Lifelink
-            if "lifelink" in attacker.keywords:
-                life_gained += attacker.power
+        # Collect deaths after both phases
+        for attacker in sim_attackers:
+            if attacker.is_dead and attacker not in my_dead:
+                my_dead.append(attacker)
+        for attacker in sim_attackers:
+            blocker_ids = blocks.get(attacker.instance_id, [])
+            for b in sim_blockers:
+                if b.instance_id in blocker_ids and b.is_dead and b not in opp_dead:
+                    opp_dead.append(b)
 
         # Build post-combat board
         post = sim_board.copy()
