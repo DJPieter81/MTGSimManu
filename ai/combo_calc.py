@@ -161,6 +161,27 @@ def _assess_storm_zone(game, player_idx, goal_engine, snap, zone, target,
     opp_life = max(1, snap.opp_life)
     best_damage = best.storm_damage if best else 0
 
+    # ── Hypothetical reducer deploy: what if we cast a reducer first? ──
+    # If a cost reducer is in hand and affordable, try chains with it deployed.
+    # The better chain (with or without reducer) is used. No card names —
+    # detected from cost_reducer tag on non-instant non-sorcery cards.
+    reducer_in_hand = [c for c in me.hand
+                       if 'cost_reducer' in getattr(c.template, 'tags', set())
+                       and not c.template.is_instant and not c.template.is_sorcery]
+    if reducer_in_hand:
+        cheapest_cmc = min(c.template.cmc or 99 for c in reducer_in_hand)
+        if mana >= cheapest_cmc:
+            # Remove the cheapest reducer from hand, subtract its cost, add 1 medallion
+            cheapest = min(reducer_in_hand, key=lambda c: c.template.cmc or 99)
+            hand_after = [c for c in me.hand if c.instance_id != cheapest.instance_id]
+            mana_after = mana - cheapest_cmc
+            chains_with = find_all_chains(hand_after, mana_after, medallions + 1,
+                                          payoff_names, storm + 1)
+            best_with = max(chains_with, key=lambda c: c.storm_damage, default=None)
+            if best_with and best_with.storm_damage > best_damage:
+                best = best_with
+                best_damage = best_with.storm_damage
+
     missing = what_is_missing(me.hand, mana, medallions, payoff_names)
 
     # ── R_res: chain-reaction residue ──
@@ -428,12 +449,9 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
                          and not c.template.is_land
                          and Kw.STORM not in getattr(c.template, 'keywords', set()))
         if total_fuel > 0:
-            # Hold penalty = wasted potential.
-            # Firing at storm=3 vs opp_life=17 wastes (17-4)/17 = 76% of the finisher.
-            # The penalty is the fraction of kill we LOSE by firing early × combo_value.
-            damage_now = storm + 1
-            fraction_wasted = (opp_life - damage_now) / opp_life
-            return -fraction_wasted * a.combo_value
+            # Hold: each remaining fuel adds 1/opp_life of a kill × combo_value.
+            # This is the opportunity cost of firing early instead of chaining more.
+            return -total_fuel / opp_life * a.combo_value
         # Truly no fuel left — fire now
         return (storm + 1) / opp_life * a.combo_value
 

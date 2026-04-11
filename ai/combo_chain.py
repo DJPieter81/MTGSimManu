@@ -120,10 +120,12 @@ def _simulate_sequence(
     starting_mana: int,
     starting_medallions: int,
     base_storm: int = 0,
+    full_hand: List["CardInstance"] = None,
 ) -> Optional[ChainOutcome]:
     """Simulate casting spells in order. Returns None if sequence is unaffordable.
 
     base_storm: spells already cast this turn (from game._global_storm_count).
+    full_hand: all cards in player's hand (for splice onto Arcane detection).
     """
     from engine.cards import Color
 
@@ -136,6 +138,9 @@ def _simulate_sequence(
     payoff_name = None
     payoff_damage = False
     payoff_storm = False
+
+    # Track which cards are in this sequence (for splice: don't splice yourself)
+    sequence_ids = {c.instance_id for c, _ in sequence} if full_hand else set()
 
     for card, role in sequence:
         # Recalculate cost with current medallion count
@@ -152,6 +157,25 @@ def _simulate_sequence(
         ritual_data = getattr(t, 'ritual_mana', None)
         if ritual_data:
             mana += ritual_data[1]  # (color, amount) -> add amount
+
+        # Splice onto Arcane: if this spell is Arcane, check for spliceable
+        # cards in the remaining hand (not in this sequence).
+        # Spliced card stays in hand, adds its ritual mana to this spell.
+        if full_hand and 'Arcane' in getattr(t, 'subtypes', []):
+            for hc in full_hand:
+                if hc.instance_id in sequence_ids:
+                    continue
+                splice = getattr(hc.template, 'splice_cost', None)
+                if not splice:
+                    continue
+                generic, colored = splice
+                splice_eff = max(0, generic - medallions) + colored
+                if splice_eff <= mana:
+                    mana -= splice_eff
+                    sr = getattr(hc.template, 'ritual_mana', None)
+                    if sr:
+                        mana += sr[1]
+
         if role.is_cost_reducer:
             medallions += 1
         if role.draws_card:
@@ -230,7 +254,8 @@ def find_all_chains(
 
                     # Fuel-only chain (no payoff)
                     fuel_result = _simulate_sequence(list(perm), available_mana,
-                                                     medallion_count, base_storm)
+                                                     medallion_count, base_storm,
+                                                     full_hand=hand)
                     if fuel_result:
                         results.append(fuel_result)
 
@@ -238,14 +263,16 @@ def find_all_chains(
                     for pay_card, pay_role in payoffs:
                         full_seq = list(perm) + [(pay_card, pay_role)]
                         outcome = _simulate_sequence(full_seq, available_mana,
-                                                     medallion_count, base_storm)
+                                                     medallion_count, base_storm,
+                                                     full_hand=hand)
                         if outcome:
                             results.append(outcome)
 
         # Also try payoff-only (no fuel) if affordable
         for pay_card, pay_role in payoffs:
             outcome = _simulate_sequence([(pay_card, pay_role)], available_mana,
-                                         medallion_count, base_storm)
+                                         medallion_count, base_storm,
+                                         full_hand=hand)
             if outcome:
                 results.append(outcome)
     else:
@@ -263,14 +290,16 @@ def find_all_chains(
         base = cost_reducers + rituals + cantrips + other
 
         # Fuel-only
-        fuel_result = _simulate_sequence(base, available_mana, medallion_count, base_storm)
+        fuel_result = _simulate_sequence(base, available_mana, medallion_count,
+                                         base_storm, full_hand=hand)
         if fuel_result:
             results.append(fuel_result)
 
         # With each payoff
         for pay_card, pay_role in payoffs:
             outcome = _simulate_sequence(base + [(pay_card, pay_role)],
-                                         available_mana, medallion_count, base_storm)
+                                         available_mana, medallion_count,
+                                         base_storm, full_hand=hand)
             if outcome:
                 results.append(outcome)
 
