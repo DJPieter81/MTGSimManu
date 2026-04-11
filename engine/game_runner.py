@@ -966,8 +966,13 @@ class GameRunner:
 
             pw_name = pw.template.name
             from .game_state import _parse_planeswalker_abilities
-            pw_data = _parse_planeswalker_abilities(
-                pw.template.oracle_text, pw.template.loyalty)
+            # Use back face oracle for transformed cards (e.g., Ral creature → PW)
+            oracle = pw.template.oracle_text
+            loyalty = pw.template.loyalty
+            if getattr(pw, 'is_transformed', False) and pw.template.back_face_oracle:
+                oracle = pw.template.back_face_oracle
+                loyalty = pw.template.back_face_loyalty
+            pw_data = _parse_planeswalker_abilities(oracle, loyalty)
             if not pw_data.get("plus") and not pw_data.get("minus"):
                 continue  # no parseable abilities
             opp = game.players[opponent]
