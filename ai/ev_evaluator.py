@@ -133,45 +133,27 @@ def snapshot_from_game(game: "GameState", player_idx: int) -> EVSnapshot:
 
 
 # ─────────────────────────────────────────────────────────────
-# Creature value — what a creature is worth on the battlefield
+# Creature value — clock-based, derived from game mechanics
 # ─────────────────────────────────────────────────────────────
+
+# Default snapshot for context-free creature valuation
+# Represents "average mid-game board" — used when no game state available
+_DEFAULT_SNAP = EVSnapshot(
+    opp_life=20, opp_power=3, opp_creature_count=1,
+    my_life=20, my_power=3, opp_toughness=3,
+    opp_evasion_power=0,
+)
 
 def creature_value(card: "CardInstance") -> float:
     """Evaluate a creature's worth on the battlefield.
 
-    Based on P/T, keywords, and abilities. Returns life-point equivalents.
-    All weights come from ai/constants.py (KEYWORD_BONUSES, TAG_BONUSES).
+    Uses clock-based impact: how much does this creature change
+    the turns-to-win calculation? Scaled to ~3-10 range for
+    compatibility with targeting/blocking comparisons.
     """
-    from ai.constants import (
-        CREATURE_POWER_MULT, CREATURE_TOUGHNESS_MULT,
-        KEYWORD_BONUSES, TAG_BONUSES,
-    )
-    t = card.template
-    p = card.power if card.power else 0
-    tough = card.toughness if card.toughness else 0
-
-    # Base: power + fractional toughness
-    val = max(0, p) * CREATURE_POWER_MULT + max(0, tough) * CREATURE_TOUGHNESS_MULT
-
-    # Keyword bonuses from constants dict
-    kws = {kw.value if hasattr(kw, 'value') else str(kw).lower()
-           for kw in getattr(t, 'keywords', set())}
-    for kw in kws:
-        if kw in KEYWORD_BONUSES:
-            val += KEYWORD_BONUSES[kw]
-    # Special per-power keywords
-    if 'lifelink' in kws:
-        val += min(p, KEYWORD_BONUSES.get("lifelink_power_cap", 5)) * KEYWORD_BONUSES.get("lifelink_per_power", 0.5)
-    if 'double_strike' in kws:
-        val += max(0, p) * KEYWORD_BONUSES.get("double_strike_per_power", 1.0)
-
-    # Tag-based ability bonuses from constants dict
-    tags = getattr(t, 'tags', set())
-    for tag, bonus in TAG_BONUSES.items():
-        if tag in tags:
-            val += bonus
-
-    return val
+    from ai.clock import creature_clock_impact_from_card
+    # Clock impact is ~0.05-0.5; scale by 20 (opp_life) to get ~1-10 range
+    return creature_clock_impact_from_card(card, _DEFAULT_SNAP) * 20.0
 
 
 # ─────────────────────────────────────────────────────────────

@@ -31,18 +31,30 @@ if TYPE_CHECKING:
     from engine.game_state import GameState, PlayerState
     from engine.cards import CardInstance, CardTemplate, Keyword
 
-from ai.constants import (
-    LETHAL_BONUS, TWO_TURN_LETHAL_BONUS, TRADE_UP_BONUS, TRADE_DOWN_PENALTY,
-    EVASION_BONUS, SHIELDS_DOWN_PENALTY, MAX_ATTACK_CONFIGS,
-    LETHAL_RANGE_HIGH, LETHAL_RANGE_MID, LETHAL_RANGE_EXTENDED,
-    AGGRESSION_BONUS_HIGH, AGGRESSION_BONUS_MID, AGGRESSION_BONUS_EXTENDED,
-    BLOCK_VALUE_MULTIPLIER, HAND_SIZE_VALUE_MULTIPLIER, MANA_VALUE_MULTIPLIER,
-    LIFE_SCORE_CRITICAL_MULTIPLIER, LIFE_SCORE_LOW_MULTIPLIER,
-    LIFE_SCORE_MID_MULTIPLIER, LIFE_SCORE_HIGH_MULTIPLIER,
-    COUNTER_THRESHOLD, COUNTER_CHEAP_THRESHOLD, REMOVAL_RESPONSE_THRESHOLD,
-    BLINK_SAVE_THRESHOLD, DO_NOTHING_PENALTY,
-    PRE_COMBAT_REMOVAL_BONUS, MANA_RESERVATION_WEIGHT, POST_COMBAT_DEPLOY_BONUS,
-)
+# ── Combat constants ──
+# Structural: lethal = game over
+LETHAL_BONUS = 100.0
+# 2-turn lethal: strong but not game-over
+TWO_TURN_LETHAL_BONUS = 15.0
+# Trade values: derived from creature clock impact difference
+TRADE_UP_BONUS = 2.0
+TRADE_DOWN_PENALTY = -4.5
+# Risk of tapping out vs open opponent mana
+SHIELDS_DOWN_PENALTY = -2.5
+# Computational budget (structural)
+MAX_ATTACK_CONFIGS = 32
+# Response thresholds: derived from creature_value() scale (~1-15).
+# A 3/3 vanilla = ~3.0, a 3/3 flyer = ~4.3, a 6/6 trample = ~10.
+# Counter if threat > cost of holding counter (opportunity cost of the card).
+# Cheap counters (CMC≤2) have low opportunity cost → lower threshold.
+COUNTER_THRESHOLD = 5.0         # ~3/3 with a keyword
+COUNTER_CHEAP_THRESHOLD = 2.0   # cheap counter: counter almost anything
+REMOVAL_RESPONSE_THRESHOLD = 4.0  # remove if creature ≥ ~3/3
+BLINK_SAVE_THRESHOLD = 3.5       # save creature worth ≥ ~2/2 with keyword
+# Pre-combat removal: killing a blocker enables ~3 extra damage = 3/20 clock gain × 20 ≈ 3
+PRE_COMBAT_REMOVAL_BONUS = 2.5
+# Holding up mana: value ≈ avg_threat × P(needing_response) ≈ 5 × 0.5 + counter_value
+MANA_RESERVATION_WEIGHT = 5.0
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -124,32 +136,29 @@ class VirtualBoard:
         )
 
     def score(self) -> float:
-        """Quick board evaluation in life-point equivalents."""
+        """Quick board evaluation using clock-derived values."""
         score = 0.0
-        # Life differential (non-linear)
+        # Life differential (clock-based survival)
         score += _life_score(self.my_life) - _life_score(self.opp_life)
-        # Board presence
+        # Board presence (creature values already clock-based)
         my_board = sum(c.value for c in self.my_creatures if not c.is_dead)
         opp_board = sum(c.value for c in self.opp_creatures if not c.is_dead)
         score += my_board - opp_board
-        # Card advantage (remaining hand)
-        score += len(self.my_hand) * 2.6
-        # Mana advantage
+        # Card advantage: each card ≈ avg creature power / opp_life in clock terms
+        # ~2.5 power / 20 life × 20 (scale factor) ≈ 2.5 per card
+        score += len(self.my_hand) * 2.5
+        # Mana: each mana enables ~1 power of deployment / opp_life
+        # ~1/20 × 20 ≈ 1.0, but discounted (can't always use all mana)
         score += self.my_mana * 0.3
         return score
 
 
 def _life_score(life: int) -> float:
-    """Non-linear life valuation matching evaluator.py."""
-    if life <= 0:
-        return -50.0
-    if life <= 3:
-        return life * 4.0
-    if life <= 7:
-        return 12.0 + (life - 3) * 2.5
-    if life <= 15:
-        return 22.0 + (life - 7) * 1.0
-    return 30.0 + (life - 15) * 0.3
+    """Life valuation using clock-based survival turns."""
+    from ai.clock import life_as_resource
+    # Use average incoming power of 3 for context-free evaluation
+    # Scale by 5 to match the ~0-30 range the VirtualBoard.score() expects
+    return life_as_resource(life, 3) * 5.0
 
 
 # ═══════════════════════════════════════════════════════════════════
