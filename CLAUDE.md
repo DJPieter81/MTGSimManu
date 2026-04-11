@@ -39,7 +39,7 @@ print(f'Loaded {len(merged)} cards')
 ## Quick Reference — run_meta.py
 
 ```bash
-python run_meta.py --list                              # all 13 decks
+python run_meta.py --list                              # all 14 decks
 python run_meta.py --deck storm                        # deck profile + gameplan
 python run_meta.py --matchup storm dimir -n 50         # win rate (N games)
 python run_meta.py --field storm -n 30                 # one deck vs all
@@ -94,9 +94,11 @@ python import_deck.py "Deck Name" --archetype control < decklist.txt
 ```
 Auto-detects archetype, generates gameplan, prints code to paste into modern_meta.py.
 
-## Available Decks (13)
+## Available Decks (14)
 
-Boros Energy, Jeskai Blink, Ruby Storm, Affinity, Eldrazi Tron, Amulet Titan, Goryo's Vengeance, Domain Zoo, Living End, Izzet Prowess, Dimir Midrange, 4c Omnath, 4/5c Control
+Boros Energy, Jeskai Blink, Ruby Storm, Affinity, Eldrazi Tron, Amulet Titan, Goryo's Vengeance, Domain Zoo, Living End, Izzet Prowess, Dimir Midrange, 4c Omnath, 4/5c Control, Azorius Control
+
+**Known DB gaps:** `The Legend of Roku` (Azorius Control) and `Sink into Stupor` missing from ModernAtomic.json — deflates WR for those decks.
 
 ## Architecture
 
@@ -155,7 +157,7 @@ def bowmasters_etb(game, card, controller, targets=None, item=None):
 
 ### Layer 3: Deck Configuration
 
-**Decklists** (`decks/modern_meta.py`) — mainboard + sideboard for all 13 decks
+**Decklists** (`decks/modern_meta.py`) — mainboard + sideboard for all 14 decks
 
 **Gameplans** (`decks/gameplans/*.json`) — per-deck strategy:
 ```json
