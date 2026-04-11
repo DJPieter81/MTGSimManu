@@ -61,6 +61,8 @@ Synonyms: `--bo3`, `--match`, `--play-by-play`, `--pbp`, `--detailed`, `--game-l
 
 This produces a comprehensive log with: die roll, mulligan decisions, opening hands, turn-by-turn board states (creatures, permanents, life totals, hand sizes, lands), all spells cast, stack resolution, combat, and game result. Best-of-3 format with proper alternation.
 
+**IMPORTANT: When showing game results to the user, ALWAYS output the full detailed text log from --bo3. Never summarize or paraphrase the log — show the raw output. The user wants to see every phase, every draw, every mana tap, every priority pass, every board state. This is a hard requirement.**
+
 **Aliases work:** storm, zoo, dimir, omnath, 4c, 5c, energy, boros, jeskai, blink, tron, amulet, goryos, prowess, affinity, cascade
 
 **Python API:**
