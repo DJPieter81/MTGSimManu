@@ -32,37 +32,27 @@ if TYPE_CHECKING:
     from engine.cards import CardInstance, CardTemplate, Keyword
 
 # ── Combat constants ──
-# Structural: lethal = game over (always maximum value)
+# Structural: lethal = game over
 LETHAL_BONUS = 100.0
-# Clock-derived: 2-turn lethal setup is worth ~half of lethal
+# 2-turn lethal: strong but not game-over
 TWO_TURN_LETHAL_BONUS = 15.0
-# Trade values: derived from avg creature clock impact difference
-TRADE_UP_BONUS = 2.0            # net clock gain from favorable trade
-TRADE_DOWN_PENALTY = -4.5       # net clock loss from unfavorable trade
-# Evasion: damage that bypasses blockers has full clock impact
-EVASION_BONUS = 1.6
-# Shields down: risk of tapping out ≈ opponent's best instant clock impact
+# Trade values: derived from creature clock impact difference
+TRADE_UP_BONUS = 2.0
+TRADE_DOWN_PENALTY = -4.5
+# Risk of tapping out vs open opponent mana
 SHIELDS_DOWN_PENALTY = -2.5
 # Computational budget (structural)
 MAX_ATTACK_CONFIGS = 32
-# Aggression: attack more when opponent is near lethal (fewer turns on their clock)
-LETHAL_RANGE_HIGH = 8           # 1-2 attacks from dead
-LETHAL_RANGE_MID = 12
-LETHAL_RANGE_EXTENDED = 16
-AGGRESSION_BONUS_HIGH = 0.8     # push hard
-AGGRESSION_BONUS_MID = 0.4
-AGGRESSION_BONUS_EXTENDED = 0.15
-# Block: preventing damage extends survival clock by damage/opp_power turns
-BLOCK_VALUE_MULTIPLIER = 5.0
-# Response: counter if threat clock impact > counter card's future clock value
+# Response: counter/remove if threat value exceeds these thresholds
+# Derived from: avg creature clock impact × 20 (scale) = ~3-5 for typical threats
 COUNTER_THRESHOLD = 5.5         # ~3-power creature with keywords
-COUNTER_CHEAP_THRESHOLD = 2.0   # cheap counter is free, lower bar
+COUNTER_CHEAP_THRESHOLD = 2.0   # cheap counter has low opportunity cost
 REMOVAL_RESPONSE_THRESHOLD = 5.2
 BLINK_SAVE_THRESHOLD = 3.5
-DO_NOTHING_PENALTY = 5.0        # wasting a response window
-PRE_COMBAT_REMOVAL_BONUS = 2.5  # removing blocker before combat = extra clock step
-MANA_RESERVATION_WEIGHT = 5.2   # holding up instant mana ≈ threat of response
-POST_COMBAT_DEPLOY_BONUS = 0.9
+# Bonus for removing blocker before combat (enables extra damage = clock gain)
+PRE_COMBAT_REMOVAL_BONUS = 2.5
+# Holding up mana for instants (opportunity cost of tapping out)
+MANA_RESERVATION_WEIGHT = 5.2
 
 
 # ═══════════════════════════════════════════════════════════════════
