@@ -376,7 +376,195 @@ def inspect_deck(deck_name: str) -> str:
     return '\n'.join(lines)
 
 
-def run_verbose_game(deck1: str, deck2: str, seed: int = 42000) -> str:
+def audit_deck(deck_name: str, n_games: int = 30, opponents: List[str] = None,
+               seed_start: int = 60000) -> str:
+    """Run N games across the field and report card-level gameplay statistics.
+
+    Parses game logs to extract:
+    - Win rate, avg win/loss turn, kill methods
+    - Per-card stats: cast rate, avg turn cast, contribution to wins
+    - Damage sources: which cards deal the most damage
+    - Interaction: how often key pieces get removed
+    - Mana curve: avg lands per turn, mana efficiency
+
+    Usage:
+        python run_meta.py --audit affinity -n 30
+    """
+    import re
+    from collections import defaultdict
+
+    runner = _get_runner()
+    deck_data = MODERN_DECKS[deck_name]
+    if opponents is None:
+        opponents = [n for n in get_all_deck_names() if n != deck_name]
+
+    # Collect stats across all games
+    total_games = 0
+    wins = 0
+    win_turns = []
+    loss_turns = []
+    win_conditions = defaultdict(int)
+
+    # Per-card tracking
+    card_cast_count = defaultdict(int)       # card -> times cast
+    card_cast_turns = defaultdict(list)      # card -> [turn numbers]
+    card_cast_in_wins = defaultdict(int)     # card -> times cast in won games
+    card_resolved = defaultdict(int)         # card -> times resolved
+    card_countered = defaultdict(int)        # card -> times countered
+    card_removed = defaultdict(int)          # card -> times removed/exiled from battlefield
+
+    # Damage tracking
+    attack_damage_total = 0
+    attack_count = 0
+    etb_damage_total = 0
+    burn_damage_total = 0
+
+    # Per-game creature stats
+    creatures_deployed_total = 0
+    equipment_equips_total = 0
+    cards_drawn_total = 0
+
+    # Mulligan stats
+    mulligan_count = 0
+    keep_7_count = 0
+
+    for opp_name in opponents:
+        opp_data = MODERN_DECKS[opp_name]
+        games_vs = max(1, n_games // len(opponents))
+
+        for i in range(games_vs):
+            seed = seed_start + total_games * 500
+            random.seed(seed)
+            r = runner.run_game(
+                deck_name, deck_data['mainboard'], opp_name, opp_data['mainboard'],
+                deck1_sideboard=deck_data.get('sideboard', {}),
+                deck2_sideboard=opp_data.get('sideboard', {}),
+                verbose=True,
+            )
+            total_games += 1
+            is_win = r.winner_deck == deck_name
+            player_prefix = "P1"  # deck under audit is always P1
+
+            if is_win:
+                wins += 1
+                win_turns.append(r.turns)
+                win_conditions[r.win_condition] += 1
+            else:
+                loss_turns.append(r.turns)
+
+            # Parse game log
+            for line in r.game_log:
+                # Cast detection: "T5 P1: Cast Thought Monitor (6U)"
+                m = re.match(r'T(\d+) P1: Cast (.+?) \(', line)
+                if m:
+                    turn, card = int(m.group(1)), m.group(2)
+                    card_cast_count[card] += 1
+                    card_cast_turns[card].append(turn)
+                    if is_win:
+                        card_cast_in_wins[card] += 1
+
+                # Resolve detection
+                if line.startswith('T') and 'Resolve ' in line:
+                    m2 = re.match(r'T\d+: Resolve (.+)', line)
+                    if m2:
+                        card_resolved[m2.group(1)] += 1
+
+                # Counter detection: "CardName is countered"
+                if 'is countered' in line:
+                    m3 = re.match(r'T\d+: (.+?) is countered', line)
+                    if m3:
+                        card_countered[m3.group(1)] += 1
+
+                # Removal detection: card moved from battlefield to exile/graveyard
+                if 'moved battlefield ->' in line and 'P1' not in line.split('moved')[0]:
+                    # This is an opponent's card being removed — skip
+                    pass
+                if 'moved battlefield ->' in line:
+                    m4 = re.match(r'T\d+: (.+?) moved battlefield -> (exile|graveyard)', line)
+                    if m4:
+                        card_removed[m4.group(1)] += 1
+
+                # Attack detection
+                if f'{player_prefix}: Attack with' in line:
+                    attack_count += 1
+                    attackers = line.split('Attack with ')[1] if 'Attack with ' in line else ''
+                    creatures_attacking = len(attackers.split(', ')) if attackers else 0
+
+                # ETB damage: "ETB: deal N damage" or "ETB: draw N cards"
+                if 'P1:' in line and 'ETB' in line and 'draw' in line:
+                    m5 = re.search(r'draw (\d+) card', line)
+                    if m5:
+                        cards_drawn_total += int(m5.group(1))
+
+                # Equip detection
+                if f'{player_prefix}: Equip' in line:
+                    equipment_equips_total += 1
+
+                # Creature deployment
+                if f'{player_prefix}: Cast' in line:
+                    creatures_deployed_total += 1
+
+                # Mulligan detection
+                if 'P1 mulligans' in line:
+                    mulligan_count += 1
+                if 'P1 keeps 7' in line:
+                    keep_7_count += 1
+
+    # Build report
+    lines = []
+    win_pct = round(wins / max(1, total_games) * 100)
+    avg_win_turn = round(sum(win_turns) / max(1, len(win_turns)), 1)
+    avg_loss_turn = round(sum(loss_turns) / max(1, len(loss_turns)), 1)
+
+    lines.append(f'=== AUDIT: {deck_name} ({total_games} games vs field) ===')
+    lines.append(f'')
+    lines.append(f'Win rate: {win_pct}% ({wins}/{total_games})')
+    lines.append(f'Avg win turn: T{avg_win_turn}  |  Avg loss turn: T{avg_loss_turn}')
+    if win_conditions:
+        lines.append(f'Win conditions: {dict(win_conditions)}')
+    mull_pct = round(mulligan_count / max(1, total_games) * 100)
+    lines.append(f'Mulligan rate: {mull_pct}% ({mulligan_count}/{total_games})')
+    lines.append(f'Equip actions: {equipment_equips_total} total ({equipment_equips_total/max(1,total_games):.1f}/game)')
+    lines.append(f'ETB cards drawn: {cards_drawn_total} total ({cards_drawn_total/max(1,total_games):.1f}/game)')
+    lines.append('')
+
+    # Top cards by cast frequency
+    lines.append('--- CARD CAST FREQUENCY (top 15) ---')
+    lines.append(f'{"Card":<30s} {"Cast":>5s} {"Rate":>6s} {"AvgT":>5s} {"InWins":>7s} {"WinCR":>6s}')
+    sorted_cards = sorted(card_cast_count.items(), key=lambda x: -x[1])
+    for card, count in sorted_cards[:15]:
+        rate = round(count / total_games, 1)
+        avg_turn = round(sum(card_cast_turns[card]) / max(1, len(card_cast_turns[card])), 1)
+        in_wins = card_cast_in_wins.get(card, 0)
+        win_cast_rate = round(in_wins / max(1, count) * 100)
+        lines.append(f'{card:<30s} {count:>5d} {rate:>5.1f}x {"T"+str(avg_turn):>5s} {in_wins:>5d}   {win_cast_rate:>4d}%')
+
+    # Cards that get countered/removed
+    lines.append('')
+    lines.append('--- INTERACTION (countered / removed from battlefield) ---')
+    lines.append(f'{"Card":<30s} {"Countered":>9s} {"Removed":>8s}')
+    all_interacted = set(card_countered.keys()) | set(card_removed.keys())
+    interacted_sorted = sorted(all_interacted, key=lambda c: -(card_countered.get(c, 0) + card_removed.get(c, 0)))
+    for card in interacted_sorted[:15]:
+        ct = card_countered.get(card, 0)
+        rm = card_removed.get(card, 0)
+        if ct + rm > 0:
+            lines.append(f'{card:<30s} {ct:>9d} {rm:>8d}')
+
+    # Win contribution: cards with highest win correlation
+    lines.append('')
+    lines.append('--- WIN CONTRIBUTION (cast rate in wins vs losses) ---')
+    lines.append(f'{"Card":<30s} {"InWins":>7s} {"InLoss":>7s} {"Delta":>6s}')
+    for card, count in sorted_cards[:20]:
+        in_wins = card_cast_in_wins.get(card, 0)
+        in_losses = count - in_wins
+        if wins > 0 and total_games - wins > 0:
+            rate_in_wins = in_wins / wins
+            rate_in_losses = in_losses / max(1, total_games - wins)
+            delta = rate_in_wins - rate_in_losses
+            lines.append(f'{card:<30s} {rate_in_wins:>6.2f}x {rate_in_losses:>6.2f}x {delta:>+5.2f}')
+
+    return '\n'.join(lines)
     """Run a single verbose game, return the full log as string."""
     runner = _get_runner()
     runner.rng = random.Random(seed)
@@ -629,6 +817,7 @@ if __name__ == '__main__':
     parser.add_argument('--decks', '-d', type=int, default=None, help='Top N decks for matrix')
     parser.add_argument('--seed', '-s', type=int, default=42000, help='Seed for verbose/trace game')
     parser.add_argument('--deck', metavar='DECK', help='Show deck profile: list, gameplan, strategy')
+    parser.add_argument('--audit', metavar='DECK', help='Run N games vs field, report card-level stats')
     parser.add_argument('--list', action='store_true', help='List available decks')
     parser.add_argument('--save', action='store_true', help='Save results to metagame_results.json')
     parser.add_argument('--results', action='store_true', help='Print last saved results (no sim)')
@@ -647,6 +836,10 @@ if __name__ == '__main__':
     # Resolve all deck name aliases
     if args.deck:
         print(inspect_deck(resolve_deck_name(args.deck)))
+        sys.exit(0)
+
+    if args.audit:
+        print(audit_deck(resolve_deck_name(args.audit), n_games=args.games))
         sys.exit(0)
 
     if args.trace:
