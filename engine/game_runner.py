@@ -525,6 +525,9 @@ class GameRunner:
                     if game.game_over:
                         break
                     self._activate_griselbrand(game, active)
+                    if game.game_over:
+                        break
+                    self._activate_sacrifice_abilities(game, active)
 
                 elif step == TurnStep.BEGIN_COMBAT:
                     game.current_phase = Phase.BEGIN_COMBAT
@@ -1348,6 +1351,136 @@ class GameRunner:
             for priority_val, creature in sacrificeable:
                 if sacced >= tokens_to_sac:
                     break
+
+    def _activate_sacrifice_abilities(self, game: GameState, active: int):
+        """Generic sacrifice ability activation. Parses oracle text for
+        'Sacrifice this: [effect]' patterns and activates when strategically sound.
+        No card names — all logic derived from oracle text."""
+        import re
+        player = game.players[active]
+        opponent_idx = 1 - active
+        opponent = game.players[opponent_idx]
+
+        for perm in list(player.battlefield):
+            oracle = (perm.template.oracle_text or '').lower()
+            if 'sacrifice' not in oracle:
+                continue
+            # Must be "sacrifice this/~" pattern (self-sacrifice, not "sacrifice a creature")
+            sac_match = re.search(
+                r'sacrifice (?:this|' + re.escape(perm.template.name.split(' //')[0].lower()) + r')[^:]*:\s*(.+?)(?:\.|$)',
+                oracle)
+            if not sac_match:
+                continue
+            effect_text = sac_match.group(1).strip()
+
+            should_activate = False
+
+            # Draw a card: activate late game or low hand
+            if 'draw a card' in effect_text:
+                if len(player.hand) <= 2 or game.turn_number >= 8:
+                    should_activate = True
+
+            # Destroy by MV (EE, Blast Zone)
+            elif 'destroy' in effect_text and 'mana value' in effect_text:
+                charge = perm.other_counters.get("charge", 0)
+                hits = sum(1 for c in opponent.battlefield
+                           if not c.template.is_land and (c.template.cmc or 0) == charge)
+                if hits >= 1:
+                    should_activate = True
+
+            # Exile graveyard
+            elif 'exile' in effect_text and 'graveyard' in effect_text:
+                if len(opponent.graveyard) >= 5:
+                    should_activate = True
+
+            # Search for land
+            elif 'search' in effect_text and 'land' in effect_text:
+                expensive = any((c.template.cmc or 0) > len(player.lands)
+                                for c in player.hand if not c.template.is_land)
+                if expensive and game.turn_number >= 3:
+                    should_activate = True
+
+            # Exile artifact/enchantment
+            elif 'exile' in effect_text and ('artifact' in effect_text or 'enchantment' in effect_text):
+                targets = [c for c in opponent.battlefield
+                           if not c.template.is_creature and not c.template.is_land]
+                if targets:
+                    should_activate = True
+
+            # Deal damage
+            elif re.search(r'(\d+) damage', effect_text):
+                dmg = int(re.search(r'(\d+) damage', effect_text).group(1))
+                if dmg >= opponent.life:
+                    should_activate = True
+
+            # Return lands from GY
+            elif 'return' in effect_text and 'land' in effect_text:
+                gy_lands = sum(1 for c in player.graveyard if c.template.is_land)
+                if gy_lands >= 2:
+                    should_activate = True
+
+            if should_activate:
+                player.battlefield.remove(perm)
+                perm.zone = "graveyard"
+                player.graveyard.append(perm)
+                game.log.append(f"T{game.display_turn} P{active+1}: "
+                                f"Activate {perm.name} (sacrifice)")
+                self._resolve_sac_effect(game, active, perm, effect_text)
+                if game.game_over:
+                    return
+
+    def _resolve_sac_effect(self, game: GameState, controller: int, sacrificed, effect_text: str):
+        """Execute sacrifice ability effect, parsed from oracle text."""
+        import re
+        player = game.players[controller]
+        opp_idx = 1 - controller
+        opp = game.players[opp_idx]
+
+        if 'draw a card' in effect_text:
+            game.draw_cards(controller, 1)
+        elif 'destroy' in effect_text and 'mana value' in effect_text:
+            charge = sacrificed.other_counters.get("charge", 0)
+            for p_idx in range(2):
+                for c in list(game.players[p_idx].battlefield):
+                    if not c.template.is_land and (c.template.cmc or 0) == charge:
+                        game.players[p_idx].battlefield.remove(c)
+                        c.zone = "graveyard"
+                        game.players[p_idx].graveyard.append(c)
+                        game.log.append(f"T{game.display_turn} P{controller+1}: "
+                                        f"  destroys {c.name} (MV={charge})")
+        elif 'exile' in effect_text and 'graveyard' in effect_text:
+            for c in list(opp.graveyard):
+                opp.graveyard.remove(c)
+                c.zone = "exile"
+                opp.exile.append(c)
+        elif 'search' in effect_text and 'land' in effect_text:
+            lands = [c for c in player.library if c.template.is_land]
+            if lands:
+                player.library.remove(lands[0])
+                lands[0].zone = "hand"
+                player.hand.append(lands[0])
+                game.rng.shuffle(player.library)
+        elif 'exile' in effect_text and ('artifact' in effect_text or 'enchantment' in effect_text):
+            targets = [c for c in opp.battlefield
+                       if not c.template.is_creature and not c.template.is_land]
+            if targets:
+                t = max(targets, key=lambda c: c.template.cmc or 0)
+                opp.battlefield.remove(t)
+                t.zone = "exile"
+                opp.exile.append(t)
+        elif re.search(r'(\d+) damage', effect_text):
+            dmg = int(re.search(r'(\d+) damage', effect_text).group(1))
+            opp.life -= dmg
+            if opp.life <= 0:
+                game.game_over = True
+                game.winner = controller
+        elif 'return' in effect_text and 'land' in effect_text:
+            for c in list(player.graveyard):
+                if c.template.is_land:
+                    player.graveyard.remove(c)
+                    c.zone = "battlefield"
+                    c.tapped = True
+                    player.battlefield.append(c)
                 if priority_val > 0:
                     break  # Don't sacrifice real creatures if not going for lethal
                 if creature in player.battlefield:

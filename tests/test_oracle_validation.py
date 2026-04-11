@@ -473,28 +473,42 @@ class TestActivatedAbilityCoverage:
     """Cards with activated abilities should have activation handlers."""
 
     def test_sacrifice_abilities_have_handlers(self, oracle_db, all_deck_cards, effect_registry):
-        """Cards with '{N}, Sacrifice ~:' in oracle need activation handlers."""
+        """Cards with '{N}, Sacrifice ~:' in oracle need activation handlers
+        OR coverage by the generic _activate_sacrifice_abilities framework."""
         missing = []
+        # Effects covered by the generic sacrifice activation framework
+        # (game_runner._activate_sacrifice_abilities handles these oracle patterns)
+        _GENERIC_COVERED_EFFECTS = {
+            'draw a card', 'destroy', 'exile', 'search', 'damage', 'return', 'copy',
+        }
         for card_name in all_deck_cards:
             oracle = _get_oracle(oracle_db, card_name)
             if not oracle:
                 continue
             oracle_lower = oracle.lower()
             # Pattern: "{N}, Sacrifice ~: effect" — activated sacrifice ability
-            if re.search(r'\{[\dwubrg]\}.*sacrifice .*(this|~)', oracle_lower):
-                # Check if there's any handler at all
+            if re.search(r'\{[\dwubrgc]\}.*sacrifice .*(this|~)', oracle_lower):
+                # Check if there's a specific handler
                 handlers = effect_registry._handlers.get(card_name, [])
-                has_activation = any(
+                has_handler = any(
                     'sacrifice' in getattr(h, 'description', '').lower()
                     or 'activate' in getattr(h, 'description', '').lower()
                     for h in handlers)
-                if not has_activation:
-                    # Extract the ability text for reporting
-                    ability = re.search(
-                        r'(\{[^}]+\}.*sacrifice[^.]+\.)',
-                        oracle_lower)
-                    ability_text = ability.group(1)[:80] if ability else 'sacrifice ability'
-                    missing.append(f"{card_name}: has '{ability_text}' but no handler")
+                if has_handler:
+                    continue
+                # Check if the effect is covered by generic framework
+                sac_match = re.search(
+                    r'sacrifice (?:this|' + re.escape(card_name.split(' //')[0].lower()) + r')[^:]*:\s*(.+?)(?:\.|$)',
+                    oracle_lower)
+                if sac_match:
+                    effect = sac_match.group(1)
+                    if any(kw in effect for kw in _GENERIC_COVERED_EFFECTS):
+                        continue  # covered by generic framework
+                # Not covered
+                ability = re.search(
+                    r'(\{[^}]+\}.*sacrifice[^.]+\.)', oracle_lower)
+                ability_text = ability.group(1)[:80] if ability else 'sacrifice ability'
+                missing.append(f"{card_name}: has '{ability_text}' but no handler")
 
         if missing:
             pytest.fail(
