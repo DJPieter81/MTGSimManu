@@ -57,7 +57,7 @@ class MulliganDecider:
             if gp.mulligan_combo_sets:
                 for combo_set in gp.mulligan_combo_sets:
                     if not (hand_names & combo_set):
-                        if cards_in_hand <= 5:
+                        if cards_in_hand <= 6:
                             self.last_reason = f"missing combo piece but only {cards_in_hand} cards"
                             return True
                         self.last_reason = f"missing combo piece from {combo_set}"

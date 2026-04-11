@@ -272,7 +272,12 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
     if 'board_wipe' in tags:
         if snap.opp_creature_count == 0:
             # Opponent has no creatures — board wipe is pure waste
-            projected.opp_life += 100  # heavy penalty: makes EV deeply negative
+            projected.opp_life += 100
+            # Still kills our own creatures (wrath is symmetric)
+            projected.my_power = 0
+            projected.my_creature_count = 0
+            projected.my_evasion_power = 0
+            projected.my_lifelink_power = 0
         else:
             projected.opp_power = 0
             projected.opp_creature_count = 0
@@ -468,15 +473,28 @@ def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
         cards_drawn_this_turn=snap.cards_drawn_this_turn,
     )
 
-    # Build the "removed" state: creature resolves then dies to removal
+    # Build the "removed" state: creature resolves then dies to removal.
+    # Must revert ALL projection contributions — power, toughness, creature_count,
+    # evasion_power, lifelink_power, and token_maker bonus — to stay symmetric
+    # with what _project_spell added (lines 240-256).
+    if t.is_creature:
+        kws = {kw.value if hasattr(kw, 'value') else str(kw).lower()
+               for kw in getattr(t, 'keywords', set())}
+        evasion_sub = max(0, t.power or 0) if (kws & {'flying', 'menace', 'trample'}) else 0
+        lifelink_sub = max(0, t.power or 0) if 'lifelink' in kws else 0
+        token_power = 2 if 'token_maker' in tags else 0
+        token_count = 1 if 'token_maker' in tags else 0
+    else:
+        evasion_sub = lifelink_sub = token_power = token_count = 0
+
     removed = EVSnapshot(
         my_life=projected.my_life,
         opp_life=projected.opp_life,
-        my_power=projected.my_power - max(0, t.power or 0) if t.is_creature else projected.my_power,
+        my_power=projected.my_power - max(0, t.power or 0) - token_power if t.is_creature else projected.my_power,
         opp_power=projected.opp_power,
         my_toughness=projected.my_toughness - max(0, t.toughness or 0) if t.is_creature else projected.my_toughness,
         opp_toughness=projected.opp_toughness,
-        my_creature_count=projected.my_creature_count - 1 if t.is_creature else projected.my_creature_count,
+        my_creature_count=projected.my_creature_count - 1 - token_count if t.is_creature else projected.my_creature_count,
         opp_creature_count=projected.opp_creature_count,
         my_hand_size=projected.my_hand_size,
         opp_hand_size=projected.opp_hand_size - 1,  # opponent used removal card
@@ -488,8 +506,8 @@ def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
         storm_count=projected.storm_count,
         my_gy_creatures=projected.my_gy_creatures + (1 if t.is_creature else 0),
         my_energy=projected.my_energy,
-        my_evasion_power=projected.my_evasion_power,
-        my_lifelink_power=projected.my_lifelink_power,
+        my_evasion_power=projected.my_evasion_power - evasion_sub,
+        my_lifelink_power=projected.my_lifelink_power - lifelink_sub,
         opp_evasion_power=projected.opp_evasion_power,
         cards_drawn_this_turn=projected.cards_drawn_this_turn,
     )
