@@ -66,7 +66,7 @@ class MulliganDecider:
                            for c in hand if c.name == n)
                 }
                 if not (hand_names & reducer_names):
-                    # No reducer — but keep if we have ritual + cantrip + finisher access
+                    # No reducer — keep if we have ritual + cantrip + finisher access
                     has_ritual = any('ritual' in getattr(c.template, 'tags', set())
                                      for c in spells)
                     has_cantrip = any('cantrip' in getattr(c.template, 'tags', set())

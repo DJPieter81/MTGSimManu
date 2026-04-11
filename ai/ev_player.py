@@ -441,14 +441,9 @@ class EVPlayer:
                 if fuel_available > 0:
                     mod -= 20.0  # hold finisher, cast fuel first
                 else:
-                    # No more fuel — fire now
-                    damage_pct = storm_copies / max(1, snap.opp_life)
-                    if damage_pct >= 0.7:
-                        mod += 15.0
-                    elif damage_pct >= 0.4:
-                        mod += 5.0
-                    else:
-                        mod -= 30.0
+                    # No more fuel — ALWAYS fire. Any damage > 0 is better
+                    # than wasting the entire chain (storm resets next turn).
+                    mod += 50.0  # strong positive: fire the finisher
 
         # ── Past in Flames sequencing ──
         if 'flashback' in tags and t.name == 'Past in Flames':
@@ -502,6 +497,8 @@ class EVPlayer:
                     mod -= chain_fuel * 3.0  # cast fuel first
 
         # ── Cost reducer timing ──
+        # Medallion is THE most important card in Storm — T2 Medallion
+        # enables T3-4 kills. Every turn delay costs ~1 full combo turn.
         oracle = (t.oracle_text or '').lower()
         is_reducer = ('cost_reducer' in tags and 'cost' in oracle
                       and 'less' in oracle and t.domain_reduction == 0)
@@ -513,12 +510,12 @@ class EVPlayer:
                                        for ft in ('ritual', 'cantrip', 'draw')))
             existing = sum(1 for c in me.battlefield
                            if 'cost_reducer' in getattr(c.template, 'tags', set()))
-            if fuel_in_hand > 0 or storm == 0:
-                mod += 8.0 if existing == 0 else 4.0  # first reducer is most valuable
-                if snap.turn_number <= 4:
-                    mod += 6.0  # early reducer enables whole chain
-            elif storm >= 3:
+            if storm >= 3:
                 mod -= 5.0  # mid-chain reducer wastes tempo
+            elif fuel_in_hand > 0 or storm == 0:
+                mod += 8.0 if existing == 0 else 4.0
+                if snap.turn_number <= 4:
+                    mod += 6.0  # early reducer enables chain
 
         return mod
 
