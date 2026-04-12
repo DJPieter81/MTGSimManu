@@ -181,3 +181,7 @@ After any matrix run, always:
 2. `python build_guide.py --all outputs/` (regenerates all deck guides)
 3. Auto-trigger replays for outliers (see CLAUDE.md "Post-Sim Replay Generation")
 4. Commit and push
+
+## Pro-Level Strategic Insights
+
+`build_dashboard.py` auto-injects `proInsights(p, i, j)` into every dashboard build. Click any matchup cell → "Strategic Insights" panel with 1-3 findings: G1→match swing (≥12pp), sweep asymmetry, speed gap (≥1.5 turns), removal blind spots, zero comebacks. No manual work needed.

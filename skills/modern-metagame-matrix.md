@@ -181,3 +181,7 @@ git pull origin main → python merge_db.py → python run_meta.py --matrix -n 5
 ```
 
 Read CLAUDE.md for complete instructions.
+
+## Pro-Level Strategic Insights
+
+`build_dashboard.py` auto-injects `proInsights(p, i, j)` into every dashboard build. Click any matchup cell → "Strategic Insights" panel with 1-3 findings: G1→match swing (≥12pp), sweep asymmetry, speed gap (≥1.5 turns), removal blind spots, zero comebacks. No manual work needed.
