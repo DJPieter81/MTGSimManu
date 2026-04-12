@@ -840,7 +840,16 @@ class EVPlayer:
         """Score cycling using clock-derived values.
 
         Cycling = draw 1 card + put creature in GY (for Living End).
+        Constants calibrated so cycling outscores creature-casting when
+        the gameplan requires GY filling before cascade.
         """
+        # EV scaling constants (tuned against creature cast EV of ~15-20)
+        CYCLING_CASCADE_BOOST = 8.0   # cascade in hand: cycling is primary action
+        CYCLING_GY_URGENCY = 6.0      # GY < 3 creatures: need more before cascade
+        CYCLING_GAMEPLAN_BOOST = 10.0  # gameplan says prefer_cycling
+        CYCLING_FREE_COST_BONUS = 2.0  # pay life instead of mana
+        CYCLING_CHEAP_COST_BONUS = 1.0 # mana cost <= 1
+
         from ai.clock import card_clock_impact
 
         # Drawing a card: future clock change
@@ -856,25 +865,25 @@ class EVPlayer:
         cost_data = card.template.cycling_cost_data
         if cost_data:
             if cost_data.get('life', 0) > 0:
-                ev += 2.0  # free cycling (pay life instead of mana)
+                ev += CYCLING_FREE_COST_BONUS  # free cycling (pay life instead of mana)
             elif cost_data.get('mana', 0) <= 1:
-                ev += 1.0  # cheap cycling
+                ev += CYCLING_CHEAP_COST_BONUS  # cheap cycling
 
         # Cascade in hand: filling GY is urgent — MUST cycle before cascade
         has_cascade = any(getattr(c.template, 'is_cascade', False) for c in me.hand
                          if not c.template.is_land)
         if has_cascade:
-            ev += 8.0  # big boost: cycling is the primary action before cascade
+            ev += CYCLING_CASCADE_BOOST  # cycling is the primary action before cascade
             # Count creatures already in GY — less urgency if GY is full
             gy_creatures = sum(1 for c in me.graveyard if c.template.is_creature)
             if gy_creatures < 3:
-                ev += 6.0  # urgent: need more GY creatures before cascading
+                ev += CYCLING_GY_URGENCY  # urgent: need more GY creatures before cascading
 
         # Gameplan prefer_cycling: massive boost (Living End, etc.)
         if self.goal_engine:
             current_goal = self.goal_engine.current_goal
             if current_goal and getattr(current_goal, 'prefer_cycling', False):
-                ev += 10.0  # cycling is THE gameplan, not optional
+                ev += CYCLING_GAMEPLAN_BOOST  # cycling is THE gameplan, not optional
 
         return ev
 
