@@ -478,8 +478,8 @@ class OracleTextParser:
                 if re.search(pattern, text):
                     mana_colors.update(colors)
 
-            # Generic "Add one mana of any color"
-            if re.search(r"add\s+one\s+mana\s+of\s+any\s+color", text.lower()):
+            # Generic "Add one mana of any color" / "Add three mana of any one color"
+            if re.search(r"add\s+(?:one|two|three)\s+mana\s+of\s+any\s+(?:one\s+)?color", text.lower()):
                 mana_colors.update(["W", "U", "B", "R", "G"])
 
             # Add {C} for colorless-only lands
@@ -488,9 +488,15 @@ class OracleTextParser:
 
             # Check for "Add {X} or {Y}" patterns more broadly
             # Match both 'Add {X}' and 'or {Y}' in patterns like 'Add {R} or {W}'
+            # Also match consecutive symbols: 'Add {R}{G}' (bounce lands)
             add_matches = re.findall(r'[Aa]dd\s*\{([WUBRGC])\}', text)
             for m in add_matches:
                 mana_colors.add(m)
+            # Match consecutive {X} after Add: "Add {R}{G}" → also get G
+            consecutive = re.findall(r'[Aa]dd\s*(?:\{[WUBRGC]\})+', text)
+            for match in consecutive:
+                for sym in re.findall(r'\{([WUBRGC])\}', match):
+                    mana_colors.add(sym)
             # Also match 'or {X}' that follows an Add pattern
             or_matches = re.findall(r'\bor\s+\{([WUBRGC])\}', text)
             for m in or_matches:
