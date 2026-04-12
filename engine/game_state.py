@@ -2466,6 +2466,49 @@ class GameState:
                         m = re.search(r'gain\s+(\d+)\s+life', oracle)
                         self.gain_life(controller, int(m.group(1)) if m else 1, c.name)
 
+        # Generic "whenever this creature or another [Subtype] you control enters"
+        # Covers Risen Reef (Elemental) and any future cards with this pattern.
+        # Crucially: the watcher CAN be the entering card itself ("whenever THIS
+        # creature ... enters" means it triggers on its own ETB too).
+        import re as _re
+        entering_subtypes = {s.lower() for s in (card.template.subtypes or [])}
+        player = self.players[controller]
+        for watcher in list(player.battlefield):
+            w_oracle = (watcher.template.oracle_text or '').lower()
+            # Detect pattern: "whenever this creature or another [Subtype] you control enters"
+            m = _re.search(
+                r'whenever this creature or another (\w+) you control enters',
+                w_oracle
+            )
+            if not m:
+                continue
+            required_subtype = m.group(1).lower()
+            # Fire if the entering card has the required subtype
+            if required_subtype not in entering_subtypes:
+                continue
+            # Skip if the watcher is NOT the entering card but also lacks the subtype
+            # (guards against non-Elemental watchers firing on Elemental entries)
+            watcher_subtypes = {s.lower() for s in (watcher.template.subtypes or [])}
+            if watcher.instance_id != card.instance_id and required_subtype not in watcher_subtypes:
+                continue
+            # Execute the "look at top card → land to battlefield tapped / else to hand" effect
+            if ('top card' in w_oracle or 'top of your library' in w_oracle) and player.library:
+                top = player.library[0]
+                if top.template.is_land:
+                    player.library.pop(0)
+                    top.zone = 'battlefield'
+                    top.tapped = True
+                    player.battlefield.append(top)
+                    self.log.append(
+                        f"T{self.display_turn} P{controller+1}: "
+                        f"{watcher.name} → {top.name} enters tapped (land)")
+                    self._trigger_landfall(controller)
+                else:
+                    self.draw_cards(controller, 1)
+                    self.log.append(
+                        f"T{self.display_turn} P{controller+1}: "
+                        f"{watcher.name} → draws a card")
+
     def trigger_attack(self, attacker: CardInstance, controller: int):
         """Trigger attack abilities."""
         # Energy on attack: only if oracle says "get {E}" on attack, not "pay {E}".
