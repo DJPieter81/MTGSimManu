@@ -201,16 +201,18 @@ export default function SimControlPanel() {
 
   const basePath = format === "legacy" ? LEGACY_BASE : MODERN_BASE;
   const allRuns = format === "legacy" ? legacyHistory : modernHistory;
-  const filteredRuns = histFilter === "all" ? allRuns :
-    allRuns.filter(r => r.type === histFilter || r.tag === histFilter ||
+  // Sort all runs descending by timestamp
+  const sortedRuns = [...allRuns].sort((a, b) => (b.ts || "").localeCompare(a.ts || ""));
+  const filteredRuns = histFilter === "all" ? sortedRuns :
+    sortedRuns.filter(r => r.type === histFilter || r.tag === histFilter ||
       (histFilter === "bo3" && (r.type === "bo3" || r.type === "bo3-log")) ||
       (histFilter === "matrix" && (r.type === "matrix" || r.tag === "bo3-matrix" || r.tag === "custom")) ||
       (histFilter === "trace" && (r.tag === "trace" || r.tag === "graded-trace")) ||
       (histFilter === "dashboard" && r.type === "dashboard") ||
       (histFilter === "report" && (r.type === "report" || r.tag === "profile")) ||
       (histFilter === "guide" && (r.type === "guide" || r.tag === "guide")));
-  const matrixRuns = allRuns.filter(r => r.type === "matrix");
-  const latest = allRuns[0];
+  const matrixRuns = sortedRuns.filter(r => r.type === "matrix");
+  const latest = sortedRuns[0];
   const toggleOut = (k) => setOutputs(p => ({ ...p, [k]: !p[k] }));
 
   const switchFormat = (f) => {

@@ -270,6 +270,8 @@ function render() {
     typeCounts[k] = (typeCounts[k]||0) + 1;
   });
 
+  // Sort all runs descending by timestamp
+  allRuns.sort((a, b) => (b.ts || '').localeCompare(a.ts || ''));
   const filtered = histFilter === 'all' ? allRuns :
     allRuns.filter(r => r.type === histFilter || r.tag === histFilter ||
       (histFilter === 'bo3' && (r.type === 'bo3' || r.type === 'bo3-log')) ||
