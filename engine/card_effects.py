@@ -1652,7 +1652,7 @@ def sanctifier_en_vec_etb(game, card, controller, targets=None, item=None):
     exiled = 0
     for p in game.players:
         to_exile = [c for c in p.graveyard
-                    if c.template.color_identity & {"B", "R"}]
+                    if any(col.value in ('B', 'R') for col in c.template.color_identity)]
         for c in to_exile:
             p.graveyard.remove(c)
             c.zone = "exile"
@@ -2385,7 +2385,7 @@ def celestial_purge_resolve(game, card, controller, targets=None, item=None):
 
     red_black = [c for c in opp.battlefield
                  if not c.template.is_land
-                 and (c.template.color_identity & {'R', 'B'})]
+                 and any(col.value in ('R', 'B') for col in c.template.color_identity)]
     if red_black:
         target = max(red_black, key=_threat_score)
         game._exile_permanent(target)
@@ -2541,3 +2541,55 @@ def phelia_end_step(game, card, controller, targets=None, item=None):
                 f"{exiled_card.name} returns to battlefield (P{owner_idx+1})")
             # Trigger ETB on return
             game.trigger_etb(exiled_card, owner_idx)
+
+
+# ═══════════════════════════════════════════════════════════════════
+# All Is Dust — sacrifice all colored permanents
+# ═══════════════════════════════════════════════════════════════════
+@EFFECT_REGISTRY.register("All Is Dust", EffectTiming.SPELL_RESOLVE,
+                           description="Each player sacrifices all colored permanents")
+def all_is_dust_resolve(game, card, controller, targets=None, item=None):
+    """All Is Dust: destroy all colored permanents (leaves colorless Eldrazi alive)."""
+    total = 0
+    for p in game.players:
+        colored = [c for c in list(p.battlefield)
+                   if not c.template.is_land
+                   and len(c.template.color_identity) > 0]
+        for perm in colored:
+            if perm.template.is_creature:
+                game._creature_dies(perm)
+            else:
+                game._permanent_destroyed(perm)
+            total += 1
+    game.log.append(
+        f"T{game.display_turn} P{controller+1}: "
+        f"All Is Dust sacrifices {total} colored permanents")
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Expedition Map — search for a land (Tron assembly)
+# ═══════════════════════════════════════════════════════════════════
+@EFFECT_REGISTRY.register("Expedition Map", EffectTiming.ETB,
+                           description="Artifact: sacrifice to search for a land card")
+def expedition_map_etb(game, card, controller, targets=None, item=None):
+    """Expedition Map ETB: auto-activate to find missing Tron piece.
+
+    In real MTG this is an activated ability ({2}, T, sacrifice).
+    Simplified: activates automatically when controller has 3+ mana
+    and is missing a Tron piece.
+    """
+    # Don't auto-activate on ETB — handled in game_runner end step
+    pass
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Ratchet Bomb — destroy permanents with specific CMC
+# ═══════════════════════════════════════════════════════════════════
+@EFFECT_REGISTRY.register("Ratchet Bomb", EffectTiming.ETB,
+                           description="Artifact: tick up counters, sacrifice to destroy CMC=X")
+def ratchet_bomb_etb(game, card, controller, targets=None, item=None):
+    """Ratchet Bomb: enters with 0 charge counters. Auto-ticks each turn."""
+    card.other_counters["charge"] = 0
+    game.log.append(
+        f"T{game.display_turn} P{controller+1}: "
+        f"Ratchet Bomb enters with 0 charge counters")

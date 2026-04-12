@@ -1114,6 +1114,9 @@ class CardDatabase:
             "Blood Moon": {"stax", "interaction"},
             "Thraben Charm": {"removal", "graveyard_hate", "instant_speed"},
             "Celestial Purge": {"removal", "instant_speed"},
+            # ETron
+            "All Is Dust": {"board_wipe", "removal"},
+            "Ratchet Bomb": {"removal", "interaction"},
             # Affinity sideboard
             "Dispatch": {"removal", "instant_speed"},
             "Hurkyl's Recall": {"removal", "instant_speed"},

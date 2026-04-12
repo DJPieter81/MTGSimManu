@@ -632,6 +632,8 @@ class GameRunner:
                     self._activate_goblin_bombardment(game, active)
                     if game.game_over:
                         break
+                    # Activated artifacts: Expedition Map, Ratchet Bomb
+                    self._activate_utility_artifacts(game, active)
                     # Phelia blink returns: exiled permanents come back + trigger ETB
                     if hasattr(game, '_phelia_returns') and game._phelia_returns:
                         from engine.card_effects import EFFECT_REGISTRY, EffectTiming
@@ -1450,6 +1452,86 @@ class GameRunner:
             for priority_val, creature in sacrificeable:
                 if sacced >= tokens_to_sac:
                     break
+
+    def _activate_utility_artifacts(self, game: GameState, active: int):
+        """Activate utility artifacts: Expedition Map (find Tron piece), Ratchet Bomb."""
+        player = game.players[active]
+
+        for perm in list(player.battlefield):
+            oracle = (perm.template.oracle_text or '').lower()
+
+            # Expedition Map: sacrifice to search for a land
+            if perm.name == "Expedition Map" and not getattr(perm, 'tapped', False):
+                # Need 2 mana to activate
+                untapped_count = len(player.untapped_lands)
+                if untapped_count >= 2:
+                    # Find missing Tron piece
+                    tron_pieces = {"Urza's Tower", "Urza's Mine", "Urza's Power Plant"}
+                    on_board = {l.name for l in player.lands}
+                    missing = tron_pieces - on_board
+                    # Also search for Eldrazi Temple or utility lands
+                    target_name = None
+                    if missing:
+                        target_name = next(iter(missing))
+                    elif "Eldrazi Temple" not in on_board:
+                        target_name = "Eldrazi Temple"
+                    if target_name:
+                        # Pay 2 mana
+                        tapped = 0
+                        for land in player.untapped_lands:
+                            if tapped >= 2:
+                                break
+                            land.tapped = True
+                            tapped += 1
+                        # Sacrifice Map
+                        player.battlefield.remove(perm)
+                        perm.zone = "graveyard"
+                        player.graveyard.append(perm)
+                        # Find the land in library
+                        target = None
+                        for c in player.library:
+                            if c.name == target_name:
+                                target = c
+                                break
+                        if target:
+                            player.library.remove(target)
+                            target.zone = "hand"
+                            player.hand.append(target)
+                            game.log.append(
+                                f"T{game.display_turn} P{active+1}: "
+                                f"Expedition Map finds {target_name}")
+
+            # Ratchet Bomb: tick up charge counter each turn
+            if perm.name == "Ratchet Bomb":
+                charges = perm.other_counters.get("charge", 0)
+                # Tick up
+                perm.other_counters["charge"] = charges + 1
+                new_charges = charges + 1
+                # Check if we should pop it (opponent has valuable permanents at this CMC)
+                opp = game.players[1 - active]
+                targets_at_cmc = [c for c in opp.battlefield
+                                  if not c.template.is_land
+                                  and (c.template.cmc or 0) == new_charges]
+                if len(targets_at_cmc) >= 2 or (
+                    len(targets_at_cmc) >= 1 and any(
+                        'stax' in getattr(c.template, 'tags', set()) or
+                        'Equipment' in getattr(c.template, 'subtypes', [])
+                        for c in targets_at_cmc)):
+                    # Pop it
+                    player.battlefield.remove(perm)
+                    perm.zone = "graveyard"
+                    player.graveyard.append(perm)
+                    from engine.cards import Keyword
+                    for c in list(targets_at_cmc):
+                        if Keyword.INDESTRUCTIBLE not in c.keywords:
+                            if c.template.is_creature:
+                                game._creature_dies(c)
+                            else:
+                                game._permanent_destroyed(c)
+                    game.log.append(
+                        f"T{game.display_turn} P{active+1}: "
+                        f"Ratchet Bomb ({new_charges}) destroys "
+                        f"{len(targets_at_cmc)} permanents")
 
     def _activate_sacrifice_abilities(self, game: GameState, active: int):
         """Generic sacrifice ability activation. Parses oracle text for
