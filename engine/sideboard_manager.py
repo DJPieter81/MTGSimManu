@@ -110,7 +110,7 @@ def sideboard(mainboard: Dict[str, int], sideboard_cards: Dict[str, int],
         if any(w in opp_lower for w in ["affinity", "pinnacle"]):
             if any(w in card_lower for w in ["surgical", "nihil", "cling",
                                                "leyline of the void", "rest in peace",
-                                               "blood moon", "chant"]):
+                                               "chant"]):
                 board_out_priority.append((card_name, min(count, 2), 7))
 
     board_out_priority.sort(key=lambda x: -x[2])
@@ -131,7 +131,13 @@ def sideboard(mainboard: Dict[str, int], sideboard_cards: Dict[str, int],
         in_card, in_count, _ = board_in_priority[in_idx]
         out_card, out_count, _ = board_out_priority[out_idx]
 
-        swap_count = min(in_count, out_count, max_swaps - swaps)
+        swap_count = min(in_count, out_count, max_swaps - swaps,
+                        new_main.get(out_card, 0))  # can't remove more than we have
+
+        if swap_count == 0:
+            # Out card already removed from main — skip it
+            out_idx += 1
+            continue
 
         if swap_count > 0:
             new_main[in_card] = new_main.get(in_card, 0) + swap_count
