@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Modern Metagame Matrix — April 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0c0e14;--bg2:#12151e;--bg3:#181c28;--bg4:#1e2333;--tx:#c8cdd8;--tx2:#8891a4;--tx3:#5a6270;
+--acc:#60a5fa;--grn:#4ade80;--red:#f87171;--orn:#d97706;--pur:#a78bfa;--cyn:#22d3ee;--gold:#c9a227}
+body{background:var(--bg);color:var(--tx);font-family:'Outfit',sans-serif;font-size:13px;overflow-x:hidden}
+.wrap{display:flex;height:100vh}
+.main{flex:1;overflow:auto;padding:16px 20px;min-width:0}
+/* SLIDE-IN DETAIL PANEL */
+.det{width:420px;min-width:420px;background:var(--bg2);border-left:1px solid #ffffff0a;overflow-y:auto;
+transform:translateX(100%);transition:transform .25s ease}
+.det.show{transform:translateX(0)}
+.det-inner{padding:20px}
+/* HEADER */
+h1{font-size:20px;font-weight:700;letter-spacing:-.5px;margin-bottom:2px;color:var(--gold)}
+.sub-h{color:var(--tx2);font-size:11px;margin-bottom:14px}
+/* CONTROLS */
+.ctrls{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.ctrls label{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px}
+.ctrls select,.ctrls input[type=text]{background:var(--bg3);border:1px solid #ffffff10;color:var(--tx);
+padding:5px 8px;border-radius:4px;font-size:11px;font-family:'JetBrains Mono',monospace;outline:none}
+.ctrls select:focus,.ctrls input:focus{border-color:var(--acc)}
+.toggle-wrap{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--tx2);cursor:pointer}
+.toggle-wrap input{accent-color:var(--acc)}
+/* TIER CHIPS */
+.tiers{margin-bottom:14px}
+.tier-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:6px 0 4px;
+padding:2px 6px;border-radius:2px;display:inline-block}
+.tier-label.t1{color:#4ade80;background:#4ade8015}
+.tier-label.t2{color:#60a5fa;background:#60a5fa15}
+.tier-label.t3{color:#d97706;background:#d9770615}
+.tier-label.t4{color:#f87171;background:#f8717115}
+.tier-row{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:2px}
+.rchip{font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 8px;border-radius:3px;
+cursor:pointer;transition:all .15s;white-space:nowrap;border:1px solid transparent}
+.rchip:hover{border-color:#ffffff30;transform:translateY(-1px)}
+.rchip.sel{border-color:var(--acc);box-shadow:0 0 8px #60a5fa30}
+/* LEGEND */
+.legend{display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:10px;color:var(--tx3)}
+.legend-bar{height:10px;width:160px;border-radius:3px;
+background:linear-gradient(90deg,hsl(0,55%,20%),hsl(24,45%,25%),hsl(60,35%,24%),hsl(100,45%,24%),hsl(140,50%,26%))}
+/* MATRIX */
+table{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:10px}
+th,td{padding:0;text-align:center}
+th.ch{height:90px;position:relative;min-width:26px}
+th.ch div{position:absolute;bottom:4px;left:50%;transform:rotate(-55deg) translateX(-50%);
+transform-origin:bottom left;white-space:nowrap;font-size:8px;color:var(--tx2);font-weight:400;cursor:pointer}
+th.ch.hl div{color:var(--acc);font-weight:600}
+th.rh{text-align:right;padding-right:6px;font-size:8px;color:var(--tx2);font-weight:400;
+white-space:nowrap;cursor:pointer;position:sticky;left:0;background:var(--bg);z-index:1}
+th.rh.hl{color:var(--acc);font-weight:600}
+td.c{width:26px;height:20px;font-size:9px;font-weight:600;cursor:pointer;transition:opacity .1s;position:relative}
+td.c:hover{outline:2px solid #fff;outline-offset:-2px;z-index:2}
+td.c.sel{outline:2px solid var(--acc);outline-offset:-2px;z-index:3}
+td.mir{background:var(--bg3)!important;color:var(--tx3);cursor:default;font-size:8px}
+td.avg{font-size:9px;font-weight:700;padding-left:6px;background:var(--bg);position:sticky;right:0;white-space:nowrap}
+/* TOOLTIP */
+.ttip{position:fixed;background:#1a1e2e;border:1px solid #ffffff20;border-radius:6px;padding:8px 12px;
+pointer-events:none;z-index:100;font-size:11px;box-shadow:0 8px 24px rgba(0,0,0,.5);
+opacity:0;transition:opacity .12s;max-width:280px}
+.ttip.vis{opacity:1}
+.ttip .tw{font-size:20px;font-weight:700;margin-bottom:2px;font-family:'JetBrains Mono',monospace}
+.ttip .tl{color:var(--tx2);font-size:10px;line-height:1.5}
+/* DETAIL PANEL SHARED */
+.close-btn{position:sticky;top:0;z-index:10;background:var(--bg2);padding:10px 16px;
+display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #ffffff08}
+.close-btn .det-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--tx3)}
+.close-btn button{background:none;border:1px solid #ffffff15;color:var(--tx2);width:26px;height:26px;
+border-radius:4px;cursor:pointer;font-size:14px}
+.close-btn button:hover{background:var(--bg4);color:var(--tx)}
+.det h2{font-size:16px;font-weight:700;letter-spacing:-.3px;margin-bottom:4px}
+.det .sub{color:var(--tx2);font-size:11px;margin-bottom:10px}
+.sec{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--tx3);
+margin:16px 0 7px;padding-bottom:4px;border-bottom:1px solid #ffffff08}
+/* STATS ROW */
+.row{display:flex;justify-content:space-between;padding:3px 0;font-size:12px}
+.lbl{color:var(--tx2)}.val{font-family:'JetBrains Mono',monospace;font-weight:600}
+/* MATCHUP BARS IN DETAIL */
+.mu-row{display:flex;align-items:center;gap:5px;padding:2px 0;cursor:pointer}
+.mu-row:hover{background:#ffffff05;border-radius:2px}
+.mu-name{width:110px;font-size:9px;color:var(--tx2);text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mu-bar{flex:1;height:8px;background:var(--bg3);border-radius:2px;overflow:hidden;max-width:110px}
+.mu-fill{height:100%;border-radius:2px}
+.mu-val{font-size:10px;font-weight:600;width:32px;text-align:right;font-family:'JetBrains Mono',monospace}
+.mu-ms{font-size:9px;color:var(--tx3);width:28px;text-align:right}
+/* TIER BADGE */
+.tier-badge{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;
+border-radius:4px;font-size:12px;font-weight:700;margin-right:8px;flex-shrink:0}
+/* PILLS */
+.pill{display:inline-block;padding:2px 7px;border-radius:10px;font-size:9px;font-weight:600;
+margin:0 3px 3px 0;font-family:'JetBrains Mono',monospace}
+.pill-cast{background:#6a8dae18;color:#6a8dae;border:1px solid #6a8dae25}
+.pill-dmg{background:#a0404018;color:#f87171;border:1px solid #f8717125}
+.pill-fin{background:#c9a22718;color:#c9a227;border:1px solid #c9a22725}
+/* FINISHER ROWS */
+.fin-row{display:flex;gap:8px;align-items:flex-start;padding:4px 0;border-bottom:1px solid #ffffff06}
+.fin-count{font-size:14px;font-weight:700;color:var(--gold);min-width:24px;text-align:right;font-family:'JetBrains Mono',monospace}
+.fin-card{font-size:11px;font-weight:600;color:var(--tx)}
+.fin-desc{font-size:10px;color:var(--tx3);line-height:1.5;margin-top:1px}
+/* SIDEBOARD */
+.sb-block{background:var(--bg3);border-radius:4px;padding:8px 10px;margin-bottom:6px}
+.sb-head{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.sb-in{color:var(--grn)}.sb-out{color:var(--red)}.sb-cast{color:var(--tx3)}.sb-delta-up{color:var(--grn)}.sb-delta-dn{color:var(--red)}
+.sb-line{font-size:10px;margin-bottom:4px;line-height:1.5}
+/* NARRATIVE */
+.insight-box{background:var(--bg3);border-radius:4px;padding:10px 12px;border-left:3px solid #c9a22740;margin-bottom:8px}
+.insight-box p{font-size:11px;color:var(--tx2);line-height:1.65}
+/* OVERVIEW SUMMARY */
+.overview{background:var(--bg3);border-radius:4px;padding:10px 12px;border-left:3px solid #c9a22740;margin-bottom:8px;font-size:11px;color:var(--tx2);line-height:1.65}
+/* STATS GRID */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+.stat-box{background:var(--bg3);border-radius:4px;padding:8px 10px;text-align:center}
+.stat-box .sv{font-size:18px;font-weight:700;font-family:'JetBrains Mono',monospace;margin-bottom:1px}
+.stat-box .sl{font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px}
+</style>
+</head>
+<body>
+<div class="ttip" id="ttip"></div>
+<div class="wrap">
+  <div class="main" id="main">
+    <h1>⚔ MODERN METAGAME MATRIX</h1>
+    <div class="sub-h">14 decks · 100 Bo3/pair · 9,100 total games · Modern Challenge 32 Apr 5 2026 · click cells or deck names</div>
+    <div class="ctrls">
+      <div><label>Sort</label><br>
+        <select id="srt">
+          <option value="wd">↓ Weighted WR</option>
+          <option value="fd">↓ Flat WR</option>
+          <option value="az">A → Z</option>
+        </select>
+      </div>
+      <div><label>Arch</label><br>
+        <select id="archFlt">
+          <option value="">All archetypes</option>
+          <option value="Aggro">Aggro</option>
+          <option value="Midrange">Midrange</option>
+          <option value="Control">Control</option>
+          <option value="Combo">Combo</option>
+          <option value="Ramp">Ramp</option>
+        </select>
+      </div>
+      <div><label>Highlight</label><br>
+        <select id="hl">
+          <option value="">None</option>
+        </select>
+      </div>
+      <div style="align-self:flex-end;padding-bottom:6px">
+        <label class="toggle-wrap"><input type="checkbox" id="wtToggle" checked> Weighted WR</label>
+      </div>
+    </div>
+    <div class="legend">
+      <div class="legend-bar"></div>
+      <span>0% → 50% → 100%</span>
+    </div>
+    <div class="tiers" id="tiers"></div>
+    <div id="matrix-wrap"><table id="matrix"></table></div>
+  </div>
+
+  <div class="det" id="det">
+    <div class="close-btn">
+      <span class="det-label" id="det-label">Detail</span>
+      <button onclick="closeDet()">✕</button>
+    </div>
+    <div class="det-inner" id="det-inner">
+      <div style="color:var(--tx3);font-size:12px;padding:20px 0">Click a deck name or matrix cell to view details.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const D = {"decks":["Boros Energy","Jeskai Blink","Eldrazi Tron","Ruby Storm","Affinity","Izzet Prowess","Amulet Titan","Goryo's Vengeance"],"wins":[[0,40,60,90,20,70,50,100],[60,0,50,60,10,50,90,70],[40,50,0,70,10,100,50,80],[10,40,30,0,10,50,20,50],[80,90,90,90,0,100,80,70],[30,50,0,50,0,0,30,50],[50,10,50,80,20,70,0,70],[0,30,20,50,30,50,30,0]],"matches_per_pair":100,"matchup_cards":{"4,6":{"d1":"Affinity","d2":"Amulet Titan","d1_wins":80,"d2_wins":20,"avg_turns":12.2,"win_conditions":{"damage":235,"timeout":1},"sweeps":[55,9],"went_to_3":36,"g1_wins":[70,30],"comebacks":[11,4],"d1_top_casts":[{"card":"Cranial Plating","count":58},{"card":"Signal Pest","count":50},{"card":"Memnite","count":48}],"d2_top_casts":[{"card":"Summoner's Pact","count":48},{"card":"Primeval Titan","count":48},{"card":"Amulet of Vigor","count":45}],"d1_top_damage":[],"d2_top_damage":[],"d1_finishers":[{"card":"Ornithopter","count":16},{"card":"Signal Pest","count":13}],"d2_finishers":[{"card":"Arboreal Grazer","count":5},{"card":"Dryad of the Ilysian Grove","count":5}],"insight":"Affinity is heavily favored (77-23). Polarized \u2014 64% sweeps.","d1_sb":["Post-board WR drops: G1 90% -> post 62% (-28pp)"],"d2_sb":["IN: 3x Force of Vigor","OUT: 1x Azusa, Lost but Seeking, 1x Explore, 1x Primeval Titan","SB cards seen: Force of Vigor (9x cast)","Post-board WR improves: G1 10% -> post 38% (+28pp)"]},"0,4":{"d1":"Boros Energy","d2":"Affinity","d1_wins":20,"d2_wins":80,"avg_turns":12.7,"win_conditions":{"damage":246},"sweeps":[37,17],"went_to_3":46,"g1_wins":[62,38],"comebacks":[11,12],"d1_top_casts":[{"card":"Phlage","count":52},{"card":"Guide of Souls","count":48},{"card":"Ragavan","count":33}],"d2_top_casts":[{"card":"Memnite","count":53},{"card":"Springleaf Drum","count":49},{"card":"Ornithopter","count":47}],"d1_top_damage":[{"card":"Galvanic Discharge","count":181}],"d2_top_damage":[],"d1_finishers":[{"card":"Ocelot Pride","count":9},{"card":"Guide of Souls","count":8}],"d2_finishers":[{"card":"Ornithopter","count":15},{"card":"Sojourner's Companion","count":3}],"insight":"Boros Energy has the edge (61-39). Competitive: 46% go to G3.","d1_sb":["IN: 2x Wear // Tear","OUT: 2x Thraben Charm","Post-board WR improves: G1 50% -> post 75% (+25pp)"],"d2_sb":["IN: 2x Dispatch","OUT: 2x Nettlecyst","SB cards seen: Dispatch (13x cast)","Post-board WR drops: G1 50% -> post 25% (-25pp)"]},"2,4":{"d1":"Eldrazi Tron","d2":"Affinity","d1_wins":10,"d2_wins":90,"avg_turns":13.6,"win_conditions":{"timeout":5,"damage":246},"sweeps":[18,31],"went_to_3":51,"g1_wins":[43,57],"comebacks":[14,17],"d1_top_casts":[{"card":"Eldrazi Mimic","count":44},{"card":"Matter Reshaper","count":43},{"card":"Expedition Map","count":41}],"d2_top_casts":[{"card":"Signal Pest","count":60},{"card":"Cranial Plating","count":47},{"card":"Springleaf Drum","count":45}],"d1_top_damage":[],"d2_top_damage":[],"d1_finishers":[{"card":"Eldrazi Mimic","count":10},{"card":"Thought-Knot Seer","count":6}],"d2_finishers":[{"card":"Signal Pest","count":7},{"card":"Ornithopter","count":7}],"insight":"Affinity has the edge (60-40). Affinity: 17 comeback wins. Competitive: 51% go to G3.","d1_sb":["IN: 3x Ratchet Bomb, 2x Trinisphere","OUT: 1x Endbringer, 2x Kozilek's Command, 1x Ugin, the Spirit Dragon","SB cards seen: Ratchet Bomb (15x cast), Trinisphere (6x cast)"],"d2_sb":[]},"4,7":{"d1":"Affinity","d2":"Goryo's Vengeance","d1_wins":70,"d2_wins":30,"avg_turns":13.1,"win_conditions":{"damage":217,"timeout":18},"sweeps":[55,9],"went_to_3":36,"g1_wins":[78,22],"comebacks":[7,3],"d1_top_casts":[{"card":"Ornithopter","count":51},{"card":"Signal Pest","count":46},{"card":"Springleaf Drum","count":43}],"d2_top_casts":[{"card":"Thoughtseize","count":44},{"card":"Unmarked Grave","count":43},{"card":"Goryo's Vengeance","count":29}],"d1_top_damage":[],"d2_top_damage":[],"d1_finishers":[{"card":"Ornithopter","count":13},{"card":"Signal Pest","count":8}],"d2_finishers":[{"card":"Archon of Cruelty","count":10},{"card":"Solitude","count":2}],"insight":"Affinity is heavily favored (82-18). Affinity dominates G1 (78%). Polarized \u2014 64% sweeps.","d1_sb":["IN: 2x Ethersworn Canonist, 1x Metallic Rebuke, 2x Relic of Progenitus","OUT: 2x Engineered Explosives, 1x Frogmite, 2x Nettlecyst","SB cards seen: Ethersworn Canonist (15x cast), Relic of Progenitus (14x cast), Metallic Rebuke (3x cast)"],"d2_sb":["IN: 2x Wear // Tear","OUT: 1x Archon of Cruelty, 1x Griselbrand"]},"4,5":{"d1":"Affinity","d2":"Izzet Prowess","d1_wins":100,"d2_wins":0,"avg_turns":11.0,"win_conditions":{"damage":249,"timeout":1},"sweeps":[40,10],"went_to_3":50,"g1_wins":[68,32],"comebacks":[17,10],"d1_top_casts":[{"card":"Memnite","count":50},{"card":"Springleaf Drum","count":45},{"card":"Mox Opal","count":41}],"d2_top_casts":[{"card":"Monastery Swiftspear","count":55},{"card":"Dragon's Rage Channeler","count":44},{"card":"Mishra's Bauble","count":42}],"d1_top_damage":[],"d2_top_damage":[],"d1_finishers":[{"card":"Ornithopter","count":13},{"card":"Memnite","count":7}],"d2_finishers":[{"card":"Monastery Swiftspear","count":9},{"card":"Slickshot Show-Off","count":4}],"insight":"Affinity is heavily favored (75-25). Fast tempo (11.0t). Affinity: 17 comeback wins. Competitive: 50% go to G3.","d1_sb":["IN: 1x Dispatch, 2x Relic of Progenitus","OUT: 2x Nettlecyst, 1x Thought Monitor","SB cards seen: Relic of Progenitus (15x cast), Dispatch (6x cast)","Post-board WR drops: G1 70% -> post 50% (-20pp)"],"d2_sb":["IN: 1x Meltdown","OUT: 1x Mishra's Bauble","SB cards seen: Meltdown (7x cast)","Post-board WR improves: G1 30% -> post 50% (+20pp)"]},"1,4":{"d1":"Jeskai Blink","d2":"Affinity","d1_wins":10,"d2_wins":90,"avg_turns":15.8,"win_conditions":{"timeout":21,"damage":219,"mill":1},"sweeps":[19,34],"went_to_3":47,"g1_wins":[46,54],"comebacks":[8,16],"d1_top_casts":[{"card":"Ephemerate","count":90},{"card":"Ragavan","count":68},{"card":"Lightning Bolt","count":44}],"d2_top_casts":[{"card":"Cranial Plating","count":64},{"card":"Ornithopter","count":54},{"card":"Springleaf Drum","count":53}],"d1_top_damage":[],"d2_top_damage":[],"d1_finishers":[{"card":"Spell Queller","count":3},{"card":"Subtlety","count":3}],"d2_finishers":[{"card":"Ornithopter","count":7},{"card":"Signal Pest","count":6}],"insight":"Affinity has the edge (62-38). Mid-paced (15.8t). Affinity: 16 comeback wins. Competitive: 47% go to G3.","d1_sb":["IN: 2x Wear // Tear","OUT: 2x Teferi, Time Raveler"],"d2_sb":["IN: 2x Dispatch","OUT: 2x Frogmite","SB cards seen: Dispatch (7x cast)"]},"3,4":{"d1":"Ruby Storm","d2":"Affinity","d1_wins":10,"d2_wins":90,"avg_turns":9.8,"win_conditions":{"damage":241,"mill":1},"sweeps":[13,45],"went_to_3":42,"g1_wins":[37,63],"comebacks":[4,16],"d1_top_casts":[{"card":"Manamorphose","count":104},{"card":"Reckless Impulse","count":103},{"card":"Desperate Ritual","count":97}],"d2_top_casts":[{"card":"Memnite","count":55},{"card":"Springleaf Drum","count":45},{"card":"Signal Pest","count":43}],"d1_top_damage":[{"card":"Grapeshot","count":370}],"d2_top_damage":[],"d1_finishers":[{"card":"Grapeshot","count":12},{"card":"Ral","count":4}],"d2_finishers":[{"card":"Ornithopter","count":14},{"card":"Memnite","count":9}],"insight":"Affinity is heavily favored (75-25). Blazing fast (9.8t). Affinity: 16 comeback wins. Competitive: 42% go to G3.","d1_sb":["Post-board WR drops: G1 50% -> post 37% (-13pp)"],"d2_sb":["IN: 2x Ethersworn Canonist, 1x Metallic Rebuke, 2x Relic of Progenitus","OUT: 2x Engineered Explosives, 1x Frogmite, 2x Nettlecyst","SB cards seen: Relic of Progenitus (16x cast), Ethersworn Canonist (9x cast), Metallic Rebuke (4x cast)","Post-board WR improves: G1 50% -> post 63% (+13pp)"]},"0,6":{"d1":"Boros Energy","d2":"Amulet Titan","d1_wins":50,"d2_wins":50,"avg_turns":12.0,"win_conditions":{"damage":229},"sweeps":[66,5],"went_to_3":29,"g1_wins":[83,17],"comebacks":[9,7],"d1_top_casts":[{"card":"Guide of Souls","count":62},{"card":"Phlage","count":59},{"card":"Galvanic Discharge","count":41}],"d2_top_casts":[{"card":"Amulet of Vigor","count":57},{"card":"Primeval Titan","count":49},{"card":"Arboreal Grazer","count":45}],"d1_top_damage":[{"card":"Galvanic Discharge","count":256}],"d2_top_damage":[],"d1_finishers":[{"card":"Guide of Souls","count":15},{"card":"Galvanic Discharge","count":7}],"d2_finishers":[{"card":"Arboreal Grazer","count":8},{"card":"Dryad of the Ilysian Grove","count":2}],"insight":"Boros Energy is heavily favored (85-15). Fast tempo (12.0t). Boros Energy dominates G1 (83%). Polarized \u2014 71% sweeps.","d1_sb":["IN: 1x Blood Moon, 2x Wrath of the Skies","OUT: 3x Galvanic Discharge","SB cards seen: Blood Moon (7x cast), Wrath of the Skies (6x cast)","Post-board WR drops: G1 85% -> post 57% (-28pp)"],"d2_sb":["IN: 1x Engineered Explosives, 2x Obstinate Baloth","OUT: 1x Azusa, Lost but Seeking, 1x Explore, 1x Primeval Titan","SB cards seen: Obstinate Baloth (20x cast), Engineered Explosives (7x cast)","Post-board WR improves: G1 15% -> post 43% (+28pp)"]},"2,6":{"d1":"Eldrazi Tron","d2":"Amulet Titan","d1_wins":50,"d2_wins":50,"avg_turns":15.3,"win_conditions":{"damage":234,"timeout":7},"sweeps":[48,11],"went_to_3":41,"g1_wins":[68,32],"comebacks":[14,7],"d1_top_casts":[{"card":"Chalice of the Void","count":58},{"card":"Expedition Map","count":56},{"card":"Thought-Knot Seer","count":55}],"d2_top_casts":[{"card":"Amulet of Vigor","count":51},{"card":"Primeval Titan","count":49},{"card":"Dryad of the Ilysian Grove","count":47}],"d1_top_damage":[],"d2_top_damage":[],"d1_finishers":[{"card":"Thought-Knot Seer","count":15},{"card":"Eldrazi Mimic","count":7}],"d2_finishers":[{"card":"Primeval Titan","count":8},{"card":"Arboreal Grazer","count":7}],"insight":"Eldrazi Tron is heavily favored (75-25). Mid-paced (15.3t). Competitive: 41% go to G3.","d1_sb":["IN: 2x Ratchet Bomb","OUT: 2x Kozilek's Command","SB cards seen: Ratchet Bomb (21x cast)"],"d2_sb":[]},"6,7":{"d1":"Amulet Titan","d2":"Goryo's Vengeance","d1_wins":70,"d2_wins":30,"avg_turns":16.9,"win_conditions":{"damage":213,"timeout":39},"sweeps":[33,13],"went_to_3":54,"g1_wins":[58,42],"comebacks":[13,9],"d1_top_casts":[{"card":"Primeval Titan","count":82},{"card":"Arboreal Grazer","count":63},{"card":"Amulet of Vigor","count":56}],"d2_top_casts":[{"card":"Thoughtseize","count":46},{"card":"Unmarked Grave","count":43},{"card":"Solitude","count":28}],"d1_top_damage":[],"d2_top_damage":[],"d1_finishers":[{"card":"Arboreal Grazer","count":17},{"card":"Primeval Titan","count":7}],"d2_finishers":[{"card":"Archon of Cruelty","count":12},{"card":"Solitude","count":2}],"insight":"Amulet Titan has the edge (62-38). Mid-paced (16.9t). Competitive: 54% go to G3.","d1_sb":["IN: 2x Endurance","OUT: 1x Arboreal Grazer, 1x Dryad of the Ilysian Grove","SB cards seen: Endurance (15x cast)"],"d2_sb":[]},"5,6":{"d1":"Izzet Prowess","d2":"Amulet Titan","d1_wins":30,"d2_wins":70,"avg_turns":11.2,"win_conditions":{"damage":241},"sweeps":[41,18],"went_to_3":41,"g1_wins":[59,41],"comebacks":[14,6],"d1_top_casts":[{"card":"Dragon's Rage Channeler","count":61},{"card":"Monastery Swiftspear","count":57},{"card":"Slickshot Show-Off","count":47}],"d2_top_casts":[{"card":"Amulet of Vigor","count":55},{"card":"Summoner's Pact","count":44},{"card":"Arboreal Grazer","count":42}],"d1_top_damage":[],"d2_top_damage":[],"d1_finishers":[{"card":"Monastery Swiftspear","count":17},{"card":"Slickshot Show-Off","count":11}],"d2_finishers":[{"card":"Arboreal Grazer","count":5},{"card":"Dryad of the Ilysian Grove","count":3}],"insight":"Izzet Prowess has the edge (67-33). Fast tempo (11.2t). Competitive: 41% go to G3.","d1_sb":["IN: 2x Consign to Memory","OUT: 2x Lightning Bolt","SB cards seen: Consign to Memory (10x cast)"],"d2_sb":["IN: 3x Endurance","OUT: 1x Azusa, Lost but Seeking, 1x Explore, 1x Primeval Titan","SB cards seen: Endurance (22x cast)"]},"1,6":{"d1":"Jeskai Blink","d2":"Amulet Titan","d1_wins":90,"d2_wins":10,"avg_turns":17.1,"win_conditions":{"damage":240,"timeout":16},"sweeps":[28,13],"went_to_3":59,"g1_wins":[52,48],"comebacks":[19,9],"d1_top_casts":[{"card":"Ephemerate","count":165},{"card":"Lightning Bolt","count":76},{"card":"Ragavan","count":54}],"d2_top_casts":[{"card":"Primeval Titan","count":82},{"card":"Amulet of Vigor","count":80},{"card":"Arboreal Grazer","count":67}],"d1_top_damage":[],"d2_top_damage":[],"d1_finishers":[{"card":"Ragavan","count":11},{"card":"Spell Queller","count":5}],"d2_finishers":[{"card":"Primeval Titan","count":8},{"card":"Arboreal Grazer","count":3}],"insight":"Jeskai Blink has the edge (62-38). Mid-paced (17.1t). Jeskai Blink: 19 comeback wins. Competitive: 59% go to G3.","d1_sb":["IN: 2x Flusterstorm, 2x Mystical Dispute","OUT: 2x Lightning Bolt, 2x Prismatic Ending","SB cards seen: Mystical Dispute (9x cast)"],"d2_sb":[]},"3,6":{"d1":"Ruby Storm","d2":"Amulet Titan","d1_wins":20,"d2_wins":80,"avg_turns":12.0,"win_conditions":{"damage":240,"mill":3,"timeout":1},"sweeps":[39,17],"went_to_3":44,"g1_wins":[63,37],"comebacks":[12,10],"d1_top_casts":[{"card":"Manamorphose","count":155},{"card":"Pyretic Ritual","count":139},{"card":"Reckless Impulse","count":133}],"d2_top_casts":[{"card":"Primeval Titan","count":55},{"card":"Amulet of Vigor","count":43},{"card":"Arboreal Grazer","count":42}],"d1_top_damage":[{"card":"Grapeshot","count":736}],"d2_top_damage":[],"d1_finishers":[{"card":"Grapeshot","count":27},{"card":"Ral","count":5}],"d2_finishers":[{"card":"Arboreal Grazer","count":7},{"card":"Dryad of the Ilysian Grove","count":5}],"insight":"Ruby Storm has the edge (65-35). Fast tempo (12.0t). Competitive: 44% go to G3.","d1_sb":[],"d2_sb":["IN: 2x Endurance","OUT: 1x Arboreal Grazer, 1x Dryad of the Ilysian Grove","SB cards seen: Endurance (5x cast)"]},"0,2":{"d1":"Boros Energy","d2":"Eldrazi Tron","d1_wins":60,"d2_wins":40,"avg_turns":12.6,"win_conditions":{"damage":230,"timeout":1},"sweeps":[66,3],"went_to_3":31,"g1_wins":[80,20],"comebacks":[14,2],"d1_top_casts":[{"card":"Guide of Souls","count":54},{"card":"Phlage","count":44},{"card":"Galvanic Discharge","count":39}],"d2_top_casts":[{"card":"Chalice of the Void","count":43},{"card":"Expedition Map","count":36},{"card":"Eldrazi Mimic","count":29}],"d1_top_damage":[{"card":"Galvanic Discharge","count":239}],"d2_top_damage":[],"d1_finishers":[{"card":"Phlage","count":10},{"card":"Ocelot Pride","count":7}],"d2_finishers":[{"card":"Thought-Knot Seer","count":5},{"card":"Matter Reshaper","count":2}],"insight":"Boros Energy crushes this at 92-8. Boros Energy dominates G1 (80%). Polarized \u2014 69% sweeps.","d1_sb":["IN: 2x Wear // Tear","OUT: 2x Galvanic Discharge","Post-board WR drops: G1 85% -> post 70% (-15pp)"],"d2_sb":["IN: 3x Ratchet Bomb, 2x Trinisphere","OUT: 1x Endbringer, 2x Kozilek's Command, 1x Ugin, the Spirit Dragon","SB cards seen: Ratchet Bomb (12x cast), Trinisphere (3x cast)","Post-board WR improves: G1 15% -> post 30% (+15pp)"]},"0,7":{"d1":"Boros Energy","d2":"Goryo's Vengeance","d1_wins":100,"d2_wins":0,"avg_turns":10.6,"win_conditions":{"damage":221,"timeout":2},"sweeps":[76,1],"went_to_3":23,"g1_wins":[87,13],"comebacks":[11,1],"d1_top_casts":[{"card":"Guide of Souls","count":55},{"card":"Ocelot Pride","count":44},{"card":"Ragavan","count":42}],"d2_top_casts":[{"card":"Unmarked Grave","count":37},{"card":"Thoughtseize","count":35},{"card":"Goryo's Vengeance","count":22}],"d1_top_damage":[{"card":"Galvanic Discharge","count":205}],"d2_top_damage":[],"d1_finishers":[{"card":"Ragavan","count":10},{"card":"Guide of Souls","count":9}],"d2_finishers":[{"card":"Archon of Cruelty","count":7},{"card":"Solitude","count":2}],"insight":"Boros Energy crushes this at 97-3. Fast tempo (10.6t). Boros Energy dominates G1 (87%). Polarized \u2014 77% sweeps.","d1_sb":["IN: 2x Rest in Peace","OUT: 2x Galvanic Discharge","SB cards seen: Rest in Peace (6x cast)","Post-board WR drops: G1 85% -> post 74% (-11pp)"],"d2_sb":["Post-board WR improves: G1 15% -> post 26% (+11pp)"]},"0,5":{"d1":"Boros Energy","d2":"Izzet Prowess","d1_wins":70,"d2_wins":30,"avg_turns":9.9,"win_conditions":{"damage":240},"sweeps":[56,4],"went_to_3":40,"g1_wins":[78,22],"comebacks":[13,5],"d1_top_casts":[{"card":"Guide of Souls","count":48},{"card":"Ragavan","count":45},{"card":"Ocelot Pride","count":41}],"d2_top_casts":[{"card":"Monastery Swiftspear","count":56},{"card":"Dragon's Rage Channeler","count":53},{"card":"Mishra's Bauble","count":45}],"d1_top_damage":[{"card":"Galvanic Discharge","count":192}],"d2_top_damage":[],"d1_finishers":[{"card":"Galvanic Discharge","count":8},{"card":"Ragavan","count":7}],"d2_finishers":[{"card":"Slickshot Show-Off","count":9},{"card":"Monastery Swiftspear","count":8}],"insight":"Boros Energy is heavily favored (86-14). Blazing fast (9.9t). Boros Energy dominates G1 (78%). Polarized \u2014 60% sweeps.","d1_sb":["IN: 2x Rest in Peace","OUT: 2x Thraben Charm","SB cards seen: Rest in Peace (6x cast)"],"d2_sb":["IN: 1x Pick Your Poison","OUT: 1x Mishra's Bauble","SB cards seen: Pick Your Poison (1x cast)"]},"0,1":{"d1":"Boros Energy","d2":"Jeskai Blink","d1_wins":40,"d2_wins":60,"avg_turns":12.2,"win_conditions":{"damage":212,"timeout":4},"sweeps":[80,2],"went_to_3":18,"g1_wins":[91,9],"comebacks":[7,0],"d1_top_casts":[{"card":"Guide of Souls","count":54},{"card":"Phlage","count":45},{"card":"Ragavan","count":44}],"d2_top_casts":[{"card":"Ragavan","count":51},{"card":"Lightning Bolt","count":51},{"card":"Ephemerate","count":44}],"d1_top_damage":[{"card":"Galvanic Discharge","count":172}],"d2_top_damage":[],"d1_finishers":[{"card":"Phlage","count":14},{"card":"Guide of Souls","count":6}],"d2_finishers":[{"card":"Spell Queller","count":3},{"card":"Solitude","count":1}],"insight":"Boros Energy crushes this at 98-2. Boros Energy dominates G1 (91%). Polarized \u2014 82% sweeps.","d1_sb":["IN: 1x Blood Moon, 2x Wrath of the Skies","OUT: 2x Thraben Charm","SB cards seen: Blood Moon (6x cast), Wrath of the Skies (5x cast)","Post-board WR drops: G1 100% -> post 69% (-31pp)"],"d2_sb":["IN: 2x Supreme Verdict","OUT: 2x Teferi, Time Raveler","SB cards seen: Supreme Verdict (6x cast)","Post-board WR improves: G1 0% -> post 31% (+31pp)"]},"0,3":{"d1":"Boros Energy","d2":"Ruby Storm","d1_wins":90,"d2_wins":10,"avg_turns":8.9,"win_conditions":{"damage":245},"sweeps":[41,14],"went_to_3":45,"g1_wins":[61,39],"comebacks":[16,6],"d1_top_casts":[{"card":"Guide of Souls","count":46},{"card":"Ocelot Pride","count":45},{"card":"Ragavan","count":41}],"d2_top_casts":[{"card":"Manamorphose","count":95},{"card":"Desperate Ritual","count":81},{"card":"Reckless Impulse","count":80}],"d1_top_damage":[{"card":"Galvanic Discharge","count":175}],"d2_top_damage":[{"card":"Grapeshot","count":381}],"d1_finishers":[{"card":"Guide of Souls","count":12},{"card":"Galvanic Discharge","count":5}],"d2_finishers":[{"card":"Grapeshot","count":19},{"card":"Ral","count":1}],"insight":"Boros Energy is heavily favored (71-29). Blazing fast (8.9t). Boros Energy: 16 comeback wins. Competitive: 45% go to G3.","d1_sb":["IN: 2x Rest in Peace","OUT: 2x Galvanic Discharge","SB cards seen: Rest in Peace (5x cast)","Post-board WR improves: G1 50% -> post 68% (+18pp)"],"d2_sb":["Post-board WR drops: G1 50% -> post 32% (-18pp)"]},"2,7":{"d1":"Eldrazi Tron","d2":"Goryo's Vengeance","d1_wins":80,"d2_wins":20,"avg_turns":16.5,"win_conditions":{"damage":217,"timeout":34},"sweeps":[41,8],"went_to_3":51,"g1_wins":[63,37],"comebacks":[19,1],"d1_top_casts":[{"card":"Expedition Map","count":47},{"card":"Chalice of the Void","count":46},{"card":"Thought-Knot Seer","count":38}],"d2_top_casts":[{"card":"Unmarked Grave","count":47},{"card":"Thoughtseize","count":41},{"card":"Persist","count":34}],"d1_top_damage":[],"d2_top_damage":[],"d1_finishers":[{"card":"Matter Reshaper","count":9},{"card":"Thought-Knot Seer","count":8}],"d2_finishers":[{"card":"Archon of Cruelty","count":9},{"card":"Solitude","count":3}],"insight":"Eldrazi Tron is heavily favored (81-19). Mid-paced (16.5t). Eldrazi Tron: 19 comeback wins. Competitive: 51% go to G3.","d1_sb":["IN: 4x Relic of Progenitus","OUT: 1x All Is Dust, 1x Endbringer, 2x Kozilek's Command","SB cards seen: Relic of Progenitus (28x cast)","Post-board WR improves: G1 60% -> post 74% (+14pp)"],"d2_sb":["Post-board WR drops: G1 40% -> post 26% (-14pp)"]},"2,5":{"d1":"Eldrazi Tron","d2":"Izzet Prowess","d1_wins":100,"d2_wins":0,"avg_turns":12.1,"win_conditions":{"damage":251},"sweeps":[24,25],"went_to_3":51,"g1_wins":[48,52],"comebacks":[10,10],"d1_top_casts":[{"card":"Chalice of the Void","count":58},{"card":"Expedition Map","count":48},{"card":"Matter Reshaper","count":39}],"d2_top_casts":[{"card":"Monastery Swiftspear","count":67},{"card":"Slickshot Show-Off","count":51},{"card":"Dragon's Rage Channeler","count":49}],"d1_top_damage":[],"d2_top_damage":[],"d1_finishers":[{"card":"Thought-Knot Seer","count":10},{"card":"Matter Reshaper","count":7}],"d2_finishers":[{"card":"Slickshot Show-Off","count":14},{"card":"Monastery Swiftspear","count":8}],"insight":"Coin-flip at 48-52. Competitive: 51% go to G3.","d1_sb":["IN: 5x Relic of Progenitus","OUT: 1x Endbringer, 2x Kozilek's Command, 1x Ugin, the Spirit Dragon","SB cards seen: Relic of Progenitus (24x cast)","Post-board WR drops: G1 45% -> post 35% (-10pp)"],"d2_sb":["IN: 2x Consign to Memory, 1x Meltdown","OUT: 3x Lightning Bolt","SB cards seen: Consign to Memory (15x cast), Meltdown (6x cast)","Post-board WR improves: G1 55% -> post 65% (+10pp)"]},"1,2":{"d1":"Jeskai Blink","d2":"Eldrazi Tron","d1_wins":50,"d2_wins":50,"avg_turns":17.2,"win_conditions":{"damage":221,"timeout":29},"sweeps":[19,26],"went_to_3":55,"g1_wins":[49,51],"comebacks":[10,19],"d1_top_casts":[{"card":"Ephemerate","count":219},{"card":"Lightning Bolt","count":66},{"card":"Ragavan","count":57}],"d2_top_casts":[{"card":"Expedition Map","count":64},{"card":"Chalice of the Void","count":59},{"card":"Reality Smasher","count":55}],"d1_top_damage":[],"d2_top_damage":[{"card":"Ugin","count":24}],"d1_finishers":[{"card":"Ragavan","count":5},{"card":"Quantum Riddler","count":4}],"d2_finishers":[{"card":"Reality Smasher","count":14},{"card":"Thought-Knot Seer","count":7}],"insight":"Eldrazi Tron has the edge (60-40). Mid-paced (17.2t). Eldrazi Tron: 19 comeback wins. Competitive: 55% go to G3.","d1_sb":["IN: 2x Flusterstorm, 2x Wear // Tear","OUT: 2x Lightning Bolt, 2x Prismatic Ending","SB cards seen: Flusterstorm (4x cast)","Post-board WR improves: G1 35% -> post 52% (+17pp)"],"d2_sb":["IN: 2x Ratchet Bomb, 2x Spatial Contortion","OUT: 2x Chalice of the Void, 2x Kozilek's Command","SB cards seen: Spatial Contortion (15x cast), Ratchet Bomb (13x cast)","Post-board WR drops: G1 65% -> post 48% (-17pp)"]},"2,3":{"d1":"Eldrazi Tron","d2":"Ruby Storm","d1_wins":70,"d2_wins":30,"avg_turns":11.9,"win_conditions":{"damage":254,"mill":2},"sweeps":[30,14],"went_to_3":56,"g1_wins":[56,44],"comebacks":[15,9],"d1_top_casts":[{"card":"Chalice of the Void","count":49},{"card":"Expedition Map","count":42},{"card":"Eldrazi Mimic","count":37}],"d2_top_casts":[{"card":"Pyretic Ritual","count":159},{"card":"Reckless Impulse","count":133},{"card":"Desperate Ritual","count":128}],"d1_top_damage":[],"d2_top_damage":[{"card":"Grapeshot","count":476}],"d1_finishers":[{"card":"Matter Reshaper","count":12},{"card":"Eldrazi Mimic","count":7}],"d2_finishers":[{"card":"Grapeshot","count":17},{"card":"Goblin Token","count":3}],"insight":"Eldrazi Tron has the edge (62-38). Fast tempo (11.9t). Eldrazi Tron: 15 comeback wins. Competitive: 56% go to G3.","d1_sb":["IN: 4x Relic of Progenitus","OUT: 1x All Is Dust, 1x Endbringer, 2x Kozilek's Command","SB cards seen: Relic of Progenitus (20x cast)"],"d2_sb":[]},"5,7":{"d1":"Izzet Prowess","d2":"Goryo's Vengeance","d1_wins":50,"d2_wins":50,"avg_turns":10.6,"win_conditions":{"damage":236,"timeout":5},"sweeps":[47,12],"went_to_3":41,"g1_wins":[68,32],"comebacks":[15,7],"d1_top_casts":[{"card":"Monastery Swiftspear","count":44},{"card":"Mishra's Bauble","count":43},{"card":"Dragon's Rage Channeler","count":41}],"d2_top_casts":[{"card":"Unmarked Grave","count":41},{"card":"Thoughtseize","count":38},{"card":"Goryo's Vengeance","count":22}],"d1_top_damage":[],"d2_top_damage":[],"d1_finishers":[{"card":"Monastery Swiftspear","count":15},{"card":"Dragon's Rage Channeler","count":9}],"d2_finishers":[{"card":"Archon of Cruelty","count":5},{"card":"Solitude","count":2}],"insight":"Izzet Prowess is heavily favored (76-24). Fast tempo (10.6t). Izzet Prowess: 15 comeback wins. Competitive: 41% go to G3.","d1_sb":["IN: 2x Consign to Memory, 2x Surgical Extraction","OUT: 4x Lightning Bolt","SB cards seen: Consign to Memory (9x cast)","Post-board WR improves: G1 65% -> post 76% (+11pp)"],"d2_sb":["IN: 2x Leyline of the Void","OUT: 1x Archon of Cruelty, 1x Griselbrand","SB cards seen: Leyline of the Void (7x cast)","Post-board WR drops: G1 35% -> post 24% (-11pp)"]},"1,7":{"d1":"Jeskai Blink","d2":"Goryo's Vengeance","d1_wins":70,"d2_wins":30,"avg_turns":16.1,"win_conditions":{"damage":206,"timeout":24},"sweeps":[61,6],"went_to_3":33,"g1_wins":[82,18],"comebacks":[10,4],"d1_top_casts":[{"card":"Ephemerate","count":99},{"card":"Lightning Bolt","count":78},{"card":"Ragavan","count":61}],"d2_top_casts":[{"card":"Thoughtseize","count":53},{"card":"Unmarked Grave","count":49},{"card":"Solitude","count":35}],"d1_top_damage":[],"d2_top_damage":[],"d1_finishers":[{"card":"Ragavan","count":20},{"card":"Snapcaster Mage","count":6}],"d2_finishers":[{"card":"Archon of Cruelty","count":4},{"card":"Solitude","count":3}],"insight":"Jeskai Blink is heavily favored (88-12). Mid-paced (16.1t). Jeskai Blink dominates G1 (82%). Polarized \u2014 67% sweeps.","d1_sb":["IN: 2x Flusterstorm, 2x Rest in Peace, 1x Tormod's Crypt","OUT: 2x Lightning Bolt, 2x Prismatic Ending","SB cards seen: Rest in Peace (14x cast), Flusterstorm (7x cast), Tormod's Crypt (6x cast)"],"d2_sb":[]},"3,7":{"d1":"Ruby Storm","d2":"Goryo's Vengeance","d1_wins":50,"d2_wins":50,"avg_turns":12.8,"win_conditions":{"damage":235,"timeout":7},"sweeps":[48,10],"went_to_3":42,"g1_wins":[67,33],"comebacks":[19,7],"d1_top_casts":[{"card":"Desperate Ritual","count":102},{"card":"Manamorphose","count":99},{"card":"Reckless Impulse","count":90}],"d2_top_casts":[{"card":"Thoughtseize","count":41},{"card":"Unmarked Grave","count":38},{"card":"Persist","count":17}],"d1_top_damage":[{"card":"Grapeshot","count":458}],"d2_top_damage":[],"d1_finishers":[{"card":"Grapeshot","count":26},{"card":"Ral","count":5}],"d2_finishers":[{"card":"Archon of Cruelty","count":11},{"card":"Solitude","count":3}],"insight":"Ruby Storm is heavily favored (79-21). Ruby Storm: 19 comeback wins. Competitive: 42% go to G3.","d1_sb":["Post-board WR improves: G1 80% -> post 96% (+16pp)"],"d2_sb":["IN: 2x Leyline of the Void","OUT: 1x Persist, 1x Unmarked Grave","SB cards seen: Leyline of the Void (2x cast)","Post-board WR drops: G1 20% -> post 4% (-16pp)"]},"1,5":{"d1":"Jeskai Blink","d2":"Izzet Prowess","d1_wins":50,"d2_wins":50,"avg_turns":12.8,"win_conditions":{"damage":248,"timeout":3},"sweeps":[16,32],"went_to_3":52,"g1_wins":[38,62],"comebacks":[13,11],"d1_top_casts":[{"card":"Ephemerate","count":57},{"card":"Lightning Bolt","count":51},{"card":"Ragavan","count":43}],"d2_top_casts":[{"card":"Slickshot Show-Off","count":57},{"card":"Dragon's Rage Channeler","count":54},{"card":"Lightning Bolt","count":45}],"d1_top_damage":[],"d2_top_damage":[],"d1_finishers":[{"card":"Subtlety","count":2},{"card":"Spell Queller","count":2}],"d2_finishers":[{"card":"Slickshot Show-Off","count":13},{"card":"Monastery Swiftspear","count":10}],"insight":"Izzet Prowess has the edge (60-40). Competitive: 52% go to G3.","d1_sb":["IN: 2x Rest in Peace","OUT: 2x Teferi, Time Raveler","SB cards seen: Rest in Peace (13x cast)","Post-board WR drops: G1 65% -> post 45% (-20pp)"],"d2_sb":["Post-board WR improves: G1 35% -> post 55% (+20pp)"]},"3,5":{"d1":"Ruby Storm","d2":"Izzet Prowess","d1_wins":50,"d2_wins":50,"avg_turns":8.6,"win_conditions":{"damage":244},"sweeps":[16,40],"went_to_3":44,"g1_wins":[41,59],"comebacks":[8,15],"d1_top_casts":[{"card":"Desperate Ritual","count":77},{"card":"Manamorphose","count":67},{"card":"Wrenn's Resolve","count":59}],"d2_top_casts":[{"card":"Monastery Swiftspear","count":55},{"card":"Slickshot Show-Off","count":46},{"card":"Dragon's Rage Channeler","count":40}],"d1_top_damage":[{"card":"Grapeshot","count":284}],"d2_top_damage":[],"d1_finishers":[{"card":"Grapeshot","count":13},{"card":"Ral","count":3}],"d2_finishers":[{"card":"Monastery Swiftspear","count":22},{"card":"Slickshot Show-Off","count":7}],"insight":"Izzet Prowess has the edge (66-34). Blazing fast (8.6t). Izzet Prowess: 15 comeback wins. Competitive: 44% go to G3.","d1_sb":["Post-board WR improves: G1 35% -> post 47% (+12pp)"],"d2_sb":["IN: 2x Consign to Memory, 2x Surgical Extraction","OUT: 4x Lightning Bolt","SB cards seen: Consign to Memory (9x cast)","Post-board WR drops: G1 65% -> post 53% (-12pp)"]},"1,3":{"d1":"Jeskai Blink","d2":"Ruby Storm","d1_wins":60,"d2_wins":40,"avg_turns":11.8,"win_conditions":{"damage":250},"sweeps":[9,37],"went_to_3":54,"g1_wins":[34,66],"comebacks":[9,15],"d1_top_casts":[{"card":"Ephemerate","count":51},{"card":"Lightning Bolt","count":47},{"card":"Ragavan","count":34}],"d2_top_casts":[{"card":"Manamorphose","count":124},{"card":"Ruby Medallion","count":105},{"card":"Pyretic Ritual","count":103}],"d1_top_damage":[],"d2_top_damage":[{"card":"Grapeshot","count":449}],"d1_finishers":[{"card":"Ragavan","count":6},{"card":"Quantum Riddler","count":4}],"d2_finishers":[{"card":"Grapeshot","count":29},{"card":"Goblin Token","count":3}],"insight":"Ruby Storm is heavily favored (72-28). Fast tempo (11.8t). Ruby Storm: 15 comeback wins. Competitive: 54% go to G3.","d1_sb":["IN: 2x Flusterstorm, 2x Rest in Peace, 1x Tormod's Crypt","OUT: 2x Lightning Bolt, 2x Prismatic Ending","SB cards seen: Rest in Peace (19x cast), Tormod's Crypt (7x cast), Flusterstorm (5x cast)","Post-board WR improves: G1 20% -> post 33% (+13pp)"],"d2_sb":["Post-board WR drops: G1 80% -> post 67% (-13pp)"]}},"deck_cards":[{"deck":"Boros Energy","idx":0,"mvp_casts":[{"card":"Guide of Souls","count":662},{"card":"Ragavan","count":498},{"card":"Ocelot Pride","count":468},{"card":"Phlage","count":468},{"card":"Galvanic Discharge","count":405}],"mvp_damage":[{"card":"Galvanic Discharge","count":2297}],"finishers":[{"card":"Guide of Souls","count":89,"desc":"Primary combat closer in multi-creature attacks (T10)"},{"card":"Phlage","count":88,"desc":"ETB drain finisher when opponent is low (T12)"},{"card":"Galvanic Discharge","count":60,"desc":"Direct damage to face as burn finisher (T11)"},{"card":"Ocelot Pride","count":52,"desc":"Primary combat closer in multi-creature attacks (T11)"}],"summary":"Apex predator: 69.8% T1/T2-weighted WR (41.3% of meta). Energy aggro: Phlage drain + Galvanic Discharge reach. T1/T2-weighted WR -12.7pp vs flat \u2014 the top decks punish it hard. Best: 98-2 vs Jeskai Blink. Worst: 33-67 vs Domain Zoo."},{"deck":"Jeskai Blink","idx":1,"mvp_casts":[{"card":"Ephemerate","count":1468},{"card":"Lightning Bolt","count":750},{"card":"Ragavan","count":679},{"card":"Solitude","count":479},{"card":"Quantum Riddler","count":375}],"mvp_damage":[],"finishers":[{"card":"Ragavan","count":63,"desc":"Primary combat closer in multi-creature attacks (T15)"},{"card":"Subtlety","count":31,"desc":"Primary combat closer in multi-creature attacks (T17)"},{"card":"Quantum Riddler","count":30,"desc":"Primary combat closer in multi-creature attacks (T18)"},{"card":"Spell Queller","count":18,"desc":"Primary combat closer in multi-creature attacks (T15)"}],"summary":"Struggling: 20.4% T1/T2-weighted (4.3% share). Ephemerate value-tempo with Solitude + Ragavan. T1/T2-weighted WR -20.4pp vs flat \u2014 the top decks punish it hard. Best: 88-12 vs Goryo's Vengeance. Worst: 2-98 vs Boros Energy."},{"deck":"Eldrazi Tron","idx":2,"mvp_casts":[{"card":"Chalice of the Void","count":664},{"card":"Expedition Map","count":612},{"card":"Eldrazi Mimic","count":512},{"card":"Thought-Knot Seer","count":477},{"card":"Matter Reshaper","count":466}],"mvp_damage":[{"card":"Ugin","count":66}],"finishers":[{"card":"Thought-Knot Seer","count":100,"desc":"Primary combat closer in multi-creature attacks (T14)"},{"card":"Reality Smasher","count":62,"desc":"Tramples over blockers, hard to interact with (T15)"},{"card":"Matter Reshaper","count":55,"desc":"Primary combat closer in multi-creature attacks (T14)"},{"card":"Eldrazi Mimic","count":53,"desc":"Primary combat closer in multi-creature attacks (T14)"}],"summary":"Struggling: 28.3% T1/T2-weighted (4.3% share). Big-mana Eldrazi via Tron lands. T1/T2-weighted WR -24.2pp vs flat \u2014 the top decks punish it hard. Best: 81-19 vs Goryo's Vengeance. Worst: 8-92 vs Boros Energy."},{"deck":"Ruby Storm","idx":3,"mvp_casts":[{"card":"Manamorphose","count":1292},{"card":"Desperate Ritual","count":1181},{"card":"Pyretic Ritual","count":1149},{"card":"Reckless Impulse","count":1074},{"card":"Wrenn's Resolve","count":962}],"mvp_damage":[{"card":"Grapeshot","count":5125}],"finishers":[{"card":"Grapeshot","count":257,"desc":"Lethal storm (avg 10 copies, T10)"},{"card":"Ral","count":26,"desc":"Primary combat closer in multi-creature attacks (T10)"},{"card":"Goblin Token","count":15,"desc":"Primary combat closer in multi-creature attacks (T13)"}],"summary":"Viable: 32.3% T1/T2-weighted (6.5% share). Ritual chains into lethal Grapeshot. T1/T2-weighted WR -17.1pp vs flat \u2014 the top decks punish it hard. Best: 79-21 vs Goryo's Vengeance. Worst: 18-82 vs Dimir Midrange."},{"deck":"Affinity","idx":4,"mvp_casts":[{"card":"Cranial Plating","count":587},{"card":"Memnite","count":583},{"card":"Springleaf Drum","count":578},{"card":"Ornithopter","count":578},{"card":"Signal Pest","count":537}],"mvp_damage":[],"finishers":[{"card":"Ornithopter","count":116,"desc":"Carries Cranial Plating for lethal in the air (T11)"},{"card":"Signal Pest","count":57,"desc":"Primary combat closer in multi-creature attacks (T11)"},{"card":"Memnite","count":44,"desc":"Primary combat closer in multi-creature attacks (T11)"},{"card":"Germ Token","count":34,"desc":"Primary combat closer in multi-creature attacks (T12)"}],"summary":"Strong contender: 49.4% T1/T2-weighted (23.9% share). Artifact aggro: free creatures + Cranial Plating. T1/T2-weighted WR -14.0pp vs flat \u2014 the top decks punish it hard. Best: 82-18 vs Goryo's Vengeance. Worst: 34-66 vs Domain Zoo."},{"deck":"Izzet Prowess","idx":5,"mvp_casts":[{"card":"Monastery Swiftspear","count":646},{"card":"Dragon's Rage Channeler","count":626},{"card":"Slickshot Show-Off","count":548},{"card":"Mishra's Bauble","count":484},{"card":"Lightning Bolt","count":436}],"mvp_damage":[],"finishers":[{"card":"Monastery Swiftspear","count":141,"desc":"Leads lethal Prowess attack pumped by cantrips (T9)"},{"card":"Slickshot Show-Off","count":94,"desc":"Leads lethal Prowess attack pumped by cantrips (T11)"},{"card":"Dragon's Rage Channeler","count":69,"desc":"Leads lethal Prowess attack pumped by cantrips (T10)"},{"card":"Creature Token","count":10,"desc":"Delivers the killing blow in combat (T13)"}],"summary":"Struggling: 27.6% T1/T2-weighted (8.7% share). Cantrip-pumped Prowess + Bolt reach. T1/T2-weighted WR -24.0pp vs flat \u2014 the top decks punish it hard. Best: 76-24 vs Goryo's Vengeance. Worst: 14-86 vs Boros Energy."},{"deck":"Amulet Titan","idx":6,"mvp_casts":[{"card":"Primeval Titan","count":795},{"card":"Amulet of Vigor","count":701},{"card":"Dryad of the Ilysian Grove","count":629},{"card":"Arboreal Grazer","count":624},{"card":"Summoner's Pact","count":532}],"mvp_damage":[],"finishers":[{"card":"Primeval Titan","count":90,"desc":"Massive body + land tutoring closes games (T16)"},{"card":"Arboreal Grazer","count":68,"desc":"Primary combat closer in multi-creature attacks (T14)"},{"card":"Dryad of the Ilysian Grove","count":47,"desc":"Primary combat closer in multi-creature attacks (T15)"},{"card":"Azusa","count":10,"desc":"Delivers the killing blow in combat (T14)"}],"summary":"Struggling: 21.9% T1/T2-weighted (0% share). Ramp into Primeval Titan via Amulet + bounce lands. T1/T2-weighted WR -13.2pp vs flat \u2014 the top decks punish it hard. Best: 62-38 vs Goryo's Vengeance. Worst: 2-98 vs Domain Zoo."},{"deck":"Goryo's Vengeance","idx":7,"mvp_casts":[{"card":"Thoughtseize","count":561},{"card":"Unmarked Grave","count":541},{"card":"Solitude","count":322},{"card":"Goryo's Vengeance","count":310},{"card":"Persist","count":275}],"mvp_damage":[],"finishers":[{"card":"Archon of Cruelty","count":90,"desc":"Solo reanimated beater, often the only attacker needed (T13)"},{"card":"Solitude","count":31,"desc":"Primary combat closer in multi-creature attacks (T22)"},{"card":"Griselbrand","count":4,"desc":"Delivers the killing blow in combat (T20)"}],"summary":"Struggling: 11.8% T1/T2-weighted (0% share). Reanimate Archon via Goryo's. Best: 38-62 vs Amulet Titan. Worst: 3-97 vs Boros Energy."}],"overall":[{"idx":0,"deck":"Boros Energy","win_rate":61.4,"wins":430,"games":700,"weighted_wr":57.8,"share":21.1,"delta":-3.6,"meta_wr":57.8},{"idx":1,"deck":"Jeskai Blink","win_rate":55.7,"wins":390,"games":700,"weighted_wr":55.0,"share":9.2,"delta":-0.7,"meta_wr":55.0},{"idx":2,"deck":"Eldrazi Tron","win_rate":57.1,"wins":400,"games":700,"weighted_wr":50.4,"share":7.1,"delta":-6.7,"meta_wr":50.4},{"idx":3,"deck":"Ruby Storm","win_rate":30.0,"wins":210,"games":700,"weighted_wr":24.2,"share":6.2,"delta":-5.8,"meta_wr":24.2},{"idx":4,"deck":"Affinity","win_rate":85.7,"wins":600,"games":700,"weighted_wr":85.1,"share":6.1,"delta":-0.6,"meta_wr":85.1},{"idx":5,"deck":"Izzet Prowess","win_rate":30.0,"wins":210,"games":700,"weighted_wr":29.7,"share":4.9,"delta":-0.3,"meta_wr":29.7},{"idx":6,"deck":"Amulet Titan","win_rate":50.0,"wins":350,"games":700,"weighted_wr":46.6,"share":4.1,"delta":-3.4,"meta_wr":46.6},{"idx":7,"deck":"Goryo's Vengeance","win_rate":30.0,"wins":210,"games":700,"weighted_wr":21.8,"share":3.6,"delta":-8.2,"meta_wr":21.8}],"meta_shares":{"Boros Energy":21.1,"Jeskai Blink":9.2,"Eldrazi Tron":7.1,"Ruby Storm":6.2,"Affinity":6.1,"Izzet Prowess":4.9,"Amulet Titan":4.1,"Goryo's Vengeance":3.6,"Living End":3.6,"Domain Zoo":2.9,"Dimir Midrange":2.8,"4c Omnath":3.5,"4/5c Control":3.5,"Azorius Control":2.5}};
+const ARCH = {"4/5c Control": "Control", "4c Omnath": "Midrange", "Affinity": "Aggro", "Amulet Titan": "Combo", "Boros Energy": "Aggro", "Dimir Midrange": "Midrange", "Domain Zoo": "Aggro", "Eldrazi Tron": "Ramp", "Goryo's Vengeance": "Combo", "Izzet Prowess": "Aggro", "Jeskai Blink": "Midrange", "Living End": "Combo", "Ruby Storm": "Combo", "Azorius Control": "Control", "Pinnacle Affinity": "Aggro"};
+const N = D.matches_per_pair;
+
+// Build lookup maps
+const decks = D.decks;
+const wins = D.wins; // wins[i][j] = wins for deck i vs deck j
+const MC = D.matchup_cards; // keyed "i,j" where i < j
+const DC = {}; D.deck_cards.forEach(d => DC[d.idx] = d);
+const OV = {}; D.overall.forEach(o => OV[o.idx] = o);
+const MS = D.meta_shares;
+
+// Flat and weighted WR
+const A = {}, W = {};
+decks.forEach((d, i) => {
+  const o = OV[i];
+  if (o) { A[i] = o.win_rate; W[i] = o.weighted_wr || o.win_rate; }
+});
+
+let sorted = [...decks.keys()];
+let selCell = null, selDeck = null, hlDeck = null, archFilt = '', useWeighted = true, filt = '';
+
+// Populate highlight dropdown
+const hlSel = document.getElementById('hl');
+decks.forEach((d, i) => { const opt = document.createElement('option'); opt.value = i; opt.textContent = d; hlSel.appendChild(opt); });
+
+function getWR(i) { return useWeighted ? (W[i] || A[i]) : A[i]; }
+function getCT() { return useWeighted ? [65, 48, 33] : [65, 50, 35]; }
+function tierOf(w) { const c = getCT(); return w >= c[0] ? ['S', '#4ade80'] : w >= c[1] ? ['A', '#60a5fa'] : w >= c[2] ? ['B', '#d97706'] : ['C', '#f87171']; }
+function tierTag(w) { const c = getCT(); return w >= c[0] ? 'T1' : w >= c[1] ? 'T2' : w >= c[2] ? 'T3' : 'T4'; }
+function wc(w) {
+  if (w <= 25) return `hsl(0,55%,${18+w*.3}%)`;
+  if (w <= 40) return `hsl(${(w-25)*1.6},45%,25%)`;
+  if (w <= 50) return `hsl(${24+(w-40)*3.6},35%,24%)`;
+  if (w <= 65) return `hsl(${60+(w-50)*5.3},45%,24%)`;
+  return `hsl(140,50%,${24+(w-65)*.4}%)`;
+}
+function tc(w) { return w < 30 ? '#f87171' : w > 65 ? '#4ade80' : '#e2e8f0'; }
+function muc(w) { return w >= 70 ? '#4ade80' : w >= 55 ? '#60a5fa' : w >= 45 ? '#d97706' : w >= 30 ? '#f87171' : '#ef4444'; }
+function wr(i, j) { return wins[i][j] / N * 100; }
+
+function closeDet() { document.getElementById('det').classList.remove('show'); selCell = null; selDeck = null; render(); }
+
+function sort() {
+  const m = document.getElementById('srt').value;
+  if (m === 'az') sorted = [...decks.keys()].sort((a,b) => decks[a].localeCompare(decks[b]));
+  else if (m === 'fd') sorted = [...decks.keys()].sort((a,b) => A[b]-A[a]);
+  else sorted = [...decks.keys()].sort((a,b) => getWR(b)-getWR(a));
+}
+
+function pills(cards, cls) {
+  if (!cards || !cards.length) return '';
+  return cards.map(c => `<span class="pill ${cls}">${c.card} ×${c.count}</span>`).join('');
+}
+
+function sbLines(lines) {
+  if (!lines || !lines.length) return '<div style="font-size:10px;color:var(--tx3)">No changes</div>';
+  return lines.map(l => {
+    if (l.startsWith('IN:')) return `<div class="sb-line sb-in">▲ ${l}</div>`;
+    if (l.startsWith('OUT:')) return `<div class="sb-line sb-out">▼ ${l}</div>`;
+    if (l.startsWith('SB cards seen:')) return `<div class="sb-line sb-cast">✓ ${l}</div>`;
+    if (l.includes('improves')) return `<div class="sb-line sb-delta-up">↑ ${l}</div>`;
+    if (l.includes('drops')) return `<div class="sb-line sb-delta-dn">↓ ${l}</div>`;
+    return `<div class="sb-line" style="color:var(--tx2)">${l}</div>`;
+  }).join('');
+}
+
+function getMC(i, j) {
+  const ki = Math.min(i,j), kj = Math.max(i,j);
+  const p = MC[`${ki},${kj}`];
+  if (!p) return null;
+  if (i <= j) return p;
+  // Flip perspective
+  return {
+    ...p, d1: p.d2, d2: p.d1,
+    d1_wins: p.d2_wins, d2_wins: p.d1_wins,
+    sweeps: [p.sweeps[1], p.sweeps[0]],
+    went_to_3: p.went_to_3,
+    g1_wins: [p.g1_wins[1], p.g1_wins[0]],
+    comebacks: [p.comebacks[1], p.comebacks[0]],
+    d1_top_casts: p.d2_top_casts, d2_top_casts: p.d1_top_casts,
+    d1_top_damage: p.d2_top_damage, d2_top_damage: p.d1_top_damage,
+    d1_finishers: p.d2_finishers, d2_finishers: p.d1_finishers,
+    d1_sb: p.d2_sb, d2_sb: p.d1_sb,
+    insight: p.insight
+  };
+}
+
+// TOOLTIP
+const ttip = document.getElementById('ttip');
+function showTip(e, i, j) {
+  const w = wr(i,j), rw = wr(j,i);
+  ttip.innerHTML = `<div class="tw" style="color:${tc(w)}">${w.toFixed(0)}%</div>
+<div class="tl"><b>${decks[i]}</b> (${ARCH[decks[i]]||'?'}) vs <b>${decks[j]}</b> (${ARCH[decks[j]]||'?'})</div>
+<div class="tl" style="margin-top:3px">Reverse: <b style="color:${tc(rw)}">${rw.toFixed(0)}%</b> · Check: ${(w+rw).toFixed(0)}%</div>`;
+  ttip.classList.add('vis');
+  ttip.style.left = Math.min(e.clientX+14, innerWidth-290) + 'px';
+  ttip.style.top = Math.min(e.clientY+14, innerHeight-90) + 'px';
+}
+function hideTip() { ttip.classList.remove('vis'); }
+document.addEventListener('mousemove', e => {
+  if (ttip.classList.contains('vis')) {
+    ttip.style.left = Math.min(e.clientX+14, innerWidth-290) + 'px';
+    ttip.style.top = Math.min(e.clientY+14, innerHeight-90) + 'px';
+  }
+});
+
+function showDeckProfile(idx) {
+  selDeck = idx; selCell = null;
+  const det = document.getElementById('det'); det.classList.add('show');
+  document.getElementById('det-label').textContent = 'Deck Profile';
+  const flat = A[idx], wt = W[idx] || flat;
+  const tl = tierOf(getWR(idx));
+  const dc = DC[idx] || {};
+  const ov = OV[idx] || {};
+  const delta = (wt - flat).toFixed(1);
+
+  let h = `<div style="display:flex;align-items:center;margin-bottom:8px">
+<span class="tier-badge" style="background:${tl[1]}20;color:${tl[1]};border:1px solid ${tl[1]}40">${tl[0]}</span>
+<h2>${decks[idx]}</h2></div>`;
+  h += `<div class="sub">${ARCH[decks[idx]]||'?'} · ${MS[decks[idx]]||0}% meta share</div>`;
+  h += `<div style="display:flex;gap:16px;margin:10px 0 14px;align-items:flex-end">
+<div><div style="font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px">Flat Avg</div>
+<div style="font-size:26px;font-weight:700;color:${tc(flat)};font-family:'JetBrains Mono'">${flat.toFixed(1)}%</div></div>
+<div><div style="font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px">⚖ Weighted</div>
+<div style="font-size:26px;font-weight:700;color:${tc(wt)};font-family:'JetBrains Mono'">${wt.toFixed(1)}%</div></div>
+<div style="padding-bottom:6px"><span style="font-size:12px;color:${wt<flat?'var(--red)':'var(--grn)'};font-family:'JetBrains Mono'">${delta>0?'+':''}${delta}pp</span></div>
+</div>`;
+
+  if (dc.summary) h += `<div class="overview">${dc.summary}</div>`;
+
+  if (dc.mvp_casts && dc.mvp_casts.length) {
+    h += `<div class="sec">MVP Cards (Most Cast)</div>`;
+    h += dc.mvp_casts.map(c => `<span class="pill pill-cast">${c.card} ×${c.count}</span>`).join('');
+  }
+  if (dc.mvp_damage && dc.mvp_damage.length) {
+    h += `<div style="margin-top:6px">`;
+    h += dc.mvp_damage.map(c => `<span class="pill pill-dmg">${c.card} ×${c.count}</span>`).join('');
+    h += `</div>`;
+  }
+  if (dc.finishers && dc.finishers.length) {
+    h += `<div class="sec">How It Wins</div>`;
+    h += dc.finishers.map(f => `<div class="fin-row">
+<div class="fin-count">${f.count}</div>
+<div><div class="fin-card">${f.card}</div>${f.desc?`<div class="fin-desc">${f.desc}</div>`:''}</div>
+</div>`).join('');
+  }
+
+  h += `<div class="sec">All Matchups (by opponent tier)</div>`;
+  const byTier = decks.map((_, j) => j).filter(j => j !== idx).sort((a,b) => getWR(b)-getWR(a));
+  let curTier = '';
+  byTier.forEach(j => {
+    const oppW = getWR(j);
+    const t = tierTag(oppW);
+    const myW = wr(idx, j);
+    const c = muc(myW);
+    const tc2 = {'T1':'#4ade80','T2':'#60a5fa','T3':'#d97706','T4':'#f87171'}[t];
+    if (t !== curTier) {
+      curTier = t;
+      h += `<div style="font-size:9px;font-weight:700;color:${tc2};letter-spacing:.8px;margin:10px 0 4px;padding:2px 0;border-bottom:1px solid ${tc2}20">${t}</div>`;
+    }
+    h += `<div class="mu-row" onclick="showMatchup(${idx},${j})">
+<span class="mu-name">${decks[j]}</span>
+<div class="mu-bar"><div class="mu-fill" style="width:${myW}%;background:${c}"></div></div>
+<span class="mu-val" style="color:${c}">${myW.toFixed(0)}%</span>
+<span class="mu-ms">${(MS[decks[j]]||0)}%</span>
+</div>`;
+  });
+
+  document.getElementById('det-inner').innerHTML = h;
+  render();
+}
+
+function showMatchup(i, j) {
+  selCell = [i,j]; selDeck = null;
+  const det = document.getElementById('det'); det.classList.add('show');
+  document.getElementById('det-label').textContent = 'Matchup Detail';
+  const p = getMC(i, j);
+  const w = wr(i,j), rw = wr(j,i);
+
+  let h = `<h2>${decks[i]} <span style="color:var(--tx3)">vs</span> ${decks[j]}</h2>`;
+  h += `<div class="sub">${ARCH[decks[i]]||'?'} vs ${ARCH[decks[j]]||'?'} · ${N} Bo3</div>`;
+  h += `<div style="font-size:36px;font-weight:700;color:${tc(w)};font-family:'JetBrains Mono';margin:6px 0 10px">${w.toFixed(0)}%</div>`;
+  h += `<div class="row"><span class="lbl">Reverse (${decks[j]} wins)</span><span class="val" style="color:${tc(rw)}">${rw.toFixed(0)}%</span></div>`;
+  h += `<div class="row"><span class="lbl">Symmetry check</span><span class="val">${(w+rw).toFixed(0)}%</span></div>`;
+
+  if (p) {
+    if (p.insight) h += `<div class="insight-box" style="margin-top:10px"><p>${p.insight}</p></div>`;
+
+    h += `<div class="stats-grid">
+<div class="stat-box"><div class="sv" style="color:var(--acc)">${p.avg_turns}</div><div class="sl">Avg Turns</div></div>
+<div class="stat-box"><div class="sv" style="color:var(--pur)">${p.went_to_3}%</div><div class="sl">Went to G3</div></div>
+<div class="stat-box"><div class="sv" style="color:var(--grn)">${p.g1_wins[0]}%</div><div class="sl">${decks[i].split(' ')[0]} G1 Win%</div></div>
+<div class="stat-box"><div class="sv" style="color:var(--orn)">${p.comebacks[0]}-${p.comebacks[1]}</div><div class="sl">Comebacks</div></div>
+</div>`;
+
+    if (p.d1_finishers && p.d1_finishers.length) {
+      h += `<div class="sec">How ${decks[i]} Wins</div>`;
+      h += p.d1_finishers.map(f => `<div class="fin-row"><div class="fin-count">${f.count}</div><div><div class="fin-card">${f.card}</div>${f.desc?`<div class="fin-desc">${f.desc}</div>`:''}</div></div>`).join('');
+    }
+    if (p.d1_top_casts && p.d1_top_casts.length) {
+      h += `<div class="sec">Key Cards — ${decks[i]}</div>`;
+      h += pills(p.d1_top_casts, 'pill-cast');
+      if (p.d1_top_damage && p.d1_top_damage.length) h += '<br>' + pills(p.d1_top_damage, 'pill-dmg');
+    }
+    if (p.d2_top_casts && p.d2_top_casts.length) {
+      h += `<div class="sec">Key Cards — ${decks[j]}</div>`;
+      h += pills(p.d2_top_casts, 'pill-cast');
+      if (p.d2_top_damage && p.d2_top_damage.length) h += '<br>' + pills(p.d2_top_damage, 'pill-dmg');
+    }
+    if (p.d2_finishers && p.d2_finishers.length) {
+      h += `<div class="sec">How ${decks[j]} Wins</div>`;
+      h += p.d2_finishers.map(f => `<div class="fin-row"><div class="fin-count">${f.count}</div><div><div class="fin-card">${f.card}</div></div></div>`).join('');
+    }
+
+    // Sideboard
+    const hasSb = (p.d1_sb && p.d1_sb.length) || (p.d2_sb && p.d2_sb.length);
+    if (hasSb) {
+      h += `<div class="sec">Sideboard Guide (from game data)</div>`;
+      h += `<div class="sb-block"><div class="sb-head sb-in">${decks[i]}</div>${sbLines(p.d1_sb)}</div>`;
+      h += `<div class="sb-block"><div class="sb-head sb-out">${decks[j]}</div>${sbLines(p.d2_sb)}</div>`;
+    }
+  } else {
+    h += `<div style="margin-top:12px;padding:10px;background:var(--bg3);border-radius:4px;font-size:11px;color:var(--tx3)">Card-level data pending verbose run for this matchup.</div>`;
+  }
+
+  document.getElementById('det-inner').innerHTML = h;
+  render();
+}
+
+function render() {
+  sort();
+  let fd = sorted;
+  if (archFilt) fd = fd.filter(i => ARCH[decks[i]] === archFilt);
+
+  // Tier chips
+  const rk = [...decks.keys()].sort((a,b) => getWR(b)-getWR(a));
+  const ct = getCT();
+  const tiers = {t1:[], t2:[], t3:[], t4:[]};
+  rk.forEach(i => {
+    const w = getWR(i);
+    if (w >= ct[0]) tiers.t1.push(i); else if (w >= ct[1]) tiers.t2.push(i);
+    else if (w >= ct[2]) tiers.t3.push(i); else tiers.t4.push(i);
+  });
+  const tl = useWeighted
+    ? [['t1',`Tier 1 — Dominant (≥${ct[0]}%)`],['t2',`Tier 2 — Competitive (≥${ct[1]}%)`],['t3',`Tier 3 — Fringe (≥${ct[2]}%)`],['t4','Tier 4 — Struggling']]
+    : [['t1',`Tier 1 (≥${ct[0]}%)`],['t2',`Tier 2 (≥${ct[1]}%)`],['t3',`Tier 3 (≥${ct[2]}%)`],['t4','Tier 4']];
+  let th = '';
+  tl.forEach(([cls, label]) => {
+    if (!tiers[cls].length) return;
+    th += `<div class="tier-label ${cls}">${label}</div><div class="tier-row">`;
+    tiers[cls].forEach(i => {
+      const w = getWR(i);
+      const isSel = selDeck === i;
+      const bg = tierOf(w)[1];
+      th += `<div class="rchip ${isSel?'sel':''}" style="background:${bg}18;color:${bg}"
+onclick="showDeckProfile(${i})">${decks[i]} <span style="font-size:9px;opacity:.7">${w.toFixed(1)}%</span></div>`;
+    });
+    th += '</div>';
+  });
+  document.getElementById('tiers').innerHTML = th;
+
+  // Matrix
+  const cols = fd;
+  let mt = '<thead><tr><th class="rh" style="min-width:120px"></th>';
+  cols.forEach(j => {
+    const isHL = hlDeck !== null && hlDeck == j;
+    mt += `<th class="ch${isHL?' hl':''}" onclick="showDeckProfile(${j})"><div>${decks[j]}</div></th>`;
+  });
+  mt += `<th style="font-size:8px;color:var(--tx3);padding-left:6px;text-align:left">${useWeighted?'⚖ WR':'Flat'}</th></tr></thead><tbody>`;
+
+  fd.forEach(i => {
+    const isHL = hlDeck !== null && hlDeck == i;
+    mt += `<tr><th class="rh${isHL?' hl':''}" onclick="showDeckProfile(${i})">${decks[i]}</th>`;
+    cols.forEach(j => {
+      if (i === j) { mt += `<td class="c mir">—</td>`; return; }
+      const w = wr(i,j);
+      const isSel = selCell && ((selCell[0]===i&&selCell[1]===j)||(selCell[0]===j&&selCell[1]===i));
+      const isDimmed = (selDeck!==null && selDeck!==i && selDeck!==j) || (hlDeck!==null && hlDeck!=i && hlDeck!=j);
+      mt += `<td class="c${isSel?' sel':''}" style="background:${wc(w)};opacity:${isDimmed?.3:1}"
+onmouseenter="showTip(event,${i},${j})" onmouseleave="hideTip()"
+onclick="showMatchup(${i},${j})">${w.toFixed(0)}</td>`;
+    });
+    const wr_val = getWR(i);
+    const tcolor = tierOf(wr_val)[1];
+    mt += `<td class="avg" style="color:${tcolor}">${wr_val.toFixed(1)}%</td></tr>`;
+  });
+
+  mt += '</tbody>';
+  document.getElementById('matrix').innerHTML = mt;
+}
+
+document.getElementById('srt').onchange = render;
+document.getElementById('archFlt').onchange = e => { archFilt = e.target.value; render(); };
+document.getElementById('hl').onchange = e => { hlDeck = e.target.value || null; render(); };
+document.getElementById('wtToggle').onchange = e => { useWeighted = e.target.checked; render(); };
+
+render();
+</script>
+</body>
+</html>
