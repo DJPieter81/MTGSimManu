@@ -99,15 +99,38 @@ class MulliganDecider:
                     return False
 
             # Has key card?
+            # C1 fix: key card alone is not enough — also require castable
+            # development. Previous behaviour short-circuited `return True`
+            # on any mulligan_keys hit, letting decks with dense cheap keys
+            # (Affinity, Boros Energy, Domain Zoo) auto-keep almost every
+            # 7-card hand and biasing the meta toward proactive decks.
+            cheap_spells = sum(1 for s in spells if (s.template.cmc or 0) <= 3)
             if gp.mulligan_keys:
                 hand_names = {c.name for c in hand}
                 found_keys = hand_names & gp.mulligan_keys
                 if found_keys:
-                    self.last_reason = f"has key card(s): {', '.join(sorted(found_keys))}"
-                    return True
+                    # Bar is archetype- and hand-size-dependent:
+                    #   - 6 cards or fewer (already mulled): accept slower
+                    #     development since ≥1 cheap spell still plays a turn-2
+                    #   - combo archetype: 1 cheap spell is fine — the combo
+                    #     deck often keeps a slow hand that has the piece
+                    #   - else (aggro/midrange/control/tempo/ramp): need ≥2
+                    #     cheap spells so the key-card hand actually develops
+                    if cards_in_hand <= 6:
+                        min_cheap = 1
+                    elif self.archetype == ArchetypeStrategy.COMBO:
+                        min_cheap = 1
+                    else:
+                        min_cheap = 2
+                    if cheap_spells >= min_cheap:
+                        self.last_reason = (
+                            f"has key card(s): {', '.join(sorted(found_keys))}, "
+                            f"{cheap_spells} cheap spells"
+                        )
+                        return True
+                    # Fall through — key-card-without-development isn't keepable.
 
             # Generic check
-            cheap_spells = sum(1 for s in spells if (s.template.cmc or 0) <= 3)
             if cheap_spells >= 1:
                 self.last_reason = f"{land_count} lands, {cheap_spells} castable spells"
                 return True
