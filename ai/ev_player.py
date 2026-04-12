@@ -581,13 +581,11 @@ class EVPlayer:
             has_draw = any(
                 any(dt in getattr(c.template, 'tags', set())
                     for dt in ('cantrip', 'card_advantage'))
-                or c.name in ('Reckless Impulse', "Wrenn's Resolve",
-                              'Glimpse the Impossible', 'Expressive Iteration')
                 for c in me.hand if c.instance_id != card.instance_id
                 and not c.template.is_land
             )
 
-            can_go = (has_finisher and total_fuel >= min_fuel
+            can_go = ((has_finisher or has_pif) and total_fuel >= min_fuel
                       and mana >= (1 if reducers > 0 else 2))
             # Draw spells as proxy finisher access: if enough fuel + draws,
             # the chain will find Grapeshot/Wish naturally
@@ -595,7 +593,7 @@ class EVPlayer:
                 can_go = True
             if snap.am_dead_next and fuel >= 1:
                 can_go = True
-            if has_finisher and opp_life <= total_fuel and total_fuel >= 2:
+            if (has_finisher or has_pif) and opp_life <= total_fuel and total_fuel >= 2:
                 can_go = True
 
             # Value of going off = expected storm / opp_life (fraction of kill)
@@ -668,7 +666,12 @@ class EVPlayer:
                           and any(ft in getattr(c.template, 'tags', set())
                                   for ft in ('ritual', 'cantrip')))
             if p.storm_patience and storm == 0:
-                mod -= gy_fuel / opp_life * 5.0  # hold pre-chain (reduced from 15)
+                if gy_fuel >= 4:
+                    # GY is loaded — PiF at storm=0 IS the combo.
+                    # Ritual→PiF→flashback 4+ spells→Grapeshot = lethal
+                    mod += gy_fuel / opp_life * 15.0
+                else:
+                    mod -= gy_fuel / opp_life * 5.0  # hold pre-chain
             elif gy_fuel < 2:
                 mod -= 10.0 / opp_life  # empty GY, not worth it
             else:
