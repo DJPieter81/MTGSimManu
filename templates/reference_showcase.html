@@ -224,12 +224,12 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
 <div class="hero">
   <div class="hero-eyebrow">Pure Python · Zero Dependencies · Full Bo3</div>
   <h1>The <em>Modern</em> metagame,<br>simulated.</h1>
-  <p class="hero-sub">21,795 cards. 15 decks. 18,912 games. An EV-based AI brain that mulligans, sequences spells, predicts blocks, and tracks what your opponent is holding — all in 0.68 seconds per match.</p>
+  <p class="hero-sub">21,795 cards. 15 decks. 10,500 Bo3 matches. An EV-based AI brain that mulligans, sequences spells, predicts blocks, and tracks what your opponent is holding — all in 0.68 seconds per match.</p>
   <div class="counter-row">
     <div class="counter"><div class="num" data-target="21795">0</div><div class="unit">Cards in DB</div></div>
     <div class="counter"><div class="num" data-target="15">0</div><div class="unit">Modern Decks</div></div>
-    <div class="counter"><div class="num" data-target="18912">0</div><div class="unit">Games Simulated</div></div>
-    <div class="counter"><div class="num" data-target="27358">0</div><div class="unit">Lines of Python</div></div>
+    <div class="counter"><div class="num" data-target="10500">0</div><div class="unit">Bo3 Matches</div></div>
+    <div class="counter"><div class="num" data-target="27609">0</div><div class="unit">Lines of Python</div></div>
   </div>
 </div>
 
@@ -385,7 +385,7 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
 <section>
   <div class="reveal">
     <div class="sec-label">Performance</div>
-    <div class="sec-title">18,912 games under the microscope</div>
+    <div class="sec-title">10,500 matches under the microscope</div>
     <div class="sec-desc">Every metric traceable to a game log. Every win rate backed by 50 Bo3 matches per pairing.</div>
   </div>
   <div class="chart-grid reveal">
@@ -396,7 +396,7 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
     </div>
     <div class="chart-card">
       <h4>Game resolution</h4>
-      <div class="chart-sub">How 18,912 simulated games ended</div>
+      <div class="chart-sub">How 10,500 simulated Bo3 matches ended</div>
       <div class="chart-wrap"><canvas id="resChart"></canvas></div>
     </div>
     <div class="chart-card">
@@ -633,7 +633,7 @@ const layerData={
   runner:{t:'Simulation runner — single entry point',d:'All analysis through one file: full NxN round-robin matrix, head-to-head matchups, field sweeps (one deck vs all), deck audits with per-card stats, verbose game logs, AI reasoning traces, and Bo3 match generation with sideboarding. Reproducible seeds. Python API for programmatic access.',
     files:['run_meta.py (38K)','simulate_match.py','match_trace.py','import_deck.py','update_modern_atomic.py']},
   output:{t:'Output pipeline — 3 HTML products',d:'Simulation results flow into three standalone HTML deliverables. Interactive heatmap dashboard with card-level detail (casts, damage, finishers, sideboard swaps, insights). Bo3 replay viewers with SVG life charts, collapsible turns, and AI reasoning toggle. Comprehensive deck guides with sim-verified matchup spreads, opening hand analysis, and game plan phases.',
-    files:['build_dashboard.py (34K)','build_replay.py (32K)','metagame_data.jsx (105K)','replay_generator.py','commentary_engine.py']},
+    files:['build_dashboard.py (34K)','build_replay.py (32K)','build_guide.py (15K)','metagame_data.jsx (105K)','templates/reference_deck_guide.html']},
   skills:{t:'Claude skills — 4 automation pipelines',d:'Reusable skill files that Claude reads before executing workflows. Meta matrix skill runs the full sim-to-dashboard pipeline. Dashboard refresh extracts card-level data from verbose Bo3 logs and merges into the JSX. Deck guide skill produces 7-step HTML guides. Bo3 replayer skill generates interactive match viewers. Same skills work for both Legacy and Modern formats.',
     files:['/mtg-meta-matrix','/mtg-dashboard-refresh','/mtg-deck-guide','/mtg-bo3-replayer-v2']}
 };
