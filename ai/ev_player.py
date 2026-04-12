@@ -387,6 +387,22 @@ class EVPlayer:
         if 'board_wipe' in tags and snap.opp_creature_count == 0:
             return min(ev, -50.0)
 
+        # ── X-cost board wipe: require X-budget to kill ≥2 opponent creatures ──
+        # Without this, Wrath of the Skies at X=0 (only 2 untapped lands left
+        # after paying WW) would be cast to kill a single 0-CMC token, burning
+        # our best stabilizer on a Prismatic-Ending-sized effect. Hold the wipe
+        # until we reach the mana bend.
+        if ('board_wipe' in tags and t.x_cost_data and opp.creatures):
+            total_mana = snap.my_mana
+            base_cost = t.cmc or 0
+            x_budget = max(0, total_mana - base_cost)
+            mult = (t.x_cost_data or {}).get('multiplier', 1) or 1
+            effective_x = x_budget // mult
+            kill_count = sum(1 for c in opp.creatures
+                             if (c.template.cmc or 0) <= effective_x)
+            if kill_count < 2:
+                return min(ev, -20.0)
+
         # ── Blink/flicker hard gate: no legal target means the spell fizzles ──
         # Engine safely bails (Ephemerate returns early), but AI should never
         # score a mana-wasting fizzle as positive EV. Detect by oracle pattern

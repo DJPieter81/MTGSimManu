@@ -76,16 +76,11 @@
   ],
   "mulligan_min_lands": 2,
   "mulligan_max_lands": 5,
-  "mulligan_combo_sets": [
-    ["Isochron Scepter", "Orim's Chant"]
-  ],
+  "mulligan_combo_sets": [],
   "always_early": [
     "Teferi, Time Raveler"
   ],
-  "reactive_only": [
-    "Counterspell",
-    "Orim's Chant"
-  ],
+  "reactive_only": [],
   "critical_pieces": [
     "Isochron Scepter",
     "Orim's Chant"
