@@ -295,7 +295,49 @@ python run_meta.py --verbose DECK OPPONENT -s 50000 | grep -E "Resolve.*Resolve|
 
 ---
 
-## 10. Infrastructure proposals (from Legacy cross-pollination)
+## 10. Deck guide minimum spec
+
+Guides must match the Legacy Burn guide (`guide_burn.html`) feature-for-feature. Reference: `/mtg-deck-guide` skill.
+
+| # | Section | Data source | Interactive? |
+|---|---------|-------------|-------------|
+| 1 | Hero 4-col grid | Matrix: flat WR, weighted WR, rank, best/worst | — |
+| 2 | Mainboard with role badges + Scryfall hovers | `modern_meta.py` decklist + card tags | Hover → card image popup |
+| 3 | Sideboard with "vs" targets | `sideboard_manager.py` bool flags | — |
+| 4 | Deck construction findings (±pp) | Matrix: compare hand archetypes | — |
+| 5 | Game plan (3 phases with timeline) | `gameplans/*.json` goal sequences | — |
+| 6 | Kill turn distribution chart | Matrix: `turn_dist` from matchup data | Bar chart |
+| 7 | Hand archetype WR bars + baseline | 2,000 games hand analysis (run_matchup loop) | Baseline marker |
+| 8 | Real sim hands (2 keep + 1 mull) | `run_verbose_game()` with specific seeds | Turn-by-turn |
+| 9 | Metagame strategy | Matrix: archetype WRs + triptych (prey/competitive/danger) | — |
+| 10 | Matchup spread tiered T1/T2/Field | Matrix WRs + `METAGAME_SHARES` + `DECK_ARCHETYPES` | Bars with type+meta% |
+| 11 | Provenance footer | Sim params: date, N, seeds, engine version, attribution | — |
+
+### Scryfall hover implementation
+```html
+<span class="card-tip" data-card="Ragavan, Nimble Pilferer">Ragavan</span>
+```
+```javascript
+// JS: mouseover → fetch api.scryfall.com/cards/named?fuzzy=NAME&format=image&version=normal
+// Display in fixed popup div (244×340px, border-radius:8px, box-shadow)
+```
+
+### Game plan derivation
+Game plans come from `decks/gameplans/*.json` goal sequences, NOT from manual writing. Each goal has `enablers`, `interaction`, and `payoffs` arrays. The 3-phase timeline maps to goals 1-2-3 in the JSON. Card names in the guide must match the gameplan entries.
+
+### Hand analysis pipeline (for full guide)
+```python
+# Run 2,000 games across all opponents, weighted by meta share
+for _ in range(2000):
+    opp = random.choices(opponents, weights=meta_shares)[0]
+    result = run_matchup(deck, opp, n_games=1, seed_start=next_seed)
+    # Record: hand composition (lands/creatures/spells), won/lost, kill turn
+# Group by formula (e.g. "2L-1C-4S"), calculate WR per group vs baseline
+```
+
+---
+
+## 11. Infrastructure proposals (from Legacy cross-pollination)
 
 Six concrete improvements from MTGSimClaude, scoped to infrastructure only — no changes to EV engine.
 
@@ -336,7 +378,7 @@ Every output gets: `Simulated: DATE | Decks: N | Games/pair: N | Seeds: range | 
 
 ---
 
-## 11. Recommended next work (unified backlog)
+## 12. Recommended next work (unified backlog)
 
 ### Engine fixes (remaining P1/P2)
 | # | Task | Impact | Effort | Location |
@@ -367,7 +409,7 @@ Every output gets: `Simulated: DATE | Decks: N | Games/pair: N | Seeds: range | 
 
 ---
 
-## 12. Codebase stats
+## 13. Codebase stats
 
 ~28,500 Python LOC · 66 files · 14 AI modules · 21,795 cards · 16 decks · 16 gameplans · 149 passing tests · 4 Claude skills · 0 external deps
 
