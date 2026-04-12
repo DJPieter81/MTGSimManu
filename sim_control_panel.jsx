@@ -88,7 +88,8 @@ export default function SimControlPanel() {
   const [deck2, setDeck2] = useState("");
   const [seed, setSeed] = useState(55555);
   const [guideDeck, setGuideDeck] = useState("");
-  const [outputs, setOutputs] = useState({ dashboard: true, replays: false, audit: false, deckGuide: false });
+  const [bo3Count, setBo3Count] = useState(1);
+  const [outputs, setOutputs] = useState({ dashboard: true, replays: false, audit: false, deckGuide: false, bo3Replay: true, gitPush: false });
   const [submitted, setSubmitted] = useState(null);
 
   // Deck picker for matrix (use array, not Set — Sets don't trigger React re-renders)
@@ -125,8 +126,17 @@ export default function SimControlPanel() {
     } else if (runType === "matchup") {
       lines.push(`${step++}. Run: python3 run_meta.py --matchup ${deck1 || "deck1"} ${deck2 || "deck2"} -n ${gamesPerPair}`);
     } else if (runType === "bo3") {
-      const flag = format === "legacy" ? "--verbose" : "--bo3";
-      lines.push(`${step++}. Run: python3 run_meta.py ${flag} ${deck1 || "deck1"} ${deck2 || "deck2"} -s ${seed}`);
+      const d1 = deck1 || "deck1", d2 = deck2 || "deck2";
+      if (bo3Count === 1) {
+        const flag = format === "legacy" ? "--verbose" : "--bo3";
+        lines.push(`${step++}. Run: python3 run_meta.py ${flag} "${d1}" "${d2}" -s ${seed}`);
+      } else {
+        lines.push(`${step++}. Run ${bo3Count} Bo3 matches between "${d1}" and "${d2}" starting at seed ${seed} (increment by 1000 per match)`);
+        lines.push(`   Seeds: ${Array.from({length: bo3Count}, (_, i) => seed + i * 1000).join(", ")}`);
+      }
+      if (outputs.bo3Replay) {
+        lines.push(`${step++}. Generate interactive HTML Bo3 replay(s) using /mtg-bo3-replayer-v2 skill. Save to output folder with descriptive names (e.g., replay_${d1}_vs_${d2}_s${seed}.html)`);
+      }
     } else if (runType === "field") {
       lines.push(`${step++}. Run: python3 run_meta.py --field ${deck1 || "deck1"} -n ${gamesPerPair}`);
     }
@@ -135,6 +145,7 @@ export default function SimControlPanel() {
     if (outputs.replays) lines.push(`${step++}. Generate Bo3 replays for the 3 most interesting outlier matchups (use /mtg-bo3-replayer-v2 skill, seeds 80000+)`);
     if (outputs.audit) lines.push(`${step++}. Run meta_audit.py to generate audit_dashboard.html`);
     if (outputs.deckGuide) lines.push(`${step++}. Generate a comprehensive deck guide for "${guideDeck || "selected deck"}" (use /mtg-deck-guide skill). Include mulligan analysis, matchup guide, sideboard plans, and key hand archetypes.`);
+    if (outputs.gitPush) lines.push(`${step++}. Git add all new/changed result files, replays, and dashboards. Commit with a descriptive message summarizing what was run (decks, games/pair, outputs generated). Push to origin main.`);
     lines.push(`\nPresent all generated files when done.`);
     return lines.join("\n");
   };
@@ -291,8 +302,8 @@ export default function SimControlPanel() {
                 </div>
               )}
 
-              {/* Matchup / Bo3 config */}
-              {(runType === "matchup" || runType === "bo3") && (
+              {/* Matchup config */}
+              {runType === "matchup" && (
                 <div style={S.row}>
                   <div style={{ flex: 1 }}>
                     <span style={S.label}>Deck 1</span>
@@ -308,17 +319,46 @@ export default function SimControlPanel() {
                       {allDecks.map(d => <option key={d} value={d}>{d}</option>)}
                     </select>
                   </div>
-                  {runType === "bo3" ? (
+                  <div style={{ width: 100 }}>
+                    <span style={S.label}>Games</span>
+                    <input type="number" value={gamesPerPair} onChange={e => setGamesPerPair(+e.target.value)} style={S.input} min={5} />
+                  </div>
+                </div>
+              )}
+
+              {/* Bo3 config */}
+              {runType === "bo3" && (
+                <div>
+                  <div style={S.row}>
+                    <div style={{ flex: 1 }}>
+                      <span style={S.label}>Deck 1</span>
+                      <select value={deck1} onChange={e => setDeck1(e.target.value)} style={S.select}>
+                        <option value="">Select...</option>
+                        {allDecks.map(d => <option key={d} value={d}>{d}</option>)}
+                      </select>
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <span style={S.label}>Deck 2</span>
+                      <select value={deck2} onChange={e => setDeck2(e.target.value)} style={S.select}>
+                        <option value="">Select...</option>
+                        {allDecks.map(d => <option key={d} value={d}>{d}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                  <div style={S.row}>
                     <div style={{ width: 100 }}>
                       <span style={S.label}>Seed</span>
                       <input type="number" value={seed} onChange={e => setSeed(+e.target.value)} style={S.input} />
                     </div>
-                  ) : (
-                    <div style={{ width: 100 }}>
-                      <span style={S.label}>Games</span>
-                      <input type="number" value={gamesPerPair} onChange={e => setGamesPerPair(+e.target.value)} style={S.input} min={5} />
+                    <div style={{ width: 120 }}>
+                      <span style={S.label}>Matches</span>
+                      <input type="number" value={bo3Count} onChange={e => setBo3Count(Math.max(1, +e.target.value))} style={S.input} min={1} max={100} />
+                      <span style={{ fontSize: 11, color: muted, marginLeft: 6 }}>Bo3{bo3Count > 1 ? "s" : ""}</span>
                     </div>
-                  )}
+                    <div style={{ flex: 1, display: "flex", alignItems: "flex-end", paddingBottom: 2 }}>
+                      <Check checked={outputs.bo3Replay} onClick={() => toggleOut("bo3Replay")} label="Generate HTML replay" desc="" />
+                    </div>
+                  </div>
                 </div>
               )}
 
@@ -357,6 +397,9 @@ export default function SimControlPanel() {
                     </select>
                   </div>
                 )}
+              </div>
+              <div style={{ borderTop: `1px solid ${border}`, marginTop: 8, paddingTop: 8 }}>
+                <Check checked={outputs.gitPush} onClick={() => toggleOut("gitPush")} label="Git commit & push" desc="Stage results, commit with summary, push to origin main" />
               </div>
             </div>
 

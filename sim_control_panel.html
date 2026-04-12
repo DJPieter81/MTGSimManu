@@ -210,7 +210,8 @@ let runType = 'matrix';
 let selectedDecks = new Set(LEGACY_DECKS);
 let gamesPerPair = 50;
 let deck1 = '', deck2 = '', seed = 55555, guideDeck = '';
-let outputs = { dashboard: true, replays: false, audit: false, deckGuide: false };
+let bo3Count = 1;
+let outputs = { dashboard: true, replays: false, audit: false, deckGuide: false, bo3Replay: true, gitPush: false };
 
 function getDecks() { return format === 'legacy' ? LEGACY_DECKS : MODERN_DECKS; }
 function getRuns() { return format === 'legacy' ? LEGACY_RUNS : MODERN_RUNS; }
@@ -304,16 +305,30 @@ function render() {
       <div class="deck-grid">${decks.map(d =>
         `<span class="deck-chip ${selectedDecks.has(d)?'active':''}" onclick="toggleDeck('${d.replace(/'/g,"\\'")}')">${d}</span>`
       ).join('')}</div>`;
-  } else if (runType === 'matchup' || runType === 'bo3') {
+  } else if (runType === 'matchup') {
     cfg += `<div class="row"><div><span class="label">Deck 1</span>
       <select onchange="deck1=this.value">${deckOptions(deck1)}</select></div>
       <div><span class="label">Deck 2</span>
-      <select onchange="deck2=this.value">${deckOptions(deck2)}</select></div>`;
-    if (runType === 'bo3') cfg += `<div class="narrow"><span class="label">Seed</span>
-      <input type="number" value="${seed}" onchange="seed=+this.value"></div>`;
-    else cfg += `<div class="narrow"><span class="label">Games</span>
-      <input type="number" value="${gamesPerPair}" onchange="gamesPerPair=+this.value" min="5"></div>`;
-    cfg += '</div>';
+      <select onchange="deck2=this.value">${deckOptions(deck2)}</select></div>
+      <div class="narrow"><span class="label">Games</span>
+      <input type="number" value="${gamesPerPair}" onchange="gamesPerPair=+this.value" min="5"></div></div>`;
+  } else if (runType === 'bo3') {
+    cfg += `<div class="row"><div><span class="label">Deck 1</span>
+      <select onchange="deck1=this.value">${deckOptions(deck1)}</select></div>
+      <div><span class="label">Deck 2</span>
+      <select onchange="deck2=this.value">${deckOptions(deck2)}</select></div></div>
+      <div class="row">
+      <div class="narrow"><span class="label">Seed</span>
+      <input type="number" value="${seed}" onchange="seed=+this.value"></div>
+      <div class="narrow"><span class="label">Matches</span>
+      <input type="number" value="${bo3Count}" onchange="bo3Count=Math.max(1,+this.value);render()" min="1" max="100">
+      <span style="font-size:11px;color:var(--muted);margin-left:4px">Bo3${bo3Count>1?'s':''}</span></div>
+      <div style="flex:1;display:flex;align-items:flex-end;padding-bottom:2px">
+        <div class="check-row" onclick="toggleOutput('bo3Replay')">
+          <div class="check-box ${outputs.bo3Replay?'checked':''}"></div>
+          <div><div class="check-label">Generate HTML replay</div></div>
+        </div>
+      </div></div>`;
   } else if (runType === 'field') {
     cfg += `<div class="row"><div><span class="label">Deck</span>
       <select onchange="deck1=this.value">${deckOptions(deck1)}</select></div>
@@ -341,6 +356,12 @@ function render() {
       <span class="label" style="margin-bottom:4px">Deck to guide</span>
       <select onchange="guideDeck=this.value">${deckOptions(guideDeck)}</select>
     </div></div>`;
+
+  chk += `<div style="border-top:1px solid var(--border);margin-top:8px;padding-top:8px">
+    <div class="check-row" onclick="toggleOutput('gitPush')">
+      <div class="check-box ${outputs.gitPush?'checked':''}"></div>
+      <div><div class="check-label">Git commit & push</div>
+      <div class="check-desc">Stage results, commit with summary, push to origin main</div></div></div></div>`;
   document.getElementById('output-checks').innerHTML = chk;
 
   // Artifacts
@@ -391,8 +412,17 @@ function generateTask() {
   } else if (runType === 'matchup') {
     lines.push(`${step++}. Run: python3 run_meta.py --matchup ${deck1||'deck1'} ${deck2||'deck2'} -n ${gamesPerPair}`);
   } else if (runType === 'bo3') {
-    const flag = format === 'legacy' ? '--verbose' : '--bo3';
-    lines.push(`${step++}. Run: python3 run_meta.py ${flag} ${deck1||'deck1'} ${deck2||'deck2'} -s ${seed}`);
+    const d1 = deck1 || 'deck1', d2 = deck2 || 'deck2';
+    if (bo3Count === 1) {
+      const flag = format === 'legacy' ? '--verbose' : '--bo3';
+      lines.push(`${step++}. Run: python3 run_meta.py ${flag} "${d1}" "${d2}" -s ${seed}`);
+    } else {
+      lines.push(`${step++}. Run ${bo3Count} Bo3 matches between "${d1}" and "${d2}" starting at seed ${seed} (increment by 1000 per match)`);
+      lines.push('   Seeds: ' + Array.from({length: bo3Count}, (_, i) => seed + i * 1000).join(', '));
+    }
+    if (outputs.bo3Replay) {
+      lines.push(`${step++}. Generate interactive HTML Bo3 replay(s) using /mtg-bo3-replayer-v2 skill. Save to output folder with descriptive names (e.g., replay_${d1}_vs_${d2}_s${seed}.html)`);
+    }
   } else if (runType === 'field') {
     lines.push(`${step++}. Run: python3 run_meta.py --field ${deck1||'deck1'} -n ${gamesPerPair}`);
   }
@@ -401,6 +431,7 @@ function generateTask() {
   if (outputs.replays) lines.push(`${step++}. Generate Bo3 replays for the 3 most interesting outlier matchups (use /mtg-bo3-replayer-v2 skill, seeds 80000+)`);
   if (outputs.audit) lines.push(`${step++}. Run meta_audit.py to generate audit_dashboard.html`);
   if (outputs.deckGuide) lines.push(`${step++}. Generate a comprehensive deck guide for "${guideDeck||'selected deck'}" (use /mtg-deck-guide skill). Include mulligan analysis, matchup guide, sideboard plans, and key hand archetypes.`);
+  if (outputs.gitPush) lines.push(`${step++}. Git add all new/changed result files, replays, and dashboards. Commit with a descriptive message summarizing what was run (decks, games/pair, outputs generated). Push to origin main.`);
   lines.push('\nPresent all generated files when done.');
 
   const prompt = lines.join('\n');
