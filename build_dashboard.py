@@ -149,12 +149,30 @@ def merge(results_path='metagame_results.json',
         return
 
     n_games = results['n_games']
-    D['matches_per_pair'] = n_games
-
-    # Build new wins matrix from the flat matrix dict keyed "d1|d2"
     decks = D['decks']
     idx = {name: i for i, name in enumerate(decks)}
-    new_wins = [[0] * len(decks) for _ in decks]
+
+    # Detect subset (--decks N) runs and refuse to merge — partial data would
+    # zero out every matchup not in the subset and corrupt the dashboard.
+    results_names = set(results.get('names') or [])
+    if results_names and len(results_names) < len(decks):
+        missing = [n for n in decks if n not in results_names]
+        print(f"merge: skipping — results only cover {len(results_names)}/{len(decks)} "
+              f"decks (missing {len(missing)}). Run the full matrix "
+              f"(drop --decks N) to update the dashboard.",
+              file=sys.stderr)
+        return
+
+    D['matches_per_pair'] = n_games
+
+    # Build new wins matrix from the flat matrix dict keyed "d1|d2". Seed from
+    # the existing matrix so any pair not in results keeps its last-known wins
+    # (scaled to the new N). Full-matrix runs will overwrite every pair.
+    old_wins = D.get('wins') or [[0] * len(decks) for _ in decks]
+    old_N = D.get('matches_per_pair', n_games) or n_games
+    new_wins = [[round((old_wins[i][j] if i < len(old_wins) and j < len(old_wins[i]) else 0)
+                       * n_games / old_N) for j in range(len(decks))]
+                for i in range(len(decks))]
     for key, pct in results['matrix'].items():
         if '|' not in key:
             continue
