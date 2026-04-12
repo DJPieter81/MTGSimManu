@@ -4,10 +4,11 @@
   "goals": [
     {
       "goal_type": "INTERACT",
-      "description": "Answer early threats with Solitude, Prismatic Ending, Counterspell. Deploy T3feri to shut off instant speed",
+      "description": "Answer early threats with Solitude, Prismatic Ending, Counterspell. Deploy Sanctifier en-Vec as pro-red/black blocker vs Boros/Dimir. T3feri to shut off instant speed.",
       "card_priorities": {
         "Teferi, Time Raveler": 24.0,
         "Solitude": 22.0,
+        "Sanctifier en-Vec": 21.0,
         "Prismatic Ending": 20.0,
         "Counterspell": 18.0,
         "Orim's Chant": 12.0,
@@ -16,13 +17,13 @@
       "card_roles": {
         "interaction": [
           "Solitude",
-          "Subtlety",
           "Prismatic Ending",
           "Counterspell",
           "Orim's Chant"
         ],
         "enablers": [
           "Teferi, Time Raveler",
+          "Sanctifier en-Vec",
           "Consult the Star Charts"
         ]
       },
@@ -76,16 +77,11 @@
   ],
   "mulligan_min_lands": 2,
   "mulligan_max_lands": 5,
-  "mulligan_combo_sets": [
-    ["Isochron Scepter", "Orim's Chant"]
-  ],
+  "mulligan_combo_sets": [],
   "always_early": [
     "Teferi, Time Raveler"
   ],
-  "reactive_only": [
-    "Counterspell",
-    "Orim's Chant"
-  ],
+  "reactive_only": [],
   "critical_pieces": [
     "Isochron Scepter",
     "Orim's Chant"

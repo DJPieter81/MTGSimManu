@@ -172,8 +172,16 @@ def _threat_score(card) -> float:
                for kw in getattr(t, 'keywords', set())}
         if kws & {'flying', 'menace', 'trample'}:
             score += power * 1.5  # evasion multiplier
+        # Ward taxes the attacker's removal: a single-target removal now
+        # effectively costs (spell_cost + ward_cost) mana, making it a worse
+        # trade than picking another target. Parse ward {N} from oracle and
+        # subtract 2N from the threat score so targeting drops down the list.
+        # Falls back to -6 if the cost is unparseable (e.g. "Ward — Pay 2 life").
         if 'ward' in oracle:
-            score += 5.0  # hard to remove = more threatening
+            import re as _re
+            m = _re.search(r'ward\s*\{?(\d+)\}?', oracle)
+            ward_cost = int(m.group(1)) if m else 3
+            score -= ward_cost * 2.0
         if 'lifelink' in kws:
             score += 4.0
 
@@ -800,46 +808,9 @@ def isochron_scepter_etb(game, card, controller, targets=None, item=None):
                     f"Isochron Scepter imprints {best.template.name}")
 
 
-@EFFECT_REGISTRY.register("Phelia, Exuberant Shepherd", EffectTiming.ATTACK,
-                           description="On attack: blink another target permanent you control")
-def phelia_attack(game, card, controller, targets=None, item=None):
-    # Oracle: "Whenever Phelia attacks, exile another target permanent you
-    # control, then return it to the battlefield tapped and attacking."
-    # Primary value is the ETB re-trigger. We do not hook the returned permanent
-    # into the CombatManager attacker list (GameState has no reference) — the
-    # extra combat damage is omitted, but the ETB blink value is captured.
-    me = game.players[controller]
-    candidates = [c for c in me.battlefield
-                  if c.instance_id != card.instance_id
-                  and not c.template.is_land]
-    if not candidates:
-        return
-
-    def _blink_value(c):
-        tags = getattr(c.template, 'tags', set())
-        score = 0
-        if 'etb_value' in tags:
-            score += 5
-        oracle = (c.template.oracle_text or "").lower()
-        if 'gain' in oracle and 'life' in oracle:
-            score += 3
-        if 'cantrip' in tags or ('draw' in oracle and 'enter' in oracle):
-            score += 2
-        if 'removal' in tags:
-            if game.players[1 - controller].creatures:
-                score += 4
-            else:
-                score += 1
-        score += (c.template.cmc or 0) * 0.5
-        return score
-
-    target = max(candidates, key=_blink_value)
-    game._blink_permanent(target, controller)
-    # Tap to simulate "returned attacking" — vigilance check moot since it's
-    # already re-entering; omit tap if it just ETB'd as a flash blocker.
-    if target in me.battlefield:
-        target.tapped = True
-        target.attacking = True
+# Phelia attack handler — superseded by the richer implementation at line
+# ~2506 (added in main commit bbd21fd), which includes the END_STEP return
+# hook. The earlier stub is removed here to avoid duplicate registration.
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -1661,6 +1632,52 @@ def sanctifier_en_vec_etb(game, card, controller, targets=None, item=None):
     if exiled > 0:
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Sanctifier en-Vec exiles {exiled} black/red cards from graveyards")
+
+
+@EFFECT_REGISTRY.register("Consign to Memory", EffectTiming.SPELL_RESOLVE,
+                           description="Counter target triggered ability or colorless spell")
+def consign_to_memory_resolve(game, card, controller, targets=None, item=None):
+    """Consign to Memory: counter a triggered ability or colorless spell.
+
+    The generic ability parser doesn't build a counter ability for this card
+    (its oracle doesn't match the standard 'Counter target spell' pattern), so
+    registering here is necessary to make it functional. Primary value: counters
+    colorless spells — every Affinity artifact creature (Frogmite, Thought
+    Monitor, Cranial Plating, Mox Opal, Memnite, Ornithopter). Replicate {1}
+    is skipped for simplicity.
+    """
+    if not targets and not item:
+        return
+    tids = targets or (getattr(item, 'targets', None) if item else None) or []
+    # Fall back to countering the top of the stack if no explicit target.
+    if not tids:
+        if game.stack.is_empty:
+            game.log.append(f"T{game.display_turn} P{controller+1}: "
+                            f"Consign to Memory fizzles (no target)")
+            return
+        target_idx = len(game.stack.items) - 1
+        tids = [game.stack.items[target_idx].source.instance_id]
+
+    for tid in tids:
+        for i, stack_item in enumerate(game.stack.items):
+            if stack_item.source.instance_id != tid:
+                continue
+            tmpl = stack_item.source.template
+            # Validate: only colorless spells (no color identity).
+            # Triggered ability counters are not modelled separately.
+            if tmpl.color_identity:
+                game.log.append(
+                    f"T{game.display_turn} P{controller+1}: "
+                    f"Consign to Memory fizzles (target has color identity)")
+                continue
+            countered = game.stack.items.pop(i)
+            countered_card = countered.source
+            countered_card.zone = "graveyard"
+            game.players[countered_card.owner].graveyard.append(countered_card)
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: "
+                f"Consign to Memory counters {countered_card.name}")
+            break
 
 
 @EFFECT_REGISTRY.register("Orcish Bowmasters", EffectTiming.ETB,

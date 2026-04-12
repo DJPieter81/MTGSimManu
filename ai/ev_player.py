@@ -368,6 +368,34 @@ class EVPlayer:
         # ── Combo sequencing overlay ──
         ev += self._combo_modifier(card, snap, game, me, opp)
 
+        # ── Amulet + Titan ramp combo ──
+        # Generic detection: if we hold Primeval Titan (or any 6-mana "when
+        # this creature enters, search for two lands" creature) AND this card
+        # is Amulet of Vigor, the acceleration is enormous — each Amulet +
+        # bounce-land loop effectively doubles our ramp, enabling Titan 1-2
+        # turns earlier. `_combo_modifier` skips ramp archetypes, so wire it
+        # here. Similarly bump the Titan itself when Amulet is already down.
+        t_oracle = (t.oracle_text or '').lower()
+        is_amulet = ('whenever' in t_oracle and 'enters tapped' in t_oracle
+                     and 'untap it' in t_oracle)
+        has_titan_in_hand = any(
+            'search your library' in (c.template.oracle_text or '').lower()
+            and 'two' in (c.template.oracle_text or '').lower()
+            and 'land' in (c.template.oracle_text or '').lower()
+            for c in me.hand if c.template.is_creature)
+        has_amulet_on_board = any(
+            ('whenever' in (c.template.oracle_text or '').lower()
+             and 'enters tapped' in (c.template.oracle_text or '').lower()
+             and 'untap it' in (c.template.oracle_text or '').lower())
+            for c in me.battlefield)
+        if is_amulet and has_titan_in_hand:
+            ev += 8.0  # deploy Amulet ASAP when Titan is coming
+        is_titan_like = (t.is_creature and (t.cmc or 0) >= 6
+                         and 'search your library' in t_oracle
+                         and 'two' in t_oracle and 'land' in t_oracle)
+        if is_titan_like and has_amulet_on_board:
+            ev += 6.0  # Titan under Amulet = immediate mana bounce chain
+
         # ── Non-creature permanent overlay (Pattern B) ──
         from engine.cards import CardType
         if not t.is_creature and not t.is_instant and not t.is_sorcery:
@@ -386,6 +414,22 @@ class EVPlayer:
         # ── Board wipe hard gate ──
         if 'board_wipe' in tags and snap.opp_creature_count == 0:
             return min(ev, -50.0)
+
+        # ── X-cost board wipe: require X-budget to kill ≥2 opponent creatures ──
+        # Without this, Wrath of the Skies at X=0 (only 2 untapped lands left
+        # after paying WW) would be cast to kill a single 0-CMC token, burning
+        # our best stabilizer on a Prismatic-Ending-sized effect. Hold the wipe
+        # until we reach the mana bend.
+        if ('board_wipe' in tags and t.x_cost_data and opp.creatures):
+            total_mana = snap.my_mana
+            base_cost = t.cmc or 0
+            x_budget = max(0, total_mana - base_cost)
+            mult = (t.x_cost_data or {}).get('multiplier', 1) or 1
+            effective_x = x_budget // mult
+            kill_count = sum(1 for c in opp.creatures
+                             if (c.template.cmc or 0) <= effective_x)
+            if kill_count < 2:
+                return min(ev, -20.0)
 
         # ── Blink/flicker hard gate: no legal target means the spell fizzles ──
         # Engine safely bails (Ephemerate returns early), but AI should never
