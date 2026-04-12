@@ -2710,6 +2710,18 @@ class GameState:
                         gain = int(m.group(1)) if m else 1
                         for _ in range(trigger_multiplier):
                             self.gain_life(controller, gain, c.name)
+                    # Energy trigger (Guide of Souls: "get {E}" after life gain).
+                    # The parse_energy_production static was stripped of this
+                    # clause to stop Guide auto-producing energy on its own
+                    # ETB — re-wire the trigger here so the proper CR behavior
+                    # still applies: energy lands when another creature enters.
+                    if '{e}' in oracle:
+                        import re
+                        em = re.search(r'(?:get|gets?)\s+((?:\{e\})+)', oracle)
+                        if em:
+                            amt = em.group(1).count('{e}')
+                            for _ in range(trigger_multiplier):
+                                self.produce_energy(controller, amt, c.name)
 
         # Generic "whenever this creature or another [Subtype] you control enters"
         # Covers Risen Reef (Elemental) and any future cards with this pattern.
@@ -2758,17 +2770,39 @@ class GameState:
 
     def trigger_attack(self, attacker: CardInstance, controller: int):
         """Trigger attack abilities."""
-        # Energy on attack: only if oracle says "get {E}" on attack, not "pay {E}".
-        # Cards that PAY energy on attack (Guide of Souls: "you may pay {E}{E}{E}")
-        # should NOT produce energy — that's handled by the pay/spend logic.
+        # Energy on attack: only fire when the "get {E}" clause is actually in
+        # the attack sentence. Guide of Souls has "get {E}" in its "whenever
+        # another creature enters" clause and a SEPARATE "whenever you attack,
+        # you may PAY {E}{E}{E}" clause — the old loose regex matched the
+        # former and fired on attacks, giving Boros free energy every swing.
         oracle = (attacker.template.oracle_text or '').lower()
         if '{e}' in oracle and 'attack' in oracle and 'get' in oracle:
-            # Count {E} in the "get" clause, not the "pay" clause
             import re
-            get_match = re.search(r'get\s+((?:\{e\})+)', oracle)
-            if get_match:
-                energy_count = get_match.group(1).count('{e}')
-                self.produce_energy(controller, energy_count, f"{attacker.name} attack")
+            for m in re.finditer(r'(?:get|gets?)\s+((?:\{e\})+)', oracle):
+                # Find this sentence's bounds
+                sentence_start = max(
+                    oracle.rfind('.', 0, m.start()),
+                    oracle.rfind('\n', 0, m.start()),
+                    -1
+                ) + 1
+                sentence_end = m.end()
+                # Look for the sentence's full text from start to end
+                for term in ('.', '\n'):
+                    idx = oracle.find(term, m.end())
+                    if idx != -1:
+                        sentence_end = min(sentence_end if sentence_end > m.end() else idx, idx)
+                        break
+                clause = oracle[sentence_start:m.end()]
+                # Fire only if this clause is an attack trigger, not an
+                # "enters"/"dies"/other trigger.
+                if 'attack' in clause and 'whenever' in clause:
+                    # Also skip if the clause contains "may pay" (it's a payment
+                    # opportunity, not a production).
+                    if 'may pay' in clause or 'pay {' in clause:
+                        continue
+                    energy_count = m.group(1).count('{e}')
+                    self.produce_energy(controller, energy_count, f"{attacker.name} attack")
+                    break
 
         # Annihilator
         if Keyword.ANNIHILATOR in attacker.keywords:

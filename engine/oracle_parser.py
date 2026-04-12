@@ -101,18 +101,32 @@ def parse_energy_production(oracle: str) -> int:
     """Count energy production from oracle text.
 
     Returns the number of {E} symbols in the first energy-producing clause.
+    Skips clauses gated by "Whenever ... enters/attacks/dies" — those are
+    triggered abilities that fire in response to other events, not static
+    ETB production. Guide of Souls was being credited 1 energy at its own
+    ETB because its triggered "whenever another creature you control enters"
+    clause matched the raw "get {e}" regex.
     """
     oracle = oracle.lower()
     if '{e}' not in oracle and 'energy' not in oracle:
         return 0
 
-    # Count {e} symbols in "get {e}{e}{e}" patterns
-    m = re.search(r'(?:get|gets?)\s+((?:\{e\})+)', oracle)
-    if m:
+    # Look for "get {E}" clauses. Return the first one whose sentence is
+    # NOT gated by a "whenever" trigger.
+    for m in re.finditer(r'(?:get|gets?)\s+((?:\{e\})+)', oracle):
+        # Find the boundary of this "sentence" — the last sentence-terminator
+        # (period, newline) before the match, or start of string.
+        sentence_start = max(
+            oracle.rfind('.', 0, m.start()),
+            oracle.rfind('\n', 0, m.start()),
+            -1
+        ) + 1
+        clause = oracle[sentence_start:m.end()]
+        if 'whenever' in clause or 'when ' in clause.lstrip()[:5]:
+            continue  # triggered ability — not static ETB
         return m.group(1).count('{e}')
 
-    # "you get {e}" anywhere
-    return oracle.count('{e}')
+    return 0
 
 
 def has_cascade(oracle: str) -> bool:
