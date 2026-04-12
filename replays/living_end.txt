@@ -1,0 +1,1365 @@
+Loaded 21759 cards (0 errors)
+======================================================================
+  GAME 1: Living End (P1) vs Amulet Titan (P2)  —  seed 89500
+  Series: Living End 0 - 0 Amulet Titan
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Living End wins → chooses to play first
+║ P1 (on play): Living End
+║ P2 (on draw): Amulet Titan
+╚═══════════════════════════════════════════════════════
+
+P1 (Living End) opening hand (3 lands, 4 spells):
+  • Striped Riverwinder [Creature, CMC 7]
+  • Island [Land, CMC 0]
+  • Swamp [Land, CMC 0]
+  • Demonic Dread [Spell, CMC 3]
+  • Subtlety [Creature, CMC 4]
+  • Blood Crypt [Land, CMC 0]
+  • Shardless Agent [Creature, CMC 3]
+→ P1 KEEPS 7 — has key card(s): Demonic Dread, Shardless Agent, Striped Riverwinder, 2 cheap spells
+
+P2 (Amulet Titan) opening hand (4 lands, 3 spells):
+  • Vesuva [Land, CMC 0]
+  • Urza's Saga [Land, CMC 0]
+  • Amulet of Vigor [Spell, CMC 1]
+  • Shifting Woodland [Land, CMC 0]
+  • Boseiju, Who Endures [Land, CMC 0]
+  • Scapeshift [Spell, CMC 4]
+  • Amulet of Vigor [Spell, CMC 1]
+→ P2 KEEPS 7 — has key card(s): Amulet of Vigor, 2 cheap spells
+
+
+╔══ TURN 1 — Living End (P1) ══════════════════════════
+║ Life: Living End 20  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Island
+T1 P1: Cycle Striped Riverwinder (pay 1 mana, draw a card)
+T1 P1: Cycle Street Wraith (pay 2 life, draw a card)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Living End 18
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Spelunking
+  [Main 1]
+T1 P2: Play Boseiju, Who Endures
+    → Goal: deploy_engine [engines]
+T1 P2: Cast Amulet of Vigor (1)
+    [Priority] P1 passes (no response)
+T1: Resolve Amulet of Vigor
+    → Goal: ramp
+T1 P2: Cast Amulet of Vigor (1)
+    [Priority] P1 passes (no response)
+T1: Resolve Amulet of Vigor
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Living End (P1) ══════════════════════════
+║ Life: Living End 18  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 51  |  Graveyard: 2
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Island
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor
+║   Lands: Boseiju, Who Endures
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Demonic Dread
+  [Main 1]
+T2 P1: Play Blood Crypt (pay 2 life, untapped, life: 16)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Living End 16
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor
+║   Lands: Boseiju, Who Endures
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Island, Blood Crypt
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mirrorpool
+  [Main 1]
+T2 P2: Play Urza's Saga
+    → Goal: ramp [enablers]
+    [Mana] Tap Boseiju, Who Endures→G (paying for Spelunking, 2 mana remaining)
+T2 P2: Cast Spelunking (2G)
+    [Priority] P1 passes (no response)
+T2: Resolve Spelunking
+T2 P2: Spelunking ETB: draw a card
+T2 P2: Amulet of Vigor, Amulet of Vigor untaps Simic Growth Chamber (x2)
+T2 P2: Simic Growth Chamber returns Boseiju, Who Endures to hand
+T2 P2: Spelunking puts Simic Growth Chamber onto battlefield
+    → Goal: ramp
+T2 P2: Cast Vexing Bauble (1)
+    [Priority] P1 passes (no response)
+T2: Resolve Vexing Bauble
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Living End (P1) ══════════════════════════
+║ Life: Living End 16  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Island, Blood Crypt
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking, Vexing Bauble
+║   Lands: Urza's Saga, Simic Growth Chamber
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Living End
+  [Main 1]
+T3 P1: Play Swamp
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Blood Crypt→R, Swamp→B, Island→U (paying for Demonic Dread, 3 mana remaining)
+T3 P1: Cast Demonic Dread (1BR)
+    [Priority] P2 passes (no response)
+T3: Resolve Demonic Dread
+T3: Cascade (CMC < 3)
+T3: Cascade hits Living End
+T3 P1: Cast Living End (0)
+T3: Resolve Living End
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Living End 16
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking, Vexing Bauble
+║   Lands: Urza's Saga, Simic Growth Chamber
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Island [T], Blood Crypt [T], Swamp [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Lotus Field
+  [Main 1]
+T3 P2: Play Lotus Field (enters tapped)
+T3 P2: Amulet of Vigor, Amulet of Vigor untaps Lotus Field (x2)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Living End (P1) ══════════════════════════
+║ Life: Living End 16  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 4
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Island, Blood Crypt, Swamp
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking, Vexing Bauble
+║   Lands: Urza's Saga, Simic Growth Chamber, Lotus Field
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Shardless Agent
+  [Main 1]
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Blood Crypt→R, Swamp→B, Island→U (paying for Demonic Dread, 3 mana remaining)
+T4 P1: Cast Demonic Dread (1BR)
+    [Priority] P2 passes (no response)
+T4: Resolve Demonic Dread
+T4: Cascade (CMC < 3)
+T4: Cascade hits Living End
+T4 P1: Cast Living End (0)
+T4: Resolve Living End
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Living End 16
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking, Vexing Bauble
+║   Lands: Urza's Saga, Simic Growth Chamber, Lotus Field
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Island [T], Blood Crypt [T], Swamp [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T4 P2: Create 1x Construct token(s)
+T4 P2: Urza's Saga Ch.II: Create Construct Token
+  [Draw] P2 draws: Scapeshift
+  [Main 1]
+T4 P2: Play Vesuva
+T4: Construct Token dies
+T4 P2: Activate Vexing Bauble (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Living End (P1) ══════════════════════════
+║ Life: Living End 16  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 6
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Island, Blood Crypt, Swamp
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking
+║   Lands: Urza's Saga, Simic Growth Chamber, Lotus Field, Vesuva
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Island
+  [Main 1]
+T5 P1: Play Island
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Living End 16
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking
+║   Lands: Urza's Saga, Simic Growth Chamber, Lotus Field, Vesuva
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Island, Blood Crypt, Swamp, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T5 P2: Create 1x Construct token(s)
+T5 P2: Urza's Saga Ch.III: Create Construct Token
+T5 P2: Urza's Saga tutors Amulet of Vigor
+T5 P2: Sacrifice Urza's Saga (final chapter)
+  [Draw] P2 draws: Green Sun's Zenith
+  [Main 1]
+T5 P2: Play Mirrorpool (enters tapped)
+T5 P2: Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Mirrorpool (x3)
+T5: Construct Token dies
+    → Goal: ramp
+    [Mana] Tap Simic Growth Chamber→G (paying for Green Sun's Zenith, 4 mana remaining)
+T5 P2: Cast Green Sun's Zenith (3G) (X=3)
+    [Priority] P1 passes (no response)
+T5: Resolve Green Sun's Zenith
+T5 P2: Green Sun's Zenith finds Dryad Arbor
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+    [Mana] Tap Island→U, Island→U, Swamp→B, Blood Crypt→B (paying for Subtlety, 4 mana remaining)
+T5 P1: Cast Subtlety (2UU)
+T5: Resolve Subtlety
+T5 P1: Subtlety enters (no creature/PW spell on stack to target)
+
+╔══ TURN 6 — Living End (P1) ══════════════════════════
+║ Life: Living End 16  |  Amulet Titan 20
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 6
+║ Living End board:
+║   Creatures: Subtlety (3/3)
+║   Lands: Island, Blood Crypt, Swamp, Island
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking, Amulet of Vigor
+║   Lands: Simic Growth Chamber [T], Lotus Field [T], Vesuva [T], Mirrorpool [T], Dryad Arbor
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Subtlety
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Subtlety
+T6 P1: Attack with Subtlety
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 3 damage dealt → P2 life: 20 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 17  |  Living End 16
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 43  |  Graveyard: 5
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking, Amulet of Vigor
+║   Lands: Simic Growth Chamber, Lotus Field, Vesuva, Mirrorpool, Dryad Arbor
+║ Living End board:
+║   Creatures: Subtlety (3/3) [tapped]
+║   Lands: Island, Blood Crypt, Swamp, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Scapeshift
+  [Main 1]
+T6 P2: Play Shifting Woodland (enters tapped)
+T6 P2: Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Shifting Woodland (x3)
+    → Goal: ramp
+    [Mana] Tap Dryad Arbor→G, Shifting Woodland→G, Mirrorpool→C, Simic Growth Chamber→G (paying for Scapeshift, 6 mana remaining)
+T6 P2: Cast Scapeshift (2GG)
+    [Priority] P1 passes (no response)
+T6: Resolve Scapeshift
+T6 P2: Scapeshift sacrifices 6 lands
+T6 P2: Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Simic Growth Chamber (x3)
+T6 P2: Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Gruul Turf (x3)
+T6 P2: Gruul Turf returns Simic Growth Chamber to hand
+T6 P2: Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Gruul Turf (x3)
+T6 P2: Gruul Turf returns Gruul Turf to hand
+T6 P2: Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Gruul Turf (x3)
+T6 P2: Gruul Turf returns Gruul Turf to hand
+T6 P2: Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Simic Growth Chamber (x3)
+T6 P2: Simic Growth Chamber returns Gruul Turf to hand
+T6 P2: Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Gruul Turf (x3)
+T6 P2: Gruul Turf returns Simic Growth Chamber to hand
+T6 P2: Scapeshift fetches 6 lands onto battlefield
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+    [Mana] Tap Island→U, Island→U, Swamp→B, Blood Crypt→B (paying for Subtlety, 4 mana remaining)
+T6 P1: Cast Subtlety (2UU)
+T6: Resolve Subtlety
+T6 P1: Subtlety enters (no creature/PW spell on stack to target)
+T6: Boseiju, Who Endures moved hand -> graveyard (discard to hand size)
+T6: Crumbling Vestige moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 7 — Living End (P1) ══════════════════════════
+║ Life: Living End 16  |  Amulet Titan 17
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 1
+║ Library: 44  |  Graveyard: 6
+║ Living End board:
+║   Creatures: Subtlety (3/3), Subtlety (3/3)
+║   Lands: Island, Blood Crypt, Swamp, Island
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking, Amulet of Vigor
+║   Lands: Gruul Turf
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Blooming Marsh
+  [Main 1]
+T7 P1: Play Blooming Marsh (tapped, 4 other lands)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Subtlety, Subtlety
+T7 P1: Attack with Subtlety, Subtlety
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 6 damage dealt → P2 life: 17 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 11  |  Living End 16
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 5
+║ Library: 36  |  Graveyard: 14
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking, Amulet of Vigor
+║   Lands: Gruul Turf
+║ Living End board:
+║   Creatures: Subtlety (3/3) [tapped], Subtlety (3/3) [tapped]
+║   Lands: Island, Blood Crypt, Swamp, Island, Blooming Marsh [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Hanweir Battlements // Hanweir, the Writhing Township
+  [Main 1]
+T7 P2: Play Simic Growth Chamber (enters tapped)
+T7 P2: Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Simic Growth Chamber (x3)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Living End (P1) ══════════════════════════
+║ Life: Living End 16  |  Amulet Titan 11
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 5  |  Opp lands: 2
+║ Library: 43  |  Graveyard: 6
+║ Living End board:
+║   Creatures: Subtlety (3/3), Subtlety (3/3)
+║   Lands: Island, Blood Crypt, Swamp, Island, Blooming Marsh
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking, Amulet of Vigor
+║   Lands: Gruul Turf, Simic Growth Chamber
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ketria Triome
+  [Main 1]
+T8 P1: Cycle Ketria Triome (pay 3 mana, draw a card)
+T8 P1: Play Breeding Pool (pay 2 life, untapped, life: 14)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Subtlety, Subtlety
+T8 P1: Attack with Subtlety, Subtlety
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 6 damage dealt → P2 life: 11 → 5
+  [End Combat]
+  [Main 2]
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Island→U, Blooming Marsh→G, Breeding Pool→G (paying for Shardless Agent, 3 mana remaining)
+T8 P1: Cast Shardless Agent (1UG)
+    [Priority] P2 passes (no response)
+T8: Resolve Shardless Agent
+T8: Cascade (CMC < 3)
+T8: Cascade hits Living End
+T8 P1: Cast Living End (0)
+T8: Resolve Living End
+  [End Step]
+
+╔══ TURN 8 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 5  |  Living End 14
+║ Hand: 7 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 6
+║ Library: 35  |  Graveyard: 14
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking, Amulet of Vigor
+║   Lands: Gruul Turf, Simic Growth Chamber
+║ Living End board:
+║   Creatures: Subtlety (3/3) [tapped], Subtlety (3/3) [tapped], Shardless Agent (2/2)
+║   Lands: Island [T], Blood Crypt [T], Swamp [T], Island [T], Blooming Marsh [T], Breeding Pool [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Green Sun's Zenith
+  [Main 1]
+T8 P2: Play Gruul Turf (enters tapped)
+T8 P2: Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Gruul Turf (x3)
+    → Goal: ramp
+    [Mana] Tap Gruul Turf→G (paying for Green Sun's Zenith, 3 mana remaining)
+T8 P2: Cast Green Sun's Zenith (2G) (X=2)
+    [Priority] P1 passes (no response)
+T8: Resolve Green Sun's Zenith
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Living End (P1) ══════════════════════════
+║ Life: Living End 14  |  Amulet Titan 5
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 6  |  Opp lands: 3
+║ Library: 40  |  Graveyard: 8
+║ Living End board:
+║   Creatures: Subtlety (3/3), Subtlety (3/3), Shardless Agent (2/2)
+║   Lands: Island, Blood Crypt, Swamp, Island, Blooming Marsh, Breeding Pool
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking, Amulet of Vigor
+║   Lands: Gruul Turf [T], Simic Growth Chamber [T], Gruul Turf [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Forest
+  [Main 1]
+T9 P1: Play Forest
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Island→U, Forest→G (paying for Shardless Agent, 7 mana remaining)
+T9 P1: Cast Shardless Agent (1UG)
+    [Priority] P2 passes (no response)
+T9: Resolve Shardless Agent
+T9: Cascade (CMC < 3)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Subtlety, Subtlety, Shardless Agent
+T9 P1: Attack with Subtlety, Subtlety, Shardless Agent
+  [Declare Blockers] P2 does not block
+P2 loses: life total -3
+  [Combat Damage] 8 damage dealt → P2 life: 5 → -3
+
+>>> Living End wins Game 1 on turn 9 via damage
+    Final life: Living End=14  Amulet Titan=-3
+
+======================================================================
+  GAME 2: Amulet Titan (P1) vs Living End (P2)  —  seed 89501
+  Series: Living End 1 - 0 Amulet Titan
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Amulet Titan wins → chooses to play first
+║ P1 (on play): Amulet Titan
+║ P2 (on draw): Living End
+╚═══════════════════════════════════════════════════════
+
+P1 (Amulet Titan) opening hand (5 lands, 2 spells):
+  • Forest [Land, CMC 0]
+  • Forest [Land, CMC 0]
+  • Amulet of Vigor [Spell, CMC 1]
+  • Green Sun's Zenith [Spell, CMC 1]
+  • Vesuva [Land, CMC 0]
+  • Urza's Cave [Land, CMC 0]
+  • Crumbling Vestige [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Amulet of Vigor, Green Sun's Zenith, 2 cheap spells
+
+P2 (Living End) opening hand (3 lands, 4 spells):
+  • Street Wraith [Creature, CMC 5]
+  • Force of Negation [Spell, CMC 3]
+  • Striped Riverwinder [Creature, CMC 7]
+  • Forest [Land, CMC 0]
+  • Blooming Marsh [Land, CMC 0]
+  • Street Wraith [Creature, CMC 5]
+  • Blooming Marsh [Land, CMC 0]
+→ P2 MULLIGANS (missing combo piece from {'Demonic Dread', 'Shardless Agent'})
+  New hand (2 lands, 5 spells): ['Architects of Will', 'Verdant Catacombs', 'Island', 'Curator of Mysteries', 'Striped Riverwinder', 'Living End', 'Architects of Will']
+→ P2 mulligans to 6, bottoms: ['Curator of Mysteries']
+  Keeps: ['Architects of Will', 'Verdant Catacombs', 'Island', 'Striped Riverwinder', 'Living End', 'Architects of Will']
+
+
+╔══ TURN 1 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Living End 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Crumbling Vestige (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Living End (P2) ══════════════════════════
+║ Life: Living End 20  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 0
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Indatha Triome
+  [Main 1]
+T1 P2: Play Verdant Catacombs
+T1 P2: Crack Verdant Catacombs (pay 1 life) -> Watery Grave (pay 2 life, untapped, life: 17)
+T1 P2: Cycle Striped Riverwinder (pay 1 mana, draw a card)
+T1 P2: Cycle Architects of Will (pay 0 mana, draw a card)
+T1 P2: Cycle Architects of Will (pay 0 mana, draw a card)
+T1 P2: Cycle Architects of Will (pay 0 mana, draw a card)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Living End 17
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Green Sun's Zenith
+  [Main 1]
+T2 P1: Play Urza's Cave
+    → Goal: deploy_engine [engines]
+    [Mana] Tap Urza's Cave→C (paying for Amulet of Vigor, 2 mana remaining)
+T2 P1: Cast Amulet of Vigor (1)
+    [Priority] P2 passes (no response)
+T2: Resolve Amulet of Vigor
+    → Goal: ramp
+    [Mana] Tap Crumbling Vestige→G (paying for Green Sun's Zenith, 1 mana remaining)
+T2 P1: Cast Green Sun's Zenith (G)
+    [Priority] P2 passes (no response)
+T2: Resolve Green Sun's Zenith
+T2 P1: Green Sun's Zenith finds Dryad Arbor
+    → Goal: ramp
+    [Mana] Tap Dryad Arbor→G (paying for Green Sun's Zenith, 1 mana remaining)
+T2 P1: Cast Green Sun's Zenith (G)
+    [Priority] P2 passes (no response)
+T2: Resolve Green Sun's Zenith
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Living End (P2) ══════════════════════════
+║ Life: Living End 17  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 1  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 5
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1) [tapped]
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige [T], Urza's Cave [T], Dryad Arbor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Shardless Agent
+  [Main 1]
+T2 P2: Cycle Striped Riverwinder (pay 1 mana, draw a card)
+T2 P2: Play Island
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Living End 17
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige, Urza's Cave, Dryad Arbor
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Aftermath Analyst
+  [Main 1]
+T3 P1: Play Forest
+    → Goal: ramp
+    [Mana] Tap Dryad Arbor→G, Urza's Cave→C (paying for Aftermath Analyst, 4 mana remaining)
+T3 P1: Cast Aftermath Analyst (1G)
+    [Priority] P2 passes (no response)
+T3: Resolve Aftermath Analyst
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Living End (P2) ══════════════════════════
+║ Life: Living End 17  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 6
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Island
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1) [tapped], Aftermath Analyst (1/3)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige, Urza's Cave [T], Dryad Arbor [T], Forest
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Curator of Mysteries
+  [Main 1]
+T3 P2: Cycle Curator of Mysteries (pay 1 mana, draw a card)
+T3 P2: Play Misty Rainforest
+T3 P2: Crack Misty Rainforest (pay 1 life) -> Breeding Pool (pay 2 life, untapped, life: 14)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Living End 14
+║ Hand: 2 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1), Aftermath Analyst (1/3)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige, Urza's Cave, Dryad Arbor, Forest
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Island, Breeding Pool
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Scapeshift
+  [Main 1]
+T4 P1: Play Forest
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Dryad Arbor, Aftermath Analyst
+T4 P1: Attack with Dryad Arbor, Aftermath Analyst
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 2 damage dealt → P2 life: 14 → 12
+  [End Combat]
+  [Main 2]
+    → Goal: ramp
+    [Mana] Tap Forest→G, Forest→G, Urza's Cave→C, Crumbling Vestige→B (paying for Scapeshift, 4 mana remaining)
+T4 P1: Cast Scapeshift (2GG)
+    [Priority] P2 passes (no response)
+T4: Resolve Scapeshift
+T4 P1: Scapeshift sacrifices 5 lands
+T4 P1: Amulet of Vigor untaps Gruul Turf
+T4 P1: Amulet of Vigor untaps Gruul Turf
+T4 P1: Gruul Turf returns Gruul Turf to hand
+T4 P1: Amulet of Vigor untaps Gruul Turf
+T4 P1: Gruul Turf returns Gruul Turf to hand
+T4 P1: Amulet of Vigor untaps Simic Growth Chamber
+T4 P1: Simic Growth Chamber returns Gruul Turf to hand
+T4 P1: Amulet of Vigor untaps Gruul Turf
+T4 P1: Gruul Turf returns Simic Growth Chamber to hand
+T4 P1: Scapeshift fetches 5 lands onto battlefield
+  [End Step]
+
+╔══ TURN 4 — Living End (P2) ══════════════════════════
+║ Life: Living End 12  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 1
+║ Library: 43  |  Graveyard: 8
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Island, Breeding Pool
+║ Amulet Titan board:
+║   Creatures: Aftermath Analyst (1/3) [tapped]
+║   Other: Amulet of Vigor
+║   Lands: Gruul Turf
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Force of Negation
+  [Main 1]
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Breeding Pool→G, Island→U, Watery Grave→B (paying for Shardless Agent, 3 mana remaining)
+T4 P2: Cast Shardless Agent (1UG)
+    [Priority] P1 passes (no response)
+T4: Resolve Shardless Agent
+T4: Cascade (CMC < 3)
+T4: Cascade hits Living End
+T4 P2: Cast Living End (0)
+T4: Resolve Living End
+T4 P2: Play Indatha Triome (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Living End 12
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 4
+║ Library: 44  |  Graveyard: 8
+║ Amulet Titan board:
+║   Creatures: Aftermath Analyst (1/3)
+║   Other: Amulet of Vigor
+║   Lands: Gruul Turf
+║ Living End board:
+║   Creatures: Shardless Agent (2/2)
+║   Lands: Watery Grave [T], Island [T], Breeding Pool [T], Indatha Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Simic Growth Chamber
+  [Main 1]
+T5 P1: Play Simic Growth Chamber (enters tapped)
+T5 P1: Amulet of Vigor untaps Simic Growth Chamber
+T5 P1: Activate Aftermath Analyst (sacrifice)
+T5 P1: Returned Crumbling Vestige to battlefield — 1 damage to P2 (life: 11)
+T5 P1: Returned Urza's Cave to battlefield — 1 damage to P2 (life: 10)
+T5 P1: Returned Dryad Arbor to battlefield — 1 damage to P2 (life: 9)
+T5 P1: Returned Forest to battlefield — 1 damage to P2 (life: 8)
+T5 P1: Returned Forest to battlefield — 1 damage to P2 (life: 7)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Living End (P2) ══════════════════════════
+║ Life: Living End 7  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 7
+║ Library: 41  |  Graveyard: 9
+║ Living End board:
+║   Creatures: Shardless Agent (2/2)
+║   Lands: Watery Grave, Island, Breeding Pool, Indatha Triome
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1) [tapped]
+║   Other: Amulet of Vigor
+║   Lands: Gruul Turf, Simic Growth Chamber, Crumbling Vestige [T], Urza's Cave [T], Dryad Arbor [T], Forest [T], Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Striped Riverwinder
+  [Main 1]
+T5 P2: Cycle Striped Riverwinder (pay 1 mana, draw a card)
+T5 P2: Play Blooming Marsh (tapped, 4 other lands)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Shardless Agent
+T5 P2: Attack with Shardless Agent
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 2 damage dealt → P1 life: 20 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 18  |  Living End 7
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 7  |  Opp lands: 5
+║ Library: 43  |  Graveyard: 4
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1)
+║   Other: Amulet of Vigor
+║   Lands: Gruul Turf, Simic Growth Chamber, Crumbling Vestige, Urza's Cave, Dryad Arbor, Forest, Forest
+║ Living End board:
+║   Creatures: Shardless Agent (2/2) [tapped]
+║   Lands: Watery Grave [T], Island, Breeding Pool, Indatha Triome, Blooming Marsh [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Forest
+  [Main 1]
+T6 P1: Play Gruul Turf (enters tapped)
+T6 P1: Amulet of Vigor untaps Gruul Turf
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Dryad Arbor
+T6 P1: Attack with Dryad Arbor
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 1 damage dealt → P2 life: 7 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Living End (P2) ══════════════════════════
+║ Life: Living End 6  |  Amulet Titan 18
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 8
+║ Library: 39  |  Graveyard: 10
+║ Living End board:
+║   Creatures: Shardless Agent (2/2)
+║   Lands: Watery Grave, Island, Breeding Pool, Indatha Triome, Blooming Marsh
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1) [tapped]
+║   Other: Amulet of Vigor
+║   Lands: Gruul Turf, Simic Growth Chamber, Crumbling Vestige, Urza's Cave, Dryad Arbor [T], Forest, Forest, Gruul Turf
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Demonic Dread
+  [Main 1]
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Island→U, Breeding Pool→G (paying for Shardless Agent, 5 mana remaining)
+T6 P2: Cast Shardless Agent (1UG)
+    [Priority] P1 passes (no response)
+T6: Resolve Shardless Agent
+T6: Cascade (CMC < 3)
+T6: Cascade hits Living End
+T6 P2: Cast Living End (0)
+T6: Resolve Living End
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Shardless Agent
+T6 P2: Attack with Shardless Agent
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 2 damage dealt → P1 life: 18 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 16  |  Living End 6
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 8  |  Opp lands: 5
+║ Library: 42  |  Graveyard: 4
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1)
+║   Other: Amulet of Vigor
+║   Lands: Gruul Turf, Simic Growth Chamber, Crumbling Vestige, Urza's Cave, Dryad Arbor, Forest, Forest, Gruul Turf
+║ Living End board:
+║   Creatures: Shardless Agent (2/2) [tapped], Shardless Agent (2/2)
+║   Lands: Watery Grave, Island [T], Breeding Pool [T], Indatha Triome, Blooming Marsh
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Amulet of Vigor
+  [Main 1]
+T7 P1: Play Gruul Turf (enters tapped)
+T7 P1: Amulet of Vigor untaps Gruul Turf
+    → Goal: ramp
+    [Mana] Tap Urza's Cave→C (paying for Amulet of Vigor, 9 mana remaining)
+T7 P1: Cast Amulet of Vigor (1)
+    [Priority] P2 passes (no response)
+T7: Resolve Amulet of Vigor
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Living End (P2) ══════════════════════════
+║ Life: Living End 6  |  Amulet Titan 16
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 9
+║ Library: 37  |  Graveyard: 11
+║ Living End board:
+║   Creatures: Shardless Agent (2/2), Shardless Agent (2/2)
+║   Lands: Watery Grave, Island, Breeding Pool, Indatha Triome, Blooming Marsh
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1)
+║   Other: Amulet of Vigor, Amulet of Vigor
+║   Lands: Gruul Turf, Simic Growth Chamber, Crumbling Vestige, Urza's Cave [T], Dryad Arbor, Forest, Forest, Gruul Turf, Gruul Turf
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Curator of Mysteries
+  [Main 1]
+T7 P2: Cycle Curator of Mysteries (pay 1 mana, draw a card)
+T7 P2: Play Verdant Catacombs
+T7 P2: Crack Verdant Catacombs -> Blood Crypt (tapped, no spells need mana)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Shardless Agent, Shardless Agent
+T7 P2: Attack with Shardless Agent, Shardless Agent
+  [Declare Blockers] P1 blocks: 
+T7: Dryad Arbor dies
+  [Combat Damage] 2 damage dealt → P1 life: 16 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 14  |  Living End 5
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 8  |  Opp lands: 6
+║ Library: 41  |  Graveyard: 5
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor
+║   Lands: Gruul Turf, Simic Growth Chamber, Crumbling Vestige, Urza's Cave, Forest, Forest, Gruul Turf, Gruul Turf
+║ Living End board:
+║   Creatures: Shardless Agent (2/2) [tapped], Shardless Agent (2/2) [tapped]
+║   Lands: Watery Grave [T], Island, Breeding Pool, Indatha Triome, Blooming Marsh, Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arboreal Grazer
+  [Main 1]
+T8 P1: Play Gruul Turf (enters tapped)
+T8 P1: Amulet of Vigor, Amulet of Vigor untaps Gruul Turf (x2)
+    → Goal: ramp [enablers]
+    [Mana] Tap Forest→G (paying for Arboreal Grazer, 9 mana remaining)
+T8 P1: Cast Arboreal Grazer (G)
+    [Priority] P2 passes (no response)
+T8: Resolve Arboreal Grazer
+T8 P1: Amulet of Vigor, Amulet of Vigor untaps Simic Growth Chamber (x2)
+T8 P1: Arboreal Grazer puts Simic Growth Chamber onto battlefield
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Living End (P2) ══════════════════════════
+║ Life: Living End 5  |  Amulet Titan 14
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 6  |  Opp lands: 10
+║ Library: 34  |  Graveyard: 13
+║ Living End board:
+║   Creatures: Shardless Agent (2/2), Shardless Agent (2/2)
+║   Lands: Watery Grave, Island, Breeding Pool, Indatha Triome, Blooming Marsh, Blood Crypt
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Amulet of Vigor
+║   Lands: Gruul Turf, Simic Growth Chamber, Crumbling Vestige, Urza's Cave, Forest [T], Forest, Gruul Turf, Gruul Turf, Gruul Turf, Simic Growth Chamber
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Waker of Waves
+  [Main 1]
+    → Goal: execute_payoff [fillers]
+    [Mana] Tap Island→U, Watery Grave→U, Breeding Pool→G, Blooming Marsh→B, Blood Crypt→B (paying for Waker of Waves, 6 mana remaining)
+T8 P2: Cast Waker of Waves (5UU)
+    [Priority] P1 passes (no response)
+T8: Resolve Waker of Waves
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Shardless Agent, Shardless Agent
+T8 P2: Attack with Shardless Agent, Shardless Agent
+  [Declare Blockers] P1 blocks: 
+  [Combat Damage] 2 damage dealt → P1 life: 14 → 12
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 12  |  Living End 5
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 10  |  Opp lands: 6
+║ Library: 40  |  Graveyard: 5
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Amulet of Vigor
+║   Lands: Gruul Turf, Simic Growth Chamber, Crumbling Vestige, Urza's Cave, Forest, Forest, Gruul Turf, Gruul Turf, Gruul Turf, Simic Growth Chamber
+║ Living End board:
+║   Creatures: Shardless Agent (2/2) [tapped], Shardless Agent (2/2) [tapped], Waker of Waves (7/7)
+║   Lands: Watery Grave [T], Island [T], Breeding Pool [T], Indatha Triome, Blooming Marsh [T], Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arboreal Grazer
+  [Main 1]
+T9 P1: Play Vesuva
+    → Goal: ramp [enablers]
+    [Mana] Tap Forest→G (paying for Arboreal Grazer, 11 mana remaining)
+T9 P1: Cast Arboreal Grazer (G)
+    [Priority] P2 passes (no response)
+T9: Resolve Arboreal Grazer
+T9 P1: Arboreal Grazer puts Forest onto battlefield
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Living End (P2) ══════════════════════════
+║ Life: Living End 5  |  Amulet Titan 12
+║ Hand: 5 cards  |  Opp hand: 0 cards
+║ Lands: 6  |  Opp lands: 12
+║ Library: 33  |  Graveyard: 13
+║ Living End board:
+║   Creatures: Shardless Agent (2/2), Shardless Agent (2/2), Waker of Waves (7/7)
+║   Lands: Watery Grave, Island, Breeding Pool, Indatha Triome, Blooming Marsh, Blood Crypt
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Amulet of Vigor
+║   Lands: Gruul Turf, Simic Growth Chamber, Crumbling Vestige, Urza's Cave, Forest [T], Forest, Gruul Turf, Gruul Turf, Gruul Turf, Simic Growth Chamber, Vesuva, Forest
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Force of Negation
+  [Main 1]
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Blood Crypt→R, Watery Grave→B (paying for Demonic Dread, 6 mana remaining)
+T9 P2: Cast Demonic Dread (1BR)
+    [Priority] P1 passes (no response)
+T9: Resolve Demonic Dread
+T9: Cascade (CMC < 3)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Shardless Agent, Shardless Agent, Waker of Waves
+T9 P2: Attack with Shardless Agent, Shardless Agent, Waker of Waves
+  [Declare Blockers] P1 blocks: 
+T9: Arboreal Grazer dies
+  [Combat Damage] 2 damage dealt → P1 life: 12 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 10  |  Living End 5
+║ Hand: 0 cards  |  Opp hand: 5 cards
+║ Lands: 12  |  Opp lands: 6
+║ Library: 39  |  Graveyard: 6
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Amulet of Vigor
+║   Lands: Gruul Turf, Simic Growth Chamber, Crumbling Vestige, Urza's Cave, Forest, Forest, Gruul Turf, Gruul Turf, Gruul Turf, Simic Growth Chamber, Vesuva, Forest
+║ Living End board:
+║   Creatures: Shardless Agent (2/2) [tapped], Shardless Agent (2/2) [tapped], Waker of Waves (7/7) [tapped]
+║   Lands: Watery Grave [T], Island, Breeding Pool, Indatha Triome, Blooming Marsh, Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Vexing Bauble
+  [Main 1]
+    → Goal: ramp
+    [Mana] Tap Urza's Cave→C (paying for Vexing Bauble, 12 mana remaining)
+T10 P1: Cast Vexing Bauble (1)
+    [Priority] P2 passes (no response)
+T10: Resolve Vexing Bauble
+T10 P1: Activate Vexing Bauble (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Arboreal Grazer
+T10 P1: Attack with Arboreal Grazer
+  [Declare Blockers] P2 does not block
+  [End Combat]
+  [Main 2]
+    → Goal: ramp
+T10 P1: Cast Summoner's Pact (0)
+    [Priority] P2 passes (no response)
+T10: Resolve Summoner's Pact
+T10 P1: Summoner's Pact finds Primeval Titan
+    → Goal: ramp [payoffs]
+    [Mana] Tap Forest→G, Forest→G, Forest→G, Gruul Turf→G, Simic Growth Chamber→G, Gruul Turf→G (paying for Primeval Titan, 11 mana remaining)
+T10 P1: Cast Primeval Titan (4GG)
+    [Priority] P2 passes (no response)
+T10: Resolve Primeval Titan
+T10 P1: Amulet of Vigor, Amulet of Vigor untaps Lotus Field (x2)
+T10 P1: Primeval Titan searches for Lotus Field
+T10 P1: Amulet of Vigor, Amulet of Vigor untaps Crumbling Vestige (x2)
+T10 P1: Primeval Titan searches for Crumbling Vestige
+  [End Step]
+
+╔══ TURN 10 — Living End (P2) ══════════════════════════
+║ Life: Living End 5  |  Amulet Titan 10
+║ Hand: 5 cards  |  Opp hand: 0 cards
+║ Lands: 6  |  Opp lands: 14
+║ Library: 32  |  Graveyard: 14
+║ Living End board:
+║   Creatures: Shardless Agent (2/2), Shardless Agent (2/2), Waker of Waves (7/7)
+║   Lands: Watery Grave, Island, Breeding Pool, Indatha Triome, Blooming Marsh, Blood Crypt
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3) [tapped], Primeval Titan (6/6)
+║   Other: Amulet of Vigor, Amulet of Vigor
+║   Lands: Gruul Turf [T], Simic Growth Chamber [T], Crumbling Vestige, Urza's Cave [T], Forest [T], Forest [T], Gruul Turf [T], Gruul Turf, Gruul Turf, Simic Growth Chamber, Vesuva, Forest [T], Lotus Field, Crumbling Vestige
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Verdant Catacombs
+  [Main 1]
+T10 P2: Play Verdant Catacombs
+T10 P2: Crack Verdant Catacombs -> Overgrown Tomb (tapped, no spells need mana)
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Blood Crypt→R, Watery Grave→B (paying for Demonic Dread, 6 mana remaining)
+T10 P2: Cast Demonic Dread (1BR)
+    [Priority] P1 passes (no response)
+T10: Resolve Demonic Dread
+T10: Cascade (CMC < 3)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Shardless Agent, Shardless Agent, Waker of Waves
+T10 P2: Attack with Shardless Agent, Shardless Agent, Waker of Waves
+  [Declare Blockers] P1 blocks: 
+T10: Primeval Titan dies
+  [Combat Damage] 4 damage dealt → P1 life: 10 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 6  |  Living End 4
+║ Hand: 0 cards  |  Opp hand: 4 cards
+║ Lands: 14  |  Opp lands: 7
+║ Library: 34  |  Graveyard: 9
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Amulet of Vigor
+║   Lands: Gruul Turf, Simic Growth Chamber, Crumbling Vestige, Urza's Cave, Forest, Forest, Gruul Turf, Gruul Turf, Gruul Turf, Simic Growth Chamber, Vesuva, Forest, Lotus Field, Crumbling Vestige
+║ Living End board:
+║   Creatures: Shardless Agent (2/2) [tapped], Shardless Agent (2/2) [tapped], Waker of Waves (7/7) [tapped]
+║   Lands: Watery Grave [T], Island, Breeding Pool, Indatha Triome, Blooming Marsh, Blood Crypt [T], Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Cultivator Colossus
+  [Main 1]
+    → Goal: ramp [payoffs]
+    [Mana] Tap Forest→G, Forest→G, Forest→G, Urza's Cave→C, Gruul Turf→G, Simic Growth Chamber→G, Gruul Turf→G (paying for Cultivator Colossus, 14 mana remaining)
+T11 P1: Cast Cultivator Colossus (4GGG)
+    [Priority] P2 passes (no response)
+T11: Resolve Cultivator Colossus
+T11 P1: Cultivator Colossus ETB: draw a card
+T11 P1: Amulet of Vigor, Amulet of Vigor untaps Shifting Woodland (x2)
+T11 P1: Cultivator Colossus puts Shifting Woodland onto battlefield
+T11: Cultivator Colossus dies
+    → Goal: ramp [enablers]
+    [Mana] Tap Shifting Woodland→G, Gruul Turf→G, Gruul Turf→G (paying for Spelunking, 8 mana remaining)
+T11 P1: Cast Spelunking (2G)
+    [Priority] P2 passes (no response)
+T11: Resolve Spelunking
+T11 P1: Spelunking ETB: draw a card
+T11 P1: Spelunking puts Otawara, Soaring City onto battlefield
+    → Goal: ramp [payoffs]
+    [Mana] Tap Simic Growth Chamber→G, Lotus Field→G, Otawara, Soaring City→U, Crumbling Vestige→B, Crumbling Vestige→B (paying for Primeval Titan, 6 mana remaining)
+T11 P1: Cast Primeval Titan (4GG)
+    [Priority] P2 passes (no response)
+T11: Resolve Primeval Titan
+T11 P1: Amulet of Vigor, Amulet of Vigor untaps Lotus Field (x2)
+T11 P1: Primeval Titan searches for Lotus Field
+T11 P1: Amulet of Vigor, Amulet of Vigor untaps Simic Growth Chamber (x2)
+T11 P1: Primeval Titan searches for Simic Growth Chamber
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Arboreal Grazer
+T11 P1: Attack with Arboreal Grazer
+  [Declare Blockers] P2 does not block
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Living End (P2) ══════════════════════════
+║ Life: Living End 4  |  Amulet Titan 6
+║ Hand: 4 cards  |  Opp hand: 0 cards
+║ Lands: 7  |  Opp lands: 18
+║ Library: 30  |  Graveyard: 16
+║ Living End board:
+║   Creatures: Shardless Agent (2/2), Shardless Agent (2/2), Waker of Waves (7/7)
+║   Lands: Watery Grave, Island, Breeding Pool, Indatha Triome, Blooming Marsh, Blood Crypt, Overgrown Tomb
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3) [tapped], Primeval Titan (6/6)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking
+║   Lands: Gruul Turf [T], Simic Growth Chamber [T], Crumbling Vestige [T], Urza's Cave [T], Forest [T], Forest [T], Gruul Turf [T], Gruul Turf [T], Gruul Turf [T], Simic Growth Chamber [T], Vesuva, Forest [T], Lotus Field [T], Crumbling Vestige [T], Shifting Woodland [T], Otawara, Soaring City [T], Lotus Field, Simic Growth Chamber
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Misty Rainforest
+  [Main 1]
+T11 P2: Play Misty Rainforest
+T11 P2: Crack Misty Rainforest -> Island (untapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Shardless Agent, Shardless Agent, Waker of Waves
+T11 P2: Attack with Shardless Agent, Shardless Agent, Waker of Waves
+  [Declare Blockers] P1 blocks: 
+T11: Primeval Titan dies
+  [Combat Damage] 4 damage dealt → P1 life: 6 → 2
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 2  |  Living End 3
+║ Hand: 0 cards  |  Opp hand: 4 cards
+║ Lands: 18  |  Opp lands: 8
+║ Library: 27  |  Graveyard: 11
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking
+║   Lands: Gruul Turf, Simic Growth Chamber, Crumbling Vestige, Urza's Cave, Forest, Forest, Gruul Turf, Gruul Turf, Gruul Turf, Simic Growth Chamber, Vesuva, Forest, Lotus Field, Crumbling Vestige, Shifting Woodland, Otawara, Soaring City, Lotus Field, Simic Growth Chamber
+║ Living End board:
+║   Creatures: Shardless Agent (2/2) [tapped], Shardless Agent (2/2) [tapped], Waker of Waves (7/7) [tapped]
+║   Lands: Watery Grave, Island, Breeding Pool, Indatha Triome, Blooming Marsh, Blood Crypt, Overgrown Tomb, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Tolaria West
+  [Main 1]
+T12 P1: Play Tolaria West (enters tapped)
+T12 P1: Amulet of Vigor, Amulet of Vigor untaps Tolaria West (x2)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Arboreal Grazer
+T12 P1: Attack with Arboreal Grazer
+  [Declare Blockers] P2 does not block
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Living End (P2) ══════════════════════════
+║ Life: Living End 3  |  Amulet Titan 2
+║ Hand: 4 cards  |  Opp hand: 0 cards
+║ Lands: 8  |  Opp lands: 19
+║ Library: 28  |  Graveyard: 17
+║ Living End board:
+║   Creatures: Shardless Agent (2/2), Shardless Agent (2/2), Waker of Waves (7/7)
+║   Lands: Watery Grave, Island, Breeding Pool, Indatha Triome, Blooming Marsh, Blood Crypt, Overgrown Tomb, Island
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3) [tapped]
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking
+║   Lands: Gruul Turf, Simic Growth Chamber, Crumbling Vestige, Urza's Cave, Forest, Forest, Gruul Turf, Gruul Turf, Gruul Turf, Simic Growth Chamber, Vesuva, Forest, Lotus Field, Crumbling Vestige, Shifting Woodland, Otawara, Soaring City, Lotus Field, Simic Growth Chamber, Tolaria West
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Force of Negation
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Shardless Agent, Shardless Agent, Waker of Waves
+T12 P2: Attack with Shardless Agent, Shardless Agent, Waker of Waves
+  [Declare Blockers] P1 does not block
+P1 loses: life total -9
+  [Combat Damage] 11 damage dealt → P1 life: 2 → -9
+
+>>> Living End wins Game 2 on turn 12 via damage
+    Final life: Amulet Titan=-9  Living End=3
+
+======================================================================
+  MATCH RESULT: Living End wins 2-0
+======================================================================

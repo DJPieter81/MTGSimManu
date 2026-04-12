@@ -1,0 +1,1637 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bo3 Replay: Living End vs Amulet Titan</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-serif;padding:20px;max-width:920px;margin:0 auto;font-size:13px}
+/* HEADER */
+.header{background:linear-gradient(135deg,#f0f4f8,#e8edf2);border:1px solid #d0d7de;border-radius:12px;padding:24px;margin-bottom:16px}
+.header h1{font-size:1.5em;margin-bottom:6px;color:#1f2328}
+.header h1 .vs{color:#9198a1}
+.meta{display:flex;justify-content:space-between;color:#656d76;font-size:.85em;margin-bottom:12px;padding:6px 0;border-bottom:1px solid #d0d7de}
+.series-score{font-size:1.3em;font-weight:700;margin-top:6px}
+.bug-s{color:#0969da}.opp-s{color:#d1242f}
+/* LEGEND */
+.legend-box{background:#f6f8fa;border:1px solid #d0d7de;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:11px}
+.legend-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#9198a1;margin-bottom:8px}
+.legend-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.leg-item{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.leg-label{color:#656d76;font-size:10px}
+.legend-note{margin-top:8px;font-size:10px;color:#9198a1;font-style:italic;border-top:1px solid #d0d7de;padding-top:6px}
+/* TABS */
+.game-tabs{display:flex;gap:4px;margin-bottom:0}
+.game-tab{background:#eaeef2;color:#656d76;border:1px solid #d0d7de;border-radius:8px 8px 0 0;padding:10px 20px;cursor:pointer;font-weight:600;font-size:.9em;transition:background .15s}
+.game-tab:hover{background:#d0d7de}
+.game-tab.active{background:#ffffff;color:#1f2328;border-bottom-color:#ffffff}
+.winner-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-left:6px;vertical-align:middle}
+.winner-dot.bug{background:#0969da}.winner-dot.opp{background:#d1242f}
+.game-panel{display:none;background:#ffffff;border:1px solid #d0d7de;border-top:none;border-radius:0 8px 8px 8px;padding:16px;margin-bottom:16px}
+.game-panel.active{display:block}
+/* HANDS */
+.hands{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.hand-box{background:#f6f8fa;border:1px solid #d0d7de;border-radius:8px;padding:12px}
+.hand-box h3{font-size:.8em;color:#656d76;margin-bottom:8px;font-weight:600}
+.hand-box.bug{border-left:3px solid #0969da}.hand-box.opp{border-left:3px solid #d1242f}
+.pill{display:inline-block;background:#eaeef2;border:1px solid #d0d7de;border-radius:10px;padding:2px 8px;margin:2px;font-size:.78em;font-family:'Fira Code','Consolas',monospace;color:#9a6700}
+.mull-pills{opacity:.5;margin:2px 0}.mull-pills .pill{font-size:.7em;text-decoration:line-through}
+.mull-step{display:flex;align-items:center;gap:6px;margin:5px 0 2px;font-size:.8em}
+.mull-label{color:#656d76;font-weight:600}
+.keep-tag{color:#1a7f37;font-weight:700;font-size:.82em;padding:1px 6px;background:#dafbe1;border-radius:3px}
+.mull-tag{color:#d1242f;font-weight:700;font-size:.82em;padding:1px 6px;background:#ffebe9;border-radius:3px}
+.mull-reason{font-size:.75em;color:#d1242f;margin:2px 0 6px;font-style:italic;padding-left:6px;border-left:2px solid #f5b8b0}
+.keep-reason{font-size:.78em;color:#1a7f37;margin-left:8px;font-style:italic}
+.hand-analysis{font-size:.75em;color:#1a7f37;margin-top:5px;padding:3px 7px;background:#dafbe1;border-radius:3px;border-left:2px solid #4ac26b}
+/* LIFE CHART */
+.life-chart{background:#f6f8fa;border:1px solid #d0d7de;border-radius:8px;padding:14px;margin-bottom:12px}
+.life-chart h3{font-size:.82em;color:#656d76;font-weight:600}
+/* CONTROLS */
+.controls{display:flex;gap:8px;margin-bottom:12px;align-items:center}
+.controls button{background:#f6f8fa;color:#1f2328;border:1px solid #d0d7de;border-radius:5px;padding:5px 12px;cursor:pointer;font-size:.82em}
+.controls button:hover{background:#eaeef2;border-color:#0969da}
+.kbd-hint{color:#9198a1;font-size:.78em;margin-left:4px}
+/* TURNS */
+.turn{background:#f6f8fa;border:1px solid #d0d7de;border-radius:8px;margin-bottom:6px;overflow:hidden;transition:border-color .15s}
+.turn.bug{border-left:3px solid #0969da}.turn.opp{border-left:3px solid #d1242f}
+.turn.active{border-color:#bf8700!important}
+.turn-header{padding:10px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;transition:background .1s}
+.turn-header:hover{background:#eaeef2}
+.turn-header .left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tnum{font-weight:700;font-size:1.05em;min-width:32px;font-family:'Fira Code',monospace}
+.tnum.bug{color:#0969da}.tnum.opp{color:#d1242f}
+.player{font-weight:600;font-size:.82em;padding:2px 7px;border-radius:4px}
+.player.bug{background:#ddf4ff;color:#0969da}.player.opp{background:#ffebe9;color:#d1242f}
+.life{font-size:.85em;color:#656d76}.life b{color:#1f2328}
+.hand-count{font-size:.75em;color:#9198a1;background:#eaeef2;padding:1px 5px;border-radius:3px;font-family:'Fira Code',monospace}
+.star-marker{color:#bf4b8a;font-size:.8em;font-weight:700}
+.arrow{color:#9198a1;transition:transform .2s;font-size:.75em;flex-shrink:0}
+.turn.open .arrow{transform:rotate(90deg)}
+.turn-body{display:none;padding:0 14px 14px;border-top:1px solid #d0d7de}
+.turn.open .turn-body{display:block}
+.section-label{font-size:.7em;text-transform:uppercase;letter-spacing:1px;color:#9198a1;margin:10px 0 5px;font-weight:600}
+.draw-row{margin-bottom:4px;display:flex;align-items:center;gap:4px}
+/* PLAYS */
+.play{padding:5px 0;display:flex;gap:6px;align-items:flex-start;flex-wrap:wrap;border-bottom:1px solid #eaeef2}
+.step{color:#9198a1;font-size:.82em;min-width:18px;text-align:right;padding-top:2px;flex-shrink:0}
+.action{font-family:'Fira Code','Consolas',monospace;font-size:.82em;color:#1f2328}
+.action.key{color:#9a6700;font-weight:600}
+.reasoning{font-size:.75em;color:#656d76;font-style:italic;width:100%;padding-left:24px;margin-top:1px}
+.pass-label{color:#9198a1;font-size:.82em;font-style:italic;padding-left:24px}
+/* BADGE */
+.cat-badge{font-size:.62em;text-transform:uppercase;letter-spacing:.5px;padding:1px 5px;border-radius:3px;font-weight:700;margin-right:3px;min-width:46px;text-align:center;display:inline-block;flex-shrink:0;font-family:system-ui}
+/* COMBAT */
+.combat-detail{background:#fff8f8;border:1px solid #f5b8b0;border-radius:5px;padding:6px 10px;margin:3px 0;font-family:'Fira Code',monospace;font-size:.8em;color:#1f2328}
+/* BOARD */
+.board-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+.board-side{background:#ffffff;border:1px solid #d0d7de;border-radius:6px;padding:8px 10px}
+.board-side h4{font-size:.75em;color:#656d76;margin-bottom:6px;font-weight:600}
+.board{margin-bottom:4px;min-height:22px;display:flex;flex-wrap:wrap;gap:3px}
+.creature-badge{background:#ddf4ff;border:1px solid #a8d8f0;border-radius:5px;padding:3px 8px;font-family:'Fira Code',monospace;font-size:.78em;color:#0969da;display:inline-flex;align-items:center;gap:4px}
+.creature-badge .pt{color:#656d76;font-size:.9em}
+.land-list{color:#9198a1;font-size:.72em;margin-top:4px;line-height:1.5}
+/* RESULT */
+.result{background:linear-gradient(135deg,#f0f4f8,#e8edf2);border:2px solid #d0d7de;border-radius:12px;padding:24px;text-align:center;margin-top:16px}
+.result h2{font-size:1.8em;margin-bottom:6px}
+.reason{color:#656d76;margin-bottom:4px;font-size:.9em}
+.stats{color:#9198a1;font-size:.85em}
+.bug-win{color:#0969da}.opp-win{color:#d1242f}
+.play-response{background:#fff8e1;border-left:3px solid #bf8700;border-radius:0 4px 4px 0;padding:5px 6px;margin:2px 0}
+.respond-badge{font-size:.75em;font-weight:700;margin-right:6px;letter-spacing:.3px}
+.reason-toggle{color:#9198a1;font-size:1.1em;cursor:pointer;padding:0 4px;border-radius:3px;user-select:none;flex-shrink:0}.reason-toggle:hover{color:#1f2328;background:#eaeef2}
+.reason-toggle.open{color:#0969da}
+.reasoning{font-size:.75em;color:#656d76;font-style:italic;width:100%;padding:2px 0 2px 24px;margin-top:1px;border-left:2px solid #d0d7de;margin-left:24px}
+</style></head><body>
+<div class="header">
+  <h1><span style="color:#0969da">Living End</span> <span class="vs">vs</span> <span style="color:#d1242f">Amulet Titan</span></h1>
+  <div class="series-score"><span class="bug-s">2</span> – <span class="opp-s">0</span> <span style="font-size:.6em;color:#484f58;font-weight:400">(Living End wins)</span></div>
+  <div style="color:#484f58;font-size:.8em;margin-top:4px">Modern Bo3 · Seed 89500 · Apr 2026</div>
+</div>
+<div class="legend-box">
+  <div class="legend-title">Legend</div>
+  <div class="legend-row">
+    <span class="leg-item"><span style="display:inline-block;width:10px;height:10px;background:#0969da;border-radius:2px;margin-right:4px;vertical-align:middle"></span><span class="leg-label">P1 (blue)</span></span>
+    <span class="leg-item"><span style="display:inline-block;width:10px;height:10px;background:#d1242f;border-radius:2px;margin-right:4px;vertical-align:middle"></span><span class="leg-label">P2 (red)</span></span>
+    <span class="leg-item"><span style="color:#e3b341;font-weight:700;margin-right:4px">gold text</span><span class="leg-label">Key play</span></span>
+    <span class="leg-item"><span style="color:#f778ba;font-weight:700;margin-right:4px">★</span><span class="leg-label">Key turn</span></span>
+    <span class="leg-item"><span style="color:#6e7681;font-style:italic;margin-right:4px">← goal</span><span class="leg-label">AI goal from log</span></span>
+  </div>
+  <div class="legend-row" style="margin-top:6px"><span class="leg-item"><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span> <span class="leg-label">Land drops</span></span><span class="leg-item"><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span> <span class="leg-label">Spells cast</span></span><span class="leg-item"><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">MANA</span> <span class="leg-label">Mana rituals / cantrips</span></span><span class="leg-item"><span class="cat-badge" style="background:#f5f0ff;color:#6639ba">FETCH</span> <span class="leg-label">Fetchlands</span></span><span class="leg-item"><span class="cat-badge" style="background:#ffebe9;color:#d1242f">REMOVE</span> <span class="leg-label">Removal</span></span><span class="leg-item"><span class="cat-badge" style="background:#f5f0ff;color:#8250df">COUNTER</span> <span class="leg-label">Counterspells</span></span><span class="leg-item"><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span> <span class="leg-label">Attacks / blocks</span></span><span class="leg-item"><span class="cat-badge" style="background:#fff0f8;color:#bf4b8a">COMBO</span> <span class="leg-label">Combo finishers</span></span><span class="leg-item"><span class="cat-badge" style="background:#fff8c5;color:#9a6700">DISCARD</span> <span class="leg-label">Discard effects</span></span><span class="leg-item"><span class="cat-badge" style="background:#fff8c5;color:#9a6700">TRIGGER</span> <span class="leg-label">Abilities / ETBs</span></span><span class="leg-item"><span class="cat-badge" style="background:#ffebe9;color:#d1242f">DAMAGE</span> <span class="leg-label">Direct damage</span></span><span class="leg-item"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span> <span class="leg-label">Draw step</span></span><span class="leg-item"><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span> <span class="leg-label">Other</span></span></div>
+  <div class="legend-note">Hand shown = active player's cards (tracked from opening hand + draws − plays). Board shown = state <em>after</em> turn resolves.</div>
+</div>
+<div class="game-tabs"><div class="game-tab active" onclick="showGame(0)">Game 1 <span class="winner-dot bug"></span></div>
+<div class="game-tab " onclick="showGame(1)">Game 2 <span class="winner-dot opp"></span></div>
+</div>
+<div class="game-panel active" id="game-0">
+<div class="meta">
+  <span>Amulet Titan is ON THE DRAW</span>
+  <span style="color:#484f58">Seed: 89500</span>
+</div>
+<div class="hands">
+  <div class="hand-box bug">
+    <h3><span style="color:#0969da">Living End</span> — Opening Hand (P1)</h3>
+    <div class="mull-step"><span class="keep-tag">KEEP 7</span><span class="keep-reason">has key card(s): Demonic Dread, Shardless Agent, Striped Riverwinder, 2 cheap spells</span></div><div class="hand-pills"><span class="pill">Striped Riverwinder</span><span class="pill">Island</span><span class="pill">Swamp</span><span class="pill">Demonic Dread</span><span class="pill">Subtlety</span><span class="pill">Blood Crypt</span><span class="pill">Shardless Agent</span></div>
+  </div>
+  <div class="hand-box opp">
+    <h3><span style="color:#d1242f">Amulet Titan</span> — Opening Hand (P2)</h3>
+    <div class="mull-step"><span class="keep-tag">KEEP 7</span><span class="keep-reason">has key card(s): Amulet of Vigor, 2 cheap spells</span></div><div class="hand-pills"><span class="pill">Vesuva</span><span class="pill">Urza's Saga</span><span class="pill">Amulet of Vigor</span><span class="pill">Shifting Woodland</span><span class="pill">Boseiju, Who Endures</span><span class="pill">Scapeshift</span><span class="pill">Amulet of Vigor</span></div>
+  </div>
+</div>
+<div class="life-chart">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+    <h3>Life Totals</h3>
+    <span style="font-size:10px;color:#484f58">— dashed lines at 5, 10, 15 —</span>
+  </div>
+  <svg viewBox="0 0 760 80" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:80px"><line x1="10" y1="56" x2="750" y2="56" stroke="#d0d7de" stroke-width="1" stroke-dasharray="3,3"/><text x="6" y="59" fill="#484f58" font-size="7" text-anchor="end">5</text><line x1="10" y1="39" x2="750" y2="39" stroke="#d0d7de" stroke-width="1" stroke-dasharray="3,3"/><text x="6" y="42" fill="#484f58" font-size="7" text-anchor="end">10</text><line x1="10" y1="22" x2="750" y2="22" stroke="#d0d7de" stroke-width="1" stroke-dasharray="3,3"/><text x="6" y="25" fill="#484f58" font-size="7" text-anchor="end">15</text><polyline points="10,5 53,5 97,11 140,11 184,18 227,18 271,18 314,18 358,18 401,18 445,18 488,18 532,18 575,18 619,18 662,18 706,25 750,25" fill="none" stroke="#0969da" stroke-width="2" opacity=".85"/><polyline points="10,5 53,5 97,5 140,5 184,5 227,5 271,5 314,5 358,5 401,5 445,5 488,5 532,15 575,15 619,35 662,35 706,56 750,56" fill="none" stroke="#d1242f" stroke-width="2" opacity=".85"/><circle cx="10" cy="5" r="3" fill="#0969da"/><text x="10" y="0" fill="#0969da" font-size="8" text-anchor="middle">20</text><circle cx="750" cy="25" r="3" fill="#0969da"/><text x="750" y="20" fill="#0969da" font-size="8" text-anchor="end">14</text><circle cx="10" cy="5" r="3" fill="#d1242f"/><text x="10" y="0" fill="#d1242f" font-size="8" text-anchor="middle">20</text><circle cx="750" cy="56" r="3" fill="#d1242f"/><text x="750" y="51" fill="#d1242f" font-size="8" text-anchor="end">5</text><text x="10" y="76" fill="#0969da" font-size="8" font-weight="600">Living End</text><text x="750" y="76" fill="#d1242f" font-size="8" font-weight="600" text-anchor="end">Amulet Titan</text></svg>
+</div>
+<div class="controls">
+  <button onclick="expandAll()">Expand All</button>
+  <button onclick="collapseAll()">Collapse All</button>
+  <span class="kbd-hint">↑↓ navigate turns &nbsp;·&nbsp; Enter: expand/collapse</span>
+</div>
+<div class="turn bug" id="g1t1">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T1</span>
+      <span class="player bug">Living End</span>
+      <span class="life">Life: <b>20</b> &nbsp;|&nbsp; Opp: 20</span>
+      <span class="hand-count">7c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    
+    <div class="section-label">Hand (7 cards)</div><div class="hand-pills"><span class="pill">Striped Riverwinder</span><span class="pill">Island</span><span class="pill">Swamp</span><span class="pill">Demonic Dread</span><span class="pill">Subtlety</span><span class="pill">Blood Crypt</span><span class="pill">Shardless Agent</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Island</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Cycle Striped Riverwinder (pay 1 mana, draw a card)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Cycle Street Wraith (pay 2 life, draw a card)</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Living End</span> — 1 land</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Island [T]</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Amulet Titan</span> — 0 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">none</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g1t1">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T1</span>
+      <span class="player opp">Amulet Titan</span>
+      <span class="life">Life: <b>20</b> &nbsp;|&nbsp; Opp: 18</span>
+      <span class="hand-count">8c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Spelunking</span></div>
+    <div class="section-label">Hand (8 cards)</div><div class="hand-pills"><span class="pill">Vesuva</span><span class="pill">Urza's Saga</span><span class="pill">Amulet of Vigor</span><span class="pill">Shifting Woodland</span><span class="pill">Boseiju, Who Endures</span><span class="pill">Scapeshift</span><span class="pill">Amulet of Vigor</span><span class="pill">Spelunking</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Boseiju, Who Endures</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Amulet of Vigor (1)</span><span class="reason-toggle" onclick="toggleReason('r1t1s2')" title="Show reasoning">·</span><div class="reasoning" id="r1t1s2" style="display:none">← deploy_engine [engines]</div></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Amulet of Vigor (1)</span><span class="reason-toggle" onclick="toggleReason('r1t1s3')" title="Show reasoning">·</span><div class="reasoning" id="r1t1s3" style="display:none">← ramp</div></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Living End</span> — 1 land</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Island</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Amulet Titan</span> — 2 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Boseiju, Who Endures</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g1t2">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T2</span>
+      <span class="player bug">Living End</span>
+      <span class="life">Life: <b>18</b> &nbsp;|&nbsp; Opp: 20</span>
+      <span class="hand-count">7c</span>
+      <span class="star-marker" title="Key turn">★1</span>
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Demonic Dread</span></div>
+    <div class="section-label">Hand (7 cards)</div><div class="hand-pills"><span class="pill">Striped Riverwinder</span><span class="pill">Swamp</span><span class="pill">Demonic Dread</span><span class="pill">Subtlety</span><span class="pill">Blood Crypt</span><span class="pill">Shardless Agent</span><span class="pill">Demonic Dread</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Blood Crypt (pay 2 life, untapped, life: 16)</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Living End</span> — 2 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Island, Blood Crypt</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Amulet Titan</span> — 2 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Boseiju, Who Endures</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g1t2">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T2</span>
+      <span class="player opp">Amulet Titan</span>
+      <span class="life">Life: <b>20</b> &nbsp;|&nbsp; Opp: 16</span>
+      <span class="hand-count">6c</span>
+      <span class="star-marker" title="Key turn">★1</span>
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Mirrorpool</span></div>
+    <div class="section-label">Hand (6 cards)</div><div class="hand-pills"><span class="pill">Vesuva</span><span class="pill">Urza's Saga</span><span class="pill">Shifting Woodland</span><span class="pill">Scapeshift</span><span class="pill">Spelunking</span><span class="pill">Mirrorpool</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Urza's Saga</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Spelunking (2G)</span><span class="reason-toggle" onclick="toggleReason('r1t2s2')" title="Show reasoning">·</span><div class="reasoning" id="r1t2s2" style="display:none">← ramp [enablers]</div></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Spelunking ETB: draw a card</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Amulet of Vigor, Amulet of Vigor untaps Simic Growth Chamber (x2)</span></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Simic Growth Chamber returns Boseiju, Who Endures to hand</span></div>
+<div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Spelunking puts Simic Growth Chamber onto battlefield</span></div>
+<div class="play"><span class="step">7.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Vexing Bauble (1)</span><span class="reason-toggle" onclick="toggleReason('r1t2s7')" title="Show reasoning">·</span><div class="reasoning" id="r1t2s7" style="display:none">← ramp</div></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Living End</span> — 2 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Island, Blood Crypt</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Amulet Titan</span> — 2 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Urza's Saga, Simic Growth Chamber</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g1t3">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T3</span>
+      <span class="player bug">Living End</span>
+      <span class="life">Life: <b>16</b> &nbsp;|&nbsp; Opp: 20</span>
+      <span class="hand-count">7c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Living End</span></div>
+    <div class="section-label">Hand (7 cards)</div><div class="hand-pills"><span class="pill">Striped Riverwinder</span><span class="pill">Swamp</span><span class="pill">Demonic Dread</span><span class="pill">Subtlety</span><span class="pill">Shardless Agent</span><span class="pill">Demonic Dread</span><span class="pill">Living End</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Swamp</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Demonic Dread (1BR)</span><span class="reason-toggle" onclick="toggleReason('r1t3s2')" title="Show reasoning">·</span><div class="reasoning" id="r1t3s2" style="display:none">← execute_payoff [payoffs]</div></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Living End (0)</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Living End</span> — 3 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Island [T], Blood Crypt [T], Swamp [T]</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Amulet Titan</span> — 2 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Urza's Saga, Simic Growth Chamber</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g1t3">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T3</span>
+      <span class="player opp">Amulet Titan</span>
+      <span class="life">Life: <b>20</b> &nbsp;|&nbsp; Opp: 16</span>
+      <span class="hand-count">5c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Lotus Field</span></div>
+    <div class="section-label">Hand (5 cards)</div><div class="hand-pills"><span class="pill">Vesuva</span><span class="pill">Shifting Woodland</span><span class="pill">Scapeshift</span><span class="pill">Mirrorpool</span><span class="pill">Lotus Field</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Lotus Field (enters tapped)</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Amulet of Vigor, Amulet of Vigor untaps Lotus Field (x2)</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Living End</span> — 3 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Island, Blood Crypt, Swamp</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Amulet Titan</span> — 3 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Urza's Saga, Simic Growth Chamber, Lotus Field</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g1t4">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T4</span>
+      <span class="player bug">Living End</span>
+      <span class="life">Life: <b>16</b> &nbsp;|&nbsp; Opp: 20</span>
+      <span class="hand-count">5c</span>
+      <span class="star-marker" title="Key turn">★2</span>
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Shardless Agent</span></div>
+    <div class="section-label">Hand (5 cards)</div><div class="hand-pills"><span class="pill">Striped Riverwinder</span><span class="pill">Subtlety</span><span class="pill">Shardless Agent</span><span class="pill">Demonic Dread</span><span class="pill">Shardless Agent</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Demonic Dread (1BR)</span><span class="reason-toggle" onclick="toggleReason('r1t4s1')" title="Show reasoning">·</span><div class="reasoning" id="r1t4s1" style="display:none">← execute_payoff [payoffs]</div></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Living End (0)</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Living End</span> — 3 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Island [T], Blood Crypt [T], Swamp [T]</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Amulet Titan</span> — 3 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Urza's Saga, Simic Growth Chamber, Lotus Field</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g1t4">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T4</span>
+      <span class="player opp">Amulet Titan</span>
+      <span class="life">Life: <b>20</b> &nbsp;|&nbsp; Opp: 16</span>
+      <span class="hand-count">5c</span>
+      <span class="star-marker" title="Key turn">★2</span>
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Scapeshift</span></div>
+    <div class="section-label">Hand (5 cards)</div><div class="hand-pills"><span class="pill">Vesuva</span><span class="pill">Shifting Woodland</span><span class="pill">Scapeshift</span><span class="pill">Mirrorpool</span><span class="pill">Scapeshift</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Create 1x Construct token(s)</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Urza's Saga Ch.II: Create Construct Token</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Vesuva</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Activate Vexing Bauble (sacrifice)</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Living End</span> — 3 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Island, Blood Crypt, Swamp</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Amulet Titan</span> — 4 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Urza's Saga, Simic Growth Chamber, Lotus Field, Vesuva</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g1t5">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T5</span>
+      <span class="player bug">Living End</span>
+      <span class="life">Life: <b>16</b> &nbsp;|&nbsp; Opp: 20</span>
+      <span class="hand-count">5c</span>
+      <span class="star-marker" title="Key turn">★3</span>
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Island</span></div>
+    <div class="section-label">Hand (5 cards)</div><div class="hand-pills"><span class="pill">Striped Riverwinder</span><span class="pill">Subtlety</span><span class="pill">Shardless Agent</span><span class="pill">Shardless Agent</span><span class="pill">Island</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Island</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Living End</span> — 4 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Island, Blood Crypt, Swamp, Island</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Amulet Titan</span> — 4 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Urza's Saga, Simic Growth Chamber, Lotus Field, Vesuva</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g1t5">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T5</span>
+      <span class="player opp">Amulet Titan</span>
+      <span class="life">Life: <b>20</b> &nbsp;|&nbsp; Opp: 16</span>
+      <span class="hand-count">5c</span>
+      <span class="star-marker" title="Key turn">★3</span>
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Green Sun's Zenith</span></div>
+    <div class="section-label">Hand (5 cards)</div><div class="hand-pills"><span class="pill">Shifting Woodland</span><span class="pill">Scapeshift</span><span class="pill">Mirrorpool</span><span class="pill">Scapeshift</span><span class="pill">Green Sun's Zenith</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Create 1x Construct token(s)</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Urza's Saga Ch.III: Create Construct Token</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Urza's Saga tutors Amulet of Vigor</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Sacrifice Urza's Saga (final chapter)</span></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Mirrorpool (enters tapped)</span></div>
+<div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Mirrorpool (x3)</span></div>
+<div class="play"><span class="step">7.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Green Sun's Zenith (3G) (X=3)</span><span class="reason-toggle" onclick="toggleReason('r1t5s7')" title="Show reasoning">·</span><div class="reasoning" id="r1t5s7" style="display:none">← ramp</div></div>
+<div class="play"><span class="step">8.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Green Sun's Zenith finds Dryad Arbor</span></div>
+<div class="play"><span class="step">9.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Subtlety (2UU)</span></div>
+<div class="play"><span class="step">10.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Subtlety enters (no creature/PW spell on stack to target)</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Living End</span> — 4 lands</h4>
+        <div class="board"><span class="creature-badge">Subtlety<span class="pt">3/3</span></span></div>
+        <div class="land-list">Island, Blood Crypt, Swamp, Island</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Amulet Titan</span> — 5 lands</h4>
+        <div class="board"><span class="creature-badge">Dryad Arbor<span class="pt">1/1</span></span></div>
+        <div class="land-list">Simic Growth Chamber [T], Lotus Field [T], Vesuva [T], Mirrorpool [T], Dryad Arbor</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g1t6">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T6</span>
+      <span class="player bug">Living End</span>
+      <span class="life">Life: <b>16</b> &nbsp;|&nbsp; Opp: 20</span>
+      <span class="hand-count">4c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Subtlety</span></div>
+    <div class="section-label">Hand (4 cards)</div><div class="hand-pills"><span class="pill">Striped Riverwinder</span><span class="pill">Shardless Agent</span><span class="pill">Shardless Agent</span><span class="pill">Subtlety</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Subtlety</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Subtlety</div><div class="combat-detail">3 damage → life 20 → 17</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Living End</span> — 4 lands</h4>
+        <div class="board"><span class="creature-badge">Subtlety<span class="pt">3/3</span></span></div>
+        <div class="land-list">Island, Blood Crypt, Swamp, Island</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Amulet Titan</span> — 5 lands</h4>
+        <div class="board"><span class="creature-badge">Dryad Arbor<span class="pt">1/1</span></span></div>
+        <div class="land-list">Simic Growth Chamber, Lotus Field, Vesuva, Mirrorpool, Dryad Arbor</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g1t6">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T6</span>
+      <span class="player opp">Amulet Titan</span>
+      <span class="life">Life: <b>17</b> &nbsp;|&nbsp; Opp: 16</span>
+      <span class="hand-count">4c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Scapeshift</span></div>
+    <div class="section-label">Hand (4 cards)</div><div class="hand-pills"><span class="pill">Shifting Woodland</span><span class="pill">Scapeshift</span><span class="pill">Scapeshift</span><span class="pill">Scapeshift</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Shifting Woodland (enters tapped)</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Shifting Woodland (x3)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Scapeshift (2GG)</span><span class="reason-toggle" onclick="toggleReason('r1t6s3')" title="Show reasoning">·</span><div class="reasoning" id="r1t6s3" style="display:none">← ramp</div></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Scapeshift sacrifices 6 lands</span></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Simic Growth Chamber (x3)</span></div>
+<div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Gruul Turf (x3)</span></div>
+<div class="play"><span class="step">7.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Gruul Turf returns Simic Growth Chamber to hand</span></div>
+<div class="play"><span class="step">8.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Gruul Turf (x3)</span></div>
+<div class="play"><span class="step">9.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Gruul Turf returns Gruul Turf to hand</span></div>
+<div class="play"><span class="step">10.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Gruul Turf (x3)</span></div>
+<div class="play"><span class="step">11.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Gruul Turf returns Gruul Turf to hand</span></div>
+<div class="play"><span class="step">12.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Simic Growth Chamber (x3)</span></div>
+<div class="play"><span class="step">13.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Simic Growth Chamber returns Gruul Turf to hand</span></div>
+<div class="play"><span class="step">14.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Gruul Turf (x3)</span></div>
+<div class="play"><span class="step">15.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Gruul Turf returns Simic Growth Chamber to hand</span></div>
+<div class="play"><span class="step">16.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Scapeshift fetches 6 lands onto battlefield</span></div>
+<div class="play"><span class="step">17.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Subtlety (2UU)</span></div>
+<div class="play"><span class="step">18.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Subtlety enters (no creature/PW spell on stack to target)</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Living End</span> — 4 lands</h4>
+        <div class="board"><span class="creature-badge">Subtlety<span class="pt">3/3</span></span><span class="creature-badge">Subtlety<span class="pt">3/3</span></span></div>
+        <div class="land-list">Island, Blood Crypt, Swamp, Island</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Amulet Titan</span> — 1 land</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Gruul Turf</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g1t7">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T7</span>
+      <span class="player bug">Living End</span>
+      <span class="life">Life: <b>16</b> &nbsp;|&nbsp; Opp: 17</span>
+      <span class="hand-count">4c</span>
+      <span class="star-marker" title="Key turn">★4</span>
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Blooming Marsh</span></div>
+    <div class="section-label">Hand (4 cards)</div><div class="hand-pills"><span class="pill">Striped Riverwinder</span><span class="pill">Shardless Agent</span><span class="pill">Shardless Agent</span><span class="pill">Blooming Marsh</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Blooming Marsh (tapped, 4 other lands)</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Subtlety, Subtlety</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Subtlety, Subtlety</div><div class="combat-detail">6 damage → life 17 → 11</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Living End</span> — 5 lands</h4>
+        <div class="board"><span class="creature-badge">Subtlety<span class="pt">3/3</span></span><span class="creature-badge">Subtlety<span class="pt">3/3</span></span></div>
+        <div class="land-list">Island, Blood Crypt, Swamp, Island, Blooming Marsh [T]</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Amulet Titan</span> — 1 land</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Gruul Turf</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g1t7">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T7</span>
+      <span class="player opp">Amulet Titan</span>
+      <span class="life">Life: <b>11</b> &nbsp;|&nbsp; Opp: 16</span>
+      <span class="hand-count">3c</span>
+      <span class="star-marker" title="Key turn">★4</span>
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Hanweir Battlements // Hanweir, the Writhing Township</span></div>
+    <div class="section-label">Hand (3 cards)</div><div class="hand-pills"><span class="pill">Scapeshift</span><span class="pill">Scapeshift</span><span class="pill">Hanweir Battlements // Hanweir, the Writhing Township</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Simic Growth Chamber (enters tapped)</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Simic Growth Chamber (x3)</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Living End</span> — 5 lands</h4>
+        <div class="board"><span class="creature-badge">Subtlety<span class="pt">3/3</span></span><span class="creature-badge">Subtlety<span class="pt">3/3</span></span></div>
+        <div class="land-list">Island, Blood Crypt, Swamp, Island, Blooming Marsh</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Amulet Titan</span> — 2 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Gruul Turf, Simic Growth Chamber</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g1t8">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T8</span>
+      <span class="player bug">Living End</span>
+      <span class="life">Life: <b>16</b> &nbsp;|&nbsp; Opp: 11</span>
+      <span class="hand-count">4c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Ketria Triome</span></div>
+    <div class="section-label">Hand (4 cards)</div><div class="hand-pills"><span class="pill">Striped Riverwinder</span><span class="pill">Shardless Agent</span><span class="pill">Shardless Agent</span><span class="pill">Ketria Triome</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Cycle Ketria Triome (pay 3 mana, draw a card)</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Breeding Pool (pay 2 life, untapped, life: 14)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Subtlety, Subtlety</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Shardless Agent (1UG)</span><span class="reason-toggle" onclick="toggleReason('r1t8s4')" title="Show reasoning">·</span><div class="reasoning" id="r1t8s4" style="display:none">← execute_payoff [payoffs]</div></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Living End (0)</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Subtlety, Subtlety</div><div class="combat-detail">6 damage → life 11 → 5</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Living End</span> — 6 lands</h4>
+        <div class="board"><span class="creature-badge">Subtlety<span class="pt">3/3</span></span><span class="creature-badge">Subtlety<span class="pt">3/3</span></span><span class="creature-badge">Shardless Agent<span class="pt">2/2</span></span></div>
+        <div class="land-list">Island [T], Blood Crypt [T], Swamp [T], Island [T], Blooming Marsh [T], Breeding Pool [T]</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Amulet Titan</span> — 2 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Gruul Turf, Simic Growth Chamber</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g1t8">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T8</span>
+      <span class="player opp">Amulet Titan</span>
+      <span class="life">Life: <b>5</b> &nbsp;|&nbsp; Opp: 14</span>
+      <span class="hand-count">4c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Green Sun's Zenith</span></div>
+    <div class="section-label">Hand (4 cards)</div><div class="hand-pills"><span class="pill">Scapeshift</span><span class="pill">Scapeshift</span><span class="pill">Hanweir Battlements // Hanweir, the Writhing Township</span><span class="pill">Green Sun's Zenith</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Gruul Turf (enters tapped)</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Gruul Turf (x3)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Green Sun's Zenith (2G) (X=2)</span><span class="reason-toggle" onclick="toggleReason('r1t8s3')" title="Show reasoning">·</span><div class="reasoning" id="r1t8s3" style="display:none">← ramp</div></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Living End</span> — 6 lands</h4>
+        <div class="board"><span class="creature-badge">Subtlety<span class="pt">3/3</span></span><span class="creature-badge">Subtlety<span class="pt">3/3</span></span><span class="creature-badge">Shardless Agent<span class="pt">2/2</span></span></div>
+        <div class="land-list">Island, Blood Crypt, Swamp, Island, Blooming Marsh, Breeding Pool</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Amulet Titan</span> — 3 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Gruul Turf [T], Simic Growth Chamber [T], Gruul Turf [T]</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g1t9">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T9</span>
+      <span class="player bug">Living End</span>
+      <span class="life">Life: <b>14</b> &nbsp;|&nbsp; Opp: 5</span>
+      <span class="hand-count">4c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Forest</span></div>
+    <div class="section-label">Hand (4 cards)</div><div class="hand-pills"><span class="pill">Striped Riverwinder</span><span class="pill">Shardless Agent</span><span class="pill">Ketria Triome</span><span class="pill">Forest</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Forest</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Shardless Agent (1UG)</span><span class="reason-toggle" onclick="toggleReason('r1t9s2')" title="Show reasoning">·</span><div class="reasoning" id="r1t9s2" style="display:none">← execute_payoff [payoffs]</div></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Subtlety, Subtlety, Shardless Agent</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Subtlety, Subtlety, Shardless Agent</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Living End</span> — 6 lands</h4>
+        <div class="board"><span class="creature-badge">Subtlety<span class="pt">3/3</span></span><span class="creature-badge">Subtlety<span class="pt">3/3</span></span><span class="creature-badge">Shardless Agent<span class="pt">2/2</span></span></div>
+        <div class="land-list">Island, Blood Crypt, Swamp, Island, Blooming Marsh, Breeding Pool</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Amulet Titan</span> — 3 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Gruul Turf [T], Simic Growth Chamber [T], Gruul Turf [T]</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="result">
+  <h2 class="bug-win">Living End WINS</h2>
+  <div class="reason">Via damage on turn 9</div>
+  <div class="stats">
+    Final life: <span style="color:#0969da">Living End 14</span>
+    &nbsp;|&nbsp;
+    <span style="color:#d1242f">Amulet Titan 5</span>
+    &nbsp;|&nbsp; Length: T9
+  </div>
+</div>
+</div>
+<div class="game-panel " id="game-1">
+<div class="meta">
+  <span>Living End is ON THE DRAW</span>
+  <span style="color:#484f58">Seed: 89500</span>
+</div>
+<div class="hands">
+  <div class="hand-box bug">
+    <h3><span style="color:#0969da">Amulet Titan</span> — Opening Hand (P1)</h3>
+    <div class="mull-step"><span class="keep-tag">KEEP 7</span><span class="keep-reason">has key card(s): Amulet of Vigor, Green Sun's Zenith, 2 cheap spells</span></div><div class="hand-pills"><span class="pill">Forest</span><span class="pill">Forest</span><span class="pill">Amulet of Vigor</span><span class="pill">Green Sun's Zenith</span><span class="pill">Vesuva</span><span class="pill">Urza's Cave</span><span class="pill">Crumbling Vestige</span></div>
+  </div>
+  <div class="hand-box opp">
+    <h3><span style="color:#d1242f">Living End</span> — Opening Hand (P2)</h3>
+    <div class="mull-step"><span class="mull-tag">MULL</span><span class="mull-label">Mulled hand:</span></div><div class="mull-pills"><span class="pill">Street Wraith</span><span class="pill">Force of Negation</span><span class="pill">Striped Riverwinder</span><span class="pill">Forest</span><span class="pill">Blooming Marsh</span><span class="pill">Street Wraith</span><span class="pill">Blooming Marsh</span></div><div class="mull-reason">missing combo piece from {'Demonic Dread', 'Shardless Agent'}</div><div class="mull-step"><span class="keep-tag">KEEP 7</span></div><div class="hand-pills"><span class="pill">Architects of Will</span><span class="pill">Verdant Catacombs</span><span class="pill">Island</span><span class="pill">Striped Riverwinder</span><span class="pill">Living End</span><span class="pill">Architects of Will</span></div>
+  </div>
+</div>
+<div class="life-chart">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+    <h3>Life Totals</h3>
+    <span style="font-size:10px;color:#484f58">— dashed lines at 5, 10, 15 —</span>
+  </div>
+  <svg viewBox="0 0 760 80" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:80px"><line x1="10" y1="56" x2="750" y2="56" stroke="#d0d7de" stroke-width="1" stroke-dasharray="3,3"/><text x="6" y="59" fill="#484f58" font-size="7" text-anchor="end">5</text><line x1="10" y1="39" x2="750" y2="39" stroke="#d0d7de" stroke-width="1" stroke-dasharray="3,3"/><text x="6" y="42" fill="#484f58" font-size="7" text-anchor="end">10</text><line x1="10" y1="22" x2="750" y2="22" stroke="#d0d7de" stroke-width="1" stroke-dasharray="3,3"/><text x="6" y="25" fill="#484f58" font-size="7" text-anchor="end">15</text><polyline points="10,5 40,5 71,5 102,5 133,5 164,5 195,5 225,5 256,5 287,5 318,5 349,11 380,11 410,18 441,18 472,25 503,25 534,32 565,32 595,39 626,39 657,52 688,52 719,66 750,66" fill="none" stroke="#0969da" stroke-width="2" opacity=".85"/><polyline points="10,5 40,5 71,5 102,15 133,15 164,15 195,15 225,25 256,32 287,32 318,49 349,49 380,52 410,52 441,52 472,56 503,56 534,56 565,56 595,56 626,56 657,59 688,59 719,62 750,62" fill="none" stroke="#d1242f" stroke-width="2" opacity=".85"/><circle cx="10" cy="5" r="3" fill="#0969da"/><text x="10" y="0" fill="#0969da" font-size="8" text-anchor="middle">20</text><circle cx="750" cy="66" r="3" fill="#0969da"/><text x="750" y="61" fill="#0969da" font-size="8" text-anchor="end">2</text><circle cx="10" cy="5" r="3" fill="#d1242f"/><text x="10" y="0" fill="#d1242f" font-size="8" text-anchor="middle">20</text><circle cx="750" cy="62" r="3" fill="#d1242f"/><text x="750" y="57" fill="#d1242f" font-size="8" text-anchor="end">3</text><text x="10" y="76" fill="#0969da" font-size="8" font-weight="600">Amulet Titan</text><text x="750" y="76" fill="#d1242f" font-size="8" font-weight="600" text-anchor="end">Living End</text></svg>
+</div>
+<div class="controls">
+  <button onclick="expandAll()">Expand All</button>
+  <button onclick="collapseAll()">Collapse All</button>
+  <span class="kbd-hint">↑↓ navigate turns &nbsp;·&nbsp; Enter: expand/collapse</span>
+</div>
+<div class="turn bug" id="g2t1">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T1</span>
+      <span class="player bug">Amulet Titan</span>
+      <span class="life">Life: <b>20</b> &nbsp;|&nbsp; Opp: 20</span>
+      <span class="hand-count">7c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    
+    <div class="section-label">Hand (7 cards)</div><div class="hand-pills"><span class="pill">Forest</span><span class="pill">Forest</span><span class="pill">Amulet of Vigor</span><span class="pill">Green Sun's Zenith</span><span class="pill">Vesuva</span><span class="pill">Urza's Cave</span><span class="pill">Crumbling Vestige</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Crumbling Vestige (enters tapped)</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Amulet Titan</span> — 1 land</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Crumbling Vestige [T]</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Living End</span> — 0 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">none</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g2t1">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T1</span>
+      <span class="player opp">Living End</span>
+      <span class="life">Life: <b>20</b> &nbsp;|&nbsp; Opp: 20</span>
+      <span class="hand-count">7c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Indatha Triome</span></div>
+    <div class="section-label">Hand (7 cards)</div><div class="hand-pills"><span class="pill">Architects of Will</span><span class="pill">Verdant Catacombs</span><span class="pill">Island</span><span class="pill">Striped Riverwinder</span><span class="pill">Living End</span><span class="pill">Architects of Will</span><span class="pill">Indatha Triome</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Verdant Catacombs</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f5f0ff;color:#6639ba">FETCH</span><span class="action">Crack Verdant Catacombs (pay 1 life) -&gt; Watery Grave (pay 2 life, untapped, life: 17)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Cycle Striped Riverwinder (pay 1 mana, draw a card)</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Cycle Architects of Will (pay 0 mana, draw a card)</span></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Cycle Architects of Will (pay 0 mana, draw a card)</span></div>
+<div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Cycle Architects of Will (pay 0 mana, draw a card)</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Amulet Titan</span> — 1 land</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Crumbling Vestige</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Living End</span> — 1 land</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Watery Grave [T]</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g2t2">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T2</span>
+      <span class="player bug">Amulet Titan</span>
+      <span class="life">Life: <b>20</b> &nbsp;|&nbsp; Opp: 17</span>
+      <span class="hand-count">7c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Green Sun's Zenith</span></div>
+    <div class="section-label">Hand (7 cards)</div><div class="hand-pills"><span class="pill">Forest</span><span class="pill">Forest</span><span class="pill">Amulet of Vigor</span><span class="pill">Green Sun's Zenith</span><span class="pill">Vesuva</span><span class="pill">Urza's Cave</span><span class="pill">Green Sun's Zenith</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Urza's Cave</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Amulet of Vigor (1)</span><span class="reason-toggle" onclick="toggleReason('r2t2s2')" title="Show reasoning">·</span><div class="reasoning" id="r2t2s2" style="display:none">← deploy_engine [engines]</div></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Green Sun's Zenith (G)</span><span class="reason-toggle" onclick="toggleReason('r2t2s3')" title="Show reasoning">·</span><div class="reasoning" id="r2t2s3" style="display:none">← ramp</div></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Green Sun's Zenith finds Dryad Arbor</span></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Green Sun's Zenith (G)</span><span class="reason-toggle" onclick="toggleReason('r2t2s5')" title="Show reasoning">·</span><div class="reasoning" id="r2t2s5" style="display:none">← ramp</div></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Amulet Titan</span> — 3 lands</h4>
+        <div class="board"><span class="creature-badge">Dryad Arbor<span class="pt">1/1</span></span></div>
+        <div class="land-list">Crumbling Vestige [T], Urza's Cave [T], Dryad Arbor [T]</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Living End</span> — 1 land</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Watery Grave</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g2t2">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T2</span>
+      <span class="player opp">Living End</span>
+      <span class="life">Life: <b>17</b> &nbsp;|&nbsp; Opp: 20</span>
+      <span class="hand-count">7c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Shardless Agent</span></div>
+    <div class="section-label">Hand (7 cards)</div><div class="hand-pills"><span class="pill">Architects of Will</span><span class="pill">Island</span><span class="pill">Striped Riverwinder</span><span class="pill">Living End</span><span class="pill">Architects of Will</span><span class="pill">Indatha Triome</span><span class="pill">Shardless Agent</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Cycle Striped Riverwinder (pay 1 mana, draw a card)</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Island</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Amulet Titan</span> — 3 lands</h4>
+        <div class="board"><span class="creature-badge">Dryad Arbor<span class="pt">1/1</span></span></div>
+        <div class="land-list">Crumbling Vestige, Urza's Cave, Dryad Arbor</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Living End</span> — 2 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Watery Grave [T], Island</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g2t3">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T3</span>
+      <span class="player bug">Amulet Titan</span>
+      <span class="life">Life: <b>20</b> &nbsp;|&nbsp; Opp: 17</span>
+      <span class="hand-count">4c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Aftermath Analyst</span></div>
+    <div class="section-label">Hand (4 cards)</div><div class="hand-pills"><span class="pill">Forest</span><span class="pill">Forest</span><span class="pill">Vesuva</span><span class="pill">Aftermath Analyst</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Forest</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Aftermath Analyst (1G)</span><span class="reason-toggle" onclick="toggleReason('r2t3s2')" title="Show reasoning">·</span><div class="reasoning" id="r2t3s2" style="display:none">← ramp</div></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Amulet Titan</span> — 4 lands</h4>
+        <div class="board"><span class="creature-badge">Dryad Arbor<span class="pt">1/1</span></span><span class="creature-badge">Aftermath Analyst<span class="pt">1/3</span></span></div>
+        <div class="land-list">Crumbling Vestige, Urza's Cave [T], Dryad Arbor [T], Forest</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Living End</span> — 2 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Watery Grave, Island</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g2t3">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T3</span>
+      <span class="player opp">Living End</span>
+      <span class="life">Life: <b>17</b> &nbsp;|&nbsp; Opp: 20</span>
+      <span class="hand-count">7c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Curator of Mysteries</span></div>
+    <div class="section-label">Hand (7 cards)</div><div class="hand-pills"><span class="pill">Architects of Will</span><span class="pill">Striped Riverwinder</span><span class="pill">Living End</span><span class="pill">Architects of Will</span><span class="pill">Indatha Triome</span><span class="pill">Shardless Agent</span><span class="pill">Curator of Mysteries</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Cycle Curator of Mysteries (pay 1 mana, draw a card)</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Misty Rainforest</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f5f0ff;color:#6639ba">FETCH</span><span class="action">Crack Misty Rainforest (pay 1 life) -&gt; Breeding Pool (pay 2 life, untapped, life: 14)</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Amulet Titan</span> — 4 lands</h4>
+        <div class="board"><span class="creature-badge">Dryad Arbor<span class="pt">1/1</span></span><span class="creature-badge">Aftermath Analyst<span class="pt">1/3</span></span></div>
+        <div class="land-list">Crumbling Vestige, Urza's Cave, Dryad Arbor, Forest</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Living End</span> — 3 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Watery Grave [T], Island, Breeding Pool</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g2t4">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T4</span>
+      <span class="player bug">Amulet Titan</span>
+      <span class="life">Life: <b>20</b> &nbsp;|&nbsp; Opp: 14</span>
+      <span class="hand-count">3c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Scapeshift</span></div>
+    <div class="section-label">Hand (3 cards)</div><div class="hand-pills"><span class="pill">Forest</span><span class="pill">Vesuva</span><span class="pill">Scapeshift</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Forest</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Dryad Arbor, Aftermath Analyst</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Scapeshift (2GG)</span><span class="reason-toggle" onclick="toggleReason('r2t4s3')" title="Show reasoning">·</span><div class="reasoning" id="r2t4s3" style="display:none">← ramp</div></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Scapeshift sacrifices 5 lands</span></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Amulet of Vigor untaps Gruul Turf</span></div>
+<div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Amulet of Vigor untaps Gruul Turf</span></div>
+<div class="play"><span class="step">7.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Gruul Turf returns Gruul Turf to hand</span></div>
+<div class="play"><span class="step">8.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Amulet of Vigor untaps Gruul Turf</span></div>
+<div class="play"><span class="step">9.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Gruul Turf returns Gruul Turf to hand</span></div>
+<div class="play"><span class="step">10.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Amulet of Vigor untaps Simic Growth Chamber</span></div>
+<div class="play"><span class="step">11.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Simic Growth Chamber returns Gruul Turf to hand</span></div>
+<div class="play"><span class="step">12.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Amulet of Vigor untaps Gruul Turf</span></div>
+<div class="play"><span class="step">13.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Gruul Turf returns Simic Growth Chamber to hand</span></div>
+<div class="play"><span class="step">14.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Scapeshift fetches 5 lands onto battlefield</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Dryad Arbor, Aftermath Analyst</div><div class="combat-detail">2 damage → life 14 → 12</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Amulet Titan</span> — 1 land</h4>
+        <div class="board"><span class="creature-badge">Aftermath Analyst<span class="pt">1/3</span></span></div>
+        <div class="land-list">Gruul Turf</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Living End</span> — 3 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Watery Grave, Island, Breeding Pool</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g2t4">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T4</span>
+      <span class="player opp">Living End</span>
+      <span class="life">Life: <b>12</b> &nbsp;|&nbsp; Opp: 20</span>
+      <span class="hand-count">8c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Force of Negation</span></div>
+    <div class="section-label">Hand (8 cards)</div><div class="hand-pills"><span class="pill">Architects of Will</span><span class="pill">Striped Riverwinder</span><span class="pill">Living End</span><span class="pill">Architects of Will</span><span class="pill">Indatha Triome</span><span class="pill">Shardless Agent</span><span class="pill">Curator of Mysteries</span><span class="pill">Force of Negation</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Shardless Agent (1UG)</span><span class="reason-toggle" onclick="toggleReason('r2t4s1')" title="Show reasoning">·</span><div class="reasoning" id="r2t4s1" style="display:none">← execute_payoff [payoffs]</div></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Living End (0)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Indatha Triome (enters tapped)</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Amulet Titan</span> — 1 land</h4>
+        <div class="board"><span class="creature-badge">Aftermath Analyst<span class="pt">1/3</span></span></div>
+        <div class="land-list">Gruul Turf</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Living End</span> — 4 lands</h4>
+        <div class="board"><span class="creature-badge">Shardless Agent<span class="pt">2/2</span></span></div>
+        <div class="land-list">Watery Grave [T], Island [T], Breeding Pool [T], Indatha Triome [T]</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g2t5">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T5</span>
+      <span class="player bug">Amulet Titan</span>
+      <span class="life">Life: <b>20</b> &nbsp;|&nbsp; Opp: 12</span>
+      <span class="hand-count">2c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Simic Growth Chamber</span></div>
+    <div class="section-label">Hand (2 cards)</div><div class="hand-pills"><span class="pill">Vesuva</span><span class="pill">Simic Growth Chamber</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Simic Growth Chamber (enters tapped)</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Amulet of Vigor untaps Simic Growth Chamber</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Activate Aftermath Analyst (sacrifice)</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">DAMAGE</span><span class="action">Returned Crumbling Vestige to battlefield — 1 damage to P2 (life: 11)</span></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">DAMAGE</span><span class="action">Returned Urza's Cave to battlefield — 1 damage to P2 (life: 10)</span></div>
+<div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">DAMAGE</span><span class="action">Returned Dryad Arbor to battlefield — 1 damage to P2 (life: 9)</span></div>
+<div class="play"><span class="step">7.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">DAMAGE</span><span class="action">Returned Forest to battlefield — 1 damage to P2 (life: 8)</span></div>
+<div class="play"><span class="step">8.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">DAMAGE</span><span class="action">Returned Forest to battlefield — 1 damage to P2 (life: 7)</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Amulet Titan</span> — 7 lands</h4>
+        <div class="board"><span class="creature-badge">Dryad Arbor<span class="pt">1/1</span></span></div>
+        <div class="land-list">Gruul Turf, Simic Growth Chamber, Crumbling Vestige [T], Urza's Cave [T], Dryad Arbor [T], Forest [T], Forest [T]</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Living End</span> — 4 lands</h4>
+        <div class="board"><span class="creature-badge">Shardless Agent<span class="pt">2/2</span></span></div>
+        <div class="land-list">Watery Grave, Island, Breeding Pool, Indatha Triome</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g2t5">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T5</span>
+      <span class="player opp">Living End</span>
+      <span class="life">Life: <b>7</b> &nbsp;|&nbsp; Opp: 20</span>
+      <span class="hand-count">6c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Striped Riverwinder</span></div>
+    <div class="section-label">Hand (6 cards)</div><div class="hand-pills"><span class="pill">Architects of Will</span><span class="pill">Striped Riverwinder</span><span class="pill">Architects of Will</span><span class="pill">Curator of Mysteries</span><span class="pill">Force of Negation</span><span class="pill">Striped Riverwinder</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Cycle Striped Riverwinder (pay 1 mana, draw a card)</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Blooming Marsh (tapped, 4 other lands)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Shardless Agent</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Shardless Agent</div><div class="combat-detail">2 damage → life 20 → 18</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Amulet Titan</span> — 7 lands</h4>
+        <div class="board"><span class="creature-badge">Dryad Arbor<span class="pt">1/1</span></span></div>
+        <div class="land-list">Gruul Turf, Simic Growth Chamber, Crumbling Vestige, Urza's Cave, Dryad Arbor, Forest, Forest</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Living End</span> — 5 lands</h4>
+        <div class="board"><span class="creature-badge">Shardless Agent<span class="pt">2/2</span></span></div>
+        <div class="land-list">Watery Grave [T], Island, Breeding Pool, Indatha Triome, Blooming Marsh [T]</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g2t6">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T6</span>
+      <span class="player bug">Amulet Titan</span>
+      <span class="life">Life: <b>18</b> &nbsp;|&nbsp; Opp: 7</span>
+      <span class="hand-count">2c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Forest</span></div>
+    <div class="section-label">Hand (2 cards)</div><div class="hand-pills"><span class="pill">Vesuva</span><span class="pill">Forest</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Gruul Turf (enters tapped)</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Amulet of Vigor untaps Gruul Turf</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Dryad Arbor</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Dryad Arbor</div><div class="combat-detail">1 damage → life 7 → 6</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Amulet Titan</span> — 8 lands</h4>
+        <div class="board"><span class="creature-badge">Dryad Arbor<span class="pt">1/1</span></span></div>
+        <div class="land-list">Gruul Turf, Simic Growth Chamber, Crumbling Vestige, Urza's Cave, Dryad Arbor [T], Forest, Forest, Gruul Turf</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Living End</span> — 5 lands</h4>
+        <div class="board"><span class="creature-badge">Shardless Agent<span class="pt">2/2</span></span></div>
+        <div class="land-list">Watery Grave, Island, Breeding Pool, Indatha Triome, Blooming Marsh</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g2t6">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T6</span>
+      <span class="player opp">Living End</span>
+      <span class="life">Life: <b>6</b> &nbsp;|&nbsp; Opp: 18</span>
+      <span class="hand-count">7c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Demonic Dread</span></div>
+    <div class="section-label">Hand (7 cards)</div><div class="hand-pills"><span class="pill">Architects of Will</span><span class="pill">Striped Riverwinder</span><span class="pill">Architects of Will</span><span class="pill">Curator of Mysteries</span><span class="pill">Force of Negation</span><span class="pill">Striped Riverwinder</span><span class="pill">Demonic Dread</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Shardless Agent (1UG)</span><span class="reason-toggle" onclick="toggleReason('r2t6s1')" title="Show reasoning">·</span><div class="reasoning" id="r2t6s1" style="display:none">← execute_payoff [payoffs]</div></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Living End (0)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Shardless Agent</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Shardless Agent</div><div class="combat-detail">2 damage → life 18 → 16</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Amulet Titan</span> — 8 lands</h4>
+        <div class="board"><span class="creature-badge">Dryad Arbor<span class="pt">1/1</span></span></div>
+        <div class="land-list">Gruul Turf, Simic Growth Chamber, Crumbling Vestige, Urza's Cave, Dryad Arbor, Forest, Forest, Gruul Turf</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Living End</span> — 5 lands</h4>
+        <div class="board"><span class="creature-badge">Shardless Agent<span class="pt">2/2</span></span><span class="creature-badge">Shardless Agent<span class="pt">2/2</span></span></div>
+        <div class="land-list">Watery Grave, Island [T], Breeding Pool [T], Indatha Triome, Blooming Marsh</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g2t7">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T7</span>
+      <span class="player bug">Amulet Titan</span>
+      <span class="life">Life: <b>16</b> &nbsp;|&nbsp; Opp: 6</span>
+      <span class="hand-count">3c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Amulet of Vigor</span></div>
+    <div class="section-label">Hand (3 cards)</div><div class="hand-pills"><span class="pill">Vesuva</span><span class="pill">Forest</span><span class="pill">Amulet of Vigor</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Gruul Turf (enters tapped)</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Amulet of Vigor untaps Gruul Turf</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Amulet of Vigor (1)</span><span class="reason-toggle" onclick="toggleReason('r2t7s3')" title="Show reasoning">·</span><div class="reasoning" id="r2t7s3" style="display:none">← ramp</div></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Amulet Titan</span> — 9 lands</h4>
+        <div class="board"><span class="creature-badge">Dryad Arbor<span class="pt">1/1</span></span></div>
+        <div class="land-list">Gruul Turf, Simic Growth Chamber, Crumbling Vestige, Urza's Cave [T], Dryad Arbor, Forest, Forest, Gruul Turf, Gruul Turf</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Living End</span> — 5 lands</h4>
+        <div class="board"><span class="creature-badge">Shardless Agent<span class="pt">2/2</span></span><span class="creature-badge">Shardless Agent<span class="pt">2/2</span></span></div>
+        <div class="land-list">Watery Grave, Island, Breeding Pool, Indatha Triome, Blooming Marsh</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g2t7">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T7</span>
+      <span class="player opp">Living End</span>
+      <span class="life">Life: <b>6</b> &nbsp;|&nbsp; Opp: 16</span>
+      <span class="hand-count">8c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Curator of Mysteries</span></div>
+    <div class="section-label">Hand (8 cards)</div><div class="hand-pills"><span class="pill">Architects of Will</span><span class="pill">Striped Riverwinder</span><span class="pill">Architects of Will</span><span class="pill">Curator of Mysteries</span><span class="pill">Force of Negation</span><span class="pill">Striped Riverwinder</span><span class="pill">Demonic Dread</span><span class="pill">Curator of Mysteries</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Cycle Curator of Mysteries (pay 1 mana, draw a card)</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Verdant Catacombs</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f5f0ff;color:#6639ba">FETCH</span><span class="action">Crack Verdant Catacombs -&gt; Blood Crypt (tapped, no spells need mana)</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Shardless Agent, Shardless Agent</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Shardless Agent, Shardless Agent</div><div class="combat-detail">2 damage → life 16 → 14</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Amulet Titan</span> — 8 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Gruul Turf, Simic Growth Chamber, Crumbling Vestige, Urza's Cave, Forest, Forest, Gruul Turf, Gruul Turf</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Living End</span> — 6 lands</h4>
+        <div class="board"><span class="creature-badge">Shardless Agent<span class="pt">2/2</span></span><span class="creature-badge">Shardless Agent<span class="pt">2/2</span></span></div>
+        <div class="land-list">Watery Grave [T], Island, Breeding Pool, Indatha Triome, Blooming Marsh, Blood Crypt [T]</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g2t8">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T8</span>
+      <span class="player bug">Amulet Titan</span>
+      <span class="life">Life: <b>14</b> &nbsp;|&nbsp; Opp: 5</span>
+      <span class="hand-count">3c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Arboreal Grazer</span></div>
+    <div class="section-label">Hand (3 cards)</div><div class="hand-pills"><span class="pill">Vesuva</span><span class="pill">Forest</span><span class="pill">Arboreal Grazer</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Gruul Turf (enters tapped)</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Amulet of Vigor, Amulet of Vigor untaps Gruul Turf (x2)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Arboreal Grazer (G)</span><span class="reason-toggle" onclick="toggleReason('r2t8s3')" title="Show reasoning">·</span><div class="reasoning" id="r2t8s3" style="display:none">← ramp [enablers]</div></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Amulet of Vigor, Amulet of Vigor untaps Simic Growth Chamber (x2)</span></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Arboreal Grazer puts Simic Growth Chamber onto battlefield</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Amulet Titan</span> — 10 lands</h4>
+        <div class="board"><span class="creature-badge">Arboreal Grazer<span class="pt">0/3</span></span></div>
+        <div class="land-list">Gruul Turf, Simic Growth Chamber, Crumbling Vestige, Urza's Cave, Forest [T], Forest, Gruul Turf, Gruul Turf, Gruul Turf, Simic Growth Chamb</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Living End</span> — 6 lands</h4>
+        <div class="board"><span class="creature-badge">Shardless Agent<span class="pt">2/2</span></span><span class="creature-badge">Shardless Agent<span class="pt">2/2</span></span></div>
+        <div class="land-list">Watery Grave, Island, Breeding Pool, Indatha Triome, Blooming Marsh, Blood Crypt</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g2t8">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T8</span>
+      <span class="player opp">Living End</span>
+      <span class="life">Life: <b>5</b> &nbsp;|&nbsp; Opp: 14</span>
+      <span class="hand-count">9c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Waker of Waves</span></div>
+    <div class="section-label">Hand (9 cards)</div><div class="hand-pills"><span class="pill">Architects of Will</span><span class="pill">Striped Riverwinder</span><span class="pill">Architects of Will</span><span class="pill">Curator of Mysteries</span><span class="pill">Force of Negation</span><span class="pill">Striped Riverwinder</span><span class="pill">Demonic Dread</span><span class="pill">Curator of Mysteries</span><span class="pill">Waker of Waves</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Waker of Waves (5UU)</span><span class="reason-toggle" onclick="toggleReason('r2t8s1')" title="Show reasoning">·</span><div class="reasoning" id="r2t8s1" style="display:none">← execute_payoff [fillers]</div></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Shardless Agent, Shardless Agent</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Shardless Agent, Shardless Agent</div><div class="combat-detail">2 damage → life 14 → 12</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Amulet Titan</span> — 10 lands</h4>
+        <div class="board"><span class="creature-badge">Arboreal Grazer<span class="pt">0/3</span></span></div>
+        <div class="land-list">Gruul Turf, Simic Growth Chamber, Crumbling Vestige, Urza's Cave, Forest, Forest, Gruul Turf, Gruul Turf, Gruul Turf, Simic Growth Chamber</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Living End</span> — 6 lands</h4>
+        <div class="board"><span class="creature-badge">Shardless Agent<span class="pt">2/2</span></span><span class="creature-badge">Shardless Agent<span class="pt">2/2</span></span><span class="creature-badge">Waker of Waves<span class="pt">7/7</span></span></div>
+        <div class="land-list">Watery Grave [T], Island [T], Breeding Pool [T], Indatha Triome, Blooming Marsh [T], Blood Crypt [T]</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g2t9">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T9</span>
+      <span class="player bug">Amulet Titan</span>
+      <span class="life">Life: <b>12</b> &nbsp;|&nbsp; Opp: 5</span>
+      <span class="hand-count">3c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Arboreal Grazer</span></div>
+    <div class="section-label">Hand (3 cards)</div><div class="hand-pills"><span class="pill">Vesuva</span><span class="pill">Forest</span><span class="pill">Arboreal Grazer</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Vesuva</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Arboreal Grazer (G)</span><span class="reason-toggle" onclick="toggleReason('r2t9s2')" title="Show reasoning">·</span><div class="reasoning" id="r2t9s2" style="display:none">← ramp [enablers]</div></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Arboreal Grazer puts Forest onto battlefield</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Amulet Titan</span> — 12 lands</h4>
+        <div class="board"><span class="creature-badge">Arboreal Grazer<span class="pt">0/3</span></span><span class="creature-badge">Arboreal Grazer<span class="pt">0/3</span></span></div>
+        <div class="land-list">Gruul Turf, Simic Growth Chamber, Crumbling Vestige, Urza's Cave, Forest [T], Forest, Gruul Turf, Gruul Turf, Gruul Turf, Simic Growth Chamb</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Living End</span> — 6 lands</h4>
+        <div class="board"><span class="creature-badge">Shardless Agent<span class="pt">2/2</span></span><span class="creature-badge">Shardless Agent<span class="pt">2/2</span></span><span class="creature-badge">Waker of Waves<span class="pt">7/7</span></span></div>
+        <div class="land-list">Watery Grave, Island, Breeding Pool, Indatha Triome, Blooming Marsh, Blood Crypt</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g2t9">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T9</span>
+      <span class="player opp">Living End</span>
+      <span class="life">Life: <b>5</b> &nbsp;|&nbsp; Opp: 12</span>
+      <span class="hand-count">9c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Force of Negation</span></div>
+    <div class="section-label">Hand (9 cards)</div><div class="hand-pills"><span class="pill">Architects of Will</span><span class="pill">Striped Riverwinder</span><span class="pill">Architects of Will</span><span class="pill">Curator of Mysteries</span><span class="pill">Force of Negation</span><span class="pill">Striped Riverwinder</span><span class="pill">Demonic Dread</span><span class="pill">Curator of Mysteries</span><span class="pill">Force of Negation</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Demonic Dread (1BR)</span><span class="reason-toggle" onclick="toggleReason('r2t9s1')" title="Show reasoning">·</span><div class="reasoning" id="r2t9s1" style="display:none">← execute_payoff [payoffs]</div></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Shardless Agent, Shardless Agent, Waker of Waves</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Shardless Agent, Shardless Agent, Waker of Waves</div><div class="combat-detail">2 damage → life 12 → 10</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Amulet Titan</span> — 12 lands</h4>
+        <div class="board"><span class="creature-badge">Arboreal Grazer<span class="pt">0/3</span></span></div>
+        <div class="land-list">Gruul Turf, Simic Growth Chamber, Crumbling Vestige, Urza's Cave, Forest, Forest, Gruul Turf, Gruul Turf, Gruul Turf, Simic Growth Chamber, </div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Living End</span> — 6 lands</h4>
+        <div class="board"><span class="creature-badge">Shardless Agent<span class="pt">2/2</span></span><span class="creature-badge">Shardless Agent<span class="pt">2/2</span></span><span class="creature-badge">Waker of Waves<span class="pt">7/7</span></span></div>
+        <div class="land-list">Watery Grave [T], Island, Breeding Pool, Indatha Triome, Blooming Marsh, Blood Crypt [T]</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g2t10">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T10</span>
+      <span class="player bug">Amulet Titan</span>
+      <span class="life">Life: <b>10</b> &nbsp;|&nbsp; Opp: 5</span>
+      <span class="hand-count">2c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Vexing Bauble</span></div>
+    <div class="section-label">Hand (2 cards)</div><div class="hand-pills"><span class="pill">Forest</span><span class="pill">Vexing Bauble</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Vexing Bauble (1)</span><span class="reason-toggle" onclick="toggleReason('r2t10s1')" title="Show reasoning">·</span><div class="reasoning" id="r2t10s1" style="display:none">← ramp</div></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Activate Vexing Bauble (sacrifice)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Arboreal Grazer</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Summoner's Pact (0)</span><span class="reason-toggle" onclick="toggleReason('r2t10s4')" title="Show reasoning">·</span><div class="reasoning" id="r2t10s4" style="display:none">← ramp</div></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Summoner's Pact finds Primeval Titan</span></div>
+<div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Primeval Titan (4GG)</span><span class="reason-toggle" onclick="toggleReason('r2t10s6')" title="Show reasoning">·</span><div class="reasoning" id="r2t10s6" style="display:none">← ramp [payoffs]</div></div>
+<div class="play"><span class="step">7.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Amulet of Vigor, Amulet of Vigor untaps Lotus Field (x2)</span></div>
+<div class="play"><span class="step">8.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Primeval Titan searches for Lotus Field</span></div>
+<div class="play"><span class="step">9.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Amulet of Vigor, Amulet of Vigor untaps Crumbling Vestige (x2)</span></div>
+<div class="play"><span class="step">10.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Primeval Titan searches for Crumbling Vestige</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Arboreal Grazer</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Amulet Titan</span> — 14 lands</h4>
+        <div class="board"><span class="creature-badge">Arboreal Grazer<span class="pt">0/3</span></span><span class="creature-badge">Primeval Titan<span class="pt">6/6</span></span></div>
+        <div class="land-list">Gruul Turf [T], Simic Growth Chamber [T], Crumbling Vestige, Urza's Cave [T], Forest [T], Forest [T], Gruul Turf [T], Gruul Turf, Gruul Turf</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Living End</span> — 6 lands</h4>
+        <div class="board"><span class="creature-badge">Shardless Agent<span class="pt">2/2</span></span><span class="creature-badge">Shardless Agent<span class="pt">2/2</span></span><span class="creature-badge">Waker of Waves<span class="pt">7/7</span></span></div>
+        <div class="land-list">Watery Grave, Island, Breeding Pool, Indatha Triome, Blooming Marsh, Blood Crypt</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g2t10">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T10</span>
+      <span class="player opp">Living End</span>
+      <span class="life">Life: <b>5</b> &nbsp;|&nbsp; Opp: 10</span>
+      <span class="hand-count">9c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Verdant Catacombs</span></div>
+    <div class="section-label">Hand (9 cards)</div><div class="hand-pills"><span class="pill">Architects of Will</span><span class="pill">Striped Riverwinder</span><span class="pill">Architects of Will</span><span class="pill">Curator of Mysteries</span><span class="pill">Force of Negation</span><span class="pill">Striped Riverwinder</span><span class="pill">Curator of Mysteries</span><span class="pill">Force of Negation</span><span class="pill">Verdant Catacombs</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Verdant Catacombs</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f5f0ff;color:#6639ba">FETCH</span><span class="action">Crack Verdant Catacombs -&gt; Overgrown Tomb (tapped, no spells need mana)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Demonic Dread (1BR)</span><span class="reason-toggle" onclick="toggleReason('r2t10s3')" title="Show reasoning">·</span><div class="reasoning" id="r2t10s3" style="display:none">← execute_payoff [payoffs]</div></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Shardless Agent, Shardless Agent, Waker of Waves</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Shardless Agent, Shardless Agent, Waker of Waves</div><div class="combat-detail">4 damage → life 10 → 6</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Amulet Titan</span> — 14 lands</h4>
+        <div class="board"><span class="creature-badge">Arboreal Grazer<span class="pt">0/3</span></span></div>
+        <div class="land-list">Gruul Turf, Simic Growth Chamber, Crumbling Vestige, Urza's Cave, Forest, Forest, Gruul Turf, Gruul Turf, Gruul Turf, Simic Growth Chamber, </div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Living End</span> — 7 lands</h4>
+        <div class="board"><span class="creature-badge">Shardless Agent<span class="pt">2/2</span></span><span class="creature-badge">Shardless Agent<span class="pt">2/2</span></span><span class="creature-badge">Waker of Waves<span class="pt">7/7</span></span></div>
+        <div class="land-list">Watery Grave [T], Island, Breeding Pool, Indatha Triome, Blooming Marsh, Blood Crypt [T], Overgrown Tomb [T]</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g2t11">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T11</span>
+      <span class="player bug">Amulet Titan</span>
+      <span class="life">Life: <b>6</b> &nbsp;|&nbsp; Opp: 4</span>
+      <span class="hand-count">2c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Cultivator Colossus</span></div>
+    <div class="section-label">Hand (2 cards)</div><div class="hand-pills"><span class="pill">Forest</span><span class="pill">Cultivator Colossus</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Cultivator Colossus (4GGG)</span><span class="reason-toggle" onclick="toggleReason('r2t11s1')" title="Show reasoning">·</span><div class="reasoning" id="r2t11s1" style="display:none">← ramp [payoffs]</div></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Cultivator Colossus ETB: draw a card</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Amulet of Vigor, Amulet of Vigor untaps Shifting Woodland (x2)</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Cultivator Colossus puts Shifting Woodland onto battlefield</span></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Spelunking (2G)</span><span class="reason-toggle" onclick="toggleReason('r2t11s5')" title="Show reasoning">·</span><div class="reasoning" id="r2t11s5" style="display:none">← ramp [enablers]</div></div>
+<div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Spelunking ETB: draw a card</span></div>
+<div class="play"><span class="step">7.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Spelunking puts Otawara, Soaring City onto battlefield</span></div>
+<div class="play"><span class="step">8.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Primeval Titan (4GG)</span><span class="reason-toggle" onclick="toggleReason('r2t11s8')" title="Show reasoning">·</span><div class="reasoning" id="r2t11s8" style="display:none">← ramp [payoffs]</div></div>
+<div class="play"><span class="step">9.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Amulet of Vigor, Amulet of Vigor untaps Lotus Field (x2)</span></div>
+<div class="play"><span class="step">10.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Primeval Titan searches for Lotus Field</span></div>
+<div class="play"><span class="step">11.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Amulet of Vigor, Amulet of Vigor untaps Simic Growth Chamber (x2)</span></div>
+<div class="play"><span class="step">12.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Primeval Titan searches for Simic Growth Chamber</span></div>
+<div class="play"><span class="step">13.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Arboreal Grazer</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Arboreal Grazer</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Amulet Titan</span> — 19 lands</h4>
+        <div class="board"><span class="creature-badge">Arboreal Grazer<span class="pt">0/3</span></span><span class="creature-badge">Primeval Titan<span class="pt">6/6</span></span></div>
+        <div class="land-list">Gruul Turf [T], Simic Growth Chamber [T], Crumbling Vestige [T], Urza's Cave [T], Forest [T], Forest [T], Gruul Turf [T], Gruul Turf [T], Gr</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Living End</span> — 7 lands</h4>
+        <div class="board"><span class="creature-badge">Shardless Agent<span class="pt">2/2</span></span><span class="creature-badge">Shardless Agent<span class="pt">2/2</span></span><span class="creature-badge">Waker of Waves<span class="pt">7/7</span></span></div>
+        <div class="land-list">Watery Grave, Island, Breeding Pool, Indatha Triome, Blooming Marsh, Blood Crypt, Overgrown Tomb</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g2t11">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T11</span>
+      <span class="player opp">Living End</span>
+      <span class="life">Life: <b>4</b> &nbsp;|&nbsp; Opp: 6</span>
+      <span class="hand-count">9c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Misty Rainforest</span></div>
+    <div class="section-label">Hand (9 cards)</div><div class="hand-pills"><span class="pill">Architects of Will</span><span class="pill">Striped Riverwinder</span><span class="pill">Architects of Will</span><span class="pill">Curator of Mysteries</span><span class="pill">Force of Negation</span><span class="pill">Striped Riverwinder</span><span class="pill">Curator of Mysteries</span><span class="pill">Force of Negation</span><span class="pill">Misty Rainforest</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Misty Rainforest</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f5f0ff;color:#6639ba">FETCH</span><span class="action">Crack Misty Rainforest -&gt; Island (untapped)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Shardless Agent, Shardless Agent, Waker of Waves</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Shardless Agent, Shardless Agent, Waker of Waves</div><div class="combat-detail">4 damage → life 6 → 2</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Amulet Titan</span> — 19 lands</h4>
+        <div class="board"><span class="creature-badge">Arboreal Grazer<span class="pt">0/3</span></span></div>
+        <div class="land-list">Gruul Turf, Simic Growth Chamber, Crumbling Vestige, Urza's Cave, Forest, Forest, Gruul Turf, Gruul Turf, Gruul Turf, Simic Growth Chamber, </div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Living End</span> — 8 lands</h4>
+        <div class="board"><span class="creature-badge">Shardless Agent<span class="pt">2/2</span></span><span class="creature-badge">Shardless Agent<span class="pt">2/2</span></span><span class="creature-badge">Waker of Waves<span class="pt">7/7</span></span></div>
+        <div class="land-list">Watery Grave, Island, Breeding Pool, Indatha Triome, Blooming Marsh, Blood Crypt, Overgrown Tomb, Island</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g2t12">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T12</span>
+      <span class="player bug">Amulet Titan</span>
+      <span class="life">Life: <b>2</b> &nbsp;|&nbsp; Opp: 3</span>
+      <span class="hand-count">2c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Tolaria West</span></div>
+    <div class="section-label">Hand (2 cards)</div><div class="hand-pills"><span class="pill">Forest</span><span class="pill">Tolaria West</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Tolaria West (enters tapped)</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Amulet of Vigor, Amulet of Vigor untaps Tolaria West (x2)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Arboreal Grazer</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Arboreal Grazer</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Amulet Titan</span> — 20 lands</h4>
+        <div class="board"><span class="creature-badge">Arboreal Grazer<span class="pt">0/3</span></span></div>
+        <div class="land-list">Gruul Turf, Simic Growth Chamber, Crumbling Vestige, Urza's Cave, Forest, Forest, Gruul Turf, Gruul Turf, Gruul Turf, Simic Growth Chamber, </div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Living End</span> — 8 lands</h4>
+        <div class="board"><span class="creature-badge">Shardless Agent<span class="pt">2/2</span></span><span class="creature-badge">Shardless Agent<span class="pt">2/2</span></span><span class="creature-badge">Waker of Waves<span class="pt">7/7</span></span></div>
+        <div class="land-list">Watery Grave, Island, Breeding Pool, Indatha Triome, Blooming Marsh, Blood Crypt, Overgrown Tomb, Island</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g2t12">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T12</span>
+      <span class="player opp">Living End</span>
+      <span class="life">Life: <b>3</b> &nbsp;|&nbsp; Opp: 2</span>
+      <span class="hand-count">9c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Force of Negation</span></div>
+    <div class="section-label">Hand (9 cards)</div><div class="hand-pills"><span class="pill">Architects of Will</span><span class="pill">Striped Riverwinder</span><span class="pill">Architects of Will</span><span class="pill">Curator of Mysteries</span><span class="pill">Force of Negation</span><span class="pill">Striped Riverwinder</span><span class="pill">Curator of Mysteries</span><span class="pill">Force of Negation</span><span class="pill">Force of Negation</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Shardless Agent, Shardless Agent, Waker of Waves</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Shardless Agent, Shardless Agent, Waker of Waves</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Amulet Titan</span> — 20 lands</h4>
+        <div class="board"><span class="creature-badge">Arboreal Grazer<span class="pt">0/3</span></span></div>
+        <div class="land-list">Gruul Turf, Simic Growth Chamber, Crumbling Vestige, Urza's Cave, Forest, Forest, Gruul Turf, Gruul Turf, Gruul Turf, Simic Growth Chamber, </div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Living End</span> — 8 lands</h4>
+        <div class="board"><span class="creature-badge">Shardless Agent<span class="pt">2/2</span></span><span class="creature-badge">Shardless Agent<span class="pt">2/2</span></span><span class="creature-badge">Waker of Waves<span class="pt">7/7</span></span></div>
+        <div class="land-list">Watery Grave, Island, Breeding Pool, Indatha Triome, Blooming Marsh, Blood Crypt, Overgrown Tomb, Island</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="result">
+  <h2 class="opp-win">Living End WINS</h2>
+  <div class="reason">Via damage on turn 12</div>
+  <div class="stats">
+    Final life: <span style="color:#0969da">Amulet Titan 2</span>
+    &nbsp;|&nbsp;
+    <span style="color:#d1242f">Living End 3</span>
+    &nbsp;|&nbsp; Length: T12
+  </div>
+</div>
+</div>
+
+<script>
+function toggle(el){el.classList.toggle('open')}
+function expandAll(){document.querySelectorAll('.game-panel.active .turn').forEach(t=>t.classList.add('open'))}
+function collapseAll(){document.querySelectorAll('.game-panel.active .turn').forEach(t=>t.classList.remove('open'))}
+function showGame(idx){
+  document.querySelectorAll('.game-tab').forEach((t,i)=>t.classList.toggle('active',i===idx));
+  document.querySelectorAll('.game-panel').forEach((p,i)=>p.classList.toggle('active',i===idx));
+}
+document.addEventListener('keydown',e=>{
+  const active=document.querySelector('.game-panel.active');
+  if(!active)return;
+  const turns=active.querySelectorAll('.turn');
+  let cur=[...turns].findIndex(t=>t.classList.contains('active'));
+  if(e.key==='ArrowDown'){e.preventDefault();if(cur<turns.length-1){turns.forEach(t=>t.classList.remove('active'));turns[cur+1].classList.add('active');turns[cur+1].scrollIntoView({behavior:'smooth',block:'center'});}}
+  else if(e.key==='ArrowUp'){e.preventDefault();if(cur>0){turns.forEach(t=>t.classList.remove('active'));turns[cur-1].classList.add('active');turns[cur-1].scrollIntoView({behavior:'smooth',block:'center'});}}
+  else if(e.key==='Enter'&&cur>=0){e.preventDefault();toggle(turns[cur]);}
+});
+function toggleReason(id){
+  const el=document.getElementById(id);
+  const btn=el.previousElementSibling;
+  const visible=el.style.display!=='none';
+  el.style.display=visible?'none':'block';
+  if(btn&&btn.classList.contains('reason-toggle')){
+    btn.classList.toggle('open',!visible);
+    btn.title=visible?'Show reasoning':'Hide reasoning';
+  }
+}
+</script>
+</body></html>

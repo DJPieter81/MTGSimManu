@@ -1,0 +1,1152 @@
+Loaded 21759 cards (0 errors)
+======================================================================
+  GAME 1: Amulet Titan (P1) vs Izzet Prowess (P2)  —  seed 92000
+  Series: Amulet Titan 0 - 0 Izzet Prowess
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Izzet Prowess wins → chooses to play first
+║ P1 (on play): Izzet Prowess
+║ P2 (on draw): Amulet Titan
+╚═══════════════════════════════════════════════════════
+
+P1 (Amulet Titan) opening hand (4 lands, 3 spells):
+  • Summoner's Pact [Spell, CMC 0]
+  • Green Sun's Zenith [Spell, CMC 1]
+  • Aftermath Analyst [Creature, CMC 2]
+  • Urza's Saga [Land, CMC 0]
+  • Forest [Land, CMC 0]
+  • Mirrorpool [Land, CMC 0]
+  • Crumbling Vestige [Land, CMC 0]
+→ P1 MULLIGANS (no cost reducer and no ritual+cantrip+finisher backup)
+  New hand (3 lands, 4 spells): ['Forest', 'Boseiju, Who Endures', 'Arboreal Grazer', 'Amulet of Vigor', 'Forest', "Summoner's Pact", 'Spelunking']
+→ P1 mulligans to 6, bottoms: ['Boseiju, Who Endures']
+  Keeps: ['Forest', 'Arboreal Grazer', 'Amulet of Vigor', 'Forest', "Summoner's Pact", 'Spelunking']
+
+P2 (Izzet Prowess) opening hand (4 lands, 3 spells):
+  • Mishra's Bauble [Spell, CMC 0]
+  • Stomping Ground [Land, CMC 0]
+  • Lava Dart [Spell, CMC 1]
+  • Mountain [Land, CMC 0]
+  • Cori-Steel Cutter [Spell, CMC 2]
+  • Steam Vents [Land, CMC 0]
+  • Mountain [Land, CMC 0]
+→ P2 MULLIGANS (too many lands (4 > 3))
+  New hand (3 lands, 4 spells): ['Bloodstained Mire', 'Monastery Swiftspear', 'Arid Mesa', 'Steam Vents', "Dragon's Rage Channeler", 'Violent Urge', 'Slickshot Show-Off']
+→ P2 mulligans to 6, bottoms: ['Violent Urge']
+  Keeps: ['Bloodstained Mire', 'Monastery Swiftspear', 'Arid Mesa', 'Steam Vents', "Dragon's Rage Channeler", 'Slickshot Show-Off']
+
+
+╔══ TURN 1 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 20  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 54  |  Graveyard: 0
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Bloodstained Mire
+T1 P2: Crack Bloodstained Mire (pay 1 life) -> Stomping Ground (pay 2 life, untapped, life: 17)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Stomping Ground→R (paying for Monastery Swiftspear, 1 mana remaining)
+T1 P2: Cast Monastery Swiftspear (R)
+    [Priority] P1 passes (no response)
+T1: Resolve Monastery Swiftspear
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Monastery Swiftspear
+T1 P2: Attack with Monastery Swiftspear
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 1 damage dealt → P1 life: 20 → 19
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 19  |  Izzet Prowess 17
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2) [tapped]
+║   Lands: Stomping Ground [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Saga
+  [Main 1]
+T1 P1: Play Forest
+    → Goal: deploy_engine
+T1 P1: Cast Summoner's Pact (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Summoner's Pact
+T1 P1: Summoner's Pact finds Primeval Titan
+    → Goal: deploy_engine [engines]
+    [Mana] Tap Forest→G (paying for Amulet of Vigor, 1 mana remaining)
+T1 P1: Cast Amulet of Vigor (1)
+    [Priority] P2 passes (no response)
+T1: Resolve Amulet of Vigor
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 17  |  Amulet Titan 19
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 1
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2)
+║   Lands: Stomping Ground
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thundering Falls
+  [Main 1]
+T2 P2: Play Arid Mesa
+T2 P2: Crack Arid Mesa (pay 1 life) -> Steam Vents (pay 2 life, untapped, life: 14)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Stomping Ground→R (paying for Dragon's Rage Channeler, 2 mana remaining)
+T2 P2: Cast Dragon's Rage Channeler (R)
+    [Priority] P1 passes (no response)
+T2: Resolve Dragon's Rage Channeler
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Monastery Swiftspear
+T2 P2: Attack with Monastery Swiftspear
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 1 damage dealt → P1 life: 19 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 18  |  Izzet Prowess 14
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Forest
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2) [tapped], Dragon's Rage Channeler (1/1)
+║   Lands: Stomping Ground [T], Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Green Sun's Zenith
+  [Main 1]
+T2 P1: Play Urza's Saga
+    → Goal: ramp [enablers]
+    [Mana] Tap Forest→G (paying for Arboreal Grazer, 2 mana remaining)
+T2 P1: Cast Arboreal Grazer (G)
+    [Priority] P2 passes (no response)
+T2: Resolve Arboreal Grazer
+T2 P1: Arboreal Grazer puts Forest onto battlefield
+    → Goal: ramp [enablers]
+    [Mana] Tap Forest→G, Urza's Saga→C (paying for Spelunking, 2 mana remaining)
+T2 P1: Cast Spelunking (2G)
+    [Priority] P2 passes (no response)
+T2: Resolve Spelunking
+T2 P1: Spelunking ETB: draw a card
+T2 P1: Amulet of Vigor untaps Crumbling Vestige
+T2 P1: Spelunking puts Crumbling Vestige onto battlefield
+    → Goal: ramp
+    [Mana] Tap Crumbling Vestige→G (paying for Green Sun's Zenith, 1 mana remaining)
+T2 P1: Cast Green Sun's Zenith (G)
+    [Priority] P2 passes (no response)
+T2: Resolve Green Sun's Zenith
+T2 P1: Green Sun's Zenith finds Dryad Arbor
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 14  |  Amulet Titan 18
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 5
+║ Library: 51  |  Graveyard: 2
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2), Dragon's Rage Channeler (1/1)
+║   Lands: Stomping Ground, Steam Vents
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Dryad Arbor (1/1)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Forest [T], Urza's Saga [T], Forest [T], Crumbling Vestige [T], Dryad Arbor
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Preordain
+  [Main 1]
+T3 P2: Play Steam Vents (tapped, no spells need mana)
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→U (paying for Preordain, 2 mana remaining)
+T3 P2: Cast Preordain (U)
+T3 P2: Dragon's Rage Channeler surveil 1 → Expressive Iteration to GY
+    [Priority] P1 passes (no response)
+T3: Resolve Preordain
+    → Goal: curve_out
+    [Mana] Tap Stomping Ground→R (paying for Lightning Bolt, 1 mana remaining)
+T3 P2: Cast Lightning Bolt (R)
+T3 P2: Dragon's Rage Channeler surveil 1 → Lightning Bolt to GY
+    [Priority] P1 passes (no response)
+T3: Resolve Lightning Bolt
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Monastery Swiftspear, Dragon's Rage Channeler
+T3 P2: Attack with Monastery Swiftspear, Dragon's Rage Channeler
+  [Declare Blockers] P1 blocks: 
+T3: Arboreal Grazer dies
+T3: Dryad Arbor dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 15  |  Izzet Prowess 14
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 4
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Forest, Urza's Saga, Forest, Crumbling Vestige
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2) [tapped], Dragon's Rage Channeler (1/1) [tapped]
+║   Lands: Stomping Ground [T], Steam Vents [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Saga
+  [Main 1]
+T3 P1: Play Forest
+    → Goal: ramp [payoffs]
+    [Mana] Tap Forest→G, Forest→G, Urza's Saga→C, Forest→G, Crumbling Vestige→B (paying for Primeval Titan, 5 mana remaining)
+T3 P1: Cast Primeval Titan (4GG)
+    [Priority] P2 passes (no response)
+T3: Resolve Primeval Titan
+T3 P1: Amulet of Vigor untaps Tolaria West
+T3 P1: Primeval Titan searches for Tolaria West
+T3 P1: Amulet of Vigor untaps Gruul Turf
+T3 P1: Primeval Titan searches for Gruul Turf
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 14  |  Amulet Titan 15
+║ Hand: 2 cards  |  Opp hand: 1 cards
+║ Lands: 3  |  Opp lands: 7
+║ Library: 47  |  Graveyard: 6
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2), Dragon's Rage Channeler (1/1)
+║   Lands: Stomping Ground, Steam Vents, Steam Vents
+║ Amulet Titan board:
+║   Creatures: Primeval Titan (6/6)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Forest [T], Urza's Saga [T], Forest [T], Crumbling Vestige [T], Forest [T], Tolaria West, Gruul Turf
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mutagenic Growth
+  [Main 1]
+T4 P2: Play Thundering Falls (enters tapped)
+    → Goal: curve_out
+T4 P2: Pay 2 life (Phyrexian mana) for Mutagenic Growth
+T4 P2: Cast Mutagenic Growth (G)
+T4 P2: Dragon's Rage Channeler surveil 1 → Dragon's Rage Channeler to GY
+    [Priority] P1 passes (no response)
+T4: Resolve Mutagenic Growth
+    → Goal: curve_out [enablers]
+    [Mana] Tap Stomping Ground→R, Steam Vents→R (paying for Slickshot Show-Off, 3 mana remaining)
+T4 P2: Cast Slickshot Show-Off (1R)
+    [Priority] P1 passes (no response)
+T4: Resolve Slickshot Show-Off
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Dragon's Rage Channeler, Slickshot Show-Off
+T4 P2: Attack with Dragon's Rage Channeler, Slickshot Show-Off
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 8 damage dealt → P1 life: 15 → 7
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 7  |  Izzet Prowess 10
+║ Hand: 1 cards  |  Opp hand: 0 cards
+║ Lands: 7  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 4
+║ Amulet Titan board:
+║   Creatures: Primeval Titan (6/6)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Forest, Urza's Saga, Forest, Crumbling Vestige, Forest, Tolaria West, Gruul Turf
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2), Dragon's Rage Channeler (3/3) [tapped], Slickshot Show-Off (1/2) [tapped]
+║   Lands: Stomping Ground [T], Steam Vents [T], Steam Vents, Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T4 P1: Create 1x Construct token(s)
+T4 P1: Urza's Saga Ch.II: Create Construct Token
+  [Draw] P1 draws: Spelunking
+  [Main 1]
+T4 P1: Play Urza's Saga
+T4: Construct Token dies
+    → Goal: ramp [enablers]
+    [Mana] Tap Forest→G (paying for Spelunking, 8 mana remaining)
+T4 P1: Cast Spelunking (2G)
+    [Priority] P2 passes (no response)
+T4: Resolve Spelunking
+T4 P1: Spelunking ETB: draw a card
+T4 P1: Amulet of Vigor untaps Gruul Turf
+T4 P1: Gruul Turf returns Forest to hand
+T4 P1: Spelunking puts Gruul Turf onto battlefield
+    → Goal: ramp [payoffs]
+    [Mana] Tap Forest→G, Forest→G, Urza's Saga→C, Tolaria West→U (paying for Primeval Titan, 8 mana remaining)
+T4 P1: Cast Primeval Titan (4GG)
+    [Priority] P2 passes (no response)
+T4: Resolve Primeval Titan
+T4 P1: Amulet of Vigor untaps Lotus Field
+T4 P1: Primeval Titan searches for Lotus Field
+T4 P1: Amulet of Vigor untaps Simic Growth Chamber
+T4 P1: Primeval Titan searches for Simic Growth Chamber
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Primeval Titan
+T4 P1: Amulet of Vigor untaps Lotus Field
+T4 P1: Primeval Titan searches for Lotus Field
+T4 P1: Amulet of Vigor untaps Crumbling Vestige
+T4 P1: Primeval Titan searches for Crumbling Vestige
+T4 P1: Attack with Primeval Titan
+  [Declare Blockers] P2 blocks: 
+T4: Monastery Swiftspear dies
+  [Combat Damage] 4 damage dealt → P2 life: 10 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 6  |  Amulet Titan 7
+║ Hand: 0 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 12
+║ Library: 45  |  Graveyard: 9
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (3/3), Slickshot Show-Off (1/2)
+║   Lands: Stomping Ground, Steam Vents, Steam Vents, Thundering Falls
+║ Amulet Titan board:
+║   Creatures: Primeval Titan (6/6) [tapped], Primeval Titan (6/6)
+║   Other: Amulet of Vigor, Spelunking, Spelunking
+║   Lands: Urza's Saga [T], Forest [T], Crumbling Vestige, Forest [T], Tolaria West [T], Gruul Turf, Urza's Saga, Gruul Turf, Lotus Field, Simic Growth Chamber, Lotus Field, Crumbling Vestige
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Dragon's Rage Channeler
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Stomping Ground→R (paying for Dragon's Rage Channeler, 4 mana remaining)
+T5 P2: Cast Dragon's Rage Channeler (R)
+    [Priority] P1 passes (no response)
+T5: Resolve Dragon's Rage Channeler
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Dragon's Rage Channeler, Slickshot Show-Off
+T5 P2: Attack with Dragon's Rage Channeler, Slickshot Show-Off
+  [Declare Blockers] P1 blocks: 
+T5: Dragon's Rage Channeler dies
+  [Combat Damage] 1 damage dealt → P1 life: 7 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 6  |  Izzet Prowess 6
+║ Hand: 1 cards  |  Opp hand: 0 cards
+║ Lands: 12  |  Opp lands: 4
+║ Library: 38  |  Graveyard: 5
+║ Amulet Titan board:
+║   Creatures: Primeval Titan (6/6), Primeval Titan (6/6)
+║   Other: Amulet of Vigor, Spelunking, Spelunking
+║   Lands: Urza's Saga, Forest, Crumbling Vestige, Forest, Tolaria West, Gruul Turf, Urza's Saga, Gruul Turf, Lotus Field, Simic Growth Chamber, Lotus Field, Crumbling Vestige
+║ Izzet Prowess board:
+║   Creatures: Slickshot Show-Off (1/2) [tapped], Dragon's Rage Channeler (3/3)
+║   Lands: Stomping Ground [T], Steam Vents, Steam Vents, Thundering Falls
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T5 P1: Create 1x Construct token(s)
+T5 P1: Urza's Saga Ch.III: Create Construct Token
+T5 P1: Urza's Saga tutors Amulet of Vigor
+T5 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Gruul Turf
+  [Main 1]
+T5 P1: Play Gruul Turf (enters tapped)
+T5 P1: Amulet of Vigor, Amulet of Vigor untaps Gruul Turf (x2)
+T5: Construct Token dies
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Primeval Titan, Primeval Titan
+T5 P1: Amulet of Vigor, Amulet of Vigor untaps Simic Growth Chamber (x2)
+T5 P1: Primeval Titan searches for Simic Growth Chamber
+T5 P1: Amulet of Vigor, Amulet of Vigor untaps Shifting Woodland (x2)
+T5 P1: Primeval Titan searches for Shifting Woodland
+T5 P1: Amulet of Vigor, Amulet of Vigor untaps Crumbling Vestige (x2)
+T5 P1: Primeval Titan searches for Crumbling Vestige
+T5 P1: Amulet of Vigor, Amulet of Vigor untaps Simic Growth Chamber (x2)
+T5 P1: Primeval Titan searches for Simic Growth Chamber
+T5 P1: Attack with Primeval Titan, Primeval Titan
+  [Declare Blockers] P2 blocks: 
+P2 loses: life total -3
+  [Combat Damage] 9 damage dealt → P2 life: 6 → -3
+
+>>> Amulet Titan wins Game 1 on turn 5 via damage
+    Final life: Amulet Titan=6  Izzet Prowess=-3
+
+======================================================================
+  GAME 2: Izzet Prowess (P1) vs Amulet Titan (P2)  —  seed 92001
+  Series: Amulet Titan 1 - 0 Izzet Prowess
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Amulet Titan wins → chooses to play first
+║ P1 (on play): Amulet Titan
+║ P2 (on draw): Izzet Prowess
+╚═══════════════════════════════════════════════════════
+
+P1 (Izzet Prowess) opening hand (4 lands, 3 spells):
+  • Thundering Falls [Land, CMC 0]
+  • Scalding Tarn [Land, CMC 0]
+  • Preordain [Spell, CMC 1]
+  • Preordain [Spell, CMC 1]
+  • Mountain [Land, CMC 0]
+  • Violent Urge [Spell, CMC 1]
+  • Wooded Foothills [Land, CMC 0]
+→ P1 MULLIGANS (too many lands (4 > 3))
+  New hand (6 lands, 1 spells): ['Wooded Foothills', 'Steam Vents', "Mishra's Bauble", 'Scalding Tarn', 'Arid Mesa', 'Mountain', 'Mountain']
+→ P1 MULLIGANS (6 lands (≥ 6))
+  New hand (2 lands, 5 spells): ['Slickshot Show-Off', 'Monastery Swiftspear', 'Scalding Tarn', 'Bloodstained Mire', 'Preordain', 'Monastery Swiftspear', 'Expressive Iteration']
+→ P1 mulligans to 5, bottoms: ['Expressive Iteration', 'Preordain']
+  Keeps: ['Slickshot Show-Off', 'Monastery Swiftspear', 'Scalding Tarn', 'Bloodstained Mire', 'Monastery Swiftspear']
+
+P2 (Amulet Titan) opening hand (3 lands, 4 spells):
+  • Spelunking [Spell, CMC 3]
+  • Amulet of Vigor [Spell, CMC 1]
+  • Urza's Saga [Land, CMC 0]
+  • Arboreal Grazer [Creature, CMC 1]
+  • Vesuva [Land, CMC 0]
+  • Scapeshift [Spell, CMC 4]
+  • Tolaria West [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Amulet of Vigor, Arboreal Grazer, Spelunking, 3 cheap spells
+
+
+╔══ TURN 1 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Izzet Prowess 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Urza's Saga
+    → Goal: deploy_engine [engines]
+T1 P2: Cast Amulet of Vigor (1)
+    [Priority] P1 passes (no response)
+T1: Resolve Amulet of Vigor
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Izzet Prowess (P1) ══════════════════════════
+║ Life: Izzet Prowess 20  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 55  |  Graveyard: 0
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mountain
+  [Main 1]
+T1 P1: Play Scalding Tarn
+T1 P1: Crack Scalding Tarn (pay 1 life) -> Stomping Ground (pay 2 life, untapped, life: 17)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Stomping Ground→R (paying for Monastery Swiftspear, 1 mana remaining)
+T1 P1: Cast Monastery Swiftspear (R)
+    [Priority] P2 passes (no response)
+T1: Resolve Monastery Swiftspear
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Monastery Swiftspear
+T1 P1: Attack with Monastery Swiftspear
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 1 damage dealt → P2 life: 20 → 19
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 19  |  Izzet Prowess 17
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Urza's Saga
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2) [tapped]
+║   Lands: Stomping Ground [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Crumbling Vestige
+  [Main 1]
+T2 P2: Play Crumbling Vestige (enters tapped)
+T2 P2: Amulet of Vigor untaps Crumbling Vestige
+    → Goal: ramp [enablers]
+    [Mana] Tap Crumbling Vestige→G, Urza's Saga→C (paying for Spelunking, 2 mana remaining)
+T2 P2: Cast Spelunking (2G)
+    [Priority] P1 passes (no response)
+T2: Resolve Spelunking
+T2 P2: Spelunking ETB: draw a card
+T2 P2: Spelunking puts Vesuva onto battlefield
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Izzet Prowess (P1) ══════════════════════════
+║ Life: Izzet Prowess 17  |  Amulet Titan 19
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 3
+║ Library: 53  |  Graveyard: 1
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2)
+║   Lands: Stomping Ground
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Urza's Saga [T], Crumbling Vestige [T], Vesuva
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Steam Vents
+  [Main 1]
+T2 P1: Play Bloodstained Mire
+T2 P1: Crack Bloodstained Mire (pay 1 life) -> Steam Vents (pay 2 life, untapped, life: 14)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Stomping Ground→R, Steam Vents→R (paying for Slickshot Show-Off, 2 mana remaining)
+T2 P1: Cast Slickshot Show-Off (1R)
+    [Priority] P2 passes (no response)
+T2: Resolve Slickshot Show-Off
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Monastery Swiftspear, Slickshot Show-Off
+T2 P1: Attack with Monastery Swiftspear, Slickshot Show-Off
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 2 damage dealt → P2 life: 19 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 17  |  Izzet Prowess 14
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Urza's Saga, Crumbling Vestige, Vesuva
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2) [tapped], Slickshot Show-Off (1/2) [tapped]
+║   Lands: Stomping Ground [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T3 P2: Create 1x Construct token(s)
+T3 P2: Urza's Saga Ch.II: Create Construct Token
+  [Draw] P2 draws: Gruul Turf
+  [Main 1]
+T3 P2: Play Gruul Turf (enters tapped)
+T3 P2: Amulet of Vigor untaps Gruul Turf
+T3: Construct Token dies
+    → Goal: ramp [enablers]
+    [Mana] Tap Gruul Turf→G (paying for Arboreal Grazer, 4 mana remaining)
+T3 P2: Cast Arboreal Grazer (G)
+    [Priority] P1 passes (no response)
+T3: Resolve Arboreal Grazer
+T3 P2: Amulet of Vigor untaps Tolaria West
+T3 P2: Arboreal Grazer puts Tolaria West onto battlefield
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Izzet Prowess (P1) ══════════════════════════
+║ Life: Izzet Prowess 14  |  Amulet Titan 17
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 5
+║ Library: 51  |  Graveyard: 2
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2), Slickshot Show-Off (1/2)
+║   Lands: Stomping Ground, Steam Vents
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Urza's Saga, Crumbling Vestige, Vesuva, Gruul Turf [T], Tolaria West
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Lava Dart
+  [Main 1]
+T3 P1: Play Mountain
+    → Goal: curve_out
+    [Mana] Tap Mountain→R (paying for Lava Dart, 3 mana remaining)
+T3 P1: Cast Lava Dart (R)
+    [Priority] P2 passes (no response)
+T3: Resolve Lava Dart
+    → Goal: curve_out
+    [Mana] Tap Stomping Ground→R (paying for Lava Dart, 2 mana remaining)
+T3 P1: Cast Lava Dart (R)
+    [Priority] P2 passes (no response)
+T3: Resolve Lava Dart
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R (paying for Monastery Swiftspear, 1 mana remaining)
+T3 P1: Cast Monastery Swiftspear (R)
+    [Priority] P2 passes (no response)
+T3: Resolve Monastery Swiftspear
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Monastery Swiftspear, Slickshot Show-Off, Monastery Swiftspear
+T3 P1: Attack with Monastery Swiftspear, Slickshot Show-Off, Monastery Swiftspear
+  [Declare Blockers] P2 blocks: 
+T3: Arboreal Grazer dies
+  [Combat Damage] 4 damage dealt → P2 life: 17 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 13  |  Izzet Prowess 14
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Urza's Saga, Crumbling Vestige, Vesuva, Gruul Turf, Tolaria West
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2) [tapped], Slickshot Show-Off (1/2) [tapped], Monastery Swiftspear (1/2) [tapped]
+║   Lands: Stomping Ground [T], Steam Vents [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T4 P2: Create 1x Construct token(s)
+T4 P2: Urza's Saga Ch.III: Create Construct Token
+T4 P2: Urza's Saga tutors Amulet of Vigor
+T4 P2: Sacrifice Urza's Saga (final chapter)
+  [Draw] P2 draws: Summoner's Pact
+  [Main 1]
+T4 P2: Play Crumbling Vestige (enters tapped)
+T4 P2: Amulet of Vigor, Amulet of Vigor untaps Crumbling Vestige (x2)
+T4: Construct Token dies
+    → Goal: ramp
+T4 P2: Cast Summoner's Pact (0)
+    [Priority] P1 passes (no response)
+T4: Resolve Summoner's Pact
+T4 P2: Summoner's Pact finds Primeval Titan
+    → Goal: ramp
+    [Mana] Tap Gruul Turf→G, Crumbling Vestige→G, Tolaria West→U, Crumbling Vestige→B (paying for Scapeshift, 5 mana remaining)
+T4 P2: Cast Scapeshift (2GG)
+    [Priority] P1 passes (no response)
+T4: Resolve Scapeshift
+T4 P2: Scapeshift sacrifices 5 lands
+T4 P2: Amulet of Vigor, Amulet of Vigor untaps Simic Growth Chamber (x2)
+T4 P2: Amulet of Vigor, Amulet of Vigor untaps Gruul Turf (x2)
+T4 P2: Gruul Turf returns Simic Growth Chamber to hand
+T4 P2: Amulet of Vigor, Amulet of Vigor untaps Simic Growth Chamber (x2)
+T4 P2: Simic Growth Chamber returns Gruul Turf to hand
+T4 P2: Amulet of Vigor, Amulet of Vigor untaps Gruul Turf (x2)
+T4 P2: Gruul Turf returns Simic Growth Chamber to hand
+T4 P2: Amulet of Vigor, Amulet of Vigor untaps Simic Growth Chamber (x2)
+T4 P2: Simic Growth Chamber returns Gruul Turf to hand
+T4 P2: Scapeshift fetches 5 lands onto battlefield
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Izzet Prowess (P1) ══════════════════════════
+║ Life: Izzet Prowess 14  |  Amulet Titan 13
+║ Hand: 1 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 1
+║ Library: 50  |  Graveyard: 2
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2), Slickshot Show-Off (1/2), Monastery Swiftspear (1/2)
+║   Lands: Stomping Ground, Steam Vents, Mountain
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Spelunking, Amulet of Vigor
+║   Lands: Simic Growth Chamber
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Violent Urge
+  [Main 1]
+T4 P1: Play Steam Vents (tapped, no spells need mana)
+    → Goal: curve_out
+    [Mana] Tap Mountain→R (paying for Violent Urge, 3 mana remaining)
+T4 P1: Cast Violent Urge (R)
+    [Priority] P2 passes (no response)
+T4: Resolve Violent Urge
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Monastery Swiftspear, Slickshot Show-Off, Monastery Swiftspear
+T4 P1: Attack with Monastery Swiftspear, Slickshot Show-Off, Monastery Swiftspear
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 8 damage dealt → P2 life: 13 → 5
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 5  |  Izzet Prowess 14
+║ Hand: 6 cards  |  Opp hand: 0 cards
+║ Lands: 1  |  Opp lands: 4
+║ Library: 41  |  Graveyard: 11
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Spelunking, Amulet of Vigor
+║   Lands: Simic Growth Chamber
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2) [tapped], Slickshot Show-Off (1/2) [tapped], Monastery Swiftspear (1/2) [tapped]
+║   Lands: Stomping Ground, Steam Vents, Mountain [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Forest
+  [Main 1]
+T5 P2: Play Gruul Turf (enters tapped)
+T5 P2: Amulet of Vigor, Amulet of Vigor untaps Gruul Turf (x2)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Izzet Prowess (P1) ══════════════════════════
+║ Life: Izzet Prowess 14  |  Amulet Titan 5
+║ Hand: 0 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 3
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2), Slickshot Show-Off (1/2), Monastery Swiftspear (1/2)
+║   Lands: Stomping Ground, Steam Vents, Mountain, Steam Vents
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Spelunking, Amulet of Vigor
+║   Lands: Simic Growth Chamber, Gruul Turf
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mutagenic Growth
+  [Main 1]
+    → Goal: curve_out
+T5 P1: Pay 2 life (Phyrexian mana) for Mutagenic Growth
+T5 P1: Cast Mutagenic Growth (G)
+    [Priority] P2 passes (no response)
+T5: Resolve Mutagenic Growth
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Monastery Swiftspear, Slickshot Show-Off, Monastery Swiftspear
+T5 P1: Attack with Monastery Swiftspear, Slickshot Show-Off, Monastery Swiftspear
+  [Declare Blockers] P2 does not block
+P2 loses: life total -4
+  [Combat Damage] 9 damage dealt → P2 life: 5 → -4
+
+>>> Izzet Prowess wins Game 2 on turn 5 via damage
+    Final life: Izzet Prowess=10  Amulet Titan=-4
+
+======================================================================
+  GAME 3: Amulet Titan (P1) vs Izzet Prowess (P2)  —  seed 92002
+  Series: Amulet Titan 1 - 1 Izzet Prowess
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Amulet Titan wins → chooses to play first
+║ P1 (on play): Amulet Titan
+║ P2 (on draw): Izzet Prowess
+╚═══════════════════════════════════════════════════════
+
+P1 (Amulet Titan) opening hand (5 lands, 2 spells):
+  • Forest [Land, CMC 0]
+  • Primeval Titan [Creature, CMC 6]
+  • Otawara, Soaring City [Land, CMC 0]
+  • Mirrorpool [Land, CMC 0]
+  • Lotus Field [Land, CMC 0]
+  • Urza's Saga [Land, CMC 0]
+  • Arboreal Grazer [Creature, CMC 1]
+→ P1 KEEPS 7 — has key card(s): Arboreal Grazer, 1 cheap spells
+
+P2 (Izzet Prowess) opening hand (0 lands, 7 spells):
+  • Lava Dart [Spell, CMC 1]
+  • Mishra's Bauble [Spell, CMC 0]
+  • Expressive Iteration [Spell, CMC 2]
+  • Expressive Iteration [Spell, CMC 2]
+  • Slickshot Show-Off [Creature, CMC 2]
+  • Dragon's Rage Channeler [Creature, CMC 1]
+  • Monastery Swiftspear [Creature, CMC 1]
+→ P2 MULLIGANS (0 lands)
+  New hand (3 lands, 4 spells): ['Unholy Heat', 'Monastery Swiftspear', 'Fiery Islet', 'Slickshot Show-Off', 'Scalding Tarn', 'Monastery Swiftspear', 'Thundering Falls']
+→ P2 mulligans to 6, bottoms: ['Unholy Heat']
+  Keeps: ['Monastery Swiftspear', 'Fiery Islet', 'Slickshot Show-Off', 'Scalding Tarn', 'Monastery Swiftspear', 'Thundering Falls']
+
+
+╔══ TURN 1 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Izzet Prowess 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Lotus Field (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 20  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 0
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Lotus Field [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Slickshot Show-Off
+  [Main 1]
+T1 P2: Play Scalding Tarn
+T1 P2: Crack Scalding Tarn (pay 1 life) -> Stomping Ground (pay 2 life, untapped, life: 17)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Stomping Ground→R (paying for Monastery Swiftspear, 1 mana remaining)
+T1 P2: Cast Monastery Swiftspear (R)
+    [Priority] P1 passes (no response)
+T1: Resolve Monastery Swiftspear
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Monastery Swiftspear
+T1 P2: Attack with Monastery Swiftspear
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 1 damage dealt → P1 life: 20 → 19
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 19  |  Izzet Prowess 17
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Lotus Field
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2) [tapped]
+║   Lands: Stomping Ground [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Shifting Woodland
+  [Main 1]
+T2 P1: Play Urza's Saga
+    → Goal: deploy_engine [enablers]
+    [Mana] Tap Lotus Field→G (paying for Arboreal Grazer, 2 mana remaining)
+T2 P1: Cast Arboreal Grazer (G)
+    [Priority] P2 passes (no response)
+T2: Resolve Arboreal Grazer
+T2 P1: Arboreal Grazer puts Mirrorpool onto battlefield
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 17  |  Amulet Titan 19
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 3
+║ Library: 52  |  Graveyard: 1
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2)
+║   Lands: Stomping Ground
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Lands: Lotus Field [T], Urza's Saga, Mirrorpool [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wooded Foothills
+  [Main 1]
+T2 P2: Play Fiery Islet
+    → Goal: curve_out [enablers]
+    [Mana] Tap Stomping Ground→R, Fiery Islet→R (paying for Slickshot Show-Off, 2 mana remaining)
+T2 P2: Cast Slickshot Show-Off (1R)
+    [Priority] P1 passes (no response)
+T2: Resolve Slickshot Show-Off
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Monastery Swiftspear, Slickshot Show-Off
+T2 P2: Attack with Monastery Swiftspear, Slickshot Show-Off
+  [Declare Blockers] P1 blocks: 
+  [Combat Damage] 1 damage dealt → P1 life: 19 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 18  |  Izzet Prowess 17
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Lands: Lotus Field, Urza's Saga, Mirrorpool
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2) [tapped], Slickshot Show-Off (1/2) [tapped]
+║   Lands: Stomping Ground [T], Fiery Islet [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Dryad Arbor
+  [Main 1]
+T3 P1: Play Forest
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Arboreal Grazer
+T3 P1: Attack with Arboreal Grazer
+  [Declare Blockers] P2 does not block
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 17  |  Amulet Titan 18
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 51  |  Graveyard: 1
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2), Slickshot Show-Off (1/2)
+║   Lands: Stomping Ground, Fiery Islet
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3) [tapped]
+║   Lands: Lotus Field, Urza's Saga, Mirrorpool, Forest
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mishra's Bauble
+  [Main 1]
+T3 P2: Play Wooded Foothills
+T3 P2: Crack Wooded Foothills -> Steam Vents (tapped, no spells need mana)
+    → Goal: curve_out
+T3 P2: Cast Mishra's Bauble (0)
+    [Priority] P1 passes (no response)
+T3: Resolve Mishra's Bauble
+    → Goal: curve_out [enablers]
+    [Mana] Tap Stomping Ground→R, Fiery Islet→R (paying for Slickshot Show-Off, 2 mana remaining)
+T3 P2: Cast Slickshot Show-Off (1R)
+    [Priority] P1 passes (no response)
+T3: Resolve Slickshot Show-Off
+T3 P2: Activate Fiery Islet (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Monastery Swiftspear, Slickshot Show-Off, Slickshot Show-Off
+T3 P2: Attack with Monastery Swiftspear, Slickshot Show-Off, Slickshot Show-Off
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 6 damage dealt → P1 life: 18 → 12
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 12  |  Izzet Prowess 16
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Lands: Lotus Field, Urza's Saga, Mirrorpool, Forest
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2) [tapped], Slickshot Show-Off (1/2) [tapped], Slickshot Show-Off (1/2) [tapped]
+║   Other: Mishra's Bauble
+║   Lands: Stomping Ground [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T4 P1: Create 1x Construct token(s)
+T4 P1: Urza's Saga Ch.II: Create Construct Token
+  [Draw] P1 draws: Crumbling Vestige
+  [Main 1]
+T4 P1: Play Otawara, Soaring City
+T4: Construct Token dies
+    → Goal: ramp [payoffs]
+    [Mana] Tap Forest→G, Lotus Field→G, Urza's Saga→C, Mirrorpool→C (paying for Primeval Titan, 5 mana remaining)
+T4 P1: Cast Primeval Titan (4GG)
+    [Priority] P2 passes (no response)
+T4: Resolve Primeval Titan
+T4 P1: Primeval Titan searches for Lotus Field
+T4 P1: Primeval Titan searches for Crumbling Vestige
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Arboreal Grazer
+T4 P1: Attack with Arboreal Grazer
+  [Declare Blockers] P2 does not block
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 16  |  Amulet Titan 12
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 7
+║ Library: 48  |  Graveyard: 3
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2), Slickshot Show-Off (1/2), Slickshot Show-Off (1/2)
+║   Other: Mishra's Bauble
+║   Lands: Stomping Ground, Steam Vents
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3) [tapped], Primeval Titan (6/6)
+║   Lands: Lotus Field [T], Urza's Saga [T], Mirrorpool [T], Forest [T], Otawara, Soaring City, Lotus Field [T], Crumbling Vestige [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Lava Dart
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Stomping Ground→R (paying for Lava Dart, 2 mana remaining)
+T4 P2: Cast Lava Dart (R)
+    [Priority] P1 passes (no response)
+T4: Resolve Lava Dart
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→R (paying for Lava Dart, 1 mana remaining)
+T4 P2: Cast Lava Dart (R)
+    [Priority] P1 passes (no response)
+T4: Resolve Lava Dart
+T4 P2: Play Thundering Falls (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Monastery Swiftspear, Slickshot Show-Off, Slickshot Show-Off
+T4 P2: Attack with Monastery Swiftspear, Slickshot Show-Off, Slickshot Show-Off
+  [Declare Blockers] P1 blocks: 
+T4: Monastery Swiftspear dies
+  [Combat Damage] 10 damage dealt → P1 life: 12 → 2
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 2  |  Izzet Prowess 16
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 7  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Primeval Titan (6/6)
+║   Lands: Lotus Field, Urza's Saga, Mirrorpool, Forest, Otawara, Soaring City, Lotus Field, Crumbling Vestige
+║ Izzet Prowess board:
+║   Creatures: Slickshot Show-Off (1/2) [tapped], Slickshot Show-Off (1/2) [tapped]
+║   Other: Mishra's Bauble
+║   Lands: Stomping Ground [T], Steam Vents [T], Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T5 P1: Create 1x Construct token(s)
+T5 P1: Urza's Saga Ch.III: Create Construct Token
+T5 P1: Urza's Saga tutors Amulet of Vigor
+T5 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Urza's Saga
+  [Main 1]
+T5 P1: Play Urza's Saga
+T5: Construct Token dies
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Arboreal Grazer, Primeval Titan
+T5 P1: Amulet of Vigor untaps Simic Growth Chamber
+T5 P1: Primeval Titan searches for Simic Growth Chamber
+T5 P1: Amulet of Vigor untaps Simic Growth Chamber
+T5 P1: Primeval Titan searches for Simic Growth Chamber
+T5 P1: Attack with Arboreal Grazer, Primeval Titan
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 6 damage dealt → P2 life: 16 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 10  |  Amulet Titan 2
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 9
+║ Library: 47  |  Graveyard: 4
+║ Izzet Prowess board:
+║   Creatures: Slickshot Show-Off (1/2), Slickshot Show-Off (1/2)
+║   Other: Mishra's Bauble
+║   Lands: Stomping Ground, Steam Vents, Thundering Falls
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3) [tapped], Primeval Titan (6/6) [tapped]
+║   Other: Amulet of Vigor
+║   Lands: Lotus Field, Mirrorpool, Forest, Otawara, Soaring City, Lotus Field, Crumbling Vestige, Urza's Saga, Simic Growth Chamber, Simic Growth Chamber
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Unholy Heat
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Stomping Ground→R (paying for Unholy Heat, 3 mana remaining)
+T5 P2: Cast Unholy Heat (R)
+    [Priority] P1 passes (no response)
+T5: Resolve Unholy Heat
+P1 loses: life total 0
+
+>>> Izzet Prowess wins Game 3 on turn 5 via damage
+    Final life: Amulet Titan=0  Izzet Prowess=10
+
+======================================================================
+  MATCH RESULT: Izzet Prowess wins 2-1
+======================================================================
