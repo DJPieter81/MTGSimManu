@@ -434,20 +434,33 @@ class EVPlayer:
         if 'board_wipe' in tags and snap.opp_creature_count == 0:
             return min(ev, -50.0)
 
-        # ── X-cost board wipe: require X-budget to kill ≥2 opponent creatures ──
-        # Without this, Wrath of the Skies at X=0 (only 2 untapped lands left
-        # after paying WW) would be cast to kill a single 0-CMC token, burning
-        # our best stabilizer on a Prismatic-Ending-sized effect. Hold the wipe
-        # until we reach the mana bend.
+        # ── X-cost board wipe: hold when the X-budget can't meaningfully clear ──
+        # Tuned through three passes:
+        #   v1 (≥2 kills) — too strict: Azorius never wraths vs 1 Ragavan.
+        #   v2 (≥3 power on single kill) — still too strict: 2-power Ragavan
+        #       fails, but killing even a single attacking Ragavan is correct
+        #       when the AI is dying.
+        #   v3 (this): threshold drops to 2 power, and the whole gate is
+        #       waived when we're at low life (≤10). Consolidates the
+        #       "always fire when desperate" behaviour.
         if ('board_wipe' in tags and t.x_cost_data and opp.creatures):
             total_mana = snap.my_mana
             base_cost = t.cmc or 0
             x_budget = max(0, total_mana - base_cost)
             mult = (t.x_cost_data or {}).get('multiplier', 1) or 1
             effective_x = x_budget // mult
-            kill_count = sum(1 for c in opp.creatures
-                             if (c.template.cmc or 0) <= effective_x)
-            if kill_count < 2:
+            killable = [c for c in opp.creatures
+                        if (c.template.cmc or 0) <= effective_x]
+            kill_count = len(killable)
+            killable_power = sum((c.power or 0) for c in killable)
+            desperate = snap.my_life <= 10
+            if not desperate:
+                if kill_count == 0:
+                    return min(ev, -20.0)
+                if kill_count == 1 and killable_power < 2:
+                    return min(ev, -20.0)
+            elif kill_count == 0:
+                # Even desperate, zero kills is pure waste
                 return min(ev, -20.0)
 
         # ── Blink/flicker hard gate: no legal target means the spell fizzles ──

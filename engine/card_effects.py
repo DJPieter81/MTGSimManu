@@ -2150,14 +2150,15 @@ def kappa_etb(game, card, controller, targets=None, item=None):
     # Approximate: add counters equal to half the artifacts on board (those played this turn)
     bonus = min(artifact_count // 2, 4)
     if bonus > 0:
-        if not hasattr(card, 'counters'):
-            card.counters = 0
-        card.counters += bonus
-        card.template.power = (card.template.power or 4) + bonus
-        card.template.toughness = (card.template.toughness or 4) + bonus
+        # Use plus_counters on the INSTANCE — assigning to card.template.power
+        # mutated the shared CardDatabase template, so every future game's
+        # Kappa Cannoneer grew another +bonus (matrix-wide corruption, same
+        # class of bug as the Blood Moon leak fixed in 2380126).
+        card.plus_counters += bonus
+    # Read through the P/T properties (which apply plus_counters) for logging.
     game.log.append(
         f"T{game.display_turn} P{controller+1}: "
-        f"Kappa Cannoneer enters as {card.template.power}/{card.template.toughness} (ward 4, grows with artifacts)")
+        f"Kappa Cannoneer enters as {card.power}/{card.toughness} (ward 4, grows with artifacts)")
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -2192,15 +2193,16 @@ def pinnacle_emissary_etb(game, card, controller, targets=None, item=None):
 @EFFECT_REGISTRY.register("Arcbound Ravager", EffectTiming.ETB,
                            description="Arcbound Ravager: 0/0 + modular 1, grows by sacrificing artifacts")
 def arcbound_ravager_etb(game, card, controller, targets=None, item=None):
-    """Arcbound Ravager ETB: starts as 1/1 (modular 1), grows later."""
-    card.template.power = 1
-    card.template.toughness = 1
-    if not hasattr(card, 'counters'):
-        card.counters = 0
-    card.counters += 1
+    """Arcbound Ravager ETB: starts as 1/1 (modular 1), grows later.
+
+    Uses plus_counters on the instance instead of writing to the shared
+    template (prior impl mutated template.power/toughness, leaking across
+    games the same way Blood Moon did).
+    """
+    card.plus_counters += 1
     game.log.append(
         f"T{game.display_turn} P{controller+1}: "
-        f"Arcbound Ravager enters as 1/1 (modular 1)")
+        f"Arcbound Ravager enters as {card.power}/{card.toughness} (modular 1)")
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -2322,8 +2324,12 @@ def teferi_t3_etb(game, card, controller, targets=None, item=None):
             f"T{game.display_turn} P{controller+1}: "
             f"Teferi draws {drawn.name}")
 
-    # Static: opponents can only cast at sorcery speed
-    # Model by reducing opponent counter_density to 0
+    # Static: opponents can only cast at sorcery speed.
+    # Reducing counter_density is an AI hint; the hard engine restriction
+    # lives in GameState via the `_teferi_shutdown_active` helper that
+    # checks controller-side "cast at sorcery speed" permanents whenever
+    # a response window would open. Setting counter_density to 0 keeps
+    # the BHI and EV heuristics aligned with the hard restriction.
     opp.counter_density = 0.0
 
 
@@ -2369,21 +2375,35 @@ def goblin_bombardment_etb(game, card, controller, targets=None, item=None):
 def blood_moon_etb(game, card, controller, targets=None, item=None):
     """Blood Moon enters: opponent's nonbasic lands become Mountains.
 
-    Only strips non-R mana production. Lands that already only produce R
-    are unaffected (Steam Vents producing U+R loses U but keeps R).
-    Opponent-only simplification (controller builds around it).
+    CRITICAL: Do NOT mutate `land.template.produces_mana` — templates are
+    shared across every CardInstance of that land in every game in the
+    matrix worker. The old implementation permanently corrupted the
+    CardDatabase for all subsequent games, which is the primary cause of
+    Boros's 94% WR (Blood Moon SB → opponent lands become Mountains in
+    game 1 → stay broken for games 2..N because mana-tap logic reads the
+    shared template).
+
+    Fix: give each affected land instance its own shallow-copied template
+    with produces_mana=['R']. Only the instance sees the change; the
+    shared CardDatabase template is untouched.
     """
+    import copy
     opp_idx = 1 - controller
     opp = game.players[opp_idx]
     affected = 0
     for land in opp.lands:
         supertypes = getattr(land.template, 'supertypes', [])
-        if 'Basic' not in supertypes:
-            old_colors = set(land.template.produces_mana)
-            # Only affect lands that produce non-R colors
-            if old_colors != {'R'} and old_colors != set():
-                land.template.produces_mana = ['R']
-                affected += 1
+        if 'Basic' in supertypes:
+            continue
+        old_colors = set(land.template.produces_mana)
+        if old_colors == {'R'} or old_colors == set():
+            continue
+        # Shallow-copy the template, then replace produces_mana in the copy.
+        # Assigning land.template rebinds only this instance's reference.
+        per_instance_tmpl = copy.copy(land.template)
+        per_instance_tmpl.produces_mana = ['R']
+        land.template = per_instance_tmpl
+        affected += 1
     if affected > 0:
         game.log.append(
             f"T{game.display_turn} P{controller+1}: "

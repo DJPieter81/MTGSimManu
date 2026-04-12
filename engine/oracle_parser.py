@@ -23,13 +23,16 @@ def parse_ritual_mana(oracle: str) -> Optional[Tuple[str, int]]:
     E.g., "Add {R}{R}{R}" → ("R", 3)
     """
     oracle = oracle.lower()
-    if 'add' not in oracle:
+    # Use word boundaries to avoid matching "additional" (e.g. in "Kicker {W}
+    # (You may pay an additional {W}..." on Orim's Chant, which was being
+    # mis-parsed as a 2-W ritual and producing mana instead of silencing).
+    if not re.search(r'\badd\b', oracle):
         return None
 
-    # Only look at the first sentence containing "add"
+    # Only look at the first sentence containing a standalone "add"
     add_sentence = ''
     for sentence in oracle.split('.'):
-        if 'add' in sentence:
+        if re.search(r'\badd\b', sentence):
             add_sentence = sentence
             break
     if not add_sentence:
@@ -43,7 +46,7 @@ def parse_ritual_mana(oracle: str) -> Optional[Tuple[str, int]]:
             return (color, count)
 
     # "Add two mana in any combination" (Manamorphose)
-    m = re.search(r'add\s+(\w+)\s+mana', oracle)
+    m = re.search(r'\badd\s+(\w+)\s+mana', oracle)
     if m:
         word_to_num = {'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5}
         amount = word_to_num.get(m.group(1), 0)
@@ -101,18 +104,32 @@ def parse_energy_production(oracle: str) -> int:
     """Count energy production from oracle text.
 
     Returns the number of {E} symbols in the first energy-producing clause.
+    Skips clauses gated by "Whenever ... enters/attacks/dies" — those are
+    triggered abilities that fire in response to other events, not static
+    ETB production. Guide of Souls was being credited 1 energy at its own
+    ETB because its triggered "whenever another creature you control enters"
+    clause matched the raw "get {e}" regex.
     """
     oracle = oracle.lower()
     if '{e}' not in oracle and 'energy' not in oracle:
         return 0
 
-    # Count {e} symbols in "get {e}{e}{e}" patterns
-    m = re.search(r'(?:get|gets?)\s+((?:\{e\})+)', oracle)
-    if m:
+    # Look for "get {E}" clauses. Return the first one whose sentence is
+    # NOT gated by a "whenever" trigger.
+    for m in re.finditer(r'(?:get|gets?)\s+((?:\{e\})+)', oracle):
+        # Find the boundary of this "sentence" — the last sentence-terminator
+        # (period, newline) before the match, or start of string.
+        sentence_start = max(
+            oracle.rfind('.', 0, m.start()),
+            oracle.rfind('\n', 0, m.start()),
+            -1
+        ) + 1
+        clause = oracle[sentence_start:m.end()]
+        if 'whenever' in clause or 'when ' in clause.lstrip()[:5]:
+            continue  # triggered ability — not static ETB
         return m.group(1).count('{e}')
 
-    # "you get {e}" anywhere
-    return oracle.count('{e}')
+    return 0
 
 
 def has_cascade(oracle: str) -> bool:

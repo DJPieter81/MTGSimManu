@@ -67,10 +67,8 @@ MODERN_DECKS: Dict[str, Dict[str, Dict[str, int]]] = {
             "Obsidian Charmaw": 2,
             "Blood Moon": 2,
             "The Legend of Roku": 2,
+            "Wear // Tear": 3,
             "Celestial Purge": 1,
-            "Showdown of the Skalds": 1,
-            "Surgical Extraction": 1,
-            "Wear // Tear": 1,
         },
     },
     "Jeskai Blink": {
