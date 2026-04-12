@@ -1,5 +1,12 @@
 # MTG Simulator — Codebase Architecture
 
+> ⚠️ **STALE — do not rely on this document.** It references deleted modules
+> (`ai_player.py` as orchestrator, `spell_decision.py`, `combo_readiness.py`,
+> `spell_sequencer.py`, `replay_generator.py`, `replay_generator_v2.py`) and a
+> 12-deck count. Current architecture and deck count live in
+> [`PROJECT_STATUS.md`](PROJECT_STATUS.md). This file is retained pending a
+> full rewrite; scheduled as part of the docs/ reshuffle work.
+
 > A Modern-format Magic: The Gathering game simulator with AI opponents, replay generation, and a web-based replay viewer. The system simulates full games between 12 Modern decks, produces structured replay data, and renders it in an interactive browser UI.
 
 ---
