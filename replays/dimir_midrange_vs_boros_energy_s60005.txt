@@ -1,0 +1,1182 @@
+Loaded 21759 cards (0 errors)
+======================================================================
+  GAME 1: Dimir Midrange (P1) vs Boros Energy (P2)  —  seed 60005
+  Series: Dimir Midrange 0 - 0 Boros Energy
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Boros Energy wins → chooses to play first
+║ P1 (on play): Boros Energy
+║ P2 (on draw): Dimir Midrange
+╚═══════════════════════════════════════════════════════
+
+P1 (Dimir Midrange) opening hand (3 lands, 4 spells):
+  • Fatal Push [Spell, CMC 1]
+  • Darkslick Shores [Land, CMC 0]
+  • Darkslick Shores [Land, CMC 0]
+  • Thoughtseize [Spell, CMC 1]
+  • Island [Land, CMC 0]
+  • Psychic Frog [Creature, CMC 2]
+  • Fatal Push [Spell, CMC 1]
+→ P1 KEEPS 7 — has key card(s): Fatal Push, Psychic Frog, Thoughtseize, 4 cheap spells
+
+P2 (Boros Energy) opening hand (3 lands, 4 spells):
+  • Arena of Glory [Land, CMC 0]
+  • Galvanic Discharge [Spell, CMC 1]
+  • Ocelot Pride [Creature, CMC 1]
+  • Flooded Strand [Land, CMC 0]
+  • Ajani, Nacatl Pariah // Ajani, Nacatl Avenger [Creature, CMC 2]
+  • Marsh Flats [Land, CMC 0]
+  • Guide of Souls [Creature, CMC 1]
+→ P2 KEEPS 7 — has key card(s): Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Galvanic Discharge, Guide of Souls, Ocelot Pride, 4 cheap spells
+
+
+╔══ TURN 1 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Dimir Midrange 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Flooded Strand
+T1 P2: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (pay 2 life, untapped, life: 17)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Ocelot Pride, 1 mana remaining)
+T1 P2: Cast Ocelot Pride (W)
+    [Priority] P1 passes (no response)
+T1: Resolve Ocelot Pride
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Boros Energy 17
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Creeping Tar Pit
+  [Main 1]
+T1 P1: Play Island
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 17  |  Dimir Midrange 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Lands: Sacred Foundry
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Goblin Bombardment
+  [Main 1]
+T2 P2: Play Marsh Flats
+T2 P2: Crack Marsh Flats (pay 1 life) -> Sacred Foundry (pay 2 life, untapped, life: 14)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 2 mana remaining)
+T2 P2: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P1 passes (no response)
+T2: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T2 P2: Create 1x Cat token(s)
+T2 P2: Ajani creates 2/1 Cat Warrior token
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ocelot Pride
+T2 P2: Attack with Ocelot Pride
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 1 damage dealt → P1 life: 20 → 19
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Boros Energy 15
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Island
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Orcish Bowmasters
+  [Main 1]
+T2 P1: Play Darkslick Shores (untapped, 1 other lands)
+    → Goal: disrupt [enablers]
+    [Mana] Tap Darkslick Shores→B, Island→U (paying for Orcish Bowmasters, 2 mana remaining)
+T2 P1: Cast Orcish Bowmasters (1B)
+    [Priority] P2 passes (no response)
+T2: Resolve Orcish Bowmasters
+T2 P1: Bowmasters deals 1 damage to Cat Token
+T2 P1: Bowmasters creates 1/1 Orc Army token
+T2: Cat Token dies
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 15  |  Dimir Midrange 19
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 3
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Island [T], Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Snow-Covered Mountain
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Guide of Souls, 2 mana remaining)
+T3 P2: Cast Guide of Souls (W)
+    [Priority] P1 passes (no response)
+T3: Resolve Guide of Souls
+T3 P2: Guide of Souls produces 1 energy (total: 1)
+T3 P2: Play Snow-Covered Mountain
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T3 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Declare Blockers] P1 blocks: 
+T3: Orcish Bowmasters dies
+  [End Combat]
+  [Main 2]
+    → Goal: curve_out [interaction]
+    [Mana] Tap Snow-Covered Mountain→R (paying for Galvanic Discharge, 2 mana remaining)
+T3 P2: Cast Galvanic Discharge (R)
+    [Priority] P1 passes (no response)
+T3: Resolve Galvanic Discharge
+T3 P2: Galvanic Discharge deals 5 to opponent
+  [End Step]
+
+╔══ TURN 3 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 14  |  Boros Energy 15
+║ Hand: 6 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1)
+║   Lands: Island, Darkslick Shores
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Guide of Souls (1/2)
+║   Lands: Sacred Foundry [T], Sacred Foundry, Snow-Covered Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Counterspell
+  [Main 1]
+T3 P1: Play Darkslick Shores (untapped, 2 other lands)
+    → Goal: disrupt [interaction]
+    [Mana] Tap Darkslick Shores→B (paying for Thoughtseize, 3 mana remaining)
+T3 P1: Cast Thoughtseize (B)
+    [Priority] P2 passes (no response)
+T3: Resolve Thoughtseize
+T3: Goblin Bombardment moved hand -> graveyard (forced discard)
+    → Goal: disrupt [interaction]
+    [Mana] Tap Darkslick Shores→B (paying for Fatal Push, 2 mana remaining)
+T3 P1: Cast Fatal Push (B)
+    [Priority] P2 passes (no response)
+T3: Resolve Fatal Push
+T3: Ocelot Pride dies
+T3 P1: Fatal Push destroys Ocelot Pride
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 15  |  Dimir Midrange 12
+║ Hand: 1 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 6
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Guide of Souls (1/2)
+║   Lands: Sacred Foundry, Sacred Foundry, Snow-Covered Mountain
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1)
+║   Lands: Island, Darkslick Shores [T], Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ocelot Pride
+  [Main 1]
+T4 P2: Play Arena of Glory (enters tapped)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Ocelot Pride, 3 mana remaining)
+T4 P2: Cast Ocelot Pride (W)
+    [Priority] P1 passes (no response)
+T4: Resolve Ocelot Pride
+T4 P2: Gain 1 life from Guide of Souls (life: 16)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Guide of Souls
+T4 P2: +1 energy from Guide of Souls attack (total: 1)
+T4 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Guide of Souls
+  [Declare Blockers] P1 blocks: 
+T4: Orc Army dies
+  [Combat Damage] 1 damage dealt → P1 life: 12 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 11  |  Boros Energy 16
+║ Hand: 4 cards  |  Opp hand: 0 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 4
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Island, Darkslick Shores, Darkslick Shores
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Guide of Souls (1/2) [tapped], Ocelot Pride (1/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry, Snow-Covered Mountain, Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Fatal Push
+  [Main 1]
+T4 P1: Play Creeping Tar Pit (enters tapped)
+    → Goal: disrupt [interaction]
+    [Mana] Tap Darkslick Shores→B (paying for Fatal Push, 3 mana remaining)
+T4 P1: Cast Fatal Push (B)
+    [Priority] P2 passes (no response)
+T4: Resolve Fatal Push
+T4: Ocelot Pride dies
+T4 P1: Fatal Push destroys Ocelot Pride
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 16  |  Dimir Midrange 11
+║ Hand: 0 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 7
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Guide of Souls (1/2)
+║   Lands: Sacred Foundry, Sacred Foundry, Snow-Covered Mountain, Arena of Glory
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Island, Darkslick Shores [T], Darkslick Shores, Creeping Tar Pit [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Galvanic Discharge
+  [Main 1]
+    → Goal: curve_out [interaction]
+    [Mana] Tap Snow-Covered Mountain→R (paying for Galvanic Discharge, 4 mana remaining)
+T5 P2: Cast Galvanic Discharge (R)
+    [Priority] P1 responds with Counterspell
+    [Mana] Tap Island→U, Darkslick Shores→U (paying for Counterspell, 2 mana remaining)
+T5 P1: Cast Counterspell (UU)
+T5: Resolve Counterspell
+T5: Galvanic Discharge is countered
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Guide of Souls
+T5 P2: +1 energy from Guide of Souls attack (total: 2)
+T5 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Guide of Souls
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 2 damage dealt → P1 life: 11 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 9  |  Boros Energy 16
+║ Hand: 2 cards  |  Opp hand: 0 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 6
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Island, Darkslick Shores, Darkslick Shores, Creeping Tar Pit
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Guide of Souls (1/2) [tapped]
+║   Lands: Sacred Foundry, Sacred Foundry, Snow-Covered Mountain [T], Arena of Glory
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Orcish Bowmasters
+  [Main 1]
+    → Goal: disrupt [enablers]
+    [Mana] Tap Darkslick Shores→B, Island→U (paying for Psychic Frog, 4 mana remaining)
+T5 P1: Cast Psychic Frog (UB)
+    [Priority] P2 passes (no response)
+T5: Resolve Psychic Frog
+    → Goal: disrupt [enablers]
+    [Mana] Tap Darkslick Shores→B, Creeping Tar Pit→B (paying for Orcish Bowmasters, 2 mana remaining)
+T5 P1: Cast Orcish Bowmasters (1B)
+    [Priority] P2 passes (no response)
+T5: Resolve Orcish Bowmasters
+T5 P1: Bowmasters deals 1 damage to opponent (life: 15)
+T5 P1: Bowmasters creates 1/1 Orc Army token
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 15  |  Dimir Midrange 9
+║ Hand: 0 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 8
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Guide of Souls (1/2)
+║   Lands: Sacred Foundry, Sacred Foundry, Snow-Covered Mountain, Arena of Glory
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2), Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Island [T], Darkslick Shores [T], Darkslick Shores [T], Creeping Tar Pit [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Marsh Flats
+  [Main 1]
+T6 P2: Play Marsh Flats
+T6 P2: Crack Marsh Flats -> Sacred Foundry (tapped, no spells need mana)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Guide of Souls
+T6 P2: +1 energy from Guide of Souls attack (total: 3)
+T6 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Guide of Souls
+  [Declare Blockers] P1 blocks: 
+T6: Orc Army dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 9  |  Boros Energy 14
+║ Hand: 1 cards  |  Opp hand: 0 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 7
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2), Orcish Bowmasters (1/1)
+║   Lands: Island, Darkslick Shores, Darkslick Shores, Creeping Tar Pit
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Guide of Souls (1/2) [tapped]
+║   Lands: Sacred Foundry, Sacred Foundry, Snow-Covered Mountain, Arena of Glory, Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Subtlety
+  [Main 1]
+    → Goal: disrupt
+    [Mana] Tap Island→U, Darkslick Shores→U, Darkslick Shores→B, Creeping Tar Pit→B (paying for Subtlety, 4 mana remaining)
+T6 P1: Cast Subtlety (2UU)
+    [Priority] P2 passes (no response)
+T6: Resolve Subtlety
+T6 P1: Subtlety enters (no creature/PW spell on stack to target)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Psychic Frog, Orcish Bowmasters
+T6 P1: Attack with Psychic Frog, Orcish Bowmasters
+  [Declare Blockers] P2 does not block
+T6 P1: Psychic Frog deals combat damage — draw a card
+  [Combat Damage] 2 damage dealt → P2 life: 14 → 12
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 12  |  Dimir Midrange 9
+║ Hand: 0 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 9
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Guide of Souls (1/2)
+║   Lands: Sacred Foundry, Sacred Foundry, Snow-Covered Mountain, Arena of Glory, Sacred Foundry
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2) [tapped], Orcish Bowmasters (1/1) [tapped], Subtlety (3/3)
+║   Lands: Island [T], Darkslick Shores [T], Darkslick Shores [T], Creeping Tar Pit [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T7 P2: Play Flooded Strand
+T7 P2: Crack Flooded Strand -> Snow-Covered Plains (untapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 9  |  Boros Energy 11
+║ Hand: 2 cards  |  Opp hand: 0 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 46  |  Graveyard: 7
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2), Orcish Bowmasters (1/1), Subtlety (3/3)
+║   Lands: Island, Darkslick Shores, Darkslick Shores, Creeping Tar Pit
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Guide of Souls (1/2)
+║   Lands: Sacred Foundry, Sacred Foundry, Snow-Covered Mountain, Arena of Glory, Sacred Foundry, Snow-Covered Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Psychic Frog
+  [Main 1]
+    → Goal: disrupt [interaction]
+    [Mana] Tap Darkslick Shores→B (paying for Fatal Push, 4 mana remaining)
+T7 P1: Cast Fatal Push (B)
+    [Priority] P2 passes (no response)
+T7: Resolve Fatal Push
+T7: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger dies
+T7 P1: Fatal Push destroys Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+    → Goal: disrupt [enablers]
+    [Mana] Tap Darkslick Shores→B, Island→U (paying for Psychic Frog, 3 mana remaining)
+T7 P1: Cast Psychic Frog (UB)
+    [Priority] P2 passes (no response)
+T7: Resolve Psychic Frog
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Psychic Frog, Subtlety
+T7 P1: Attack with Psychic Frog, Subtlety
+  [Declare Blockers] P2 blocks: 
+  [Combat Damage] 3 damage dealt → P2 life: 11 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 8  |  Dimir Midrange 9
+║ Hand: 0 cards  |  Opp hand: 1 cards
+║ Lands: 6  |  Opp lands: 4
+║ Library: 43  |  Graveyard: 11
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2)
+║   Lands: Sacred Foundry, Sacred Foundry, Snow-Covered Mountain, Arena of Glory, Sacred Foundry, Snow-Covered Plains
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2) [tapped], Orcish Bowmasters (1/1), Subtlety (3/3) [tapped], Psychic Frog (1/2)
+║   Lands: Island [T], Darkslick Shores [T], Darkslick Shores [T], Creeping Tar Pit
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Guide of Souls
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Snow-Covered Plains→W (paying for Guide of Souls, 6 mana remaining)
+T8 P2: Cast Guide of Souls (W)
+    [Priority] P1 passes (no response)
+T8: Resolve Guide of Souls
+T8 P2: Guide of Souls produces 1 energy (total: 4)
+T8 P2: Gain 1 life from Guide of Souls (life: 9)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Guide of Souls
+T8 P2: +1 energy from Guide of Souls attack (total: 5)
+T8 P2: Attack with Guide of Souls
+  [Declare Blockers] P1 blocks: 
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 9  |  Boros Energy 9
+║ Hand: 1 cards  |  Opp hand: 0 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 45  |  Graveyard: 8
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2), Orcish Bowmasters (1/1), Subtlety (3/3), Psychic Frog (1/2)
+║   Lands: Island, Darkslick Shores, Darkslick Shores, Creeping Tar Pit
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2) [tapped], Guide of Souls (1/2)
+║   Lands: Sacred Foundry, Sacred Foundry, Snow-Covered Mountain, Arena of Glory, Sacred Foundry, Snow-Covered Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Darkslick Shores
+  [Main 1]
+T8 P1: Play Darkslick Shores (tapped, 4 other lands)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Psychic Frog, Subtlety, Psychic Frog
+T8 P1: Attack with Psychic Frog, Subtlety, Psychic Frog
+  [Declare Blockers] P2 blocks: 
+T8 P1: Psychic Frog deals combat damage — draw a card
+  [Combat Damage] 4 damage dealt → P2 life: 9 → 5
+  [End Combat]
+  [Main 2]
+    → Goal: disrupt [enablers]
+    [Mana] Tap Island→U (paying for Consider, 4 mana remaining)
+T8 P1: Cast Consider (U)
+    [Priority] P2 passes (no response)
+T8: Resolve Consider
+  [End Step]
+
+╔══ TURN 9 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 5  |  Dimir Midrange 9
+║ Hand: 0 cards  |  Opp hand: 2 cards
+║ Lands: 6  |  Opp lands: 5
+║ Library: 42  |  Graveyard: 11
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2), Guide of Souls (1/2)
+║   Lands: Sacred Foundry, Sacred Foundry, Snow-Covered Mountain, Arena of Glory, Sacred Foundry, Snow-Covered Plains
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2) [tapped], Orcish Bowmasters (1/1), Subtlety (3/3) [tapped], Psychic Frog (1/2) [tapped]
+║   Lands: Island [T], Darkslick Shores, Darkslick Shores, Creeping Tar Pit, Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Elegant Parlor
+  [Main 1]
+T9 P2: Play Elegant Parlor (enters tapped)
+  [Begin Combat]
+    [Mana] Tap Darkslick Shores→U, Darkslick Shores→B (paying for Drown in the Loch, 3 mana remaining)
+T9 P1: Cast Drown in the Loch (UB)
+T9: Resolve Drown in the Loch
+T9: Guide of Souls dies
+  [Declare Attackers] P2 attacks with: Guide of Souls
+T9 P2: +1 energy from Guide of Souls attack (total: 6)
+T9 P2: Attack with Guide of Souls
+  [Declare Blockers] P1 blocks: 
+T9: Orcish Bowmasters dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 9  |  Boros Energy 5
+║ Hand: 1 cards  |  Opp hand: 0 cards
+║ Lands: 5  |  Opp lands: 7
+║ Library: 42  |  Graveyard: 11
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2), Subtlety (3/3), Psychic Frog (1/2)
+║   Lands: Island, Darkslick Shores, Darkslick Shores, Creeping Tar Pit, Darkslick Shores
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2) [tapped]
+║   Lands: Sacred Foundry, Sacred Foundry, Snow-Covered Mountain, Arena of Glory, Sacred Foundry, Snow-Covered Plains, Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Darkslick Shores
+  [Main 1]
+T9 P1: Play Scalding Tarn
+T9 P1: Crack Scalding Tarn -> Watery Grave (tapped, no spells need mana)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Psychic Frog, Subtlety, Psychic Frog
+T9 P1: Attack with Psychic Frog, Subtlety, Psychic Frog
+  [Declare Blockers] P2 does not block
+T9 P1: Psychic Frog deals combat damage — draw a card
+T9 P1: Psychic Frog deals combat damage — draw a card
+P2 loses: life total -1
+  [Combat Damage] 6 damage dealt → P2 life: 5 → -1
+
+>>> Dimir Midrange wins Game 1 on turn 9 via damage
+    Final life: Dimir Midrange=8  Boros Energy=-1
+
+======================================================================
+  GAME 2: Boros Energy (P1) vs Dimir Midrange (P2)  —  seed 60006
+  Series: Dimir Midrange 1 - 0 Boros Energy
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Dimir Midrange wins → chooses to play first
+║ P1 (on play): Dimir Midrange
+║ P2 (on draw): Boros Energy
+╚═══════════════════════════════════════════════════════
+
+P1 (Boros Energy) opening hand (2 lands, 5 spells):
+  • Ocelot Pride [Creature, CMC 1]
+  • Seasoned Pyromancer [Creature, CMC 3]
+  • Arid Mesa [Land, CMC 0]
+  • Arid Mesa [Land, CMC 0]
+  • Seasoned Pyromancer [Creature, CMC 3]
+  • Guide of Souls [Creature, CMC 1]
+  • Guide of Souls [Creature, CMC 1]
+→ P1 KEEPS 7 — has key card(s): Guide of Souls, Ocelot Pride, 5 cheap spells
+
+P2 (Dimir Midrange) opening hand (4 lands, 3 spells):
+  • Subtlety [Creature, CMC 4]
+  • Island [Land, CMC 0]
+  • Otawara, Soaring City [Land, CMC 0]
+  • Orcish Bowmasters [Creature, CMC 2]
+  • Drown in the Loch [Spell, CMC 2]
+  • Creeping Tar Pit [Land, CMC 0]
+  • Takenuma, Abandoned Mire [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Orcish Bowmasters, 2 cheap spells
+
+
+╔══ TURN 1 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Boros Energy 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Creeping Tar Pit (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 20  |  Dimir Midrange 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Creeping Tar Pit [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Blood Moon
+  [Main 1]
+T1 P1: Play Arid Mesa
+T1 P1: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (pay 2 life, untapped, life: 17)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Ocelot Pride, 1 mana remaining)
+T1 P1: Cast Ocelot Pride (W)
+    [Priority] P2 passes (no response)
+T1: Resolve Ocelot Pride
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Boros Energy 17
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Creeping Tar Pit
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Counterspell
+  [Main 1]
+T2 P2: Play Island
+    → Goal: disrupt [enablers]
+    [Mana] Tap Creeping Tar Pit→B, Island→U (paying for Orcish Bowmasters, 2 mana remaining)
+T2 P2: Cast Orcish Bowmasters (1B)
+    [Priority] P1 passes (no response)
+T2: Resolve Orcish Bowmasters
+T2 P2: Bowmasters deals 1 damage to Ocelot Pride
+T2 P2: Bowmasters creates 1/1 Orc Army token
+T2: Ocelot Pride dies
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 17  |  Dimir Midrange 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Creeping Tar Pit [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arena of Glory
+  [Main 1]
+T2 P1: Play Arid Mesa
+T2 P1: Crack Arid Mesa -> Sacred Foundry (tapped, no spells need mana)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Boros Energy 16
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Creeping Tar Pit, Island
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Counterspell
+  [Main 1]
+T3 P2: Play Otawara, Soaring City
+    → Goal: disrupt
+    [Mana] Tap Island→U, Otawara, Soaring City→U, Creeping Tar Pit→B (paying for Subtlety, 3 mana remaining)
+T3 P2: Cast Subtlety (2UU)
+    [Priority] P1 passes (no response)
+T3: Resolve Subtlety
+T3 P2: Subtlety enters (no creature/PW spell on stack to target)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army
+T3 P2: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 2 damage dealt → P1 life: 16 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 14  |  Dimir Midrange 20
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 3
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped], Subtlety (3/3)
+║   Lands: Creeping Tar Pit [T], Island [T], Otawara, Soaring City [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Flooded Strand
+  [Main 1]
+T3 P1: Play Flooded Strand
+T3 P1: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (pay 2 life, untapped, life: 11)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→R, Sacred Foundry→R, Sacred Foundry→R (paying for Seasoned Pyromancer, 3 mana remaining)
+T3 P1: Cast Seasoned Pyromancer (1RR)
+    [Priority] P2 passes (no response)
+T3: Resolve Seasoned Pyromancer
+T3 P1: Create 1x Elemental token(s)
+T3 P1: Seasoned Pyromancer: discard 2, draw 2, create 1 Elemental(s)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Boros Energy 9
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Subtlety (3/3)
+║   Lands: Creeping Tar Pit, Island, Otawara, Soaring City
+║ Boros Energy board:
+║   Creatures: Seasoned Pyromancer (2/2), Elemental Token (1/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Psychic Frog
+  [Main 1]
+    → Goal: disrupt [enablers]
+    [Mana] Tap Creeping Tar Pit→B, Island→U (paying for Psychic Frog, 3 mana remaining)
+T4 P2: Cast Psychic Frog (UB)
+    [Priority] P1 passes (no response)
+T4: Resolve Psychic Frog
+T4 P2: Play Takenuma, Abandoned Mire
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Subtlety
+T4 P2: Attack with Subtlety
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 3 damage dealt → P1 life: 9 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 6  |  Dimir Midrange 20
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 6
+║ Boros Energy board:
+║   Creatures: Seasoned Pyromancer (2/2), Elemental Token (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Subtlety (3/3) [tapped], Psychic Frog (1/2)
+║   Lands: Creeping Tar Pit [T], Island [T], Otawara, Soaring City, Takenuma, Abandoned Mire
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Goblin Bombardment
+  [Main 1]
+T4 P1: Play Snow-Covered Plains
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→R, Sacred Foundry→R, Snow-Covered Plains→W (paying for Seasoned Pyromancer, 4 mana remaining)
+T4 P1: Cast Seasoned Pyromancer (1RR)
+    [Priority] P2 responds with Drown in the Loch
+    [Mana] Tap Otawara, Soaring City→U, Takenuma, Abandoned Mire→B (paying for Drown in the Loch, 2 mana remaining)
+T4 P2: Cast Drown in the Loch (UB)
+T4: Resolve Drown in the Loch
+T4: Seasoned Pyromancer is countered
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Guide of Souls, 1 mana remaining)
+T4 P1: Cast Guide of Souls (W)
+    [Priority] P2 passes (no response)
+T4: Resolve Guide of Souls
+T4 P1: Guide of Souls produces 1 energy (total: 1)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Seasoned Pyromancer
+T4 P1: Attack with Seasoned Pyromancer
+  [Declare Blockers] P2 blocks: 
+T4: Seasoned Pyromancer dies
+T4: Orcish Bowmasters dies
+T4: Orc Army dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Boros Energy 6
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: Subtlety (3/3), Psychic Frog (1/2)
+║   Lands: Creeping Tar Pit, Island, Otawara, Soaring City, Takenuma, Abandoned Mire
+║ Boros Energy board:
+║   Creatures: Elemental Token (1/1), Guide of Souls (1/2)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Snow-Covered Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Creeping Tar Pit
+  [Main 1]
+T5 P2: Play Creeping Tar Pit (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Subtlety, Psychic Frog
+T5 P2: Attack with Subtlety, Psychic Frog
+  [Declare Blockers] P1 blocks: 
+  [Combat Damage] 3 damage dealt → P1 life: 6 → 3
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 3  |  Dimir Midrange 20
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 8
+║ Boros Energy board:
+║   Creatures: Elemental Token (1/1), Guide of Souls (1/2)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains
+║ Dimir Midrange board:
+║   Creatures: Subtlety (3/3) [tapped], Psychic Frog (1/2) [tapped]
+║   Lands: Creeping Tar Pit, Island, Otawara, Soaring City, Takenuma, Abandoned Mire, Creeping Tar Pit [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Phlage, Titan of Fire's Fury
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Sacred Foundry→R, Snow-Covered Plains→W, Sacred Foundry→R (paying for Phlage, Titan of Fire's Fury, 4 mana remaining)
+T5 P1: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P2 responds with Counterspell
+    [Mana] Tap Island→U, Otawara, Soaring City→U (paying for Counterspell, 4 mana remaining)
+T5 P2: Cast Counterspell (UU)
+T5: Resolve Counterspell
+T5: Phlage, Titan of Fire's Fury is countered
+    → Goal: curve_out [interaction]
+    [Mana] Tap Sacred Foundry→R (paying for Galvanic Discharge, 1 mana remaining)
+T5 P1: Cast Galvanic Discharge (R)
+    [Priority] P2 passes (no response)
+T5: Resolve Galvanic Discharge
+T5 P1: Galvanic Discharge deals 5 to Subtlety
+T5: Subtlety dies
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Elemental Token, Guide of Souls
+T5 P1: +1 energy from Guide of Souls attack (total: 1)
+T5 P1: Attack with Elemental Token, Guide of Souls
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 2 damage dealt → P2 life: 20 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 18  |  Boros Energy 3
+║ Hand: 1 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 5
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2)
+║   Lands: Creeping Tar Pit, Island, Otawara, Soaring City, Takenuma, Abandoned Mire, Creeping Tar Pit
+║ Boros Energy board:
+║   Creatures: Elemental Token (1/1) [tapped], Guide of Souls (1/2) [tapped]
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Snow-Covered Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thoughtseize
+  [Main 1]
+    → Goal: disrupt [interaction]
+    [Mana] Tap Takenuma, Abandoned Mire→B (paying for Thoughtseize, 5 mana remaining)
+T6 P2: Cast Thoughtseize (B)
+    [Priority] P1 passes (no response)
+T6: Resolve Thoughtseize
+T6: Blood Moon moved hand -> graveyard (forced discard)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Psychic Frog
+T6 P2: Attack with Psychic Frog
+  [Declare Blockers] P1 does not block
+T6 P2: Psychic Frog deals combat damage — draw a card
+  [Combat Damage] 1 damage dealt → P1 life: 3 → 2
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 2  |  Dimir Midrange 16
+║ Hand: 1 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 43  |  Graveyard: 11
+║ Boros Energy board:
+║   Creatures: Elemental Token (1/1), Guide of Souls (1/2)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2) [tapped]
+║   Lands: Creeping Tar Pit, Island, Otawara, Soaring City, Takenuma, Abandoned Mire [T], Creeping Tar Pit
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Galvanic Discharge
+  [Main 1]
+    → Goal: curve_out
+T6 P1: Escape Phlage, Titan of Fire's Fury (exile 5 cards)
+    [Mana] Tap Sacred Foundry→R, Sacred Foundry→R, Snow-Covered Plains→W, Sacred Foundry→W (paying for Phlage, Titan of Fire's Fury, 4 mana remaining)
+T6 P1: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P2 responds with Counterspell
+    [Mana] Tap Island→U, Otawara, Soaring City→U (paying for Counterspell, 4 mana remaining)
+T6 P2: Cast Counterspell (UU)
+T6: Resolve Counterspell
+T6: Phlage, Titan of Fire's Fury is countered
+  [Begin Combat]
+    [Mana] Tap Creeping Tar Pit→B (paying for Fatal Push, 2 mana remaining)
+T6 P2: Cast Fatal Push (B)
+T6: Resolve Fatal Push
+T6: Guide of Souls dies
+T6 P2: Fatal Push destroys Guide of Souls
+  [Declare Attackers] P1 attacks with: Elemental Token
+T6 P1: Attack with Elemental Token
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 1 damage dealt → P2 life: 16 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 15  |  Boros Energy 2
+║ Hand: 0 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 8
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2)
+║   Lands: Creeping Tar Pit, Island, Otawara, Soaring City, Takenuma, Abandoned Mire, Creeping Tar Pit
+║ Boros Energy board:
+║   Creatures: Elemental Token (1/1) [tapped]
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Snow-Covered Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Murktide Regent
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Psychic Frog
+T7 P2: Attack with Psychic Frog
+  [Declare Blockers] P1 does not block
+T7 P2: Psychic Frog deals combat damage — draw a card
+  [Combat Damage] 1 damage dealt → P1 life: 2 → 1
+  [End Combat]
+  [Main 2]
+T7 P2: Play Swamp
+  [End Step]
+
+╔══ TURN 7 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 1  |  Dimir Midrange 15
+║ Hand: 2 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 42  |  Graveyard: 7
+║ Boros Energy board:
+║   Creatures: Elemental Token (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2) [tapped]
+║   Lands: Creeping Tar Pit, Island, Otawara, Soaring City, Takenuma, Abandoned Mire, Creeping Tar Pit, Swamp
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+    → Goal: curve_out
+T7 P1: Escape Phlage, Titan of Fire's Fury (exile 5 cards)
+    [Mana] Tap Sacred Foundry→R, Sacred Foundry→R, Snow-Covered Plains→W, Sacred Foundry→W (paying for Phlage, Titan of Fire's Fury, 4 mana remaining)
+T7 P1: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P2 passes (no response)
+T7: Resolve Phlage, Titan of Fire's Fury
+T7 P1: Phlage: 3 damage to opponent, gain 3 life
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Elemental Token
+T7 P1: Attack with Elemental Token
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 1 damage dealt → P2 life: 12 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 11  |  Boros Energy 4
+║ Hand: 1 cards  |  Opp hand: 3 cards
+║ Lands: 6  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 8
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2)
+║   Lands: Creeping Tar Pit, Island, Otawara, Soaring City, Takenuma, Abandoned Mire, Creeping Tar Pit, Swamp
+║ Boros Energy board:
+║   Creatures: Elemental Token (1/1) [tapped], Phlage, Titan of Fire's Fury (6/6)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Snow-Covered Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Spell Pierce
+  [Main 1]
+    → Goal: disrupt
+T8 P2: Delve 5 cards for Murktide Regent
+    [Mana] Tap Island→U, Otawara, Soaring City→U (paying for Murktide Regent, 6 mana remaining)
+T8 P2: Cast Murktide Regent (5UU)
+    [Priority] P1 passes (no response)
+T8: Resolve Murktide Regent
+T8 P2: Murktide Regent enters as 8/8 (3 +1/+1 counters from delved instants/sorceries)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 4  |  Dimir Midrange 11
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 41  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Elemental Token (1/1), Phlage, Titan of Fire's Fury (6/6)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2), Murktide Regent (8/8)
+║   Lands: Creeping Tar Pit, Island [T], Otawara, Soaring City [T], Takenuma, Abandoned Mire, Creeping Tar Pit, Swamp
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arena of Glory
+  [Main 1]
+T8 P1: Play Arena of Glory (enters tapped)
+    → Goal: curve_out [interaction]
+    [Mana] Tap Sacred Foundry→R (paying for Galvanic Discharge, 4 mana remaining)
+T8 P1: Cast Galvanic Discharge (R)
+    [Priority] P2 responds with Spell Pierce
+    [Mana] Tap Creeping Tar Pit→U (paying for Spell Pierce, 4 mana remaining)
+T8 P2: Cast Spell Pierce (U)
+T8: Resolve Spell Pierce
+T8: Galvanic Discharge is countered
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 3 mana remaining)
+T8 P1: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P2 passes (no response)
+T8: Resolve Ragavan, Nimble Pilferer
+    → Goal: curve_out
+    [Mana] Tap Sacred Foundry→R (paying for Goblin Bombardment, 2 mana remaining)
+T8 P1: Cast Goblin Bombardment (1R)
+    [Priority] P2 passes (no response)
+T8: Resolve Goblin Bombardment
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer
+T8 P1: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P2 blocks: 
+T8: Ragavan, Nimble Pilferer dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 11  |  Boros Energy 4
+║ Hand: 0 cards  |  Opp hand: 0 cards
+║ Lands: 6  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 4
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2), Murktide Regent (9/9)
+║   Lands: Creeping Tar Pit, Island, Otawara, Soaring City, Takenuma, Abandoned Mire, Creeping Tar Pit, Swamp
+║ Boros Energy board:
+║   Creatures: Elemental Token (1/1), Phlage, Titan of Fire's Fury (6/6)
+║   Other: Goblin Bombardment
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Snow-Covered Plains, Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Psychic Frog
+  [Main 1]
+    → Goal: disrupt [enablers]
+    [Mana] Tap Island→U, Takenuma, Abandoned Mire→B (paying for Psychic Frog, 6 mana remaining)
+T9 P2: Cast Psychic Frog (UB)
+    [Priority] P1 passes (no response)
+T9: Resolve Psychic Frog
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Psychic Frog, Murktide Regent
+T9 P2: Attack with Psychic Frog, Murktide Regent
+  [Declare Blockers] P1 blocks: 
+P1 loses: life total -5
+  [Combat Damage] 9 damage dealt → P1 life: 4 → -5
+
+>>> Dimir Midrange wins Game 2 on turn 9 via damage
+    Final life: Boros Energy=-5  Dimir Midrange=11
+
+======================================================================
+  MATCH RESULT: Dimir Midrange wins 2-0
+======================================================================

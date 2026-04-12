@@ -1,0 +1,751 @@
+Loaded 21759 cards (0 errors)
+======================================================================
+  GAME 1: Izzet Prowess (P1) vs Boros Energy (P2)  —  seed 60004
+  Series: Izzet Prowess 0 - 0 Boros Energy
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Izzet Prowess wins → chooses to play first
+║ P1 (on play): Izzet Prowess
+║ P2 (on draw): Boros Energy
+╚═══════════════════════════════════════════════════════
+
+P1 (Izzet Prowess) opening hand (3 lands, 4 spells):
+  • Scalding Tarn [Land, CMC 0]
+  • Wooded Foothills [Land, CMC 0]
+  • Preordain [Spell, CMC 1]
+  • Mutagenic Growth [Spell, CMC 1]
+  • Wooded Foothills [Land, CMC 0]
+  • Preordain [Spell, CMC 1]
+  • Expressive Iteration [Spell, CMC 2]
+→ P1 MULLIGANS (no creature with CMC ≤ 2)
+  New hand (2 lands, 5 spells): ["Dragon's Rage Channeler", 'Slickshot Show-Off', 'Steam Vents', 'Stomping Ground', 'Preordain', "Mishra's Bauble", 'Slickshot Show-Off']
+→ P1 mulligans to 6, bottoms: ['Preordain']
+  Keeps: ["Dragon's Rage Channeler", 'Slickshot Show-Off', 'Steam Vents', 'Stomping Ground', "Mishra's Bauble", 'Slickshot Show-Off']
+
+P2 (Boros Energy) opening hand (3 lands, 4 spells):
+  • Guide of Souls [Creature, CMC 1]
+  • Elegant Parlor [Land, CMC 0]
+  • Ocelot Pride [Creature, CMC 1]
+  • Phlage, Titan of Fire's Fury [Creature, CMC 3]
+  • Elegant Parlor [Land, CMC 0]
+  • Arena of Glory [Land, CMC 0]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+→ P2 KEEPS 7 — has key card(s): Guide of Souls, Ocelot Pride, Ragavan, Nimble Pilferer, 4 cheap spells
+
+
+╔══ TURN 1 — Izzet Prowess (P1) ══════════════════════════
+║ Life: Izzet Prowess 20  |  Boros Energy 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 54  |  Graveyard: 0
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Steam Vents (pay 2 life, untapped, life: 18)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R (paying for Dragon's Rage Channeler, 1 mana remaining)
+T1 P1: Cast Dragon's Rage Channeler (R)
+    [Priority] P2 passes (no response)
+T1: Resolve Dragon's Rage Channeler
+    → Goal: curve_out
+T1 P1: Cast Mishra's Bauble (0)
+T1 P1: Dragon's Rage Channeler surveil 1 → Thundering Falls to GY
+    [Priority] P2 passes (no response)
+T1: Resolve Mishra's Bauble
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Izzet Prowess 18
+║ Hand: 7 cards  |  Opp hand: 3 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (1/1)
+║   Other: Mishra's Bauble
+║   Lands: Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Galvanic Discharge
+  [Main 1]
+T1 P2: Play Elegant Parlor (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Izzet Prowess (P1) ══════════════════════════
+║ Life: Izzet Prowess 18  |  Boros Energy 20
+║ Hand: 3 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 1
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (1/1)
+║   Other: Mishra's Bauble
+║   Lands: Steam Vents
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Slickshot Show-Off
+  [Main 1]
+T2 P1: Play Stomping Ground (pay 2 life, untapped, life: 16)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R, Stomping Ground→G (paying for Slickshot Show-Off, 2 mana remaining)
+T2 P1: Cast Slickshot Show-Off (1R)
+    [Priority] P2 passes (no response)
+T2: Resolve Slickshot Show-Off
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Dragon's Rage Channeler, Slickshot Show-Off
+T2 P1: Attack with Dragon's Rage Channeler, Slickshot Show-Off
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 2 damage dealt → P2 life: 20 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 18  |  Izzet Prowess 16
+║ Hand: 7 cards  |  Opp hand: 2 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Elegant Parlor
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (1/1) [tapped], Slickshot Show-Off (1/2) [tapped]
+║   Other: Mishra's Bauble
+║   Lands: Steam Vents [T], Stomping Ground [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Elegant Parlor→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T2 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T2: Resolve Ragavan, Nimble Pilferer
+T2 P2: Play Elegant Parlor (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Izzet Prowess (P1) ══════════════════════════
+║ Life: Izzet Prowess 16  |  Boros Energy 18
+║ Hand: 2 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 1
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (1/1), Slickshot Show-Off (1/2)
+║   Other: Mishra's Bauble
+║   Lands: Steam Vents, Stomping Ground
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Elegant Parlor [T], Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mutagenic Growth
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R, Stomping Ground→G (paying for Slickshot Show-Off, 2 mana remaining)
+T3 P1: Cast Slickshot Show-Off (1R)
+    [Priority] P2 passes (no response)
+T3: Resolve Slickshot Show-Off
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Slickshot Show-Off, Slickshot Show-Off
+T3 P1: Attack with Slickshot Show-Off, Slickshot Show-Off
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 2 damage dealt → P2 life: 18 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 16  |  Izzet Prowess 16
+║ Hand: 6 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Elegant Parlor, Elegant Parlor
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (1/1), Slickshot Show-Off (1/2) [tapped], Slickshot Show-Off (1/2) [tapped]
+║   Other: Mishra's Bauble
+║   Lands: Steam Vents [T], Stomping Ground [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ocelot Pride
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Elegant Parlor→W (paying for Ocelot Pride, 2 mana remaining)
+T3 P2: Cast Ocelot Pride (W)
+    [Priority] P1 passes (no response)
+T3: Resolve Ocelot Pride
+    → Goal: curve_out [enablers]
+    [Mana] Tap Elegant Parlor→W (paying for Ocelot Pride, 1 mana remaining)
+T3 P2: Cast Ocelot Pride (W)
+    [Priority] P1 passes (no response)
+T3: Resolve Ocelot Pride
+T3 P2: Play Arena of Glory (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T3 P2: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 blocks: 
+T3: Dragon's Rage Channeler dies
+T3: Ragavan, Nimble Pilferer dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Izzet Prowess (P1) ══════════════════════════
+║ Life: Izzet Prowess 16  |  Boros Energy 16
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 2
+║ Izzet Prowess board:
+║   Creatures: Slickshot Show-Off (1/2), Slickshot Show-Off (1/2)
+║   Other: Mishra's Bauble
+║   Lands: Steam Vents, Stomping Ground
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ocelot Pride (1/1)
+║   Lands: Elegant Parlor [T], Elegant Parlor [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Lava Dart
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Stomping Ground→G (paying for Mutagenic Growth, 2 mana remaining)
+T4 P1: Cast Mutagenic Growth (G)
+    [Priority] P2 passes (no response)
+T4: Resolve Mutagenic Growth
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→R (paying for Lava Dart, 1 mana remaining)
+T4 P1: Cast Lava Dart (R)
+    [Priority] P2 passes (no response)
+T4: Resolve Lava Dart
+T4: Ocelot Pride dies
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Slickshot Show-Off, Slickshot Show-Off
+T4 P1: Attack with Slickshot Show-Off, Slickshot Show-Off
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 12 damage dealt → P2 life: 16 → 4
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 4  |  Izzet Prowess 14
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Lands: Elegant Parlor, Elegant Parlor, Arena of Glory
+║ Izzet Prowess board:
+║   Creatures: Slickshot Show-Off (1/2) [tapped], Slickshot Show-Off (1/2) [tapped]
+║   Other: Mishra's Bauble
+║   Lands: Steam Vents [T], Stomping Ground [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T4 P2: Play Arid Mesa
+T4 P2: Crack Arid Mesa -> Sacred Foundry (tapped, no spells need mana)
+    → Goal: curve_out
+    [Mana] Tap Elegant Parlor→W, Arena of Glory→R, Elegant Parlor→R (paying for Phlage, Titan of Fire's Fury, 3 mana remaining)
+T4 P2: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P1 passes (no response)
+T4: Resolve Phlage, Titan of Fire's Fury
+T4 P2: Phlage: 3 damage to opponent, gain 3 life
+T4 P2: Phlage sacrificed (not escaped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ocelot Pride
+T4 P2: Attack with Ocelot Pride
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 1 damage dealt → P1 life: 11 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Izzet Prowess (P1) ══════════════════════════
+║ Life: Izzet Prowess 10  |  Boros Energy 7
+║ Hand: 1 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 4
+║ Izzet Prowess board:
+║   Creatures: Slickshot Show-Off (1/2), Slickshot Show-Off (1/2)
+║   Other: Mishra's Bauble
+║   Lands: Steam Vents, Stomping Ground
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped]
+║   Lands: Elegant Parlor [T], Elegant Parlor [T], Arena of Glory [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mutagenic Growth
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R, Stomping Ground→G (paying for Slickshot Show-Off, 2 mana remaining)
+T5 P1: Cast Slickshot Show-Off (1R)
+    [Priority] P2 passes (no response)
+T5: Resolve Slickshot Show-Off
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Slickshot Show-Off, Slickshot Show-Off, Slickshot Show-Off
+T5 P1: Attack with Slickshot Show-Off, Slickshot Show-Off, Slickshot Show-Off
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 3 damage dealt → P2 life: 7 → 4
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 4  |  Izzet Prowess 10
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 4
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Lands: Elegant Parlor, Elegant Parlor, Arena of Glory, Sacred Foundry
+║ Izzet Prowess board:
+║   Creatures: Slickshot Show-Off (1/2) [tapped], Slickshot Show-Off (1/2) [tapped], Slickshot Show-Off (1/2) [tapped]
+║   Other: Mishra's Bauble
+║   Lands: Steam Vents [T], Stomping Ground [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Marsh Flats
+  [Main 1]
+T5 P2: Play Marsh Flats
+T5 P2: Crack Marsh Flats -> Sacred Foundry (tapped, no spells need mana)
+    → Goal: curve_out [interaction]
+    [Mana] Tap Arena of Glory→R (paying for Galvanic Discharge, 4 mana remaining)
+T5 P2: Cast Galvanic Discharge (R)
+    [Priority] P1 passes (no response)
+T5: Resolve Galvanic Discharge
+T5 P2: Galvanic Discharge deals 4 to opponent
+    → Goal: curve_out [enablers]
+    [Mana] Tap Elegant Parlor→R, Elegant Parlor→R (paying for Ragavan, Nimble Pilferer, 3 mana remaining)
+T5 P2: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P1 passes (no response)
+T5: Resolve Ragavan, Nimble Pilferer
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Guide of Souls, 1 mana remaining)
+T5 P2: Cast Guide of Souls (W)
+    [Priority] P1 passes (no response)
+T5: Resolve Guide of Souls
+T5 P2: Guide of Souls produces 1 energy (total: 1)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ocelot Pride, Ragavan, Nimble Pilferer
+T5 P2: Attack with Ocelot Pride, Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T5 P2: Create 1x Treasure token(s)
+T5 P2: Ragavan, Nimble Pilferer exiles Mutagenic Growth from top of P1's library
+  [Combat Damage] 3 damage dealt → P1 life: 6 → 3
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Ragavan, Nimble Pilferer moved battlefield -> hand (Dash return)
+T5: Ragavan, Nimble Pilferer returned to hand (Dash)
+
+╔══ TURN 6 — Izzet Prowess (P1) ══════════════════════════
+║ Life: Izzet Prowess 3  |  Boros Energy 4
+║ Hand: 1 cards  |  Opp hand: 1 cards
+║ Lands: 2  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 4
+║ Izzet Prowess board:
+║   Creatures: Slickshot Show-Off (1/2), Slickshot Show-Off (1/2), Slickshot Show-Off (1/2)
+║   Other: Mishra's Bauble
+║   Lands: Steam Vents, Stomping Ground
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped], Guide of Souls (1/2)
+║   Other: Treasure Token
+║   Lands: Elegant Parlor [T], Elegant Parlor [T], Arena of Glory [T], Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Expressive Iteration
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Stomping Ground→G (paying for Mutagenic Growth, 2 mana remaining)
+T6 P1: Cast Mutagenic Growth (G)
+    [Priority] P2 passes (no response)
+T6: Resolve Mutagenic Growth
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Slickshot Show-Off, Slickshot Show-Off, Slickshot Show-Off
+T6 P1: Attack with Slickshot Show-Off, Slickshot Show-Off, Slickshot Show-Off
+  [Declare Blockers] P2 does not block
+P2 loses: life total -7
+  [Combat Damage] 11 damage dealt → P2 life: 4 → -7
+
+>>> Izzet Prowess wins Game 1 on turn 6 via damage
+    Final life: Izzet Prowess=1  Boros Energy=-7
+
+======================================================================
+  GAME 2: Boros Energy (P1) vs Izzet Prowess (P2)  —  seed 60005
+  Series: Izzet Prowess 1 - 0 Boros Energy
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Izzet Prowess wins → chooses to play first
+║ P1 (on play): Izzet Prowess
+║ P2 (on draw): Boros Energy
+╚═══════════════════════════════════════════════════════
+
+P1 (Boros Energy) opening hand (3 lands, 4 spells):
+  • Phlage, Titan of Fire's Fury [Creature, CMC 3]
+  • Flooded Strand [Land, CMC 0]
+  • Marsh Flats [Land, CMC 0]
+  • Ajani, Nacatl Pariah // Ajani, Nacatl Avenger [Creature, CMC 2]
+  • Arena of Glory [Land, CMC 0]
+  • Ocelot Pride [Creature, CMC 1]
+  • Seasoned Pyromancer [Creature, CMC 3]
+→ P1 KEEPS 7 — has key card(s): Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Ocelot Pride, 4 cheap spells
+
+P2 (Izzet Prowess) opening hand (3 lands, 4 spells):
+  • Bloodstained Mire [Land, CMC 0]
+  • Mishra's Bauble [Spell, CMC 0]
+  • Monastery Swiftspear [Creature, CMC 1]
+  • Scalding Tarn [Land, CMC 0]
+  • Lightning Bolt [Spell, CMC 1]
+  • Arid Mesa [Land, CMC 0]
+  • Slickshot Show-Off [Creature, CMC 2]
+→ P2 KEEPS 7 — has key card(s): Lightning Bolt, Monastery Swiftspear, Slickshot Show-Off, 4 cheap spells
+
+
+╔══ TURN 1 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 20  |  Boros Energy 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Bloodstained Mire
+T1 P2: Crack Bloodstained Mire (pay 1 life) -> Steam Vents (pay 2 life, untapped, life: 17)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R (paying for Monastery Swiftspear, 1 mana remaining)
+T1 P2: Cast Monastery Swiftspear (R)
+    [Priority] P1 passes (no response)
+T1: Resolve Monastery Swiftspear
+    → Goal: curve_out
+T1 P2: Cast Mishra's Bauble (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Mishra's Bauble
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Monastery Swiftspear
+T1 P2: Attack with Monastery Swiftspear
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 2 damage dealt → P1 life: 20 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 18  |  Izzet Prowess 17
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2) [tapped]
+║   Other: Mishra's Bauble
+║   Lands: Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Snow-Covered Plains
+  [Main 1]
+T1 P1: Play Flooded Strand
+T1 P1: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (pay 2 life, untapped, life: 15)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Ocelot Pride, 1 mana remaining)
+T1 P1: Cast Ocelot Pride (W)
+    [Priority] P2 passes (no response)
+T1: Resolve Ocelot Pride
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 17  |  Boros Energy 15
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2)
+║   Other: Mishra's Bauble
+║   Lands: Steam Vents
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Expressive Iteration
+  [Main 1]
+T2 P2: Play Arid Mesa
+T2 P2: Crack Arid Mesa (pay 1 life) -> Steam Vents (pay 2 life, untapped, life: 14)
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→U, Steam Vents→R (paying for Expressive Iteration, 2 mana remaining)
+T2 P2: Cast Expressive Iteration (UR)
+    [Priority] P1 passes (no response)
+T2: Resolve Expressive Iteration
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Monastery Swiftspear
+T2 P2: Attack with Monastery Swiftspear
+  [Declare Blockers] P1 blocks: 
+T2: Ocelot Pride dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 15  |  Izzet Prowess 14
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2) [tapped]
+║   Other: Mishra's Bauble
+║   Lands: Steam Vents [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Snow-Covered Mountain
+  [Main 1]
+T2 P1: Play Marsh Flats
+T2 P1: Crack Marsh Flats (pay 1 life) -> Sacred Foundry (pay 2 life, untapped, life: 12)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 2 mana remaining)
+T2 P1: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P2 passes (no response)
+T2: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T2 P1: Create 1x Cat token(s)
+T2 P1: Ajani creates 2/1 Cat Warrior token
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 14  |  Boros Energy 12
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 3
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2)
+║   Other: Mishra's Bauble
+║   Lands: Steam Vents, Steam Vents
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Monastery Swiftspear
+  [Main 1]
+T3 P2: Play Scalding Tarn
+T3 P2: Crack Scalding Tarn -> Stomping Ground (tapped, no spells need mana)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R (paying for Monastery Swiftspear, 2 mana remaining)
+T3 P2: Cast Monastery Swiftspear (R)
+    [Priority] P1 passes (no response)
+T3: Resolve Monastery Swiftspear
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→R (paying for Lightning Bolt, 1 mana remaining)
+T3 P2: Cast Lightning Bolt (R)
+    [Priority] P1 passes (no response)
+T3: Resolve Lightning Bolt
+T3: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger dies
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Monastery Swiftspear, Monastery Swiftspear
+T3 P2: Attack with Monastery Swiftspear, Monastery Swiftspear
+  [Declare Blockers] P1 blocks: 
+T3: Cat Token dies
+  [Combat Damage] 2 damage dealt → P1 life: 12 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 10  |  Izzet Prowess 13
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 5
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2) [tapped], Monastery Swiftspear (1/2) [tapped]
+║   Other: Mishra's Bauble
+║   Lands: Steam Vents [T], Steam Vents [T], Stomping Ground [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Flooded Strand
+  [Main 1]
+T3 P1: Play Flooded Strand
+T3 P1: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (pay 2 life, untapped, life: 7)
+    → Goal: curve_out
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R, Sacred Foundry→R (paying for Phlage, Titan of Fire's Fury, 3 mana remaining)
+T3 P1: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P2 passes (no response)
+T3: Resolve Phlage, Titan of Fire's Fury
+T3 P1: Phlage: 3 damage to opponent, gain 3 life
+T3 P1: Phlage sacrificed (not escaped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 10  |  Boros Energy 10
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 5
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2), Monastery Swiftspear (1/2)
+║   Other: Mishra's Bauble
+║   Lands: Steam Vents, Steam Vents, Stomping Ground
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Unholy Heat
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→R (paying for Unholy Heat, 3 mana remaining)
+T4 P2: Cast Unholy Heat (R)
+    [Priority] P1 passes (no response)
+T4: Resolve Unholy Heat
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R, Stomping Ground→G (paying for Slickshot Show-Off, 2 mana remaining)
+T4 P2: Cast Slickshot Show-Off (1R)
+    [Priority] P1 passes (no response)
+T4: Resolve Slickshot Show-Off
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Monastery Swiftspear, Monastery Swiftspear, Slickshot Show-Off
+T4 P2: Attack with Monastery Swiftspear, Monastery Swiftspear, Slickshot Show-Off
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 5 damage dealt → P1 life: 8 → 3
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 3  |  Izzet Prowess 10
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 7
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2) [tapped], Monastery Swiftspear (1/2) [tapped], Slickshot Show-Off (1/2) [tapped]
+║   Other: Mishra's Bauble
+║   Lands: Steam Vents [T], Steam Vents [T], Stomping Ground [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Marsh Flats
+  [Main 1]
+T4 P1: Play Marsh Flats
+T4 P1: Crack Marsh Flats -> Snow-Covered Plains (untapped)
+    → Goal: curve_out
+T4 P1: Escape Phlage, Titan of Fire's Fury (exile 5 cards)
+    [Mana] Tap Sacred Foundry→R, Sacred Foundry→R, Snow-Covered Plains→W, Sacred Foundry→W (paying for Phlage, Titan of Fire's Fury, 4 mana remaining)
+T4 P1: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P2 passes (no response)
+T4: Resolve Phlage, Titan of Fire's Fury
+T4 P1: Phlage: 3 damage to opponent, gain 3 life
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 7  |  Boros Energy 5
+║ Hand: 1 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 6
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2), Monastery Swiftspear (1/2), Slickshot Show-Off (1/2)
+║   Other: Mishra's Bauble
+║   Lands: Steam Vents, Steam Vents, Stomping Ground
+║ Boros Energy board:
+║   Creatures: Phlage, Titan of Fire's Fury (6/6)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Snow-Covered Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Violent Urge
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→U, Steam Vents→R (paying for Expressive Iteration, 3 mana remaining)
+T5 P2: Cast Expressive Iteration (UR)
+    [Priority] P1 passes (no response)
+T5: Resolve Expressive Iteration
+    → Goal: curve_out
+    [Mana] Tap Stomping Ground→R (paying for Unholy Heat, 1 mana remaining)
+T5 P2: Cast Unholy Heat (R)
+    [Priority] P1 passes (no response)
+T5: Resolve Unholy Heat
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Monastery Swiftspear, Monastery Swiftspear, Slickshot Show-Off
+T5 P2: Attack with Monastery Swiftspear, Monastery Swiftspear, Slickshot Show-Off
+  [Declare Blockers] P1 blocks: 
+P1 loses: life total -5
+  [Combat Damage] 8 damage dealt → P1 life: 3 → -5
+
+>>> Izzet Prowess wins Game 2 on turn 5 via damage
+    Final life: Boros Energy=-5  Izzet Prowess=7
+
+======================================================================
+  MATCH RESULT: Izzet Prowess wins 2-0
+======================================================================
