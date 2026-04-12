@@ -255,3 +255,62 @@ Same methodology, format-specific data. The skill becomes truly cross-format.
 ---
 
 *This proposal was generated from a live benchmarking session comparing both codebases. All numbers are from actual runs on 2026-04-12.*
+
+---
+
+## 10. Deferred backlog (2026-04-12 session) — ready-to-pick-up
+
+Three items from `PROJECT_STATUS.md §12` were scoped out of the
+`claude/complete-unfinished-tasks-50La8` branch to keep the change surface
+manageable. They are fully researched; the next session can land them with
+minimal re-exploration.
+
+### 10.1 Plugin deck architecture (~2h)
+Replace `decks/modern_meta.py` (16 decks packed into one file) with one
+self-registering module per deck.
+
+```
+decks/boros_energy.py:
+    DECK_META = {
+        'name':           'Boros Energy',
+        'key':            'boros_energy',
+        'meta_share':     0.12,
+        'mainboard':      {...},
+        'sideboard':      {...},
+        'gameplan_path':  'decks/gameplans/boros_energy.json',
+        'archetype':      'aggro',
+    }
+```
+
+Add `decks/deck_registry.py` (~60 LOC) using `importlib` to discover every
+`decks/*.py` that defines `DECK_META`. Re-export legacy globals (`MODERN_DECKS`,
+`METAGAME_SHARES`, `get_all_deck_names`) so callers don't change.
+
+Benefit: adding a new deck becomes one-file instead of three-file. Scales to
+38 decks (Legacy's count) without the current friction.
+
+### 10.2 Template dashboard (~3h)
+Extract the giant `HEAD` and `ENGINE` string literals out of
+`build_dashboard.py` into `templates/reference_modern_matrix.html`. Refactor
+`build_dashboard.build()` to load the template, string-replace a
+`{{ DASHBOARD_DATA }}` marker with the JSON payload, and write out. The
+`_provenance_footer()` helper already exists — just inject into the template
+marker instead of `replace('</body>', ...)`.
+
+Benefit: designers can iterate on dashboard layout without touching Python.
+Matches Legacy's skill-based build pipeline.
+
+### 10.3 Artifact hate in sideboards — Affinity 85% investigation
+Not a code change — an investigation. The meta-audit now flags Affinity
+(85% > expected 65%). Root cause is likely AI sideboarding not prioritising
+artifact removal aggressively enough against Affinity's prison-permanent core
+(Springleaf Drum, Cranial Plating, Mox Opal).
+
+Recommended first step: generate Boros-vs-Affinity Bo3 replays for seeds in
+both bands (Affinity winning fast, Boros winning) and compare sideboard
+decisions via the replay HTML viewer. Then decide: tune `sideboard_manager.py`
+priorities, OR add missing hate cards to sideboards. No sim-level changes
+until the replay evidence is in.
+
+Status: replay `replays/boros_vs_affinity_s55555.txt` + HTML is generated at
+the end of this branch so the next session starts from data, not speculation.
