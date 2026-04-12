@@ -380,6 +380,9 @@ class GameState:
                 instance_id=self.next_instance_id(), zone="library",
             )
             card._game_state = self
+            # Innate flashback (Lava Dart, Lingering Souls, etc.)
+            if 'flashback' in template.tags:
+                card.has_flashback = True
             self.players[0].library.append(card)
 
         for template in deck2:
@@ -388,6 +391,8 @@ class GameState:
                 instance_id=self.next_instance_id(), zone="library",
             )
             card._game_state = self
+            if 'flashback' in template.tags:
+                card.has_flashback = True
             self.players[1].library.append(card)
 
         self.rng.shuffle(self.players[0].library)
@@ -722,6 +727,15 @@ class GameState:
             generic_portion = max(0, effective_cmc - colored_cost)
             delve_reduction = min(gy_count, generic_portion)
             effective_cmc = max(colored_cost, effective_cmc - delve_reduction)
+
+        # Phyrexian mana: can pay 2 life per Phyrexian symbol instead of mana
+        # Mutagenic Growth ({G/P}), Dismember ({1}{B/P}{B/P}), etc.
+        oracle = (template.oracle_text or '')
+        if '/P}' in oracle or '/p}' in oracle.lower():
+            phyrexian_count = oracle.lower().count('/p}')
+            life_cost = phyrexian_count * 2
+            if player.life > life_cost:
+                effective_cmc = max(0, effective_cmc - phyrexian_count)
 
         # Check evoke as alternative cost (Solitude, Endurance, Grief, etc.)
         # Unified board evaluation: can we evoke this creature?
@@ -1366,7 +1380,25 @@ class GameState:
                                                      card_name=template.name):
                         return False
                 else:
-                    if not self.tap_lands_for_mana(player_idx, template.mana_cost,
+                    # Phyrexian mana: pay 2 life per Phyrexian symbol instead of colored mana
+                    oracle_lower = (template.oracle_text or '').lower()
+                    phyrexian_count = oracle_lower.count('/p}')
+                    if phyrexian_count > 0 and player.life > phyrexian_count * 2:
+                        life_cost = phyrexian_count * 2
+                        player.life -= life_cost
+                        # Reduce the effective cost — Mutagenic Growth {G/P} becomes free
+                        remaining_cmc = max(0, template.mana_cost.cmc - phyrexian_count)
+                        if remaining_cmc > 0:
+                            from .mana import ManaCost
+                            phyrexian_cost = ManaCost(generic=remaining_cmc)
+                            if not self.tap_lands_for_mana(player_idx, phyrexian_cost,
+                                                             card_name=template.name):
+                                player.life += life_cost  # refund
+                                return False
+                        self.log.append(
+                            f"T{self.display_turn} P{player_idx+1}: "
+                            f"Pay {life_cost} life (Phyrexian mana) for {template.name}")
+                    elif not self.tap_lands_for_mana(player_idx, template.mana_cost,
                                                      card_name=template.name):
                         return False
 
