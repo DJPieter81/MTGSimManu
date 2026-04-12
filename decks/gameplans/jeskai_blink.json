@@ -33,14 +33,13 @@
     },
     {
       "goal_type": "GRIND_VALUE",
-      "description": "Blink ETB creatures for value — Solitude re-exiles, Riddler redraws, Phelia flickers",
+      "description": "Blink ETB creatures for value \u2014 Solitude re-exiles, Riddler redraws, Phelia flickers",
       "card_priorities": {
         "Quantum Riddler": 22.0,
         "Solitude": 20.0,
         "Ephemerate": 18.0,
         "Phelia, Exuberant Shepherd": 17.0,
-        "Phlage, Titan of Fire's Fury": 16.0,
-        "Casey Jones, Vigilante": 15.0
+        "Phlage, Titan of Fire's Fury": 16.0
       },
       "card_roles": {
         "payoffs": [
@@ -53,7 +52,6 @@
           "Phelia, Exuberant Shepherd"
         ],
         "interaction": [
-          "Casey Jones, Vigilante",
           "Consign to Memory"
         ]
       },
