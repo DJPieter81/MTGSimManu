@@ -85,3 +85,47 @@ All card names use `class="card-tip" data-card="CardName"`. JS mouseover fetches
 ## What This Skill Was Missing (Lesson)
 
 Previous version listed `build_guide.py` as producing only "hero, Stars, G1 swing, danger cards, spread" and deferred the rest to the hand-crafted template. This caused a regression where 5 sections were silently dropped. The fix: every derivable section MUST be in `build_guide.py`, verified by section count after generation. The hand-crafted template (`templates/reference_deck_guide.html`) adds polish but is NOT the source for missing sections.
+
+## Role Badges (auto-derived from card tags)
+
+`build_guide.py` reads `engine.card_database.CardDatabase` and maps card tags to display badges:
+
+| Tag | Badge | Color |
+|-----|-------|-------|
+| efficient_threat, threat | threat | amber |
+| energy | energy | teal |
+| removal, board_wipe | removal / sweep | red |
+| stax, interaction | hate | amber |
+| token_maker | enabler | purple |
+| etb_value | value | blue |
+| graveyard | GY | purple |
+| counter | protect | blue |
+
+Fallback: creatures CMC≤2 → "threat", lands → "land".
+
+## SB "vs" Targets (auto-derived from matchup data)
+
+Sideboard cards show which matchups they come in against, parsed from `matchup_cards[key].d1_sb` / `d2_sb`:
+- Format: `vs Zoo, Prowess (2×)`
+- Source: `IN: 2x Wrath of the Skies` lines in SB data
+
+## Deck Construction Findings Section
+
+Three auto-derived data points after the decklist:
+1. Meta-weighted vs flat WR gap (±pp)
+2. #1 damage source (card, casts, total dmg)
+3. #1 finisher (card, kill count, description)
+
+## Updated Section Count: 9 minimum
+
+| # | Section |
+|---|---------|
+| 1 | Hero stats (4-col) |
+| 2 | Decklist with role badges + card stats + SB targets |
+| 3 | Deck Construction Findings |
+| 4 | Stars of the Sim |
+| 5 | Game Plan (3 phases) |
+| 6 | Kill Turn Distribution |
+| 7 | Non-Obvious Findings (up to 6) |
+| 8 | G1→Match Swing |
+| 9 | Matchup Spread |
