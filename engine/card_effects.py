@@ -2035,3 +2035,49 @@ def sink_into_stupor_resolve(game, card, controller, targets=None, item=None):
         game.log.append(
             f"T{game.display_turn} P{controller+1}: "
             f"Sink into Stupor bounces {best.name}")
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Mana rituals — add mana on resolve (critical for Ruby Storm)
+# ═══════════════════════════════════════════════════════════════════
+@EFFECT_REGISTRY.register("Pyretic Ritual", EffectTiming.SPELL_RESOLVE,
+                           description="Add RRR (net +1R)")
+def pyretic_ritual_resolve(game, card, controller, targets=None, item=None):
+    """Pyretic Ritual: Add {R}{R}{R}."""
+    player = game.players[controller]
+    player.mana_pool.add("R", 3)
+    game.log.append(
+        f"T{game.display_turn} P{controller+1}: "
+        f"Pyretic Ritual adds RRR (pool: {player.mana_pool})")
+
+
+@EFFECT_REGISTRY.register("Desperate Ritual", EffectTiming.SPELL_RESOLVE,
+                           description="Add RRR (net +1R)")
+def desperate_ritual_resolve(game, card, controller, targets=None, item=None):
+    """Desperate Ritual: Add {R}{R}{R}."""
+    player = game.players[controller]
+    player.mana_pool.add("R", 3)
+    game.log.append(
+        f"T{game.display_turn} P{controller+1}: "
+        f"Desperate Ritual adds RRR (pool: {player.mana_pool})")
+
+
+@EFFECT_REGISTRY.register("Manamorphose", EffectTiming.SPELL_RESOLVE,
+                           description="Add 2 mana of any color, draw a card")
+def manamorphose_resolve(game, card, controller, targets=None, item=None):
+    """Manamorphose: Add two mana in any combination + draw a card."""
+    player = game.players[controller]
+    # Add RR by default (Storm deck context)
+    player.mana_pool.add("R", 2)
+    # Draw a card
+    if player.library:
+        drawn = player.library.pop(0)
+        drawn.zone = "hand"
+        player.hand.append(drawn)
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: "
+            f"Manamorphose adds RR, draws {drawn.name}")
+    else:
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: "
+            f"Manamorphose adds RR (no cards to draw)")
