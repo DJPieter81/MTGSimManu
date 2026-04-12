@@ -2845,22 +2845,30 @@ class GameState:
                             f"{attacker.name} deals combat damage — draw a card"
                         )
 
-            # Ocelot Pride: "Whenever a creature you control deals combat damage to a player,
-            # if you have more energy than that player has life, create a 1/1 Cat token."
+            # Generic: "Whenever a creature you control deals combat damage to a player,
+            # if you have more energy than that player has life, create a 1/1 [type] token."
+            # Detects the energy-vs-life token pattern from oracle text.
             if total_damage_dealt > 0 and not is_blocked:
-                ocelot_prides = [
-                    c for c in self.players[attacking_player].battlefield
-                    if c.name == 'Ocelot Pride'
-                ]
-                if ocelot_prides:
-                    my_energy = self.players[attacking_player].energy_counters
-                    opp_life = self.players[defending_player].life
-                    if my_energy > opp_life:
-                        self.create_token(attacking_player, "cat", count=1, power=1, toughness=1)
-                        self.log.append(
-                            f"T{self.display_turn} P{attacking_player+1}: "
-                            f"Ocelot Pride — created 1/1 Cat token (energy {my_energy} > life {opp_life})"
-                        )
+                for watcher in self.players[attacking_player].battlefield:
+                    w_oracle = (watcher.template.oracle_text or '').lower()
+                    if ('combat damage to a player' in w_oracle
+                            and 'energy' in w_oracle
+                            and 'life' in w_oracle
+                            and 'create' in w_oracle
+                            and 'token' in w_oracle):
+                        my_energy = self.players[attacking_player].energy_counters
+                        opp_life = self.players[defending_player].life
+                        if my_energy > opp_life:
+                            # Parse token type from oracle (e.g., "1/1 white Cat")
+                            import re as _re
+                            m = _re.search(r'create a ([\d]+)/([\d]+)\s+\w+\s+(\w+)\s+(?:creature\s+)?token', w_oracle)
+                            p, t = (int(m.group(1)), int(m.group(2))) if m else (1, 1)
+                            self.create_token(attacking_player, "cat", count=1, power=p, toughness=t)
+                            self.log.append(
+                                f"T{self.display_turn} P{attacking_player+1}: "
+                                f"{watcher.name} — created {p}/{t} token "
+                                f"(energy {my_energy} > life {opp_life})"
+                            )
 
     def end_of_turn_cleanup(self):
         """Handle end-of-turn delayed triggers (e.g., Goryo's exile, Dash return)."""

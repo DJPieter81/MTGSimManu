@@ -636,23 +636,26 @@ class EVPlayer:
             triggers = 2 if is_fetch else 1
             ev += landfall_count * triggers * 3.0
 
-        # Tron land assembly bonus: completing the Urza's Tower/Mine/Power Plant
-        # set unlocks 7 mana and completely changes the deck's game plan.
-        tron_lands = {'Urza\'s Tower', 'Urza\'s Mine', 'Urza\'s Power Plant'}
-        if land.name in tron_lands:
-            current_tron = {c.name for c in me.lands if c.name in tron_lands}
-            completing = land.name not in current_tron  # this land is a new Tron piece
+        # Tron land assembly bonus: detect via "Urza's" subtype (shared by all 3 pieces).
+        # Completing the set unlocks {C}{C}{C} production — a huge mana jump.
+        is_tron_piece = "Urza's" in (land.template.subtypes or [])
+        if is_tron_piece:
+            current_tron = [c for c in me.lands if "Urza's" in (c.template.subtypes or [])]
+            # Count distinct Tron pieces (Tower / Mine / Power-Plant have unique subtypes)
+            tron_types_present = {
+                next((s for s in (c.template.subtypes or []) if s != "Urza's"), None)
+                for c in current_tron
+            }
+            new_type = next((s for s in (land.template.subtypes or []) if s != "Urza's"), None)
+            completing = new_type not in tron_types_present
             if completing:
-                after_tron = current_tron | {land.name}
-                if len(after_tron) == 3:
-                    # Completing Tron — massive bonus (7 mana unlocks everything)
-                    ev += 20.0
-                elif len(after_tron) == 2:
-                    # Two pieces — getting closer, meaningful bonus
-                    ev += 8.0
+                after_count = len(tron_types_present) + 1
+                if after_count == 3:
+                    ev += 20.0   # Completing Tron — 7 mana unlocks everything
+                elif after_count == 2:
+                    ev += 8.0    # Two pieces — meaningful progress
                 else:
-                    # First piece — small bonus over a generic land
-                    ev += 3.0
+                    ev += 3.0    # First piece — small bonus
 
         # Landfall deferral: cast landfall creature FIRST, then play land
         current_mana = len(me.untapped_lands) + me.mana_pool.total() + me._tron_mana_bonus()
