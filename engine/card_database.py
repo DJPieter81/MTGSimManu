@@ -1126,6 +1126,11 @@ class CardDatabase:
             "Ethersworn Canonist": {"creature", "stax", "early_play"},
             "Haywire Mite": {"removal", "creature", "early_play"},
             "Thought Monitor": {"creature", "etb_value", "card_advantage"},
+            # Domain Zoo
+            "Leyline of the Guildpact": {"stax", "combo"},
+            "Scion of Draco": {"creature", "etb_value", "evasion", "threat"},
+            "Territorial Kavu": {"creature", "threat", "early_play"},
+            "Doorkeeper Thrull": {"creature", "stax", "evasion", "instant_speed", "early_play"},
         }
         if name in TAG_OVERRIDES:
             template.tags.update(TAG_OVERRIDES[name])

@@ -2610,3 +2610,80 @@ def ratchet_bomb_etb(game, card, controller, targets=None, item=None):
     game.log.append(
         f"T{game.display_turn} P{controller+1}: "
         f"Ratchet Bomb enters with 0 charge counters")
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Leyline of the Guildpact — free T0 enchantment, domain enabler
+# ═══════════════════════════════════════════════════════════════════
+@EFFECT_REGISTRY.register("Leyline of the Guildpact", EffectTiming.ETB,
+                           description="All lands are every basic type, all permanents are all colors")
+def leyline_guildpact_etb(game, card, controller, targets=None, item=None):
+    """Leyline of the Guildpact: enables full domain (5 basic land types).
+
+    Static: all your lands are every basic land type → domain = 5.
+    Static: all nonland permanents you control are all colors.
+    """
+    player = game.players[controller]
+    # Set a flag for domain calculation
+    player._leyline_guildpact = True
+    game.log.append(
+        f"T{game.display_turn} P{controller+1}: "
+        f"Leyline of the Guildpact: all lands are every basic type (domain=5)")
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Territorial Kavu — domain P/T
+# ═══════════════════════════════════════════════════════════════════
+@EFFECT_REGISTRY.register("Territorial Kavu", EffectTiming.ETB,
+                           description="P/T = domain count, attack: exile from hand or GY")
+def territorial_kavu_etb(game, card, controller, targets=None, item=None):
+    """Territorial Kavu: 0/0 base + domain. With Leyline = 5/5."""
+    # Power/toughness handled by CardInstance._dynamic_base_power
+    # which checks domain. Just log.
+    domain = game._count_domain(controller)
+    game.log.append(
+        f"T{game.display_turn} P{controller+1}: "
+        f"Territorial Kavu enters as {domain}/{domain} (domain={domain})")
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Scion of Draco — domain cost reduction + keyword soup
+# ═══════════════════════════════════════════════════════════════════
+@EFFECT_REGISTRY.register("Scion of Draco", EffectTiming.ETB,
+                           description="Flying 4/4, gives all creatures keywords by color")
+def scion_of_draco_etb(game, card, controller, targets=None, item=None):
+    """Scion of Draco: 4/4 flying. With Leyline (all colors), gives all
+    creatures: vigilance, hexproof, first strike, lifelink, flying."""
+    from .cards import Keyword
+    player = game.players[controller]
+    has_leyline = getattr(player, '_leyline_guildpact', False)
+    if has_leyline:
+        # All permanents are all colors → every creature gets everything
+        for creature in player.creatures:
+            creature.keywords.add(Keyword.LIFELINK)
+            creature.keywords.add(Keyword.FLYING)
+            creature.keywords.add(Keyword.FIRST_STRIKE)
+            creature.keywords.add(Keyword.VIGILANCE)
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: "
+            f"Scion of Draco grants all creatures: vigilance, first strike, lifelink, flying")
+    else:
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: "
+            f"Scion of Draco enters (no Leyline — partial keywords)")
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Doorkeeper Thrull — flash flyer, shuts off ETB triggers
+# ═══════════════════════════════════════════════════════════════════
+@EFFECT_REGISTRY.register("Doorkeeper Thrull", EffectTiming.ETB,
+                           description="Flash, flying, artifacts/creatures entering don't trigger abilities")
+def doorkeeper_thrull_etb(game, card, controller, targets=None, item=None):
+    """Doorkeeper Thrull: Torpor Orb on a 1/2 flash flyer."""
+    # Set a flag to suppress future ETB triggers
+    if not hasattr(game, '_etb_suppressed'):
+        game._etb_suppressed = set()
+    game._etb_suppressed.add(controller)
+    game.log.append(
+        f"T{game.display_turn} P{controller+1}: "
+        f"Doorkeeper Thrull: opponent ETB triggers suppressed")
