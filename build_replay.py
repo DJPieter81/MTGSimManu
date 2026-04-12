@@ -229,7 +229,8 @@ def hand_section(h):
         if h.get('mull_reason'): html+=f'<div class="mull-reason">{esc(h["mull_reason"])}</div>'
     ks=h.get('keep_size',7)
     keep_reason=h.get('keep_reason','')
-    html+=f'<div class="mull-step"><span class="keep-tag">KEEP {ks}</span>{f"<span class=\"keep-reason\">{esc(keep_reason)}</span>" if keep_reason else ""}</div>'
+    kr_html = f'<span class="keep-reason">{esc(keep_reason)}</span>' if keep_reason else ''
+    html+=f'<div class="mull-step"><span class="keep-tag">KEEP {ks}</span>{kr_html}</div>'
     html+='<div class="hand-pills">'+''.join(pill(c) for c in h.get('cards',[]))+'</div>'
     keys=[c for c in h.get('cards',[]) if any(k in c for k in
           ['Cranial Plating','Mox Opal','Ornithopter','Springleaf Drum','Memnite','Signal Pest',
