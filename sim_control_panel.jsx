@@ -9,28 +9,74 @@ const LEGACY_DECKS = [
   "ur_aggro","ur_delver","ur_tempo","uwx","wan_shi_tong"
 ];
 const MODERN_DECKS = [
-  "Boros Energy","Jeskai Blink","Ruby Storm","Affinity","Eldrazi Tron",
+  "Boros Energy","Jeskai Blink","Ruby Storm","Affinity","Pinnacle Affinity","Eldrazi Tron",
   "Amulet Titan","Goryo's Vengeance","Domain Zoo","Living End",
   "Izzet Prowess","Dimir Midrange","4c Omnath","4/5c Control","Azorius Control"
 ];
 
-const LEGACY_RUNS = [
-  { file: "matrix_20260411_134630.json", decks: 36, n: 100, tag: "matrix", ts: "2026-04-11T13:46:30" },
-  { file: "matrix_20260411_131017.json", decks: 36, n: 100, tag: "matrix", ts: "2026-04-11T13:10:17" },
-  { file: "matrix_20260411_121738.json", decks: 38, n: 100, tag: "matrix", ts: "2026-04-11T12:17:38" },
-  { file: "matrix_20260411_104511.json", decks: 38, n: 100, tag: "matrix", ts: "2026-04-11T10:45:11" },
-  { file: "custom_matrix_20260410_223608.json", decks: 38, n: 50, tag: "custom", ts: "2026-04-10T22:36:08" },
-  { file: "custom_matrix_20260410_220305.json", decks: 38, n: 50, tag: "custom", ts: "2026-04-10T22:03:05" },
-  { file: "custom_matrix_20260410_213914.json", decks: 38, n: 50, tag: "custom", ts: "2026-04-10T21:39:14" },
-  { file: "custom_matrix_20260410_180102.json", decks: 38, n: 50, tag: "custom", ts: "2026-04-10T18:01:02" },
-  { file: "matrix_20260410_180012.json", decks: 9, n: 50, tag: "matrix", ts: "2026-04-10T18:00:12" },
-  { file: "matrix_20260406_163650.json", decks: 16, n: 200, tag: "matrix", ts: "2026-04-06T16:36:50" },
-  { file: "matrix_20260406_163112.json", decks: 16, n: 200, tag: "matrix", ts: "2026-04-06T16:31:12" },
-  { file: "matrix_20260406_162728.json", decks: 16, n: 50, tag: "matrix", ts: "2026-04-06T16:27:28" },
-  { file: "custom_matrix_20260406_012114.json", decks: 17, n: 200, tag: "custom", ts: "2026-04-06T01:21:14" },
+const LEGACY_BASE = "/Users/lynette/MTGSimManu/MTGSimClaude";
+const MODERN_BASE = "/Users/lynette/MTGSimManu/MTGSimManu/MTGSimManu";
+
+// ── Run history (regenerate with: python3 scan_results.py) ───────────
+const LEGACY_HISTORY = [
+  { file:"matrix_20260411_134630.json", tag:"matrix", type:"matrix", ts:"2026-04-11T13:46:30", decks:36, n:100, path:"results/matrix_20260411_134630.json" },
+  { file:"matrix_20260411_131017.json", tag:"matrix", type:"matrix", ts:"2026-04-11T13:10:17", decks:36, n:100, path:"results/matrix_20260411_131017.json" },
+  { file:"matrix_20260411_121738.json", tag:"matrix", type:"matrix", ts:"2026-04-11T12:17:38", decks:38, n:100, path:"results/matrix_20260411_121738.json" },
+  { file:"matrix_20260411_104511.json", tag:"matrix", type:"matrix", ts:"2026-04-11T10:45:11", decks:38, n:100, path:"results/matrix_20260411_104511.json" },
+  { file:"custom_matrix_20260410_223608.json", tag:"custom", type:"matrix", ts:"2026-04-10T22:36:08", decks:38, n:50, path:"results/custom_matrix_20260410_223608.json" },
+  { file:"custom_matrix_20260410_220305.json", tag:"custom", type:"matrix", ts:"2026-04-10T22:03:05", decks:38, n:50, path:"results/custom_matrix_20260410_220305.json" },
+  { file:"custom_matrix_20260410_213914.json", tag:"custom", type:"matrix", ts:"2026-04-10T21:39:14", decks:38, n:50, path:"results/custom_matrix_20260410_213914.json" },
+  { file:"custom_matrix_20260410_180102.json", tag:"custom", type:"matrix", ts:"2026-04-10T18:01:02", decks:38, n:50, path:"results/custom_matrix_20260410_180102.json" },
+  { file:"matrix_20260410_180012.json", tag:"matrix", type:"matrix", ts:"2026-04-10T18:00:12", decks:9, n:50, path:"results/matrix_20260410_180012.json" },
+  { file:"matrix_20260406_163650.json", tag:"matrix", type:"matrix", ts:"2026-04-06T16:36:50", decks:16, n:200, path:"results/matrix_20260406_163650.json" },
+  { file:"matrix_20260406_163112.json", tag:"matrix", type:"matrix", ts:"2026-04-06T16:31:12", decks:16, n:200, path:"results/matrix_20260406_163112.json" },
+  { file:"matrix_20260406_162728.json", tag:"matrix", type:"matrix", ts:"2026-04-06T16:27:28", decks:16, n:50, path:"results/matrix_20260406_162728.json" },
+  { file:"custom_matrix_20260406_012114.json", tag:"custom", type:"matrix", ts:"2026-04-06T01:21:14", decks:17, n:200, path:"results/custom_matrix_20260406_012114.json" },
+  // ── Replays ──
+  { file:"replay_oops_vs_dimir_flash.html", tag:"replay", type:"replay", ts:"2026-04-12T09:14:24", d1:"oops", d2:"dimir_flash", path:"results/replay_oops_vs_dimir_flash.html", size_kb:70.0 },
+  { file:"game_replay.html", tag:"replay", type:"replay", ts:"2026-04-12T06:58:51", path:"results/game_replay.html", size_kb:40.8 },
+  // ── Audit ──
+  { file:"audit_dashboard.html", tag:"audit", type:"audit", ts:"2026-04-12T06:58:51", path:"results/audit_dashboard.html", size_kb:134.7 },
+  // ── Bo3 logs ──
+  { file:"bo3_ur_delver_vs_dimir.txt", tag:"bo3", type:"bo3", ts:"2026-04-12T06:58:51", d1:"ur_delver", d2:"dimir", path:"results/bo3_ur_delver_vs_dimir.txt", size_kb:67.9 },
+  // ── Traces (grouped by matchup — 89 total, showing unique matchups) ──
+  { file:"trace: burn vs dimir (6 runs)", tag:"trace", type:"trace", ts:"2026-04-11T14:15:51", d1:"burn", d2:"dimir", path:"results/trace_burn_vs_dimir_s100_20260411_141551.txt", count:6 },
+  { file:"trace: burn vs dnt (11 runs)", tag:"trace", type:"trace", ts:"2026-04-10T21:45:24", d1:"burn", d2:"dnt", path:"results/trace_burn_vs_dnt_s5_20260410_214524.txt", count:11 },
+  { file:"trace: bug vs storm (1 run)", tag:"trace", type:"trace", ts:"2026-04-12T06:58:51", d1:"bug", d2:"storm", path:"results/trace_bug_vs_storm_s42.txt", count:1 },
+  { file:"trace: bug vs burn (1 run)", tag:"trace", type:"trace", ts:"2026-04-10T22:25:10", d1:"bug", d2:"burn", path:"results/trace_bug_vs_burn_s5_20260410_222510.txt", count:1 },
+  { file:"trace: bug vs depths (1 run)", tag:"trace", type:"trace", ts:"2026-04-11T14:12:09", d1:"bug", d2:"depths", path:"results/trace_bug_vs_depths_s103_20260411_141209.txt", count:1 },
+  { file:"trace: burn vs lands (1 run)", tag:"trace", type:"trace", ts:"2026-04-10T20:38:25", d1:"burn", d2:"lands", path:"results/trace_burn_vs_lands_s5_20260410_203825.txt", count:1 },
+  { file:"trace: oops vs burn (1 run)", tag:"trace", type:"trace", ts:"2026-04-10T20:22:38", d1:"oops", d2:"burn", path:"results/trace_oops_vs_burn_s5_20260410_202238.txt", count:1 },
+  { file:"trace: oops vs dimir (1 run)", tag:"trace", type:"trace", ts:"2026-04-10T22:04:58", d1:"oops", d2:"dimir", path:"results/trace_oops_vs_dimir_s2_20260410_220458.txt", count:1 },
+  { file:"trace: oops vs dnt (1 run)", tag:"trace", type:"trace", ts:"2026-04-11T14:07:13", d1:"oops", d2:"dnt", path:"results/trace_oops_vs_dnt_s106_20260411_140713.txt", count:1 },
+  { file:"trace: storm vs burn (1 run)", tag:"trace", type:"trace", ts:"2026-04-10T20:22:48", d1:"storm", d2:"burn", path:"results/trace_storm_vs_burn_s3_20260410_202248.txt", count:1 },
+  { file:"trace: storm vs dimir (4 runs)", tag:"trace", type:"trace", ts:"2026-04-11T14:14:10", d1:"storm", d2:"dimir", path:"results/trace_storm_vs_dimir_s108_20260411_141410.txt", count:4 },
+  { file:"trace: infect vs dimir (3 runs)", tag:"trace", type:"trace", ts:"2026-04-10T22:23:09", d1:"infect", d2:"dimir", path:"results/trace_infect_vs_dimir_s5_20260410_222309.txt", count:3 },
+  { file:"trace: reanimator vs dimir (5 runs)", tag:"trace", type:"trace", ts:"2026-04-10T22:25:27", d1:"reanimator", d2:"dimir", path:"results/trace_reanimator_vs_dimir_s5_20260410_222515.txt", count:5 },
+  { file:"trace: show vs bug (2 runs)", tag:"trace", type:"trace", ts:"2026-04-11T14:16:12", d1:"show", d2:"bug", path:"results/trace_show_vs_bug_s104_20260411_141612.txt", count:2 },
+  { file:"trace: ur_tempo vs bug (3 runs)", tag:"trace", type:"trace", ts:"2026-04-10T22:26:53", d1:"ur_tempo", d2:"bug", path:"results/trace_ur_tempo_vs_bug_s3_20260410_222640.txt", count:3 },
+  { file:"trace: ur_tempo vs dimir (2 runs)", tag:"trace", type:"trace", ts:"2026-04-10T22:18:17", d1:"ur_tempo", d2:"dimir", path:"results/trace_ur_tempo_vs_dimir_s7_20260410_221817.txt", count:2 },
+  { file:"trace: uwx vs burn (5 runs)", tag:"trace", type:"trace", ts:"2026-04-10T22:29:18", d1:"uwx", d2:"burn", path:"results/trace_uwx_vs_burn_s7_20260410_222918.txt", count:5 },
+  { file:"trace: lands vs dimir (1 run)", tag:"trace", type:"trace", ts:"2026-04-10T22:08:11", d1:"lands", d2:"dimir", path:"results/trace_lands_vs_dimir_s0_20260410_220811.txt", count:1 },
+  // ── Reports ──
+  { file:"metagame_report.html", tag:"report", type:"report", ts:"2026-04-12T06:58:51", path:"results/metagame_report.html", size_kb:29.6 },
+  { file:"player_guide.html", tag:"guide", type:"report", ts:"2026-04-12T06:58:51", path:"results/player_guide.html", size_kb:29.7 },
+  { file:"meta_deck_profiles.txt", tag:"profile", type:"report", ts:"2026-04-12T06:58:51", path:"results/meta_deck_profiles.txt", size_kb:40.0 },
+  // ── Sweeps ──
+  { file:"expanded_sweep.json", tag:"sweep", type:"sweep", ts:"2026-04-12T06:58:51", path:"results/expanded_sweep.json" },
+  { file:"overnight_sweep.json", tag:"sweep", type:"sweep", ts:"2026-04-12T06:58:51", path:"results/overnight_sweep.json" },
 ];
-const MODERN_RUNS = [
-  { file: "metagame_results.json", decks: 8, n: 10, tag: "matrix", ts: "2026-04-11T20:15:00" },
+
+const MODERN_HISTORY = [
+  { file:"metagame_results.json", tag:"matrix", type:"matrix", ts:"2026-04-11T20:15:00", decks:8, n:10, path:"metagame_results.json" },
+  // ── Bo3 logs (replays/) ──
+  { file:"boros_energy_vs_domain_zoo_s55555.txt", tag:"bo3", type:"bo3-log", ts:"2026-04-12T09:09:00", d1:"Boros Energy", d2:"Domain Zoo", seed:"55555", path:"replays/boros_energy_vs_domain_zoo_s55555.txt", size_kb:61.7 },
+  { file:"azorius_wst_vs_boros_s55555.txt", tag:"bo3", type:"bo3-log", ts:"2026-04-12T09:09:00", d1:"Azorius Control", d2:"Boros Energy", seed:"55555", path:"replays/azorius_wst_vs_boros_s55555.txt", size_kb:37.4 },
+  { file:"ruby_storm_vs_affinity_s55555.txt", tag:"bo3", type:"bo3-log", ts:"2026-04-12T09:08:00", d1:"Ruby Storm", d2:"Affinity", seed:"55555", path:"replays/ruby_storm_vs_affinity_s55555.txt", size_kb:25.3 },
+  { file:"eldrazi_tron_vs_izzet_prowess_s55555.txt", tag:"bo3", type:"bo3-log", ts:"2026-04-11T18:13:00", d1:"Eldrazi Tron", d2:"Izzet Prowess", seed:"55555", path:"replays/eldrazi_tron_vs_izzet_prowess_s55555.txt", size_kb:60.4 },
+  { file:"jeskai_blink_vs_affinity_s55555.txt", tag:"bo3", type:"bo3-log", ts:"2026-04-11T18:13:00", d1:"Jeskai Blink", d2:"Affinity", seed:"55555", path:"replays/jeskai_blink_vs_affinity_s55555.txt", size_kb:33.3 },
+  { file:"affinity_vs_domain_zoo_s55555.txt", tag:"bo3", type:"bo3-log", ts:"2026-04-11T18:13:00", d1:"Affinity", d2:"Domain Zoo", seed:"55555", path:"replays/affinity_vs_domain_zoo_s55555.txt", size_kb:37.0 },
+  { file:"affinity_vs_izzet_prowess_s55555.txt", tag:"bo3", type:"bo3-log", ts:"2026-04-11T18:13:00", d1:"Affinity", d2:"Izzet Prowess", seed:"55555", path:"replays/affinity_vs_izzet_prowess_s55555.txt", size_kb:26.2 },
 ];
 
 // ── Theme ─────────────────────────────────────────────────────────────
@@ -40,6 +86,22 @@ const blue = "#2563eb", blueLight = "#dbeafe";
 const green = "#059669", greenLight = "#d1fae5";
 const amber = "#d97706", amberLight = "#fef3c7";
 const red = "#dc2626", redLight = "#fee2e2";
+const teal = "#0d9488", tealLight = "#ccfbf1";
+const pink = "#db2777", pinkLight = "#fce7f3";
+
+// ── Tag colors ───────────────────────────────────────────────────────
+const TAG_COLORS = {
+  matrix: { c: blue, bg: blueLight },
+  custom: { c: amber, bg: amberLight },
+  trace: { c: teal, bg: tealLight },
+  bo3: { c: green, bg: greenLight },
+  replay: { c: accent, bg: accentLight },
+  audit: { c: red, bg: redLight },
+  report: { c: pink, bg: pinkLight },
+  guide: { c: pink, bg: pinkLight },
+  profile: { c: muted, bg: "#f3f4f6" },
+  sweep: { c: amber, bg: amberLight },
+};
 
 // ── Helpers ───────────────────────────────────────────────────────────
 const fmt = (iso) => {
@@ -78,10 +140,26 @@ const Check = ({ checked, onClick, label, desc }) => (
   </div>
 );
 
+const isClickable = (r) => r.path?.endsWith(".html");
+const fileLink = (basePath, r) => `computer://${basePath}/${r.path}`;
+
+// ── Filter types for history ─────────────────────────────────────────
+const FILTER_TYPES = [
+  { k: "all", l: "All" },
+  { k: "matrix", l: "Matrix" },
+  { k: "trace", l: "Traces" },
+  { k: "bo3", l: "Bo3" },
+  { k: "replay", l: "Replays" },
+  { k: "audit", l: "Audit" },
+  { k: "report", l: "Reports" },
+  { k: "sweep", l: "Sweeps" },
+];
+
 // ── Main ──────────────────────────────────────────────────────────────
 export default function SimControlPanel() {
   const [format, setFormat] = useState("legacy");
   const [tab, setTab] = useState("history");
+  const [histFilter, setHistFilter] = useState("all");
   const [runType, setRunType] = useState("matrix");
   const [gamesPerPair, setGamesPerPair] = useState(50);
   const [deck1, setDeck1] = useState("");
@@ -92,23 +170,30 @@ export default function SimControlPanel() {
   const [outputs, setOutputs] = useState({ dashboard: true, replays: false, audit: false, deckGuide: false, bo3Replay: true, gitPush: false });
   const [submitted, setSubmitted] = useState(null);
 
-  // Deck picker for matrix (use array, not Set — Sets don't trigger React re-renders)
   const allDecks = format === "legacy" ? LEGACY_DECKS : MODERN_DECKS;
   const [selectedDecks, setSelectedDecks] = useState([...allDecks]);
   const toggleDeck = (d) => setSelectedDecks(prev => prev.includes(d) ? prev.filter(x => x !== d) : [...prev, d]);
   const selectAll = () => setSelectedDecks([...allDecks]);
   const selectNone = () => setSelectedDecks([]);
 
-  const runs = format === "legacy" ? LEGACY_RUNS : MODERN_RUNS;
-  const latest = runs[0];
+  const basePath = format === "legacy" ? LEGACY_BASE : MODERN_BASE;
+  const allRuns = format === "legacy" ? LEGACY_HISTORY : MODERN_HISTORY;
+  const filteredRuns = histFilter === "all" ? allRuns :
+    allRuns.filter(r => r.type === histFilter || r.tag === histFilter ||
+      (histFilter === "bo3" && (r.type === "bo3" || r.type === "bo3-log")));
+  const matrixRuns = allRuns.filter(r => r.type === "matrix");
+  const latest = allRuns[0];
   const toggleOut = (k) => setOutputs(p => ({ ...p, [k]: !p[k] }));
 
-  // Reset deck selection when switching format
   const switchFormat = (f) => {
     setFormat(f);
     setSelectedDecks([...(f === "legacy" ? LEGACY_DECKS : MODERN_DECKS)]);
-    setDeck1(""); setDeck2(""); setGuideDeck("");
+    setDeck1(""); setDeck2(""); setGuideDeck(""); setHistFilter("all");
   };
+
+  // ── Count by type ──
+  const typeCounts = {};
+  allRuns.forEach(r => { const k = r.type === "bo3-log" ? "bo3" : r.type; typeCounts[k] = (typeCounts[k] || 0) + 1; });
 
   const buildPrompt = () => {
     const repo = format === "legacy" ? "MTGSimClaude (Legacy) at ~/MTGSimManu/MTGSimClaude" : "MTGSimManu (Modern) at ~/MTGSimManu/MTGSimManu/MTGSimManu";
@@ -158,7 +243,7 @@ export default function SimControlPanel() {
     subtitle: { fontSize: 13, color: muted, marginTop: 4 },
     tabs: { display: "flex", gap: 0, borderBottom: `1px solid ${border}`, padding: "0 28px", background: "#fff" },
     tab: (active) => ({ padding: "10px 20px", fontSize: 13, fontWeight: 600, color: active ? accent : muted, borderBottom: active ? `2px solid ${accent}` : "2px solid transparent", cursor: "pointer", transition: "all .15s" }),
-    body: { padding: "20px 28px", maxWidth: 900 },
+    body: { padding: "20px 28px", maxWidth: 920 },
     card: { background: surface, border: `1px solid ${border}`, borderRadius: 10, padding: 16, marginBottom: 12, boxShadow: "0 1px 2px rgba(0,0,0,.03)" },
     label: { fontSize: 11, fontWeight: 700, color: muted, textTransform: "uppercase", letterSpacing: 1, marginBottom: 8, display: "block" },
     stat: { fontSize: 28, fontWeight: 800, fontFamily: "'JetBrains Mono', monospace", color: text },
@@ -170,9 +255,33 @@ export default function SimControlPanel() {
     prompt: { background: "#1e1b2e", border: `1px solid #312e45`, borderRadius: 10, padding: 16, fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: "#a5f3a0", whiteSpace: "pre-wrap", lineHeight: 1.6, marginTop: 12 },
     row: { display: "flex", gap: 12, marginBottom: 12 },
     mono: { fontFamily: "'JetBrains Mono', monospace", fontSize: 12 },
-    histRow: (i) => ({ display: "grid", gridTemplateColumns: "1fr 55px 55px 80px 180px", gap: 8, padding: "9px 12px", borderRadius: 8, background: i === 0 ? amberLight : i % 2 === 0 ? "#fff" : "#fafafa", borderLeft: i === 0 ? `3px solid ${amber}` : "3px solid transparent", alignItems: "center", fontSize: 13 }),
+    histRow: (i, clickable) => ({
+      display: "grid", gridTemplateColumns: "1fr 80px 140px", gap: 8,
+      padding: "9px 12px", borderRadius: 8,
+      background: i === 0 ? amberLight : i % 2 === 0 ? "#fff" : "#fafafa",
+      borderLeft: i === 0 ? `3px solid ${amber}` : "3px solid transparent",
+      alignItems: "center", fontSize: 13,
+      cursor: clickable ? "pointer" : "default",
+      transition: "all .1s",
+    }),
     deckGrid: { display: "flex", flexWrap: "wrap", gap: 6, marginTop: 8 },
     deckChip: (active) => ({ padding: "4px 10px", borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: "pointer", transition: "all .12s", border: `1.5px solid ${active ? accent : "#e5e7eb"}`, background: active ? accentLight : "#fff", color: active ? accentText : muted }),
+  };
+
+  // ── Render description for history row ──
+  const rowDesc = (r) => {
+    if (r.type === "matrix") return `${r.decks || "?"}d × ${r.n || "?"}g`;
+    if (r.d1 && r.d2) return `${r.d1} vs ${r.d2}`;
+    if (r.d1) return r.d1;
+    return r.file.replace(/\.(json|txt|html)$/, "");
+  };
+
+  const rowExtra = (r) => {
+    const parts = [];
+    if (r.seed) parts.push(`s${r.seed}`);
+    if (r.size_kb) parts.push(`${r.size_kb}KB`);
+    if (r.count && r.count > 1) parts.push(`×${r.count}`);
+    return parts.join(" · ");
   };
 
   return (
@@ -196,34 +305,38 @@ export default function SimControlPanel() {
       <div style={S.tabs}>
         {["history", "newrun", "artifacts"].map(t => (
           <div key={t} style={S.tab(tab === t)} onClick={() => setTab(t)}>
-            {t === "history" ? "History" : t === "newrun" ? "New Run" : "Artifacts"}
+            {t === "history" ? `History (${allRuns.length})` : t === "newrun" ? "New Run" : "Artifacts"}
           </div>
         ))}
       </div>
 
       <div style={S.body}>
         {/* Quick open bar */}
-        <div style={{ ...S.card, display: "flex", alignItems: "center", gap: 12, marginBottom: 12, padding: "10px 16px" }}>
+        <div style={{ ...S.card, display: "flex", alignItems: "center", gap: 12, marginBottom: 12, padding: "10px 16px", flexWrap: "wrap" }}>
           <span style={{ fontSize: 13, fontWeight: 700, color: text }}>Open:</span>
           {format === "modern" && (
-            <a href="computer:///Users/lynette/MTGSimManu/MTGSimManu/MTGSimManu/modern_meta_matrix_full.html" target="_blank" rel="noreferrer"
+            <a href={`computer://${MODERN_BASE}/modern_meta_matrix_full.html`} target="_blank" rel="noreferrer"
               style={{ fontSize: 13, fontWeight: 600, color: blue, textDecoration: "none", padding: "4px 12px", borderRadius: 6, background: blueLight, border: `1px solid ${blue}33` }}>
               Modern Matrix Dashboard
             </a>
           )}
           {format === "legacy" && (
             <>
-              <a href="computer:///Users/lynette/MTGSimManu/MTGSimClaude/results/metagame_report.html" target="_blank" rel="noreferrer"
+              <a href={`computer://${LEGACY_BASE}/results/mtg_meta_matrix.html`} target="_blank" rel="noreferrer"
                 style={{ fontSize: 13, fontWeight: 600, color: blue, textDecoration: "none", padding: "4px 12px", borderRadius: 6, background: blueLight, border: `1px solid ${blue}33` }}>
-                Legacy Meta Report
+                Legacy Matrix
               </a>
-              <a href="computer:///Users/lynette/MTGSimManu/MTGSimClaude/results/audit_dashboard.html" target="_blank" rel="noreferrer"
+              <a href={`computer://${LEGACY_BASE}/results/audit_dashboard.html`} target="_blank" rel="noreferrer"
                 style={{ fontSize: 13, fontWeight: 600, color: red, textDecoration: "none", padding: "4px 12px", borderRadius: 6, background: redLight, border: `1px solid ${red}33` }}>
-                Audit Dashboard
+                Audit
               </a>
-              <a href="computer:///Users/lynette/MTGSimManu/MTGSimClaude/results/game_replay.html" target="_blank" rel="noreferrer"
+              <a href={`computer://${LEGACY_BASE}/results/game_replay.html`} target="_blank" rel="noreferrer"
                 style={{ fontSize: 13, fontWeight: 600, color: green, textDecoration: "none", padding: "4px 12px", borderRadius: 6, background: greenLight, border: `1px solid ${green}33` }}>
-                Game Replay
+                Replay
+              </a>
+              <a href={`computer://${LEGACY_BASE}/results/metagame_report.html`} target="_blank" rel="noreferrer"
+                style={{ fontSize: 13, fontWeight: 600, color: pink, textDecoration: "none", padding: "4px 12px", borderRadius: 6, background: pinkLight, border: `1px solid ${pink}33` }}>
+                Meta Report
               </a>
             </>
           )}
@@ -232,10 +345,10 @@ export default function SimControlPanel() {
         {/* Stats */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 12, marginBottom: 20 }}>
           {[
-            { label: "Total runs", val: runs.length },
+            { label: "Total items", val: allRuns.length },
             { label: "Latest", val: latest ? fmt(latest.ts).split("(")[0].trim() : "\u2014", sub: latest ? fmt(latest.ts).match(/\(.*\)/)?.[0] : "", small: true },
-            { label: "Biggest run", val: runs.length ? Math.max(...runs.map(r => r.decks)) : 0, sub: "decks" },
-            { label: "Max games/pair", val: runs.length ? Math.max(...runs.map(r => r.n)) : 0 },
+            { label: "Matrix runs", val: matrixRuns.length, sub: matrixRuns.length ? `${Math.max(...matrixRuns.map(r => r.decks || 0))}d max` : "" },
+            { label: "Traces/Bo3s", val: (typeCounts.trace || 0) + (typeCounts.bo3 || 0) },
           ].map((s, i) => (
             <div key={i} style={S.card}>
               <span style={S.label}>{s.label}</span>
@@ -247,26 +360,62 @@ export default function SimControlPanel() {
 
         {/* ── History ── */}
         {tab === "history" && (
-          <div style={S.card}>
-            <div style={{ ...S.histRow(-1), color: muted, fontSize: 10, fontWeight: 700, letterSpacing: .5, background: "transparent" }}>
-              <span>FILE</span><span>DECKS</span><span>N</span><span>TYPE</span><span>DATE</span>
+          <div>
+            {/* Filter chips */}
+            <div style={{ display: "flex", gap: 6, marginBottom: 12, flexWrap: "wrap" }}>
+              {FILTER_TYPES.map(ft => {
+                const cnt = ft.k === "all" ? allRuns.length :
+                  ft.k === "bo3" ? (typeCounts.bo3 || 0) : (typeCounts[ft.k] || 0);
+                if (cnt === 0 && ft.k !== "all") return null;
+                return (
+                  <button key={ft.k} onClick={() => setHistFilter(ft.k)} style={{
+                    padding: "4px 12px", borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: "pointer",
+                    border: `1.5px solid ${histFilter === ft.k ? accent : border}`,
+                    background: histFilter === ft.k ? accentLight : "#fff",
+                    color: histFilter === ft.k ? accentText : muted,
+                  }}>
+                    {ft.l} ({cnt})
+                  </button>
+                );
+              })}
             </div>
-            {runs.map((r, i) => (
-              <div key={r.file} style={S.histRow(i)}>
-                <span style={S.mono}>{r.file.replace(".json", "")}</span>
-                <span style={S.mono}>{r.decks}</span>
-                <span style={S.mono}>{r.n}</span>
-                <Tag t={r.tag} color={r.tag === "matrix" ? blue : amber} bg={r.tag === "matrix" ? blueLight : amberLight} />
-                <span style={{ fontSize: 12, color: i === 0 ? amber : muted }}>{fmt(r.ts)}</span>
+
+            <div style={S.card}>
+              <div style={{ ...S.histRow(-1, false), color: muted, fontSize: 10, fontWeight: 700, letterSpacing: .5, background: "transparent" }}>
+                <span>DESCRIPTION</span><span>TYPE</span><span>DATE</span>
               </div>
-            ))}
+              {filteredRuns.map((r, i) => {
+                const tc = TAG_COLORS[r.tag] || TAG_COLORS.matrix;
+                const clickable = isClickable(r);
+                const row = (
+                  <div key={r.file + i} style={{
+                    ...S.histRow(i, clickable),
+                    ...(clickable ? { ":hover": { background: accentLight } } : {}),
+                  }}>
+                    <div>
+                      <span style={{ ...S.mono, color: clickable ? blue : text }}>{rowDesc(r)}</span>
+                      {rowExtra(r) && <span style={{ fontSize: 10, color: muted, marginLeft: 8 }}>{rowExtra(r)}</span>}
+                    </div>
+                    <Tag t={r.tag} color={tc.c} bg={tc.bg} />
+                    <span style={{ fontSize: 12, color: i === 0 ? amber : muted }}>{fmt(r.ts)}</span>
+                  </div>
+                );
+                return clickable ? (
+                  <a key={r.file + i} href={fileLink(basePath, r)} target="_blank" rel="noreferrer" style={{ textDecoration: "none", color: "inherit" }}>
+                    {row}
+                  </a>
+                ) : row;
+              })}
+              {filteredRuns.length === 0 && (
+                <div style={{ padding: 20, textAlign: "center", color: muted, fontSize: 13 }}>No {histFilter} entries found</div>
+              )}
+            </div>
           </div>
         )}
 
         {/* ── New Run ── */}
         {tab === "newrun" && (
           <div>
-            {/* Run type */}
             <div style={S.card}>
               <span style={S.label}>Run Type</span>
               <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
@@ -276,7 +425,6 @@ export default function SimControlPanel() {
                 ].map(t => <Chip key={t.k} active={runType === t.k} onClick={() => setRunType(t.k)}>{t.l}</Chip>)}
               </div>
 
-              {/* Matrix config */}
               {runType === "matrix" && (
                 <div>
                   <div style={S.row}>
@@ -302,7 +450,6 @@ export default function SimControlPanel() {
                 </div>
               )}
 
-              {/* Matchup config */}
               {runType === "matchup" && (
                 <div style={S.row}>
                   <div style={{ flex: 1 }}>
@@ -326,7 +473,6 @@ export default function SimControlPanel() {
                 </div>
               )}
 
-              {/* Bo3 config */}
               {runType === "bo3" && (
                 <div>
                   <div style={S.row}>
@@ -362,7 +508,6 @@ export default function SimControlPanel() {
                 </div>
               )}
 
-              {/* Field config */}
               {runType === "field" && (
                 <div style={S.row}>
                   <div style={{ flex: 1 }}>
@@ -403,7 +548,6 @@ export default function SimControlPanel() {
               </div>
             </div>
 
-            {/* Submit */}
             <button style={S.btn} onClick={() => setSubmitted(buildPrompt())}>Generate Task</button>
 
             {submitted && (
@@ -423,36 +567,27 @@ export default function SimControlPanel() {
           <div>
             <div style={S.card}>
               <span style={S.label}>Dashboards & Reports</span>
-              {[
-                ...(format === "modern" ? [{ name: "modern_meta_matrix_full.html", type: "Matrix", c: blue, bg: blueLight }] : []),
-                ...(format === "legacy" ? [
-                  { name: "audit_dashboard.html", type: "Audit", c: red, bg: redLight },
-                  { name: "game_replay.html", type: "Replay", c: green, bg: greenLight },
-                  { name: "metagame_report.html", type: "Report", c: blue, bg: blueLight },
-                  { name: "player_guide.html", type: "Guide", c: accent, bg: accentLight },
-                ] : []),
-              ].map(a => (
-                <div key={a.name} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", borderRadius: 8, background: bg, marginTop: 6 }}>
-                  <div style={{ width: 8, height: 8, borderRadius: "50%", background: a.c }} />
-                  <span style={{ ...S.mono, flex: 1 }}>{a.name}</span>
-                  <Tag t={a.type} color={a.c} bg={a.bg} />
-                </div>
-              ))}
+              {allRuns.filter(r => r.path?.endsWith(".html")).map(r => {
+                const tc = TAG_COLORS[r.tag] || TAG_COLORS.report;
+                return (
+                  <a key={r.file} href={fileLink(basePath, r)} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", borderRadius: 8, background: bg, marginTop: 6, cursor: "pointer" }}>
+                      <div style={{ width: 8, height: 8, borderRadius: "50%", background: tc.c }} />
+                      <span style={{ ...S.mono, flex: 1, color: blue }}>{r.file}</span>
+                      <Tag t={r.tag} color={tc.c} bg={tc.bg} />
+                      {r.size_kb && <span style={{ fontSize: 10, color: muted }}>{r.size_kb}KB</span>}
+                    </div>
+                  </a>
+                );
+              })}
             </div>
             <div style={S.card}>
               <span style={S.label}>Data Files</span>
-              {[
-                ...(format === "modern" ? [
-                  { name: "metagame_14deck.jsx", desc: "14-deck data (wins, matchup_cards, deck_cards)" },
-                  { name: "metagame_results.json", desc: "Latest matrix results" },
-                ] : []),
-                ...(format === "legacy" ? [
-                  { name: latest?.file || "matrix_*.json", desc: `Latest: ${latest?.decks || "?"}d x ${latest?.n || "?"}g` },
-                ] : []),
-              ].map(a => (
-                <div key={a.name} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", borderRadius: 8, background: bg, marginTop: 6 }}>
-                  <span style={{ ...S.mono, flex: 1, color: muted }}>{a.name}</span>
-                  <span style={{ fontSize: 11, color: muted }}>{a.desc}</span>
+              {allRuns.filter(r => r.path?.endsWith(".json")).map(r => (
+                <div key={r.file} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", borderRadius: 8, background: bg, marginTop: 6 }}>
+                  <span style={{ ...S.mono, flex: 1, color: muted }}>{r.file}</span>
+                  <Tag t={r.tag} color={(TAG_COLORS[r.tag] || TAG_COLORS.matrix).c} bg={(TAG_COLORS[r.tag] || TAG_COLORS.matrix).bg} />
+                  <span style={{ fontSize: 11, color: muted }}>{rowDesc(r)}</span>
                 </div>
               ))}
             </div>
