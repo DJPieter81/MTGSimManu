@@ -2,7 +2,7 @@
 """Merge ModernAtomic_part*.json into ModernAtomic.json.
 
 Run this after git pull, before any sim or dashboard work.
-Usage: python merge_db.py
+Usage: python3 merge_db.py
 """
 import json, glob, sys
 
