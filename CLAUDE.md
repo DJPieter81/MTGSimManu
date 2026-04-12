@@ -227,9 +227,6 @@ python run_meta.py --trace storm dimir -s 42000
 # Game actions log
 python run_meta.py --verbose zoo omnath -s 42000
 
-# Legacy debug dump
-python dump_game.py
-
 # BO3 match → HTML replay (correct pipeline)
 python run_meta.py --bo3 "Ruby Storm" "Domain Zoo" -s 55555 > replays/log.txt
 python build_replay.py replays/log.txt replay.html 55555
