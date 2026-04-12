@@ -312,6 +312,11 @@ TOKEN_DEFS = {
     "soldier": ("Soldier", [CardType.CREATURE], 1, 1, set()),
     "spirit": ("Spirit", [CardType.CREATURE], 1, 1, {Keyword.FLYING}),
     "construct": ("Construct", [CardType.CREATURE], 0, 0, set()),  # P/T = artifact count
+    # Nettlecyst creates "a 0/0 black Phyrexian Germ" per oracle. Previously
+    # absent from TOKEN_DEFS, falling through to the generic 1/1 default in
+    # create_token() — Germ tokens ended up +1/+1 larger than intended,
+    # contributing ~1-2pp to Affinity's overall WR.
+    "germ": ("Germ", [CardType.CREATURE], 0, 0, set()),
     "cat": ("Cat", [CardType.CREATURE], 1, 1, set()),
     "elemental": ("Elemental", [CardType.CREATURE], 1, 1, set()),
     "treasure": ("Treasure", [CardType.ARTIFACT], 0, 0, set()),
