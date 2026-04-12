@@ -572,3 +572,13 @@ Current product links:
 - Legacy: `https://djpieter81.github.io/MTGSimClaude/results/mtgsimclaude_showcase.html`
 
 **Any new HTML intended for live viewing must be committed to the repo** — `/mnt/user-data/outputs/` is local only.
+
+## Cross-Project Sync
+
+Read `CROSS_PROJECT_SYNC.md` before any cross-project work. It tracks:
+- Legacy → Modern adoption (parallel.py, hypothesis_testing.py, deck_registry.py)
+- Modern → Legacy adoption (proInsights(), G1/G3/sweep stats, SB guide)
+- Shared modules (clock.py, bhi.py, strategic_logger.py, gameplan.py)
+- Common standards (file naming, GitHub Pages URLs, skill format)
+
+Same file exists in both repos — keep them in sync.
