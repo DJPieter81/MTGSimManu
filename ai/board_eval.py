@@ -411,6 +411,9 @@ def _eval_block(game, me, a: BoardAssessment, ctx: dict) -> float:
     # Scale life value up when we're under pressure
     if a.opp_clock < 5:
         value *= 1.5  # each life point matters more when clock is short
+    # Big attackers (8+ power) are much more dangerous — boost damage prevention
+    if a_power >= 8:
+        value *= 2.0
     if a.my_life <= damage_prevented:
         value = 100.0  # this block prevents lethal — always block
 
