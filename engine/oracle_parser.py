@@ -23,13 +23,16 @@ def parse_ritual_mana(oracle: str) -> Optional[Tuple[str, int]]:
     E.g., "Add {R}{R}{R}" → ("R", 3)
     """
     oracle = oracle.lower()
-    if 'add' not in oracle:
+    # Use word boundaries to avoid matching "additional" (e.g. in "Kicker {W}
+    # (You may pay an additional {W}..." on Orim's Chant, which was being
+    # mis-parsed as a 2-W ritual and producing mana instead of silencing).
+    if not re.search(r'\badd\b', oracle):
         return None
 
-    # Only look at the first sentence containing "add"
+    # Only look at the first sentence containing a standalone "add"
     add_sentence = ''
     for sentence in oracle.split('.'):
-        if 'add' in sentence:
+        if re.search(r'\badd\b', sentence):
             add_sentence = sentence
             break
     if not add_sentence:
@@ -43,7 +46,7 @@ def parse_ritual_mana(oracle: str) -> Optional[Tuple[str, int]]:
             return (color, count)
 
     # "Add two mana in any combination" (Manamorphose)
-    m = re.search(r'add\s+(\w+)\s+mana', oracle)
+    m = re.search(r'\badd\s+(\w+)\s+mana', oracle)
     if m:
         word_to_num = {'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5}
         amount = word_to_num.get(m.group(1), 0)

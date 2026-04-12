@@ -27,6 +27,21 @@ from ai.board_eval import evaluate_action, Action, ActionType
 from ai.mana_planner import analyze_mana_needs, choose_fetch_target
 
 
+def _sorcery_speed_only_active(player: PlayerState) -> bool:
+    """True if the player controls a "cast at sorcery speed only" effect.
+
+    Generic oracle-pattern match — handles Teferi, Time Raveler and any
+    future card with the same static. Used to shut down opponent instant-
+    speed response windows (counterspells, removal, evoke) during this
+    player's turn.
+    """
+    for c in player.battlefield:
+        oracle = (c.template.oracle_text or '').lower()
+        if 'cast spells only any time they could cast a sorcery' in oracle:
+            return True
+    return False
+
+
 class AICallbacks(GameCallbacks):
     """Wires engine callbacks to AI decision functions."""
 
@@ -771,20 +786,27 @@ class GameRunner:
                                active_ai: AIPlayer, context: str = "pre_combat",
                                max_instants: int = 3):
         """Unified instant-speed interaction window.
-        
+
         Uses threat assessment to decide which creatures to remove and
         whether to spend resources now or hold them.
-        
+
         v2: Fixed bug where active_player.creatures was checked instead of
         the active player's board. Now properly evaluates the active player's
         creatures as threats to remove. Lowered thresholds so removal fires
         more aggressively against value engines and early threats.
+
+        Teferi gate: if the ACTIVE player controls a "cast at sorcery speed
+        only" permanent (Teferi, Time Raveler et al.), opponents cannot
+        cast anything at instant speed during this window. Detect via oracle
+        pattern and bail out early.
         """
         from ai.evaluator import _permanent_value
 
         opponent_idx = opponent_ai.player_idx
         opponent = game.players[opponent_idx]  # the player holding removal
         active_player = game.players[active_ai.player_idx]  # the player whose turn it is
+        if _sorcery_speed_only_active(active_player):
+            return
 
         cast_count = 0
 
@@ -957,8 +979,14 @@ class GameRunner:
                 if success:
                     _last_failed_card = None
                     _consecutive_fails = 0
-                    # Opponent gets priority to respond (CR 117.3d)
-                    if not game.stack.is_empty:
+                    # Opponent gets priority to respond (CR 117.3d) — UNLESS
+                    # the active player controls a Teferi-style "cast at
+                    # sorcery speed only" effect. In that case, the opponent
+                    # literally cannot respond at instant speed.
+                    active_player = game.players[ai.player_idx]
+                    if _sorcery_speed_only_active(active_player):
+                        pass  # skip response window entirely
+                    elif not game.stack.is_empty:
                         top = game.stack.top
                         if top:
                             priority.give_priority(game, opponent_ai.player_idx)

@@ -1933,6 +1933,17 @@ class GameState:
         if extra_keywords:
             kw_set |= extra_keywords
 
+        # Oracle text on the generated template so _dynamic_base_power's
+        # regex can find the scaling pattern. Without this, Construct tokens
+        # from Urza's Saga Ch II have no oracle_text, the regex
+        # `\+\d+/\+\d+ for each artifact you control` doesn't fire, and they
+        # stay 0/0 → die immediately to state-based actions. Root-caused from
+        # verbose vs Affinity: "T4: Construct Token dies" on Ch II resolution.
+        TOKEN_ORACLES = {
+            "construct": "This creature gets +1/+1 for each artifact you control.",
+        }
+        token_oracle = TOKEN_ORACLES.get(token_type, "")
+
         for _ in range(count):
             template = CardTemplate(
                 name=f"{t_name} Token",
@@ -1942,6 +1953,7 @@ class GameState:
                 toughness=t_toughness,
                 keywords=kw_set,
                 tags={"token", "creature"},
+                oracle_text=token_oracle,
             )
             instance = CardInstance(
                 template=template,

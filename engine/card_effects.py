@@ -2324,8 +2324,12 @@ def teferi_t3_etb(game, card, controller, targets=None, item=None):
             f"T{game.display_turn} P{controller+1}: "
             f"Teferi draws {drawn.name}")
 
-    # Static: opponents can only cast at sorcery speed
-    # Model by reducing opponent counter_density to 0
+    # Static: opponents can only cast at sorcery speed.
+    # Reducing counter_density is an AI hint; the hard engine restriction
+    # lives in GameState via the `_teferi_shutdown_active` helper that
+    # checks controller-side "cast at sorcery speed" permanents whenever
+    # a response window would open. Setting counter_density to 0 keeps
+    # the BHI and EV heuristics aligned with the hard restriction.
     opp.counter_density = 0.0
 
 
