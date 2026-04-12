@@ -1382,14 +1382,7 @@ def arboreal_grazer_etb(game, card, controller, targets=None, item=None):
         land.enter_battlefield()
         land.controller = controller
         player.battlefield.append(land)
-        # Amulet of Vigor can untap it
-        if land.tapped:
-            amulet_count = sum(1 for c in player.battlefield
-                               if c.template.name == "Amulet of Vigor")
-            if amulet_count > 0:
-                land.tapped = False
-                game.log.append(f"T{game.display_turn} P{controller+1}: "
-                                f"Amulet of Vigor untaps {land.name}")
+        game._apply_untap_on_enter_triggers(land, controller)
         game._trigger_landfall(controller)
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Arboreal Grazer puts {land.name} onto battlefield")
@@ -1431,14 +1424,7 @@ def _primeval_titan_search(game, controller):
         land.enter_battlefield()
         land.controller = controller
         player.battlefield.append(land)
-        # Amulet of Vigor untaps
-        if land.tapped:
-            amulet_count = sum(1 for c in player.battlefield
-                               if c.template.name == "Amulet of Vigor")
-            if amulet_count > 0:
-                land.tapped = False
-                game.log.append(f"T{game.display_turn} P{controller+1}: "
-                                f"Amulet of Vigor untaps {land.name}")
+        game._apply_untap_on_enter_triggers(land, controller)
         game._trigger_landfall(controller)
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Primeval Titan searches for {land.name}")

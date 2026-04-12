@@ -885,14 +885,9 @@ class GameState:
             player.battlefield.append(card)
 
         # ── Generic "untap enters tapped" (Amulet of Vigor pattern) ──
-        if card.tapped:
-            for c in player.battlefield:
-                oracle = (c.template.oracle_text or '').lower()
-                if 'tapped permanent enters' in oracle and 'untap' in oracle:
-                    card.tapped = False
-                    self.log.append(f"T{self.display_turn} P{player_idx+1}: "
-                                    f"{c.name} untaps {card.name}")
-                    break
+        self._apply_untap_on_enter_triggers(card, player_idx)
+        # ── "Lands you control enter untapped" static (Spelunking pattern) ──
+        self._apply_lands_enter_untapped(card, player_idx)
 
         # ── Landfall triggers ──
         self._trigger_landfall(player_idx)
@@ -961,6 +956,12 @@ class GameState:
                                f"({'tapped' if best_land.tapped else 'untapped'})")
 
             player.battlefield.append(best_land)
+            # Amulet of Vigor and similar untap triggers
+            self._apply_untap_on_enter_triggers(best_land, player_idx)
+            # Bounce land ETB (return a land to hand)
+            if best_land.template.is_land:
+                from .oracle_resolver import resolve_etb_from_oracle
+                resolve_etb_from_oracle(self, best_land, player_idx)
             # Shuffle library
             self.rng.shuffle(player.library)
             # Track library search and trigger opponent's search triggers
@@ -2021,6 +2022,60 @@ class GameState:
                     self.cast_spell(controller, card, free_cast=True)
 
         # Planeswalker dies at 0 loyalty (SBA will catch this)
+
+    # ─── ENTERS-TAPPED UNTAP TRIGGER ─────────────────────────────
+
+    def _apply_untap_on_enter_triggers(self, permanent: "CardInstance", controller: int):
+        """Generic 'whenever a permanent you control enters tapped, untap it' trigger.
+
+        Detects any artifact/enchantment on the battlefield with that oracle pattern
+        (e.g. Amulet of Vigor) without hardcoding card names.
+        """
+        if not getattr(permanent, 'tapped', False):
+            return
+        player = self.players[controller]
+        untaps = 0
+        for watcher in player.battlefield:
+            if watcher.instance_id == permanent.instance_id:
+                continue
+            w_oracle = (watcher.template.oracle_text or '').lower()
+            if ('whenever' in w_oracle and 'enters tapped' in w_oracle
+                    and 'untap it' in w_oracle):
+                untaps += 1
+        if untaps > 0:
+            permanent.tapped = False
+            # Find watcher names for logging
+            watcher_names = [
+                w.name for w in player.battlefield
+                if w.instance_id != permanent.instance_id
+                and 'whenever' in (w.template.oracle_text or '').lower()
+                and 'enters tapped' in (w.template.oracle_text or '').lower()
+                and 'untap it' in (w.template.oracle_text or '').lower()
+            ]
+            self.log.append(
+                f"T{self.display_turn} P{controller+1}: "
+                f"{', '.join(watcher_names)} untaps {permanent.name}"
+            )
+
+    def _apply_lands_enter_untapped(self, land: "CardInstance", controller: int):
+        """Generic 'lands you control enter the battlefield untapped' static ability.
+
+        Fires when a land enters; checks for Spelunking and similar permanents.
+        Does nothing if land is already untapped.
+        """
+        if not getattr(land, 'tapped', False) or not land.template.is_land:
+            return
+        player = self.players[controller]
+        for watcher in player.battlefield:
+            if watcher.instance_id == land.instance_id:
+                continue
+            w_oracle = (watcher.template.oracle_text or '').lower()
+            if 'lands you control enter' in w_oracle and 'untapped' in w_oracle:
+                land.tapped = False
+                self.log.append(
+                    f"T{self.display_turn} P{controller+1}: "
+                    f"{watcher.name} — {land.name} enters untapped")
+                break
 
     # ─── ENERGY SYSTEM ───────────────────────────────────────────
 

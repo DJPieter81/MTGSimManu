@@ -90,7 +90,10 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
             game.draw_cards(controller, amount)
 
     # ── "When this creature enters, gain N life" ──
-    if 'enters' in oracle and 'gain' in oracle and 'life' in oracle:
+    # Only fire for unconditional gains — skip conditional ones like
+    # "If you put a Cave onto the battlefield this way, gain N life"
+    if ('enters' in oracle and 'gain' in oracle and 'life' in oracle
+            and 'if you' not in oracle and 'if a' not in oracle):
         m = re.search(r'gain\s+(\d+)\s+life', oracle)
         if m:
             amount = int(m.group(1))
@@ -112,6 +115,68 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
                     f"T{game.display_turn} P{controller+1}: "
                     f"{card.name} ETB: {amount} damage to opponent "
                     f"(life: {game.players[opponent].life})")
+
+    # ── Bounce land: "When this land enters, return a land you control
+    #    to its owner's hand." (Gruul Turf, Simic Growth Chamber, etc.) ──
+    if (card.template.is_land and 'when this land enters' in oracle
+            and 'return a land you control' in oracle
+            and 'hand' in oracle):
+        player = game.players[controller]
+        # Return cheapest non-bounce land (prefer basics to keep bounce land)
+        candidates = [c for c in player.battlefield
+                      if c.template.is_land and c.instance_id != card.instance_id]
+        if candidates:
+            # Prefer basics first; among bounce lands prefer not to return them
+            def bounce_priority(c):
+                is_bounce = ('return a land you control' in
+                             (c.template.oracle_text or '').lower())
+                return (1 if is_bounce else 0, c.template.cmc or 0)
+            target = min(candidates, key=bounce_priority)
+            player.battlefield.remove(target)
+            target.zone = 'hand'
+            target.tapped = False
+            player.hand.append(target)
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: "
+                f"{card.name} returns {target.name} to hand")
+
+    # ── Spelunking / "when this enters, draw a card, then you may put a
+    #    land card from your hand onto the battlefield" ──
+    if ('when this' in oracle and 'enters' in oracle
+            and 'draw a card' in oracle
+            and 'land card from your hand onto the battlefield' in oracle):
+        player = game.players[controller]
+        game.draw_cards(controller, 1)
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: "
+            f"{card.name} ETB: draw a card")
+        lands_in_hand = [c for c in player.hand if c.template.is_land]
+        if lands_in_hand:
+            # Prefer bounce lands (synergy with Amulet)
+            bounce = [c for c in lands_in_hand
+                      if 'return a land you control' in
+                      (c.template.oracle_text or '').lower()]
+            land = bounce[0] if bounce else lands_in_hand[0]
+            player.hand.remove(land)
+            land.zone = 'battlefield'
+            land.controller = controller
+            land.enter_battlefield()   # sets tapped if enters_tapped
+            player.battlefield.append(land)
+            game._apply_untap_on_enter_triggers(land, controller)
+            # Also apply "Lands you control enter untapped" static (Spelunking etc.)
+            game._apply_lands_enter_untapped(land, controller)
+            # Fire land's own ETB (e.g. bounce land returns a land to hand)
+            resolve_etb_from_oracle(game, land, controller)
+            game._trigger_landfall(controller)
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: "
+                f"{card.name} puts {land.name} onto battlefield")
+            # Cave bonus: gain 4 life only if land placed is a Cave
+            if 'Cave' in (land.template.subtypes or []) and 'gain 4 life' in oracle:
+                game.gain_life(controller, 4, card.name)
+                game.log.append(
+                    f"T{game.display_turn} P{controller+1}: "
+                    f"{card.name} Cave bonus: gain 4 life")
 
 
 def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
