@@ -799,6 +799,31 @@ class GameState:
             if total_mana >= improvise_cmc:
                 return True
 
+        # Force alternate cost: "exile a [color] card from your hand rather
+        # than pay this spell's mana cost" — only on opponent's turn
+        oracle_lower = (template.oracle_text or '').lower()
+        if 'exile a' in oracle_lower and 'rather than pay' in oracle_lower:
+            # Only works on opponent's turn (not your turn)
+            if self.active_player != player_idx:
+                # Find required color to exile
+                import re
+                m = re.search(r'exile an? (\w+) card from your hand', oracle_lower)
+                if m:
+                    color_word = m.group(1)
+                    color_map = {'blue': 'U', 'green': 'G', 'red': 'R',
+                                 'white': 'W', 'black': 'B'}
+                    req_color = color_map.get(color_word, '')
+                    if req_color:
+                        from .cards import Color
+                        color_enum = {'U': Color.BLUE, 'G': Color.GREEN, 'R': Color.RED,
+                                      'W': Color.WHITE, 'B': Color.BLACK}.get(req_color)
+                        has_exile_target = any(
+                            c != card and color_enum in c.template.color_identity
+                            for c in player.hand
+                        )
+                        if has_exile_target:
+                            return True  # Can cast for free
+
         if total_mana < effective_cmc:
             return False
 
@@ -1364,43 +1389,76 @@ class GameState:
                                                  card_name=template.name):
                     return False
             elif not evoked:
-                # Delve: pay reduced cost if we exiled cards
-                if delve_exiled > 0:
-                    from .mana import ManaCost
-                    reduced_generic = max(0, template.mana_cost.generic - delve_exiled)
-                    delve_cost = ManaCost(
-                        white=template.mana_cost.white,
-                        blue=template.mana_cost.blue,
-                        black=template.mana_cost.black,
-                        red=template.mana_cost.red,
-                        green=template.mana_cost.green,
-                        generic=reduced_generic,
-                    )
-                    if not self.tap_lands_for_mana(player_idx, delve_cost,
-                                                     card_name=template.name):
-                        return False
-                else:
-                    # Phyrexian mana: pay 2 life per Phyrexian symbol instead of colored mana
-                    oracle_lower = (template.oracle_text or '').lower()
-                    phyrexian_count = oracle_lower.count('/p}')
-                    if phyrexian_count > 0 and player.life > phyrexian_count * 2:
-                        life_cost = phyrexian_count * 2
-                        player.life -= life_cost
-                        # Reduce the effective cost — Mutagenic Growth {G/P} becomes free
-                        remaining_cmc = max(0, template.mana_cost.cmc - phyrexian_count)
-                        if remaining_cmc > 0:
-                            from .mana import ManaCost
-                            phyrexian_cost = ManaCost(generic=remaining_cmc)
-                            if not self.tap_lands_for_mana(player_idx, phyrexian_cost,
-                                                             card_name=template.name):
-                                player.life += life_cost  # refund
-                                return False
-                        self.log.append(
-                            f"T{self.display_turn} P{player_idx+1}: "
-                            f"Pay {life_cost} life (Phyrexian mana) for {template.name}")
-                    elif not self.tap_lands_for_mana(player_idx, template.mana_cost,
-                                                     card_name=template.name):
-                        return False
+                # Force alternate cost: exile a card from hand instead of mana
+                oracle_lower = (template.oracle_text or '').lower()
+                force_cast = False
+                if ('exile a' in oracle_lower and 'rather than pay' in oracle_lower
+                        and self.active_player != player_idx):
+                    import re
+                    m = re.search(r'exile an? (\w+) card from your hand', oracle_lower)
+                    if m:
+                        color_word = m.group(1)
+                        color_map = {'blue': 'U', 'green': 'G', 'red': 'R',
+                                     'white': 'W', 'black': 'B'}
+                        req_color = color_map.get(color_word, '')
+                        if req_color:
+                            from .cards import Color
+                            color_enum = {'U': Color.BLUE, 'G': Color.GREEN, 'R': Color.RED,
+                                          'W': Color.WHITE, 'B': Color.BLACK}.get(req_color)
+                            exile_candidates = [
+                                c for c in player.hand
+                                if c != card and color_enum in c.template.color_identity
+                            ]
+                            if exile_candidates:
+                                # Exile the least valuable card
+                                exile_candidates.sort(key=lambda c: c.template.cmc or 0)
+                                exiled = exile_candidates[0]
+                                player.hand.remove(exiled)
+                                exiled.zone = "exile"
+                                player.exile.append(exiled)
+                                force_cast = True
+                                self.log.append(
+                                    f"T{self.display_turn} P{player_idx+1}: "
+                                    f"Pay alternate cost: exile {exiled.name} for {template.name}")
+
+                if not force_cast:
+                    # Delve: pay reduced cost if we exiled cards
+                    if delve_exiled > 0:
+                        from .mana import ManaCost
+                        reduced_generic = max(0, template.mana_cost.generic - delve_exiled)
+                        delve_cost = ManaCost(
+                            white=template.mana_cost.white,
+                            blue=template.mana_cost.blue,
+                            black=template.mana_cost.black,
+                            red=template.mana_cost.red,
+                            green=template.mana_cost.green,
+                            generic=reduced_generic,
+                        )
+                        if not self.tap_lands_for_mana(player_idx, delve_cost,
+                                                         card_name=template.name):
+                            return False
+                    else:
+                        # Phyrexian mana: pay 2 life per Phyrexian symbol instead of colored mana
+                        oracle_lower = (template.oracle_text or '').lower()
+                        phyrexian_count = oracle_lower.count('/p}')
+                        if phyrexian_count > 0 and player.life > phyrexian_count * 2:
+                            life_cost = phyrexian_count * 2
+                            player.life -= life_cost
+                            # Reduce the effective cost — Mutagenic Growth {G/P} becomes free
+                            remaining_cmc = max(0, template.mana_cost.cmc - phyrexian_count)
+                            if remaining_cmc > 0:
+                                from .mana import ManaCost
+                                phyrexian_cost = ManaCost(generic=remaining_cmc)
+                                if not self.tap_lands_for_mana(player_idx, phyrexian_cost,
+                                                                 card_name=template.name):
+                                    player.life += life_cost  # refund
+                                    return False
+                            self.log.append(
+                                f"T{self.display_turn} P{player_idx+1}: "
+                                f"Pay {life_cost} life (Phyrexian mana) for {template.name}")
+                        elif not self.tap_lands_for_mana(player_idx, template.mana_cost,
+                                                         card_name=template.name):
+                            return False
 
         # Remove from zone and track cast-from-graveyard for flashback exile
         cast_with_flashback = False
@@ -2106,6 +2164,50 @@ class GameState:
                     self.log.append(f"T{self.display_turn} P{controller+1}: "
                                    f"  Free-cast {card.name} from exile")
                     self.cast_spell(controller, card, free_cast=True)
+
+        elif "draw a card" in effect_desc.lower() and "untap" in effect_desc.lower():
+            # Teferi, Hero of Dominaria +1: draw a card, untap 2 lands
+            self.draw_cards(controller, 1)
+            player = self.players[controller]
+            untapped = 0
+            for land in player.lands:
+                if land.tapped and untapped < 2:
+                    land.tapped = False
+                    untapped += 1
+            if untapped:
+                self.log.append(f"T{self.display_turn} P{controller+1}: "
+                               f"  untap {untapped} lands")
+
+        elif "put target" in effect_desc.lower() and "library" in effect_desc.lower():
+            # Teferi Hero -3: tuck nonland permanent into library
+            opp = self.players[opponent]
+            targets = [c for c in opp.battlefield if not c.template.is_land]
+            if targets:
+                target = max(targets, key=lambda c: (c.template.cmc or 0, c.power or 0))
+                # Tuck: remove from battlefield (not death — no dies triggers)
+                if target in opp.battlefield:
+                    opp.battlefield.remove(target)
+                # Put into library 3rd from top
+                target.zone = "library"
+                if len(opp.library) >= 2:
+                    opp.library.insert(2, target)
+                else:
+                    opp.library.append(target)
+                self.log.append(f"T{self.display_turn} P{controller+1}: "
+                               f"  tucks {target.name} into library")
+
+        elif "emblem" in effect_desc.lower() and "exile" in effect_desc.lower():
+            # Teferi Hero -8 / generic emblem: exile an opponent's permanent
+            opp = self.players[opponent]
+            targets = [c for c in opp.battlefield]
+            if targets:
+                target = max(targets, key=lambda c: (c.template.cmc or 0, c.power or 0))
+                if target in opp.battlefield:
+                    opp.battlefield.remove(target)
+                target.zone = "exile"
+                opp.exile.append(target)
+                self.log.append(f"T{self.display_turn} P{controller+1}: "
+                               f"  emblem exiles {target.name}")
 
         # Planeswalker dies at 0 loyalty (SBA will catch this)
 
