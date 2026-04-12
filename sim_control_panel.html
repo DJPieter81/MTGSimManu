@@ -139,8 +139,9 @@ const MODERN_DECKS = [
   "Izzet Prowess","Dimir Midrange","4c Omnath","4/5c Control","Azorius Control"
 ];
 
-const LEGACY_BASE = "/Users/lynette/MTGSimManu/MTGSimClaude";
-const MODERN_BASE = "/Users/lynette/MTGSimManu/MTGSimManu/MTGSimManu";
+// GitHub Pages base URLs (enable Pages: Settings → Pages → main branch, / root)
+const LEGACY_BASE = "https://djpieter81.github.io/MTGSimClaude";
+const MODERN_BASE = "https://djpieter81.github.io/MTGSimManu";
 
 // ── Run history (regenerate: python3 scan_results.py) ────────────────
 const LEGACY_HISTORY = [
@@ -251,7 +252,7 @@ function rowExtra(r) {
   return p.join(' · ');
 }
 function isClickable(r) { return !!r.path; }
-function fileUrl(r) { return 'file:///' + getBase() + '/' + r.path; }
+function fileUrl(r) { return getBase() + '/' + r.path; }
 
 // ── Switching ─────────────────────────────────────────────────────────
 function switchFormat(f) {
@@ -285,17 +286,16 @@ function render() {
   document.querySelector('[data-tab="history"]').textContent = `History (${allRuns.length})`;
 
   // Open links
-  const fp = 'file:///' + base;
   let links = '';
   if (format === 'modern') {
-    links = `<a style="color:var(--blue);background:var(--blue-light);border:1px solid #2563eb33" href="${fp}/modern_meta_matrix_full.html" target="_blank">Modern Matrix</a>`
-           +`<a style="color:var(--green);background:var(--green-light);border:1px solid #05966933" href="${fp}/sim_control_panel.html" target="_blank">Control Panel</a>`;
+    links = `<a style="color:var(--blue);background:var(--blue-light);border:1px solid #2563eb33" href="${base}/modern_meta_matrix_full.html" target="_blank">Modern Matrix</a>`
+           +`<a style="color:var(--green);background:var(--green-light);border:1px solid #05966933" href="${base}/sim_control_panel.html" target="_blank">Control Panel</a>`;
   } else {
-    links = `<a style="color:var(--blue);background:var(--blue-light);border:1px solid #2563eb33" href="${fp}/results/mtg_meta_matrix.html" target="_blank">Legacy Matrix</a>`
-           +`<a style="color:var(--red);background:var(--red-light);border:1px solid #dc262633" href="${fp}/results/audit_dashboard.html" target="_blank">Audit</a>`
-           +`<a style="color:var(--green);background:var(--green-light);border:1px solid #05966933" href="${fp}/results/game_replay.html" target="_blank">Replay</a>`
-           +`<a style="color:var(--pink);background:var(--pink-light);border:1px solid #db277733" href="${fp}/results/metagame_report.html" target="_blank">Meta Report</a>`
-           +`<a style="color:var(--accent);background:var(--accent-light);border:1px solid #7c3aed33" href="${fp}/results/player_guide.html" target="_blank">Player Guide</a>`;
+    links = `<a style="color:var(--blue);background:var(--blue-light);border:1px solid #2563eb33" href="${base}/results/mtg_meta_matrix.html" target="_blank">Legacy Matrix</a>`
+           +`<a style="color:var(--red);background:var(--red-light);border:1px solid #dc262633" href="${base}/results/audit_dashboard.html" target="_blank">Audit</a>`
+           +`<a style="color:var(--green);background:var(--green-light);border:1px solid #05966933" href="${base}/results/game_replay.html" target="_blank">Replay</a>`
+           +`<a style="color:var(--pink);background:var(--pink-light);border:1px solid #db277733" href="${base}/results/metagame_report.html" target="_blank">Meta Report</a>`
+           +`<a style="color:var(--accent);background:var(--accent-light);border:1px solid #7c3aed33" href="${base}/results/player_guide.html" target="_blank">Player Guide</a>`;
   }
   document.getElementById('open-links').innerHTML = links;
 

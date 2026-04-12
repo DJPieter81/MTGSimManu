@@ -14,8 +14,10 @@ const MODERN_DECKS = [
   "Izzet Prowess","Dimir Midrange","4c Omnath","4/5c Control","Azorius Control"
 ];
 
-const LEGACY_BASE = "/Users/lynette/MTGSimManu/MTGSimClaude";
-const MODERN_BASE = "/Users/lynette/MTGSimManu/MTGSimManu/MTGSimManu";
+// GitHub Pages base URLs (enable Pages: Settings → Pages → main branch, / root)
+const LEGACY_BASE = "https://djpieter81.github.io/MTGSimClaude";
+const MODERN_BASE = "https://djpieter81.github.io/MTGSimManu";
+// Local fallback: computer:///Users/lynette/MTGSimManu/MTGSimClaude, computer:///Users/lynette/MTGSimManu/MTGSimManu/MTGSimManu
 
 // ── Run history (regenerate with: python3 scan_results.py) ───────────
 const LEGACY_HISTORY = [
@@ -141,7 +143,7 @@ const Check = ({ checked, onClick, label, desc }) => (
 );
 
 const isClickable = (r) => !!r.path;
-const fileLink = (basePath, r) => `computer://${basePath}/${r.path}`;
+const fileLink = (basePath, r) => `${basePath}/${r.path}`;
 
 // ── Filter types for history ─────────────────────────────────────────
 const FILTER_TYPES = [
@@ -324,7 +326,7 @@ export default function SimControlPanel() {
             { label: "Meta Report", path: "results/metagame_report.html", c: pink, bg: pinkLight },
             { label: "Player Guide", path: "results/player_guide.html", c: accent, bg: accentLight },
           ]).map(lnk => (
-            <a key={lnk.label} href={`computer://${basePath}/${lnk.path}`} target="_blank" rel="noreferrer"
+            <a key={lnk.label} href={`${basePath}/${lnk.path}`} target="_blank" rel="noreferrer"
               style={{ fontSize: 13, fontWeight: 600, color: lnk.c, textDecoration: "none", padding: "4px 12px", borderRadius: 6, background: lnk.bg, border: `1px solid ${lnk.c}33` }}>
               {lnk.label}
             </a>
