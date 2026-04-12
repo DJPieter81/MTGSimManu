@@ -626,10 +626,15 @@ MODERN_DECKS: Dict[str, Dict[str, Dict[str, int]]] = {
     "Azorius Control": {
         # Yuri Anichini — 1st Place, Modern Monster @ Dungeon Street (Pisa, Italy), 22/02/2026
         # Isochron Scepter + Orim's Chant lock package, Solitude creature suite
+        # Session 3 phase 6 tuning: added 3 Sanctifier en-Vec mainboard
+        # (protection from red+black — specifically strong vs Boros Energy's
+        # red creatures/burn and Dimir's black removal). Cut 1 Subtlety and
+        # 2 Consult the Star Charts for the slots. Addresses the "0 mainboard
+        # blockers" structural gap that kept the deck at 7.9% matrix-v3 WR.
         "mainboard": {
             "Solitude": 4,
-            "Subtlety": 1,
-            "Consult the Star Charts": 4,
+            "Sanctifier en-Vec": 3,
+            "Consult the Star Charts": 2,
             "Counterspell": 4,
             "Lórien Revealed": 2,
             "Orim's Chant": 4,
