@@ -2150,14 +2150,15 @@ def kappa_etb(game, card, controller, targets=None, item=None):
     # Approximate: add counters equal to half the artifacts on board (those played this turn)
     bonus = min(artifact_count // 2, 4)
     if bonus > 0:
-        if not hasattr(card, 'counters'):
-            card.counters = 0
-        card.counters += bonus
-        card.template.power = (card.template.power or 4) + bonus
-        card.template.toughness = (card.template.toughness or 4) + bonus
+        # Use plus_counters on the INSTANCE — assigning to card.template.power
+        # mutated the shared CardDatabase template, so every future game's
+        # Kappa Cannoneer grew another +bonus (matrix-wide corruption, same
+        # class of bug as the Blood Moon leak fixed in 2380126).
+        card.plus_counters += bonus
+    # Read through the P/T properties (which apply plus_counters) for logging.
     game.log.append(
         f"T{game.display_turn} P{controller+1}: "
-        f"Kappa Cannoneer enters as {card.template.power}/{card.template.toughness} (ward 4, grows with artifacts)")
+        f"Kappa Cannoneer enters as {card.power}/{card.toughness} (ward 4, grows with artifacts)")
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -2192,15 +2193,16 @@ def pinnacle_emissary_etb(game, card, controller, targets=None, item=None):
 @EFFECT_REGISTRY.register("Arcbound Ravager", EffectTiming.ETB,
                            description="Arcbound Ravager: 0/0 + modular 1, grows by sacrificing artifacts")
 def arcbound_ravager_etb(game, card, controller, targets=None, item=None):
-    """Arcbound Ravager ETB: starts as 1/1 (modular 1), grows later."""
-    card.template.power = 1
-    card.template.toughness = 1
-    if not hasattr(card, 'counters'):
-        card.counters = 0
-    card.counters += 1
+    """Arcbound Ravager ETB: starts as 1/1 (modular 1), grows later.
+
+    Uses plus_counters on the instance instead of writing to the shared
+    template (prior impl mutated template.power/toughness, leaking across
+    games the same way Blood Moon did).
+    """
+    card.plus_counters += 1
     game.log.append(
         f"T{game.display_turn} P{controller+1}: "
-        f"Arcbound Ravager enters as 1/1 (modular 1)")
+        f"Arcbound Ravager enters as {card.power}/{card.toughness} (modular 1)")
 
 
 # ═══════════════════════════════════════════════════════════════════
