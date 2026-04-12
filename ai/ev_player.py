@@ -241,6 +241,19 @@ class EVPlayer:
                 while self.goal_engine.current_goal_idx < len(self.goal_engine.gameplan.goals) - 1:
                     self.goal_engine.advance_goal(game, f"Combo kill detected (storm={storm_count})")
 
+        # REANIMATE PRIORITY OVERRIDE: if hand has reanimate spell AND
+        # graveyard has a creature with power >= 5, force-cast it immediately
+        reanimate_override = None
+        from engine.cards import CardType
+        gy_big = [c for c in me.graveyard
+                  if CardType.CREATURE in c.template.card_types
+                  and (c.template.power or 0) >= 5]
+        if gy_big:
+            for spell in spells:
+                if 'reanimate' in getattr(spell.template, 'tags', set()) and game.can_cast(self.player_idx, spell):
+                    reanimate_override = spell
+                    break
+
         for spell in spells:
             if not game.can_cast(self.player_idx, spell):
                 continue
@@ -271,6 +284,10 @@ class EVPlayer:
 
             ev = self._score_spell(spell, snap, game, me, opp)
             targets = self._choose_targets(game, spell)
+
+            # Reanimate override: massive boost when big creature is in GY
+            if reanimate_override and spell.instance_id == reanimate_override.instance_id:
+                ev += 40.0  # force-cast reanimation when target ready
 
             # Spells that need targets but have none = skip
             if self._spell_requires_targets(spell) and not targets:

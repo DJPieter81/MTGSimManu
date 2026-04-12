@@ -48,6 +48,11 @@ class AICallbacks(GameCallbacks):
         arch_enum = DECK_ARCHETYPES.get(deck_name)
         archetype = arch_enum.value if arch_enum else "midrange"
 
+        # Combo decks: always pay life in early turns — every mana matters
+        # for assembling the combo, 2 life is irrelevant
+        if archetype == "combo" and game.turn_number <= 8:
+            return True
+
         # Snapshot the current state
         snap = snapshot_from_game(game, player_idx)
 
