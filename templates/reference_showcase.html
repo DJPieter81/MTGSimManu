@@ -426,7 +426,7 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
     </div>
     <div class="chart-card">
       <h4>AI strategy grades</h4>
-      <div class="chart-sub">6-expert LLM judge panel, 210 games audited</div>
+      <div class="chart-sub">6-expert LLM judge panel · 210 games audited · D+ → C- → C+ (3 sessions of fixes)</div>
       <div class="chart-wrap"><canvas id="gradeChart"></canvas></div>
     </div>
     <div class="chart-card">
@@ -453,7 +453,7 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
 <section>
   <div class="reveal">
     <div class="sec-label">Accuracy</div>
-    <div class="sec-title">Graded C- by a 6-expert panel</div>
+    <div class="sec-title">Graded C+ by a 6-expert panel (up from D+)</div>
     <div class="sec-desc">Click any deck bar to see why it's on or off target. Shaded bands show the expected tournament range.</div>
   </div>
   <div class="accuracy-bars reveal">
@@ -757,7 +757,7 @@ const resChart=new Chart(document.getElementById('resChart'),{type:'doughnut',da
 // Grade radar
 new Chart(document.getElementById('gradeChart'),{type:'radar',data:{
   labels:['Rules','Combat','Mulligan','Mana','Combo','Control'],
-  datasets:[{data:[72,66,58,50,50,30],fill:true,backgroundColor:'rgba(184,148,30,.12)',borderColor:gold,pointBackgroundColor:gold,pointRadius:4,borderWidth:2}]
+  datasets:[{data:[75,72,58,55,60,50],fill:true,backgroundColor:'rgba(184,148,30,.12)',borderColor:gold,pointBackgroundColor:gold,pointRadius:4,borderWidth:2}]
 },options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:100,ticks:{display:false,stepSize:25},
   grid:{color:'#e8e4dd'},angleLines:{color:'#e8e4dd'},pointLabels:{font:{family:'DM Sans',size:11}}}},
   plugins:{legend:{display:false}}}});
