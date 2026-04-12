@@ -485,3 +485,76 @@ python build_guide.py --all /mnt/user-data/outputs/
 Reads `metagame_14deck.jsx` D object. Generates: hero stats, Stars of Sim (Scryfall thumbnails), G1→match swing table, danger cards (removal blind spots), tiered matchup spread, provenance footer. All data traced to JSX keys.
 
 **Note:** `build_guide.py` produces the data-driven skeleton. The hand-crafted Boros guide in `templates/reference_deck_guide.html` has additional depth: real sim hands, game plan phases, hand archetype WR bars, and 6 pro-level findings. For tournament-grade guides, use the template as the reference and augment `build_guide.py` output.
+
+## Post-Sim Replay Generation — Triggered Pipeline
+
+After every matrix sim or matchup run, automatically generate Bo3 replay logs for investigation. This replaces manual "save a replay" decisions.
+
+### Trigger: after `run_meta.py --matrix` or `build_dashboard.py --merge`
+
+```bash
+# Step 1: Identify replay-worthy matchups from JSX data
+python3 << 'PY'
+import json
+with open('metagame_14deck.jsx') as f: jsx = f.read()
+D = json.loads(jsx[jsx.index('const D = ')+10 : jsx.index(';\nconst N')])
+
+EXPECTED = {  # (low, high) — update when meta shifts
+    'Boros Energy': (50,70), 'Affinity': (45,60), 'Eldrazi Tron': (50,65),
+    'Jeskai Blink': (45,60), 'Ruby Storm': (40,55), 'Domain Zoo': (50,65),
+    'Izzet Prowess': (45,60), 'Dimir Midrange': (45,60),
+}
+
+targets = set()
+for o in D['overall']:
+    d = o['deck']
+    wr = o['win_rate']
+    lo, hi = EXPECTED.get(d, (30, 70))
+    if wr < lo or wr > hi:
+        # Outlier deck: replay its worst and best matchup
+        idx = o['idx']
+        wins = D['wins'][idx]
+        worst_i = min(range(len(wins)), key=lambda i: wins[i] if i != idx else 999)
+        best_i = max(range(len(wins)), key=lambda i: wins[i] if i != idx else -1)
+        targets.add((d, D['decks'][worst_i]))
+        targets.add((d, D['decks'][best_i]))
+
+    # G1 → match swing > 20pp
+    for i in range(len(D['decks'])):
+        key = f"{o['idx']},{i}"
+        mc = D['matchup_cards'].get(key, {})
+        if mc.get('g1_wins'):
+            g1 = mc['g1_wins'][0]
+            match_wr = round(D['wins'][o['idx']][i] / D['matches_per_pair'] * 100)
+            if abs(match_wr - g1) >= 20:
+                targets.add((d, D['decks'][i]))
+
+for d1, d2 in sorted(targets):
+    print(f"{d1} vs {d2}")
+PY
+
+# Step 2: Generate Bo3 logs + HTML for each target
+SEED=60100
+for pair in $(python3 -c "...targets output..."); do
+    d1=$(echo $pair | cut -d'|' -f1)
+    d2=$(echo $pair | cut -d'|' -f2)
+    slug="${d1// /_}_vs_${d2// /_}_s${SEED}"
+    python3 run_meta.py --bo3 "$d1" "$d2" -s $SEED > "replays/${slug,,}.txt"
+    python3 build_replay.py "replays/${slug,,}.txt" "/mnt/user-data/outputs/replay_${slug,,}.html" $SEED
+    SEED=$((SEED+1))
+done
+
+# Step 3: Commit logs
+git add replays/*.txt
+git commit -m "data: auto-generated replay logs for outlier/swing matchups"
+```
+
+### Replay triggers (when to auto-generate)
+1. **Outlier decks**: WR outside expected range → replay worst + best matchup
+2. **G1→match swing ≥ 20pp**: sideboard is transformational → replay to see the transformation
+3. **0 comebacks in 10+ matches**: unwinnable when behind → replay to diagnose
+4. **New deck added**: replay vs T1 field (Boros, Jeskai, Affinity)
+
+### Files produced per replay
+- `replays/{d1}_vs_{d2}_s{SEED}.txt` — raw Bo3 log (committed to repo)
+- `/mnt/user-data/outputs/replay_{...}.html` — interactive HTML viewer (output to user)
