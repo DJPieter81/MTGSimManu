@@ -1566,10 +1566,12 @@ class GameRunner:
             # Destroy by MV (EE, Blast Zone)
             elif 'destroy' in effect_text and 'mana value' in effect_text:
                 charge = perm.other_counters.get("charge", 0)
-                hits = sum(1 for c in opponent.battlefield
-                           if not c.template.is_land and (c.template.cmc or 0) == charge)
-                if hits >= 1:
-                    should_activate = True
+                # Don't pop at charge=0 (kills own tokens/0-cost artifacts)
+                if charge >= 1:
+                    hits = sum(1 for c in opponent.battlefield
+                               if not c.template.is_land and (c.template.cmc or 0) == charge)
+                    if hits >= 1:
+                        should_activate = True
 
             # Exile graveyard
             elif 'exile' in effect_text and 'graveyard' in effect_text:
@@ -1623,12 +1625,15 @@ class GameRunner:
             game.draw_cards(controller, 1)
         elif 'destroy' in effect_text and 'mana value' in effect_text:
             charge = sacrificed.other_counters.get("charge", 0)
-            for p_idx in range(2):
-                for c in list(game.players[p_idx].battlefield):
-                    if not c.template.is_land and (c.template.cmc or 0) == charge:
-                        game.players[p_idx].battlefield.remove(c)
-                        c.zone = "graveyard"
-                        game.players[p_idx].graveyard.append(c)
+            # Only destroy OPPONENT's permanents (Blast Zone/EE target opponents)
+            from engine.cards import Keyword
+            for c in list(opp.battlefield):
+                if not c.template.is_land and (c.template.cmc or 0) == charge:
+                    if Keyword.INDESTRUCTIBLE not in c.keywords:
+                        if c.template.is_creature:
+                            game._creature_dies(c)
+                        else:
+                            game._permanent_destroyed(c)
                         game.log.append(f"T{game.display_turn} P{controller+1}: "
                                         f"  destroys {c.name} (MV={charge})")
         elif 'exile' in effect_text and 'graveyard' in effect_text:
@@ -1637,11 +1642,32 @@ class GameRunner:
                 c.zone = "exile"
                 opp.exile.append(c)
         elif 'search' in effect_text and 'land' in effect_text:
-            lands = [c for c in player.library if c.template.is_land]
-            if lands:
-                player.library.remove(lands[0])
-                lands[0].zone = "hand"
-                player.hand.append(lands[0])
+            # Smart land search: find missing Tron piece first, then any land
+            tron_pieces = {"Urza's Tower", "Urza's Mine", "Urza's Power Plant"}
+            on_board = {l.name for l in player.lands}
+            in_hand = {c.name for c in player.hand if c.template.is_land}
+            missing_tron = tron_pieces - on_board - in_hand
+            target = None
+            for c in player.library:
+                if c.template.is_land and c.name in missing_tron:
+                    target = c
+                    break
+            if not target:
+                # Fallback: find Eldrazi Temple or any useful land
+                for c in player.library:
+                    if c.template.is_land and c.name not in on_board:
+                        target = c
+                        break
+            if not target:
+                lands = [c for c in player.library if c.template.is_land]
+                if lands:
+                    target = lands[0]
+            if target:
+                player.library.remove(target)
+                target.zone = "hand"
+                player.hand.append(target)
+                game.log.append(f"T{game.display_turn} P{controller+1}: "
+                                f"  finds {target.name}")
                 game.rng.shuffle(player.library)
         elif 'exile' in effect_text and ('artifact' in effect_text or 'enchantment' in effect_text):
             targets = [c for c in opp.battlefield
