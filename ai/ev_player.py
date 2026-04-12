@@ -499,8 +499,24 @@ class EVPlayer:
             has_finisher = _has_finisher()
             min_fuel = p.storm_min_fuel_to_go if reducers > 0 else p.storm_min_fuel_to_go + 2
 
+            # Draw spells (Reckless Impulse, Wrenn's Resolve) dig for finishers.
+            # With reducer on board + 3+ fuel, going off through draws is correct
+            # because: ritual → draw → draw finds finisher → cast it with floating mana
+            has_draw = any(
+                any(dt in getattr(c.template, 'tags', set())
+                    for dt in ('cantrip', 'card_advantage'))
+                or c.name in ('Reckless Impulse', "Wrenn's Resolve",
+                              'Glimpse the Impossible', 'Expressive Iteration')
+                for c in me.hand if c.instance_id != card.instance_id
+                and not c.template.is_land
+            )
+
             can_go = (has_finisher and total_fuel >= min_fuel
                       and mana >= (1 if reducers > 0 else 2))
+            # Draw spells as proxy finisher access: if enough fuel + draws,
+            # the chain will find Grapeshot/Wish naturally
+            if not can_go and has_draw and reducers > 0 and total_fuel >= 3:
+                can_go = True
             if snap.am_dead_next and fuel >= 1:
                 can_go = True
             if has_finisher and opp_life <= total_fuel and total_fuel >= 2:
