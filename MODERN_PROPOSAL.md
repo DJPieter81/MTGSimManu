@@ -71,7 +71,7 @@ METAGAME_SHARES = {k: v['meta_share'] for k, v in DECKS.items()}
 ## 2. Template-driven dashboard rebuild (HIGH priority)
 
 ### Problem
-`build_dashboard.py` generates HTML from scratch each time (34K file). Any design fix must be re-applied after every rebuild. The canonical `metagame_14deck.jsx` (105K) is both data and presentation.
+`build_dashboard.py` generates HTML from scratch each time (34K file). Any design fix must be re-applied after every rebuild. The canonical `metagame_data.jsx` (105K) is both data and presentation.
 
 ### Legacy solution
 ```
@@ -82,7 +82,7 @@ Dashboard rebuild = swap 5 data constants (`D`, `DA`, `C`, `I`, `ARCH`) in the t
 ### Proposed implementation
 1. Extract current `modern_meta_matrix_full.html` as `templates/reference_modern_matrix.html`
 2. Refactor `build_dashboard.py` to inject data into template, not generate HTML
-3. Separate `metagame_14deck.jsx` into data-only JSON + presentation template
+3. Separate `metagame_data.jsx` into data-only JSON + presentation template
 
 **Effort:** ~3 hours. Eliminates "dashboard looks different after rebuild" bugs permanently.
 

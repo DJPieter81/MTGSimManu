@@ -633,7 +633,7 @@ const layerData={
   runner:{t:'Simulation runner — single entry point',d:'All analysis through one file: full NxN round-robin matrix, head-to-head matchups, field sweeps (one deck vs all), deck audits with per-card stats, verbose game logs, AI reasoning traces, and Bo3 match generation with sideboarding. Reproducible seeds. Python API for programmatic access.',
     files:['run_meta.py (38K)','simulate_match.py','match_trace.py','import_deck.py','update_modern_atomic.py']},
   output:{t:'Output pipeline — 3 HTML products',d:'Simulation results flow into three standalone HTML deliverables. Interactive heatmap dashboard with card-level detail (casts, damage, finishers, sideboard swaps, insights). Bo3 replay viewers with SVG life charts, collapsible turns, and AI reasoning toggle. Comprehensive deck guides with sim-verified matchup spreads, opening hand analysis, and game plan phases.',
-    files:['build_dashboard.py (34K)','build_replay.py (32K)','metagame_14deck.jsx (105K)','replay_generator.py','commentary_engine.py']},
+    files:['build_dashboard.py (34K)','build_replay.py (32K)','metagame_data.jsx (105K)','replay_generator.py','commentary_engine.py']},
   skills:{t:'Claude skills — 4 automation pipelines',d:'Reusable skill files that Claude reads before executing workflows. Meta matrix skill runs the full sim-to-dashboard pipeline. Dashboard refresh extracts card-level data from verbose Bo3 logs and merges into the JSX. Deck guide skill produces 7-step HTML guides. Bo3 replayer skill generates interactive match viewers. Same skills work for both Legacy and Modern formats.',
     files:['/mtg-meta-matrix','/mtg-dashboard-refresh','/mtg-deck-guide','/mtg-bo3-replayer-v2']}
 };

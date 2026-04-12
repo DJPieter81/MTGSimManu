@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """
-build_guide.py — Generate deck guide HTML from metagame_14deck.jsx data.
+build_guide.py — Generate deck guide HTML from metagame_data.jsx data.
 
 Usage:
   python build_guide.py "Boros Energy"                    # stdout
   python build_guide.py "Boros Energy" out.html           # write file
   python build_guide.py --all /mnt/user-data/outputs/     # all T1/T2 decks
 
-Reads: metagame_14deck.jsx (D object), decks/modern_meta.py, templates/reference_deck_guide.html
+Reads: metagame_data.jsx (D object), decks/modern_meta.py, templates/reference_deck_guide.html
 """
 import json, re, sys, os
 
-def load_D(jsx_path='metagame_14deck.jsx'):
+def load_D(jsx_path='metagame_data.jsx'):
     with open(jsx_path) as f: jsx = f.read()
     d_start = jsx.index('const D = ') + 10
     d_end = jsx.index(';\nconst N')
@@ -239,7 +239,7 @@ def build_guide(deck_name, D):
     # Provenance
     h('<div class="prov">')
     h(f'Simulated: 2026-04-12 · {len(decks)} decks · {N} Bo3/pair ({overall["total_matches"]} games for {esc(deck_name)}) · Engine: MTGSimManu<br>')
-    h(f'Source: metagame_14deck.jsx (D object) · Card stats: deck_cards[{idx}] · Matchups: matchup_cards["{idx},*"]<br>')
+    h(f'Source: metagame_data.jsx (D object) · Card stats: deck_cards[{idx}] · Matchups: matchup_cards["{idx},*"]<br>')
     h('Shell: ManusAI · Strategy + EV scoring: Claude · Owner: DJPieter81')
     h('</div>')
     h('</body></html>')

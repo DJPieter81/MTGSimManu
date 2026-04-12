@@ -228,7 +228,7 @@ export default function SimControlPanel() {
       lines.push(`${step++}. Run: python3 run_meta.py --field ${deck1 || "deck1"} -n ${gamesPerPair}`);
     }
 
-    if (outputs.dashboard) lines.push(`${step++}. Rebuild the metagame matrix dashboard (use /mtg-meta-matrix skill). For Modern: run 'python3 -c "from build_dashboard import merge_results, build; merge_results(\\'metagame_results.json\\', \\'metagame_14deck.jsx\\'); build(\\'metagame_14deck.jsx\\', \\'./modern_meta_matrix_full.html\\')"'`);
+    if (outputs.dashboard) lines.push(`${step++}. Rebuild the metagame matrix dashboard (use /mtg-meta-matrix skill). For Modern: run 'python3 -c "from build_dashboard import merge_results, build; merge_results(\\'metagame_results.json\\', \\'metagame_data.jsx\\'); build(\\'metagame_data.jsx\\', \\'./modern_meta_matrix_full.html\\')"'`);
     if (outputs.replays) lines.push(`${step++}. Generate Bo3 replays for the 3 most interesting outlier matchups (use /mtg-bo3-replayer-v2 skill, seeds 80000+)`);
     if (outputs.audit) lines.push(`${step++}. Run meta_audit.py to generate audit_dashboard.html`);
     if (outputs.deckGuide) lines.push(`${step++}. Generate a comprehensive deck guide for "${guideDeck || "selected deck"}" (use /mtg-deck-guide skill). Include mulligan analysis, matchup guide, sideboard plans, and key hand archetypes.`);

@@ -282,7 +282,7 @@ Turn structure, cascade, storm copies, counterspell restrictions, legend rule, B
 
 The interactive metagame dashboard is a **standalone vanilla JS HTML file** (no React, no Babel).
 
-**Data source:** `metagame_14deck.jsx` — the canonical D object with:
+**Data source:** `metagame_data.jsx` — the canonical D object with:
 - `wins[i][j]` — win counts (out of `matches_per_pair=100`)
 - `matchup_cards["i,j"]` — per-matchup detail: insight, avg_turns, sweeps, went_to_3, g1_wins, comebacks, top_casts, finishers, top_damage, sideboard IN/OUT with cast counts + post-board WR delta
 - `deck_cards[idx]` — per-deck: mvp_casts, mvp_damage, finishers with descriptions, summary
@@ -297,7 +297,7 @@ python3 build_dashboard.py --merge
 # Without a new run — just rebuild HTML from existing JSX:
 python3 build_dashboard.py
 ```
-`--merge` reads `metagame_results.json`, merges wins into `metagame_14deck.jsx` (preserving all matchup_cards/deck_cards), recomputes WRs, then builds the HTML. Always use `--merge` after running `--matrix`.
+`--merge` reads `metagame_results.json`, merges wins into `metagame_data.jsx` (preserving all matchup_cards/deck_cards), recomputes WRs, then builds the HTML. Always use `--merge` after running `--matrix`.
 
 **Dashboard features:**
 - Slide-in detail panel (CSS `translateX` transition, 420px)
@@ -314,9 +314,9 @@ python3 build_dashboard.py
 **Adding a new deck:**
 1. **Check DB freshness first** — run the freshness check above. If any new sets have been released since last update, run `python3 update_modern_atomic.py` before proceeding.
 2. Run `run_meta.py --field "New Deck" -n 100 --save` to get win data
-3. Add wins row/col and basic `matchup_cards` entries to `metagame_14deck.jsx` D object
+3. Add wins row/col and basic `matchup_cards` entries to `metagame_data.jsx` D object
 4. Run verbose matchups for card-level detail: `run_meta.py --verbose "New Deck" opp -s SEED`
-5. Rebuild HTML: `python3 build_dashboard.py metagame_14deck.jsx`
+5. Rebuild HTML: `python3 build_dashboard.py metagame_data.jsx`
 
 ## Replay Viewer — Pipeline
 
@@ -398,7 +398,7 @@ Run after every major operation:
 # After dashboard rebuild
 python3 -c "
 import re
-with open('metagame_14deck.jsx') as f: c=f.read()
+with open('metagame_data.jsx') as f: c=f.read()
 n = re.search(r'const N = (\d+)', c)
 d = re.findall(r'\"decks\":\[(.+?)\]', c)
 print(f'N={n.group(1) if n else \"MISSING\"}, decks={len(d[0].split(\",\")) if d else \"MISSING\"}')"
@@ -482,7 +482,7 @@ python build_guide.py "Boros Energy" /mnt/user-data/outputs/guide_boros_energy.h
 python build_guide.py --all /mnt/user-data/outputs/
 ```
 
-Reads `metagame_14deck.jsx` D object. Generates: hero stats, Stars of Sim (Scryfall thumbnails), G1→match swing table, danger cards (removal blind spots), tiered matchup spread, provenance footer. All data traced to JSX keys.
+Reads `metagame_data.jsx` D object. Generates: hero stats, Stars of Sim (Scryfall thumbnails), G1→match swing table, danger cards (removal blind spots), tiered matchup spread, provenance footer. All data traced to JSX keys.
 
 **Note:** `build_guide.py` produces the data-driven skeleton. The hand-crafted Boros guide in `templates/reference_deck_guide.html` has additional depth: real sim hands, game plan phases, hand archetype WR bars, and 6 pro-level findings. For tournament-grade guides, use the template as the reference and augment `build_guide.py` output.
 
@@ -496,7 +496,7 @@ After every matrix sim or matchup run, automatically generate Bo3 replay logs fo
 # Step 1: Identify replay-worthy matchups from JSX data
 python3 << 'PY'
 import json
-with open('metagame_14deck.jsx') as f: jsx = f.read()
+with open('metagame_data.jsx') as f: jsx = f.read()
 D = json.loads(jsx[jsx.index('const D = ')+10 : jsx.index(';\nconst N')])
 
 EXPECTED = {  # (low, high) — update when meta shifts

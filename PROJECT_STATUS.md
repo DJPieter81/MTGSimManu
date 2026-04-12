@@ -25,7 +25,7 @@ A **Modern-format Magic: The Gathering game simulator** with EV-based AI decisio
 │  /mtg-deck-guide   /mtg-bo3-replayer-v2                     │
 ├─────────────────────────────────────────────────────────────┤
 │  OUTPUT PIPELINE                                            │
-│  build_dashboard.py → metagame_14deck.jsx → HTML heatmap    │
+│  build_dashboard.py → metagame_data.jsx → HTML heatmap    │
 │  build_replay.py → Bo3 HTML replayer (light theme)          │
 │  commentary_engine.py → strategic annotations               │
 ├─────────────────────────────────────────────────────────────┤
@@ -254,7 +254,7 @@ from engine.card_database import CardDatabase  # singleton pattern
 
 ### Never do
 - Read meta shares from JSON — always from METAGAME_SHARES in `decks/modern_meta.py`
-- Edit metagame_14deck.jsx manually — always `python build_dashboard.py --merge`
+- Edit metagame_data.jsx manually — always `python build_dashboard.py --merge`
 - Force-push to GitHub
 - Mix data sources — every figure traces to one function + one data file
 - Use heuristic SB tips — only game log data
@@ -274,7 +274,7 @@ from engine.card_database import CardDatabase  # singleton pattern
 # After dashboard rebuild
 python3 -c "
 import re
-with open('metagame_14deck.jsx') as f: c=f.read()
+with open('metagame_data.jsx') as f: c=f.read()
 n = re.search(r'const N = (\d+)', c)
 d = re.findall(r'\"decks\":\[(.+?)\]', c)
 print(f'N={n.group(1) if n else \"MISSING\"}, decks={len(d[0].split(\",\")) if d else \"MISSING\"}')"
