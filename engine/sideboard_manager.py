@@ -75,6 +75,13 @@ def sideboard(mainboard: Dict[str, int], sideboard_cards: Dict[str, int],
            any(w in opp_lower for w in ["energy", "storm"]):
             board_in_priority.append((card_name, count, 6))
 
+        # Blood Moon vs multicolor / Tron / greedy mana bases
+        if "blood moon" in card_lower:
+            if any(w in opp_lower for w in ["tron", "titan", "omnath", "4c", "5c",
+                                              "4/5c", "domain", "jeskai", "goryo",
+                                              "control"]):
+                board_in_priority.append((card_name, count, 9))
+
     board_in_priority.sort(key=lambda x: -x[2])
 
     # Determine cards to board out
@@ -112,6 +119,13 @@ def sideboard(mainboard: Dict[str, int], sideboard_cards: Dict[str, int],
                                                "leyline of the void", "rest in peace",
                                                "chant"]):
                 board_out_priority.append((card_name, min(count, 2), 7))
+
+        # Board out narrow interaction vs big mana / multicolor
+        # (makes room for Blood Moon from SB)
+        if any(w in opp_lower for w in ["tron", "titan", "omnath", "4c", "5c",
+                                          "4/5c", "domain", "control"]):
+            if any(w in card_lower for w in ["chant", "charm", "bombardment"]):
+                board_out_priority.append((card_name, min(count, 2), 6))
 
     board_out_priority.sort(key=lambda x: -x[2])
 
