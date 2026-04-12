@@ -64,8 +64,11 @@ class MulliganDecider:
                         return False
 
             # Combo decks with always_early: prefer reducer
-            # Only apply ritual/cantrip/finisher backup check to storm/combo archetypes
-            if gp.always_early and cards_in_hand >= 7 and self.archetype in ('storm', 'combo'):
+            # Only apply ritual/cantrip/finisher backup check to combo archetype.
+            # Bug fix: the previous check `self.archetype in ('storm', 'combo')`
+            # compared an ArchetypeStrategy enum against string literals, which
+            # always evaluated False — making this entire guardrail dead code.
+            if gp.always_early and cards_in_hand >= 7 and self.archetype == ArchetypeStrategy.COMBO:
                 reducer_names = gp.always_early | {
                     n for n in hand_names
                     if any('cost_reducer' in getattr(c.template, 'tags', set())
