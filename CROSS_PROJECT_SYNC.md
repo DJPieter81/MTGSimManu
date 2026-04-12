@@ -44,9 +44,9 @@ Keep these portable — no project-specific imports.
 
 | # | Feature | Modern file | Lines | Legacy status | Priority |
 |---|---------|-------------|-------|---------------|----------|
-| 1 | Pro-insights dashboard | `build_dashboard.py` | 124 | ❌ Dashboard lacks proInsights() | HIGH |
-| 2 | Bo3 replay viewer | `build_replay.py` | 591 | ⚠️ Has `game_replay.py` (840) but no HTML viewer | HIGH |
-| 3 | Deck guide generator | `build_guide.py` | 270 | ⚠️ Has `gen_guides.py` (397) — compare features | MED |
+| 1 | Pro-insights function | `proInsights()` in build_dashboard.py | ~60 | ❌ Dashboard has card data + events but no auto-derived findings | HIGH |
+| 2 | G1/G3/sweep/comeback stats | matchup_cards fields | — | ❌ Dashboard lacks G1 WR, went_to_3, sweeps, comebacks | HIGH |
+| 3 | Sideboard guide section | `sbLines()` in dashboard | — | ❌ No SB swap display in matchup detail | MED |
 | 4 | Bool-flag sideboard | `sideboard_manager.py` | 158 | ❌ Different SB approach | MED |
 | 5 | Full combat sim | `combat_manager.py` | 334 | ❌ Simplified combat | LOW |
 | 6 | 5-ordering turn planner | `turn_planner.py` | 1113 | ❌ Single ordering | LOW |
@@ -54,9 +54,10 @@ Keep these portable — no project-specific imports.
 | 8 | Continuous effects | `continuous_effects.py` | 379 | ❌ No layer system | LOW |
 
 ### Adoption notes
-- **#1 proInsights():** 5 auto-derived findings per matchup (G1→match swing, sweep asymmetry, speed gap, removal blind spots, zero comebacks). Inject via post-processing — no ENGINE string edits.
-- **#2 Replay viewer:** Modern's `build_replay.py` produces standalone HTML with SVG life chart, collapsible turns, keyboard nav. Legacy's `game_replay.py` outputs text. Port the HTML builder.
-- **#3 Deck guides:** Compare Modern's `build_guide.py` (Stars of Sim, G1→match swing, danger cards, tiered matchup spread) vs Legacy's `gen_guides.py` (7 features). Merge best of both.
+- **Legacy dashboard is already interactive (767K)** — has clickable heatmap, card-level data (finishers, casts, attackers, damage), "What Happens" events (Lock/Hate, Removal, Counters, Pivotal), game plans, deck profiles, and tier system. What it lacks is the `proInsights()` auto-derived findings and Bo3-specific stats (G1 WR, G3 rate, sweeps, comebacks).
+- **Legacy already has HTML replays** — `replay_oops_vs_dimir_flash.html` has dark theme, game tabs, life tracking. Same v2 replayer format as Modern.
+- **#1 proInsights():** Port the 60-line JS function and inject via post-processing in `build_matrix_html.py`. Needs matchup_cards fields (G1 wins, sweeps, comebacks) extracted during sim.
+- **#3 Deck guides:** Legacy's `gen_guides.py` (397 lines) already produces 7-feature guides. Compare with Modern's `build_guide.py` (270 lines) — merge Stars of Sim section and 6 pro-level findings.
 
 ---
 
@@ -91,6 +92,8 @@ Source: {data_file} · Shell: ManusAI · Strategy: Claude · Owner: DJPieter81
 
 1. **Modern:** Adopt `parallel.py` + `hypothesis_testing.py` (cuts matrix time 5×, adds stat rigor)
 2. **Modern:** Adopt `deck_registry.py` (enables user deck additions without code edits)
-3. **Legacy:** Adopt `proInsights()` dashboard function (5 auto-derived findings per cell)
-4. **Legacy:** Adopt `build_replay.py` HTML viewer (currently text-only replays)
-5. **Both:** Keep shared modules (`clock.py`, `bhi.py`, `strategic_logger.py`, `gameplan.py`) portable
+3. **Legacy:** Port `proInsights()` into `build_matrix_html.py` (5 auto-derived findings per cell)
+4. **Legacy:** Extract G1 WR, G3%, sweeps, comebacks during sim — feed into dashboard
+5. **Legacy:** Add sideboard guide section to matchup detail panel
+6. **Both:** Keep shared modules (`clock.py`, `bhi.py`, `strategic_logger.py`, `gameplan.py`) portable
+7. **Both:** Merge deck guide pipelines — Legacy's 7-feature `gen_guides.py` + Modern's Stars/findings `build_guide.py`
