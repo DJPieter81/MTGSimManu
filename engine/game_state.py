@@ -104,6 +104,9 @@ class PlayerState:
     counter_density: float = 0.0    # fraction of deck that is counterspells
     removal_density: float = 0.0    # fraction of deck that is single-target removal
     exile_density: float = 0.0      # fraction that exiles (ignores toughness)
+    # Transient combat-aggression flag: set by board-refill events like Living End
+    # so the next combat phase swings hard. Decremented after combat.
+    aggression_boost_turns: int = 0
 
     @property
     def is_alive(self) -> bool:
@@ -984,6 +987,9 @@ class GameState:
             player.battlefield.append(best_land)
             # Amulet of Vigor and similar untap triggers
             self._apply_untap_on_enter_triggers(best_land, player_idx)
+            # Spelunking / "lands you control enter untapped" static must apply
+            # on the fetchland-crack path too — matches the play_land path.
+            self._apply_lands_enter_untapped(best_land, player_idx)
             # Bounce land ETB (return a land to hand)
             if best_land.template.is_land:
                 from .oracle_resolver import resolve_etb_from_oracle
@@ -1790,6 +1796,14 @@ class GameState:
                 self.log.append(f"T{self.display_turn}: Living End returns "
                                 f"{creature.name} for P{p_idx+1}")
 
+        # Mark the controller's next combat as aggressive. Living End resets the
+        # board in our favour; the AI should swing all-in even with blockers back
+        # because the opponent has no creatures and any incremental damage is
+        # close to lethal. Consumed after the next combat phase.
+        self.players[controller].aggression_boost_turns = max(
+            getattr(self.players[controller], 'aggression_boost_turns', 0), 1
+        )
+
     # ─── REANIMATION ─────────────────────────────────────────────
 
     def reanimate(self, controller: int, target_card: CardInstance,
@@ -2077,7 +2091,11 @@ class GameState:
                     and 'untap it' in w_oracle):
                 untaps += 1
         if untaps > 0:
-            permanent.tapped = False
+            # Each copy of the untap-trigger permanent independently untaps.
+            # Idempotent today (tapped = False after any one), but semantically
+            # correct: N copies fire N triggers.
+            for _ in range(untaps):
+                permanent.tapped = False
             # Find watcher names for logging
             watcher_names = [
                 w.name for w in player.battlefield
@@ -2086,9 +2104,10 @@ class GameState:
                 and 'enters tapped' in (w.template.oracle_text or '').lower()
                 and 'untap it' in (w.template.oracle_text or '').lower()
             ]
+            copies_note = f" (x{untaps})" if untaps > 1 else ""
             self.log.append(
                 f"T{self.display_turn} P{controller+1}: "
-                f"{', '.join(watcher_names)} untaps {permanent.name}"
+                f"{', '.join(watcher_names)} untaps {permanent.name}{copies_note}"
             )
 
     def _apply_lands_enter_untapped(self, land: "CardInstance", controller: int):
@@ -2539,9 +2558,22 @@ class GameState:
     # ─── TRIGGERS ────────────────────────────────────────────────
 
     def trigger_etb(self, card: CardInstance, controller: int):
+        # Elesh Norn / Panharmonicon family: detect any controller-side permanent
+        # whose oracle says "triggers an additional time". Each such permanent
+        # causes ETB-induced triggers to fire one extra time. Generic — no
+        # hardcoding. Excludes the entering card itself (it can double its own
+        # triggers only once it has fully entered, which is fine in this impl).
+        doublers = sum(
+            1 for c in self.players[controller].battlefield
+            if c.instance_id != card.instance_id
+            and 'triggers an additional time' in (c.template.oracle_text or '').lower()
+        )
+        trigger_multiplier = 1 + doublers
+
         for ability in card.template.abilities:
             if ability.ability_type == AbilityType.ETB:
-                self._triggers_queue.append((ability, card, controller))
+                for _ in range(trigger_multiplier):
+                    self._triggers_queue.append((ability, card, controller))
         # Generic "whenever another creature enters" triggers from oracle
         if card.template.is_creature:
             player = self.players[controller]
@@ -2553,7 +2585,9 @@ class GameState:
                     if 'gain' in oracle and 'life' in oracle:
                         import re
                         m = re.search(r'gain\s+(\d+)\s+life', oracle)
-                        self.gain_life(controller, int(m.group(1)) if m else 1, c.name)
+                        gain = int(m.group(1)) if m else 1
+                        for _ in range(trigger_multiplier):
+                            self.gain_life(controller, gain, c.name)
 
         # Generic "whenever this creature or another [Subtype] you control enters"
         # Covers Risen Reef (Elemental) and any future cards with this pattern.
@@ -2580,23 +2614,25 @@ class GameState:
             watcher_subtypes = {s.lower() for s in (watcher.template.subtypes or [])}
             if watcher.instance_id != card.instance_id and required_subtype not in watcher_subtypes:
                 continue
-            # Execute the "look at top card → land to battlefield tapped / else to hand" effect
-            if ('top card' in w_oracle or 'top of your library' in w_oracle) and player.library:
-                top = player.library[0]
-                if top.template.is_land:
-                    player.library.pop(0)
-                    top.zone = 'battlefield'
-                    top.tapped = True
-                    player.battlefield.append(top)
-                    self.log.append(
-                        f"T{self.display_turn} P{controller+1}: "
-                        f"{watcher.name} → {top.name} enters tapped (land)")
-                    self._trigger_landfall(controller)
-                else:
-                    self.draw_cards(controller, 1)
-                    self.log.append(
-                        f"T{self.display_turn} P{controller+1}: "
-                        f"{watcher.name} → draws a card")
+            # Execute the "look at top card → land to battlefield tapped / else to hand" effect.
+            # Elesh Norn family: resolve once per trigger_multiplier.
+            for _ in range(trigger_multiplier):
+                if ('top card' in w_oracle or 'top of your library' in w_oracle) and player.library:
+                    top = player.library[0]
+                    if top.template.is_land:
+                        player.library.pop(0)
+                        top.zone = 'battlefield'
+                        top.tapped = True
+                        player.battlefield.append(top)
+                        self.log.append(
+                            f"T{self.display_turn} P{controller+1}: "
+                            f"{watcher.name} → {top.name} enters tapped (land)")
+                        self._trigger_landfall(controller)
+                    else:
+                        self.draw_cards(controller, 1)
+                        self.log.append(
+                            f"T{self.display_turn} P{controller+1}: "
+                            f"{watcher.name} → draws a card")
 
     def trigger_attack(self, attacker: CardInstance, controller: int):
         """Trigger attack abilities."""
@@ -2649,6 +2685,11 @@ class GameState:
         # Phlage, Ocelot Pride, battle cry, etc. all resolved from oracle text
         from .oracle_resolver import resolve_attack_trigger
         resolve_attack_trigger(self, attacker, controller)
+
+        # Card-specific ATTACK handlers (e.g. Phelia blink-on-attack)
+        EFFECT_REGISTRY.execute(
+            attacker.template.name, EffectTiming.ATTACK, self, attacker, controller
+        )
 
         # Generic attack triggers from ability objects
         for ability in attacker.template.abilities:

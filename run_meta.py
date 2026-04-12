@@ -728,6 +728,12 @@ def run_trace_game(deck1: str, deck2: str, seed: int = 42000) -> str:
         # Run the real decision FIRST — no re-scoring, no RNG divergence
         result = orig_main(self, game, excluded_cards)
 
+        # Phase label so Main1 vs Main2 decision blocks are distinguishable
+        # in the trace output (fixes "duplicate EV trace blocks" P2 audit).
+        phase_obj = getattr(game, 'current_phase', None)
+        phase_label = getattr(phase_obj, 'name', str(phase_obj) if phase_obj else 'Main?')
+        lines.append(f'  [{phase_label}]')
+
         # Read back the state and scored candidates from the decision
         me = game.players[self.player_idx]
         opp = game.players[1 - self.player_idx]
@@ -750,8 +756,12 @@ def run_trace_game(deck1: str, deck2: str, seed: int = 42000) -> str:
             lines.append(f'  Permanents: {bf_other}')
         lines.append(f'  Opp board: {opp_creatures} (life={opp.life})')
 
-        # Display candidates from the actual decision (no re-scoring)
+        # Display candidates from the actual decision (no re-scoring).
+        # Filter "ghost candidates" — cards no longer in hand/battlefield after
+        # a prior spell resolved in the same phase (audit P2 finding).
         candidates = getattr(self, '_last_candidates', [])
+        valid_ids = {c.instance_id for c in me.hand} | {c.instance_id for c in me.battlefield}
+        candidates = [p for p in candidates if p.card.instance_id in valid_ids]
         if candidates:
             lines.append(f'  EV scores:')
             for play in candidates[:6]:
