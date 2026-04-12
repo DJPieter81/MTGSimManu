@@ -222,18 +222,54 @@ def build_deck_res(D):
 
 
 def build_xfilter_arrays(D):
-    """Generate decksFull and decks arrays for cross-filter scatter."""
-    # Exclude Pinnacle Affinity if it has no card data
+    """Generate decksFull, decks, and filtered indices for cross-filter scatter."""
+    # Exclude decks with no card data (e.g. Pinnacle Affinity)
     exclude = set()
     for dc in D.get('deck_cards', []):
         if not dc.get('mvp_casts'):
             exclude.add(dc['deck'])
     
     filtered = [d for d in D['decks'] if d not in exclude]
+    indices = [D['decks'].index(d) for d in filtered]
     fulls = ','.join(f"'{d}'" if "'" not in d else f'"{d}"' for d in filtered)
     shorts = ','.join(f"'{xfilter_name(d)}'" for d in filtered)
     
-    return f"const decksFull=[{fulls}];", f"const decks=[{shorts}];"
+    return f"const decksFull=[{fulls}];", f"const decks=[{shorts}];", filtered, indices
+
+
+def build_heatmap_arrays(D, indices):
+    """Generate wins, archetype, avgTurns arrays for the heatmap, matching filtered deck order."""
+    n = D['matches_per_pair']
+    mc = D.get('matchup_cards', {})
+    filtered_names = [D['decks'][i] for i in indices]
+    
+    # wins[r][c] = win percentage (integer)
+    wins_matrix = []
+    avg_turns_matrix = []
+    for r_idx in indices:
+        win_row = []
+        turn_row = []
+        for c_idx in indices:
+            if r_idx == c_idx:
+                win_row.append(0)
+                turn_row.append(0)
+            else:
+                wp = round(D['wins'][r_idx][c_idx] / n * 100)
+                win_row.append(wp)
+                # avg turns from matchup_cards
+                ki, kj = min(r_idx, c_idx), max(r_idx, c_idx)
+                mc_entry = mc.get(f"{ki},{kj}", {})
+                turn_row.append(round(mc_entry.get('avg_turns', 0)))
+        wins_matrix.append(win_row)
+        avg_turns_matrix.append(turn_row)
+    
+    archetype_list = [ARCH.get(D['decks'][i], 'midrange').lower() for i in indices]
+    
+    wins_js = 'const wins=[' + ','.join('[' + ','.join(str(v) for v in row) + ']' for row in wins_matrix) + '];'
+    arch_js = "const archetype=[" + ','.join(f"'{a}'" for a in archetype_list) + "];"
+    turns_js = 'const avgTurns=[' + ','.join('[' + ','.join(str(v) for v in row) + ']' for row in avg_turns_matrix) + '];'
+    
+    return wins_js, arch_js, turns_js
 
 
 def patch(html, D, overall_grade, radar_data):
@@ -274,10 +310,14 @@ def patch(html, D, overall_grade, radar_data):
     # wrData is embedded differently — find and replace
     html = re.sub(r"const wrData=\[[\d.,]+\];", wr_data, html)
     
-    # 5. Cross-filter arrays
-    xf_full, xf_short = build_xfilter_arrays(D)
+    # 5. Cross-filter arrays + heatmap data (all parallel, must match)
+    xf_full, xf_short, filtered, indices = build_xfilter_arrays(D)
+    wins_js, arch_js, turns_js = build_heatmap_arrays(D, indices)
     html = re.sub(r"const decksFull=\[.*?\];", xf_full, html)
     html = re.sub(r"const decks=\[.*?\];", xf_short, html)
+    html = re.sub(r"const wins=\[.*?\];", wins_js, html)
+    html = re.sub(r"const archetype=\[.*?\];", arch_js, html)
+    html = re.sub(r"const avgTurns=\[.*?\];", turns_js, html)
     
     # 6. Deck resolution
     deck_res = build_deck_res(D)
