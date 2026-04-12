@@ -129,3 +129,38 @@ Three auto-derived data points after the decklist:
 | 7 | Non-Obvious Findings (up to 6) |
 | 8 | G1→Match Swing |
 | 9 | Matchup Spread |
+
+## Card Annotations (auto-derived from oracle text)
+
+`get_card_annotation()` parses oracle text and tags to generate short italic annotations per card:
+
+| Oracle pattern | Annotation |
+|---------------|------------|
+| `//` in name | flips → PW |
+| sacrifice + damage | sac for damage |
+| energy + board_wipe tag | energy sweeper |
+| energy + removal tag | energy removal |
+| energy + creature + etb_value | energy engine |
+| nonbasic lands | shuts greedy mana |
+| choose one / is_modal | modal · flex |
+| escape in oracle | escape recursion |
+| card_advantage + token_maker | draw + tokens |
+| token_maker + creature | token synergy |
+
+## Construction Findings (7 data points)
+
+1. Meta-weighted vs flat WR gap (±pp)
+2. #1 damage source (card, casts, total dmg)
+3. #1 finisher (card, kill count, description)
+4. Hidden token damage (total from all tokens)
+5. Most cast card (total + per-game average)
+6. Best matchup (deck, archetype, WR%)
+7. Worst matchup (deck, archetype, WR%)
+
+## Game Plan Detail
+
+Each phase shows:
+- Phase label (Setup / Develop / Close)
+- Description from gameplans/*.json
+- Card roles: Enablers, Payoffs, Interaction per phase
+- Mulligan keys + always-deploy-early cards
