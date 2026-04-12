@@ -193,10 +193,13 @@ def build_guide(deck_name, D):
     h(f'  <div class="hero-item"><div class="hero-label">Best / Worst</div><div class="hero-val g" style="font-size:18px;padding-top:2px">{best[1]["wr"]}%</div><div class="hero-sub">vs {best[0][:12]} / worst {worst[1]["wr"]}% vs {worst[0][:12]}</div></div>')
     h('</div>')
     
-    # Decklist
+    # Decklist with card-level sim stats
     deck_data = MODERN_DECKS.get(deck_name, {})
     mb = deck_data.get('mainboard', {})
     sb = deck_data.get('sideboard', {})
+    cast_map = {c['card']: c['count'] for c in dc.get('mvp_casts', [])}
+    dmg_map_full = {d['card']: d['count'] for d in dc.get('mvp_damage', [])}
+    fin_map_full = {f['card']: f['count'] for f in dc.get('finishers', [])}
     if mb:
         h('<div class="section-title">Decklist</div>')
         h('<div class="decklist">')
@@ -204,7 +207,15 @@ def build_guide(deck_name, D):
         h('<div class="dl-col">')
         h(f'<h3>Mainboard ({sum(mb.values())})</h3>')
         for card, qty in mb.items():
-            h(f'<div class="dl-row"><span class="dl-qty">{qty}</span><span class="dl-card card-tip" data-card="{esc(card)}">{esc(card)}</span></div>')
+            stats = []
+            casts = cast_map.get(card, 0)
+            dmg = dmg_map_full.get(card, 0)
+            kills = fin_map_full.get(card, 0)
+            if casts: stats.append(f'{casts} casts')
+            if dmg: stats.append(f'{dmg} dmg')
+            if kills: stats.append(f'{kills} kills')
+            stat_str = f'<span style="font-size:9px;color:#aaa;margin-left:4px">{" · ".join(stats)}</span>' if stats else ''
+            h(f'<div class="dl-row"><span class="dl-qty">{qty}</span><span class="dl-card card-tip" data-card="{esc(card)}">{esc(card)}</span>{stat_str}</div>')
         h(f'<div class="dl-total">{sum(mb.values())} cards · {len(mb)} unique</div>')
         h('</div>')
         # Sideboard
@@ -238,6 +249,89 @@ def build_guide(deck_name, D):
         h(f'    <div class="star-desc">{kill_str}</div></div>')
     h('</div>')
     
+    # Game Plan — from gameplans JSON
+    gp_slug = deck_name.lower().replace(' ', '_').replace("'", '').replace('/', '').replace('(', '').replace(')', '')
+    gp_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'decks', 'gameplans', f'{gp_slug}.json')
+    if os.path.exists(gp_path):
+        import json as json2
+        with open(gp_path) as gf: gp = json2.load(gf)
+        goals = gp.get('goals', [])
+        if goals:
+            h('<div class="section-title">Game Plan</div>')
+            h('<div style="display:flex;gap:0;margin:12px 0">')
+            colors = ['#e6f5ee', '#eef5ff', '#fdf5e6']
+            txt_colors = ['#0f6e56', '#185fa5', '#854f0b']
+            labels = ['Setup', 'Develop', 'Close']
+            for i, goal in enumerate(goals[:3]):
+                lbl = labels[i] if i < len(labels) else f'Phase {i+1}'
+                bg = colors[i % len(colors)]
+                tc = txt_colors[i % len(txt_colors)]
+                desc = goal.get('description', goal.get('name', ''))
+                h(f'<div style="flex:1;padding:14px 16px;background:{bg};{"border-radius:8px 0 0 8px" if i==0 else "border-radius:0 8px 8px 0" if i==len(goals[:3])-1 else ""}">')
+                h(f'<div style="font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:{tc};font-weight:700;margin-bottom:4px">{lbl}</div>')
+                h(f'<div style="font-size:12px;color:#333;line-height:1.4">{esc(desc)}</div>')
+                h('</div>')
+            h('</div>')
+
+    # Kill Turn Distribution — SVG bar chart
+    turn_data = []
+    for d, m in sorted(mu.items(), key=lambda x: x[1]['wr'], reverse=True):
+        mc = m['mc']
+        at = mc.get('avg_turns')
+        if at and at != '?':
+            turn_data.append((d[:12], float(at), m['wr']))
+    if turn_data:
+        h('<div class="section-title">Kill Turn Distribution</div>')
+        max_t = max(t for _, t, _ in turn_data)
+        h('<div style="margin:12px 0">')
+        for name, turns, wr in turn_data:
+            pct = turns / max(max_t, 1) * 100
+            c = '#1f7040' if wr >= 55 else '#854f0b' if wr >= 45 else '#b02020'
+            h(f'<div style="display:flex;align-items:center;gap:6px;padding:2px 0;font-size:11px">')
+            h(f'<span style="width:80px;text-align:right;color:#555">{name}</span>')
+            h(f'<div style="flex:1;height:8px;background:#f0f0f0;border-radius:2px;max-width:200px"><div style="width:{pct}%;height:100%;background:{c};border-radius:2px"></div></div>')
+            h(f'<span style="font-family:monospace;font-size:10px;color:{c};width:30px">T{turns:.1f}</span>')
+            h(f'<span style="font-size:9px;color:#aaa">{wr}%</span></div>')
+        h('</div>')
+
+    # Non-Obvious Findings — 6 pro-level insights
+    findings = []
+    # F1: damage-to-kill efficiency paradox
+    if dc.get('finishers') and dc.get('mvp_damage'):
+        top_fin = dc['finishers'][0]
+        top_dmg = [d for d in dc['mvp_damage'] if 'Token' not in d['card']]
+        if top_dmg and top_fin['card'] != top_dmg[0]['card']:
+            findings.append(f'<b>Damage ≠ kills:</b> {top_dmg[0]["card"]} deals the most damage ({top_dmg[0]["count"]}) but {top_fin["card"]} gets the most kills ({top_fin["count"]}). The closer and the damage engine are different cards — don\'t evaluate them the same way.')
+    # F2: closer changes by matchup speed
+    fast_mu = [(d, m) for d, m in mu.items() if m['mc'].get('avg_turns') and float(m['mc']['avg_turns']) <= 6]
+    slow_mu = [(d, m) for d, m in mu.items() if m['mc'].get('avg_turns') and float(m['mc']['avg_turns']) >= 8]
+    if fast_mu and slow_mu and dc.get('finishers') and len(dc['finishers']) >= 2:
+        findings.append(f'<b>Speed shapes your closer:</b> In fast matchups (T≤6) like {fast_mu[0][0][:12]}, your {dc["finishers"][0]["card"].split(",")[0]} closes. In grindy matchups (T≥8) like {slow_mu[0][0][:12]}, {dc["finishers"][1]["card"].split(",")[0]} takes over. Board differently for speed vs grind.')
+    # F3: G1→match swing (biggest)
+    if swings:
+        top_swing = swings[0]
+        direction = "improves" if top_swing[3] > 0 else "drops"
+        findings.append(f'<b>Sideboard asymmetry:</b> vs {top_swing[0]}, G1 WR is {top_swing[1]}% but match WR {direction} to {top_swing[2]}% ({top_swing[3]:+d}pp). {"Your SB plan is strong here." if top_swing[3] > 0 else "Opponent adapts better post-board."}')
+    # F4: structural blind spots
+    if danger_cards:
+        dc_card = danger_cards[0]
+        findings.append(f'<b>Removal blind spot:</b> {dc_card[0]} from {dc_card[2][:15]} deals {dc_card[1]} damage and is likely outside your mainboard removal range. Consider SB answers for this axis.')
+    # F5: hidden damage sources (tokens)
+    token_dmg = [d for d in dc.get('mvp_damage', []) if 'Token' in d['card']]
+    if token_dmg:
+        findings.append(f'<b>Hidden damage engine:</b> {token_dmg[0]["card"]} deals {token_dmg[0]["count"]} total damage — a top source that doesn\'t appear in your decklist. Never board out the cards that produce these tokens.')
+    # F6: weighted gap analysis
+    if abs(gap) >= 1.0:
+        direction = "overperforms" if gap > 0 else "underperforms"
+        findings.append(f'<b>Weighted gap {gap:+.1f}pp:</b> This deck {direction} at top tables vs the field. {"Strong against the meta — T1/T2 opponents suit your game plan." if gap > 0 else "Struggles against popular decks — consider adapting your SB for the T1 field."}')
+    
+    if findings:
+        h('<div class="section-title">Metagame Strategy — Non-Obvious Findings</div>')
+        h('<div style="border-left:3px solid #b8941e;padding:12px 16px;margin:12px 0;background:#fdfbf5;border-radius:0 6px 6px 0">')
+        for i, f_text in enumerate(findings):
+            h(f'<div style="font-size:12px;color:#333;line-height:1.6;margin-bottom:{10 if i < len(findings)-1 else 0}px">{f_text}</div>')
+        h('</div>')
+
     # G1 → Match Swing findings
     if swings:
         h('<div class="section-title">G1 → Match Swing — Sideboard Asymmetry</div>')
