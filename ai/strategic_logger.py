@@ -105,6 +105,10 @@ class StrategicLogger:
             1, (opp.life + my_power - 1) // my_power)
         opp_clock = 999 if opp_power <= 0 else max(
             1, (me.life + opp_power - 1) // opp_power)
+        # Phase label helps separate Main1 and Main2 decision blocks in traces
+        # (fixes the duplicate-EV-trace-block report from the 2026-04-11 audit).
+        phase_obj = getattr(game, 'current_phase', None)
+        phase_label = getattr(phase_obj, 'name', str(phase_obj) if phase_obj else "")
         return {
             "role": role,
             "goal": goal,
@@ -117,6 +121,7 @@ class StrategicLogger:
             "my_creatures": len(me.creatures),
             "opp_creatures": len(opp.creatures),
             "turn": game.turn_number,
+            "phase": phase_label,
         }
 
     # ── Mulligan ──

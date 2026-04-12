@@ -370,6 +370,31 @@ class EVPlayer:
         if 'board_wipe' in tags and snap.opp_creature_count == 0:
             return min(ev, -50.0)
 
+        # ── Blink/flicker hard gate: no legal target means the spell fizzles ──
+        # Engine safely bails (Ephemerate returns early), but AI should never
+        # score a mana-wasting fizzle as positive EV. Detect by oracle pattern
+        # "target creature you control" on an instant/sorcery.
+        oracle_lower_full = (t.oracle_text or '').lower()
+        if ('blink' in tags or 'exile target creature you control' in oracle_lower_full) \
+                and (t.is_instant or t.is_sorcery) \
+                and len(me.creatures) == 0:
+            return min(ev, -50.0)
+
+        # ── Jeskai / blink M1 hold: prefer M2 blink so combat damage applies ──
+        # If we hold a blink instant AND an ETB-value creature, and it is Main1,
+        # slightly penalise the blink so the AI passes M1, swings, and casts in M2.
+        if ('blink' in tags and (t.is_instant or t.is_sorcery)
+                and game is not None
+                and getattr(game, 'current_phase', None) is not None
+                and 'MAIN1' in str(getattr(game, 'current_phase', ''))):
+            etb_creatures = [c for c in me.creatures
+                             if 'etb_value' in getattr(c.template, 'tags', set())]
+            has_attackers = any(not getattr(c, 'summoning_sick', False)
+                                and not getattr(c, 'tapped', False)
+                                for c in me.creatures)
+            if etb_creatures and has_attackers:
+                ev -= 2.0  # wait for M2 so we keep combat damage
+
         # ── Noncreature-only counter dead vs creature-heavy opponents ──
         # Dovin's Veto / Negate can't target creature spells.
         # Gate positive EV when opponent's board is all creatures and hand
@@ -610,7 +635,21 @@ class EVPlayer:
             for s in hand_spells
         )
         has_one_drops = any((s.template.cmc or 0) <= 1 for s in hand_spells)
-        if not land.template.enters_tapped:
+
+        # Amulet of Vigor family: a battlefield permanent with oracle pattern
+        # "whenever a permanent you control enters tapped, untap it" makes
+        # enters-tapped lands behave as untapped for mana-availability. Detection
+        # mirrors engine/game_state.py:_apply_untap_on_enter_triggers so we don't
+        # hardcode card names.
+        has_untap_enabler = any(
+            ('whenever' in (c.template.oracle_text or '').lower()
+             and 'enters tapped' in (c.template.oracle_text or '').lower()
+             and 'untap it' in (c.template.oracle_text or '').lower())
+            for c in me.battlefield
+        )
+
+        effectively_tapped = land.template.enters_tapped and not has_untap_enabler
+        if not effectively_tapped:
             ev += 5.0 if has_castable_spells else 2.0
         else:
             if has_castable_spells:
@@ -618,6 +657,17 @@ class EVPlayer:
                     ev -= 10.0
                 else:
                     ev -= 3.0
+
+        # Amulet + bounce-land mana loop: the bounce land returns a land, which
+        # re-triggers the Amulet untap → net +1 mana/turn. Detect via oracle.
+        if has_untap_enabler:
+            land_oracle = (land.template.oracle_text or '').lower()
+            is_bounce_land = (
+                "return a land you control to its owner's hand" in land_oracle
+                or "return an untapped land you control to its owner's hand" in land_oracle
+            )
+            if is_bounce_land:
+                ev += 4.0
 
         # New colors: enables spells we couldn't cast → direct clock impact
         existing_colors = set()
@@ -837,6 +887,12 @@ class EVPlayer:
             # When opponent is low, attack more aggressively to close the game
             if opp.life <= self.profile.burn_low_life_threshold and self.archetype in ('aggro', 'tempo'):
                 threshold -= self.profile.aggro_closing_threshold_reduction
+
+            # Post-board-refill aggression: Living End just resolved, opponent's
+            # board was wiped, our creatures came back with summoning sickness
+            # gone. Swing with everything to cash in the tempo swing.
+            if getattr(me, 'aggression_boost_turns', 0) > 0:
+                threshold -= 2.0
 
             # Bonus EV for combat damage / attack triggers the planner doesn't model
             trigger_bonus = 0.0

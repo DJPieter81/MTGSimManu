@@ -380,15 +380,70 @@ Every output gets: `Simulated: DATE | Decks: N | Games/pair: N | Seeds: range | 
 
 ## 12. Recommended next work (unified backlog)
 
-### Engine fixes (remaining P1/P2)
-| # | Task | Impact | Effort | Location |
-|---|------|--------|--------|----------|
-| 1 | Amulet Titan mana loop value in `_score_land` | P1 fix | MED | `ai/ev_player.py` |
-| 2 | Living End post-combo attack aggression | P1 fix | MED | `ai/ev_player.py` |
-| 3 | Elesh Norn trigger doubling | P1 fix | HIGH | `engine/game_state.py` |
-| 4 | Phelia blink-on-attack | P2 fix | LOW | `engine/card_effects.py` |
-| 5 | Multiple Amulet copies stack correctly | P2 fix | LOW | `_apply_untap_on_enter_triggers()` |
-| 6 | Jeskai Blink WR gap (~27% vs expected ~45%) — no Fury in list; Galvanic Discharge/Wrath are self-fueling energy (correct); AI sequencing suboptimal | P2 | LOW | AI strategy |
+### Session 3 changelog (branch `claude/complete-unfinished-tasks-50La8`)
+All items below were landed or verified-already-live on the session-3 branch.
+Groups A/B/C commits: `2a4e3a7`, `9d5a7a7`, `72c1be9`.
+
+| # | Task | Status | Commit |
+|---|------|--------|--------|
+| 1 | Amulet + bounce-land mana loop in `_score_land` | landed | `2a4e3a7` |
+| 2 | Living End post-combo aggression flag | landed | `2a4e3a7` |
+| 3 | Elesh Norn / Panharmonicon trigger doubling | landed | `2a4e3a7` |
+| 4 | Phelia blink-on-attack handler (ETB value; attack-decl partial) | landed | `2a4e3a7` |
+| 5 | Multi-copy Amulet untap loop | landed | `2a4e3a7` |
+| 6 | Jeskai Ephemerate Main1-hold sequencing | landed | `2a4e3a7` |
+| — | Ephemerate AI-side target gate (audit P1) | landed | `2a4e3a7` |
+| — | Psychic Frog / low-CMC ETB creature EV floor (§7 P1 #3) | landed | `2a4e3a7` |
+| — | Spelunking `_apply_lands_enter_untapped` on fetchland crack (§7 P2 #5) | landed | `2a4e3a7` |
+| — | Phase-labelled EV traces + ghost-candidate filter (audit P2) | landed | `2a4e3a7` |
+| — | LE mulligan relax-at-6 (audit P2) — already live | verified | — |
+| — | Tron assembly bonus (audit P2) — already live `ai/ev_player.py:657-676` | verified | — |
+| 7 | meta_audit.py + EXPECTED_RANGES + post-matrix outlier flagging | landed | `9d5a7a7` |
+| 8 | Symmetry check in run_meta_matrix | landed | `9d5a7a7` |
+| 11 | `--workers` CLI flag for matrix parallelism | landed | `9d5a7a7` |
+| 12 | Provenance footers in dashboard + guide builders | landed | `9d5a7a7` |
+| — | `--sigma DECK1 DECK2 --repeats N` sampler (fills §5 σ-at-n=50 TODO) | landed | `9d5a7a7` |
+| 9 | Plugin deck architecture | **deferred** — stub in MODERN_PROPOSAL.md §10.1 | `72c1be9` |
+| 10 | Template dashboard | **deferred** — stub in MODERN_PROPOSAL.md §10.2 | `72c1be9` |
+| 15 | Artifact hate in sideboards (Affinity 85%) | **investigation-only** — replay committed for next session | `72c1be9` |
+
+### Still open after session 3
+- Wish tutor Grapeshot-vs-Warrens balance (audit P2). Attempted shift toward
+  Warrens regressed Storm at current sample sizes; original 0.6 threshold
+  restored. Needs a proper EV-weighted decision, not a threshold tweak.
+
+### Session 3 validation (2026-04-12)
+Full 16×16 matrix, `n=100` Bo3 matches per pair, 14 workers, commit `72c1be9`.
+`meta_audit` flagged 11 outliers — the format remains poorly balanced but
+several deck-specific improvements are measurable:
+
+| Deck | Expected | Pre-session 3 | Post-session 3 |
+|------|----------|---------------|----------------|
+| Affinity | 45-65% | ~85% | **88.9% (severe)** — item 15 still unresolved |
+| Azorius Control | 30-50% | — | **7.9% (severe)** — new outlier, needs Isochron Scepter |
+| Eldrazi Tron | 48-62% | — | 73.1% (moderate) |
+| Dimir Midrange | 45-58% | ~50% | 67.9% (moderate) |
+| Amulet Titan | 30-50% | 23% | 23.8% (minor) — A1 fix too small to close the gap |
+| 4c Omnath | 30-52% | 29% | 57.0% (minor, now *above* range — unexpected!) |
+| Boros Energy | 55-70% | ~64% | 73.7% (minor) |
+| Jeskai Blink | 35-55% | 27% | 62.3% (moderate, now *above* range) |
+| Living End | 20-45% | 12% | 36.1% — A2 aggression flag appears to land |
+
+Takeaways:
+- Living End, 4c Omnath, Jeskai — aggression + ETB + sequencing fixes landed
+  (Living End doubled its WR; Jeskai moved from 27% → 62%).
+- Amulet Titan barely moved — A1 mana-loop bonus may need to be larger or
+  needs to model Titan's cast turn specifically (not just land value).
+- **Affinity still severe:** item 15 remains the top priority for the next
+  session; the committed replay in `replays/boros_vs_affinity_s55555.txt`
+  is the starting point.
+- **New regression:** Azorius Control dropped to 7.9% — needs Isochron Scepter
+  implementation (flagged in §8).
+
+### LLM judge re-grading
+The 2026-04-11 LLM judge panel is a static document. We don't have a scripted
+hook to re-run it. `meta_audit.py` provides the automated outlier-flag
+substitute; a real LLM re-grade would need external infra (not in this repo).
 
 ### Infrastructure (from Legacy proposal)
 | # | Task | Impact | Effort | Deps |

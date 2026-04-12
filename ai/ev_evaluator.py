@@ -718,6 +718,16 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
 
     ev = after_value - current_value
 
+    # Low-CMC ETB-value creature floor: prevents the removal-projection from
+    # shoving a 2-CMC creature with tangible on-board value (Psychic Frog,
+    # Orcish Bowmasters, etc.) into deep-negative territory, which made Dimir
+    # pass T2 even when the alternative was doing nothing. Floor at -2.0.
+    t = card.template
+    tags = getattr(t, 'tags', set())
+    if (t.is_creature and (t.cmc or 0) <= 2
+            and ('etb_value' in tags or 'removal' in tags or 'card_advantage' in tags)):
+        ev = max(ev, -2.0)
+
     # Combo chain boost: if this card starts a lethal storm/combo chain,
     # boost EV massively so the AI prioritizes starting the chain
     if game and archetype == "combo":

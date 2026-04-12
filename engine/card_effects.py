@@ -693,6 +693,48 @@ def undying_evil_resolve(game, card, controller, targets=None, item=None):
         best.temp_keywords.add(Keyword.UNDYING)
 
 
+@EFFECT_REGISTRY.register("Phelia, Exuberant Shepherd", EffectTiming.ATTACK,
+                           description="On attack: blink another target permanent you control")
+def phelia_attack(game, card, controller, targets=None, item=None):
+    # Oracle: "Whenever Phelia attacks, exile another target permanent you
+    # control, then return it to the battlefield tapped and attacking."
+    # Primary value is the ETB re-trigger. We do not hook the returned permanent
+    # into the CombatManager attacker list (GameState has no reference) — the
+    # extra combat damage is omitted, but the ETB blink value is captured.
+    me = game.players[controller]
+    candidates = [c for c in me.battlefield
+                  if c.instance_id != card.instance_id
+                  and not c.template.is_land]
+    if not candidates:
+        return
+
+    def _blink_value(c):
+        tags = getattr(c.template, 'tags', set())
+        score = 0
+        if 'etb_value' in tags:
+            score += 5
+        oracle = (c.template.oracle_text or "").lower()
+        if 'gain' in oracle and 'life' in oracle:
+            score += 3
+        if 'cantrip' in tags or ('draw' in oracle and 'enter' in oracle):
+            score += 2
+        if 'removal' in tags:
+            if game.players[1 - controller].creatures:
+                score += 4
+            else:
+                score += 1
+        score += (c.template.cmc or 0) * 0.5
+        return score
+
+    target = max(candidates, key=_blink_value)
+    game._blink_permanent(target, controller)
+    # Tap to simulate "returned attacking" — vigilance check moot since it's
+    # already re-entering; omit tap if it just ETB'd as a flash blocker.
+    if target in me.battlefield:
+        target.tapped = True
+        target.attacking = True
+
+
 # ═══════════════════════════════════════════════════════════════════
 # Boros Energy creatures
 # ═══════════════════════════════════════════════════════════════════
@@ -964,8 +1006,9 @@ def wish_resolve(game, card, controller, targets=None, item=None):
     estimated_storm = current_storm + 1 + min(total_fuel, 8)
 
     # Grapeshot is the PRIMARY plan — it's an instant kill, no waiting a turn.
-    # Only fall back to Empty the Warrens when Grapeshot can't get close.
-    # "Close" means storm covers 60%+ of opponent's life.
+    # Only fall back to Empty the Warrens when Grapeshot really can't get close.
+    # Tuned empirically: Empty's summoning-sick tokens need to survive a turn,
+    # which Storm often can't count on, so we keep a fairly wide Grapeshot band.
     grapeshot_damage = estimated_storm  # 1 damage per copy
     if grapeshot_damage >= opp_life:
         # Lethal! Always Grapeshot.
@@ -975,7 +1018,7 @@ def wish_resolve(game, card, controller, targets=None, item=None):
         # Ral/tokens finish next turn). Better than tokens that might get blocked.
         finisher_priority = ["Grapeshot", "Empty the Warrens", "Galvanic Relay"]
     else:
-        # Not close — Empty creates a board that threatens lethal next turn
+        # Not close — Empty creates a board that threatens lethal next turn.
         finisher_priority = ["Empty the Warrens", "Grapeshot", "Galvanic Relay"]
 
     # Search sideboard first (real Wish behavior)

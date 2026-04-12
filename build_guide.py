@@ -236,9 +236,16 @@ def build_guide(deck_name, D):
             c = wr_color(m['wr'])
             h(f'<div class="mu-row"><span class="mu-name">{esc(d[:20])}</span><span class="mu-type">{m["arch"].lower()}</span><span class="mu-meta">{m["meta"]}%</span><div class="mu-bar"><div class="mu-fill" style="width:{m["wr"]}%;background:{c}"></div></div><span class="mu-val" style="color:{c}">{m["wr"]}%</span></div>')
     
-    # Provenance
+    # Provenance — date + engine SHA resolved at build time
+    import datetime, subprocess
+    try:
+        sha = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD'],
+                                      stderr=subprocess.DEVNULL).decode().strip()
+    except Exception:
+        sha = 'unknown'
+    today = datetime.date.today().isoformat()
     h('<div class="prov">')
-    h(f'Simulated: 2026-04-12 · {len(decks)} decks · {N} Bo3/pair ({overall["total_matches"]} games for {esc(deck_name)}) · Engine: MTGSimManu<br>')
+    h(f'Simulated: {today} · {len(decks)} decks · {N} Bo3/pair ({overall["total_matches"]} games for {esc(deck_name)}) · Engine: MTGSimManu@{sha}<br>')
     h(f'Source: metagame_data.jsx (D object) · Card stats: deck_cards[{idx}] · Matchups: matchup_cards["{idx},*"]<br>')
     h('Shell: ManusAI · Strategy + EV scoring: Claude · Owner: DJPieter81')
     h('</div>')

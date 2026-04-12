@@ -114,9 +114,38 @@ function proInsights(p, i, j) {
         "h += proInsights(p, i, j);\n    if (p.insight) h += `<div class=\"insight-box\""
     )
 
+    # Provenance footer — injected before </body>. Captures the session's
+    # sim parameters so anyone loading the HTML can trace its origin.
+    html = html.replace('</body>', _provenance_footer(D) + '\n</body>')
+
     with open(out_path, 'w') as f:
         f.write(html)
     print(f"Built: {out_path} ({len(html):,} chars)")
+
+
+def _provenance_footer(D: dict) -> str:
+    """Small footer block listing date, deck count, games/pair, engine SHA."""
+    import datetime, subprocess
+    try:
+        sha = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD'],
+                                      stderr=subprocess.DEVNULL).decode().strip()
+    except Exception:
+        sha = 'unknown'
+    date = datetime.date.today().isoformat()
+    n_decks = len(D.get('decks', []))
+    n_games = D.get('matches_per_pair', '?')
+    seed_range = D.get('seed_range', '')
+    return (
+        f'<footer style="margin:24px 12px 18px;padding:10px 14px;'
+        f'background:var(--bg2);border-top:1px solid #ffffff08;'
+        f'font-family:\'JetBrains Mono\',monospace;font-size:10px;'
+        f'color:var(--tx3);border-radius:4px">'
+        f'Simulated: {date} · Decks: {n_decks} · Games/pair: {n_games}'
+        f'{" · Seeds: " + seed_range if seed_range else ""}'
+        f' · Engine: {sha}'
+        f'</footer>'
+    )
+
 
 if __name__ == '__main__':
     jsx = sys.argv[1] if len(sys.argv) > 1 else 'metagame_data.jsx'

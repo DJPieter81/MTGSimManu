@@ -172,6 +172,9 @@ class CombatManager:
         for p in game.players:
             for c in p.creatures:
                 c.reset_combat()
+            # Consume transient aggression flag after combat (Living End etc.)
+            if getattr(p, 'aggression_boost_turns', 0) > 0:
+                p.aggression_boost_turns -= 1
 
         self._assignments = []
         self._attackers = []
