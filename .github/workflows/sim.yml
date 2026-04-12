@@ -1,0 +1,126 @@
+name: Run Simulation
+on:
+  workflow_dispatch:
+    inputs:
+      run_type:
+        description: 'Run type: matrix, matchup, bo3, field'
+        required: true
+        default: 'matrix'
+        type: choice
+        options: [matrix, matchup, bo3, field]
+      decks:
+        description: 'Deck names (comma-separated for matrix, "deck1,deck2" for matchup/bo3)'
+        required: false
+        default: ''
+      games:
+        description: 'Games per pair'
+        required: false
+        default: '50'
+      seed:
+        description: 'Seed (for bo3/verbose)'
+        required: false
+        default: '55555'
+      bo3_count:
+        description: 'Number of Bo3 matches'
+        required: false
+        default: '1'
+      outputs:
+        description: 'Post-run outputs (comma-separated): dashboard,replays,audit,guide,gitpush'
+        required: false
+        default: 'dashboard'
+      guide_deck:
+        description: 'Deck for guide generation'
+        required: false
+        default: ''
+
+jobs:
+  simulate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Reassemble ModernAtomic.json
+        run: |
+          python3 -c "
+          import json
+          merged = {}
+          for i in range(1, 9):
+              try:
+                  with open(f'ModernAtomic_part{i}.json') as f:
+                      merged.update(json.load(f)['data'])
+              except FileNotFoundError:
+                  break
+          with open('ModernAtomic.json', 'w') as f:
+              json.dump({'meta': {}, 'data': merged}, f)
+          print(f'Loaded {len(merged)} cards')
+          "
+
+      - name: Run simulation
+        run: |
+          TYPE="${{ inputs.run_type }}"
+          DECKS="${{ inputs.decks }}"
+          GAMES="${{ inputs.games }}"
+          SEED="${{ inputs.seed }}"
+          BO3="${{ inputs.bo3_count }}"
+
+          if [ "$TYPE" = "matrix" ]; then
+            if [ -z "$DECKS" ]; then
+              python3 run_meta.py --matrix -n "$GAMES" --save
+            else
+              python3 run_meta.py --matrix $(echo "$DECKS" | tr ',' ' ') -n "$GAMES" --save
+            fi
+          elif [ "$TYPE" = "matchup" ]; then
+            D1=$(echo "$DECKS" | cut -d',' -f1)
+            D2=$(echo "$DECKS" | cut -d',' -f2)
+            python3 run_meta.py --matchup "$D1" "$D2" -n "$GAMES"
+          elif [ "$TYPE" = "bo3" ]; then
+            D1=$(echo "$DECKS" | cut -d',' -f1)
+            D2=$(echo "$DECKS" | cut -d',' -f2)
+            for i in $(seq 1 "$BO3"); do
+              S=$((SEED + (i-1) * 1000))
+              python3 run_meta.py --bo3 "$D1" "$D2" -s "$S"
+            done
+          elif [ "$TYPE" = "field" ]; then
+            D1=$(echo "$DECKS" | cut -d',' -f1)
+            python3 run_meta.py --field "$D1" -n "$GAMES"
+          fi
+
+      - name: Post-run outputs
+        run: |
+          OUTPUTS="${{ inputs.outputs }}"
+
+          if echo "$OUTPUTS" | grep -q "dashboard"; then
+            python3 -c "from build_dashboard import merge_results, build; merge_results('metagame_results.json', 'metagame_14deck.jsx'); build('metagame_14deck.jsx', './modern_meta_matrix_full.html')" || true
+          fi
+
+          if echo "$OUTPUTS" | grep -q "audit"; then
+            python3 meta_audit.py --run || true
+          fi
+
+          # Update run history
+          python3 scan_results.py || true
+
+      - name: Commit and push results
+        if: contains(inputs.outputs, 'gitpush')
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "data: sim run (${{ inputs.run_type }}, ${{ inputs.games }}g) via GitHub Actions"
+          git push
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sim-results
+          path: |
+            metagame_results.json
+            modern_meta_matrix_full.html
+            replays/*.txt
+            replays/*.html
+            run_history.json
+          retention-days: 30
