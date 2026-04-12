@@ -1,0 +1,1239 @@
+Loaded 21760 cards (0 errors)
+======================================================================
+  GAME 1: Domain Zoo (P1) vs Affinity (P2)  —  seed 60104
+  Series: Domain Zoo 0 - 0 Affinity
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Affinity wins → chooses to play first
+║ P1 (on play): Affinity
+║ P2 (on draw): Domain Zoo
+╚═══════════════════════════════════════════════════════
+
+P1 (Domain Zoo) opening hand (3 lands, 4 spells):
+  • Phlage, Titan of Fire's Fury [Creature, CMC 3]
+  • Arena of Glory [Land, CMC 0]
+  • Lightning Bolt [Spell, CMC 1]
+  • Arid Mesa [Land, CMC 0]
+  • Territorial Kavu [Creature, CMC 2]
+  • Mountain [Land, CMC 0]
+  • Leyline Binding [Spell, CMC 6]
+→ P1 KEEPS 7 — has key card(s): Leyline Binding, Territorial Kavu, 3 cheap spells
+
+P2 (Affinity) opening hand (4 lands, 3 spells):
+  • Urza's Saga [Land, CMC 0]
+  • Treasure Vault [Land, CMC 0]
+  • Spire of Industry [Land, CMC 0]
+  • Darksteel Citadel [Land, CMC 0]
+  • Thought Monitor [Creature, CMC 7]
+  • Nettlecyst [Spell, CMC 3]
+  • Springleaf Drum [Spell, CMC 1]
+→ P2 KEEPS 7 — has key card(s): Springleaf Drum, 2 cheap spells
+
+
+╔══ TURN 1 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Domain Zoo 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Spire of Industry
+    → Goal: deploy_engine [engines]
+    [Mana] Tap Spire of Industry→B (paying for Springleaf Drum, 1 mana remaining)
+T1 P2: Cast Springleaf Drum (1)
+    [Priority] P1 passes (no response)
+T1: Resolve Springleaf Drum
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Springleaf Drum
+║   Lands: Spire of Industry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Lightning Bolt
+  [Main 1]
+T1 P1: Play Arid Mesa
+T1 P1: Crack Arid Mesa (pay 1 life) -> Blood Crypt (pay 2 life, untapped, life: 17)
+    → Goal: curve_out
+    [Mana] Tap Blood Crypt→R (paying for Lightning Bolt, 1 mana remaining)
+T1 P1: Cast Lightning Bolt (R)
+    [Priority] P2 passes (no response)
+T1: Resolve Lightning Bolt
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 17  |  Domain Zoo 17
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Springleaf Drum
+║   Lands: Spire of Industry
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Signal Pest
+  [Main 1]
+T2 P2: Play Urza's Saga
+    → Goal: curve_out
+T2 P2: Cast Signal Pest (1)
+    [Priority] P1 passes (no response)
+T2: Resolve Signal Pest
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Urza's Saga→C, Spire of Industry→B (paying for Nettlecyst, 2 mana remaining)
+T2 P2: Cast Nettlecyst (3)
+    [Priority] P1 passes (no response)
+T2: Resolve Nettlecyst
+T2 P2: Create 1x Germ token(s)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 17  |  Affinity 17
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 2
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Blood Crypt
+║ Affinity board:
+║   Creatures: Signal Pest (0/1), Germ Token (4/4)
+║   Other: Springleaf Drum, Nettlecyst
+║   Lands: Spire of Industry [T], Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Flooded Strand
+  [Main 1]
+T2 P1: Play Flooded Strand
+T2 P1: Crack Flooded Strand (pay 1 life) -> Temple Garden (pay 2 life, untapped, life: 14)
+    → Goal: curve_out
+    [Mana] Tap Temple Garden→W, Blood Crypt→B (paying for Leyline Binding, 2 mana remaining)
+T2 P1: Cast Leyline Binding (5W)
+    [Priority] P2 passes (no response)
+T2: Resolve Leyline Binding
+T2: Nettlecyst moved battlefield -> exile (exiled)
+T2 P1: Leyline Binding exiles Nettlecyst
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 17  |  Domain Zoo 14
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Signal Pest (0/1), Germ Token (1/3)
+║   Other: Springleaf Drum
+║   Lands: Spire of Industry, Urza's Saga
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline Binding
+║   Lands: Blood Crypt [T], Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Springleaf Drum
+  [Main 1]
+T3 P2: Play Treasure Vault
+    → Goal: curve_out [enablers]
+    [Mana] Tap Spire of Industry→U, Urza's Saga→C, Treasure Vault→C (paying for Thought Monitor, 3 mana remaining)
+T3 P2: Cast Thought Monitor (6U)
+    [Priority] P1 passes (no response)
+T3: Resolve Thought Monitor
+T3 P2: Thought Monitor ETB: draw 2 cards
+    → Goal: curve_out
+T3 P2: Cast Memnite (0)
+    [Priority] P1 passes (no response)
+T3: Resolve Memnite
+    → Goal: curve_out
+T3 P2: Cast Springleaf Drum (1)
+    [Priority] P1 passes (no response)
+T3: Resolve Springleaf Drum
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Signal Pest, Germ Token
+T3 P2: Signal Pest battle cry — other attackers get +1/+0
+T3 P2: Attack with Signal Pest, Germ Token
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 2 damage dealt → P1 life: 14 → 12
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 12  |  Affinity 17
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline Binding
+║   Lands: Blood Crypt, Temple Garden
+║ Affinity board:
+║   Creatures: Signal Pest (0/1) [tapped], Germ Token (1/7) [tapped], Thought Monitor (2/2), Memnite (1/1)
+║   Other: Springleaf Drum, Springleaf Drum
+║   Lands: Spire of Industry [T], Urza's Saga [T], Treasure Vault [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Territorial Kavu
+  [Main 1]
+T3 P1: Play Mountain
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Temple Garden→W, Mountain→R (paying for Phlage, Titan of Fire's Fury, 3 mana remaining)
+T3 P1: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P2 passes (no response)
+T3: Resolve Phlage, Titan of Fire's Fury
+T3 P1: Phlage: 3 damage to opponent, gain 3 life
+T3 P1: Phlage sacrificed (not escaped)
+    → Goal: curve_out
+    [Mana] Tap Blood Crypt→R (paying for Lightning Bolt, 1 mana remaining)
+T3 P1: Cast Lightning Bolt (R)
+    [Priority] P2 passes (no response)
+T3: Resolve Lightning Bolt
+T3: Thought Monitor dies
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 14  |  Domain Zoo 15
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Signal Pest (0/1), Germ Token (1/6), Memnite (1/1)
+║   Other: Springleaf Drum, Springleaf Drum
+║   Lands: Spire of Industry, Urza's Saga, Treasure Vault
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline Binding
+║   Lands: Blood Crypt [T], Temple Garden [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T4 P2: Create 1x Construct token(s)
+T4 P2: Urza's Saga Ch.II: Create Construct Token
+  [Draw] P2 draws: Ornithopter
+  [Main 1]
+T4 P2: Play Darksteel Citadel
+T4: Construct Token dies
+    → Goal: curve_out
+T4 P2: Cast Ornithopter (0)
+    [Priority] P1 passes (no response)
+T4: Resolve Ornithopter
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Signal Pest, Germ Token, Memnite
+T4 P2: Signal Pest battle cry — other attackers get +1/+0
+T4 P2: Attack with Signal Pest, Germ Token, Memnite
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 4 damage dealt → P1 life: 15 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 11  |  Affinity 14
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 5
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline Binding
+║   Lands: Blood Crypt, Temple Garden, Mountain
+║ Affinity board:
+║   Creatures: Signal Pest (0/1) [tapped], Germ Token (1/8) [tapped], Memnite (1/1) [tapped], Ornithopter (0/2)
+║   Other: Springleaf Drum, Springleaf Drum
+║   Lands: Spire of Industry, Urza's Saga, Treasure Vault, Darksteel Citadel
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Stubborn Denial
+  [Main 1]
+T4 P1: Play Arena of Glory (enters tapped)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Temple Garden→G, Mountain→R (paying for Territorial Kavu, 3 mana remaining)
+T4 P1: Cast Territorial Kavu (RG)
+    [Priority] P2 passes (no response)
+T4: Resolve Territorial Kavu
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 14  |  Domain Zoo 11
+║ Hand: 1 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 2
+║ Affinity board:
+║   Creatures: Signal Pest (0/1), Germ Token (1/8), Memnite (1/1), Ornithopter (0/2)
+║   Other: Springleaf Drum, Springleaf Drum
+║   Lands: Spire of Industry, Urza's Saga, Treasure Vault, Darksteel Citadel
+║ Domain Zoo board:
+║   Creatures: Territorial Kavu (4/4)
+║   Other: Leyline Binding
+║   Lands: Blood Crypt, Temple Garden [T], Mountain [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T5 P2: Create 1x Construct token(s)
+T5 P2: Urza's Saga Ch.III: Create Construct Token
+T5 P2: Urza's Saga tutors Mox Opal
+T5 P2: Sacrifice Urza's Saga (final chapter)
+  [Draw] P2 draws: Spire of Industry
+  [Main 1]
+T5 P2: Play Treasure Vault
+T5: Construct Token dies
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Germ Token
+T5 P2: Attack with Germ Token
+  [Declare Blockers] P1 blocks: 
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 11  |  Affinity 14
+║ Hand: 2 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 5
+║ Domain Zoo board:
+║   Creatures: Territorial Kavu (4/4)
+║   Other: Leyline Binding
+║   Lands: Blood Crypt, Temple Garden, Mountain, Arena of Glory
+║ Affinity board:
+║   Creatures: Signal Pest (0/1), Germ Token (1/10) [tapped], Memnite (1/1), Ornithopter (0/2)
+║   Other: Springleaf Drum, Springleaf Drum, Mox Opal
+║   Lands: Spire of Industry, Treasure Vault, Darksteel Citadel, Treasure Vault
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Doorkeeper Thrull
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Temple Garden→W (paying for Doorkeeper Thrull, 4 mana remaining)
+T5 P1: Cast Doorkeeper Thrull (1W)
+    [Priority] P2 passes (no response)
+T5: Resolve Doorkeeper Thrull
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Territorial Kavu
+T5 P1: Attack with Territorial Kavu
+  [Declare Blockers] P2 blocks: 
+T5: Signal Pest dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 14  |  Domain Zoo 11
+║ Hand: 1 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 5
+║ Affinity board:
+║   Creatures: Germ Token (1/9), Memnite (1/1), Ornithopter (0/2)
+║   Other: Springleaf Drum, Springleaf Drum, Mox Opal
+║   Lands: Spire of Industry, Treasure Vault, Darksteel Citadel, Treasure Vault
+║ Domain Zoo board:
+║   Creatures: Territorial Kavu (4/4) [tapped], Doorkeeper Thrull (1/2)
+║   Other: Leyline Binding
+║   Lands: Blood Crypt, Temple Garden [T], Mountain, Arena of Glory
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Sojourner's Companion
+  [Main 1]
+T6 P2: Play Spire of Industry
+T6 P2: Cycle Sojourner's Companion (pay 2 mana, draw a card)
+    → Goal: curve_out
+    [Mana] Tap Darksteel Citadel→C (paying for Signal Pest, 3 mana remaining)
+T6 P2: Cast Signal Pest (1)
+    [Priority] P1 passes (no response)
+T6: Resolve Signal Pest
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Germ Token, Ornithopter
+T6 P2: Attack with Germ Token, Ornithopter
+  [Declare Blockers] P1 blocks: 
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 11  |  Affinity 14
+║ Hand: 2 cards  |  Opp hand: 0 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 5
+║ Domain Zoo board:
+║   Creatures: Territorial Kavu (4/4), Doorkeeper Thrull (1/2)
+║   Other: Leyline Binding
+║   Lands: Blood Crypt, Temple Garden, Mountain, Arena of Glory
+║ Affinity board:
+║   Creatures: Germ Token (1/10) [tapped], Memnite (1/1), Ornithopter (0/2) [tapped], Signal Pest (0/1)
+║   Other: Springleaf Drum, Springleaf Drum, Mox Opal
+║   Lands: Spire of Industry [T], Treasure Vault [T], Darksteel Citadel [T], Treasure Vault, Spire of Industry
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Thundering Falls
+  [Main 1]
+T6 P1: Play Thundering Falls (enters tapped)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Temple Garden→G, Mountain→R (paying for Territorial Kavu, 4 mana remaining)
+T6 P1: Cast Territorial Kavu (RG)
+    [Priority] P2 passes (no response)
+T6: Resolve Territorial Kavu
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Territorial Kavu, Doorkeeper Thrull
+T6 P1: Attack with Territorial Kavu, Doorkeeper Thrull
+  [Declare Blockers] P2 blocks: 
+T6: Signal Pest dies
+  [Combat Damage] 1 damage dealt → P2 life: 14 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 13  |  Domain Zoo 11
+║ Hand: 0 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 7
+║ Affinity board:
+║   Creatures: Germ Token (1/9), Memnite (1/1), Ornithopter (0/2)
+║   Other: Springleaf Drum, Springleaf Drum, Mox Opal
+║   Lands: Spire of Industry, Treasure Vault, Darksteel Citadel, Treasure Vault, Spire of Industry
+║ Domain Zoo board:
+║   Creatures: Territorial Kavu (4/4) [tapped], Doorkeeper Thrull (1/2) [tapped], Territorial Kavu (4/4)
+║   Other: Leyline Binding
+║   Lands: Blood Crypt, Temple Garden [T], Mountain [T], Arena of Glory, Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mox Opal
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Germ Token, Ornithopter
+T7 P2: Attack with Germ Token, Ornithopter
+  [Declare Blockers] P1 blocks: 
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 11  |  Affinity 13
+║ Hand: 1 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 5
+║ Domain Zoo board:
+║   Creatures: Territorial Kavu (4/4), Doorkeeper Thrull (1/2), Territorial Kavu (4/4)
+║   Other: Leyline Binding
+║   Lands: Blood Crypt, Temple Garden, Mountain, Arena of Glory, Thundering Falls
+║ Affinity board:
+║   Creatures: Germ Token (1/9) [tapped], Memnite (1/1), Ornithopter (0/2) [tapped]
+║   Other: Springleaf Drum, Springleaf Drum, Mox Opal
+║   Lands: Spire of Industry, Treasure Vault, Darksteel Citadel, Treasure Vault, Spire of Industry
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Territorial Kavu
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Temple Garden→G, Mountain→R (paying for Territorial Kavu, 5 mana remaining)
+T7 P1: Cast Territorial Kavu (RG)
+    [Priority] P2 passes (no response)
+T7: Resolve Territorial Kavu
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Territorial Kavu, Doorkeeper Thrull, Territorial Kavu
+T7 P1: Attack with Territorial Kavu, Doorkeeper Thrull, Territorial Kavu
+  [Declare Blockers] P2 blocks: 
+T7: Memnite dies
+  [Combat Damage] 5 damage dealt → P2 life: 13 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 8  |  Domain Zoo 11
+║ Hand: 1 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 43  |  Graveyard: 8
+║ Affinity board:
+║   Creatures: Germ Token (1/8), Ornithopter (0/2)
+║   Other: Springleaf Drum, Springleaf Drum, Mox Opal
+║   Lands: Spire of Industry, Treasure Vault, Darksteel Citadel, Treasure Vault, Spire of Industry
+║ Domain Zoo board:
+║   Creatures: Territorial Kavu (4/4) [tapped], Doorkeeper Thrull (1/2) [tapped], Territorial Kavu (4/4) [tapped], Territorial Kavu (4/4)
+║   Other: Leyline Binding
+║   Lands: Blood Crypt, Temple Garden [T], Mountain [T], Arena of Glory, Thundering Falls
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Razortide Bridge
+  [Main 1]
+T8 P2: Play Razortide Bridge (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Germ Token, Ornithopter
+T8 P2: Attack with Germ Token, Ornithopter
+  [Declare Blockers] P1 blocks: 
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 11  |  Affinity 8
+║ Hand: 1 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 44  |  Graveyard: 5
+║ Domain Zoo board:
+║   Creatures: Territorial Kavu (4/4), Doorkeeper Thrull (1/2), Territorial Kavu (4/4), Territorial Kavu (4/4)
+║   Other: Leyline Binding
+║   Lands: Blood Crypt, Temple Garden, Mountain, Arena of Glory, Thundering Falls
+║ Affinity board:
+║   Creatures: Germ Token (1/9) [tapped], Ornithopter (0/2) [tapped]
+║   Other: Springleaf Drum, Springleaf Drum, Mox Opal
+║   Lands: Spire of Industry, Treasure Vault, Darksteel Citadel, Treasure Vault, Spire of Industry, Razortide Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Flooded Strand
+  [Main 1]
+T8 P1: Play Flooded Strand
+T8 P1: Crack Flooded Strand -> Steam Vents (tapped, no spells need mana)
+    → Goal: curve_out [payoffs]
+T8 P1: Escape Phlage, Titan of Fire's Fury (exile 5 cards)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Territorial Kavu, Doorkeeper Thrull, Territorial Kavu, Territorial Kavu
+T8 P1: Attack with Territorial Kavu, Doorkeeper Thrull, Territorial Kavu, Territorial Kavu
+  [Declare Blockers] P2 does not block
+P2 loses: life total -5
+  [Combat Damage] 13 damage dealt → P2 life: 8 → -5
+
+>>> Domain Zoo wins Game 1 on turn 8 via damage
+    Final life: Domain Zoo=10  Affinity=-5
+
+======================================================================
+  GAME 2: Affinity (P1) vs Domain Zoo (P2)  —  seed 60105
+  Series: Domain Zoo 1 - 0 Affinity
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Affinity wins → chooses to play first
+║ P1 (on play): Affinity
+║ P2 (on draw): Domain Zoo
+╚═══════════════════════════════════════════════════════
+
+P1 (Affinity) opening hand (3 lands, 4 spells):
+  • Signal Pest [Creature, CMC 1]
+  • Mox Opal [Spell, CMC 0]
+  • Memnite [Creature, CMC 0]
+  • Signal Pest [Creature, CMC 1]
+  • Urza's Saga [Land, CMC 0]
+  • Mistvault Bridge [Land, CMC 0]
+  • Darksteel Citadel [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Memnite, Mox Opal, 4 cheap spells
+
+P2 (Domain Zoo) opening hand (3 lands, 4 spells):
+  • Wooded Foothills [Land, CMC 0]
+  • Temple Garden [Land, CMC 0]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • The Legend of Roku // Avatar Roku [Spell, CMC 4]
+  • Wooded Foothills [Land, CMC 0]
+  • Leyline Binding [Spell, CMC 6]
+  • Phlage, Titan of Fire's Fury [Creature, CMC 3]
+→ P2 KEEPS 7 — has key card(s): Leyline Binding, Ragavan, Nimble Pilferer, 2 cheap spells
+
+
+╔══ TURN 1 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Domain Zoo 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Urza's Saga
+    → Goal: deploy_engine [enablers]
+T1 P1: Cast Memnite (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Memnite
+    → Goal: deploy_engine
+T1 P1: Cast Signal Pest (1)
+    [Priority] P2 passes (no response)
+T1: Resolve Signal Pest
+    → Goal: deploy_engine
+T1 P1: Cast Signal Pest (1)
+    [Priority] P2 passes (no response)
+T1: Resolve Signal Pest
+    → Goal: deploy_engine [engines]
+T1 P1: Cast Mox Opal (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Mox Opal
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 2 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: Memnite (1/1), Signal Pest (0/1), Signal Pest (0/1)
+║   Other: Mox Opal
+║   Lands: Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Phlage, Titan of Fire's Fury
+  [Main 1]
+T1 P2: Play Wooded Foothills
+T1 P2: Crack Wooded Foothills (pay 1 life) -> Blood Crypt (pay 2 life, untapped, life: 17)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Blood Crypt→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T1 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T1: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Domain Zoo 17
+║ Hand: 2 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Memnite (1/1), Signal Pest (0/1), Signal Pest (0/1)
+║   Other: Mox Opal
+║   Lands: Urza's Saga
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Spire of Industry
+  [Main 1]
+T2 P1: Play Spire of Industry
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Memnite
+T2 P1: Attack with Memnite
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 1 damage dealt → P2 life: 17 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 16  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 2 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Blood Crypt
+║ Affinity board:
+║   Creatures: Memnite (1/1) [tapped], Signal Pest (0/1), Signal Pest (0/1)
+║   Other: Mox Opal
+║   Lands: Urza's Saga, Spire of Industry
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Leyline of the Guildpact
+  [Main 1]
+T2 P2: Play Temple Garden (tapped, no spells need mana)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T2 P2: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 blocks: 
+T2: Signal Pest dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Domain Zoo 16
+║ Hand: 2 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Memnite (1/1), Signal Pest (0/1)
+║   Other: Mox Opal
+║   Lands: Urza's Saga, Spire of Industry
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped]
+║   Lands: Blood Crypt, Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T3 P1: Create 1x Construct token(s)
+T3 P1: Urza's Saga Ch.II: Create Construct Token
+  [Draw] P1 draws: Island
+  [Main 1]
+T3 P1: Play Darksteel Citadel
+T3: Construct Token dies
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Memnite, Signal Pest
+T3 P1: Signal Pest battle cry — other attackers get +1/+0
+T3 P1: Attack with Memnite, Signal Pest
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 3 damage dealt → P2 life: 16 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 13  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Blood Crypt, Temple Garden
+║ Affinity board:
+║   Creatures: Memnite (1/1) [tapped], Signal Pest (0/1) [tapped]
+║   Other: Mox Opal
+║   Lands: Urza's Saga, Spire of Industry, Darksteel Citadel
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Doorkeeper Thrull
+  [Main 1]
+T3 P2: Play Wooded Foothills
+T3 P2: Crack Wooded Foothills (pay 1 life) -> Steam Vents (pay 2 life, untapped, life: 10)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Temple Garden→W, Blood Crypt→R, Steam Vents→R (paying for Phlage, Titan of Fire's Fury, 3 mana remaining)
+T3 P2: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P1 passes (no response)
+T3: Resolve Phlage, Titan of Fire's Fury
+T3 P2: Phlage: 3 damage to opponent, gain 3 life
+T3 P2: Phlage sacrificed (not escaped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T3 P2: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T3 P2: Create 1x Treasure token(s)
+T3 P2: Ragavan, Nimble Pilferer exiles Frogmite from top of P1's library
+  [Combat Damage] 2 damage dealt → P1 life: 17 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 15  |  Domain Zoo 13
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 2
+║ Affinity board:
+║   Creatures: Memnite (1/1), Signal Pest (0/1)
+║   Other: Mox Opal
+║   Lands: Urza's Saga, Spire of Industry, Darksteel Citadel
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped]
+║   Other: Treasure Token
+║   Lands: Blood Crypt [T], Temple Garden [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T4 P1: Create 1x Construct token(s)
+T4 P1: Urza's Saga Ch.III: Create Construct Token
+T4 P1: Urza's Saga tutors Mox Opal
+T4 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Springleaf Drum
+  [Main 1]
+T4 P1: Play Island
+T4: Construct Token dies
+T4: Mox Opal moved battlefield -> graveyard (SBA 704.5j: legend rule (Mox Opal))
+    → Goal: curve_out
+    [Mana] Tap Darksteel Citadel→C (paying for Springleaf Drum, 3 mana remaining)
+T4 P1: Cast Springleaf Drum (1)
+    [Priority] P2 passes (no response)
+T4: Resolve Springleaf Drum
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Memnite, Signal Pest
+T4 P1: Signal Pest battle cry — other attackers get +1/+0
+T4 P1: Attack with Memnite, Signal Pest
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 3 damage dealt → P2 life: 13 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 10  |  Affinity 15
+║ Hand: 5 cards  |  Opp hand: 1 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Treasure Token
+║   Lands: Blood Crypt, Temple Garden, Steam Vents
+║ Affinity board:
+║   Creatures: Memnite (1/1) [tapped], Signal Pest (0/1) [tapped]
+║   Other: Mox Opal, Springleaf Drum
+║   Lands: Spire of Industry, Darksteel Citadel [T], Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Territorial Kavu
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Temple Garden→W, Blood Crypt→R, Steam Vents→R (paying for Phlage, Titan of Fire's Fury, 3 mana remaining)
+T4 P2: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P1 passes (no response)
+T4: Resolve Phlage, Titan of Fire's Fury
+T4 P2: Phlage: 3 damage to opponent, gain 3 life
+T4 P2: Phlage sacrificed (not escaped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T4 P2: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T4 P2: Create 1x Treasure token(s)
+T4 P2: Ragavan, Nimble Pilferer exiles Frogmite from top of P1's library
+  [Combat Damage] 2 damage dealt → P1 life: 12 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 10  |  Domain Zoo 13
+║ Hand: 1 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 5
+║ Affinity board:
+║   Creatures: Memnite (1/1), Signal Pest (0/1)
+║   Other: Mox Opal, Springleaf Drum
+║   Lands: Spire of Industry, Darksteel Citadel, Island
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped]
+║   Other: Treasure Token, Treasure Token
+║   Lands: Blood Crypt [T], Temple Garden [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Memnite
+  [Main 1]
+    → Goal: curve_out
+T5 P1: Cast Memnite (0)
+    [Priority] P2 passes (no response)
+T5: Resolve Memnite
+T5 P1: Play Mistvault Bridge (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Memnite, Signal Pest
+T5 P1: Signal Pest battle cry — other attackers get +1/+0
+T5 P1: Attack with Memnite, Signal Pest
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 3 damage dealt → P2 life: 13 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 10  |  Affinity 10
+║ Hand: 5 cards  |  Opp hand: 0 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 4
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Treasure Token, Treasure Token
+║   Lands: Blood Crypt, Temple Garden, Steam Vents
+║ Affinity board:
+║   Creatures: Memnite (1/1) [tapped], Signal Pest (0/1) [tapped], Memnite (1/1)
+║   Other: Mox Opal, Springleaf Drum
+║   Lands: Spire of Industry, Darksteel Citadel, Island, Mistvault Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Stubborn Denial
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Temple Garden→W (paying for Leyline Binding, 3 mana remaining)
+T5 P2: Cast Leyline Binding (5W)
+    [Priority] P1 passes (no response)
+T5: Resolve Leyline Binding
+T5: Memnite moved battlefield -> exile (exiled)
+T5 P2: Leyline Binding exiles Memnite
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T5 P2: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 blocks: 
+T5: Memnite dies
+T5: Ragavan, Nimble Pilferer dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 10  |  Domain Zoo 10
+║ Hand: 0 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 6
+║ Affinity board:
+║   Creatures: Signal Pest (0/1)
+║   Other: Mox Opal, Springleaf Drum
+║   Lands: Spire of Industry, Darksteel Citadel, Island, Mistvault Bridge
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Treasure Token, Treasure Token, Leyline Binding
+║   Lands: Blood Crypt, Temple Garden [T], Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mistvault Bridge
+  [Main 1]
+T6 P1: Play Mistvault Bridge (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Signal Pest
+T6 P1: Signal Pest battle cry — other attackers get +1/+0
+T6 P1: Attack with Signal Pest
+  [Declare Blockers] P2 does not block
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 10  |  Affinity 10
+║ Hand: 5 cards  |  Opp hand: 0 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 5
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Treasure Token, Treasure Token, Leyline Binding
+║   Lands: Blood Crypt, Temple Garden, Steam Vents
+║ Affinity board:
+║   Creatures: Signal Pest (0/1) [tapped]
+║   Other: Mox Opal, Springleaf Drum
+║   Lands: Spire of Industry, Darksteel Citadel, Island, Mistvault Bridge, Mistvault Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Lush Portico
+  [Main 1]
+T6 P2: Play Lush Portico (enters tapped)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Temple Garden→W (paying for Doorkeeper Thrull, 3 mana remaining)
+T6 P2: Cast Doorkeeper Thrull (1W)
+    [Priority] P1 passes (no response)
+T6: Resolve Doorkeeper Thrull
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 10  |  Domain Zoo 10
+║ Hand: 0 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 6
+║ Affinity board:
+║   Creatures: Signal Pest (0/1)
+║   Other: Mox Opal, Springleaf Drum
+║   Lands: Spire of Industry, Darksteel Citadel, Island, Mistvault Bridge, Mistvault Bridge
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2)
+║   Other: Treasure Token, Treasure Token, Leyline Binding
+║   Lands: Blood Crypt, Temple Garden [T], Steam Vents, Lush Portico [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Razortide Bridge
+  [Main 1]
+T7 P1: Play Razortide Bridge (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 10  |  Affinity 10
+║ Hand: 4 cards  |  Opp hand: 0 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 45  |  Graveyard: 5
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2)
+║   Other: Treasure Token, Treasure Token, Leyline Binding
+║   Lands: Blood Crypt, Temple Garden, Steam Vents, Lush Portico
+║ Affinity board:
+║   Creatures: Signal Pest (0/1)
+║   Other: Mox Opal, Springleaf Drum
+║   Lands: Spire of Industry, Darksteel Citadel, Island, Mistvault Bridge, Mistvault Bridge, Razortide Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Blood Crypt→R (paying for Ragavan, Nimble Pilferer, 4 mana remaining)
+T7 P2: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P1 passes (no response)
+T7: Resolve Ragavan, Nimble Pilferer
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Steam Vents→R, Temple Garden→G (paying for Territorial Kavu, 3 mana remaining)
+T7 P2: Cast Territorial Kavu (RG)
+    [Priority] P1 passes (no response)
+T7: Resolve Territorial Kavu
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Doorkeeper Thrull, Ragavan, Nimble Pilferer
+T7 P2: Attack with Doorkeeper Thrull, Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 blocks: 
+T7: Signal Pest dies
+  [Combat Damage] 1 damage dealt → P1 life: 10 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+T7: Ragavan, Nimble Pilferer moved battlefield -> hand (Dash return)
+T7: Ragavan, Nimble Pilferer returned to hand (Dash)
+
+╔══ TURN 8 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 9  |  Domain Zoo 10
+║ Hand: 0 cards  |  Opp hand: 4 cards
+║ Lands: 6  |  Opp lands: 4
+║ Library: 44  |  Graveyard: 7
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Springleaf Drum
+║   Lands: Spire of Industry, Darksteel Citadel, Island, Mistvault Bridge, Mistvault Bridge, Razortide Bridge
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2) [tapped], Territorial Kavu (4/4)
+║   Other: Treasure Token, Treasure Token, Leyline Binding
+║   Lands: Blood Crypt [T], Temple Garden [T], Steam Vents [T], Lush Portico
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Sojourner's Companion
+  [Main 1]
+T8 P1: Cycle Sojourner's Companion (pay 2 mana, draw a card)
+    → Goal: curve_out
+T8 P1: Cast Ornithopter (0)
+    [Priority] P2 passes (no response)
+T8: Resolve Ornithopter
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 10  |  Affinity 9
+║ Hand: 4 cards  |  Opp hand: 0 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 44  |  Graveyard: 5
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2), Territorial Kavu (4/4)
+║   Other: Treasure Token, Treasure Token, Leyline Binding
+║   Lands: Blood Crypt, Temple Garden, Steam Vents, Lush Portico
+║ Affinity board:
+║   Creatures: Ornithopter (0/2)
+║   Other: Mox Opal, Springleaf Drum
+║   Lands: Spire of Industry [T], Darksteel Citadel [T], Island, Mistvault Bridge, Mistvault Bridge, Razortide Bridge
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thundering Falls
+  [Main 1]
+T8 P2: Play Thundering Falls (enters tapped)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Blood Crypt→R (paying for Ragavan, Nimble Pilferer, 4 mana remaining)
+T8 P2: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P1 passes (no response)
+T8: Resolve Ragavan, Nimble Pilferer
+    → Goal: curve_out [enablers]
+    [Mana] Tap Temple Garden→G, Steam Vents→R, Lush Portico→G (paying for Leyline of the Guildpact, 3 mana remaining)
+T8 P2: Cast Leyline of the Guildpact (4)
+    [Priority] P1 passes (no response)
+T8: Resolve Leyline of the Guildpact
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Doorkeeper Thrull, Territorial Kavu, Ragavan, Nimble Pilferer
+T8 P2: Attack with Doorkeeper Thrull, Territorial Kavu, Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 blocks: 
+T8 P2: Create 1x Treasure token(s)
+T8 P2: Ragavan, Nimble Pilferer exiles Spire of Industry from top of P1's library
+T8: Ornithopter dies
+  [Combat Damage] 3 damage dealt → P1 life: 9 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+T8: Ragavan, Nimble Pilferer moved battlefield -> hand (Dash return)
+T8: Ragavan, Nimble Pilferer returned to hand (Dash)
+
+╔══ TURN 9 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 6  |  Domain Zoo 10
+║ Hand: 0 cards  |  Opp hand: 3 cards
+║ Lands: 6  |  Opp lands: 5
+║ Library: 41  |  Graveyard: 9
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Springleaf Drum
+║   Lands: Spire of Industry, Darksteel Citadel, Island, Mistvault Bridge, Mistvault Bridge, Razortide Bridge
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2) [tapped], Territorial Kavu (4/4) [tapped]
+║   Other: Treasure Token, Treasure Token, Leyline Binding, Leyline of the Guildpact, Treasure Token
+║   Lands: Blood Crypt [T], Temple Garden [T], Steam Vents [T], Lush Portico [T], Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Engineered Explosives
+  [Main 1]
+    → Goal: curve_out
+T9 P1: Cast Engineered Explosives (6) (X=6)
+    [Priority] P2 passes (no response)
+T9: Resolve Engineered Explosives
+T9 P1: Engineered Explosives enters with 5 charge counters
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 10  |  Affinity 6
+║ Hand: 3 cards  |  Opp hand: 0 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 43  |  Graveyard: 5
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2), Territorial Kavu (4/4)
+║   Other: Treasure Token, Treasure Token, Leyline Binding, Leyline of the Guildpact, Treasure Token
+║   Lands: Blood Crypt, Temple Garden, Steam Vents, Lush Portico, Thundering Falls
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Springleaf Drum, Engineered Explosives
+║   Lands: Spire of Industry [T], Darksteel Citadel [T], Island [T], Mistvault Bridge [T], Mistvault Bridge [T], Razortide Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Steam Vents
+  [Main 1]
+T9 P2: Play Steam Vents (tapped, no spells need mana)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Blood Crypt→R (paying for Ragavan, Nimble Pilferer, 5 mana remaining)
+T9 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T9: Resolve Ragavan, Nimble Pilferer
+    → Goal: curve_out
+    [Mana] Tap Temple Garden→R, Steam Vents→R, Lush Portico→W (paying for The Legend of Roku // Avatar Roku, 4 mana remaining)
+T9 P2: Cast The Legend of Roku // Avatar Roku (2RR)
+    [Priority] P1 passes (no response)
+T9: Resolve The Legend of Roku // Avatar Roku
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Doorkeeper Thrull, Territorial Kavu
+T9 P2: Attack with Doorkeeper Thrull, Territorial Kavu
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 5 damage dealt → P1 life: 6 → 1
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 1  |  Domain Zoo 10
+║ Hand: 0 cards  |  Opp hand: 2 cards
+║ Lands: 6  |  Opp lands: 6
+║ Library: 40  |  Graveyard: 9
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Springleaf Drum, Engineered Explosives
+║   Lands: Spire of Industry, Darksteel Citadel, Island, Mistvault Bridge, Mistvault Bridge, Razortide Bridge
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2) [tapped], Territorial Kavu (4/4) [tapped], Ragavan, Nimble Pilferer (2/1)
+║   Other: Treasure Token, Treasure Token, Leyline Binding, Leyline of the Guildpact, Treasure Token, The Legend of Roku // Avatar Roku
+║   Lands: Blood Crypt [T], Temple Garden [T], Steam Vents [T], Lush Portico [T], Thundering Falls, Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Spire of Industry
+  [Main 1]
+T10 P1: Play Spire of Industry
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 10  |  Affinity 1
+║ Hand: 2 cards  |  Opp hand: 0 cards
+║ Lands: 6  |  Opp lands: 7
+║ Library: 41  |  Graveyard: 5
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2), Territorial Kavu (4/4), Ragavan, Nimble Pilferer (2/1)
+║   Other: Treasure Token, Treasure Token, Leyline Binding, Leyline of the Guildpact, Treasure Token, The Legend of Roku // Avatar Roku
+║   Lands: Blood Crypt, Temple Garden, Steam Vents, Lush Portico, Thundering Falls, Steam Vents
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Springleaf Drum, Engineered Explosives
+║   Lands: Spire of Industry, Darksteel Citadel, Island, Mistvault Bridge, Mistvault Bridge, Razortide Bridge, Spire of Industry
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Phlage, Titan of Fire's Fury
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Blood Crypt→W, Temple Garden→R (paying for Phlage, Titan of Fire's Fury, 6 mana remaining)
+T10 P2: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P1 passes (no response)
+T10: Resolve Phlage, Titan of Fire's Fury
+T10 P2: Phlage: 3 damage to opponent, gain 3 life
+T10 P2: Phlage sacrificed (not escaped)
+
+>>> Domain Zoo wins Game 2 on turn 10 via damage
+    Final life: Affinity=-2  Domain Zoo=13
+
+======================================================================
+  MATCH RESULT: Domain Zoo wins 2-0
+======================================================================
