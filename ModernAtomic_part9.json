@@ -1,0 +1,720 @@
+{
+  "Ral, Monsoon Mage // Ral, Leyline Prodigy": [
+    {
+      "name": "Ral, Monsoon Mage // Ral, Leyline Prodigy",
+      "manaCost": "{U}{R}",
+      "manaValue": 2.0,
+      "convertedManaCost": 2.0,
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Wizard"
+      ],
+      "supertypes": [
+        "Legendary"
+      ],
+      "power": "1",
+      "toughness": "2",
+      "text": "Instant and sorcery spells you cast cost {1} less to cast.\nIf you've cast three or more instant and/or sorcery spells this turn, exile Ral, Monsoon Mage, then return him to the battlefield transformed under his owner's control.",
+      "keywords": [],
+      "colors": [
+        "U",
+        "R"
+      ],
+      "colorIdentity": [
+        "U",
+        "R"
+      ],
+      "type": "Legendary Creature \u2014 Human Wizard",
+      "layout": "transform"
+    }
+  ],
+  "Fable of the Mirror-Breaker // Reflection of Kiki-Jiki": [
+    {
+      "name": "Fable of the Mirror-Breaker // Reflection of Kiki-Jiki",
+      "manaCost": "{2}{R}",
+      "manaValue": 3.0,
+      "convertedManaCost": 3.0,
+      "types": [
+        "Enchantment"
+      ],
+      "subtypes": [
+        "Saga"
+      ],
+      "supertypes": [],
+      "text": "I \u2014 Create a 2/2 red Goblin Shaman creature token with haste.\nII \u2014 You may discard up to two cards. If you do, draw that many cards.\nIII \u2014 Exile this Saga, then return it to the battlefield transformed.",
+      "keywords": [],
+      "colors": [
+        "R"
+      ],
+      "colorIdentity": [
+        "R"
+      ],
+      "type": "Enchantment \u2014 Saga",
+      "layout": "transform"
+    }
+  ],
+  "Kappa Cannoneer": [
+    {
+      "name": "Kappa Cannoneer",
+      "manaCost": "{5}{U}",
+      "manaValue": 6.0,
+      "convertedManaCost": 6.0,
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Turtle",
+        "Warrior"
+      ],
+      "supertypes": [],
+      "power": "4",
+      "toughness": "4",
+      "text": "Improvise\nWard {4}\nWhenever an artifact enters the battlefield under your control, put a +1/+1 counter on Kappa Cannoneer and it can't be blocked this turn.",
+      "keywords": [
+        "Improvise",
+        "Ward"
+      ],
+      "colors": [
+        "U"
+      ],
+      "colorIdentity": [
+        "U"
+      ],
+      "type": "Creature \u2014 Turtle Warrior",
+      "layout": "normal"
+    }
+  ],
+  "Pinnacle Emissary": [
+    {
+      "name": "Pinnacle Emissary",
+      "manaCost": "{3}{R}",
+      "manaValue": 4.0,
+      "convertedManaCost": 4.0,
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Phyrexian",
+        "Wizard"
+      ],
+      "supertypes": [],
+      "power": "3",
+      "toughness": "3",
+      "text": "Warp {1}\nWhenever a nontoken artifact enters the battlefield under your control, create a 1/1 colorless Drone artifact creature token with flying.",
+      "keywords": [],
+      "colors": [
+        "R"
+      ],
+      "colorIdentity": [
+        "R"
+      ],
+      "type": "Creature \u2014 Phyrexian Wizard",
+      "layout": "normal"
+    }
+  ],
+  "Arcbound Ravager": [
+    {
+      "name": "Arcbound Ravager",
+      "manaCost": "{2}",
+      "manaValue": 2.0,
+      "convertedManaCost": 2.0,
+      "types": [
+        "Artifact",
+        "Creature"
+      ],
+      "subtypes": [
+        "Beast"
+      ],
+      "supertypes": [],
+      "power": "0",
+      "toughness": "0",
+      "text": "Sacrifice an artifact: Put a +1/+1 counter on Arcbound Ravager.\nModular 1",
+      "keywords": [
+        "Modular"
+      ],
+      "colors": [],
+      "colorIdentity": [],
+      "type": "Artifact Creature \u2014 Beast",
+      "layout": "normal"
+    }
+  ],
+  "Emry, Lurker of the Loch": [
+    {
+      "name": "Emry, Lurker of the Loch",
+      "manaCost": "{2}{U}",
+      "manaValue": 3.0,
+      "convertedManaCost": 3.0,
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Merfolk",
+        "Wizard"
+      ],
+      "supertypes": [
+        "Legendary"
+      ],
+      "power": "1",
+      "toughness": "2",
+      "text": "This spell costs {1} less to cast for each artifact you control.\nWhen Emry, Lurker of the Loch enters the battlefield, mill four cards.\n{T}: Choose target artifact card in your graveyard. You may cast it this turn.",
+      "keywords": [],
+      "colors": [
+        "U"
+      ],
+      "colorIdentity": [
+        "U"
+      ],
+      "type": "Legendary Creature \u2014 Merfolk Wizard",
+      "layout": "normal"
+    }
+  ],
+  "Sink into Stupor // Soporific Springs": [
+    {
+      "name": "Sink into Stupor // Soporific Springs",
+      "manaCost": "{1}{U}{U}",
+      "manaValue": 3.0,
+      "convertedManaCost": 3.0,
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "text": "Return target nonland permanent to its owner's hand.",
+      "keywords": [],
+      "colors": [
+        "U"
+      ],
+      "colorIdentity": [
+        "U"
+      ],
+      "type": "Instant",
+      "layout": "modal_dfc"
+    }
+  ],
+  "Lavaspur Boots": [
+    {
+      "name": "Lavaspur Boots",
+      "manaCost": "{1}",
+      "manaValue": 1.0,
+      "convertedManaCost": 1.0,
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [
+        "Equipment"
+      ],
+      "supertypes": [],
+      "text": "Equipped creature gets +1/+0 and has haste.\nEquip {1}",
+      "keywords": [
+        "Equip"
+      ],
+      "colors": [],
+      "colorIdentity": [],
+      "type": "Artifact \u2014 Equipment",
+      "layout": "normal"
+    }
+  ],
+  "Tormod's Crypt": [
+    {
+      "name": "Tormod's Crypt",
+      "manaCost": "{0}",
+      "manaValue": 0.0,
+      "convertedManaCost": 0.0,
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "text": "{T}, Sacrifice Tormod's Crypt: Exile all cards from target player's graveyard.",
+      "keywords": [],
+      "colors": [],
+      "colorIdentity": [],
+      "type": "Artifact",
+      "layout": "normal"
+    }
+  ],
+  "Hanweir Battlements // Hanweir, the Writhing Township": [
+    {
+      "name": "Hanweir Battlements // Hanweir, the Writhing Township",
+      "manaCost": "",
+      "manaValue": 0.0,
+      "convertedManaCost": 0.0,
+      "types": [
+        "Land"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "text": "{T}: Add {C}.\n{R}, {T}: Target creature gains haste until end of turn.",
+      "keywords": [],
+      "colors": [],
+      "colorIdentity": [
+        "R"
+      ],
+      "type": "Land",
+      "layout": "meld"
+    }
+  ],
+  "Mox Opal": [
+    {
+      "name": "Mox Opal",
+      "manaCost": "{0}",
+      "manaValue": 0.0,
+      "convertedManaCost": 0.0,
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [],
+      "supertypes": [
+        "Legendary"
+      ],
+      "text": "Metalcraft \u2014 {T}: Add one mana of any color. Activate only if you control three or more artifacts.",
+      "keywords": [],
+      "colors": [],
+      "colorIdentity": [],
+      "type": "Legendary Artifact",
+      "layout": "normal"
+    }
+  ],
+  "Ornithopter": [
+    {
+      "name": "Ornithopter",
+      "manaCost": "{0}",
+      "manaValue": 0.0,
+      "convertedManaCost": 0.0,
+      "types": [
+        "Artifact",
+        "Creature"
+      ],
+      "subtypes": [
+        "Thopter"
+      ],
+      "supertypes": [],
+      "power": "0",
+      "toughness": "2",
+      "text": "Flying",
+      "keywords": [
+        "Flying"
+      ],
+      "colors": [],
+      "colorIdentity": [],
+      "type": "Artifact Creature \u2014 Thopter",
+      "layout": "normal"
+    }
+  ],
+  "Memnite": [
+    {
+      "name": "Memnite",
+      "manaCost": "{0}",
+      "manaValue": 0.0,
+      "convertedManaCost": 0.0,
+      "types": [
+        "Artifact",
+        "Creature"
+      ],
+      "subtypes": [
+        "Construct"
+      ],
+      "supertypes": [],
+      "power": "1",
+      "toughness": "1",
+      "text": "",
+      "keywords": [],
+      "colors": [],
+      "colorIdentity": [],
+      "type": "Artifact Creature \u2014 Construct",
+      "layout": "normal"
+    }
+  ],
+  "Springleaf Drum": [
+    {
+      "name": "Springleaf Drum",
+      "manaCost": "{1}",
+      "manaValue": 1.0,
+      "convertedManaCost": 1.0,
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "text": "{T}, Tap an untapped creature you control: Add one mana of any color.",
+      "keywords": [],
+      "colors": [],
+      "colorIdentity": [],
+      "type": "Artifact",
+      "layout": "normal"
+    }
+  ],
+  "Cranial Plating": [
+    {
+      "name": "Cranial Plating",
+      "manaCost": "{2}",
+      "manaValue": 2.0,
+      "convertedManaCost": 2.0,
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [
+        "Equipment"
+      ],
+      "supertypes": [],
+      "text": "Equipped creature gets +1/+0 for each artifact you control.\n{B}{B}: Attach Cranial Plating to target creature you control.\nEquip {1}",
+      "keywords": [
+        "Equip"
+      ],
+      "colors": [],
+      "colorIdentity": [
+        "B"
+      ],
+      "type": "Artifact \u2014 Equipment",
+      "layout": "normal"
+    }
+  ],
+  "Mishra's Bauble": [
+    {
+      "name": "Mishra's Bauble",
+      "manaCost": "{0}",
+      "manaValue": 0.0,
+      "convertedManaCost": 0.0,
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "text": "{T}, Sacrifice Mishra's Bauble: Look at the top card of target player's library. Draw a card at the beginning of the next turn's upkeep.",
+      "keywords": [],
+      "colors": [],
+      "colorIdentity": [],
+      "type": "Artifact",
+      "layout": "normal"
+    }
+  ],
+  "Darksteel Citadel": [
+    {
+      "name": "Darksteel Citadel",
+      "manaCost": "",
+      "manaValue": 0.0,
+      "convertedManaCost": 0.0,
+      "types": [
+        "Artifact",
+        "Land"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "text": "Indestructible\n{T}: Add {C}.",
+      "keywords": [
+        "Indestructible"
+      ],
+      "colors": [],
+      "colorIdentity": [],
+      "type": "Artifact Land",
+      "layout": "normal"
+    }
+  ],
+  "Silverbluff Bridge": [
+    {
+      "name": "Silverbluff Bridge",
+      "manaCost": "",
+      "manaValue": 0.0,
+      "convertedManaCost": 0.0,
+      "types": [
+        "Artifact",
+        "Land"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "text": "Silverbluff Bridge enters the battlefield tapped.\nIndestructible\n{T}: Add {U} or {R}.",
+      "keywords": [
+        "Indestructible"
+      ],
+      "colors": [],
+      "colorIdentity": [
+        "R",
+        "U"
+      ],
+      "type": "Artifact Land",
+      "layout": "normal"
+    }
+  ],
+  "Spire of Industry": [
+    {
+      "name": "Spire of Industry",
+      "manaCost": "",
+      "manaValue": 0.0,
+      "convertedManaCost": 0.0,
+      "types": [
+        "Land"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "text": "{T}: Add {C}.\n{T}, Pay 1 life: Add one mana of any color. Activate only if you control an artifact.",
+      "keywords": [],
+      "colors": [],
+      "colorIdentity": [],
+      "type": "Land",
+      "layout": "normal"
+    }
+  ],
+  "Metallic Rebuke": [
+    {
+      "name": "Metallic Rebuke",
+      "manaCost": "{2}{U}",
+      "manaValue": 3.0,
+      "convertedManaCost": 3.0,
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "text": "Improvise\nCounter target spell unless its controller pays {3}.",
+      "keywords": [
+        "Improvise"
+      ],
+      "colors": [
+        "U"
+      ],
+      "colorIdentity": [
+        "U"
+      ],
+      "type": "Instant",
+      "layout": "normal"
+    }
+  ],
+  "Spell Pierce": [
+    {
+      "name": "Spell Pierce",
+      "manaCost": "{U}",
+      "manaValue": 1.0,
+      "convertedManaCost": 1.0,
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "text": "Counter target noncreature spell unless its controller pays {2}.",
+      "keywords": [],
+      "colors": [
+        "U"
+      ],
+      "colorIdentity": [
+        "U"
+      ],
+      "type": "Instant",
+      "layout": "normal"
+    }
+  ],
+  "Relic of Progenitus": [
+    {
+      "name": "Relic of Progenitus",
+      "manaCost": "{1}",
+      "manaValue": 1.0,
+      "convertedManaCost": 1.0,
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "text": "{T}: Target player exiles a card from their graveyard.\n{1}, Exile Relic of Progenitus: Exile all graveyards. Draw a card.",
+      "keywords": [],
+      "colors": [],
+      "colorIdentity": [],
+      "type": "Artifact",
+      "layout": "normal"
+    }
+  ],
+  "Ethersworn Canonist": [
+    {
+      "name": "Ethersworn Canonist",
+      "manaCost": "{1}{W}",
+      "manaValue": 2.0,
+      "convertedManaCost": 2.0,
+      "types": [
+        "Artifact",
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Cleric"
+      ],
+      "supertypes": [],
+      "power": "2",
+      "toughness": "2",
+      "text": "Each player who has cast a nonartifact spell this turn can't cast additional nonartifact spells.",
+      "keywords": [],
+      "colors": [
+        "W"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "type": "Artifact Creature \u2014 Human Cleric",
+      "layout": "normal"
+    }
+  ],
+  "Haywire Mite": [
+    {
+      "name": "Haywire Mite",
+      "manaCost": "{1}",
+      "manaValue": 1.0,
+      "convertedManaCost": 1.0,
+      "types": [
+        "Artifact",
+        "Creature"
+      ],
+      "subtypes": [
+        "Insect"
+      ],
+      "supertypes": [],
+      "power": "1",
+      "toughness": "1",
+      "text": "When Haywire Mite dies, you gain 2 life.\n{G}, Sacrifice Haywire Mite: Exile target noncreature artifact or noncreature enchantment.",
+      "keywords": [],
+      "colors": [],
+      "colorIdentity": [
+        "G"
+      ],
+      "type": "Artifact Creature \u2014 Insect",
+      "layout": "normal"
+    }
+  ],
+  "Hurkyl's Recall": [
+    {
+      "name": "Hurkyl's Recall",
+      "manaCost": "{1}{U}",
+      "manaValue": 2.0,
+      "convertedManaCost": 2.0,
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "text": "Return all artifacts target player owns to their hand.",
+      "keywords": [],
+      "colors": [
+        "U"
+      ],
+      "colorIdentity": [
+        "U"
+      ],
+      "type": "Instant",
+      "layout": "normal"
+    }
+  ],
+  "Blood Moon": [
+    {
+      "name": "Blood Moon",
+      "manaCost": "{2}{R}",
+      "manaValue": 3.0,
+      "convertedManaCost": 3.0,
+      "types": [
+        "Enchantment"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "text": "Nonbasic lands are Mountains.",
+      "keywords": [],
+      "colors": [
+        "R"
+      ],
+      "colorIdentity": [
+        "R"
+      ],
+      "type": "Enchantment",
+      "layout": "normal"
+    }
+  ],
+  "Force of Negation": [
+    {
+      "name": "Force of Negation",
+      "manaCost": "{1}{U}{U}",
+      "manaValue": 3.0,
+      "convertedManaCost": 3.0,
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "text": "If it's not your turn, you may exile a blue card from your hand rather than pay this spell's mana cost.\nCounter target noncreature spell.",
+      "keywords": [],
+      "colors": [
+        "U"
+      ],
+      "colorIdentity": [
+        "U"
+      ],
+      "type": "Instant",
+      "layout": "normal"
+    }
+  ],
+  "Torpor Orb": [
+    {
+      "name": "Torpor Orb",
+      "manaCost": "{2}",
+      "manaValue": 2.0,
+      "convertedManaCost": 2.0,
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [],
+      "supertypes": [],
+      "text": "Creatures entering the battlefield don't cause abilities to trigger.",
+      "keywords": [],
+      "colors": [],
+      "colorIdentity": [],
+      "type": "Artifact",
+      "layout": "normal"
+    }
+  ],
+  "Island": [
+    {
+      "name": "Island",
+      "manaCost": "",
+      "manaValue": 0.0,
+      "convertedManaCost": 0.0,
+      "types": [
+        "Land"
+      ],
+      "subtypes": [
+        "Island"
+      ],
+      "supertypes": [
+        "Basic"
+      ],
+      "text": "({T}: Add {U}.)",
+      "keywords": [],
+      "colors": [],
+      "colorIdentity": [
+        "U"
+      ],
+      "type": "Basic Land \u2014 Island",
+      "layout": "normal"
+    }
+  ],
+  "Mountain": [
+    {
+      "name": "Mountain",
+      "manaCost": "",
+      "manaValue": 0.0,
+      "convertedManaCost": 0.0,
+      "types": [
+        "Land"
+      ],
+      "subtypes": [
+        "Mountain"
+      ],
+      "supertypes": [
+        "Basic"
+      ],
+      "text": "({T}: Add {R}.)",
+      "keywords": [],
+      "colors": [],
+      "colorIdentity": [
+        "R"
+      ],
+      "type": "Basic Land \u2014 Mountain",
+      "layout": "normal"
+    }
+  ]
+}
