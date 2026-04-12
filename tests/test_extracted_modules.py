@@ -156,8 +156,14 @@ class TestGameplanLoader:
 
     def test_load_all_gameplans(self):
         from decks.gameplan_loader import load_all_gameplans
+        from decks.modern_meta import METAGAME_SHARES
         plans = load_all_gameplans()
-        assert len(plans) == 15
+        # Registry consistency: one gameplan per deck in METAGAME_SHARES.
+        assert set(plans.keys()) == set(METAGAME_SHARES.keys()), (
+            f"Gameplan drift: "
+            f"gameplans={sorted(plans.keys())}, "
+            f"METAGAME_SHARES={sorted(METAGAME_SHARES.keys())}"
+        )
 
     def test_load_specific_deck(self):
         from decks.gameplan_loader import load_gameplan
