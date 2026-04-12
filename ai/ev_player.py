@@ -346,7 +346,11 @@ class EVPlayer:
             return min(ev, -50.0)
 
         # ── Mana holdback: penalize tapping out when we hold instants ──
-        if p.holdback_applies and (snap.opp_power > 0 or snap.opp_hand_size >= 4):
+        # Trigger holdback when: opp has creatures, OR opp is a spell/combo deck
+        # with hand cards (holdback for counterspells even vs creatureless opponents)
+        opp_has_spells = snap.opp_hand_size >= 3 and snap.opp_power == 0
+        holdback_relevant = snap.opp_power > 0 or snap.opp_hand_size >= 4 or opp_has_spells
+        if p.holdback_applies and holdback_relevant:
             cmc = t.cmc or 0
             has_instant = any(
                 c.template.is_instant and (
@@ -517,7 +521,7 @@ class EVPlayer:
                 mod -= 5.0 / opp_life  # hold pre-chain
             else:
                 # Tutor value = it finds the finisher, enabling storm/opp_life kill
-                mod += (storm + 1) / opp_life * 20.0
+                mod += (storm + 1) / opp_life * 5.0
                 # Hold tutor if we have castable fuel (cast fuel first for more storm)
                 chain_fuel = sum(1 for c in me.hand
                                  if c.instance_id != card.instance_id
@@ -776,23 +780,40 @@ class EVPlayer:
             if opp.life <= self.profile.burn_low_life_threshold and self.archetype in ('aggro', 'tempo'):
                 threshold -= self.profile.aggro_closing_threshold_reduction
 
-            if attack_plan and score_delta > threshold:
+            # Bonus EV for combat damage / attack triggers the planner doesn't model
+            trigger_bonus = 0.0
+            if attack_plan:
+                for vc in attack_plan:
+                    c_oracle = (getattr(vc, 'oracle', None) or '').lower()
+                    if 'combat damage to a player' in c_oracle:
+                        trigger_bonus += 1.5  # Ragavan: Treasure + exile ≈ 1.5 EV
+                    if 'whenever' in c_oracle and 'attacks' in c_oracle and '{e}' in c_oracle:
+                        trigger_bonus += 0.5  # Guide of Souls energy
+
+            if attack_plan and (score_delta + trigger_bonus) > threshold:
                 attack_ids = {vc.instance_id for vc in attack_plan}
                 return [c for c in valid if c.instance_id in attack_ids]
         except Exception:
             pass
 
-        # Fallback: only attack with creatures that won't die to blockers
-        # (evasion or power > max blocker toughness)
+        # Fallback: attack with creatures that won't die to blockers,
+        # or creatures with valuable combat triggers worth the trade
         safe = []
         max_blocker_power = max((b.power or 0 for b in opp_blockers), default=0)
         for c in valid:
+            c_oracle = (c.template.oracle_text or "").lower()
+            has_combat_trigger = 'combat damage to a player' in c_oracle
             if Keyword.FLYING in c.keywords and not any(
                     Keyword.FLYING in b.keywords or Keyword.REACH in b.keywords
                     for b in opp_blockers):
                 safe.append(c)  # unblockable flyer
             elif (c.toughness or 0) > max_blocker_power:
                 safe.append(c)  # survives any single block
+            elif has_combat_trigger and (c.power or 0) > 0:
+                # e.g. Ragavan: attack if our power kills their best blocker (even trade gains trigger)
+                killable = [b for b in opp_blockers if (c.power or 0) >= (b.toughness or 0)]
+                if killable:
+                    safe.append(c)
         return safe if safe else []
 
     def decide_blockers(self, game, attackers) -> Dict[int, List[int]]:
