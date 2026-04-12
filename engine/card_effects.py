@@ -2687,3 +2687,68 @@ def doorkeeper_thrull_etb(game, card, controller, targets=None, item=None):
     game.log.append(
         f"T{game.display_turn} P{controller+1}: "
         f"Doorkeeper Thrull: opponent ETB triggers suppressed")
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Scapeshift — sacrifice lands, search for same number
+# ═══════════════════════════════════════════════════════════════════
+@EFFECT_REGISTRY.register("Scapeshift", EffectTiming.SPELL_RESOLVE,
+                           description="Sacrifice any number of lands, search for that many")
+def scapeshift_resolve(game, card, controller, targets=None, item=None):
+    """Scapeshift: sacrifice N lands → search library for N lands → battlefield tapped.
+
+    With Amulet of Vigor: all enter untapped → massive mana.
+    Key targets: bounce lands (for Amulet untap triggers), utility lands.
+    """
+    player = game.players[controller]
+    my_lands = [c for c in player.battlefield if c.template.is_land]
+
+    # Only sacrifice if we have 6+ lands (need critical mass for payoff)
+    if len(my_lands) < 4:
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
+                        f"Scapeshift: only {len(my_lands)} lands, not enough to sacrifice")
+        return
+
+    # Sacrifice all lands
+    sac_count = len(my_lands)
+    for land in list(my_lands):
+        player.battlefield.remove(land)
+        land.zone = "graveyard"
+        player.graveyard.append(land)
+
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
+                    f"Scapeshift sacrifices {sac_count} lands")
+
+    # Search library for that many lands
+    library_lands = [c for c in player.library if c.template.is_land]
+    # Prioritize: bounce lands > utility lands > basics
+    def land_priority(c):
+        oracle = (c.template.oracle_text or '').lower()
+        if 'return a land you control' in oracle:
+            return 3  # bounce land
+        if len(c.template.produces_mana) >= 2:
+            return 2  # dual land
+        return 1  # basic
+    library_lands.sort(key=land_priority, reverse=True)
+
+    fetched = 0
+    for land in library_lands[:sac_count]:
+        if land not in player.library:
+            continue  # already moved by a trigger (bounce land ETB etc.)
+        player.library.remove(land)
+        land.zone = "battlefield"
+        land.tapped = True  # enters tapped
+        player.battlefield.append(land)
+        # Amulet of Vigor / Spelunking untap trigger
+        game._apply_untap_on_enter_triggers(land, controller)
+        game._apply_lands_enter_untapped(land, controller)
+        # Bounce land ETB
+        from .oracle_resolver import resolve_etb_from_oracle
+        resolve_etb_from_oracle(game, land, controller)
+        # Landfall
+        game._trigger_landfall(controller)
+        fetched += 1
+
+    game.rng.shuffle(player.library)
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
+                    f"Scapeshift fetches {fetched} lands onto battlefield")

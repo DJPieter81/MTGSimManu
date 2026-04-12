@@ -1137,6 +1137,10 @@ class CardDatabase:
             "Scion of Draco": {"creature", "etb_value", "evasion", "threat"},
             "Territorial Kavu": {"creature", "threat", "early_play"},
             "Doorkeeper Thrull": {"creature", "stax", "evasion", "instant_speed", "early_play"},
+            # Amulet Titan
+            "Scapeshift": {"combo", "ramp"},
+            "Amulet of Vigor": {"combo", "ramp", "early_play"},
+            "Spelunking": {"ramp", "cantrip", "combo"},
         }
         if name in TAG_OVERRIDES:
             template.tags.update(TAG_OVERRIDES[name])
