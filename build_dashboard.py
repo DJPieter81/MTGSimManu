@@ -47,6 +47,73 @@ def build(jsx_path='metagame_data.jsx', out_path=None):
             + 'const ARCH = ' + arch_json + ';\n'
             + ENGINE)
 
+    # Inject pro-level strategic insights function
+    PRO_INSIGHTS = """
+function proInsights(p, i, j) {
+  if (!p || !p.avg_turns) return '';
+  let ins = [];
+  const w = wr(i,j), g1 = p.g1_wins[0], delta = Math.round(w - g1);
+  const d1 = decks[i].split(' ')[0], d2 = decks[j].split(' ')[0];
+
+  // G1 vs Match swing
+  if (Math.abs(delta) >= 12) {
+    if (delta > 0) ins.push('<b>'+d1+"'s SB dominates:</b> G1 WR is "+g1+'% but match WR is '+w.toFixed(0)+'% (+'+delta+"pp). "+p.comebacks[0]+' comebacks from behind.');
+    else ins.push('<b>'+d2+' adapts better post-board:</b> '+d1+' has '+g1+'% G1 WR but drops to '+w.toFixed(0)+'% match ('+delta+"pp). Opponent's sideboard plan is more effective.");
+  }
+
+  // Sweep asymmetry
+  var s1 = p.sweeps[0], s2 = p.sweeps[1], g3 = p.went_to_3;
+  if (s1 + s2 > 3 && Math.abs(s1-s2) >= 3) {
+    var sweeper = s1 > s2 ? d1 : d2;
+    ins.push('<b>Polarized:</b> '+sweeper+' sweeps '+Math.max(s1,s2)+'x vs '+Math.min(s1,s2)+'. When '+sweeper+' wins, it is decisive. But '+g3+'% reach G3.');
+  }
+
+  // Speed gap between closers
+  if (p.d1_finishers && p.d1_finishers.length && p.d2_finishers && p.d2_finishers.length) {
+    var f1 = p.d1_finishers[0], f2 = p.d2_finishers[0];
+    if (f1.desc && f2.desc) {
+      var m1 = f1.desc.match(/T([0-9.]+)/), m2 = f2.desc.match(/T([0-9.]+)/);
+      if (m1 && m2) {
+        var t1 = parseFloat(m1[1]), t2 = parseFloat(m2[1]);
+        if (Math.abs(t1-t2) >= 1.5) {
+          var faster = t1 < t2 ? d1 : d2;
+          var fCard = (t1 < t2 ? f1 : f2).card.split(',')[0];
+          ins.push('<b>Speed gap:</b> '+faster+' closes with '+fCard+' (T'+Math.min(t1,t2).toFixed(1)+') vs T'+Math.max(t1,t2).toFixed(1)+'. '+Math.abs(t1-t2).toFixed(1)+' turns difference.');
+        }
+      }
+    }
+  }
+
+  // Damage source blind spot
+  if (w < 45 && p.d2_top_damage && p.d2_top_damage.length) {
+    var killer = p.d2_top_damage[0];
+    ins.push('<b>'+d1+"'s problem:</b> "+killer.card+' deals '+killer.count+' total damage. Likely outside '+d1+"'s removal range.");
+  } else if (w > 75 && p.d1_top_damage && p.d1_top_damage.length) {
+    var killer2 = p.d1_top_damage[0];
+    ins.push('<b>Why '+d1+' dominates:</b> '+killer2.card+' ('+killer2.count+' dmg) goes unanswered by '+d2+'.');
+  }
+
+  // Zero comebacks
+  if (p.comebacks[0] === 0 && p.comebacks[1] === 0 && g3 >= 30) {
+    ins.push('<b>No comebacks:</b> Despite '+g3+'% going to G3, neither side reverse-swept. G1 play/draw advantage is decisive.');
+  }
+
+  if (!ins.length) return '';
+  return '<div style="margin:10px 0;padding:10px 14px;background:var(--bg2);border-left:3px solid var(--acc);border-radius:0 6px 6px 0">' +
+    '<div style="font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:var(--tx3);margin-bottom:6px;font-weight:700">Strategic Insights</div>' +
+    ins.map(function(s){return '<div style="font-size:11px;color:var(--tx2);line-height:1.5;margin-bottom:6px">'+s+'</div>';}).join('') + '</div>';
+}
+"""
+    # Insert proInsights function before showMatchup, and call it in showMatchup
+    html = html.replace(
+        'function showMatchup(i, j) {',
+        PRO_INSIGHTS + '\nfunction showMatchup(i, j) {'
+    )
+    html = html.replace(
+        "if (p.insight) h += `<div class=\"insight-box\"",
+        "h += proInsights(p, i, j);\n    if (p.insight) h += `<div class=\"insight-box\""
+    )
+
     with open(out_path, 'w') as f:
         f.write(html)
     print(f"Built: {out_path} ({len(html):,} chars)")
