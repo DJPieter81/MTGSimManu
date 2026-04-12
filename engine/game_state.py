@@ -750,6 +750,32 @@ class GameState:
         if template.dash_cost is not None and total_mana >= template.dash_cost:
             return True
 
+        # Warp: alternative cost (e.g., Pinnacle Emissary "Warp {1}")
+        # Can cast for {1} if you control an artifact
+        oracle = (template.oracle_text or "").lower()
+        if "warp" in oracle:
+            has_artifact = any(
+                'Artifact' in str(getattr(c.template, 'card_types', []))
+                for c in player.battlefield
+            )
+            if has_artifact and total_mana >= 1:
+                return True
+
+        # Improvise: tap artifacts to help pay (Kappa Cannoneer, Metallic Rebuke)
+        # Each untapped non-land artifact can pay {1} of generic cost
+        if "improvise" in oracle:
+            untapped_artifacts = sum(
+                1 for c in player.battlefield
+                if hasattr(c, 'template')
+                and 'Artifact' in str(getattr(c.template, 'card_types', []))
+                and not c.template.is_land
+                and not getattr(c, 'tapped', False)
+                and c != card
+            )
+            improvise_cmc = max(0, effective_cmc - untapped_artifacts)
+            if total_mana >= improvise_cmc:
+                return True
+
         if total_mana < effective_cmc:
             return False
 
