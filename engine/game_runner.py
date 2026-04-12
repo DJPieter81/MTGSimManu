@@ -494,6 +494,20 @@ class GameRunner:
                             game._rebound_cards.remove(rc)
                             if rc in game.players[active].exile:
                                 game.players[active].exile.remove(rc)
+                            # Gate rebound on valid targets (avoids wasted fizzles)
+                            tags = getattr(rc.template, 'tags', set())
+                            player = game.players[active]
+                            opponent = game.players[1 - active]
+                            skip = False
+                            if 'blink' in tags and not player.creatures:
+                                skip = True  # no creature to blink
+                            elif ('removal' in tags and 'board_wipe' not in tags
+                                  and not opponent.creatures):
+                                skip = True  # no creature to target
+                            if skip:
+                                game.log.append(f"T{game.display_turn} P{active+1}: "
+                                                f"Rebound {rc.name} skipped (no valid target)")
+                                continue
                             game.cast_spell(active, rc, free_cast=True)
                             game.log.append(f"T{game.display_turn} P{active+1}: "
                                             f"Rebound {rc.name}")
