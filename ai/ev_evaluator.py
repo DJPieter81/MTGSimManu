@@ -362,6 +362,28 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
     if 'energy' in tags:
         projected.my_energy += 2  # conservative estimate
 
+    # Prowess bonus: noncreature spells pump prowess creatures
+    # Each prowess trigger = +1 power (or more for Slickshot +2/+0)
+    # This extra combat damage isn't captured by the basic projection
+    if not t.is_creature and game:
+        me = game.players[player_idx]
+        from engine.cards import Keyword as _Kw
+        prowess_bonus = 0
+        for creature in me.creatures:
+            if _Kw.PROWESS in creature.keywords:
+                prowess_bonus += 1
+            else:
+                c_oracle = (creature.template.oracle_text or '').lower()
+                if 'noncreature spell' in c_oracle:
+                    import re
+                    pump = re.search(r'gets?\s+\+(\d+)/\+(\d+)', c_oracle)
+                    if pump:
+                        prowess_bonus += int(pump.group(1))
+        if prowess_bonus > 0:
+            projected.my_power += prowess_bonus
+            # Prowess creatures are typically evasive (flying, haste)
+            projected.my_evasion_power += prowess_bonus
+
     return projected
 
 
