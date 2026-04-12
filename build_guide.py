@@ -68,9 +68,12 @@ def build_guide(deck_name, D):
     meta_pct = ms.get(deck_name, 0)
     tier = 'T1' if meta_pct >= 5 else 'T2' if meta_pct >= 3 else 'Field'
 
-    # Stars: top 2 finishers + top 2 by damage that aren't the same
-    stars_fin = dc['finishers'][:2]
-    stars_dmg = [d for d in dc['mvp_damage'] if d['card'] not in [f['card'] for f in stars_fin]][:2]
+    # Stars: top 2 finishers (no tokens) + top 2 by damage (no tokens, no overlap)
+    stars_fin = [f for f in dc['finishers'] if 'Token' not in f['card'] and 'Germ' not in f['card']][:2]
+    stars_dmg = [d for d in dc['mvp_damage']
+                 if d['card'] not in [f['card'] for f in stars_fin]
+                 and 'Token' not in d['card']
+                 and 'Germ' not in d['card']][:2]
     
     # Sort matchups by meta for spread
     t1 = [(d,m) for d,m in mu.items() if m['meta'] >= 5]
@@ -101,8 +104,10 @@ def build_guide(deck_name, D):
         if m['wr'] >= 55: continue
         mc = m['mc']
         if mc.get('d2_top_damage'):
-            for card in mc['d2_top_damage'][:1]:
-                danger_cards.append((card['card'], card['count'], d))
+            for card in mc['d2_top_damage'][:2]:
+                if 'Token' not in card['card'] and 'Germ' not in card['card']:
+                    danger_cards.append((card['card'], card['count'], d))
+                    break
     
     # F6: weighted gap comparison
     gaps = []
@@ -224,12 +229,13 @@ def build_guide(deck_name, D):
         h(f'    <div class="star-desc">{dmg} total dmg · {f["desc"]}</div></div>')
     for d in stars_dmg[:2]:
         url = 'https://api.scryfall.com/cards/named?fuzzy=' + d['card'].split('//')[0].strip().replace(' ','+') + '&format=image&version=art_crop'
-        kills = fin_map.get(d['card'], '?')
+        kills = fin_map.get(d['card'], 0)
+        kill_str = f'{kills} kills' if kills else 'damage engine'
         h(f'  <div class="star-card"><span class="star-label surprise">Overperformer</span>')
         h(f'    <img src="{url}" alt="{esc(d["card"])}" loading="lazy" style="height:200px;object-fit:cover;width:100%;border-radius:12px">')
         h(f'    <div class="star-name">{esc(d["card"])}</div>')
         h(f'    <div class="star-stat" style="color:#c06010">{d["count"]} dmg</div>')
-        h(f'    <div class="star-desc">{kills} kills · hidden damage engine</div></div>')
+        h(f'    <div class="star-desc">{kill_str}</div></div>')
     h('</div>')
     
     # G1 → Match Swing findings
