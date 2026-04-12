@@ -693,6 +693,52 @@ def undying_evil_resolve(game, card, controller, targets=None, item=None):
         best.temp_keywords.add(Keyword.UNDYING)
 
 
+@EFFECT_REGISTRY.register("Isochron Scepter", EffectTiming.ETB,
+                           description="Imprint: exile an instant with CMC <= 2 from hand")
+def isochron_scepter_etb(game, card, controller, targets=None, item=None):
+    """Imprint clause: pick the best instant with mana value 2 or less from
+    hand and move it to exile attached to the Scepter. Activation (per turn)
+    is handled in game_runner._process_upkeep_activations, which reads the
+    `imprint:<name>` tag we set here.
+    """
+    player = game.players[controller]
+    candidates = [c for c in player.hand
+                  if c.template.is_instant and (c.template.cmc or 0) <= 2]
+    if not candidates:
+        return
+
+    # Priority: Orim's Chant / lock pieces > removal > counter > cantrip.
+    def _imprint_value(c):
+        name = c.template.name
+        tags = getattr(c.template, 'tags', set())
+        oracle = (c.template.oracle_text or '').lower()
+        if name == "Orim's Chant":
+            return 100
+        if 'removal' in tags and 'exile' in oracle:
+            return 60
+        if 'removal' in tags:
+            return 50
+        if 'counterspell' in tags:
+            return 40
+        if 'cantrip' in tags or 'draw' in tags:
+            return 20
+        return 10
+
+    best = max(candidates, key=_imprint_value)
+    player.hand.remove(best)
+    best.zone = "exile"
+    # Mark the imprint link so game_runner knows which card to copy.
+    if not hasattr(card, 'instance_tags') or card.instance_tags is None:
+        card.instance_tags = set()
+    card.instance_tags.add(f"imprint:{best.template.name}")
+    if not hasattr(best, 'instance_tags') or best.instance_tags is None:
+        best.instance_tags = set()
+    best.instance_tags.add("on_scepter")
+    player.exile.append(best)
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
+                    f"Isochron Scepter imprints {best.template.name}")
+
+
 @EFFECT_REGISTRY.register("Phelia, Exuberant Shepherd", EffectTiming.ATTACK,
                            description="On attack: blink another target permanent you control")
 def phelia_attack(game, card, controller, targets=None, item=None):
@@ -890,9 +936,18 @@ def stock_up_resolve(game, card, controller, targets=None, item=None):
                            description="Opponent can't cast spells this turn")
 def orims_chant_resolve(game, card, controller, targets=None, item=None):
     opponent = 1 - controller
-    game.players[opponent].silenced_this_turn = True
-    game.log.append(f"T{game.display_turn} P{controller+1}: "
-                    f"Orim's Chant silences opponent")
+    # If we resolve during our own turn (normal via Scepter), the "this turn"
+    # clause has no bite against the opponent — queue a silence for their
+    # NEXT upkeep instead. If the opponent is active (flash-ins on their
+    # turn), silence now.
+    if game.active_player == controller:
+        game.players[opponent].silenced_next_turn = True
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
+                        f"Orim's Chant queues silence for P{opponent+1}'s next turn")
+    else:
+        game.players[opponent].silenced_this_turn = True
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
+                        f"Orim's Chant silences opponent")
 
 
 @EFFECT_REGISTRY.register("Mutagenic Growth", EffectTiming.SPELL_RESOLVE,

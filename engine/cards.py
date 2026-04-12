@@ -354,10 +354,16 @@ class CardInstance:
             return (self.template.power or 0) + self._get_gy_instants_sorceries()
 
         base = self.template.power or 0
-        # Construct Token and similar: "gets +1/+1 for each artifact you control"
+        # Construct Token and similar: "gets +N/+N for each artifact you control"
+        # NB: must match the bonus-per-artifact pattern specifically. The naive
+        # `'artifact you control' in oracle` match triggered on Affinity reminder
+        # text ("costs {1} less to cast for each artifact you control") and
+        # inflated every Affinity creature's power to the controller's artifact
+        # count. Scope the match to the actual Construct/Plating pattern.
+        import re as _re
         oracle = (self.template.oracle_text or '').lower()
-        if 'artifact you control' in oracle and ('+1/+1' in oracle or 'for each' in oracle):
-            base = self._get_artifact_count()
+        if _re.search(r'\+\d+/\+\d+\s+for\s+each\s+artifact\s+you\s+control', oracle):
+            base = (self.template.power or 0) + self._get_artifact_count()
         # Equipment scaling (Cranial Plating etc.)
         for tag in self.instance_tags:
             if tag.endswith("_equipped"):
@@ -393,9 +399,11 @@ class CardInstance:
             return (self.template.toughness or 0) + self._get_gy_instants_sorceries()
 
         base = self.template.toughness or 0
+        import re as _re
         oracle = (self.template.oracle_text or '').lower()
-        if 'artifact you control' in oracle and ('+1/+1' in oracle or 'for each' in oracle):
-            base = self._get_artifact_count()
+        # Same tightening as _dynamic_base_power — see note above.
+        if _re.search(r'\+\d+/\+\d+\s+for\s+each\s+artifact\s+you\s+control', oracle):
+            base = (self.template.toughness or 0) + self._get_artifact_count()
         if "nettlecyst_equipped" in self.instance_tags:
             base += self._get_artifact_count()
         return base

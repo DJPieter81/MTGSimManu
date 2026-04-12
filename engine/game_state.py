@@ -96,6 +96,7 @@ class PlayerState:
     energy_spent_this_game: int = 0
     library_searches_this_game: int = 0
     silenced_this_turn: bool = False
+    silenced_next_turn: bool = False  # Orim's Chant + Scepter lock
     temp_cost_reduction: int = 0  # temporary "spells cost N less" (Ral PW +1), cleared end of turn
     deck_name: str = ""
     # Effective CMC overrides from gameplan (e.g. domain cost reduction)
@@ -246,6 +247,11 @@ class PlayerState:
         self.damage_dealt_this_turn = 0
         self.cards_drawn_this_turn = 0
         self.silenced_this_turn = False
+        # Consume a pending silence from Orim's Chant cast on the previous
+        # opponent turn (Isochron Scepter lock pattern).
+        if getattr(self, 'silenced_next_turn', False):
+            self.silenced_this_turn = True
+            self.silenced_next_turn = False
         self.temp_cost_reduction = 0
         self._landfall_count_this_turn = 0
 

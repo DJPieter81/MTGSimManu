@@ -660,6 +660,9 @@ class EVPlayer:
 
         # Amulet + bounce-land mana loop: the bounce land returns a land, which
         # re-triggers the Amulet untap → net +1 mana/turn. Detect via oracle.
+        # Value raised from +4 → +8 after session-3 matrix showed Amulet Titan
+        # still at 23.8% (unchanged from pre-fix 23%); the base signal wasn't
+        # loud enough to affect play sequencing.
         if has_untap_enabler:
             land_oracle = (land.template.oracle_text or '').lower()
             is_bounce_land = (
@@ -667,7 +670,21 @@ class EVPlayer:
                 or "return an untapped land you control to its owner's hand" in land_oracle
             )
             if is_bounce_land:
-                ev += 4.0
+                ev += 8.0
+
+        # Amulet Titan cast-turn priority: when Primeval Titan is in hand and
+        # this land brings us to (or past) the 6-mana threshold, rush the land.
+        # Counts effective mana including Amulet doubling on bounce lands.
+        has_titan_in_hand = any(c.template.name == 'Primeval Titan' for c in me.hand)
+        if has_titan_in_hand:
+            effective_mana_after = current_untapped + (1 if not effectively_tapped else 0)
+            # Amulet doubles tapped-land mana: add +1 if we have enabler + tapped land
+            if has_untap_enabler and land.template.enters_tapped:
+                effective_mana_after += 1
+            if effective_mana_after >= 6:
+                ev += 12.0   # enables Titan this turn
+            elif effective_mana_after >= 4:
+                ev += 4.0    # on-curve ramp to Titan next turn
 
         # New colors: enables spells we couldn't cast → direct clock impact
         existing_colors = set()
