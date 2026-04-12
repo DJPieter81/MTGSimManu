@@ -206,6 +206,11 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
 .deck-chip{font-family:var(--font-mono);font-size:11px;padding:6px 14px;border-radius:100px;border:1px solid rgba(0,0,0,.08);background:var(--card);color:var(--ink2);cursor:default;transition:all .25s}
 .deck-chip:hover{border-color:var(--gold);color:var(--ink);box-shadow:0 4px 12px rgba(184,148,30,.1);transform:translateY(-2px)}
 .deck-chip .meta{color:var(--gold);font-weight:600;margin-left:4px}
+.deck-chip.chip-selected{border-color:var(--gold);background:rgba(184,148,30,.08) !important;color:var(--ink);box-shadow:0 0 0 2px var(--gold)}
+.hl-row{box-shadow:inset 0 2px 0 var(--gold),inset 0 -2px 0 var(--gold)}
+.hl-col{box-shadow:inset 2px 0 0 var(--gold),inset -2px 0 0 var(--gold)}
+.hl-row.hl-col{box-shadow:inset 0 0 0 2px var(--gold)}
+.deck-label.hl-label{color:var(--gold) !important;font-weight:700}
 .deck-chip.t1{border-color:rgba(184,148,30,.25);background:var(--gold-bg)}
 .deck-chip.t2{border-color:rgba(24,95,165,.15);background:#eef5ff}
 
@@ -712,24 +717,38 @@ function showLayer(wrap,key){
   det.classList.add('show');
 }
 
-// Charts
+// Charts — Cross-Filter Pattern
 const gold='#b8941e',teal='#0f6e56',amber='#d4850b',red='#a32d2d',blue='#185fa5',purple='#534ab7';
+let selectedDeck=null;
+
+// WR chart labels → full names
+const wrLabels=['Affinity','Boros','Dimir','ETron','Zoo','Jeskai','Prowess','Storm','Omnath'];
+const wrFull=['Affinity','Boros Energy','Dimir Midrange','Eldrazi Tron','Domain Zoo','Jeskai Blink','Izzet Prowess','Ruby Storm','4c Omnath'];
+const wrData=[82,64,58,57,57,50,42,37,29];
+const wrBgDef=['#fde8e8','#e6f5ee','#e6f5ee','#e6f5ee','#e6f5ee','#fdf5e6','#fdf5e6','#fde8e8','#fde8e8'];
+const wrBrDef=[red,teal,teal,teal,teal,amber,amber,red,red];
+
+// Per-deck win resolution (damage%, combo%, timeout%)
+const deckRes={'Affinity':{d:92,c:1,t:7},'Boros Energy':{d:89,c:2,t:9},'Dimir Midrange':{d:88,c:0,t:12},'Eldrazi Tron':{d:85,c:0,t:15},'Domain Zoo':{d:94,c:1,t:5},'Jeskai Blink':{d:82,c:0,t:18},'Izzet Prowess':{d:96,c:0,t:4},'Ruby Storm':{d:60,c:30,t:10},'4c Omnath':{d:75,c:0,t:25},'4/5c Control':{d:70,c:0,t:30},"Goryo's Vengeance":{d:55,c:35,t:10},'Amulet Titan':{d:80,c:10,t:10},'Living End':{d:65,c:25,t:10},'Azorius Control (WST)':{d:60,c:0,t:40},'Azorius Control':{d:55,c:0,t:45}};
+const deckArch={'Affinity':'aggro','Boros Energy':'aggro','Dimir Midrange':'midrange','Eldrazi Tron':'ramp','Domain Zoo':'aggro','Jeskai Blink':'tempo','Izzet Prowess':'aggro','Ruby Storm':'combo','4c Omnath':'midrange'};
+const archMatch={'Aggro vs Aggro':['aggro'],'Aggro vs Mid':['aggro','midrange'],'Aggro vs Combo':['aggro','combo'],'Mid vs Mid':['midrange'],'Mid vs Control':['midrange','control'],'Control mirror':['control']};
+const resDef=[95.2,4.7,0.1];
 
 // WR Chart
-new Chart(document.getElementById('wrChart'),{type:'bar',data:{
-  labels:['Affinity','Boros','Dimir','ETron','Zoo','Jeskai','Prowess','Storm','Omnath'],
-  datasets:[{data:[82,64,58,57,57,50,42,37,29],
-    backgroundColor:['#fde8e8','#e6f5ee','#e6f5ee','#e6f5ee','#e6f5ee','#fdf5e6','#fdf5e6','#fde8e8','#fde8e8'],
-    borderColor:[red,teal,teal,teal,teal,amber,amber,red,red],borderWidth:1.5,borderRadius:6}]
+const wrChart=new Chart(document.getElementById('wrChart'),{type:'bar',data:{
+  labels:wrLabels,
+  datasets:[{data:wrData,backgroundColor:[...wrBgDef],borderColor:[...wrBrDef],borderWidth:1.5,borderRadius:6}]
 },options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},
+  onClick:(e,els)=>{if(els.length)selectDeck(wrFull[els[0].index]);else clearSelection()},
   scales:{x:{max:100,grid:{color:'#e8e4dd'},ticks:{callback:v=>v+'%',font:{family:'JetBrains Mono',size:10}}},
     y:{grid:{display:false},ticks:{font:{family:'DM Sans',size:11}}}}}});
 
 // Resolution chart
-new Chart(document.getElementById('resChart'),{type:'doughnut',data:{
+const resChart=new Chart(document.getElementById('resChart'),{type:'doughnut',data:{
   labels:['Damage','Timeout (T25)','Mill'],
-  datasets:[{data:[95.2,4.7,0.1],backgroundColor:[teal,amber,'#534ab7'],borderWidth:0,borderRadius:4}]
+  datasets:[{data:[...resDef],backgroundColor:[teal,amber,purple],borderWidth:0,borderRadius:4}]
 },options:{responsive:true,maintainAspectRatio:false,cutout:'65%',
+  onClick:(e,els)=>{if(!els.length){clearSelection();return}const key=['d','t','c'][els[0].index];let best='',bestV=0;for(const[d,v] of Object.entries(deckRes)){if(v[key]>bestV){bestV=v[key];best=d}}if(best)selectDeck(best)},
   plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:11},padding:16,usePointStyle:true,pointStyleWidth:8}}}}});
 
 // Grade radar
@@ -741,12 +760,72 @@ new Chart(document.getElementById('gradeChart'),{type:'radar',data:{
   plugins:{legend:{display:false}}}});
 
 // Turn length chart
-new Chart(document.getElementById('turnChart'),{type:'bar',data:{
-  labels:['Aggro vs Aggro','Aggro vs Mid','Aggro vs Combo','Mid vs Mid','Mid vs Control','Control mirror'],
-  datasets:[{data:[8.2,11.5,9.8,14.2,16.8,18.4],backgroundColor:[teal,'#5dcaa5','#9fe1cb',amber,'#ef9f27','#fac775'],borderRadius:6,borderSkipped:false}]
+const turnLabels=['Aggro vs Aggro','Aggro vs Mid','Aggro vs Combo','Mid vs Mid','Mid vs Control','Control mirror'];
+const turnData=[8.2,11.5,9.8,14.2,16.8,18.4];
+const turnBgDef=[teal,'#5dcaa5','#9fe1cb',amber,'#ef9f27','#fac775'];
+const turnChart=new Chart(document.getElementById('turnChart'),{type:'bar',data:{
+  labels:turnLabels,
+  datasets:[{data:turnData,backgroundColor:[...turnBgDef],borderRadius:6,borderSkipped:false}]
 },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+  onClick:(e,els)=>{if(!els.length)clearSelection()},
   scales:{y:{grid:{color:'#e8e4dd'},ticks:{callback:v=>v+'t',font:{family:'JetBrains Mono',size:10}}},
     x:{grid:{display:false},ticks:{font:{family:'DM Sans',size:10},maxRotation:35}}}}});
+
+// Cross-filter: selectDeck drives all views
+function selectDeck(name){
+  selectedDeck=name;
+  const wrIdx=wrFull.indexOf(name);
+  const hmIdx=decksFull.findIndex(d=>d===name||d.startsWith(name.split(' ')[0]));
+  const arch=deckArch[name]||'';
+
+  // 1. WR chart: HIGHLIGHT
+  wrChart.data.datasets[0].borderWidth=wrLabels.map((_,i)=>i===wrIdx?3:1.5);
+  wrChart.data.datasets[0].borderColor=wrLabels.map((_,i)=>i===wrIdx?gold:wrBrDef[i]);
+  wrChart.data.datasets[0].backgroundColor=wrLabels.map((_,i)=>i===wrIdx?'rgba(184,148,30,.2)':wrBgDef[i].replace(/[\d.]+\)$/,'.05)'));
+  wrChart.update();
+
+  // 2. Doughnut: SWAP to deck's win resolution
+  const dr=deckRes[name];
+  if(dr){resChart.data.datasets[0].data=[dr.d,dr.t,dr.c];resChart.options.plugins.title={display:true,text:name,font:{family:'DM Sans',size:12},color:'#b8941e'}}
+  else{resChart.data.datasets[0].data=[...resDef];resChart.options.plugins.title={display:false}}
+  resChart.update();
+
+  // 3. Turn length: HIGHLIGHT matching archetype
+  turnChart.data.datasets[0].backgroundColor=turnLabels.map((at,i)=>{
+    const a=archMatch[at]||[];
+    return a.includes(arch)?turnBgDef[i]:(turnBgDef[i]+'18');
+  });
+  turnChart.update();
+
+  // 4. Heatmap: CSS gold highlight
+  document.querySelectorAll('.hl-row,.hl-col,.hl-label').forEach(el=>{el.classList.remove('hl-row','hl-col','hl-label')});
+  if(hmIdx>=0){
+    const rows=document.querySelectorAll('#heatmap tr');
+    if(rows[hmIdx+1])rows[hmIdx+1].querySelectorAll('td').forEach(td=>td.classList.add('hl-row'));
+    rows.forEach(tr=>{const cells=tr.querySelectorAll('td,th');if(cells[hmIdx+1])cells[hmIdx+1].classList.add('hl-col')});
+    document.querySelectorAll('.deck-label')[hmIdx]?.classList.add('hl-label');
+  }
+
+  // 5. Deck cloud: gold selected
+  document.querySelectorAll('.deck-chip').forEach(ch=>{
+    ch.classList.toggle('chip-selected',ch.textContent.includes(name.split(' ')[0]));
+  });
+}
+
+function clearSelection(){
+  selectedDeck=null;
+  wrChart.data.datasets[0].borderWidth=1.5;
+  wrChart.data.datasets[0].borderColor=[...wrBrDef];
+  wrChart.data.datasets[0].backgroundColor=[...wrBgDef];
+  wrChart.update();
+  resChart.data.datasets[0].data=[...resDef];
+  resChart.options.plugins.title={display:false};
+  resChart.update();
+  turnChart.data.datasets[0].backgroundColor=[...turnBgDef];
+  turnChart.update();
+  document.querySelectorAll('.hl-row,.hl-col,.hl-label').forEach(el=>{el.classList.remove('hl-row','hl-col','hl-label')});
+  document.querySelectorAll('.deck-chip').forEach(ch=>ch.classList.remove('chip-selected'));
+};
 
 // Heatmap — full interactivity
 const decksFull=['4/5c Control','4c Omnath','Affinity','Amulet Titan','Boros Energy','Dimir Midrange','Domain Zoo','Eldrazi Tron',"Goryo's Vengeance",'Izzet Prowess','Jeskai Blink','Living End','Ruby Storm','Azorius WST'];
@@ -832,12 +911,12 @@ function showDeckProfile(i){
   hmDet.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
-// Deck cloud → highlight heatmap row
+// Deck cloud → cross-filter
 document.querySelectorAll('.deck-chip').forEach(chip=>{
   chip.addEventListener('click',()=>{
     const name=chip.textContent.replace(/\d+%/,'').trim();
-    const idx=decksFull.findIndex(d=>d.includes(name.split(' ')[0]));
-    if(idx>=0){document.getElementById('heatmap').scrollIntoView({behavior:'smooth',block:'start'});setTimeout(()=>showDeckProfile(idx),400)}
+    const full=decksFull.find(d=>d.includes(name.split(' ')[0]));
+    if(full)selectDeck(full);
   });
 });
 
