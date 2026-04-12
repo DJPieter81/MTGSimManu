@@ -400,7 +400,26 @@ class EVPlayer:
         from engine.cards import CardType
         if not t.is_creature and not t.is_instant and not t.is_sorcery:
             if CardType.PLANESWALKER in t.card_types:
-                ev += 3.0 + (t.loyalty or 0)
+                # Planeswalkers are sticky card-advantage engines. Loyalty
+                # approximates the number of loyalty activations before they
+                # die — each worth roughly one card's clock impact (draw,
+                # removal, damage, or tokens). Base stickiness bonus reflects
+                # that the opponent must divert resources to kill them.
+                # Without this, the projection-based EV undervalues planeswalkers
+                # (no power/toughness on entry) and decks like 4c Omnath /
+                # Jeskai Blink hold Wrenn & Six and Teferi in hand all game.
+                loyalty = t.loyalty or 3
+                ev += 5.0 + 1.5 * loyalty
+                # Extra bump if oracle text indicates high-impact ability:
+                # draw (card advantage), deal damage (removal/reach), search
+                # library (ramp), or return to hand (tempo).
+                o = (t.oracle_text or '').lower()
+                if 'draw' in o and 'card' in o:
+                    ev += 2.0
+                if 'deal' in o and 'damage' in o:
+                    ev += 2.0
+                if 'search your library' in o:
+                    ev += 2.0
             elif 'cost_reducer' in tags:
                 ev += 4.0
 
