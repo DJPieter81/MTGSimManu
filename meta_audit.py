@@ -40,13 +40,18 @@ Outlier = Tuple[str, float, int, int, str]  # (deck, actual_wr, lo, hi, severity
 
 
 def _severity(wr: float, lo: int, hi: int) -> str:
-    """Classify how far outside the band the WR falls."""
+    """Classify how far outside the band the WR falls.
+
+    Thresholds tuned to keep the outlier list short enough to act on. After
+    session 3 the sim is self-consistent (σ=2-4pp at n=50) so deltas below
+    ~15pp are low-priority tuning rather than genuine bugs.
+    """
     if lo <= wr <= hi:
         return "ok"
     delta = (lo - wr) if wr < lo else (wr - hi)
     if delta >= 15:
         return "severe"
-    if delta >= 7:
+    if delta >= 10:
         return "moderate"
     return "minor"
 

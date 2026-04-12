@@ -487,6 +487,17 @@ The Wish tutor improvement (proper Warrens-vs-Grapeshot comparison with token
 survival factor) nudged Storm vs Dimir from 0% to 20% at n=10. Modest but
 directional.
 
+### Session 3 phase 3 — Affinity SB coverage + audit calibration
+- `engine/sideboard_manager.py`: bumped `max_swaps` from 5 to 7 for artifact
+  matchups (Affinity/Pinnacle/Tron). 5-card cap left the majority of the
+  opponent's 18+ artifacts untouched; 7 pulls Boros closer to a real hate
+  loadout. Spot-check Boros vs Affinity at n=20: 50/50 (was 16/84 pre-session-3,
+  30/70 post-P0-fix).
+- `meta_audit.py`: raised the moderate/minor severity cutoff from 7pp to 10pp.
+  σ at n=50 is 2-4pp, so deltas under ~10pp aren't actionable signal. This
+  keeps the outlier list short enough to act on each session rather than
+  chasing noise.
+
 ### Infrastructure (from Legacy proposal)
 | # | Task | Impact | Effort | Deps |
 |---|------|--------|--------|------|

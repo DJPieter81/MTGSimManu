@@ -115,9 +115,15 @@ def sideboard(mainboard: Dict[str, int], sideboard_cards: Dict[str, int],
 
     board_out_priority.sort(key=lambda x: -x[2])
 
-    # Execute swaps (up to 5 cards)
+    # Execute swaps. Default max 5, but artifact matchups need more coverage:
+    # Affinity runs 18+ artifacts, so 5 hate pieces leaves most untouched.
+    # Raise to 7 when the opponent is an artifact deck so the sideboarded
+    # hate can actually change the matchup. Paired with the cards.py
+    # artifact-scaling fix from session 3.
     swaps = 0
     max_swaps = 5
+    if any(w in opp_lower for w in ["affinity", "pinnacle", "tron"]):
+        max_swaps = 7
     in_idx = 0
     out_idx = 0
 
