@@ -132,6 +132,67 @@ EFFECT_REGISTRY = CardEffectRegistry()
 
 
 # ═══════════════════════════════════════════════════════════════════
+# Threat Scoring — smart targeting for removal/interaction
+# ═══════════════════════════════════════════════════════════════════
+
+def _threat_score(card) -> float:
+    """Score a permanent by actual game threat, not CMC.
+
+    Used by all removal/interaction effects to pick the best target.
+    Higher = more threatening = should be removed first.
+    """
+    t = card.template
+    tags = getattr(t, 'tags', set())
+    oracle = (t.oracle_text or '').lower()
+    score = 0.0
+
+    # Equipment that amplifies damage (Cranial Plating, Nettlecyst)
+    subtypes = getattr(t, 'subtypes', [])
+    is_equipment = 'Equipment' in subtypes or 'equipment' in tags
+    if is_equipment:
+        score += 15.0
+        if 'for each artifact' in oracle or 'artifact you control' in oracle:
+            score += 20.0  # Cranial Plating = top priority
+        if 'for each artifact' in oracle or 'enchantment you control' in oracle:
+            score += 15.0  # Nettlecyst
+
+    # Cost reducers (Ruby Medallion, Ral)
+    if getattr(t, 'is_cost_reducer', False):
+        score += 18.0
+
+    # Token generators / ongoing value engines
+    if 'whenever' in oracle and ('create' in oracle or 'token' in oracle):
+        score += 15.0  # Pinnacle Emissary, Goblin Bombardment, etc.
+
+    # Creatures: score by effective damage output
+    if t.is_creature:
+        power = card.power if hasattr(card, 'power') and card.power else (t.power or 0)
+        score += power * 2.0
+        kws = {kw.value if hasattr(kw, 'value') else str(kw).lower()
+               for kw in getattr(t, 'keywords', set())}
+        if kws & {'flying', 'menace', 'trample'}:
+            score += power * 1.5  # evasion multiplier
+        if 'ward' in oracle:
+            score += 5.0  # hard to remove = more threatening
+        if 'lifelink' in kws:
+            score += 4.0
+
+    # Planeswalkers
+    from engine.cards import CardType
+    if CardType.PLANESWALKER in getattr(t, 'card_types', []):
+        score += 12.0
+
+    # Artifacts generally (mana sources, synergy pieces)
+    if CardType.ARTIFACT in getattr(t, 'card_types', []):
+        score += 2.0
+
+    # CMC as tiebreaker (low weight)
+    score += (t.cmc or 0) * 0.5
+
+    return score
+
+
+# ═══════════════════════════════════════════════════════════════════
 # ETB Effects
 # ═══════════════════════════════════════════════════════════════════
 
@@ -146,7 +207,7 @@ def solitude_etb(game, card, controller, targets=None, item=None):
     if not opp_creatures:
         return  # No valid targets — ETB fizzles
     # Pick the most threatening creature (highest power, then CMC)
-    target = max(opp_creatures, key=lambda c: (c.power or 0, c.template.cmc))
+    target = max(opp_creatures, key=_threat_score)
     life_gain = target.power or 0
     game._exile_permanent(target)
     game.players[opponent].life += life_gain
@@ -236,7 +297,7 @@ def eternal_witness_etb(game, card, controller, targets=None, item=None):
     if player.graveyard:
         nonlands = [c for c in player.graveyard if not c.template.is_land]
         if nonlands:
-            best = max(nonlands, key=lambda c: c.template.cmc)
+            best = max(nonlands, key=_threat_score)
         else:
             best = player.graveyard[0]
         player.graveyard.remove(best)
@@ -632,7 +693,7 @@ def march_otherworldly_light_resolve(game, card, controller, targets=None, item=
                           or CardType.ENCHANTMENT in c.template.card_types)
                      and c.template.cmc <= x_val]
     if exile_targets:
-        target = max(exile_targets, key=lambda c: c.template.cmc)
+        target = max(exile_targets, key=_threat_score)
         game._exile_permanent(target)
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"March of Otherworldly Light exiles {target.name}")
@@ -1204,7 +1265,7 @@ def wear_tear_resolve(game, card, controller, targets=None, item=None):
     artifacts = [c for c in opp.battlefield
                  if CardType.ARTIFACT in c.template.card_types]
     if artifacts:
-        target = max(artifacts, key=lambda c: c.template.cmc)
+        target = max(artifacts, key=_threat_score)
         game._permanent_destroyed(target)
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Wear // Tear destroys {target.name}")
@@ -1214,7 +1275,7 @@ def wear_tear_resolve(game, card, controller, targets=None, item=None):
                     if CardType.ENCHANTMENT in c.template.card_types
                     and not c.template.is_creature]
     if enchantments:
-        target = max(enchantments, key=lambda c: c.template.cmc)
+        target = max(enchantments, key=_threat_score)
         game._permanent_destroyed(target)
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Wear // Tear destroys {target.name}")
@@ -1240,7 +1301,7 @@ def pick_your_poison_resolve(game, card, controller, targets=None, item=None):
 
     if artifacts_enchantments:
         # Sacrifice highest value artifact/enchantment
-        target = max(artifacts_enchantments, key=lambda c: c.template.cmc)
+        target = max(artifacts_enchantments, key=_threat_score)
         game._permanent_destroyed(target)
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Pick Your Poison: opponent sacrifices {target.name}")
@@ -1303,7 +1364,7 @@ def kolaghans_command_resolve(game, card, controller, targets=None, item=None):
     artifacts = [c for c in opp.battlefield
                  if CardType.ARTIFACT in c.template.card_types]
     if artifacts:
-        target = max(artifacts, key=lambda c: c.template.cmc)
+        target = max(artifacts, key=_threat_score)
         game._permanent_destroyed(target)
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Kolaghan's Command destroys {target.name}")
