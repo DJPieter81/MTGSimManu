@@ -28,17 +28,14 @@ DECK_ARCHETYPES = {
     "Eldrazi Tron":       ArchetypeStrategy.RAMP,
     "Amulet Titan":       ArchetypeStrategy.COMBO,
     "Goryo's Vengeance":  ArchetypeStrategy.COMBO,
-    "Neobrand":           ArchetypeStrategy.COMBO,
     "Domain Zoo":         ArchetypeStrategy.AGGRO,
     "Living End":         ArchetypeStrategy.COMBO,
-    "Belcher":            ArchetypeStrategy.COMBO,
     "Dimir Midrange":     ArchetypeStrategy.MIDRANGE,
     "Izzet Prowess":      ArchetypeStrategy.AGGRO,
     "4c Omnath":          ArchetypeStrategy.MIDRANGE,
     "4/5c Control":       ArchetypeStrategy.CONTROL,
     "Azorius Control":    ArchetypeStrategy.CONTROL,
     "Azorius Control (WST)": ArchetypeStrategy.CONTROL,
-    "Kappa Cannoneer":    ArchetypeStrategy.TEMPO,
 }
 
 

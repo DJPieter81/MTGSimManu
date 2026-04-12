@@ -1180,7 +1180,7 @@ class GameRunner:
         """Process saga chapter triggers during upkeep.
 
         Each saga gains a lore counter per turn (starting the turn after ETB).
-        Supported sagas: Urza's Saga, The Legend of Roku // Avatar Roku.
+        Supported sagas: Urza's Saga, The Legend of Roku.
         """
         from engine.cards import CardType
         player = game.players[active]

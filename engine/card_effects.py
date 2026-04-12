@@ -793,7 +793,7 @@ def ragavan_etb(game, card, controller, targets=None, item=None):
     pass
 
 
-@EFFECT_REGISTRY.register("The Legend of Roku // Avatar Roku", EffectTiming.ETB,
+@EFFECT_REGISTRY.register("The Legend of Roku", EffectTiming.ETB,
                            description="Saga Ch.I: exile top 3, may play until end of next turn")
 def legend_of_roku_etb(game, card, controller, targets=None, item=None):
     """Chapter I triggers on ETB: impulse draw 3."""
