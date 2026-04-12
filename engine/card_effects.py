@@ -2350,12 +2350,11 @@ def goblin_bombardment_etb(game, card, controller, targets=None, item=None):
 @EFFECT_REGISTRY.register("Blood Moon", EffectTiming.ETB,
                            description="Nonbasic lands are Mountains")
 def blood_moon_etb(game, card, controller, targets=None, item=None):
-    """Blood Moon enters: opponent's nonbasic lands become Mountains (produce R only).
+    """Blood Moon enters: opponent's nonbasic lands become Mountains.
 
-    Simplified: only affects opponent. In real MTG it's symmetric, but
-    decks that play Blood Moon (Boros, Storm) build their mana base
-    around it by fetching basics first. The sim doesn't model that
-    sequencing, so opponent-only is the correct approximation.
+    Only strips non-R mana production. Lands that already only produce R
+    are unaffected (Steam Vents producing U+R loses U but keeps R).
+    Opponent-only simplification (controller builds around it).
     """
     opp_idx = 1 - controller
     opp = game.players[opp_idx]
@@ -2363,11 +2362,15 @@ def blood_moon_etb(game, card, controller, targets=None, item=None):
     for land in opp.lands:
         supertypes = getattr(land.template, 'supertypes', [])
         if 'Basic' not in supertypes:
-            land.template.produces_mana = ['R']
-            affected += 1
-    game.log.append(
-        f"T{game.display_turn} P{controller+1}: "
-        f"Blood Moon: {affected} opponent nonbasic lands become Mountains")
+            old_colors = set(land.template.produces_mana)
+            # Only affect lands that produce non-R colors
+            if old_colors != {'R'} and old_colors != set():
+                land.template.produces_mana = ['R']
+                affected += 1
+    if affected > 0:
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: "
+            f"Blood Moon: {affected} opponent nonbasic lands become Mountains")
 
 
 # ═══════════════════════════════════════════════════════════════════

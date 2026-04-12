@@ -101,6 +101,11 @@ def sideboard(mainboard: Dict[str, int], sideboard_cards: Dict[str, int],
             if any(w in card_lower for w in ["drown in the loch", "consider"]):
                 board_out_priority.append((card_name, min(count, 2), 6))
 
+        # Board out Blood Moon vs R-based and aggro decks (their lands already produce R)
+        if any(w in opp_lower for w in ["prowess", "energy", "storm", "affinity", "pinnacle"]):
+            if "blood moon" in card_lower:
+                board_out_priority.append((card_name, min(count, 2), 8))
+
         # Board out graveyard hate and slow spells vs artifact decks
         if any(w in opp_lower for w in ["affinity", "pinnacle"]):
             if any(w in card_lower for w in ["surgical", "nihil", "cling",
