@@ -8,7 +8,7 @@
 
 ## 1. What this project is
 
-A **Modern-format Magic: The Gathering game simulator** with EV-based AI decision-making. Pure Python 3.11, zero external dependencies. Simulates full Bo3 matches between 15 competitive Modern decks, produces interactive dashboards, deck guides, and replay viewers.
+A **Modern-format Magic: The Gathering game simulator** with EV-based AI decision-making. Pure Python 3.11, zero external dependencies. Simulates full Bo3 matches between 16 competitive Modern decks, produces interactive dashboards, deck guides, and replay viewers.
 
 **Repository:** `github.com/DJPieter81/MTGSimManu` (branch: `main`)
 
@@ -58,7 +58,7 @@ A **Modern-format Magic: The Gathering game simulator** with EV-based AI decisio
 ├─────────────────────────────────────────────────────────────┤
 │  DATA LAYER                                                 │
 │  ModernAtomic.json (21,795 cards, 8 parts merged)           │
-│  decks/modern_meta.py (15 decks + METAGAME_SHARES)          │
+│  decks/modern_meta.py (16 decks + METAGAME_SHARES)          │
 │  decks/gameplans/*.json (15 goal sequences)                 │
 │  ai/strategy_profile.py (archetype AI weights)              │
 │  decks/card_knowledge.json (card role tags)                 │
@@ -369,7 +369,7 @@ Every output gets: `Simulated: DATE | Decks: N | Games/pair: N | Seeds: range | 
 
 ## 12. Codebase stats
 
-~28,500 Python LOC · 66 files · 14 AI modules · 21,795 cards · 15 decks · 15 gameplans · 149 passing tests · 4 Claude skills · 0 external deps
+~28,500 Python LOC · 66 files · 14 AI modules · 21,795 cards · 16 decks · 16 gameplans · 149 passing tests · 4 Claude skills · 0 external deps
 
 ---
 

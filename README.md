@@ -1,8 +1,8 @@
 # MTGSimManu — MTG Modern Format Game Simulator
 
-Magic: The Gathering Modern-format game simulator with EV-based AI. Simulates full Bo3 matches between 15 competitive Modern decks with mulligans, spell casting, combat, counterspells, evoke, storm chains, reanimation, cascade, and blink.
+Magic: The Gathering Modern-format game simulator with EV-based AI. Simulates full Bo3 matches between 16 competitive Modern decks with mulligans, spell casting, combat, counterspells, evoke, storm chains, reanimation, cascade, and blink.
 
-**Grade: C** · 149 tests passing · 15 decks · 21,795 cards · 0 external deps
+**Grade: C** · 149 tests passing · 16 decks · 21,795 cards · 0 external deps
 
 ## Quick Start
 

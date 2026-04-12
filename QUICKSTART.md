@@ -27,7 +27,7 @@ print(f'Loaded {len(merged)} cards')
 ## Commands
 
 ```bash
-# List all 15 decks
+# List all 16 decks
 python3 run_meta.py --list
 
 # Matchup win rate (N games)

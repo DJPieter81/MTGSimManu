@@ -87,8 +87,15 @@ class TestDeckLoading:
                 assert total <= 15, f"{name} has {total} sideboard cards, expected <= 15"
 
     def test_deck_names_match(self):
-        from decks.modern_meta import get_all_deck_names
+        from decks.modern_meta import get_all_deck_names, MODERN_DECKS, METAGAME_SHARES
         names = get_all_deck_names()
-        assert len(names) == 15
+        # Registry consistency: all three sources must agree.
+        # Drift in any of these is the A1 bug surfaced by the Affinity audit.
+        assert set(names) == set(MODERN_DECKS.keys()) == set(METAGAME_SHARES.keys()), (
+            f"Deck registry drift: "
+            f"get_all_deck_names()={sorted(names)}, "
+            f"MODERN_DECKS={sorted(MODERN_DECKS.keys())}, "
+            f"METAGAME_SHARES={sorted(METAGAME_SHARES.keys())}"
+        )
         assert "Domain Zoo" in names
         assert "Dimir Midrange" in names

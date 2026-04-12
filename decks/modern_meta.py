@@ -7,9 +7,11 @@ Card names use MTGJSON naming convention:
 - Double-faced cards: "Front // Back"
 - Split cards: "Left // Right"
 
-Deck lists and metagame shares are also available as JSON files in
-decks/lists/ and decks/metagame.json. The JSON files are the source
-of truth; the Python dicts below serve as fallback.
+This module is the source of truth for MODERN_DECKS (full decklists) and
+METAGAME_SHARES (tournament weights). `decks/metagame.json` is a JSON mirror
+of METAGAME_SHARES, regenerated from this module; keep it in sync whenever
+METAGAME_SHARES changes. Gameplans live as JSON per-deck under
+`decks/gameplans/<slug>.json`.
 """
 from typing import Dict, List, Tuple
 
