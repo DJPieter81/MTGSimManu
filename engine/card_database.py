@@ -1103,6 +1103,9 @@ class CardDatabase:
             "Griselbrand": {"creature", "threat", "card_advantage"},
             # Counterspells missing auto-detection
             "Flusterstorm": {"counterspell", "interaction", "instant_speed", "combo"},
+            "Consign to Memory": {"counterspell", "interaction", "instant_speed"},
+            # Stax pieces
+            "Chalice of the Void": {"stax", "interaction"},
             # Affinity sideboard
             "Dispatch": {"removal", "instant_speed"},
             "Hurkyl's Recall": {"removal", "instant_speed"},
