@@ -264,4 +264,24 @@ class ResponseDecider:
         if 'reanimate' in getattr(template, 'tags', set()):
             threat += 4.0
 
+        # Equipment: ongoing damage amplifier — very high threat
+        subtypes = getattr(template, 'subtypes', [])
+        oracle = (template.oracle_text or '').lower()
+        if 'Equipment' in subtypes or 'equipment' in getattr(template, 'tags', set()):
+            threat += 5.0
+            if 'for each artifact' in oracle:
+                threat += 5.0  # Cranial Plating / Nettlecyst
+
+        # Cost reducers: enable combos
+        if getattr(template, 'is_cost_reducer', False):
+            threat += 4.0
+
+        # Token generators / engines
+        if 'whenever' in oracle and ('create' in oracle or 'token' in oracle):
+            threat += 4.0
+
+        # Card advantage engines (Thought Monitor draws 2)
+        if 'card_advantage' in getattr(template, 'tags', set()):
+            threat += 3.0
+
         return max(0, threat)
