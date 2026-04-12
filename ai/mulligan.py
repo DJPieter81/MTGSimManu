@@ -35,6 +35,16 @@ class MulliganDecider:
         land_count = len(lands)
         self.last_reason = ""
 
+        # Suspend-only cards (Living End, Ancestral Vision) are dead in hand
+        # — can only be cast via cascade/suspend, never from hand
+        from engine.cards import Keyword
+        dead_cards = [c for c in spells
+                      if c.template.cmc == 0 and Keyword.SUSPEND in c.template.keywords]
+        live_spells = [c for c in spells if c not in dead_cards]
+        if dead_cards and len(live_spells) < 2 and cards_in_hand >= 6:
+            self.last_reason = f"dead card in hand ({dead_cards[0].name}) + too few live spells"
+            return False
+
         # GoalEngine-aware mulligan
         if self.goal_engine and self.goal_engine.gameplan:
             gp = self.goal_engine.gameplan
@@ -188,6 +198,11 @@ class MulliganDecider:
     def _card_keep_score(self, card: "CardInstance", hand: List["CardInstance"]) -> float:
         """Score a card for mulligan bottom. Higher = more valuable to keep."""
         from ai.strategy_profile import ArchetypeStrategy
+        from engine.cards import Keyword
+
+        # Suspend-only cards are dead in hand — always bottom
+        if card.template.cmc == 0 and Keyword.SUSPEND in card.template.keywords:
+            return -100.0
 
         score = 0.0
         t = card.template
