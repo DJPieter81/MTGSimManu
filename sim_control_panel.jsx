@@ -140,7 +140,7 @@ const Check = ({ checked, onClick, label, desc }) => (
   </div>
 );
 
-const isClickable = (r) => r.path?.endsWith(".html");
+const isClickable = (r) => !!r.path;
 const fileLink = (basePath, r) => `computer://${basePath}/${r.path}`;
 
 // ── Filter types for history ─────────────────────────────────────────
@@ -314,32 +314,21 @@ export default function SimControlPanel() {
         {/* Quick open bar */}
         <div style={{ ...S.card, display: "flex", alignItems: "center", gap: 12, marginBottom: 12, padding: "10px 16px", flexWrap: "wrap" }}>
           <span style={{ fontSize: 13, fontWeight: 700, color: text }}>Open:</span>
-          {format === "modern" && (
-            <a href={`computer://${MODERN_BASE}/modern_meta_matrix_full.html`} target="_blank" rel="noreferrer"
-              style={{ fontSize: 13, fontWeight: 600, color: blue, textDecoration: "none", padding: "4px 12px", borderRadius: 6, background: blueLight, border: `1px solid ${blue}33` }}>
-              Modern Matrix Dashboard
+          {(format === "modern" ? [
+            { label: "Modern Matrix", path: "modern_meta_matrix_full.html", c: blue, bg: blueLight },
+            { label: "Control Panel", path: "sim_control_panel.html", c: green, bg: greenLight },
+          ] : [
+            { label: "Legacy Matrix", path: "results/mtg_meta_matrix.html", c: blue, bg: blueLight },
+            { label: "Audit", path: "results/audit_dashboard.html", c: red, bg: redLight },
+            { label: "Replay", path: "results/game_replay.html", c: green, bg: greenLight },
+            { label: "Meta Report", path: "results/metagame_report.html", c: pink, bg: pinkLight },
+            { label: "Player Guide", path: "results/player_guide.html", c: accent, bg: accentLight },
+          ]).map(lnk => (
+            <a key={lnk.label} href={`computer://${basePath}/${lnk.path}`} target="_blank" rel="noreferrer"
+              style={{ fontSize: 13, fontWeight: 600, color: lnk.c, textDecoration: "none", padding: "4px 12px", borderRadius: 6, background: lnk.bg, border: `1px solid ${lnk.c}33` }}>
+              {lnk.label}
             </a>
-          )}
-          {format === "legacy" && (
-            <>
-              <a href={`computer://${LEGACY_BASE}/results/mtg_meta_matrix.html`} target="_blank" rel="noreferrer"
-                style={{ fontSize: 13, fontWeight: 600, color: blue, textDecoration: "none", padding: "4px 12px", borderRadius: 6, background: blueLight, border: `1px solid ${blue}33` }}>
-                Legacy Matrix
-              </a>
-              <a href={`computer://${LEGACY_BASE}/results/audit_dashboard.html`} target="_blank" rel="noreferrer"
-                style={{ fontSize: 13, fontWeight: 600, color: red, textDecoration: "none", padding: "4px 12px", borderRadius: 6, background: redLight, border: `1px solid ${red}33` }}>
-                Audit
-              </a>
-              <a href={`computer://${LEGACY_BASE}/results/game_replay.html`} target="_blank" rel="noreferrer"
-                style={{ fontSize: 13, fontWeight: 600, color: green, textDecoration: "none", padding: "4px 12px", borderRadius: 6, background: greenLight, border: `1px solid ${green}33` }}>
-                Replay
-              </a>
-              <a href={`computer://${LEGACY_BASE}/results/metagame_report.html`} target="_blank" rel="noreferrer"
-                style={{ fontSize: 13, fontWeight: 600, color: pink, textDecoration: "none", padding: "4px 12px", borderRadius: 6, background: pinkLight, border: `1px solid ${pink}33` }}>
-                Meta Report
-              </a>
-            </>
-          )}
+          ))}
         </div>
 
         {/* Stats */}
@@ -582,14 +571,19 @@ export default function SimControlPanel() {
               })}
             </div>
             <div style={S.card}>
-              <span style={S.label}>Data Files</span>
-              {allRuns.filter(r => r.path?.endsWith(".json")).map(r => (
-                <div key={r.file} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", borderRadius: 8, background: bg, marginTop: 6 }}>
-                  <span style={{ ...S.mono, flex: 1, color: muted }}>{r.file}</span>
-                  <Tag t={r.tag} color={(TAG_COLORS[r.tag] || TAG_COLORS.matrix).c} bg={(TAG_COLORS[r.tag] || TAG_COLORS.matrix).bg} />
-                  <span style={{ fontSize: 11, color: muted }}>{rowDesc(r)}</span>
-                </div>
-              ))}
+              <span style={S.label}>Data & Log Files</span>
+              {allRuns.filter(r => r.path && !r.path.endsWith(".html")).map(r => {
+                const tc = TAG_COLORS[r.tag] || TAG_COLORS.matrix;
+                return (
+                  <a key={r.file} href={fileLink(basePath, r)} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", borderRadius: 8, background: bg, marginTop: 6, cursor: "pointer" }}>
+                      <span style={{ ...S.mono, flex: 1, color: blue }}>{r.file}</span>
+                      <Tag t={r.tag} color={tc.c} bg={tc.bg} />
+                      <span style={{ fontSize: 11, color: muted }}>{rowDesc(r)}</span>
+                    </div>
+                  </a>
+                );
+              })}
             </div>
           </div>
         )}
