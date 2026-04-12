@@ -8,9 +8,10 @@
       "card_priorities": {
         "Ruby Medallion": 25.0,
         "Ral, Monsoon Mage // Ral, Leyline Prodigy": 20.0,
-        "Opt": 14.0,
-        "Sleight of Hand": 14.0,
-        "Manamorphose": 15.0
+        "Manamorphose": 15.0,
+        "Reckless Impulse": 16.0,
+        "Wrenn's Resolve": 16.0,
+        "Glimpse the Impossible": 14.0
       },
       "card_roles": {
         "engines": [
@@ -22,7 +23,7 @@
           "Reckless Impulse",
           "Wrenn's Resolve",
           "Glimpse the Impossible",
-          "Sleight of Hand"
+          "Valakut Awakening // Valakut Stoneforge"
         ]
       }
     },
@@ -41,8 +42,7 @@
         "Valakut Awakening // Valakut Stoneforge": 20.0,
         "March of Reckless Joy": 20.0,
         "Grapeshot": 18.0,
-        "Empty the Warrens": 17.0,
-        "Galvanic Relay": 12.0
+        "Empty the Warrens": 17.0
       },
       "card_roles": {
         "payoffs": [
@@ -100,11 +100,14 @@
     ]
   ],
   "land_priorities": {
-    "Spirebluff Canal": 5.0,
-    "Steam Vents": 3.0,
-    "Scalding Tarn": 4.0,
+    "Scalding Tarn": 5.0,
+    "Arid Mesa": 4.0,
+    "Sunbaked Canyon": 3.0,
     "Mountain": 2.0,
-    "Island": 1.0
+    "Elegant Parlor": 3.0,
+    "Sacred Foundry": 2.0,
+    "Gemstone Caverns": 4.0,
+    "Thundering Falls": 2.0
   },
   "always_early": [
     "Ruby Medallion"
