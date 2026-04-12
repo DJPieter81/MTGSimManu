@@ -340,4 +340,79 @@ Always save logs to `replays/` and commit. `build_replay.py` is in the repo with
 - Display end-of-turn board using **next turn's header** (turn N's header = state before N's plays; turn N+1's header = state after)
 - `╔══ TURN N ══╗` header sections are labelled `║ PlayerName board:` — match exactly
 
-**Design:** GitHub-dark (`#0d1117`), collapsible turn cards, 15 category badges, `.active` for keyboard nav, `boards` keyed by player name. See `/mtg-bo3-replayer-v2` skill for full spec.
+**Design:** Light theme (white `#ffffff` bg, GitHub light palette), collapsible turn cards, 15 category badges, `.active` for keyboard nav, `boards` keyed by player name. P1 = `#0969da` (blue), P2 = `#d1242f` (red). See `/mtg-bo3-replayer-v2` skill for full spec.
+
+## Planning Reference — PROJECT_STATUS.md
+
+**Read `PROJECT_STATUS.md` before any session.** It is the single-source-of-truth for Claude Code planning mode. Contains: architecture diagram with line counts, AI decision flow, Python API signatures with return shapes, runtime benchmarks, all P0/P1 bugs with file:line locations, infrastructure proposals, "never do / always do" rules, and post-action verification scripts.
+
+Related docs: `MODERN_PROPOSAL.md` (6 infra proposals from Legacy), `LLM_JUDGE_STRATEGY_AUDIT.md` (C- grade, 6-expert panel), `LEGACY_MODERNISATION_PROPOSAL.md` (8 adoptions for Legacy from Modern).
+
+## Sister Project — MTGSimClaude (Legacy)
+
+Repository: `github.com/DJPieter81/MTGSimClaude` (38 decks, 2.5ms/game, G1-only matrix).
+
+Both projects share the same Claude skills (`/mtg-meta-matrix`, `/mtg-deck-guide`, `/mtg-bo3-replayer-v2`, `/mtg-dashboard-refresh`) and cross-pollinate architecture ideas. See cross-project proposals in `MODERN_PROPOSAL.md` and `LEGACY_MODERNISATION_PROPOSAL.md`.
+
+Key differences: Legacy has per-deck strategy functions (deeper knowledge), Modern has EV scoring + BHI + combat sim (better architecture). Neither is strictly better.
+
+## AI Decision Architecture (summary)
+
+```
+EVSnapshot ← snapshot_from_game()          # ev_evaluator.py
+    ↓
+GoalEngine.current_goal                    # gameplan.py (JSON-driven)
+    ↓
+Enumerate legal plays → Play objects       # ev_player.py
+    ↓
+Score: heuristic EV + clock Δ + combo mod  # ev_player.py + clock.py + combo_calc.py
+    ↓
+Discount by P(countered), P(removed)       # bhi.py (Bayesian hand inference)
+    ↓
+TurnPlanner: 5 orderings evaluated         # turn_planner.py
+    ↓
+Execute best → log reasoning               # strategic_logger.py
+```
+
+**Known weakness:** Generic `_score_spell()` has no per-card overrides → planeswalkers score ~0 (P0), storm rituals penalised mid-chain (P1). Fix: `card_ev_overrides` in gameplan JSON + combo chain EV bypass.
+
+## Deck Guide Minimum Spec
+
+Guides must match the Legacy Burn guide (`guide_burn.html`) feature-for-feature:
+
+1. **Hero** — 4-col: format, sim WR (flat + weighted), rank/tier, best/worst
+2. **Decklist** — Mainboard with role badges + card notes + Scryfall hover popups, SB with "vs" targets
+3. **Deck construction findings** — ±pp values derived from sim data
+4. **Game plan** — 3-phase timeline with colored dots and turn-by-turn descriptions
+5. **Kill turn distribution** — Bar chart from sim data
+6. **Hand archetype WR** — Horizontal bars with baseline marker
+7. **Real sim hands** — 2-3 keep + 1 mull, each with turn-by-turn play sequence and strategic commentary
+8. **Metagame strategy** — Archetype WR bars + matchup triptych (prey/competitive/danger)
+9. **Matchup spread** — All opponents tiered T1/T2/Field, with archetype type + meta% columns
+10. **Provenance footer** — Date, deck count, games/pair, engine version, attribution
+
+Scryfall hovers: `<span class="card-tip" data-card="Card Name">Card Name</span>` + JS popup using `api.scryfall.com/cards/named?fuzzy=NAME&format=image&version=normal`.
+
+## Post-Action Verification
+
+Run after every major operation:
+
+```bash
+# After dashboard rebuild
+python3 -c "
+import re
+with open('metagame_14deck.jsx') as f: c=f.read()
+n = re.search(r'const N = (\d+)', c)
+d = re.findall(r'\"decks\":\[(.+?)\]', c)
+print(f'N={n.group(1) if n else \"MISSING\"}, decks={len(d[0].split(\",\")) if d else \"MISSING\"}')"
+
+# After deck import
+python3 -c "
+from decks.modern_meta import MODERN_DECKS, METAGAME_SHARES
+print(f'Decks: {len(MODERN_DECKS)}, Shares: {len(METAGAME_SHARES)}')
+assert len(MODERN_DECKS) == len(METAGAME_SHARES), 'MISMATCH'"
+
+# Smoke test (both orderings should sum to ~100%)
+python run_meta.py --matchup NEW_DECK dimir -n 10
+python run_meta.py --matchup dimir NEW_DECK -n 10
+```
