@@ -91,7 +91,7 @@ class EVPlayer:
 
         # Mulligan decider — reuse existing
         from ai.mulligan import MulliganDecider
-        from ai.ai_player import ArchetypeStrategy
+        from ai.strategy_profile import ArchetypeStrategy
         arch_enum = ArchetypeStrategy(self.archetype) if self.archetype in [e.value for e in ArchetypeStrategy] else ArchetypeStrategy.MIDRANGE
         self._mulligan_decider = MulliganDecider(arch_enum, self.goal_engine)
 

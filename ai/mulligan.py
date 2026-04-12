@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING, List, Optional
 if TYPE_CHECKING:
     from engine.cards import CardInstance
     from ai.gameplan import GoalEngine
-    from ai.ai_player import ArchetypeStrategy
+    from ai.strategy_profile import ArchetypeStrategy
 
 
 class MulliganDecider:
@@ -28,7 +28,7 @@ class MulliganDecider:
         Also stores self.last_reason with the rationale (for logging).
         """
         from engine.cards import CardType
-        from ai.ai_player import ArchetypeStrategy
+        from ai.strategy_profile import ArchetypeStrategy
 
         lands = [c for c in hand if c.template.is_land]
         spells = [c for c in hand if not c.template.is_land]
@@ -147,7 +147,7 @@ class MulliganDecider:
 
     def _generic(self, hand: List["CardInstance"], lands: List["CardInstance"], spells: List["CardInstance"], cards_in_hand: int) -> bool:
         """Generic mulligan heuristic when no gameplan is available."""
-        from ai.ai_player import ArchetypeStrategy
+        from ai.strategy_profile import ArchetypeStrategy
 
         land_count = len(lands)
         if land_count == 1 and cards_in_hand == 7:
@@ -187,7 +187,7 @@ class MulliganDecider:
 
     def _card_keep_score(self, card: "CardInstance", hand: List["CardInstance"]) -> float:
         """Score a card for mulligan bottom. Higher = more valuable to keep."""
-        from ai.ai_player import ArchetypeStrategy
+        from ai.strategy_profile import ArchetypeStrategy
 
         score = 0.0
         t = card.template
