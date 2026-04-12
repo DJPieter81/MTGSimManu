@@ -228,6 +228,19 @@ class EVPlayer:
                                        f"Land: {land.name} (EV={ev:.1f})"))
 
         # Score spell plays
+        #
+        # COMBO KILL OVERRIDE: if chain evaluator sees a lethal line,
+        # force-advance goal to EXECUTE_PAYOFF so ritual/draw cards
+        # get scored as chain starters instead of generic spells.
+        if self.goal_engine and self.archetype == "combo":
+            from ai.ev_evaluator import _estimate_combo_chain
+            can_kill, storm_count, damage, chain = _estimate_combo_chain(
+                game, self.player_idx)
+            if can_kill or storm_count >= 5:
+                # Force goal to last phase (EXECUTE_PAYOFF / CLOSE_GAME)
+                while self.goal_engine.current_goal_idx < len(self.goal_engine.gameplan.goals) - 1:
+                    self.goal_engine.advance_goal(game, f"Combo kill detected (storm={storm_count})")
+
         for spell in spells:
             if not game.can_cast(self.player_idx, spell):
                 continue
