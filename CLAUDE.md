@@ -471,3 +471,17 @@ templates/
 - Chart.js charts (WR bars, resolution doughnut, AI radar, game length)
 
 **When to update templates:** After major design changes, new section types, or insight methodology upgrades. Always commit updated templates alongside the code that generated them.
+
+## Deck Guide Builder — build_guide.py
+
+```bash
+# Single deck
+python build_guide.py "Boros Energy" /mnt/user-data/outputs/guide_boros_energy.html
+
+# All T1/T2 decks (meta ≥ 3%)
+python build_guide.py --all /mnt/user-data/outputs/
+```
+
+Reads `metagame_14deck.jsx` D object. Generates: hero stats, Stars of Sim (Scryfall thumbnails), G1→match swing table, danger cards (removal blind spots), tiered matchup spread, provenance footer. All data traced to JSX keys.
+
+**Note:** `build_guide.py` produces the data-driven skeleton. The hand-crafted Boros guide in `templates/reference_deck_guide.html` has additional depth: real sim hands, game plan phases, hand archetype WR bars, and 6 pro-level findings. For tournament-grade guides, use the template as the reference and augment `build_guide.py` output.
