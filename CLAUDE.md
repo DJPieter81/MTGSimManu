@@ -445,3 +445,29 @@ Guides target pro tour players. The metagame strategy section requires 6+ non-ob
 6. **Weighted WR gap** — compare `weighted_wr - win_rate` across all decks for meta positioning insight
 
 **Quality bar:** If a finding would be obvious to someone who's played 10 matches with the deck, it's not good enough. Target findings that require 700+ simulated games to discover.
+
+## Templates — Reference Outputs
+
+```
+templates/
+├── reference_deck_guide.html    — Boros Energy guide (canonical, 348 lines)
+└── reference_showcase.html      — Project showcase page (canonical, ~800 lines)
+```
+
+**Usage:** When generating a new deck guide or showcase, read the reference template first to match structure, design, and insight depth. Do NOT regenerate from scratch — use the template's CSS, JS (Scryfall hovers), and section order, then swap data.
+
+**Deck guide template features:**
+- Stars of the Sim (4 card thumbnails from Scryfall: 2 MVPs + 2 overperformers)
+- Card-level sim stats in decklist notes (casts, dmg, finisher count from `deck_cards`)
+- SB "vs" targets citing actual `matchup_cards.d1_sb` cast counts
+- 6 non-obvious strategic findings mined from `matchup_cards` (see methodology above)
+- Matchup spread tiered T1/T2/Field with archetype type + meta%
+- Provenance footer tracing to exact JSX keys
+
+**Showcase template features:**
+- 10+ interactive sections (architecture, AI pipeline, heatmap, validation, roadmap)
+- Product cards linking to artifacts via relative URLs (same directory)
+- Cross-project comparison with acceptance status
+- Chart.js charts (WR bars, resolution doughnut, AI radar, game length)
+
+**When to update templates:** After major design changes, new section types, or insight methodology upgrades. Always commit updated templates alongside the code that generated them.

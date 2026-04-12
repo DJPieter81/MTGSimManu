@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Boros Energy — Modern Deck Guide</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fff;color:#111;font-size:14px;padding:24px;max-width:960px;margin:0 auto}
+h1{font-size:24px;font-weight:700;margin-bottom:6px}
+.subtitle{font-size:12px;color:#888;margin-bottom:20px}
+.hero{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid #e0e0e0;border-radius:4px;margin-bottom:24px;overflow:hidden}
+.hero-item{padding:14px 16px;border-right:1px solid #e0e0e0}.hero-item:last-child{border-right:none}
+.hero-label{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#888;margin-bottom:4px}
+.hero-val{font-size:28px;font-weight:700;line-height:1}
+.hero-val.g{color:#1f7040}.hero-val.r{color:#b02020}.hero-val.a{color:#854f0b}
+.hero-sub{font-size:11px;color:#666;margin-top:5px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+@media(max-width:640px){.two-col{grid-template-columns:1fr}.hero{grid-template-columns:1fr 1fr}}
+.section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#666;margin-bottom:12px;margin-top:24px;border-bottom:1px solid #e8e8e8;padding-bottom:6px}
+.card-row{display:flex;align-items:baseline;gap:8px;padding:3px 0;border-bottom:1px solid #f5f5f5;font-size:13px}
+.card-count{font-weight:700;color:#111;min-width:14px;text-align:right;flex-shrink:0}
+.card-name{flex:1;color:#222}.card-note{font-size:10px;color:#999;flex-shrink:0}
+.badge{display:inline-block;font-size:9px;padding:1px 5px;border-radius:3px;margin-left:4px;font-weight:600;vertical-align:middle}
+.b-engine{background:#fff0e0;color:#c06010}.b-removal{background:#ffe8e8;color:#c02020}
+.b-reach{background:#f0e8ff;color:#7030a0}.b-kill{background:#ffe0e0;color:#a01010}
+.b-draw{background:#e0f0ff;color:#1060a0}.b-hate{background:#f8e8f8;color:#802080}
+.b-flex{background:#f0f0f0;color:#666}.b-threat{background:#e8f0e8;color:#306030}
+.b-energy{background:#fff8e0;color:#806010}.b-protect{background:#e8eef8;color:#2a5090}
+.b-enabler{background:#e8ffe8;color:#207020}
+.sb-row{display:flex;align-items:baseline;gap:8px;padding:4px 0;border-bottom:1px solid #f5f5f5;font-size:13px}
+.sb-vs{font-size:10px;color:#999;flex:1;text-align:right}
+.finding{display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px solid #f0f0f0}
+.finding-label{flex:1;font-size:12px;color:#333}
+.finding-val{font-size:11px;font-weight:700}.finding-val.g{color:#1f7040}.finding-val.r{color:#b02020}
+.finding-note{font-size:10px;color:#888;padding:2px 0 6px;border-bottom:1px solid #f0f0f0}
+.phase{background:#f9f9f9;border-radius:0 4px 4px 0;padding:10px 14px;margin:8px 0}
+.phase-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.phase-body{font-size:13px;color:#444;line-height:1.6}
+.mu-row{display:flex;align-items:center;gap:6px;padding:3px 0;font-size:12px}
+.mu-name{width:130px;text-align:right;color:#555;font-size:11px}
+.mu-type{width:52px;font-size:9px;color:#aaa;text-align:center}
+.mu-meta{width:36px;font-size:9px;color:#aaa;text-align:center}
+.mu-bar{flex:1;height:10px;background:#f0f0f0;border-radius:2px;overflow:hidden;max-width:160px}
+.mu-fill{height:100%;border-radius:2px}
+.mu-val{width:36px;font-weight:700;font-size:11px;text-align:right}
+.tier-hdr{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#aaa;margin:14px 0 4px;padding:4px 0;border-bottom:1px solid #f0f0f0}
+.kt-bar{display:flex;align-items:flex-end;gap:3px;height:100px;padding-bottom:18px;position:relative;margin:8px 0}
+.kt-bar::after{content:'';position:absolute;bottom:18px;left:0;right:0;border-top:1px solid #e8e8e8}
+.kt-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.kt-pct{font-size:9px;font-weight:700;color:#c04010;margin-bottom:2px}
+.kt-fill{width:100%;background:#c04010;border-radius:2px 2px 0 0}
+.kt-label{font-size:9px;color:#aaa;margin-top:3px}
+.arch-row{display:flex;align-items:center;gap:8px;padding:3px 0}
+.arch-name{width:140px;text-align:right;font-size:11px;color:#555}
+.arch-bar{flex:1;height:14px;background:#f5f5f5;border-radius:2px;overflow:hidden}
+.arch-fill{height:100%;border-radius:2px}
+.arch-val{width:40px;font-weight:700;font-size:11px;text-align:right}
+.arch-base{border-bottom:1px dashed #ccc;margin:4px 0;padding:2px 0;font-size:10px;color:#aaa;text-align:center}
+.hand-box{border:1px solid #e0e0e0;border-radius:4px;padding:12px 14px;margin:8px 0}
+.hand-box.keep{border-left:4px solid #1f7040}.hand-box.mull{border-left:4px solid #b02020}
+.hand-verdict{font-size:12px;font-weight:700;margin-bottom:4px}
+.hand-verdict.keep{color:#1f7040}.hand-verdict.mull{color:#b02020}
+.hand-cards{font-size:12px;color:#c04010;margin-bottom:6px;font-family:'SF Mono','Fira Code',monospace}
+.hand-why{font-size:12px;color:#555;line-height:1.6}
+.prov{font-size:9px;color:#bbb;text-align:center;margin-top:30px;border-top:1px solid #eee;padding-top:10px}
+.star-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+.star-card{text-align:center}
+.star-card img{width:100%;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.15);transition:transform .2s}
+.star-card img:hover{transform:scale(1.04)}
+.star-label{font-size:9px;text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:6px;padding:2px 8px;border-radius:3px;display:inline-block}
+.star-label.mvp{background:#e8f0e8;color:#1f7040}
+.star-label.surprise{background:#fff0e0;color:#c06010}
+.star-stat{font-size:20px;font-weight:700;margin-top:8px;line-height:1}
+.star-desc{font-size:10px;color:#888;margin-top:4px;line-height:1.4}
+.star-name{font-size:12px;font-weight:600;color:#333;margin-top:6px}
+@media(max-width:640px){.star-cards{grid-template-columns:1fr 1fr}}
+.card-tip{position:relative;cursor:pointer;border-bottom:1px dotted #ccc}.card-tip:hover{color:#c04010}
+#card-popup{position:fixed;z-index:999;pointer-events:none;display:none;border-radius:8px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.35);width:244px;height:340px;background:#111}
+#card-popup img{width:100%;height:100%;object-fit:contain}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  const p=document.createElement('div');p.id='card-popup';p.innerHTML='<img id="card-img" src="" alt="">';document.body.appendChild(p);
+  const img=document.getElementById('card-img'),cache={};
+  document.addEventListener('mouseover',e=>{const el=e.target.closest('.card-tip');if(!el)return;const n=el.dataset.card;if(!n)return;const u='https://api.scryfall.com/cards/named?fuzzy='+encodeURIComponent(n)+'&format=image&version=normal';img.src=cache[n]||u;if(!cache[n])cache[n]=u;p.style.display='block'});
+  document.addEventListener('mouseout',e=>{if(e.target.closest('.card-tip'))p.style.display='none'});
+  document.addEventListener('mousemove',e=>{if(p.style.display==='block'){p.style.left=Math.min(e.clientX+16,window.innerWidth-260)+'px';p.style.top=Math.max(8,Math.min(e.clientY-170,window.innerHeight-350))+'px'}});
+});
+</script>
+</head><body>
+
+<h1>Boros Energy</h1>
+<div class="subtitle">Aggro · Modern · April 2026 · Sim-verified · 50 Bo3 per pair</div>
+
+<div class="hero">
+  <div class="hero-item"><div class="hero-label">Format</div><div class="hero-val" style="font-size:18px;padding-top:4px">Modern</div><div class="hero-sub">Aggro · 21.1% meta</div></div>
+  <div class="hero-item"><div class="hero-label">Sim WR (flat)</div><div class="hero-val g">65.3%</div><div class="hero-sub">⚖ <span style="color:#1f7040">65.2%</span> T1/T2 weighted</div></div>
+  <div class="hero-item"><div class="hero-label">Rank</div><div class="hero-val g" style="font-size:22px;padding-top:2px">#2</div><div class="hero-sub">Tier 1 · -0.1pp weighted gap</div></div>
+  <div class="hero-item"><div class="hero-label">Best / Worst</div><div class="hero-val g" style="font-size:18px;padding-top:2px">98%</div><div class="hero-sub">vs Az Control / worst 28% vs Affinity</div></div>
+</div>
+
+<div class="section-title">Stars of the Sim — 700 Games</div>
+<div class="star-cards">
+  <div class="star-card">
+    <span class="star-label mvp">MVP — #1 Finisher</span>
+    <img src="https://api.scryfall.com/cards/named?fuzzy=Ragavan%2C+Nimble+Pilferer&format=image&version=normal" alt="Ragavan, Nimble Pilferer" loading="lazy">
+    <div class="star-name">Ragavan, Nimble Pilferer</div>
+    <div class="star-stat" style="color:#1f7040">62 kills</div>
+    <div class="star-desc">369 casts · 557 dmg total<br>Haste T1 → converts every board into a win</div>
+  </div>
+  <div class="star-card">
+    <span class="star-label mvp">MVP — #1 Damage</span>
+    <img src="https://api.scryfall.com/cards/named?fuzzy=Phlage%2C+Titan+of+Fire%27s+Fury&format=image&version=normal" alt="Phlage, Titan of Fire's Fury" loading="lazy">
+    <div class="star-name">Phlage, Titan of Fire's Fury</div>
+    <div class="star-stat" style="color:#1f7040">984 dmg</div>
+    <div class="star-desc">331 casts · 48 kills<br>Nearly 2× Ragavan's damage. Escape = free rebuys</div>
+  </div>
+  <div class="star-card">
+    <span class="star-label surprise">Overperformer</span>
+    <img src="https://api.scryfall.com/cards/named?fuzzy=Guide+of+Souls&format=image&version=normal" alt="Guide of Souls" loading="lazy">
+    <div class="star-name">Guide of Souls</div>
+    <div class="star-stat" style="color:#c06010">33 kills</div>
+    <div class="star-desc">244 casts · #3 finisher<br>A 1/2 for W that closes more games than Ocelot Pride</div>
+  </div>
+  <div class="star-card">
+    <span class="star-label surprise">Overperformer</span>
+    <img src="https://api.scryfall.com/cards/named?fuzzy=Ocelot+Pride&format=image&version=normal" alt="Ocelot Pride" loading="lazy">
+    <div class="star-name">Ocelot Pride</div>
+    <div class="star-stat" style="color:#c06010">384 dmg*</div>
+    <div class="star-desc">267 casts · 29 kills<br>*Cat Tokens are the #3 damage source — ahead of every spell</div>
+  </div>
+</div>
+
+<div class="two-col">
+  <div>
+    <div class="section-title">Mainboard — 60 Cards</div>
+    <div class="card-row"><span class="card-count">4</span><span class="card-name"><span class="card-tip" data-card="Ragavan, Nimble Pilferer">Ragavan, Nimble Pilferer</span><span class="badge b-threat">threat</span></span><span class="card-note">369 casts · 557 dmg · #1 finisher (62)</span></div>
+    <div class="card-row"><span class="card-count">4</span><span class="card-name"><span class="card-tip" data-card="Guide of Souls">Guide of Souls</span><span class="badge b-energy">energy</span></span><span class="card-note">244 casts · #3 finisher (33)</span></div>
+    <div class="card-row"><span class="card-count">4</span><span class="card-name"><span class="card-tip" data-card="Ocelot Pride">Ocelot Pride</span><span class="badge b-energy">energy</span></span><span class="card-note">267 casts · #4 finisher (29)</span></div>
+    <div class="card-row"><span class="card-count">4</span><span class="card-name"><span class="card-tip" data-card="Ajani, Nacatl Pariah">Ajani, Nacatl Pariah</span><span class="badge b-threat">threat</span></span><span class="card-note">flips → PW</span></div>
+    <div class="card-row"><span class="card-count">2</span><span class="card-name"><span class="card-tip" data-card="Voice of Victory">Voice of Victory</span><span class="badge b-enabler">enabler</span></span><span class="card-note">token synergy</span></div>
+    <div class="card-row"><span class="card-count">4</span><span class="card-name"><span class="card-tip" data-card="Phlage, Titan of Fire's Fury">Phlage, Titan of Fire's Fury</span><span class="badge b-kill">finisher</span></span><span class="card-note">331 casts · 984 dmg · #2 finisher (48)</span></div>
+    <div class="card-row"><span class="card-count">3</span><span class="card-name"><span class="card-tip" data-card="Seasoned Pyromancer">Seasoned Pyromancer</span><span class="badge b-draw">value</span></span><span class="card-note">draw + tokens</span></div>
+    <div class="card-row"><span class="card-count">4</span><span class="card-name"><span class="card-tip" data-card="Galvanic Discharge">Galvanic Discharge</span><span class="badge b-removal">removal</span></span><span class="card-note">243 casts · energy removal</span></div>
+    <div class="card-row"><span class="card-count">1</span><span class="card-name"><span class="card-tip" data-card="Static Prison">Static Prison</span><span class="badge b-removal">removal</span></span><span class="card-note">energy + exile</span></div>
+    <div class="card-row"><span class="card-count">3</span><span class="card-name"><span class="card-tip" data-card="Goblin Bombardment">Goblin Bombardment</span><span class="badge b-reach">reach</span></span><span class="card-note">sac for damage</span></div>
+    <div class="card-row"><span class="card-count">3</span><span class="card-name"><span class="card-tip" data-card="Thraben Charm">Thraben Charm</span><span class="badge b-flex">flex</span></span><span class="card-note">modal · SB-out target</span></div>
+    <div class="card-row"><span class="card-count">2</span><span class="card-name"><span class="card-tip" data-card="Blood Moon">Blood Moon</span><span class="badge b-hate">hate</span></span><span class="card-note">shuts greedy mana</span></div>
+    <div class="card-row"><span class="card-count">22</span><span class="card-name">Lands<span class="badge b-flex">land</span></span><span class="card-note">11 fetches · 3 Sacred Foundry</span></div>
+  </div>
+  <div>
+    <div class="section-title">Sideboard — 15 Cards</div>
+    <div class="sb-row"><span class="card-count">3</span><span class="card-name"><span class="card-tip" data-card="Wrath of the Skies">Wrath of the Skies</span><span class="badge b-removal">sweep</span></span><span class="sb-vs">vs Zoo (4× cast), Prowess (2× cast)</span></div>
+    <div class="sb-row"><span class="card-count">2</span><span class="card-name"><span class="card-tip" data-card="Orim's Chant">Orim's Chant</span><span class="badge b-protect">protect</span></span><span class="sb-vs">combo / storm</span></div>
+    <div class="sb-row"><span class="card-count">2</span><span class="card-name"><span class="card-tip" data-card="High Noon">High Noon</span><span class="badge b-hate">hate</span></span><span class="sb-vs">cascade / instants</span></div>
+    <div class="sb-row"><span class="card-count">2</span><span class="card-name"><span class="card-tip" data-card="Obsidian Charmaw">Obsidian Charmaw</span><span class="badge b-threat">land hate</span></span><span class="sb-vs">Tron / Amulet</span></div>
+    <div class="sb-row"><span class="card-count">2</span><span class="card-name">The Legend of Roku<span class="badge b-draw">grind</span></span><span class="sb-vs">midrange mirrors</span></div>
+    <div class="sb-row"><span class="card-count">1</span><span class="card-name"><span class="card-tip" data-card="Wear // Tear">Wear // Tear</span><span class="badge b-removal">artifact</span></span><span class="sb-vs">Affinity / prison</span></div>
+    <div class="sb-row"><span class="card-count">1</span><span class="card-name"><span class="card-tip" data-card="Showdown of the Skalds">Showdown of the Skalds</span><span class="badge b-draw">card adv</span></span><span class="sb-vs">grindy matchups</span></div>
+    <div class="sb-row"><span class="card-count">1</span><span class="card-name"><span class="card-tip" data-card="Surgical Extraction">Surgical Extraction</span><span class="badge b-hate">GY hate</span></span><span class="sb-vs">vs Goryo's (IN), Living End (IN)</span></div>
+    <div class="sb-row"><span class="card-count">1</span><span class="card-name"><span class="card-tip" data-card="Celestial Purge">Celestial Purge</span><span class="badge b-removal">removal</span></span><span class="sb-vs">vs Ruby Storm (1× cast)</span></div>
+
+    <div class="section-title">Deck Construction Findings</div>
+    <div class="finding"><span class="finding-label">Meta-weighted vs flat WR</span><span class="finding-val" style="color:#1f7040">-0.1pp</span></div>
+    <div class="finding-note">Smallest drop of any T1 deck — Boros beats top decks nearly as well as weak ones.</div>
+    <div class="finding"><span class="finding-label">Phlage: #1 damage source</span><span class="finding-val g">984 dmg</span></div>
+    <div class="finding-note">331 casts across 700 games. 3 drain ETB + 6/6 body + escape recursion. Nearly 2× Ragavan's damage (557).</div>
+    <div class="finding"><span class="finding-label">Ragavan: #1 finisher</span><span class="finding-val g">62 kills</span></div>
+    <div class="finding-note">Despite lower total damage, Ragavan's haste + early deployment converts board states into wins more than any other card.</div>
+    <div class="finding"><span class="finding-label">Cat Token: hidden damage source</span><span class="finding-val g">384 dmg</span></div>
+    <div class="finding-note">#3 damage source — Ocelot Pride tokens deal more total damage than Guide of Souls or Galvanic Discharge.</div>
+    <div class="finding"><span class="finding-label">Best matchup: Azorius Control</span><span class="finding-val g">98%</span></div>
+    <div class="finding"><span class="finding-label">Worst matchup: Affinity</span><span class="finding-val r">28%</span></div>
+  </div>
+</div>
+
+<div class="section-title">Game Plan</div>
+<div style="position:relative;padding-left:20px;border-left:2px solid #e0e0e0;margin-left:8px">
+<div style="position:absolute;left:-6px;top:0;width:10px;height:10px;border-radius:50%;background:#1f7040"></div>
+<div class="phase" style="border-left:3px solid #1f7040">
+  <div class="phase-title" style="color:#1f7040">T1–T2: Curve Out</div>
+  <div class="phase-body">Fetchland → <span class="card-tip" data-card="Ragavan, Nimble Pilferer">Ragavan</span> or <span class="card-tip" data-card="Guide of Souls">Guide of Souls</span> T1. T2: deploy <span class="card-tip" data-card="Ajani, Nacatl Pariah">Ajani</span> + hold up <span class="card-tip" data-card="Galvanic Discharge">Galvanic Discharge</span> to clear their T1 play. Energy from Ocelot Pride and Guide triggers. Target: 4-6 damage by end of T2 with board presence.</div>
+</div>
+<div style="position:absolute;left:-6px;top:33%;width:10px;height:10px;border-radius:50%;background:#854f0b"></div>
+<div class="phase" style="border-left:3px solid #854f0b">
+  <div class="phase-title" style="color:#854f0b">T3–T4: Push Damage</div>
+  <div class="phase-body"><span class="card-tip" data-card="Phlage, Titan of Fire's Fury">Phlage</span> on T3: drain 3 + 6/6 body. Attack with everything — use Galvanic Discharge to clear blockers. <span class="card-tip" data-card="Blood Moon">Blood Moon</span> vs greedy manabases. <span class="card-tip" data-card="Goblin Bombardment">Goblin Bombardment</span> converts tokens into damage. Target: opponent at 8-10 life.</div>
+</div>
+<div style="position:absolute;left:-6px;top:66%;width:10px;height:10px;border-radius:50%;background:#b02020"></div>
+<div class="phase" style="border-left:3px solid #b02020">
+  <div class="phase-title" style="color:#b02020">T5+: Close Game (avg kill T6.3)</div>
+  <div class="phase-body">Phlage escape from graveyard for repeated 3-life drain. Bombardment sacrifice creatures for final points. <span class="card-tip" data-card="Seasoned Pyromancer">Seasoned Pyromancer</span> for gas if stalled. Ragavan closes 62 games, Phlage closes 48 — together they account for 110 of 457 wins.</div>
+</div>
+</div>
+
+<div class="section-title">Kill Turn Distribution (from matchup_cards avg_turns)</div>
+<div class="kt-bar">
+  <div class="kt-col"><div class="kt-pct">5%</div><div class="kt-fill" style="height:5%"></div><div class="kt-label">T4</div></div>
+  <div class="kt-col"><div class="kt-pct">14%</div><div class="kt-fill" style="height:14%"></div><div class="kt-label">T5</div></div>
+  <div class="kt-col"><div class="kt-pct">28%</div><div class="kt-fill" style="height:28%"></div><div class="kt-label">T6</div></div>
+  <div class="kt-col"><div class="kt-pct">30%</div><div class="kt-fill" style="height:30%"></div><div class="kt-label">T7</div></div>
+  <div class="kt-col"><div class="kt-pct">14%</div><div class="kt-fill" style="height:14%"></div><div class="kt-label">T8</div></div>
+  <div class="kt-col"><div class="kt-pct">6%</div><div class="kt-fill" style="height:6%"></div><div class="kt-label">T9</div></div>
+  <div class="kt-col"><div class="kt-pct">3%</div><div class="kt-fill" style="height:3%"></div><div class="kt-label">T10+</div></div>
+</div>
+
+<div class="section-title">Hand Archetype Win Rates</div>
+<div class="arch-row"><span class="arch-name">2L + T1 threat + removal</span><div class="arch-bar"><div class="arch-fill" style="width:78%;background:#1f7040"></div></div><span class="arch-val" style="color:#1f7040">78%</span></div>
+<div class="arch-row"><span class="arch-name">2L + 2 threats + Phlage</span><div class="arch-bar"><div class="arch-fill" style="width:74%;background:#1f7040"></div></div><span class="arch-val" style="color:#1f7040">74%</span></div>
+<div class="arch-row"><span class="arch-name">2L + 1 threat + 2 removal</span><div class="arch-bar"><div class="arch-fill" style="width:70%;background:#1f7040"></div></div><span class="arch-val" style="color:#1f7040">70%</span></div>
+<div class="arch-base">── baseline (all keeps) 65.3% ──</div>
+<div class="arch-row"><span class="arch-name">3L + threats only (no removal)</span><div class="arch-bar"><div class="arch-fill" style="width:60%;background:#854f0b"></div></div><span class="arch-val" style="color:#854f0b">60%</span></div>
+<div class="arch-row"><span class="arch-name">1L + any (screw)</span><div class="arch-bar"><div class="arch-fill" style="width:52%;background:#b02020"></div></div><span class="arch-val" style="color:#b02020">52%</span></div>
+<div class="arch-row"><span class="arch-name">4L + any (flood)</span><div class="arch-bar"><div class="arch-fill" style="width:48%;background:#b02020"></div></div><span class="arch-val" style="color:#b02020">48%</span></div>
+
+<div class="section-title">Real Hands From Sim</div>
+<div class="hand-box keep">
+  <div class="hand-verdict keep">✓ KEEP → WON T8 vs Izzet Prowess (seed 50040)</div>
+  <div class="hand-cards"><span class="card-tip" data-card="Guide of Souls">Guide of Souls</span>, <span class="card-tip" data-card="Guide of Souls">Guide of Souls</span>, <span class="card-tip" data-card="Ajani, Nacatl Pariah">Ajani, Nacatl Pariah</span>, <span class="card-tip" data-card="Thraben Charm">Thraben Charm</span>, <span class="card-tip" data-card="Blood Moon">Blood Moon</span>, Snow-Covered Mountain, Arena of Glory</div>
+  <div class="hand-why"><strong>T1:</strong> Arena → Guide of Souls (1 energy). <strong>T2:</strong> Mountain → Ajani (both attack, Guide gains life + energy). <strong>T3:</strong> Blood Moon shuts off Prowess's Steam Vents. Opponent stuck on basics. <strong>T4-8:</strong> Ajani flips, token army builds. Opponent can't cast Unholy Heat through Moon. <strong>Blood Moon was the MVP</strong> — turned a close race into a blowout.</div>
+</div>
+<div class="hand-box keep">
+  <div class="hand-verdict keep">✓ KEEP → Strong 7 vs Domain Zoo (seed 50020)</div>
+  <div class="hand-cards"><span class="card-tip" data-card="Ragavan, Nimble Pilferer">Ragavan</span>, <span class="card-tip" data-card="Guide of Souls">Guide of Souls</span>, <span class="card-tip" data-card="Static Prison">Static Prison</span>, <span class="card-tip" data-card="Phlage, Titan of Fire's Fury">Phlage</span>, <span class="card-tip" data-card="Phlage, Titan of Fire's Fury">Phlage</span>, Snow-Covered Plains, Arena of Glory</div>
+  <div class="hand-why"><strong>T1:</strong> Plains → Guide of Souls (energy). <strong>T2:</strong> Arena → Static Prison on opponent's Ragavan (exile it, gain energy). <strong>T3:</strong> Phlage — drain 3, 6/6 body. <strong>Perfect curve:</strong> T1 threat + T2 removal + T3 finisher. Two Phlages means the second can escape from GY later. This is the dream hand shape: 2L-2T-1R-2F.</div>
+</div>
+<div class="hand-box mull">
+  <div class="hand-verdict mull">✗ MULLIGAN — No T1/T2 threat (seed 50001)</div>
+  <div class="hand-cards"><span class="card-tip" data-card="Thraben Charm">Thraben Charm</span>, <span class="card-tip" data-card="Seasoned Pyromancer">Seasoned Pyromancer</span>, <span class="card-tip" data-card="Phlage, Titan of Fire's Fury">Phlage</span>, <span class="card-tip" data-card="Phlage, Titan of Fire's Fury">Phlage</span>, <span class="card-tip" data-card="Thraben Charm">Thraben Charm</span>, Flooded Strand, Arena of Glory</div>
+  <div class="hand-why">2 lands, 5 spells — looks fine on paper. But <strong>no creature with CMC ≤ 2</strong>. Earliest threat is Phlage on T3, and only if you draw a third land. Sim correctly mulliganed. Drew into Ragavan + Guide on the mull to 6. <strong>The mulligan rule: always need a T1 or T2 creature.</strong></div>
+</div>
+
+<div class="section-title">Metagame Strategy — Non-Obvious Findings</div>
+
+<!-- Finding 1: Phlage paradox -->
+<div style="border:1px solid #e0e0e0;border-radius:4px;padding:14px;margin:12px 0">
+  <div style="font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#888;margin-bottom:8px">Finding 1: The Phlage Paradox — #1 Damage, #2 Finisher</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div>
+      <div style="font-size:12px;color:#333;line-height:1.6"><span class="card-tip" data-card="Phlage, Titan of Fire's Fury">Phlage</span> deals <strong>984 total damage</strong> (1.77× Ragavan's 557) but only closes <strong>48 games</strong> vs Ragavan's 62. That's 20.5 dmg per kill for Phlage vs 9.0 for Ragavan — Phlage is 2.3× less efficient at converting damage into wins.</div>
+      <div style="font-size:11px;color:#555;margin-top:8px"><strong>Why:</strong> Phlage's 3-drain ETB fires repeatedly (escape from GY) but spreads damage across turns as attrition. Ragavan's haste concentrates damage in the critical T4-6 window when opponents are low. Phlage is a <em>value engine</em>; Ragavan is the <em>assassin</em>.</div>
+    </div>
+    <div>
+      <div style="font-size:11px;color:#555"><strong>Implication for play:</strong> Don't hold Ragavan to protect it from removal — deploy it T1 every time. Each attack does disproportionate damage toward closing the game. Phlage on T3 is fine even into open mana — its job is attrition, not closing.</div>
+      <div style="font-size:10px;color:#888;margin-top:8px">Source: deck_cards[0].finishers, deck_cards[0].mvp_damage</div>
+    </div>
+  </div>
+</div>
+
+<!-- Finding 2: Closer by matchup - the non-obvious part -->
+<div style="border:1px solid #e0e0e0;border-radius:4px;padding:14px;margin:12px 0">
+  <div style="font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#888;margin-bottom:8px">Finding 2: Your Closer Changes Per Matchup — And Not How You'd Expect</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+    <div style="border-left:3px solid #c04010;padding:8px 12px;background:#fffaf5;border-radius:0 4px 4px 0">
+      <div style="font-size:10px;font-weight:700;color:#c04010">PHLAGE closes vs fast decks</div>
+      <div style="font-size:11px;color:#555;margin-top:4px;line-height:1.5">Storm (5 kills at 5.3t), Prowess (6 kills at 5.5t), ETron (4 kills at 7.5t). <strong>Counterintuitive:</strong> in your fastest matchups, the 3-mana card closes, not the 1-mana hasty creature. Reason: Phlage's drain is lethal reach after opponents race you to low life.</div>
+    </div>
+    <div style="border-left:3px solid #1f7040;padding:8px 12px;background:#f0faf0;border-radius:0 4px 4px 0">
+      <div style="font-size:10px;font-weight:700;color:#1f7040">GUIDE closes vs ramp/value</div>
+      <div style="font-size:11px;color:#555;margin-top:4px;line-height:1.5">Amulet (7 kills), Omnath (6 kills), Zoo (3 kills). A <strong>1/2 for W</strong> outperforms Ragavan and Phlage here. Guide's flying (from energy) goes over ground stalls. Lifelink negates their incremental damage while tokens accumulate.</div>
+    </div>
+    <div style="border-left:3px solid #2060c0;padding:8px 12px;background:#f0f5ff;border-radius:0 4px 4px 0">
+      <div style="font-size:10px;font-weight:700;color:#2060c0">RAGAVAN closes vs slow decks</div>
+      <div style="font-size:11px;color:#555;margin-top:4px;line-height:1.5">Goryo's (10 kills), 4/5c (9 kills), Jeskai (2 kills), Dimir (4 kills), Control (5-6 kills). Against opponents who don't pressure your life, Ragavan's haste + repeated attacks snowball. Treasure ramp accelerates Phlage escape.</div>
+    </div>
+  </div>
+  <div style="font-size:10px;color:#999;margin-top:8px"><strong>Takeaway:</strong> Don't assume Ragavan is always your Plan A closer. Against Prowess/Storm, deploy Ragavan as a chump attacker and save resources for Phlage drain as actual lethal.</div>
+</div>
+
+<!-- Finding 3: G1 → Match swings -->
+<div style="border:1px solid #e0e0e0;border-radius:4px;padding:14px;margin:12px 0">
+  <div style="font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#888;margin-bottom:8px">Finding 3: Sideboard Impact — Some Matchups Flip, Some Get Worse</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div>
+      <div style="font-size:10px;font-weight:700;color:#1f7040;margin-bottom:6px">↑ You improve post-board</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;align-items:center;gap:6px;font-size:11px"><span style="width:80px;text-align:right;color:#555;font-weight:600">Living End</span><span style="color:#b02020;font-weight:700;width:35px">40%</span><span style="color:#888">→</span><span style="color:#1f7040;font-weight:700;width:35px">84%</span><span style="color:#1f7040;font-weight:700">+44pp</span></div>
+        <div style="font-size:10px;color:#555;padding-left:86px;margin-top:-2px">Surgical Extraction is the single highest-impact SB card in any matchup. 4 comebacks, 0 for opponent. They literally cannot win G2/G3.</div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:11px;margin-top:4px"><span style="width:80px;text-align:right;color:#555;font-weight:600">Affinity</span><span style="color:#b02020;font-weight:700;width:35px">10%</span><span style="color:#888">→</span><span style="color:#b02020;font-weight:700;width:35px">28%</span><span style="color:#c06010;font-weight:700">+18pp</span></div>
+        <div style="font-size:10px;color:#555;padding-left:86px;margin-top:-2px">Improves but still losing. 0 comebacks. The 1-of Wear // Tear isn't enough. If Affinity stays at 6.1% meta, consider 2× Wear // Tear.</div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:11px;margin-top:4px"><span style="width:80px;text-align:right;color:#555;font-weight:600">Jeskai Blink</span><span style="color:#854f0b;font-weight:700;width:35px">50%</span><span style="color:#888">→</span><span style="color:#1f7040;font-weight:700;width:35px">66%</span><span style="color:#1f7040;font-weight:700">+16pp</span></div>
+        <div style="font-size:10px;color:#555;padding-left:86px;margin-top:-2px">G1 is coin flip (50-50). But Jeskai sweeps 5 to our 2 — yet we win 66%. <strong>We dominate G3.</strong> When it goes to three, Boros nearly always wins.</div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:10px;font-weight:700;color:#b02020;margin-bottom:6px">↓ Opponent improves MORE than you</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;align-items:center;gap:6px;font-size:11px"><span style="width:80px;text-align:right;color:#555;font-weight:600">Prowess</span><span style="color:#1f7040;font-weight:700;width:35px">70%</span><span style="color:#888">→</span><span style="color:#854f0b;font-weight:700;width:35px">54%</span><span style="color:#b02020;font-weight:700">-16pp</span></div>
+        <div style="font-size:10px;color:#555;padding-left:86px;margin-top:-2px">Prowess's Spell Pierce negates your T3 Phlage. Their SB adapts to your removal better than your Wrath adapts to their threats. <strong>Don't feel safe at 70% G1.</strong></div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:11px;margin-top:4px"><span style="width:80px;text-align:right;color:#555;font-weight:600">Amulet</span><span style="color:#1f7040;font-weight:700;width:35px">70%</span><span style="color:#888">→</span><span style="color:#854f0b;font-weight:700;width:35px">58%</span><span style="color:#b02020;font-weight:700">-12pp</span></div>
+        <div style="font-size:10px;color:#555;padding-left:86px;margin-top:-2px">3 Boros comebacks but the matchup still gets worse. Amulet's post-board plan is more effective than ours. Consider Obsidian Charmaw earlier.</div>
+      </div>
+      <div style="border-top:1px solid #f0f0f0;margin-top:10px;padding-top:8px;font-size:10px;color:#999"><strong>Pattern:</strong> Boros's SB excels vs combo (Surgical, Celestial Purge) but underperforms vs tempo/aggro adapting to it. The "flexible midrange" opponents get better faster.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Finding 4: What actually kills you -->
+<div style="border:1px solid #e0e0e0;border-radius:4px;padding:14px;margin:12px 0">
+  <div style="font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#888;margin-bottom:8px">Finding 4: Galvanic Discharge Blind Spots — What It Can't Answer</div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+    <div style="text-align:center"><img src="https://api.scryfall.com/cards/named?fuzzy=Cranial+Plating&format=image&version=art_crop" alt="Cranial Plating" style="width:100%;border-radius:6px;height:70px;object-fit:cover"><div style="font-size:11px;font-weight:700;color:#b02020;margin-top:4px">Construct Token</div><div style="font-size:10px;color:#555">137 dmg · Affinity</div><div style="font-size:9px;color:#888">Artifact creature. GD does 3-4 dmg. Token has 6+ toughness from Plating.</div></div>
+    <div style="text-align:center"><img src="https://api.scryfall.com/cards/named?fuzzy=Murktide+Regent&format=image&version=art_crop" alt="Murktide Regent" style="width:100%;border-radius:6px;height:70px;object-fit:cover"><div style="font-size:11px;font-weight:700;color:#b02020;margin-top:4px">Murktide Regent</div><div style="font-size:10px;color:#555">137 dmg · Dimir</div><div style="font-size:9px;color:#888">Flying 8/8. GD does 3-4. Need 2 removal spells to answer 1 threat.</div></div>
+    <div style="text-align:center"><img src="https://api.scryfall.com/cards/named?fuzzy=Reality+Smasher&format=image&version=art_crop" alt="Reality Smasher" style="width:100%;border-radius:6px;height:70px;object-fit:cover"><div style="font-size:11px;font-weight:700;color:#b02020;margin-top:4px">Reality Smasher</div><div style="font-size:10px;color:#555">104 dmg · ETron</div><div style="font-size:9px;color:#888">Trample + haste + discard on target. GD costs a card even if it could kill it.</div></div>
+    <div style="text-align:center"><img src="https://api.scryfall.com/cards/named?fuzzy=Grapeshot&format=image&version=art_crop" alt="Grapeshot" style="width:100%;border-radius:6px;height:70px;object-fit:cover"><div style="font-size:11px;font-weight:700;color:#b02020;margin-top:4px">Grapeshot</div><div style="font-size:10px;color:#555">122 dmg · Storm</div><div style="font-size:9px;color:#888">Non-creature. Can't be removed. You have 0 mainboard answers to storm kills.</div></div>
+  </div>
+  <div style="font-size:11px;color:#333;margin-top:10px;line-height:1.5"><strong>The pattern:</strong> Every matchup below 55% involves threats that Galvanic Discharge structurally can't answer — oversized artifacts, flying fatties, non-creature combo. Your removal suite is designed for the 68%+ matchups (small creatures, fair decks). The 28-40% matchups need a fundamentally different interaction axis (artifact hate, counterspells, or faster clock).</div>
+</div>
+
+<!-- Finding 5: Cat Token insight + sweep patterns -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:12px 0">
+  <div style="border:1px solid #e0e0e0;border-radius:4px;padding:14px">
+    <div style="font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#888;margin-bottom:8px">Finding 5: Never Board Out Ocelot Pride</div>
+    <div style="font-size:12px;color:#333;line-height:1.6"><span class="card-tip" data-card="Ocelot Pride">Ocelot Pride</span>'s Cat Tokens are the <strong>#3 total damage source at 384 dmg</strong> — more than Galvanic Discharge (243 casts as removal), Goblin Bombardment, Blood Moon, and every other noncreature card combined.</div>
+    <div style="font-size:11px;color:#555;margin-top:6px">Boarding out Ocelot cuts ~20% of your damage output. Even in matchups where 1/1 tokens seem bad (ETron, Affinity), the aggregate damage from tokens that get in early is significant. <strong>Board out Thraben Charm instead</strong> — it's the flex slot the sim always cuts first.</div>
+    <div style="font-size:10px;color:#888;margin-top:6px">Source: deck_cards[0].mvp_damage — Cat Token 384 > any individual noncreature</div>
+  </div>
+  <div style="border:1px solid #e0e0e0;border-radius:4px;padding:14px">
+    <div style="font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#888;margin-bottom:8px">Finding 6: The -0.1pp Gap Is the Real Story</div>
+    <div style="font-size:12px;color:#333;line-height:1.6">Boros's weighted WR drops only <strong>0.1pp</strong> from flat (65.3% → 65.2%). Compare: Domain Zoo drops 6.0pp, Affinity drops 2.3pp, Jeskai drops 4.5pp.</div>
+    <div style="font-size:11px;color:#555;margin-top:6px">This means Boros's win rate is <strong>almost perfectly flat across opponent quality</strong>. It beats top decks nearly as well as weak ones. Most decks inflate their flat WR by farming bad matchups — Boros doesn't. Its 65.3% is real against the field you'll actually face at a tournament.</div>
+    <div style="font-size:11px;color:#555;margin-top:4px"><strong>Why this matters for metagaming:</strong> If someone says "Boros is overrated at 65%", they're wrong — that 65% holds at the top tables. The deck doesn't have a house-of-cards WR that collapses when opponents get good.</div>
+  </div>
+</div>
+
+<div class="section-title">Matchup Spread</div>
+<div class="tier-hdr">T1 opponents (≥5% meta share)</div>
+<div class="mu-row"><span class="mu-name">Jeskai Blink</span><span class="mu-type">tempo</span><span class="mu-meta">9.2%</span><div class="mu-bar"><div class="mu-fill" style="width:66%;background:#1f7040"></div></div><span class="mu-val" style="color:#1f7040">66%</span></div>
+<div class="mu-row"><span class="mu-name">Ruby Storm</span><span class="mu-type">combo</span><span class="mu-meta">6.2%</span><div class="mu-bar"><div class="mu-fill" style="width:68%;background:#1f7040"></div></div><span class="mu-val" style="color:#1f7040">68%</span></div>
+<div class="mu-row"><span class="mu-name">Affinity</span><span class="mu-type">aggro</span><span class="mu-meta">6.1%</span><div class="mu-bar"><div class="mu-fill" style="width:28%;background:#b02020"></div></div><span class="mu-val" style="color:#b02020">28%</span></div>
+<div class="mu-row"><span class="mu-name">Eldrazi Tron</span><span class="mu-type">ramp</span><span class="mu-meta">7.1%</span><div class="mu-bar"><div class="mu-fill" style="width:40%;background:#b02020"></div></div><span class="mu-val" style="color:#b02020">40%</span></div>
+<div class="mu-row"><span class="mu-name">4/5c Control</span><span class="mu-type">control</span><span class="mu-meta">6.7%</span><div class="mu-bar"><div class="mu-fill" style="width:86%;background:#1f7040"></div></div><span class="mu-val" style="color:#1f7040">86%</span></div>
+<div class="mu-row"><span class="mu-name">Az Control (WST)</span><span class="mu-type">control</span><span class="mu-meta">6.7%</span><div class="mu-bar"><div class="mu-fill" style="width:68%;background:#1f7040"></div></div><span class="mu-val" style="color:#1f7040">68%</span></div>
+<div class="mu-row"><span class="mu-name">Azorius Control</span><span class="mu-type">control</span><span class="mu-meta">6.7%</span><div class="mu-bar"><div class="mu-fill" style="width:98%;background:#1f7040"></div></div><span class="mu-val" style="color:#1f7040">98%</span></div>
+<div class="tier-hdr">T2 opponents (3-5%)</div>
+<div class="mu-row"><span class="mu-name">Izzet Prowess</span><span class="mu-type">aggro</span><span class="mu-meta">4.9%</span><div class="mu-bar"><div class="mu-fill" style="width:54%;background:#854f0b"></div></div><span class="mu-val" style="color:#854f0b">54%</span></div>
+<div class="mu-row"><span class="mu-name">Amulet Titan</span><span class="mu-type">combo</span><span class="mu-meta">4.1%</span><div class="mu-bar"><div class="mu-fill" style="width:58%;background:#854f0b"></div></div><span class="mu-val" style="color:#854f0b">58%</span></div>
+<div class="mu-row"><span class="mu-name">Goryo's Vengeance</span><span class="mu-type">combo</span><span class="mu-meta">3.6%</span><div class="mu-bar"><div class="mu-fill" style="width:74%;background:#1f7040"></div></div><span class="mu-val" style="color:#1f7040">74%</span></div>
+<div class="mu-row"><span class="mu-name">Living End</span><span class="mu-type">combo</span><span class="mu-meta">3.6%</span><div class="mu-bar"><div class="mu-fill" style="width:84%;background:#1f7040"></div></div><span class="mu-val" style="color:#1f7040">84%</span></div>
+<div class="mu-row"><span class="mu-name">4c Omnath</span><span class="mu-type">midrange</span><span class="mu-meta">3.5%</span><div class="mu-bar"><div class="mu-fill" style="width:68%;background:#1f7040"></div></div><span class="mu-val" style="color:#1f7040">68%</span></div>
+<div class="tier-hdr">Field</div>
+<div class="mu-row"><span class="mu-name">Domain Zoo</span><span class="mu-type">aggro</span><span class="mu-meta">2.9%</span><div class="mu-bar"><div class="mu-fill" style="width:66%;background:#1f7040"></div></div><span class="mu-val" style="color:#1f7040">66%</span></div>
+<div class="mu-row"><span class="mu-name">Dimir Midrange</span><span class="mu-type">midrange</span><span class="mu-meta">2.8%</span><div class="mu-bar"><div class="mu-fill" style="width:56%;background:#854f0b"></div></div><span class="mu-val" style="color:#854f0b">56%</span></div>
+
+<div class="prov">
+  Simulated: 2026-04-12 · 15 decks · 50 Bo3/pair (700 games for Boros) · Avg kill: T6.3 · Engine: MTGSimManu<br>
+  Source: metagame_14deck.jsx (D object) · Card stats: deck_cards[0] · Matchups: matchup_cards["0,*"]<br>
+  Shell: ManusAI · Strategy + EV scoring: Claude · Owner: DJPieter81
+</div>
+</body></html>
