@@ -18,6 +18,10 @@ from .priority_system import PrioritySystem
 from .combat_manager import CombatManager
 from .callbacks import GameCallbacks
 
+# MTG rule: "Urza's Tron" — three specific lands that produce 7 colorless
+# when all three are in play. Analogous to basic land type → color mapping.
+URZA_TRON_LANDS = {"Urza's Tower", "Urza's Mine", "Urza's Power Plant"}
+
 from ai.ev_player import EVPlayer as AIPlayer
 from ai.board_eval import evaluate_action, Action, ActionType
 from ai.mana_planner import analyze_mana_needs, choose_fetch_target
@@ -1468,7 +1472,7 @@ class GameRunner:
                 untapped_count = len(player.untapped_lands)
                 if untapped_count >= 2:
                     # Find missing Tron piece
-                    tron_pieces = {"Urza's Tower", "Urza's Mine", "Urza's Power Plant"}
+                    tron_pieces = URZA_TRON_LANDS
                     on_board = {l.name for l in player.lands}
                     missing = tron_pieces - on_board
                     # Also search for Eldrazi Temple or utility lands
@@ -1643,7 +1647,7 @@ class GameRunner:
                 opp.exile.append(c)
         elif 'search' in effect_text and 'land' in effect_text:
             # Smart land search: find missing Tron piece first, then any land
-            tron_pieces = {"Urza's Tower", "Urza's Mine", "Urza's Power Plant"}
+            tron_pieces = URZA_TRON_LANDS
             on_board = {l.name for l in player.lands}
             in_hand = {c.name for c in player.hand if c.template.is_land}
             missing_tron = tron_pieces - on_board - in_hand

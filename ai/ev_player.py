@@ -749,19 +749,22 @@ class EVPlayer:
             if is_bounce_land:
                 ev += 8.0
 
-        # Amulet Titan cast-turn priority: when Primeval Titan is in hand and
-        # this land brings us to (or past) the 6-mana threshold, rush the land.
-        # Counts effective mana including Amulet doubling on bounce lands.
-        has_titan_in_hand = any(c.template.name == 'Primeval Titan' for c in me.hand)
-        if has_titan_in_hand:
+        # High-CMC creature ramp priority: when a CMC 6+ creature is in hand
+        # and this land brings us to casting threshold, rush the land.
+        # (Primeval Titan, Cultivator Colossus, Reality Smasher, etc.)
+        high_cmc_creature = next(
+            (c for c in me.hand if c.template.is_creature and (c.template.cmc or 0) >= 6),
+            None)
+        if high_cmc_creature:
+            target_cmc = high_cmc_creature.template.cmc or 6
             effective_mana_after = current_untapped + (1 if not effectively_tapped else 0)
             # Amulet doubles tapped-land mana: add +1 if we have enabler + tapped land
             if has_untap_enabler and land.template.enters_tapped:
                 effective_mana_after += 1
-            if effective_mana_after >= 6:
-                ev += 12.0   # enables Titan this turn
-            elif effective_mana_after >= 4:
-                ev += 4.0    # on-curve ramp to Titan next turn
+            if effective_mana_after >= target_cmc:
+                ev += 12.0   # enables big creature this turn
+            elif effective_mana_after >= target_cmc - 2:
+                ev += 4.0    # on-curve ramp to big creature next turn
 
         # New colors: enables spells we couldn't cast → direct clock impact
         existing_colors = set()

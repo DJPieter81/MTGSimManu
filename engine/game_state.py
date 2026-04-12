@@ -1263,87 +1263,53 @@ class GameState:
                     and c.template.color_identity & template.color_identity
                 ]
                 if exile_candidates:
-                    # Two-tier protection system:
-                    # CRITICAL: NEVER exile these (unique combo pieces)
-                    CRITICAL_PIECES = {
-                        # Goryo's combo
-                        "Griselbrand", "Goryo's Vengeance", "Through the Breach",
-                        "Persist", "Atraxa, Grand Unifier",
-                        # Ruby Storm finishers
-                        "Grapeshot", "Empty the Warrens", "Past in Flames",
-                        # Amulet Titan
-                        "Primeval Titan", "Amulet of Vigor", "Cultivator Colossus",
-                        # Living End cascade spells (MUST keep at least one)
-                        "Shardless Agent", "Demonic Dread", "Violent Outburst",
-                        # Key threats
-                        "Omnath, Locus of Creation",
-                    }
-                    # IMPORTANT: Avoid exiling but allow if redundant or necessary
-                    IMPORTANT_PIECES = {
-                        # Goryo's enablers
-                        "Faithful Mending", "Unmarked Grave",
-                        # Ruby Storm rituals
-                        "Pyretic Ritual", "Desperate Ritual", "Manamorphose",
-                        "Ruby Medallion", "Gifts Ungiven", "Wish",
-                        # Living End cyclers (prefer to cycle, but can exile if needed)
-                        "Striped Riverwinder", "Architects of Will",
-                        "Curator of Mysteries", "Waker of Waves",
-                        # Amulet Titan enablers
-                        "Summoner's Pact", "Dryad of the Ilysian Grove",
-                        "Azusa, Lost but Seeking",
-                        # Key threats
-                        "Phlage, Titan of Fire's Fury",
-                        "Ajani, Nacatl Pariah // Ajani, Nacatl Avenger",
-                        "Wurmcoil Engine", "Karn, the Great Creator",
-                        "Teferi, Time Raveler", "Murktide Regent",
-                        "Ephemerate", "Spell Queller",
-                    }
-                    
-                    # Filter out CRITICAL pieces entirely
-                    safe_candidates = [c for c in exile_candidates if c.name not in CRITICAL_PIECES]
-                    if not safe_candidates:
-                        return False  # All candidates are critical, skip evoke
-                    
+                    # Generic evoke exile scoring — no hardcoded card names.
+                    # Uses gameplan card_priorities when available, falls back to
+                    # tag-based heuristics (combo pieces > threats > filler).
                     def exile_priority(c):
-                        # Lower = more willing to exile
-                        score = c.template.cmc
-                        if c.name in IMPORTANT_PIECES:
-                            # Check if we have redundant copies
-                            copies_in_hand = sum(1 for h in player.hand if h.name == c.name)
-                            if copies_in_hand >= 2:
-                                score += 5   # Redundant copy, mild protection
-                            else:
-                                score += 30  # Only copy, strong protection
-                        # Prefer exiling reactive spells
-                        if hasattr(c.template, 'tags') and c.template.tags:
-                            if 'counterspell' in c.template.tags or 'interaction' in c.template.tags:
-                                score -= 3
-                        # Cycling creatures are fine to exile (already used their value)
-                        if getattr(c.template, 'cycling_cost_data', None):
-                            score -= 5
+                        """Lower score = more willing to exile this card."""
+                        score = c.template.cmc or 0  # prefer exiling cheap cards
+                        tags = c.template.tags or set()
+                        # Tag-based protection
+                        if any(t in tags for t in ('combo', 'finisher')):
+                            score += 50  # never exile combo pieces
+                        if Keyword.STORM in c.template.keywords:
+                            score += 50
+                        if Keyword.CASCADE in c.template.keywords:
+                            score += 40  # cascade spells are critical
+                        if any(t in tags for t in ('threat', 'removal', 'board_wipe')):
+                            score += 10
+                        if any(t in tags for t in ('ritual', 'cost_reducer', 'ramp')):
+                            score += 15  # enablers are important
+                        if any(t in tags for t in ('cantrip', 'cycling')):
+                            score += 5  # replaceable card draw
+                        # Duplicate protection: if we have 2+ copies, one is expendable
+                        dupes = sum(1 for h in player.hand
+                                    if h.name == c.name and h != c)
+                        if dupes > 0:
+                            score -= 20  # redundant copy is safe to exile
                         return score
-                    exile_card = min(safe_candidates, key=exile_priority)
-                    # If the best exile candidate is an important piece with no
-                    # redundant copies (exile_priority assigns +30 for sole copies
-                    # of IMPORTANT_PIECES), skip evoke to preserve synergy unless
-                    # under lethal pressure.
-                    if exile_card.name in IMPORTANT_PIECES and \
-                       sum(1 for h in player.hand if h.name == exile_card.name) < 2:
+
+                    exile_candidates.sort(key=exile_priority)
+                    best_exile = exile_candidates[0]
+                    # Don't exile if the best candidate is a critical piece
+                    if exile_priority(best_exile) >= 40:
+                        return False  # all candidates are too important
+                    # Lethal check: allow exiling important pieces under pressure
+                    if exile_priority(best_exile) >= 20:
                         opp_idx = 1 - player_idx
                         opp_power = sum(
                             (c.power or c.template.power or 0)
                             for c in self.players[opp_idx].creatures
                         )
-                        # Only sacrifice the synergy piece if opponent threatens
-                        # lethal next attack (power >= life)
                         if opp_power < player.life:
-                            return False  # Don't waste important synergy pieces
-                    player.hand.remove(exile_card)
-                    exile_card.zone = "exile"
-                    player.exile.append(exile_card)
+                            return False  # not under pressure, keep synergy piece
+                    player.hand.remove(best_exile)
+                    best_exile.zone = "exile"
+                    player.exile.append(best_exile)
                     evoked = True
                     self.log.append(f"T{self.display_turn} P{player_idx+1}: "
-                                   f"Evoke {card.name} (exile {exile_card.name})")
+                                   f"Evoke {card.name} (exile {best_exile.name})")
                 else:
                     return False
 
@@ -1829,8 +1795,13 @@ class GameState:
         if found_card:
             self.log.append(f"T{self.display_turn}: Cascade hits {found_card.name}")
 
-            # Special: Living End
-            if found_card.name == "Living End":
+            # Detect "exile all creatures + return from GY" effects (Living End, etc.)
+            found_oracle = (found_card.template.oracle_text or '').lower()
+            is_mass_reanimate = (
+                'sacrifices all creatures' in found_oracle
+                and 'puts all creature cards' in found_oracle
+            )
+            if is_mass_reanimate:
                 self._resolve_living_end(controller)
                 found_card.zone = "graveyard"
                 if found_card in player.exile:
