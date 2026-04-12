@@ -28,6 +28,34 @@ if TYPE_CHECKING:
 
 
 # ═══════════════════════════════════════════════════════════════════
+# Role assessment — "Who's the beatdown?"
+# ═══════════════════════════════════════════════════════════════════
+
+class Role(Enum):
+    BEATDOWN = "beatdown"
+    CONTROL = "control"
+
+def assess_role(game: "GameState", player_idx: int) -> Role:
+    """Determine if we should be attacking or defending.
+    Compare total board power: higher power = beatdown."""
+    me = game.players[player_idx]
+    opp = game.players[1 - player_idx]
+    my_power = sum(c.power or 0 for c in me.creatures)
+    opp_power = sum(c.power or 0 for c in opp.creatures)
+    my_life = me.life
+    opp_life = opp.life
+    # Beatdown if: more board power, or opponent lower life, or aggro archetype
+    if my_power > opp_power + 2:
+        return Role.BEATDOWN
+    if opp_life < my_life - 5:
+        return Role.BEATDOWN
+    if my_power < opp_power - 2:
+        return Role.CONTROL
+    # Default: deck with faster clock is beatdown
+    return Role.BEATDOWN if my_power >= opp_power else Role.CONTROL
+
+
+# ═══════════════════════════════════════════════════════════════════
 # Constants & keyword value table
 # ═══════════════════════════════════════════════════════════════════
 

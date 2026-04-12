@@ -108,6 +108,12 @@ def sideboard(mainboard: Dict[str, int], sideboard_cards: Dict[str, int],
             if any(w in card_lower for w in ["drown in the loch", "consider"]):
                 board_out_priority.append((card_name, min(count, 2), 6))
 
+        # Board out slow engines vs fast artifact aggro
+        if any(w in opp_lower for w in ["affinity", "pinnacle"]):
+            if any(w in card_lower for w in ["bombardment", "voice of victory",
+                                               "static prison"]):
+                board_out_priority.append((card_name, min(count, 2), 6))
+
         # Board out Blood Moon vs R-based and aggro decks (their lands already produce R)
         if any(w in opp_lower for w in ["prowess", "energy", "storm", "affinity", "pinnacle"]):
             if "blood moon" in card_lower:
@@ -140,37 +146,48 @@ def sideboard(mainboard: Dict[str, int], sideboard_cards: Dict[str, int],
         max_swaps = 7
     in_idx = 0
     out_idx = 0
+    # Track remaining counts separately (tuple values are immutable)
+    in_remaining = [count for _, count, _ in board_in_priority]
+    out_remaining = [count for _, count, _ in board_out_priority]
 
     while swaps < max_swaps and in_idx < len(board_in_priority) and out_idx < len(board_out_priority):
-        in_card, in_count, _ = board_in_priority[in_idx]
-        out_card, out_count, _ = board_out_priority[out_idx]
+        in_card = board_in_priority[in_idx][0]
+        in_count = in_remaining[in_idx]
+        out_card = board_out_priority[out_idx][0]
+        out_count = out_remaining[out_idx]
 
         swap_count = min(in_count, out_count, max_swaps - swaps,
-                        new_main.get(out_card, 0))  # can't remove more than we have
+                        new_main.get(out_card, 0),  # can't remove more than we have
+                        new_side.get(in_card, 0))    # can't add more than SB has
 
         if swap_count == 0:
-            # Out card already removed from main — skip it
-            out_idx += 1
+            # Out card already removed from main or in card exhausted in SB — skip
+            if new_main.get(out_card, 0) == 0:
+                out_idx += 1
+            elif new_side.get(in_card, 0) == 0:
+                in_idx += 1
+            else:
+                out_idx += 1
             continue
 
         if swap_count > 0:
             new_main[in_card] = new_main.get(in_card, 0) + swap_count
             new_side[in_card] = max(0, new_side.get(in_card, 0) - swap_count)
-            if new_side[in_card] == 0:
+            if new_side.get(in_card, 0) == 0 and in_card in new_side:
                 del new_side[in_card]
 
             new_main[out_card] = max(0, new_main.get(out_card, 0) - swap_count)
-            if new_main[out_card] == 0:
+            if new_main.get(out_card, 0) == 0 and out_card in new_main:
                 del new_main[out_card]
             new_side[out_card] = new_side.get(out_card, 0) + swap_count
 
             swaps += swap_count
 
-        in_count -= swap_count
-        out_count -= swap_count
-        if in_count <= 0:
+        in_remaining[in_idx] -= swap_count
+        out_remaining[out_idx] -= swap_count
+        if in_remaining[in_idx] <= 0:
             in_idx += 1
-        if out_count <= 0:
+        if out_remaining[out_idx] <= 0:
             out_idx += 1
 
     # Log swaps
