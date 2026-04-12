@@ -4,25 +4,26 @@
   "goals": [
     {
       "goal_type": "INTERACT",
-      "description": "Counter threats, remove early creatures, deploy Chalice to lock 1-drops",
+      "description": "Answer early threats with Solitude, Prismatic Ending, Counterspell. Deploy T3feri to shut off instant speed",
       "card_priorities": {
-        "Chalice of the Void": 24.0,
-        "Prismatic Ending": 22.0,
-        "March of Otherworldly Light": 20.0,
+        "Teferi, Time Raveler": 24.0,
+        "Solitude": 22.0,
+        "Prismatic Ending": 20.0,
         "Counterspell": 18.0,
-        "Dovin's Veto": 16.0,
-        "Teferi, Time Raveler": 15.0
+        "Orim's Chant": 12.0,
+        "Consult the Star Charts": 10.0
       },
       "card_roles": {
         "interaction": [
-          "Chalice of the Void",
+          "Solitude",
+          "Subtlety",
+          "Prismatic Ending",
           "Counterspell",
-          "Dovin's Veto",
-          "March of Otherworldly Light",
-          "Prismatic Ending"
+          "Orim's Chant"
         ],
         "enablers": [
-          "Teferi, Time Raveler"
+          "Teferi, Time Raveler",
+          "Consult the Star Charts"
         ]
       },
       "min_turns": 2,
@@ -30,13 +31,14 @@
     },
     {
       "goal_type": "GRIND_VALUE",
-      "description": "Stabilize with sweepers, deploy Sanctifier vs red/black, Teferi for value",
+      "description": "Stabilize with sweepers, deploy Isochron Scepter imprinting Orim's Chant for soft-lock. Teferi Hero for card advantage",
       "card_priorities": {
+        "Isochron Scepter": 24.0,
         "Wrath of the Skies": 22.0,
         "Supreme Verdict": 20.0,
-        "Sanctifier en-Vec": 18.0,
-        "Teferi, Time Raveler": 16.0,
-        "Wan Shi Tong, Librarian": 15.0
+        "Teferi, Hero of Dominaria": 18.0,
+        "Orim's Chant": 16.0,
+        "Stock Up": 12.0
       },
       "card_roles": {
         "interaction": [
@@ -44,38 +46,48 @@
           "Wrath of the Skies"
         ],
         "payoffs": [
-          "Sanctifier en-Vec",
-          "Teferi, Time Raveler"
+          "Isochron Scepter",
+          "Teferi, Hero of Dominaria"
         ],
         "engines": [
-          "Wan Shi Tong, Librarian"
+          "Consult the Star Charts",
+          "Stock Up"
         ]
       },
       "hold_mana": true
     },
     {
       "goal_type": "CLOSE_GAME",
-      "description": "Deploy Wan Shi Tong as finisher — grows from opponent's fetches, draws cards",
+      "description": "Lock opponent out with Scepter-Chant, win with Teferi Hero ultimate or Hall of Storm Giants",
       "card_priorities": {
-        "Wan Shi Tong, Librarian": 22.0,
-        "Sanctifier en-Vec": 14.0
+        "Teferi, Hero of Dominaria": 22.0,
+        "Isochron Scepter": 20.0,
+        "Orim's Chant": 16.0
       }
     }
   ],
   "mulligan_keys": [
-    "Chalice of the Void",
+    "Teferi, Time Raveler",
     "Counterspell",
     "Prismatic Ending",
-    "March of Otherworldly Light",
-    "Teferi, Time Raveler"
+    "Solitude",
+    "Isochron Scepter",
+    "Orim's Chant"
   ],
   "mulligan_min_lands": 2,
   "mulligan_max_lands": 5,
+  "mulligan_combo_sets": [
+    ["Isochron Scepter", "Orim's Chant"]
+  ],
   "always_early": [
-    "Chalice of the Void"
+    "Teferi, Time Raveler"
   ],
   "reactive_only": [
     "Counterspell",
-    "Dovin's Veto"
+    "Orim's Chant"
+  ],
+  "critical_pieces": [
+    "Isochron Scepter",
+    "Orim's Chant"
   ]
 }
