@@ -1,182 +1,87 @@
 ---
 name: mtg-deck-guide
-description: Generate comprehensive MTG deck guides with sim-verified data. Use this skill whenever the user wants to create a deck guide, deck primer, matchup guide, mulligan guide, or sideboard guide for any MTG deck. Triggers on requests like "make a guide for [deck]", "deck primer", "mulligan analysis", "sideboard plans", "hand analysis", or "what hands should I keep". Also triggers when the user wants to analyze opening hand win rates, extract hand archetypes from simulation data, or create tournament prep documents. Use this skill even if the format isn't Legacy — the methodology applies to any format with a sim engine.
+description: Generate comprehensive MTG deck guides with sim-verified data. Use this skill whenever the user wants to create a deck guide, deck primer, matchup guide, mulligan guide, or sideboard guide for any MTG deck. Triggers on requests like "make a guide for [deck]", "deck primer", "mulligan analysis", "sideboard plans", "hand analysis", or "what hands should I keep". Also triggers when the user wants to analyze opening hand win rates, extract hand archetypes from simulation data, or create tournament prep documents.
 ---
 
 # MTG Deck Guide Generator
 
-Generates a comprehensive, single-file HTML deck guide with sim-verified data including real opening hands, hand archetype analysis, kill turn distributions, matchup spreads, and sideboard plans.
-
-## When to Use
-
-- User wants a deck guide, primer, or matchup analysis
-- User asks for mulligan advice backed by data
-- User wants to know which hands win and which lose
-- User wants sideboard plans ordered by meta relevance
-- User wants visualizations of matchup spreads or kill turn distributions
-
-## Output Structure
-
-A standalone HTML file (~40-60KB) with this flow:
-
-1. **Hero** — 4-col grid: Format, Sim WR (flat + weighted), Rank/Tier, Best/Worst
-2. **Decklist** — Two-column: Main 60 with role badges left, SB 15 + findings right
-3. **Game Plan** — Phase-based timeline (3 phases with colored dots)
-4. **Kill Turn Distribution** — Bar chart from sim data
-5. **Hand Archetype Win Rates** — Horizontal bars with baseline marker (2,000 games)
-6. **Real Sim Hands** — Keep (green) / Mull (red) boxes with turn-by-turn logs
-7. **Metagame Strategy** — 7 visual components (archetype WR, tournament sim, triptych, arc, delta proof, danger cards, game plan)
-8. **Matchup Spread** — All opponents grouped by meta tier with WR bars
-9. **Provenance Footer** — Exact sim parameters, deck count, game count, date
-
-## Data Requirements
-
-The guide requires data from the meta matrix skill (`mtg-meta-matrix`), plus additional hand analysis:
-
-| Data | Source | Purpose |
-|------|--------|---------|
-| `meta_N.json` | Meta matrix | Matchup WRs, kill turns, game stats |
-| `deck_agg.json` | Meta matrix | MVPs, finishers, deck profile |
-| `card_trimmed.json` | Meta matrix | Per-matchup card stats |
-| Hand samples | New extraction | Real opening hands with outcomes |
-
-## Hand Analysis Pipeline
-
-Read `references/hand_analysis.md` for the full methodology. Summary:
-
-### Step 1: Collect 2,000 games
-
-```python
-for _ in range(2000):
-    opp = random.choice(opponents)
-    r = run_symmetric_game(deck, opp)
-    # Record: hand composition, won/lost, kill_turn, opponent
-```
-
-### Step 2: Classify hand composition
-
-For each 7-card hand, count:
-- Lands, creatures, cantrips, burn spells / counters / removal
-- Presence of key cards (deck-specific)
-- Has T1 threat? Has free counter? etc.
-
-### Step 3: Calculate archetype win rates
-
-Group hands by formula (e.g., "2L-1C-4S") and by named archetype (e.g., "T1 threat + Force + cantrip"). Calculate WR for each group vs baseline.
-
-### Step 4: Select real example hands
-
-- **Winning hands**: Pick 3 fastest kills with full game logs
-- **Losing hands**: Pick 2-3 losses that illustrate WHY the deck loses (usually T1 combo, not bad hands)
-- Verify mana math in all turn-by-turn sequences
-
-### Critical: Mana Math Verification
-
-ALWAYS verify that described play sequences are physically possible:
-- Can't cast 2 spells with 1 mana source
-- Fireblast needs 2 Mountains on battlefield (not in hand)
-- Suspend costs mana (R for Rift Bolt)
-- Goblin Guide reveals OPPONENT's top card, not yours
-- Prowess only triggers from NONCREATURE spells
-
-## Design System
-
-Read `references/design_system.md` for the complete visual spec.
-
-### Theme: Light Clean (Amulet Titan style)
-```css
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-       background: #fff; color: #111; max-width: 960px; margin: 0 auto; }
-Colors: green #1f7040 (good) / amber #854f0b (neutral) / red #b02020 (bad)
-```
-
-### Card Role Badges
-Each card in the decklist gets a colored badge:
-| Badge | CSS | Use |
-|-------|-----|-----|
-| `b-threat` | green bg | Creatures that attack |
-| `b-burn` / `b-reach` | orange/purple bg | Direct damage spells |
-| `b-engine` | warm bg | Repeatable value (Eidolon, Bowmasters) |
-| `b-finisher` / `b-kill` | red bg | Closers (Fireblast, Emrakul) |
-| `b-enabler` | green bg | Setup (Amulet, Dark Ritual) |
-| `b-removal` | red bg | Interaction (Bolt, Push, Swords) |
-| `b-draw` / `b-tutor` | blue/gold bg | Card selection |
-| `b-hate` | purple bg | Sideboard hate (Pyroblast, Veil) |
-| `b-flex` | grey bg | Lands, flexible slots |
-
-### Scryfall Card Image Hovers
-All card names get `class="card-tip" data-card="Card Name"` which shows the
-actual MTG card image on mouseover via Scryfall API:
-`api.scryfall.com/cards/named?fuzzy=NAME&format=image&version=normal`
-JS popup follows cursor, caches images after first load.
-
-### Layout
-- **Hero**: 4-column grid (Format, WR, Rank, Best/Worst)
-- **Decklist**: Two-column (mainboard left, sideboard + findings right)
-- **Game Plan**: Vertical timeline with colored dots + phase boxes
-- **Kill Turn**: CSS flex bar chart
-- **Matchup Spread**: Tier-grouped horizontal bars with meta WR column
-
-### Metagame Strategy Section (7 visual components)
-1. **Archetype WR bars** — horizontal bars by opponent type
-2. **Tournament histogram** — 8-round sim from 10,000 runs
-3. **Prey/Competitive/Danger triptych** — 3 cards with big WR + text
-4. **Tournament arc** — segmented color bar (R1-3 bank → R4-6 gauntlet → R7-8 top)
-5. **Delta proof chart** — flat→weighted drop comparison across T1 decks
-6. **Danger matchup cards** — red gradient header + ✗/⚡/★ icon bullets
-7. **Game plan timeline** — vertical dots connecting phase boxes
-
-## Ordering Principle
-
-**Everything ordered by meta tier, not by win rate.** The decks you'll face most often (Tier 1) appear first in:
-- Matchup spread bars
-- Sideboard table rows
-- Deck profile matchup lists
-
-This is a tournament prep tool — you study the common matchups first.
-
-## Sideboard Construction
-
-For decks without a physical sideboard in the sim (BO1), construct a realistic 15-card sideboard based on:
-1. The deck's weaknesses revealed by sim data
-2. Common Legacy/Modern sideboard cards for the archetype
-3. Which cards to cut in each matchup (weakest maindeck cards)
-
-Always include the IN/OUT with specific card names and counts.
-
-## File Structure
-
-```
-mtg-deck-guide/
-├── SKILL.md (this file)
-└── references/
-    ├── hand_analysis.md    — Full hand extraction and archetype methodology
-    ├── design_system.md    — CSS variables, fonts, component patterns
-    └── mana_math.md        — Common mana math pitfalls to avoid
-```
-
-## Quick Generation (NEW)
+## Quick Reference
 
 ```bash
-# All T1/T2 decks at once
-python build_guide.py --all /mnt/user-data/outputs/
+# All T1/T2 decks
+python build_guide.py --all guides/
 
 # Single deck
-python build_guide.py "Boros Energy" /mnt/user-data/outputs/guide_boros.html
+python build_guide.py "Boros Energy" guides/guide_boros_energy.html
 ```
 
-`build_guide.py` reads `metagame_data.jsx` and generates: hero stats, Stars of Sim (Scryfall thumbnails), G1→match swing table, danger cards, tiered matchup spread, provenance footer.
+Reads: `metagame_data.jsx` (D object), `decks/modern_meta.py` (decklists), `decks/gameplans/*.json` (goal sequences)
 
-For tournament-grade guides, read `templates/reference_deck_guide.html` first — it has the full 11-section spec including real sim hands, game plan phases, and 6 pro-level findings.
+## REQUIRED Sections (8 minimum)
+
+Every guide produced by `build_guide.py` MUST contain ALL of these. If any section is missing, the guide is incomplete — fix the generator, don't ship it.
+
+| # | Section | Data source | Verification |
+|---|---------|-------------|-------------|
+| 1 | **Hero stats** (4-col) | D.overall[idx] | grep `hero-item` ≥ 4 |
+| 2 | **Decklist** with card stats (casts/dmg/kills) | MODERN_DECKS + D.deck_cards | grep `dl-row` ≥ 20 |
+| 3 | **Stars of the Sim** (Scryfall thumbnails) | D.deck_cards finishers + mvp_damage | grep `star-card` ≥ 2 |
+| 4 | **Game Plan** (3 phases from gameplan JSON) | decks/gameplans/*.json | grep `Game Plan` = 1 |
+| 5 | **Kill Turn Distribution** (bar per opponent) | matchup_cards[key].avg_turns | grep `Kill Turn` = 1 |
+| 6 | **Non-Obvious Findings** (up to 6) | Derived from matchup data | grep `Non-Obvious` = 1 |
+| 7 | **G1→Match Swing** table | matchup_cards g1_wins vs match WR | grep `Swing` = 1 |
+| 8 | **Matchup Spread** (tiered T1/T2/Field) | D.wins + D.meta_shares | grep `mu-row` ≥ 5 |
+
+Optional (requires verbose sim data not in JSX):
+- Hand Archetype WR bars (needs hand extraction from game logs)
+- Real Sim Hands with turn-by-turn (needs verbose game traces)
+- Danger Cards with Scryfall art crops (included when d2_top_damage exists)
+
+## Post-Generation Verification
+
+After `build_guide.py --all`, run this check:
+
+```bash
+for f in guides/guide_*.html; do
+  sections=$(grep -c "section-title" "$f")
+  cards=$(grep -c "dl-row" "$f")
+  stars=$(grep -c "star-card" "$f")
+  echo "$f: $sections sections, $cards cards, $stars stars"
+  if [ "$sections" -lt 7 ]; then echo "  WARNING: missing sections!"; fi
+  if [ "$cards" -lt 15 ]; then echo "  WARNING: decklist incomplete!"; fi
+done
+```
 
 ## 6 Required Pro-Level Findings
 
-Each finding must be data-backed, non-obvious, and actionable:
-1. Damage-to-kill efficiency paradox (top dmg source ≠ top closer)
-2. Closer changes by matchup speed counterintuitively
-3. G1→match WR swing showing SB asymmetry (≥12pp)
-4. Structural removal blind spots from d2_top_damage
-5. Hidden damage sources (tokens) → boarding rules
-6. Weighted WR gap analysis
+Each finding is auto-derived from matchup data. Must be non-obvious and actionable:
 
-Source fields: `matchup_cards[key].d1_finishers`, `.d1_top_damage`, `.g1_wins`, `.sweeps`, `.comebacks`, `.d1_sb`
+1. **Damage ≠ kills paradox**: top dmg source ≠ top closer → different boarding rules
+2. **Speed shapes closer**: fast matchups use different finisher than grindy ones
+3. **SB asymmetry**: G1→match swing ≥12pp → one side's SB plan dominates
+4. **Removal blind spots**: opponent's top damage source outside your removal range
+5. **Hidden damage engines**: tokens deal massive damage but aren't in the decklist
+6. **Weighted gap**: deck over/underperforms at top tables vs field average
+
+Source fields: `D.deck_cards[idx].finishers`, `.mvp_damage`, `.mvp_casts`, `matchup_cards[key].g1_wins`, `.avg_turns`, `.sweeps`, `.comebacks`
+
+## Token Filter Rule
+
+Never show tokens (Construct Token, Germ, Cat Token) in Stars or Danger Cards sections — Scryfall API can't resolve token names. Filter with: `'Token' not in card and 'Germ' not in card`
+
+## Card Stats in Decklist
+
+Every mainboard card shows inline stats when available:
+- Cast count (from D.deck_cards.mvp_casts)
+- Damage dealt (from D.deck_cards.mvp_damage)  
+- Kill count (from D.deck_cards.finishers)
+
+Format: `4x Ragavan, Nimble Pilferer  369 casts · 557 dmg · 62 kills`
+
+## Scryfall Card Hovers
+
+All card names use `class="card-tip" data-card="CardName"`. JS mouseover fetches card image from `api.scryfall.com/cards/named?fuzzy=`. Cache per session. Works for all real cards, fails silently for tokens.
+
+## What This Skill Was Missing (Lesson)
+
+Previous version listed `build_guide.py` as producing only "hero, Stars, G1 swing, danger cards, spread" and deferred the rest to the hand-crafted template. This caused a regression where 5 sections were silently dropped. The fix: every derivable section MUST be in `build_guide.py`, verified by section count after generation. The hand-crafted template (`templates/reference_deck_guide.html`) adds polish but is NOT the source for missing sections.
