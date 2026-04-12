@@ -182,6 +182,11 @@ class EVPlayer:
         self._init_deck_knowledge(game)
         me = game.players[self.player_idx]
         opp = game.players[1 - self.player_idx]
+
+        # Check if current goal should advance before evaluating plays
+        if self.goal_engine:
+            self.goal_engine.check_transition(game, self.player_idx)
+
         snap = snapshot_from_game(game, self.player_idx)
 
         legal = game.get_legal_plays(self.player_idx)

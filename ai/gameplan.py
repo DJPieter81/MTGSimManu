@@ -422,6 +422,92 @@ class GoalEngine:
                     old_goal.description, new_goal.description,
                     game, reason or f"Transitioning from {old_goal.goal_type.value} to {new_goal.goal_type.value}")
 
+    def check_transition(self, game, player_idx: int):
+        """Check if current goal should advance based on board state.
+        Call at the start of each main phase."""
+        goal = self.current_goal
+        me = game.players[player_idx]
+
+        # Track turns in current goal
+        turn = getattr(game, 'turn_number', getattr(game, 'display_turn', 0))
+        if turn != self._last_turn:
+            self.turns_in_goal += 1
+            self._last_turn = turn
+
+        # Don't advance past last goal
+        if self.current_goal_idx >= len(self.gameplan.goals) - 1:
+            return
+
+        # Respect min_turns
+        if self.turns_in_goal < goal.min_turns:
+            return
+
+        should_advance = False
+        reason = ""
+
+        gt = goal.goal_type
+
+        if gt == GoalType.DEPLOY_ENGINE:
+            # Advance when an engine card is on the battlefield
+            engines = goal.card_roles.get('engines', set())
+            deployed = [c.name for c in me.battlefield if c.name in engines]
+            if deployed:
+                should_advance = True
+                reason = f"Engine online: {deployed[0]}"
+            elif self.turns_in_goal >= 3:
+                should_advance = True
+                reason = "No engine after 3 turns, advancing anyway"
+
+        elif gt == GoalType.DISRUPT:
+            # Combo decks: advance once we've had time to disrupt
+            should_advance = self.turns_in_goal >= 2
+            reason = "Disruption window passed"
+
+        elif gt == GoalType.FILL_RESOURCE:
+            # Check resource target (GY creatures for Living End, etc.)
+            zone = goal.resource_zone
+            target = goal.resource_target or 3
+            if zone == "graveyard":
+                min_cmc = getattr(goal, 'resource_min_cmc', 0)
+                from engine.cards import CardType
+                gy_creatures = sum(1 for c in me.graveyard
+                                   if CardType.CREATURE in c.template.card_types
+                                   and (c.template.cmc or 0) >= min_cmc)
+                if gy_creatures >= target:
+                    should_advance = True
+                    reason = f"{gy_creatures} creatures in GY (need {target})"
+            # Also advance if payoff is in hand and some resources ready
+            next_goal_idx = self.current_goal_idx + 1
+            if next_goal_idx < len(self.gameplan.goals):
+                next_payoffs = self.gameplan.goals[next_goal_idx].card_roles.get('payoffs', set())
+                has_payoff = any(c.name in next_payoffs for c in me.hand)
+                if has_payoff and self.turns_in_goal >= 2:
+                    should_advance = True
+                    reason = "Payoff in hand, resources partially ready"
+
+        elif gt == GoalType.INTERACT:
+            # Control: advance after min_turns
+            if self.turns_in_goal >= max(goal.min_turns, 2):
+                should_advance = True
+                reason = "Interaction phase complete"
+
+        elif gt == GoalType.GRIND_VALUE:
+            if self.turns_in_goal >= 2:
+                should_advance = True
+                reason = "Value phase complete"
+
+        elif gt == GoalType.EXECUTE_PAYOFF:
+            # Already executing — don't advance
+            pass
+
+        elif gt == GoalType.PUSH_DAMAGE:
+            if self.turns_in_goal >= 2:
+                should_advance = True
+                reason = "Push damage phase complete"
+
+        if should_advance:
+            self.advance_goal(game, reason)
+
 
     # GoalEngine decision methods removed — EVPlayer handles all decisions.
     # GoalEngine is now a thin container for DeckGameplan + card role data.
