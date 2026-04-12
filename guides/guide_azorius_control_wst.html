@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Azorius Control (WST) — Modern Deck Guide</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fff;color:#111;font-size:14px;padding:24px;max-width:960px;margin:0 auto}
+h1{font-size:24px;font-weight:700;margin-bottom:6px}
+.subtitle{font-size:12px;color:#888;margin-bottom:20px}
+.hero{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid #e0e0e0;border-radius:4px;margin-bottom:24px;overflow:hidden}
+.hero-item{padding:14px 16px;border-right:1px solid #e0e0e0}.hero-item:last-child{border-right:none}
+.hero-label{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#888;margin-bottom:4px}
+.hero-val{font-size:28px;font-weight:700;line-height:1}
+.hero-val.g{color:#1f7040}.hero-val.r{color:#b02020}.hero-val.a{color:#854f0b}
+.hero-sub{font-size:11px;color:#666;margin-top:5px}
+.section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#666;margin-bottom:12px;margin-top:24px;border-bottom:1px solid #e8e8e8;padding-bottom:6px}
+.mu-row{display:flex;align-items:center;gap:6px;padding:3px 0;font-size:12px}
+.mu-name{width:130px;text-align:right;color:#555;font-size:11px}
+.mu-type{width:52px;font-size:9px;color:#aaa;text-align:center}
+.mu-meta{width:36px;font-size:9px;color:#aaa;text-align:center}
+.mu-bar{flex:1;height:10px;background:#f0f0f0;border-radius:2px;overflow:hidden;max-width:160px}
+.mu-fill{height:100%;border-radius:2px}
+.mu-val{width:36px;font-weight:700;font-size:11px;text-align:right}
+.tier-hdr{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#aaa;margin:14px 0 4px;padding:4px 0;border-bottom:1px solid #f0f0f0}
+.star-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+.star-card{text-align:center}
+.star-card img{width:100%;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.15);transition:transform .2s}
+.star-card img:hover{transform:scale(1.04)}
+.star-label{font-size:9px;text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:6px;padding:2px 8px;border-radius:3px;display:inline-block}
+.star-label.mvp{background:#e8f0e8;color:#1f7040}
+.star-label.surprise{background:#fff0e0;color:#c06010}
+.star-stat{font-size:20px;font-weight:700;margin-top:8px;line-height:1}
+.star-desc{font-size:10px;color:#888;margin-top:4px;line-height:1.4}
+.star-name{font-size:12px;font-weight:600;color:#333;margin-top:6px}
+.card-tip{position:relative;cursor:pointer;border-bottom:1px dotted #ccc}.card-tip:hover{color:#c04010}
+#card-popup{position:fixed;z-index:999;pointer-events:none;display:none;border-radius:8px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.35);width:244px;height:340px;background:#111}
+#card-popup img{width:100%;height:100%;object-fit:contain}
+.prov{font-size:9px;color:#bbb;text-align:center;margin-top:30px;border-top:1px solid #eee;padding-top:10px}
+@media(max-width:640px){.hero{grid-template-columns:1fr 1fr}.star-cards{grid-template-columns:1fr 1fr}}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+const p=document.createElement('div');p.id='card-popup';p.innerHTML='<img id="card-img" src="" alt="">';document.body.appendChild(p);
+const img=document.getElementById('card-img'),cache={};
+document.addEventListener('mouseover',e=>{const el=e.target.closest('.card-tip');if(!el)return;const n=el.dataset.card;if(!n)return;const u='https://api.scryfall.com/cards/named?fuzzy='+encodeURIComponent(n)+'&format=image&version=normal';img.src=cache[n]||u;if(!cache[n])cache[n]=u;p.style.display='block'});
+document.addEventListener('mouseout',e=>{if(e.target.closest('.card-tip'))p.style.display='none'});
+document.addEventListener('mousemove',e=>{if(p.style.display==='block'){p.style.left=Math.min(e.clientX+16,window.innerWidth-260)+'px';p.style.top=Math.max(8,Math.min(e.clientY-170,window.innerHeight-350))+'px'}});
+});
+</script>
+</head><body>
+<h1>Azorius Control (WST)</h1>
+<div class="subtitle">Control · Modern · April 2026 · Sim-verified · 50 Bo3 per pair</div>
+<div class="hero">
+  <div class="hero-item"><div class="hero-label">Format</div><div class="hero-val" style="font-size:18px;padding-top:4px">Modern</div><div class="hero-sub">Control · 6.7% meta</div></div>
+  <div class="hero-item"><div class="hero-label">Sim WR (flat)</div><div class="hero-val r">35.3%</div><div class="hero-sub">⚖ <span style="color:#b02020">33.5%</span> T1/T2 weighted</div></div>
+  <div class="hero-item"><div class="hero-label">Rank</div><div class="hero-val r" style="font-size:22px;padding-top:2px">#13</div><div class="hero-sub">T1 · -1.8pp weighted gap</div></div>
+  <div class="hero-item"><div class="hero-label">Best / Worst</div><div class="hero-val g" style="font-size:18px;padding-top:2px">74%</div><div class="hero-sub">vs Living End / worst 2% vs Eldrazi Tron</div></div>
+</div>
+<div class="section-title">Stars of the Sim — 700 Games</div>
+<div class="star-cards">
+  <div class="star-card"><span class="star-label mvp">MVP</span>
+    <img src="https://api.scryfall.com/cards/named?fuzzy=Wan+Shi+Tong,+Librarian&format=image&version=normal" alt="Wan Shi Tong, Librarian" loading="lazy">
+    <div class="star-name">Wan Shi Tong, Librarian</div>
+    <div class="star-stat" style="color:#1f7040">26 kills</div>
+    <div class="star-desc">1147 total dmg · Primary combat closer (T9.8)</div></div>
+  <div class="star-card"><span class="star-label mvp">MVP</span>
+    <img src="https://api.scryfall.com/cards/named?fuzzy=Chalice+of+the+Void&format=image&version=normal" alt="Chalice of the Void" loading="lazy">
+    <div class="star-name">Chalice of the Void</div>
+    <div class="star-stat" style="color:#1f7040">21 kills</div>
+    <div class="star-desc">? total dmg · Primary combat closer (T9.8)</div></div>
+  <div class="star-card"><span class="star-label surprise">Overperformer</span>
+    <img src="https://api.scryfall.com/cards/named?fuzzy=Sanctifier+en-Vec&format=image&version=art_crop" alt="Sanctifier en-Vec" loading="lazy" style="height:200px;object-fit:cover;width:100%;border-radius:12px">
+    <div class="star-name">Sanctifier en-Vec</div>
+    <div class="star-stat" style="color:#c06010">571 dmg</div>
+    <div class="star-desc">14 kills · hidden damage engine</div></div>
+</div>
+<div class="section-title">Matchup Spread</div>
+<div class="tier-hdr">T1 opponents (≥5% meta)</div>
+<div class="mu-row"><span class="mu-name">Boros Energy</span><span class="mu-type">aggro</span><span class="mu-meta">21.1%</span><div class="mu-bar"><div class="mu-fill" style="width:32%;background:#b02020"></div></div><span class="mu-val" style="color:#b02020">32%</span></div>
+<div class="mu-row"><span class="mu-name">Jeskai Blink</span><span class="mu-type">tempo</span><span class="mu-meta">9.2%</span><div class="mu-bar"><div class="mu-fill" style="width:22%;background:#b02020"></div></div><span class="mu-val" style="color:#b02020">22%</span></div>
+<div class="mu-row"><span class="mu-name">Eldrazi Tron</span><span class="mu-type">ramp</span><span class="mu-meta">7.1%</span><div class="mu-bar"><div class="mu-fill" style="width:2%;background:#b02020"></div></div><span class="mu-val" style="color:#b02020">2%</span></div>
+<div class="mu-row"><span class="mu-name">4/5c Control</span><span class="mu-type">control</span><span class="mu-meta">6.7%</span><div class="mu-bar"><div class="mu-fill" style="width:32%;background:#b02020"></div></div><span class="mu-val" style="color:#b02020">32%</span></div>
+<div class="mu-row"><span class="mu-name">Azorius Control</span><span class="mu-type">control</span><span class="mu-meta">6.7%</span><div class="mu-bar"><div class="mu-fill" style="width:60%;background:#854f0b"></div></div><span class="mu-val" style="color:#854f0b">60%</span></div>
+<div class="mu-row"><span class="mu-name">Ruby Storm</span><span class="mu-type">combo</span><span class="mu-meta">6.2%</span><div class="mu-bar"><div class="mu-fill" style="width:66%;background:#1f7040"></div></div><span class="mu-val" style="color:#1f7040">66%</span></div>
+<div class="mu-row"><span class="mu-name">Affinity</span><span class="mu-type">aggro</span><span class="mu-meta">6.1%</span><div class="mu-bar"><div class="mu-fill" style="width:4%;background:#b02020"></div></div><span class="mu-val" style="color:#b02020">4%</span></div>
+<div class="tier-hdr">T2 opponents (3-5%)</div>
+<div class="mu-row"><span class="mu-name">Izzet Prowess</span><span class="mu-type">aggro</span><span class="mu-meta">4.9%</span><div class="mu-bar"><div class="mu-fill" style="width:46%;background:#b02020"></div></div><span class="mu-val" style="color:#b02020">46%</span></div>
+<div class="mu-row"><span class="mu-name">Amulet Titan</span><span class="mu-type">combo</span><span class="mu-meta">4.1%</span><div class="mu-bar"><div class="mu-fill" style="width:16%;background:#b02020"></div></div><span class="mu-val" style="color:#b02020">16%</span></div>
+<div class="mu-row"><span class="mu-name">Goryo's Vengeance</span><span class="mu-type">combo</span><span class="mu-meta">3.6%</span><div class="mu-bar"><div class="mu-fill" style="width:52%;background:#854f0b"></div></div><span class="mu-val" style="color:#854f0b">52%</span></div>
+<div class="mu-row"><span class="mu-name">Living End</span><span class="mu-type">combo</span><span class="mu-meta">3.6%</span><div class="mu-bar"><div class="mu-fill" style="width:74%;background:#1f7040"></div></div><span class="mu-val" style="color:#1f7040">74%</span></div>
+<div class="mu-row"><span class="mu-name">4c Omnath</span><span class="mu-type">midrange</span><span class="mu-meta">3.5%</span><div class="mu-bar"><div class="mu-fill" style="width:34%;background:#b02020"></div></div><span class="mu-val" style="color:#b02020">34%</span></div>
+<div class="tier-hdr">Field</div>
+<div class="mu-row"><span class="mu-name">Domain Zoo</span><span class="mu-type">aggro</span><span class="mu-meta">2.9%</span><div class="mu-bar"><div class="mu-fill" style="width:40%;background:#b02020"></div></div><span class="mu-val" style="color:#b02020">40%</span></div>
+<div class="mu-row"><span class="mu-name">Dimir Midrange</span><span class="mu-type">midrange</span><span class="mu-meta">2.8%</span><div class="mu-bar"><div class="mu-fill" style="width:14%;background:#b02020"></div></div><span class="mu-val" style="color:#b02020">14%</span></div>
+<div class="mu-row"><span class="mu-name">Pinnacle Affinity</span><span class="mu-type">aggro</span><span class="mu-meta">2.0%</span><div class="mu-bar"><div class="mu-fill" style="width:24%;background:#b02020"></div></div><span class="mu-val" style="color:#b02020">24%</span></div>
+<div class="prov">
+Simulated: 2026-04-12 · 16 decks · 50 Bo3/pair (700 games for Azorius Control (WST)) · Engine: MTGSimManu@01c2f56<br>
+Source: metagame_data.jsx (D object) · Card stats: deck_cards[13] · Matchups: matchup_cards["13,*"]<br>
+Shell: ManusAI · Strategy + EV scoring: Claude · Owner: DJPieter81
+</div>
+</body></html>

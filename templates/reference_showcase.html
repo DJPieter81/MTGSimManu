@@ -361,21 +361,21 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
     <div class="sec-desc" style="margin:0 auto 2rem">Decklists from Modern Challenge and League results. April 2026 meta shares.</div>
   </div>
   <div class="deck-cloud reveal">
-    <div class="deck-chip t1">Boros Energy<span class="meta">12%</span></div>
-    <div class="deck-chip t1">Jeskai Blink<span class="meta">8%</span></div>
-    <div class="deck-chip t1">Ruby Storm<span class="meta">6%</span></div>
-    <div class="deck-chip t1">Domain Zoo<span class="meta">6%</span></div>
-    <div class="deck-chip t1">Dimir Midrange<span class="meta">5%</span></div>
-    <div class="deck-chip t2">Eldrazi Tron</div>
-    <div class="deck-chip t2">4c Omnath</div>
-    <div class="deck-chip t2">Izzet Prowess</div>
-    <div class="deck-chip t2">Living End</div>
-    <div class="deck-chip t2">4/5c Control</div>
-    <div class="deck-chip">Affinity</div>
-    <div class="deck-chip">Amulet Titan</div>
-    <div class="deck-chip">Goryo's Vengeance</div>
-    <div class="deck-chip">Kappa Cannoneer</div>
-    <div class="deck-chip">Azorius Control</div>
+    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_boros_energy.html" class="deck-chip t1" style="text-decoration:none;color:inherit">Boros Energy<span class="meta">12%</span></a>
+    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_jeskai_blink.html" class="deck-chip t1" style="text-decoration:none;color:inherit">Jeskai Blink<span class="meta">8%</span></a>
+    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_ruby_storm.html" class="deck-chip t1" style="text-decoration:none;color:inherit">Ruby Storm<span class="meta">6%</span></a>
+    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_domain_zoo.html" class="deck-chip t1" style="text-decoration:none;color:inherit">Domain Zoo<span class="meta">6%</span></a>
+    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_dimir_midrange.html" class="deck-chip t1" style="text-decoration:none;color:inherit">Dimir Midrange<span class="meta">5%</span></a>
+    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_eldrazi_tron.html" class="deck-chip t2" style="text-decoration:none;color:inherit">Eldrazi Tron</a>
+    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_4c_omnath.html" class="deck-chip t2" style="text-decoration:none;color:inherit">4c Omnath</a>
+    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_izzet_prowess.html" class="deck-chip t2" style="text-decoration:none;color:inherit">Izzet Prowess</a>
+    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_living_end.html" class="deck-chip t2" style="text-decoration:none;color:inherit">Living End</a>
+    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_45c_control.html" class="deck-chip t2" style="text-decoration:none;color:inherit">4/5c Control</a>
+    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_affinity.html" class="deck-chip" style="text-decoration:none;color:inherit">Affinity</a>
+    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_amulet_titan.html" class="deck-chip" style="text-decoration:none;color:inherit">Amulet Titan</a>
+    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_goryos_vengeance.html" class="deck-chip" style="text-decoration:none;color:inherit">Goryo's Vengeance</a>
+    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_azorius_control_wst.html" class="deck-chip" style="text-decoration:none;color:inherit">Azorius Control WST</a>
+    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_azorius_control.html" class="deck-chip" style="text-decoration:none;color:inherit">Azorius Control</a>
   </div>
   <div class="reveal" style="display:flex;justify-content:center;gap:16px;margin-top:8px;font-size:11px;color:var(--ink3)">
     <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:50%;background:var(--gold-bg);border:1px solid rgba(184,148,30,.3)"></span> T1 (5%+)</span>
@@ -906,14 +906,17 @@ function showDeckProfile(i){
       <div><h4>${decksFull[i]}</h4><div style="font-size:12px;color:var(--ink3)">${archetype[i]} archetype</div></div>
       <div style="text-align:right"><div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:${avg>=55?'var(--teal)':avg>=45?'var(--ink)':'var(--red)'}">${avg}%</div><div style="font-size:11px;color:var(--ink3)">avg flat WR</div></div>
     </div>
+    <a href="${guideBase}guide_${decksFull[i].toLowerCase().replace(/ /g,'_').replace(/[^a-z0-9_]/g,'')}.html" target="_blank" style="display:inline-block;margin:8px 0;font-size:11px;color:var(--gold);text-decoration:none;border-bottom:1px dotted var(--gold)">View deck guide →</a>
     <div class="dk-matchups">${mu.map(m=>`<div class="dk-mu" style="cursor:pointer" onclick="showMatchup(${i},${m.idx})"><span>${m.short}</span><span class="dk-wr" style="color:${m.wr>=55?'var(--teal)':m.wr>=45?'var(--ink2)':'var(--red)'}">${m.wr}%</span></div>`).join('')}</div>
   </div>`;
   hmDet.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
-// Deck cloud → cross-filter
+// Deck cloud → cross-filter (click = cross-filter, ctrl+click = open guide)
+const guideBase='https://djpieter81.github.io/MTGSimManu/guides/';
 document.querySelectorAll('.deck-chip').forEach(chip=>{
-  chip.addEventListener('click',()=>{
+  chip.addEventListener('click',(e)=>{
+    e.preventDefault();
     const name=chip.textContent.replace(/\d+%/,'').trim();
     const full=decksFull.find(d=>d.includes(name.split(' ')[0]));
     if(full)selectDeck(full);

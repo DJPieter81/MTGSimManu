@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Boros Energy — Modern Deck Guide</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fff;color:#111;font-size:14px;padding:24px;max-width:960px;margin:0 auto}
+h1{font-size:24px;font-weight:700;margin-bottom:6px}
+.subtitle{font-size:12px;color:#888;margin-bottom:20px}
+.hero{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid #e0e0e0;border-radius:4px;margin-bottom:24px;overflow:hidden}
+.hero-item{padding:14px 16px;border-right:1px solid #e0e0e0}.hero-item:last-child{border-right:none}
+.hero-label{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#888;margin-bottom:4px}
+.hero-val{font-size:28px;font-weight:700;line-height:1}
+.hero-val.g{color:#1f7040}.hero-val.r{color:#b02020}.hero-val.a{color:#854f0b}
+.hero-sub{font-size:11px;color:#666;margin-top:5px}
+.section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#666;margin-bottom:12px;margin-top:24px;border-bottom:1px solid #e8e8e8;padding-bottom:6px}
+.mu-row{display:flex;align-items:center;gap:6px;padding:3px 0;font-size:12px}
+.mu-name{width:130px;text-align:right;color:#555;font-size:11px}
+.mu-type{width:52px;font-size:9px;color:#aaa;text-align:center}
+.mu-meta{width:36px;font-size:9px;color:#aaa;text-align:center}
+.mu-bar{flex:1;height:10px;background:#f0f0f0;border-radius:2px;overflow:hidden;max-width:160px}
+.mu-fill{height:100%;border-radius:2px}
+.mu-val{width:36px;font-weight:700;font-size:11px;text-align:right}
+.tier-hdr{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#aaa;margin:14px 0 4px;padding:4px 0;border-bottom:1px solid #f0f0f0}
+.star-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+.star-card{text-align:center}
+.star-card img{width:100%;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.15);transition:transform .2s}
+.star-card img:hover{transform:scale(1.04)}
+.star-label{font-size:9px;text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:6px;padding:2px 8px;border-radius:3px;display:inline-block}
+.star-label.mvp{background:#e8f0e8;color:#1f7040}
+.star-label.surprise{background:#fff0e0;color:#c06010}
+.star-stat{font-size:20px;font-weight:700;margin-top:8px;line-height:1}
+.star-desc{font-size:10px;color:#888;margin-top:4px;line-height:1.4}
+.star-name{font-size:12px;font-weight:600;color:#333;margin-top:6px}
+.card-tip{position:relative;cursor:pointer;border-bottom:1px dotted #ccc}.card-tip:hover{color:#c04010}
+#card-popup{position:fixed;z-index:999;pointer-events:none;display:none;border-radius:8px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.35);width:244px;height:340px;background:#111}
+#card-popup img{width:100%;height:100%;object-fit:contain}
+.prov{font-size:9px;color:#bbb;text-align:center;margin-top:30px;border-top:1px solid #eee;padding-top:10px}
+@media(max-width:640px){.hero{grid-template-columns:1fr 1fr}.star-cards{grid-template-columns:1fr 1fr}}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+const p=document.createElement('div');p.id='card-popup';p.innerHTML='<img id="card-img" src="" alt="">';document.body.appendChild(p);
+const img=document.getElementById('card-img'),cache={};
+document.addEventListener('mouseover',e=>{const el=e.target.closest('.card-tip');if(!el)return;const n=el.dataset.card;if(!n)return;const u='https://api.scryfall.com/cards/named?fuzzy='+encodeURIComponent(n)+'&format=image&version=normal';img.src=cache[n]||u;if(!cache[n])cache[n]=u;p.style.display='block'});
+document.addEventListener('mouseout',e=>{if(e.target.closest('.card-tip'))p.style.display='none'});
+document.addEventListener('mousemove',e=>{if(p.style.display==='block'){p.style.left=Math.min(e.clientX+16,window.innerWidth-260)+'px';p.style.top=Math.max(8,Math.min(e.clientY-170,window.innerHeight-350))+'px'}});
+});
+</script>
+</head><body>
+<h1>Boros Energy</h1>
+<div class="subtitle">Aggro · Modern · April 2026 · Sim-verified · 50 Bo3 per pair</div>
+<div class="hero">
+  <div class="hero-item"><div class="hero-label">Format</div><div class="hero-val" style="font-size:18px;padding-top:4px">Modern</div><div class="hero-sub">Aggro · 21.1% meta</div></div>
+  <div class="hero-item"><div class="hero-label">Sim WR (flat)</div><div class="hero-val g">65.3%</div><div class="hero-sub">⚖ <span style="color:#1f7040">65.2%</span> T1/T2 weighted</div></div>
+  <div class="hero-item"><div class="hero-label">Rank</div><div class="hero-val g" style="font-size:22px;padding-top:2px">#3</div><div class="hero-sub">T1 · -0.1pp weighted gap</div></div>
+  <div class="hero-item"><div class="hero-label">Best / Worst</div><div class="hero-val g" style="font-size:18px;padding-top:2px">98%</div><div class="hero-sub">vs Azorius Cont / worst 28% vs Affinity</div></div>
+</div>
+<div class="section-title">Stars of the Sim — 700 Games</div>
+<div class="star-cards">
+  <div class="star-card"><span class="star-label mvp">MVP</span>
+    <img src="https://api.scryfall.com/cards/named?fuzzy=Ragavan,+Nimble+Pilferer&format=image&version=normal" alt="Ragavan, Nimble Pilferer" loading="lazy">
+    <div class="star-name">Ragavan, Nimble Pilferer</div>
+    <div class="star-stat" style="color:#1f7040">62 kills</div>
+    <div class="star-desc">557 total dmg · Primary combat closer (T6.3)</div></div>
+  <div class="star-card"><span class="star-label mvp">MVP</span>
+    <img src="https://api.scryfall.com/cards/named?fuzzy=Phlage,+Titan+of+Fire's+Fury&format=image&version=normal" alt="Phlage, Titan of Fire's Fury" loading="lazy">
+    <div class="star-name">Phlage, Titan of Fire's Fury</div>
+    <div class="star-stat" style="color:#1f7040">48 kills</div>
+    <div class="star-desc">984 total dmg · Direct damage finisher (avg kill T6.3)</div></div>
+  <div class="star-card"><span class="star-label surprise">Overperformer</span>
+    <img src="https://api.scryfall.com/cards/named?fuzzy=Phlage&format=image&version=art_crop" alt="Phlage" loading="lazy" style="height:200px;object-fit:cover;width:100%;border-radius:12px">
+    <div class="star-name">Phlage</div>
+    <div class="star-stat" style="color:#c06010">984 dmg</div>
+    <div class="star-desc">? kills · hidden damage engine</div></div>
+  <div class="star-card"><span class="star-label surprise">Overperformer</span>
+    <img src="https://api.scryfall.com/cards/named?fuzzy=Cat+Token&format=image&version=art_crop" alt="Cat Token" loading="lazy" style="height:200px;object-fit:cover;width:100%;border-radius:12px">
+    <div class="star-name">Cat Token</div>
+    <div class="star-stat" style="color:#c06010">384 dmg</div>
+    <div class="star-desc">? kills · hidden damage engine</div></div>
+</div>
+<div class="section-title">G1 → Match Swing — Sideboard Asymmetry</div>
+<div style="border:1px solid #e0e0e0;border-radius:4px;padding:14px;margin:12px 0">
+<div style="display:flex;align-items:center;gap:8px;font-size:11px;padding:3px 0;border-bottom:1px solid #f5f5f5">
+<span style="width:110px;text-align:right;color:#555;font-weight:600">Living End</span>
+<span style="color:#b02020;font-weight:700;width:35px">40%</span>
+<span style="color:#888">→</span>
+<span style="color:#1f7040;font-weight:700;width:35px">84%</span>
+<span style="color:#1f7040;font-weight:700;font-size:10px">+44pp</span>
+<span style="font-size:9px;color:#aaa">G3=40%</span></div>
+<div style="display:flex;align-items:center;gap:8px;font-size:11px;padding:3px 0;border-bottom:1px solid #f5f5f5">
+<span style="width:110px;text-align:right;color:#555;font-weight:600">Affinity</span>
+<span style="color:#b02020;font-weight:700;width:35px">10%</span>
+<span style="color:#888">→</span>
+<span style="color:#b02020;font-weight:700;width:35px">28%</span>
+<span style="color:#1f7040;font-weight:700;font-size:10px">+18pp</span>
+<span style="font-size:9px;color:#aaa">G3=20%</span></div>
+<div style="display:flex;align-items:center;gap:8px;font-size:11px;padding:3px 0;border-bottom:1px solid #f5f5f5">
+<span style="width:110px;text-align:right;color:#555;font-weight:600">Azorius Control</span>
+<span style="color:#1f7040;font-weight:700;width:35px">80%</span>
+<span style="color:#888">→</span>
+<span style="color:#1f7040;font-weight:700;width:35px">98%</span>
+<span style="color:#1f7040;font-weight:700;font-size:10px">+18pp</span>
+<span style="font-size:9px;color:#aaa">G3=20%</span></div>
+<div style="display:flex;align-items:center;gap:8px;font-size:11px;padding:3px 0;border-bottom:1px solid #f5f5f5">
+<span style="width:110px;text-align:right;color:#555;font-weight:600">Jeskai Blink</span>
+<span style="color:#854f0b;font-weight:700;width:35px">50%</span>
+<span style="color:#888">→</span>
+<span style="color:#1f7040;font-weight:700;width:35px">66%</span>
+<span style="color:#1f7040;font-weight:700;font-size:10px">+16pp</span>
+<span style="font-size:9px;color:#aaa">G3=30%</span></div>
+<div style="display:flex;align-items:center;gap:8px;font-size:11px;padding:3px 0;border-bottom:1px solid #f5f5f5">
+<span style="width:110px;text-align:right;color:#555;font-weight:600">Izzet Prowess</span>
+<span style="color:#1f7040;font-weight:700;width:35px">70%</span>
+<span style="color:#888">→</span>
+<span style="color:#854f0b;font-weight:700;width:35px">54%</span>
+<span style="color:#b02020;font-weight:700;font-size:10px">-16pp</span>
+<span style="font-size:9px;color:#aaa">G3=60%</span></div>
+<div style="display:flex;align-items:center;gap:8px;font-size:11px;padding:3px 0;border-bottom:1px solid #f5f5f5">
+<span style="width:110px;text-align:right;color:#555;font-weight:600">Amulet Titan</span>
+<span style="color:#1f7040;font-weight:700;width:35px">70%</span>
+<span style="color:#888">→</span>
+<span style="color:#854f0b;font-weight:700;width:35px">58%</span>
+<span style="color:#b02020;font-weight:700;font-size:10px">-12pp</span>
+<span style="font-size:9px;color:#aaa">G3=40%</span></div>
+</div>
+<div class="section-title">What Kills You — Removal Blind Spots</div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:12px 0">
+<div style="text-align:center;border:1px solid #e0e0e0;border-radius:8px;padding:10px">
+<img src="https://api.scryfall.com/cards/named?fuzzy=Construct+Token&format=image&version=art_crop" alt="Construct Token" style="width:100%;border-radius:6px;height:70px;object-fit:cover">
+<div style="font-size:11px;font-weight:700;color:#b02020;margin-top:4px">Construct Token</div>
+<div style="font-size:10px;color:#555">137 dmg · Affinity</div></div>
+<div style="text-align:center;border:1px solid #e0e0e0;border-radius:8px;padding:10px">
+<img src="https://api.scryfall.com/cards/named?fuzzy=Thought-Knot+Seer&format=image&version=art_crop" alt="Thought-Knot Seer" style="width:100%;border-radius:6px;height:70px;object-fit:cover">
+<div style="font-size:11px;font-weight:700;color:#b02020;margin-top:4px">Thought-Knot Seer</div>
+<div style="font-size:10px;color:#555">125 dmg · Eldrazi Tron</div></div>
+<div style="text-align:center;border:1px solid #e0e0e0;border-radius:8px;padding:10px">
+<img src="https://api.scryfall.com/cards/named?fuzzy=Slickshot+Show-Off&format=image&version=art_crop" alt="Slickshot Show-Off" style="width:100%;border-radius:6px;height:70px;object-fit:cover">
+<div style="font-size:11px;font-weight:700;color:#b02020;margin-top:4px">Slickshot Show-Off</div>
+<div style="font-size:10px;color:#555">93 dmg · Izzet Prowess</div></div>
+</div>
+<div class="section-title">Matchup Spread</div>
+<div class="tier-hdr">T1 opponents (≥5% meta)</div>
+<div class="mu-row"><span class="mu-name">Jeskai Blink</span><span class="mu-type">tempo</span><span class="mu-meta">9.2%</span><div class="mu-bar"><div class="mu-fill" style="width:66%;background:#1f7040"></div></div><span class="mu-val" style="color:#1f7040">66%</span></div>
+<div class="mu-row"><span class="mu-name">Eldrazi Tron</span><span class="mu-type">ramp</span><span class="mu-meta">7.1%</span><div class="mu-bar"><div class="mu-fill" style="width:40%;background:#b02020"></div></div><span class="mu-val" style="color:#b02020">40%</span></div>
+<div class="mu-row"><span class="mu-name">4/5c Control</span><span class="mu-type">control</span><span class="mu-meta">6.7%</span><div class="mu-bar"><div class="mu-fill" style="width:86%;background:#1f7040"></div></div><span class="mu-val" style="color:#1f7040">86%</span></div>
+<div class="mu-row"><span class="mu-name">Azorius Control (WST</span><span class="mu-type">control</span><span class="mu-meta">6.7%</span><div class="mu-bar"><div class="mu-fill" style="width:68%;background:#1f7040"></div></div><span class="mu-val" style="color:#1f7040">68%</span></div>
+<div class="mu-row"><span class="mu-name">Azorius Control</span><span class="mu-type">control</span><span class="mu-meta">6.7%</span><div class="mu-bar"><div class="mu-fill" style="width:98%;background:#1f7040"></div></div><span class="mu-val" style="color:#1f7040">98%</span></div>
+<div class="mu-row"><span class="mu-name">Ruby Storm</span><span class="mu-type">combo</span><span class="mu-meta">6.2%</span><div class="mu-bar"><div class="mu-fill" style="width:68%;background:#1f7040"></div></div><span class="mu-val" style="color:#1f7040">68%</span></div>
+<div class="mu-row"><span class="mu-name">Affinity</span><span class="mu-type">aggro</span><span class="mu-meta">6.1%</span><div class="mu-bar"><div class="mu-fill" style="width:28%;background:#b02020"></div></div><span class="mu-val" style="color:#b02020">28%</span></div>
+<div class="tier-hdr">T2 opponents (3-5%)</div>
+<div class="mu-row"><span class="mu-name">Izzet Prowess</span><span class="mu-type">aggro</span><span class="mu-meta">4.9%</span><div class="mu-bar"><div class="mu-fill" style="width:54%;background:#854f0b"></div></div><span class="mu-val" style="color:#854f0b">54%</span></div>
+<div class="mu-row"><span class="mu-name">Amulet Titan</span><span class="mu-type">combo</span><span class="mu-meta">4.1%</span><div class="mu-bar"><div class="mu-fill" style="width:58%;background:#854f0b"></div></div><span class="mu-val" style="color:#854f0b">58%</span></div>
+<div class="mu-row"><span class="mu-name">Goryo's Vengeance</span><span class="mu-type">combo</span><span class="mu-meta">3.6%</span><div class="mu-bar"><div class="mu-fill" style="width:74%;background:#1f7040"></div></div><span class="mu-val" style="color:#1f7040">74%</span></div>
+<div class="mu-row"><span class="mu-name">Living End</span><span class="mu-type">combo</span><span class="mu-meta">3.6%</span><div class="mu-bar"><div class="mu-fill" style="width:84%;background:#1f7040"></div></div><span class="mu-val" style="color:#1f7040">84%</span></div>
+<div class="mu-row"><span class="mu-name">4c Omnath</span><span class="mu-type">midrange</span><span class="mu-meta">3.5%</span><div class="mu-bar"><div class="mu-fill" style="width:68%;background:#1f7040"></div></div><span class="mu-val" style="color:#1f7040">68%</span></div>
+<div class="tier-hdr">Field</div>
+<div class="mu-row"><span class="mu-name">Domain Zoo</span><span class="mu-type">aggro</span><span class="mu-meta">2.9%</span><div class="mu-bar"><div class="mu-fill" style="width:66%;background:#1f7040"></div></div><span class="mu-val" style="color:#1f7040">66%</span></div>
+<div class="mu-row"><span class="mu-name">Dimir Midrange</span><span class="mu-type">midrange</span><span class="mu-meta">2.8%</span><div class="mu-bar"><div class="mu-fill" style="width:56%;background:#854f0b"></div></div><span class="mu-val" style="color:#854f0b">56%</span></div>
+<div class="mu-row"><span class="mu-name">Pinnacle Affinity</span><span class="mu-type">aggro</span><span class="mu-meta">2.0%</span><div class="mu-bar"><div class="mu-fill" style="width:76%;background:#1f7040"></div></div><span class="mu-val" style="color:#1f7040">76%</span></div>
+<div class="prov">
+Simulated: 2026-04-12 · 16 decks · 50 Bo3/pair (700 games for Boros Energy) · Engine: MTGSimManu@01c2f56<br>
+Source: metagame_data.jsx (D object) · Card stats: deck_cards[0] · Matchups: matchup_cards["0,*"]<br>
+Shell: ManusAI · Strategy + EV scoring: Claude · Owner: DJPieter81
+</div>
+</body></html>
