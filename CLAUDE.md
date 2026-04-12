@@ -418,3 +418,21 @@ assert len(MODERN_DECKS) == len(METAGAME_SHARES), 'MISMATCH'"
 python run_meta.py --matchup NEW_DECK dimir -n 10
 python run_meta.py --matchup dimir NEW_DECK -n 10
 ```
+
+## Project Showcase — Skill
+
+Skill: `/mtg-project-showcase` — generates interactive marketing/portfolio HTML pages for the project.
+
+**Triggers:** "showcase", "marketing page", "show off", "visualize the project", "share with friends"
+
+**Pipeline:** git pull → read docs → run benchmarks → extract JSX stats → generate 3 artifacts (dashboard, replay, deck guide) → build showcase HTML → present files
+
+**Output:** 4 cross-linked HTML files in same directory:
+- `mtgsimmanu_showcase.html` — main page (70K, 10 interactive sections)
+- `modern_meta_matrix.html` — dashboard artifact (132K)
+- `boros_energy_guide.html` — deck guide artifact (32K)
+- `replay_*.html` — Bo3 replay artifact (143K)
+
+**Re-run after:** new matrix sim, P0/P1 fixes, new decks, proposal acceptance changes.
+
+**Design:** Light cream theme, Playfair Display + DM Sans + JetBrains Mono, Chart.js for graphs, 6 layer color codes, scroll-triggered animations, IntersectionObserver reveals.
