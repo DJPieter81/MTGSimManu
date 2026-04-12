@@ -244,38 +244,55 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
     <div class="sec-desc">From MTGJSON card data to interactive HTML dashboards — every layer has a single responsibility and zero external dependencies.</div>
   </div>
   <div class="arch-visual reveal">
-    <div class="arch-bar ab-data" onclick="showLayer(this,'data')">
+    <div class="arch-wrap" data-layer="data">
+    <div class="arch-bar ab-data" onclick="showLayer(this.parentNode,'data')">
       <div class="bar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#185fa5" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
       <div class="bar-body"><div class="bar-name">Data layer</div><div class="bar-desc">MTGJSON cards, decklists, gameplans, strategy profiles</div></div>
       <div class="bar-stat">21,795 cards</div>
     </div>
-    <div class="arch-bar ab-engine" onclick="showLayer(this,'engine')">
+    <div class="arch-detail"></div>
+    </div>
+    <div class="arch-wrap" data-layer="engine">
+    <div class="arch-bar ab-engine" onclick="showLayer(this.parentNode,'engine')">
       <div class="bar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#0f6e56" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
       <div class="bar-body"><div class="bar-name">Engine layer</div><div class="bar-desc">Rules, state machine, stack, combat, 80+ card effects</div></div>
       <div class="bar-stat">3,160 lines</div>
     </div>
-    <div class="arch-bar ab-ai" onclick="showLayer(this,'ai')">
+    <div class="arch-detail"></div>
+    </div>
+    <div class="arch-wrap" data-layer="ai">
+    <div class="arch-bar ab-ai" onclick="showLayer(this.parentNode,'ai')">
       <div class="bar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#534ab7" stroke-width="2"><path d="M12 2a4 4 0 014 4v1a4 4 0 01-8 0V6a4 4 0 014-4z"/><path d="M16 11a4 4 0 014 4v1a4 4 0 01-8 0v-1a4 4 0 014-4z"/><path d="M8 11a4 4 0 014 4v1a4 4 0 01-8 0v-1a4 4 0 014-4z"/></svg></div>
       <div class="bar-body"><div class="bar-name">AI layer</div><div class="bar-desc">EV scoring, clock evaluation, Bayesian inference, combat sim</div></div>
       <div class="bar-stat">14 modules</div>
     </div>
-    <div class="arch-bar ab-run" onclick="showLayer(this,'runner')">
+    <div class="arch-detail"></div>
+    </div>
+    <div class="arch-wrap" data-layer="runner">
+    <div class="arch-bar ab-run" onclick="showLayer(this.parentNode,'runner')">
       <div class="bar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#d4850b" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
       <div class="bar-body"><div class="bar-name">Simulation runner</div><div class="bar-desc">CLI + Python API: matrix, matchups, Bo3, audit, trace</div></div>
       <div class="bar-stat">run_meta.py</div>
     </div>
-    <div class="arch-bar ab-out" onclick="showLayer(this,'output')">
+    <div class="arch-detail"></div>
+    </div>
+    <div class="arch-wrap" data-layer="output">
+    <div class="arch-bar ab-out" onclick="showLayer(this.parentNode,'output')">
       <div class="bar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#a32d2d" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>
       <div class="bar-body"><div class="bar-name">Output pipeline</div><div class="bar-desc">Heatmap dashboard, Bo3 replayer, deck guides</div></div>
       <div class="bar-stat">3 products</div>
     </div>
-    <div class="arch-bar ab-skill" onclick="showLayer(this,'skills')">
+    <div class="arch-detail"></div>
+    </div>
+    <div class="arch-wrap" data-layer="skills">
+    <div class="arch-bar ab-skill" onclick="showLayer(this.parentNode,'skills')">
       <div class="bar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#b8941e" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
       <div class="bar-body"><div class="bar-name">Claude skills</div><div class="bar-desc">4 reusable automation pipelines for the full workflow</div></div>
       <div class="bar-stat">4 skills</div>
     </div>
+    <div class="arch-detail"></div>
+    </div>
   </div>
-  <div class="arch-detail" id="archDetail"></div>
 </section>
 
 <!-- Output Products -->
@@ -680,13 +697,19 @@ const layerData={
       {n:'/mtg-project-showcase',tip:'Marketing page generator: 10 interactive sections, Chart.js, cross-project comparison'}
     ]}
 };
-function showLayer(el,key){
-  document.querySelectorAll('.arch-bar').forEach(b=>b.classList.remove('active'));
-  el.classList.add('active');
-  const d=layerData[key],det=document.getElementById('archDetail');
+function showLayer(wrap,key){
+  // Close all other details
+  document.querySelectorAll('.arch-wrap').forEach(w=>{
+    w.querySelector('.arch-bar').classList.remove('active');
+    w.querySelector('.arch-detail').classList.remove('show');
+  });
+  // Toggle this one
+  const bar = wrap.querySelector('.arch-bar');
+  const det = wrap.querySelector('.arch-detail');
+  bar.classList.add('active');
+  const d=layerData[key];
   det.innerHTML=`<h4>${d.t}</h4><p>${d.d}</p><div class="file-list">${d.files.map(f=>`<span class="file-chip" data-tip="${f.tip}">${f.n}</span>`).join('')}</div>`;
   det.classList.add('show');
-  det.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
 // Charts
