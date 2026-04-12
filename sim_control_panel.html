@@ -77,6 +77,17 @@
   .panel.active { display: block; }
   .guide-select { margin-left: 28px; margin-top: 6px; max-width: 260px; display: none; }
   .guide-select.visible { display: block; }
+  .run-mode-btn { flex: 1; padding: 10px 12px; border-radius: 8px; cursor: pointer; transition: all .15s; text-align: left; border: 2px solid var(--border); background: #fff; }
+  .run-mode-btn.active { border-color: var(--accent); background: var(--accent-light); }
+  .run-mode-btn .mode-title { font-size: 13px; font-weight: 700; }
+  .run-mode-btn.active .mode-title { color: var(--accent-text); }
+  .run-mode-btn .mode-desc { font-size: 10px; color: var(--muted); margin-top: 2px; }
+  .btn-github { background: var(--blue); }
+  .btn-local { background: var(--green); }
+  .btn-disabled { background: var(--muted) !important; cursor: not-allowed; }
+  input[type="password"] { background: #fff; border: 1.5px solid var(--border); border-radius: 8px; color: var(--text); padding: 7px 10px; font-size: 12px; font-family: 'JetBrains Mono', monospace; outline: none; max-width: 400px; width: 100%; }
+  .info-box { padding: 8px 12px; border-radius: 8px; background: var(--amber-light); border: 1px solid rgba(217,119,6,.2); font-size: 12px; margin-bottom: 12px; }
+  .info-box code { background: #fff; padding: 2px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
 </style>
 </head>
 <body>
@@ -112,13 +123,10 @@
       <span class="label">Post-Run Outputs</span>
       <div id="output-checks"></div>
     </div>
-    <button class="btn" onclick="generateTask()">Generate Task</button>
-    <div id="prompt-output" style="display:none">
-      <div style="font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.5px;margin-top:16px">TASK PROMPT</div>
-      <div class="prompt-box" id="prompt-text"></div>
-      <div style="display:flex;gap:8px;margin-top:8px">
-        <button class="btn-sec" onclick="copyPrompt()">Copy to clipboard</button>
-      </div>
+    <div class="card" id="exec-mode-card"></div>
+    <div id="exec-output" style="display:none">
+      <div style="font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.5px;margin-top:12px" id="exec-label">TASK PROMPT</div>
+      <div class="prompt-box" id="exec-text"></div>
     </div>
   </div>
   <div class="panel" id="panel-artifacts"></div>
@@ -216,6 +224,8 @@ let format = 'legacy', runType = 'matrix', histFilter = 'all';
 let selectedDecks = new Set(LEGACY_DECKS);
 let gamesPerPair = 50, deck1 = '', deck2 = '', seed = 55555, guideDeck = '', bo3Count = 1;
 let outputs = { dashboard: true, replays: false, audit: false, deckGuide: false, bo3Replay: true, gitPush: false };
+let runMode = 'cowork', execStatus = 'idle', execLog = '';
+let ghToken = ''; try { ghToken = sessionStorage.getItem('gh_pat') || ''; } catch(e) {}
 
 function getDecks() { return format === 'legacy' ? LEGACY_DECKS : MODERN_DECKS; }
 function getHistory() { return format === 'legacy' ? LEGACY_HISTORY : MODERN_HISTORY; }
@@ -407,6 +417,31 @@ function render() {
       <div class="check-desc">Stage results, commit with summary, push to origin main</div></div></div></div>`;
   document.getElementById('output-checks').innerHTML = chk;
 
+  // Execution mode card
+  let exec = '<span class="label">Run Method</span><div style="display:flex;gap:8px;margin-bottom:12px">';
+  [{k:'github',l:'\u2601\uFE0F GitHub Actions',d:'Runs on GitHub\'s servers'},
+   {k:'local',l:'\uD83D\uDCBB Local Server',d:'Runs on your machine'},
+   {k:'cowork',l:'\uD83D\uDCCB Copy for Cowork',d:'Copy task prompt'}
+  ].forEach(m => {
+    exec += `<button class="run-mode-btn ${runMode===m.k?'active':''}" onclick="setRunMode('${m.k}')">
+      <div class="mode-title">${m.l}</div><div class="mode-desc">${m.d}</div></button>`;
+  });
+  exec += '</div>';
+  if (runMode === 'github') {
+    exec += `<div style="margin-bottom:12px"><span class="label" style="margin-bottom:4px">GitHub PAT</span>
+      <input type="password" value="${ghToken}" oninput="saveGhToken(this.value)" placeholder="ghp_...">
+      <div style="font-size:10px;color:var(--muted);margin-top:4px">Stored in sessionStorage. Needs repo + actions scope.</div></div>`;
+    exec += `<button class="btn btn-github ${execStatus==='running'?'btn-disabled':''}" onclick="triggerGitHub()" ${execStatus==='running'?'disabled':''}>${execStatus==='running'?'Running...':'\u25B6 Run via GitHub Actions'}</button>`;
+  } else if (runMode === 'local') {
+    const port = format === 'legacy' ? 8766 : 8765;
+    exec += `<div class="info-box">Start server first: <code>python3 sim_server.py</code> <span style="color:var(--muted);margin-left:8px">(port ${port})</span></div>`;
+    exec += `<button class="btn btn-local ${execStatus==='running'?'btn-disabled':''}" onclick="triggerLocal()" ${execStatus==='running'?'disabled':''}>${execStatus==='running'?'Running...':'\u25B6 Run on Local Server'}</button>`;
+  } else {
+    exec += '<button class="btn" onclick="generateTask()">Generate Task</button>';
+    exec += ' <button class="btn-sec" onclick="copyPrompt()" style="margin-left:8px">Copy to clipboard</button>';
+  }
+  document.getElementById('exec-mode-card').innerHTML = exec;
+
   // Artifacts — HTML files are clickable
   let art = '<div class="card"><span class="label">HTML Dashboards & Reports</span>';
   allRuns.filter(r => r.path && r.path.endsWith('.html')).forEach(r => {
@@ -430,7 +465,6 @@ function render() {
   });
   art += '</div>';
   document.getElementById('panel-artifacts').innerHTML = art;
-  document.getElementById('prompt-output').style.display = 'none';
 }
 
 // ── Actions ──────────────────────────────────────────────────────────
@@ -469,16 +503,81 @@ function generateTask() {
   if (outputs.deckGuide) lines.push(`${step++}. Generate a comprehensive deck guide for "${guideDeck||'selected deck'}" (use /mtg-deck-guide skill). Include mulligan analysis, matchup guide, sideboard plans, and key hand archetypes.`);
   if (outputs.gitPush) lines.push(`${step++}. Git add all new/changed result files, replays, and dashboards. Commit with a descriptive message summarizing what was run (decks, games/pair, outputs generated). Push to origin main.`);
   lines.push('\nPresent all generated files when done.');
-  document.getElementById('prompt-text').textContent = lines.join('\n');
-  document.getElementById('prompt-output').style.display = 'block';
+  document.getElementById('exec-text').textContent = lines.join('\n');
+  document.getElementById('exec-label').textContent = 'TASK PROMPT';
+  document.getElementById('exec-output').style.display = 'block';
 }
 
 function copyPrompt() {
-  const text = document.getElementById('prompt-text').textContent;
+  const text = document.getElementById('exec-text').textContent;
   navigator.clipboard?.writeText(text).then(() => {
-    const btn = document.querySelector('#prompt-output .btn-sec');
-    btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy to clipboard', 1500);
+    const btn = document.querySelector('#exec-output .btn-sec');
+    if (btn) { btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy to clipboard', 1500); }
   });
+}
+
+function setRunMode(m) { runMode = m; execStatus = 'idle'; execLog = ''; render(); }
+
+function saveGhToken(v) { ghToken = v; try { sessionStorage.setItem('gh_pat', v); } catch(e) {} }
+
+async function triggerGitHub() {
+  if (!ghToken) { execLog = 'Error: No GitHub PAT set. Enter token above.'; execStatus = 'error'; renderExec(); return; }
+  try { sessionStorage.setItem('gh_pat', ghToken); } catch(e) {}
+  execStatus = 'running'; execLog = 'Triggering GitHub Actions...\n'; renderExec();
+  const repo = format === 'legacy' ? 'DJPieter81/MTGSimClaude' : 'DJPieter81/MTGSimManu';
+  const deckStr = runType === 'matrix' ? [...selectedDecks].join(',') : [deck1, deck2].filter(Boolean).join(',');
+  const outParts = [];
+  if (outputs.dashboard) outParts.push('dashboard');
+  if (outputs.replays) outParts.push('replays');
+  if (outputs.audit) outParts.push('audit');
+  if (outputs.deckGuide) outParts.push('guide');
+  if (outputs.gitPush) outParts.push('gitpush');
+  const body = { ref: 'main', inputs: { run_type: runType, decks: deckStr, games: String(gamesPerPair), seed: String(seed), bo3_count: String(bo3Count), outputs: outParts.join(','), guide_deck: guideDeck } };
+  try {
+    const res = await fetch(`https://api.github.com/repos/${repo}/actions/workflows/sim.yml/dispatches`, {
+      method: 'POST', headers: { Authorization: `token ${ghToken}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    if (res.status === 204) { execLog += '\u2705 Workflow dispatched on ' + repo + '.\nCheck: https://github.com/' + repo + '/actions\n'; execStatus = 'done'; }
+    else { const t = await res.text(); execLog += '\u274c HTTP ' + res.status + ': ' + t + '\n'; execStatus = 'error'; }
+  } catch(e) { execLog += '\u274c Network error: ' + e.message + '\n'; execStatus = 'error'; }
+  renderExec();
+}
+
+async function triggerLocal() {
+  execStatus = 'running'; execLog = 'Sending to local server...\n'; renderExec();
+  const deckStr = runType === 'matrix' ? [...selectedDecks].join(',') : [deck1, deck2].filter(Boolean).join(',');
+  const outParts = [];
+  if (outputs.dashboard) outParts.push('dashboard');
+  if (outputs.audit) outParts.push('audit');
+  if (outputs.gitPush) outParts.push('gitpush');
+  const body = { run_type: runType, decks: deckStr, games: String(gamesPerPair), seed: String(seed), bo3_count: String(bo3Count), outputs: outParts.join(','), guide_deck: guideDeck };
+  const port = format === 'legacy' ? 8766 : 8765;
+  try {
+    const res = await fetch('http://localhost:' + port + '/run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const data = await res.json();
+    if (res.ok) {
+      execLog += '\u2705 Sim started (' + JSON.stringify(data.params) + ')\n'; execStatus = 'done'; renderExec();
+      const poll = setInterval(async () => {
+        try {
+          const sr = await fetch('http://localhost:' + port + '/status');
+          const st = await sr.json();
+          execLog = 'Server: ' + st.repo + ' | Running: ' + st.running + '\nLast run: ' + (st.last_run||'\u2014') + '\n\n' + (st.log_tail||'');
+          renderExec();
+          if (!st.running && st.last_run) { clearInterval(poll); execStatus = 'done'; renderExec(); }
+        } catch(e) { clearInterval(poll); }
+      }, 3000);
+    } else { execLog += '\u274c ' + (data.error || res.statusText) + '\n'; execStatus = 'error'; renderExec(); }
+  } catch(e) { execLog += '\u274c Cannot reach localhost:' + port + '. Start sim_server.py first.\n  python3 sim_server.py\n'; execStatus = 'error'; renderExec(); }
+}
+
+function renderExec() {
+  const el = document.getElementById('exec-output');
+  const txtEl = document.getElementById('exec-text');
+  const lblEl = document.getElementById('exec-label');
+  if (runMode === 'cowork' && txtEl.textContent) { el.style.display = 'block'; lblEl.textContent = 'TASK PROMPT'; }
+  else if (execLog) { el.style.display = 'block'; lblEl.textContent = 'EXECUTION LOG'; txtEl.textContent = execLog; }
+  else { el.style.display = 'none'; }
 }
 
 render();

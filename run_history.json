@@ -1,0 +1,83 @@
+{
+  "generated": "2026-04-12T10:45:30.816287",
+  "count": 7,
+  "runs": [
+    {
+      "file": "azorius_wst_vs_boros_s55555.txt",
+      "d1": "azorius_wst",
+      "d2": "boros",
+      "seed": "55555",
+      "tag": "bo3",
+      "ts": "2026-04-12T09:09:22.879099",
+      "type": "bo3-log",
+      "path": "replays/azorius_wst_vs_boros_s55555.txt",
+      "size_kb": 37.4
+    },
+    {
+      "file": "ruby_storm_vs_affinity_s55555.txt",
+      "d1": "ruby_storm",
+      "d2": "affinity",
+      "seed": "55555",
+      "tag": "bo3",
+      "ts": "2026-04-12T09:08:56.766062",
+      "type": "bo3-log",
+      "path": "replays/ruby_storm_vs_affinity_s55555.txt",
+      "size_kb": 25.3
+    },
+    {
+      "file": "boros_energy_vs_domain_zoo_s55555.txt",
+      "d1": "boros_energy",
+      "d2": "domain_zoo",
+      "seed": "55555",
+      "tag": "bo3",
+      "ts": "2026-04-12T09:08:56.764228",
+      "type": "bo3-log",
+      "path": "replays/boros_energy_vs_domain_zoo_s55555.txt",
+      "size_kb": 61.7
+    },
+    {
+      "file": "jeskai_blink_vs_affinity_s55555.txt",
+      "d1": "jeskai_blink",
+      "d2": "affinity",
+      "seed": "55555",
+      "tag": "bo3",
+      "ts": "2026-04-11T18:13:46.004437",
+      "type": "bo3-log",
+      "path": "replays/jeskai_blink_vs_affinity_s55555.txt",
+      "size_kb": 33.3
+    },
+    {
+      "file": "eldrazi_tron_vs_izzet_prowess_s55555.txt",
+      "d1": "eldrazi_tron",
+      "d2": "izzet_prowess",
+      "seed": "55555",
+      "tag": "bo3",
+      "ts": "2026-04-11T18:13:46.004169",
+      "type": "bo3-log",
+      "path": "replays/eldrazi_tron_vs_izzet_prowess_s55555.txt",
+      "size_kb": 60.4
+    },
+    {
+      "file": "affinity_vs_izzet_prowess_s55555.txt",
+      "d1": "affinity",
+      "d2": "izzet_prowess",
+      "seed": "55555",
+      "tag": "bo3",
+      "ts": "2026-04-11T18:13:46.003663",
+      "type": "bo3-log",
+      "path": "replays/affinity_vs_izzet_prowess_s55555.txt",
+      "size_kb": 26.2
+    },
+    {
+      "file": "affinity_vs_domain_zoo_s55555.txt",
+      "d1": "affinity",
+      "d2": "domain_zoo",
+      "seed": "55555",
+      "tag": "bo3",
+      "ts": "2026-04-11T18:13:46.003416",
+      "type": "bo3-log",
+      "path": "replays/affinity_vs_domain_zoo_s55555.txt",
+      "size_kb": 37.0
+    }
+  ]
+}

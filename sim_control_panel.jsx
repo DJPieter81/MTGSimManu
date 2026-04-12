@@ -171,6 +171,12 @@ export default function SimControlPanel() {
   const [bo3Count, setBo3Count] = useState(1);
   const [outputs, setOutputs] = useState({ dashboard: true, replays: false, audit: false, deckGuide: false, bo3Replay: true, gitPush: false });
   const [submitted, setSubmitted] = useState(null);
+  const [runMode, setRunMode] = useState("cowork"); // "github", "local", "cowork"
+  const [execStatus, setExecStatus] = useState("idle"); // "idle", "running", "done", "error"
+  const [execLog, setExecLog] = useState("");
+  const [ghToken, setGhToken] = useState(() => {
+    try { return sessionStorage.getItem("gh_pat") || ""; } catch { return ""; }
+  });
 
   const allDecks = format === "legacy" ? LEGACY_DECKS : MODERN_DECKS;
   const [selectedDecks, setSelectedDecks] = useState([...allDecks]);
@@ -196,6 +202,59 @@ export default function SimControlPanel() {
   // ── Count by type ──
   const typeCounts = {};
   allRuns.forEach(r => { const k = r.type === "bo3-log" ? "bo3" : r.type; typeCounts[k] = (typeCounts[k] || 0) + 1; });
+
+  // ── GitHub Actions trigger ──
+  const triggerGitHub = async () => {
+    if (!ghToken) { setExecLog("Error: No GitHub PAT set. Enter token above."); setExecStatus("error"); return; }
+    try { sessionStorage.setItem("gh_pat", ghToken); } catch {}
+    setExecStatus("running"); setExecLog("Triggering GitHub Actions...\n");
+    const repo = format === "legacy" ? "DJPieter81/MTGSimClaude" : "DJPieter81/MTGSimManu";
+    const deckStr = runType === "matrix" ? selectedDecks.join(",") : [deck1, deck2].filter(Boolean).join(",");
+    const outParts = [];
+    if (outputs.dashboard) outParts.push("dashboard");
+    if (outputs.replays) outParts.push("replays");
+    if (outputs.audit) outParts.push("audit");
+    if (outputs.deckGuide) outParts.push("guide");
+    if (outputs.gitPush) outParts.push("gitpush");
+    const body = { ref: "main", inputs: { run_type: runType, decks: deckStr, games: String(gamesPerPair), seed: String(seed), bo3_count: String(bo3Count), outputs: outParts.join(","), guide_deck: guideDeck } };
+    try {
+      const res = await fetch(`https://api.github.com/repos/${repo}/actions/workflows/sim.yml/dispatches`, {
+        method: "POST", headers: { Authorization: `token ${ghToken}`, Accept: "application/vnd.github.v3+json", "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (res.status === 204) { setExecLog(prev => prev + `\u2705 Workflow dispatched on ${repo}.\nCheck: https://github.com/${repo}/actions\n`); setExecStatus("done"); }
+      else { const t = await res.text(); setExecLog(prev => prev + `\u274c HTTP ${res.status}: ${t}\n`); setExecStatus("error"); }
+    } catch (e) { setExecLog(prev => prev + `\u274c Network error: ${e.message}\n`); setExecStatus("error"); }
+  };
+
+  // ── Local server trigger ──
+  const triggerLocal = async () => {
+    setExecStatus("running"); setExecLog("Sending to local server...\n");
+    const deckStr = runType === "matrix" ? selectedDecks.join(",") : [deck1, deck2].filter(Boolean).join(",");
+    const outParts = [];
+    if (outputs.dashboard) outParts.push("dashboard");
+    if (outputs.audit) outParts.push("audit");
+    if (outputs.gitPush) outParts.push("gitpush");
+    const body = { run_type: runType, decks: deckStr, games: String(gamesPerPair), seed: String(seed), bo3_count: String(bo3Count), outputs: outParts.join(","), guide_deck: guideDeck };
+    const port = format === "legacy" ? 8766 : 8765;
+    try {
+      const res = await fetch(`http://localhost:${port}/run`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      const data = await res.json();
+      if (res.ok) {
+        setExecLog(prev => prev + `\u2705 Sim started (${JSON.stringify(data.params)})\n`);
+        setExecStatus("done");
+        // Start polling status
+        const poll = setInterval(async () => {
+          try {
+            const sr = await fetch(`http://localhost:${port}/status`);
+            const st = await sr.json();
+            setExecLog(`Server: ${st.repo} | Running: ${st.running}\nLast run: ${st.last_run || "—"}\n\n${st.log_tail || ""}`);
+            if (!st.running && st.last_run) { clearInterval(poll); setExecStatus("done"); }
+          } catch { clearInterval(poll); }
+        }, 3000);
+      } else { setExecLog(prev => prev + `\u274c ${data.error || res.statusText}\n`); setExecStatus("error"); }
+    } catch (e) { setExecLog(prev => prev + `\u274c Cannot reach localhost:${port}. Start sim_server.py first.\n  python3 sim_server.py\n`); setExecStatus("error"); }
+  };
 
   const buildPrompt = () => {
     const repo = format === "legacy" ? "MTGSimClaude (Legacy) at ~/MTGSimManu/MTGSimClaude" : "MTGSimManu (Modern) at ~/MTGSimManu/MTGSimManu/MTGSimManu";
@@ -539,15 +598,68 @@ export default function SimControlPanel() {
               </div>
             </div>
 
-            <button style={S.btn} onClick={() => setSubmitted(buildPrompt())}>Generate Task</button>
+            {/* ── Execution Mode ── */}
+            <div style={S.card}>
+              <span style={S.label}>Run Method</span>
+              <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+                {[
+                  { k: "github", l: "\u2601\uFE0F GitHub Actions", desc: "Runs on GitHub's servers" },
+                  { k: "local", l: "\uD83D\uDCBB Local Server", desc: "Runs on your machine" },
+                  { k: "cowork", l: "\uD83D\uDCCB Copy for Cowork", desc: "Copy task prompt" },
+                ].map(m => (
+                  <button key={m.k} onClick={() => { setRunMode(m.k); setExecStatus("idle"); setExecLog(""); }} style={{
+                    flex: 1, padding: "10px 12px", borderRadius: 8, cursor: "pointer", transition: "all .15s", textAlign: "left",
+                    border: `2px solid ${runMode === m.k ? accent : border}`,
+                    background: runMode === m.k ? accentLight : "#fff",
+                  }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: runMode === m.k ? accentText : text }}>{m.l}</div>
+                    <div style={{ fontSize: 10, color: muted, marginTop: 2 }}>{m.desc}</div>
+                  </button>
+                ))}
+              </div>
 
-            {submitted && (
-              <div style={{ marginTop: 16 }}>
-                <span style={{ fontSize: 11, color: muted, fontWeight: 600, letterSpacing: .5 }}>TASK PROMPT</span>
-                <div style={S.prompt}>{submitted}</div>
-                <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-                  <button style={S.btnSec} onClick={() => navigator.clipboard?.writeText(submitted)}>Copy to clipboard</button>
+              {runMode === "github" && (
+                <div style={{ marginBottom: 12 }}>
+                  <span style={{ ...S.label, marginBottom: 4 }}>GitHub PAT</span>
+                  <input type="password" value={ghToken} onChange={e => setGhToken(e.target.value)} placeholder="ghp_..." style={{ ...S.select, maxWidth: 400, fontFamily: "'JetBrains Mono', monospace", fontSize: 12 }} />
+                  <div style={{ fontSize: 10, color: muted, marginTop: 4 }}>Stored in sessionStorage. Needs repo + actions scope.</div>
                 </div>
+              )}
+
+              {runMode === "local" && (
+                <div style={{ marginBottom: 12, padding: "8px 12px", borderRadius: 8, background: amberLight, border: `1px solid ${amber}33`, fontSize: 12, color: text }}>
+                  Start server first: <code style={{ ...S.mono, background: "#fff", padding: "2px 6px", borderRadius: 4 }}>python3 sim_server.py</code>
+                  <span style={{ color: muted, marginLeft: 8 }}>(port {format === "legacy" ? 8766 : 8765})</span>
+                </div>
+              )}
+
+              <div style={{ display: "flex", gap: 8 }}>
+                {runMode === "github" && (
+                  <button style={{ ...S.btn, background: execStatus === "running" ? muted : blue }} disabled={execStatus === "running"} onClick={triggerGitHub}>
+                    {execStatus === "running" ? "Running..." : "\u25B6 Run via GitHub Actions"}
+                  </button>
+                )}
+                {runMode === "local" && (
+                  <button style={{ ...S.btn, background: execStatus === "running" ? muted : green }} disabled={execStatus === "running"} onClick={triggerLocal}>
+                    {execStatus === "running" ? "Running..." : "\u25B6 Run on Local Server"}
+                  </button>
+                )}
+                {runMode === "cowork" && (
+                  <>
+                    <button style={S.btn} onClick={() => { setSubmitted(buildPrompt()); setExecStatus("done"); }}>Generate Task</button>
+                    {submitted && <button style={S.btnSec} onClick={() => navigator.clipboard?.writeText(submitted)}>Copy to clipboard</button>}
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Execution log */}
+            {(execLog || (runMode === "cowork" && submitted)) && (
+              <div style={{ marginTop: 12 }}>
+                <span style={{ fontSize: 11, color: muted, fontWeight: 600, letterSpacing: .5 }}>
+                  {runMode === "cowork" ? "TASK PROMPT" : "EXECUTION LOG"}
+                </span>
+                <div style={S.prompt}>{runMode === "cowork" ? submitted : execLog}</div>
               </div>
             )}
           </div>
