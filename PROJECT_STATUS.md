@@ -373,4 +373,4 @@ Every output gets: `Simulated: DATE | Decks: N | Games/pair: N | Seeds: range | 
 
 ---
 
-*See also: ARCHITECTURE.md · QUICKSTART.md · LLM_JUDGE_STRATEGY_AUDIT.md · LEGACY_MODERNISATION_PROPOSAL.md*
+*See also: docs/ARCHITECTURE.md · QUICKSTART.md · docs/history/audits/2026-04-11_LLM_judge.md · LEGACY_MODERNISATION_PROPOSAL.md*

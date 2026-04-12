@@ -244,7 +244,7 @@ python build_replay.py replays/log.txt replay.html 55555
 
 ## Known Issues — LLM-Judge Strategy Audit
 
-See **`LLM_JUDGE_STRATEGY_AUDIT.md`** for the full 6-expert panel report (~168 games). Overall grade: **D+**.
+See **`docs/history/audits/2026-04-11_LLM_judge.md`** for the full 6-expert panel report (~168 games). Overall grade: **D+**. Superseded by `PROJECT_STATUS.md` (see Grade in §6).
 
 ### P0 — Critical (game-breaking)
 
@@ -343,7 +343,7 @@ Always save logs to `replays/` and commit. `build_replay.py` is in the repo with
 
 **Current grade: C** (session 2 completed all P0/P1 fixes — see Section 7 for full changelog)
 
-Related docs: `MODERN_PROPOSAL.md` (6 infra proposals from Legacy), `LLM_JUDGE_STRATEGY_AUDIT.md` (original D+ audit), `LEGACY_MODERNISATION_PROPOSAL.md` (Legacy adoption plan).
+Related docs: `MODERN_PROPOSAL.md` (6 infra proposals from Legacy), `docs/history/audits/2026-04-11_LLM_judge.md` (original D+ audit), `LEGACY_MODERNISATION_PROPOSAL.md` (Legacy adoption plan).
 
 ## Sister Project — MTGSimClaude (Legacy)
 
