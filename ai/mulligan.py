@@ -35,6 +35,36 @@ class MulliganDecider:
         land_count = len(lands)
         self.last_reason = ""
 
+        # ── Hard floor: 0 lands = always mulligan ──────────────────────
+        # Exception: Affinity can keep 0-land hands with mana artifacts
+        # (Mox Opal, Springleaf Drum) that produce mana without lands.
+        if land_count == 0:
+            deck_name = ""
+            if self.goal_engine and self.goal_engine.gameplan:
+                deck_name = self.goal_engine.gameplan.deck_name
+            if "affinity" in deck_name.lower():
+                hand_names = {c.name for c in hand}
+                mana_artifacts = hand_names & {"Mox Opal", "Springleaf Drum"}
+                if not mana_artifacts:
+                    self.last_reason = "0 lands — no mana artifacts (Affinity)"
+                    return False
+                # else: Affinity with mana artifacts — allow through to normal eval
+            else:
+                self.last_reason = "0 lands — hard floor"
+                return False
+
+        # ── Soft ceiling: 5+ lands with < 2 spells = mulligan ─────────
+        # Exception: Amulet Titan actively wants land-heavy hands.
+        if land_count >= 5 and len(spells) < 2:
+            deck_name = ""
+            if self.goal_engine and self.goal_engine.gameplan:
+                deck_name = self.goal_engine.gameplan.deck_name
+            if "amulet" not in deck_name.lower():
+                self.last_reason = (
+                    f"{land_count} lands with only {len(spells)} spell(s) — soft ceiling"
+                )
+                return False
+
         # Suspend-only cards (Living End, Ancestral Vision) are dead in hand
         # — can only be cast via cascade/suspend, never from hand
         from engine.cards import Keyword
