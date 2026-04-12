@@ -68,6 +68,33 @@ def get_sb_targets(deck_name, D, idx):
                     # Already tracked via IN, just note cast count
     return targets
 
+def get_card_annotation(card_name, db):
+    """Derive a short annotation from oracle text and tags."""
+    card = db.cards.get(card_name) if db else None
+    if not card: return ''
+    oracle = (card.oracle_text or '').lower()
+    tags = set(str(t).lower().replace('cardtag.','') for t in card.tags) if card.tags else set()
+    if '//' in card_name: return 'flips \u2192 PW'
+    if 'sacrifice a creature' in oracle and 'damage' in oracle: return 'sac for damage'
+    if 'energy' in tags and 'board_wipe' in tags: return 'energy sweeper'
+    if 'energy' in tags and 'removal' in tags: return 'energy removal'
+    if 'energy' in tags and 'creature' in tags and 'etb_value' in tags: return 'energy engine'
+    if 'nonbasic lands' in oracle: return 'shuts greedy mana'
+    if 'choose one' in oracle or getattr(card, 'is_modal', False): return 'modal \u00b7 flex'
+    if 'exile target' in oracle and 'energy' in tags: return 'energy + exile'
+    if 'escape' in oracle: return 'escape recursion'
+    if 'card_advantage' in tags and 'token_maker' in tags: return 'draw + tokens'
+    if 'token_maker' in tags and 'creature' in tags: return 'token synergy'
+    if 'cascade' in tags: return 'cascade'
+    if 'graveyard_hate' in tags and 'removal' in tags: return 'modal \u00b7 GY hate'
+    if 'stax' in tags: return 'prison piece'
+    if 'silence' in tags: return 'token army'
+    if card.is_land:
+        if 'search' in oracle: return 'fetch land'
+        if card.enters_tapped: return 'enters tapped'
+        return ''
+    return ''
+
 def load_D(jsx_path='metagame_data.jsx'):
     with open(jsx_path) as f: jsx = f.read()
     d_start = jsx.index('const D = ') + 10
@@ -273,6 +300,8 @@ def build_guide(deck_name, D):
         h(f'<h3>Mainboard ({sum(mb.values())})</h3>')
         for card, qty in mb.items():
             badge = get_role_badge(card, db)
+            annot = get_card_annotation(card, db)
+            annot_str = f'<span style="font-size:9px;color:#999;margin-left:4px;font-style:italic">{annot}</span>' if annot else ''
             stats = []
             casts = cast_map.get(card, 0)
             dmg = dmg_map_full.get(card, 0)
@@ -281,7 +310,7 @@ def build_guide(deck_name, D):
             if dmg: stats.append(f'{dmg} dmg')
             if kills: stats.append(f'#{[i+1 for i,f in enumerate(dc.get("finishers",[])) if f["card"]==card][0] if any(f["card"]==card for f in dc.get("finishers",[])) else "?"} finisher ({kills})')
             stat_str = f'<span style="font-size:9px;color:#aaa;margin-left:auto;white-space:nowrap">{" · ".join(stats)}</span>' if stats else ''
-            h(f'<div class="dl-row"><span class="dl-qty">{qty}</span><span class="dl-card card-tip" data-card="{esc(card)}">{esc(card)}</span>{badge}{stat_str}</div>')
+            h(f'<div class="dl-row"><span class="dl-qty">{qty}</span><span class="dl-card card-tip" data-card="{esc(card)}">{esc(card)}</span>{badge}{annot_str}{stat_str}</div>')
         h(f'<div class="dl-total">{sum(mb.values())} cards · {len(mb)} unique</div>')
         h('</div>')
         # Sideboard with vs targets
@@ -328,6 +357,35 @@ def build_guide(deck_name, D):
         f_dmg = dmg_map_full.get(top_f['card'], '?')
         h(f'<div style="font-size:11px;color:#888">{top_f.get("desc","")}</div></div>')
         h(f'<div style="font-size:18px;font-weight:700;color:#1f7040;font-family:monospace">{top_f["count"]} kills</div></div>')
+    # Token damage (hidden source)
+    token_dmg = [d for d in dc.get('mvp_damage', []) if 'Token' in d['card']]
+    if token_dmg:
+        total_tok = sum(d['count'] for d in token_dmg)
+        tok_names = ', '.join(d['card'] for d in token_dmg[:2])
+        h(f'<div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid #f0f0f0">')
+        h(f'<div><div style="font-size:13px;font-weight:600">Hidden damage: tokens</div>')
+        h(f'<div style="font-size:11px;color:#888">{tok_names} — not in decklist but a top damage source. Never board out producers.</div></div>')
+        h(f'<div style="font-size:18px;font-weight:700;color:#854f0b;font-family:monospace">{total_tok} dmg</div></div>')
+    # Most cast card
+    if dc.get('mvp_casts'):
+        top_c = dc['mvp_casts'][0]
+        h(f'<div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid #f0f0f0">')
+        h(f'<div><div style="font-size:13px;font-weight:600">{esc(top_c["card"].split(",")[0])}: most cast card</div>')
+        per_game = round(top_c['count'] / max(overall.get('total_matches',1),1), 1)
+        h(f'<div style="font-size:11px;color:#888">{per_game}x per game average — the engine of the deck</div></div>')
+        h(f'<div style="font-size:18px;font-weight:700;color:#185fa5;font-family:monospace">{top_c["count"]} casts</div></div>')
+    # Best matchup
+    if best:
+        h(f'<div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid #f0f0f0">')
+        h(f'<div><div style="font-size:13px;font-weight:600">Best matchup: {esc(best[0])}</div>')
+        h(f'<div style="font-size:11px;color:#888">{ARCH.get(best[0],"?")} archetype — structural advantage</div></div>')
+        h(f'<div style="font-size:18px;font-weight:700;color:#1f7040;font-family:monospace">{best[1]["wr"]}%</div></div>')
+    # Worst matchup
+    if worst:
+        h(f'<div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid #f0f0f0">')
+        h(f'<div><div style="font-size:13px;font-weight:600">Worst matchup: {esc(worst[0])}</div>')
+        h(f'<div style="font-size:11px;color:#888">{ARCH.get(worst[0],"?")} archetype — structural weakness</div></div>')
+        h(f'<div style="font-size:18px;font-weight:700;color:#b02020;font-family:monospace">{worst[1]["wr"]}%</div></div>')
     h('</div>')
     
     # Stars
@@ -370,11 +428,24 @@ def build_guide(deck_name, D):
                 bg = colors[i % len(colors)]
                 tc = txt_colors[i % len(txt_colors)]
                 desc = goal.get('description', goal.get('name', ''))
+                roles = goal.get('card_roles', {})
                 h(f'<div style="flex:1;padding:14px 16px;background:{bg};{"border-radius:8px 0 0 8px" if i==0 else "border-radius:0 8px 8px 0" if i==len(goals[:3])-1 else ""}">')
                 h(f'<div style="font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:{tc};font-weight:700;margin-bottom:4px">{lbl}</div>')
-                h(f'<div style="font-size:12px;color:#333;line-height:1.4">{esc(desc)}</div>')
+                h(f'<div style="font-size:12px;color:#333;line-height:1.4;margin-bottom:6px">{esc(desc)}</div>')
+                # Card roles per phase
+                for role_name, cards_list in roles.items():
+                    card_names = [c.split('//')[0].split(',')[0].strip() for c in cards_list[:4]]
+                    role_label = role_name.replace('_', ' ').title()
+                    h(f'<div style="font-size:9px;color:{tc};margin-top:3px"><span style="font-weight:600">{role_label}:</span> {", ".join(card_names)}</div>')
                 h('</div>')
             h('</div>')
+            # Mulligan keys
+            mull_keys = gp.get('mulligan_keys', [])
+            always_early = gp.get('always_early', [])
+            if mull_keys:
+                h(f'<div style="font-size:11px;color:#666;margin:8px 0"><span style="font-weight:600">Mulligan for:</span> {", ".join(c.split("//")[0].split(",")[0].strip() for c in mull_keys[:5])}</div>')
+            if always_early:
+                h(f'<div style="font-size:11px;color:#666;margin:4px 0"><span style="font-weight:600">Always deploy T1-T2:</span> {", ".join(c.split("//")[0].split(",")[0].strip() for c in always_early[:4])}</div>')
 
     # Kill Turn Distribution — SVG bar chart
     turn_data = []
