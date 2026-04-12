@@ -309,6 +309,12 @@ def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
         if not oracle or 'whenever' not in oracle:
             continue
 
+        # ── Ocelot Pride: "Whenever you cast a noncreature spell, you get {E}" ──
+        if (permanent.name == 'Ocelot Pride'
+                and not spell_cast.template.is_creature
+                and permanent.controller == caster_idx):
+            game.produce_energy(caster_idx, 1, 'Ocelot Pride')
+
         # ── "Whenever you cast a noncreature spell, create a token" ──
         if ('noncreature spell' in oracle and 'create' in oracle
                 and 'token' in oracle and not spell_cast.template.is_creature):

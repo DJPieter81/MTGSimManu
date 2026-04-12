@@ -563,26 +563,34 @@ def faithful_mending_resolve(game, card, controller, targets=None, item=None):
 
 
 @EFFECT_REGISTRY.register("Wrath of the Skies", EffectTiming.SPELL_RESOLVE,
-                           description="Destroy nonland permanents with MV <= X (energy)")
+                           description="Get X energy, pay any amount, destroy permanents with MV <= paid")
 def wrath_of_the_skies_resolve(game, card, controller, targets=None, item=None):
     from .cards import Keyword
     player = game.players[controller]
-    x_val = min(player.energy_counters, 10)
+
+    # Oracle: "You get X {E}, then you may pay any amount of {E}.
+    # Destroy each artifact, creature, and enchantment with MV <= amount paid."
+    # Step 1: get X energy from the cast X value
+    x_cast = item.x_value if item and hasattr(item, 'x_value') else 0
+    if x_cast > 0:
+        player.add_energy(x_cast)
+
+    # Step 2: spend up to all available energy (capped at what we just got + existing)
+    x_val = player.energy_counters  # includes newly generated energy
     if x_val > 0:
         player.spend_energy(x_val)
-    # Oracle: "Destroy each artifact, creature, and enchantment with mana value
-    # less than or equal to the amount of {E} paid this way."
-    # NO phantom +2. Threshold = energy paid, period.
+
+    # Step 3: destroy each permanent with MV <= x_val
     for p in game.players:
         to_destroy = [c for c in p.battlefield
                       if not c.template.is_land
                       and (c.template.cmc or 0) <= x_val
                       and Keyword.INDESTRUCTIBLE not in c.keywords]
-        for creature in to_destroy:
-            if creature.template.is_creature:
-                game._creature_dies(creature)
+        for permanent in to_destroy:
+            if permanent.template.is_creature:
+                game._creature_dies(permanent)
             else:
-                game._permanent_destroyed(creature)
+                game._permanent_destroyed(permanent)
     game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Wrath of the Skies (X={x_val}) sweeps the board")
 
@@ -701,11 +709,14 @@ def guide_of_souls_etb(game, card, controller, targets=None, item=None):
 
 
 @EFFECT_REGISTRY.register("Ocelot Pride", EffectTiming.ETB,
-                           description="First strike, lifelink, ascend (no ETB effect)")
+                           description="No ETB effect — noncreature cast trigger in oracle_resolver")
 def ocelot_pride_etb(game, card, controller, targets=None, item=None):
-    # Oracle: "At the beginning of your end step, if you gained life this turn,
-    # create a 1/1 white Cat creature token."
-    # NO energy, NO ETB trigger. End-step token creation is handled elsewhere.
+    # Real Ocelot Pride (Modern Horizons 3 / Aetherdrift era):
+    # "Whenever you cast a noncreature spell, you get {E}."
+    # "Whenever a creature you control deals combat damage to a player,
+    #  if you have more energy than that player has life, create a 1/1 Cat token."
+    # No ETB effect — the noncreature trigger is handled in oracle_resolver.py
+    # via the _ocelot_noncreature_trigger path.
     pass
 
 
