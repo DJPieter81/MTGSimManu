@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Magic: The Gathering Modern-format game simulator with EV-based AI decision-making. Simulates full games between 14 competitive decks with strategic AI (mulligans, spell casting, combat, targeting, counterspells, evoke, storm chains, reanimation, cascade, blink).
+Magic: The Gathering Modern-format game simulator with EV-based AI decision-making. Simulates full games between 16 competitive decks with strategic AI (mulligans, spell casting, combat, targeting, counterspells, evoke, storm chains, reanimation, cascade, blink).
 
 **Python 3.11** — no external dependencies beyond the standard library.
 
@@ -26,11 +26,11 @@ print(f'Loaded {len(merged)} cards')
 ## Quick Reference — run_meta.py
 
 ```bash
-python run_meta.py --list                              # all 14 decks
+python run_meta.py --list                              # all 16 decks
 python run_meta.py --deck storm                        # deck profile + gameplan
 python run_meta.py --matchup storm dimir -n 50         # win rate (N games)
 python run_meta.py --field storm -n 30                 # one deck vs all
-python run_meta.py --matrix -n 20                      # full 14x14 matrix
+python run_meta.py --matrix -n 20                      # full 16x16 matrix
 python run_meta.py --matrix --decks 8 -n 50            # top 8 only
 python run_meta.py --verbose zoo omnath -s 42000        # game log
 python run_meta.py --trace zoo omnath -s 42000          # full AI reasoning
@@ -106,11 +106,11 @@ python import_deck.py "Deck Name" --archetype control < decklist.txt
 ```
 Auto-detects archetype, generates gameplan, prints code to paste into modern_meta.py.
 
-## Available Decks (14)
+## Available Decks (16)
 
-Boros Energy, Jeskai Blink, Ruby Storm, Affinity, Pinnacle Affinity, Eldrazi Tron, Amulet Titan, Goryo's Vengeance, Domain Zoo, Living End, Izzet Prowess, Dimir Midrange, 4c Omnath, 4/5c Control, Azorius Control
+Boros Energy, Jeskai Blink, Ruby Storm, Affinity, Pinnacle Affinity, Eldrazi Tron, Amulet Titan, Goryo's Vengeance, Domain Zoo, Living End, Izzet Prowess, Dimir Midrange, 4c Omnath, 4/5c Control, Azorius Control, Azorius Control (WST)
 
-**Known DB gaps:** ~~`The Legend of Roku` and `Sink into Stupor`~~ — both now resolved after ModernAtomic refresh (Apr 2026). All 14 decks sim correctly.
+**Known DB gaps:** ~~`The Legend of Roku` and `Sink into Stupor`~~ — both now resolved after ModernAtomic refresh (Apr 2026). All 16 decks sim correctly.
 
 ## Architecture
 
@@ -169,7 +169,7 @@ def bowmasters_etb(game, card, controller, targets=None, item=None):
 
 ### Layer 3: Deck Configuration
 
-**Decklists** (`decks/modern_meta.py`) — mainboard + sideboard for all 13 decks
+**Decklists** (`decks/modern_meta.py`) — mainboard + sideboard for all 16 decks
 
 **Gameplans** (`decks/gameplans/*.json`) — per-deck strategy:
 ```json
