@@ -93,13 +93,20 @@ def sideboard(mainboard: Dict[str, int], sideboard_cards: Dict[str, int],
             if any(w in card_lower for w in ["consider", "drown", "charm"]):
                 board_out_priority.append((card_name, min(count, 2), 6))
 
-        # Board out slow cards vs aggro
-        if any(w in opp_lower for w in ["energy", "zoo", "prowess"]):
+        # Board out slow cards vs aggro (includes artifact aggro)
+        if any(w in opp_lower for w in ["energy", "zoo", "prowess", "affinity", "pinnacle"]):
             if any(w in card_lower for w in ["charm", "command"]):
                 board_out_priority.append((card_name, min(count, 2), 5))
             # Board out conditional removal and cantrips vs aggro
             if any(w in card_lower for w in ["drown in the loch", "consider"]):
                 board_out_priority.append((card_name, min(count, 2), 6))
+
+        # Board out graveyard hate and slow spells vs artifact decks
+        if any(w in opp_lower for w in ["affinity", "pinnacle"]):
+            if any(w in card_lower for w in ["surgical", "nihil", "cling",
+                                               "leyline of the void", "rest in peace",
+                                               "blood moon", "chant"]):
+                board_out_priority.append((card_name, min(count, 2), 7))
 
     board_out_priority.sort(key=lambda x: -x[2])
 
