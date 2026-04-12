@@ -161,6 +161,40 @@ def _run_game_no_runner(d1_name, d2_name, seed):
 # ─── Core functions ───────────────────────────────────────────
 
 
+def run_sigma(deck1: str, deck2: str, n_games: int = 50,
+              repeats: int = 5, seed_start: int = 50000,
+              bo1: bool = False) -> Dict:
+    """Quantify run-to-run variance for a single matchup.
+
+    Runs the same matchup `repeats` times with stepped starting seeds, returning
+    mean and standard deviation of deck1's win rate. Used to fill the
+    PROJECT_STATUS.md §5 σ-at-n=50 TODO.
+    """
+    import statistics
+    rates = []
+    runner = _get_runner()
+    for r in range(repeats):
+        ss = seed_start + r * (n_games * 500)
+        wins = {deck1: 0, deck2: 0}
+        for i in range(n_games):
+            seed = ss + i * 500
+            try:
+                res = _run_pair(runner, deck1, deck2, seed, bo1=bo1)
+                wins[res.winner_deck] = wins.get(res.winner_deck, 0) + 1
+            except Exception:
+                pass
+            sys.stderr.write(
+                f'\r  run {r+1}/{repeats}  game {i+1}/{n_games}          ')
+            sys.stderr.flush()
+        pct = wins[deck1] / n_games * 100
+        rates.append(pct)
+    sys.stderr.write('\r' + ' ' * 60 + '\r')
+    mean = statistics.mean(rates)
+    sigma = statistics.pstdev(rates) if len(rates) > 1 else 0.0
+    return {'deck1': deck1, 'deck2': deck2, 'n_games': n_games,
+            'repeats': repeats, 'rates': rates, 'mean': mean, 'sigma': sigma}
+
+
 def run_matchup(deck1: str, deck2: str, n_games: int = 50,
                 seed_start: int = 50000, verbose: bool = False,
                 bo1: bool = False) -> Dict:
@@ -325,9 +359,45 @@ def run_meta_matrix(top_tier: int = None, n_games: int = 20,
         rankings.append((round(avg, 1), d, meta_wr))
     rankings.sort(key=lambda x: x[2], reverse=True)
 
+    # ── Symmetry check: flag pairs where wr(A,B) + wr(B,A) deviates from 100.
+    # The matrix is constructed symmetrically by `matrix[(d2,d1)] = 100 - pct`
+    # above, so deviations only arise from rounding. This still catches any
+    # future code path that populates (d2,d1) independently (e.g. separate
+    # per-seat runs, go-first-advantage studies).
+    symmetry_issues: List[Tuple[str, str, float, float, float]] = []
+    checked = set()
+    for (d1, d2), wr1 in list(matrix.items()):
+        if (d2, d1) in checked or d1 == d2:
+            continue
+        checked.add((d1, d2))
+        wr2 = matrix.get((d2, d1))
+        if wr2 is None:
+            continue
+        total = wr1 + wr2
+        if abs(total - 100) > 10:
+            symmetry_issues.append((d1, d2, wr1, wr2, total - 100))
+    symmetry_issues.sort(key=lambda t: -abs(t[4]))
+    if symmetry_issues:
+        print(f'Symmetry: {len(symmetry_issues)} pair(s) with |wr1+wr2 - 100| > 10',
+              file=sys.stderr)
+        for d1, d2, wr1, wr2, delta in symmetry_issues[:10]:
+            print(f'  {d1} vs {d2}: {wr1}% / {wr2}% (Δ={delta:+.0f})', file=sys.stderr)
+
+    # ── Meta audit: flag decks outside expected WR bands.
+    try:
+        from meta_audit import audit_matrix, format_audit
+        overall_for_audit = [{'deck': d, 'win_rate': avg}
+                             for avg, d, _ in rankings]
+        outliers = audit_matrix(overall_for_audit)
+        if outliers:
+            print(format_audit(outliers), file=sys.stderr)
+    except Exception as e:
+        print(f'  (meta_audit skipped: {e})', file=sys.stderr)
+
     return {'matrix': matrix, 'rankings': rankings, 'names': names,
             'tier1': sorted(tier1), 'tier2': sorted(tier2),
-            'n_games': n_games, 'format': 'bo1' if bo1 else 'bo3'}
+            'n_games': n_games, 'format': 'bo1' if bo1 else 'bo3',
+            'symmetry_issues': symmetry_issues}
 
 
 def inspect_deck(deck_name: str) -> str:
@@ -971,7 +1041,21 @@ if __name__ == '__main__':
     parser.add_argument('--bo1', action='store_true',
                         help='Use Bo1 single games for matrix/field/matchup '
                              '(default is Bo3 with sideboarding)')
+    parser.add_argument('--sigma', nargs=2, metavar=('DECK1', 'DECK2'),
+                        help='Measure run-to-run WR variance for a matchup; '
+                             'pair with -n and --repeats')
+    parser.add_argument('--repeats', type=int, default=5,
+                        help='Number of independent runs for --sigma (default 5)')
+    parser.add_argument('--workers', type=int, default=None,
+                        help='Parallel workers for matrix runs '
+                             '(default: cpu_count()-1; each worker holds a '
+                             '~400MB card DB in memory)')
     args = parser.parse_args()
+
+    # Apply --workers override before any parallel run. Rebinds the
+    # module-level name because run_meta_matrix reads it at call time.
+    if args.workers is not None and args.workers >= 1:
+        globals()['_DEFAULT_WORKERS'] = args.workers
 
     if args.results:
         print_saved_results()
@@ -1005,6 +1089,16 @@ if __name__ == '__main__':
     elif args.verbose:
         d1, d2 = resolve_deck_name(args.verbose[0]), resolve_deck_name(args.verbose[1])
         print(run_verbose_game(d1, d2, seed=args.seed))
+    elif args.sigma:
+        d1, d2 = resolve_deck_name(args.sigma[0]), resolve_deck_name(args.sigma[1])
+        sig = run_sigma(d1, d2, n_games=args.games, repeats=args.repeats,
+                        bo1=args.bo1)
+        print(f'{sig["deck1"]} vs {sig["deck2"]} — '
+              f'{sig["repeats"]} × {sig["n_games"]} games')
+        for i, r in enumerate(sig['rates'], 1):
+            print(f'  run {i}: {r:.1f}%')
+        print(f'  mean = {sig["mean"]:.1f}%   σ = {sig["sigma"]:.2f} pp')
+        sys.exit(0)
     elif args.matchup:
         d1, d2 = resolve_deck_name(args.matchup[0]), resolve_deck_name(args.matchup[1])
         result = run_matchup(d1, d2, n_games=args.games, bo1=args.bo1)
