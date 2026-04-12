@@ -178,6 +178,7 @@ from engine.card_database import CardDatabase  # singleton pattern
 | 10 | Ephemerate castable with no friendly creatures | `can_cast` blink tag check | `53d372a` |
 | 11 | Duplicate Chalice no penalty | -8.0 EV if same name already on battlefield | `53d372a` |
 | 12 | `_resolve_sac_effect` crash (undefined variables) | Fixed scoping | `53d372a` |
+| 13 | Ephemerate rebound fires without valid target | Gate rebound on `player.creatures` check | `3d1d8a1` |
 
 ### P2 — FIXED (session 2)
 | # | Bug | Fix | Commit |
@@ -239,7 +240,7 @@ from engine.card_database import CardDatabase  # singleton pattern
 | Eldrazi Tron | ✅ Working | 60% vs Boros; Tron assembly bonus added |
 | Domain Zoo | ✅ Working | 40% vs Boros realistic |
 | Ruby Storm | ✅ Working | 40% vs Dimir realistic after tutor fix |
-| Jeskai Blink | ⚠️ Underperforms | 35% vs Boros; expected ~45% |
+| Jeskai Blink | ⚠️ Underperforms | 27% vs Boros (n=60); deck list corrected (Witch Enchanter, Fable x3); Ephemerate rebound fizzle fixed; gap is structural — no Fury to reset boards |
 | 4c Omnath | ⚠️ Underperforms | 30% vs Boros; deck list now correct; Elesh Norn/Phelia not implemented |
 | Amulet Titan | ⚠️ Underperforms | 23% vs Boros; expected ~45%; mana loop value not modelled |
 | Goryo's Vengeance | ⚠️ Reasonable | 25% vs Dimir; cascade combo fires correctly |
@@ -345,7 +346,7 @@ Every output gets: `Simulated: DATE | Decks: N | Games/pair: N | Seeds: range | 
 | 3 | Elesh Norn trigger doubling | P1 fix | HIGH | `engine/game_state.py` |
 | 4 | Phelia blink-on-attack | P2 fix | LOW | `engine/card_effects.py` |
 | 5 | Multiple Amulet copies stack correctly | P2 fix | LOW | `_apply_untap_on_enter_triggers()` |
-| 6 | Jeskai Blink WR investigation | P1 fix | MED | audit |
+| 6 | Jeskai Blink WR gap (~27% vs expected ~45%) — no Fury in list; Galvanic Discharge/Wrath are self-fueling energy (correct); AI sequencing suboptimal | P2 | LOW | AI strategy |
 
 ### Infrastructure (from Legacy proposal)
 | # | Task | Impact | Effort | Deps |
