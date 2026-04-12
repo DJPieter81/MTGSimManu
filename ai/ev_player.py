@@ -341,6 +341,13 @@ class EVPlayer:
             elif 'cost_reducer' in tags:
                 ev += 4.0
 
+        # ── Duplicate Chalice-of-the-Void / hate permanent penalty ──
+        # Casting a second Chalice with the same X is useless (same CMC locked)
+        if t.x_cost_data and 'charge_counter' in (t.oracle_text or '').lower():
+            existing = [c for c in me.battlefield if c.name == t.name]
+            if existing:
+                ev -= 8.0  # strongly penalise duplicate hate permanent
+
         # ── Board wipe hard gate ──
         if 'board_wipe' in tags and snap.opp_creature_count == 0:
             return min(ev, -50.0)

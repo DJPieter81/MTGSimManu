@@ -1481,15 +1481,14 @@ class GameRunner:
                     c.zone = "battlefield"
                     c.tapped = True
                     player.battlefield.append(c)
-                    opponent.life -= 1
+                    opp.life -= 1
                     player.damage_dealt_this_turn += 1
-                    sacced += 1
                     game.log.append(
-                        f"T{game.display_turn} P{active+1}: Goblin Bombardment "
-                        f"sacrifice {creature.name} -> 1 damage to P{opponent_idx+1} "
-                        f"(life: {opponent.life})"
+                        f"T{game.display_turn} P{controller+1}: "
+                        f"Returned {c.name} to battlefield — 1 damage to P{opp_idx+1} "
+                        f"(life: {opp.life})"
                     )
-                    if opponent.life <= 0:
+                    if opp.life <= 0:
                         game.game_over = True
-                        game.winner = active
+                        game.winner = controller
                         return

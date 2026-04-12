@@ -815,6 +815,11 @@ class GameState:
         if remaining_sources < generic_needed:
             return False
 
+        # Blink spells (Ephemerate etc.) require a friendly creature target
+        if 'blink' in (template.tags or set()):
+            if not player.creatures:
+                return False  # No friendly creature to target
+
         return True
 
     def play_land(self, player_idx: int, card: CardInstance):
@@ -1514,7 +1519,9 @@ class GameState:
         card = item.source
         template = card.template
 
-        self.log.append(f"T{self.display_turn}: Resolve {card.name}")
+        # Only log "Resolve" for spells — not for triggered/activated abilities
+        if item.item_type == StackItemType.SPELL:
+            self.log.append(f"T{self.display_turn}: Resolve {card.name}")
 
         if item.item_type == StackItemType.SPELL:
             if CardType.INSTANT in template.card_types or CardType.SORCERY in template.card_types:
