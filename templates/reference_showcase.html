@@ -232,12 +232,12 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
 <div class="hero">
   <div class="hero-eyebrow">Pure Python · Zero Dependencies · Full Bo3</div>
   <h1>The <em>Modern</em> metagame,<br>simulated.</h1>
-  <p class="hero-sub">21,795 cards. 15 decks. 10,500 Bo3 matches. An EV-based AI brain that mulligans, sequences spells, predicts blocks, and tracks what your opponent is holding — all in 0.68 seconds per match.</p>
+  <p class="hero-sub">21,795 cards. 16 decks. 12,000 Bo3 matches. An EV-based AI brain that mulligans, sequences spells, predicts blocks, and tracks what your opponent is holding — all in 0.68 seconds per match.</p>
   <div class="counter-row">
     <div class="counter"><div class="num" data-target="21795">0</div><div class="unit">Cards in DB</div></div>
     <div class="counter"><div class="num" data-target="15">0</div><div class="unit">Modern Decks</div></div>
-    <div class="counter"><div class="num" data-target="10500">0</div><div class="unit">Bo3 Matches</div></div>
-    <div class="counter"><div class="num" data-target="27609">0</div><div class="unit">Lines of Python</div></div>
+    <div class="counter"><div class="num" data-target="12000">0</div><div class="unit">Bo3 Matches</div></div>
+    <div class="counter"><div class="num" data-target="28772">0</div><div class="unit">Lines of Python</div></div>
   </div>
 </div>
 
@@ -317,7 +317,7 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
           <rect x="12" y="87" width="22" height="22" rx="3" fill="#2563eb" opacity=".4"/><rect x="37" y="87" width="22" height="22" rx="3" fill="#ef4444" opacity=".5"/><rect x="62" y="87" width="22" height="22" rx="3" fill="#22c55e" opacity=".8"/><rect x="87" y="87" width="22" height="22" rx="3" fill="#86efac" opacity=".3"/><rect x="112" y="87" width="22" height="22" rx="3" fill="#3b82f6"/><rect x="137" y="87" width="22" height="22" rx="3" fill="#f59e0b" opacity=".4"/><rect x="162" y="87" width="22" height="22" rx="3" fill="#22c55e" opacity=".6"/>
         </svg>
       </div>
-      <div class="pc-body"><h3>Metagame matrix</h3><p>14x14 interactive heatmap. Click any cell for card-level data, sideboard plans, and matchup insights.</p><div class="feature-pills"><span style="background:#eef5ff;color:#185fa5">Card stats</span><span style="background:var(--gold-bg);color:var(--gold)">Weighted WR</span><span style="background:#e6f5ee;color:#0f6e56">SB guide</span></div></div>
+      <div class="pc-body"><h3>Metagame matrix</h3><p>16x16 interactive heatmap. Click any cell for card-level data, sideboard plans, and matchup insights.</p><div class="feature-pills"><span style="background:#eef5ff;color:#185fa5">Card stats</span><span style="background:var(--gold-bg);color:var(--gold)">Weighted WR</span><span style="background:#e6f5ee;color:#0f6e56">SB guide</span></div></div>
     </a>
     <a href="https://djpieter81.github.io/MTGSimManu/templates/reference_deck_guide.html" style="text-decoration:none;color:inherit" class="product-card">
       <div class="pc-visual" style="background:linear-gradient(135deg,#e6f5ee,#dcfce7)">
@@ -410,7 +410,7 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
 <section>
   <div class="reveal">
     <div class="sec-label">Performance</div>
-    <div class="sec-title">10,500 matches under the microscope</div>
+    <div class="sec-title">12,000 matches under the microscope</div>
     <div class="sec-desc">Every metric traceable to a game log. Every win rate backed by 50 Bo3 matches per pairing.</div>
   </div>
   <div class="chart-grid reveal">
@@ -421,7 +421,7 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
     </div>
     <div class="chart-card">
       <h4>Game resolution</h4>
-      <div class="chart-sub">How 10,500 simulated Bo3 matches ended</div>
+      <div class="chart-sub">How 12,000 simulated Bo3 matches ended</div>
       <div class="chart-wrap"><canvas id="resChart"></canvas></div>
     </div>
     <div class="chart-card">
@@ -722,11 +722,11 @@ const gold='#b8941e',teal='#0f6e56',amber='#d4850b',red='#a32d2d',blue='#185fa5'
 let selectedDeck=null;
 
 // WR chart labels → full names
-const wrLabels=['Affinity','Boros','Dimir','ETron','Zoo','Jeskai','Prowess','Storm','Omnath'];
-const wrFull=['Affinity','Boros Energy','Dimir Midrange','Eldrazi Tron','Domain Zoo','Jeskai Blink','Izzet Prowess','Ruby Storm','4c Omnath'];
-const wrData=[82,64,58,57,57,50,42,37,29];
-const wrBgDef=['#fde8e8','#e6f5ee','#e6f5ee','#e6f5ee','#e6f5ee','#fdf5e6','#fdf5e6','#fde8e8','#fde8e8'];
-const wrBrDef=[red,teal,teal,teal,teal,amber,amber,red,red];
+const wrLabels=['Affinity','Boros','ETron','Dimir','Zoo','Prowess','Jeskai','P.Affinity','Amulet','Storm','Omnath','4/5c','WST','LivEnd','Goryo','AzCtrl'];
+const wrFull=['Affinity','Boros Energy','Eldrazi Tron','Dimir Midrange','Domain Zoo','Izzet Prowess','Jeskai Blink','Pinnacle Affinity','Amulet Titan','Ruby Storm','4c Omnath','4/5c Control','Azorius Control (WST)','Living End',"Goryo's Vengeance",'Azorius Control'];
+const wrData=[83,65,67,60,58,56,56,50,46,44,39,34,34,30,29,11];
+const wrBgDef=['#fde8e8','#e6f5ee','#e6f5ee','#e6f5ee','#e6f5ee','#e6f5ee','#e6f5ee','#fdf5e6','#fdf5e6','#fdf5e6','#fde8e8','#fde8e8','#fde8e8','#fde8e8','#fde8e8','#fde8e8'];
+const wrBrDef=[red,teal,teal,teal,teal,teal,teal,amber,amber,amber,red,red,red,red,red,red];
 
 // Per-deck win resolution (damage%, combo%, timeout%)
 const deckRes={'Affinity':{d:92,c:1,t:7},'Boros Energy':{d:89,c:2,t:9},'Dimir Midrange':{d:88,c:0,t:12},'Eldrazi Tron':{d:85,c:0,t:15},'Domain Zoo':{d:94,c:1,t:5},'Jeskai Blink':{d:82,c:0,t:18},'Izzet Prowess':{d:96,c:0,t:4},'Ruby Storm':{d:60,c:30,t:10},'4c Omnath':{d:75,c:0,t:25},'4/5c Control':{d:70,c:0,t:30},"Goryo's Vengeance":{d:55,c:35,t:10},'Amulet Titan':{d:80,c:10,t:10},'Living End':{d:65,c:25,t:10},'Azorius Control (WST)':{d:60,c:0,t:40},'Azorius Control':{d:55,c:0,t:45}};
