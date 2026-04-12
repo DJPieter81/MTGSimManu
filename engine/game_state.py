@@ -1495,12 +1495,22 @@ class GameState:
                 elif re.search(r'gets?\s+\+(\d+)/\+0', c_oracle):
                     m = re.search(r'gets?\s+\+(\d+)/\+0', c_oracle)
                     creature.temp_power_mod += int(m.group(1))
-                # Delirium / surveil: "surveil" in oracle → after enough spells, power up
-                if 'surveil' in c_oracle and player.spells_cast_this_turn >= 3:
-                    if Keyword.FLYING not in creature.keywords:
-                        creature.keywords.add(Keyword.FLYING)
-                    creature.temp_power_mod = max(creature.temp_power_mod, 2)
-                    creature.temp_toughness_mod = max(creature.temp_toughness_mod, 2)
+                # Delirium — check actual GY card types via _has_delirium()
+                # _dynamic_base_power() already scales to 3 with delirium; we also
+                # need to grant FLYING as a keyword so combat logic sees it.
+                if 'delirium' in c_oracle and hasattr(creature, '_has_delirium'):
+                    if creature._has_delirium():
+                        if Keyword.FLYING not in creature.keywords:
+                            creature.keywords.add(Keyword.FLYING)
+
+                # Surveil 1: always bin the top card to GY (AI choice: maximise delirium)
+                if 'surveil' in c_oracle and player.library:
+                    top = player.library.pop(0)
+                    top.zone = 'graveyard'
+                    player.graveyard.append(top)
+                    self.log.append(
+                        f"T{self.display_turn} P{player_idx+1}: "
+                        f"{creature.name} surveil 1 → {top.name} to GY")
 
         # Generic oracle-text-based spell-cast triggers
         from .oracle_resolver import resolve_spell_cast_trigger

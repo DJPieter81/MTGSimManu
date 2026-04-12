@@ -1050,9 +1050,10 @@ class CardDatabase:
             template.equip_cost = equip
             template.tags.add("equipment")
 
-        # Prowess from oracle (backup: "noncreature spell" + surveil/+1/+1)
-        if ('noncreature spell' in oracle_lower
-                and ('+1/+1' in oracle_lower or 'surveil' in oracle_lower)):
+        # Prowess from oracle (backup: "noncreature spell" + "+1/+1" pump only)
+        # Note: "surveil" alone does NOT indicate prowess — DRC has surveil but
+        # its size bonus comes from delirium, not a +1/+1 pump on spells.
+        if ('noncreature spell' in oracle_lower and '+1/+1' in oracle_lower):
             template.keywords.add(Keyword.PROWESS)
 
         # Oracle-derived tags (threat, ramp, token_maker, etb_value, etc.)
