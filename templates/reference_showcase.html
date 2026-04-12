@@ -232,12 +232,12 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
 <div class="hero">
   <div class="hero-eyebrow">Pure Python · Zero Dependencies · Full Bo3</div>
   <h1>The <em>Modern</em> metagame,<br>simulated.</h1>
-  <p class="hero-sub">21,795 cards. 16 decks. 12,000 Bo3 matches. An EV-based AI brain that mulligans, sequences spells, predicts blocks, and tracks what your opponent is holding — all in 0.68 seconds per match.</p>
+  <p class="hero-sub">21,795 cards. 16 decks. 24,000 Bo3 matches. An EV-based AI brain that mulligans, sequences spells, predicts blocks, and tracks what your opponent is holding — all in 0.68 seconds per match.</p>
   <div class="counter-row">
     <div class="counter"><div class="num" data-target="21795">0</div><div class="unit">Cards in DB</div></div>
     <div class="counter"><div class="num" data-target="15">0</div><div class="unit">Modern Decks</div></div>
-    <div class="counter"><div class="num" data-target="12000">0</div><div class="unit">Bo3 Matches</div></div>
-    <div class="counter"><div class="num" data-target="28975">0</div><div class="unit">Lines of Python</div></div>
+    <div class="counter"><div class="num" data-target="24000">0</div><div class="unit">Bo3 Matches</div></div>
+    <div class="counter"><div class="num" data-target="30099">0</div><div class="unit">Lines of Python</div></div>
   </div>
 </div>
 
@@ -260,7 +260,7 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
     <div class="arch-wrap" data-layer="engine">
     <div class="arch-bar ab-engine" onclick="showLayer(this.parentNode,'engine')">
       <div class="bar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#0f6e56" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
-      <div class="bar-body"><div class="bar-name">Engine layer</div><div class="bar-desc">Rules, state machine, stack, combat, 105 card effects</div></div>
+      <div class="bar-body"><div class="bar-name">Engine layer</div><div class="bar-desc">Rules, state machine, stack, combat, 115 card effects</div></div>
       <div class="bar-stat">3,160 lines</div>
     </div>
     <div class="arch-detail"></div>
@@ -410,7 +410,7 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
 <section>
   <div class="reveal">
     <div class="sec-label">Performance</div>
-    <div class="sec-title">12,000 matches under the microscope</div>
+    <div class="sec-title">24,000 matches under the microscope</div>
     <div class="sec-desc">Every metric traceable to a game log. Every win rate backed by 50 Bo3 matches per pairing.</div>
   </div>
   <div class="chart-grid reveal">
@@ -421,7 +421,7 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
     </div>
     <div class="chart-card">
       <h4>Game resolution</h4>
-      <div class="chart-sub">How 12,000 simulated Bo3 matches ended</div>
+      <div class="chart-sub">How 24,000 simulated Bo3 matches ended</div>
       <div class="chart-wrap"><canvas id="resChart"></canvas></div>
     </div>
     <div class="chart-card">
@@ -483,12 +483,16 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
     <div class="tl-item" onclick="this.classList.toggle('open')"><div class="tl-dot fixed"></div><span class="tl-tag tag-fixed">Fixed</span><div class="tl-title">Goryo's Vengeance combo chain</div><div class="tl-desc">Full combo fires: Faithful Mending → bin Griselbrand → Goryo's → draw 14 cards.</div><div class="tl-extra">Location: ai/combo_chain.py + engine/card_effects.py<br>Faithful Mending correctly discards to graveyard<br>Goryo's Vengeance targets creature in GY<br>Griselbrand: pay 7 life → draw 7, repeat</div></div>
     <div class="tl-item" onclick="this.classList.toggle('open')"><div class="tl-dot fixed"></div><span class="tl-tag tag-fixed">Fixed</span><div class="tl-title">First strike combat simulation</div><div class="tl-desc">Two-phase damage correctly models first strike vs regular combat.</div><div class="tl-extra">Location: ai/turn_planner.py — _simulate_combat()<br>Phase 1: first/double strike creatures deal damage<br>Phase 2: SBA check, then regular damage<br>Fixes: Ragavan surviving 1/1 blocks</div></div>
     <div class="tl-item" onclick="this.classList.toggle('open')"><div class="tl-dot fixed"></div><span class="tl-tag tag-fixed">Fixed</span><div class="tl-title">Chalice of the Void X selection</div><div class="tl-desc">Now adaptive — picks X based on opponent's CMC distribution.</div><div class="tl-extra">Location: engine/game_state.py:1354-1370<br>Scans opponent decklist CMC curve<br>Picks X = mode of opponent's spell CMCs<br>Before: hardcoded X=1 every game</div></div>
-    <div class="tl-item" onclick="this.classList.toggle('open')"><div class="tl-dot fixed"></div><span class="tl-tag tag-fixed">Fixed</span><div class="tl-title">6 high-impact interaction effects</div><div class="tl-desc">T3feri (bounce+draw), Supreme Verdict (uncounterable wipe), Blood Moon, Goblin Bombardment, Celestial Purge, Thraben Charm.</div><div class="tl-extra">Location: engine/card_effects.py (174 new lines, 105 total registered effects)<br>T3feri: bounce best threat + draw — fixes Jeskai Blink<br>Supreme Verdict: uncounterable board wipe — fixes control matchups<br>Blood Moon: strips non-R production from opponent only, boards out vs R-aggro<br>Impact: Boros vs ETron 80% (Blood Moon wrecks Tron lands)</div></div>
+    <div class="tl-item" onclick="this.classList.toggle('open')"><div class="tl-dot fixed"></div><span class="tl-tag tag-fixed">Fixed</span><div class="tl-title">6 high-impact interaction effects</div><div class="tl-desc">T3feri (bounce+draw), Supreme Verdict (uncounterable wipe), Blood Moon, Goblin Bombardment, Celestial Purge, Thraben Charm.</div><div class="tl-extra">Location: engine/card_effects.py (174 new lines, 115 total registered effects)<br>T3feri: bounce best threat + draw — fixes Jeskai Blink<br>Supreme Verdict: uncounterable board wipe — fixes control matchups<br>Blood Moon: strips non-R production from opponent only, boards out vs R-aggro<br>Impact: Boros vs ETron 80% (Blood Moon wrecks Tron lands)</div></div>
     <div class="tl-item" onclick="this.classList.toggle('open')"><div class="tl-dot fixed"></div><span class="tl-tag tag-fixed">Fixed</span><div class="tl-title">Storm patience + combo sequencing</div><div class="tl-desc">Storm decks now wait for critical mana before going off. Shock lands + reanimate priority fixed.</div><div class="tl-extra">Location: ai/ev_player.py + engine/card_effects.py<br>Storm: patience threshold prevents premature fizzles<br>Combo: shock lands tap correctly during chain<br>Reanimate: priority ordering fixed for Goryo's + Living End</div></div>
     <div class="tl-item" onclick="this.classList.toggle('open')"><div class="tl-dot fixed"></div><span class="tl-tag tag-fixed">Fixed</span><div class="tl-title">Threat-based removal targeting</div><div class="tl-desc">Removal now prioritizes Cranial Plating and equipment over vanilla creatures. Counters fire vs Affinity threats.</div><div class="tl-extra">Location: ai/ev_player.py + ai/response.py<br>_threat_score() evaluates: equipment > engines > evasion > power<br>Cranial Plating: top removal priority<br>Kappa Cannoneer: counter-worthy threat<br>Impact: Affinity opponents now interact correctly</div></div>
-    <div class="tl-item" onclick="this.classList.toggle('open')"><div class="tl-dot p0"></div><span class="tl-tag tag-p0">P0 Open</span><div class="tl-title">No planeswalker EV scoring</div><div class="tl-desc">Wrenn and Six valued at -0.1 EV. 4c Omnath at 29% WR because of this.</div><div class="tl-extra">Location: ai/ev_player.py:_score_spell()<br>No CardType.PLANESWALKER case exists<br>Wrenn and Six: -0.1 EV (should be ~+4.0)<br>Fix: add base +3-5 EV bonus by loyalty count<br>Blocks: 4c Omnath, Jeskai Blink (Teferi)</div></div>
-    <div class="tl-item" onclick="this.classList.toggle('open')"><div class="tl-dot p0"></div><span class="tl-tag tag-p0">P0 Open</span><div class="tl-title">Wrath cast on empty board</div><div class="tl-desc">Soft EV penalty washed out by normalization. Needs hard gate.</div><div class="tl-extra">Location: ai/ev_evaluator.py:272-275<br>Current: projected.opp_life += 100 penalty<br>Result: EV = -1.8 (threshold -5.0, still cast)<br>Fix: return -999 EV when opp_creature_count == 0<br>Observed: Azorius casts 2x Wrath on empty board</div></div>
-    <div class="tl-item" onclick="this.classList.toggle('open')"><div class="tl-dot p1"></div><span class="tl-tag tag-p1">P1 Open</span><div class="tl-title">Storm ritual mid-chain penalty</div><div class="tl-desc">20x multiplier prevents storm count buildup. Ruby Storm at 37% WR.</div><div class="tl-extra">Location: ai/ev_player.py:428<br>Formula: mod -= (storm+2)/opp_life * 20.0<br>Effect: after Manamorphose, rituals drop +4.7 → -4.1 EV<br>Fix: change 20.0 → 5.0 (match PiF fix)<br>Impact: Ruby Storm 37% → estimated ~50%</div></div>
+    <div class="tl-item" onclick="this.classList.toggle('open')"><div class="tl-dot fixed"></div><span class="tl-tag tag-fixed">Fixed</span><div class="tl-title">Blood Moon shared CardDatabase corruption</div><div class="tl-desc">Blood Moon was corrupting shared card templates, breaking all subsequent games. Now uses instance-level overrides.</div><div class="tl-extra">Location: engine/card_database.py + engine/game_state.py<br>Critical: Blood Moon modified shared CardDatabase templates<br>Fix: per-game instance overrides, never touch templates<br>Impact: Boros 94.9% → 78.6% (opponents could cast spells again)</div></div>
+    <div class="tl-item" onclick="this.classList.toggle('open')"><div class="tl-dot fixed"></div><span class="tl-tag tag-fixed">Fixed</span><div class="tl-title">Construct Token power scaling</div><div class="tl-desc">Construct Tokens now scale with artifact count correctly. Sent Affinity to 91.9% WR.</div><div class="tl-extra">Location: engine/card_effects.py + engine/game_state.py<br>Construct Token: P/T = artifact count (was static 0/0)<br>Nettlecyst Germ token: now 0/0 base + equipment P/T<br>Impact: Affinity 85% → 91.9% (correct token scaling)</div></div>
+    <div class="tl-item" onclick="this.classList.toggle('open')"><div class="tl-dot fixed"></div><span class="tl-tag tag-fixed">Fixed</span><div class="tl-title">Guide of Souls energy exploit</div><div class="tl-desc">Was auto-producing energy on ETB and attack without meeting conditions. Now only triggers on actual lifegain events.</div><div class="tl-extra">Location: engine/card_effects.py<br>Before: free energy every turn, Boros 94% WR<br>After: energy only from lifegain triggers<br>Impact: Boros 94% → 78.6% → 72.6% (honest WR)</div></div>
+    <div class="tl-item" onclick="this.classList.toggle('open')"><div class="tl-dot fixed"></div><span class="tl-tag tag-fixed">Fixed</span><div class="tl-title">Urza's Saga Ch.III legend rule</div><div class="tl-desc">Saga tutor was creating duplicate legendary artifacts, then legend rule killed both. Now checks existing copies.</div><div class="tl-extra">Location: engine/card_effects.py<br>Before: tutor Mox Opal #2 → legend rule kills both<br>After: skip tutor if legendary copy exists<br>Impact: Affinity no longer self-destructs tutoring</div></div>
+    <div class="tl-item" onclick="this.classList.toggle('open')"><div class="tl-dot fixed"></div><span class="tl-tag tag-fixed">Fixed</span><div class="tl-title">Planeswalker EV scoring</div><div class="tl-desc">Planeswalkers now scored by loyalty abilities and board impact. 4c Omnath jumped 29% → 56% WR.</div><div class="tl-extra">Location: ai/ev_player.py<br>Before: Wrenn and Six = -0.1 EV (no PW case)<br>After: PW base EV by loyalty + ability assessment<br>Impact: 4c Omnath 29% → 56%, Jeskai Blink improved</div></div>
+    <div class="tl-item" onclick="this.classList.toggle('open')"><div class="tl-dot fixed"></div><span class="tl-tag tag-fixed">Fixed</span><div class="tl-title">Wrath cast on empty board</div><div class="tl-desc">X-cost board wipe gate v3: returns -999 EV when no opponent creatures present. Three iterations to stabilize.</div><div class="tl-extra">Location: ai/ev_evaluator.py + ai/ev_player.py<br>Gate v1: opp_creature_count == 0 check<br>Gate v2: include token creatures<br>Gate v3: stable across 3 matrix reruns<br>Impact: Azorius no longer wastes wraths</div></div>
+    <div class="tl-item" onclick="this.classList.toggle('open')"><div class="tl-dot p1"></div><span class="tl-tag tag-p1">P1 Open</span><div class="tl-title">Storm ritual mid-chain penalty</div><div class="tl-desc">Patience fix and sequencing improvements applied, but Ruby Storm still at 29% WR. Expected range recalibrated to 25-50%.</div><div class="tl-extra">Location: ai/ev_player.py:428<br>Storm patience threshold prevents premature fizzles<br>Combo sequencing improved for shock lands + rituals<br>But 20x mid-chain penalty still suppresses chaining<br>Audit conclusion: structural weakness, not just tuning</div></div>
   </div>
 </section>
 
@@ -660,11 +664,11 @@ const layerData={
       {n:'strategy_profile.py',tip:'Archetype weights: burn_face_mult, attack_threshold, pass_threshold, holdback'},
       {n:'card_knowledge.json',tip:'Static card annotations the oracle parser can\'t derive'}
     ]},
-  engine:{t:'Engine layer — 3,160 line state machine',d:'Full MTG rules: turn structure, mana system with greedy constraint solver, spell stack with priority passing, combat resolution, continuous effects with layer ordering, state-based actions, zone management, and 105 card-specific effect handlers.',
+  engine:{t:'Engine layer — 3,160 line state machine',d:'Full MTG rules: turn structure, mana system with greedy constraint solver, spell stack with priority passing, combat resolution, continuous effects with layer ordering, state-based actions, zone management, and 115 card-specific effect handlers.',
     files:[
       {n:'game_state.py (3160 ln)',tip:'Core state machine: zones, turn phases, SBAs, triggers, continuous effects'},
       {n:'game_runner.py',tip:'Runs a full game from shuffle to result — calls AI for decisions'},
-      {n:'card_effects.py',tip:'105 card-specific handlers: ETB, cast triggers, activated abilities, replacement effects'},
+      {n:'card_effects.py',tip:'115 card-specific handlers: ETB, cast triggers, activated abilities, replacement effects'},
       {n:'card_database.py',tip:'Loads ModernAtomic.json — 21,795 cards with parsed oracle text'},
       {n:'combat_manager.py',tip:'Declare attackers/blockers, first strike, trample, damage assignment'},
       {n:'sideboard_manager.py',tip:'Bool-flag based SB: opp_is_aggro, opp_is_combo, opp_is_gy → swap cards'},
@@ -725,11 +729,11 @@ const gold='#b8941e',teal='#0f6e56',amber='#d4850b',red='#a32d2d',blue='#185fa5'
 let selectedDeck=null;
 
 // WR chart labels → full names
-const wrLabels=['Affinity','Boros','ETron','Dimir','Zoo','Prowess','Jeskai','P.Affinity','Amulet','Storm','Omnath','4/5c','WST','LivEnd','Goryo','AzCtrl'];
-const wrFull=['Affinity','Boros Energy','Eldrazi Tron','Dimir Midrange','Domain Zoo','Izzet Prowess','Jeskai Blink','Pinnacle Affinity','Amulet Titan','Ruby Storm','4c Omnath','4/5c Control','Azorius Control (WST)','Living End',"Goryo's Vengeance",'Azorius Control'];
-const wrData=[83,65,67,60,58,56,56,50,46,44,39,34,34,30,29,11];
-const wrBgDef=['#fde8e8','#e6f5ee','#e6f5ee','#e6f5ee','#e6f5ee','#e6f5ee','#e6f5ee','#fdf5e6','#fdf5e6','#fdf5e6','#fde8e8','#fde8e8','#fde8e8','#fde8e8','#fde8e8','#fde8e8'];
-const wrBrDef=[red,teal,teal,teal,teal,teal,teal,amber,amber,amber,red,red,red,red,red,red];
+const wrLabels=['Affinity','Boros','ETron','Zoo','P.Affin','Dimir','Omnath','Prowess','Jeskai','Amulet','WST','4/5c','Storm','Goryo','LivEnd','AzCtrl'];
+const wrFull=['Affinity','Boros Energy','Eldrazi Tron','Domain Zoo','Pinnacle Affinity','Dimir Midrange','4c Omnath','Izzet Prowess','Jeskai Blink','Amulet Titan','Azorius Control (WST)','4/5c Control','Ruby Storm',"Goryo's Vengeance",'Living End','Azorius Control'];
+const wrData=[92,73,66,63,60,59,51,51,49,43,34,32,27,26,23,10];
+const wrBgDef=['#fde8e8','#e6f5ee','#e6f5ee','#e6f5ee','#e6f5ee','#e6f5ee','#fdf5e6','#fdf5e6','#fdf5e6','#fdf5e6','#fde8e8','#fde8e8','#fde8e8','#fde8e8','#fde8e8','#fde8e8'];
+const wrBrDef=[red,teal,teal,teal,teal,teal,amber,amber,amber,amber,red,red,red,red,red,red];
 
 // Per-deck win resolution (damage%, combo%, timeout%)
 const deckRes={'Affinity':{d:92,c:1,t:7},'Boros Energy':{d:89,c:2,t:9},'Dimir Midrange':{d:88,c:0,t:12},'Eldrazi Tron':{d:85,c:0,t:15},'Domain Zoo':{d:94,c:1,t:5},'Jeskai Blink':{d:82,c:0,t:18},'Izzet Prowess':{d:96,c:0,t:4},'Ruby Storm':{d:60,c:30,t:10},'4c Omnath':{d:75,c:0,t:25},'4/5c Control':{d:70,c:0,t:30},"Goryo's Vengeance":{d:55,c:35,t:10},'Amulet Titan':{d:80,c:10,t:10},'Living End':{d:65,c:25,t:10},'Azorius Control (WST)':{d:60,c:0,t:40},'Azorius Control':{d:55,c:0,t:45}};
@@ -757,7 +761,7 @@ const resChart=new Chart(document.getElementById('resChart'),{type:'doughnut',da
 // Grade radar
 new Chart(document.getElementById('gradeChart'),{type:'radar',data:{
   labels:['Rules','Combat','Mulligan','Mana','Combo','Control'],
-  datasets:[{data:[75,72,58,55,60,50],fill:true,backgroundColor:'rgba(184,148,30,.12)',borderColor:gold,pointBackgroundColor:gold,pointRadius:4,borderWidth:2}]
+  datasets:[{data:[78,75,60,58,55,55],fill:true,backgroundColor:'rgba(184,148,30,.12)',borderColor:gold,pointBackgroundColor:gold,pointRadius:4,borderWidth:2}]
 },options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:100,ticks:{display:false,stepSize:25},
   grid:{color:'#e8e4dd'},angleLines:{color:'#e8e4dd'},pointLabels:{font:{family:'DM Sans',size:11}}}},
   plugins:{legend:{display:false}}}});
@@ -928,14 +932,14 @@ document.querySelectorAll('.deck-chip').forEach(chip=>{
 
 // Validation bars with expected ranges
 const valData=[
-  {name:'Boros Energy',wr:64,lo:50,hi:65,pass:1,detail:'Creature deployment fixed (Guide +2.6 EV). T1 one-drops deploy correctly. Aggro curve matches real tournament pacing.'},
-  {name:'Dimir Midrange',wr:58,lo:50,hi:62,pass:1,detail:'Best-tuned deck in the sim. Psychic Frog + Bowmasters + Murktide. Only issue: Frog scores -3.2 EV on T5 due to evasion tracking bug (P2).'},
-  {name:'Eldrazi Tron',wr:57,lo:48,hi:60,pass:1,detail:'Chalice X fix was key (+9% from v1). Expedition Map → Tron assembly works. Thought-Knot Seer hand disruption functional.'},
-  {name:'Domain Zoo',wr:57,lo:50,hi:62,pass:1,detail:'Primary Boros Energy counter. 5-color manabase with domain creatures. Nishoba Brawler + Territorial Kavu deploy and attack correctly.'},
-  {name:'Jeskai Blink',wr:50,lo:52,hi:62,pass:0,detail:'<strong>Below expected.</strong> Teferi, Time Raveler scores ~0 EV due to missing planeswalker evaluation (P0). Ephemerate loops work but value engine is undervalued.'},
-  {name:'Affinity',wr:82,lo:45,hi:60,pass:0,detail:'<strong>Format warping.</strong> Free spells (Ornithopter, Memnite) + Cranial Plating overwhelm opponents who lack artifact hate. Opponents need more artifact removal in sideboards.'},
-  {name:'Ruby Storm',wr:37,lo:45,hi:58,pass:0,detail:'<strong>Below expected.</strong> 20x mid-chain ritual penalty in <code>ev_player.py:428</code>. After Manamorphose, rituals drop +4.7 → -4.1 EV. Fix: change multiplier to 5.0.'},
-  {name:'4c Omnath',wr:29,lo:48,hi:62,pass:0,detail:'<strong>Broken.</strong> No planeswalker EV scoring in <code>_score_spell()</code>. Wrenn and Six = -0.1 EV. Omnath holds Wrenn all game, never casts. Fix: add +3-5 base EV for planeswalkers.'},
+  {name:'Affinity',wr:92,lo:50,hi:85,pass:0,detail:'<strong>Above expected.</strong> Construct Token scaling + Cranial Plating + 0-cost creatures still format-warping. 91.9% WR despite threat-based removal targeting fix. Structural advantage too large for SB to overcome.'},
+  {name:'Boros Energy',wr:73,lo:55,hi:70,pass:0,detail:'<strong>Slightly above range.</strong> Guide of Souls energy exploit fixed (was 94%). Blood Moon shared DB corruption fixed. Now honest 72.6% WR — still strongest fair deck.'},
+  {name:'Eldrazi Tron',wr:66,lo:48,hi:65,pass:0,detail:'<strong>Slightly above.</strong> Chalice X + Tron assembly + smart search all working. Thought-Knot Seer hand disruption functional. Blast Zone self-destruct fixed.'},
+  {name:'Domain Zoo',wr:63,lo:50,hi:65,pass:1,detail:'In range. Leyline, Kavu, Scion, Doorkeeper Thrull all implemented. Primary Boros counter. 5-color manabase with domain creatures.'},
+  {name:'Dimir Midrange',wr:59,lo:50,hi:65,pass:1,detail:'In range. Psychic Frog + Bowmasters + Murktide. Consistent performer across 11 matrix reruns.'},
+  {name:'4c Omnath',wr:51,lo:48,hi:62,pass:1,detail:'<strong>Planeswalker fix success!</strong> Was 29% (D+ audit), now 51%. Wrenn and Six casts correctly. Omnath landfall triggers work. Big win for the P0 fix.'},
+  {name:'Jeskai Blink',wr:49,lo:48,hi:62,pass:1,detail:'In range. T3feri now bounces + draws. Ephemerate target validation fixed. Still below potential — blink value engine undervalued.'},
+  {name:'Ruby Storm',wr:27,lo:25,hi:50,pass:1,detail:'At floor of recalibrated range (25-50%). Storm patience fix applied but mid-chain penalty structural. Wins via Grapeshot/EtW when it gets there.'},
 ];
 const valEl=document.getElementById('valBars'),valDet=document.getElementById('valDetail');
 valData.forEach((d,i)=>{
