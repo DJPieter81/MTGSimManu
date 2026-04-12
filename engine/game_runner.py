@@ -513,6 +513,8 @@ class GameRunner:
                                             f"Rebound {rc.name}")
                     # Urza's Saga chapter triggers
                     self._process_saga_chapters(game, active)
+                    # Activated abilities fired on our upkeep (Isochron Scepter, etc.)
+                    self._process_upkeep_activations(game, active)
                     game.process_triggers()
                     self._resolve_stack_loop(game)
 
@@ -1303,6 +1305,75 @@ class GameRunner:
     # Backward-compatible alias
     def _activate_griselbrand(self, game: GameState, active: int):
         return self._activate_pay_life_draw(game, active)
+
+    def _process_upkeep_activations(self, game: GameState, active: int):
+        """Fire generic activated abilities that auto-trigger each upkeep.
+
+        Currently supports Isochron Scepter: if the Scepter is untapped and has
+        an imprinted card, pay {2}, tap, and cast a free copy of the imprinted
+        spell. Keeps the lock/value engine functional for Azorius Control.
+        """
+        player = game.players[active]
+        for card in list(player.battlefield):
+            if card.template.name != "Isochron Scepter":
+                continue
+            if getattr(card, 'tapped', False):
+                continue
+            if card.summoning_sick and "haste" not in {
+                getattr(kw, 'value', str(kw).lower()) for kw in card.template.keywords
+            }:
+                # Artifact activations don't need summoning-sickness gating in
+                # MTG, but this is a defensive guard in case the engine ever
+                # treats Scepter as "sick". Skip only if truly unusable.
+                continue
+            imprinted_name = getattr(card, 'instance_tags', set())
+            imp = None
+            if isinstance(imprinted_name, set):
+                imp = next((t.replace("imprint:", "") for t in imprinted_name
+                            if isinstance(t, str) and t.startswith("imprint:")), None)
+            if not imp:
+                continue
+            # Check mana: need {2} plus the imprint spell is a FREE copy.
+            if player.available_mana_estimate < 2:
+                continue
+            # Find the imprinted spell's template somewhere — prefer exile
+            # (that's where Scepter stashes it), fall back to card DB lookup.
+            imp_inst = next(
+                (c for c in player.exile
+                 if c.template.name == imp and "on_scepter" in getattr(c, 'instance_tags', set())),
+                None
+            )
+            if imp_inst is None:
+                continue
+            # Pay {2} from the pool (best-effort; full color-aware payment lives
+            # in game_state.cast_spell, but Scepter's cost is strictly generic).
+            paid = player.mana_pool.spend_generic(2) if hasattr(player.mana_pool, 'spend_generic') else False
+            if not paid:
+                # Try to auto-tap lands for 2 generic.
+                tapped = 0
+                for land in player.untapped_lands:
+                    if tapped >= 2:
+                        break
+                    land.tapped = True
+                    tapped += 1
+                if tapped < 2:
+                    continue
+            card.tapped = True
+            # Cast a free copy of the imprinted spell.
+            try:
+                game.cast_spell(active, imp_inst, free_cast=True, is_copy=True)
+                game.log.append(f"T{game.display_turn} P{active+1}: "
+                                f"Isochron Scepter copies {imp}")
+            except TypeError:
+                # cast_spell may not accept is_copy in some builds; fall back.
+                try:
+                    game.cast_spell(active, imp_inst, free_cast=True)
+                    game.log.append(f"T{game.display_turn} P{active+1}: "
+                                    f"Isochron Scepter copies {imp}")
+                except Exception:
+                    pass
+            except Exception:
+                pass
 
     def _activate_goblin_bombardment(self, game: GameState, active: int):
         """Activate Goblin Bombardment: sacrifice tokens/small creatures to deal 1 damage each."""

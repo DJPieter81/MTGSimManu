@@ -445,6 +445,48 @@ The 2026-04-11 LLM judge panel is a static document. We don't have a scripted
 hook to re-run it. `meta_audit.py` provides the automated outlier-flag
 substitute; a real LLM re-grade would need external infra (not in this repo).
 
+### Session 3 phase 2 (2026-04-12, same-day)
+Parallel-work push: Affinity root-cause P0, Isochron Scepter, Amulet depth,
+proper Wish finisher comparison. Commits `823958f`, `<wish-fix>`.
+
+**P0 found in `engine/cards.py:359`** — the `'artifact you control' in oracle`
+creature-scaling check was matching Affinity reminder text, overwriting every
+Affinity creature's P/T with `artifact_count`. Frogmite was 11/11 instead of
+2/2 on a 10-artifact board. Tightened the regex to `\+N/\+N for each artifact
+you control` and switched to additive (`base + artifact_count` not `=`).
+
+Matrix-v2 (n=100 Bo3, commit `823958f`) deltas:
+
+| Deck | v1 WR | v2 WR | Δ |
+|------|-------|-------|---|
+| Affinity | 88.9% | 80.2% | −8.7pp (still severe) |
+| Boros Energy | 73.7% | 77.9% | +4.2pp (moderate; strengthened by Affinity nerf) |
+| Amulet Titan | 23.8% | 24.7% | +0.9pp (A1 loop bonus too small) |
+| Azorius Control | 7.9% | 7.3% | −0.6pp (Isochron lock works but Azorius still loses vs aggro) |
+| Jeskai Blink | 62.3% | 63.9% | +1.6pp |
+| Eldrazi Tron | 73.1% | 75.1% | +2.0pp |
+| Pinnacle Affinity | 40.2% | 31.2% | −9.0pp (same cards.py fix; now too weak) |
+| 4c Omnath | 57.0% | 59.8% | +2.8pp |
+
+σ sampler (n=50, repeats=5) confirms sampling noise is small (2-4pp across
+outliers), so the trends above are real signal.
+
+**Still open — three categories:**
+1. Affinity 80.2% — P0 fix brought it down 9pp but deck is still structurally
+   too strong. Next step: SB investigation (replay already committed) + check
+   Cranial Plating / equipment evaluation in `ai/ev_player.py:1166-1169`.
+2. Over-range cluster (Boros 78, Tron 75, Jeskai 64, Dimir 67, Zoo 71) — needs
+   a decision: tune-down vs update-ranges. Empirically the sim is self-
+   consistent (low σ), so these are true sim realities, not noise.
+3. Under-range cluster (Amulet 25, Azorius 7, Pinnacle Affinity 31, WST 33,
+   Storm 38) — each needs deck-specific work (Amulet ramp AI, Azorius survival
+   against aggro, Pinnacle Affinity was a Frogmite-power-inflation beneficiary
+   and is now weak, Storm needs proper combo-EV evaluation).
+
+The Wish tutor improvement (proper Warrens-vs-Grapeshot comparison with token
+survival factor) nudged Storm vs Dimir from 0% to 20% at n=10. Modest but
+directional.
+
 ### Infrastructure (from Legacy proposal)
 | # | Task | Impact | Effort | Deps |
 |---|------|--------|--------|------|

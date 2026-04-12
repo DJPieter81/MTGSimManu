@@ -693,6 +693,52 @@ def undying_evil_resolve(game, card, controller, targets=None, item=None):
         best.temp_keywords.add(Keyword.UNDYING)
 
 
+@EFFECT_REGISTRY.register("Isochron Scepter", EffectTiming.ETB,
+                           description="Imprint: exile an instant with CMC <= 2 from hand")
+def isochron_scepter_etb(game, card, controller, targets=None, item=None):
+    """Imprint clause: pick the best instant with mana value 2 or less from
+    hand and move it to exile attached to the Scepter. Activation (per turn)
+    is handled in game_runner._process_upkeep_activations, which reads the
+    `imprint:<name>` tag we set here.
+    """
+    player = game.players[controller]
+    candidates = [c for c in player.hand
+                  if c.template.is_instant and (c.template.cmc or 0) <= 2]
+    if not candidates:
+        return
+
+    # Priority: Orim's Chant / lock pieces > removal > counter > cantrip.
+    def _imprint_value(c):
+        name = c.template.name
+        tags = getattr(c.template, 'tags', set())
+        oracle = (c.template.oracle_text or '').lower()
+        if name == "Orim's Chant":
+            return 100
+        if 'removal' in tags and 'exile' in oracle:
+            return 60
+        if 'removal' in tags:
+            return 50
+        if 'counterspell' in tags:
+            return 40
+        if 'cantrip' in tags or 'draw' in tags:
+            return 20
+        return 10
+
+    best = max(candidates, key=_imprint_value)
+    player.hand.remove(best)
+    best.zone = "exile"
+    # Mark the imprint link so game_runner knows which card to copy.
+    if not hasattr(card, 'instance_tags') or card.instance_tags is None:
+        card.instance_tags = set()
+    card.instance_tags.add(f"imprint:{best.template.name}")
+    if not hasattr(best, 'instance_tags') or best.instance_tags is None:
+        best.instance_tags = set()
+    best.instance_tags.add("on_scepter")
+    player.exile.append(best)
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
+                    f"Isochron Scepter imprints {best.template.name}")
+
+
 @EFFECT_REGISTRY.register("Phelia, Exuberant Shepherd", EffectTiming.ATTACK,
                            description="On attack: blink another target permanent you control")
 def phelia_attack(game, card, controller, targets=None, item=None):
@@ -890,9 +936,18 @@ def stock_up_resolve(game, card, controller, targets=None, item=None):
                            description="Opponent can't cast spells this turn")
 def orims_chant_resolve(game, card, controller, targets=None, item=None):
     opponent = 1 - controller
-    game.players[opponent].silenced_this_turn = True
-    game.log.append(f"T{game.display_turn} P{controller+1}: "
-                    f"Orim's Chant silences opponent")
+    # If we resolve during our own turn (normal via Scepter), the "this turn"
+    # clause has no bite against the opponent — queue a silence for their
+    # NEXT upkeep instead. If the opponent is active (flash-ins on their
+    # turn), silence now.
+    if game.active_player == controller:
+        game.players[opponent].silenced_next_turn = True
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
+                        f"Orim's Chant queues silence for P{opponent+1}'s next turn")
+    else:
+        game.players[opponent].silenced_this_turn = True
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
+                        f"Orim's Chant silences opponent")
 
 
 @EFFECT_REGISTRY.register("Mutagenic Growth", EffectTiming.SPELL_RESOLVE,
@@ -1005,21 +1060,51 @@ def wish_resolve(game, card, controller, targets=None, item=None):
     # After Wish resolves: Grapeshot is the next spell, then remaining fuel
     estimated_storm = current_storm + 1 + min(total_fuel, 8)
 
-    # Grapeshot is the PRIMARY plan — it's an instant kill, no waiting a turn.
-    # Only fall back to Empty the Warrens when Grapeshot really can't get close.
-    # Tuned empirically: Empty's summoning-sick tokens need to survive a turn,
-    # which Storm often can't count on, so we keep a fairly wide Grapeshot band.
-    grapeshot_damage = estimated_storm  # 1 damage per copy
+    # Proper finisher comparison: compute expected lethal-turn for each option
+    # given the current board state, pick the earliest.
+    #
+    #   Grapeshot: deals `estimated_storm` damage immediately. Kills iff
+    #              estimated_storm >= opp_life. Otherwise the chain is wasted —
+    #              we leave opp alive on their turn.
+    #
+    #   Empty the Warrens: creates 2 * estimated_storm goblins, which attack
+    #              for 2 * estimated_storm next turn. Survival probability
+    #              depends on opponent board / sweeper count / blocker count,
+    #              approximated below via a survival factor.
+    #
+    # Prefer Empty when its expected damage beats Grapeshot's current damage
+    # AND we're not mid-kill (where Grapeshot would close the game this turn).
+    grapeshot_damage = estimated_storm  # 1 damage per copy, now
+    empty_power     = 2 * estimated_storm  # tokens deal this next turn
+
+    # Survival factor: probability the goblins survive opponent's response.
+    # Defaults to 0.75 (no board), scales down with opp creatures and sweepers.
+    opp = game.players[1 - controller]
+    opp_creatures = len([c for c in opp.battlefield if c.template.is_creature])
+    opp_has_sweeper_mana = opp.life > 0 and len(
+        [c for c in opp.battlefield if c.template.is_land and not getattr(c, 'tapped', False)]
+    ) >= 4
+    survival = 0.75
+    if opp_creatures >= 3:
+        survival -= 0.25  # chump-blocking eats most goblins
+    if opp_has_sweeper_mana:
+        survival -= 0.35  # wrath / Pyroclasm risk
+    survival = max(0.15, survival)
+    empty_expected_damage = empty_power * survival
+
     if grapeshot_damage >= opp_life:
-        # Lethal! Always Grapeshot.
+        # Grapeshot kills now — always take it.
         finisher_priority = ["Grapeshot", "Empty the Warrens", "Galvanic Relay"]
+    elif empty_expected_damage > grapeshot_damage and empty_power >= opp_life:
+        # Warrens expected to kill next turn and beats a half-Grapeshot now.
+        finisher_priority = ["Empty the Warrens", "Grapeshot", "Galvanic Relay"]
     elif grapeshot_damage >= opp_life * 0.6:
-        # Close to lethal — Grapeshot still best (leaves opp at low life,
-        # Ral/tokens finish next turn). Better than tokens that might get blocked.
+        # Close to lethal — Grapeshot's immediate damage still preferable.
         finisher_priority = ["Grapeshot", "Empty the Warrens", "Galvanic Relay"]
     else:
-        # Not close — Empty creates a board that threatens lethal next turn.
-        finisher_priority = ["Empty the Warrens", "Grapeshot", "Galvanic Relay"]
+        # Grapeshot can't finish, but Warrens can't reliably close either;
+        # default to Grapeshot (doesn't give opponent a turn to stabilise).
+        finisher_priority = ["Grapeshot", "Empty the Warrens", "Galvanic Relay"]
 
     # Search sideboard first (real Wish behavior)
     if sb:
