@@ -35,6 +35,13 @@ h1{font-size:24px;font-weight:700;margin-bottom:6px}
 #card-popup{position:fixed;z-index:999;pointer-events:none;display:none;border-radius:8px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.35);width:244px;height:340px;background:#111}
 #card-popup img{width:100%;height:100%;object-fit:contain}
 .prov{font-size:9px;color:#bbb;text-align:center;margin-top:30px;border-top:1px solid #eee;padding-top:10px}
+.decklist{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:12px 0 24px}
+.dl-col h3{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#555;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid #e8e8e8}
+.dl-row{display:flex;justify-content:space-between;padding:2px 0;font-size:12px;border-bottom:1px solid #f5f5f5}
+.dl-row:hover{background:#f8f8f8}
+.dl-qty{font-weight:700;color:#888;width:20px;text-align:right;margin-right:6px;flex-shrink:0}
+.dl-card{flex:1}
+.dl-total{font-size:10px;color:#aaa;margin-top:6px;text-align:right}
 @media(max-width:640px){.hero{grid-template-columns:1fr 1fr}.star-cards{grid-template-columns:1fr 1fr}}
 </style>
 <script>
@@ -54,6 +61,45 @@ document.addEventListener('mousemove',e=>{if(p.style.display==='block'){p.style.
   <div class="hero-item"><div class="hero-label">Sim WR (flat)</div><div class="hero-val g">91.9%</div><div class="hero-sub">⚖ <span style="color:#1f7040">91.8%</span> T1/T2 weighted</div></div>
   <div class="hero-item"><div class="hero-label">Rank</div><div class="hero-val g" style="font-size:22px;padding-top:2px">#1</div><div class="hero-sub">T1 · -0.1pp weighted gap</div></div>
   <div class="hero-item"><div class="hero-label">Best / Worst</div><div class="hero-val g" style="font-size:18px;padding-top:2px">100%</div><div class="hero-sub">vs Amulet Titan / worst 78% vs Pinnacle Aff</div></div>
+</div>
+<div class="section-title">Decklist</div>
+<div class="decklist">
+<div class="dl-col">
+<h3>Mainboard (60)</h3>
+<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Mox Opal">Mox Opal</span></div>
+<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Ornithopter">Ornithopter</span></div>
+<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Springleaf Drum">Springleaf Drum</span></div>
+<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Signal Pest">Signal Pest</span></div>
+<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Memnite">Memnite</span></div>
+<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Thought Monitor">Thought Monitor</span></div>
+<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Cranial Plating">Cranial Plating</span></div>
+<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Sojourner's Companion">Sojourner's Companion</span></div>
+<div class="dl-row"><span class="dl-qty">2</span><span class="dl-card card-tip" data-card="Nettlecyst">Nettlecyst</span></div>
+<div class="dl-row"><span class="dl-qty">2</span><span class="dl-card card-tip" data-card="Engineered Explosives">Engineered Explosives</span></div>
+<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Darksteel Citadel">Darksteel Citadel</span></div>
+<div class="dl-row"><span class="dl-qty">2</span><span class="dl-card card-tip" data-card="Treasure Vault">Treasure Vault</span></div>
+<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Urza's Saga">Urza's Saga</span></div>
+<div class="dl-row"><span class="dl-qty">2</span><span class="dl-card card-tip" data-card="Silverbluff Bridge">Silverbluff Bridge</span></div>
+<div class="dl-row"><span class="dl-qty">2</span><span class="dl-card card-tip" data-card="Razortide Bridge">Razortide Bridge</span></div>
+<div class="dl-row"><span class="dl-qty">2</span><span class="dl-card card-tip" data-card="Tanglepool Bridge">Tanglepool Bridge</span></div>
+<div class="dl-row"><span class="dl-qty">2</span><span class="dl-card card-tip" data-card="Mistvault Bridge">Mistvault Bridge</span></div>
+<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Island">Island</span></div>
+<div class="dl-row"><span class="dl-qty">3</span><span class="dl-card card-tip" data-card="Spire of Industry">Spire of Industry</span></div>
+<div class="dl-row"><span class="dl-qty">2</span><span class="dl-card card-tip" data-card="Frogmite">Frogmite</span></div>
+<div class="dl-total">60 cards · 20 unique</div>
+</div>
+<div class="dl-col">
+<h3>Sideboard (15)</h3>
+<div class="dl-row"><span class="dl-qty">2</span><span class="dl-card card-tip" data-card="Metallic Rebuke">Metallic Rebuke</span></div>
+<div class="dl-row"><span class="dl-qty">2</span><span class="dl-card card-tip" data-card="Haywire Mite">Haywire Mite</span></div>
+<div class="dl-row"><span class="dl-qty">2</span><span class="dl-card card-tip" data-card="Dispatch">Dispatch</span></div>
+<div class="dl-row"><span class="dl-qty">2</span><span class="dl-card card-tip" data-card="Ethersworn Canonist">Ethersworn Canonist</span></div>
+<div class="dl-row"><span class="dl-qty">2</span><span class="dl-card card-tip" data-card="Relic of Progenitus">Relic of Progenitus</span></div>
+<div class="dl-row"><span class="dl-qty">2</span><span class="dl-card card-tip" data-card="Hurkyl's Recall">Hurkyl's Recall</span></div>
+<div class="dl-row"><span class="dl-qty">2</span><span class="dl-card card-tip" data-card="Spell Pierce">Spell Pierce</span></div>
+<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Torpor Orb">Torpor Orb</span></div>
+<div class="dl-total">15 cards · 8 unique</div>
+</div>
 </div>
 <div class="section-title">Stars of the Sim — 1500 Games</div>
 <div class="star-cards">
@@ -136,7 +182,7 @@ document.addEventListener('mousemove',e=>{if(p.style.display==='block'){p.style.
 <div class="mu-row"><span class="mu-name">Dimir Midrange</span><span class="mu-type">midrange</span><span class="mu-meta">2.8%</span><div class="mu-bar"><div class="mu-fill" style="width:80%;background:#1f7040"></div></div><span class="mu-val" style="color:#1f7040">80%</span></div>
 <div class="mu-row"><span class="mu-name">Pinnacle Affinity</span><span class="mu-type">aggro</span><span class="mu-meta">2.0%</span><div class="mu-bar"><div class="mu-fill" style="width:78%;background:#1f7040"></div></div><span class="mu-val" style="color:#1f7040">78%</span></div>
 <div class="prov">
-Simulated: 2026-04-12 · 16 decks · 100 Bo3/pair (1500 games for Affinity) · Engine: MTGSimManu@de3e2b1<br>
+Simulated: 2026-04-12 · 16 decks · 100 Bo3/pair (1500 games for Affinity) · Engine: MTGSimManu@0e4a26b<br>
 Source: metagame_data.jsx (D object) · Card stats: deck_cards[3] · Matchups: matchup_cards["3,*"]<br>
 Shell: ManusAI · Strategy + EV scoring: Claude · Owner: DJPieter81
 </div>

@@ -35,6 +35,13 @@ h1{font-size:24px;font-weight:700;margin-bottom:6px}
 #card-popup{position:fixed;z-index:999;pointer-events:none;display:none;border-radius:8px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.35);width:244px;height:340px;background:#111}
 #card-popup img{width:100%;height:100%;object-fit:contain}
 .prov{font-size:9px;color:#bbb;text-align:center;margin-top:30px;border-top:1px solid #eee;padding-top:10px}
+.decklist{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:12px 0 24px}
+.dl-col h3{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#555;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid #e8e8e8}
+.dl-row{display:flex;justify-content:space-between;padding:2px 0;font-size:12px;border-bottom:1px solid #f5f5f5}
+.dl-row:hover{background:#f8f8f8}
+.dl-qty{font-weight:700;color:#888;width:20px;text-align:right;margin-right:6px;flex-shrink:0}
+.dl-card{flex:1}
+.dl-total{font-size:10px;color:#aaa;margin-top:6px;text-align:right}
 @media(max-width:640px){.hero{grid-template-columns:1fr 1fr}.star-cards{grid-template-columns:1fr 1fr}}
 </style>
 <script>
@@ -54,6 +61,41 @@ document.addEventListener('mousemove',e=>{if(p.style.display==='block'){p.style.
   <div class="hero-item"><div class="hero-label">Sim WR (flat)</div><div class="hero-val r">34.0%</div><div class="hero-sub">⚖ <span style="color:#b02020">34.0%</span> T1/T2 weighted</div></div>
   <div class="hero-item"><div class="hero-label">Rank</div><div class="hero-val r" style="font-size:22px;padding-top:2px">#11</div><div class="hero-sub">T1 · +0.0pp weighted gap</div></div>
   <div class="hero-item"><div class="hero-label">Best / Worst</div><div class="hero-val g" style="font-size:18px;padding-top:2px">90%</div><div class="hero-sub">vs Ruby Storm / worst 0% vs Eldrazi Tron</div></div>
+</div>
+<div class="section-title">Decklist</div>
+<div class="decklist">
+<div class="dl-col">
+<h3>Mainboard (60)</h3>
+<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Wan Shi Tong, Librarian">Wan Shi Tong, Librarian</span></div>
+<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="March of Otherworldly Light">March of Otherworldly Light</span></div>
+<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Chalice of the Void">Chalice of the Void</span></div>
+<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Wrath of the Skies">Wrath of the Skies</span></div>
+<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Counterspell">Counterspell</span></div>
+<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Prismatic Ending">Prismatic Ending</span></div>
+<div class="dl-row"><span class="dl-qty">3</span><span class="dl-card card-tip" data-card="Supreme Verdict">Supreme Verdict</span></div>
+<div class="dl-row"><span class="dl-qty">3</span><span class="dl-card card-tip" data-card="Teferi, Time Raveler">Teferi, Time Raveler</span></div>
+<div class="dl-row"><span class="dl-qty">3</span><span class="dl-card card-tip" data-card="Sanctifier en-Vec">Sanctifier en-Vec</span></div>
+<div class="dl-row"><span class="dl-qty">2</span><span class="dl-card card-tip" data-card="Dovin's Veto">Dovin's Veto</span></div>
+<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Flooded Strand">Flooded Strand</span></div>
+<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Polluted Delta">Polluted Delta</span></div>
+<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Hallowed Fountain">Hallowed Fountain</span></div>
+<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Meticulous Archive">Meticulous Archive</span></div>
+<div class="dl-row"><span class="dl-qty">7</span><span class="dl-card card-tip" data-card="Island">Island</span></div>
+<div class="dl-row"><span class="dl-qty">5</span><span class="dl-card card-tip" data-card="Plains">Plains</span></div>
+<div class="dl-total">60 cards · 16 unique</div>
+</div>
+<div class="dl-col">
+<h3>Sideboard (15)</h3>
+<div class="dl-row"><span class="dl-qty">3</span><span class="dl-card card-tip" data-card="Subtlety">Subtlety</span></div>
+<div class="dl-row"><span class="dl-qty">3</span><span class="dl-card card-tip" data-card="Damping Sphere">Damping Sphere</span></div>
+<div class="dl-row"><span class="dl-qty">2</span><span class="dl-card card-tip" data-card="Rest in Peace">Rest in Peace</span></div>
+<div class="dl-row"><span class="dl-qty">2</span><span class="dl-card card-tip" data-card="Engineered Explosives">Engineered Explosives</span></div>
+<div class="dl-row"><span class="dl-qty">2</span><span class="dl-card card-tip" data-card="Consign to Memory">Consign to Memory</span></div>
+<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Dovin's Veto">Dovin's Veto</span></div>
+<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Force of Negation">Force of Negation</span></div>
+<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Celestial Purge">Celestial Purge</span></div>
+<div class="dl-total">15 cards · 8 unique</div>
+</div>
 </div>
 <div class="section-title">Stars of the Sim — 1500 Games</div>
 <div class="star-cards">
@@ -93,7 +135,7 @@ document.addEventListener('mousemove',e=>{if(p.style.display==='block'){p.style.
 <div class="mu-row"><span class="mu-name">Dimir Midrange</span><span class="mu-type">midrange</span><span class="mu-meta">2.8%</span><div class="mu-bar"><div class="mu-fill" style="width:22%;background:#b02020"></div></div><span class="mu-val" style="color:#b02020">22%</span></div>
 <div class="mu-row"><span class="mu-name">Pinnacle Affinity</span><span class="mu-type">aggro</span><span class="mu-meta">2.0%</span><div class="mu-bar"><div class="mu-fill" style="width:22%;background:#b02020"></div></div><span class="mu-val" style="color:#b02020">22%</span></div>
 <div class="prov">
-Simulated: 2026-04-12 · 16 decks · 100 Bo3/pair (1500 games for Azorius Control (WST)) · Engine: MTGSimManu@de3e2b1<br>
+Simulated: 2026-04-12 · 16 decks · 100 Bo3/pair (1500 games for Azorius Control (WST)) · Engine: MTGSimManu@0e4a26b<br>
 Source: metagame_data.jsx (D object) · Card stats: deck_cards[13] · Matchups: matchup_cards["13,*"]<br>
 Shell: ManusAI · Strategy + EV scoring: Claude · Owner: DJPieter81
 </div>

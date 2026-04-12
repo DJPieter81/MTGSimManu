@@ -10,6 +10,8 @@ Usage:
 Reads: metagame_data.jsx (D object), decks/modern_meta.py, templates/reference_deck_guide.html
 """
 import json, re, sys, os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from decks.modern_meta import MODERN_DECKS
 
 def load_D(jsx_path='metagame_data.jsx'):
     with open(jsx_path) as f: jsx = f.read()
@@ -151,6 +153,13 @@ def build_guide(deck_name, D):
     h('#card-popup{position:fixed;z-index:999;pointer-events:none;display:none;border-radius:8px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.35);width:244px;height:340px;background:#111}')
     h('#card-popup img{width:100%;height:100%;object-fit:contain}')
     h('.prov{font-size:9px;color:#bbb;text-align:center;margin-top:30px;border-top:1px solid #eee;padding-top:10px}')
+    h('.decklist{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:12px 0 24px}')
+    h('.dl-col h3{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#555;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid #e8e8e8}')
+    h('.dl-row{display:flex;justify-content:space-between;padding:2px 0;font-size:12px;border-bottom:1px solid #f5f5f5}')
+    h('.dl-row:hover{background:#f8f8f8}')
+    h('.dl-qty{font-weight:700;color:#888;width:20px;text-align:right;margin-right:6px;flex-shrink:0}')
+    h('.dl-card{flex:1}')
+    h('.dl-total{font-size:10px;color:#aaa;margin-top:6px;text-align:right}')
     h('@media(max-width:640px){.hero{grid-template-columns:1fr 1fr}.star-cards{grid-template-columns:1fr 1fr}}')
     h('</style>')
     
@@ -178,6 +187,29 @@ def build_guide(deck_name, D):
     h(f'  <div class="hero-item"><div class="hero-label">Rank</div><div class="hero-val {wr_cls}" style="font-size:22px;padding-top:2px">#{rank}</div><div class="hero-sub">{tier} · {gap:+.1f}pp weighted gap</div></div>')
     h(f'  <div class="hero-item"><div class="hero-label">Best / Worst</div><div class="hero-val g" style="font-size:18px;padding-top:2px">{best[1]["wr"]}%</div><div class="hero-sub">vs {best[0][:12]} / worst {worst[1]["wr"]}% vs {worst[0][:12]}</div></div>')
     h('</div>')
+    
+    # Decklist
+    deck_data = MODERN_DECKS.get(deck_name, {})
+    mb = deck_data.get('mainboard', {})
+    sb = deck_data.get('sideboard', {})
+    if mb:
+        h('<div class="section-title">Decklist</div>')
+        h('<div class="decklist">')
+        # Mainboard
+        h('<div class="dl-col">')
+        h(f'<h3>Mainboard ({sum(mb.values())})</h3>')
+        for card, qty in mb.items():
+            h(f'<div class="dl-row"><span class="dl-qty">{qty}</span><span class="dl-card card-tip" data-card="{esc(card)}">{esc(card)}</span></div>')
+        h(f'<div class="dl-total">{sum(mb.values())} cards · {len(mb)} unique</div>')
+        h('</div>')
+        # Sideboard
+        h('<div class="dl-col">')
+        h(f'<h3>Sideboard ({sum(sb.values())})</h3>')
+        for card, qty in sb.items():
+            h(f'<div class="dl-row"><span class="dl-qty">{qty}</span><span class="dl-card card-tip" data-card="{esc(card)}">{esc(card)}</span></div>')
+        h(f'<div class="dl-total">{sum(sb.values())} cards · {len(sb)} unique</div>')
+        h('</div>')
+        h('</div>')
     
     # Stars
     h(f'<div class="section-title">Stars of the Sim — {overall["total_matches"]} Games</div>')
