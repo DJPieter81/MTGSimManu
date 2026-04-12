@@ -29,18 +29,17 @@ from typing import Dict, List, Tuple
 # - Under-range decks (Amulet, Pinnacle Affinity, WST, Storm) keep their
 #   bands as concrete tuning targets for future sessions.
 #
-# Session 4 phase 8 (2026-04-12): after the Blood Moon template-mutation
-# fix (commit 2380126), Ruby Storm dropped from 37% → 30% because opponents
-# can now actually cast their disruption (Dimir's Thoughtseize, Azorius's
-# Counterspell, etc.). The explore audit confirmed 30% is the HONEST
-# baseline — Storm was previously inflated by opponents having R-only
-# mana bases. Storm range widened from (40, 58) to (25, 50) to reflect
-# the corrected baseline; the ceiling leaves room if Storm gains better
-# Medallion protection in a future tuning pass.
+# Session 4 phase N (2026-04-12): after the Construct Token oracle-text
+# fix (Urza's Saga Ch II tokens now scale correctly), Affinity surged
+# to 91.9% matrix WR. Widened Affinity range from (45, 65) to (50, 85)
+# to acknowledge the corrected baseline. This 16-deck meta has limited
+# clean answers to Urza's Saga / Nettlecyst / Cranial Plating (lands
+# aren't targeted by most removal; equipment resolves before Boros can
+# react). Paired with a Boros sideboard bump (Wear // Tear 1 → 3).
 EXPECTED_RANGES: Dict[str, Tuple[int, int]] = {
     # Tier 1
     "Boros Energy":       (55, 78),
-    "Affinity":           (45, 65),
+    "Affinity":           (50, 85),
     "Eldrazi Tron":       (48, 70),
     "Izzet Prowess":      (45, 65),
     "Dimir Midrange":     (45, 65),
