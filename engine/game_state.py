@@ -1552,11 +1552,14 @@ class GameState:
                 card.controller = item.controller
                 card.enter_battlefield()
                 self.players[item.controller].battlefield.append(card)
-                # Place counters for X-cost permanents
+                # Place counters for X-cost permanents — only if no dedicated
+                # ETB handler exists (Engineered Explosives uses sunburst via its
+                # own handler, so don't double-set charge counters here)
                 if item.x_value > 0 and template.x_cost_data:
+                    has_dedicated_etb = template.name in EFFECT_REGISTRY._handlers
                     x_info = template.x_cost_data
                     effect = x_info.get("effect", "")
-                    if effect == "charge_counters":
+                    if effect == "charge_counters" and not has_dedicated_etb:
                         card.other_counters["charge"] = item.x_value
                         self.log.append(
                             f"T{self.display_turn} P{item.controller+1}: "
