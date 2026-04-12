@@ -66,7 +66,10 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
 .arch-detail h4{font-family:var(--font-display);font-size:18px;margin-bottom:8px}
 .arch-detail p{font-size:13px;color:var(--ink2);line-height:1.6;margin-bottom:12px}
 .arch-detail .file-list{display:flex;flex-wrap:wrap;gap:6px}
-.arch-detail .file-chip{font-family:var(--font-mono);font-size:10px;padding:4px 10px;border-radius:6px;background:var(--paper);color:var(--ink2);border:1px solid var(--border)}
+.arch-detail .file-chip{font-family:var(--font-mono);font-size:10px;padding:4px 10px;border-radius:6px;background:var(--paper);color:var(--ink2);border:1px solid var(--border);position:relative;cursor:default}
+.arch-detail .file-chip:hover{background:#e8e4dd;border-color:var(--ink3)}
+.arch-detail .file-chip[data-tip]:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-family:var(--font-body);font-size:10px;padding:6px 10px;border-radius:6px;white-space:nowrap;max-width:260px;white-space:normal;line-height:1.4;z-index:10;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.arch-detail .file-chip[data-tip]:hover::before{content:'';position:absolute;bottom:calc(100% + 2px);left:50%;transform:translateX(-50%);border:4px solid transparent;border-top-color:var(--ink);z-index:10}
 .ab-data{background:#eef5ff;border:1px solid #d0e2f7}.ab-data::before{background:var(--blue)}
 .ab-data .bar-icon{background:#d0e2f7}
 .ab-engine{background:#e6f5ee;border:1px solid #bfe5d2}.ab-engine::before{background:var(--teal)}
@@ -625,24 +628,65 @@ function showAI(i){
 // Architecture layer details
 const layerData={
   data:{t:'Data layer — 21,795 cards',d:'MTGJSON card database reassembled from 8 parts. Every card has parsed mana costs, keywords, tags, oracle text, and special mechanics (evoke, dash, escape, delve, domain). 15 Modern decklists with mainboard + sideboard in modern_meta.py. Per-deck gameplans as JSON goal sequences. Strategy profiles with archetype-specific AI weights.',
-    files:['ModernAtomic_part[1-8].json','modern_meta.py','gameplans/*.json','strategy_profile.py','card_knowledge.json']},
-  engine:{t:'Engine layer — 3,160 line state machine',d:'Full MTG rules: turn structure (untap/upkeep/draw/main/combat/main/end), mana system with greedy constraint solver, spell stack with priority passing, combat resolution with first strike, continuous effects with layer ordering, state-based actions (704.5), zone management (library/hand/battlefield/graveyard/exile/stack), event triggers, and 80+ card-specific effect handlers.',
-    files:['game_state.py (3160 ln)','game_runner.py','card_effects.py','card_database.py','combat_manager.py','event_system.py','continuous_effects.py','sideboard_manager.py','zone_manager.py','stack.py','sba_manager.py','oracle_parser.py']},
-  ai:{t:'AI layer — 14 modules, 7,757 lines',d:'EV-based decision engine. Clock evaluation (turns to kill = fundamental unit). Bayesian hand inference tracks P(counter), P(removal) from observed actions. Full combat simulation with blocker prediction and 5 turn orderings. Goal engine with JSON-defined game phases. Combo assessment for storm/graveyard/mana zones. Strategic logger produces reasoning traces for the LLM judge audit.',
-    files:['ev_player.py (1224 ln)','gameplan.py (545 ln)','turn_planner.py (1113 ln)','ev_evaluator.py (712 ln)','combo_calc.py (652 ln)','clock.py (328 ln)','bhi.py (275 ln)','response.py','mulligan.py','board_eval.py','mana_planner.py','combo_chain.py','strategic_logger.py']},
-  runner:{t:'Simulation runner — single entry point',d:'All analysis through one file: full NxN round-robin matrix, head-to-head matchups, field sweeps (one deck vs all), deck audits with per-card stats, verbose game logs, AI reasoning traces, and Bo3 match generation with sideboarding. Reproducible seeds. Python API for programmatic access.',
-    files:['run_meta.py (38K)','simulate_match.py','match_trace.py','import_deck.py','update_modern_atomic.py']},
-  output:{t:'Output pipeline — 3 HTML products',d:'Simulation results flow into three standalone HTML deliverables. Interactive heatmap dashboard with card-level detail (casts, damage, finishers, sideboard swaps, insights). Bo3 replay viewers with SVG life charts, collapsible turns, and AI reasoning toggle. Comprehensive deck guides with sim-verified matchup spreads, opening hand analysis, and game plan phases.',
-    files:['build_dashboard.py (34K)','build_replay.py (32K)','build_guide.py (15K)','metagame_data.jsx (105K)','templates/reference_deck_guide.html']},
-  skills:{t:'Claude skills — 4 automation pipelines',d:'Reusable skill files that Claude reads before executing workflows. Meta matrix skill runs the full sim-to-dashboard pipeline. Dashboard refresh extracts card-level data from verbose Bo3 logs and merges into the JSX. Deck guide skill produces 7-step HTML guides. Bo3 replayer skill generates interactive match viewers. Same skills work for both Legacy and Modern formats.',
-    files:['/mtg-meta-matrix','/mtg-dashboard-refresh','/mtg-deck-guide','/mtg-bo3-replayer-v2']}
+    files:[
+      {n:'ModernAtomic_part[1-8].json',tip:'Card database split into 8 parts for git — merged at runtime by merge_db.py'},
+      {n:'modern_meta.py',tip:'All 16 decklists + METAGAME_SHARES — single source of truth for decks'},
+      {n:'gameplans/*.json',tip:'Per-deck goal sequences: curve_out → push_damage → close_game with enablers/payoffs'},
+      {n:'strategy_profile.py',tip:'Archetype weights: burn_face_mult, attack_threshold, pass_threshold, holdback'},
+      {n:'card_knowledge.json',tip:'Static card annotations the oracle parser can\'t derive'}
+    ]},
+  engine:{t:'Engine layer — 3,160 line state machine',d:'Full MTG rules: turn structure, mana system with greedy constraint solver, spell stack with priority passing, combat resolution, continuous effects with layer ordering, state-based actions, zone management, and 80+ card-specific effect handlers.',
+    files:[
+      {n:'game_state.py (3160 ln)',tip:'Core state machine: zones, turn phases, SBAs, triggers, continuous effects'},
+      {n:'game_runner.py',tip:'Runs a full game from shuffle to result — calls AI for decisions'},
+      {n:'card_effects.py',tip:'80+ card-specific handlers: ETB, cast triggers, activated abilities, replacement effects'},
+      {n:'card_database.py',tip:'Loads ModernAtomic.json — 21,795 cards with parsed oracle text'},
+      {n:'combat_manager.py',tip:'Declare attackers/blockers, first strike, trample, damage assignment'},
+      {n:'sideboard_manager.py',tip:'Bool-flag based SB: opp_is_aggro, opp_is_combo, opp_is_gy → swap cards'},
+      {n:'oracle_parser.py',tip:'Extracts keywords, mana costs, P/T, abilities from raw oracle text'},
+      {n:'stack.py',tip:'Spell stack with priority passing — handles counters, responses, split second'}
+    ]},
+  ai:{t:'AI layer — 14 modules, 7,757 lines',d:'EV-based decision engine. Clock evaluation (turns to kill). Bayesian hand inference tracks P(counter), P(removal). Full combat sim with blocker prediction and 5 turn orderings. Goal engine with JSON game phases. Combo assessment. Strategic logger produces reasoning traces.',
+    files:[
+      {n:'ev_player.py (1224 ln)',tip:'Main AI brain: enumerate plays → score by EV + clock Δ + combo mod → pick best'},
+      {n:'gameplan.py (545 ln)',tip:'GoalEngine: reads gameplans/*.json, tracks current goal, transitions on board state'},
+      {n:'turn_planner.py (1113 ln)',tip:'Tries 5 orderings of the same plays, picks highest total EV sequence'},
+      {n:'ev_evaluator.py (712 ln)',tip:'EVSnapshot: board eval, life totals, hand quality, threat assessment'},
+      {n:'combo_calc.py (652 ln)',tip:'Storm count, graveyard state for escape/delve, mana zone for combo turns'},
+      {n:'clock.py (328 ln)',tip:'Turns-to-kill calculator — the fundamental unit of MTG tempo evaluation'},
+      {n:'bhi.py (275 ln)',tip:'Bayesian Hand Inference: tracks P(Force), P(Push) from opponent\'s visible actions'},
+      {n:'strategic_logger.py',tip:'Logs AI reasoning: "Cast Phlage (+8.2 EV, clock 5→3)" for replay viewer'}
+    ]},
+  runner:{t:'Simulation runner — single entry point',d:'All analysis through one file: full NxN round-robin matrix, head-to-head matchups, field sweeps, verbose game logs, AI reasoning traces, and Bo3 match generation. Reproducible seeds.',
+    files:[
+      {n:'run_meta.py (38K)',tip:'CLI entry point: --matrix, --matchup, --field, --bo3, --verbose, --deck'},
+      {n:'merge_db.py',tip:'Merges ModernAtomic_part[1-8].json into single ModernAtomic.json'},
+      {n:'scan_results.py',tip:'Post-sim analysis: identifies outliers, G1→match swings, sweep patterns'},
+      {n:'update_modern_atomic.py',tip:'Downloads fresh MTGJSON data when new sets release'}
+    ]},
+  output:{t:'Output pipeline — 3 HTML products + guide generator',d:'Simulation results flow into standalone HTML deliverables. Interactive heatmap dashboard. Bo3 replay viewers with life charts. Deck guides with Scryfall hovers, Stars of Sim, 6 pro-level strategic findings, and sideboard data.',
+    files:[
+      {n:'build_dashboard.py',tip:'Merges metagame_results.json into metagame_data.jsx, builds interactive HTML heatmap'},
+      {n:'build_replay.py',tip:'Parses Bo3 game logs → standalone HTML with collapsible turns, SVG life chart, keyboard nav'},
+      {n:'build_guide.py',tip:'Generates deck guides from JSX D object — Stars, G1→match swings, danger cards, matchup spread'},
+      {n:'metagame_data.jsx',tip:'Canonical data: D object with wins matrix, matchup_cards, deck_cards, meta_shares'},
+      {n:'templates/',tip:'reference_deck_guide.html (gold standard) + reference_showcase.html'}
+    ]},
+  skills:{t:'Claude skills — 4 automation pipelines',d:'Reusable skill files for Claude Chat, Cowork, and Claude Code. Same skills work for Legacy and Modern. Triggered by keywords like "build the matrix", "deck guide", "replay", "showcase".',
+    files:[
+      {n:'/mtg-meta-matrix',tip:'Full sim-to-dashboard pipeline: run matrix → extract card data → merge JSX → build HTML'},
+      {n:'/mtg-deck-guide',tip:'7-step guide: JSX data → Stars → hands → findings → spread. Read template first'},
+      {n:'/mtg-bo3-replayer-v2',tip:'Bo3 log → HTML viewer. Light theme, game tabs, keyboard nav, board state tracking'},
+      {n:'/mtg-project-showcase',tip:'Marketing page generator: 10 interactive sections, Chart.js, cross-project comparison'}
+    ]}
 };
 function showLayer(el,key){
   document.querySelectorAll('.arch-bar').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
   const d=layerData[key],det=document.getElementById('archDetail');
-  det.innerHTML=`<h4>${d.t}</h4><p>${d.d}</p><div class="file-list">${d.files.map(f=>`<span class="file-chip">${f}</span>`).join('')}</div>`;
+  det.innerHTML=`<h4>${d.t}</h4><p>${d.d}</p><div class="file-list">${d.files.map(f=>`<span class="file-chip" data-tip="${f.tip}">${f.n}</span>`).join('')}</div>`;
   det.classList.add('show');
+  det.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
 // Charts
