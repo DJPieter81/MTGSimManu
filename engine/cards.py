@@ -198,26 +198,13 @@ class CardTemplate:
         return hash(self.name)
 
 
-# Domain creatures: cards whose power/toughness depends on basic land types
-DOMAIN_POWER_CREATURES = {
-    "Territorial Kavu",    # P/T = domain / domain
-    "Nishoba Brawler",     # P = domain, T = 3
-}
-
-# Tarmogoyf-like: P/T depends on card types in graveyards
-TARMOGOYF_CREATURES = {
-    "Tarmogoyf",           # P = types in all GYs, T = types + 1
-}
-
-# Delirium creatures: get bonus with 4+ card types in graveyard
-DELIRIUM_CREATURES = {
-    "Dragon's Rage Channeler",  # 1/1 -> 3/3 with delirium
-}
-
-# Creatures with graveyard-scaling P/T
-GRAVEYARD_SCALING_CREATURES = {
-    "Murktide Regent",     # +1/+1 for each instant/sorcery exiled (approx: in GY)
-}
+# These sets are no longer used — scaling is detected from oracle text via
+# CardTemplate.power_scales_with ("domain", "tarmogoyf", "delirium", "graveyard").
+# Kept as empty dicts for backwards compatibility only; will be removed next refactor.
+DOMAIN_POWER_CREATURES: set = set()
+TARMOGOYF_CREATURES: set = set()
+DELIRIUM_CREATURES: set = set()
+GRAVEYARD_SCALING_CREATURES: set = set()
 
 BASIC_LAND_TYPES = {"Plains", "Island", "Swamp", "Mountain", "Forest"}
 
@@ -342,58 +329,73 @@ class CardInstance:
                    if c.template.is_instant or c.template.is_sorcery)
 
     def _dynamic_base_power(self) -> int:
-        """Calculate base power, accounting for domain and similar effects."""
-        # Dynamic P/T only applies on the battlefield
+        """Calculate base power, accounting for domain and similar effects.
+        Scaling type is detected at template load time from oracle text
+        (CardTemplate.power_scales_with) — no card names hardcoded here.
+        """
         if self.zone != "battlefield":
             return self.template.power or 0
-        name = self.template.name
-        if name in DOMAIN_POWER_CREATURES:
-            # Cap at 4 to simulate average disruption (Blood Moon, etc.)
+        scaling = self.template.power_scales_with
+
+        if scaling == "domain":
             return min(self._get_domain_count(), 4)
-        if name in TARMOGOYF_CREATURES:
+        if scaling == "tarmogoyf":
             return self._get_tarmogoyf_count()
-        if name in DELIRIUM_CREATURES:
-            return 3 if self._has_delirium() else (self.template.power or 0)
-        if name in GRAVEYARD_SCALING_CREATURES:
+        if scaling == "delirium":
+            if self._has_delirium():
+                # Parse bonus from oracle: "gets +N/+M" → use N for power
+                import re as _re
+                oracle = (self.template.oracle_text or '').lower()
+                m = _re.search(r'gets?\s+\+(\d+)/\+(\d+)', oracle)
+                bonus = int(m.group(1)) if m else 2
+                return (self.template.power or 0) + bonus
+            return self.template.power or 0
+        if scaling == "graveyard":
             return (self.template.power or 0) + self._get_gy_instants_sorceries()
+
         base = self.template.power or 0
-        # Construct Token (Urza's Saga): P/T = number of artifacts you control
-        if name == "Construct Token":
+        # Construct Token and similar: "gets +1/+1 for each artifact you control"
+        oracle = (self.template.oracle_text or '').lower()
+        if 'artifact you control' in oracle and ('+1/+1' in oracle or 'for each' in oracle):
             base = self._get_artifact_count()
-        # Equipment that scales power by artifact count:
-        # any "_equipped" tag from equipment whose oracle says "for each artifact"
+        # Equipment scaling (Cranial Plating etc.)
         for tag in self.instance_tags:
             if tag.endswith("_equipped"):
-                # Find the equipment template to check its oracle text
                 equip_name_prefix = tag[:-len("_equipped")]
                 for perm in self._get_controller_battlefield():
                     perm_prefix = perm.template.name.lower().replace(" ", "_").replace("'", "").replace(",", "")
                     if perm_prefix == equip_name_prefix:
-                        oracle = (perm.template.oracle_text or '').lower()
-                        if 'for each artifact' in oracle or 'artifact you control' in oracle:
+                        eq_oracle = (perm.template.oracle_text or '').lower()
+                        if 'for each artifact' in eq_oracle or 'artifact you control' in eq_oracle:
                             base += self._get_artifact_count()
                         break
         return base
 
     def _dynamic_base_toughness(self) -> int:
-        """Calculate base toughness, accounting for domain and similar effects."""
-        # Dynamic P/T only applies on the battlefield
+        """Calculate base toughness — mirrors _dynamic_base_power scaling logic."""
         if self.zone != "battlefield":
             return self.template.toughness or 0
-        name = self.template.name
-        if name == "Territorial Kavu":
+        scaling = self.template.power_scales_with
+
+        if scaling == "domain":
             return min(self._get_domain_count(), 4)
-        if name in TARMOGOYF_CREATURES:
+        if scaling == "tarmogoyf":
             return self._get_tarmogoyf_count() + 1
-        if name in DELIRIUM_CREATURES:
-            return 3 if self._has_delirium() else (self.template.toughness or 0)
-        if name in GRAVEYARD_SCALING_CREATURES:
+        if scaling == "delirium":
+            if self._has_delirium():
+                import re as _re
+                oracle = (self.template.oracle_text or '').lower()
+                m = _re.search(r'gets?\s+\+(\d+)/\+(\d+)', oracle)
+                bonus = int(m.group(2)) if m else 2
+                return (self.template.toughness or 0) + bonus
+            return self.template.toughness or 0
+        if scaling == "graveyard":
             return (self.template.toughness or 0) + self._get_gy_instants_sorceries()
+
         base = self.template.toughness or 0
-        # Construct Token (Urza's Saga): P/T = number of artifacts you control
-        if name == "Construct Token":
+        oracle = (self.template.oracle_text or '').lower()
+        if 'artifact you control' in oracle and ('+1/+1' in oracle or 'for each' in oracle):
             base = self._get_artifact_count()
-        # Nettlecyst: +1/+1 per artifact
         if "nettlecyst_equipped" in self.instance_tags:
             base += self._get_artifact_count()
         return base
