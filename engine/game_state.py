@@ -685,6 +685,25 @@ class GameState:
             if not (is_main_phase and is_active and self.stack.is_empty):
                 return False
 
+        # Target validation (CR 601.2c): a spell with a required target
+        # cannot be cast if no legal target exists. Without this, the AI
+        # casts e.g. Ephemerate into an empty board — the spell fizzles at
+        # resolution but mana and the card are wasted. Applies to instants
+        # and sorceries only; permanents with ETB targets are handled by
+        # their own effect handlers.
+        if template.is_instant or template.is_sorcery:
+            oracle_l = (template.oracle_text or "").lower()
+            if 'target creature you control' in oracle_l:
+                if not player.creatures:
+                    return False
+            elif ('target creature' in oracle_l
+                  and 'target creature or planeswalker' not in oracle_l
+                  and 'up to' not in oracle_l.split('target creature')[0][-20:]):
+                # "target creature" (any controller) — need at least one creature on board
+                opp = self.players[1 - player_idx]
+                if not player.creatures and not opp.creatures:
+                    return False
+
         # Check mana (pool + untapped lands + Tron bonus)
         untapped_lands = player.untapped_lands
         total_mana = len(untapped_lands) + player.mana_pool.total() + player._tron_mana_bonus()
@@ -1277,6 +1296,11 @@ class GameState:
                         """Lower score = more willing to exile this card."""
                         score = c.template.cmc or 0  # prefer exiling cheap cards
                         tags = c.template.tags or set()
+                        # Planeswalkers are sticky card-advantage engines —
+                        # never pitch them to evoke. Observed: 4c Omnath was
+                        # pitching Wrenn and Six to Endurance.
+                        if CardType.PLANESWALKER in c.template.card_types:
+                            score += 50
                         # Tag-based protection
                         if any(t in tags for t in ('combo', 'finisher')):
                             score += 50  # never exile combo pieces
