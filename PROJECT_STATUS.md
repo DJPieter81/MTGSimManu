@@ -139,7 +139,7 @@ from engine.card_database import CardDatabase  # singleton pattern
 
 ## 6. AI strategy accuracy
 
-**Overall grade: C** (up from C-, up from D+) — session 2 fixes
+**Overall grade: C-** (downgraded from C+ — blocking P0 invalidates all matchup data)
 
 | Domain | Grade | | Domain | Grade |
 |--------|-------|-|--------|-------|
@@ -158,6 +158,16 @@ from engine.card_database import CardDatabase  # singleton pattern
 ---
 
 ## 7. Known bugs
+
+### P0 — OPEN (replay audit, Apr 2026)
+
+| # | Issue | Location | Evidence | Impact |
+|---|-------|----------|----------|--------|
+| 9 | **Zero blocks across all games** | `ai/ev_player.py:decide_blockers()` → `ai/board_eval.py:evaluate_action()` | 228 attack opportunities, 0 blocks, 211 cases with untapped power>0 defenders. `evaluate_action(ActionType.BLOCK)` never returns positive. | Aggro WRs inflated (Affinity 92%). Midrange/control can't trade on defense. All matchup data affected. |
+| 10 | **Not attacking with profitable boards** | `ai/ev_player.py` attack threshold | Ragavan idle into empty board, Bowmasters army idle 3 turns, Matter Reshaper held back | Underestimates aggro damage output. Games run longer than they should. |
+| 11 | **0-land mulligan keep** | `ai/mulligan.py` | Prowess kept 0-land 7-card hand (all uncastable). No minimum land floor. | Deck loses games it shouldn't from non-functional keeps. |
+
+**Priority fix order:** #9 (blocking) first — affects every matchup. Then #10 (attack threshold). #11 is deck-specific.
 
 ### P0 — FIXED (session 2)
 | # | Bug | Fix | Commit |
