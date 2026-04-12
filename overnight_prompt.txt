@@ -1,0 +1,17 @@
+You are working on MTGSimManu, an MTG Modern metagame simulator. Your job is to run an overnight iterate loop of small fixes to bring deck win rates closer to expected Modern ranges.
+
+First: cd ~/MTGSimManu && git pull origin main && python3 merge_db.py
+
+Then read OVERNIGHT_TASK.md for full context. The key files are iterate.py (test harness) and the priority fix list in OVERNIGHT_TASK.md.
+
+Run this loop up to 20 times:
+
+1. python3 iterate.py --check --n 5
+2. Read the outlier analysis. Pick the single worst HIGH outlier.
+3. Run a verbose trace to diagnose: python3 run_meta.py --verbose "DeckA" "DeckB" -s 90000
+4. Make ONE small fix (max 10 lines, max 1 file). Only touch: ai/ev_player.py, ai/board_eval.py, engine/sideboard_manager.py, ai/strategy_profile.py, or decks/gameplans/*.json. Never hardcode card names.
+5. Test: python3 iterate.py --matchup "DeckA" "DeckB" --n 10
+6. If WR improved >=5pp toward expected AND no regression >10pp: git add + commit + push. Otherwise: git checkout the file.
+7. Go to step 1.
+
+Stop when no HIGH outliers remain or after 20 iterations. Always git pull --rebase origin main before pushing. Never force-push. Never touch game_state.py, card_effects.py, cards.py, combat_manager.py, or run_meta.py.
