@@ -847,7 +847,6 @@ class EVPlayer:
         if card.template.is_creature:
             power = card.template.power or 0
             # Creature in GY = future reanimation target
-            # Value = power / opp_life in clock terms, scaled
             ev += (4.0 + power * 0.5)
 
         # Cycling cost: cheaper = better tempo
@@ -858,11 +857,21 @@ class EVPlayer:
             elif cost_data.get('mana', 0) <= 1:
                 ev += 1.0  # cheap cycling
 
-        # Cascade in hand: filling GY is urgent
+        # Cascade in hand: filling GY is urgent — MUST cycle before cascade
         has_cascade = any(getattr(c.template, 'is_cascade', False) for c in me.hand
                          if not c.template.is_land)
         if has_cascade:
-            ev += 3.0
+            ev += 8.0  # big boost: cycling is the primary action before cascade
+            # Count creatures already in GY — less urgency if GY is full
+            gy_creatures = sum(1 for c in me.graveyard if c.template.is_creature)
+            if gy_creatures < 3:
+                ev += 6.0  # urgent: need more GY creatures before cascading
+
+        # Gameplan prefer_cycling: massive boost (Living End, etc.)
+        if self.goal_engine:
+            current_goal = self.goal_engine.current_goal
+            if current_goal and getattr(current_goal, 'prefer_cycling', False):
+                ev += 10.0  # cycling is THE gameplan, not optional
 
         return ev
 
