@@ -1264,8 +1264,15 @@ class GameState:
                 ]
                 if exile_candidates:
                     # Generic evoke exile scoring — no hardcoded card names.
-                    # Uses gameplan card_priorities when available, falls back to
-                    # tag-based heuristics (combo pieces > threats > filler).
+                    # Uses tag-based heuristics (combo pieces > threats > filler).
+                    # Reanimate decks: big creatures are irreplaceable combo targets
+                    deck_has_reanimate = any(
+                        'reanimate' in (h.template.tags or set())
+                        for h in player.hand
+                    ) or any(
+                        'reanimate' in (h.template.tags or set())
+                        for h in player.graveyard
+                    )
                     def exile_priority(c):
                         """Lower score = more willing to exile this card."""
                         score = c.template.cmc or 0  # prefer exiling cheap cards
@@ -1277,6 +1284,10 @@ class GameState:
                             score += 50
                         if Keyword.CASCADE in c.template.keywords:
                             score += 40  # cascade spells are critical
+                        # Reanimate targets: big creatures in a reanimate deck
+                        if (deck_has_reanimate and c.template.is_creature
+                                and (c.template.power or 0) >= 5):
+                            score += 50  # irreplaceable reanimate target
                         if any(t in tags for t in ('threat', 'removal', 'board_wipe')):
                             score += 10
                         if any(t in tags for t in ('ritual', 'cost_reducer', 'ramp')):
