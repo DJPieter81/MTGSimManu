@@ -431,3 +431,17 @@ Skill: `/mtg-project-showcase` — generates interactive marketing/portfolio HTM
 **Re-run after:** new matrix sim, P0/P1 fixes, new decks, proposal acceptance changes.
 
 **Design:** Light cream theme, Playfair Display + DM Sans + JetBrains Mono, Chart.js for graphs, 6 layer color codes, scroll-triggered animations, IntersectionObserver reveals.
+
+### Deck Guide Strategic Insights — Pro-Level Methodology
+
+Guides target pro tour players. The metagame strategy section requires 6+ non-obvious findings mined from `matchup_cards` data. Each finding must be data-backed, counterintuitive, and actionable.
+
+**Required findings template:**
+1. **Damage-to-kill efficiency paradox** — compare `mvp_damage` vs `finishers` kill counts, calculate dmg/kill ratio
+2. **Closer changes per matchup** — group `d1_finishers[0]` by `avg_turns`, show counterintuitive patterns
+3. **G1 → Match WR swing** — calculate `match_wr - g1_wr`, identify whether YOUR or OPPONENT's SB caused the swing
+4. **Structural removal blind spots** — cross-reference `d2_top_damage` in losing matchups against your removal suite
+5. **Hidden damage sources** — find tokens/unexpected cards in `mvp_damage`, derive boarding rules
+6. **Weighted WR gap** — compare `weighted_wr - win_rate` across all decks for meta positioning insight
+
+**Quality bar:** If a finding would be obvious to someone who's played 10 matches with the deck, it's not good enough. Target findings that require 700+ simulated games to discover.
