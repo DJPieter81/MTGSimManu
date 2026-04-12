@@ -1,0 +1,132 @@
+{
+  "timestamp": "2026-04-12T15:47:14.700934",
+  "type": "matrix",
+  "rankings": [
+    [
+      83.6,
+      "Boros Energy",
+      83.6
+    ],
+    [
+      82.1,
+      "Affinity",
+      74.7
+    ],
+    [
+      65.0,
+      "Izzet Prowess",
+      53.0
+    ],
+    [
+      65.0,
+      "Jeskai Blink",
+      49.4
+    ],
+    [
+      42.9,
+      "Pinnacle Affinity",
+      30.5
+    ],
+    [
+      32.1,
+      "Ruby Storm",
+      25.1
+    ],
+    [
+      27.1,
+      "Eldrazi Tron",
+      19.1
+    ],
+    [
+      2.1,
+      "Amulet Titan",
+      1.5
+    ]
+  ],
+  "names": [
+    "Boros Energy",
+    "Jeskai Blink",
+    "Eldrazi Tron",
+    "Ruby Storm",
+    "Affinity",
+    "Pinnacle Affinity",
+    "Izzet Prowess",
+    "Amulet Titan"
+  ],
+  "matrix": {
+    "Boros Energy|Jeskai Blink": 90,
+    "Jeskai Blink|Boros Energy": 10,
+    "Boros Energy|Eldrazi Tron": 90,
+    "Eldrazi Tron|Boros Energy": 10,
+    "Boros Energy|Ruby Storm": 90,
+    "Ruby Storm|Boros Energy": 10,
+    "Boros Energy|Affinity": 45,
+    "Affinity|Boros Energy": 55,
+    "Boros Energy|Pinnacle Affinity": 95,
+    "Pinnacle Affinity|Boros Energy": 5,
+    "Boros Energy|Izzet Prowess": 75,
+    "Izzet Prowess|Boros Energy": 25,
+    "Boros Energy|Amulet Titan": 100,
+    "Amulet Titan|Boros Energy": 0,
+    "Jeskai Blink|Eldrazi Tron": 100,
+    "Eldrazi Tron|Jeskai Blink": 0,
+    "Jeskai Blink|Ruby Storm": 70,
+    "Ruby Storm|Jeskai Blink": 30,
+    "Jeskai Blink|Affinity": 25,
+    "Affinity|Jeskai Blink": 75,
+    "Jeskai Blink|Pinnacle Affinity": 95,
+    "Pinnacle Affinity|Jeskai Blink": 5,
+    "Jeskai Blink|Izzet Prowess": 55,
+    "Izzet Prowess|Jeskai Blink": 45,
+    "Jeskai Blink|Amulet Titan": 100,
+    "Amulet Titan|Jeskai Blink": 0,
+    "Eldrazi Tron|Ruby Storm": 60,
+    "Ruby Storm|Eldrazi Tron": 40,
+    "Eldrazi Tron|Affinity": 0,
+    "Affinity|Eldrazi Tron": 100,
+    "Eldrazi Tron|Pinnacle Affinity": 5,
+    "Pinnacle Affinity|Eldrazi Tron": 95,
+    "Eldrazi Tron|Izzet Prowess": 15,
+    "Izzet Prowess|Eldrazi Tron": 85,
+    "Eldrazi Tron|Amulet Titan": 100,
+    "Amulet Titan|Eldrazi Tron": 0,
+    "Ruby Storm|Affinity": 20,
+    "Affinity|Ruby Storm": 80,
+    "Ruby Storm|Pinnacle Affinity": 30,
+    "Pinnacle Affinity|Ruby Storm": 70,
+    "Ruby Storm|Izzet Prowess": 10,
+    "Izzet Prowess|Ruby Storm": 90,
+    "Ruby Storm|Amulet Titan": 85,
+    "Amulet Titan|Ruby Storm": 15,
+    "Affinity|Pinnacle Affinity": 100,
+    "Pinnacle Affinity|Affinity": 0,
+    "Affinity|Izzet Prowess": 65,
+    "Izzet Prowess|Affinity": 35,
+    "Affinity|Amulet Titan": 100,
+    "Amulet Titan|Affinity": 0,
+    "Pinnacle Affinity|Izzet Prowess": 25,
+    "Izzet Prowess|Pinnacle Affinity": 75,
+    "Pinnacle Affinity|Amulet Titan": 100,
+    "Amulet Titan|Pinnacle Affinity": 0,
+    "Izzet Prowess|Amulet Titan": 100,
+    "Amulet Titan|Izzet Prowess": 0
+  },
+  "tier1": [
+    "Affinity",
+    "Boros Energy",
+    "Eldrazi Tron",
+    "Jeskai Blink",
+    "Ruby Storm"
+  ],
+  "tier2": [
+    "4c Omnath",
+    "Amulet Titan",
+    "Goryo's Vengeance",
+    "Izzet Prowess",
+    "Living End",
+    "Pinnacle Affinity"
+  ],
+  "n_games": 20,
+  "format": "bo3",
+  "symmetry_issues": []
+}
