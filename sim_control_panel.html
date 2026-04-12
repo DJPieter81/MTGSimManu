@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MTG Sim Control Panel</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #fafafa; --surface: #fff; --border: #e2e4e9; --text: #1a1a1a; --muted: #6b7280;
+    --accent: #7c3aed; --accent-light: #ede9fe; --accent-text: #5b21b6;
+    --blue: #2563eb; --blue-light: #dbeafe;
+    --green: #059669; --green-light: #d1fae5;
+    --amber: #d97706; --amber-light: #fef3c7;
+    --red: #dc2626; --red-light: #fee2e2;
+  }
+  body { font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); }
+  .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+  /* Header */
+  .header { background: #fff; padding: 24px 28px 18px; border-bottom: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,.04); }
+  .header h1 { font-size: 22px; font-weight: 800; letter-spacing: -.5px; display: flex; align-items: center; gap: 12px; }
+  .header h1 .icon { width: 32px; height: 32px; border-radius: 8px; background: var(--accent-light); display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .header .sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .format-bar { display: flex; gap: 8px; margin-top: 16px; }
+
+  /* Chips */
+  .chip { padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .15s;
+    border: 1.5px solid var(--border); background: var(--surface); color: var(--muted); }
+  .chip.active { border-color: var(--accent); background: var(--accent-light); color: var(--accent-text); }
+  .chip:hover { border-color: var(--accent); }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); padding: 0 28px; background: #fff; }
+  .tab { padding: 10px 20px; font-size: 13px; font-weight: 600; color: var(--muted); border-bottom: 2px solid transparent; cursor: pointer; transition: all .15s; }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab:hover { color: var(--accent); }
+
+  /* Body */
+  .body { padding: 20px 28px; max-width: 920px; }
+
+  /* Cards */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,.03); }
+  .label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; display: block; }
+
+  /* Stats grid */
+  .stats { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+  .stat-val { font-size: 28px; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+  .stat-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* Quick open */
+  .open-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .open-bar a { font-size: 13px; font-weight: 600; text-decoration: none; padding: 4px 12px; border-radius: 6px; transition: all .15s; }
+  .open-bar a:hover { filter: brightness(.9); }
+  .open-bar .blue { color: var(--blue); background: var(--blue-light); border: 1px solid #2563eb33; }
+  .open-bar .red { color: var(--red); background: var(--red-light); border: 1px solid #dc262633; }
+  .open-bar .green { color: var(--green); background: var(--green-light); border: 1px solid #05966933; }
+
+  /* History */
+  .hist-header { display: grid; grid-template-columns: 1fr 55px 55px 80px 180px; gap: 8px; padding: 9px 12px; font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .5px; }
+  .hist-row { display: grid; grid-template-columns: 1fr 55px 55px 80px 180px; gap: 8px; padding: 9px 12px; border-radius: 8px; align-items: center; font-size: 13px; }
+  .hist-row:nth-child(even) { background: #fafafa; }
+  .hist-row.latest { background: var(--amber-light); border-left: 3px solid var(--amber); }
+
+  /* Tags */
+  .tag { font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 700; letter-spacing: .4px; text-transform: uppercase; display: inline-block; }
+
+  /* Form elements */
+  select, input[type="number"] { background: #fff; border: 1.5px solid var(--border); border-radius: 8px; color: var(--text); padding: 7px 10px; font-size: 13px; outline: none; transition: border .15s; }
+  select:focus, input:focus { border-color: var(--accent); }
+  select { width: 100%; }
+  input[type="number"] { width: 80px; font-family: 'JetBrains Mono', monospace; }
+  .row { display: flex; gap: 12px; margin-bottom: 12px; }
+  .row > div { flex: 1; }
+  .row > div.narrow { flex: 0 0 100px; }
+
+  /* Deck grid */
+  .deck-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .deck-chip { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all .12s;
+    border: 1.5px solid #e5e7eb; background: #fff; color: var(--muted); }
+  .deck-chip.active { border-color: var(--accent); background: var(--accent-light); color: var(--accent-text); }
+  .deck-chip:hover { border-color: var(--accent); }
+
+  /* Checkboxes */
+  .check-row { display: flex; align-items: flex-start; cursor: pointer; padding: 6px 0; gap: 10px; }
+  .check-box { width: 18px; height: 18px; border-radius: 4px; border: 2px solid #d1d5db; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; transition: all .15s; }
+  .check-box.checked { border-color: var(--accent); background: var(--accent); }
+  .check-box.checked::after { content: '\2713'; color: #fff; font-size: 12px; font-weight: 800; }
+  .check-label { font-size: 13px; font-weight: 600; }
+  .check-desc { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+  /* Buttons */
+  .btn { background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 10px 24px; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: 0 1px 3px rgba(124,58,237,.3); transition: all .15s; }
+  .btn:hover { filter: brightness(.9); }
+  .btn-sec { background: #fff; color: var(--accent); border: 1.5px solid var(--border); border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .btn-sm { padding: 4px 12px; font-size: 11px; }
+
+  /* Prompt output */
+  .prompt-box { background: #1e1b2e; border: 1px solid #312e45; border-radius: 10px; padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #a5f3a0; white-space: pre-wrap; line-height: 1.6; margin-top: 12px; }
+
+  /* Artifacts */
+  .artifact-row { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px; background: var(--bg); margin-top: 6px; }
+  .artifact-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
+  /* Panels */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* Guide sub-select */
+  .guide-select { margin-left: 28px; margin-top: 6px; max-width: 260px; display: none; }
+  .guide-select.visible { display: block; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1><span class="icon">&#9876;</span> MTG Sim Control Panel</h1>
+  <div class="sub">Manage simulations, track runs, configure outputs</div>
+  <div class="format-bar">
+    <button class="chip active" data-format="legacy" onclick="switchFormat('legacy')">Legacy (<span id="legacy-count">36</span>)</button>
+    <button class="chip" data-format="modern" onclick="switchFormat('modern')">Modern (<span id="modern-count">14</span>)</button>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" data-tab="history" onclick="switchTab('history')">History</div>
+  <div class="tab" data-tab="newrun" onclick="switchTab('newrun')">New Run</div>
+  <div class="tab" data-tab="artifacts" onclick="switchTab('artifacts')">Artifacts</div>
+</div>
+
+<div class="body">
+  <!-- Quick open bar -->
+  <div class="card" style="padding:10px 16px; margin-bottom:12px">
+    <div class="open-bar">
+      <span style="font-size:13px;font-weight:700">Open:</span>
+      <span id="open-links"></span>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats" id="stats-row"></div>
+
+  <!-- History -->
+  <div class="panel active" id="panel-history">
+    <div class="card" id="history-table"></div>
+  </div>
+
+  <!-- New Run -->
+  <div class="panel" id="panel-newrun">
+    <div class="card">
+      <span class="label">Run Type</span>
+      <div style="display:flex;gap:8px;margin-bottom:16px" id="run-type-chips"></div>
+      <div id="run-config"></div>
+    </div>
+    <div class="card">
+      <span class="label">Post-Run Outputs</span>
+      <div id="output-checks"></div>
+    </div>
+    <button class="btn" onclick="generateTask()">Generate Task</button>
+    <div id="prompt-output" style="display:none">
+      <div style="font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.5px;margin-top:16px">TASK PROMPT</div>
+      <div class="prompt-box" id="prompt-text"></div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn-sec" onclick="copyPrompt()">Copy to clipboard</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Artifacts -->
+  <div class="panel" id="panel-artifacts"></div>
+</div>
+
+<script>
+// ── Data ──────────────────────────────────────────────────────────────
+const LEGACY_DECKS = [
+  "affinity","belcher","boros","bug","burn","cephalid","cloudpost","depths",
+  "dimir","dimir_b","dimir_flash","dnt","doomsday","eight_cast","eldrazi",
+  "elves","goblins","infect","lands","mardu","mono_black","ocelot","oops",
+  "painter","prison","reanimator","show","sneak_a","sneak_b","storm","tes",
+  "ur_aggro","ur_delver","ur_tempo","uwx","wan_shi_tong"
+];
+const MODERN_DECKS = [
+  "Boros Energy","Jeskai Blink","Ruby Storm","Affinity","Eldrazi Tron",
+  "Amulet Titan","Goryo's Vengeance","Domain Zoo","Living End",
+  "Izzet Prowess","Dimir Midrange","4c Omnath","4/5c Control","Azorius Control"
+];
+const LEGACY_RUNS = [
+  {file:"matrix_20260411_134630.json",decks:36,n:100,tag:"matrix",ts:"2026-04-11T13:46:30"},
+  {file:"matrix_20260411_131017.json",decks:36,n:100,tag:"matrix",ts:"2026-04-11T13:10:17"},
+  {file:"matrix_20260411_121738.json",decks:38,n:100,tag:"matrix",ts:"2026-04-11T12:17:38"},
+  {file:"matrix_20260411_104511.json",decks:38,n:100,tag:"matrix",ts:"2026-04-11T10:45:11"},
+  {file:"custom_matrix_20260410_223608.json",decks:38,n:50,tag:"custom",ts:"2026-04-10T22:36:08"},
+  {file:"custom_matrix_20260410_220305.json",decks:38,n:50,tag:"custom",ts:"2026-04-10T22:03:05"},
+  {file:"custom_matrix_20260410_213914.json",decks:38,n:50,tag:"custom",ts:"2026-04-10T21:39:14"},
+  {file:"custom_matrix_20260410_180102.json",decks:38,n:50,tag:"custom",ts:"2026-04-10T18:01:02"},
+  {file:"matrix_20260410_180012.json",decks:9,n:50,tag:"matrix",ts:"2026-04-10T18:00:12"},
+  {file:"matrix_20260406_163650.json",decks:16,n:200,tag:"matrix",ts:"2026-04-06T16:36:50"},
+  {file:"matrix_20260406_163112.json",decks:16,n:200,tag:"matrix",ts:"2026-04-06T16:31:12"},
+  {file:"matrix_20260406_162728.json",decks:16,n:50,tag:"matrix",ts:"2026-04-06T16:27:28"},
+  {file:"custom_matrix_20260406_012114.json",decks:17,n:200,tag:"custom",ts:"2026-04-06T01:21:14"},
+];
+const MODERN_RUNS = [
+  {file:"metagame_results.json",decks:8,n:10,tag:"matrix",ts:"2026-04-11T20:15:00"},
+];
+
+// ── State ─────────────────────────────────────────────────────────────
+let format = 'legacy';
+let runType = 'matrix';
+let selectedDecks = new Set(LEGACY_DECKS);
+let gamesPerPair = 50;
+let deck1 = '', deck2 = '', seed = 55555, guideDeck = '';
+let outputs = { dashboard: true, replays: false, audit: false, deckGuide: false };
+
+function getDecks() { return format === 'legacy' ? LEGACY_DECKS : MODERN_DECKS; }
+function getRuns() { return format === 'legacy' ? LEGACY_RUNS : MODERN_RUNS; }
+
+// ── Helpers ───────────────────────────────────────────────────────────
+function fmt(iso) {
+  if (!iso) return '\u2014';
+  const d = new Date(iso);
+  const ago = Math.floor((Date.now() - d) / 3600000);
+  const rel = ago < 1 ? '< 1h ago' : ago < 24 ? ago + 'h ago' : Math.floor(ago / 24) + 'd ago';
+  return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}) + ' ' +
+         d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}) + ' (' + rel + ')';
+}
+function tag(t, color, bgc) {
+  return `<span class="tag" style="background:${bgc};color:${color}">${t.toUpperCase()}</span>`;
+}
+function deckOptions(sel) {
+  return '<option value="">Select...</option>' + getDecks().map(d =>
+    `<option value="${d}" ${d===sel?'selected':''}>${d}</option>`).join('');
+}
+
+// ── Format / Tab switching ────────────────────────────────────────────
+function switchFormat(f) {
+  format = f;
+  selectedDecks = new Set(getDecks());
+  deck1 = ''; deck2 = ''; guideDeck = '';
+  document.querySelectorAll('[data-format]').forEach(el => el.classList.toggle('active', el.dataset.format === f));
+  render();
+}
+function switchTab(t) {
+  document.querySelectorAll('.tab').forEach(el => el.classList.toggle('active', el.dataset.tab === t));
+  document.querySelectorAll('.panel').forEach(el => el.classList.toggle('active', el.id === 'panel-' + t));
+}
+
+// ── Render ────────────────────────────────────────────────────────────
+function render() {
+  const runs = getRuns();
+  const latest = runs[0];
+  const decks = getDecks();
+
+  // Open links
+  const links = format === 'modern'
+    ? '<a class="blue" href="modern_meta_matrix_full.html">Modern Matrix Dashboard</a>'
+    : '<a class="blue" href="results/metagame_report.html">Legacy Meta Report</a>' +
+      '<a class="red" href="results/audit_dashboard.html">Audit Dashboard</a>' +
+      '<a class="green" href="results/game_replay.html">Game Replay</a>';
+  document.getElementById('open-links').innerHTML = links;
+
+  // Stats
+  const maxDecks = runs.length ? Math.max(...runs.map(r => r.decks)) : 0;
+  const maxN = runs.length ? Math.max(...runs.map(r => r.n)) : 0;
+  document.getElementById('stats-row').innerHTML = [
+    { l: 'Total runs', v: runs.length },
+    { l: 'Latest', v: latest ? fmt(latest.ts).split('(')[0].trim() : '\u2014', s: latest ? (fmt(latest.ts).match(/\(.*\)/)||[''])[0] : '', small: true },
+    { l: 'Biggest run', v: maxDecks, s: 'decks' },
+    { l: 'Max games/pair', v: maxN },
+  ].map(s => `<div class="card"><span class="label">${s.l}</span>
+    <div ${s.small ? 'class="mono" style="font-size:14px;color:var(--amber);font-weight:700"' : 'class="stat-val"'}>${s.v}</div>
+    ${s.s ? `<div class="stat-sub">${s.s}</div>` : ''}</div>`).join('');
+
+  // History
+  let hist = '<div class="hist-header"><span>FILE</span><span>DECKS</span><span>N</span><span>TYPE</span><span>DATE</span></div>';
+  runs.forEach((r, i) => {
+    const tc = r.tag === 'matrix' ? ['var(--blue)','var(--blue-light)'] : ['var(--amber)','var(--amber-light)'];
+    hist += `<div class="hist-row ${i===0?'latest':''}">
+      <span class="mono">${r.file.replace('.json','')}</span>
+      <span class="mono">${r.decks}</span>
+      <span class="mono">${r.n}</span>
+      ${tag(r.tag, tc[0], tc[1])}
+      <span style="font-size:12px;color:${i===0?'var(--amber)':'var(--muted)'}">${fmt(r.ts)}</span>
+    </div>`;
+  });
+  document.getElementById('history-table').innerHTML = hist;
+
+  // Run type chips
+  document.getElementById('run-type-chips').innerHTML = [
+    {k:'matrix',l:'Full Matrix'},{k:'matchup',l:'Head-to-Head'},{k:'bo3',l:'Single Bo3'},{k:'field',l:'Field Sweep'}
+  ].map(t => `<button class="chip ${runType===t.k?'active':''}" onclick="setRunType('${t.k}')">${t.l}</button>`).join('');
+
+  // Run config
+  let cfg = '';
+  if (runType === 'matrix') {
+    cfg += `<div class="row"><div><span class="label">Games per pair</span>
+      <input type="number" value="${gamesPerPair}" onchange="gamesPerPair=+this.value" min="5" step="5"></div>
+      <div style="text-align:right;padding-top:20px"><span class="mono" style="color:var(--accent);font-weight:700">${selectedDecks.size}</span>
+      <span style="font-size:12px;color:var(--muted)"> / ${decks.length} decks selected</span></div></div>`;
+    cfg += `<span class="label">Include Decks</span>
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <button class="btn-sec btn-sm" onclick="selectAll()">All</button>
+        <button class="btn-sec btn-sm" onclick="selectNone()">None</button></div>
+      <div class="deck-grid">${decks.map(d =>
+        `<span class="deck-chip ${selectedDecks.has(d)?'active':''}" onclick="toggleDeck('${d.replace(/'/g,"\\'")}')">${d}</span>`
+      ).join('')}</div>`;
+  } else if (runType === 'matchup' || runType === 'bo3') {
+    cfg += `<div class="row"><div><span class="label">Deck 1</span>
+      <select onchange="deck1=this.value">${deckOptions(deck1)}</select></div>
+      <div><span class="label">Deck 2</span>
+      <select onchange="deck2=this.value">${deckOptions(deck2)}</select></div>`;
+    if (runType === 'bo3') cfg += `<div class="narrow"><span class="label">Seed</span>
+      <input type="number" value="${seed}" onchange="seed=+this.value"></div>`;
+    else cfg += `<div class="narrow"><span class="label">Games</span>
+      <input type="number" value="${gamesPerPair}" onchange="gamesPerPair=+this.value" min="5"></div>`;
+    cfg += '</div>';
+  } else if (runType === 'field') {
+    cfg += `<div class="row"><div><span class="label">Deck</span>
+      <select onchange="deck1=this.value">${deckOptions(deck1)}</select></div>
+      <div class="narrow"><span class="label">Games</span>
+      <input type="number" value="${gamesPerPair}" onchange="gamesPerPair=+this.value" min="5"></div></div>`;
+  }
+  document.getElementById('run-config').innerHTML = cfg;
+
+  // Output checkboxes
+  const checks = [
+    {k:'dashboard', l:'Rebuild metagame dashboard', d:'Heatmap matrix, tier chips, weighted WR'},
+    {k:'replays', l:'Generate outlier replays', d:'Bo3 HTML replays for top 3 suspicious matchups'},
+    {k:'audit', l:'Run meta audit', d:'Outlier detection, strategy audit, audit_dashboard.html'},
+  ];
+  let chk = checks.map(o => `<div class="check-row" onclick="toggleOutput('${o.k}')">
+    <div class="check-box ${outputs[o.k]?'checked':''}"></div>
+    <div><div class="check-label">${o.l}</div><div class="check-desc">${o.d}</div></div></div>`).join('');
+
+  chk += `<div style="border-top:1px solid var(--border);margin-top:8px;padding-top:8px">
+    <div class="check-row" onclick="toggleOutput('deckGuide')">
+      <div class="check-box ${outputs.deckGuide?'checked':''}"></div>
+      <div><div class="check-label">Generate deck guide</div>
+      <div class="check-desc">Mulligan analysis, matchup guide, sideboard plans, hand archetypes</div></div></div>
+    <div class="guide-select ${outputs.deckGuide?'visible':''}">
+      <span class="label" style="margin-bottom:4px">Deck to guide</span>
+      <select onchange="guideDeck=this.value">${deckOptions(guideDeck)}</select>
+    </div></div>`;
+  document.getElementById('output-checks').innerHTML = chk;
+
+  // Artifacts
+  let art = '<div class="card"><span class="label">Dashboards & Reports</span>';
+  const artifacts = format === 'modern'
+    ? [{n:'modern_meta_matrix_full.html',t:'Matrix',c:'var(--blue)',bg:'var(--blue-light)'}]
+    : [{n:'audit_dashboard.html',t:'Audit',c:'var(--red)',bg:'var(--red-light)'},
+       {n:'game_replay.html',t:'Replay',c:'var(--green)',bg:'var(--green-light)'},
+       {n:'metagame_report.html',t:'Report',c:'var(--blue)',bg:'var(--blue-light)'},
+       {n:'player_guide.html',t:'Guide',c:'var(--accent)',bg:'var(--accent-light)'}];
+  artifacts.forEach(a => {
+    art += `<div class="artifact-row"><div class="artifact-dot" style="background:${a.c}"></div>
+      <span class="mono" style="flex:1">${a.n}</span>${tag(a.t,a.c,a.bg)}</div>`;
+  });
+  art += '</div><div class="card"><span class="label">Data Files</span>';
+  const files = format === 'modern'
+    ? [{n:'metagame_14deck.jsx',d:'14-deck data (wins, matchup_cards, deck_cards)'},{n:'metagame_results.json',d:'Latest matrix results'}]
+    : [{n:latest?.file||'matrix_*.json',d:`Latest: ${latest?.decks||'?'}d x ${latest?.n||'?'}g`}];
+  files.forEach(a => {
+    art += `<div class="artifact-row"><span class="mono" style="flex:1;color:var(--muted)">${a.n}</span>
+      <span style="font-size:11px;color:var(--muted)">${a.d}</span></div>`;
+  });
+  art += '</div>';
+  document.getElementById('panel-artifacts').innerHTML = art;
+
+  document.getElementById('prompt-output').style.display = 'none';
+}
+
+// ── Actions ───────────────────────────────────────────────────────────
+function setRunType(t) { runType = t; render(); }
+function toggleDeck(d) { selectedDecks.has(d) ? selectedDecks.delete(d) : selectedDecks.add(d); render(); }
+function selectAll() { selectedDecks = new Set(getDecks()); render(); }
+function selectNone() { selectedDecks.clear(); render(); }
+function toggleOutput(k) { outputs[k] = !outputs[k]; render(); }
+
+function generateTask() {
+  const repo = format === 'legacy'
+    ? 'MTGSimClaude (Legacy) at ~/MTGSimManu/MTGSimClaude'
+    : 'MTGSimManu (Modern) at ~/MTGSimManu/MTGSimManu/MTGSimManu';
+  const deckList = [...selectedDecks];
+  const allDecks = getDecks();
+  let step = 1, lines = [`Run simulation in ${repo}:\n`];
+
+  if (runType === 'matrix') {
+    const deckArg = deckList.length === allDecks.length ? '' : ' ' + deckList.join(' ');
+    lines.push(`${step++}. Run: python3 run_meta.py --matrix${deckArg} -n ${gamesPerPair}${format==='modern'?' --save':''}`);
+    lines.push(`   Decks (${deckList.length}): ${deckList.join(', ')}`);
+  } else if (runType === 'matchup') {
+    lines.push(`${step++}. Run: python3 run_meta.py --matchup ${deck1||'deck1'} ${deck2||'deck2'} -n ${gamesPerPair}`);
+  } else if (runType === 'bo3') {
+    const flag = format === 'legacy' ? '--verbose' : '--bo3';
+    lines.push(`${step++}. Run: python3 run_meta.py ${flag} ${deck1||'deck1'} ${deck2||'deck2'} -s ${seed}`);
+  } else if (runType === 'field') {
+    lines.push(`${step++}. Run: python3 run_meta.py --field ${deck1||'deck1'} -n ${gamesPerPair}`);
+  }
+
+  if (outputs.dashboard) lines.push(`${step++}. Rebuild the metagame matrix dashboard (use /mtg-meta-matrix skill)`);
+  if (outputs.replays) lines.push(`${step++}. Generate Bo3 replays for the 3 most interesting outlier matchups (use /mtg-bo3-replayer-v2 skill, seeds 80000+)`);
+  if (outputs.audit) lines.push(`${step++}. Run meta_audit.py to generate audit_dashboard.html`);
+  if (outputs.deckGuide) lines.push(`${step++}. Generate a comprehensive deck guide for "${guideDeck||'selected deck'}" (use /mtg-deck-guide skill). Include mulligan analysis, matchup guide, sideboard plans, and key hand archetypes.`);
+  lines.push('\nPresent all generated files when done.');
+
+  const prompt = lines.join('\n');
+  document.getElementById('prompt-text').textContent = prompt;
+  document.getElementById('prompt-output').style.display = 'block';
+}
+
+function copyPrompt() {
+  const text = document.getElementById('prompt-text').textContent;
+  navigator.clipboard?.writeText(text).then(() => {
+    const btn = document.querySelector('#prompt-output .btn-sec');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy to clipboard', 1500);
+  });
+}
+
+// ── Init ──────────────────────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>
