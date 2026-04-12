@@ -81,5 +81,7 @@
     "Teferi, Time Raveler",
     "Wrenn and Six"
   ],
-  "reactive_only": []
+  "reactive_only": [
+    "Orim's Chant"
+  ]
 }
