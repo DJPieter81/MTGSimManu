@@ -307,6 +307,12 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
             projected.my_creature_count = 0
             projected.my_evasion_power = 0
             projected.my_lifelink_power = 0
+            # Wrath also destroys artifacts/enchantments — bonus vs artifact-heavy boards
+            if game:
+                opp = game.players[1 - player_idx]
+                opp_nonland = sum(1 for c in opp.battlefield if not c.template.is_land)
+                if opp_nonland >= 4:
+                    projected.opp_life += 5  # bonus: crippling a wide board
 
     # Burn damage to face
     if 'burn' in tags or ('damage' in (t.oracle_text or '').lower()):
