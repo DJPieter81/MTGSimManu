@@ -558,3 +558,17 @@ git commit -m "data: auto-generated replay logs for outlier/swing matchups"
 ### Files produced per replay
 - `replays/{d1}_vs_{d2}_s{SEED}.txt` — raw Bo3 log (committed to repo)
 - `/mnt/user-data/outputs/replay_{...}.html` — interactive HTML viewer (output to user)
+
+## GitHub Pages — Link Rules
+
+Base URL: `https://djpieter81.github.io/MTGSimManu/`
+
+All links in `templates/reference_showcase.html` MUST be absolute GitHub Pages URLs — not relative. The showcase lives in `templates/`, so relative links resolve to `templates/filename.html` which 404s.
+
+Current product links:
+- Matrix: `https://djpieter81.github.io/MTGSimManu/modern_meta_matrix_full.html`
+- Deck Guide: `https://djpieter81.github.io/MTGSimManu/templates/reference_deck_guide.html`
+- Replay: `https://djpieter81.github.io/MTGSimManu/replays/replay_boros_vs_zoo.html`
+- Legacy: `https://djpieter81.github.io/MTGSimClaude/results/mtgsimclaude_showcase.html`
+
+**Any new HTML intended for live viewing must be committed to the repo** — `/mnt/user-data/outputs/` is local only.
