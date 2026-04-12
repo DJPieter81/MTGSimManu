@@ -255,6 +255,27 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
             projected.my_power += 2
             projected.my_creature_count += 1
 
+    # Reanimation — bring back best creature from graveyard
+    if 'reanimate' in tags and game:
+        me = game.players[player_idx]
+        from engine.cards import CardType
+        gy_creatures = [c for c in me.graveyard
+                       if CardType.CREATURE in c.template.card_types]
+        if gy_creatures:
+            best = max(gy_creatures, key=lambda c: (c.template.power or 0) + (c.template.toughness or 0))
+            p = best.template.power or 0
+            tough = best.template.toughness or 0
+            projected.my_power += p
+            projected.my_toughness += tough
+            projected.my_creature_count += 1
+            projected.my_gy_creatures = max(0, projected.my_gy_creatures - 1)
+            kws = {kw.value if hasattr(kw, 'value') else str(kw).lower()
+                   for kw in getattr(best.template, 'keywords', set())}
+            if kws & {'flying', 'menace', 'trample'}:
+                projected.my_evasion_power += p
+            if 'lifelink' in kws:
+                projected.my_lifelink_power += p
+
     # Removal — kills best opponent creature
     if 'removal' in tags and not 'board_wipe' in tags:
         if snap.opp_creature_count > 0 and game:
