@@ -151,72 +151,48 @@ const MODERN_DECKS = [
 const LEGACY_BASE = "https://djpieter81.github.io/MTGSimClaude";
 const MODERN_BASE = "https://djpieter81.github.io/MTGSimManu";
 
-// ── Run history (regenerate: python3 scan_results.py) ────────────────
-const LEGACY_HISTORY = [
-  {file:"matrix_20260411_134630.json",tag:"matrix",type:"matrix",ts:"2026-04-11T13:46:30",decks:36,n:100,path:"results/matrix_20260411_134630.json"},
-  {file:"matrix_20260411_131017.json",tag:"matrix",type:"matrix",ts:"2026-04-11T13:10:17",decks:36,n:100,path:"results/matrix_20260411_131017.json"},
-  {file:"matrix_20260411_121738.json",tag:"matrix",type:"matrix",ts:"2026-04-11T12:17:38",decks:38,n:100,path:"results/matrix_20260411_121738.json"},
-  {file:"matrix_20260411_104511.json",tag:"matrix",type:"matrix",ts:"2026-04-11T10:45:11",decks:38,n:100,path:"results/matrix_20260411_104511.json"},
-  {file:"custom_matrix_20260410_223608.json",tag:"custom",type:"matrix",ts:"2026-04-10T22:36:08",decks:38,n:50,path:"results/custom_matrix_20260410_223608.json"},
-  {file:"custom_matrix_20260410_220305.json",tag:"custom",type:"matrix",ts:"2026-04-10T22:03:05",decks:38,n:50,path:"results/custom_matrix_20260410_220305.json"},
-  {file:"custom_matrix_20260410_213914.json",tag:"custom",type:"matrix",ts:"2026-04-10T21:39:14",decks:38,n:50,path:"results/custom_matrix_20260410_213914.json"},
-  {file:"custom_matrix_20260410_180102.json",tag:"custom",type:"matrix",ts:"2026-04-10T18:01:02",decks:38,n:50,path:"results/custom_matrix_20260410_180102.json"},
-  {file:"matrix_20260410_180012.json",tag:"matrix",type:"matrix",ts:"2026-04-10T18:00:12",decks:9,n:50,path:"results/matrix_20260410_180012.json"},
-  {file:"matrix_20260406_163650.json",tag:"matrix",type:"matrix",ts:"2026-04-06T16:36:50",decks:16,n:200,path:"results/matrix_20260406_163650.json"},
-  {file:"matrix_20260406_163112.json",tag:"matrix",type:"matrix",ts:"2026-04-06T16:31:12",decks:16,n:200,path:"results/matrix_20260406_163112.json"},
-  {file:"matrix_20260406_162728.json",tag:"matrix",type:"matrix",ts:"2026-04-06T16:27:28",decks:16,n:50,path:"results/matrix_20260406_162728.json"},
-  {file:"custom_matrix_20260406_012114.json",tag:"custom",type:"matrix",ts:"2026-04-06T01:21:14",decks:17,n:200,path:"results/custom_matrix_20260406_012114.json"},
-  {file:"replay_oops_vs_dimir_flash.html",tag:"replay",type:"replay",ts:"2026-04-12T09:14:24",d1:"oops",d2:"dimir_flash",path:"results/replay_oops_vs_dimir_flash.html",size_kb:70.0},
-  {file:"game_replay.html",tag:"replay",type:"replay",ts:"2026-04-12T06:58:51",path:"results/game_replay.html",size_kb:40.8},
-  {file:"audit_dashboard.html",tag:"audit",type:"audit",ts:"2026-04-12T06:58:51",path:"results/audit_dashboard.html",size_kb:134.7},
-  {file:"bo3_ur_delver_vs_dimir.txt",tag:"bo3",type:"bo3",ts:"2026-04-12T06:58:51",d1:"ur_delver",d2:"dimir",path:"results/bo3_ur_delver_vs_dimir.txt",size_kb:67.9},
-  {file:"trace: burn vs dimir (6 runs)",tag:"trace",type:"trace",ts:"2026-04-11T14:15:51",d1:"burn",d2:"dimir",path:"results/trace_burn_vs_dimir_s100_20260411_141551.txt",count:6},
-  {file:"trace: burn vs dnt (11 runs)",tag:"trace",type:"trace",ts:"2026-04-10T21:45:24",d1:"burn",d2:"dnt",path:"results/trace_burn_vs_dnt_s5_20260410_214524.txt",count:11},
-  {file:"trace: bug vs storm (1 run)",tag:"trace",type:"trace",ts:"2026-04-12T06:58:51",d1:"bug",d2:"storm",path:"results/trace_bug_vs_storm_s42.txt",count:1},
-  {file:"trace: bug vs burn (1 run)",tag:"trace",type:"trace",ts:"2026-04-10T22:25:10",d1:"bug",d2:"burn",path:"results/trace_bug_vs_burn_s5_20260410_222510.txt",count:1},
-  {file:"trace: bug vs depths (1 run)",tag:"trace",type:"trace",ts:"2026-04-11T14:12:09",d1:"bug",d2:"depths",path:"results/trace_bug_vs_depths_s103_20260411_141209.txt",count:1},
-  {file:"trace: burn vs lands (1 run)",tag:"trace",type:"trace",ts:"2026-04-10T20:38:25",d1:"burn",d2:"lands",path:"results/trace_burn_vs_lands_s5_20260410_203825.txt",count:1},
-  {file:"trace: oops vs burn (1 run)",tag:"trace",type:"trace",ts:"2026-04-10T20:22:38",d1:"oops",d2:"burn",path:"results/trace_oops_vs_burn_s5_20260410_202238.txt",count:1},
-  {file:"trace: oops vs dimir (1 run)",tag:"trace",type:"trace",ts:"2026-04-10T22:04:58",d1:"oops",d2:"dimir",path:"results/trace_oops_vs_dimir_s2_20260410_220458.txt",count:1},
-  {file:"trace: oops vs dnt (1 run)",tag:"trace",type:"trace",ts:"2026-04-11T14:07:13",d1:"oops",d2:"dnt",path:"results/trace_oops_vs_dnt_s106_20260411_140713.txt",count:1},
-  {file:"trace: storm vs burn (1 run)",tag:"trace",type:"trace",ts:"2026-04-10T20:22:48",d1:"storm",d2:"burn",path:"results/trace_storm_vs_burn_s3_20260410_202248.txt",count:1},
-  {file:"trace: storm vs dimir (4 runs)",tag:"trace",type:"trace",ts:"2026-04-11T14:14:10",d1:"storm",d2:"dimir",path:"results/trace_storm_vs_dimir_s108_20260411_141410.txt",count:4},
-  {file:"trace: infect vs dimir (3 runs)",tag:"trace",type:"trace",ts:"2026-04-10T22:23:09",d1:"infect",d2:"dimir",path:"results/trace_infect_vs_dimir_s5_20260410_222309.txt",count:3},
-  {file:"trace: reanimator vs dimir (5 runs)",tag:"trace",type:"trace",ts:"2026-04-10T22:25:27",d1:"reanimator",d2:"dimir",path:"results/trace_reanimator_vs_dimir_s5_20260410_222515.txt",count:5},
-  {file:"trace: show vs bug (2 runs)",tag:"trace",type:"trace",ts:"2026-04-11T14:16:12",d1:"show",d2:"bug",path:"results/trace_show_vs_bug_s104_20260411_141612.txt",count:2},
-  {file:"trace: ur_tempo vs bug (3 runs)",tag:"trace",type:"trace",ts:"2026-04-10T22:26:53",d1:"ur_tempo",d2:"bug",path:"results/trace_ur_tempo_vs_bug_s3_20260410_222640.txt",count:3},
-  {file:"trace: ur_tempo vs dimir (2 runs)",tag:"trace",type:"trace",ts:"2026-04-10T22:18:17",d1:"ur_tempo",d2:"dimir",path:"results/trace_ur_tempo_vs_dimir_s7_20260410_221817.txt",count:2},
-  {file:"trace: uwx vs burn (5 runs)",tag:"trace",type:"trace",ts:"2026-04-10T22:29:18",d1:"uwx",d2:"burn",path:"results/trace_uwx_vs_burn_s7_20260410_222918.txt",count:5},
-  {file:"trace: lands vs dimir (1 run)",tag:"trace",type:"trace",ts:"2026-04-10T22:08:11",d1:"lands",d2:"dimir",path:"results/trace_lands_vs_dimir_s0_20260410_220811.txt",count:1},
-  {file:"metagame_report.html",tag:"report",type:"report",ts:"2026-04-12T06:58:51",path:"results/metagame_report.html",size_kb:29.6},
-  {file:"player_guide.html",tag:"guide",type:"report",ts:"2026-04-12T06:58:51",path:"results/player_guide.html",size_kb:29.7},
-  {file:"meta_deck_profiles.txt",tag:"profile",type:"report",ts:"2026-04-12T06:58:51",path:"results/meta_deck_profiles.txt",size_kb:40.0},
-  {file:"expanded_sweep.json",tag:"sweep",type:"sweep",ts:"2026-04-12T06:58:51",path:"results/expanded_sweep.json"},
-  {file:"overnight_sweep.json",tag:"sweep",type:"sweep",ts:"2026-04-12T06:58:51",path:"results/overnight_sweep.json"},
-];
-
-const MODERN_HISTORY = [
-  {file:"metagame_results.json",tag:"matrix",type:"matrix",ts:"2026-04-11T20:15:00",decks:8,n:10,path:"metagame_results.json"},
-  {file:"boros_energy_vs_domain_zoo_s55555.txt",tag:"bo3",type:"bo3-log",ts:"2026-04-12T09:09:00",d1:"Boros Energy",d2:"Domain Zoo",seed:"55555",path:"replays/boros_energy_vs_domain_zoo_s55555.txt",size_kb:61.7},
-  {file:"azorius_wst_vs_boros_s55555.txt",tag:"bo3",type:"bo3-log",ts:"2026-04-12T09:09:00",d1:"Azorius Control",d2:"Boros Energy",seed:"55555",path:"replays/azorius_wst_vs_boros_s55555.txt",size_kb:37.4},
-  {file:"ruby_storm_vs_affinity_s55555.txt",tag:"bo3",type:"bo3-log",ts:"2026-04-12T09:08:00",d1:"Ruby Storm",d2:"Affinity",seed:"55555",path:"replays/ruby_storm_vs_affinity_s55555.txt",size_kb:25.3},
-  {file:"eldrazi_tron_vs_izzet_prowess_s55555.txt",tag:"bo3",type:"bo3-log",ts:"2026-04-11T18:13:00",d1:"Eldrazi Tron",d2:"Izzet Prowess",seed:"55555",path:"replays/eldrazi_tron_vs_izzet_prowess_s55555.txt",size_kb:60.4},
-  {file:"jeskai_blink_vs_affinity_s55555.txt",tag:"bo3",type:"bo3-log",ts:"2026-04-11T18:13:00",d1:"Jeskai Blink",d2:"Affinity",seed:"55555",path:"replays/jeskai_blink_vs_affinity_s55555.txt",size_kb:33.3},
-  {file:"affinity_vs_domain_zoo_s55555.txt",tag:"bo3",type:"bo3-log",ts:"2026-04-11T18:13:00",d1:"Affinity",d2:"Domain Zoo",seed:"55555",path:"replays/affinity_vs_domain_zoo_s55555.txt",size_kb:37.0},
-  {file:"affinity_vs_izzet_prowess_s55555.txt",tag:"bo3",type:"bo3-log",ts:"2026-04-11T18:13:00",d1:"Affinity",d2:"Izzet Prowess",seed:"55555",path:"replays/affinity_vs_izzet_prowess_s55555.txt",size_kb:26.2},
-];
+// ── Run history — loaded dynamically from run_history.json, fallback to empty ──
+// Regenerate: python3 scan_results.py
+let LEGACY_HISTORY = [];
+let MODERN_HISTORY = [];
+let _historyLoaded = { legacy: false, modern: false };
 
 const TAG_COLORS = {
   matrix:['var(--blue)','var(--blue-light)'], custom:['var(--amber)','var(--amber-light)'],
-  trace:['var(--teal)','var(--teal-light)'], bo3:['var(--green)','var(--green-light)'],
-  replay:['var(--accent)','var(--accent-light)'], audit:['var(--red)','var(--red-light)'],
+  'bo3-matrix':['var(--blue)','var(--blue-light)'],
+  trace:['var(--teal)','var(--teal-light)'], 'graded-trace':['var(--teal)','var(--teal-light)'],
+  bo3:['var(--green)','var(--green-light)'],
+  replay:['var(--accent)','var(--accent-light)'],
+  dashboard:['var(--blue)','var(--blue-light)'],
+  audit:['var(--red)','var(--red-light)'],
   report:['var(--pink)','var(--pink-light)'], guide:['var(--pink)','var(--pink-light)'],
+  showcase:['var(--accent)','var(--accent-light)'],
   profile:['var(--muted)','#f3f4f6'], sweep:['var(--amber)','var(--amber-light)'],
+  data:['var(--muted)','#f3f4f6'],
 };
+
+// ── Dynamic history loader ──
+async function loadHistory(fmt) {
+  if (_historyLoaded[fmt]) return;
+  const base = fmt === 'legacy' ? LEGACY_BASE : MODERN_BASE;
+  try {
+    const res = await fetch(base + '/run_history.json?_=' + Date.now());
+    if (res.ok) {
+      const data = await res.json();
+      if (fmt === 'legacy') LEGACY_HISTORY = data.runs || [];
+      else MODERN_HISTORY = data.runs || [];
+      _historyLoaded[fmt] = true;
+      console.log(`Loaded ${data.count} ${fmt} history entries`);
+    }
+  } catch(e) { console.warn('Failed to load ' + fmt + ' history:', e); }
+  render();
+}
 
 const FILTER_TYPES = [
   {k:'all',l:'All'},{k:'matrix',l:'Matrix'},{k:'trace',l:'Traces'},{k:'bo3',l:'Bo3'},
-  {k:'replay',l:'Replays'},{k:'audit',l:'Audit'},{k:'report',l:'Reports'},{k:'sweep',l:'Sweeps'},
+  {k:'replay',l:'Replays'},{k:'dashboard',l:'Dashboards'},{k:'audit',l:'Audit'},
+  {k:'report',l:'Reports'},{k:'guide',l:'Guides'},{k:'showcase',l:'Showcase'},
+  {k:'sweep',l:'Sweeps'},{k:'data',l:'Data'},
 ];
 
 // ── State ─────────────────────────────────────────────────────────────
@@ -269,6 +245,7 @@ function switchFormat(f) {
   format = f; selectedDecks = new Set(getDecks());
   deck1 = ''; deck2 = ''; guideDeck = ''; histFilter = 'all';
   document.querySelectorAll('[data-format]').forEach(el => el.classList.toggle('active', el.dataset.format === f));
+  loadHistory(f);
   render();
 }
 function switchTab(t) {
@@ -284,11 +261,23 @@ function render() {
 
   // Type counts
   const typeCounts = {};
-  allRuns.forEach(r => { const k = r.type === 'bo3-log' ? 'bo3' : r.type; typeCounts[k] = (typeCounts[k]||0) + 1; });
+  allRuns.forEach(r => {
+    let k = r.type;
+    if (k === 'bo3-log') k = 'bo3';
+    if (r.tag === 'graded-trace') k = 'trace';
+    if (r.tag === 'custom' || r.tag === 'bo3-matrix') k = 'matrix';
+    if (r.tag === 'profile') k = 'report';
+    typeCounts[k] = (typeCounts[k]||0) + 1;
+  });
 
   const filtered = histFilter === 'all' ? allRuns :
     allRuns.filter(r => r.type === histFilter || r.tag === histFilter ||
-      (histFilter === 'bo3' && (r.type === 'bo3' || r.type === 'bo3-log')));
+      (histFilter === 'bo3' && (r.type === 'bo3' || r.type === 'bo3-log')) ||
+      (histFilter === 'matrix' && (r.type === 'matrix' || r.tag === 'bo3-matrix' || r.tag === 'custom')) ||
+      (histFilter === 'trace' && (r.tag === 'trace' || r.tag === 'graded-trace')) ||
+      (histFilter === 'dashboard' && r.type === 'dashboard') ||
+      (histFilter === 'report' && (r.type === 'report' || r.tag === 'profile')) ||
+      (histFilter === 'guide' && (r.type === 'guide' || r.tag === 'guide')));
   const matrixRuns = allRuns.filter(r => r.type === 'matrix');
   const latest = allRuns[0];
 
@@ -581,6 +570,9 @@ function renderExec() {
 }
 
 render();
+// Load history dynamically from GitHub Pages on startup
+loadHistory('legacy');
+loadHistory('modern');
 </script>
 </body>
 </html>
