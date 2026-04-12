@@ -1,6 +1,6 @@
 # MTGSimManu — Project Status & Planning Reference
 
-> **Last updated:** 2026-04-12
+> **Last updated:** 2026-04-12 (session 2)
 > **Purpose:** Single-source-of-truth for Claude Code planning mode. Read this before any session.
 > **Sister project:** MTGSimClaude (Legacy format, 38 decks, see LEGACY_MODERNISATION_PROPOSAL.md)
 
@@ -89,13 +89,8 @@ TurnPlanner: evaluate 5 orderings          # turn_planner.py
 Pick highest EV → execute → log            # strategic_logger.py
 ```
 
-### Known AI weakness: generic scoring loses deck-specific knowledge
-The _score_spell() function uses archetype weights but has no per-card overrides. This causes:
-- Planeswalkers score ~0 EV (no CardType.PLANESWALKER case) → P0 bug
-- Storm rituals penalised mid-chain (generic scorer sees "no board impact") → P1 bug
-- Wrath cast on empty board (penalty too soft) → P0 bug
-
-**Fix pattern (from Legacy comparison):** Add `card_ev_overrides` to gameplan JSON. EVPlayer reads overrides before generic scoring. For combo turns: when GoalEngine.current_goal is combo and readiness > threshold, bypass _score_spell() and use combo_calc.py exclusively.
+### Key fix (session 2): token removal bug
+The `removed` EVSnapshot was subtracting ETB token power alongside the removed creature — tokens persist on battlefield after their parent is removed. Fixing this moved Orcish Bowmasters from -32.7 → +14.7 EV.
 
 ---
 
@@ -144,41 +139,117 @@ from engine.card_database import CardDatabase  # singleton pattern
 
 ## 6. AI strategy accuracy
 
-**Overall grade: C-** (up from D+) · 6-expert LLM judge panel · 210 games
+**Overall grade: C** (up from C-, up from D+) — session 2 fixes
 
 | Domain | Grade | | Domain | Grade |
 |--------|-------|-|--------|-------|
-| Rules & engine | B | | Mana & sequencing | C |
-| Combat & threats | B- | | Combo & storm | C |
-| Mulligan & openers | C+ | | Control & interaction | D |
+| Rules & engine | B+ | | Mana & sequencing | C+ |
+| Combat & threats | B | | Combo & storm | C+ |
+| Mulligan & openers | C+ | | Control & interaction | C- |
 
-### Missing validation (learned from Legacy)
-
-| Validation | Action needed |
-|------------|---------------|
-| Spot-check vs consensus | Pick 10 matchups, compare to mtgtop8 expected ranges, document pass/fail |
-| Symmetry test | Run both orderings per matchup, flag |d1+d2−100| > 10% |
-| Noise floor | Run 5× same matchup at n=50, measure σ |
+### WR improvements from session 2 fixes
+| Matchup | Before | After | Root cause fixed |
+|---------|--------|-------|-----------------|
+| Affinity vs Izzet Prowess | 97% | ~60-85% | DRC PROWESS misclassification → surveil/delirium |
+| 4c Omnath vs Boros | 10% | 30% | Wrong decklist + Risen Reef ETB |
+| Dimir vs Boros | broken | 50% | Token removed-state bug |
+| Amulet Titan vs Boros | 15% | ~23% | Amulet/Spelunking/bounce land ETBs |
 
 ---
 
 ## 7. Known bugs
 
-### P0
-1. No planeswalker EV scoring → `ai/ev_player.py:_score_spell()` → 4c Omnath 29% WR
-2. Wrath on empty board → `ai/ev_evaluator.py:272-275` → hard gate needed
-3. Ocelot Pride energy on ETB → Card DB oracle wrong
-4. Wrath of Skies X=0 kills all → Engine bug
+### P0 — FIXED (session 2)
+| # | Bug | Fix | Commit |
+|---|-----|-----|--------|
+| 1 | Wrath of Skies uses stored energy not cast X | Use `item.x_value` | `ba15c11` |
+| 2 | Ocelot Pride energy on ETB (wrong trigger + oracle) | Noncreature cast trigger; combat damage Cat token | `ba15c11` |
+| 3 | DRC misclassified as PROWESS → surveil/delirium never fires | Fix oracle detection; implement surveil GY bin | `eec7ec8` |
+| 4 | EE double ETB (X-counter + sunburst both fire) | Gate X-counter path to cards without dedicated ETB handlers | `1c38354` |
 
-### P1
-5. Storm ritual 20x mid-chain → `ai/ev_player.py:428` → change to 5.0
-6. Affinity 82% → add artifact hate to sideboards
-7. Ephemerate no target validation → `game_state.py`
-8. Evasion/lifelink not subtracted in removed state → `ai/ev_evaluator.py:491-492`
+### P1 — FIXED (session 2)
+| # | Bug | Fix | Commit |
+|---|-----|-----|--------|
+| 5 | Token power wrongly subtracted in removed state | Tokens persist when parent removed | `9aff147` |
+| 6 | Ragavan never attacks (no trigger bonus) | +1.5 EV combat trigger bonus | `704a671` |
+| 7 | Storm tutor 20x mid-chain penalty | 20x → 5x | `704a671` |
+| 8 | Holdback only fires when opp_power > 0 | Also fires vs creatureless spell decks | `704a671` |
+| 9 | Sanctifier double "Resolve" log | Gate log to SPELL items only | `53d372a` |
+| 10 | Ephemerate castable with no friendly creatures | `can_cast` blink tag check | `53d372a` |
+| 11 | Duplicate Chalice no penalty | -8.0 EV if same name already on battlefield | `53d372a` |
+| 12 | `_resolve_sac_effect` crash (undefined variables) | Fixed scoping | `53d372a` |
+
+### P2 — FIXED (session 2)
+| # | Bug | Fix | Commit |
+|---|-----|-----|--------|
+| 13 | CMC 2 removal scaling 0.6 too high | 0.6 → 0.4 | `9aff147` |
+| 14 | Evasion creatures over-penalised | 50% damage-removal discount for conditional flyers | `9aff147` |
+| 15 | Dovin's Veto positive EV vs aggro | Cap EV vs creature-heavy low-hand boards | `9aff147` |
+| 16 | Tron no assembly bonus | +3/+8/+20 per piece via Urza's subtype | `705ea0b` |
+| 17 | `rmv=` trace display not matching main path | Detailed path now mirrors main path scaling | `9aff147` |
+
+### Hardcoding removed (session 2)
+| Was hardcoded | Now uses |
+|---|---|
+| `permanent.name == 'Ocelot Pride'` (2 places) | Oracle: `'{e}' in oracle` + `'noncreature spell'` / `'combat damage'` pattern |
+| `tron_lands = {'Urza\'s Tower', ...}` | `"Urza's" in land.template.subtypes` |
+| `DELIRIUM_CREATURES = {"Dragon's Rage Channeler"}` | `template.power_scales_with == "delirium"` (oracle-derived at load) |
+| `TARMOGOYF_CREATURES`, `DOMAIN_POWER_CREATURES`, `GRAVEYARD_SCALING_CREATURES` | `template.power_scales_with` field |
+| `if name == "Construct Token"` | `'artifact you control' in oracle` |
+| `c.template.name == "Amulet of Vigor"` (2 places) | `_apply_untap_on_enter_triggers()` — oracle pattern |
+
+### Generic engine patterns added (session 2)
+| Pattern | Trigger | Effect |
+|---------|---------|--------|
+| `"whenever a permanent you control enters tapped, untap it"` | `_apply_untap_on_enter_triggers()` | Covers Amulet of Vigor and any future card |
+| `"lands you control enter the battlefield untapped"` | `_apply_lands_enter_untapped()` | Covers Spelunking static |
+| `"when this land enters, return a land you control to hand"` | `resolve_etb_from_oracle()` | Covers Gruul Turf, Simic Growth Chamber, all bounce lands |
+| `"when this [enters], draw a card, then you may put a land from hand onto battlefield"` | `resolve_etb_from_oracle()` | Covers Spelunking ETB |
+| `"whenever this creature or another [Subtype] you control enters"` + top-card effect | `trigger_etb()` | Covers Risen Reef, any future Elemental-chain card |
+| `"whenever you cast a noncreature spell, you get {E}"` | `resolve_spell_cast_trigger()` | Energy on noncreature spell cast |
+| `"if you have more energy than that player has life, create a 1/1 token"` | `_assign_combat_damage()` | Combat damage energy→token trigger |
+
+### Remaining open bugs
+
+#### P1
+| # | Bug | Location |
+|---|-----|----------|
+| 1 | Amulet Titan WR still low (~23% vs expected ~45%) — Arboreal Grazer not prioritising bounce lands; AI doesn't model Amulet mana loop value | `ai/ev_player.py`, `_score_land()` |
+| 2 | Living End ~12% vs Boros — AI doesn't attack aggressively after Living End resolves; Force of Negation not held for protection | `ai/ev_player.py`, `ai/response.py` |
+| 3 | Psychic Frog early EV still negative when Orcish Bowmasters is better option (correct priority, but EV magnitude off) | `ai/ev_evaluator.py` |
+
+#### P2
+| # | Bug | Location |
+|---|-----|----------|
+| 4 | Amulet of Vigor multiple copies don't stack (only 1 untap applied per land ETB) | `engine/game_state.py:_apply_untap_on_enter_triggers()` |
+| 5 | Spelunking "Lands you control enter untapped" not applied to normal `play_land` path consistently | `engine/game_state.py` |
+| 6 | Elesh Norn trigger doubling not implemented | `engine/game_state.py` |
+| 7 | Phelia blink-on-attack not fully implemented | `engine/card_effects.py` |
 
 ---
 
-## 8. Never do / always do
+## 8. Deck status
+
+| Deck | Sim grade | Notes |
+|------|-----------|-------|
+| Boros Energy | ✅ Working | T1 deck, ~64% weighted WR |
+| Affinity | ✅ Working | Construct tokens, Cranial Plating, Urza's Saga all correct |
+| Izzet Prowess | ✅ Working | DRC surveil/delirium fixed; 60% vs Affinity realistic |
+| Dimir Midrange | ✅ Working | 50% vs Boros realistic |
+| Eldrazi Tron | ✅ Working | 60% vs Boros; Tron assembly bonus added |
+| Domain Zoo | ✅ Working | 40% vs Boros realistic |
+| Ruby Storm | ✅ Working | 40% vs Dimir realistic after tutor fix |
+| Jeskai Blink | ⚠️ Underperforms | 35% vs Boros; expected ~45% |
+| 4c Omnath | ⚠️ Underperforms | 30% vs Boros; deck list now correct; Elesh Norn/Phelia not implemented |
+| Amulet Titan | ⚠️ Underperforms | 23% vs Boros; expected ~45%; mana loop value not modelled |
+| Goryo's Vengeance | ⚠️ Reasonable | 25% vs Dimir; cascade combo fires correctly |
+| Living End | ⚠️ Underperforms | 12% vs Boros; cascade/cycling correct; post-combo attack AI weak |
+| Azorius Control | ⚠️ Deflated | Isochron Scepter not implemented |
+| Azorius Control (WST) | ✅ Field run | Wrath X now correct; separate from Isochron variant |
+
+---
+
+## 9. Never do / always do
 
 ### Never do
 - Read meta shares from JSON — always from METAGAME_SHARES in `decks/modern_meta.py`
@@ -188,11 +259,14 @@ from engine.card_database import CardDatabase  # singleton pattern
 - Use heuristic SB tips — only game log data
 - Replace deck variant without being told — run alongside existing
 - Skip `git pull origin main`
+- Hardcode card names in engine — always detect from oracle text or template field
 
 ### Always do
 - `git pull origin main` before any work
 - Merge ModernAtomic_part*.json before first sim run
 - Confirm metrics at each stage before proceeding
+- Use `_apply_untap_on_enter_triggers()` when putting lands onto battlefield
+- Call `resolve_etb_from_oracle()` for lands placed by non-standard paths
 
 ### Post-action verification
 ```bash
@@ -213,11 +287,14 @@ assert len(MODERN_DECKS) == len(METAGAME_SHARES), 'MISMATCH'"
 # Smoke test new/edited deck (both orderings — should sum to ~100%)
 python run_meta.py --matchup NEW_DECK dimir -n 10
 python run_meta.py --matchup dimir NEW_DECK -n 10
+
+# Rules audit: check for double ETB, wrong triggers, incorrect P/T
+python run_meta.py --verbose DECK OPPONENT -s 50000 | grep -E "Resolve.*Resolve|damage.*dies|X=0.*dies"
 ```
 
 ---
 
-## 9. Infrastructure proposals (from Legacy cross-pollination)
+## 10. Infrastructure proposals (from Legacy cross-pollination)
 
 Six concrete improvements from MTGSimClaude, scoped to infrastructure only — no changes to EV engine.
 
@@ -233,82 +310,42 @@ DECK_META = {
     'strategy_weights': { ... }, # currently strategy_profile.py
     'sideboard_plan': { ... },   # currently sideboard_manager.py
 }
-
-# deck_registry.py — auto-discovers on import (~60 lines)
-import importlib, pathlib
-DECKS = {}
-for path in pathlib.Path('decks').glob('*.py'):
-    if path.name.startswith('_'): continue
-    mod = importlib.import_module(f'decks.{path.stem}')
-    if hasattr(mod, 'DECK_META'):
-        DECKS[mod.DECK_META['key']] = mod.DECK_META
 ```
-Migration: one-time extraction from modern_meta.py + gameplans/ + strategy_profile.py.
 
 ### 9b. Template-driven dashboard (~3h)
 Separate data from presentation. Design lives in template, never regenerated.
-```
-templates/reference_modern_matrix.html  ← design lives here
-build_dashboard.py                      ← swaps D,DA,C,I,ARCH constants only
-```
-Eliminates "dashboard looks different after rebuild" bugs permanently.
 
 ### 9c. Parallel processing (~1h + profiling)
-```python
-from multiprocessing import Pool
-def run_matrix_parallel(decks, n_games=50, workers=4):
-    pairs = [(d1,d2) for d1 in decks for d2 in decks if d1!=d2]
-    with Pool(workers) as pool:
-        results = pool.map(partial(_run_pair, n_games=n_games), pairs)
-    return {(d1,d2): wr for d1,d2,wr in results}
-```
-Constraint: CardDatabase (400MB) must load per-worker. Est. 95min → ~32min (3×).
+Est. 95min → ~32min (3×). CardDatabase (400MB) must load per-worker.
 
 ### 9d. Meta audit with expected ranges (~2h)
 ```python
 EXPECTED_RANGES = {
-    'boros_energy': (0.50, 0.65), 'affinity': (0.45, 0.60),  # NOT 82%
-    'ruby_storm': (0.45, 0.58),  '4c_omnath': (0.48, 0.62),  # NOT 29%
+    'boros_energy': (0.50, 0.65), 'affinity': (0.45, 0.60),
+    'ruby_storm': (0.40, 0.55),  '4c_omnath': (0.40, 0.55),
+    'izzet_prowess': (0.40, 0.55), 'amulet_titan': (0.40, 0.50),
 }
-def audit_matrix(results):
-    return [(d,actual,lo,hi) for d,(lo,hi) in EXPECTED_RANGES.items()
-            if not lo <= results[d]['flat_wr'] <= hi]
 ```
-Would have caught Affinity (82%), 4c Omnath (29%), Storm (37%) immediately.
 
 ### 9e. Symmetry measurement (~30min)
-```python
-def check_symmetry(results):
-    return [(d1,d2,wr,results[(d2,d1)]) for (d1,d2),wr in results.items()
-            if (d2,d1) in results and abs(wr + results[(d2,d1)] - 1.0) > 0.10]
-```
 Run both orderings. Flag |d1+d2−100| > 10% as engine fairness bug.
 
 ### 9f. Provenance footer (~20min)
 Every output gets: `Simulated: DATE | Decks: N | Games/pair: N | Seeds: range | Engine: vX`
 
-### What NOT to adopt from Legacy
-| Legacy approach | Modern already does it better |
-|----------------|-------------------------------|
-| Hardcoded strategy functions (19×) | EV scoring — one engine for all decks |
-| Manual card builders (119K cards.py) | MTGJSON auto-load (21,795 cards) |
-| G1-only matrix | Full Bo3 with bool-flag SB |
-| 4-level threat classification | Continuous EV scoring |
-| Tag-based card identity (73 tags) | Oracle text + card_effects.py |
-
 ---
 
-## 10. Recommended next work (unified backlog)
+## 11. Recommended next work (unified backlog)
 
-### AI fixes (P0/P1)
+### Engine fixes (remaining P1/P2)
 | # | Task | Impact | Effort | Location |
 |---|------|--------|--------|----------|
-| 1 | PW EV scoring | P0 fix | LOW | `ev_player.py:_score_spell()` |
-| 2 | Hard-gate Wrath empty board | P0 fix | LOW | `ev_evaluator.py:272` |
-| 3 | Fix Ocelot Pride + Wrath X=0 | P0 fix | LOW | Card DB + engine |
-| 4 | Storm penalty 20→5 | P1 fix | LOW | `ev_player.py:428` |
-| 5 | card_ev_overrides in gameplans | Architecture | MED | gameplan JSON |
-| 6 | Combo chain EV bypass | Architecture | MED | ev_player.py |
+| 1 | Amulet Titan mana loop value in `_score_land` | P1 fix | MED | `ai/ev_player.py` |
+| 2 | Living End post-combo attack aggression | P1 fix | MED | `ai/ev_player.py` |
+| 3 | Elesh Norn trigger doubling | P1 fix | HIGH | `engine/game_state.py` |
+| 4 | Phelia blink-on-attack | P2 fix | LOW | `engine/card_effects.py` |
+| 5 | Multiple Amulet copies stack correctly | P2 fix | LOW | `_apply_untap_on_enter_triggers()` |
+| 6 | Jeskai Blink WR investigation | P1 fix | MED | audit |
 
 ### Infrastructure (from Legacy proposal)
 | # | Task | Impact | Effort | Deps |
@@ -323,18 +360,15 @@ Every output gets: `Simulated: DATE | Decks: N | Games/pair: N | Seeds: range | 
 ### Validation
 | # | Task | Impact | Effort |
 |---|------|--------|--------|
-| 13 | Spot-check 10 matchups vs consensus | MED | LOW |
-| 14 | Investigate Amulet -18% regression | MED | MED |
-| 15 | Artifact hate in sideboards | P1 fix | MED |
-| 16 | Re-run full matrix after fixes | Production | HIGH |
-
-**Total infrastructure effort: ~9 hours.** No changes to AI engine.
+| 13 | Full matrix re-run after session 2 fixes | HIGH | 95 min |
+| 14 | Spot-check 10 matchups vs consensus WR | MED | LOW |
+| 15 | Artifact hate in sideboards (Affinity 85% still high) | P1 fix | MED |
 
 ---
 
-## 11. Codebase stats
+## 12. Codebase stats
 
-27,358 Python LOC · 66 files · 14 AI modules (7,757 ln) · 21,795 cards · 15 decks · 15 gameplans · 7 test suites · 4 Claude skills · 0 external deps
+~28,500 Python LOC · 66 files · 14 AI modules · 21,795 cards · 15 decks · 15 gameplans · 149 passing tests · 4 Claude skills · 0 external deps
 
 ---
 
