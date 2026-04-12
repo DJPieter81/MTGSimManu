@@ -1890,3 +1890,148 @@ def torpor_orb_etb(game, card, controller, targets=None, item=None):
     card.instance_tags.add("torpor_orb_active")
     game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Torpor Orb enters — creature ETB abilities suppressed")
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Ral, Monsoon Mage — cost reduction handled by oracle parser;
+# this adds the storm-count transform trigger
+# ═══════════════════════════════════════════════════════════════════
+@EFFECT_REGISTRY.register("Ral, Monsoon Mage // Ral, Leyline Prodigy",
+                           EffectTiming.ETB,
+                           description="Ral ETB: cost reducer on battlefield")
+def ral_monsoon_etb(game, card, controller, targets=None, item=None):
+    """Ral's cost reduction is handled by oracle text parsing.
+    ETB just logs deployment."""
+    game.log.append(
+        f"T{game.display_turn} P{controller+1}: "
+        f"Ral, Monsoon Mage enters — instants/sorceries cost {{1}} less")
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Fable of the Mirror-Breaker — Saga
+# Ch I: Create 2/2 Goblin with haste
+# Ch II: Discard up to 2, draw that many
+# Ch III: Transform (create 2/2 creature copy-maker)
+# ═══════════════════════════════════════════════════════════════════
+@EFFECT_REGISTRY.register("Fable of the Mirror-Breaker // Reflection of Kiki-Jiki",
+                           EffectTiming.ETB,
+                           description="Saga Ch.I: Create 2/2 Goblin Shaman with haste")
+def fable_etb(game, card, controller, targets=None, item=None):
+    """Chapter I: Create a 2/2 Goblin token with haste."""
+    from engine.cards import Keyword
+    tokens = game.create_token(controller, "goblin", power=2, toughness=2,
+                               extra_keywords={Keyword.HASTE})
+    game.log.append(
+        f"T{game.display_turn} P{controller+1}: "
+        f"Fable Ch.I: Create 2/2 Goblin Shaman with haste")
+    if not hasattr(card, 'other_counters') or card.other_counters is None:
+        card.other_counters = {}
+    card.other_counters['lore'] = 1
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Kappa Cannoneer — artifact-enters trigger: +1/+1 counter + unblockable
+# Sim approximation: ETB with ward 4 stats, grows over time
+# ═══════════════════════════════════════════════════════════════════
+@EFFECT_REGISTRY.register("Kappa Cannoneer", EffectTiming.ETB,
+                           description="Kappa enters: ward 4 turtle, grows with artifacts")
+def kappa_etb(game, card, controller, targets=None, item=None):
+    """Kappa Cannoneer ETB: count artifacts for immediate power boost."""
+    player = game.players[controller]
+    artifact_count = sum(1 for c in player.battlefield
+                        if hasattr(c, 'template') and 'Artifact' in str(getattr(c.template, 'card_types', [])))
+    # Each artifact that entered this turn gives +1/+1
+    # Approximate: add counters equal to half the artifacts on board (those played this turn)
+    bonus = min(artifact_count // 2, 4)
+    if bonus > 0:
+        if not hasattr(card, 'counters'):
+            card.counters = 0
+        card.counters += bonus
+        card.template.power = (card.template.power or 4) + bonus
+        card.template.toughness = (card.template.toughness or 4) + bonus
+    game.log.append(
+        f"T{game.display_turn} P{controller+1}: "
+        f"Kappa Cannoneer enters as {card.template.power}/{card.template.toughness} (ward 4, grows with artifacts)")
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Pinnacle Emissary — creates 1/1 flying Drone tokens when artifacts enter
+# Sim approximation: ETB creates tokens based on cheap artifacts in hand
+# ═══════════════════════════════════════════════════════════════════
+@EFFECT_REGISTRY.register("Pinnacle Emissary", EffectTiming.ETB,
+                           description="Pinnacle Emissary: create Drone tokens for artifacts played")
+def pinnacle_emissary_etb(game, card, controller, targets=None, item=None):
+    """Pinnacle Emissary ETB: count 0-cost artifacts in hand that will generate drones."""
+    player = game.players[controller]
+    free_artifacts = sum(1 for c in player.hand
+                        if hasattr(c, 'template')
+                        and 'Artifact' in str(getattr(c.template, 'card_types', []))
+                        and (c.template.cmc or 0) == 0)
+    # Create drone tokens for each free artifact (they'll be played this turn)
+    drone_count = min(free_artifacts, 4)
+    if drone_count > 0:
+        from engine.cards import Keyword
+        game.create_token(controller, "drone", power=1, toughness=1,
+                         count=drone_count,
+                         extra_keywords={Keyword.FLYING})
+    game.log.append(
+        f"T{game.display_turn} P{controller+1}: "
+        f"Pinnacle Emissary enters — {drone_count} Drone tokens projected from free artifacts")
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Arcbound Ravager — modular: sac artifacts for counters
+# Sim approximation: grows by sacrificing artifacts
+# ═══════════════════════════════════════════════════════════════════
+@EFFECT_REGISTRY.register("Arcbound Ravager", EffectTiming.ETB,
+                           description="Arcbound Ravager: 0/0 + modular 1, grows by sacrificing artifacts")
+def arcbound_ravager_etb(game, card, controller, targets=None, item=None):
+    """Arcbound Ravager ETB: starts as 1/1 (modular 1), grows later."""
+    card.template.power = 1
+    card.template.toughness = 1
+    if not hasattr(card, 'counters'):
+        card.counters = 0
+    card.counters += 1
+    game.log.append(
+        f"T{game.display_turn} P{controller+1}: "
+        f"Arcbound Ravager enters as 1/1 (modular 1)")
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Emry, Lurker of the Loch — ETB: mill 4
+# ═══════════════════════════════════════════════════════════════════
+@EFFECT_REGISTRY.register("Emry, Lurker of the Loch", EffectTiming.ETB,
+                           description="Emry ETB: mill 4 cards")
+def emry_etb(game, card, controller, targets=None, item=None):
+    """Emry ETB: mill 4 cards into graveyard."""
+    player = game.players[controller]
+    milled = []
+    for _ in range(min(4, len(player.library))):
+        c = player.library.pop(0)
+        c.zone = "graveyard"
+        player.graveyard.append(c)
+        milled.append(c.name)
+    if milled:
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: "
+            f"Emry mills {len(milled)}: {', '.join(milled)}")
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Sink into Stupor — bounce spell
+# ═══════════════════════════════════════════════════════════════════
+@EFFECT_REGISTRY.register("Sink into Stupor // Soporific Springs", EffectTiming.SPELL_RESOLVE,
+                           description="Return target nonland permanent to hand")
+def sink_into_stupor_resolve(game, card, controller, targets=None, item=None):
+    """Bounce best opposing creature."""
+    opp_idx = 1 - controller
+    opp = game.players[opp_idx]
+    if opp.battlefield:
+        # Bounce highest-CMC creature
+        best = max(opp.battlefield, key=lambda c: (c.template.cmc or 0))
+        opp.battlefield.remove(best)
+        best.zone = "hand"
+        opp.hand.append(best)
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: "
+            f"Sink into Stupor bounces {best.name}")

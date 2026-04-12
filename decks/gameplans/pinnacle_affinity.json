@@ -1,0 +1,100 @@
+{
+  "deck_name": "Pinnacle Affinity",
+  "archetype": "aggro",
+  "goals": [
+    {
+      "goal_type": "DEPLOY_ENGINE",
+      "description": "Deploy Pinnacle Emissary ASAP, dump free artifacts to generate Drone tokens",
+      "card_priorities": {
+        "Pinnacle Emissary": 25.0,
+        "Mox Opal": 24.0,
+        "Springleaf Drum": 20.0,
+        "Ornithopter": 18.0,
+        "Memnite": 18.0,
+        "Mishra's Bauble": 16.0,
+        "Tormod's Crypt": 14.0
+      },
+      "card_roles": {
+        "engines": [
+          "Pinnacle Emissary",
+          "Mox Opal"
+        ],
+        "enablers": [
+          "Ornithopter",
+          "Memnite",
+          "Springleaf Drum",
+          "Mishra's Bauble",
+          "Tormod's Crypt"
+        ]
+      },
+      "min_turns": 1
+    },
+    {
+      "goal_type": "PUSH_DAMAGE",
+      "description": "Deploy Kappa Cannoneer or Cranial Plating to convert artifact board into lethal damage",
+      "card_priorities": {
+        "Kappa Cannoneer": 25.0,
+        "Cranial Plating": 22.0,
+        "Lavaspur Boots": 16.0,
+        "Thought Monitor": 18.0,
+        "Emry, Lurker of the Loch": 14.0
+      },
+      "card_roles": {
+        "payoffs": [
+          "Kappa Cannoneer",
+          "Cranial Plating"
+        ],
+        "engines": [
+          "Thought Monitor",
+          "Emry, Lurker of the Loch"
+        ]
+      }
+    },
+    {
+      "goal_type": "CLOSE_GAME",
+      "description": "Attack with massive Kappa or Plating-equipped creature, counter removal with Metallic Rebuke",
+      "card_priorities": {
+        "Kappa Cannoneer": 25.0,
+        "Cranial Plating": 22.0,
+        "Metallic Rebuke": 18.0,
+        "Sink into Stupor // Soporific Springs": 16.0
+      },
+      "card_roles": {
+        "payoffs": [
+          "Kappa Cannoneer",
+          "Cranial Plating"
+        ],
+        "interaction": [
+          "Metallic Rebuke",
+          "Sink into Stupor // Soporific Springs"
+        ]
+      }
+    }
+  ],
+  "mulligan_keys": [
+    "Pinnacle Emissary",
+    "Kappa Cannoneer",
+    "Mox Opal",
+    "Springleaf Drum",
+    "Urza's Saga"
+  ],
+  "mulligan_min_lands": 1,
+  "mulligan_max_lands": 3,
+  "mulligan_combo_sets": [
+    ["Pinnacle Emissary", "Mox Opal", "Ornithopter", "Memnite", "Springleaf Drum", "Mishra's Bauble", "Tormod's Crypt"]
+  ],
+  "always_early": [
+    "Pinnacle Emissary",
+    "Mox Opal",
+    "Springleaf Drum",
+    "Ornithopter",
+    "Memnite"
+  ],
+  "reactive_only": [
+    "Metallic Rebuke"
+  ],
+  "critical_pieces": [
+    "Pinnacle Emissary",
+    "Kappa Cannoneer"
+  ]
+}

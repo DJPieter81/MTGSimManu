@@ -36,6 +36,7 @@ DECK_ARCHETYPES = {
     "4/5c Control":       ArchetypeStrategy.CONTROL,
     "Azorius Control":    ArchetypeStrategy.CONTROL,
     "Azorius Control (WST)": ArchetypeStrategy.CONTROL,
+    "Pinnacle Affinity":  ArchetypeStrategy.AGGRO,
 }
 
 
