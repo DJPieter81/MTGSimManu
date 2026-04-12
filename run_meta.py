@@ -75,6 +75,10 @@ def _get_runner():
 
 
 def _run_game(runner, d1_name, d2_name, seed):
+    """Run a single Bo1 game. Used by audit/verbose/trace paths that need
+    per-game granularity; the competitive paths (matrix/field/matchup)
+    go through Bo3 via _run_match below.
+    """
     d1 = MODERN_DECKS[d1_name]
     d2 = MODERN_DECKS[d2_name]
     random.seed(seed)
@@ -85,6 +89,26 @@ def _run_game(runner, d1_name, d2_name, seed):
     )
 
 
+def _run_match(runner, d1_name, d2_name, seed, verbose=False):
+    """Run a Bo3 match with sideboarding between games (B1).
+
+    Returns a MatchResult — API-compatible with GameResult for the
+    .winner_deck attribute. `.match_score` and `.games` expose the
+    per-match detail callers need for turn stats / 2-0 vs 2-1 tracking.
+    """
+    d1 = MODERN_DECKS[d1_name]
+    d2 = MODERN_DECKS[d2_name]
+    random.seed(seed)
+    return runner.run_match(d1_name, d1, d2_name, d2, verbose=verbose)
+
+
+def _run_pair(runner, d1_name, d2_name, seed, bo1=False, verbose=False):
+    """Dispatch to Bo3 match (default) or Bo1 game (bo1=True)."""
+    if bo1:
+        return _run_game(runner, d1_name, d2_name, seed)
+    return _run_match(runner, d1_name, d2_name, seed, verbose=verbose)
+
+
 _worker_runner = None  # Per-process cached runner
 
 
@@ -93,6 +117,10 @@ def _init_worker():
     global _worker_runner
     import logging
     logging.disable(logging.WARNING)
+    # B1: silence sideboard_manager stderr spam in workers; the swap info
+    # is captured by the --verbose path, not needed for matrix aggregation.
+    import os
+    sys.stderr = open(os.devnull, 'w')
     db = CardDatabase()
     _worker_runner = GameRunner(db)
 
@@ -100,21 +128,17 @@ def _init_worker():
 def _worker_matchup(args):
     """Worker function for parallel matchup execution.
     Uses the pre-initialized _worker_runner (one DB load per process).
+
+    Args tuple: (d1_name, d2_name, n_games, seed_start, bo1).
+    Returns (d1_name, d2_name, pct, bo1) — pct is MATCH WR in Bo3 mode.
     """
-    d1_name, d2_name, n_games, seed_start = args
+    d1_name, d2_name, n_games, seed_start, bo1 = args
     runner = _worker_runner
     wins = {d1_name: 0, d2_name: 0}
     for i in range(n_games):
         seed = seed_start + i * 500
-        d1 = MODERN_DECKS[d1_name]
-        d2 = MODERN_DECKS[d2_name]
-        random.seed(seed)
         try:
-            r = runner.run_game(
-                d1_name, d1['mainboard'], d2_name, d2['mainboard'],
-                deck1_sideboard=d1.get('sideboard', {}),
-                deck2_sideboard=d2.get('sideboard', {}),
-            )
+            r = _run_pair(runner, d1_name, d2_name, seed, bo1=bo1)
             wins[r.winner_deck] = wins.get(r.winner_deck, 0) + 1
         except Exception:
             pass
@@ -138,48 +162,65 @@ def _run_game_no_runner(d1_name, d2_name, seed):
 
 
 def run_matchup(deck1: str, deck2: str, n_games: int = 50,
-                seed_start: int = 50000, verbose: bool = False) -> Dict:
-    """Run N games between two decks. Returns stats dict."""
+                seed_start: int = 50000, verbose: bool = False,
+                bo1: bool = False) -> Dict:
+    """Run N matchups between two decks. Returns stats dict.
+
+    Default is Bo3 matches with sideboarding (n_games = number of matches).
+    Pass bo1=True for single-game tallies (legacy behaviour).
+    """
     runner = _get_runner()
     wins = {deck1: 0, deck2: 0, 'draw': 0}
     turn_wins = {deck1: [], deck2: []}
+    match_scores = []  # list of (p1_games_won, p2_games_won) for Bo3
 
     for i in range(n_games):
         seed = seed_start + i * 500
-        d1 = MODERN_DECKS[deck1]
-        d2 = MODERN_DECKS[deck2]
-        random.seed(seed)
-        r = runner.run_game(
-            deck1, d1['mainboard'], deck2, d2['mainboard'],
-            deck1_sideboard=d1.get('sideboard', {}),
-            deck2_sideboard=d2.get('sideboard', {}),
-            verbose=verbose,
-        )
+        r = _run_pair(runner, deck1, deck2, seed, bo1=bo1, verbose=verbose)
         wins[r.winner_deck] = wins.get(r.winner_deck, 0) + 1
-        if r.winner_deck in turn_wins:
-            turn_wins[r.winner_deck].append(r.turns)
+        if bo1:
+            if r.winner_deck in turn_wins:
+                turn_wins[r.winner_deck].append(r.turns)
+        else:
+            # Bo3: tally per-game turn stats from r.games
+            for g in r.games:
+                if g.winner_deck in turn_wins:
+                    turn_wins[g.winner_deck].append(g.turns)
+            match_scores.append(tuple(r.match_score))
 
     pct1 = round(wins[deck1] / n_games * 100)
     pct2 = round(wins[deck2] / n_games * 100)
     avg_turn1 = (sum(turn_wins[deck1]) / len(turn_wins[deck1])) if turn_wins[deck1] else 0
     avg_turn2 = (sum(turn_wins[deck2]) / len(turn_wins[deck2])) if turn_wins[deck2] else 0
 
-    return {
+    result = {
         'deck1': deck1, 'deck2': deck2, 'games': n_games,
         'wins': wins, 'pct1': pct1, 'pct2': pct2,
         'avg_turn1': round(avg_turn1, 1), 'avg_turn2': round(avg_turn2, 1),
         'turn_dist1': sorted(turn_wins[deck1]), 'turn_dist2': sorted(turn_wins[deck2]),
+        'format': 'bo1' if bo1 else 'bo3',
     }
+    if not bo1:
+        # B1: expose match-level detail — 2-0 sweeps vs 2-1 grinds
+        sweeps = sum(1 for s in match_scores if 2 in s and 0 in s)
+        went_to_3 = sum(1 for s in match_scores if max(s) == 2 and min(s) == 1)
+        result['sweeps'] = sweeps
+        result['went_to_3'] = went_to_3
+    return result
 
 
 def run_field(deck: str, n_games: int = 30, opponents: List[str] = None,
-              parallel: bool = True) -> Dict:
-    """Run one deck against all others. Returns {opponent: win_pct}."""
+              parallel: bool = True, bo1: bool = False) -> Dict:
+    """Run one deck against all others. Returns {opponent: win_pct}.
+
+    Default is Bo3 matches with sideboarding (n_games = matches per opponent).
+    Pass bo1=True for single-game tallies.
+    """
     if opponents is None:
         opponents = [n for n in get_all_deck_names() if n != deck]
 
     if parallel and len(opponents) > 1:
-        args = [(deck, opp, n_games, 50000) for opp in opponents]
+        args = [(deck, opp, n_games, 50000, bo1) for opp in opponents]
         with mp.Pool(_DEFAULT_WORKERS, initializer=_init_worker) as pool:
             worker_results = pool.map(_worker_matchup, args)
         results = {d2: pct for d1, d2, pct in worker_results}
@@ -190,28 +231,32 @@ def run_field(deck: str, n_games: int = 30, opponents: List[str] = None,
             wins = {deck: 0, opp: 0}
             for i in range(n_games):
                 seed = 50000 + i * 500
-                r = _run_game(runner, deck, opp, seed)
+                r = _run_pair(runner, deck, opp, seed, bo1=bo1)
                 wins[r.winner_deck] = wins.get(r.winner_deck, 0) + 1
             results[opp] = round(wins[deck] / n_games * 100)
 
     avg = sum(results.values()) / len(results) if results else 0
-    return {'deck': deck, 'matchups': results, 'average': round(avg, 1)}
+    return {'deck': deck, 'matchups': results, 'average': round(avg, 1),
+            'format': 'bo1' if bo1 else 'bo3'}
 
 
 def run_meta_matrix(top_tier: int = None, n_games: int = 20,
-                    seed_start: int = 40000, parallel: bool = True) -> Dict:
+                    seed_start: int = 40000, parallel: bool = True,
+                    bo1: bool = False) -> Dict:
     """Run full metagame matrix. Returns matrix dict + rankings.
 
     Args:
         top_tier: Only include top N decks by metagame share (None = all)
-        n_games: Games per matchup pair
+        n_games: Matches per pair (Bo3 by default; n_games = match count)
         seed_start: Starting seed
         parallel: Use multiprocessing (default True)
+        bo1: Bo1 single games instead of Bo3 matches (default False)
 
     Returns dict with:
         'matrix': {(deck1, deck2): win_pct}
         'rankings': [(avg_pct, deck_name), ...] sorted desc
         'names': list of deck names included
+        'format': 'bo1' or 'bo3'
     """
     names = get_all_deck_names()
     if top_tier and top_tier < len(names):
@@ -222,14 +267,15 @@ def run_meta_matrix(top_tier: int = None, n_games: int = 20,
     for i, d1_name in enumerate(names):
         for j, d2_name in enumerate(names):
             if i < j:
-                pairs.append((d1_name, d2_name, n_games, seed_start))
+                pairs.append((d1_name, d2_name, n_games, seed_start, bo1))
 
     total = len(pairs)
     matrix = {}
 
     if parallel and total > 1:
         workers = min(_DEFAULT_WORKERS, total)
-        print(f'Running {total} matchups × {n_games} games = {total * n_games} total '
+        fmt = 'Bo1' if bo1 else 'Bo3'
+        print(f'Running {total} matchups × {n_games} {fmt} = {total * n_games} total '
               f'({workers} workers)', file=sys.stderr)
         with mp.Pool(workers, initializer=_init_worker) as pool:
             for i, (d1, d2, pct) in enumerate(pool.imap_unordered(_worker_matchup, pairs)):
@@ -238,12 +284,12 @@ def run_meta_matrix(top_tier: int = None, n_games: int = 20,
                 print(f'  [{i+1}/{total}] {d1} vs {d2}: {pct}%-{100-pct}%', file=sys.stderr)
     else:
         runner = _get_runner()
-        for idx, (d1_name, d2_name, ng, ss) in enumerate(pairs):
+        for idx, (d1_name, d2_name, ng, ss, _bo1) in enumerate(pairs):
             wins = {d1_name: 0, d2_name: 0}
             for g in range(ng):
                 seed = ss + g * 500
                 try:
-                    r = _run_game(runner, d1_name, d2_name, seed)
+                    r = _run_pair(runner, d1_name, d2_name, seed, bo1=_bo1)
                     wins[r.winner_deck] = wins.get(r.winner_deck, 0) + 1
                 except Exception:
                     pass
@@ -281,7 +327,7 @@ def run_meta_matrix(top_tier: int = None, n_games: int = 20,
 
     return {'matrix': matrix, 'rankings': rankings, 'names': names,
             'tier1': sorted(tier1), 'tier2': sorted(tier2),
-            'n_games': n_games}
+            'n_games': n_games, 'format': 'bo1' if bo1 else 'bo3'}
 
 
 def inspect_deck(deck_name: str) -> str:
@@ -861,9 +907,15 @@ def print_matrix(result: Dict):
 
 def print_matchup(result: Dict):
     """Pretty-print a matchup result."""
-    print(f'\n{result["deck1"]} vs {result["deck2"]} ({result["games"]} games)')
+    fmt = result.get('format', 'bo1').upper()
+    unit = 'matches' if fmt == 'BO3' else 'games'
+    print(f'\n{result["deck1"]} vs {result["deck2"]} ({result["games"]} {unit}, {fmt})')
     print(f'  {result["deck1"]:25s}: {result["pct1"]}% (avg T{result["avg_turn1"]})')
     print(f'  {result["deck2"]:25s}: {result["pct2"]}% (avg T{result["avg_turn2"]})')
+    if fmt == 'BO3':
+        sweeps = result.get('sweeps', 0)
+        went_3 = result.get('went_to_3', 0)
+        print(f'  Match breakdown: {sweeps} sweep(s) (2-0), {went_3} went to three (2-1)')
     if result['turn_dist1']:
         print(f'  {result["deck1"]} wins on: {result["turn_dist1"]}')
     if result['turn_dist2']:
@@ -906,6 +958,9 @@ if __name__ == '__main__':
     parser.add_argument('--list', action='store_true', help='List available decks')
     parser.add_argument('--save', action='store_true', help='Save results to metagame_results.json')
     parser.add_argument('--results', action='store_true', help='Print last saved results (no sim)')
+    parser.add_argument('--bo1', action='store_true',
+                        help='Use Bo1 single games for matrix/field/matchup '
+                             '(default is Bo3 with sideboarding)')
     args = parser.parse_args()
 
     if args.results:
@@ -942,18 +997,18 @@ if __name__ == '__main__':
         print(run_verbose_game(d1, d2, seed=args.seed))
     elif args.matchup:
         d1, d2 = resolve_deck_name(args.matchup[0]), resolve_deck_name(args.matchup[1])
-        result = run_matchup(d1, d2, n_games=args.games)
+        result = run_matchup(d1, d2, n_games=args.games, bo1=args.bo1)
         print_matchup(result)
         if args.save:
             save_results(result)
     elif args.field:
-        result = run_field(resolve_deck_name(args.field), n_games=args.games)
+        result = run_field(resolve_deck_name(args.field), n_games=args.games, bo1=args.bo1)
         print_field(result)
         if args.save:
             save_results(result)
     else:
         # Default: run matrix
-        result = run_meta_matrix(top_tier=args.decks, n_games=args.games)
+        result = run_meta_matrix(top_tier=args.decks, n_games=args.games, bo1=args.bo1)
         print_matrix(result)
         if args.save:
             save_results(result)
