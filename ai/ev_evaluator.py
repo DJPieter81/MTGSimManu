@@ -439,7 +439,28 @@ def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
     elif cmc == 1:
         removal_probability *= 0.25
     elif cmc == 2:
-        removal_probability *= 0.6
+        removal_probability *= 0.4  # was 0.6 — too aggressive for 2-drops
+
+    # Evasion discount: creatures that can become unblockable/flying are harder
+    # to remove via damage (opponent needs instant-speed removal not just blocks).
+    # Check both innate evasion and oracle-derived evasion (e.g. Psychic Frog).
+    card_oracle = (t.oracle_text or '').lower()
+    has_innate_evasion = bool(
+        getattr(t, 'keywords', set()) & {'flying', 'menace', 'trample', 'shadow'}
+    )
+    has_conditional_evasion = (
+        'flying' in card_oracle and
+        ('counter' in card_oracle or 'discard' in card_oracle or 'whenever' in card_oracle)
+    )
+    if has_innate_evasion or has_conditional_evasion:
+        # Evasion means damage-based removal is less effective at stopping attacks.
+        # Reduce only the damage-removal portion (exile still applies fully).
+        if bhi and bhi._initialized:
+            exile_frac = bhi.get_exile_removal_probability() / max(0.01, bhi.get_removal_probability()) if bhi.get_removal_probability() > 0 else 0.5
+        else:
+            exile_frac = 0.5
+        damage_frac = 1.0 - exile_frac
+        removal_probability *= (exile_frac + damage_frac * 0.5)  # halve damage-removal relevance
 
     # Compute expected value as weighted average of outcomes:
     # P(counter) * V(countered) + P(removal) * V(removed) + P(pass) * V(projected)
@@ -473,17 +494,18 @@ def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
         cards_drawn_this_turn=snap.cards_drawn_this_turn,
     )
 
-    # Build the "removed" state: creature resolves then dies to removal.
-    # Must revert ALL projection contributions — power, toughness, creature_count,
-    # evasion_power, lifelink_power, and token_maker bonus — to stay symmetric
-    # with what _project_spell added (lines 240-256).
+    # Build the "removed" state: creature resolves (ETB fires, tokens created),
+    # then dies to instant-speed removal. Tokens from ETB PERSIST — they're
+    # already on the battlefield before removal resolves. Only the creature itself
+    # is subtracted, not any tokens it already created.
     if t.is_creature:
         kws = {kw.value if hasattr(kw, 'value') else str(kw).lower()
                for kw in getattr(t, 'keywords', set())}
         evasion_sub = max(0, t.power or 0) if (kws & {'flying', 'menace', 'trample'}) else 0
         lifelink_sub = max(0, t.power or 0) if 'lifelink' in kws else 0
-        token_power = 2 if 'token_maker' in tags else 0
-        token_count = 1 if 'token_maker' in tags else 0
+        # Token power stays on the board — only the creature itself is removed
+        token_power = 0
+        token_count = 0
     else:
         evasion_sub = lifelink_sub = token_power = token_count = 0
 
@@ -578,7 +600,7 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
     if not detailed:
         return ev
 
-    # Recover response probabilities (same logic as estimate_opponent_response)
+    # Recover response probabilities — mirrors estimate_opponent_response scaling
     from ai.constants import (
         COUNTER_ESTIMATED_COST, REMOVAL_ESTIMATED_COST,
         DAMAGE_REMOVAL_EFF_HIGH_TOUGH, DAMAGE_REMOVAL_EFF_MID_TOUGH,
@@ -607,6 +629,26 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
             elif creature_toughness >= 3:
                 damage_prob *= DAMAGE_REMOVAL_EFF_MID_TOUGH
             removal_pct = min(1.0, exile_prob + damage_prob * (1.0 - exile_prob))
+            # Apply same CMC scaling as estimate_opponent_response
+            cmc = t.cmc or 0
+            if cmc == 0:
+                removal_pct *= 0.15
+            elif cmc == 1:
+                removal_pct *= 0.25
+            elif cmc == 2:
+                removal_pct *= 0.4
+            # Evasion discount: conditional or innate flying/evasion
+            has_innate_evasion = bool(
+                getattr(t, 'keywords', set()) & {'flying', 'menace', 'trample', 'shadow'}
+            )
+            has_conditional_evasion = (
+                'flying' in oracle and
+                ('counter' in oracle or 'discard' in oracle or 'whenever' in oracle)
+            )
+            if has_innate_evasion or has_conditional_evasion:
+                exile_frac = opp.exile_density / max(0.01, opp.removal_density)
+                damage_frac = 1.0 - exile_frac
+                removal_pct *= (exile_frac + damage_frac * 0.5)
 
     return ev, {
         'current_value': current_value,

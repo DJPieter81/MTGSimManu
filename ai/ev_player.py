@@ -352,6 +352,18 @@ class EVPlayer:
         if 'board_wipe' in tags and snap.opp_creature_count == 0:
             return min(ev, -50.0)
 
+        # ── Noncreature-only counter dead vs creature-heavy opponents ──
+        # Dovin's Veto / Negate can't target creature spells.
+        # Gate positive EV when opponent's board is all creatures and hand
+        # is likely all creatures too (aggro decks like Boros).
+        oracle_lower = (t.oracle_text or '').lower()
+        if ('counterspell' in tags and 'noncreature' in oracle_lower
+                and snap.opp_creature_count >= 2
+                and snap.opp_power >= 4
+                and snap.opp_hand_size <= 3):
+            # Opponent is an aggro deck running out of cards — counter is dead
+            ev = min(ev, -3.0)
+
         # ── Mana holdback: penalize tapping out when we hold instants ──
         # Trigger holdback when: opp has creatures, OR opp is a spell/combo deck
         # with hand cards (holdback for counterspells even vs creatureless opponents)
@@ -623,6 +635,24 @@ class EVPlayer:
         if landfall_count > 0:
             triggers = 2 if is_fetch else 1
             ev += landfall_count * triggers * 3.0
+
+        # Tron land assembly bonus: completing the Urza's Tower/Mine/Power Plant
+        # set unlocks 7 mana and completely changes the deck's game plan.
+        tron_lands = {'Urza\'s Tower', 'Urza\'s Mine', 'Urza\'s Power Plant'}
+        if land.name in tron_lands:
+            current_tron = {c.name for c in me.lands if c.name in tron_lands}
+            completing = land.name not in current_tron  # this land is a new Tron piece
+            if completing:
+                after_tron = current_tron | {land.name}
+                if len(after_tron) == 3:
+                    # Completing Tron — massive bonus (7 mana unlocks everything)
+                    ev += 20.0
+                elif len(after_tron) == 2:
+                    # Two pieces — getting closer, meaningful bonus
+                    ev += 8.0
+                else:
+                    # First piece — small bonus over a generic land
+                    ev += 3.0
 
         # Landfall deferral: cast landfall creature FIRST, then play land
         current_mana = len(me.untapped_lands) + me.mana_pool.total() + me._tron_mana_bonus()
