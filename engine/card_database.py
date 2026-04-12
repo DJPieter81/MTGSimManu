@@ -1106,6 +1106,14 @@ class CardDatabase:
             "Consign to Memory": {"counterspell", "interaction", "instant_speed"},
             # Stax pieces
             "Chalice of the Void": {"stax", "interaction"},
+            # Board wipes
+            "Supreme Verdict": {"board_wipe", "removal"},
+            # Interactive permanents
+            "Teferi, Time Raveler": {"etb_value", "interaction", "threat"},
+            "Goblin Bombardment": {"removal", "combo", "threat"},
+            "Blood Moon": {"stax", "interaction"},
+            "Thraben Charm": {"removal", "graveyard_hate", "instant_speed"},
+            "Celestial Purge": {"removal", "instant_speed"},
             # Affinity sideboard
             "Dispatch": {"removal", "instant_speed"},
             "Hurkyl's Recall": {"removal", "instant_speed"},

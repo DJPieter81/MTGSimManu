@@ -2270,3 +2270,174 @@ def manamorphose_resolve(game, card, controller, targets=None, item=None):
         game.log.append(
             f"T{game.display_turn} P{controller+1}: "
             f"Manamorphose adds RR (no cards to draw)")
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Teferi, Time Raveler — bounce + shut off instant speed
+# ═══════════════════════════════════════════════════════════════════
+@EFFECT_REGISTRY.register("Teferi, Time Raveler", EffectTiming.ETB,
+                           description="Bounce target opponent permanent, draw a card")
+def teferi_t3_etb(game, card, controller, targets=None, item=None):
+    """T3feri ETB: bounce opponent's best nonland permanent, draw a card."""
+    opp_idx = 1 - controller
+    opp = game.players[opp_idx]
+    player = game.players[controller]
+
+    # Bounce best opponent nonland permanent (by threat)
+    nonlands = [c for c in opp.battlefield if not c.template.is_land]
+    if nonlands:
+        target = max(nonlands, key=_threat_score)
+        opp.battlefield.remove(target)
+        if target in opp.creatures:
+            opp.creatures.remove(target)
+        target.zone = "hand"
+        opp.hand.append(target)
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: "
+            f"Teferi bounces {target.name}")
+
+    # Draw a card
+    if player.library:
+        drawn = player.library.pop(0)
+        drawn.zone = "hand"
+        player.hand.append(drawn)
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: "
+            f"Teferi draws {drawn.name}")
+
+    # Static: opponents can only cast at sorcery speed
+    # Model by reducing opponent counter_density to 0
+    opp.counter_density = 0.0
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Supreme Verdict — uncounterable board wipe
+# ═══════════════════════════════════════════════════════════════════
+@EFFECT_REGISTRY.register("Supreme Verdict", EffectTiming.SPELL_RESOLVE,
+                           description="Destroy all creatures (can't be countered)")
+def supreme_verdict_resolve(game, card, controller, targets=None, item=None):
+    """Supreme Verdict: destroy all creatures. Can't be countered."""
+    from .cards import Keyword
+    total_killed = 0
+    for p in game.players:
+        to_kill = [c for c in p.creatures
+                   if Keyword.INDESTRUCTIBLE not in c.keywords]
+        for creature in to_kill:
+            game._creature_dies(creature)
+            total_killed += 1
+    game.log.append(
+        f"T{game.display_turn} P{controller+1}: "
+        f"Supreme Verdict destroys {total_killed} creatures")
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Goblin Bombardment — sacrifice creature, deal 1 damage
+# ═══════════════════════════════════════════════════════════════════
+@EFFECT_REGISTRY.register("Goblin Bombardment", EffectTiming.ETB,
+                           description="Enchantment: sacrifice a creature, deal 1 damage to any target")
+def goblin_bombardment_etb(game, card, controller, targets=None, item=None):
+    """Goblin Bombardment enters — mark it for activated ability processing."""
+    # The actual sacrifice-for-damage is handled in game_runner's
+    # _activate_goblin_bombardment method. ETB just logs.
+    game.log.append(
+        f"T{game.display_turn} P{controller+1}: "
+        f"Goblin Bombardment enters — sacrifice creatures for 1 damage each")
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Blood Moon — nonbasic lands are Mountains
+# ═══════════════════════════════════════════════════════════════════
+@EFFECT_REGISTRY.register("Blood Moon", EffectTiming.ETB,
+                           description="Nonbasic lands are Mountains")
+def blood_moon_etb(game, card, controller, targets=None, item=None):
+    """Blood Moon enters: opponent's nonbasic lands become Mountains (produce R only).
+
+    Simplified: only affects opponent. In real MTG it's symmetric, but
+    decks that play Blood Moon (Boros, Storm) build their mana base
+    around it by fetching basics first. The sim doesn't model that
+    sequencing, so opponent-only is the correct approximation.
+    """
+    opp_idx = 1 - controller
+    opp = game.players[opp_idx]
+    affected = 0
+    for land in opp.lands:
+        supertypes = getattr(land.template, 'supertypes', [])
+        if 'Basic' not in supertypes:
+            land.template.produces_mana = ['R']
+            affected += 1
+    game.log.append(
+        f"T{game.display_turn} P{controller+1}: "
+        f"Blood Moon: {affected} opponent nonbasic lands become Mountains")
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Celestial Purge — exile target red or black permanent
+# ═══════════════════════════════════════════════════════════════════
+@EFFECT_REGISTRY.register("Celestial Purge", EffectTiming.SPELL_RESOLVE,
+                           description="Exile target red or black permanent")
+def celestial_purge_resolve(game, card, controller, targets=None, item=None):
+    """Exile best red or black permanent opponent controls."""
+    opp_idx = 1 - controller
+    opp = game.players[opp_idx]
+
+    red_black = [c for c in opp.battlefield
+                 if not c.template.is_land
+                 and (c.template.color_identity & {'R', 'B'})]
+    if red_black:
+        target = max(red_black, key=_threat_score)
+        game._exile_permanent(target)
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: "
+            f"Celestial Purge exiles {target.name}")
+    else:
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: "
+            f"Celestial Purge: no valid red/black target")
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Thraben Charm — modal: destroy enchantment, GY hate, or -1/-1
+# ═══════════════════════════════════════════════════════════════════
+@EFFECT_REGISTRY.register("Thraben Charm", EffectTiming.SPELL_RESOLVE,
+                           description="Modal: destroy enchantment / exile GY / -1/-1 creatures")
+def thraben_charm_resolve(game, card, controller, targets=None, item=None):
+    """Thraben Charm: choose best mode based on game state."""
+    opp_idx = 1 - controller
+    opp = game.players[opp_idx]
+    from .cards import CardType
+
+    # Mode 1: Destroy target enchantment
+    enchantments = [c for c in opp.battlefield
+                    if CardType.ENCHANTMENT in c.template.card_types]
+    # Mode 2: Exile target player's graveyard
+    opp_gy_value = sum((c.template.cmc or 0) for c in opp.graveyard)
+    # Mode 3: All creatures get -1/-1 until end of turn (mini-wipe for tokens)
+    opp_tokens = sum(1 for c in opp.creatures if (c.toughness or c.template.toughness or 0) <= 1)
+
+    if enchantments:
+        target = max(enchantments, key=_threat_score)
+        game._permanent_destroyed(target)
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: "
+            f"Thraben Charm destroys enchantment {target.name}")
+    elif opp_gy_value >= 10:
+        # Exile graveyard
+        for c in list(opp.graveyard):
+            opp.graveyard.remove(c)
+            c.zone = "exile"
+            opp.exile.append(c)
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: "
+            f"Thraben Charm exiles opponent's graveyard ({opp_gy_value} CMC)")
+    elif opp_tokens >= 2:
+        # -1/-1 to all creatures (kills tokens)
+        to_kill = [c for c in opp.creatures if (c.toughness or c.template.toughness or 0) <= 1]
+        for c in to_kill:
+            game._creature_dies(c)
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: "
+            f"Thraben Charm -1/-1 kills {len(to_kill)} tokens")
+    else:
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: "
+            f"Thraben Charm: no high-value mode available")
