@@ -32,7 +32,7 @@ A **Modern-format Magic: The Gathering game simulator** with EV-based AI decisio
 │  SIMULATION RUNNER                                          │
 │  run_meta.py (CLI + Python API)                             │
 │  --matrix --matchup --bo3 --field --audit --verbose --trace │
-│  import_deck.py  simulate_match.py  match_trace.py          │
+│  import_deck.py  match_trace.py  build_replay.py            │
 ├─────────────────────────────────────────────────────────────┤
 │  AI LAYER — EV-based decision engine (14 modules, 7757 ln)  │
 │  ev_player.py (1224 ln) — score plays, pick best            │
@@ -373,4 +373,4 @@ Every output gets: `Simulated: DATE | Decks: N | Games/pair: N | Seeds: range | 
 
 ---
 
-*See also: ARCHITECTURE.md · QUICKSTART.md · LLM_JUDGE_STRATEGY_AUDIT.md · LEGACY_MODERNISATION_PROPOSAL.md*
+*See also: docs/ARCHITECTURE.md · QUICKSTART.md · docs/history/audits/2026-04-11_LLM_judge.md · LEGACY_MODERNISATION_PROPOSAL.md*

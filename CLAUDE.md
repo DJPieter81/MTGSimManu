@@ -227,9 +227,6 @@ python run_meta.py --trace storm dimir -s 42000
 # Game actions log
 python run_meta.py --verbose zoo omnath -s 42000
 
-# Legacy debug dump
-python dump_game.py
-
 # BO3 match → HTML replay (correct pipeline)
 python run_meta.py --bo3 "Ruby Storm" "Domain Zoo" -s 55555 > replays/log.txt
 python build_replay.py replays/log.txt replay.html 55555
@@ -247,7 +244,7 @@ python build_replay.py replays/log.txt replay.html 55555
 
 ## Known Issues — LLM-Judge Strategy Audit
 
-See **`LLM_JUDGE_STRATEGY_AUDIT.md`** for the full 6-expert panel report (~168 games). Overall grade: **D+**.
+See **`docs/history/audits/2026-04-11_LLM_judge.md`** for the full 6-expert panel report (~168 games). Overall grade: **D+**. Superseded by `PROJECT_STATUS.md` (see Grade in §6).
 
 ### P0 — Critical (game-breaking)
 
@@ -323,9 +320,7 @@ python3 build_dashboard.py
 
 ## Replay Viewer — Pipeline
 
-**Do NOT use `simulate_match.py` output** — wrong color scheme and table layout.
-
-**Correct pipeline:**
+Canonical pipeline:
 ```bash
 # 1. Run verbose Bo3 and save log
 python run_meta.py --bo3 "Ruby Storm" "Affinity" -s 55555 > replays/ruby_storm_vs_affinity_s55555.txt
@@ -348,7 +343,7 @@ Always save logs to `replays/` and commit. `build_replay.py` is in the repo with
 
 **Current grade: C** (session 2 completed all P0/P1 fixes — see Section 7 for full changelog)
 
-Related docs: `MODERN_PROPOSAL.md` (6 infra proposals from Legacy), `LLM_JUDGE_STRATEGY_AUDIT.md` (original D+ audit), `LEGACY_MODERNISATION_PROPOSAL.md` (Legacy adoption plan).
+Related docs: `MODERN_PROPOSAL.md` (6 infra proposals from Legacy), `docs/history/audits/2026-04-11_LLM_judge.md` (original D+ audit), `LEGACY_MODERNISATION_PROPOSAL.md` (Legacy adoption plan).
 
 ## Sister Project — MTGSimClaude (Legacy)
 

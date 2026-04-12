@@ -22,8 +22,6 @@ elif [[ "$COMMAND" =~ metagame_fast\.py ]]; then
   IS_SIM=true
 elif [[ "$COMMAND" =~ run_meta_matrix ]]; then
   IS_SIM=true
-elif [[ "$COMMAND" =~ simulate_match\.py ]] && [[ "$COMMAND" =~ --matrix ]]; then
-  IS_SIM=true
 fi
 
 if [[ "$IS_SIM" != "true" ]]; then
