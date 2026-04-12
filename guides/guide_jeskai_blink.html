@@ -37,7 +37,7 @@ h1{font-size:24px;font-weight:700;margin-bottom:6px}
 .prov{font-size:9px;color:#bbb;text-align:center;margin-top:30px;border-top:1px solid #eee;padding-top:10px}
 .decklist{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:12px 0 24px}
 .dl-col h3{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#555;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid #e8e8e8}
-.dl-row{display:flex;justify-content:space-between;padding:2px 0;font-size:12px;border-bottom:1px solid #f5f5f5}
+.dl-row{display:flex;align-items:center;padding:3px 0;font-size:12px;border-bottom:1px solid #f5f5f5;gap:4px}
 .dl-row:hover{background:#f8f8f8}
 .dl-qty{font-weight:700;color:#888;width:20px;text-align:right;margin-right:6px;flex-shrink:0}
 .dl-card{flex:1}
@@ -66,47 +66,62 @@ document.addEventListener('mousemove',e=>{if(p.style.display==='block'){p.style.
 <div class="decklist">
 <div class="dl-col">
 <h3>Mainboard (60)</h3>
-<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Phelia, Exuberant Shepherd">Phelia, Exuberant Shepherd</span><span style="font-size:9px;color:#aaa;margin-left:4px">316 casts · 552 dmg</span></div>
-<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Phlage, Titan of Fire's Fury">Phlage, Titan of Fire's Fury</span><span style="font-size:9px;color:#aaa;margin-left:4px">467 casts · 68 kills</span></div>
-<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Quantum Riddler">Quantum Riddler</span></div>
-<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Ragavan, Nimble Pilferer">Ragavan, Nimble Pilferer</span><span style="font-size:9px;color:#aaa;margin-left:4px">305 casts · 566 dmg · 31 kills</span></div>
-<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Solitude">Solitude</span></div>
-<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Witch Enchanter">Witch Enchanter</span></div>
-<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Consign to Memory">Consign to Memory</span></div>
-<div class="dl-row"><span class="dl-qty">2</span><span class="dl-card card-tip" data-card="Ephemerate">Ephemerate</span><span style="font-size:9px;color:#aaa;margin-left:4px">341 casts · 35 kills</span></div>
-<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Galvanic Discharge">Galvanic Discharge</span><span style="font-size:9px;color:#aaa;margin-left:4px">328 casts · 37 kills</span></div>
-<div class="dl-row"><span class="dl-qty">2</span><span class="dl-card card-tip" data-card="Prismatic Ending">Prismatic Ending</span></div>
-<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Wrath of the Skies">Wrath of the Skies</span></div>
-<div class="dl-row"><span class="dl-qty">3</span><span class="dl-card card-tip" data-card="Fable of the Mirror-Breaker // Reflection of Kiki-Jiki">Fable of the Mirror-Breaker // Reflection of Kiki-Jiki</span></div>
-<div class="dl-row"><span class="dl-qty">2</span><span class="dl-card card-tip" data-card="Arena of Glory">Arena of Glory</span></div>
-<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Arid Mesa">Arid Mesa</span></div>
-<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Elegant Parlor">Elegant Parlor</span></div>
-<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Flooded Strand">Flooded Strand</span></div>
-<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Hallowed Fountain">Hallowed Fountain</span></div>
-<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Island">Island</span></div>
-<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Meticulous Archive">Meticulous Archive</span></div>
-<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Mountain">Mountain</span></div>
-<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Plains">Plains</span></div>
-<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Sacred Foundry">Sacred Foundry</span></div>
-<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Scalding Tarn">Scalding Tarn</span></div>
-<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Steam Vents">Steam Vents</span></div>
-<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Thundering Falls">Thundering Falls</span></div>
+<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Phelia, Exuberant Shepherd">Phelia, Exuberant Shepherd</span><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:3px;color:#7c4d12;background:#fff0e0;margin-left:6px">threat</span><span style="font-size:9px;color:#aaa;margin-left:auto;white-space:nowrap">316 casts · 552 dmg</span></div>
+<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Phlage, Titan of Fire's Fury">Phlage, Titan of Fire's Fury</span><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:3px;color:#7c4d12;background:#fff0e0;margin-left:6px">threat</span><span style="font-size:9px;color:#aaa;margin-left:auto;white-space:nowrap">467 casts · #1 finisher (68)</span></div>
+<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Quantum Riddler">Quantum Riddler</span><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:3px;color:#666;background:#f0f0f0;margin-left:6px">cantrip</span></div>
+<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Ragavan, Nimble Pilferer">Ragavan, Nimble Pilferer</span><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:3px;color:#666;background:#f0f0f0;margin-left:6px">cantrip</span><span style="font-size:9px;color:#aaa;margin-left:auto;white-space:nowrap">305 casts · 566 dmg · #4 finisher (31)</span></div>
+<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Solitude">Solitude</span><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:3px;color:#185fa5;background:#eef5ff;margin-left:6px">value</span></div>
+<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Witch Enchanter">Witch Enchanter</span><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:3px;color:#185fa5;background:#eef5ff;margin-left:6px">value</span></div>
+<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Consign to Memory">Consign to Memory</span><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:3px;color:#7c4d12;background:#fff0e0;margin-left:6px">hate</span></div>
+<div class="dl-row"><span class="dl-qty">2</span><span class="dl-card card-tip" data-card="Ephemerate">Ephemerate</span><span style="font-size:9px;color:#aaa;margin-left:auto;white-space:nowrap">341 casts · #3 finisher (35)</span></div>
+<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Galvanic Discharge">Galvanic Discharge</span><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:3px;color:#0f6e56;background:#e6f5ee;margin-left:6px">energy</span><span style="font-size:9px;color:#aaa;margin-left:auto;white-space:nowrap">328 casts · #2 finisher (37)</span></div>
+<div class="dl-row"><span class="dl-qty">2</span><span class="dl-card card-tip" data-card="Prismatic Ending">Prismatic Ending</span><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:3px;color:#b02020;background:#fde8e8;margin-left:6px">removal</span></div>
+<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Wrath of the Skies">Wrath of the Skies</span><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:3px;color:#b02020;background:#fde8e8;margin-left:6px">sweep</span></div>
+<div class="dl-row"><span class="dl-qty">3</span><span class="dl-card card-tip" data-card="Fable of the Mirror-Breaker // Reflection of Kiki-Jiki">Fable of the Mirror-Breaker // Reflection of Kiki-Jiki</span><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:3px;color:#534ab7;background:#eeedfb;margin-left:6px">enabler</span></div>
+<div class="dl-row"><span class="dl-qty">2</span><span class="dl-card card-tip" data-card="Arena of Glory">Arena of Glory</span><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:3px;color:#666;background:#f0f0f0;margin-left:6px">land</span></div>
+<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Arid Mesa">Arid Mesa</span><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:3px;color:#666;background:#f0f0f0;margin-left:6px">land</span></div>
+<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Elegant Parlor">Elegant Parlor</span><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:3px;color:#666;background:#f0f0f0;margin-left:6px">land</span></div>
+<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Flooded Strand">Flooded Strand</span><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:3px;color:#666;background:#f0f0f0;margin-left:6px">land</span></div>
+<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Hallowed Fountain">Hallowed Fountain</span><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:3px;color:#666;background:#f0f0f0;margin-left:6px">land</span></div>
+<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Island">Island</span><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:3px;color:#666;background:#f0f0f0;margin-left:6px">land</span></div>
+<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Meticulous Archive">Meticulous Archive</span><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:3px;color:#666;background:#f0f0f0;margin-left:6px">land</span></div>
+<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Mountain">Mountain</span><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:3px;color:#666;background:#f0f0f0;margin-left:6px">land</span></div>
+<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Plains">Plains</span><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:3px;color:#666;background:#f0f0f0;margin-left:6px">land</span></div>
+<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Sacred Foundry">Sacred Foundry</span><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:3px;color:#666;background:#f0f0f0;margin-left:6px">land</span></div>
+<div class="dl-row"><span class="dl-qty">4</span><span class="dl-card card-tip" data-card="Scalding Tarn">Scalding Tarn</span><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:3px;color:#666;background:#f0f0f0;margin-left:6px">land</span></div>
+<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Steam Vents">Steam Vents</span><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:3px;color:#666;background:#f0f0f0;margin-left:6px">land</span></div>
+<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Thundering Falls">Thundering Falls</span><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:3px;color:#666;background:#f0f0f0;margin-left:6px">land</span></div>
 <div class="dl-total">60 cards · 25 unique</div>
 </div>
 <div class="dl-col">
 <h3>Sideboard (15)</h3>
 <div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Ashiok, Dream Render">Ashiok, Dream Render</span></div>
-<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Clarion Conqueror">Clarion Conqueror</span></div>
-<div class="dl-row"><span class="dl-qty">2</span><span class="dl-card card-tip" data-card="High Noon">High Noon</span></div>
-<div class="dl-row"><span class="dl-qty">2</span><span class="dl-card card-tip" data-card="Mystical Dispute">Mystical Dispute</span></div>
-<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Obsidian Charmaw">Obsidian Charmaw</span></div>
-<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Strix Serenade">Strix Serenade</span></div>
-<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Surgical Extraction">Surgical Extraction</span></div>
-<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Teferi, Time Raveler">Teferi, Time Raveler</span></div>
-<div class="dl-row"><span class="dl-qty">2</span><span class="dl-card card-tip" data-card="White Orchid Phantom">White Orchid Phantom</span></div>
-<div class="dl-row"><span class="dl-qty">3</span><span class="dl-card card-tip" data-card="Wrath of the Skies">Wrath of the Skies</span></div>
+<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Clarion Conqueror">Clarion Conqueror</span><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:3px;color:#7c4d12;background:#fff0e0;margin-left:6px">threat</span></div>
+<div class="dl-row"><span class="dl-qty">2</span><span class="dl-card card-tip" data-card="High Noon">High Noon</span><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:3px;color:#b02020;background:#fde8e8;margin-left:6px">removal</span></div>
+<div class="dl-row"><span class="dl-qty">2</span><span class="dl-card card-tip" data-card="Mystical Dispute">Mystical Dispute</span><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:3px;color:#7c4d12;background:#fff0e0;margin-left:6px">hate</span><span style="font-size:9px;color:#aaa;margin-left:auto;white-space:nowrap">vs Ruby (5×), Amulet (5×), Living (4×)</span></div>
+<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Obsidian Charmaw">Obsidian Charmaw</span><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:3px;color:#185fa5;background:#eef5ff;margin-left:6px">value</span></div>
+<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Strix Serenade">Strix Serenade</span><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:3px;color:#534ab7;background:#eeedfb;margin-left:6px">enabler</span></div>
+<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Surgical Extraction">Surgical Extraction</span><span style="font-size:9px;color:#aaa;margin-left:auto;white-space:nowrap">vs Living</span></div>
+<div class="dl-row"><span class="dl-qty">1</span><span class="dl-card card-tip" data-card="Teferi, Time Raveler">Teferi, Time Raveler</span><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:3px;color:#666;background:#f0f0f0;margin-left:6px">cantrip</span></div>
+<div class="dl-row"><span class="dl-qty">2</span><span class="dl-card card-tip" data-card="White Orchid Phantom">White Orchid Phantom</span><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:3px;color:#185fa5;background:#eef5ff;margin-left:6px">value</span></div>
+<div class="dl-row"><span class="dl-qty">3</span><span class="dl-card card-tip" data-card="Wrath of the Skies">Wrath of the Skies</span><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:3px;color:#b02020;background:#fde8e8;margin-left:6px">sweep</span></div>
 <div class="dl-total">15 cards · 10 unique</div>
 </div>
+</div>
+<div class="section-title">Deck Construction Findings</div>
+<div style="margin:12px 0">
+<div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid #f0f0f0">
+<div><div style="font-size:13px;font-weight:600">Meta-weighted vs flat WR</div>
+<div style="font-size:11px;color:#888">Struggles more against popular decks</div></div>
+<div style="font-size:18px;font-weight:700;color:#b02020;font-family:monospace">-5.0pp</div></div>
+<div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid #f0f0f0">
+<div><div style="font-size:13px;font-weight:600">Phlage: #1 damage source</div>
+<div style="font-size:11px;color:#888">? casts across 1500 games</div></div>
+<div style="font-size:18px;font-weight:700;color:#b02020;font-family:monospace">1518 dmg</div></div>
+<div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid #f0f0f0">
+<div><div style="font-size:13px;font-weight:600">Phlage, Titan of Fire's Fury: #1 finisher</div>
+<div style="font-size:11px;color:#888">Direct damage finisher (avg kill T8.1)</div></div>
+<div style="font-size:18px;font-weight:700;color:#1f7040;font-family:monospace">68 kills</div></div>
 </div>
 <div class="section-title">Stars of the Sim — 1500 Games</div>
 <div class="star-cards">
@@ -305,7 +320,7 @@ document.addEventListener('mousemove',e=>{if(p.style.display==='block'){p.style.
 <div class="mu-row"><span class="mu-name">Dimir Midrange</span><span class="mu-type">midrange</span><span class="mu-meta">2.8%</span><div class="mu-bar"><div class="mu-fill" style="width:37%;background:#b02020"></div></div><span class="mu-val" style="color:#b02020">37%</span></div>
 <div class="mu-row"><span class="mu-name">Pinnacle Affinity</span><span class="mu-type">aggro</span><span class="mu-meta">2.0%</span><div class="mu-bar"><div class="mu-fill" style="width:35%;background:#b02020"></div></div><span class="mu-val" style="color:#b02020">35%</span></div>
 <div class="prov">
-Simulated: 2026-04-12 · 16 decks · 100 Bo3/pair (1500 games for Jeskai Blink) · Engine: MTGSimManu@fc2806d<br>
+Simulated: 2026-04-12 · 16 decks · 100 Bo3/pair (1500 games for Jeskai Blink) · Engine: MTGSimManu@b51902e<br>
 Source: metagame_data.jsx (D object) · Card stats: deck_cards[1] · Matchups: matchup_cards["1,*"]<br>
 Shell: ManusAI · Strategy + EV scoring: Claude · Owner: DJPieter81
 </div>

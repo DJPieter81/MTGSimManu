@@ -13,6 +13,61 @@ import json, re, sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from decks.modern_meta import MODERN_DECKS
 
+# Role badge mapping from card tags
+TAG_TO_BADGE = {
+    'efficient_threat': ('threat', '#7c4d12', '#fff0e0'),
+    'threat': ('threat', '#7c4d12', '#fff0e0'),
+    'energy': ('energy', '#0f6e56', '#e6f5ee'),
+    'removal': ('removal', '#b02020', '#fde8e8'),
+    'board_wipe': ('sweep', '#b02020', '#fde8e8'),
+    'stax': ('hate', '#7c4d12', '#fff0e0'),
+    'interaction': ('hate', '#7c4d12', '#fff0e0'),
+    'token_maker': ('enabler', '#534ab7', '#eeedfb'),
+    'etb_value': ('value', '#185fa5', '#eef5ff'),
+    'graveyard': ('GY', '#534ab7', '#eeedfb'),
+    'counter': ('protect', '#185fa5', '#eef5ff'),
+    'cantrip': ('cantrip', '#666', '#f0f0f0'),
+    'artifact': ('artifact', '#854f0b', '#fdf5e6'),
+    'cascade': ('cascade', '#0f6e56', '#e6f5ee'),
+}
+
+def get_role_badge(card_name, db):
+    """Get a role badge HTML from card tags."""
+    card = db.cards.get(card_name) if db else None
+    if not card: return ''
+    for tag in sorted(card.tags):
+        tag_str = str(tag).lower().replace('cardtag.', '')
+        if tag_str in TAG_TO_BADGE:
+            label, color, bg = TAG_TO_BADGE[tag_str]
+            return f'<span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:3px;color:{color};background:{bg};margin-left:6px">{label}</span>'
+    # Fallback by card type
+    if card.is_creature and card.cmc <= 2: return f'<span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:3px;color:#7c4d12;background:#fff0e0;margin-left:6px">threat</span>'
+    if card.is_land: return f'<span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:3px;color:#666;background:#f0f0f0;margin-left:6px">land</span>'
+    return ''
+
+def get_sb_targets(deck_name, D, idx):
+    """Build SB card → opponent matchup mapping from matchup_cards."""
+    targets = {}
+    for j in range(len(D['decks'])):
+        if j == idx: continue
+        key = f'{min(idx,j)},{max(idx,j)}'
+        mc = D['matchup_cards'].get(key, {})
+        sb_key = 'd1_sb' if idx < j else 'd2_sb'
+        for line in mc.get(sb_key, []):
+            if line.startswith('IN:'):
+                # Parse "IN: 2x Wrath of the Skies"
+                m = re.match(r'IN:\s*(\d+)x\s+(.+)', line)
+                if m:
+                    qty, card = int(m.group(1)), m.group(2).strip()
+                    if card not in targets: targets[card] = []
+                    targets[card].append((D['decks'][j], qty))
+            elif line.startswith('SB cards seen:'):
+                # Parse "SB cards seen: Celestial Purge (1x cast)"
+                for m2 in re.finditer(r'(\S.+?)\s*\((\d+)x cast\)', line):
+                    card, casts = m2.group(1).strip(), int(m2.group(2))
+                    # Already tracked via IN, just note cast count
+    return targets
+
 def load_D(jsx_path='metagame_data.jsx'):
     with open(jsx_path) as f: jsx = f.read()
     d_start = jsx.index('const D = ') + 10
@@ -160,7 +215,7 @@ def build_guide(deck_name, D):
     h('.prov{font-size:9px;color:#bbb;text-align:center;margin-top:30px;border-top:1px solid #eee;padding-top:10px}')
     h('.decklist{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:12px 0 24px}')
     h('.dl-col h3{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#555;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid #e8e8e8}')
-    h('.dl-row{display:flex;justify-content:space-between;padding:2px 0;font-size:12px;border-bottom:1px solid #f5f5f5}')
+    h('.dl-row{display:flex;align-items:center;padding:3px 0;font-size:12px;border-bottom:1px solid #f5f5f5;gap:4px}')
     h('.dl-row:hover{background:#f8f8f8}')
     h('.dl-qty{font-weight:700;color:#888;width:20px;text-align:right;margin-right:6px;flex-shrink:0}')
     h('.dl-card{flex:1}')
@@ -193,7 +248,17 @@ def build_guide(deck_name, D):
     h(f'  <div class="hero-item"><div class="hero-label">Best / Worst</div><div class="hero-val g" style="font-size:18px;padding-top:2px">{best[1]["wr"]}%</div><div class="hero-sub">vs {best[0][:12]} / worst {worst[1]["wr"]}% vs {worst[0][:12]}</div></div>')
     h('</div>')
     
-    # Decklist with card-level sim stats
+    # Load card database for role badges
+    try:
+        from engine.card_database import CardDatabase
+        db = CardDatabase('ModernAtomic.json')
+    except:
+        db = None
+    
+    # SB targets from matchup data
+    sb_targets = get_sb_targets(deck_name, D, idx)
+    
+    # Decklist with card-level sim stats + role badges
     deck_data = MODERN_DECKS.get(deck_name, {})
     mb = deck_data.get('mainboard', {})
     sb = deck_data.get('sideboard', {})
@@ -207,25 +272,63 @@ def build_guide(deck_name, D):
         h('<div class="dl-col">')
         h(f'<h3>Mainboard ({sum(mb.values())})</h3>')
         for card, qty in mb.items():
+            badge = get_role_badge(card, db)
             stats = []
             casts = cast_map.get(card, 0)
             dmg = dmg_map_full.get(card, 0)
             kills = fin_map_full.get(card, 0)
             if casts: stats.append(f'{casts} casts')
             if dmg: stats.append(f'{dmg} dmg')
-            if kills: stats.append(f'{kills} kills')
-            stat_str = f'<span style="font-size:9px;color:#aaa;margin-left:4px">{" · ".join(stats)}</span>' if stats else ''
-            h(f'<div class="dl-row"><span class="dl-qty">{qty}</span><span class="dl-card card-tip" data-card="{esc(card)}">{esc(card)}</span>{stat_str}</div>')
+            if kills: stats.append(f'#{[i+1 for i,f in enumerate(dc.get("finishers",[])) if f["card"]==card][0] if any(f["card"]==card for f in dc.get("finishers",[])) else "?"} finisher ({kills})')
+            stat_str = f'<span style="font-size:9px;color:#aaa;margin-left:auto;white-space:nowrap">{" · ".join(stats)}</span>' if stats else ''
+            h(f'<div class="dl-row"><span class="dl-qty">{qty}</span><span class="dl-card card-tip" data-card="{esc(card)}">{esc(card)}</span>{badge}{stat_str}</div>')
         h(f'<div class="dl-total">{sum(mb.values())} cards · {len(mb)} unique</div>')
         h('</div>')
-        # Sideboard
+        # Sideboard with vs targets
         h('<div class="dl-col">')
         h(f'<h3>Sideboard ({sum(sb.values())})</h3>')
         for card, qty in sb.items():
-            h(f'<div class="dl-row"><span class="dl-qty">{qty}</span><span class="dl-card card-tip" data-card="{esc(card)}">{esc(card)}</span></div>')
+            badge = get_role_badge(card, db)
+            # SB targets: which matchups this card comes in against
+            tgt = sb_targets.get(card, [])
+            tgt_str = ''
+            if tgt:
+                parts = []
+                for opp, n in tgt[:3]:
+                    parts.append(f'{opp.split(" ")[0]}' + (f' ({n}×)' if n > 1 else ''))
+                tgt_str = f'<span style="font-size:9px;color:#aaa;margin-left:auto;white-space:nowrap">vs {", ".join(parts)}</span>'
+            h(f'<div class="dl-row"><span class="dl-qty">{qty}</span><span class="dl-card card-tip" data-card="{esc(card)}">{esc(card)}</span>{badge}{tgt_str}</div>')
         h(f'<div class="dl-total">{sum(sb.values())} cards · {len(sb)} unique</div>')
         h('</div>')
         h('</div>')
+
+    # Deck Construction Findings
+    h('<div class="section-title">Deck Construction Findings</div>')
+    h('<div style="margin:12px 0">')
+    # Weighted vs flat gap
+    h(f'<div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid #f0f0f0">')
+    h(f'<div><div style="font-size:13px;font-weight:600">Meta-weighted vs flat WR</div>')
+    h(f'<div style="font-size:11px;color:#888">{"Beats top decks as well as weak ones" if abs(gap) < 2 else "Struggles more against popular decks" if gap < -2 else "Overperforms at top tables"}</div></div>')
+    gap_color = '#1f7040' if gap > 0 else '#b02020' if gap < -1 else '#854f0b'
+    h(f'<div style="font-size:18px;font-weight:700;color:{gap_color};font-family:monospace">{gap:+.1f}pp</div></div>')
+    # Top damage source
+    non_token_dmg = [d for d in dc.get('mvp_damage', []) if 'Token' not in d['card']]
+    if non_token_dmg:
+        top = non_token_dmg[0]
+        h(f'<div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid #f0f0f0">')
+        h(f'<div><div style="font-size:13px;font-weight:600">{esc(top["card"])}: #1 damage source</div>')
+        casts_for = cast_map.get(top['card'], '?')
+        h(f'<div style="font-size:11px;color:#888">{casts_for} casts across {overall["total_matches"]} games</div></div>')
+        h(f'<div style="font-size:18px;font-weight:700;color:#b02020;font-family:monospace">{top["count"]} dmg</div></div>')
+    # Top finisher
+    if dc.get('finishers'):
+        top_f = dc['finishers'][0]
+        h(f'<div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid #f0f0f0">')
+        h(f'<div><div style="font-size:13px;font-weight:600">{esc(top_f["card"])}: #1 finisher</div>')
+        f_dmg = dmg_map_full.get(top_f['card'], '?')
+        h(f'<div style="font-size:11px;color:#888">{top_f.get("desc","")}</div></div>')
+        h(f'<div style="font-size:18px;font-weight:700;color:#1f7040;font-family:monospace">{top_f["count"]} kills</div></div>')
+    h('</div>')
     
     # Stars
     h(f'<div class="section-title">Stars of the Sim — {overall["total_matches"]} Games</div>')
