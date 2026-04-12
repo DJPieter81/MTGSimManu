@@ -1143,10 +1143,14 @@ class EVPlayer:
 
         me = game.players[self.player_idx]
         total_incoming = sum(a.power or 0 for a in attackers)
+        biggest_attacker_power = max((a.power or 0 for a in attackers), default=0)
 
-        # EMERGENCY: if incoming damage is lethal, we MUST block
-        # Use cheapest blockers first to preserve high-value creatures
-        if total_incoming >= me.life:
+        # EMERGENCY: block when incoming damage is dangerous
+        # Triggers: lethal, would drop below 5 life, or single attacker > half our life
+        emergency = (total_incoming >= me.life
+                     or (me.life - total_incoming <= 5 and total_incoming >= 3)
+                     or biggest_attacker_power >= me.life // 2)
+        if emergency:
             emergency_blocks: Dict[int, List[int]] = {}
             e_used: Set[int] = set()
             # Block biggest attackers with smallest blockers
@@ -1167,12 +1171,13 @@ class EVPlayer:
                 if best_chump:
                     emergency_blocks[attacker.instance_id] = [best_chump.instance_id]
                     e_used.add(best_chump.instance_id)
-                    # Check if we've blocked enough to survive
+                    # Check if we've blocked enough to survive/stabilize
                     blocked_damage = sum(
                         a.power or 0 for a in attackers if a.instance_id in emergency_blocks
                     )
-                    if total_incoming - blocked_damage < me.life:
-                        break  # we survive, stop blocking
+                    remaining = total_incoming - blocked_damage
+                    if remaining < me.life and (me.life - remaining > 5 or remaining == 0):
+                        break  # stabilized
             if emergency_blocks:
                 return emergency_blocks
 
