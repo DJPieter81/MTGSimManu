@@ -320,9 +320,7 @@ python3 build_dashboard.py
 
 ## Replay Viewer — Pipeline
 
-**Do NOT use `simulate_match.py` output** — wrong color scheme and table layout.
-
-**Correct pipeline:**
+Canonical pipeline:
 ```bash
 # 1. Run verbose Bo3 and save log
 python run_meta.py --bo3 "Ruby Storm" "Affinity" -s 55555 > replays/ruby_storm_vs_affinity_s55555.txt
