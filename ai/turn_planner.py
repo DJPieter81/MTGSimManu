@@ -38,9 +38,9 @@ LETHAL_BONUS = 100.0
 TWO_TURN_LETHAL_BONUS = 15.0
 # Trade values: derived from creature clock impact difference
 TRADE_UP_BONUS = 2.0
-TRADE_DOWN_PENALTY = -4.5
+TRADE_DOWN_PENALTY = -2.5
 # Risk of tapping out vs open opponent mana
-SHIELDS_DOWN_PENALTY = -2.5
+SHIELDS_DOWN_PENALTY = -1.5
 # Computational budget (structural)
 MAX_ATTACK_CONFIGS = 32
 # Response thresholds: derived from creature_value() scale (~1-15).
@@ -222,7 +222,7 @@ class CombatPlanner:
 
         # Evaluate each configuration
         best_config = []
-        best_score = 0.0  # baseline: don't attack at all
+        best_score = -1.0  # allow slightly-negative attacks (chip damage matters)
         baseline_score = board.score()
 
         for config in configs:
@@ -239,11 +239,13 @@ class CombatPlanner:
             if result.two_turn_lethal:
                 delta += TWO_TURN_LETHAL_BONUS
 
-            # Penalty if we're trading down badly
+            # Penalty if we're trading down badly — scaled by lost value
+            # Losing a 1/1 token for nothing is minor; losing a 4/4 is serious
             my_lost_value = sum(c.value for c in result.my_dead)
             opp_lost_value = sum(c.value for c in result.opp_dead)
             if my_lost_value > opp_lost_value * 1.5 and not result.is_lethal:
-                delta += TRADE_DOWN_PENALTY
+                scale = min(my_lost_value / 5.0, 1.0)  # 1/1≈0.2x, 3/3≈0.6x, 5/5=1.0x
+                delta += TRADE_DOWN_PENALTY * scale
 
             # Bonus for trading up
             if opp_lost_value > my_lost_value * 1.2:
@@ -265,6 +267,11 @@ class CombatPlanner:
                     damage_ratio = min(total_attack_power / max(board.opp_life, 1), 1.0)
                     scaled_penalty = SHIELDS_DOWN_PENALTY * (1.0 - damage_ratio * 0.6)
                     delta += scaled_penalty
+
+            # Chip damage bonus: dealing ANY damage has inherent value
+            # This ensures profitable-but-small attacks (1/1 into empty) are taken
+            if result.damage_to_opp > 0:
+                delta += result.damage_to_opp * 0.3  # base chip value
 
             # Aggression bonus: attacks become more valuable as opponent's life drops.
             # In real MTG, players push damage aggressively when opponent is low.

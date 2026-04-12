@@ -1028,6 +1028,47 @@ class EVPlayer:
         if not opp_blockers and valid:
             return valid
 
+        # ── Free attackers: creatures that survive any block always attack ──
+        # If no blocker has power >= attacker.toughness, the attack is risk-free
+        free_attackers = []
+        non_free = []
+        for c in valid:
+            can_die_to_block = any(
+                (b.power or 0) >= (c.toughness or 0)
+                for b in opp_blockers
+                if not b.tapped  # only untapped creatures can block
+            )
+            is_evasive = (
+                Keyword.FLYING in c.keywords and not any(
+                    Keyword.FLYING in b.keywords or Keyword.REACH in b.keywords
+                    for b in opp_blockers if not b.tapped)
+            )
+            if not can_die_to_block or is_evasive:
+                free_attackers.append(c)
+            else:
+                non_free.append(c)
+
+        # If ALL our creatures are free attackers, just send them all
+        if not non_free and free_attackers:
+            return free_attackers
+
+        # ── Determine opponent archetype for anti-combo aggression ──
+        opp_deck_name = getattr(opp, 'deck_name', '')
+        opp_archetype = 'midrange'  # default
+        try:
+            from ai.gameplan import get_gameplan
+            opp_gp = get_gameplan(opp_deck_name)
+            if opp_gp:
+                opp_archetype = opp_gp.archetype
+        except Exception:
+            pass
+
+        # ── Racing rule: when opp life is within 2x our board power, race ──
+        is_racing = total_power > 0 and opp.life <= 2 * total_power
+
+        # ── Anti-combo: vs spell-based decks, creature attacks are always right ──
+        opp_is_spell_deck = opp_archetype in ('combo', 'storm')
+
         # CombatPlanner
         try:
             vboard = extract_virtual_board(game, self.player_idx)
@@ -1044,6 +1085,14 @@ class EVPlayer:
             if getattr(me, 'aggression_boost_turns', 0) > 0:
                 threshold -= 2.0
 
+            # Racing: when we can kill in ~2 swings, be aggressive
+            if is_racing:
+                threshold -= 2.0
+
+            # Anti-combo: opponent won't block with creatures, so attacks are free
+            if opp_is_spell_deck:
+                threshold -= 3.0
+
             # Bonus EV for combat damage / attack triggers the planner doesn't model
             trigger_bonus = 0.0
             if attack_plan:
@@ -1056,28 +1105,31 @@ class EVPlayer:
 
             if attack_plan and (score_delta + trigger_bonus) > threshold:
                 attack_ids = {vc.instance_id for vc in attack_plan}
-                return [c for c in valid if c.instance_id in attack_ids]
+                planner_picks = [c for c in valid if c.instance_id in attack_ids]
+                # Always include free attackers even if planner didn't pick them
+                free_ids = {c.instance_id for c in free_attackers}
+                for c in free_attackers:
+                    if c.instance_id not in attack_ids:
+                        planner_picks.append(c)
+                return planner_picks
         except Exception:
             pass
 
-        # Fallback: attack with creatures that won't die to blockers,
-        # or creatures with valuable combat triggers worth the trade
-        safe = []
-        max_blocker_power = max((b.power or 0 for b in opp_blockers), default=0)
-        for c in valid:
+        # Fallback: always send free attackers + creatures that can trade favorably
+        safe = list(free_attackers)
+        for c in non_free:
             c_oracle = (c.template.oracle_text or "").lower()
             has_combat_trigger = 'combat damage to a player' in c_oracle
-            if Keyword.FLYING in c.keywords and not any(
-                    Keyword.FLYING in b.keywords or Keyword.REACH in b.keywords
-                    for b in opp_blockers):
-                safe.append(c)  # unblockable flyer
-            elif (c.toughness or 0) > max_blocker_power:
-                safe.append(c)  # survives any single block
-            elif has_combat_trigger and (c.power or 0) > 0:
+            if has_combat_trigger and (c.power or 0) > 0:
                 # e.g. Ragavan: attack if our power kills their best blocker (even trade gains trigger)
                 killable = [b for b in opp_blockers if (c.power or 0) >= (b.toughness or 0)]
                 if killable:
                     safe.append(c)
+
+        # If racing or vs combo, send everything even if risky
+        if (is_racing or opp_is_spell_deck) and valid:
+            return valid
+
         return safe if safe else []
 
     def decide_blockers(self, game, attackers) -> Dict[int, List[int]]:

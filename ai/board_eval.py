@@ -276,17 +276,24 @@ def _eval_dash(game, me, a: BoardAssessment, ctx: dict) -> float:
 
     opp = game.players[1 - me.index if hasattr(me, 'index') else 0]
 
-    # Opponent has blockers/threats? Dash to dodge removal
     opp_has_blockers = any(c.can_block for c in opp.creatures)
     opp_threatening = len(opp.creatures) >= 2
 
     score = 0.0
+
+    # Early game with empty opponent board: Dash for guaranteed haste damage
+    if not opp_has_blockers and game.turn_number <= 3:
+        score += 2.0  # Haste damage is huge in early turns
+
     if opp_has_blockers or opp_threatening:
-        score += 1.0
+        score += 1.0  # Dodge removal by bouncing back
+
     if a.pressure > 0.6:
         score += 0.5
-    # Prefer permanent body when board is stable
-    score -= 0.3
+
+    # Prefer permanent body only when they can block (body has blocking value)
+    if opp_has_blockers:
+        score -= 0.3
 
     return score
 
