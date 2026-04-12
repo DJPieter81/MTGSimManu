@@ -2369,21 +2369,35 @@ def goblin_bombardment_etb(game, card, controller, targets=None, item=None):
 def blood_moon_etb(game, card, controller, targets=None, item=None):
     """Blood Moon enters: opponent's nonbasic lands become Mountains.
 
-    Only strips non-R mana production. Lands that already only produce R
-    are unaffected (Steam Vents producing U+R loses U but keeps R).
-    Opponent-only simplification (controller builds around it).
+    CRITICAL: Do NOT mutate `land.template.produces_mana` — templates are
+    shared across every CardInstance of that land in every game in the
+    matrix worker. The old implementation permanently corrupted the
+    CardDatabase for all subsequent games, which is the primary cause of
+    Boros's 94% WR (Blood Moon SB → opponent lands become Mountains in
+    game 1 → stay broken for games 2..N because mana-tap logic reads the
+    shared template).
+
+    Fix: give each affected land instance its own shallow-copied template
+    with produces_mana=['R']. Only the instance sees the change; the
+    shared CardDatabase template is untouched.
     """
+    import copy
     opp_idx = 1 - controller
     opp = game.players[opp_idx]
     affected = 0
     for land in opp.lands:
         supertypes = getattr(land.template, 'supertypes', [])
-        if 'Basic' not in supertypes:
-            old_colors = set(land.template.produces_mana)
-            # Only affect lands that produce non-R colors
-            if old_colors != {'R'} and old_colors != set():
-                land.template.produces_mana = ['R']
-                affected += 1
+        if 'Basic' in supertypes:
+            continue
+        old_colors = set(land.template.produces_mana)
+        if old_colors == {'R'} or old_colors == set():
+            continue
+        # Shallow-copy the template, then replace produces_mana in the copy.
+        # Assigning land.template rebinds only this instance's reference.
+        per_instance_tmpl = copy.copy(land.template)
+        per_instance_tmpl.produces_mana = ['R']
+        land.template = per_instance_tmpl
+        affected += 1
     if affected > 0:
         game.log.append(
             f"T{game.display_turn} P{controller+1}: "
