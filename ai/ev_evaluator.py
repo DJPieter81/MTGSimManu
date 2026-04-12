@@ -594,6 +594,100 @@ def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
     )
 
 
+
+# ═══════════════════════════════════════════════════════════════════
+# Combo Chain Evaluator — lookahead for storm/ritual chains
+# ═══════════════════════════════════════════════════════════════════
+
+def _estimate_combo_chain(game, player_idx: int, first_card=None):
+    """Simulate casting all chainable spells from hand to estimate kill potential.
+
+    Returns (can_kill: bool, storm_count: int, total_damage: int, chain: list[str])
+
+    Models:
+    - Rituals: spend CMC, gain 3R (net +1)
+    - Cost reducers on battlefield: -1 to instant/sorcery costs
+    - Draw spells: draw 2 cards (may find more rituals)
+    - Finishers: Grapeshot (storm copies), Empty the Warrens (tokens)
+    """
+    me = game.players[player_idx]
+
+    # Count cost reducers on battlefield
+    reducers = sum(1 for c in me.battlefield
+                   if getattr(c.template, 'is_cost_reducer', False))
+
+    # Available mana
+    mana = len(me.untapped_lands) + me.mana_pool.total()
+
+    # Partition hand into categories
+    rituals = []
+    draws = []
+    finishers = []
+    other_spells = []
+
+    for c in me.hand:
+        if c.template.is_land:
+            continue
+        tags = getattr(c.template, 'tags', set())
+        name = c.name
+        cmc = max(0, (c.template.cmc or 0) - reducers)
+
+        if 'ritual' in tags:
+            rituals.append((name, cmc, 3))  # name, cost, mana produced
+        elif name in ('Grapeshot', 'Empty the Warrens'):
+            finishers.append((name, cmc))
+        elif 'cantrip' in tags or 'card_advantage' in tags or name in (
+                'Reckless Impulse', "Wrenn's Resolve", 'Glimpse the Impossible',
+                'Expressive Iteration', 'Valakut Awakening // Valakut Stoneforge'):
+            draws.append((name, cmc))
+        elif 'instant_speed' in tags or not c.template.is_creature:
+            other_spells.append((name, cmc))
+
+    # Simulate the chain
+    storm = 0
+    chain = []
+    if first_card and first_card.name not in [r[0] for r in rituals] + [d[0] for d in draws] + [f[0] for f in finishers]:
+        return False, 0, 0, []
+
+    # Cast rituals first (net positive mana)
+    for name, cost, produced in sorted(rituals, key=lambda r: r[1]):
+        if mana >= cost:
+            mana = mana - cost + produced
+            storm += 1
+            chain.append(name)
+
+    # Cast draw spells (may chain into more gas)
+    for name, cost in sorted(draws, key=lambda d: d[1]):
+        if mana >= cost:
+            mana -= cost
+            storm += 1
+            chain.append(name)
+            # Draw spells find ~1 more castable spell on average
+            mana += 1  # approximate: drawn card is often a ritual or free spell
+
+    # Cast other cheap spells for storm count
+    for name, cost in sorted(other_spells, key=lambda s: s[1]):
+        if cost <= 1 and mana >= cost:
+            mana -= cost
+            storm += 1
+            chain.append(name)
+
+    # Can we cast a finisher?
+    for name, cost in finishers:
+        if mana >= cost:
+            storm += 1
+            chain.append(name)
+            if name == 'Grapeshot':
+                total_damage = storm  # each storm copy deals 1
+                can_kill = total_damage >= game.players[1 - player_idx].life
+                return can_kill, storm, total_damage, chain
+            elif name == 'Empty the Warrens':
+                tokens = storm * 2
+                return tokens >= 6, storm, tokens, chain  # 6+ goblins is usually enough
+
+    return False, storm, 0, chain
+
+
 def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
                     game: "GameState" = None, player_idx: int = 0,
                     dk: Optional[DeckKnowledge] = None,
@@ -617,6 +711,24 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
     after_value = evaluate_board(post_response, archetype, dk)
 
     ev = after_value - current_value
+
+    # Combo chain boost: if this card starts a lethal storm/combo chain,
+    # boost EV massively so the AI prioritizes starting the chain
+    if game and archetype == "combo":
+        tags = getattr(card.template, 'tags', set())
+        is_chain_starter = ('ritual' in tags or 'cantrip' in tags or
+                           'card_advantage' in tags or 'cost_reducer' in tags or
+                           card.name in ('Grapeshot', 'Empty the Warrens',
+                                        'Past in Flames', 'Wish'))
+        if is_chain_starter:
+            can_kill, storm_count, damage, chain = _estimate_combo_chain(
+                game, player_idx, first_card=card)
+            if can_kill:
+                ev += 50.0  # massive boost — this starts a lethal chain
+            elif storm_count >= 4:
+                ev += 15.0  # good chain even if not lethal
+            elif storm_count >= 2:
+                ev += 5.0   # moderate chain
 
     if not detailed:
         return ev
