@@ -4,6 +4,13 @@ Magic: The Gathering Modern-format game simulator with EV-based AI. Simulates fu
 
 **Grade: C** · 149 tests passing · 16 decks · 21,795 cards · 0 external deps
 
+### Live Demos
+
+- [**Project Showcase**](https://djpieter81.github.io/MTGSimManu/templates/reference_showcase.html) — Interactive architecture, AI pipeline, heatmap, charts
+- [**Metagame Matrix**](https://djpieter81.github.io/MTGSimManu/modern_meta_matrix_full.html) — 15×15 matchup heatmap with card-level detail
+- [**Deck Guide (Boros Energy)**](https://djpieter81.github.io/MTGSimManu/templates/reference_deck_guide.html) — Scryfall hovers, sim-verified insights
+- [**Sister Project: Legacy Showcase**](https://djpieter81.github.io/MTGSimClaude/results/mtgsimclaude_showcase.html) — MTGSimClaude (38 Legacy decks)
+
 ## Quick Start
 
 ```bash
