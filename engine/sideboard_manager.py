@@ -32,16 +32,21 @@ def sideboard(mainboard: Dict[str, int], sideboard_cards: Dict[str, int],
         card_lower = card_name.lower()
 
         # Graveyard hate vs graveyard decks
+        # bojuka catches Bojuka Bog (a land that exiles a graveyard)
         if any(w in opp_lower for w in ["goryo", "living end", "dredge"]):
             if any(w in card_lower for w in ["relic", "rest in peace", "leyline of the void",
                                                "surgical", "nihil", "endurance",
-                                               "tormod", "crypt", "cling to dust"]):
+                                               "tormod", "crypt", "cling to dust",
+                                               "bojuka"]):
                 board_in_priority.append((card_name, count, 10))
 
         # Artifact hate vs artifact decks
+        # pithing catches Pithing Needle (Tron SB), meltdown catches Meltdown
+        # (Storm/Izzet SB), boseiju catches Boseiju, Who Endures (LE/Omnath/4-5c SB)
         if any(w in opp_lower for w in ["affinity", "tron"]):
             if any(w in card_lower for w in ["wear", "force of vigor", "collector",
-                                               "haywire", "shattering", "hurkyl"]):
+                                               "haywire", "shattering", "hurkyl",
+                                               "pithing", "meltdown", "boseiju"]):
                 board_in_priority.append((card_name, count, 9))
 
         # Counterspells vs combo
