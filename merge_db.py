@@ -4,7 +4,7 @@
 Run this after git pull, before any sim or dashboard work.
 Usage: python3 merge_db.py
 """
-import json, glob, sys
+import json, glob, os, sys
 
 base = "ModernAtomic.json"
 parts = sorted(glob.glob("ModernAtomic_part*.json"))
@@ -13,8 +13,13 @@ if not parts:
     print("No part files found — nothing to merge.")
     sys.exit(0)
 
-with open(base) as f:
-    raw = json.load(f)
+# On fresh clone, ModernAtomic.json doesn't exist yet — start from an empty
+# MTGJSON-shaped skeleton so merge works end-to-end without a prerequisite.
+if os.path.exists(base):
+    with open(base) as f:
+        raw = json.load(f)
+else:
+    raw = {"meta": {}, "data": {}}
 
 cards = raw.get("data", raw)
 before = len(cards)

@@ -14,7 +14,7 @@ class TestMulliganDecider:
 
     def test_auto_keep_at_5(self):
         from ai.mulligan import MulliganDecider
-        from ai.ai_player import ArchetypeStrategy
+        from ai.strategy_profile import ArchetypeStrategy
         decider = MulliganDecider(ArchetypeStrategy.MIDRANGE)
         # At 5 cards, the AIPlayer wrapper auto-keeps, but the decider
         # should also return True for any reasonable 5-card hand
@@ -24,7 +24,7 @@ class TestMulliganDecider:
     def test_generic_too_few_lands(self):
         """Generic mulligan rejects 0-land hands."""
         from ai.mulligan import MulliganDecider
-        from ai.ai_player import ArchetypeStrategy
+        from ai.strategy_profile import ArchetypeStrategy
         from unittest.mock import MagicMock
 
         decider = MulliganDecider(ArchetypeStrategy.MIDRANGE)
@@ -47,7 +47,7 @@ class TestMulliganDecider:
     def test_generic_too_many_lands(self):
         """Generic mulligan rejects 5+ land hands at 7 cards."""
         from ai.mulligan import MulliganDecider
-        from ai.ai_player import ArchetypeStrategy
+        from ai.strategy_profile import ArchetypeStrategy
         from unittest.mock import MagicMock
 
         decider = MulliganDecider(ArchetypeStrategy.MIDRANGE)

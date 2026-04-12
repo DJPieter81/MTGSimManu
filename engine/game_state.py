@@ -1369,9 +1369,17 @@ class GameState:
                             cmc_counts[cm] = cmc_counts.get(cm, 0) + 1
                 # Pick the CMC with the most spells, capped at available mana
                 if cmc_counts and x_value >= 1:
-                    best_x = max((cnt, cmc) for cmc, cnt in cmc_counts.items()
-                                 if cmc <= x_value)
-                    x_value = best_x[1]
+                    # Bug guard: cmc_counts non-empty doesn't guarantee any
+                    # CMC fits under x_value — the filter can still produce an
+                    # empty sequence. Materialize the candidate list and fall
+                    # back to X=1 when nothing fits.
+                    candidates = [(cnt, cmc) for cmc, cnt in cmc_counts.items()
+                                  if cmc <= x_value]
+                    if candidates:
+                        best_x = max(candidates)
+                        x_value = best_x[1]
+                    else:
+                        x_value = 1
                 elif x_value >= 1:
                     x_value = 1  # fallback to X=1 if no data
             # +1/+1 counter creatures: use max mana (Ballista-style)
