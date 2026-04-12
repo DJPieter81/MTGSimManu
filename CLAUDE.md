@@ -106,11 +106,14 @@ python import_deck.py "Deck Name" --archetype control < decklist.txt
 ```
 Auto-detects archetype, generates gameplan, prints code to paste into modern_meta.py.
 
-## Available Decks (14)
+## Available Decks (15)
 
-Boros Energy, Jeskai Blink, Ruby Storm, Affinity, Pinnacle Affinity, Eldrazi Tron, Amulet Titan, Goryo's Vengeance, Domain Zoo, Living End, Izzet Prowess, Dimir Midrange, 4c Omnath, 4/5c Control, Azorius Control
+Boros Energy, Jeskai Blink, Ruby Storm, Affinity, Eldrazi Tron, Amulet Titan, Goryo's Vengeance, Domain Zoo, Living End, Izzet Prowess, Dimir Midrange, 4c Omnath, 4/5c Control, Azorius Control, Azorius Control (WST)
 
-**Known DB gaps:** ~~`The Legend of Roku` and `Sink into Stupor`~~ — both now resolved after ModernAtomic refresh (Apr 2026). All 14 decks sim correctly.
+**Notes:**
+- Azorius Control = Yuri Anichini Isochron Scepter + Orim's Chant build (1st place Modern Monster, Feb 2026). Isochron Scepter mechanic NOT simulated — WR deflated.
+- Azorius Control (WST) = Wan Shi Tong + Chalice of the Void draw-go build. Field run only (not in full matrix yet).
+- All DB gaps resolved (Apr 2026 refresh).
 
 ## Architecture
 
@@ -169,7 +172,7 @@ def bowmasters_etb(game, card, controller, targets=None, item=None):
 
 ### Layer 3: Deck Configuration
 
-**Decklists** (`decks/modern_meta.py`) — mainboard + sideboard for all 13 decks
+**Decklists** (`decks/modern_meta.py`) — mainboard + sideboard for all 15 decks
 
 **Gameplans** (`decks/gameplans/*.json`) — per-deck strategy:
 ```json
@@ -247,45 +250,43 @@ python build_replay.py replays/log.txt replay.html 55555
 
 ## Known Issues — LLM-Judge Strategy Audit
 
-See **`LLM_JUDGE_STRATEGY_AUDIT.md`** for the full 6-expert panel report (~210 games). Overall grade: **C-** (up from D+).
-
-### Previous P0 — Now FIXED
-
-| Issue | Status |
-|-------|--------|
-| Removal projection kills creature deployment | **FIXED** — Guide of Souls: -7.6 → +2.6 EV |
-| Goryo's combo non-functional | **FIXED** — Faithful Mending bins Griselbrand, combo fires |
-| Living End missing ETBs | **FIXED** — `_handle_permanent_etb()` now called |
-| Chalice hardcoded X=1 | **FIXED** — Adaptive by opponent CMC distribution |
-| First strike missing from AI combat sim | **FIXED** — Two-phase damage in `_simulate_combat` |
+See **`LLM_JUDGE_STRATEGY_AUDIT.md`** for the full 6-expert panel report (~168 games). Overall grade: **D+**.
 
 ### P0 — Critical (game-breaking)
 
 | Issue | Location | Summary |
 |-------|----------|---------|
-| 4c Omnath non-functional | `ai/ev_player.py:_score_spell()` | No planeswalker scoring — Wrenn and Six, Teferi never cast. 4c Omnath at 29% meta WR. |
-| Wrath on empty board (fix insufficient) | `ai/ev_evaluator.py:272-275` | +100 opp_life penalty produces EV=-1.8, still passes -5.0 threshold. Needs hard gate. |
+| Wrath of the Skies X=0 kills all creatures | `engine/card_effects.py` | At X=0, should only destroy MV≤0. Instead destroys all. Ragavan (MV1) wrongly dies. Fix: compare creature MV against energy paid. |
+| Ocelot Pride energy trigger fires on ETB | `engine/card_effects.py` | Registered as ETB trigger giving 1{E}. Real trigger is "whenever you cast a noncreature spell." DB also has wrong oracle (Ixalan version). Fix: re-register as cast trigger + fix oracle. |
+| Removal projection kills creature deployment | `ai/ev_evaluator.py:539-572` | `estimate_opponent_response` makes all cheap creatures negative EV (Guide of Souls=-7.6, Memnite=-7.4). Aggro decks pass T1-T3. |
+| Storm finisher uncastable | `ai/ev_player.py:393-484` | PiF penalty `gy_fuel/opp_life*15` makes it -5.8 even with 7 mana + 9 GY spells. Storm at 39% WR. |
+| Goryo's combo non-functional | `engine/card_effects.py` discard | Faithful Mending never bins Griselbrand → Goryo's has no target. Combo never fires. |
+| Living End missing ETBs | `engine/game_state.py:~1710` | `_resolve_living_end()` skips `_handle_permanent_etb()`. Returned creatures get no ETB triggers. |
+| Chalice hardcoded X=1 | `engine/game_state.py:1349` | Always X=1 regardless of opponent. Locks Azorius out of own spells (-0.76 win delta). |
 
 ### P1 — High (significant strategy errors)
 
 | Issue | Location | Summary |
 |-------|----------|---------|
-| Storm ritual mid-chain penalty 20x | `ai/ev_player.py:428` | PiF penalty reduced 15→5x, but mid-chain ritual penalty NOT reduced. Rituals swing -13 EV. |
-| Evasion/lifelink removed state bug | `ai/ev_evaluator.py:491-492` | Flying/lifelink power not subtracted in "removed" scenario. Affects Psychic Frog, flyers. |
-| Ephemerate no target validation | `engine/game_state.py:cast_spell()` | Spell cast with no legal targets; fizzles at resolution. Should be prevented at cast time. |
-| Affinity 85% WR format warping | Decklist / interaction | Insufficient artifact removal across field. No sideboarding implemented. |
-| Duplicate Chalice deployment | `ai/ev_player.py` | AI casts 2nd Chalice at same X value. No board-state check for existing Chalice. |
+| Sanctifier en-Vec resolves after combat | `engine/game_runner.py` | Spells cast in Main 1 sometimes resolve after combat damage step. Stack should clear before Begin Combat. |
+| Ragavan never attacks | `ai/ev_player.py` | AI keeps Ragavan back; entire card value is combat damage triggers. Should prioritise attacking. |
+| Wrath on empty board | `ai/ev_evaluator.py:272` | Board wipes with 0 creatures pass the -5.0 threshold at EV=-0.1. |
+| Burn face with no clock | `ai/strategy_profile.py:102` | `burn_face_mult=1.5` makes face burn positive EV even on empty board T1. |
+| Fatal Push mis-targets | `ai/response.py:156-169` | Targets highest-value battlefield creature, not the incoming spell on the stack. |
+| Holdback broken vs spell decks | `ai/ev_player.py:337-349` | Only triggers on `opp_power>0`. Control taps out freely vs Storm. |
+| First strike missing from AI combat sim | `ai/turn_planner.py:398-478` | `_simulate_combat` applies all damage simultaneously. Engine is correct; AI evaluation is not. |
 
 ### P2 — Medium
 
 - Living End mulligan too aggressive (`ai/mulligan.py:60`): combo_sets should relax at 6 cards, not 5
-- Psychic Frog negative EV (-3.2): evasion bug (P1) + removal probability combine to suppress best Dimir threat
-- Tron lands not differentiated (`ai/ev_player.py`): no assembly bonus for completing Tron set
-- Dovin's Veto dead weight: 0% WinCR in Azorius, dead vs non-blue opponents
+- Tron lands not differentiated (`ai/ev_player.py:540-616`): no assembly bonus for missing piece
+- Empty the Warrens underutilized: Wish tutor too Grapeshot-biased
+- Ghost candidates in EV list: stale snapshot after spell resolution within same main phase
+- Duplicate EV trace blocks: Main1+Main2 without phase labels
 
 ### Confirmed Working
 
-Turn structure, cascade, storm copies, counterspell restrictions, legend rule, Bowmasters ETB, Phlage ETB, ritual mana tracking, fetch land prioritization, land-before-spell sequencing, Goryo's combo chain, Living End ETBs, Chalice X selection, first strike combat AI, creature deployment for aggro, burn face gating, Walking Ballista X-cost handling.
+Turn structure, cascade, storm copies, counterspell restrictions, legend rule, Bowmasters ETB, Phlage ETB, ritual mana tracking, fetch land prioritization, land-before-spell sequencing.
 
 ## Dashboard — modern_meta_matrix_full.html
 
@@ -346,4 +347,4 @@ Always save logs to `replays/` and commit. `build_replay.py` is in the repo with
 - Display end-of-turn board using **next turn's header** (turn N's header = state before N's plays; turn N+1's header = state after)
 - `╔══ TURN N ══╗` header sections are labelled `║ PlayerName board:` — match exactly
 
-**Design:** GitHub-dark (`#0d1117`), collapsible turn cards, 15 category badges, `.active` for keyboard nav, `boards` keyed by player name. See `/mtg-bo3-replayer-v2` skill for full spec.
+**Design:** Light theme (white `#ffffff` bg, GitHub light palette), collapsible turn cards, 15 category badges, `.active` for keyboard nav, `boards` keyed by player name. P1 = `#0969da` (blue), P2 = `#d1242f` (red). See `/mtg-bo3-replayer-v2` skill for full spec.

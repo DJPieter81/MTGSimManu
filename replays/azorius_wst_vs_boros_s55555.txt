@@ -1,0 +1,846 @@
+Loaded 21759 cards (0 errors)
+======================================================================
+  GAME 1: Azorius Control (WST) (P1) vs Boros Energy (P2)  —  seed 55555
+  Series: Azorius Control (WST) 0 - 0 Boros Energy
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Boros Energy wins → chooses to play first
+║ P1 (on play): Boros Energy
+║ P2 (on draw): Azorius Control (WST)
+╚═══════════════════════════════════════════════════════
+
+P1 (Azorius Control (WST)) opening hand (3 lands, 4 spells):
+  • Prismatic Ending [Spell, CMC 1]
+  • March of Otherworldly Light [Spell, CMC 1]
+  • Counterspell [Spell, CMC 2]
+  • Teferi, Time Raveler [Spell, CMC 3]
+  • Hallowed Fountain [Land, CMC 0]
+  • Hallowed Fountain [Land, CMC 0]
+  • Plains [Land, CMC 0]
+→ P1 KEEPS 7 — generic: 3 lands, 4 spells — keep
+
+P2 (Boros Energy) opening hand (3 lands, 4 spells):
+  • Galvanic Discharge [Spell, CMC 1]
+  • Sacred Foundry [Land, CMC 0]
+  • Elegant Parlor [Land, CMC 0]
+  • Flooded Strand [Land, CMC 0]
+  • Seasoned Pyromancer [Creature, CMC 3]
+  • Ocelot Pride [Creature, CMC 1]
+  • Goblin Bombardment [Spell, CMC 2]
+→ P2 KEEPS 7 — has key card(s): Galvanic Discharge, Ocelot Pride
+
+
+╔══ TURN 1 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Azorius Control (WST) 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Sacred Foundry (pay 2 life, untapped, life: 18)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Ocelot Pride, 1 mana remaining)
+T1 P2: Cast Ocelot Pride (W)
+    [Priority] P1 passes (no response)
+T1: Resolve Ocelot Pride
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Azorius Control (WST) (P1) ══════════════════════════
+║ Life: Azorius Control (WST) 20  |  Boros Energy 18
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Plains
+  [Main 1]
+T1 P1: Play Hallowed Fountain (pay 2 life, untapped, life: 18)
+    [Mana] Tap Hallowed Fountain→W (paying for Prismatic Ending, 1 mana remaining)
+T1 P1: Cast Prismatic Ending (W)
+    [Priority] P2 passes (no response)
+T1: Resolve Prismatic Ending
+T1: Ocelot Pride moved battlefield -> exile (exiled)
+T1 P1: Prismatic Ending exiles Ocelot Pride
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 18  |  Azorius Control (WST) 18
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T2 P2: Play Flooded Strand
+T2 P2: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (pay 2 life, untapped, life: 15)
+    → Goal: curve_out [interaction]
+    [Mana] Tap Sacred Foundry→R (paying for Galvanic Discharge, 2 mana remaining)
+T2 P2: Cast Galvanic Discharge (R)
+    [Priority] P1 passes (no response)
+T2: Resolve Galvanic Discharge
+T2 P2: Galvanic Discharge deals 4 to opponent
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Azorius Control (WST) (P1) ══════════════════════════
+║ Life: Azorius Control (WST) 14  |  Boros Energy 15
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 1
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wan Shi Tong, Librarian
+  [Main 1]
+T2 P1: Play Hallowed Fountain (pay 2 life, untapped, life: 12)
+    [Mana] Tap Hallowed Fountain→U, Hallowed Fountain→U (paying for Wan Shi Tong, Librarian, 2 mana remaining)
+T2 P1: Cast Wan Shi Tong, Librarian (UU)
+    [Priority] P2 passes (no response)
+T2: Resolve Wan Shi Tong, Librarian
+T2 P1: Wan Shi Tong enters with 1 +1/+1 counters (2/2), draws 0 cards
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T2: Resolve Wan Shi Tong, Librarian
+
+╔══ TURN 3 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 15  |  Azorius Control (WST) 12
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ Azorius Control (WST) board:
+║   Creatures: Wan Shi Tong, Librarian (2/2)
+║   Lands: Hallowed Fountain [T], Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+T3 P2: Play Flooded Strand
+T3 P2: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (pay 2 life, untapped, life: 12)
+T3 P1: Wan Shi Tong, Librarian triggers (opponent searched) — +1/+1 counter (3/3), draw a card
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R, Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 3 mana remaining)
+T3 P2: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P1 passes (no response)
+T3: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T3: Ragavan, Nimble Pilferer moved battlefield -> hand (Dash return)
+T3: Ragavan, Nimble Pilferer returned to hand (Dash)
+
+╔══ TURN 3 — Azorius Control (WST) (P1) ══════════════════════════
+║ Life: Azorius Control (WST) 12  |  Boros Energy 12
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Azorius Control (WST) board:
+║   Creatures: Wan Shi Tong, Librarian (3/3)
+║   Lands: Hallowed Fountain, Hallowed Fountain
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Island
+  [Main 1]
+T3 P1: Play Plains
+    [Mana] Tap Hallowed Fountain→U, Plains→W, Hallowed Fountain→U (paying for Teferi, Time Raveler, 3 mana remaining)
+T3 P1: Cast Teferi, Time Raveler (1WU)
+    [Priority] P2 passes (no response)
+T3: Resolve Teferi, Time Raveler
+T3 P1: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Wan Shi Tong, Librarian
+T3 P1: Attack with Wan Shi Tong, Librarian
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 3 damage dealt → P2 life: 12 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 9  |  Azorius Control (WST) 12
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 3
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry
+║ Azorius Control (WST) board:
+║   Creatures: Wan Shi Tong, Librarian (3/3)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain [T], Hallowed Fountain [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Phlage, Titan of Fire's Fury
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R, Sacred Foundry→R (paying for Phlage, Titan of Fire's Fury, 3 mana remaining)
+T4 P2: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P1 passes (no response)
+T4: Resolve Phlage, Titan of Fire's Fury
+T4 P2: Phlage: 3 damage to opponent, gain 3 life
+T4 P2: Phlage sacrificed (not escaped)
+T4 P2: Play Elegant Parlor (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Resolve Phlage, Titan of Fire's Fury
+
+╔══ TURN 4 — Azorius Control (WST) (P1) ══════════════════════════
+║ Life: Azorius Control (WST) 9  |  Boros Energy 12
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 1
+║ Azorius Control (WST) board:
+║   Creatures: Wan Shi Tong, Librarian (3/3)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Hallowed Fountain, Plains
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Island
+  [Main 1]
+T4 P1: Play Plains
+T4 P1: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Wan Shi Tong, Librarian
+T4 P1: Attack with Wan Shi Tong, Librarian
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 3 damage dealt → P2 life: 12 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 9  |  Azorius Control (WST) 9
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 4
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Elegant Parlor
+║ Azorius Control (WST) board:
+║   Creatures: Wan Shi Tong, Librarian (3/3)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Hallowed Fountain, Plains, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Galvanic Discharge
+  [Main 1]
+    → Goal: curve_out [interaction]
+    [Mana] Tap Sacred Foundry→R (paying for Galvanic Discharge, 4 mana remaining)
+T5 P2: Cast Galvanic Discharge (R)
+    [Priority] P1 responds with Counterspell
+    [Mana] Tap Hallowed Fountain→U, Hallowed Fountain→U (paying for Counterspell, 4 mana remaining)
+T5 P1: Cast Counterspell (UU)
+T5: Resolve Counterspell
+T5: Galvanic Discharge is countered
+    → Goal: curve_out
+    [Mana] Tap Sacred Foundry→R, Sacred Foundry→R (paying for Goblin Bombardment, 3 mana remaining)
+T5 P2: Cast Goblin Bombardment (1R)
+    [Priority] P1 passes (no response)
+T5: Resolve Goblin Bombardment
+    → Goal: curve_out [enablers]
+    [Mana] Tap Elegant Parlor→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T5 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T5: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Resolve Goblin Bombardment
+
+╔══ TURN 5 — Azorius Control (WST) (P1) ══════════════════════════
+║ Life: Azorius Control (WST) 9  |  Boros Energy 9
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 2
+║ Azorius Control (WST) board:
+║   Creatures: Wan Shi Tong, Librarian (3/3)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Hallowed Fountain, Plains, Plains
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Goblin Bombardment
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Supreme Verdict
+  [Main 1]
+T5 P1: Play Island
+    [Mana] Tap Plains→W (paying for March of Otherworldly Light, 5 mana remaining)
+T5 P1: Cast March of Otherworldly Light (4W) (X=4)
+    [Priority] P2 passes (no response)
+T5: Resolve March of Otherworldly Light
+T5: Goblin Bombardment moved battlefield -> exile (exiled)
+T5 P1: March of Otherworldly Light exiles Goblin Bombardment
+T5 P1: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Wan Shi Tong, Librarian
+T5 P1: Attack with Wan Shi Tong, Librarian
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 3 damage dealt → P2 life: 9 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 6  |  Azorius Control (WST) 9
+║ Hand: 1 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 5
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Elegant Parlor
+║ Azorius Control (WST) board:
+║   Creatures: Wan Shi Tong, Librarian (3/3)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain [T], Hallowed Fountain [T], Plains [T], Plains [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arena of Glory
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→R, Sacred Foundry→R, Sacred Foundry→R (paying for Seasoned Pyromancer, 4 mana remaining)
+T6 P2: Cast Seasoned Pyromancer (1RR)
+    [Priority] P1 passes (no response)
+T6: Resolve Seasoned Pyromancer
+T6 P2: Seasoned Pyromancer: discard 2, draw 2 (no nonland discards)
+    → Goal: curve_out [interaction]
+    [Mana] Tap Elegant Parlor→R (paying for Galvanic Discharge, 1 mana remaining)
+T6 P2: Cast Galvanic Discharge (R)
+    [Priority] P1 passes (no response)
+T6: Resolve Galvanic Discharge
+T6 P2: Galvanic Discharge deals 4 to Wan Shi Tong, Librarian
+T6: Wan Shi Tong, Librarian dies
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T6 P2: Attack with Ragavan, Nimble Pilferer
+T6: Resolve Seasoned Pyromancer
+  [Declare Blockers] P1 does not block
+T6 P2: Create 1x Treasure token(s)
+T6 P2: Ragavan, Nimble Pilferer exiles Supreme Verdict from top of P1's library
+  [Combat Damage] 2 damage dealt → P1 life: 9 → 7
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Azorius Control (WST) (P1) ══════════════════════════
+║ Life: Azorius Control (WST) 7  |  Boros Energy 6
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 4
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Hallowed Fountain, Plains, Plains, Island
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Seasoned Pyromancer (2/2)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Dovin's Veto
+  [Main 1]
+T6 P1: Play Island
+    [Mana] Tap Plains→W, Plains→W, Island→U, Island→U (paying for Supreme Verdict, 6 mana remaining)
+T6 P1: Cast Supreme Verdict (1WWU)
+    [Priority] P2 passes (no response)
+T6: Resolve Supreme Verdict
+T6: Ragavan, Nimble Pilferer dies
+T6: Seasoned Pyromancer dies
+    [Mana] Tap Hallowed Fountain→U, Hallowed Fountain→U (paying for Wan Shi Tong, Librarian, 2 mana remaining)
+T6 P1: Cast Wan Shi Tong, Librarian (UU)
+    [Priority] P2 passes (no response)
+T6: Resolve Wan Shi Tong, Librarian
+T6 P1: Wan Shi Tong enters with 2 +1/+1 counters (3/3), draws 1 cards
+T6 P1: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+T6: Teferi, Time Raveler moved battlefield -> graveyard (SBA 704.5p: zero loyalty)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T6: Resolve Wan Shi Tong, Librarian
+
+╔══ TURN 7 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 6  |  Azorius Control (WST) 7
+║ Hand: 1 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 44  |  Graveyard: 9
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Elegant Parlor
+║ Azorius Control (WST) board:
+║   Creatures: Wan Shi Tong, Librarian (3/3)
+║   Lands: Hallowed Fountain [T], Hallowed Fountain [T], Plains [T], Plains [T], Island [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Voice of Victory
+  [Main 1]
+    → Goal: curve_out
+T7 P2: Escape Phlage, Titan of Fire's Fury (exile 5 cards)
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→W, Sacred Foundry→R, Elegant Parlor→R (paying for Phlage, Titan of Fire's Fury, 4 mana remaining)
+T7 P2: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P1 passes (no response)
+T7: Resolve Phlage, Titan of Fire's Fury
+T7 P2: Phlage: 3 damage to opponent, gain 3 life
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T7: Resolve Phlage, Titan of Fire's Fury
+
+╔══ TURN 7 — Azorius Control (WST) (P1) ══════════════════════════
+║ Life: Azorius Control (WST) 4  |  Boros Energy 9
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 6  |  Opp lands: 4
+║ Library: 44  |  Graveyard: 6
+║ Azorius Control (WST) board:
+║   Creatures: Wan Shi Tong, Librarian (3/3)
+║   Lands: Hallowed Fountain, Hallowed Fountain, Plains, Plains, Island, Island
+║ Boros Energy board:
+║   Creatures: Phlage, Titan of Fire's Fury (6/6)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Hallowed Fountain
+  [Main 1]
+T7 P1: Play Hallowed Fountain (tapped, no spells need mana)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Wan Shi Tong, Librarian
+T7 P1: Attack with Wan Shi Tong, Librarian
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 3 damage dealt → P2 life: 9 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 6  |  Azorius Control (WST) 4
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 7
+║ Library: 43  |  Graveyard: 3
+║ Boros Energy board:
+║   Creatures: Phlage, Titan of Fire's Fury (6/6)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Elegant Parlor
+║ Azorius Control (WST) board:
+║   Creatures: Wan Shi Tong, Librarian (3/3)
+║   Lands: Hallowed Fountain, Hallowed Fountain, Plains, Plains, Island, Island, Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Sacred Foundry→R (paying for Goblin Bombardment, 4 mana remaining)
+T8 P2: Cast Goblin Bombardment (1R)
+    [Priority] P1 responds with Dovin's Veto
+    [Mana] Tap Plains→W, Island→U (paying for Dovin's Veto, 6 mana remaining)
+T8 P1: Cast Dovin's Veto (WU)
+T8: Resolve Dovin's Veto
+T8: Goblin Bombardment is countered
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 3 mana remaining)
+T8 P2: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P1 passes (no response)
+T8: Resolve Ragavan, Nimble Pilferer
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→W (paying for Voice of Victory, 2 mana remaining)
+T8 P2: Cast Voice of Victory (1W)
+    [Priority] P1 passes (no response)
+T8: Resolve Voice of Victory
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Phlage, Titan of Fire's Fury, Ragavan, Nimble Pilferer
+T8 P2: Gain 3 life from Phlage, Titan of Fire's Fury (life: 9)
+T8 P2: Attack with Phlage, Titan of Fire's Fury, Ragavan, Nimble Pilferer
+T8: Resolve Phlage, Titan of Fire's Fury
+  [Declare Blockers] P1 blocks: 
+T8 P2: Create 1x Treasure token(s)
+T8 P2: Ragavan, Nimble Pilferer exiles Flooded Strand from top of P1's library
+P1 loses: life total -1
+  [Combat Damage] 2 damage dealt → P1 life: 1 → -1
+
+>>> Boros Energy wins Game 1 on turn 8 via damage
+    Final life: Azorius Control (WST)=-1  Boros Energy=9
+
+======================================================================
+  GAME 2: Azorius Control (WST) (P1) vs Boros Energy (P2)  —  seed 55556
+  Series: Azorius Control (WST) 0 - 1 Boros Energy
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Boros Energy wins → chooses to play first
+║ P1 (on play): Boros Energy
+║ P2 (on draw): Azorius Control (WST)
+╚═══════════════════════════════════════════════════════
+
+P1 (Azorius Control (WST)) opening hand (1 lands, 6 spells):
+  • Wan Shi Tong, Librarian [Creature, CMC 2]
+  • Supreme Verdict [Spell, CMC 4]
+  • Sanctifier en-Vec [Creature, CMC 2]
+  • Island [Land, CMC 0]
+  • Counterspell [Spell, CMC 2]
+  • Wan Shi Tong, Librarian [Creature, CMC 2]
+  • Wrath of the Skies [Spell, CMC 2]
+→ P1 MULLIGANS (generic: 1 lands, 6 spells — mulligan)
+  New hand (1 lands, 6 spells): ['Island', 'Wrath of the Skies', 'Wan Shi Tong, Librarian', 'Teferi, Time Raveler', 'Prismatic Ending', 'Chalice of the Void', 'Counterspell']
+→ P1 mulligans to 6, bottoms: ['Teferi, Time Raveler']
+  Keeps: ['Island', 'Wrath of the Skies', 'Wan Shi Tong, Librarian', 'Prismatic Ending', 'Chalice of the Void', 'Counterspell']
+
+P2 (Boros Energy) opening hand (3 lands, 4 spells):
+  • Ajani, Nacatl Pariah // Ajani, Nacatl Avenger [Creature, CMC 2]
+  • Snow-Covered Plains [Land, CMC 0]
+  • Blood Moon [Spell, CMC 3]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Arena of Glory [Land, CMC 0]
+  • Marsh Flats [Land, CMC 0]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+→ P2 KEEPS 7 — has key card(s): Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Ragavan, Nimble Pilferer
+
+
+╔══ TURN 1 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Azorius Control (WST) 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Marsh Flats
+T1 P2: Crack Marsh Flats (pay 1 life) -> Sacred Foundry (pay 2 life, untapped, life: 17)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T1 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T1: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Azorius Control (WST) (P1) ══════════════════════════
+║ Life: Azorius Control (WST) 20  |  Boros Energy 17
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 0
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wrath of the Skies
+  [Main 1]
+T1 P1: Play Island
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 17  |  Azorius Control (WST) 20
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Lands: Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thraben Charm
+  [Main 1]
+T2 P2: Play Snow-Covered Plains
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Snow-Covered Plains→W, Sacred Foundry→R (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 2 mana remaining)
+T2 P2: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P1 passes (no response)
+T2: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T2 P2: Create 1x Cat token(s)
+T2 P2: Ajani creates 2/1 Cat Warrior token
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T2 P2: Attack with Ragavan, Nimble Pilferer
+T2: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Declare Blockers] P1 does not block
+T2 P2: Create 1x Treasure token(s)
+T2 P2: Ragavan, Nimble Pilferer exiles Hallowed Fountain from top of P1's library
+  [Combat Damage] 2 damage dealt → P1 life: 20 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Azorius Control (WST) (P1) ══════════════════════════
+║ Life: Azorius Control (WST) 18  |  Boros Energy 17
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Lands: Island
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Snow-Covered Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Chalice of the Void
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 17  |  Azorius Control (WST) 18
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 1
+║ Library: 51  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Snow-Covered Plains
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Lands: Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Phlage, Titan of Fire's Fury
+  [Main 1]
+T3 P2: Play Arena of Glory (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+T3 P2: Attack with Ragavan, Nimble Pilferer, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+  [Declare Blockers] P1 does not block
+T3 P2: Create 1x Treasure token(s)
+T3 P2: Ragavan, Nimble Pilferer exiles Island from top of P1's library
+  [Combat Damage] 5 damage dealt → P1 life: 18 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Azorius Control (WST) (P1) ══════════════════════════
+║ Life: Azorius Control (WST) 13  |  Boros Energy 17
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 0
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Lands: Island
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Cat Token (2/1) [tapped]
+║   Other: Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Snow-Covered Plains, Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Flooded Strand
+  [Main 1]
+T3 P1: Play Flooded Strand
+T3 P1: Crack Flooded Strand (pay 1 life) -> Hallowed Fountain (pay 2 life, untapped, life: 10)
+T3 P1: Cast Chalice of the Void (2) (X=1)
+    [Priority] P2 passes (no response)
+T3: Resolve Chalice of the Void
+T3 P1: Chalice of the Void enters with 1 charge counter(s)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 17  |  Azorius Control (WST) 10
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Other: Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Snow-Covered Plains, Arena of Glory
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void
+║   Lands: Island [T], Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arena of Glory
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Snow-Covered Plains→W, Arena of Glory→R, Sacred Foundry→R (paying for Phlage, Titan of Fire's Fury, 3 mana remaining)
+T4 P2: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P1 passes (no response)
+T4: Resolve Phlage, Titan of Fire's Fury
+T4 P2: Phlage: 3 damage to opponent, gain 3 life
+T4 P2: Phlage sacrificed (not escaped)
+T4 P2: Play Arena of Glory (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+T4 P2: Attack with Ragavan, Nimble Pilferer, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+T4: Resolve Phlage, Titan of Fire's Fury
+  [Declare Blockers] P1 does not block
+T4 P2: Create 1x Treasure token(s)
+T4 P2: Ragavan, Nimble Pilferer exiles Plains from top of P1's library
+  [Combat Damage] 5 damage dealt → P1 life: 7 → 2
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Azorius Control (WST) (P1) ══════════════════════════
+║ Life: Azorius Control (WST) 2  |  Boros Energy 20
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 1
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void
+║   Lands: Island, Hallowed Fountain
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Cat Token (2/1) [tapped]
+║   Other: Treasure Token, Treasure Token, Treasure Token
+║   Lands: Sacred Foundry [T], Snow-Covered Plains [T], Arena of Glory [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Dovin's Veto
+  [Main 1]
+T4 P1: Cast Chalice of the Void (2) (X=1)
+    [Priority] P2 passes (no response)
+T4: Resolve Chalice of the Void
+T4 P1: Chalice of the Void enters with 1 charge counter(s)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Azorius Control (WST) 2
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Other: Treasure Token, Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Snow-Covered Plains, Arena of Glory, Arena of Glory
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void, Chalice of the Void
+║   Lands: Island [T], Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Snow-Covered Plains
+  [Main 1]
+T5 P2: Play Snow-Covered Plains
+    → Goal: curve_out
+    [Mana] Tap Arena of Glory→R, Snow-Covered Plains→W, Arena of Glory→R (paying for Blood Moon, 5 mana remaining)
+T5 P2: Cast Blood Moon (2R)
+    [Priority] P1 passes (no response)
+T5: Resolve Blood Moon
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+T5 P2: Attack with Ragavan, Nimble Pilferer, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+  [Declare Blockers] P1 does not block
+T5 P2: Create 1x Treasure token(s)
+T5 P2: Ragavan, Nimble Pilferer exiles Prismatic Ending from top of P1's library
+P1 loses: life total -3
+  [Combat Damage] 5 damage dealt → P1 life: 2 → -3
+
+>>> Boros Energy wins Game 2 on turn 5 via damage
+    Final life: Azorius Control (WST)=-3  Boros Energy=20
+
+======================================================================
+  MATCH RESULT: Boros Energy wins 2-0
+======================================================================
