@@ -644,7 +644,10 @@ class GameRunner:
                     if hasattr(game, '_phelia_returns') and game._phelia_returns:
                         from engine.card_effects import EFFECT_REGISTRY, EffectTiming
                         for perm in game.players[active].battlefield:
-                            if perm.name == "Phelia, Exuberant Shepherd":
+                            # Generic: any creature with end-step return trigger
+                            p_oracle = (perm.template.oracle_text or '').lower()
+                            if ('end step' in p_oracle and 'return' in p_oracle
+                                    and 'exiled' in p_oracle):
                                 EFFECT_REGISTRY.execute(
                                     perm.name, EffectTiming.END_STEP,
                                     game, perm, active)
@@ -1466,8 +1469,10 @@ class GameRunner:
         for perm in list(player.battlefield):
             oracle = (perm.template.oracle_text or '').lower()
 
-            # Expedition Map: sacrifice to search for a land
-            if perm.name == "Expedition Map" and not getattr(perm, 'tapped', False):
+            # Artifact with "sacrifice, search for a land" (Expedition Map, etc.)
+            if ('sacrifice' in oracle and 'search' in oracle and 'land' in oracle
+                    and not getattr(perm, 'tapped', False)
+                    and not perm.template.is_creature):
                 # Need 2 mana to activate
                 untapped_count = len(player.untapped_lands)
                 if untapped_count >= 2:
@@ -1475,12 +1480,17 @@ class GameRunner:
                     tron_pieces = URZA_TRON_LANDS
                     on_board = {l.name for l in player.lands}
                     missing = tron_pieces - on_board
-                    # Also search for Eldrazi Temple or utility lands
+                    # Search priority: missing Tron piece > any non-basic not on board
                     target_name = None
                     if missing:
                         target_name = next(iter(missing))
-                    elif "Eldrazi Temple" not in on_board:
-                        target_name = "Eldrazi Temple"
+                    else:
+                        # Find a useful land in library not already on board
+                        for c in player.library:
+                            if (c.template.is_land and c.name not in on_board
+                                    and len(c.template.produces_mana) >= 1):
+                                target_name = c.name
+                                break
                     if target_name:
                         # Pay 2 mana
                         tapped = 0
@@ -1505,10 +1515,12 @@ class GameRunner:
                             player.hand.append(target)
                             game.log.append(
                                 f"T{game.display_turn} P{active+1}: "
-                                f"Expedition Map finds {target_name}")
+                                f"{perm.name} finds {target_name}")
 
-            # Ratchet Bomb: tick up charge counter each turn
-            if perm.name == "Ratchet Bomb":
+            # Charge counter artifact that ticks up and pops to destroy
+            # (Ratchet Bomb, Engineered Explosives, etc.)
+            if ('charge counter' in oracle and 'destroy' in oracle
+                    and 'mana value' in oracle):
                 charges = perm.other_counters.get("charge", 0)
                 # Tick up
                 perm.other_counters["charge"] = charges + 1
