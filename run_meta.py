@@ -739,6 +739,19 @@ def run_bo3(deck1: str, deck2: str, seed: int = 42000) -> str:
             else:
                 p1_name, p1_data, p2_name, p2_data = deck1, d1, deck2, d2
 
+        # Sideboard for G2-G3
+        if game_num >= 2:
+            from engine.sideboard_manager import sideboard as apply_sb
+            p1_main_sb, _ = apply_sb(
+                dict(p1_data['mainboard']), dict(p1_data.get('sideboard', {})),
+                p1_name, p2_name)
+            p2_main_sb, _ = apply_sb(
+                dict(p2_data['mainboard']), dict(p2_data.get('sideboard', {})),
+                p2_name, p1_name)
+        else:
+            p1_main_sb = p1_data['mainboard']
+            p2_main_sb = p2_data['mainboard']
+
         lines.append('=' * 70)
         lines.append(f'  GAME {game_num}: {p1_name} (P1) vs {p2_name} (P2)  —  seed {game_seed}')
         lines.append(f'  Series: {deck1} {score[0]} - {score[1]} {deck2}')
@@ -748,7 +761,7 @@ def run_bo3(deck1: str, deck2: str, seed: int = 42000) -> str:
         runner.rng = random.Random(game_seed)
         random.seed(game_seed)
         r = runner.run_game(
-            p1_name, p1_data['mainboard'], p2_name, p2_data['mainboard'],
+            p1_name, p1_main_sb, p2_name, p2_main_sb,
             deck1_sideboard=p1_data.get('sideboard', {}),
             deck2_sideboard=p2_data.get('sideboard', {}),
             verbose=True,
