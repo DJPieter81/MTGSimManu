@@ -1223,7 +1223,7 @@ class GameRunner:
         Each saga gains a lore counter per turn (starting the turn after ETB).
         Supported sagas: Urza's Saga, The Legend of Roku.
         """
-        from engine.cards import CardType
+        from engine.cards import CardType, Supertype
         player = game.players[active]
         sagas_to_sacrifice = []
         sagas_to_transform = []
@@ -1268,9 +1268,17 @@ class GameRunner:
                         "Cranial Plating": 10, "Springleaf Drum": 5,
                         "Mox Opal": 8, "Engineered Explosives": 3,
                     }
+                    # Avoid tutoring a legend we already control (dies to legend rule)
+                    owned_legend_names = {
+                        bc.name for bc in player.battlefield
+                        if Supertype.LEGENDARY in bc.template.supertypes
+                    }
                     for c in player.library:
                         if (CardType.ARTIFACT in c.template.card_types
                                 and (c.template.cmc or 0) <= 1):
+                            if (Supertype.LEGENDARY in c.template.supertypes
+                                    and c.name in owned_legend_names):
+                                continue
                             prio = tutor_priority.get(c.name, 1)
                             if prio > best_priority:
                                 best = c
