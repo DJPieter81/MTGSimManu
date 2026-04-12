@@ -160,6 +160,11 @@ class MulliganDecider:
         from ai.strategy_profile import ArchetypeStrategy
 
         land_count = len(lands)
+        # P1 fix: 0 lands = always mulligan (no free-spell exception needed
+        # since decks using Evoke/Living End have gameplans with min_lands)
+        if land_count == 0:
+            self.last_reason = "0 lands — auto-mulligan"
+            return False
         if land_count == 1 and cards_in_hand == 7:
             if self.archetype == ArchetypeStrategy.AGGRO:
                 return sum(1 for s in spells if s.template.cmc <= 2) >= 4

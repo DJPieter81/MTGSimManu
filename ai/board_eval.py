@@ -349,7 +349,11 @@ def _eval_combo(game, me, a: BoardAssessment, ctx: dict) -> float:
 
 def _eval_block(game, me, a: BoardAssessment, ctx: dict) -> float:
     """Block this attacker with this blocker?
-    Returns positive = block, negative = don't."""
+    Returns positive = block, negative = don't.
+
+    Score = damage_prevented + attacker_killed_value - blocker_lost_value.
+    Blocker survives → free block → always positive.
+    """
     from engine.cards import Keyword
 
     attacker = ctx.get('attacker')
@@ -362,38 +366,64 @@ def _eval_block(game, me, a: BoardAssessment, ctx: dict) -> float:
     b_power = blocker.power or 0
     b_tough = blocker.toughness or 0
 
-    # Damage prevented
+    # --- Combat outcome ---
+    has_deathtouch = Keyword.DEATHTOUCH in blocker.keywords
+    has_first_strike = Keyword.FIRST_STRIKE in blocker.keywords
+    attacker_has_deathtouch = Keyword.DEATHTOUCH in attacker.keywords
+    attacker_has_first_strike = Keyword.FIRST_STRIKE in attacker.keywords
+
+    # First strike: if blocker has it and kills attacker, blocker takes no damage
+    if has_first_strike and (b_power >= a_tough or has_deathtouch):
+        blocker_survives = True
+        attacker_dies = True
+    elif attacker_has_first_strike and (a_power >= b_tough or attacker_has_deathtouch):
+        blocker_survives = False
+        attacker_dies = (b_power >= a_tough or has_deathtouch)  # only if blocker survives to deal damage
+        # Blocker dies before dealing damage
+        attacker_dies = False
+    else:
+        blocker_survives = a_power < b_tough and not attacker_has_deathtouch
+        attacker_dies = b_power >= a_tough or has_deathtouch
+
+    # --- Damage prevented ---
     damage_prevented = a_power
     if Keyword.TRAMPLE in attacker.keywords:
-        damage_prevented = max(0, a_power - max(0, a_power - b_tough))
+        # Trample: excess damage over blocker toughness tramples through
+        damage_prevented = min(a_power, b_tough)
 
-    # Benefit: life saved
-    value = _life_value(damage_prevented, a) * 5.0
+    # --- Creature values (CMC-weighted) ---
+    a_cmc = attacker.template.cmc or 0
+    b_cmc = blocker.template.cmc or 0
+    attacker_val = max(a_cmc, a_power + a_tough * 0.3) * 1.5
+    blocker_val = max(b_cmc, b_power + b_tough * 0.3) * 1.5
 
-    # Combat outcome
-    blocker_survives = a_power < b_tough
-    attacker_dies = b_power >= a_tough or Keyword.DEATHTOUCH in blocker.keywords
+    # --- Score: benefit - cost ---
+    # Benefit 1: life saved (direct value, 1 point per life point)
+    value = float(damage_prevented)
 
-    attacker_val = (a_power + a_tough * 0.3) * 1.5
-    blocker_val = (b_power + b_tough * 0.3) * 1.5
+    # Scale life value up when we're under pressure
+    if a.opp_clock < 5:
+        value *= 1.5  # each life point matters more when clock is short
+    if a.my_life <= damage_prevented:
+        value = 100.0  # this block prevents lethal — always block
 
-    if blocker_survives and attacker_dies:
+    # Benefit 2: killing the attacker
+    if attacker_dies:
         value += attacker_val
-    elif not blocker_survives and attacker_dies:
-        value += attacker_val - blocker_val
-    elif blocker_survives and not attacker_dies:
-        pass
-    else:
-        conservation = 1.0 - a.pressure * 0.5
-        if blocker_val <= 3.0:
-            value -= blocker_val * 0.2 * conservation
-        else:
-            value -= blocker_val * 0.5 * conservation
 
-    if Keyword.DEATHTOUCH in blocker.keywords:
-        value += 3.0
-    if Keyword.FIRST_STRIKE in blocker.keywords and b_power >= a_tough:
-        value += blocker_val * 0.5
+    # Cost: losing the blocker
+    if not blocker_survives:
+        value -= blocker_val
+
+    # Blocker survives = free block, always positive (value >= damage_prevented)
+    # 1-for-1 trade: positive when attacker_val > blocker_val
+    # Chump block: positive when damage_prevented > blocker_val
+
+    # Keywords
+    if has_deathtouch:
+        value += 2.0  # deathtouch blocker always kills, extra value
+    if has_first_strike and attacker_dies:
+        value += 1.0  # kills before taking damage
 
     return value
 

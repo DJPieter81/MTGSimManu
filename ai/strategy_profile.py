@@ -60,7 +60,7 @@ class StrategyProfile:
     holdback_applies: bool = True         # whether to hold mana for instants
 
     # ── Combat ──
-    attack_threshold: float = 0.0
+    attack_threshold: float = -0.5        # slightly negative: attack when trades are close
     aggro_closing_threshold_reduction: float = 2.0
 
     # ── Mulligan ──
