@@ -1,0 +1,1643 @@
+Loaded 21759 cards (0 errors)
+======================================================================
+  GAME 1: Azorius Control (P1) vs Boros Energy (P2)  —  seed 60103
+  Series: Azorius Control 0 - 0 Boros Energy
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Boros Energy wins → chooses to play first
+║ P1 (on play): Boros Energy
+║ P2 (on draw): Azorius Control
+╚═══════════════════════════════════════════════════════
+
+P1 (Azorius Control) opening hand (2 lands, 5 spells):
+  • Orim's Chant [Spell, CMC 1]
+  • Supreme Verdict [Spell, CMC 4]
+  • Wrath of the Skies [Spell, CMC 2]
+  • Flooded Strand [Land, CMC 0]
+  • Island [Land, CMC 0]
+  • Orim's Chant [Spell, CMC 1]
+  • Solitude [Creature, CMC 5]
+→ P1 KEEPS 7 — has key card(s): Orim's Chant, Solitude, 3 cheap spells
+
+P2 (Boros Energy) opening hand (3 lands, 4 spells):
+  • Arena of Glory [Land, CMC 0]
+  • Orim's Chant [Spell, CMC 1]
+  • Sacred Foundry [Land, CMC 0]
+  • Seasoned Pyromancer [Creature, CMC 3]
+  • Flooded Strand [Land, CMC 0]
+  • Ajani, Nacatl Pariah // Ajani, Nacatl Avenger [Creature, CMC 2]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+→ P2 KEEPS 7 — has key card(s): Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Ragavan, Nimble Pilferer, 4 cheap spells
+
+
+╔══ TURN 1 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Azorius Control 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Sacred Foundry (pay 2 life, untapped, life: 18)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T1 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T1: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 20  |  Boros Energy 18
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Isochron Scepter
+  [Main 1]
+T1 P1: Play Flooded Strand
+T1 P1: Crack Flooded Strand (pay 1 life) -> Hallowed Fountain (pay 2 life, untapped, life: 17)
+    → Goal: interact [interaction]
+    [Mana] Tap Hallowed Fountain→W (paying for Orim's Chant, 1 mana remaining)
+T1 P1: Cast Orim's Chant (W)
+    [Priority] P2 passes (no response)
+T1: Resolve Orim's Chant
+T1 P1: Orim's Chant queues silence for P2's next turn
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 18  |  Azorius Control 17
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Voice of Victory
+  [Main 1]
+T2 P2: Play Flooded Strand
+T2 P2: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (pay 2 life, untapped, life: 15)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 2 mana remaining)
+T2 P2: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P1 passes (no response)
+T2: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T2 P2: Create 1x Cat token(s)
+T2 P2: Ajani creates 2/1 Cat Warrior token
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T2 P2: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T2 P2: Create 1x Treasure token(s)
+T2 P2: Ragavan, Nimble Pilferer exiles Counterspell from top of P1's library
+  [Combat Damage] 2 damage dealt → P1 life: 17 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 15  |  Boros Energy 15
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Demolition Field
+  [Main 1]
+T2 P1: Play Demolition Field
+T2 P1: Crack Demolition Field (pay 1 life) -> Hallowed Fountain (pay 2 life, untapped, life: 12)
+    → Goal: grind_value [interaction]
+    [Mana] Tap Hallowed Fountain→W, Hallowed Fountain→W (paying for Wrath of the Skies, 2 mana remaining)
+T2 P1: Cast Wrath of the Skies (WW)
+    [Priority] P2 passes (no response)
+T2: Resolve Wrath of the Skies
+T2: Cat Token dies
+T2: Treasure Token moved battlefield -> graveyard (destroyed)
+T2 P1: Wrath of the Skies (X=0) sweeps the board
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 15  |  Azorius Control 12
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 3
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T], Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Marsh Flats
+  [Main 1]
+T3 P2: Play Marsh Flats
+T3 P2: Crack Marsh Flats (pay 1 life) -> Sacred Foundry (pay 2 life, untapped, life: 12)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→R, Sacred Foundry→R, Sacred Foundry→R (paying for Seasoned Pyromancer, 3 mana remaining)
+T3 P2: Cast Seasoned Pyromancer (1RR)
+    [Priority] P1 passes (no response)
+T3: Resolve Seasoned Pyromancer
+T3 P2: Create 1x Elemental token(s)
+T3 P2: Seasoned Pyromancer: discard 2, draw 2, create 1 Elemental(s)
+  [Begin Combat]
+T3 P1: Evoke Solitude (exile Orim's Chant)
+T3 P1: Cast Solitude (3WW)
+T3: Resolve Solitude
+T3: Ragavan, Nimble Pilferer moved battlefield -> exile (exiled)
+T3 P1: Solitude exiles Ragavan, Nimble Pilferer (opponent gains 2 life, now 14)
+T3 P1: Solitude sacrificed (evoke)
+  [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T3 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 1 damage dealt → P1 life: 12 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 11  |  Boros Energy 14
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 5
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Hallowed Fountain
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Seasoned Pyromancer (2/2), Elemental Token (1/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Consult the Star Charts
+  [Main 1]
+T3 P1: Play Island
+    → Goal: grind_value [engines]
+    [Mana] Tap Island→U, Hallowed Fountain→U (paying for Consult the Star Charts, 3 mana remaining)
+T3 P1: Cast Consult the Star Charts (1U) (X=1)
+    [Priority] P2 passes (no response)
+T3: Resolve Consult the Star Charts
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 14  |  Azorius Control 11
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 6
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Seasoned Pyromancer (2/2), Elemental Token (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T], Hallowed Fountain [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ocelot Pride
+  [Main 1]
+T4 P2: Play Arid Mesa
+T4 P2: Crack Arid Mesa -> Snow-Covered Plains (untapped)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Snow-Covered Plains→W (paying for Ocelot Pride, 4 mana remaining)
+T4 P2: Cast Ocelot Pride (W)
+    [Priority] P1 passes (no response)
+T4: Resolve Ocelot Pride
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R (paying for Voice of Victory, 3 mana remaining)
+T4 P2: Cast Voice of Victory (1W)
+    [Priority] P1 passes (no response)
+T4: Resolve Voice of Victory
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Seasoned Pyromancer, Elemental Token
+T4 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Seasoned Pyromancer, Elemental Token
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 4 damage dealt → P1 life: 11 → 7
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 7  |  Boros Energy 13
+║ Hand: 2 cards  |  Opp hand: 1 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 6
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Hallowed Fountain, Island
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Seasoned Pyromancer (2/2) [tapped], Elemental Token (1/1) [tapped], Ocelot Pride (1/1), Voice of Victory (1/3)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry, Snow-Covered Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Teferi, Time Raveler
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→W, Island→U, Hallowed Fountain→U (paying for Teferi, Time Raveler, 3 mana remaining)
+T4 P1: Cast Teferi, Time Raveler (1WU)
+    [Priority] P2 passes (no response)
+T4: Resolve Teferi, Time Raveler
+T4 P1: Teferi bounces Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T4 P1: Teferi draws Wrath of the Skies
+T4 P1: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 13  |  Azorius Control 7
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 45  |  Graveyard: 7
+║ Boros Energy board:
+║   Creatures: Seasoned Pyromancer (2/2), Elemental Token (1/1), Ocelot Pride (1/1), Voice of Victory (1/3)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain [T], Hallowed Fountain [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Snow-Covered Plains→W, Sacred Foundry→R (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 4 mana remaining)
+T5 P2: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P1 passes (no response)
+T5: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T5 P2: Create 1x Cat token(s)
+T5 P2: Ajani creates 2/1 Cat Warrior token
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Seasoned Pyromancer, Elemental Token, Ocelot Pride, Voice of Victory
+T5 P2: Create 2x Warrior token(s)
+T5 P2: Voice of Victory mobilize 2 — create 2 1/1 tokens
+T5 P2: Attack with Seasoned Pyromancer, Elemental Token, Ocelot Pride, Voice of Victory
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 5 damage dealt → P1 life: 7 → 2
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 2  |  Boros Energy 14
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 6
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Hallowed Fountain, Island
+║ Boros Energy board:
+║   Creatures: Seasoned Pyromancer (2/2) [tapped], Elemental Token (1/1) [tapped], Ocelot Pride (1/1) [tapped], Voice of Victory (1/3) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1), Warrior Token (1/1), Warrior Token (1/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry, Sacred Foundry, Snow-Covered Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Solitude
+  [Main 1]
+    → Goal: close_game
+T5 P1: Evoke Solitude (exile Wrath of the Skies)
+T5 P1: Cast Solitude (3WW)
+T5: Resolve Solitude
+T5: Voice of Victory moved battlefield -> exile (exiled)
+T5 P1: Solitude exiles Voice of Victory (opponent gains 1 life, now 15)
+T5 P1: Solitude sacrificed (evoke)
+    → Goal: close_game
+    [Mana] Tap Island→U, Hallowed Fountain→U (paying for Isochron Scepter, 3 mana remaining)
+T5 P1: Cast Isochron Scepter (2)
+T5: Resolve Isochron Scepter
+T5 P1: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 15  |  Azorius Control 2
+║ Hand: 2 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 44  |  Graveyard: 7
+║ Boros Energy board:
+║   Creatures: Seasoned Pyromancer (2/2), Elemental Token (1/1), Ocelot Pride (1/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1), Warrior Token (1/1), Warrior Token (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler, Isochron Scepter
+║   Lands: Hallowed Fountain [T], Hallowed Fountain, Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Goblin Bombardment
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Seasoned Pyromancer, Elemental Token, Ocelot Pride, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token, Warrior Token, Warrior Token
+T6 P2: Attack with Seasoned Pyromancer, Elemental Token, Ocelot Pride, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token, Warrior Token, Warrior Token
+  [Declare Blockers] P1 does not block
+P1 loses: life total -7
+  [Combat Damage] 9 damage dealt → P1 life: 2 → -7
+
+>>> Boros Energy wins Game 1 on turn 6 via damage
+    Final life: Azorius Control=-7  Boros Energy=16
+
+======================================================================
+  GAME 2: Azorius Control (P1) vs Boros Energy (P2)  —  seed 60104
+  Series: Azorius Control 0 - 1 Boros Energy
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Boros Energy wins → chooses to play first
+║ P1 (on play): Boros Energy
+║ P2 (on draw): Azorius Control
+╚═══════════════════════════════════════════════════════
+
+P1 (Azorius Control) opening hand (3 lands, 4 spells):
+  • Orim's Chant [Spell, CMC 1]
+  • Island [Land, CMC 0]
+  • Prismatic Ending [Spell, CMC 1]
+  • Arid Mesa [Land, CMC 0]
+  • Counterspell [Spell, CMC 2]
+  • Steam Vents [Land, CMC 0]
+  • Wrath of the Skies [Spell, CMC 2]
+→ P1 KEEPS 7 — has key card(s): Counterspell, Orim's Chant, Prismatic Ending, 4 cheap spells
+
+P2 (Boros Energy) opening hand (4 lands, 3 spells):
+  • Flooded Strand [Land, CMC 0]
+  • Arid Mesa [Land, CMC 0]
+  • Elegant Parlor [Land, CMC 0]
+  • Arid Mesa [Land, CMC 0]
+  • Seasoned Pyromancer [Creature, CMC 3]
+  • Goblin Bombardment [Spell, CMC 2]
+  • Guide of Souls [Creature, CMC 1]
+→ P2 KEEPS 7 — has key card(s): Guide of Souls, 3 cheap spells
+
+
+╔══ TURN 1 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Azorius Control 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Arid Mesa
+T1 P2: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (pay 2 life, untapped, life: 17)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Guide of Souls, 1 mana remaining)
+T1 P2: Cast Guide of Souls (W)
+    [Priority] P1 passes (no response)
+T1: Resolve Guide of Souls
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 20  |  Boros Energy 17
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Stock Up
+  [Main 1]
+T1 P1: Play Arid Mesa
+T1 P1: Crack Arid Mesa (pay 1 life) -> Hallowed Fountain (pay 2 life, untapped, life: 17)
+    → Goal: interact [interaction]
+    [Mana] Tap Hallowed Fountain→W (paying for Prismatic Ending, 1 mana remaining)
+T1 P1: Cast Prismatic Ending (W)
+    [Priority] P2 passes (no response)
+T1: Resolve Prismatic Ending
+T1: Guide of Souls moved battlefield -> exile (exiled)
+T1 P1: Prismatic Ending exiles Guide of Souls
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 17  |  Azorius Control 17
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Elegant Parlor
+  [Main 1]
+T2 P2: Play Flooded Strand
+T2 P2: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (pay 2 life, untapped, life: 14)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 17  |  Boros Energy 14
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 2
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Otawara, Soaring City
+  [Main 1]
+T2 P1: Play Steam Vents (pay 2 life, untapped, life: 15)
+    → Goal: grind_value
+    [Mana] Tap Hallowed Fountain→W (paying for Orim's Chant, 2 mana remaining)
+T2 P1: Cast Orim's Chant (W)
+    [Priority] P2 passes (no response)
+T2: Resolve Orim's Chant
+T2 P1: Orim's Chant queues silence for P2's next turn
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 14  |  Azorius Control 15
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T], Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T3 P2: Play Arid Mesa
+T3 P2: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (pay 2 life, untapped, life: 11)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→R, Sacred Foundry→R, Sacred Foundry→R (paying for Seasoned Pyromancer, 3 mana remaining)
+T3 P2: Cast Seasoned Pyromancer (1RR)
+    [Priority] P1 passes (no response)
+T3: Resolve Seasoned Pyromancer
+T3 P2: Seasoned Pyromancer: discard 2, draw 2 (no nonland discards)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 15  |  Boros Energy 11
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 3
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Steam Vents
+║ Boros Energy board:
+║   Creatures: Seasoned Pyromancer (2/2)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Teferi, Hero of Dominaria
+  [Main 1]
+T3 P1: Play Island
+    → Goal: grind_value [engines]
+    [Mana] Tap Island→U, Hallowed Fountain→U, Steam Vents→R (paying for Stock Up, 3 mana remaining)
+T3 P1: Cast Stock Up (2U)
+    [Priority] P2 passes (no response)
+T3: Resolve Stock Up
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 11  |  Azorius Control 15
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 5
+║ Boros Energy board:
+║   Creatures: Seasoned Pyromancer (2/2)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T], Steam Vents [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T4 P2: Play Flooded Strand
+T4 P2: Crack Flooded Strand -> Snow-Covered Plains (untapped)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Snow-Covered Plains→W (paying for Ocelot Pride, 4 mana remaining)
+T4 P2: Cast Ocelot Pride (W)
+    [Priority] P1 passes (no response)
+T4: Resolve Ocelot Pride
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Seasoned Pyromancer
+T4 P2: Attack with Seasoned Pyromancer
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 2 damage dealt → P1 life: 15 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 13  |  Boros Energy 10
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 4
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Steam Vents, Island
+║ Boros Energy board:
+║   Creatures: Seasoned Pyromancer (2/2) [tapped], Ocelot Pride (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Monumental Henge
+  [Main 1]
+T4 P1: Play Otawara, Soaring City
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→W, Island→U (paying for Teferi, Time Raveler, 4 mana remaining)
+T4 P1: Cast Teferi, Time Raveler (1WU)
+    [Priority] P2 passes (no response)
+T4: Resolve Teferi, Time Raveler
+T4 P1: Teferi bounces Ocelot Pride
+T4 P1: Teferi draws Sanctifier en-Vec
+T4 P1: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 10  |  Azorius Control 13
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 44  |  Graveyard: 6
+║ Boros Energy board:
+║   Creatures: Seasoned Pyromancer (2/2)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain [T], Steam Vents, Island [T], Otawara, Soaring City
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thraben Charm
+  [Main 1]
+T5 P2: Play Arid Mesa
+T5 P2: Crack Arid Mesa -> Snow-Covered Mountain (untapped)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Snow-Covered Plains→W (paying for Ocelot Pride, 5 mana remaining)
+T5 P2: Cast Ocelot Pride (W)
+    [Priority] P1 responds with Counterspell
+    [Mana] Tap Otawara, Soaring City→U, Steam Vents→U (paying for Counterspell, 2 mana remaining)
+T5 P1: Cast Counterspell (UU)
+T5: Resolve Counterspell
+T5: Ocelot Pride is countered
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Seasoned Pyromancer
+T5 P2: Attack with Seasoned Pyromancer
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 2 damage dealt → P1 life: 13 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 11  |  Boros Energy 9
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 5
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Steam Vents, Island, Otawara, Soaring City
+║ Boros Energy board:
+║   Creatures: Seasoned Pyromancer (2/2) [tapped]
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains [T], Snow-Covered Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Orim's Chant
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→W, Island→U, Otawara, Soaring City→U, Steam Vents→R (paying for Teferi, Hero of Dominaria, 4 mana remaining)
+T5 P1: Cast Teferi, Hero of Dominaria (3WU)
+T5: Resolve Teferi, Hero of Dominaria
+T5 P1: Play Plains
+    → Goal: close_game
+    [Mana] Tap Plains→W (paying for Orim's Chant, 1 mana remaining)
+T5 P1: Cast Orim's Chant (W)
+T5: Resolve Orim's Chant
+T5 P1: Orim's Chant queues silence for P2's next turn
+T5 P1: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+T5 P1: Teferi, Hero of Dominaria [+1] -> Draw a card. At the beginning of the next end step, untap up to two lands
+T5 P1:   untap 2 lands
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 9  |  Azorius Control 11
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 42  |  Graveyard: 8
+║ Boros Energy board:
+║   Creatures: Seasoned Pyromancer (2/2)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains, Snow-Covered Mountain
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler, Teferi, Hero of Dominaria
+║   Lands: Hallowed Fountain, Steam Vents, Island [T], Otawara, Soaring City [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Main 1]
+T6 P2: Play Snow-Covered Plains
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Snow-Covered Plains→W, Snow-Covered Mountain→R (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 6 mana remaining)
+T6 P2: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P1 passes (no response)
+T6: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T6 P2: Create 1x Cat token(s)
+T6 P2: Ajani creates 2/1 Cat Warrior token
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Seasoned Pyromancer
+T6 P2: Attack with Seasoned Pyromancer
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 2 damage dealt → P1 life: 11 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 9  |  Boros Energy 9
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 43  |  Graveyard: 6
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler, Teferi, Hero of Dominaria
+║   Lands: Hallowed Fountain, Steam Vents, Island, Otawara, Soaring City, Plains
+║ Boros Energy board:
+║   Creatures: Seasoned Pyromancer (2/2) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains [T], Snow-Covered Mountain [T], Snow-Covered Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arid Mesa
+  [Main 1]
+T6 P1: Play Arid Mesa
+T6 P1: Crack Arid Mesa -> Hallowed Fountain (tapped, no spells need mana)
+    → Goal: close_game
+    [Mana] Tap Plains→W, Hallowed Fountain→W (paying for Wrath of the Skies, 5 mana remaining)
+T6 P1: Cast Wrath of the Skies (3WW) (X=3)
+T6: Resolve Wrath of the Skies
+T6: Teferi, Time Raveler moved battlefield -> graveyard (destroyed)
+T6: Seasoned Pyromancer dies
+T6: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger dies
+T6: Cat Token dies
+T6 P1: Wrath of the Skies (X=3) sweeps the board
+T6 P1: Teferi, Hero of Dominaria [+1] -> Draw a card. At the beginning of the next end step, untap up to two lands
+T6 P1:   untap 2 lands
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→W, Steam Vents→U (paying for Teferi, Time Raveler, 2 mana remaining)
+T6 P1: Cast Teferi, Time Raveler (1WU)
+    [Priority] P2 passes (no response)
+T6: Resolve Teferi, Time Raveler
+T6 P1: Teferi draws Prismatic Ending
+T6 P1: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [End Step]
+
+╔══ TURN 7 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 9  |  Azorius Control 8
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 6  |  Opp lands: 6
+║ Library: 41  |  Graveyard: 11
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains, Snow-Covered Mountain, Snow-Covered Plains
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Hero of Dominaria, Teferi, Time Raveler
+║   Lands: Hallowed Fountain [T], Steam Vents [T], Island [T], Otawara, Soaring City [T], Plains [T], Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arena of Glory
+  [Main 1]
+T7 P2: Play Arena of Glory (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 8  |  Boros Energy 9
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 6  |  Opp lands: 7
+║ Library: 39  |  Graveyard: 9
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Hero of Dominaria, Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Steam Vents, Island, Otawara, Soaring City, Plains, Hallowed Fountain
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains, Snow-Covered Mountain, Snow-Covered Plains, Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Meticulous Archive
+  [Main 1]
+T7 P1: Play Monumental Henge (enters tapped)
+    → Goal: close_game
+    [Mana] Tap Plains→W, Hallowed Fountain→W (paying for Sanctifier en-Vec, 6 mana remaining)
+T7 P1: Cast Sanctifier en-Vec (WW)
+T7: Resolve Sanctifier en-Vec
+T7 P1: Sanctifier en-Vec exiles 4 black/red cards from graveyards
+T7 P1: Teferi, Hero of Dominaria [+1] -> Draw a card. At the beginning of the next end step, untap up to two lands
+T7 P1:   untap 2 lands
+T7 P1: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+T7 P1: Cycle Lórien Revealed (pay 1 mana, draw a card)
+    → Goal: close_game
+    [Mana] Tap Plains→W, Hallowed Fountain→W (paying for Sanctifier en-Vec, 5 mana remaining)
+T7 P1: Cast Sanctifier en-Vec (WW)
+T7: Resolve Sanctifier en-Vec
+  [End Step]
+
+╔══ TURN 8 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 9  |  Azorius Control 8
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 7  |  Opp lands: 7
+║ Library: 40  |  Graveyard: 7
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains, Snow-Covered Mountain, Snow-Covered Plains, Arena of Glory
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2), Sanctifier en-Vec (2/2)
+║   Other: Teferi, Hero of Dominaria, Teferi, Time Raveler
+║   Lands: Hallowed Fountain [T], Steam Vents, Island, Otawara, Soaring City, Plains [T], Hallowed Fountain [T], Monumental Henge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Marsh Flats
+  [Main 1]
+T8 P2: Play Marsh Flats
+T8 P2: Crack Marsh Flats (no valid land found)
+    → Goal: curve_out
+    [Mana] Tap Snow-Covered Mountain→R, Snow-Covered Plains→W (paying for Goblin Bombardment, 7 mana remaining)
+T8 P2: Cast Goblin Bombardment (1R)
+    [Priority] P1 passes (no response)
+T8: Resolve Goblin Bombardment
+T8 P2: Goblin Bombardment enters — sacrifice creatures for 1 damage each
+    → Goal: curve_out [interaction]
+    [Mana] Tap Snow-Covered Plains→W, Arena of Glory→R (paying for Thraben Charm, 5 mana remaining)
+T8 P2: Cast Thraben Charm (1W)
+    [Priority] P1 passes (no response)
+T8: Resolve Thraben Charm
+T8 P2: Thraben Charm exiles opponent's graveyard (18 CMC)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 8  |  Boros Energy 8
+║ Hand: 3 cards  |  Opp hand: 0 cards
+║ Lands: 7  |  Opp lands: 7
+║ Library: 36  |  Graveyard: 0
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2), Sanctifier en-Vec (2/2)
+║   Other: Teferi, Hero of Dominaria, Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Steam Vents, Island, Otawara, Soaring City, Plains, Hallowed Fountain, Monumental Henge
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Other: Goblin Bombardment
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains [T], Snow-Covered Mountain [T], Snow-Covered Plains [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Lórien Revealed
+  [Main 1]
+T8 P1: Cycle Lórien Revealed (pay 1 mana, draw a card)
+T8 P1: Play Island
+    → Goal: close_game
+    [Mana] Tap Plains→W (paying for Prismatic Ending, 7 mana remaining)
+T8 P1: Cast Prismatic Ending (6W) (X=6)
+T8: Resolve Prismatic Ending
+T8: Goblin Bombardment moved battlefield -> exile (exiled)
+T8 P1: Prismatic Ending exiles Goblin Bombardment
+T8 P1: Teferi, Hero of Dominaria [+1] -> Draw a card. At the beginning of the next end step, untap up to two lands
+T8 P1:   untap 2 lands
+T8 P1: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Sanctifier en-Vec, Sanctifier en-Vec
+T8 P1: Attack with Sanctifier en-Vec, Sanctifier en-Vec
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 4 damage dealt → P2 life: 8 → 4
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 4  |  Azorius Control 8
+║ Hand: 0 cards  |  Opp hand: 3 cards
+║ Lands: 7  |  Opp lands: 8
+║ Library: 39  |  Graveyard: 9
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains, Snow-Covered Mountain, Snow-Covered Plains, Arena of Glory
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2) [tapped], Sanctifier en-Vec (2/2) [tapped]
+║   Other: Teferi, Hero of Dominaria, Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Steam Vents, Island [T], Otawara, Soaring City [T], Plains [T], Hallowed Fountain [T], Monumental Henge [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ocelot Pride
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 8  |  Boros Energy 4
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 8  |  Opp lands: 7
+║ Library: 33  |  Graveyard: 2
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2), Sanctifier en-Vec (2/2)
+║   Other: Teferi, Hero of Dominaria, Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Steam Vents, Island, Otawara, Soaring City, Plains, Hallowed Fountain, Monumental Henge, Island
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains, Snow-Covered Mountain, Snow-Covered Plains, Arena of Glory
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Prismatic Ending
+  [Main 1]
+T9 P1: Play Meticulous Archive (enters tapped)
+T9 P1: Teferi, Hero of Dominaria [-8] -> You get an emblem with "Whenever you draw a card, exile target permanent an opponent controls."
+T9 P1:   emblem exiles Sacred Foundry
+T9: Teferi, Hero of Dominaria moved battlefield -> graveyard (SBA 704.5p: zero loyalty)
+T9 P1: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Sanctifier en-Vec, Sanctifier en-Vec
+T9 P1: Attack with Sanctifier en-Vec, Sanctifier en-Vec
+  [Declare Blockers] P2 does not block
+P2 loses: life total 0
+  [Combat Damage] 4 damage dealt → P2 life: 4 → 0
+
+>>> Azorius Control wins Game 2 on turn 9 via damage
+    Final life: Azorius Control=8  Boros Energy=0
+
+======================================================================
+  GAME 3: Boros Energy (P1) vs Azorius Control (P2)  —  seed 60105
+  Series: Azorius Control 1 - 1 Boros Energy
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Boros Energy wins → chooses to play first
+║ P1 (on play): Boros Energy
+║ P2 (on draw): Azorius Control
+╚═══════════════════════════════════════════════════════
+
+P1 (Boros Energy) opening hand (2 lands, 5 spells):
+  • Ajani, Nacatl Pariah // Ajani, Nacatl Avenger [Creature, CMC 2]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Phlage, Titan of Fire's Fury [Creature, CMC 3]
+  • Ajani, Nacatl Pariah // Ajani, Nacatl Avenger [Creature, CMC 2]
+  • Flooded Strand [Land, CMC 0]
+  • Sacred Foundry [Land, CMC 0]
+  • Orim's Chant [Spell, CMC 1]
+→ P1 KEEPS 7 — has key card(s): Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Ragavan, Nimble Pilferer, 5 cheap spells
+
+P2 (Azorius Control) opening hand (4 lands, 3 spells):
+  • Hallowed Fountain [Land, CMC 0]
+  • Mystic Gate [Land, CMC 0]
+  • Solitude [Creature, CMC 5]
+  • Arid Mesa [Land, CMC 0]
+  • Island [Land, CMC 0]
+  • Wrath of the Skies [Spell, CMC 2]
+  • Orim's Chant [Spell, CMC 1]
+→ P2 KEEPS 7 — has key card(s): Orim's Chant, Solitude, 2 cheap spells
+
+
+╔══ TURN 1 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 20  |  Azorius Control 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Flooded Strand
+T1 P1: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (pay 2 life, untapped, life: 17)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T1 P1: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P2 passes (no response)
+T1: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 20  |  Boros Energy 17
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Counterspell
+  [Main 1]
+T1 P2: Play Mystic Gate
+    → Goal: interact [interaction]
+T1 P2: Evoke Solitude (exile Orim's Chant)
+T1 P2: Cast Solitude (3WW)
+    [Priority] P1 passes (no response)
+T1: Resolve Solitude
+T1: Ragavan, Nimble Pilferer moved battlefield -> exile (exiled)
+T1 P2: Solitude exiles Ragavan, Nimble Pilferer (opponent gains 2 life, now 19)
+T1 P2: Solitude sacrificed (evoke)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 19  |  Azorius Control 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Mystic Gate
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Guide of Souls
+  [Main 1]
+T2 P1: Play Sacred Foundry (pay 2 life, untapped, life: 17)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 2 mana remaining)
+T2 P1: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P2 passes (no response)
+T2: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T2 P1: Create 1x Cat token(s)
+T2 P1: Ajani creates 2/1 Cat Warrior token
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 20  |  Boros Energy 17
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 1
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Mystic Gate
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Teferi, Time Raveler
+  [Main 1]
+T2 P2: Play Arid Mesa
+T2 P2: Crack Arid Mesa (pay 1 life) -> Hallowed Fountain (pay 2 life, untapped, life: 17)
+    → Goal: grind_value [interaction]
+    [Mana] Tap Hallowed Fountain→W, Mystic Gate→W (paying for Wrath of the Skies, 2 mana remaining)
+T2 P2: Cast Wrath of the Skies (WW)
+    [Priority] P1 passes (no response)
+T2: Resolve Wrath of the Skies
+T2: Cat Token dies
+T2 P2: Wrath of the Skies (X=0) sweeps the board
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 17  |  Azorius Control 17
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Mystic Gate [T], Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Seasoned Pyromancer
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Guide of Souls, 2 mana remaining)
+T3 P1: Cast Guide of Souls (W)
+    [Priority] P2 passes (no response)
+T3: Resolve Guide of Souls
+    → Goal: curve_out
+    [Mana] Tap Sacred Foundry→W (paying for Orim's Chant, 1 mana remaining)
+T3 P1: Cast Orim's Chant (W)
+    [Priority] P2 passes (no response)
+T3: Resolve Orim's Chant
+T3 P1: Orim's Chant queues silence for P2's next turn
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T3 P1: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 1 damage dealt → P2 life: 17 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 16  |  Boros Energy 17
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 3
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Mystic Gate, Hallowed Fountain
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Guide of Souls (1/2)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Island
+  [Main 1]
+T3 P2: Play Hallowed Fountain (pay 2 life, untapped, life: 14)
+    → Goal: grind_value
+    [Mana] Tap Hallowed Fountain→W, Hallowed Fountain→U, Mystic Gate→C (paying for Teferi, Time Raveler, 3 mana remaining)
+T3 P2: Cast Teferi, Time Raveler (1WU)
+    [Priority] P1 passes (no response)
+T3: Resolve Teferi, Time Raveler
+T3 P2: Teferi bounces Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T3 P2: Teferi draws Supreme Verdict
+T3 P2: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 17  |  Azorius Control 14
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 3
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Mystic Gate [T], Hallowed Fountain [T], Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Phlage, Titan of Fire's Fury
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 2 mana remaining)
+T4 P1: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P2 passes (no response)
+T4: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T4 P1: Create 1x Cat token(s)
+T4 P1: Ajani creates 2/1 Cat Warrior token
+T4 P1: Gain 1 life from Guide of Souls (life: 18)
+T4 P1: +1 energy from Guide of Souls (total: 1)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Guide of Souls
+T4 P1: Attack with Guide of Souls
+  [Declare Blockers] P2 does not block
+  [Combat Damage] 1 damage dealt → P2 life: 14 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 13  |  Boros Energy 18
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 3
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Mystic Gate, Hallowed Fountain, Hallowed Fountain
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Sanctifier en-Vec
+  [Main 1]
+T4 P2: Play Island
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→W, Hallowed Fountain→W, Island→U, Mystic Gate→C (paying for Supreme Verdict, 4 mana remaining)
+T4 P2: Cast Supreme Verdict (1WWU)
+T4: Resolve Supreme Verdict
+T4: Guide of Souls dies
+T4: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger dies
+T4: Cat Token dies
+T4 P2: Supreme Verdict destroys 3 creatures
+T4 P2: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 18  |  Azorius Control 13
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 6
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Mystic Gate [T], Hallowed Fountain [T], Hallowed Fountain [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Flooded Strand
+  [Main 1]
+T5 P1: Play Flooded Strand
+T5 P1: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (pay 2 life, untapped, life: 15)
+    → Goal: curve_out
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R, Sacred Foundry→R (paying for Phlage, Titan of Fire's Fury, 3 mana remaining)
+T5 P1: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P2 passes (no response)
+T5: Resolve Phlage, Titan of Fire's Fury
+T5 P1: Phlage: 3 damage to opponent, gain 3 life
+T5 P1: Phlage sacrificed (not escaped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 10  |  Boros Energy 18
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 4
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Mystic Gate, Hallowed Fountain, Hallowed Fountain, Island
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thundering Falls
+  [Main 1]
+T5 P2: Play Island
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→W, Hallowed Fountain→W (paying for Sanctifier en-Vec, 5 mana remaining)
+T5 P2: Cast Sanctifier en-Vec (WW)
+T5: Resolve Sanctifier en-Vec
+T5 P2: Sanctifier en-Vec exiles 2 black/red cards from graveyards
+T5 P2: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 18  |  Azorius Control 10
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 6
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2)
+║   Other: Teferi, Time Raveler
+║   Lands: Mystic Gate, Hallowed Fountain [T], Hallowed Fountain [T], Island, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Galvanic Discharge
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R, Sacred Foundry→R (paying for Phlage, Titan of Fire's Fury, 3 mana remaining)
+T6 P1: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P2 responds with Counterspell
+    [Mana] Tap Island→U, Island→U (paying for Counterspell, 3 mana remaining)
+T6 P2: Cast Counterspell (UU)
+T6: Resolve Counterspell
+T6: Phlage, Titan of Fire's Fury is countered
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 10  |  Boros Energy 18
+║ Hand: 1 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 5
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2)
+║   Other: Teferi, Time Raveler
+║   Lands: Mystic Gate, Hallowed Fountain, Hallowed Fountain, Island, Island
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Solitude
+  [Main 1]
+T6 P2: Play Thundering Falls (enters tapped)
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→W, Hallowed Fountain→W, Island→U, Island→U, Mystic Gate→C (paying for Solitude, 5 mana remaining)
+T6 P2: Cast Solitude (3WW)
+T6: Resolve Solitude
+T6 P2: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Sanctifier en-Vec
+T6 P2: Attack with Sanctifier en-Vec
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 2 damage dealt → P1 life: 18 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 16  |  Azorius Control 10
+║ Hand: 3 cards  |  Opp hand: 0 cards
+║ Lands: 3  |  Opp lands: 6
+║ Library: 46  |  Graveyard: 7
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2) [tapped], Solitude (3/2)
+║   Other: Teferi, Time Raveler
+║   Lands: Mystic Gate [T], Hallowed Fountain [T], Hallowed Fountain [T], Island [T], Island [T], Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Seasoned Pyromancer
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→R, Sacred Foundry→R, Sacred Foundry→R (paying for Seasoned Pyromancer, 3 mana remaining)
+T7 P1: Cast Seasoned Pyromancer (1RR)
+    [Priority] P2 passes (no response)
+T7: Resolve Seasoned Pyromancer
+T7 P1: Create 2x Elemental token(s)
+T7 P1: Seasoned Pyromancer: discard 2, draw 2, create 2 Elemental(s)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 10  |  Boros Energy 16
+║ Hand: 0 cards  |  Opp hand: 3 cards
+║ Lands: 6  |  Opp lands: 3
+║ Library: 45  |  Graveyard: 5
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2), Solitude (3/2)
+║   Other: Teferi, Time Raveler
+║   Lands: Mystic Gate, Hallowed Fountain, Hallowed Fountain, Island, Island, Thundering Falls
+║ Boros Energy board:
+║   Creatures: Seasoned Pyromancer (2/2), Elemental Token (1/1), Elemental Token (1/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Prismatic Ending
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→W (paying for Prismatic Ending, 6 mana remaining)
+T7 P2: Cast Prismatic Ending (5W) (X=5)
+T7: Resolve Prismatic Ending
+T7: Seasoned Pyromancer moved battlefield -> exile (exiled)
+T7 P2: Prismatic Ending exiles Seasoned Pyromancer
+T7 P2: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Sanctifier en-Vec, Solitude
+T7 P2: Attack with Sanctifier en-Vec, Solitude
+  [Declare Blockers] P1 blocks: 
+T7: Elemental Token dies
+T7: Elemental Token dies
+T7: Solitude dies
+  [Combat Damage] 2 damage dealt → P1 life: 16 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 14  |  Azorius Control 12
+║ Hand: 3 cards  |  Opp hand: 0 cards
+║ Lands: 3  |  Opp lands: 6
+║ Library: 43  |  Graveyard: 11
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2) [tapped]
+║   Other: Teferi, Time Raveler
+║   Lands: Mystic Gate [T], Hallowed Fountain [T], Hallowed Fountain [T], Island [T], Island [T], Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arid Mesa
+  [Main 1]
+T8 P1: Play Arid Mesa
+T8 P1: Crack Arid Mesa -> Snow-Covered Mountain (untapped)
+    → Goal: curve_out
+T8 P1: Escape Phlage, Titan of Fire's Fury (exile 5 cards)
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→W, Snow-Covered Mountain→R, Sacred Foundry→R (paying for Phlage, Titan of Fire's Fury, 4 mana remaining)
+T8 P1: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P2 passes (no response)
+T8: Resolve Phlage, Titan of Fire's Fury
+T8 P1: Phlage: 3 damage to opponent, gain 3 life
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 9  |  Boros Energy 16
+║ Hand: 0 cards  |  Opp hand: 3 cards
+║ Lands: 6  |  Opp lands: 4
+║ Library: 44  |  Graveyard: 7
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2)
+║   Other: Teferi, Time Raveler
+║   Lands: Mystic Gate, Hallowed Fountain, Hallowed Fountain, Island, Island, Thundering Falls
+║ Boros Energy board:
+║   Creatures: Phlage, Titan of Fire's Fury (6/6)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Snow-Covered Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Counterspell
+  [Main 1]
+T8 P2: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 16  |  Azorius Control 9
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 41  |  Graveyard: 6
+║ Boros Energy board:
+║   Creatures: Phlage, Titan of Fire's Fury (6/6)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Mountain
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2)
+║   Other: Teferi, Time Raveler
+║   Lands: Mystic Gate, Hallowed Fountain, Hallowed Fountain, Island, Island, Thundering Falls
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arena of Glory
+  [Main 1]
+T9 P1: Play Arena of Glory (enters tapped)
+    → Goal: curve_out [interaction]
+    [Mana] Tap Snow-Covered Mountain→R (paying for Galvanic Discharge, 4 mana remaining)
+T9 P1: Cast Galvanic Discharge (R)
+    [Priority] P2 passes (no response)
+T9: Resolve Galvanic Discharge
+T9 P1: Galvanic Discharge deals 5 to opponent
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→R, Sacred Foundry→R (paying for Seasoned Pyromancer, 3 mana remaining)
+T9 P1: Cast Seasoned Pyromancer (1RR)
+    [Priority] P2 responds with Counterspell
+    [Mana] Tap Island→U, Island→U (paying for Counterspell, 6 mana remaining)
+T9 P2: Cast Counterspell (UU)
+T9: Resolve Counterspell
+T9: Seasoned Pyromancer is countered
+    → Goal: curve_out
+    [Mana] Tap Sacred Foundry→R (paying for Goblin Bombardment, 1 mana remaining)
+T9 P1: Cast Goblin Bombardment (1R)
+    [Priority] P2 passes (no response)
+T9: Resolve Goblin Bombardment
+T9 P1: Goblin Bombardment enters — sacrifice creatures for 1 damage each
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Phlage, Titan of Fire's Fury
+T9 P1: Gain 3 life from Phlage, Titan of Fire's Fury (life: 19)
+T9 P1: Attack with Phlage, Titan of Fire's Fury
+  [Declare Blockers] P2 blocks: 
+T9: Sanctifier en-Vec dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 1  |  Boros Energy 19
+║ Hand: 0 cards  |  Opp hand: 0 cards
+║ Lands: 6  |  Opp lands: 5
+║ Library: 43  |  Graveyard: 9
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Mystic Gate, Hallowed Fountain, Hallowed Fountain, Island, Island, Thundering Falls
+║ Boros Energy board:
+║   Creatures: Phlage, Titan of Fire's Fury (6/6) [tapped]
+║   Other: Goblin Bombardment
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Snow-Covered Mountain [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Sanctifier en-Vec
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→W, Hallowed Fountain→W (paying for Sanctifier en-Vec, 6 mana remaining)
+T9 P2: Cast Sanctifier en-Vec (WW)
+T9: Resolve Sanctifier en-Vec
+T9 P2: Sanctifier en-Vec exiles 4 black/red cards from graveyards
+T9 P2: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 19  |  Azorius Control 1
+║ Hand: 0 cards  |  Opp hand: 0 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 40  |  Graveyard: 4
+║ Boros Energy board:
+║   Creatures: Phlage, Titan of Fire's Fury (6/6)
+║   Other: Goblin Bombardment
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Mountain, Arena of Glory
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2)
+║   Other: Teferi, Time Raveler
+║   Lands: Mystic Gate, Hallowed Fountain [T], Hallowed Fountain [T], Island, Island, Thundering Falls
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arid Mesa
+  [Main 1]
+T10 P1: Play Arid Mesa
+T10 P1: Crack Arid Mesa -> Snow-Covered Plains (untapped)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Phlage, Titan of Fire's Fury
+T10 P1: Gain 3 life from Phlage, Titan of Fire's Fury (life: 21)
+T10 P1: Attack with Phlage, Titan of Fire's Fury
+P2 loses: life total -2
+
+>>> Boros Energy wins Game 3 on turn 10 via damage
+    Final life: Boros Energy=21  Azorius Control=-2
+
+======================================================================
+  MATCH RESULT: Boros Energy wins 2-1
+======================================================================

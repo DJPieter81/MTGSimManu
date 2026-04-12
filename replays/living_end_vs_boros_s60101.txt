@@ -1,0 +1,589 @@
+Loaded 21759 cards (0 errors)
+======================================================================
+  GAME 1: Living End (P1) vs Boros Energy (P2)  —  seed 60101
+  Series: Living End 0 - 0 Boros Energy
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Living End wins → chooses to play first
+║ P1 (on play): Living End
+║ P2 (on draw): Boros Energy
+╚═══════════════════════════════════════════════════════
+
+P1 (Living End) opening hand (2 lands, 5 spells):
+  • Living End [Spell, CMC 0]
+  • Subtlety [Creature, CMC 4]
+  • Architects of Will [Creature, CMC 4]
+  • Striped Riverwinder [Creature, CMC 7]
+  • Verdant Catacombs [Land, CMC 0]
+  • Misty Rainforest [Land, CMC 0]
+  • Force of Negation [Spell, CMC 3]
+→ P1 MULLIGANS (missing combo piece from {'Shardless Agent', 'Demonic Dread'})
+  New hand (3 lands, 4 spells): ['Force of Negation', 'Overgrown Tomb', 'Verdant Catacombs', 'Curator of Mysteries', 'Waker of Waves', 'Architects of Will', 'Island']
+→ P1 mulligans to 6, bottoms: ['Force of Negation']
+  Keeps: ['Overgrown Tomb', 'Verdant Catacombs', 'Curator of Mysteries', 'Waker of Waves', 'Architects of Will', 'Island']
+
+P2 (Boros Energy) opening hand (1 lands, 6 spells):
+  • Flooded Strand [Land, CMC 0]
+  • Ajani, Nacatl Pariah // Ajani, Nacatl Avenger [Creature, CMC 2]
+  • Voice of Victory [Creature, CMC 2]
+  • Ocelot Pride [Creature, CMC 1]
+  • Ocelot Pride [Creature, CMC 1]
+  • Goblin Bombardment [Spell, CMC 2]
+  • Seasoned Pyromancer [Creature, CMC 3]
+→ P2 MULLIGANS (too few lands (1 < 2))
+  New hand (2 lands, 5 spells): ['Ragavan, Nimble Pilferer', 'Arid Mesa', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Galvanic Discharge', 'Ocelot Pride', 'Flooded Strand']
+→ P2 mulligans to 6, bottoms: ['Arid Mesa']
+  Keeps: ['Ragavan, Nimble Pilferer', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Galvanic Discharge', 'Ocelot Pride', 'Flooded Strand']
+
+
+╔══ TURN 1 — Living End (P1) ══════════════════════════
+║ Life: Living End 20  |  Boros Energy 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 54  |  Graveyard: 0
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Verdant Catacombs
+T1 P1: Crack Verdant Catacombs (pay 1 life) -> Watery Grave (pay 2 life, untapped, life: 17)
+T1 P1: Cycle Curator of Mysteries (pay 1 mana, draw a card)
+T1 P1: Cycle Architects of Will (pay 0 mana, draw a card)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Living End 17
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Main 1]
+T1 P2: Play Flooded Strand
+T1 P2: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (pay 2 life, untapped, life: 17)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T1 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T1: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Living End (P1) ══════════════════════════
+║ Life: Living End 17  |  Boros Energy 17
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 51  |  Graveyard: 3
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Subtlety
+  [Main 1]
+T2 P1: Play Verdant Catacombs
+T2 P1: Crack Verdant Catacombs (pay 1 life) -> Breeding Pool (pay 2 life, untapped, life: 14)
+    → Goal: execute_payoff
+T2 P1: Evoke Subtlety (exile Force of Negation)
+T2 P1: Cast Subtlety (2UU)
+    [Priority] P2 passes (no response)
+T2: Resolve Subtlety
+T2 P1: Subtlety enters (no creature/PW spell on stack to target)
+T2 P1: Subtlety sacrificed (evoke)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 17  |  Living End 14
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Breeding Pool
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Voice of Victory
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Ocelot Pride, 1 mana remaining)
+T2 P2: Cast Ocelot Pride (W)
+    [Priority] P1 passes (no response)
+T2: Resolve Ocelot Pride
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T2 P2: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T2 P2: Create 1x Treasure token(s)
+T2 P2: Ragavan, Nimble Pilferer exiles Verdant Catacombs from top of P1's library
+  [Combat Damage] 2 damage dealt → P1 life: 14 → 12
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Living End (P1) ══════════════════════════
+║ Life: Living End 12  |  Boros Energy 17
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 1
+║ Library: 48  |  Graveyard: 5
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Breeding Pool
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Ocelot Pride (1/1)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Street Wraith
+  [Main 1]
+T3 P1: Cycle Street Wraith (pay 2 life, draw a card)
+T3 P1: Play Overgrown Tomb (pay 2 life, untapped, life: 8)
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Watery Grave→U, Breeding Pool→G, Overgrown Tomb→B (paying for Shardless Agent, 3 mana remaining)
+T3 P1: Cast Shardless Agent (1UG)
+    [Priority] P2 passes (no response)
+T3: Resolve Shardless Agent
+T3: Cascade (CMC < 3)
+T3: Cascade hits Living End
+T3 P1: Cast Living End (0)
+T3: Resolve Living End
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 17  |  Living End 8
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 1  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Ocelot Pride (1/1)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry
+║ Living End board:
+║   Creatures: Shardless Agent (2/2)
+║   Lands: Watery Grave [T], Breeding Pool [T], Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+    → Goal: curve_out [interaction]
+    [Mana] Tap Sacred Foundry→R (paying for Galvanic Discharge, 1 mana remaining)
+T3 P2: Cast Galvanic Discharge (R)
+    [Priority] P1 passes (no response)
+T3: Resolve Galvanic Discharge
+T3 P2: Galvanic Discharge deals 4 to opponent
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T3 P2: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 blocks: 
+T3: Shardless Agent dies
+T3: Ragavan, Nimble Pilferer dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Living End (P1) ══════════════════════════
+║ Life: Living End 4  |  Boros Energy 17
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 1
+║ Library: 45  |  Graveyard: 8
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Breeding Pool, Overgrown Tomb
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Demonic Dread
+  [Main 1]
+T4 P1: Play Island
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 17  |  Living End 4
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 1  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 3
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Breeding Pool, Overgrown Tomb, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thraben Charm
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T4 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T4: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ocelot Pride
+T4 P2: Attack with Ocelot Pride
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 1 damage dealt → P1 life: 4 → 3
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Living End (P1) ══════════════════════════
+║ Life: Living End 3  |  Boros Energy 18
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 1
+║ Library: 44  |  Graveyard: 8
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Breeding Pool, Overgrown Tomb, Island
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped], Ragavan, Nimble Pilferer (2/1)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Force of Negation
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 18  |  Living End 3
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 1  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 3
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ragavan, Nimble Pilferer (2/1)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Breeding Pool, Overgrown Tomb, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ocelot Pride, Ragavan, Nimble Pilferer
+T5 P2: Attack with Ocelot Pride, Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T5 P2: Create 1x Treasure token(s)
+T5 P2: Ragavan, Nimble Pilferer exiles Street Wraith from top of P1's library
+P1 loses: life total 0
+  [Combat Damage] 3 damage dealt → P1 life: 3 → 0
+
+>>> Boros Energy wins Game 1 on turn 5 via damage
+    Final life: Living End=0  Boros Energy=19
+
+======================================================================
+  GAME 2: Living End (P1) vs Boros Energy (P2)  —  seed 60102
+  Series: Living End 0 - 1 Boros Energy
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Living End wins → chooses to play first
+║ P1 (on play): Living End
+║ P2 (on draw): Boros Energy
+╚═══════════════════════════════════════════════════════
+
+P1 (Living End) opening hand (3 lands, 4 spells):
+  • Shardless Agent [Creature, CMC 3]
+  • Misty Rainforest [Land, CMC 0]
+  • Striped Riverwinder [Creature, CMC 7]
+  • Striped Riverwinder [Creature, CMC 7]
+  • Architects of Will [Creature, CMC 4]
+  • Botanical Sanctum [Land, CMC 0]
+  • Zagoth Triome [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Architects of Will, Shardless Agent, Striped Riverwinder, 1 cheap spells
+
+P2 (Boros Energy) opening hand (2 lands, 5 spells):
+  • Ocelot Pride [Creature, CMC 1]
+  • Thraben Charm [Spell, CMC 2]
+  • Ajani, Nacatl Pariah // Ajani, Nacatl Avenger [Creature, CMC 2]
+  • Orim's Chant [Spell, CMC 1]
+  • Ajani, Nacatl Pariah // Ajani, Nacatl Avenger [Creature, CMC 2]
+  • Arena of Glory [Land, CMC 0]
+  • Snow-Covered Plains [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Ocelot Pride, 5 cheap spells
+
+
+╔══ TURN 1 — Living End (P1) ══════════════════════════
+║ Life: Living End 20  |  Boros Energy 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Misty Rainforest
+T1 P1: Crack Misty Rainforest (pay 1 life) -> Watery Grave (pay 2 life, untapped, life: 17)
+T1 P1: Cycle Striped Riverwinder (pay 1 mana, draw a card)
+T1 P1: Cycle Architects of Will (pay 0 mana, draw a card)
+T1 P1: Cycle Street Wraith (pay 2 life, draw a card)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Living End 15
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Elegant Parlor
+  [Main 1]
+T1 P2: Play Snow-Covered Plains
+    → Goal: curve_out [enablers]
+    [Mana] Tap Snow-Covered Plains→W (paying for Ocelot Pride, 1 mana remaining)
+T1 P2: Cast Ocelot Pride (W)
+    [Priority] P1 passes (no response)
+T1: Resolve Ocelot Pride
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Living End (P1) ══════════════════════════
+║ Life: Living End 15  |  Boros Energy 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 49  |  Graveyard: 4
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Lands: Snow-Covered Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Waker of Waves
+  [Main 1]
+T2 P1: Cycle Striped Riverwinder (pay 1 mana, draw a card)
+T2 P1: Play Misty Rainforest
+T2 P1: Crack Misty Rainforest (pay 1 life) -> Overgrown Tomb (pay 2 life, untapped, life: 12)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Living End 12
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Lands: Snow-Covered Plains
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Overgrown Tomb
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T2 P2: Play Arid Mesa
+T2 P2: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (pay 2 life, untapped, life: 17)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Snow-Covered Plains→W, Sacred Foundry→R (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 2 mana remaining)
+T2 P2: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P1 passes (no response)
+T2: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T2 P2: Create 1x Cat token(s)
+T2 P2: Ajani creates 2/1 Cat Warrior token
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ocelot Pride
+T2 P2: Attack with Ocelot Pride
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 1 damage dealt → P1 life: 12 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Living End (P1) ══════════════════════════
+║ Life: Living End 11  |  Boros Energy 18
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 46  |  Graveyard: 6
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Overgrown Tomb
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Lands: Snow-Covered Plains [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Indatha Triome
+  [Main 1]
+T3 P1: Play Verdant Catacombs
+T3 P1: Crack Verdant Catacombs (pay 1 life) -> Blood Crypt (pay 2 life, untapped, life: 8)
+T3 P1: Cycle Zagoth Triome (pay 3 mana, draw a card)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 18  |  Living End 8
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Lands: Snow-Covered Plains, Sacred Foundry
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Overgrown Tomb [T], Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thraben Charm
+  [Main 1]
+T3 P2: Play Arena of Glory (enters tapped)
+    → Goal: curve_out
+    [Mana] Tap Snow-Covered Plains→W (paying for Orim's Chant, 2 mana remaining)
+T3 P2: Cast Orim's Chant (W)
+    [Priority] P1 passes (no response)
+T3: Resolve Orim's Chant
+T3 P2: Orim's Chant queues silence for P1's next turn
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ocelot Pride, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+T3 P2: Attack with Ocelot Pride, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+  [Declare Blockers] P1 does not block
+  [Combat Damage] 4 damage dealt → P1 life: 8 → 4
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Living End (P1) ══════════════════════════
+║ Life: Living End 4  |  Boros Energy 19
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 43  |  Graveyard: 8
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Overgrown Tomb, Blood Crypt
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Cat Token (2/1) [tapped]
+║   Lands: Snow-Covered Plains [T], Sacred Foundry, Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Shardless Agent
+  [Main 1]
+T4 P1: Cycle Indatha Triome (pay 3 mana, draw a card)
+T4 P1: Play Misty Rainforest
+T4 P1: Crack Misty Rainforest -> Island (untapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Living End 3
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Lands: Snow-Covered Plains, Sacred Foundry, Arena of Glory
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Overgrown Tomb [T], Blood Crypt [T], Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Galvanic Discharge
+  [Main 1]
+    → Goal: curve_out [interaction]
+    [Mana] Tap Arena of Glory→R (paying for Galvanic Discharge, 3 mana remaining)
+T4 P2: Cast Galvanic Discharge (R)
+    [Priority] P1 passes (no response)
+T4: Resolve Galvanic Discharge
+T4 P2: Galvanic Discharge deals 4 to opponent
+P1 loses: life total -1
+
+>>> Boros Energy wins Game 2 on turn 4 via damage
+    Final life: Living End=-1  Boros Energy=19
+
+======================================================================
+  MATCH RESULT: Boros Energy wins 2-0
+======================================================================

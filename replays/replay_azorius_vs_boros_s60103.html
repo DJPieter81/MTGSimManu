@@ -1,0 +1,1919 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bo3 Replay: Azorius Control vs Boros Energy</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-serif;padding:20px;max-width:920px;margin:0 auto;font-size:13px}
+/* HEADER */
+.header{background:linear-gradient(135deg,#f0f4f8,#e8edf2);border:1px solid #d0d7de;border-radius:12px;padding:24px;margin-bottom:16px}
+.header h1{font-size:1.5em;margin-bottom:6px;color:#1f2328}
+.header h1 .vs{color:#9198a1}
+.meta{display:flex;justify-content:space-between;color:#656d76;font-size:.85em;margin-bottom:12px;padding:6px 0;border-bottom:1px solid #d0d7de}
+.series-score{font-size:1.3em;font-weight:700;margin-top:6px}
+.bug-s{color:#0969da}.opp-s{color:#d1242f}
+/* LEGEND */
+.legend-box{background:#f6f8fa;border:1px solid #d0d7de;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:11px}
+.legend-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#9198a1;margin-bottom:8px}
+.legend-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.leg-item{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.leg-label{color:#656d76;font-size:10px}
+.legend-note{margin-top:8px;font-size:10px;color:#9198a1;font-style:italic;border-top:1px solid #d0d7de;padding-top:6px}
+/* TABS */
+.game-tabs{display:flex;gap:4px;margin-bottom:0}
+.game-tab{background:#eaeef2;color:#656d76;border:1px solid #d0d7de;border-radius:8px 8px 0 0;padding:10px 20px;cursor:pointer;font-weight:600;font-size:.9em;transition:background .15s}
+.game-tab:hover{background:#d0d7de}
+.game-tab.active{background:#ffffff;color:#1f2328;border-bottom-color:#ffffff}
+.winner-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-left:6px;vertical-align:middle}
+.winner-dot.bug{background:#0969da}.winner-dot.opp{background:#d1242f}
+.game-panel{display:none;background:#ffffff;border:1px solid #d0d7de;border-top:none;border-radius:0 8px 8px 8px;padding:16px;margin-bottom:16px}
+.game-panel.active{display:block}
+/* HANDS */
+.hands{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.hand-box{background:#f6f8fa;border:1px solid #d0d7de;border-radius:8px;padding:12px}
+.hand-box h3{font-size:.8em;color:#656d76;margin-bottom:8px;font-weight:600}
+.hand-box.bug{border-left:3px solid #0969da}.hand-box.opp{border-left:3px solid #d1242f}
+.pill{display:inline-block;background:#eaeef2;border:1px solid #d0d7de;border-radius:10px;padding:2px 8px;margin:2px;font-size:.78em;font-family:'Fira Code','Consolas',monospace;color:#9a6700}
+.mull-pills{opacity:.5;margin:2px 0}.mull-pills .pill{font-size:.7em;text-decoration:line-through}
+.mull-step{display:flex;align-items:center;gap:6px;margin:5px 0 2px;font-size:.8em}
+.mull-label{color:#656d76;font-weight:600}
+.keep-tag{color:#1a7f37;font-weight:700;font-size:.82em;padding:1px 6px;background:#dafbe1;border-radius:3px}
+.mull-tag{color:#d1242f;font-weight:700;font-size:.82em;padding:1px 6px;background:#ffebe9;border-radius:3px}
+.mull-reason{font-size:.75em;color:#d1242f;margin:2px 0 6px;font-style:italic;padding-left:6px;border-left:2px solid #f5b8b0}
+.keep-reason{font-size:.78em;color:#1a7f37;margin-left:8px;font-style:italic}
+.hand-analysis{font-size:.75em;color:#1a7f37;margin-top:5px;padding:3px 7px;background:#dafbe1;border-radius:3px;border-left:2px solid #4ac26b}
+/* LIFE CHART */
+.life-chart{background:#f6f8fa;border:1px solid #d0d7de;border-radius:8px;padding:14px;margin-bottom:12px}
+.life-chart h3{font-size:.82em;color:#656d76;font-weight:600}
+/* CONTROLS */
+.controls{display:flex;gap:8px;margin-bottom:12px;align-items:center}
+.controls button{background:#f6f8fa;color:#1f2328;border:1px solid #d0d7de;border-radius:5px;padding:5px 12px;cursor:pointer;font-size:.82em}
+.controls button:hover{background:#eaeef2;border-color:#0969da}
+.kbd-hint{color:#9198a1;font-size:.78em;margin-left:4px}
+/* TURNS */
+.turn{background:#f6f8fa;border:1px solid #d0d7de;border-radius:8px;margin-bottom:6px;overflow:hidden;transition:border-color .15s}
+.turn.bug{border-left:3px solid #0969da}.turn.opp{border-left:3px solid #d1242f}
+.turn.active{border-color:#bf8700!important}
+.turn-header{padding:10px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;transition:background .1s}
+.turn-header:hover{background:#eaeef2}
+.turn-header .left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tnum{font-weight:700;font-size:1.05em;min-width:32px;font-family:'Fira Code',monospace}
+.tnum.bug{color:#0969da}.tnum.opp{color:#d1242f}
+.player{font-weight:600;font-size:.82em;padding:2px 7px;border-radius:4px}
+.player.bug{background:#ddf4ff;color:#0969da}.player.opp{background:#ffebe9;color:#d1242f}
+.life{font-size:.85em;color:#656d76}.life b{color:#1f2328}
+.hand-count{font-size:.75em;color:#9198a1;background:#eaeef2;padding:1px 5px;border-radius:3px;font-family:'Fira Code',monospace}
+.star-marker{color:#bf4b8a;font-size:.8em;font-weight:700}
+.arrow{color:#9198a1;transition:transform .2s;font-size:.75em;flex-shrink:0}
+.turn.open .arrow{transform:rotate(90deg)}
+.turn-body{display:none;padding:0 14px 14px;border-top:1px solid #d0d7de}
+.turn.open .turn-body{display:block}
+.section-label{font-size:.7em;text-transform:uppercase;letter-spacing:1px;color:#9198a1;margin:10px 0 5px;font-weight:600}
+.draw-row{margin-bottom:4px;display:flex;align-items:center;gap:4px}
+/* PLAYS */
+.play{padding:5px 0;display:flex;gap:6px;align-items:flex-start;flex-wrap:wrap;border-bottom:1px solid #eaeef2}
+.step{color:#9198a1;font-size:.82em;min-width:18px;text-align:right;padding-top:2px;flex-shrink:0}
+.action{font-family:'Fira Code','Consolas',monospace;font-size:.82em;color:#1f2328}
+.action.key{color:#9a6700;font-weight:600}
+.reasoning{font-size:.75em;color:#656d76;font-style:italic;width:100%;padding-left:24px;margin-top:1px}
+.pass-label{color:#9198a1;font-size:.82em;font-style:italic;padding-left:24px}
+/* BADGE */
+.cat-badge{font-size:.62em;text-transform:uppercase;letter-spacing:.5px;padding:1px 5px;border-radius:3px;font-weight:700;margin-right:3px;min-width:46px;text-align:center;display:inline-block;flex-shrink:0;font-family:system-ui}
+/* COMBAT */
+.combat-detail{background:#fff8f8;border:1px solid #f5b8b0;border-radius:5px;padding:6px 10px;margin:3px 0;font-family:'Fira Code',monospace;font-size:.8em;color:#1f2328}
+/* BOARD */
+.board-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+.board-side{background:#ffffff;border:1px solid #d0d7de;border-radius:6px;padding:8px 10px}
+.board-side h4{font-size:.75em;color:#656d76;margin-bottom:6px;font-weight:600}
+.board{margin-bottom:4px;min-height:22px;display:flex;flex-wrap:wrap;gap:3px}
+.creature-badge{background:#ddf4ff;border:1px solid #a8d8f0;border-radius:5px;padding:3px 8px;font-family:'Fira Code',monospace;font-size:.78em;color:#0969da;display:inline-flex;align-items:center;gap:4px}
+.creature-badge .pt{color:#656d76;font-size:.9em}
+.land-list{color:#9198a1;font-size:.72em;margin-top:4px;line-height:1.5}
+/* RESULT */
+.result{background:linear-gradient(135deg,#f0f4f8,#e8edf2);border:2px solid #d0d7de;border-radius:12px;padding:24px;text-align:center;margin-top:16px}
+.result h2{font-size:1.8em;margin-bottom:6px}
+.reason{color:#656d76;margin-bottom:4px;font-size:.9em}
+.stats{color:#9198a1;font-size:.85em}
+.bug-win{color:#0969da}.opp-win{color:#d1242f}
+.play-response{background:#fff8e1;border-left:3px solid #bf8700;border-radius:0 4px 4px 0;padding:5px 6px;margin:2px 0}
+.respond-badge{font-size:.75em;font-weight:700;margin-right:6px;letter-spacing:.3px}
+.reason-toggle{color:#9198a1;font-size:1.1em;cursor:pointer;padding:0 4px;border-radius:3px;user-select:none;flex-shrink:0}.reason-toggle:hover{color:#1f2328;background:#eaeef2}
+.reason-toggle.open{color:#0969da}
+.reasoning{font-size:.75em;color:#656d76;font-style:italic;width:100%;padding:2px 0 2px 24px;margin-top:1px;border-left:2px solid #d0d7de;margin-left:24px}
+</style></head><body>
+<div class="header">
+  <h1><span style="color:#0969da">Azorius Control</span> <span class="vs">vs</span> <span style="color:#d1242f">Boros Energy</span></h1>
+  <div class="series-score"><span class="bug-s">1</span> – <span class="opp-s">2</span> <span style="font-size:.6em;color:#484f58;font-weight:400">(Boros Energy wins)</span></div>
+  <div style="color:#484f58;font-size:.8em;margin-top:4px">Modern Bo3 · Seed 60103 · Apr 2026</div>
+</div>
+<div class="legend-box">
+  <div class="legend-title">Legend</div>
+  <div class="legend-row">
+    <span class="leg-item"><span style="display:inline-block;width:10px;height:10px;background:#0969da;border-radius:2px;margin-right:4px;vertical-align:middle"></span><span class="leg-label">P1 (blue)</span></span>
+    <span class="leg-item"><span style="display:inline-block;width:10px;height:10px;background:#d1242f;border-radius:2px;margin-right:4px;vertical-align:middle"></span><span class="leg-label">P2 (red)</span></span>
+    <span class="leg-item"><span style="color:#e3b341;font-weight:700;margin-right:4px">gold text</span><span class="leg-label">Key play</span></span>
+    <span class="leg-item"><span style="color:#f778ba;font-weight:700;margin-right:4px">★</span><span class="leg-label">Key turn</span></span>
+    <span class="leg-item"><span style="color:#6e7681;font-style:italic;margin-right:4px">← goal</span><span class="leg-label">AI goal from log</span></span>
+  </div>
+  <div class="legend-row" style="margin-top:6px"><span class="leg-item"><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span> <span class="leg-label">Land drops</span></span><span class="leg-item"><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span> <span class="leg-label">Spells cast</span></span><span class="leg-item"><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">MANA</span> <span class="leg-label">Mana rituals / cantrips</span></span><span class="leg-item"><span class="cat-badge" style="background:#f5f0ff;color:#6639ba">FETCH</span> <span class="leg-label">Fetchlands</span></span><span class="leg-item"><span class="cat-badge" style="background:#ffebe9;color:#d1242f">REMOVE</span> <span class="leg-label">Removal</span></span><span class="leg-item"><span class="cat-badge" style="background:#f5f0ff;color:#8250df">COUNTER</span> <span class="leg-label">Counterspells</span></span><span class="leg-item"><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span> <span class="leg-label">Attacks / blocks</span></span><span class="leg-item"><span class="cat-badge" style="background:#fff0f8;color:#bf4b8a">COMBO</span> <span class="leg-label">Combo finishers</span></span><span class="leg-item"><span class="cat-badge" style="background:#fff8c5;color:#9a6700">DISCARD</span> <span class="leg-label">Discard effects</span></span><span class="leg-item"><span class="cat-badge" style="background:#fff8c5;color:#9a6700">TRIGGER</span> <span class="leg-label">Abilities / ETBs</span></span><span class="leg-item"><span class="cat-badge" style="background:#ffebe9;color:#d1242f">DAMAGE</span> <span class="leg-label">Direct damage</span></span><span class="leg-item"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span> <span class="leg-label">Draw step</span></span><span class="leg-item"><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span> <span class="leg-label">Other</span></span></div>
+  <div class="legend-note">Hand shown = active player's cards (tracked from opening hand + draws − plays). Board shown = state <em>after</em> turn resolves.</div>
+</div>
+<div class="game-tabs"><div class="game-tab active" onclick="showGame(0)">Game 1 <span class="winner-dot opp"></span></div>
+<div class="game-tab " onclick="showGame(1)">Game 2 <span class="winner-dot bug"></span></div>
+<div class="game-tab " onclick="showGame(2)">Game 3 <span class="winner-dot bug"></span></div>
+</div>
+<div class="game-panel active" id="game-0">
+<div class="meta">
+  <span>Azorius Control is ON THE DRAW</span>
+  <span style="color:#484f58">Seed: 60103</span>
+</div>
+<div class="hands">
+  <div class="hand-box bug">
+    <h3><span style="color:#0969da">Azorius Control</span> — Opening Hand (P1)</h3>
+    <div class="mull-step"><span class="keep-tag">KEEP 7</span><span class="keep-reason">has key card(s): Orim's Chant, Solitude, 3 cheap spells</span></div><div class="hand-pills"><span class="pill">Orim's Chant</span><span class="pill">Supreme Verdict</span><span class="pill">Wrath of the Skies</span><span class="pill">Flooded Strand</span><span class="pill">Island</span><span class="pill">Orim's Chant</span><span class="pill">Solitude</span></div>
+  </div>
+  <div class="hand-box opp">
+    <h3><span style="color:#d1242f">Boros Energy</span> — Opening Hand (P2)</h3>
+    <div class="mull-step"><span class="keep-tag">KEEP 7</span><span class="keep-reason">has key card(s): Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Ragavan, Nimble Pilferer, 4 cheap spells</span></div><div class="hand-pills"><span class="pill">Arena of Glory</span><span class="pill">Orim's Chant</span><span class="pill">Sacred Foundry</span><span class="pill">Seasoned Pyromancer</span><span class="pill">Flooded Strand</span><span class="pill">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span><span class="pill">Ragavan, Nimble Pilferer</span></div>
+  </div>
+</div>
+<div class="life-chart">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+    <h3>Life Totals</h3>
+    <span style="font-size:10px;color:#484f58">— dashed lines at 5, 10, 15 —</span>
+  </div>
+  <svg viewBox="0 0 760 80" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:80px"><line x1="10" y1="56" x2="750" y2="56" stroke="#d0d7de" stroke-width="1" stroke-dasharray="3,3"/><text x="6" y="59" fill="#484f58" font-size="7" text-anchor="end">5</text><line x1="10" y1="39" x2="750" y2="39" stroke="#d0d7de" stroke-width="1" stroke-dasharray="3,3"/><text x="6" y="42" fill="#484f58" font-size="7" text-anchor="end">10</text><line x1="10" y1="22" x2="750" y2="22" stroke="#d0d7de" stroke-width="1" stroke-dasharray="3,3"/><text x="6" y="25" fill="#484f58" font-size="7" text-anchor="end">15</text><polyline points="10,5 77,5 144,5 211,15 279,22 346,32 413,35 480,35 548,49 615,49 682,66 750,66" fill="none" stroke="#0969da" stroke-width="2" opacity=".85"/><polyline points="10,5 77,5 144,11 211,11 279,22 346,22 413,25 480,25 548,28 615,28 682,25 750,22" fill="none" stroke="#d1242f" stroke-width="2" opacity=".85"/><circle cx="10" cy="5" r="3" fill="#0969da"/><text x="10" y="0" fill="#0969da" font-size="8" text-anchor="middle">20</text><circle cx="750" cy="66" r="3" fill="#0969da"/><text x="750" y="61" fill="#0969da" font-size="8" text-anchor="end">2</text><circle cx="10" cy="5" r="3" fill="#d1242f"/><text x="10" y="0" fill="#d1242f" font-size="8" text-anchor="middle">20</text><circle cx="750" cy="22" r="3" fill="#d1242f"/><text x="750" y="17" fill="#d1242f" font-size="8" text-anchor="end">15</text><text x="10" y="76" fill="#0969da" font-size="8" font-weight="600">Azorius Control</text><text x="750" y="76" fill="#d1242f" font-size="8" font-weight="600" text-anchor="end">Boros Energy</text></svg>
+</div>
+<div class="controls">
+  <button onclick="expandAll()">Expand All</button>
+  <button onclick="collapseAll()">Collapse All</button>
+  <span class="kbd-hint">↑↓ navigate turns &nbsp;·&nbsp; Enter: expand/collapse</span>
+</div>
+<div class="turn opp" id="g1t1">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T1</span>
+      <span class="player opp">Boros Energy</span>
+      <span class="life">Life: <b>20</b> &nbsp;|&nbsp; Opp: 20</span>
+      <span class="hand-count">7c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    
+    <div class="section-label">Hand (7 cards)</div><div class="hand-pills"><span class="pill">Arena of Glory</span><span class="pill">Orim's Chant</span><span class="pill">Sacred Foundry</span><span class="pill">Seasoned Pyromancer</span><span class="pill">Flooded Strand</span><span class="pill">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span><span class="pill">Ragavan, Nimble Pilferer</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Sacred Foundry (pay 2 life, untapped, life: 18)</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Ragavan, Nimble Pilferer (R)</span><span class="reason-toggle" onclick="toggleReason('r1t1s2')" title="Show reasoning">·</span><div class="reasoning" id="r1t1s2" style="display:none">← curve_out [enablers]</div></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Azorius Control</span> — 0 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">none</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 1 land</h4>
+        <div class="board"><span class="creature-badge">Ragavan</span><span class="creature-badge">Nimble Pilferer<span class="pt">2/1</span></span></div>
+        <div class="land-list">Sacred Foundry [T]</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g1t1">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T1</span>
+      <span class="player bug">Azorius Control</span>
+      <span class="life">Life: <b>20</b> &nbsp;|&nbsp; Opp: 18</span>
+      <span class="hand-count">8c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Isochron Scepter</span></div>
+    <div class="section-label">Hand (8 cards)</div><div class="hand-pills"><span class="pill">Orim's Chant</span><span class="pill">Supreme Verdict</span><span class="pill">Wrath of the Skies</span><span class="pill">Flooded Strand</span><span class="pill">Island</span><span class="pill">Orim's Chant</span><span class="pill">Solitude</span><span class="pill">Isochron Scepter</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Flooded Strand</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f5f0ff;color:#6639ba">FETCH</span><span class="action">Crack Flooded Strand (pay 1 life) -&gt; Hallowed Fountain (pay 2 life, untapped, life: 17)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Orim's Chant (W)</span><span class="reason-toggle" onclick="toggleReason('r1t1s3')" title="Show reasoning">·</span><div class="reasoning" id="r1t1s3" style="display:none">← interact [interaction]</div></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Orim's Chant queues silence for P2's next turn</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Azorius Control</span> — 1 land</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Hallowed Fountain [T]</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 1 land</h4>
+        <div class="board"><span class="creature-badge">Ragavan</span><span class="creature-badge">Nimble Pilferer<span class="pt">2/1</span></span></div>
+        <div class="land-list">Sacred Foundry</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g1t2">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T2</span>
+      <span class="player opp">Boros Energy</span>
+      <span class="life">Life: <b>18</b> &nbsp;|&nbsp; Opp: 17</span>
+      <span class="hand-count">6c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Voice of Victory</span></div>
+    <div class="section-label">Hand (6 cards)</div><div class="hand-pills"><span class="pill">Arena of Glory</span><span class="pill">Orim's Chant</span><span class="pill">Seasoned Pyromancer</span><span class="pill">Flooded Strand</span><span class="pill">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span><span class="pill">Voice of Victory</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Flooded Strand</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f5f0ff;color:#6639ba">FETCH</span><span class="action">Crack Flooded Strand (pay 1 life) -&gt; Sacred Foundry (pay 2 life, untapped, life: 15)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)</span><span class="reason-toggle" onclick="toggleReason('r1t2s3')" title="Show reasoning">·</span><div class="reasoning" id="r1t2s3" style="display:none">← curve_out [payoffs]</div></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Create 1x Cat token(s)</span></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Ajani creates 2/1 Cat Warrior token</span></div>
+<div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Ragavan, Nimble Pilferer</span></div>
+<div class="play"><span class="step">7.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Create 1x Treasure token(s)</span></div>
+<div class="play"><span class="step">8.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Ragavan, Nimble Pilferer exiles Counterspell from top of P1's library</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Ragavan, Nimble Pilferer</div><div class="combat-detail">2 damage → life 17 → 15</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Azorius Control</span> — 1 land</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Hallowed Fountain</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 2 lands</h4>
+        <div class="board"><span class="creature-badge">Ragavan</span><span class="creature-badge">Nimble Pilferer<span class="pt">2/1</span></span><span class="creature-badge">Ajani</span><span class="creature-badge">Nacatl Pariah // Ajani</span><span class="creature-badge">Nacatl Avenger<span class="pt">1/2</span></span><span class="creature-badge">Cat Token<span class="pt">2/1</span></span></div>
+        <div class="land-list">Sacred Foundry [T], Sacred Foundry [T]</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g1t2">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T2</span>
+      <span class="player bug">Azorius Control</span>
+      <span class="life">Life: <b>15</b> &nbsp;|&nbsp; Opp: 15</span>
+      <span class="hand-count">7c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Demolition Field</span></div>
+    <div class="section-label">Hand (7 cards)</div><div class="hand-pills"><span class="pill">Supreme Verdict</span><span class="pill">Wrath of the Skies</span><span class="pill">Island</span><span class="pill">Orim's Chant</span><span class="pill">Solitude</span><span class="pill">Isochron Scepter</span><span class="pill">Demolition Field</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Demolition Field</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f5f0ff;color:#6639ba">FETCH</span><span class="action">Crack Demolition Field (pay 1 life) -&gt; Hallowed Fountain (pay 2 life, untapped, life: 12)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Wrath of the Skies (WW)</span><span class="reason-toggle" onclick="toggleReason('r1t2s3')" title="Show reasoning">·</span><div class="reasoning" id="r1t2s3" style="display:none">← grind_value [interaction]</div></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Wrath of the Skies (X=0) sweeps the board</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Azorius Control</span> — 2 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Hallowed Fountain [T], Hallowed Fountain [T]</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 2 lands</h4>
+        <div class="board"><span class="creature-badge">Ragavan</span><span class="creature-badge">Nimble Pilferer<span class="pt">2/1</span></span><span class="creature-badge">Ajani</span><span class="creature-badge">Nacatl Pariah // Ajani</span><span class="creature-badge">Nacatl Avenger<span class="pt">1/2</span></span></div>
+        <div class="land-list">Sacred Foundry, Sacred Foundry</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g1t3">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T3</span>
+      <span class="player opp">Boros Energy</span>
+      <span class="life">Life: <b>15</b> &nbsp;|&nbsp; Opp: 12</span>
+      <span class="hand-count">5c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Marsh Flats</span></div>
+    <div class="section-label">Hand (5 cards)</div><div class="hand-pills"><span class="pill">Arena of Glory</span><span class="pill">Orim's Chant</span><span class="pill">Seasoned Pyromancer</span><span class="pill">Voice of Victory</span><span class="pill">Marsh Flats</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Marsh Flats</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f5f0ff;color:#6639ba">FETCH</span><span class="action">Crack Marsh Flats (pay 1 life) -&gt; Sacred Foundry (pay 2 life, untapped, life: 12)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Seasoned Pyromancer (1RR)</span><span class="reason-toggle" onclick="toggleReason('r1t3s3')" title="Show reasoning">·</span><div class="reasoning" id="r1t3s3" style="display:none">← curve_out [payoffs]</div></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Create 1x Elemental token(s)</span></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Seasoned Pyromancer: discard 2, draw 2, create 1 Elemental(s)</span></div>
+<div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Evoke Solitude (exile Orim's Chant)</span></div>
+<div class="play"><span class="step">7.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">REMOVE</span><span class="action">Cast Solitude (3WW)</span></div>
+<div class="play"><span class="step">8.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Solitude exiles Ragavan, Nimble Pilferer (opponent gains 2 life, now 14)</span></div>
+<div class="play"><span class="step">9.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Solitude sacrificed (evoke)</span></div>
+<div class="play"><span class="step">10.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</div><div class="combat-detail">1 damage → life 12 → 11</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Azorius Control</span> — 2 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Hallowed Fountain, Hallowed Fountain</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 3 lands</h4>
+        <div class="board"><span class="creature-badge">Ajani</span><span class="creature-badge">Nacatl Pariah // Ajani</span><span class="creature-badge">Nacatl Avenger<span class="pt">1/2</span></span><span class="creature-badge">Seasoned Pyromancer<span class="pt">2/2</span></span><span class="creature-badge">Elemental Token<span class="pt">1/1</span></span></div>
+        <div class="land-list">Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T]</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g1t3">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T3</span>
+      <span class="player bug">Azorius Control</span>
+      <span class="life">Life: <b>11</b> &nbsp;|&nbsp; Opp: 14</span>
+      <span class="hand-count">5c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Consult the Star Charts</span></div>
+    <div class="section-label">Hand (5 cards)</div><div class="hand-pills"><span class="pill">Supreme Verdict</span><span class="pill">Island</span><span class="pill">Orim's Chant</span><span class="pill">Isochron Scepter</span><span class="pill">Consult the Star Charts</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Island</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Consult the Star Charts (1U) (X=1)</span><span class="reason-toggle" onclick="toggleReason('r1t3s2')" title="Show reasoning">·</span><div class="reasoning" id="r1t3s2" style="display:none">← grind_value [engines]</div></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Azorius Control</span> — 3 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Hallowed Fountain [T], Hallowed Fountain [T], Island [T]</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 3 lands</h4>
+        <div class="board"><span class="creature-badge">Ajani</span><span class="creature-badge">Nacatl Pariah // Ajani</span><span class="creature-badge">Nacatl Avenger<span class="pt">1/2</span></span><span class="creature-badge">Seasoned Pyromancer<span class="pt">2/2</span></span><span class="creature-badge">Elemental Token<span class="pt">1/1</span></span></div>
+        <div class="land-list">Sacred Foundry, Sacred Foundry, Sacred Foundry</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g1t4">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T4</span>
+      <span class="player opp">Boros Energy</span>
+      <span class="life">Life: <b>14</b> &nbsp;|&nbsp; Opp: 11</span>
+      <span class="hand-count">4c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Ocelot Pride</span></div>
+    <div class="section-label">Hand (4 cards)</div><div class="hand-pills"><span class="pill">Arena of Glory</span><span class="pill">Orim's Chant</span><span class="pill">Voice of Victory</span><span class="pill">Ocelot Pride</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Arid Mesa</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f5f0ff;color:#6639ba">FETCH</span><span class="action">Crack Arid Mesa -&gt; Snow-Covered Plains (untapped)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Ocelot Pride (W)</span><span class="reason-toggle" onclick="toggleReason('r1t4s3')" title="Show reasoning">·</span><div class="reasoning" id="r1t4s3" style="display:none">← curve_out [enablers]</div></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Voice of Victory (1W)</span><span class="reason-toggle" onclick="toggleReason('r1t4s4')" title="Show reasoning">·</span><div class="reasoning" id="r1t4s4" style="display:none">← curve_out [payoffs]</div></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Seasoned Pyromancer, Elemental Token</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Seasoned Pyromancer, Elemental Token</div><div class="combat-detail">4 damage → life 11 → 7</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Azorius Control</span> — 3 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Hallowed Fountain, Hallowed Fountain, Island</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 4 lands</h4>
+        <div class="board"><span class="creature-badge">Ajani</span><span class="creature-badge">Nacatl Pariah // Ajani</span><span class="creature-badge">Nacatl Avenger<span class="pt">1/2</span></span><span class="creature-badge">Seasoned Pyromancer<span class="pt">2/2</span></span><span class="creature-badge">Elemental Token<span class="pt">1/1</span></span><span class="creature-badge">Ocelot Pride<span class="pt">1/1</span></span><span class="creature-badge">Voice of Victory<span class="pt">1/3</span></span></div>
+        <div class="land-list">Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry, Snow-Covered Plains [T]</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g1t4">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T4</span>
+      <span class="player bug">Azorius Control</span>
+      <span class="life">Life: <b>7</b> &nbsp;|&nbsp; Opp: 13</span>
+      <span class="hand-count">4c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Teferi, Time Raveler</span></div>
+    <div class="section-label">Hand (4 cards)</div><div class="hand-pills"><span class="pill">Supreme Verdict</span><span class="pill">Orim's Chant</span><span class="pill">Isochron Scepter</span><span class="pill">Teferi, Time Raveler</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Teferi, Time Raveler (1WU)</span><span class="reason-toggle" onclick="toggleReason('r1t4s1')" title="Show reasoning">·</span><div class="reasoning" id="r1t4s1" style="display:none">← close_game</div></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Teferi bounces Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Teferi draws Wrath of the Skies</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Teferi, Time Raveler [-3] -&gt; Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Azorius Control</span> — 3 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Hallowed Fountain [T], Hallowed Fountain [T], Island [T]</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 4 lands</h4>
+        <div class="board"><span class="creature-badge">Seasoned Pyromancer<span class="pt">2/2</span></span><span class="creature-badge">Elemental Token<span class="pt">1/1</span></span><span class="creature-badge">Ocelot Pride<span class="pt">1/1</span></span><span class="creature-badge">Voice of Victory<span class="pt">1/3</span></span></div>
+        <div class="land-list">Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g1t5">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T5</span>
+      <span class="player opp">Boros Energy</span>
+      <span class="life">Life: <b>13</b> &nbsp;|&nbsp; Opp: 7</span>
+      <span class="hand-count">3c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span></div>
+    <div class="section-label">Hand (3 cards)</div><div class="hand-pills"><span class="pill">Arena of Glory</span><span class="pill">Orim's Chant</span><span class="pill">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)</span><span class="reason-toggle" onclick="toggleReason('r1t5s1')" title="Show reasoning">·</span><div class="reasoning" id="r1t5s1" style="display:none">← curve_out [payoffs]</div></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Create 1x Cat token(s)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Ajani creates 2/1 Cat Warrior token</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Create 2x Warrior token(s)</span></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Voice of Victory mobilize 2 — create 2 1/1 tokens</span></div>
+<div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Seasoned Pyromancer, Elemental Token, Ocelot Pride, Voice of Victory</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Seasoned Pyromancer, Elemental Token, Ocelot Pride, Voice of Victory</div><div class="combat-detail">5 damage → life 7 → 2</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Azorius Control</span> — 3 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Hallowed Fountain, Hallowed Fountain, Island</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 4 lands</h4>
+        <div class="board"><span class="creature-badge">Seasoned Pyromancer<span class="pt">2/2</span></span><span class="creature-badge">Elemental Token<span class="pt">1/1</span></span><span class="creature-badge">Ocelot Pride<span class="pt">1/1</span></span><span class="creature-badge">Voice of Victory<span class="pt">1/3</span></span><span class="creature-badge">Ajani</span><span class="creature-badge">Nacatl Pariah // Ajani</span><span class="creature-badge">Nacatl Avenger<span class="pt">1/2</span></span><span class="creature-badge">Cat Token<span class="pt">2/1</span></span><span class="creature-badge">Warrior Token<span class="pt">1/1</span></span><span class="creature-badge">Warrior Token<span class="pt">1/1</span></span></div>
+        <div class="land-list">Sacred Foundry [T], Sacred Foundry, Sacred Foundry, Snow-Covered Plains [T]</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g1t5">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T5</span>
+      <span class="player bug">Azorius Control</span>
+      <span class="life">Life: <b>2</b> &nbsp;|&nbsp; Opp: 14</span>
+      <span class="hand-count">4c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Solitude</span></div>
+    <div class="section-label">Hand (4 cards)</div><div class="hand-pills"><span class="pill">Supreme Verdict</span><span class="pill">Orim's Chant</span><span class="pill">Isochron Scepter</span><span class="pill">Solitude</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Evoke Solitude (exile Wrath of the Skies)</span><span class="reason-toggle" onclick="toggleReason('r1t5s1')" title="Show reasoning">·</span><div class="reasoning" id="r1t5s1" style="display:none">← close_game</div></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">REMOVE</span><span class="action">Cast Solitude (3WW)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Solitude exiles Voice of Victory (opponent gains 1 life, now 15)</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Solitude sacrificed (evoke)</span></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Isochron Scepter (2)</span><span class="reason-toggle" onclick="toggleReason('r1t5s5')" title="Show reasoning">·</span><div class="reasoning" id="r1t5s5" style="display:none">← close_game</div></div>
+<div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Teferi, Time Raveler [+1] -&gt; Until your next turn, you may cast sorcery spells as though they had flash</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Azorius Control</span> — 3 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Hallowed Fountain [T], Hallowed Fountain, Island [T]</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 4 lands</h4>
+        <div class="board"><span class="creature-badge">Seasoned Pyromancer<span class="pt">2/2</span></span><span class="creature-badge">Elemental Token<span class="pt">1/1</span></span><span class="creature-badge">Ocelot Pride<span class="pt">1/1</span></span><span class="creature-badge">Ajani</span><span class="creature-badge">Nacatl Pariah // Ajani</span><span class="creature-badge">Nacatl Avenger<span class="pt">1/2</span></span><span class="creature-badge">Cat Token<span class="pt">2/1</span></span><span class="creature-badge">Warrior Token<span class="pt">1/1</span></span><span class="creature-badge">Warrior Token<span class="pt">1/1</span></span></div>
+        <div class="land-list">Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g1t6">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T6</span>
+      <span class="player opp">Boros Energy</span>
+      <span class="life">Life: <b>15</b> &nbsp;|&nbsp; Opp: 2</span>
+      <span class="hand-count">3c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Goblin Bombardment</span></div>
+    <div class="section-label">Hand (3 cards)</div><div class="hand-pills"><span class="pill">Arena of Glory</span><span class="pill">Orim's Chant</span><span class="pill">Goblin Bombardment</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Seasoned Pyromancer, Elemental Token, Ocelot Pride, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token, Warrior Token, Warrior Token</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Seasoned Pyromancer, Elemental Token, Ocelot Pride, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token, Warrior Token, Warrior Token</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Azorius Control</span> — 3 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Hallowed Fountain [T], Hallowed Fountain, Island [T]</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 4 lands</h4>
+        <div class="board"><span class="creature-badge">Seasoned Pyromancer<span class="pt">2/2</span></span><span class="creature-badge">Elemental Token<span class="pt">1/1</span></span><span class="creature-badge">Ocelot Pride<span class="pt">1/1</span></span><span class="creature-badge">Ajani</span><span class="creature-badge">Nacatl Pariah // Ajani</span><span class="creature-badge">Nacatl Avenger<span class="pt">1/2</span></span><span class="creature-badge">Cat Token<span class="pt">2/1</span></span><span class="creature-badge">Warrior Token<span class="pt">1/1</span></span><span class="creature-badge">Warrior Token<span class="pt">1/1</span></span></div>
+        <div class="land-list">Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="result">
+  <h2 class="opp-win">Boros Energy WINS</h2>
+  <div class="reason">Via damage on turn 6</div>
+  <div class="stats">
+    Final life: <span style="color:#0969da">Azorius Control 2</span>
+    &nbsp;|&nbsp;
+    <span style="color:#d1242f">Boros Energy 15</span>
+    &nbsp;|&nbsp; Length: T6
+  </div>
+</div>
+</div>
+<div class="game-panel " id="game-1">
+<div class="meta">
+  <span>Azorius Control is ON THE DRAW</span>
+  <span style="color:#484f58">Seed: 60103</span>
+</div>
+<div class="hands">
+  <div class="hand-box bug">
+    <h3><span style="color:#0969da">Azorius Control</span> — Opening Hand (P1)</h3>
+    <div class="mull-step"><span class="keep-tag">KEEP 7</span><span class="keep-reason">has key card(s): Counterspell, Orim's Chant, Prismatic Ending, 4 cheap spells</span></div><div class="hand-pills"><span class="pill">Orim's Chant</span><span class="pill">Island</span><span class="pill">Prismatic Ending</span><span class="pill">Arid Mesa</span><span class="pill">Counterspell</span><span class="pill">Steam Vents</span><span class="pill">Wrath of the Skies</span></div>
+  </div>
+  <div class="hand-box opp">
+    <h3><span style="color:#d1242f">Boros Energy</span> — Opening Hand (P2)</h3>
+    <div class="mull-step"><span class="keep-tag">KEEP 7</span><span class="keep-reason">has key card(s): Guide of Souls, 3 cheap spells</span></div><div class="hand-pills"><span class="pill">Flooded Strand</span><span class="pill">Arid Mesa</span><span class="pill">Elegant Parlor</span><span class="pill">Arid Mesa</span><span class="pill">Seasoned Pyromancer</span><span class="pill">Goblin Bombardment</span><span class="pill">Guide of Souls</span></div>
+  </div>
+</div>
+<div class="life-chart">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+    <h3>Life Totals</h3>
+    <span style="font-size:10px;color:#484f58">— dashed lines at 5, 10, 15 —</span>
+  </div>
+  <svg viewBox="0 0 760 80" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:80px"><line x1="10" y1="56" x2="750" y2="56" stroke="#d0d7de" stroke-width="1" stroke-dasharray="3,3"/><text x="6" y="59" fill="#484f58" font-size="7" text-anchor="end">5</text><line x1="10" y1="39" x2="750" y2="39" stroke="#d0d7de" stroke-width="1" stroke-dasharray="3,3"/><text x="6" y="42" fill="#484f58" font-size="7" text-anchor="end">10</text><line x1="10" y1="22" x2="750" y2="22" stroke="#d0d7de" stroke-width="1" stroke-dasharray="3,3"/><text x="6" y="25" fill="#484f58" font-size="7" text-anchor="end">15</text><polyline points="10,5 51,5 92,5 133,15 174,15 215,22 256,22 297,22 338,28 380,28 421,35 462,35 503,42 544,45 585,45 626,45 667,45 708,45 750,45" fill="none" stroke="#0969da" stroke-width="2" opacity=".85"/><polyline points="10,5 51,5 92,15 133,15 174,25 215,25 256,35 297,35 338,39 380,39 421,42 462,42 503,42 544,42 585,42 626,42 667,45 708,59 750,59" fill="none" stroke="#d1242f" stroke-width="2" opacity=".85"/><circle cx="10" cy="5" r="3" fill="#0969da"/><text x="10" y="0" fill="#0969da" font-size="8" text-anchor="middle">20</text><circle cx="750" cy="45" r="3" fill="#0969da"/><text x="750" y="40" fill="#0969da" font-size="8" text-anchor="end">8</text><circle cx="10" cy="5" r="3" fill="#d1242f"/><text x="10" y="0" fill="#d1242f" font-size="8" text-anchor="middle">20</text><circle cx="750" cy="59" r="3" fill="#d1242f"/><text x="750" y="54" fill="#d1242f" font-size="8" text-anchor="end">4</text><text x="10" y="76" fill="#0969da" font-size="8" font-weight="600">Azorius Control</text><text x="750" y="76" fill="#d1242f" font-size="8" font-weight="600" text-anchor="end">Boros Energy</text></svg>
+</div>
+<div class="controls">
+  <button onclick="expandAll()">Expand All</button>
+  <button onclick="collapseAll()">Collapse All</button>
+  <span class="kbd-hint">↑↓ navigate turns &nbsp;·&nbsp; Enter: expand/collapse</span>
+</div>
+<div class="turn opp" id="g2t1">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T1</span>
+      <span class="player opp">Boros Energy</span>
+      <span class="life">Life: <b>20</b> &nbsp;|&nbsp; Opp: 20</span>
+      <span class="hand-count">7c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    
+    <div class="section-label">Hand (7 cards)</div><div class="hand-pills"><span class="pill">Flooded Strand</span><span class="pill">Arid Mesa</span><span class="pill">Elegant Parlor</span><span class="pill">Arid Mesa</span><span class="pill">Seasoned Pyromancer</span><span class="pill">Goblin Bombardment</span><span class="pill">Guide of Souls</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Arid Mesa</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f5f0ff;color:#6639ba">FETCH</span><span class="action">Crack Arid Mesa (pay 1 life) -&gt; Sacred Foundry (pay 2 life, untapped, life: 17)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Guide of Souls (W)</span><span class="reason-toggle" onclick="toggleReason('r2t1s3')" title="Show reasoning">·</span><div class="reasoning" id="r2t1s3" style="display:none">← curve_out [enablers]</div></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Azorius Control</span> — 0 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">none</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 1 land</h4>
+        <div class="board"><span class="creature-badge">Guide of Souls<span class="pt">1/2</span></span></div>
+        <div class="land-list">Sacred Foundry [T]</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g2t1">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T1</span>
+      <span class="player bug">Azorius Control</span>
+      <span class="life">Life: <b>20</b> &nbsp;|&nbsp; Opp: 17</span>
+      <span class="hand-count">8c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Stock Up</span></div>
+    <div class="section-label">Hand (8 cards)</div><div class="hand-pills"><span class="pill">Orim's Chant</span><span class="pill">Island</span><span class="pill">Prismatic Ending</span><span class="pill">Arid Mesa</span><span class="pill">Counterspell</span><span class="pill">Steam Vents</span><span class="pill">Wrath of the Skies</span><span class="pill">Stock Up</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Arid Mesa</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f5f0ff;color:#6639ba">FETCH</span><span class="action">Crack Arid Mesa (pay 1 life) -&gt; Hallowed Fountain (pay 2 life, untapped, life: 17)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Prismatic Ending (W)</span><span class="reason-toggle" onclick="toggleReason('r2t1s3')" title="Show reasoning">·</span><div class="reasoning" id="r2t1s3" style="display:none">← interact [interaction]</div></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Prismatic Ending exiles Guide of Souls</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Azorius Control</span> — 1 land</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Hallowed Fountain [T]</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 1 land</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Sacred Foundry</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g2t2">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T2</span>
+      <span class="player opp">Boros Energy</span>
+      <span class="life">Life: <b>17</b> &nbsp;|&nbsp; Opp: 17</span>
+      <span class="hand-count">6c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Elegant Parlor</span></div>
+    <div class="section-label">Hand (6 cards)</div><div class="hand-pills"><span class="pill">Flooded Strand</span><span class="pill">Elegant Parlor</span><span class="pill">Arid Mesa</span><span class="pill">Seasoned Pyromancer</span><span class="pill">Goblin Bombardment</span><span class="pill">Elegant Parlor</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Flooded Strand</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f5f0ff;color:#6639ba">FETCH</span><span class="action">Crack Flooded Strand (pay 1 life) -&gt; Sacred Foundry (pay 2 life, untapped, life: 14)</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Azorius Control</span> — 1 land</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Hallowed Fountain</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 2 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Sacred Foundry, Sacred Foundry</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g2t2">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T2</span>
+      <span class="player bug">Azorius Control</span>
+      <span class="life">Life: <b>17</b> &nbsp;|&nbsp; Opp: 14</span>
+      <span class="hand-count">7c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Otawara, Soaring City</span></div>
+    <div class="section-label">Hand (7 cards)</div><div class="hand-pills"><span class="pill">Orim's Chant</span><span class="pill">Island</span><span class="pill">Counterspell</span><span class="pill">Steam Vents</span><span class="pill">Wrath of the Skies</span><span class="pill">Stock Up</span><span class="pill">Otawara, Soaring City</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Steam Vents (pay 2 life, untapped, life: 15)</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Orim's Chant (W)</span><span class="reason-toggle" onclick="toggleReason('r2t2s2')" title="Show reasoning">·</span><div class="reasoning" id="r2t2s2" style="display:none">← grind_value</div></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Orim's Chant queues silence for P2's next turn</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Azorius Control</span> — 2 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Hallowed Fountain [T], Steam Vents</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 2 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Sacred Foundry, Sacred Foundry</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g2t3">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T3</span>
+      <span class="player opp">Boros Energy</span>
+      <span class="life">Life: <b>14</b> &nbsp;|&nbsp; Opp: 15</span>
+      <span class="hand-count">6c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Arid Mesa</span></div>
+    <div class="section-label">Hand (6 cards)</div><div class="hand-pills"><span class="pill">Elegant Parlor</span><span class="pill">Arid Mesa</span><span class="pill">Seasoned Pyromancer</span><span class="pill">Goblin Bombardment</span><span class="pill">Elegant Parlor</span><span class="pill">Arid Mesa</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Arid Mesa</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f5f0ff;color:#6639ba">FETCH</span><span class="action">Crack Arid Mesa (pay 1 life) -&gt; Sacred Foundry (pay 2 life, untapped, life: 11)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Seasoned Pyromancer (1RR)</span><span class="reason-toggle" onclick="toggleReason('r2t3s3')" title="Show reasoning">·</span><div class="reasoning" id="r2t3s3" style="display:none">← curve_out [payoffs]</div></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Seasoned Pyromancer: discard 2, draw 2 (no nonland discards)</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Azorius Control</span> — 2 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Hallowed Fountain, Steam Vents</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 3 lands</h4>
+        <div class="board"><span class="creature-badge">Seasoned Pyromancer<span class="pt">2/2</span></span></div>
+        <div class="land-list">Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T]</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g2t3">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T3</span>
+      <span class="player bug">Azorius Control</span>
+      <span class="life">Life: <b>15</b> &nbsp;|&nbsp; Opp: 11</span>
+      <span class="hand-count">6c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Teferi, Hero of Dominaria</span></div>
+    <div class="section-label">Hand (6 cards)</div><div class="hand-pills"><span class="pill">Island</span><span class="pill">Counterspell</span><span class="pill">Wrath of the Skies</span><span class="pill">Stock Up</span><span class="pill">Otawara, Soaring City</span><span class="pill">Teferi, Hero of Dominaria</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Island</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Stock Up (2U)</span><span class="reason-toggle" onclick="toggleReason('r2t3s2')" title="Show reasoning">·</span><div class="reasoning" id="r2t3s2" style="display:none">← grind_value [engines]</div></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Azorius Control</span> — 3 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Hallowed Fountain [T], Steam Vents [T], Island [T]</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 3 lands</h4>
+        <div class="board"><span class="creature-badge">Seasoned Pyromancer<span class="pt">2/2</span></span></div>
+        <div class="land-list">Sacred Foundry, Sacred Foundry, Sacred Foundry</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g2t4">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T4</span>
+      <span class="player opp">Boros Energy</span>
+      <span class="life">Life: <b>11</b> &nbsp;|&nbsp; Opp: 15</span>
+      <span class="hand-count">5c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Flooded Strand</span></div>
+    <div class="section-label">Hand (5 cards)</div><div class="hand-pills"><span class="pill">Elegant Parlor</span><span class="pill">Goblin Bombardment</span><span class="pill">Elegant Parlor</span><span class="pill">Arid Mesa</span><span class="pill">Flooded Strand</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Flooded Strand</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f5f0ff;color:#6639ba">FETCH</span><span class="action">Crack Flooded Strand -&gt; Snow-Covered Plains (untapped)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Ocelot Pride (W)</span><span class="reason-toggle" onclick="toggleReason('r2t4s3')" title="Show reasoning">·</span><div class="reasoning" id="r2t4s3" style="display:none">← curve_out [enablers]</div></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Seasoned Pyromancer</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Seasoned Pyromancer</div><div class="combat-detail">2 damage → life 15 → 13</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Azorius Control</span> — 3 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Hallowed Fountain, Steam Vents, Island</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 4 lands</h4>
+        <div class="board"><span class="creature-badge">Seasoned Pyromancer<span class="pt">2/2</span></span><span class="creature-badge">Ocelot Pride<span class="pt">1/1</span></span></div>
+        <div class="land-list">Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains [T]</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g2t4">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T4</span>
+      <span class="player bug">Azorius Control</span>
+      <span class="life">Life: <b>13</b> &nbsp;|&nbsp; Opp: 10</span>
+      <span class="hand-count">5c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Monumental Henge</span></div>
+    <div class="section-label">Hand (5 cards)</div><div class="hand-pills"><span class="pill">Counterspell</span><span class="pill">Wrath of the Skies</span><span class="pill">Otawara, Soaring City</span><span class="pill">Teferi, Hero of Dominaria</span><span class="pill">Monumental Henge</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Otawara, Soaring City</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Teferi, Time Raveler (1WU)</span><span class="reason-toggle" onclick="toggleReason('r2t4s2')" title="Show reasoning">·</span><div class="reasoning" id="r2t4s2" style="display:none">← close_game</div></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Teferi bounces Ocelot Pride</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Teferi draws Sanctifier en-Vec</span></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Teferi, Time Raveler [-3] -&gt; Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Azorius Control</span> — 5 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Hallowed Fountain [T], Steam Vents, Island [T], Otawara, Soaring City</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 4 lands</h4>
+        <div class="board"><span class="creature-badge">Seasoned Pyromancer<span class="pt">2/2</span></span></div>
+        <div class="land-list">Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g2t5">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T5</span>
+      <span class="player opp">Boros Energy</span>
+      <span class="life">Life: <b>10</b> &nbsp;|&nbsp; Opp: 13</span>
+      <span class="hand-count">5c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Thraben Charm</span></div>
+    <div class="section-label">Hand (5 cards)</div><div class="hand-pills"><span class="pill">Elegant Parlor</span><span class="pill">Goblin Bombardment</span><span class="pill">Elegant Parlor</span><span class="pill">Arid Mesa</span><span class="pill">Thraben Charm</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Arid Mesa</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f5f0ff;color:#6639ba">FETCH</span><span class="action">Crack Arid Mesa -&gt; Snow-Covered Mountain (untapped)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Ocelot Pride (W)</span><span class="reason-toggle" onclick="toggleReason('r2t5s3')" title="Show reasoning">·</span><div class="reasoning" id="r2t5s3" style="display:none">← curve_out [enablers]</div></div>
+<div class="play play-response"><span class="respond-badge" style="color:#58a6ff">⚡ Azorius</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Counterspell (UU)</span></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Seasoned Pyromancer</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Seasoned Pyromancer</div><div class="combat-detail">2 damage → life 13 → 11</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Azorius Control</span> — 5 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Hallowed Fountain, Steam Vents, Island, Otawara, Soaring City</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 5 lands</h4>
+        <div class="board"><span class="creature-badge">Seasoned Pyromancer<span class="pt">2/2</span></span></div>
+        <div class="land-list">Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains [T], Snow-Covered Mountain</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g2t5">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T5</span>
+      <span class="player bug">Azorius Control</span>
+      <span class="life">Life: <b>11</b> &nbsp;|&nbsp; Opp: 9</span>
+      <span class="hand-count">4c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Orim's Chant</span></div>
+    <div class="section-label">Hand (4 cards)</div><div class="hand-pills"><span class="pill">Wrath of the Skies</span><span class="pill">Teferi, Hero of Dominaria</span><span class="pill">Monumental Henge</span><span class="pill">Orim's Chant</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Teferi, Hero of Dominaria (3WU)</span><span class="reason-toggle" onclick="toggleReason('r2t5s1')" title="Show reasoning">·</span><div class="reasoning" id="r2t5s1" style="display:none">← close_game</div></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Plains</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Orim's Chant (W)</span><span class="reason-toggle" onclick="toggleReason('r2t5s3')" title="Show reasoning">·</span><div class="reasoning" id="r2t5s3" style="display:none">← close_game</div></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Orim's Chant queues silence for P2's next turn</span></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Teferi, Time Raveler [+1] -&gt; Until your next turn, you may cast sorcery spells as though they had flash</span></div>
+<div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  untap 2 lands</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Azorius Control</span> — 6 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Hallowed Fountain, Steam Vents, Island [T], Otawara, Soaring City [T], Plains [T]</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 5 lands</h4>
+        <div class="board"><span class="creature-badge">Seasoned Pyromancer<span class="pt">2/2</span></span></div>
+        <div class="land-list">Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains, Snow-Covered Mountain</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g2t6">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T6</span>
+      <span class="player opp">Boros Energy</span>
+      <span class="life">Life: <b>9</b> &nbsp;|&nbsp; Opp: 11</span>
+      <span class="hand-count">5c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span></div>
+    <div class="section-label">Hand (5 cards)</div><div class="hand-pills"><span class="pill">Elegant Parlor</span><span class="pill">Goblin Bombardment</span><span class="pill">Elegant Parlor</span><span class="pill">Thraben Charm</span><span class="pill">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Snow-Covered Plains</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)</span><span class="reason-toggle" onclick="toggleReason('r2t6s2')" title="Show reasoning">·</span><div class="reasoning" id="r2t6s2" style="display:none">← curve_out [payoffs]</div></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Create 1x Cat token(s)</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Ajani creates 2/1 Cat Warrior token</span></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Seasoned Pyromancer</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Seasoned Pyromancer</div><div class="combat-detail">2 damage → life 11 → 9</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Azorius Control</span> — 6 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Hallowed Fountain, Steam Vents, Island, Otawara, Soaring City, Plains</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 6 lands</h4>
+        <div class="board"><span class="creature-badge">Seasoned Pyromancer<span class="pt">2/2</span></span><span class="creature-badge">Ajani</span><span class="creature-badge">Nacatl Pariah // Ajani</span><span class="creature-badge">Nacatl Avenger<span class="pt">1/2</span></span><span class="creature-badge">Cat Token<span class="pt">2/1</span></span></div>
+        <div class="land-list">Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains [T], Snow-Covered Mountain [T], Snow-Covered Plains</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g2t6">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T6</span>
+      <span class="player bug">Azorius Control</span>
+      <span class="life">Life: <b>9</b> &nbsp;|&nbsp; Opp: 9</span>
+      <span class="hand-count">3c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Arid Mesa</span></div>
+    <div class="section-label">Hand (3 cards)</div><div class="hand-pills"><span class="pill">Wrath of the Skies</span><span class="pill">Monumental Henge</span><span class="pill">Arid Mesa</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Arid Mesa</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f5f0ff;color:#6639ba">FETCH</span><span class="action">Crack Arid Mesa -&gt; Hallowed Fountain (tapped, no spells need mana)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Wrath of the Skies (3WW) (X=3)</span><span class="reason-toggle" onclick="toggleReason('r2t6s3')" title="Show reasoning">·</span><div class="reasoning" id="r2t6s3" style="display:none">← close_game</div></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Wrath of the Skies (X=3) sweeps the board</span></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  untap 2 lands</span></div>
+<div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Teferi, Time Raveler (1WU)</span><span class="reason-toggle" onclick="toggleReason('r2t6s6')" title="Show reasoning">·</span><div class="reasoning" id="r2t6s6" style="display:none">← close_game</div></div>
+<div class="play"><span class="step">7.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Teferi draws Prismatic Ending</span></div>
+<div class="play"><span class="step">8.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Teferi, Time Raveler [+1] -&gt; Until your next turn, you may cast sorcery spells as though they had flash</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Azorius Control</span> — 7 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Hallowed Fountain [T], Steam Vents [T], Island [T], Otawara, Soaring City [T], Plains [T], Hallowed Fountain [T]</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 6 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains, Snow-Covered Mountain, Snow-Covered Plains</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g2t7">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T7</span>
+      <span class="player opp">Boros Energy</span>
+      <span class="life">Life: <b>9</b> &nbsp;|&nbsp; Opp: 8</span>
+      <span class="hand-count">5c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Arena of Glory</span></div>
+    <div class="section-label">Hand (5 cards)</div><div class="hand-pills"><span class="pill">Elegant Parlor</span><span class="pill">Goblin Bombardment</span><span class="pill">Elegant Parlor</span><span class="pill">Thraben Charm</span><span class="pill">Arena of Glory</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Arena of Glory (enters tapped)</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Azorius Control</span> — 7 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Hallowed Fountain, Steam Vents, Island, Otawara, Soaring City, Plains, Hallowed Fountain</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 7 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains, Snow-Covered Mountain, Snow-Covered Plains, Arena of Glory [T]</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g2t7">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T7</span>
+      <span class="player bug">Azorius Control</span>
+      <span class="life">Life: <b>8</b> &nbsp;|&nbsp; Opp: 9</span>
+      <span class="hand-count">2c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Meticulous Archive</span></div>
+    <div class="section-label">Hand (2 cards)</div><div class="hand-pills"><span class="pill">Monumental Henge</span><span class="pill">Meticulous Archive</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Monumental Henge (enters tapped)</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Sanctifier en-Vec (WW)</span><span class="reason-toggle" onclick="toggleReason('r2t7s2')" title="Show reasoning">·</span><div class="reasoning" id="r2t7s2" style="display:none">← close_game</div></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Sanctifier en-Vec exiles 4 black/red cards from graveyards</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  untap 2 lands</span></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Teferi, Time Raveler [+1] -&gt; Until your next turn, you may cast sorcery spells as though they had flash</span></div>
+<div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Cycle Lórien Revealed (pay 1 mana, draw a card)</span></div>
+<div class="play"><span class="step">7.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Sanctifier en-Vec (WW)</span><span class="reason-toggle" onclick="toggleReason('r2t7s7')" title="Show reasoning">·</span><div class="reasoning" id="r2t7s7" style="display:none">← close_game</div></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Azorius Control</span> — 8 lands</h4>
+        <div class="board"><span class="creature-badge">Sanctifier en-Vec<span class="pt">2/2</span></span><span class="creature-badge">Sanctifier en-Vec<span class="pt">2/2</span></span></div>
+        <div class="land-list">Hallowed Fountain [T], Steam Vents, Island, Otawara, Soaring City, Plains [T], Hallowed Fountain [T], Monumental Henge [T]</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 7 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains, Snow-Covered Mountain, Snow-Covered Plains, Arena of Glory</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g2t8">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T8</span>
+      <span class="player opp">Boros Energy</span>
+      <span class="life">Life: <b>9</b> &nbsp;|&nbsp; Opp: 8</span>
+      <span class="hand-count">5c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Marsh Flats</span></div>
+    <div class="section-label">Hand (5 cards)</div><div class="hand-pills"><span class="pill">Elegant Parlor</span><span class="pill">Goblin Bombardment</span><span class="pill">Elegant Parlor</span><span class="pill">Thraben Charm</span><span class="pill">Marsh Flats</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Marsh Flats</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f5f0ff;color:#6639ba">FETCH</span><span class="action">Crack Marsh Flats (no valid land found)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Goblin Bombardment (1R)</span><span class="reason-toggle" onclick="toggleReason('r2t8s3')" title="Show reasoning">·</span><div class="reasoning" id="r2t8s3" style="display:none">← curve_out</div></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Goblin Bombardment enters — sacrifice creatures for 1 damage each</span></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Thraben Charm (1W)</span><span class="reason-toggle" onclick="toggleReason('r2t8s5')" title="Show reasoning">·</span><div class="reasoning" id="r2t8s5" style="display:none">← curve_out [interaction]</div></div>
+<div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Thraben Charm exiles opponent's graveyard (18 CMC)</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Azorius Control</span> — 8 lands</h4>
+        <div class="board"><span class="creature-badge">Sanctifier en-Vec<span class="pt">2/2</span></span><span class="creature-badge">Sanctifier en-Vec<span class="pt">2/2</span></span></div>
+        <div class="land-list">Hallowed Fountain, Steam Vents, Island, Otawara, Soaring City, Plains, Hallowed Fountain, Monumental Henge</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 7 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains [T], Snow-Covered Mountain [T], Snow-Covered Plains [T], Arena of Glory </div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g2t8">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T8</span>
+      <span class="player bug">Azorius Control</span>
+      <span class="life">Life: <b>8</b> &nbsp;|&nbsp; Opp: 8</span>
+      <span class="hand-count">2c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Lórien Revealed</span></div>
+    <div class="section-label">Hand (2 cards)</div><div class="hand-pills"><span class="pill">Meticulous Archive</span><span class="pill">Lórien Revealed</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Cycle Lórien Revealed (pay 1 mana, draw a card)</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Island</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Prismatic Ending (6W) (X=6)</span><span class="reason-toggle" onclick="toggleReason('r2t8s3')" title="Show reasoning">·</span><div class="reasoning" id="r2t8s3" style="display:none">← close_game</div></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Prismatic Ending exiles Goblin Bombardment</span></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  untap 2 lands</span></div>
+<div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Teferi, Time Raveler [+1] -&gt; Until your next turn, you may cast sorcery spells as though they had flash</span></div>
+<div class="play"><span class="step">7.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Sanctifier en-Vec, Sanctifier en-Vec</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Sanctifier en-Vec, Sanctifier en-Vec</div><div class="combat-detail">4 damage → life 8 → 4</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Azorius Control</span> — 9 lands</h4>
+        <div class="board"><span class="creature-badge">Sanctifier en-Vec<span class="pt">2/2</span></span><span class="creature-badge">Sanctifier en-Vec<span class="pt">2/2</span></span></div>
+        <div class="land-list">Hallowed Fountain, Steam Vents, Island [T], Otawara, Soaring City [T], Plains [T], Hallowed Fountain [T], Monumental Henge [T], Island [T]</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 7 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains, Snow-Covered Mountain, Snow-Covered Plains, Arena of Glory</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g2t9">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T9</span>
+      <span class="player opp">Boros Energy</span>
+      <span class="life">Life: <b>4</b> &nbsp;|&nbsp; Opp: 8</span>
+      <span class="hand-count">3c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Ocelot Pride</span></div>
+    <div class="section-label">Hand (3 cards)</div><div class="hand-pills"><span class="pill">Elegant Parlor</span><span class="pill">Elegant Parlor</span><span class="pill">Ocelot Pride</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="pass-label">— pass —</span></div>
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Azorius Control</span> — 9 lands</h4>
+        <div class="board"><span class="creature-badge">Sanctifier en-Vec<span class="pt">2/2</span></span><span class="creature-badge">Sanctifier en-Vec<span class="pt">2/2</span></span></div>
+        <div class="land-list">Hallowed Fountain, Steam Vents, Island, Otawara, Soaring City, Plains, Hallowed Fountain, Monumental Henge, Island</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 7 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains, Snow-Covered Mountain, Snow-Covered Plains, Arena of Glory</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g2t9">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T9</span>
+      <span class="player bug">Azorius Control</span>
+      <span class="life">Life: <b>8</b> &nbsp;|&nbsp; Opp: 4</span>
+      <span class="hand-count">3c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Prismatic Ending</span></div>
+    <div class="section-label">Hand (3 cards)</div><div class="hand-pills"><span class="pill">Meticulous Archive</span><span class="pill">Lórien Revealed</span><span class="pill">Prismatic Ending</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Meticulous Archive (enters tapped)</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Teferi, Hero of Dominaria [-8] -&gt; You get an emblem with "Whenever you draw a card, exile target permanent an opponent controls."</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  emblem exiles Sacred Foundry</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Teferi, Time Raveler [+1] -&gt; Until your next turn, you may cast sorcery spells as though they had flash</span></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Sanctifier en-Vec, Sanctifier en-Vec</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Sanctifier en-Vec, Sanctifier en-Vec</div><div class="combat-detail">4 damage → life 4 → 0</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Azorius Control</span> — 9 lands</h4>
+        <div class="board"><span class="creature-badge">Sanctifier en-Vec<span class="pt">2/2</span></span><span class="creature-badge">Sanctifier en-Vec<span class="pt">2/2</span></span></div>
+        <div class="land-list">Hallowed Fountain, Steam Vents, Island, Otawara, Soaring City, Plains, Hallowed Fountain, Monumental Henge, Island</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 7 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains, Snow-Covered Mountain, Snow-Covered Plains, Arena of Glory</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="result">
+  <h2 class="bug-win">Azorius Control WINS</h2>
+  <div class="reason">Via damage on turn 9</div>
+  <div class="stats">
+    Final life: <span style="color:#0969da">Azorius Control 8</span>
+    &nbsp;|&nbsp;
+    <span style="color:#d1242f">Boros Energy 4</span>
+    &nbsp;|&nbsp; Length: T9
+  </div>
+</div>
+</div>
+<div class="game-panel " id="game-2">
+<div class="meta">
+  <span>Azorius Control is ON THE DRAW</span>
+  <span style="color:#484f58">Seed: 60103</span>
+</div>
+<div class="hands">
+  <div class="hand-box bug">
+    <h3><span style="color:#0969da">Boros Energy</span> — Opening Hand (P1)</h3>
+    <div class="mull-step"><span class="keep-tag">KEEP 7</span><span class="keep-reason">has key card(s): Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Ragavan, Nimble Pilferer, 5 cheap spells</span></div><div class="hand-pills"><span class="pill">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span><span class="pill">Ragavan, Nimble Pilferer</span><span class="pill">Phlage, Titan of Fire's Fury</span><span class="pill">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span><span class="pill">Flooded Strand</span><span class="pill">Sacred Foundry</span><span class="pill">Orim's Chant</span></div>
+  </div>
+  <div class="hand-box opp">
+    <h3><span style="color:#d1242f">Azorius Control</span> — Opening Hand (P2)</h3>
+    <div class="mull-step"><span class="keep-tag">KEEP 7</span><span class="keep-reason">has key card(s): Orim's Chant, Solitude, 2 cheap spells</span></div><div class="hand-pills"><span class="pill">Hallowed Fountain</span><span class="pill">Mystic Gate</span><span class="pill">Solitude</span><span class="pill">Arid Mesa</span><span class="pill">Island</span><span class="pill">Wrath of the Skies</span><span class="pill">Orim's Chant</span></div>
+  </div>
+</div>
+<div class="life-chart">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+    <h3>Life Totals</h3>
+    <span style="font-size:10px;color:#484f58">— dashed lines at 5, 10, 15 —</span>
+  </div>
+  <svg viewBox="0 0 760 80" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:80px"><line x1="10" y1="56" x2="750" y2="56" stroke="#d0d7de" stroke-width="1" stroke-dasharray="3,3"/><text x="6" y="59" fill="#484f58" font-size="7" text-anchor="end">5</text><line x1="10" y1="39" x2="750" y2="39" stroke="#d0d7de" stroke-width="1" stroke-dasharray="3,3"/><text x="6" y="42" fill="#484f58" font-size="7" text-anchor="end">10</text><line x1="10" y1="22" x2="750" y2="22" stroke="#d0d7de" stroke-width="1" stroke-dasharray="3,3"/><text x="6" y="25" fill="#484f58" font-size="7" text-anchor="end">15</text><polyline points="10,5 48,5 87,15 126,8 165,15 204,15 243,15 282,15 321,11 360,11 399,11 438,11 477,11 516,18 555,18 594,25 633,18 672,18 711,8 750,8" fill="none" stroke="#0969da" stroke-width="2" opacity=".85"/><polyline points="10,5 48,5 87,5 126,5 165,5 204,15 243,18 282,25 321,28 360,28 399,39 438,39 477,39 516,39 555,39 594,32 633,42 672,42 711,69 750,69" fill="none" stroke="#d1242f" stroke-width="2" opacity=".85"/><circle cx="10" cy="5" r="3" fill="#0969da"/><text x="10" y="0" fill="#0969da" font-size="8" text-anchor="middle">20</text><circle cx="750" cy="8" r="3" fill="#0969da"/><text x="750" y="3" fill="#0969da" font-size="8" text-anchor="end">19</text><circle cx="10" cy="5" r="3" fill="#d1242f"/><text x="10" y="0" fill="#d1242f" font-size="8" text-anchor="middle">20</text><circle cx="750" cy="69" r="3" fill="#d1242f"/><text x="750" y="64" fill="#d1242f" font-size="8" text-anchor="end">1</text><text x="10" y="76" fill="#0969da" font-size="8" font-weight="600">Boros Energy</text><text x="750" y="76" fill="#d1242f" font-size="8" font-weight="600" text-anchor="end">Azorius Control</text></svg>
+</div>
+<div class="controls">
+  <button onclick="expandAll()">Expand All</button>
+  <button onclick="collapseAll()">Collapse All</button>
+  <span class="kbd-hint">↑↓ navigate turns &nbsp;·&nbsp; Enter: expand/collapse</span>
+</div>
+<div class="turn bug" id="g3t1">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T1</span>
+      <span class="player bug">Boros Energy</span>
+      <span class="life">Life: <b>20</b> &nbsp;|&nbsp; Opp: 20</span>
+      <span class="hand-count">7c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    
+    <div class="section-label">Hand (7 cards)</div><div class="hand-pills"><span class="pill">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span><span class="pill">Ragavan, Nimble Pilferer</span><span class="pill">Phlage, Titan of Fire's Fury</span><span class="pill">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span><span class="pill">Flooded Strand</span><span class="pill">Sacred Foundry</span><span class="pill">Orim's Chant</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Flooded Strand</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f5f0ff;color:#6639ba">FETCH</span><span class="action">Crack Flooded Strand (pay 1 life) -&gt; Sacred Foundry (pay 2 life, untapped, life: 17)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Ragavan, Nimble Pilferer (R)</span><span class="reason-toggle" onclick="toggleReason('r3t1s3')" title="Show reasoning">·</span><div class="reasoning" id="r3t1s3" style="display:none">← curve_out [enablers]</div></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Boros Energy</span> — 1 land</h4>
+        <div class="board"><span class="creature-badge">Ragavan</span><span class="creature-badge">Nimble Pilferer<span class="pt">2/1</span></span></div>
+        <div class="land-list">Sacred Foundry [T]</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Azorius Control</span> — 0 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">none</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g3t1">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T1</span>
+      <span class="player opp">Azorius Control</span>
+      <span class="life">Life: <b>20</b> &nbsp;|&nbsp; Opp: 17</span>
+      <span class="hand-count">8c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Counterspell</span></div>
+    <div class="section-label">Hand (8 cards)</div><div class="hand-pills"><span class="pill">Hallowed Fountain</span><span class="pill">Mystic Gate</span><span class="pill">Solitude</span><span class="pill">Arid Mesa</span><span class="pill">Island</span><span class="pill">Wrath of the Skies</span><span class="pill">Orim's Chant</span><span class="pill">Counterspell</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Mystic Gate</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Evoke Solitude (exile Orim's Chant)</span><span class="reason-toggle" onclick="toggleReason('r3t1s2')" title="Show reasoning">·</span><div class="reasoning" id="r3t1s2" style="display:none">← interact [interaction]</div></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">REMOVE</span><span class="action">Cast Solitude (3WW)</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Solitude exiles Ragavan, Nimble Pilferer (opponent gains 2 life, now 19)</span></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Solitude sacrificed (evoke)</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Boros Energy</span> — 1 land</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Sacred Foundry</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Azorius Control</span> — 1 land</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Mystic Gate</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g3t2">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T2</span>
+      <span class="player bug">Boros Energy</span>
+      <span class="life">Life: <b>19</b> &nbsp;|&nbsp; Opp: 20</span>
+      <span class="hand-count">6c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Guide of Souls</span></div>
+    <div class="section-label">Hand (6 cards)</div><div class="hand-pills"><span class="pill">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span><span class="pill">Phlage, Titan of Fire's Fury</span><span class="pill">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span><span class="pill">Sacred Foundry</span><span class="pill">Orim's Chant</span><span class="pill">Guide of Souls</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Sacred Foundry (pay 2 life, untapped, life: 17)</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)</span><span class="reason-toggle" onclick="toggleReason('r3t2s2')" title="Show reasoning">·</span><div class="reasoning" id="r3t2s2" style="display:none">← curve_out [payoffs]</div></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Create 1x Cat token(s)</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Ajani creates 2/1 Cat Warrior token</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Boros Energy</span> — 2 lands</h4>
+        <div class="board"><span class="creature-badge">Ajani</span><span class="creature-badge">Nacatl Pariah // Ajani</span><span class="creature-badge">Nacatl Avenger<span class="pt">1/2</span></span><span class="creature-badge">Cat Token<span class="pt">2/1</span></span></div>
+        <div class="land-list">Sacred Foundry [T], Sacred Foundry [T]</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Azorius Control</span> — 1 land</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Mystic Gate</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g3t2">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T2</span>
+      <span class="player opp">Azorius Control</span>
+      <span class="life">Life: <b>20</b> &nbsp;|&nbsp; Opp: 17</span>
+      <span class="hand-count">7c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Teferi, Time Raveler</span></div>
+    <div class="section-label">Hand (7 cards)</div><div class="hand-pills"><span class="pill">Hallowed Fountain</span><span class="pill">Arid Mesa</span><span class="pill">Island</span><span class="pill">Wrath of the Skies</span><span class="pill">Orim's Chant</span><span class="pill">Counterspell</span><span class="pill">Teferi, Time Raveler</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Arid Mesa</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f5f0ff;color:#6639ba">FETCH</span><span class="action">Crack Arid Mesa (pay 1 life) -&gt; Hallowed Fountain (pay 2 life, untapped, life: 17)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Wrath of the Skies (WW)</span><span class="reason-toggle" onclick="toggleReason('r3t2s3')" title="Show reasoning">·</span><div class="reasoning" id="r3t2s3" style="display:none">← grind_value [interaction]</div></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Wrath of the Skies (X=0) sweeps the board</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Boros Energy</span> — 2 lands</h4>
+        <div class="board"><span class="creature-badge">Ajani</span><span class="creature-badge">Nacatl Pariah // Ajani</span><span class="creature-badge">Nacatl Avenger<span class="pt">1/2</span></span></div>
+        <div class="land-list">Sacred Foundry, Sacred Foundry</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Azorius Control</span> — 2 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Mystic Gate [T], Hallowed Fountain [T]</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g3t3">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T3</span>
+      <span class="player bug">Boros Energy</span>
+      <span class="life">Life: <b>17</b> &nbsp;|&nbsp; Opp: 17</span>
+      <span class="hand-count">5c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Seasoned Pyromancer</span></div>
+    <div class="section-label">Hand (5 cards)</div><div class="hand-pills"><span class="pill">Phlage, Titan of Fire's Fury</span><span class="pill">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span><span class="pill">Orim's Chant</span><span class="pill">Guide of Souls</span><span class="pill">Seasoned Pyromancer</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Guide of Souls (W)</span><span class="reason-toggle" onclick="toggleReason('r3t3s1')" title="Show reasoning">·</span><div class="reasoning" id="r3t3s1" style="display:none">← curve_out [enablers]</div></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Orim's Chant (W)</span><span class="reason-toggle" onclick="toggleReason('r3t3s2')" title="Show reasoning">·</span><div class="reasoning" id="r3t3s2" style="display:none">← curve_out</div></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Orim's Chant queues silence for P2's next turn</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</div><div class="combat-detail">1 damage → life 17 → 16</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Boros Energy</span> — 2 lands</h4>
+        <div class="board"><span class="creature-badge">Ajani</span><span class="creature-badge">Nacatl Pariah // Ajani</span><span class="creature-badge">Nacatl Avenger<span class="pt">1/2</span></span><span class="creature-badge">Guide of Souls<span class="pt">1/2</span></span></div>
+        <div class="land-list">Sacred Foundry [T], Sacred Foundry [T]</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Azorius Control</span> — 2 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Mystic Gate, Hallowed Fountain</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g3t3">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T3</span>
+      <span class="player opp">Azorius Control</span>
+      <span class="life">Life: <b>16</b> &nbsp;|&nbsp; Opp: 17</span>
+      <span class="hand-count">6c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Island</span></div>
+    <div class="section-label">Hand (6 cards)</div><div class="hand-pills"><span class="pill">Hallowed Fountain</span><span class="pill">Island</span><span class="pill">Orim's Chant</span><span class="pill">Counterspell</span><span class="pill">Teferi, Time Raveler</span><span class="pill">Island</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Hallowed Fountain (pay 2 life, untapped, life: 14)</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Teferi, Time Raveler (1WU)</span><span class="reason-toggle" onclick="toggleReason('r3t3s2')" title="Show reasoning">·</span><div class="reasoning" id="r3t3s2" style="display:none">← grind_value</div></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Teferi bounces Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Teferi draws Supreme Verdict</span></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Teferi, Time Raveler [-3] -&gt; Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Boros Energy</span> — 2 lands</h4>
+        <div class="board"><span class="creature-badge">Guide of Souls<span class="pt">1/2</span></span></div>
+        <div class="land-list">Sacred Foundry, Sacred Foundry</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Azorius Control</span> — 3 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Mystic Gate [T], Hallowed Fountain [T], Hallowed Fountain [T]</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g3t4">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T4</span>
+      <span class="player bug">Boros Energy</span>
+      <span class="life">Life: <b>17</b> &nbsp;|&nbsp; Opp: 14</span>
+      <span class="hand-count">4c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Phlage, Titan of Fire's Fury</span></div>
+    <div class="section-label">Hand (4 cards)</div><div class="hand-pills"><span class="pill">Phlage, Titan of Fire's Fury</span><span class="pill">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span><span class="pill">Seasoned Pyromancer</span><span class="pill">Phlage, Titan of Fire's Fury</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)</span><span class="reason-toggle" onclick="toggleReason('r3t4s1')" title="Show reasoning">·</span><div class="reasoning" id="r3t4s1" style="display:none">← curve_out [payoffs]</div></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Create 1x Cat token(s)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Ajani creates 2/1 Cat Warrior token</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Gain 1 life from Guide of Souls (life: 18)</span></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">+1 energy from Guide of Souls (total: 1)</span></div>
+<div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Guide of Souls</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Guide of Souls</div><div class="combat-detail">1 damage → life 14 → 13</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Boros Energy</span> — 2 lands</h4>
+        <div class="board"><span class="creature-badge">Guide of Souls<span class="pt">1/2</span></span><span class="creature-badge">Ajani</span><span class="creature-badge">Nacatl Pariah // Ajani</span><span class="creature-badge">Nacatl Avenger<span class="pt">1/2</span></span><span class="creature-badge">Cat Token<span class="pt">2/1</span></span></div>
+        <div class="land-list">Sacred Foundry [T], Sacred Foundry [T]</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Azorius Control</span> — 3 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Mystic Gate, Hallowed Fountain, Hallowed Fountain</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g3t4">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T4</span>
+      <span class="player opp">Azorius Control</span>
+      <span class="life">Life: <b>13</b> &nbsp;|&nbsp; Opp: 18</span>
+      <span class="hand-count">5c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Sanctifier en-Vec</span></div>
+    <div class="section-label">Hand (5 cards)</div><div class="hand-pills"><span class="pill">Island</span><span class="pill">Orim's Chant</span><span class="pill">Counterspell</span><span class="pill">Island</span><span class="pill">Sanctifier en-Vec</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Island</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Supreme Verdict (1WWU)</span><span class="reason-toggle" onclick="toggleReason('r3t4s2')" title="Show reasoning">·</span><div class="reasoning" id="r3t4s2" style="display:none">← close_game</div></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Supreme Verdict destroys 3 creatures</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Teferi, Time Raveler [+1] -&gt; Until your next turn, you may cast sorcery spells as though they had flash</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Boros Energy</span> — 2 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Sacred Foundry, Sacred Foundry</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Azorius Control</span> — 4 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Mystic Gate [T], Hallowed Fountain [T], Hallowed Fountain [T], Island [T]</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g3t5">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T5</span>
+      <span class="player bug">Boros Energy</span>
+      <span class="life">Life: <b>18</b> &nbsp;|&nbsp; Opp: 13</span>
+      <span class="hand-count">4c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Flooded Strand</span></div>
+    <div class="section-label">Hand (4 cards)</div><div class="hand-pills"><span class="pill">Phlage, Titan of Fire's Fury</span><span class="pill">Seasoned Pyromancer</span><span class="pill">Phlage, Titan of Fire's Fury</span><span class="pill">Flooded Strand</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Flooded Strand</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f5f0ff;color:#6639ba">FETCH</span><span class="action">Crack Flooded Strand (pay 1 life) -&gt; Sacred Foundry (pay 2 life, untapped, life: 15)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Phlage, Titan of Fire's Fury (1WR)</span><span class="reason-toggle" onclick="toggleReason('r3t5s3')" title="Show reasoning">·</span><div class="reasoning" id="r3t5s3" style="display:none">← curve_out</div></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">DAMAGE</span><span class="action">Phlage: 3 damage to opponent, gain 3 life</span></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Phlage sacrificed (not escaped)</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Boros Energy</span> — 3 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T]</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Azorius Control</span> — 4 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Mystic Gate, Hallowed Fountain, Hallowed Fountain, Island</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g3t5">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T5</span>
+      <span class="player opp">Azorius Control</span>
+      <span class="life">Life: <b>10</b> &nbsp;|&nbsp; Opp: 18</span>
+      <span class="hand-count">5c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Thundering Falls</span></div>
+    <div class="section-label">Hand (5 cards)</div><div class="hand-pills"><span class="pill">Orim's Chant</span><span class="pill">Counterspell</span><span class="pill">Island</span><span class="pill">Sanctifier en-Vec</span><span class="pill">Thundering Falls</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Island</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Sanctifier en-Vec (WW)</span><span class="reason-toggle" onclick="toggleReason('r3t5s2')" title="Show reasoning">·</span><div class="reasoning" id="r3t5s2" style="display:none">← close_game</div></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Sanctifier en-Vec exiles 2 black/red cards from graveyards</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Teferi, Time Raveler [+1] -&gt; Until your next turn, you may cast sorcery spells as though they had flash</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Boros Energy</span> — 3 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Sacred Foundry, Sacred Foundry, Sacred Foundry</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Azorius Control</span> — 5 lands</h4>
+        <div class="board"><span class="creature-badge">Sanctifier en-Vec<span class="pt">2/2</span></span></div>
+        <div class="land-list">Mystic Gate, Hallowed Fountain [T], Hallowed Fountain [T], Island, Island</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g3t6">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T6</span>
+      <span class="player bug">Boros Energy</span>
+      <span class="life">Life: <b>18</b> &nbsp;|&nbsp; Opp: 10</span>
+      <span class="hand-count">3c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Galvanic Discharge</span></div>
+    <div class="section-label">Hand (3 cards)</div><div class="hand-pills"><span class="pill">Seasoned Pyromancer</span><span class="pill">Phlage, Titan of Fire's Fury</span><span class="pill">Galvanic Discharge</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Phlage, Titan of Fire's Fury (1WR)</span><span class="reason-toggle" onclick="toggleReason('r3t6s1')" title="Show reasoning">·</span><div class="reasoning" id="r3t6s1" style="display:none">← curve_out</div></div>
+<div class="play play-response"><span class="respond-badge" style="color:#f85149">⚡ Azorius</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Counterspell (UU)</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Boros Energy</span> — 3 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T]</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Azorius Control</span> — 5 lands</h4>
+        <div class="board"><span class="creature-badge">Sanctifier en-Vec<span class="pt">2/2</span></span></div>
+        <div class="land-list">Mystic Gate, Hallowed Fountain, Hallowed Fountain, Island, Island</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g3t6">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T6</span>
+      <span class="player opp">Azorius Control</span>
+      <span class="life">Life: <b>10</b> &nbsp;|&nbsp; Opp: 18</span>
+      <span class="hand-count">3c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Solitude</span></div>
+    <div class="section-label">Hand (3 cards)</div><div class="hand-pills"><span class="pill">Orim's Chant</span><span class="pill">Thundering Falls</span><span class="pill">Solitude</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Thundering Falls (enters tapped)</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">REMOVE</span><span class="action">Cast Solitude (3WW)</span><span class="reason-toggle" onclick="toggleReason('r3t6s2')" title="Show reasoning">·</span><div class="reasoning" id="r3t6s2" style="display:none">← close_game</div></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Teferi, Time Raveler [+1] -&gt; Until your next turn, you may cast sorcery spells as though they had flash</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Sanctifier en-Vec</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Sanctifier en-Vec</div><div class="combat-detail">2 damage → life 18 → 16</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Boros Energy</span> — 3 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Sacred Foundry, Sacred Foundry, Sacred Foundry</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Azorius Control</span> — 6 lands</h4>
+        <div class="board"><span class="creature-badge">Sanctifier en-Vec<span class="pt">2/2</span></span><span class="creature-badge">Solitude<span class="pt">3/2</span></span></div>
+        <div class="land-list">Mystic Gate [T], Hallowed Fountain [T], Hallowed Fountain [T], Island [T], Island [T], Thundering Falls [T]</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g3t7">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T7</span>
+      <span class="player bug">Boros Energy</span>
+      <span class="life">Life: <b>16</b> &nbsp;|&nbsp; Opp: 10</span>
+      <span class="hand-count">3c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Seasoned Pyromancer</span></div>
+    <div class="section-label">Hand (3 cards)</div><div class="hand-pills"><span class="pill">Seasoned Pyromancer</span><span class="pill">Galvanic Discharge</span><span class="pill">Seasoned Pyromancer</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Seasoned Pyromancer (1RR)</span><span class="reason-toggle" onclick="toggleReason('r3t7s1')" title="Show reasoning">·</span><div class="reasoning" id="r3t7s1" style="display:none">← curve_out [payoffs]</div></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Create 2x Elemental token(s)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Seasoned Pyromancer: discard 2, draw 2, create 2 Elemental(s)</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Boros Energy</span> — 3 lands</h4>
+        <div class="board"><span class="creature-badge">Seasoned Pyromancer<span class="pt">2/2</span></span><span class="creature-badge">Elemental Token<span class="pt">1/1</span></span><span class="creature-badge">Elemental Token<span class="pt">1/1</span></span></div>
+        <div class="land-list">Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T]</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Azorius Control</span> — 6 lands</h4>
+        <div class="board"><span class="creature-badge">Sanctifier en-Vec<span class="pt">2/2</span></span><span class="creature-badge">Solitude<span class="pt">3/2</span></span></div>
+        <div class="land-list">Mystic Gate, Hallowed Fountain, Hallowed Fountain, Island, Island, Thundering Falls</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g3t7">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T7</span>
+      <span class="player opp">Azorius Control</span>
+      <span class="life">Life: <b>10</b> &nbsp;|&nbsp; Opp: 16</span>
+      <span class="hand-count">2c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Prismatic Ending</span></div>
+    <div class="section-label">Hand (2 cards)</div><div class="hand-pills"><span class="pill">Orim's Chant</span><span class="pill">Prismatic Ending</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Prismatic Ending (5W) (X=5)</span><span class="reason-toggle" onclick="toggleReason('r3t7s1')" title="Show reasoning">·</span><div class="reasoning" id="r3t7s1" style="display:none">← close_game</div></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Prismatic Ending exiles Seasoned Pyromancer</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Teferi, Time Raveler [-3] -&gt; Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Sanctifier en-Vec, Solitude</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Sanctifier en-Vec, Solitude</div><div class="combat-detail">2 damage → life 16 → 14</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Boros Energy</span> — 3 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Sacred Foundry, Sacred Foundry, Sacred Foundry</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Azorius Control</span> — 6 lands</h4>
+        <div class="board"><span class="creature-badge">Sanctifier en-Vec<span class="pt">2/2</span></span></div>
+        <div class="land-list">Mystic Gate [T], Hallowed Fountain [T], Hallowed Fountain [T], Island [T], Island [T], Thundering Falls [T]</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g3t8">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T8</span>
+      <span class="player bug">Boros Energy</span>
+      <span class="life">Life: <b>14</b> &nbsp;|&nbsp; Opp: 12</span>
+      <span class="hand-count">3c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Arid Mesa</span></div>
+    <div class="section-label">Hand (3 cards)</div><div class="hand-pills"><span class="pill">Galvanic Discharge</span><span class="pill">Seasoned Pyromancer</span><span class="pill">Arid Mesa</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Arid Mesa</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f5f0ff;color:#6639ba">FETCH</span><span class="action">Crack Arid Mesa -&gt; Snow-Covered Mountain (untapped)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Escape Phlage, Titan of Fire's Fury (exile 5 cards)</span><span class="reason-toggle" onclick="toggleReason('r3t8s3')" title="Show reasoning">·</span><div class="reasoning" id="r3t8s3" style="display:none">← curve_out</div></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Phlage, Titan of Fire's Fury (1WR)</span></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">DAMAGE</span><span class="action">Phlage: 3 damage to opponent, gain 3 life</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Boros Energy</span> — 4 lands</h4>
+        <div class="board"><span class="creature-badge">Phlage</span><span class="creature-badge">Titan of Fire's Fury<span class="pt">6/6</span></span></div>
+        <div class="land-list">Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Snow-Covered Mountain [T]</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Azorius Control</span> — 6 lands</h4>
+        <div class="board"><span class="creature-badge">Sanctifier en-Vec<span class="pt">2/2</span></span></div>
+        <div class="land-list">Mystic Gate, Hallowed Fountain, Hallowed Fountain, Island, Island, Thundering Falls</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g3t8">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T8</span>
+      <span class="player opp">Azorius Control</span>
+      <span class="life">Life: <b>9</b> &nbsp;|&nbsp; Opp: 16</span>
+      <span class="hand-count">2c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Counterspell</span></div>
+    <div class="section-label">Hand (2 cards)</div><div class="hand-pills"><span class="pill">Orim's Chant</span><span class="pill">Counterspell</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Teferi, Time Raveler [+1] -&gt; Until your next turn, you may cast sorcery spells as though they had flash</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Boros Energy</span> — 4 lands</h4>
+        <div class="board"><span class="creature-badge">Phlage</span><span class="creature-badge">Titan of Fire's Fury<span class="pt">6/6</span></span></div>
+        <div class="land-list">Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Mountain</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Azorius Control</span> — 6 lands</h4>
+        <div class="board"><span class="creature-badge">Sanctifier en-Vec<span class="pt">2/2</span></span></div>
+        <div class="land-list">Mystic Gate, Hallowed Fountain, Hallowed Fountain, Island, Island, Thundering Falls</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g3t9">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T9</span>
+      <span class="player bug">Boros Energy</span>
+      <span class="life">Life: <b>16</b> &nbsp;|&nbsp; Opp: 9</span>
+      <span class="hand-count">3c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Arena of Glory</span></div>
+    <div class="section-label">Hand (3 cards)</div><div class="hand-pills"><span class="pill">Galvanic Discharge</span><span class="pill">Seasoned Pyromancer</span><span class="pill">Arena of Glory</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Arena of Glory (enters tapped)</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">REMOVE</span><span class="action">Cast Galvanic Discharge (R)</span><span class="reason-toggle" onclick="toggleReason('r3t9s2')" title="Show reasoning">·</span><div class="reasoning" id="r3t9s2" style="display:none">← curve_out [interaction]</div></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">DAMAGE</span><span class="action">Galvanic Discharge deals 5 to opponent</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Seasoned Pyromancer (1RR)</span><span class="reason-toggle" onclick="toggleReason('r3t9s4')" title="Show reasoning">·</span><div class="reasoning" id="r3t9s4" style="display:none">← curve_out [payoffs]</div></div>
+<div class="play play-response"><span class="respond-badge" style="color:#f85149">⚡ Azorius</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Counterspell (UU)</span></div>
+<div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Goblin Bombardment (1R)</span><span class="reason-toggle" onclick="toggleReason('r3t9s6')" title="Show reasoning">·</span><div class="reasoning" id="r3t9s6" style="display:none">← curve_out</div></div>
+<div class="play"><span class="step">7.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Goblin Bombardment enters — sacrifice creatures for 1 damage each</span></div>
+<div class="play"><span class="step">8.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Gain 3 life from Phlage, Titan of Fire's Fury (life: 19)</span></div>
+<div class="play"><span class="step">9.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Phlage, Titan of Fire's Fury</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Phlage, Titan of Fire's Fury</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Boros Energy</span> — 5 lands</h4>
+        <div class="board"><span class="creature-badge">Phlage</span><span class="creature-badge">Titan of Fire's Fury<span class="pt">6/6</span></span></div>
+        <div class="land-list">Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Snow-Covered Mountain [T], Arena of Glory [T]</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Azorius Control</span> — 6 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="land-list">Mystic Gate, Hallowed Fountain, Hallowed Fountain, Island, Island, Thundering Falls</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g3t9">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T9</span>
+      <span class="player opp">Azorius Control</span>
+      <span class="life">Life: <b>1</b> &nbsp;|&nbsp; Opp: 19</span>
+      <span class="hand-count">2c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Sanctifier en-Vec</span></div>
+    <div class="section-label">Hand (2 cards)</div><div class="hand-pills"><span class="pill">Orim's Chant</span><span class="pill">Sanctifier en-Vec</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Sanctifier en-Vec (WW)</span><span class="reason-toggle" onclick="toggleReason('r3t9s1')" title="Show reasoning">·</span><div class="reasoning" id="r3t9s1" style="display:none">← close_game</div></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Sanctifier en-Vec exiles 4 black/red cards from graveyards</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Teferi, Time Raveler [+1] -&gt; Until your next turn, you may cast sorcery spells as though they had flash</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Boros Energy</span> — 5 lands</h4>
+        <div class="board"><span class="creature-badge">Phlage</span><span class="creature-badge">Titan of Fire's Fury<span class="pt">6/6</span></span></div>
+        <div class="land-list">Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Mountain, Arena of Glory</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Azorius Control</span> — 6 lands</h4>
+        <div class="board"><span class="creature-badge">Sanctifier en-Vec<span class="pt">2/2</span></span></div>
+        <div class="land-list">Mystic Gate, Hallowed Fountain [T], Hallowed Fountain [T], Island, Island, Thundering Falls</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g3t10">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T10</span>
+      <span class="player bug">Boros Energy</span>
+      <span class="life">Life: <b>19</b> &nbsp;|&nbsp; Opp: 1</span>
+      <span class="hand-count">1c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Arid Mesa</span></div>
+    <div class="section-label">Hand (1 cards)</div><div class="hand-pills"><span class="pill">Arid Mesa</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Arid Mesa</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f5f0ff;color:#6639ba">FETCH</span><span class="action">Crack Arid Mesa -&gt; Snow-Covered Plains (untapped)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Gain 3 life from Phlage, Titan of Fire's Fury (life: 21)</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Phlage, Titan of Fire's Fury</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Phlage, Titan of Fire's Fury</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Boros Energy</span> — 5 lands</h4>
+        <div class="board"><span class="creature-badge">Phlage</span><span class="creature-badge">Titan of Fire's Fury<span class="pt">6/6</span></span></div>
+        <div class="land-list">Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Mountain, Arena of Glory</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Azorius Control</span> — 6 lands</h4>
+        <div class="board"><span class="creature-badge">Sanctifier en-Vec<span class="pt">2/2</span></span></div>
+        <div class="land-list">Mystic Gate, Hallowed Fountain [T], Hallowed Fountain [T], Island, Island, Thundering Falls</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="result">
+  <h2 class="bug-win">Boros Energy WINS</h2>
+  <div class="reason">Via damage on turn 10</div>
+  <div class="stats">
+    Final life: <span style="color:#0969da">Boros Energy 19</span>
+    &nbsp;|&nbsp;
+    <span style="color:#d1242f">Azorius Control 1</span>
+    &nbsp;|&nbsp; Length: T10
+  </div>
+</div>
+</div>
+
+<script>
+function toggle(el){el.classList.toggle('open')}
+function expandAll(){document.querySelectorAll('.game-panel.active .turn').forEach(t=>t.classList.add('open'))}
+function collapseAll(){document.querySelectorAll('.game-panel.active .turn').forEach(t=>t.classList.remove('open'))}
+function showGame(idx){
+  document.querySelectorAll('.game-tab').forEach((t,i)=>t.classList.toggle('active',i===idx));
+  document.querySelectorAll('.game-panel').forEach((p,i)=>p.classList.toggle('active',i===idx));
+}
+document.addEventListener('keydown',e=>{
+  const active=document.querySelector('.game-panel.active');
+  if(!active)return;
+  const turns=active.querySelectorAll('.turn');
+  let cur=[...turns].findIndex(t=>t.classList.contains('active'));
+  if(e.key==='ArrowDown'){e.preventDefault();if(cur<turns.length-1){turns.forEach(t=>t.classList.remove('active'));turns[cur+1].classList.add('active');turns[cur+1].scrollIntoView({behavior:'smooth',block:'center'});}}
+  else if(e.key==='ArrowUp'){e.preventDefault();if(cur>0){turns.forEach(t=>t.classList.remove('active'));turns[cur-1].classList.add('active');turns[cur-1].scrollIntoView({behavior:'smooth',block:'center'});}}
+  else if(e.key==='Enter'&&cur>=0){e.preventDefault();toggle(turns[cur]);}
+});
+function toggleReason(id){
+  const el=document.getElementById(id);
+  const btn=el.previousElementSibling;
+  const visible=el.style.display!=='none';
+  el.style.display=visible?'none':'block';
+  if(btn&&btn.classList.contains('reason-toggle')){
+    btn.classList.toggle('open',!visible);
+    btn.title=visible?'Show reasoning':'Hide reasoning';
+  }
+}
+</script>
+</body></html>

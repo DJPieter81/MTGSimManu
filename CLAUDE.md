@@ -341,7 +341,7 @@ Always save logs to `replays/` and commit. `build_replay.py` is in the repo with
 
 **Read `PROJECT_STATUS.md` before any session.** It is the single-source-of-truth for Claude Code planning mode. Contains: architecture diagram with line counts, AI decision flow, Python API signatures with return shapes, runtime benchmarks, all bugs with fix status + commit hashes, deck status table (working vs underperforming), generic engine patterns (oracle-driven, no hardcoding), "never do / always do" rules, and post-action verification scripts.
 
-**Current grade: C** (session 2 completed all P0/P1 fixes — see Section 7 for full changelog)
+**Current grade: C** (session 3: blocking+attack+mulligan fixes validated; full 16×16 N=50 re-run; Affinity 93% and Living End 5% are new P0s)
 
 Related docs: `MODERN_PROPOSAL.md` (6 infra proposals from Legacy), `docs/history/audits/2026-04-11_LLM_judge.md` (original D+ audit), `LEGACY_MODERNISATION_PROPOSAL.md` (Legacy adoption plan).
 

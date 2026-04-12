@@ -1,88 +1,171 @@
 {
-  "generated": "2026-04-12T15:52:57.753321",
-  "count": 29,
+  "generated": "2026-04-13T00:46:04.735234",
+  "count": 47,
   "runs": [
     {
-      "file": "replay_ruby_storm_vs_dimir_midrange_s60105.html",
+      "file": "replay_azorius_vs_boros_s60103.html",
+      "d1": "Azorius",
+      "d2": "Boros",
+      "tag": "replay",
+      "ts": "2026-04-13T00:45:54.584091",
+      "type": "replay",
+      "path": "replays/replay_azorius_vs_boros_s60103.html",
+      "size_kb": 160.5
+    },
+    {
+      "file": "replay_ruby_storm_vs_dimir_s60102.html",
       "d1": "Ruby Storm",
-      "d2": "Dimir Midrange",
+      "d2": "Dimir",
       "tag": "replay",
-      "ts": "2026-04-12T15:52:43.616137",
+      "ts": "2026-04-13T00:45:54.442091",
       "type": "replay",
-      "path": "replays/replay_ruby_storm_vs_dimir_midrange_s60105.html",
-      "size_kb": 105.9
+      "path": "replays/replay_ruby_storm_vs_dimir_s60102.html",
+      "size_kb": 121.6
     },
     {
-      "file": "replay_domain_zoo_vs_affinity_s60104.html",
-      "d1": "Domain Zoo",
-      "d2": "Affinity",
+      "file": "replay_living_end_vs_boros_s60101.html",
+      "d1": "Living End",
+      "d2": "Boros",
       "tag": "replay",
-      "ts": "2026-04-12T15:52:43.579973",
+      "ts": "2026-04-13T00:45:54.400091",
       "type": "replay",
-      "path": "replays/replay_domain_zoo_vs_affinity_s60104.html",
-      "size_kb": 118.2
+      "path": "replays/replay_living_end_vs_boros_s60101.html",
+      "size_kb": 67.3
     },
     {
-      "file": "replay_dimir_midrange_vs_boros_energy_s60103.html",
-      "d1": "Dimir Midrange",
-      "d2": "Boros Energy",
-      "tag": "replay",
-      "ts": "2026-04-12T15:52:43.546096",
-      "type": "replay",
-      "path": "replays/replay_dimir_midrange_vs_boros_energy_s60103.html",
-      "size_kb": 85.2
-    },
-    {
-      "file": "replay_izzet_prowess_vs_eldrazi_tron_s60102.html",
-      "d1": "Izzet Prowess",
-      "d2": "Eldrazi Tron",
-      "tag": "replay",
-      "ts": "2026-04-12T15:52:43.519433",
-      "type": "replay",
-      "path": "replays/replay_izzet_prowess_vs_eldrazi_tron_s60102.html",
-      "size_kb": 73.3
-    },
-    {
-      "file": "replay_boros_energy_vs_domain_zoo_s60101.html",
-      "d1": "Boros Energy",
-      "d2": "Domain Zoo",
-      "tag": "replay",
-      "ts": "2026-04-12T15:52:43.491961",
-      "type": "replay",
-      "path": "replays/replay_boros_energy_vs_domain_zoo_s60101.html",
-      "size_kb": 121.7
-    },
-    {
-      "file": "replay_affinity_vs_boros_energy_s60100.html",
+      "file": "replay_affinity_vs_dimir_s60100.html",
       "d1": "Affinity",
-      "d2": "Boros Energy",
+      "d2": "Dimir",
       "tag": "replay",
-      "ts": "2026-04-12T15:52:43.454077",
+      "ts": "2026-04-13T00:45:54.377091",
       "type": "replay",
-      "path": "replays/replay_affinity_vs_boros_energy_s60100.html",
-      "size_kb": 119.1
+      "path": "replays/replay_affinity_vs_dimir_s60100.html",
+      "size_kb": 80.1
     },
     {
-      "file": "ruby_storm_vs_dimir_midrange_s60105.txt",
+      "file": "azorius_vs_boros_s60103.txt",
+      "d1": "Azorius",
+      "d2": "Boros",
+      "seed": "60103",
+      "tag": "bo3",
+      "ts": "2026-04-13T00:45:49.576085",
+      "type": "bo3-log",
+      "path": "replays/azorius_vs_boros_s60103.txt",
+      "size_kb": 72.9
+    },
+    {
+      "file": "ruby_storm_vs_dimir_s60102.txt",
       "d1": "Ruby Storm",
-      "d2": "Dimir Midrange",
-      "seed": "60105",
+      "d2": "Dimir",
+      "seed": "60102",
       "tag": "bo3",
-      "ts": "2026-04-12T15:52:37.528957",
+      "ts": "2026-04-13T00:45:46.069080",
       "type": "bo3-log",
-      "path": "replays/ruby_storm_vs_dimir_midrange_s60105.txt",
-      "size_kb": 42.2
+      "path": "replays/ruby_storm_vs_dimir_s60102.txt",
+      "size_kb": 49.4
     },
     {
-      "file": "domain_zoo_vs_affinity_s60104.txt",
-      "d1": "Domain Zoo",
-      "d2": "Affinity",
-      "seed": "60104",
+      "file": "living_end_vs_boros_s60101.txt",
+      "d1": "Living End",
+      "d2": "Boros",
+      "seed": "60101",
       "tag": "bo3",
-      "ts": "2026-04-12T15:52:31.595154",
+      "ts": "2026-04-13T00:45:42.194075",
       "type": "bo3-log",
-      "path": "replays/domain_zoo_vs_affinity_s60104.txt",
-      "size_kb": 51.9
+      "path": "replays/living_end_vs_boros_s60101.txt",
+      "size_kb": 24.5
+    },
+    {
+      "file": "affinity_vs_dimir_s60100.txt",
+      "d1": "Affinity",
+      "d2": "Dimir",
+      "seed": "60100",
+      "tag": "bo3",
+      "ts": "2026-04-13T00:45:38.101070",
+      "type": "bo3-log",
+      "path": "replays/affinity_vs_dimir_s60100.txt",
+      "size_kb": 30.3
+    },
+    {
+      "file": "metagame_results.json",
+      "decks": 0,
+      "n": 50,
+      "tag": "matrix",
+      "ts": "2026-04-13T00:18:09+02:00",
+      "type": "matrix",
+      "path": "metagame_results.json",
+      "size_kb": 10.7
+    },
+    {
+      "file": "modern_meta_matrix_full.html",
+      "tag": "dashboard",
+      "ts": "2026-04-13T00:18:09+02:00",
+      "type": "dashboard",
+      "path": "modern_meta_matrix_full.html",
+      "size_kb": 159.6
+    },
+    {
+      "file": "living_end.txt",
+      "d1": "?",
+      "d2": "?",
+      "seed": "",
+      "tag": "bo3",
+      "ts": "2026-04-12T17:45:24+00:00",
+      "type": "bo3-log",
+      "path": "replays/living_end.txt",
+      "size_kb": 58.4
+    },
+    {
+      "file": "amulet_titan.txt",
+      "d1": "?",
+      "d2": "?",
+      "seed": "",
+      "tag": "bo3",
+      "ts": "2026-04-12T17:45:24+00:00",
+      "type": "bo3-log",
+      "path": "replays/amulet_titan.txt",
+      "size_kb": 49.3
+    },
+    {
+      "file": "storm_kill.txt",
+      "d1": "?",
+      "d2": "?",
+      "seed": "",
+      "tag": "bo3",
+      "ts": "2026-04-12T17:45:24+00:00",
+      "type": "bo3-log",
+      "path": "replays/storm_kill.txt",
+      "size_kb": 34.3
+    },
+    {
+      "file": "replay_amulet_t3_titan.html",
+      "d1": "",
+      "d2": "",
+      "tag": "replay",
+      "ts": "2026-04-12T17:45:24+00:00",
+      "type": "replay",
+      "path": "replays/replay_amulet_t3_titan.html",
+      "size_kb": 119.5
+    },
+    {
+      "file": "replay_storm_t4_grapeshot.html",
+      "d1": "",
+      "d2": "",
+      "tag": "replay",
+      "ts": "2026-04-12T17:45:24+00:00",
+      "type": "replay",
+      "path": "replays/replay_storm_t4_grapeshot.html",
+      "size_kb": 92.4
+    },
+    {
+      "file": "replay_living_end_cascade.html",
+      "d1": "",
+      "d2": "",
+      "tag": "replay",
+      "ts": "2026-04-12T17:45:24+00:00",
+      "type": "replay",
+      "path": "replays/replay_living_end_cascade.html",
+      "size_kb": 133.4
     },
     {
       "file": "dimir_midrange_vs_boros_energy_s60103.txt",
@@ -90,21 +173,10 @@
       "d2": "Boros Energy",
       "seed": "60103",
       "tag": "bo3",
-      "ts": "2026-04-12T15:52:28.092832",
+      "ts": "2026-04-12T15:53:51+02:00",
       "type": "bo3-log",
       "path": "replays/dimir_midrange_vs_boros_energy_s60103.txt",
       "size_kb": 34.8
-    },
-    {
-      "file": "izzet_prowess_vs_eldrazi_tron_s60102.txt",
-      "d1": "Izzet Prowess",
-      "d2": "Eldrazi Tron",
-      "seed": "60102",
-      "tag": "bo3",
-      "ts": "2026-04-12T15:52:24.182958",
-      "type": "bo3-log",
-      "path": "replays/izzet_prowess_vs_eldrazi_tron_s60102.txt",
-      "size_kb": 29.3
     },
     {
       "file": "boros_energy_vs_domain_zoo_s60101.txt",
@@ -112,7 +184,7 @@
       "d2": "Domain Zoo",
       "seed": "60101",
       "tag": "bo3",
-      "ts": "2026-04-12T15:52:19.540518",
+      "ts": "2026-04-12T15:53:51+02:00",
       "type": "bo3-log",
       "path": "replays/boros_energy_vs_domain_zoo_s60101.txt",
       "size_kb": 51.8
@@ -123,28 +195,145 @@
       "d2": "Boros Energy",
       "seed": "60100",
       "tag": "bo3",
-      "ts": "2026-04-12T15:52:13.801667",
+      "ts": "2026-04-12T15:53:51+02:00",
       "type": "bo3-log",
       "path": "replays/affinity_vs_boros_energy_s60100.txt",
       "size_kb": 47.5
     },
     {
-      "file": "metagame_results.json",
-      "decks": 0,
-      "n": 50,
-      "tag": "matrix",
-      "ts": "2026-04-12T15:48:39.763599",
-      "type": "matrix",
-      "path": "metagame_results.json",
-      "size_kb": 10.7
+      "file": "domain_zoo_vs_affinity_s60104.txt",
+      "d1": "Domain Zoo",
+      "d2": "Affinity",
+      "seed": "60104",
+      "tag": "bo3",
+      "ts": "2026-04-12T15:53:51+02:00",
+      "type": "bo3-log",
+      "path": "replays/domain_zoo_vs_affinity_s60104.txt",
+      "size_kb": 51.9
     },
     {
-      "file": "modern_meta_matrix_full.html",
-      "tag": "dashboard",
-      "ts": "2026-04-12T13:19:48+00:00",
-      "type": "dashboard",
-      "path": "modern_meta_matrix_full.html",
-      "size_kb": 159.7
+      "file": "ruby_storm_vs_dimir_midrange_s60105.txt",
+      "d1": "Ruby Storm",
+      "d2": "Dimir Midrange",
+      "seed": "60105",
+      "tag": "bo3",
+      "ts": "2026-04-12T15:53:51+02:00",
+      "type": "bo3-log",
+      "path": "replays/ruby_storm_vs_dimir_midrange_s60105.txt",
+      "size_kb": 42.2
+    },
+    {
+      "file": "izzet_prowess_vs_eldrazi_tron_s60102.txt",
+      "d1": "Izzet Prowess",
+      "d2": "Eldrazi Tron",
+      "seed": "60102",
+      "tag": "bo3",
+      "ts": "2026-04-12T15:53:51+02:00",
+      "type": "bo3-log",
+      "path": "replays/izzet_prowess_vs_eldrazi_tron_s60102.txt",
+      "size_kb": 29.3
+    },
+    {
+      "file": "replay_dimir_midrange_vs_boros_energy_s60103.html",
+      "d1": "Dimir Midrange",
+      "d2": "Boros Energy",
+      "tag": "replay",
+      "ts": "2026-04-12T15:53:51+02:00",
+      "type": "replay",
+      "path": "replays/replay_dimir_midrange_vs_boros_energy_s60103.html",
+      "size_kb": 85.2
+    },
+    {
+      "file": "replay_affinity_vs_boros_energy_s60100.html",
+      "d1": "Affinity",
+      "d2": "Boros Energy",
+      "tag": "replay",
+      "ts": "2026-04-12T15:53:51+02:00",
+      "type": "replay",
+      "path": "replays/replay_affinity_vs_boros_energy_s60100.html",
+      "size_kb": 119.1
+    },
+    {
+      "file": "replay_izzet_prowess_vs_eldrazi_tron_s60102.html",
+      "d1": "Izzet Prowess",
+      "d2": "Eldrazi Tron",
+      "tag": "replay",
+      "ts": "2026-04-12T15:53:51+02:00",
+      "type": "replay",
+      "path": "replays/replay_izzet_prowess_vs_eldrazi_tron_s60102.html",
+      "size_kb": 73.3
+    },
+    {
+      "file": "replay_domain_zoo_vs_affinity_s60104.html",
+      "d1": "Domain Zoo",
+      "d2": "Affinity",
+      "tag": "replay",
+      "ts": "2026-04-12T15:53:51+02:00",
+      "type": "replay",
+      "path": "replays/replay_domain_zoo_vs_affinity_s60104.html",
+      "size_kb": 118.2
+    },
+    {
+      "file": "replay_ruby_storm_vs_dimir_midrange_s60105.html",
+      "d1": "Ruby Storm",
+      "d2": "Dimir Midrange",
+      "tag": "replay",
+      "ts": "2026-04-12T15:53:51+02:00",
+      "type": "replay",
+      "path": "replays/replay_ruby_storm_vs_dimir_midrange_s60105.html",
+      "size_kb": 105.9
+    },
+    {
+      "file": "replay_boros_energy_vs_domain_zoo_s60101.html",
+      "d1": "Boros Energy",
+      "d2": "Domain Zoo",
+      "tag": "replay",
+      "ts": "2026-04-12T15:53:51+02:00",
+      "type": "replay",
+      "path": "replays/replay_boros_energy_vs_domain_zoo_s60101.html",
+      "size_kb": 121.7
+    },
+    {
+      "file": "storm_vs_boros.txt",
+      "d1": "?",
+      "d2": "?",
+      "seed": "",
+      "tag": "bo3",
+      "ts": "2026-04-12T15:49:23+00:00",
+      "type": "bo3-log",
+      "path": "replays/storm_vs_boros.txt",
+      "size_kb": 61.4
+    },
+    {
+      "file": "replay_storm_vs_boros.html",
+      "d1": "Storm",
+      "d2": "Boros",
+      "tag": "replay",
+      "ts": "2026-04-12T15:49:23+00:00",
+      "type": "replay",
+      "path": "replays/replay_storm_vs_boros.html",
+      "size_kb": 156.3
+    },
+    {
+      "file": "affinity_vs_etron.txt",
+      "d1": "?",
+      "d2": "?",
+      "seed": "",
+      "tag": "bo3",
+      "ts": "2026-04-12T15:48:26+00:00",
+      "type": "bo3-log",
+      "path": "replays/affinity_vs_etron.txt",
+      "size_kb": 51.6
+    },
+    {
+      "file": "replay_affinity_vs_etron.html",
+      "d1": "Affinity",
+      "d2": "Etron",
+      "tag": "replay",
+      "ts": "2026-04-12T15:48:26+00:00",
+      "type": "replay",
+      "path": "replays/replay_affinity_vs_etron.html",
+      "size_kb": 122.7
     },
     {
       "file": "boros_vs_affinity_s55555.txt",
@@ -168,26 +357,15 @@
       "size_kb": 140.1
     },
     {
-      "file": "affinity_vs_azorius_control_s60006.txt",
-      "d1": "Affinity",
-      "d2": "Azorius Control",
-      "seed": "60006",
-      "tag": "bo3",
-      "ts": "2026-04-12T09:59:25+00:00",
-      "type": "bo3-log",
-      "path": "replays/affinity_vs_azorius_control_s60006.txt",
-      "size_kb": 34.1
-    },
-    {
-      "file": "izzet_prowess_vs_boros_energy_s60004.txt",
-      "d1": "Izzet Prowess",
+      "file": "eldrazi_tron_vs_boros_energy_s60003.txt",
+      "d1": "Eldrazi Tron",
       "d2": "Boros Energy",
-      "seed": "60004",
+      "seed": "60003",
       "tag": "bo3",
       "ts": "2026-04-12T09:59:25+00:00",
       "type": "bo3-log",
-      "path": "replays/izzet_prowess_vs_boros_energy_s60004.txt",
-      "size_kb": 32.1
+      "path": "replays/eldrazi_tron_vs_boros_energy_s60003.txt",
+      "size_kb": 53.8
     },
     {
       "file": "affinity_vs_boros_energy_s60001.txt",
@@ -201,15 +379,15 @@
       "size_kb": 24.9
     },
     {
-      "file": "dimir_midrange_vs_boros_energy_s60005.txt",
-      "d1": "Dimir Midrange",
+      "file": "izzet_prowess_vs_boros_energy_s60004.txt",
+      "d1": "Izzet Prowess",
       "d2": "Boros Energy",
-      "seed": "60005",
+      "seed": "60004",
       "tag": "bo3",
       "ts": "2026-04-12T09:59:25+00:00",
       "type": "bo3-log",
-      "path": "replays/dimir_midrange_vs_boros_energy_s60005.txt",
-      "size_kb": 51.8
+      "path": "replays/izzet_prowess_vs_boros_energy_s60004.txt",
+      "size_kb": 32.1
     },
     {
       "file": "boros_energy_vs_living_end_s60002.txt",
@@ -223,15 +401,26 @@
       "size_kb": 32.9
     },
     {
-      "file": "eldrazi_tron_vs_boros_energy_s60003.txt",
-      "d1": "Eldrazi Tron",
-      "d2": "Boros Energy",
-      "seed": "60003",
+      "file": "affinity_vs_azorius_control_s60006.txt",
+      "d1": "Affinity",
+      "d2": "Azorius Control",
+      "seed": "60006",
       "tag": "bo3",
       "ts": "2026-04-12T09:59:25+00:00",
       "type": "bo3-log",
-      "path": "replays/eldrazi_tron_vs_boros_energy_s60003.txt",
-      "size_kb": 53.8
+      "path": "replays/affinity_vs_azorius_control_s60006.txt",
+      "size_kb": 34.1
+    },
+    {
+      "file": "dimir_midrange_vs_boros_energy_s60005.txt",
+      "d1": "Dimir Midrange",
+      "d2": "Boros Energy",
+      "seed": "60005",
+      "tag": "bo3",
+      "ts": "2026-04-12T09:59:25+00:00",
+      "type": "bo3-log",
+      "path": "replays/dimir_midrange_vs_boros_energy_s60005.txt",
+      "size_kb": 51.8
     },
     {
       "file": "azorius_wst_vs_boros_s55555.txt",
@@ -245,26 +434,26 @@
       "size_kb": 37.4
     },
     {
-      "file": "boros_energy_vs_domain_zoo_s55555.txt",
-      "d1": "Boros Energy",
-      "d2": "Domain Zoo",
+      "file": "ruby_storm_vs_affinity_s55555.txt",
+      "d1": "Ruby Storm",
+      "d2": "Affinity",
       "seed": "55555",
       "tag": "bo3",
       "ts": "2026-04-11T18:22:14+02:00",
       "type": "bo3-log",
-      "path": "replays/boros_energy_vs_domain_zoo_s55555.txt",
-      "size_kb": 61.7
+      "path": "replays/ruby_storm_vs_affinity_s55555.txt",
+      "size_kb": 25.3
     },
     {
-      "file": "affinity_vs_domain_zoo_s55555.txt",
-      "d1": "Affinity",
-      "d2": "Domain Zoo",
+      "file": "eldrazi_tron_vs_izzet_prowess_s55555.txt",
+      "d1": "Eldrazi Tron",
+      "d2": "Izzet Prowess",
       "seed": "55555",
       "tag": "bo3",
       "ts": "2026-04-11T18:22:14+02:00",
       "type": "bo3-log",
-      "path": "replays/affinity_vs_domain_zoo_s55555.txt",
-      "size_kb": 37.0
+      "path": "replays/eldrazi_tron_vs_izzet_prowess_s55555.txt",
+      "size_kb": 60.4
     },
     {
       "file": "jeskai_blink_vs_affinity_s55555.txt",
@@ -289,26 +478,26 @@
       "size_kb": 26.2
     },
     {
-      "file": "eldrazi_tron_vs_izzet_prowess_s55555.txt",
-      "d1": "Eldrazi Tron",
-      "d2": "Izzet Prowess",
+      "file": "boros_energy_vs_domain_zoo_s55555.txt",
+      "d1": "Boros Energy",
+      "d2": "Domain Zoo",
       "seed": "55555",
       "tag": "bo3",
       "ts": "2026-04-11T18:22:14+02:00",
       "type": "bo3-log",
-      "path": "replays/eldrazi_tron_vs_izzet_prowess_s55555.txt",
-      "size_kb": 60.4
+      "path": "replays/boros_energy_vs_domain_zoo_s55555.txt",
+      "size_kb": 61.7
     },
     {
-      "file": "ruby_storm_vs_affinity_s55555.txt",
-      "d1": "Ruby Storm",
-      "d2": "Affinity",
+      "file": "affinity_vs_domain_zoo_s55555.txt",
+      "d1": "Affinity",
+      "d2": "Domain Zoo",
       "seed": "55555",
       "tag": "bo3",
       "ts": "2026-04-11T18:22:14+02:00",
       "type": "bo3-log",
-      "path": "replays/ruby_storm_vs_affinity_s55555.txt",
-      "size_kb": 25.3
+      "path": "replays/affinity_vs_domain_zoo_s55555.txt",
+      "size_kb": 37.0
     }
   ]
 }

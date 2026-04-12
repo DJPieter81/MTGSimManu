@@ -1,6 +1,6 @@
 # MTGSimManu — Project Status & Planning Reference
 
-> **Last updated:** 2026-04-12 (session 2)
+> **Last updated:** 2026-04-13 (session 3 — full re-run post blocking+attack+mulligan fixes)
 > **Purpose:** Single-source-of-truth for Claude Code planning mode. Read this before any session.
 > **Sister project:** MTGSimClaude (Legacy format, 38 decks, see LEGACY_MODERNISATION_PROPOSAL.md)
 
@@ -139,33 +139,48 @@ from engine.card_database import CardDatabase  # singleton pattern
 
 ## 6. AI strategy accuracy
 
-**Overall grade: C-** (downgraded from C+ — blocking P0 invalidates all matchup data)
+**Overall grade: C** (upgraded from C- — blocking P0 fixed, mulligan floor added, attack logic improved; post-fix 16×16 matrix at N=50 validates)
 
 | Domain | Grade | | Domain | Grade |
 |--------|-------|-|--------|-------|
 | Rules & engine | B+ | | Mana & sequencing | C+ |
-| Combat & threats | B | | Combo & storm | C+ |
-| Mulligan & openers | C+ | | Control & interaction | C- |
+| Combat & threats | B+ | | Combo & storm | C |
+| Mulligan & openers | B- | | Control & interaction | C |
 
-### WR improvements from session 2 fixes
-| Matchup | Before | After | Root cause fixed |
-|---------|--------|-------|-----------------|
-| Affinity vs Izzet Prowess | 97% | ~60-85% | DRC PROWESS misclassification → surveil/delirium |
-| 4c Omnath vs Boros | 10% | 30% | Wrong decklist + Risen Reef ETB |
-| Dimir vs Boros | broken | 50% | Token removed-state bug |
-| Amulet Titan vs Boros | 15% | ~23% | Amulet/Spelunking/bounce land ETBs |
+### WR shifts from session 3 full re-run (2026-04-13)
+| Deck | Pre-fix | Post-fix | Delta | Notes |
+|------|---------|----------|-------|-------|
+| 4c Omnath | 17% | 58% | +40pp | Major midrange improvement |
+| Goryo's Vengeance | 2% | 30% | +28pp | Combo now fires |
+| Azorius Control (WST) | 19% | 37% | +18pp | Control viable |
+| 4/5c Control | 22% | 34% | +11pp | Control rises |
+| Jeskai Blink | 53% | 58% | +5pp | Midrange stable |
+| Dimir Midrange | 62% | 65% | +3pp | Midrange stable |
+| Eldrazi Tron | 67% | 72% | +4pp | Ramp stable |
+| Affinity | 91% | 93% | +2pp | ⚠ Still outlier — blocking not enough |
+| Boros Energy | 88% | 67% | -21pp | Was over-performing, now realistic |
+| Ruby Storm | 51% | 30% | -21pp | ⚠ Regression — needs investigation |
+| Izzet Prowess | 75% | 55% | -20pp | Was over-performing |
+| Living End | 45% | 5% | -40pp | ⚠ BROKEN — cascade/attack AI regressed |
 
 ---
 
 ## 7. Known bugs
 
-### P0 — OPEN (replay audit, Apr 2026)
+### P0 — FIXED (session 3, 2026-04-13)
+
+| # | Issue | Fix | Commit |
+|---|-------|-----|--------|
+| 9 | **Zero blocks across all games** | Rewrite `_eval_block` with direct damage/value scoring | `8149d0c` |
+| 10 | **Not attacking with profitable boards** | Empty-board and combat trigger attack logic; verified 0 non-trivial refusals in Bo3 spot-check | Prior sessions |
+| 11 | **0-land mulligan keep** | Mulligan guardrail + combo-mulligan activation | `11e8a57`, `e1d9361` |
+
+### P0 — OPEN
 
 | # | Issue | Location | Evidence | Impact |
 |---|-------|----------|----------|--------|
-| 9 | **Zero blocks across all games** | `ai/ev_player.py:decide_blockers()` → `ai/board_eval.py:evaluate_action()` | 228 attack opportunities, 0 blocks, 211 cases with untapped power>0 defenders. `evaluate_action(ActionType.BLOCK)` never returns positive. | Aggro WRs inflated (Affinity 92%). Midrange/control can't trade on defense. All matchup data affected. |
-| 10 | **Not attacking with profitable boards** | `ai/ev_player.py` attack threshold | Ragavan idle into empty board, Bowmasters army idle 3 turns, Matter Reshaper held back | Underestimates aggro damage output. Games run longer than they should. |
-| 11 | **0-land mulligan keep** | `ai/mulligan.py` | Prowess kept 0-land 7-card hand (all uncastable). No minimum land floor. | Deck loses games it shouldn't from non-functional keeps. |
+| 12 | **Affinity 93% WR** | `ai/ev_player.py`, `engine/card_effects.py` | Still dominating post-blocking-fix. Construct tokens + Cranial Plating overwhelm all opponents. Blocking alone insufficient. | All matchup data vs Affinity suspect. |
+| 13 | **Living End 5% WR (was 45%)** | `ai/ev_player.py`, cascade/attack AI | 0% vs Boros/Jeskai/E-Tron/Prowess/Dimir. Cascade fires but post-combo attack AI broken or creatures insufficient. | Living End essentially non-functional. |
 
 **Priority fix order:** #9 (blocking) first — affects every matchup. Then #10 (attack threshold). #11 is deck-specific.
 
@@ -241,22 +256,24 @@ from engine.card_database import CardDatabase  # singleton pattern
 
 ## 8. Deck status
 
-| Deck | Sim grade | Notes |
-|------|-----------|-------|
-| Boros Energy | ✅ Working | T1 deck, ~64% weighted WR |
-| Affinity | ✅ Working | Construct tokens, Cranial Plating, Urza's Saga all correct |
-| Izzet Prowess | ✅ Working | DRC surveil/delirium fixed; 60% vs Affinity realistic |
-| Dimir Midrange | ✅ Working | 50% vs Boros realistic |
-| Eldrazi Tron | ✅ Working | 60% vs Boros; Tron assembly bonus added |
-| Domain Zoo | ✅ Working | 40% vs Boros realistic |
-| Ruby Storm | ✅ Working | 40% vs Dimir realistic after tutor fix |
-| Jeskai Blink | ⚠️ Underperforms | 27% vs Boros (n=60); deck list corrected (Witch Enchanter, Fable x3); Ephemerate rebound fizzle fixed; gap is structural — no Fury to reset boards |
-| 4c Omnath | ⚠️ Underperforms | 30% vs Boros; deck list now correct; Elesh Norn/Phelia not implemented |
-| Amulet Titan | ⚠️ Underperforms | 23% vs Boros; expected ~45%; mana loop value not modelled |
-| Goryo's Vengeance | ⚠️ Reasonable | 25% vs Dimir; cascade combo fires correctly |
-| Living End | ⚠️ Underperforms | 12% vs Boros; cascade/cycling correct; post-combo attack AI weak |
-| Azorius Control | ⚠️ Deflated | Isochron Scepter not implemented |
-| Azorius Control (WST) | ✅ Field run | Wrath X now correct; separate from Isochron variant |
+| Deck | Flat WR | Wtd WR | Sim grade | Notes |
+|------|---------|--------|-----------|-------|
+| Affinity | 93% | 91% | ⚠️ Inflated | P0: dominates all matchups. Blocking fix insufficient. |
+| Eldrazi Tron | 72% | 57% | ✅ Working | Stable; Tron assembly bonus working |
+| Boros Energy | 67% | 61% | ✅ Working | Down from 88%, now realistic T1 |
+| Pinnacle Affinity | 66% | 61% | ✅ Working | Reasonable T2 performance |
+| Domain Zoo | 65% | 59% | ✅ Working | Slightly above expected ceiling |
+| Dimir Midrange | 65% | 55% | ✅ Working | Midrange performing well |
+| Jeskai Blink | 58% | 47% | ✅ Working | Up from 53%; solid midrange |
+| 4c Omnath | 58% | 44% | ✅ Working | Massive improvement from 17%; Risen Reef/landfall chain working |
+| Izzet Prowess | 55% | 48% | ✅ Working | Down from 75%; realistic T2 |
+| Amulet Titan | 49% | 39% | ⚠️ Underperforms | Expected ~45% weighted; mana loop value still not modelled |
+| Azorius Control (WST) | 37% | 31% | ⚠️ Underperforms | Up from 19%; still weak vs aggro |
+| 4/5c Control | 34% | 23% | ⚠️ Underperforms | Up from 22%; still below expected |
+| Ruby Storm | 30% | 22% | ⚠️ Regressed | Down from 51%; needs investigation |
+| Goryo's Vengeance | 30% | 22% | ✅ Working | Up from 2%; combo fires now |
+| Azorius Control | 18% | 12% | ⚠️ Deflated | Isochron Scepter not implemented |
+| Living End | 5% | 3% | ❌ Broken | P0: down from 45%, cascade fires but post-combo AI non-functional |
 
 ---
 
