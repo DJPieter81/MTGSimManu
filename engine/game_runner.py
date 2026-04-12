@@ -1602,7 +1602,7 @@ class GameRunner:
                 if gy_lands >= 2:
                     should_activate = True
 
-            if should_activate:
+            if should_activate and perm in player.battlefield:
                 player.battlefield.remove(perm)
                 perm.zone = "graveyard"
                 player.graveyard.append(perm)
