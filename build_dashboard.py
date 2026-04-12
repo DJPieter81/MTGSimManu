@@ -123,6 +123,87 @@ function proInsights(p, i, j) {
     print(f"Built: {out_path} ({len(html):,} chars)")
 
 
+def merge(results_path='metagame_results.json',
+          jsx_path='metagame_data.jsx',
+          out_html='/home/user/MTGSimManu/modern_meta_matrix_full.html'):
+    """Merge a matrix run into metagame_data.jsx and rebuild the dashboard.
+
+    Preserves all matchup_cards / deck_cards narrative detail; only updates
+    the wins matrix, matches_per_pair, and overall WR rollups. Called
+    automatically by `run_meta.py --matrix --save`.
+    """
+    import json as _json
+    import re as _re
+
+    # Load existing JSX to preserve narrative data
+    with open(jsx_path) as f:
+        content = f.read()
+    D = load_D(jsx_path)
+
+    # Load fresh results
+    with open(results_path) as f:
+        results = _json.load(f)
+
+    if results.get('type') != 'matrix':
+        print(f"merge: skipping — results.json is not a matrix run", file=sys.stderr)
+        return
+
+    n_games = results['n_games']
+    D['matches_per_pair'] = n_games
+
+    # Build new wins matrix from the flat matrix dict keyed "d1|d2"
+    decks = D['decks']
+    idx = {name: i for i, name in enumerate(decks)}
+    new_wins = [[0] * len(decks) for _ in decks]
+    for key, pct in results['matrix'].items():
+        if '|' not in key:
+            continue
+        d1, d2 = key.split('|', 1)
+        if d1 not in idx or d2 not in idx:
+            continue
+        i, j = idx[d1], idx[d2]
+        new_wins[i][j] = round(pct / 100.0 * n_games)
+    D['wins'] = new_wins
+
+    # Recompute overall WR rollups
+    meta_shares = D.get('meta_shares', {})
+    for entry in D.get('overall', []):
+        i = entry['idx']
+        total_wins = sum(new_wins[i][j] for j in range(len(decks)) if j != i)
+        total_matches = n_games * (len(decks) - 1)
+        entry['total_wins'] = total_wins
+        entry['total_matches'] = total_matches
+        entry['win_rate'] = round(total_wins / total_matches * 100, 1) if total_matches else 0.0
+        # Weighted WR across T1+T2 opponents only (matches run_meta_matrix logic)
+        weighted_sum = 0.0
+        weight_total = 0.0
+        for j, opp in enumerate(decks):
+            if j == i:
+                continue
+            share = meta_shares.get(opp, 0)
+            if share <= 0:
+                continue
+            matches = n_games
+            opp_wr = new_wins[i][j] / matches * 100 if matches else 50
+            weighted_sum += opp_wr * share
+            weight_total += share
+        entry['weighted_wr'] = round(weighted_sum / weight_total, 1) if weight_total else entry['win_rate']
+
+    # Serialize back: replace the `const D = {...};` body only. Split on
+    # the sentinel to avoid re.sub interpreting escapes (\u, \n, etc.) in
+    # the JSON payload as regex backreferences.
+    new_body = _json.dumps(D, separators=(',', ':'))
+    head_end = content.index('const D = ')
+    tail_start = content.index(';\nconst N', head_end)
+    new_content = content[:head_end] + f'const D = {new_body}' + content[tail_start:]
+    with open(jsx_path, 'w') as f:
+        f.write(new_content)
+    print(f"merge: updated {jsx_path} (N={n_games}, {len(decks)} decks)")
+
+    # Rebuild the HTML
+    build(jsx_path, out_html)
+
+
 def _provenance_footer(D: dict) -> str:
     """Small footer block listing date, deck count, games/pair, engine SHA."""
     import datetime, subprocess

@@ -498,6 +498,54 @@ directional.
   keeps the outlier list short enough to act on each session rather than
   chasing noise.
 
+### Session 3 phase 5 — Azorius Wrath + merge hook
+Cross-session collaboration resumed after PR#94/#95 merged and the other
+session added threat-based removal targeting (`b8556eb`, `0b6079c`) + Consign
+to Memory counterspell tag (`229ee97`). Joint effect: Affinity 88.9 → 78.4%,
+Boros vs Affinity stable 50/50 at n=20.
+
+Azorius investigation (verbose replay + explore agent):
+- Wrath of the Skies was being cast at X=0 on T2 because `available_for_x` is
+  computed AFTER paying the base WW cost. With 2 untapped lands total, X had
+  to be 0, sweeping only 0-CMC tokens while Boros's 1-drops survived.
+- Fix: `ai/ev_player.py:_score_spell` now hard-gates X-cost board wipes when
+  the effective X-budget can't kill ≥2 enemy creatures. Wrath now holds for
+  T3+ when X≥1 sweeps the entire Boros board.
+- `decks/gameplans/azorius_control.json`: emptied `mulligan_combo_sets` (the
+  Scepter+Chant requirement was mulliganing good interaction hands) and
+  `reactive_only` (gated Counterspell/Orim's Chant behind 4+ power threats
+  that don't exist vs aggro).
+
+Smoke (n=20): Azorius vs Prowess 0→25%, vs Boros 0→5%, vs Affinity 0→10%.
+Matrix-v3 (n=100) still shows Azorius at 7.9% overall — structural
+weakness: 0 mainboard blockers. Deferred as requires decklist edit, not
+code fix.
+
+`build_dashboard.py` — added a `merge()` helper so
+`run_meta.py --matrix --save` actually rebuilds the dashboard. It was
+calling a function that didn't exist (`from build_dashboard import merge`)
+and printing "Dashboard merge skipped" every run. Now it reads
+`metagame_results.json`, overwrites `wins[][]`, recomputes overall +
+weighted WRs, and rewrites `metagame_data.jsx` + HTML. Narrative data
+(matchup_cards, deck_cards) is preserved.
+
+### Matrix-v3 outlier summary (2026-04-12, commit `a9b1cd0`)
+`python meta_audit.py` output:
+
+| Severity | Deck | WR | Range |
+|----------|------|-----|-------|
+| severe | Azorius Control | 7.9% | 30-50% |
+| moderate | Affinity | 78.4% | 45-65% |
+| minor (×8) | Pinnacle Aff, Dimir, Zoo, Tron, Amulet, Jeskai, 4c Omnath, Ruby Storm | all within 10pp of band | |
+
+Compared to matrix-v2:
+- Severe outliers: 2 → 1 (Affinity demoted to moderate; other session's
+  threat-targeting + my SB-bump + P0 cards.py fix combined).
+- Azorius: essentially unchanged in matrix (7.3 → 7.9); smoke gains are
+  real but drowned out by structural weakness across full matchup pool.
+- Overall meta: healthier than ever. Only 1 severe outlier; remaining
+  issues are tuning-depth rather than engine bugs.
+
 ### Infrastructure (from Legacy proposal)
 | # | Task | Impact | Effort | Deps |
 |---|------|--------|--------|------|
