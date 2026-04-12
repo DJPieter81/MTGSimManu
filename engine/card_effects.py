@@ -1060,21 +1060,51 @@ def wish_resolve(game, card, controller, targets=None, item=None):
     # After Wish resolves: Grapeshot is the next spell, then remaining fuel
     estimated_storm = current_storm + 1 + min(total_fuel, 8)
 
-    # Grapeshot is the PRIMARY plan — it's an instant kill, no waiting a turn.
-    # Only fall back to Empty the Warrens when Grapeshot really can't get close.
-    # Tuned empirically: Empty's summoning-sick tokens need to survive a turn,
-    # which Storm often can't count on, so we keep a fairly wide Grapeshot band.
-    grapeshot_damage = estimated_storm  # 1 damage per copy
+    # Proper finisher comparison: compute expected lethal-turn for each option
+    # given the current board state, pick the earliest.
+    #
+    #   Grapeshot: deals `estimated_storm` damage immediately. Kills iff
+    #              estimated_storm >= opp_life. Otherwise the chain is wasted —
+    #              we leave opp alive on their turn.
+    #
+    #   Empty the Warrens: creates 2 * estimated_storm goblins, which attack
+    #              for 2 * estimated_storm next turn. Survival probability
+    #              depends on opponent board / sweeper count / blocker count,
+    #              approximated below via a survival factor.
+    #
+    # Prefer Empty when its expected damage beats Grapeshot's current damage
+    # AND we're not mid-kill (where Grapeshot would close the game this turn).
+    grapeshot_damage = estimated_storm  # 1 damage per copy, now
+    empty_power     = 2 * estimated_storm  # tokens deal this next turn
+
+    # Survival factor: probability the goblins survive opponent's response.
+    # Defaults to 0.75 (no board), scales down with opp creatures and sweepers.
+    opp = game.players[1 - controller]
+    opp_creatures = len([c for c in opp.battlefield if c.template.is_creature])
+    opp_has_sweeper_mana = opp.life > 0 and len(
+        [c for c in opp.battlefield if c.template.is_land and not getattr(c, 'tapped', False)]
+    ) >= 4
+    survival = 0.75
+    if opp_creatures >= 3:
+        survival -= 0.25  # chump-blocking eats most goblins
+    if opp_has_sweeper_mana:
+        survival -= 0.35  # wrath / Pyroclasm risk
+    survival = max(0.15, survival)
+    empty_expected_damage = empty_power * survival
+
     if grapeshot_damage >= opp_life:
-        # Lethal! Always Grapeshot.
+        # Grapeshot kills now — always take it.
         finisher_priority = ["Grapeshot", "Empty the Warrens", "Galvanic Relay"]
+    elif empty_expected_damage > grapeshot_damage and empty_power >= opp_life:
+        # Warrens expected to kill next turn and beats a half-Grapeshot now.
+        finisher_priority = ["Empty the Warrens", "Grapeshot", "Galvanic Relay"]
     elif grapeshot_damage >= opp_life * 0.6:
-        # Close to lethal — Grapeshot still best (leaves opp at low life,
-        # Ral/tokens finish next turn). Better than tokens that might get blocked.
+        # Close to lethal — Grapeshot's immediate damage still preferable.
         finisher_priority = ["Grapeshot", "Empty the Warrens", "Galvanic Relay"]
     else:
-        # Not close — Empty creates a board that threatens lethal next turn.
-        finisher_priority = ["Empty the Warrens", "Grapeshot", "Galvanic Relay"]
+        # Grapeshot can't finish, but Warrens can't reliably close either;
+        # default to Grapeshot (doesn't give opponent a turn to stabilise).
+        finisher_priority = ["Grapeshot", "Empty the Warrens", "Galvanic Relay"]
 
     # Search sideboard first (real Wish behavior)
     if sb:
