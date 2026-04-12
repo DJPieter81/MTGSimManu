@@ -632,6 +632,15 @@ class GameRunner:
                     self._activate_goblin_bombardment(game, active)
                     if game.game_over:
                         break
+                    # Phelia blink returns: exiled permanents come back + trigger ETB
+                    if hasattr(game, '_phelia_returns') and game._phelia_returns:
+                        from engine.card_effects import EFFECT_REGISTRY, EffectTiming
+                        for perm in game.players[active].battlefield:
+                            if perm.name == "Phelia, Exuberant Shepherd":
+                                EFFECT_REGISTRY.execute(
+                                    perm.name, EffectTiming.END_STEP,
+                                    game, perm, active)
+                                break
                     # End-step instant window: opponent can cast instants/flash
                     self._end_step_instant_window(game, opponent_ai, ai)
                     if game.game_over:

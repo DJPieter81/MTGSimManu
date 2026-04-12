@@ -2444,3 +2444,100 @@ def thraben_charm_resolve(game, card, controller, targets=None, item=None):
         game.log.append(
             f"T{game.display_turn} P{controller+1}: "
             f"Thraben Charm: no high-value mode available")
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Phelia, Exuberant Shepherd — blink on attack
+# ═══════════════════════════════════════════════════════════════════
+@EFFECT_REGISTRY.register("Phelia, Exuberant Shepherd", EffectTiming.ATTACK,
+                           description="When attacks, exile another nonland permanent; return at end step")
+def phelia_attack(game, card, controller, targets=None, item=None):
+    """Phelia attacks: exile a nonland permanent. Returns at end step.
+
+    Smart targeting:
+    - Own ETB creature (Solitude, Phlage, Omnath) = repeating value engine
+    - Opponent's best nonland permanent = tempo removal (returns end step)
+    """
+    player = game.players[controller]
+    opp_idx = 1 - controller
+    opp = game.players[opp_idx]
+
+    # Find own ETB creatures (excluding Phelia herself)
+    own_etb = [c for c in player.battlefield
+               if c.instance_id != card.instance_id
+               and not c.template.is_land
+               and ('etb_value' in getattr(c.template, 'tags', set())
+                    or c.name in ('Solitude', 'Phlage, Titan of Fire\'s Fury',
+                                  'Omnath, Locus of Creation', 'Subtlety',
+                                  'Endurance'))]
+
+    # Find opponent nonlands
+    opp_nonlands = [c for c in opp.battlefield if not c.template.is_land]
+
+    target = None
+    target_owner = None
+
+    if own_etb:
+        # Blink own best ETB creature — repeating value engine
+        # Prioritize: Solitude (removal) > Phlage (damage+life) > others
+        priority = {'Solitude': 10, 'Phlage, Titan of Fire\'s Fury': 8,
+                    'Omnath, Locus of Creation': 7}
+        target = max(own_etb, key=lambda c: priority.get(c.name, _threat_score(c)))
+        target_owner = controller
+    elif opp_nonlands:
+        # Tempo: exile opponent's best nonland (it returns at end step)
+        target = max(opp_nonlands, key=_threat_score)
+        target_owner = opp_idx
+
+    if target is None:
+        return
+
+    # Exile the target
+    owner_player = game.players[target_owner]
+    if target in owner_player.battlefield:
+        owner_player.battlefield.remove(target)
+        if target.template.is_creature and target in owner_player.creatures:
+            owner_player.creatures.remove(target)
+        target.zone = "exile"
+        owner_player.exile.append(target)
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: "
+            f"Phelia exiles {target.name} (P{target_owner+1}'s)")
+
+        # Schedule return at end step
+        if not hasattr(game, '_phelia_returns'):
+            game._phelia_returns = []
+        game._phelia_returns.append((target, target_owner, controller))
+
+        # If it returns under controller's control, Phelia gets +1/+1
+        if target_owner == controller:
+            card.plus_counters += 1
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: "
+                f"Phelia gets +1/+1 counter ({card.power}/{card.toughness})")
+
+
+@EFFECT_REGISTRY.register("Phelia, Exuberant Shepherd", EffectTiming.END_STEP,
+                           description="Return Phelia-exiled cards to battlefield")
+def phelia_end_step(game, card, controller, targets=None, item=None):
+    """Return all Phelia-exiled permanents to the battlefield."""
+    if not hasattr(game, '_phelia_returns') or not game._phelia_returns:
+        return
+
+    returns = list(game._phelia_returns)
+    game._phelia_returns.clear()
+
+    for exiled_card, owner_idx, phelia_controller in returns:
+        owner = game.players[owner_idx]
+        if exiled_card in owner.exile:
+            owner.exile.remove(exiled_card)
+            exiled_card.zone = "battlefield"
+            owner.battlefield.append(exiled_card)
+            if exiled_card.template.is_creature:
+                exiled_card.enter_battlefield()
+                owner.creatures.append(exiled_card)
+            game.log.append(
+                f"T{game.display_turn}: "
+                f"{exiled_card.name} returns to battlefield (P{owner_idx+1})")
+            # Trigger ETB on return
+            game.trigger_etb(exiled_card, owner_idx)
