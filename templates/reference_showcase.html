@@ -206,6 +206,9 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
 .deck-chip{font-family:var(--font-mono);font-size:11px;padding:6px 14px;border-radius:100px;border:1px solid rgba(0,0,0,.08);background:var(--card);color:var(--ink2);cursor:default;transition:all .25s}
 .deck-chip:hover{border-color:var(--gold);color:var(--ink);box-shadow:0 4px 12px rgba(184,148,30,.1);transform:translateY(-2px)}
 .deck-chip .meta{color:var(--gold);font-weight:600;margin-left:4px}
+.replay-grid{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:1rem 0}
+.replay-chip{font-family:var(--font-mono);font-size:10px;padding:5px 12px;border-radius:6px;border:1px solid rgba(0,0,0,.08);background:var(--card);color:var(--ink2);text-decoration:none;transition:all .25s;white-space:nowrap}
+.replay-chip:hover{border-color:#a32d2d;color:var(--ink);box-shadow:0 4px 12px rgba(163,45,45,.12);transform:translateY(-2px)}
 .deck-chip.chip-selected{border-color:var(--gold);background:rgba(184,148,30,.08) !important;color:var(--ink);box-shadow:0 0 0 2px var(--gold)}
 .hl-row{box-shadow:inset 0 2px 0 var(--gold),inset 0 -2px 0 var(--gold)}
 .hl-col{box-shadow:inset 2px 0 0 var(--gold),inset -2px 0 0 var(--gold)}
@@ -384,6 +387,35 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
     <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:50%;background:var(--card);border:1px solid rgba(0,0,0,.1)"></span> Field</span>
   </div>
 </section>
+
+<!-- Replay Gallery -->
+<!-- REPLAY_GALLERY_START -->
+<section style="text-align:center">
+  <div class="reveal">
+    <div class="sec-label">Match replays</div>
+    <div class="sec-title">16 interactive Bo3 replays</div>
+    <div class="sec-desc" style="margin:0 auto 1.5rem">Step through every turn. See the AI's reasoning, life totals, and board state. Click any matchup.</div>
+  </div>
+  <div class="replay-grid reveal">
+      <a href="https://djpieter81.github.io/MTGSimManu/replays/replay_affinity_vs_boros_energy_s60100.html" class="replay-chip" target="_blank">Affinity vs Boros Energy</a>
+      <a href="https://djpieter81.github.io/MTGSimManu/replays/replay_affinity_vs_dimir_s60100.html" class="replay-chip" target="_blank">Affinity vs Dimir</a>
+      <a href="https://djpieter81.github.io/MTGSimManu/replays/replay_affinity_vs_etron.html" class="replay-chip" target="_blank">Affinity vs Etron</a>
+      <a href="https://djpieter81.github.io/MTGSimManu/replays/replay_amulet_t3_titan.html" class="replay-chip" target="_blank">Amulet T3 Titan</a>
+      <a href="https://djpieter81.github.io/MTGSimManu/replays/replay_azorius_vs_boros_s60103.html" class="replay-chip" target="_blank">Azorius vs Boros</a>
+      <a href="https://djpieter81.github.io/MTGSimManu/replays/replay_boros_energy_vs_domain_zoo_s60101.html" class="replay-chip" target="_blank">Boros Energy vs Domain Zoo</a>
+      <a href="https://djpieter81.github.io/MTGSimManu/replays/replay_boros_vs_zoo.html" class="replay-chip" target="_blank">Boros vs Zoo</a>
+      <a href="https://djpieter81.github.io/MTGSimManu/replays/replay_dimir_midrange_vs_boros_energy_s60103.html" class="replay-chip" target="_blank">Dimir Midrange vs Boros Energy</a>
+      <a href="https://djpieter81.github.io/MTGSimManu/replays/replay_domain_zoo_vs_affinity_s60104.html" class="replay-chip" target="_blank">Domain Zoo vs Affinity</a>
+      <a href="https://djpieter81.github.io/MTGSimManu/replays/replay_izzet_prowess_vs_eldrazi_tron_s60102.html" class="replay-chip" target="_blank">Izzet Prowess vs Eldrazi Tron</a>
+      <a href="https://djpieter81.github.io/MTGSimManu/replays/replay_living_end_cascade.html" class="replay-chip" target="_blank">Living End Cascade</a>
+      <a href="https://djpieter81.github.io/MTGSimManu/replays/replay_living_end_vs_boros_s60101.html" class="replay-chip" target="_blank">Living End vs Boros</a>
+      <a href="https://djpieter81.github.io/MTGSimManu/replays/replay_ruby_storm_vs_dimir_midrange_s60105.html" class="replay-chip" target="_blank">Ruby Storm vs Dimir Midrange</a>
+      <a href="https://djpieter81.github.io/MTGSimManu/replays/replay_ruby_storm_vs_dimir_s60102.html" class="replay-chip" target="_blank">Ruby Storm vs Dimir</a>
+      <a href="https://djpieter81.github.io/MTGSimManu/replays/replay_storm_t4_grapeshot.html" class="replay-chip" target="_blank">Storm T4 Grapeshot</a>
+      <a href="https://djpieter81.github.io/MTGSimManu/replays/replay_storm_vs_boros.html" class="replay-chip" target="_blank">Storm vs Boros</a>
+  </div>
+</section>
+<!-- REPLAY_GALLERY_END -->
 
 <!-- AI Brain -->
 <div class="warm-bg">

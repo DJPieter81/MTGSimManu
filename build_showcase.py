@@ -272,6 +272,52 @@ def build_heatmap_arrays(D, indices):
     return wins_js, arch_js, turns_js
 
 
+def build_replay_gallery(replays_dir='replays'):
+    """Generate replay gallery HTML from replay files on disk."""
+    import glob
+    
+    base = 'https://djpieter81.github.io/MTGSimManu/replays/'
+    files = sorted(glob.glob(os.path.join(replays_dir, 'replay_*.html')))
+    
+    if not files:
+        return ''
+    
+    # Parse replay filenames into matchup labels
+    def parse_replay(fname):
+        name = os.path.basename(fname).replace('replay_', '').replace('.html', '')
+        # Remove seed suffix
+        name = re.sub(r'_s\d+$', '', name)
+        # Split on _vs_
+        if '_vs_' in name:
+            parts = name.split('_vs_')
+            d1 = parts[0].replace('_', ' ').title()
+            d2 = parts[1].replace('_', ' ').title()
+            return d1, d2
+        # Fallback: use filename as label
+        return name.replace('_', ' ').title(), None
+    
+    cards = []
+    for f in files:
+        d1, d2 = parse_replay(f)
+        href = base + os.path.basename(f)
+        if d2:
+            label = f'{d1} vs {d2}'
+        else:
+            label = d1
+        cards.append(f'      <a href="{href}" class="replay-chip" target="_blank">{label}</a>')
+    
+    return f"""<section style="text-align:center">
+  <div class="reveal">
+    <div class="sec-label">Match replays</div>
+    <div class="sec-title">{len(files)} interactive Bo3 replays</div>
+    <div class="sec-desc" style="margin:0 auto 1.5rem">Step through every turn. See the AI's reasoning, life totals, and board state. Click any matchup.</div>
+  </div>
+  <div class="replay-grid reveal">
+{chr(10).join(cards)}
+  </div>
+</section>"""
+
+
 def patch(html, D, overall_grade, radar_data):
     """Apply all patches to showcase HTML."""
     
@@ -344,6 +390,15 @@ def patch(html, D, overall_grade, radar_data):
     n = len(D['decks'])
     html = re.sub(r'\b16[×x]16\b', f'{n}×{n}', html)
     html = re.sub(r'\b16 decks\b', f'{n} decks', html)
+    
+    # 9. Replay gallery
+    gallery = build_replay_gallery()
+    html = re.sub(
+        r'<!-- REPLAY_GALLERY_START -->.*?<!-- REPLAY_GALLERY_END -->',
+        f'<!-- REPLAY_GALLERY_START -->\n{gallery}\n<!-- REPLAY_GALLERY_END -->',
+        html,
+        flags=re.DOTALL
+    )
     
     return html
 
