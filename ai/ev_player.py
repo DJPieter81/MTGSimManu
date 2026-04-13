@@ -1708,16 +1708,20 @@ class EVPlayer:
     def _has_high_threat_target(self, game, spell) -> bool:
         """True if a removal spell has a target worth proactively casting for.
 
-        Threat value is oracle-driven via `creature_threat_value`. Catches
-        battle-cry sources, scaling threats, and big bodies — not raw power.
-        `prof.big_creature_power` (default 4) is reused as the EV floor,
-        not as a raw P/T cap.
+        Threat value is oracle-driven via `creature_threat_value` (for
+        creatures) and `_permanent_threat_value` (for artifacts /
+        enchantments like scaling equipment). `prof.big_creature_power`
+        is reused as the EV floor, not as a raw P/T cap.
+
+        Considers BOTH creatures and noncreature permanents so that a
+        nonland-permanent-hitting spell (Leyline Binding, Force of Vigor,
+        Wear // Tear) correctly releases from the reactive_only gate when
+        Cranial Plating / Nettlecyst / similar scaling equipment hits the
+        battlefield.
         """
         opp = game.players[1 - self.player_idx]
         tags = getattr(spell.template, 'tags', set())
         if 'removal' not in tags:
-            return False
-        if not opp.creatures:
             return False
 
         from decks.card_knowledge_loader import get_burn_damage
@@ -1725,14 +1729,32 @@ class EVPlayer:
         prof = self.profile
         floor = float(prof.big_creature_power)  # e.g. 4.0 EV floor
 
+        # Creature threats (battle cry, scaling, big body)
         for c in opp.creatures:
-            # For burn removal, skip creatures this spell cannot kill.
             if dmg > 0:
                 remaining = (c.toughness or 0) - getattr(c, 'damage_marked', 0)
                 if remaining > dmg:
                     continue
             if creature_threat_value(c) >= floor:
                 return True
+
+        # Noncreature-permanent threats — scaling equipment (CP, Nettlecyst),
+        # planeswalkers, stax pieces. Only applies if the spell can actually
+        # hit them (oracle mentions target artifact / enchantment / nonland /
+        # noncreature / permanent).
+        oracle = (spell.template.oracle_text or '').lower()
+        hits_noncreature = ('target artifact' in oracle
+                            or 'target enchantment' in oracle
+                            or 'target nonland permanent' in oracle
+                            or 'target noncreature' in oracle
+                            or 'target permanent' in oracle)
+        if hits_noncreature:
+            for perm in opp.battlefield:
+                if perm.template.is_land or perm.template.is_creature:
+                    continue
+                if self._permanent_threat_value(perm, opp) >= floor:
+                    return True
+
         return False
 
     def _spell_requires_targets(self, spell) -> bool:

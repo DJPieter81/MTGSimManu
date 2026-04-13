@@ -130,13 +130,6 @@ T2 P2: Cycle Sojourner's Companion (pay 2 mana, draw a card)
   [Draw] P1 draws: Indatha Triome
   [Main 1]
 T2 P1: Play Indatha Triome (enters tapped)
-    → Goal: curve_out
-    [Mana] Tap Thundering Falls→W (paying for Leyline Binding, 1 mana remaining)
-T2 P1: Cast Leyline Binding (5W)
-    [Priority] P2 passes (no response)
-T2: Resolve Leyline Binding
-T2: Ornithopter moved battlefield -> exile (exiled)
-T2 P1: Leyline Binding exiles Ornithopter
   [Begin Combat]
   [Declare Attackers] P1 does not attack
   [End Combat]
@@ -145,16 +138,16 @@ T2 P1: Leyline Binding exiles Ornithopter
 
 ╔══ TURN 3 — Affinity (P2) ══════════════════════════
 ║ Life: Affinity 20  |  Domain Zoo 20
-║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Hand: 5 cards  |  Opp hand: 5 cards
 ║ Lands: 2  |  Opp lands: 2
 ║ Library: 51  |  Graveyard: 1
 ║ Affinity board:
-║   Creatures: (empty)
+║   Creatures: Ornithopter (0/2)
 ║   Lands: Spire of Industry, Darksteel Citadel
 ║ Domain Zoo board:
 ║   Creatures: (empty)
-║   Other: Leyline of the Guildpact, Leyline Binding
-║   Lands: Thundering Falls [T], Indatha Triome [T]
+║   Other: Leyline of the Guildpact
+║   Lands: Thundering Falls, Indatha Triome [T]
 ╚═══════════════════════════════════════════════════════
   [Untap] P2 untaps all permanents
   [Upkeep]
@@ -172,6 +165,11 @@ T3 P2: Cast Springleaf Drum (1)
     [Priority] P1 passes (no response)
 T3: Resolve Springleaf Drum
   [Begin Combat]
+    [Mana] Tap Thundering Falls→W (paying for Leyline Binding, 1 mana remaining)
+T3 P1: Cast Leyline Binding (5W)
+T3: Resolve Leyline Binding
+T3: Signal Pest moved battlefield -> exile (exiled)
+T3 P1: Leyline Binding exiles Signal Pest
   [Declare Attackers] P2 does not attack
   [End Combat]
   [Main 2]
@@ -187,7 +185,7 @@ T3: Resolve Springleaf Drum
 ║   Other: Leyline of the Guildpact, Leyline Binding
 ║   Lands: Thundering Falls, Indatha Triome
 ║ Affinity board:
-║   Creatures: Signal Pest (0/1)
+║   Creatures: Ornithopter (0/2)
 ║   Other: Springleaf Drum
 ║   Lands: Spire of Industry [T], Darksteel Citadel [T], Silverbluff Bridge [T]
 ╚═══════════════════════════════════════════════════════
@@ -200,7 +198,7 @@ T3: Resolve Springleaf Drum
 T3 P1: Cast Teferi, Time Raveler (1WU)
     [Priority] P2 passes (no response)
 T3: Resolve Teferi, Time Raveler
-T3 P1: Teferi bounces Signal Pest
+T3 P1: Teferi bounces Springleaf Drum
 T3 P1: Teferi draws Wooded Foothills
 T3 P1: Play Wooded Foothills
 T3 P1: Crack Wooded Foothills -> Temple Garden (tapped, no spells need mana)
@@ -217,8 +215,7 @@ T3 P1: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, 
 ║ Lands: 3  |  Opp lands: 3
 ║ Library: 50  |  Graveyard: 1
 ║ Affinity board:
-║   Creatures: (empty)
-║   Other: Springleaf Drum
+║   Creatures: Ornithopter (0/2)
 ║   Lands: Spire of Industry, Darksteel Citadel, Silverbluff Bridge
 ║ Domain Zoo board:
 ║   Creatures: (empty)
@@ -232,10 +229,10 @@ T3 P1: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, 
 T4 P2: Cycle Sojourner's Companion (pay 2 mana, draw a card)
 T4 P2: Play Razortide Bridge (enters tapped)
     → Goal: curve_out
-    [Mana] Tap Silverbluff Bridge→R (paying for Signal Pest, 1 mana remaining)
-T4 P2: Cast Signal Pest (1)
+    [Mana] Tap Silverbluff Bridge→R (paying for Springleaf Drum, 1 mana remaining)
+T4 P2: Cast Springleaf Drum (1)
     [Priority] P1 passes (no response)
-T4: Resolve Signal Pest
+T4: Resolve Springleaf Drum
   [Begin Combat]
   [Declare Attackers] P2 does not attack
   [End Combat]
@@ -252,7 +249,7 @@ T4: Resolve Signal Pest
 ║   Other: Leyline of the Guildpact, Leyline Binding, Teferi, Time Raveler
 ║   Lands: Thundering Falls, Indatha Triome, Temple Garden
 ║ Affinity board:
-║   Creatures: Signal Pest (0/1)
+║   Creatures: Ornithopter (0/2)
 ║   Other: Springleaf Drum
 ║   Lands: Spire of Industry [T], Darksteel Citadel [T], Silverbluff Bridge [T], Razortide Bridge [T]
 ╚═══════════════════════════════════════════════════════
@@ -266,12 +263,6 @@ T4 P1: Cast Phlage, Titan of Fire's Fury (1WR)
 T4: Resolve Phlage, Titan of Fire's Fury
 T4 P1: Phlage: 3 damage to opponent, gain 3 life
 T4 P1: Phlage sacrificed (not escaped)
-    → Goal: curve_out
-    [Mana] Tap Temple Garden→W (paying for Leyline Binding, 1 mana remaining)
-T4 P1: Cast Leyline Binding (5W)
-T4: Resolve Leyline Binding
-T4: Springleaf Drum moved battlefield -> exile (exiled)
-T4 P1: Leyline Binding exiles Springleaf Drum
 T4 P1: Play Arena of Glory (enters tapped)
 T4 P1: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
   [Begin Combat]
@@ -282,23 +273,24 @@ T4 P1: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery s
 
 ╔══ TURN 5 — Affinity (P2) ══════════════════════════
 ║ Life: Affinity 17  |  Domain Zoo 22
-║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Hand: 3 cards  |  Opp hand: 3 cards
 ║ Lands: 4  |  Opp lands: 4
 ║ Library: 48  |  Graveyard: 2
 ║ Affinity board:
-║   Creatures: Signal Pest (0/1)
+║   Creatures: Ornithopter (0/2)
+║   Other: Springleaf Drum
 ║   Lands: Spire of Industry, Darksteel Citadel, Silverbluff Bridge, Razortide Bridge
 ║ Domain Zoo board:
 ║   Creatures: (empty)
-║   Other: Leyline of the Guildpact, Leyline Binding, Teferi, Time Raveler, Leyline Binding
-║   Lands: Thundering Falls [T], Indatha Triome [T], Temple Garden [T], Arena of Glory [T]
+║   Other: Leyline of the Guildpact, Leyline Binding, Teferi, Time Raveler
+║   Lands: Thundering Falls [T], Indatha Triome [T], Temple Garden, Arena of Glory [T]
 ╚═══════════════════════════════════════════════════════
   [Untap] P2 untaps all permanents
   [Upkeep]
   [Draw] P2 draws: Springleaf Drum
   [Main 1]
     → Goal: curve_out [enablers]
-    [Mana] Tap Silverbluff Bridge→U, Darksteel Citadel→C, Razortide Bridge→U (paying for Thought Monitor, 4 mana remaining)
+    [Mana] Tap Silverbluff Bridge→U, Darksteel Citadel→C (paying for Thought Monitor, 4 mana remaining)
 T5 P2: Cast Thought Monitor (6U)
     [Priority] P1 passes (no response)
 T5: Resolve Thought Monitor
@@ -309,36 +301,37 @@ T5 P2: Cast Frogmite (4)
 T5: Resolve Frogmite
     → Goal: curve_out
 T5 P2: Cast Mox Opal (0)
-    [Priority] P1 passes (no response)
+    [Priority] P1 responds with Leyline Binding
+    [Mana] Tap Temple Garden→W (paying for Leyline Binding, 1 mana remaining)
+T5 P1: Cast Leyline Binding (5W)
+T5: Resolve Leyline Binding
+T5: Thought Monitor moved battlefield -> exile (exiled)
+T5 P1: Leyline Binding exiles Thought Monitor
 T5: Resolve Mox Opal
-    → Goal: curve_out [payoffs]
-T5 P2: Cast Cranial Plating (2)
-    [Priority] P1 passes (no response)
-T5: Resolve Cranial Plating
-T5 P2: Cranial Plating enters the battlefield (unattached)
-T5 P2: Equip Cranial Plating to Signal Pest (cost 1)
-    → Goal: curve_out [payoffs]
-T5 P2: Cast Cranial Plating (2)
-    [Priority] P1 passes (no response)
-T5: Resolve Cranial Plating
-T5 P2: Cranial Plating enters the battlefield (unattached)
     → Goal: curve_out
 T5 P2: Cast Springleaf Drum (1)
     [Priority] P1 passes (no response)
 T5: Resolve Springleaf Drum
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Razortide Bridge→U (paying for Cranial Plating, 2 mana remaining)
+T5 P2: Cast Cranial Plating (2)
+    [Priority] P1 passes (no response)
+T5: Resolve Cranial Plating
+T5 P2: Cranial Plating enters the battlefield (unattached)
+T5 P2: Equip Cranial Plating to Ornithopter (cost 1)
   [Begin Combat]
-  [Declare Attackers] P2 attacks with: Signal Pest
-T5 P2: Attack with Signal Pest
+  [Declare Attackers] P2 attacks with: Ornithopter
+T5 P2: Attack with Ornithopter
   [Declare Blockers] P1 does not block
-T5 P2:   Signal Pest (10/1) → 10 dmg to player
-  [Combat Damage] 10 damage dealt → P1 life: 22 → 12
+T5 P2:   Ornithopter (9/2) → 9 dmg to player
+  [Combat Damage] 9 damage dealt → P1 life: 22 → 13
   [End Combat]
   [Main 2]
   [End Step]
 
 ╔══ TURN 5 — Domain Zoo (P1) ══════════════════════════
-║ Life: Domain Zoo 12  |  Affinity 17
-║ Hand: 2 cards  |  Opp hand: 0 cards
+║ Life: Domain Zoo 13  |  Affinity 17
+║ Hand: 2 cards  |  Opp hand: 1 cards
 ║ Lands: 4  |  Opp lands: 4
 ║ Library: 48  |  Graveyard: 2
 ║ Domain Zoo board:
@@ -346,23 +339,23 @@ T5 P2:   Signal Pest (10/1) → 10 dmg to player
 ║   Other: Leyline of the Guildpact, Leyline Binding, Teferi, Time Raveler, Leyline Binding
 ║   Lands: Thundering Falls, Indatha Triome, Temple Garden, Arena of Glory
 ║ Affinity board:
-║   Creatures: Signal Pest (10/1) [tapped], Thought Monitor (2/2), Frogmite (2/2)
-║   Other: Mox Opal, Cranial Plating, Cranial Plating, Springleaf Drum
+║   Creatures: Ornithopter (9/2) [tapped], Frogmite (2/2)
+║   Other: Springleaf Drum, Mox Opal, Springleaf Drum, Cranial Plating
 ║   Lands: Spire of Industry [T], Darksteel Citadel [T], Silverbluff Bridge [T], Razortide Bridge [T]
 ╚═══════════════════════════════════════════════════════
   [Untap] P1 untaps all permanents
   [Upkeep]
   [Draw] P1 draws: Ragavan, Nimble Pilferer
   [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Thundering Falls→R (paying for Ragavan, Nimble Pilferer, 4 mana remaining)
+T5 P1: Cast Ragavan, Nimble Pilferer (R) (Dash)
+T5: Resolve Ragavan, Nimble Pilferer
     → Goal: curve_out [payoffs]
-    [Mana] Tap Thundering Falls→R, Indatha Triome→G (paying for Territorial Kavu, 4 mana remaining)
+    [Mana] Tap Indatha Triome→R, Temple Garden→G (paying for Territorial Kavu, 3 mana remaining)
 T5 P1: Cast Territorial Kavu (RG)
 T5: Resolve Territorial Kavu
 T5 P1: Territorial Kavu enters as 5/5 (domain=5)
-    → Goal: curve_out [enablers]
-    [Mana] Tap Temple Garden→R (paying for Ragavan, Nimble Pilferer, 2 mana remaining)
-T5 P1: Cast Ragavan, Nimble Pilferer (R) (Dash)
-T5: Resolve Ragavan, Nimble Pilferer
     → Goal: curve_out
     [Mana] Tap Arena of Glory→R (paying for Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, 1 mana remaining)
 T5 P1: Cast Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2R)
@@ -384,13 +377,13 @@ T5: Frogmite dies
   [End Step]
 
 ╔══ TURN 6 — Affinity (P2) ══════════════════════════
-║ Life: Affinity 15  |  Domain Zoo 12
-║ Hand: 0 cards  |  Opp hand: 0 cards
+║ Life: Affinity 15  |  Domain Zoo 13
+║ Hand: 1 cards  |  Opp hand: 0 cards
 ║ Lands: 4  |  Opp lands: 4
 ║ Library: 45  |  Graveyard: 3
 ║ Affinity board:
-║   Creatures: Signal Pest (9/1), Thought Monitor (2/2)
-║   Other: Mox Opal, Cranial Plating, Cranial Plating, Springleaf Drum
+║   Creatures: Ornithopter (8/2)
+║   Other: Springleaf Drum, Mox Opal, Springleaf Drum, Cranial Plating
 ║   Lands: Spire of Industry, Darksteel Citadel, Silverbluff Bridge, Razortide Bridge
 ║ Domain Zoo board:
 ║   Creatures: Territorial Kavu (4/4), Goblin Token (2/2) [tapped]
@@ -401,39 +394,39 @@ T5: Frogmite dies
   [Upkeep]
   [Draw] P2 draws: Memnite
   [Main 1]
-T6 P2: Equip Cranial Plating to Signal Pest (cost 1)
     → Goal: curve_out
 T6 P2: Cast Memnite (0)
     [Priority] P1 passes (no response)
 T6: Resolve Memnite
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Darksteel Citadel→C, Silverbluff Bridge→R (paying for Cranial Plating, 4 mana remaining)
+T6 P2: Cast Cranial Plating (2)
+    [Priority] P1 passes (no response)
+T6: Resolve Cranial Plating
+T6 P2: Cranial Plating enters the battlefield (unattached)
   [Begin Combat]
-  [Declare Attackers] P2 attacks with: Signal Pest, Thought Monitor
-T6 P2: Attack with Signal Pest, Thought Monitor
-T6 P1:   [BLOCK-EMERGENCY] Territorial Kavu (4/4) blocks Signal Pest (20/1) — trade (chump)
-  [Declare Blockers] P1 blocks: (see BLOCK lines below)
-T6 P2:   Thought Monitor (3/2) → 3 dmg to player
-T6: Territorial Kavu dies
-T6: Cranial Plating falls off Signal Pest (unattached)
-T6: Cranial Plating falls off Signal Pest (unattached)
-T6: Signal Pest dies
-  [Combat Damage] 3 damage dealt → P1 life: 12 → 9
+  [Declare Attackers] P2 attacks with: Ornithopter
+T6 P2: Attack with Ornithopter
+  [Declare Blockers] P1 does not block
+T6 P2:   Ornithopter (10/2) → 10 dmg to player
+  [Combat Damage] 10 damage dealt → P1 life: 13 → 3
   [End Combat]
   [Main 2]
   [End Step]
 
 ╔══ TURN 6 — Domain Zoo (P1) ══════════════════════════
-║ Life: Domain Zoo 9  |  Affinity 15
+║ Life: Domain Zoo 3  |  Affinity 15
 ║ Hand: 0 cards  |  Opp hand: 0 cards
 ║ Lands: 4  |  Opp lands: 4
-║ Library: 47  |  Graveyard: 4
+║ Library: 47  |  Graveyard: 3
 ║ Domain Zoo board:
-║   Creatures: Goblin Token (2/2)
+║   Creatures: Territorial Kavu (4/4), Goblin Token (2/2)
 ║   Other: Leyline of the Guildpact, Leyline Binding, Teferi, Time Raveler, Leyline Binding, Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
 ║   Lands: Thundering Falls, Indatha Triome, Temple Garden, Arena of Glory
 ║ Affinity board:
-║   Creatures: Thought Monitor (2/2) [tapped], Memnite (1/1)
-║   Other: Mox Opal, Cranial Plating, Cranial Plating, Springleaf Drum
-║   Lands: Spire of Industry [T], Darksteel Citadel, Silverbluff Bridge, Razortide Bridge
+║   Creatures: Ornithopter (10/2) [tapped], Memnite (1/1)
+║   Other: Springleaf Drum, Mox Opal, Springleaf Drum, Cranial Plating, Cranial Plating
+║   Lands: Spire of Industry, Darksteel Citadel [T], Silverbluff Bridge [T], Razortide Bridge
 ╚═══════════════════════════════════════════════════════
   [Untap] P1 untaps all permanents
   [Upkeep]
@@ -450,26 +443,28 @@ T6 P1: Phlage sacrificed (not escaped)
 T6 P1: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
 T6: Teferi, Time Raveler moved battlefield -> graveyard (SBA 704.5p: zero loyalty)
   [Begin Combat]
-  [Declare Attackers] P1 attacks with: Goblin Token
-T6 P1: Attack with Goblin Token
-T6 P2:   [BLOCK] Memnite (1/1) blocks Goblin Token (2/2) — chump block
+  [Declare Attackers] P1 attacks with: Territorial Kavu, Goblin Token
+T6 P1: Attack with Territorial Kavu, Goblin Token
+T6 P2:   [BLOCK] Memnite (1/1) blocks Territorial Kavu (4/4) — chump block
   [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T6 P1:   Goblin Token (2/2) → 2 dmg to player
 T6: Memnite dies
+  [Combat Damage] 2 damage dealt → P2 life: 12 → 10
   [End Combat]
   [Main 2]
   [End Step]
 
 ╔══ TURN 7 — Affinity (P2) ══════════════════════════
-║ Life: Affinity 12  |  Domain Zoo 12
+║ Life: Affinity 10  |  Domain Zoo 6
 ║ Hand: 0 cards  |  Opp hand: 0 cards
 ║ Lands: 4  |  Opp lands: 4
-║ Library: 44  |  Graveyard: 5
+║ Library: 44  |  Graveyard: 4
 ║ Affinity board:
-║   Creatures: Thought Monitor (2/2)
-║   Other: Mox Opal, Cranial Plating, Cranial Plating, Springleaf Drum
+║   Creatures: Ornithopter (9/2)
+║   Other: Springleaf Drum, Mox Opal, Springleaf Drum, Cranial Plating, Cranial Plating
 ║   Lands: Spire of Industry, Darksteel Citadel, Silverbluff Bridge, Razortide Bridge
 ║ Domain Zoo board:
-║   Creatures: Goblin Token (2/2) [tapped]
+║   Creatures: Territorial Kavu (4/4) [tapped], Goblin Token (2/2) [tapped]
 ║   Other: Leyline of the Guildpact, Leyline Binding, Leyline Binding, Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, Treasure Token
 ║   Lands: Thundering Falls [T], Indatha Triome [T], Temple Garden, Arena of Glory
 ╚═══════════════════════════════════════════════════════
@@ -477,18 +472,22 @@ T6: Memnite dies
   [Upkeep]
   [Draw] P2 draws: Engineered Explosives
   [Main 1]
-T7 P2: Equip Cranial Plating to Thought Monitor (cost 1)
-T7 P2: Equip Cranial Plating to Thought Monitor (cost 1)
+T7 P2: Equip Cranial Plating to Ornithopter (cost 1)
+    → Goal: curve_out
+T7 P2: Cast Engineered Explosives (3) (X=3)
+    [Priority] P1 passes (no response)
+T7: Resolve Engineered Explosives
+T7 P2: Engineered Explosives enters with 5 charge counters
   [Begin Combat]
-  [Declare Attackers] P2 attacks with: Thought Monitor
-T7 P2: Attack with Thought Monitor
+  [Declare Attackers] P2 attacks with: Ornithopter
+T7 P2: Attack with Ornithopter
   [Declare Blockers] P1 does not block
-T7 P2:   Thought Monitor (18/2) → 18 dmg to player
-P1 loses: life total -6
-  [Combat Damage] 18 damage dealt → P1 life: 12 → -6
+T7 P2:   Ornithopter (20/2) → 20 dmg to player
+P1 loses: life total -14
+  [Combat Damage] 20 damage dealt → P1 life: 6 → -14
 
 >>> Affinity wins Game 1 on turn 7 via damage
-    Final life: Domain Zoo=-6  Affinity=12
+    Final life: Domain Zoo=-14  Affinity=10
 
 ======================================================================
   GAME 2: Domain Zoo (P1) vs Affinity (P2)  —  seed 60201

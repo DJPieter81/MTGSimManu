@@ -139,7 +139,18 @@ from engine.card_database import CardDatabase  # singleton pattern
 
 ## 6. AI strategy accuracy
 
-**Overall grade: B** (iteration 6 — Living End aggression-timing fix (combat_manager now decrements aggression_boost_turns only on active player; flag value bumped to 2 so creatures attack the turn AFTER cascade resolves) + Teferi Hero untap-lands oracle bonus in planeswalker overlay. Iter5's ritual + control_patience + post-combo goal-advance retained. Matrix n=30 confirms Living End at 21%/14% T2 (up from 6%/4% pre-iter5), Azorius Control 15%/10% (Orim's Chant cast rate dropped from 1.1x to 0.4x).)
+**Overall grade: B** (post-iter6 — Affinity matchup plan iteration 2: extended `_has_high_threat_target` to also consider noncreature permanents (scaling equipment like Cranial Plating, Nettlecyst, planeswalkers, stax) in addition to creatures. Leyline Binding added to Domain Zoo's reactive_only list so it holds for CP instead of burning on Ornithopters T2. Affinity field WR 82% → **77%** (−5pp); CP removal count nearly doubled; CP delta +0.44.)
+
+**Affinity matchup iter2 (post-iter6 — 2026-04-13):**
+| Metric | iter5/iter6 | Current |
+|--------|------------|---------|
+| Affinity field WR | 82% | **77%** |
+| CP delta (audit) | +0.30 | **+0.44** |
+| CP removed count (60 games) | 5 | **9** |
+| Affinity vs Zoo WR | 93% | 87% |
+| Affinity vs Boros WR | 77% | 80% |
+
+**Iteration 6 fixes (ITERATION_6_PLAN.md — 2026-04-13)**
 
 ### Iteration 6 fixes (ITERATION_6_PLAN.md — 2026-04-13)
 | Fix | Files | Status |
