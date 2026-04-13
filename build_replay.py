@@ -284,7 +284,7 @@ def turn_html(t, next_t, gnum, p1name, p2name, star_turns):
         step+=1
         cat=classify(text)
         is_key=any(k in text.lower() for k in ['cranial plating','grapeshot','lethal','equip cranial'])
-        rid = f'r{gnum}t{t["num"]}s{step}'
+        rid = f'r{gnum}t{t["num"]}p{play_pidx}s{step}'
         rtoggle = (f'<span class="reason-toggle" onclick="toggleReason(\'{rid}\')" title="Show reasoning">\xb7</span>') if reason else ''
         rhtml = (f'<div class="reasoning" id="{rid}" style="display:none">\u2190 {esc(reason)}</div>') if reason else ''
         # Response: opponent plays during active player's turn
