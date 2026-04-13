@@ -13,6 +13,7 @@ being 1 life ahead in an otherwise equal position.
 """
 from __future__ import annotations
 import math
+import re
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Set, Tuple, TYPE_CHECKING
 
@@ -71,6 +72,22 @@ class EVSnapshot:
         if self.opp_power <= 0:
             return 99.0
         return max(1.0, math.ceil(self.my_life / self.opp_power))
+
+    @property
+    def urgency_factor(self) -> float:
+        """Fraction of future turns we actually get. 1.0 = no urgency,
+        0.0 = dying now. Used to discount deferred-value permanents
+        (Goblin Bombardment, tap-activated engines) — their worth is
+        proportional to how many turns we stay alive to activate them.
+
+        Derived solely from `opp_clock`, which is itself oracle-detected
+        from opponent's creatures. No hardcoded matchup thresholds.
+
+        Formula: (opp_clock - 1) / 4.0. At opp_clock=1 (dying next turn)
+        we get 0.0 — deferred spells are pure waste. At opp_clock=5+ we
+        get 1.0 — no discount.
+        """
+        return min(1.0, max(0.0, (self.opp_clock - 1) / 4.0))
 
     @property
     def has_lethal(self) -> bool:
@@ -156,6 +173,50 @@ def creature_value(card: "CardInstance") -> float:
     return creature_clock_impact_from_card(card, _DEFAULT_SNAP) * 20.0
 
 
+def creature_threat_value(card: "CardInstance") -> float:
+    """Evaluate a creature's threat level for removal-priority decisions.
+
+    Extends `creature_value()` with oracle-driven premiums that raw P/T
+    doesn't capture:
+      * Battle cry / attack triggers  → +8.0 (ongoing damage amplifier)
+      * Self-named attack triggers    → +8.0 (e.g. "Whenever <this card name>
+                                               attacks")
+      * Scaling creatures (`for each artifact`, `for each creature`) → +6.0
+      * Large raw P (≥4)              → +0.5 × power (big bodies still matter)
+
+    All detection is oracle-driven — no hardcoded card names. Accepts a
+    CardInstance (battlefield). The signature leaves room for a future
+    (template, instance=None) generalisation to score stack objects and
+    hand cards (see AI_STRATEGY_IMPROVEMENT_PLAN.md §Generalisation).
+    """
+    base = creature_value(card)
+    t = card.template
+    oracle = (getattr(t, 'oracle_text', '') or '').lower()
+    name = (getattr(t, 'name', '') or '').lower().split(' //')[0].strip()
+    premium = 0.0
+
+    # Battle cry / generic attack triggers (Signal Pest, Ragavan, etc.)
+    if 'whenever this creature attacks' in oracle:
+        premium += 8.0
+    # Self-named attack triggers (rare oracle pattern, same semantics)
+    if name and f'whenever {name} attacks' in oracle:
+        premium += 8.0
+
+    # Scaling threats — grow every turn as more permanents come down.
+    # Broader regex (v2) catches land-based scalers (Cultivator Colossus)
+    # and card-in-yard scalers (Tarmogoyf) in addition to artifact/creature.
+    if re.search(r'for each (artifact|creature|land|card)', oracle):
+        premium += 6.0
+
+    # Big raw bodies still matter. Linear above P=3 with 0.8/power slope:
+    # P=4→+0.8, P=5→+1.6, P=7→+3.2. Chosen to top out below the battle-cry
+    # premium (+8) so oracle-detected threats always outrank vanilla P/T.
+    p = card.power or 0
+    premium += max(0, p - 3) * 0.8
+
+    return base + premium
+
+
 # ─────────────────────────────────────────────────────────────
 # Per-archetype value functions
 # ─────────────────────────────────────────────────────────────
@@ -189,6 +250,55 @@ def estimate_spell_ev(card: "CardInstance", snap: EVSnapshot,
     after_snap = _project_spell(card, snap, dk, game, player_idx)
     after = evaluate_board(after_snap, archetype, dk)
     return after - before
+
+
+def _has_immediate_effect(card: "CardInstance") -> bool:
+    """True if the spell generates value the turn it resolves.
+
+    Oracle-driven. No card names. Used to decide whether a spell's
+    projected value should be discounted by `urgency_factor` when we
+    are on a fast clock — permanents that only pay off over multiple
+    future turns (e.g. Goblin Bombardment, tap-activated engines) are
+    worth less when the opponent is about to kill us.
+
+    Default is True so unrecognised cards are never over-discounted.
+    """
+    t = card.template
+    oracle = (getattr(t, 'oracle_text', '') or '').lower()
+    tags = getattr(t, 'tags', set())
+
+    if t.is_creature:
+        return True  # bodies block / attack immediately
+    if 'removal' in tags or 'board_wipe' in tags:
+        return True  # removes a threat now
+    if 'draw' in tags or 'cantrip' in tags:
+        return True  # card advantage now
+    if 'counterspell' in tags:
+        return True  # protects against an incoming spell now
+    if 'ritual' in tags:
+        return True  # enables same-turn plays
+    # ETB value (Omnath, Thragtusk, PW ETB effects) — resolves immediately
+    if 'etb_value' in tags:
+        return True
+    if 'enters' in oracle and (
+            'deal' in oracle or 'gain' in oracle or 'exile' in oracle
+            or 'draw' in oracle or 'search your library' in oracle):
+        return True
+    # Planeswalkers provide loyalty activations this turn
+    from engine.cards import CardType
+    if hasattr(t, 'card_types') and CardType.PLANESWALKER in t.card_types:
+        return True
+    # Delayed-value permanents — patterns from AI_IMPROVEMENT_PLAN_V2.md:
+    #   'sacrifice a creature' with 'damage' → Goblin Bombardment pattern
+    #     (activated ability repurposing creatures into face damage over
+    #     multiple turns).
+    #   '{t}:' without mana production → tap-activated engines whose value
+    #     requires future untaps (Urza's Saga constructs, card-draw engines).
+    if 'sacrifice a creature' in oracle and 'damage' in oracle:
+        return False
+    if '{t}:' in oracle and 'add' not in oracle and 'draw' not in oracle:
+        return False
+    return True  # default: assume some immediate value
 
 
 def _project_spell(card: "CardInstance", snap: EVSnapshot,
@@ -280,13 +390,25 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
     if 'removal' in tags and not 'board_wipe' in tags:
         if snap.opp_creature_count > 0 and game:
             opp = game.players[1 - player_idx]
-            # Target the highest-power creature we can kill
-            best_target_power = 0
-            for c in opp.creatures:
-                cp = c.power if c.power else 0
-                if cp > best_target_power:
-                    best_target_power = cp
-            projected.opp_power = max(0, projected.opp_power - best_target_power)
+            # Target the highest-THREAT creature (oracle-driven), not the
+            # highest-power one. This ensures battle-cry / scaling threats
+            # (e.g. Signal Pest, Ragavan) project correctly as removal-worthy
+            # even when their raw power is 0.
+            best_target = max(opp.creatures, key=creature_threat_value)
+            # Effective power removed includes a threat-equivalent bonus
+            # for triggered abilities the raw P/T doesn't capture.
+            eff_power = best_target.power or 0
+            o = (best_target.template.oracle_text or '').lower()
+            cname = (best_target.template.name or '').lower().split(' //')[0].strip()
+            if 'whenever this creature attacks' in o or (
+                    cname and f'whenever {cname} attacks' in o):
+                # Battle-cry / attack-trigger amplifier — add 2 virtual power
+                # (amplifies ~2 other attackers per combat on average).
+                eff_power = max(eff_power, 0) + 2
+            if 'for each artifact' in o or 'for each creature' in o:
+                # Scaling threat — approximate ongoing growth as +2 virtual power.
+                eff_power = max(eff_power, 2)
+            projected.opp_power = max(0, projected.opp_power - eff_power)
             projected.opp_creature_count = max(0, projected.opp_creature_count - 1)
 
     # Board wipe — kills all creatures
@@ -739,6 +861,15 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
     after_value = evaluate_board(post_response, archetype, dk)
 
     ev = after_value - current_value
+
+    # Kill-clock urgency discount for deferred-value permanents. Cards
+    # whose value only materialises through future turns (Goblin
+    # Bombardment, tap-activated engines) are worth less when opponent's
+    # clock is close. At opp_clock=1 the factor is 0.0 — a sacrifice-
+    # for-damage permanent we never get to activate is pure waste.
+    # Derived purely from `opp_clock`, so no matchup thresholds.
+    if not _has_immediate_effect(card) and ev > 0:
+        ev *= snap.urgency_factor
 
     # Low-CMC ETB-value creature floor: prevents the removal-projection from
     # shoving a 2-CMC creature with tangible on-board value (Psychic Frog,

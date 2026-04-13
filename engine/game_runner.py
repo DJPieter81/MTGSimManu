@@ -62,6 +62,14 @@ class AICallbacks(GameCallbacks):
         if player.life <= life_cost:
             return False
 
+        # Fetch-shock staggering (Task 3) — decision lives in ai/mana_planner
+        deck_name = player.deck_name
+        arch_enum = DECK_ARCHETYPES.get(deck_name)
+        archetype = arch_enum.value if arch_enum else "midrange"
+        from ai.mana_planner import should_stagger_shock
+        if should_stagger_shock(game, player_idx, land, archetype):
+            return False
+
         # Determine archetype for evaluation
         deck_name = player.deck_name
         arch_enum = DECK_ARCHETYPES.get(deck_name)

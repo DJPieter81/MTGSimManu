@@ -309,6 +309,7 @@ T4: Elemental Token dies
   [Upkeep]
   [Draw] P1 draws: Arena of Glory
   [Main 1]
+T5 P1: Play Arena of Glory (enters tapped)
     → Goal: curve_out [interaction]
     [Mana] Tap Sacred Foundry→W, Snow-Covered Mountain→R (paying for Thraben Charm, 3 mana remaining)
 T5 P1: Cast Thraben Charm (1W)
@@ -316,7 +317,6 @@ T5 P1: Cast Thraben Charm (1W)
 T5: Resolve Thraben Charm
 T5: Urza's Saga moved battlefield -> graveyard (destroyed)
 T5 P1: Thraben Charm destroys enchantment Urza's Saga
-T5 P1: Play Arena of Glory (enters tapped)
   [Begin Combat]
   [Declare Attackers] P1 does not attack
   [End Combat]

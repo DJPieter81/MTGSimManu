@@ -16,6 +16,7 @@ if TYPE_CHECKING:
 from ai.deck_knowledge import DeckKnowledge
 from ai.ev_evaluator import (
     EVSnapshot, snapshot_from_game, evaluate_board, creature_value,
+    creature_threat_value,
 )
 
 # ─────────────────────────────────────────────────────────────
@@ -270,15 +271,13 @@ class EVPlayer:
 
             # Skip reactive-only NON-CREATURE spells unless:
             # - We're dying (survival override)
-            # - It's removal with a high-value target (4+ power creature)
+            # - It's removal with a high-threat target (oracle-driven, not raw power)
             if spell.name in self._reactive_only:
                 if not spell.template.is_creature:
                     prof = self.profile
                     is_dying = snap.am_dead_next or (snap.opp_power >= prof.dying_opp_power
                                                      and snap.opp_clock <= prof.dying_opp_clock)
-                    has_big_target = ('removal' in tags and
-                                     any((c.power or 0) >= prof.big_creature_power
-                                         for c in opp.creatures))
+                    has_big_target = self._has_high_threat_target(game, spell)
                     if not is_dying and not has_big_target:
                         continue
 
@@ -499,6 +498,38 @@ class EVPlayer:
                 and snap.opp_hand_size <= 3):
             # Opponent is an aggro deck running out of cards — counter is dead
             ev = min(ev, -3.0)
+
+        # ── Removal threat-premium overlay ──
+        # The projection subtracts raw power when removal resolves, but
+        # battle-cry / scaling creatures (e.g. Signal Pest, Ragavan) carry
+        # threat beyond their P/T. Compensate with a decision-layer bonus
+        # derived from `creature_threat_value` — the same function used by
+        # the gate (`_has_high_threat_target`) and target picker, so all
+        # three decisions stay consistent.
+        if ('removal' in tags and not 'board_wipe' in tags
+                and not t.is_creature and opp.creatures):
+            from decks.card_knowledge_loader import get_burn_damage
+            burn_dmg = get_burn_damage(t.name) if t.name else 0
+            reachable = []
+            for c in opp.creatures:
+                if burn_dmg > 0:
+                    rem = (c.toughness or 0) - getattr(c, 'damage_marked', 0)
+                    if rem > burn_dmg:
+                        continue
+                reachable.append(c)
+            if reachable:
+                best = max(reachable, key=lambda c: creature_threat_value(c))
+                premium = creature_threat_value(best) - creature_value(best)
+                if premium > 0:
+                    # Scale: premium * 0.5 (battle-cry ≈ +4 ev) brings removal
+                    # into tiebreaker range with equal-CMC deploys. The extra
+                    # +1.0 for 1-CMC lets cheap efficient removal (Galvanic
+                    # Discharge, Unholy Heat) eke out a win over an equal-CMC
+                    # deploy, modelling real-world play where a 1-mana
+                    # removal leaves room for a second action.
+                    ev += premium * 0.5
+                    if (t.cmc or 0) <= 1:
+                        ev += 1.0
 
         # ── Mana holdback: penalize tapping out when we hold instants ──
         # Trigger holdback when: opp has creatures, OR opp is a spell/combo deck
@@ -1570,10 +1601,55 @@ class EVPlayer:
 
         Signature matches what ResponseDecider expects:
         (card, creatures_list, opponent_player, game, opponent_idx)
+
+        Uses oracle-driven threat value so battle-cry / scaling creatures
+        outrank raw P/T bodies. Burn removal filters targets it cannot kill.
         """
         if not creatures:
             return None
-        return max(creatures, key=lambda c: creature_value(c))
+        candidates = list(creatures)
+        # For burn removal, filter out creatures this spell cannot kill.
+        from decks.card_knowledge_loader import get_burn_damage
+        dmg = get_burn_damage(card.template.name) if card.template else 0
+        if dmg > 0:
+            killable = [c for c in candidates
+                        if ((c.toughness or 0) - getattr(c, 'damage_marked', 0)) <= dmg]
+            # Fallback: if nothing is killable, keep original list so the
+            # caller still gets something to target (the ResponseDecider
+            # may still want to fire for triggered-damage purposes).
+            if killable:
+                candidates = killable
+        return max(candidates, key=lambda c: creature_threat_value(c))
+
+    def _has_high_threat_target(self, game, spell) -> bool:
+        """True if a removal spell has a target worth proactively casting for.
+
+        Threat value is oracle-driven via `creature_threat_value`. Catches
+        battle-cry sources, scaling threats, and big bodies — not raw power.
+        `prof.big_creature_power` (default 4) is reused as the EV floor,
+        not as a raw P/T cap.
+        """
+        opp = game.players[1 - self.player_idx]
+        tags = getattr(spell.template, 'tags', set())
+        if 'removal' not in tags:
+            return False
+        if not opp.creatures:
+            return False
+
+        from decks.card_knowledge_loader import get_burn_damage
+        dmg = get_burn_damage(spell.template.name) if spell.template else 0
+        prof = self.profile
+        floor = float(prof.big_creature_power)  # e.g. 4.0 EV floor
+
+        for c in opp.creatures:
+            # For burn removal, skip creatures this spell cannot kill.
+            if dmg > 0:
+                remaining = (c.toughness or 0) - getattr(c, 'damage_marked', 0)
+                if remaining > dmg:
+                    continue
+            if creature_threat_value(c) >= floor:
+                return True
+        return False
 
     def _spell_requires_targets(self, spell) -> bool:
         """Check if a spell needs targets to be cast legally.

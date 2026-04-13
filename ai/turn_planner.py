@@ -272,6 +272,17 @@ class CombatPlanner:
             # This ensures profitable-but-small attacks (1/1 into empty) are taken
             if result.damage_to_opp > 0:
                 delta += result.damage_to_opp * 0.3  # base chip value
+                # Draw-step prevention bonus: each damage point advances the
+                # game toward a state where opponent has fewer draw steps.
+                # Scales with fraction of opponent's remaining life — pushing
+                # 3 damage when opp is at 20 prevents ~15% of their library
+                # quality; the same 3 at 6 life prevents ~50%. Not matchup-
+                # specific; derived from game state. Gentle multiplier (0.3)
+                # to avoid encouraging reckless attacks into stronger boards
+                # (where the block math already dominates).
+                if board.opp_life > 0:
+                    turns_of_draws_removed = result.damage_to_opp / max(board.opp_life, 1)
+                    delta += turns_of_draws_removed * 0.3
 
             # Aggression bonus: attacks become more valuable as opponent's life drops.
             # In real MTG, players push damage aggressively when opponent is low.
