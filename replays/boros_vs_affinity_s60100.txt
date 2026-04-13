@@ -242,7 +242,8 @@ T4 P1: Play Arena of Glory (enters tapped)
   [Begin Combat]
   [Declare Attackers] P1 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
 T4 P1: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
-  [Declare Blockers] P2 blocks: 
+T4 P2:   [BLOCK] Sojourner's Companion (4/4) blocks Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) — favorable trade
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
 T4: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger dies
   [End Combat]
   [Main 2]
@@ -275,7 +276,8 @@ T4 P2: Equip Cranial Plating to Sojourner's Companion (cost 1)
 T4 P2: Signal Pest battle cry — other attackers get +1/+0
 T4 P2: Signal Pest battle cry — other attackers get +1/+0
 T4 P2: Attack with Signal Pest, Memnite, Signal Pest, Sojourner's Companion
-  [Declare Blockers] P1 blocks: 
+T4 P1:   [BLOCK-EMERGENCY] Cat Token (2/1) blocks Sojourner's Companion (14/4) — chump block
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
 T4 P2:   Signal Pest (2/1) → 2 dmg to player
 T4 P2:   Memnite (4/1) → 4 dmg to player
 T4 P2:   Signal Pest (1/1) → 1 dmg to player
@@ -362,7 +364,10 @@ T5 P2: Equip Cranial Plating to Sojourner's Companion (cost 1)
 T5 P2: Signal Pest battle cry — other attackers get +1/+0
 T5 P2: Signal Pest battle cry — other attackers get +1/+0
 T5 P2: Attack with Signal Pest, Memnite, Signal Pest, Sojourner's Companion, Construct Token
-  [Declare Blockers] P1 blocks: 
+T5 P1:   [BLOCK-EMERGENCY] Elemental Token (1/1) blocks Sojourner's Companion (20/4) — chump block
+T5 P1:   [BLOCK-EMERGENCY] Elemental Token (1/1) blocks Construct Token (16/14) — chump block
+T5 P1:   [BLOCK-EMERGENCY] Seasoned Pyromancer (2/2) blocks Memnite (4/1) — trade (chump)
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
 T5 P2:   Signal Pest (2/1) → 2 dmg to player
 T5 P2:   Signal Pest (1/1) → 1 dmg to player
 T5: Seasoned Pyromancer dies
@@ -643,7 +648,8 @@ T3 P1: Phlage sacrificed (not escaped)
   [Begin Combat]
   [Declare Attackers] P1 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
 T3 P1: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
-  [Declare Blockers] P2 blocks: 
+T3 P2:   [BLOCK] Signal Pest (0/1) blocks Cat Token (2/1) — chump block
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
 T3 P1:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
 T3: Signal Pest dies
   [Combat Damage] 1 damage dealt → P2 life: 17 → 16
@@ -723,7 +729,8 @@ T4: Resolve Guide of Souls
   [Begin Combat]
   [Declare Attackers] P1 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
 T4 P1: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
-  [Declare Blockers] P2 blocks: 
+T4 P2:   [BLOCK] Construct Token (5/5) blocks Cat Token (2/1) — favorable trade
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
 T4 P1:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
 T4: Cat Token dies
   [Combat Damage] 1 damage dealt → P2 life: 16 → 15
@@ -751,7 +758,8 @@ T4: Cat Token dies
   [Begin Combat]
   [Declare Attackers] P2 attacks with: Ornithopter, Construct Token
 T4 P2: Attack with Ornithopter, Construct Token
-  [Declare Blockers] P1 blocks: 
+T4 P1:   [BLOCK-EMERGENCY] Guide of Souls (1/2) blocks Construct Token (5/5) — chump block
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
 T4: Guide of Souls dies
   [End Combat]
   [Main 2]

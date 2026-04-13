@@ -82,6 +82,8 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
 /* COMBAT */
 .combat-detail{background:#fff8f8;border:1px solid #f5b8b0;border-radius:5px;padding:6px 10px;margin:3px 0;font-family:'Fira Code',monospace;font-size:.8em;color:#1f2328}
 .combat-breakdown{padding:3px 10px 3px 22px;font-size:.78em;color:#6e7781;font-family:'Fira Code',monospace;border-left:2px solid #f5b8b0;margin:1px 0 1px 10px}
+.combat-block{padding:4px 10px 4px 16px;font-size:.8em;color:#0550ae;font-family:'Fira Code',monospace;border-left:3px solid #0969da;margin:2px 0;background:#ddf4ff;border-radius:0 4px 4px 0}
+.combat-block.emergency{color:#82071e;border-left-color:#cf222e;background:#ffebe9}
 /* BOARD */
 .board-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
 .board-side{background:#ffffff;border:1px solid #d0d7de;border-radius:6px;padding:8px 10px}
@@ -383,8 +385,9 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
 <div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Goblin Bombardment enters — sacrifice creatures for 1 damage each</span></div>
 <div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Arena of Glory (enters tapped)</span></div>
 <div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  [BLOCK] Sojourner's Companion (4/4) blocks Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) — favorable trade</span></div>
 
-    <div class="section-label">Combat</div><div class="combat-detail">⚔ Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</div>
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</div><div class="combat-detail">🛡 (see BLOCK lines below)</div>
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
@@ -422,11 +425,12 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
 <div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Signal Pest battle cry — other attackers get +1/+0</span></div>
 <div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Signal Pest battle cry — other attackers get +1/+0</span></div>
 <div class="play"><span class="step">7.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Signal Pest, Memnite, Signal Pest, Sojourner's Companion</span></div>
-<div class="play"><span class="step">8.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Signal Pest (2/1) → 2 dmg to player</span></div>
-<div class="play"><span class="step">9.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Memnite (4/1) → 4 dmg to player</span></div>
-<div class="play"><span class="step">10.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Signal Pest (1/1) → 1 dmg to player</span></div>
+<div class="play"><span class="step">8.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  [BLOCK-EMERGENCY] Cat Token (2/1) blocks Sojourner's Companion (14/4) — chump block</span></div>
+<div class="play"><span class="step">9.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Signal Pest (2/1) → 2 dmg to player</span></div>
+<div class="play"><span class="step">10.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Memnite (4/1) → 4 dmg to player</span></div>
+<div class="play"><span class="step">11.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Signal Pest (1/1) → 1 dmg to player</span></div>
 
-    <div class="section-label">Combat</div><div class="combat-detail">⚔ Signal Pest, Memnite, Signal Pest, Sojourner's Companion</div><div class="combat-breakdown"> Signal Pest 2/1 · 2 dmg</div><div class="combat-breakdown"> Memnite 4/1 · 4 dmg</div><div class="combat-breakdown"> Signal Pest 1/1 · 1 dmg</div><div class="combat-detail">7 damage → life 19 → 12</div>
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Signal Pest, Memnite, Signal Pest, Sojourner's Companion</div><div class="combat-detail">🛡 (see BLOCK lines below)</div><div class="combat-breakdown"> Signal Pest 2/1 · 2 dmg</div><div class="combat-breakdown"> Memnite 4/1 · 4 dmg</div><div class="combat-breakdown"> Signal Pest 1/1 · 1 dmg</div><div class="combat-detail">7 damage → life 19 → 12</div>
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
@@ -507,10 +511,13 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
 <div class="play"><span class="step">12.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Signal Pest battle cry — other attackers get +1/+0</span></div>
 <div class="play"><span class="step">13.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Signal Pest battle cry — other attackers get +1/+0</span></div>
 <div class="play"><span class="step">14.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Signal Pest, Memnite, Signal Pest, Sojourner's Companion, Construct Token</span></div>
-<div class="play"><span class="step">15.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Signal Pest (2/1) → 2 dmg to player</span></div>
-<div class="play"><span class="step">16.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Signal Pest (1/1) → 1 dmg to player</span></div>
+<div class="play"><span class="step">15.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  [BLOCK-EMERGENCY] Elemental Token (1/1) blocks Sojourner's Companion (20/4) — chump block</span></div>
+<div class="play"><span class="step">16.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  [BLOCK-EMERGENCY] Elemental Token (1/1) blocks Construct Token (16/14) — chump block</span></div>
+<div class="play"><span class="step">17.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  [BLOCK-EMERGENCY] Seasoned Pyromancer (2/2) blocks Memnite (4/1) — trade (chump)</span></div>
+<div class="play"><span class="step">18.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Signal Pest (2/1) → 2 dmg to player</span></div>
+<div class="play"><span class="step">19.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Signal Pest (1/1) → 1 dmg to player</span></div>
 
-    <div class="section-label">Combat</div><div class="combat-detail">⚔ Signal Pest, Memnite, Signal Pest, Sojourner's Companion, Construct Token</div><div class="combat-breakdown"> Signal Pest 2/1 · 2 dmg</div><div class="combat-breakdown"> Signal Pest 1/1 · 1 dmg</div><div class="combat-detail">3 damage → life 12 → 9</div>
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Signal Pest, Memnite, Signal Pest, Sojourner's Companion, Construct Token</div><div class="combat-detail">🛡 (see BLOCK lines below)</div><div class="combat-breakdown"> Signal Pest 2/1 · 2 dmg</div><div class="combat-breakdown"> Signal Pest 1/1 · 1 dmg</div><div class="combat-detail">3 damage → life 12 → 9</div>
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
@@ -808,9 +815,10 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
 <div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">DAMAGE</span><span class="action">Phlage: 3 damage to opponent, gain 3 life</span></div>
 <div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Phlage sacrificed (not escaped)</span></div>
 <div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token</span></div>
-<div class="play"><span class="step">7.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player</span></div>
+<div class="play"><span class="step">7.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  [BLOCK] Signal Pest (0/1) blocks Cat Token (2/1) — chump block</span></div>
+<div class="play"><span class="step">8.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player</span></div>
 
-    <div class="section-label">Combat</div><div class="combat-detail">⚔ Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token</div><div class="combat-breakdown"> Ajani, Nacatl Pariah // Ajani, Nacatl Avenger 1/2 · 1 dmg</div><div class="combat-detail">1 damage → life 17 → 16</div>
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token</div><div class="combat-detail">🛡 (see BLOCK lines below)</div><div class="combat-breakdown"> Ajani, Nacatl Pariah // Ajani, Nacatl Avenger 1/2 · 1 dmg</div><div class="combat-detail">1 damage → life 17 → 16</div>
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
@@ -886,9 +894,10 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
 <div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Thraben Charm destroys enchantment Urza's Saga</span></div>
 <div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Guide of Souls (W)</span><span class="reason-toggle" onclick="toggleReason('r2t4p1s6')" title="Show reasoning">·</span><div class="reasoning" id="r2t4p1s6" style="display:none">← curve_out [enablers]</div></div>
 <div class="play"><span class="step">7.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token</span></div>
-<div class="play"><span class="step">8.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player</span></div>
+<div class="play"><span class="step">8.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  [BLOCK] Construct Token (5/5) blocks Cat Token (2/1) — favorable trade</span></div>
+<div class="play"><span class="step">9.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player</span></div>
 
-    <div class="section-label">Combat</div><div class="combat-detail">⚔ Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token</div><div class="combat-breakdown"> Ajani, Nacatl Pariah // Ajani, Nacatl Avenger 1/2 · 1 dmg</div><div class="combat-detail">1 damage → life 16 → 15</div>
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token</div><div class="combat-detail">🛡 (see BLOCK lines below)</div><div class="combat-breakdown"> Ajani, Nacatl Pariah // Ajani, Nacatl Avenger 1/2 · 1 dmg</div><div class="combat-detail">1 damage → life 16 → 15</div>
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
@@ -920,8 +929,9 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Cranial Plating</span></div>
     <div class="section-label">Hand (3 cards)</div><div class="hand-pills"><span class="pill">Thought Monitor</span><span class="pill">Nettlecyst</span><span class="pill">Cranial Plating</span></div>
     <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Ornithopter, Construct Token</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  [BLOCK-EMERGENCY] Guide of Souls (1/2) blocks Construct Token (5/5) — chump block</span></div>
 
-    <div class="section-label">Combat</div><div class="combat-detail">⚔ Ornithopter, Construct Token</div>
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Ornithopter, Construct Token</div><div class="combat-detail">🛡 (see BLOCK lines below)</div>
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">

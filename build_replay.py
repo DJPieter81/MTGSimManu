@@ -311,6 +311,10 @@ def turn_html(t, next_t, gnum, p1name, p2name, star_turns):
         def _combat_line(c):
             if c.startswith('BREAKDOWN:'):
                 return f'<div class="combat-breakdown">{c[10:]}</div>'
+            if c.startswith('BLOCK-EMRG:'):
+                return f'<div class="combat-block emergency">🚨 {c[11:]}</div>'
+            if c.startswith('BLOCK:'):
+                return f'<div class="combat-block">🛡 {c[6:]}</div>'
             return f'<div class="combat-detail">{c}</div>'
         combat_html='<div class="section-label">Combat</div>'+''.join(_combat_line(c) for c in t['combat'])
 
@@ -515,6 +519,8 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
 /* COMBAT */
 .combat-detail{background:#fff8f8;border:1px solid #f5b8b0;border-radius:5px;padding:6px 10px;margin:3px 0;font-family:'Fira Code',monospace;font-size:.8em;color:#1f2328}
 .combat-breakdown{padding:3px 10px 3px 22px;font-size:.78em;color:#6e7781;font-family:'Fira Code',monospace;border-left:2px solid #f5b8b0;margin:1px 0 1px 10px}
+.combat-block{padding:4px 10px 4px 16px;font-size:.8em;color:#0550ae;font-family:'Fira Code',monospace;border-left:3px solid #0969da;margin:2px 0;background:#ddf4ff;border-radius:0 4px 4px 0}
+.combat-block.emergency{color:#82071e;border-left-color:#cf222e;background:#ffebe9}
 /* BOARD */
 .board-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
 .board-side{background:#ffffff;border:1px solid #d0d7de;border-radius:6px;padding:8px 10px}

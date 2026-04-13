@@ -1186,6 +1186,29 @@ class EVPlayer:
                     if remaining < me.life and (me.life - remaining > 5 or remaining == 0):
                         break  # stabilized
             if emergency_blocks:
+                # Log emergency blocking assignments with reasoning
+                id_to_attacker = {a.instance_id: a for a in attackers}
+                id_to_blocker  = {b.instance_id: b for b in valid_blockers}
+                for atk_id, blk_ids in emergency_blocks.items():
+                    atk = id_to_attacker.get(atk_id)
+                    for blk_id in blk_ids:
+                        blk = id_to_blocker.get(blk_id)
+                        if atk and blk:
+                            a_pow = atk.power or 0
+                            b_pow = blk.power or 0
+                            b_tou = blk.toughness or 0
+                            a_tou = atk.toughness or 0
+                            survives = a_pow < b_tou
+                            kills    = b_pow >= a_tou
+                            if kills and survives:
+                                reason = "favorable trade"
+                            elif kills:
+                                reason = "trade (chump)"
+                            else:
+                                reason = "chump block"
+                            game.log.append(
+                                f"T{game.display_turn} P{self.player_idx+1}: "                                f"  [BLOCK-EMERGENCY] {blk.name} ({b_pow}/{b_tou}) "                                f"blocks {atk.name} ({a_pow}/{a_tou}) — {reason}"
+                            )
                 return emergency_blocks
 
         blocks: Dict[int, List[int]] = {}
@@ -1232,6 +1255,30 @@ class EVPlayer:
                             used.add(b2.instance_id)
                             break
 
+        # Log normal blocking assignments with reasoning
+        if blocks:
+            id_to_attacker = {a.instance_id: a for a in attackers}
+            id_to_blocker  = {b.instance_id: b for b in valid_blockers}
+            for atk_id, blk_ids in blocks.items():
+                atk = id_to_attacker.get(atk_id)
+                for blk_id in blk_ids:
+                    blk = id_to_blocker.get(blk_id)
+                    if atk and blk:
+                        a_pow = atk.power or 0
+                        b_pow = blk.power or 0
+                        b_tou = blk.toughness or 0
+                        a_tou = atk.toughness or 0
+                        survives = a_pow < b_tou
+                        kills    = b_pow >= a_tou
+                        if kills and survives:
+                            reason = "favorable trade"
+                        elif kills:
+                            reason = "trade (chump)"
+                        else:
+                            reason = "chump block"
+                        game.log.append(
+                            f"T{game.display_turn} P{self.player_idx+1}: "                            f"  [BLOCK] {blk.name} ({b_pow}/{b_tou}) "                            f"blocks {atk.name} ({a_pow}/{a_tou}) — {reason}"
+                        )
         return blocks
 
     # ═══════════════════════════════════════════════════════════

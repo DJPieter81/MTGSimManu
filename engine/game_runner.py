@@ -599,8 +599,7 @@ class GameRunner:
                         game.current_phase = Phase.DECLARE_BLOCKERS
                         blocks = opponent_ai.decide_blockers(game, combat_mgr.attackers)
                         if blocks:
-                            _vlog(f'  [Declare Blockers] P{1-active+1} blocks: '
-                                  + ', '.join(f'{b.name} blocks {next((a.name for a in combat_mgr.attackers if a.instance_id == getattr(b, "blocking", None)), "?")}' for b in blocks if getattr(b, 'blocking', None)))
+                            _vlog(f'  [Declare Blockers] P{1-active+1} blocks: (see BLOCK lines below)')
                         else:
                             _vlog(f'  [Declare Blockers] P{1-active+1} does not block')
                         combat_mgr.declare_blockers(game, blocks)
