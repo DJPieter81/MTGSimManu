@@ -1,17 +1,87 @@
-You are working on MTGSimManu, an MTG Modern metagame simulator. Your job is to run an overnight iterate loop of small fixes to bring deck win rates closer to expected Modern ranges.
+You are working on MTGSimManu (~/MTGSimManu), an MTG Modern metagame simulator. Run an overnight iterate loop of small fixes to bring deck win rates closer to expected Modern ranges.
 
-First: cd ~/MTGSimManu && git pull origin main && python3 merge_db.py
+## Setup
+cd ~/MTGSimManu && git pull origin main && python3 merge_db.py
 
-Then read OVERNIGHT_TASK.md for full context. The key files are iterate.py (test harness) and the priority fix list in OVERNIGHT_TASK.md.
+Read CLAUDE.md first (it IS the quickstart). Then read OVERNIGHT_TASK.md for the priority list and file permissions.
 
-Run this loop up to 20 times:
+## CRITICAL RULES — violations are bugs, not fixes
 
-1. python3 iterate.py --check --n 5
-2. Read the outlier analysis. Pick the single worst HIGH outlier.
-3. Run a verbose trace to diagnose: python3 run_meta.py --verbose "DeckA" "DeckB" -s 90000
-4. Make ONE small fix (max 10 lines, max 1 file). Only touch: ai/ev_player.py, ai/board_eval.py, engine/sideboard_manager.py, ai/strategy_profile.py, or decks/gameplans/*.json. Never hardcode card names.
-5. Test: python3 iterate.py --matchup "DeckA" "DeckB" --n 10
-6. If WR improved >=5pp toward expected AND no regression >10pp: git add + commit + push. Otherwise: git checkout the file.
-7. Go to step 1.
+### NO HARDCODED CARD NAMES
+Every check must use oracle text patterns, tags, CMC, power/toughness, or card types. Never `.name == "Card Name"`. Grep the codebase for `.name ==` patterns — if you are about to add one, STOP and find the oracle/tag equivalent.
 
-Stop when no HIGH outliers remain or after 20 iterations. Always git pull --rebase origin main before pushing. Never force-push. Never touch game_state.py, card_effects.py, cards.py, combat_manager.py, or run_meta.py.
+### NO ARBITRARY CONSTANTS
+Every number you write must be DERIVED from game state, not invented. Bad vs good examples:
+
+BAD:  `if a_power >= 8: value *= 2.0`  — why 8? why 2.0?
+GOOD: `value *= (a_power / max(b_power, 1))` — scales with actual power ratio
+
+BAD:  `if snap.opp_creature_count >= 3: ev += 15.0`  — why 3? why 15?
+GOOD: `ev += snap.opp_creature_count * attacker_val` — scales with board state
+
+BAD:  `threshold = 0.7`  — magic number
+GOOD: `threshold = opp_clock / (opp_clock + my_clock)` — derived from game pressure
+
+The principle: if someone asks "why this number?", the answer must be "because the game state says so", never "I picked it".
+
+Acceptable derived values:
+- Ratios: a_power / b_toughness, my_creatures / opp_creatures
+- Game-state fractions: damage / life, cards_in_hand / 7
+- CMC-based: cmc * 1.5 (CMC is a real game property)
+- Tag-driven: len(opp.creatures) * removal_value_per_target
+- Profile-based: values from strategy_profile.py that are per-archetype (these ARE the tuning knobs)
+
+### NO REGRESSIONS
+After each fix, test BOTH the target matchup AND run a quick 4-deck spot check:
+```
+python3 iterate.py --matchup "DeckA" "DeckB" --n 10
+python3 -c "from run_meta import run_matchup; [print(f'{d}: {run_matchup(\"Boros Energy\",d,3)[\"pct1\"]}%') for d in ['Affinity','Domain Zoo','Izzet Prowess','Eldrazi Tron']]"
+```
+Revert if ANY matchup moves >15pp in the wrong direction.
+
+## The Loop (run until 6 hours elapsed or no HIGH outliers)
+
+### Phase 1: Diagnose (every iteration)
+```
+python3 iterate.py --check --n 5
+```
+
+### Phase 2: Pick worst outlier, trace it
+```
+python3 run_meta.py --verbose "DeckA" "DeckB" -s 90000
+python3 run_meta.py --verbose "DeckA" "DeckB" -s 90100
+```
+Read TWO traces. Look for the PATTERN, not one anecdote:
+- Cards in hand never cast? -> scoring issue
+- Blocks never happen? -> block eval issue
+- Attacks never happen? -> attack threshold issue
+- Wrong cards sideboarded? -> SB rule issue
+- Combo pieces wasted individually? -> combo patience issue
+
+### Phase 3: Fix (max 10 lines, 1 file, NO magic numbers)
+Derive your fix from the game state. Use ratios, scaling, and proportional logic.
+
+### Phase 4: Test + commit or revert
+Accept if: target improved >=5pp AND spot-check has no regression >15pp.
+
+### Phase 5: Log and continue
+Append a line to iterate_log.json with results. Go to Phase 1.
+
+## Files you CAN change
+- ai/ev_player.py — spell scoring, attack/block decisions
+- ai/board_eval.py — block/attack evaluation
+- engine/sideboard_manager.py — board-in/out rules (use tag/oracle matching, not card names)
+- ai/strategy_profile.py — per-archetype thresholds (these are the TUNING KNOBS)
+- decks/gameplans/*.json — mulligan keys, combo sets, goal sequences
+
+## Files you MUST NOT change
+- engine/game_state.py, engine/card_effects.py, engine/cards.py
+- engine/combat_manager.py, engine/game_runner.py
+- build_*.py, run_meta.py, iterate.py
+
+## Git rules
+- Always: git pull --rebase origin main before pushing
+- Never force-push
+- Commit message format: "Fix: <what changed>\n\n<diagnosis>\n<fix logic — why this formula>\n<before->after WR>"
+
+Start now. Run the loop continuously. Do not stop until 6 hours have passed or no HIGH outliers remain.
