@@ -536,6 +536,10 @@ class GoalEngine:
                         break
             if card.name in self.gameplan.always_early:
                 score += 6.0
+            else:
+                oracle = (t.oracle_text or '').lower()
+                if any(kw in oracle for kw in ('destroy', 'exile target', 'damage to each')):
+                    score += 4.0
         return score
 
 
