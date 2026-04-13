@@ -139,7 +139,20 @@ from engine.card_database import CardDatabase  # singleton pattern
 
 ## 6. AI strategy accuracy
 
-**Overall grade: B** (iteration 5 — broken-deck rehab: ritual mana-production oracle classifier, post-combo goal advance for mass-reanimate via _pending_goal_advance signal, control_patience StrategyProfile field + reactive_only JSON populated for the three CONTROL gameplans. Living End WR 3% → **40%** in audit, Azorius Control 15% → 23%, Storm 25-30% → 30%. Healthy decks within ±10pp variance.)
+**Overall grade: B** (iteration 6 — Living End aggression-timing fix (combat_manager now decrements aggression_boost_turns only on active player; flag value bumped to 2 so creatures attack the turn AFTER cascade resolves) + Teferi Hero untap-lands oracle bonus in planeswalker overlay. Iter5's ritual + control_patience + post-combo goal-advance retained. Matrix n=30 confirms Living End at 21%/14% T2 (up from 6%/4% pre-iter5), Azorius Control 15%/10% (Orim's Chant cast rate dropped from 1.1x to 0.4x).)
+
+### Iteration 6 fixes (ITERATION_6_PLAN.md — 2026-04-13)
+| Fix | Files | Status |
+|-----|-------|--------|
+| A. Living End aggression timing | `engine/game_state.py`, `engine/combat_manager.py` | ✅ landed (`24fb118`) |
+| B. Ritual immediate-effect | `ai/ev_evaluator.py` | already in iter5 (`bc51028`) |
+| C1. control_patience gate | `ai/strategy_profile.py`, `ai/ev_player.py` | already in iter5 (`bc602db`) |
+| C2. Teferi untap bonus | `ai/ev_player.py` | ✅ landed (`24fb118`) |
+| D. Undying Evil → reactive_only | `decks/gameplans/goryos_vengeance.json` | already present |
+
+Aggression-flag semantics: combat_manager.end_combat now only decrements the **active player**'s aggression_boost_turns (was: both). Combined with `=2` (was: =1), the flag survives one wasted same-turn combat (creatures with summoning sickness) into the next turn's combat.
+
+
 
 ### Iteration 5 fixes (ITERATION_5_PLAN.md — 2026-04-13)
 | Fix | Files | Status | Audit/WR signal |
