@@ -505,10 +505,14 @@ class CombatPlanner:
         # Check lethal
         is_lethal = post.opp_life <= 0
 
-        # Check 2-turn lethal: can surviving attackers kill next turn?
-        surviving_power = sum(c.power for c in post.my_creatures
-                             if not c.is_tapped or "vigilance" in c.keywords)
-        two_turn_lethal = surviving_power >= post.opp_life and post.opp_life > 0
+        # Check 2-turn lethal: ALL surviving creatures untap next turn and can attack.
+        # Use total power of surviving creatures — they will untap between turns.
+        # Subtract opponent's surviving block power for a realistic estimate.
+        surviving_power = sum(c.power for c in post.my_creatures)
+        opp_block_power = sum(c.power for c in post.opp_creatures)
+        # Net damage next swing (opponent blocks with all creatures)
+        net_next_swing = max(0, surviving_power - opp_block_power)
+        two_turn_lethal = net_next_swing >= post.opp_life and post.opp_life > 0
 
         return CombatResult(
             attackers=attackers,
