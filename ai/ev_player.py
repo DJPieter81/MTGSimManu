@@ -519,6 +519,12 @@ class EVPlayer:
                 if remaining_mana < 2:
                     ev -= 2.0  # tapping out loses instant-speed interaction
 
+        oracle_lower = (t.oracle_text or '').lower()
+        phyrexian_count = oracle_lower.count('/p}')
+        if phyrexian_count > 0:
+            life_cost = phyrexian_count * 2
+            ev -= life_cost / max(1, snap.my_life) * 10.0
+
         return ev
 
     def _combo_modifier(self, card, snap: EVSnapshot,
