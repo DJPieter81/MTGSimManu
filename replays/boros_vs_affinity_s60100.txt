@@ -232,13 +232,13 @@ T3 P2: Cranial Plating enters the battlefield (unattached)
   [Upkeep]
   [Draw] P1 draws: Thraben Charm
   [Main 1]
-    → Goal: curve_out
-    [Mana] Tap Snow-Covered Mountain→R, Sacred Foundry→R (paying for Goblin Bombardment, 3 mana remaining)
-T4 P1: Cast Goblin Bombardment (1R)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Snow-Covered Mountain→R, Sacred Foundry→R, Sacred Foundry→R (paying for Seasoned Pyromancer, 3 mana remaining)
+T4 P1: Cast Seasoned Pyromancer (1RR)
     [Priority] P2 passes (no response)
-T4: Resolve Goblin Bombardment
-T4 P1: Goblin Bombardment enters — sacrifice creatures for 1 damage each
-T4 P1: Play Arena of Glory (enters tapped)
+T4: Resolve Seasoned Pyromancer
+T4 P1: Create 1x Elemental token(s)
+T4 P1: Seasoned Pyromancer: discard 2, draw 2, create 1 Elemental(s)
   [Begin Combat]
   [Declare Attackers] P1 does not attack
   [End Combat]
@@ -247,17 +247,16 @@ T4 P1: Play Arena of Glory (enters tapped)
 
 ╔══ TURN 4 — Affinity (P2) ══════════════════════════
 ║ Life: Affinity 16  |  Boros Energy 19
-║ Hand: 2 cards  |  Opp hand: 3 cards
-║ Lands: 3  |  Opp lands: 4
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
 ║ Library: 49  |  Graveyard: 1
 ║ Affinity board:
 ║   Creatures: Signal Pest (0/1), Memnite (1/1), Signal Pest (0/1), Sojourner's Companion (4/4)
 ║   Other: Cranial Plating
 ║   Lands: Spire of Industry, Urza's Saga, Darksteel Citadel
 ║ Boros Energy board:
-║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
-║   Other: Goblin Bombardment
-║   Lands: Sacred Foundry [T], Sacred Foundry, Snow-Covered Mountain [T], Arena of Glory [T]
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1), Seasoned Pyromancer (2/2), Elemental Token (1/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Snow-Covered Mountain [T]
 ╚═══════════════════════════════════════════════════════
   [Untap] P2 untaps all permanents
   [Upkeep]
@@ -266,16 +265,28 @@ T4 P2: Urza's Saga Ch.II: Create Construct Token
   [Draw] P2 draws: Darksteel Citadel
   [Main 1]
 T4 P2: Play Treasure Vault
+    → Goal: curve_out [enablers]
+    [Mana] Tap Spire of Industry→U (paying for Thought Monitor, 4 mana remaining)
+T4 P2: Cast Thought Monitor (6U)
+    [Priority] P1 passes (no response)
+T4: Resolve Thought Monitor
+T4 P2: Thought Monitor ETB: draw 2 cards
+T4 P2: Equip Cranial Plating to Sojourner's Companion (cost 1)
+    → Goal: curve_out [payoffs]
+T4 P2: Cast Cranial Plating (2)
+    [Priority] P1 passes (no response)
+T4: Resolve Cranial Plating
+T4 P2: Cranial Plating enters the battlefield (unattached)
 T4 P2: Equip Cranial Plating to Sojourner's Companion (cost 1)
   [Begin Combat]
   [Declare Attackers] P2 attacks with: Signal Pest, Memnite, Signal Pest, Sojourner's Companion
 T4 P2: Attack with Signal Pest, Memnite, Signal Pest, Sojourner's Companion
-T4 P1:   [BLOCK-EMERGENCY] Cat Token (2/1) blocks Sojourner's Companion (14/4) — chump block
+T4 P1:   [BLOCK-EMERGENCY] Elemental Token (1/1) blocks Sojourner's Companion (26/4) — chump block
   [Declare Blockers] P1 blocks: (see BLOCK lines below)
 T4 P2:   Signal Pest (1/1) → 1 dmg to player
 T4 P2:   Memnite (3/1) → 3 dmg to player
 T4 P2:   Signal Pest (1/1) → 1 dmg to player
-T4: Cat Token dies
+T4: Elemental Token dies
   [Combat Damage] 5 damage dealt → P1 life: 19 → 14
   [End Combat]
   [Main 2]
@@ -283,29 +294,28 @@ T4: Cat Token dies
 
 ╔══ TURN 5 — Boros Energy (P1) ══════════════════════════
 ║ Life: Boros Energy 14  |  Affinity 16
-║ Hand: 3 cards  |  Opp hand: 2 cards
-║ Lands: 4  |  Opp lands: 4
-║ Library: 48  |  Graveyard: 4
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 6
 ║ Boros Energy board:
-║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)
-║   Other: Goblin Bombardment
-║   Lands: Sacred Foundry, Sacred Foundry, Snow-Covered Mountain, Arena of Glory
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1), Seasoned Pyromancer (2/2)
+║   Lands: Sacred Foundry, Sacred Foundry, Snow-Covered Mountain
 ║ Affinity board:
-║   Creatures: Signal Pest (0/1) [tapped], Memnite (1/1) [tapped], Signal Pest (0/1) [tapped], Sojourner's Companion (12/4) [tapped], Construct Token (8/8)
-║   Other: Cranial Plating
-║   Lands: Spire of Industry [T], Urza's Saga, Darksteel Citadel, Treasure Vault
+║   Creatures: Signal Pest (0/1) [tapped], Memnite (1/1) [tapped], Signal Pest (0/1) [tapped], Sojourner's Companion (24/4) [tapped], Construct Token (10/10), Thought Monitor (2/2)
+║   Other: Cranial Plating, Cranial Plating
+║   Lands: Spire of Industry [T], Urza's Saga [T], Darksteel Citadel [T], Treasure Vault
 ╚═══════════════════════════════════════════════════════
   [Untap] P1 untaps all permanents
   [Upkeep]
-  [Draw] P1 draws: Seasoned Pyromancer
+  [Draw] P1 draws: Arena of Glory
   [Main 1]
-    → Goal: curve_out [payoffs]
-    [Mana] Tap Snow-Covered Mountain→R, Arena of Glory→R, Sacred Foundry→R (paying for Seasoned Pyromancer, 4 mana remaining)
-T5 P1: Cast Seasoned Pyromancer (1RR)
+    → Goal: curve_out [interaction]
+    [Mana] Tap Sacred Foundry→W, Snow-Covered Mountain→R (paying for Thraben Charm, 3 mana remaining)
+T5 P1: Cast Thraben Charm (1W)
     [Priority] P2 passes (no response)
-T5: Resolve Seasoned Pyromancer
-T5 P1: Create 2x Elemental token(s)
-T5 P1: Seasoned Pyromancer: discard 2, draw 2, create 2 Elemental(s)
+T5: Resolve Thraben Charm
+T5: Urza's Saga moved battlefield -> graveyard (destroyed)
+T5 P1: Thraben Charm destroys enchantment Urza's Saga
 T5 P1: Play Arena of Glory (enters tapped)
   [Begin Combat]
   [Declare Attackers] P1 does not attack
@@ -315,94 +325,75 @@ T5 P1: Play Arena of Glory (enters tapped)
 
 ╔══ TURN 5 — Affinity (P2) ══════════════════════════
 ║ Life: Affinity 16  |  Boros Energy 14
-║ Hand: 2 cards  |  Opp hand: 2 cards
-║ Lands: 4  |  Opp lands: 5
-║ Library: 48  |  Graveyard: 1
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 2
 ║ Affinity board:
-║   Creatures: Signal Pest (0/1), Memnite (1/1), Signal Pest (0/1), Sojourner's Companion (12/4), Construct Token (8/8)
-║   Other: Cranial Plating
-║   Lands: Spire of Industry, Urza's Saga, Darksteel Citadel, Treasure Vault
+║   Creatures: Signal Pest (0/1), Memnite (1/1), Signal Pest (0/1), Sojourner's Companion (24/4), Construct Token (10/10), Thought Monitor (2/2)
+║   Other: Cranial Plating, Cranial Plating
+║   Lands: Spire of Industry, Darksteel Citadel, Treasure Vault
 ║ Boros Energy board:
-║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Seasoned Pyromancer (2/2), Elemental Token (1/1), Elemental Token (1/1)
-║   Other: Goblin Bombardment
-║   Lands: Sacred Foundry [T], Sacred Foundry, Snow-Covered Mountain [T], Arena of Glory [T], Arena of Glory [T]
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1), Seasoned Pyromancer (2/2)
+║   Lands: Sacred Foundry [T], Sacred Foundry, Snow-Covered Mountain [T], Arena of Glory [T]
 ╚═══════════════════════════════════════════════════════
   [Untap] P2 untaps all permanents
   [Upkeep]
-T5 P2: Create 1x Construct token(s)
-T5 P2: Urza's Saga Ch.III: Create Construct Token
-T5 P2: Urza's Saga tutors Mox Opal
-T5 P2: Sacrifice Urza's Saga (final chapter)
-  [Draw] P2 draws: Cranial Plating
+  [Draw] P2 draws: Mox Opal
   [Main 1]
 T5 P2: Play Darksteel Citadel
-    → Goal: curve_out [enablers]
-    [Mana] Tap Spire of Industry→U (paying for Thought Monitor, 4 mana remaining)
-T5 P2: Cast Thought Monitor (6U)
-    [Priority] P1 passes (no response)
-T5: Resolve Thought Monitor
-T5 P2: Thought Monitor ETB: draw 2 cards
     → Goal: curve_out
-T5 P2: Cast Ornithopter (0)
+T5 P2: Cast Mox Opal (0)
     [Priority] P1 passes (no response)
-T5: Resolve Ornithopter
-    → Goal: curve_out [payoffs]
-    [Mana] Tap Darksteel Citadel→C (paying for Cranial Plating, 3 mana remaining)
-T5 P2: Cast Cranial Plating (2)
-    [Priority] P1 passes (no response)
-T5: Resolve Cranial Plating
-T5 P2: Cranial Plating enters the battlefield (unattached)
-T5 P2: Equip Cranial Plating to Sojourner's Companion (cost 1)
+T5: Resolve Mox Opal
   [Begin Combat]
-  [Declare Attackers] P2 attacks with: Signal Pest, Memnite, Signal Pest, Sojourner's Companion, Construct Token
-T5 P2: Attack with Signal Pest, Memnite, Signal Pest, Sojourner's Companion, Construct Token
-T5 P1:   [BLOCK-EMERGENCY] Elemental Token (1/1) blocks Sojourner's Companion (34/4) — chump block
-T5 P1:   [BLOCK-EMERGENCY] Elemental Token (1/1) blocks Construct Token (16/14) — chump block
+  [Declare Attackers] P2 attacks with: Signal Pest, Memnite, Signal Pest, Sojourner's Companion, Construct Token, Thought Monitor
+T5 P2: Attack with Signal Pest, Memnite, Signal Pest, Sojourner's Companion, Construct Token, Thought Monitor
+T5 P1:   [BLOCK-EMERGENCY] Cat Token (2/1) blocks Sojourner's Companion (30/4) — chump block
+T5 P1:   [BLOCK-EMERGENCY] Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) blocks Construct Token (14/12) — chump block
+T5 P1:   [BLOCK-EMERGENCY] Seasoned Pyromancer (2/2) blocks Memnite (3/1) — trade (chump)
   [Declare Blockers] P1 blocks: (see BLOCK lines below)
 T5 P2:   Signal Pest (1/1) → 1 dmg to player
-T5 P2:   Memnite (3/1) → 3 dmg to player
 T5 P2:   Signal Pest (1/1) → 1 dmg to player
-T5: Elemental Token dies
-T5: Elemental Token dies
-  [Combat Damage] 5 damage dealt → P1 life: 14 → 9
+T5 P2:   Thought Monitor (4/2) → 4 dmg to player
+T5: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger dies
+T5: Cat Token dies
+T5: Seasoned Pyromancer dies
+T5: Memnite dies
+  [Combat Damage] 6 damage dealt → P1 life: 14 → 8
   [End Combat]
   [Main 2]
   [End Step]
 
 ╔══ TURN 6 — Boros Energy (P1) ══════════════════════════
-║ Life: Boros Energy 9  |  Affinity 16
-║ Hand: 2 cards  |  Opp hand: 1 cards
-║ Lands: 5  |  Opp lands: 4
-║ Library: 45  |  Graveyard: 8
+║ Life: Boros Energy 8  |  Affinity 16
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 10
 ║ Boros Energy board:
-║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Seasoned Pyromancer (2/2)
-║   Other: Goblin Bombardment
-║   Lands: Sacred Foundry, Sacred Foundry, Snow-Covered Mountain, Arena of Glory, Arena of Glory
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry, Snow-Covered Mountain, Arena of Glory
 ║ Affinity board:
-║   Creatures: Signal Pest (0/1) [tapped], Memnite (1/1) [tapped], Signal Pest (0/1) [tapped], Sojourner's Companion (32/4) [tapped], Construct Token (14/14) [tapped], Construct Token (14/14), Thought Monitor (2/2), Ornithopter (0/2)
-║   Other: Cranial Plating, Mox Opal, Cranial Plating
-║   Lands: Spire of Industry [T], Darksteel Citadel [T], Treasure Vault [T], Darksteel Citadel
+║   Creatures: Signal Pest (0/1) [tapped], Signal Pest (0/1) [tapped], Sojourner's Companion (26/4) [tapped], Construct Token (11/11) [tapped], Thought Monitor (2/2) [tapped]
+║   Other: Cranial Plating, Cranial Plating, Mox Opal
+║   Lands: Spire of Industry, Darksteel Citadel, Treasure Vault, Darksteel Citadel
 ╚═══════════════════════════════════════════════════════
   [Untap] P1 untaps all permanents
   [Upkeep]
   [Draw] P1 draws: Phlage, Titan of Fire's Fury
   [Main 1]
-    → Goal: curve_out
-    [Mana] Tap Sacred Foundry→W, Snow-Covered Mountain→R, Arena of Glory→R (paying for Phlage, Titan of Fire's Fury, 5 mana remaining)
-T6 P1: Cast Phlage, Titan of Fire's Fury (1WR)
-    [Priority] P2 passes (no response)
-T6: Resolve Phlage, Titan of Fire's Fury
-T6 P1: Phlage: 3 damage to opponent, gain 3 life
-T6 P1: Phlage sacrificed (not escaped)
     → Goal: curve_out [interaction]
-    [Mana] Tap Sacred Foundry→W, Arena of Glory→R (paying for Thraben Charm, 2 mana remaining)
+    [Mana] Tap Sacred Foundry→W, Snow-Covered Mountain→R (paying for Thraben Charm, 4 mana remaining)
 T6 P1: Cast Thraben Charm (1W)
     [Priority] P2 passes (no response)
 T6: Resolve Thraben Charm
 T6: Signal Pest dies
-T6: Memnite dies
 T6: Signal Pest dies
-T6 P1: Thraben Charm -1/-1 kills 3 tokens
+T6 P1: Thraben Charm -1/-1 kills 2 tokens
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→W, Arena of Glory→R (paying for Voice of Victory, 2 mana remaining)
+T6 P1: Cast Voice of Victory (1W)
+    [Priority] P2 passes (no response)
+T6: Resolve Voice of Victory
   [Begin Combat]
   [Declare Attackers] P1 does not attack
   [End Combat]
@@ -410,36 +401,38 @@ T6 P1: Thraben Charm -1/-1 kills 3 tokens
   [End Step]
 
 ╔══ TURN 6 — Affinity (P2) ══════════════════════════
-║ Life: Affinity 13  |  Boros Energy 12
-║ Hand: 1 cards  |  Opp hand: 1 cards
-║ Lands: 4  |  Opp lands: 5
-║ Library: 44  |  Graveyard: 5
+║ Life: Affinity 16  |  Boros Energy 8
+║ Hand: 1 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 5
 ║ Affinity board:
-║   Creatures: Sojourner's Companion (26/4), Construct Token (11/11), Construct Token (11/11), Thought Monitor (2/2), Ornithopter (0/2)
-║   Other: Cranial Plating, Mox Opal, Cranial Plating
+║   Creatures: Sojourner's Companion (22/4), Construct Token (9/9), Thought Monitor (2/2)
+║   Other: Cranial Plating, Cranial Plating, Mox Opal
 ║   Lands: Spire of Industry, Darksteel Citadel, Treasure Vault, Darksteel Citadel
 ║ Boros Energy board:
-║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Seasoned Pyromancer (2/2)
-║   Other: Goblin Bombardment
-║   Lands: Sacred Foundry [T], Sacred Foundry [T], Snow-Covered Mountain [T], Arena of Glory [T], Arena of Glory [T]
+║   Creatures: Voice of Victory (1/3)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Snow-Covered Mountain [T], Arena of Glory [T]
 ╚═══════════════════════════════════════════════════════
   [Untap] P2 untaps all permanents
   [Upkeep]
-  [Draw] P2 draws: Mox Opal
+  [Draw] P2 draws: Ornithopter
   [Main 1]
+    → Goal: curve_out
+T6 P2: Cast Ornithopter (0)
+    [Priority] P1 passes (no response)
+T6: Resolve Ornithopter
   [Begin Combat]
-  [Declare Attackers] P2 attacks with: Sojourner's Companion, Construct Token, Construct Token, Thought Monitor
-T6 P2: Attack with Sojourner's Companion, Construct Token, Construct Token, Thought Monitor
-T6 P1:   [BLOCK-EMERGENCY] Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) blocks Sojourner's Companion (26/4) — chump block
-T6 P1:   [BLOCK-EMERGENCY] Seasoned Pyromancer (2/2) blocks Construct Token (11/11) — chump block
+  [Declare Attackers] P2 attacks with: Sojourner's Companion, Construct Token, Thought Monitor
+T6 P2: Attack with Sojourner's Companion, Construct Token, Thought Monitor
+T6 P1:   [BLOCK-EMERGENCY] Voice of Victory (1/3) blocks Sojourner's Companion (24/4) — chump block
   [Declare Blockers] P1 blocks: (see BLOCK lines below)
-T6 P2:   Construct Token (11/11) → 11 dmg to player
+T6 P2:   Construct Token (10/10) → 10 dmg to player
 T6 P2:   Thought Monitor (2/2) → 2 dmg to player
-P1 loses: life total -1
-  [Combat Damage] 13 damage dealt → P1 life: 12 → -1
+P1 loses: life total -4
+  [Combat Damage] 12 damage dealt → P1 life: 8 → -4
 
 >>> Affinity wins Game 1 on turn 6 via damage
-    Final life: Boros Energy=-1  Affinity=13
+    Final life: Boros Energy=-4  Affinity=16
 
 ======================================================================
   GAME 2: Boros Energy (P1) vs Affinity (P2)  —  seed 60101
@@ -563,13 +556,18 @@ T1: Resolve Ornithopter
   [Main 1]
 T2 P1: Play Flooded Strand
 T2 P1: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (pay 2 life, untapped, life: 14)
-    → Goal: curve_out [payoffs]
-    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 2 mana remaining)
-T2 P1: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    → Goal: curve_out [interaction]
+    [Mana] Tap Sacred Foundry→R (paying for Galvanic Discharge, 2 mana remaining)
+T2 P1: Cast Galvanic Discharge (R)
     [Priority] P2 passes (no response)
-T2: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
-T2 P1: Create 1x Cat token(s)
-T2 P1: Ajani creates 2/1 Cat Warrior token
+T2: Resolve Galvanic Discharge
+T2 P1: Galvanic Discharge deals 3 to Signal Pest
+T2: Signal Pest dies
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Guide of Souls, 1 mana remaining)
+T2 P1: Cast Guide of Souls (W)
+    [Priority] P2 passes (no response)
+T2: Resolve Guide of Souls
   [Begin Combat]
   [Declare Attackers] P1 does not attack
   [End Combat]
@@ -578,14 +576,14 @@ T2 P1: Ajani creates 2/1 Cat Warrior token
 
 ╔══ TURN 2 — Affinity (P2) ══════════════════════════
 ║ Life: Affinity 20  |  Boros Energy 14
-║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Hand: 3 cards  |  Opp hand: 3 cards
 ║ Lands: 1  |  Opp lands: 2
-║ Library: 52  |  Graveyard: 1
+║ Library: 52  |  Graveyard: 2
 ║ Affinity board:
-║   Creatures: Signal Pest (0/1), Ornithopter (0/2), Ornithopter (0/2)
+║   Creatures: Ornithopter (0/2), Ornithopter (0/2)
 ║   Lands: Urza's Saga
 ║ Boros Energy board:
-║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Creatures: Guide of Souls (1/2)
 ║   Lands: Sacred Foundry [T], Sacred Foundry [T]
 ╚═══════════════════════════════════════════════════════
   [Untap] P2 untaps all permanents
@@ -610,14 +608,14 @@ T2 P2: Cranial Plating enters the battlefield (unattached)
 
 ╔══ TURN 3 — Boros Energy (P1) ══════════════════════════
 ║ Life: Boros Energy 14  |  Affinity 20
-║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Hand: 3 cards  |  Opp hand: 2 cards
 ║ Lands: 2  |  Opp lands: 1
-║ Library: 50  |  Graveyard: 3
+║ Library: 50  |  Graveyard: 4
 ║ Boros Energy board:
-║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Creatures: Guide of Souls (1/2)
 ║   Lands: Sacred Foundry, Sacred Foundry
 ║ Affinity board:
-║   Creatures: Signal Pest (0/1), Ornithopter (0/2), Ornithopter (0/2)
+║   Creatures: Ornithopter (0/2), Ornithopter (0/2)
 ║   Other: Mox Opal, Cranial Plating
 ║   Lands: Urza's Saga [T]
 ╚═══════════════════════════════════════════════════════
@@ -634,28 +632,29 @@ T3 P1: Cast Phlage, Titan of Fire's Fury (1WR)
 T3: Resolve Phlage, Titan of Fire's Fury
 T3 P1: Phlage: 3 damage to opponent, gain 3 life
 T3 P1: Phlage sacrificed (not escaped)
+T3 P1: Gain 1 life from Guide of Souls (life: 15)
+T3 P1: +1 energy from Guide of Souls (total: 1)
   [Begin Combat]
-  [Declare Attackers] P1 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
-T3 P1: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+  [Declare Attackers] P1 attacks with: Guide of Souls
+T3 P1: Attack with Guide of Souls
   [Declare Blockers] P2 does not block
-T3 P1:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
-T3 P1:   Cat Token (2/1) → 2 dmg to player
-  [Combat Damage] 3 damage dealt → P2 life: 17 → 14
+T3 P1:   Guide of Souls (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P2 life: 17 → 16
   [End Combat]
   [Main 2]
   [End Step]
 
 ╔══ TURN 3 — Affinity (P2) ══════════════════════════
-║ Life: Affinity 14  |  Boros Energy 14
-║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Life: Affinity 16  |  Boros Energy 15
+║ Hand: 2 cards  |  Opp hand: 2 cards
 ║ Lands: 1  |  Opp lands: 3
-║ Library: 51  |  Graveyard: 1
+║ Library: 51  |  Graveyard: 2
 ║ Affinity board:
-║   Creatures: Signal Pest (0/1), Ornithopter (0/2), Ornithopter (0/2)
+║   Creatures: Ornithopter (0/2), Ornithopter (0/2)
 ║   Other: Mox Opal, Cranial Plating
 ║   Lands: Urza's Saga
 ║ Boros Energy board:
-║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Cat Token (2/1) [tapped]
+║   Creatures: Guide of Souls (1/2) [tapped]
 ║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T]
 ╚═══════════════════════════════════════════════════════
   [Untap] P2 untaps all permanents
@@ -667,25 +666,25 @@ T3 P2: Urza's Saga Ch.II: Create Construct Token
 T3 P2: Play Darksteel Citadel
 T3 P2: Equip Cranial Plating to Ornithopter (cost 1)
   [Begin Combat]
-  [Declare Attackers] P2 attacks with: Signal Pest, Ornithopter
-T3 P2: Attack with Signal Pest, Ornithopter
+  [Declare Attackers] P2 attacks with: Ornithopter
+T3 P2: Attack with Ornithopter
   [Declare Blockers] P1 does not block
-T3 P2:   Ornithopter (8/2) → 8 dmg to player
-  [Combat Damage] 8 damage dealt → P1 life: 14 → 6
+T3 P2:   Ornithopter (6/2) → 6 dmg to player
+  [Combat Damage] 6 damage dealt → P1 life: 15 → 9
   [End Combat]
   [Main 2]
   [End Step]
 
 ╔══ TURN 4 — Boros Energy (P1) ══════════════════════════
-║ Life: Boros Energy 6  |  Affinity 14
-║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Life: Boros Energy 9  |  Affinity 16
+║ Hand: 2 cards  |  Opp hand: 2 cards
 ║ Lands: 3  |  Opp lands: 2
-║ Library: 48  |  Graveyard: 5
+║ Library: 48  |  Graveyard: 6
 ║ Boros Energy board:
-║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Creatures: Guide of Souls (1/2)
 ║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry
 ║ Affinity board:
-║   Creatures: Signal Pest (0/1) [tapped], Ornithopter (7/2) [tapped], Ornithopter (0/2), Construct Token (7/7)
+║   Creatures: Ornithopter (6/2) [tapped], Ornithopter (0/2), Construct Token (6/6)
 ║   Other: Mox Opal, Cranial Plating
 ║   Lands: Urza's Saga [T], Darksteel Citadel
 ╚═══════════════════════════════════════════════════════
@@ -694,132 +693,134 @@ T3 P2:   Ornithopter (8/2) → 8 dmg to player
   [Draw] P1 draws: Snow-Covered Plains
   [Main 1]
 T4 P1: Play Snow-Covered Plains
-    → Goal: curve_out [interaction]
-    [Mana] Tap Sacred Foundry→R (paying for Galvanic Discharge, 4 mana remaining)
-T4 P1: Cast Galvanic Discharge (R)
+    → Goal: curve_out
+T4 P1: Escape Phlage, Titan of Fire's Fury (exile 5 cards)
+    [Mana] Tap Sacred Foundry→R, Sacred Foundry→R, Snow-Covered Plains→W, Sacred Foundry→W (paying for Phlage, Titan of Fire's Fury, 4 mana remaining)
+T4 P1: Cast Phlage, Titan of Fire's Fury (1WR)
     [Priority] P2 passes (no response)
-T4: Resolve Galvanic Discharge
-T4 P1: Galvanic Discharge deals 3 to Ornithopter
-T4: Cranial Plating falls off Ornithopter (unattached)
-T4: Ornithopter dies
-    → Goal: curve_out [interaction]
-    [Mana] Tap Snow-Covered Plains→W, Sacred Foundry→R (paying for Thraben Charm, 3 mana remaining)
-T4 P1: Cast Thraben Charm (1W)
-    [Priority] P2 passes (no response)
-T4: Resolve Thraben Charm
-T4: Urza's Saga moved battlefield -> graveyard (destroyed)
-T4 P1: Thraben Charm destroys enchantment Urza's Saga
-    → Goal: curve_out [enablers]
-    [Mana] Tap Sacred Foundry→W (paying for Guide of Souls, 1 mana remaining)
-T4 P1: Cast Guide of Souls (W)
-    [Priority] P2 passes (no response)
-T4: Resolve Guide of Souls
+T4: Resolve Phlage, Titan of Fire's Fury
+T4 P1: Phlage: 3 damage to opponent, gain 3 life
+T4 P1: Gain 1 life from Guide of Souls (life: 13)
+T4 P1: +1 energy from Guide of Souls (total: 2)
   [Begin Combat]
-  [Declare Attackers] P1 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
-T4 P1: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
-  [Declare Blockers] P2 does not block
-T4 P1:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
-T4 P1:   Cat Token (2/1) → 2 dmg to player
-  [Combat Damage] 3 damage dealt → P2 life: 14 → 11
+  [Declare Attackers] P1 does not attack
   [End Combat]
   [Main 2]
   [End Step]
 
 ╔══ TURN 4 — Affinity (P2) ══════════════════════════
-║ Life: Affinity 11  |  Boros Energy 6
-║ Hand: 2 cards  |  Opp hand: 0 cards
-║ Lands: 1  |  Opp lands: 4
-║ Library: 50  |  Graveyard: 3
+║ Life: Affinity 13  |  Boros Energy 13
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 2
 ║ Affinity board:
-║   Creatures: Signal Pest (0/1), Ornithopter (0/2), Construct Token (6/6)
+║   Creatures: Ornithopter (6/2), Ornithopter (0/2), Construct Token (6/6)
 ║   Other: Mox Opal, Cranial Plating
-║   Lands: Darksteel Citadel
+║   Lands: Urza's Saga, Darksteel Citadel
 ║ Boros Energy board:
-║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Cat Token (2/1) [tapped], Guide of Souls (1/2)
+║   Creatures: Guide of Souls (1/2), Phlage, Titan of Fire's Fury (6/6)
 ║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Snow-Covered Plains [T]
 ╚═══════════════════════════════════════════════════════
   [Untap] P2 untaps all permanents
   [Upkeep]
+T4 P2: Create 1x Construct token(s)
+T4 P2: Urza's Saga Ch.III: Create Construct Token
+T4 P2: Urza's Saga tutors Springleaf Drum
+T4 P2: Sacrifice Urza's Saga (final chapter)
   [Draw] P2 draws: Cranial Plating
   [Main 1]
   [Begin Combat]
-  [Declare Attackers] P2 attacks with: Signal Pest, Construct Token
-T4 P2: Attack with Signal Pest, Construct Token
-T4 P1:   [BLOCK-EMERGENCY] Guide of Souls (1/2) blocks Construct Token (7/6) — chump block
+  [Declare Attackers] P2 attacks with: Ornithopter, Construct Token
+T4 P2: Attack with Ornithopter, Construct Token
+T4 P1:   [BLOCK-EMERGENCY] Guide of Souls (1/2) blocks Construct Token (8/8) — chump block
   [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T4 P2:   Ornithopter (8/2) → 8 dmg to player
 T4: Guide of Souls dies
+  [Combat Damage] 8 damage dealt → P1 life: 13 → 5
   [End Combat]
   [Main 2]
   [End Step]
 
 ╔══ TURN 5 — Boros Energy (P1) ══════════════════════════
-║ Life: Boros Energy 6  |  Affinity 11
-║ Hand: 0 cards  |  Opp hand: 3 cards
+║ Life: Boros Energy 5  |  Affinity 13
+║ Hand: 2 cards  |  Opp hand: 3 cards
 ║ Lands: 4  |  Opp lands: 1
-║ Library: 47  |  Graveyard: 8
+║ Library: 47  |  Graveyard: 1
 ║ Boros Energy board:
-║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Creatures: Phlage, Titan of Fire's Fury (6/6)
 ║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains
 ║ Affinity board:
-║   Creatures: Signal Pest (0/1) [tapped], Ornithopter (0/2), Construct Token (6/6) [tapped]
-║   Other: Mox Opal, Cranial Plating
+║   Creatures: Ornithopter (8/2) [tapped], Ornithopter (0/2), Construct Token (8/8) [tapped], Construct Token (8/8)
+║   Other: Mox Opal, Cranial Plating, Springleaf Drum
 ║   Lands: Darksteel Citadel
 ╚═══════════════════════════════════════════════════════
   [Untap] P1 untaps all permanents
   [Upkeep]
   [Draw] P1 draws: Phlage, Titan of Fire's Fury
   [Main 1]
-    → Goal: curve_out
-    [Mana] Tap Sacred Foundry→R, Snow-Covered Plains→W, Sacred Foundry→R (paying for Phlage, Titan of Fire's Fury, 4 mana remaining)
-T5 P1: Cast Phlage, Titan of Fire's Fury (1WR)
+    → Goal: curve_out [interaction]
+    [Mana] Tap Snow-Covered Plains→W (paying for Thraben Charm, 4 mana remaining)
+T5 P1: Cast Thraben Charm (1W)
     [Priority] P2 passes (no response)
-T5: Resolve Phlage, Titan of Fire's Fury
-T5 P1: Phlage: 3 damage to opponent, gain 3 life
-T5 P1: Phlage sacrificed (not escaped)
+T5: Resolve Thraben Charm
+T5 P1: Thraben Charm: no high-value mode available
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→W (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 3 mana remaining)
+T5 P1: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P2 passes (no response)
+T5: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T5 P1: Create 1x Cat token(s)
+T5 P1: Ajani creates 2/1 Cat Warrior token
   [Begin Combat]
-  [Declare Attackers] P1 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
-T5 P1: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
-T5 P2:   [BLOCK-EMERGENCY] Ornithopter (0/2) blocks Cat Token (2/1) — chump block
-  [Declare Blockers] P2 blocks: (see BLOCK lines below)
-T5 P1:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
-T5: Ornithopter dies
-  [Combat Damage] 1 damage dealt → P2 life: 8 → 7
+  [Declare Attackers] P1 attacks with: Phlage, Titan of Fire's Fury
+T5 P1: Gain 3 life from Phlage, Titan of Fire's Fury (life: 8)
+T5 P1: Attack with Phlage, Titan of Fire's Fury
+  [Declare Blockers] P2 does not block
+T5 P1:   Phlage, Titan of Fire's Fury (6/6) → 6 dmg to player
+  [Combat Damage] 6 damage dealt → P2 life: 10 → 4
   [End Combat]
   [Main 2]
   [End Step]
 
 ╔══ TURN 5 — Affinity (P2) ══════════════════════════
-║ Life: Affinity 7  |  Boros Energy 9
-║ Hand: 3 cards  |  Opp hand: 0 cards
+║ Life: Affinity 4  |  Boros Energy 8
+║ Hand: 3 cards  |  Opp hand: 1 cards
 ║ Lands: 1  |  Opp lands: 4
-║ Library: 49  |  Graveyard: 4
+║ Library: 48  |  Graveyard: 3
 ║ Affinity board:
-║   Creatures: Signal Pest (0/1), Construct Token (5/5)
-║   Other: Mox Opal, Cranial Plating
+║   Creatures: Ornithopter (8/2), Ornithopter (0/2), Construct Token (8/8), Construct Token (8/8)
+║   Other: Mox Opal, Cranial Plating, Springleaf Drum
 ║   Lands: Darksteel Citadel
 ║ Boros Energy board:
-║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Cat Token (2/1) [tapped]
-║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry, Snow-Covered Plains [T]
+║   Creatures: Phlage, Titan of Fire's Fury (6/6) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry, Sacred Foundry, Snow-Covered Plains [T]
 ╚═══════════════════════════════════════════════════════
   [Untap] P2 untaps all permanents
   [Upkeep]
   [Draw] P2 draws: Frogmite
   [Main 1]
-T5 P2: Equip Cranial Plating to Construct Token (cost 1)
     → Goal: curve_out [enablers]
 T5 P2: Cast Frogmite (4)
     [Priority] P1 passes (no response)
 T5: Resolve Frogmite
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Darksteel Citadel→C (paying for Cranial Plating, 1 mana remaining)
+T5 P2: Cast Cranial Plating (2)
+    [Priority] P1 passes (no response)
+T5: Resolve Cranial Plating
+T5 P2: Cranial Plating enters the battlefield (unattached)
   [Begin Combat]
-  [Declare Attackers] P2 attacks with: Signal Pest, Construct Token
-T5 P2: Attack with Signal Pest, Construct Token
-  [Declare Blockers] P1 does not block
-T5 P2:   Construct Token (13/6) → 13 dmg to player
-P1 loses: life total -4
-  [Combat Damage] 13 damage dealt → P1 life: 9 → -4
+  [Declare Attackers] P2 attacks with: Ornithopter, Construct Token, Construct Token
+T5 P2: Attack with Ornithopter, Construct Token, Construct Token
+T5 P1:   [BLOCK-EMERGENCY] Cat Token (2/1) blocks Construct Token (10/10) — chump block
+T5 P1:   [BLOCK-EMERGENCY] Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) blocks Construct Token (10/10) — chump block
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T5 P2:   Ornithopter (10/2) → 10 dmg to player
+P1 loses: life total -2
+  [Combat Damage] 10 damage dealt → P1 life: 8 → -2
 
 >>> Affinity wins Game 2 on turn 5 via damage
-    Final life: Boros Energy=-4  Affinity=7
+    Final life: Boros Energy=-2  Affinity=4
 
 ======================================================================
   MATCH RESULT: Affinity wins 2-0

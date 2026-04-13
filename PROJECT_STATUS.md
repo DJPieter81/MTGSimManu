@@ -139,18 +139,31 @@ from engine.card_database import CardDatabase  # singleton pattern
 
 ## 6. AI strategy accuracy
 
-**Overall grade: C+** (session 4 — oracle-driven threat value + urgency discount + draw-step bonus + shock staggering; 16×16 matrix at N=30 validates, Boros WR stable in T1, Affinity still outlier pending dedicated session)
+**Overall grade: C+** (session 4-v2 — urgency_factor refined to (opp_clock-1)/4.0, clamp-floor removed so deferred-value permanents collapse to 0 EV when dying; oracle threat scoring with broader scaling regex; all other v1 wiring retained; 16×16 matrix at N=10 validates Boros at T1 67%/64% meta)
 
-### Session 4 fixes (AI_STRATEGY_IMPROVEMENT_PLAN.md — 2026-04-13)
+### Session 4 fixes (AI_STRATEGY_IMPROVEMENT_PLAN.md v1 + AI_IMPROVEMENT_PLAN_V2.md refinements — 2026-04-13)
 | Task | Commit | Status | Smoke signal |
 |------|--------|--------|--------------|
-| 1. Oracle-driven threat value for removal | `4647626` | ✅ landed | GD on Signal Pest T2 (G2 s60100): FAIL→PASS |
-| 2. Kill-clock urgency discount on slow permanents | `12e9f25` | ✅ landed | Bombardment held vs fast clock: FAIL→PASS |
+| 1. Oracle-driven threat value for removal | `4647626` | ✅ landed (v2 tweak power bonus to 0.8×(p-3)) | GD on Signal Pest T2 (G2 s60100): FAIL→PASS |
+| 2. Kill-clock urgency discount on slow permanents | `12e9f25` | ✅ landed (v2 formula (opp_clock-1)/4.0, no floor) | Bombardment held vs fast clock: FAIL→PASS |
 | 4. Draw-step prevention bonus in attack planner | `1a45dcf` | ✅ landed | Storm WR no-regression: PASS |
 | 3. Fetch-shock life-cost staggering | `b9f5dc9` | ✅ landed | ≤4 life paid T1+T2: PASS |
 
 Golden smoke (`tools/golden_smoke.py`): 8/10 pass.
-Two remaining failures are accepted trade-offs — Thraben Charm T4 (AI prefers Pyromancer T4, Charm T5, which is arguably correct) and Cat Token attack (shields-down penalty correctly weighs blocker retention).
+
+**v2 audit (energy n=60):**
+| Metric | Baseline (plan doc) | Current | v2 target |
+|--------|--------------------|---------| --------- |
+| Boros WR | — | **62%** (37/60) | — |
+| Phlage win% when cast | 84% | **84%** | maintain |
+| Bombardment win% when cast | 42% | 37% | >55% ❌ partial |
+| Bombardment cast rate | — | 0.3x/game | reduced ✓ |
+| Thraben Charm avg cast turn | — | T5.9 | <T4.5 ❌ |
+| GD win% when cast | — | 57% | ✓ |
+
+Bombardment is cast less often (urgency correctly discounts it) but the times it DOES fire are in slower games where it helps less. Thraben Charm cast timing requires multi-turn lookahead — explicitly out of scope per plan v2 §"What this does NOT fix".
+
+Two remaining smoke failures are accepted trade-offs — Thraben Charm T4 (multi-turn lookahead) and Cat Token attack (shields-down correctly weighs blocker retention).
 
 **Overall grade (old): C** (blocking P0 fixed, mulligan floor added, attack logic improved; post-fix 16×16 matrix at N=50 validates)
 

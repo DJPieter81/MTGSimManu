@@ -75,20 +75,19 @@ class EVSnapshot:
 
     @property
     def urgency_factor(self) -> float:
-        """How much future value do we actually get to realise?
-
-        Returns 0.0 (instant death) to 1.0 (no urgency). Used to discount
-        permanents that generate value only through future activations /
-        combat steps — e.g. Goblin Bombardment has no immediate effect; its
-        worth is proportional to the number of turns we stay alive to
-        sacrifice creatures into it.
+        """Fraction of future turns we actually get. 1.0 = no urgency,
+        0.0 = dying now. Used to discount deferred-value permanents
+        (Goblin Bombardment, tap-activated engines) — their worth is
+        proportional to how many turns we stay alive to activate them.
 
         Derived solely from `opp_clock`, which is itself oracle-detected
         from opponent's creatures. No hardcoded matchup thresholds.
+
+        Formula: (opp_clock - 1) / 4.0. At opp_clock=1 (dying next turn)
+        we get 0.0 — deferred spells are pure waste. At opp_clock=5+ we
+        get 1.0 — no discount.
         """
-        if self.opp_clock <= 0:
-            return 0.0
-        return min(1.0, self.opp_clock / 4.0)
+        return min(1.0, max(0.0, (self.opp_clock - 1) / 4.0))
 
     @property
     def has_lethal(self) -> bool:
@@ -203,14 +202,17 @@ def creature_threat_value(card: "CardInstance") -> float:
     if name and f'whenever {name} attacks' in oracle:
         premium += 8.0
 
-    # Scaling threats — grow every turn as more permanents come down
-    if 'for each artifact' in oracle or 'for each creature' in oracle:
+    # Scaling threats — grow every turn as more permanents come down.
+    # Broader regex (v2) catches land-based scalers (Cultivator Colossus)
+    # and card-in-yard scalers (Tarmogoyf) in addition to artifact/creature.
+    if re.search(r'for each (artifact|creature|land|card)', oracle):
         premium += 6.0
 
-    # Retain some weight on raw big bodies (evaluators still care)
+    # Big raw bodies still matter. Linear above P=3 with 0.8/power slope:
+    # P=4→+0.8, P=5→+1.6, P=7→+3.2. Chosen to top out below the battle-cry
+    # premium (+8) so oracle-detected threats always outrank vanilla P/T.
     p = card.power or 0
-    if p >= 4:
-        premium += p * 0.5
+    premium += max(0, p - 3) * 0.8
 
     return base + premium
 
@@ -286,14 +288,15 @@ def _has_immediate_effect(card: "CardInstance") -> bool:
     from engine.cards import CardType
     if hasattr(t, 'card_types') and CardType.PLANESWALKER in t.card_types:
         return True
-    # Delayed-value permanents:
-    #   'sacrifice ... deal/damage'  — Goblin Bombardment (needs future acts)
-    #   'tap ...' without mana/draw  — tap-activated engines (Urza's Saga etc.)
-    if 'sacrifice' in oracle and ('deal' in oracle or 'damage' in oracle):
+    # Delayed-value permanents — patterns from AI_IMPROVEMENT_PLAN_V2.md:
+    #   'sacrifice a creature' with 'damage' → Goblin Bombardment pattern
+    #     (activated ability repurposing creatures into face damage over
+    #     multiple turns).
+    #   '{t}:' without mana production → tap-activated engines whose value
+    #     requires future untaps (Urza's Saga constructs, card-draw engines).
+    if 'sacrifice a creature' in oracle and 'damage' in oracle:
         return False
-    if (re.search(r'\btap\b', oracle) is not None
-            and 'add' not in oracle
-            and 'draw' not in oracle):
+    if '{t}:' in oracle and 'add' not in oracle and 'draw' not in oracle:
         return False
     return True  # default: assume some immediate value
 
@@ -859,15 +862,14 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
 
     ev = after_value - current_value
 
-    # Kill-clock urgency discount for slow permanents. Cards whose value
-    # only materialises through future turns (Goblin Bombardment, tap-
-    # activated engines) are worth less when opponent's clock is close.
-    # Clamped so the minimum multiplier is 0.5 — a delayed-value permanent
-    # is still worth at least half its steady-state value even under a
-    # fast clock, preventing total collapse of midrange plans. Derived
-    # purely from `opp_clock`, so no matchup thresholds are hardcoded.
+    # Kill-clock urgency discount for deferred-value permanents. Cards
+    # whose value only materialises through future turns (Goblin
+    # Bombardment, tap-activated engines) are worth less when opponent's
+    # clock is close. At opp_clock=1 the factor is 0.0 — a sacrifice-
+    # for-damage permanent we never get to activate is pure waste.
+    # Derived purely from `opp_clock`, so no matchup thresholds.
     if not _has_immediate_effect(card) and ev > 0:
-        ev *= max(0.5, snap.urgency_factor)
+        ev *= snap.urgency_factor
 
     # Low-CMC ETB-value creature floor: prevents the removal-projection from
     # shoving a 2-CMC creature with tangible on-board value (Psychic Frog,
