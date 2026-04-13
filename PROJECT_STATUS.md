@@ -139,7 +139,31 @@ from engine.card_database import CardDatabase  # singleton pattern
 
 ## 6. AI strategy accuracy
 
-**Overall grade: B-** (session 5b — Affinity matchup plan iteration: W//T and similar artifact-hate removal now correctly tagged in card database (artifact/enchantment/all_nonland added to removal target_types, lands excluded to prevent Boseiju confusion); added _score_spell overlay so artifact-hate removal scores positive EV against scaling equipment using _permanent_threat_value. W//T now destroys Cranial Plating when drawn. Affinity matchup WRs marginally improved; audit variance ~85-92%, EE delta improving toward zero)
+**Overall grade: B** (iteration 5 — broken-deck rehab: ritual mana-production oracle classifier, post-combo goal advance for mass-reanimate via _pending_goal_advance signal, control_patience StrategyProfile field + reactive_only JSON populated for the three CONTROL gameplans. Living End WR 3% → **40%** in audit, Azorius Control 15% → 23%, Storm 25-30% → 30%. Healthy decks within ±10pp variance.)
+
+### Iteration 5 fixes (ITERATION_5_PLAN.md — 2026-04-13)
+| Fix | Files | Status | Audit/WR signal |
+|-----|-------|--------|-----------------|
+| 1. Ritual oracle mana-detection in _has_immediate_effect | `ai/ev_evaluator.py` | ✅ landed (`bc51028`) | All Storm rituals already covered by 'ritual' tag — change is belt-and-suspenders. Storm WR essentially unchanged. |
+| 2. Post-combo goal advance for mass-reanimate | `engine/game_state.py`, `ai/ev_player.py` | ✅ landed (`41f2e16`) | **Living End vs Tron 0% → 20%; field WR 3% → 40%** |
+| 3. control_patience gate + populate Azorius reactive_only | `ai/strategy_profile.py`, `ai/ev_player.py`, 3× `decks/gameplans/*.json` | ✅ landed (`bc602db`) | **Azorius WR 15% → 23%** (n=30); Counterspell delta +0.52, Teferi cast more often |
+
+**Living End audit (n=30):**
+- Win rate: 3% → **40%** (12 wins / 30 games)
+- Win conditions: damage:11 + timeout:1 (was damage:4)
+- Root cause was dual: (a) cascade-detection oracle pattern was too strict and never matched Living End's actual oracle, so `_resolve_living_end` was dead code; (b) even when creatures returned, GoalEngine kept running cascade-deck enabling goals.
+
+**Storm audit (n=60):**
+- Win rate: 25-30% → 30% (18/60); damage:17 + timeout:1
+- Grapeshot delta +0.94, Wish delta +0.78 — finishers correctly correlate with wins
+- Below 35-40% target; remaining gap is in storm_patience / _combo_modifier tuning (out of iteration-5 scope per plan)
+
+**Matrix n=10 power rankings (post-iter5):**
+- Living End: 6%/4% → **27%/23%** (huge)
+- Azorius Control (WST): 33%/29% → 33%/35%
+- Living End move from worst-deck slot
+
+Two persistent smoke failures (#1/#2 GD on Signal Pest, #6 Thraben Charm T4, #7 Cat Token) are unrelated to iteration-5 work and documented for future sessions.
 
 Session 5b changes (on top of session 5):
   * engine/card_database.py: removal tag extended to artifact/enchantment/all_nonland target_types; lands filtered out (Channel lands like Boseiju stay untagged)
