@@ -112,7 +112,7 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
 </style></head><body>
 <div class="header">
   <h1><span style="color:#0969da">Boros Energy</span> <span class="vs">vs</span> <span style="color:#d1242f">Affinity</span></h1>
-  <div class="series-score"><span class="bug-s">0</span> – <span class="opp-s">2</span> <span style="font-size:.6em;color:#484f58;font-weight:400">(Affinity wins)</span></div>
+  <div class="series-score"><span class="bug-s">1</span> – <span class="opp-s">2</span> <span style="font-size:.6em;color:#484f58;font-weight:400">(Affinity wins)</span></div>
   <div style="color:#484f58;font-size:.8em;margin-top:4px">Modern Bo3 · Seed 60100 · Apr 2026</div>
 </div>
 <div class="legend-box">
@@ -128,7 +128,8 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
   <div class="legend-note">Hand shown = active player's cards (tracked from opening hand + draws − plays). Board shown = state <em>after</em> turn resolves.</div>
 </div>
 <div class="game-tabs"><div class="game-tab active" onclick="showGame(0)">Game 1 <span class="winner-dot opp"></span></div>
-<div class="game-tab " onclick="showGame(1)">Game 2 <span class="winner-dot opp"></span></div>
+<div class="game-tab " onclick="showGame(1)">Game 2 <span class="winner-dot bug"></span></div>
+<div class="game-tab " onclick="showGame(2)">Game 3 <span class="winner-dot bug"></span></div>
 </div>
 <div class="game-panel active" id="game-0">
 <div class="meta">
@@ -633,7 +634,7 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <h3>Life Totals</h3>
     <span style="font-size:10px;color:#484f58">— dashed lines at 5, 10, 15 —</span>
   </div>
-  <svg viewBox="0 0 760 80" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:80px"><line x1="10" y1="56" x2="750" y2="56" stroke="#d0d7de" stroke-width="1" stroke-dasharray="3,3"/><text x="6" y="59" fill="#484f58" font-size="7" text-anchor="end">5</text><line x1="10" y1="39" x2="750" y2="39" stroke="#d0d7de" stroke-width="1" stroke-dasharray="3,3"/><text x="6" y="42" fill="#484f58" font-size="7" text-anchor="end">10</text><line x1="10" y1="22" x2="750" y2="22" stroke="#d0d7de" stroke-width="1" stroke-dasharray="3,3"/><text x="6" y="25" fill="#484f58" font-size="7" text-anchor="end">15</text><polyline points="10,5 84,5 158,15 232,15 306,25 380,25 454,22 528,42 602,28 676,56 750,45" fill="none" stroke="#0969da" stroke-width="2" opacity=".85"/><polyline points="10,5 84,5 158,5 232,5 306,5 380,5 454,18 528,18 602,28 676,28 750,59" fill="none" stroke="#d1242f" stroke-width="2" opacity=".85"/><circle cx="10" cy="5" r="3" fill="#0969da"/><text x="10" y="0" fill="#0969da" font-size="8" text-anchor="middle">20</text><circle cx="750" cy="45" r="3" fill="#0969da"/><text x="750" y="40" fill="#0969da" font-size="8" text-anchor="end">8</text><circle cx="10" cy="5" r="3" fill="#d1242f"/><text x="10" y="0" fill="#d1242f" font-size="8" text-anchor="middle">20</text><circle cx="750" cy="59" r="3" fill="#d1242f"/><text x="750" y="54" fill="#d1242f" font-size="8" text-anchor="end">4</text><text x="10" y="76" fill="#0969da" font-size="8" font-weight="600">Boros Energy</text><text x="750" y="76" fill="#d1242f" font-size="8" font-weight="600" text-anchor="end">Affinity</text></svg>
+  <svg viewBox="0 0 760 80" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:80px"><line x1="10" y1="56" x2="750" y2="56" stroke="#d0d7de" stroke-width="1" stroke-dasharray="3,3"/><text x="6" y="59" fill="#484f58" font-size="7" text-anchor="end">5</text><line x1="10" y1="39" x2="750" y2="39" stroke="#d0d7de" stroke-width="1" stroke-dasharray="3,3"/><text x="6" y="42" fill="#484f58" font-size="7" text-anchor="end">10</text><line x1="10" y1="22" x2="750" y2="22" stroke="#d0d7de" stroke-width="1" stroke-dasharray="3,3"/><text x="6" y="25" fill="#484f58" font-size="7" text-anchor="end">15</text><polyline points="10,5 66,5 123,15 180,15 237,25 294,25 351,25 408,52 465,52 522,52 579,42 636,42 693,32 750,32" fill="none" stroke="#0969da" stroke-width="2" opacity=".85"/><polyline points="10,5 66,5 123,5 180,5 237,11 294,11 351,32 408,32 465,42 522,42 579,52 636,52 693,62 750,62" fill="none" stroke="#d1242f" stroke-width="2" opacity=".85"/><circle cx="10" cy="5" r="3" fill="#0969da"/><text x="10" y="0" fill="#0969da" font-size="8" text-anchor="middle">20</text><circle cx="750" cy="32" r="3" fill="#0969da"/><text x="750" y="27" fill="#0969da" font-size="8" text-anchor="end">12</text><circle cx="10" cy="5" r="3" fill="#d1242f"/><text x="10" y="0" fill="#d1242f" font-size="8" text-anchor="middle">20</text><circle cx="750" cy="62" r="3" fill="#d1242f"/><text x="750" y="57" fill="#d1242f" font-size="8" text-anchor="end">3</text><text x="10" y="76" fill="#0969da" font-size="8" font-weight="600">Boros Energy</text><text x="750" y="76" fill="#d1242f" font-size="8" font-weight="600" text-anchor="end">Affinity</text></svg>
 </div>
 <div class="controls">
   <button onclick="expandAll()">Expand All</button>
@@ -690,27 +691,23 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Nettlecyst</span></div>
     <div class="section-label">Hand (8 cards)</div><div class="hand-pills"><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=small" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'">Urza's Saga</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Signal%20Pest&format=image&version=small" alt="Signal Pest" loading="lazy" onerror="this.style.display='none'">Signal Pest</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Cranial%20Plating&format=image&version=small" alt="Cranial Plating" loading="lazy" onerror="this.style.display='none'">Cranial Plating</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Engineered%20Explosives&format=image&version=small" alt="Engineered Explosives" loading="lazy" onerror="this.style.display='none'">Engineered Explosives</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Thought%20Monitor&format=image&version=small" alt="Thought Monitor" loading="lazy" onerror="this.style.display='none'">Thought Monitor</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nettlecyst&format=image&version=small" alt="Nettlecyst" loading="lazy" onerror="this.style.display='none'">Nettlecyst</span></div>
     <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Urza's Saga</span></div>
-<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Engineered Explosives (1) (X=1)</span><span class="reason-toggle" onclick="toggleReason('r2t1p2s2')" title="Show reasoning">·</span><div class="reasoning" id="r2t1p2s2" style="display:none">← deploy_engine</div></div>
-<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Engineered Explosives enters with 1 charge counters</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action key">Cast Cranial Plating (2)</span><span class="reason-toggle" onclick="toggleReason('r2t1p2s2')" title="Show reasoning">·</span><div class="reasoning" id="r2t1p2s2" style="display:none">← deploy_engine</div></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action key">Cranial Plating enters the battlefield (unattached)</span></div>
 <div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Signal Pest (1)</span><span class="reason-toggle" onclick="toggleReason('r2t1p2s4')" title="Show reasoning">·</span><div class="reasoning" id="r2t1p2s4" style="display:none">← deploy_engine</div></div>
-<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Activate Engineered Explosives (sacrifice)</span></div>
-<div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  destroys Ragavan, Nimble Pilferer (MV=1)</span></div>
-<div class="play"><span class="step">7.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Ornithopter (0)</span><span class="reason-toggle" onclick="toggleReason('r2t1p2s7')" title="Show reasoning">·</span><div class="reasoning" id="r2t1p2s7" style="display:none">← deploy_engine [enablers]</div></div>
-<div class="play"><span class="step">8.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Ornithopter (0)</span><span class="reason-toggle" onclick="toggleReason('r2t1p2s8')" title="Show reasoning">·</span><div class="reasoning" id="r2t1p2s8" style="display:none">← deploy_engine [enablers]</div></div>
 
     
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
         <h4><span style="color:#0969da">Boros Energy</span> — 1 land</h4>
-        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ragavan&format=image&version=small" alt="Ragavan" loading="lazy" onerror="this.style.display='none'">Ragavan</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nimble%20Pilferer&format=image&version=small" alt="Nimble Pilferer" loading="lazy" onerror="this.style.display='none'">Nimble Pilferer<span class="pt">2/1</span></span></div>
         
         <div class="land-list">Sacred Foundry</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:#d1242f">Affinity</span> — 1 land</h4>
-        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Signal%20Pest&format=image&version=small" alt="Signal Pest" loading="lazy" onerror="this.style.display='none'">Signal Pest<span class="pt">0/1</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">0/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">0/2</span></span></div>
-        
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Signal%20Pest&format=image&version=small" alt="Signal Pest" loading="lazy" onerror="this.style.display='none'">Signal Pest<span class="pt">0/1</span></span></div>
+        <div class="other-list">⚔ Cranial Plating</div>
         <div class="land-list">Urza's Saga [T]</div>
       </div>
     </div>
@@ -722,7 +719,7 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
       <span class="player bug">Boros Energy</span>
       <span class="life">Life: <b>17</b> &nbsp;|&nbsp; Opp: 20</span>
       <span class="hand-count">6c</span>
-      <span class="star-marker" title="Key turn">★2</span>
+      
     </div>
     <span class="arrow">&#9654;</span>
   </div>
@@ -731,23 +728,27 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="section-label">Hand (6 cards)</div><div class="hand-pills"><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Phlage%2C%20Titan%20of%20Fire%27s%20Fury&format=image&version=small" alt="Phlage, Titan of Fire's Fury" loading="lazy" onerror="this.style.display='none'">Phlage, Titan of Fire's Fury</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Thraben%20Charm&format=image&version=small" alt="Thraben Charm" loading="lazy" onerror="this.style.display='none'">Thraben Charm</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Galvanic%20Discharge&format=image&version=small" alt="Galvanic Discharge" loading="lazy" onerror="this.style.display='none'">Galvanic Discharge</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Flooded%20Strand&format=image&version=small" alt="Flooded Strand" loading="lazy" onerror="this.style.display='none'">Flooded Strand</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ajani%2C%20Nacatl%20Pariah%20//%20Ajani%2C%20Nacatl%20Avenger&format=image&version=small" alt="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger" loading="lazy" onerror="this.style.display='none'">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Guide%20of%20Souls&format=image&version=small" alt="Guide of Souls" loading="lazy" onerror="this.style.display='none'">Guide of Souls</span></div>
     <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Flooded Strand</span></div>
 <div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f5f0ff;color:#6639ba">FETCH</span><span class="action">Crack Flooded Strand (pay 1 life) -&gt; Sacred Foundry (pay 2 life, untapped, life: 14)</span></div>
-<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">REMOVE</span><span class="action">Cast Galvanic Discharge (R)</span><span class="reason-toggle" onclick="toggleReason('r2t2p1s3')" title="Show reasoning">·</span><div class="reasoning" id="r2t2p1s3" style="display:none">← curve_out [interaction]</div></div>
-<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">DAMAGE</span><span class="action">Galvanic Discharge deals 3 to Signal Pest</span></div>
-<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Guide of Souls (W)</span><span class="reason-toggle" onclick="toggleReason('r2t2p1s5')" title="Show reasoning">·</span><div class="reasoning" id="r2t2p1s5" style="display:none">← curve_out [enablers]</div></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)</span><span class="reason-toggle" onclick="toggleReason('r2t2p1s3')" title="Show reasoning">·</span><div class="reasoning" id="r2t2p1s3" style="display:none">← curve_out [payoffs]</div></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Create 1x Cat token(s)</span></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Ajani creates 2/1 Cat Warrior token</span></div>
+<div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Ragavan, Nimble Pilferer</span></div>
+<div class="play"><span class="step">7.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Ragavan, Nimble Pilferer (2/1) → 2 dmg to player</span></div>
+<div class="play"><span class="step">8.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Create 1x Treasure token(s)</span></div>
+<div class="play"><span class="step">9.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Ragavan, Nimble Pilferer exiles Mox Opal from top of P2's library</span></div>
 
-    
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Ragavan, Nimble Pilferer</div><div class="combat-breakdown"> Ragavan, Nimble Pilferer 2/1 · 2 dmg</div><div class="combat-detail">2 damage → life 20 → 18</div>
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
         <h4><span style="color:#0969da">Boros Energy</span> — 2 lands</h4>
-        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Guide%20of%20Souls&format=image&version=small" alt="Guide of Souls" loading="lazy" onerror="this.style.display='none'">Guide of Souls<span class="pt">1/2</span></span></div>
-        
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ragavan&format=image&version=small" alt="Ragavan" loading="lazy" onerror="this.style.display='none'">Ragavan</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nimble%20Pilferer&format=image&version=small" alt="Nimble Pilferer" loading="lazy" onerror="this.style.display='none'">Nimble Pilferer<span class="pt">2/1</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ajani&format=image&version=small" alt="Ajani" loading="lazy" onerror="this.style.display='none'">Ajani</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nacatl%20Pariah%20//%20Ajani&format=image&version=small" alt="Nacatl Pariah // Ajani" loading="lazy" onerror="this.style.display='none'">Nacatl Pariah // Ajani</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nacatl%20Avenger&format=image&version=small" alt="Nacatl Avenger" loading="lazy" onerror="this.style.display='none'">Nacatl Avenger<span class="pt">1/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Cat%20Token&format=image&version=small" alt="Cat Token" loading="lazy" onerror="this.style.display='none'">Cat Token<span class="pt">2/1</span></span></div>
+        <div class="other-list">⚔ Treasure Token</div>
         <div class="land-list">Sacred Foundry [T], Sacred Foundry [T]</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:#d1242f">Affinity</span> — 1 land</h4>
-        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">0/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">0/2</span></span></div>
-        
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Signal%20Pest&format=image&version=small" alt="Signal Pest" loading="lazy" onerror="this.style.display='none'">Signal Pest<span class="pt">0/1</span></span></div>
+        <div class="other-list">⚔ Cranial Plating</div>
         <div class="land-list">Urza's Saga</div>
       </div>
     </div>
@@ -757,33 +758,37 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="left">
       <span class="tnum opp">T2</span>
       <span class="player opp">Affinity</span>
-      <span class="life">Life: <b>20</b> &nbsp;|&nbsp; Opp: 14</span>
-      <span class="hand-count">4c</span>
-      <span class="star-marker" title="Key turn">★2</span>
+      <span class="life">Life: <b>18</b> &nbsp;|&nbsp; Opp: 14</span>
+      <span class="hand-count">6c</span>
+      
     </div>
     <span class="arrow">&#9654;</span>
   </div>
   <div class="turn-body">
-    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Mox Opal</span></div>
-    <div class="section-label">Hand (4 cards)</div><div class="hand-pills"><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Cranial%20Plating&format=image&version=small" alt="Cranial Plating" loading="lazy" onerror="this.style.display='none'">Cranial Plating</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Thought%20Monitor&format=image&version=small" alt="Thought Monitor" loading="lazy" onerror="this.style.display='none'">Thought Monitor</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nettlecyst&format=image&version=small" alt="Nettlecyst" loading="lazy" onerror="this.style.display='none'">Nettlecyst</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Mox%20Opal&format=image&version=small" alt="Mox Opal" loading="lazy" onerror="this.style.display='none'">Mox Opal</span></div>
-    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Mox Opal (0)</span><span class="reason-toggle" onclick="toggleReason('r2t2p2s1')" title="Show reasoning">·</span><div class="reasoning" id="r2t2p2s1" style="display:none">← deploy_engine [engines]</div></div>
-<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action key">Cast Cranial Plating (2)</span><span class="reason-toggle" onclick="toggleReason('r2t2p2s2')" title="Show reasoning">·</span><div class="reasoning" id="r2t2p2s2" style="display:none">← curve_out [payoffs]</div></div>
-<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action key">Cranial Plating enters the battlefield (unattached)</span></div>
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Darksteel Citadel</span></div>
+    <div class="section-label">Hand (6 cards)</div><div class="hand-pills"><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Engineered%20Explosives&format=image&version=small" alt="Engineered Explosives" loading="lazy" onerror="this.style.display='none'">Engineered Explosives</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Thought%20Monitor&format=image&version=small" alt="Thought Monitor" loading="lazy" onerror="this.style.display='none'">Thought Monitor</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nettlecyst&format=image&version=small" alt="Nettlecyst" loading="lazy" onerror="this.style.display='none'">Nettlecyst</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Darksteel%20Citadel&format=image&version=small" alt="Darksteel Citadel" loading="lazy" onerror="this.style.display='none'">Darksteel Citadel</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Darksteel Citadel</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Engineered Explosives (2) (X=2)</span><span class="reason-toggle" onclick="toggleReason('r2t2p2s2')" title="Show reasoning">·</span><div class="reasoning" id="r2t2p2s2" style="display:none">← deploy_engine</div></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Engineered Explosives enters with 1 charge counters</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Ornithopter (0)</span><span class="reason-toggle" onclick="toggleReason('r2t2p2s4')" title="Show reasoning">·</span><div class="reasoning" id="r2t2p2s4" style="display:none">← deploy_engine [enablers]</div></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Ornithopter (0)</span><span class="reason-toggle" onclick="toggleReason('r2t2p2s5')" title="Show reasoning">·</span><div class="reasoning" id="r2t2p2s5" style="display:none">← deploy_engine [enablers]</div></div>
+<div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Activate Engineered Explosives (sacrifice)</span></div>
+<div class="play"><span class="step">7.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  destroys Ragavan, Nimble Pilferer (MV=1)</span></div>
 
     
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
         <h4><span style="color:#0969da">Boros Energy</span> — 2 lands</h4>
-        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Guide%20of%20Souls&format=image&version=small" alt="Guide of Souls" loading="lazy" onerror="this.style.display='none'">Guide of Souls<span class="pt">1/2</span></span></div>
-        
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ajani&format=image&version=small" alt="Ajani" loading="lazy" onerror="this.style.display='none'">Ajani</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nacatl%20Pariah%20//%20Ajani&format=image&version=small" alt="Nacatl Pariah // Ajani" loading="lazy" onerror="this.style.display='none'">Nacatl Pariah // Ajani</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nacatl%20Avenger&format=image&version=small" alt="Nacatl Avenger" loading="lazy" onerror="this.style.display='none'">Nacatl Avenger<span class="pt">1/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Cat%20Token&format=image&version=small" alt="Cat Token" loading="lazy" onerror="this.style.display='none'">Cat Token<span class="pt">2/1</span></span></div>
+        <div class="other-list">⚔ Treasure Token</div>
         <div class="land-list">Sacred Foundry, Sacred Foundry</div>
       </div>
       <div class="board-side opp">
-        <h4><span style="color:#d1242f">Affinity</span> — 1 land</h4>
-        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">0/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">0/2</span></span></div>
-        <div class="other-list">⚔ Mox Opal, Cranial Plating</div>
-        <div class="land-list">Urza's Saga [T]</div>
+        <h4><span style="color:#d1242f">Affinity</span> — 2 lands</h4>
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Signal%20Pest&format=image&version=small" alt="Signal Pest" loading="lazy" onerror="this.style.display='none'">Signal Pest<span class="pt">0/1</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">0/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">0/2</span></span></div>
+        <div class="other-list">⚔ Cranial Plating</div>
+        <div class="land-list">Urza's Saga [T], Darksteel Citadel [T]</div>
       </div>
     </div>
   </div>
@@ -792,39 +797,38 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="left">
       <span class="tnum bug">T3</span>
       <span class="player bug">Boros Energy</span>
-      <span class="life">Life: <b>14</b> &nbsp;|&nbsp; Opp: 20</span>
-      <span class="hand-count">4c</span>
-      <span class="star-marker" title="Key turn">★3</span>
+      <span class="life">Life: <b>14</b> &nbsp;|&nbsp; Opp: 18</span>
+      <span class="hand-count">5c</span>
+      <span class="star-marker" title="Key turn">★2</span>
     </div>
     <span class="arrow">&#9654;</span>
   </div>
   <div class="turn-body">
     <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Marsh Flats</span></div>
-    <div class="section-label">Hand (4 cards)</div><div class="hand-pills"><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Phlage%2C%20Titan%20of%20Fire%27s%20Fury&format=image&version=small" alt="Phlage, Titan of Fire's Fury" loading="lazy" onerror="this.style.display='none'">Phlage, Titan of Fire's Fury</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Thraben%20Charm&format=image&version=small" alt="Thraben Charm" loading="lazy" onerror="this.style.display='none'">Thraben Charm</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ajani%2C%20Nacatl%20Pariah%20//%20Ajani%2C%20Nacatl%20Avenger&format=image&version=small" alt="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger" loading="lazy" onerror="this.style.display='none'">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Marsh%20Flats&format=image&version=small" alt="Marsh Flats" loading="lazy" onerror="this.style.display='none'">Marsh Flats</span></div>
+    <div class="section-label">Hand (5 cards)</div><div class="hand-pills"><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Phlage%2C%20Titan%20of%20Fire%27s%20Fury&format=image&version=small" alt="Phlage, Titan of Fire's Fury" loading="lazy" onerror="this.style.display='none'">Phlage, Titan of Fire's Fury</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Thraben%20Charm&format=image&version=small" alt="Thraben Charm" loading="lazy" onerror="this.style.display='none'">Thraben Charm</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Galvanic%20Discharge&format=image&version=small" alt="Galvanic Discharge" loading="lazy" onerror="this.style.display='none'">Galvanic Discharge</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Guide%20of%20Souls&format=image&version=small" alt="Guide of Souls" loading="lazy" onerror="this.style.display='none'">Guide of Souls</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Marsh%20Flats&format=image&version=small" alt="Marsh Flats" loading="lazy" onerror="this.style.display='none'">Marsh Flats</span></div>
     <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Marsh Flats</span></div>
 <div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f5f0ff;color:#6639ba">FETCH</span><span class="action">Crack Marsh Flats (pay 1 life) -&gt; Sacred Foundry (pay 2 life, untapped, life: 11)</span></div>
 <div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Phlage, Titan of Fire's Fury (1WR)</span><span class="reason-toggle" onclick="toggleReason('r2t3p1s3')" title="Show reasoning">·</span><div class="reasoning" id="r2t3p1s3" style="display:none">← curve_out</div></div>
 <div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">DAMAGE</span><span class="action">Phlage: 3 damage to opponent, gain 3 life</span></div>
 <div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Phlage sacrificed (not escaped)</span></div>
-<div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Gain 1 life from Guide of Souls (life: 15)</span></div>
-<div class="play"><span class="step">7.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">+1 energy from Guide of Souls (total: 1)</span></div>
-<div class="play"><span class="step">8.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Guide of Souls</span></div>
-<div class="play"><span class="step">9.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Guide of Souls (1/2) → 1 dmg to player</span></div>
+<div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token</span></div>
+<div class="play"><span class="step">7.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player</span></div>
+<div class="play"><span class="step">8.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Cat Token (2/1) → 2 dmg to player</span></div>
 
-    <div class="section-label">Combat</div><div class="combat-detail">⚔ Guide of Souls</div><div class="combat-breakdown"> Guide of Souls 1/2 · 1 dmg</div><div class="combat-detail">1 damage → life 17 → 16</div>
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token</div><div class="combat-breakdown"> Ajani, Nacatl Pariah // Ajani, Nacatl Avenger 1/2 · 1 dmg</div><div class="combat-breakdown"> Cat Token 2/1 · 2 dmg</div><div class="combat-detail">3 damage → life 15 → 12</div>
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
         <h4><span style="color:#0969da">Boros Energy</span> — 3 lands</h4>
-        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Guide%20of%20Souls&format=image&version=small" alt="Guide of Souls" loading="lazy" onerror="this.style.display='none'">Guide of Souls<span class="pt">1/2</span></span></div>
-        
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ajani&format=image&version=small" alt="Ajani" loading="lazy" onerror="this.style.display='none'">Ajani</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nacatl%20Pariah%20//%20Ajani&format=image&version=small" alt="Nacatl Pariah // Ajani" loading="lazy" onerror="this.style.display='none'">Nacatl Pariah // Ajani</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nacatl%20Avenger&format=image&version=small" alt="Nacatl Avenger" loading="lazy" onerror="this.style.display='none'">Nacatl Avenger<span class="pt">1/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Cat%20Token&format=image&version=small" alt="Cat Token" loading="lazy" onerror="this.style.display='none'">Cat Token<span class="pt">2/1</span></span></div>
+        <div class="other-list">⚔ Treasure Token</div>
         <div class="land-list">Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T]</div>
       </div>
       <div class="board-side opp">
-        <h4><span style="color:#d1242f">Affinity</span> — 1 land</h4>
-        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">0/2</span><span class="equip-tag" title="Cranial Plating">⚔Cranial Plating</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">0/2</span><span class="equip-tag" title="Cranial Plating">⚔Cranial Plating</span></span></div>
-        <div class="other-list">⚔ Mox Opal, Cranial Plating</div>
-        <div class="land-list">Urza's Saga</div>
+        <h4><span style="color:#d1242f">Affinity</span> — 2 lands</h4>
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Signal%20Pest&format=image&version=small" alt="Signal Pest" loading="lazy" onerror="this.style.display='none'">Signal Pest<span class="pt">0/1</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">0/2</span><span class="equip-tag" title="Cranial Plating">⚔Cranial Plating</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">0/2</span><span class="equip-tag" title="Cranial Plating">⚔Cranial Plating</span></span></div>
+        <div class="other-list">⚔ Cranial Plating</div>
+        <div class="land-list">Urza's Saga, Darksteel Citadel</div>
       </div>
     </div>
   </div>
@@ -833,36 +837,37 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="left">
       <span class="tnum opp">T3</span>
       <span class="player opp">Affinity</span>
-      <span class="life">Life: <b>16</b> &nbsp;|&nbsp; Opp: 15</span>
+      <span class="life">Life: <b>12</b> &nbsp;|&nbsp; Opp: 14</span>
       <span class="hand-count">3c</span>
-      <span class="star-marker" title="Key turn">★3</span>
+      <span class="star-marker" title="Key turn">★2</span>
     </div>
     <span class="arrow">&#9654;</span>
   </div>
   <div class="turn-body">
-    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Darksteel Citadel</span></div>
-    <div class="section-label">Hand (3 cards)</div><div class="hand-pills"><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Thought%20Monitor&format=image&version=small" alt="Thought Monitor" loading="lazy" onerror="this.style.display='none'">Thought Monitor</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nettlecyst&format=image&version=small" alt="Nettlecyst" loading="lazy" onerror="this.style.display='none'">Nettlecyst</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Darksteel%20Citadel&format=image&version=small" alt="Darksteel Citadel" loading="lazy" onerror="this.style.display='none'">Darksteel Citadel</span></div>
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Cranial Plating</span></div>
+    <div class="section-label">Hand (3 cards)</div><div class="hand-pills"><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Thought%20Monitor&format=image&version=small" alt="Thought Monitor" loading="lazy" onerror="this.style.display='none'">Thought Monitor</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nettlecyst&format=image&version=small" alt="Nettlecyst" loading="lazy" onerror="this.style.display='none'">Nettlecyst</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Cranial%20Plating&format=image&version=small" alt="Cranial Plating" loading="lazy" onerror="this.style.display='none'">Cranial Plating</span></div>
     <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Create 1x Construct token(s)</span></div>
 <div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Urza's Saga Ch.II: Create Construct Token</span></div>
-<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Darksteel Citadel</span></div>
-<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#fff8c5;color:#9a6700">TRIGGER</span><span class="action key">Equip Cranial Plating to Ornithopter (cost 1)</span></div>
-<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Ornithopter</span></div>
-<div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Ornithopter (6/2) → 6 dmg to player</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#fff8c5;color:#9a6700">TRIGGER</span><span class="action key">Equip Cranial Plating to Ornithopter (cost 1)</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action key">Cast Cranial Plating (2)</span><span class="reason-toggle" onclick="toggleReason('r2t3p2s4')" title="Show reasoning">·</span><div class="reasoning" id="r2t3p2s4" style="display:none">← curve_out [payoffs]</div></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action key">Cranial Plating enters the battlefield (unattached)</span></div>
+<div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Signal Pest, Ornithopter</span></div>
+<div class="play"><span class="step">7.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Ornithopter (8/2) → 8 dmg to player</span></div>
 
-    <div class="section-label">Combat</div><div class="combat-detail">⚔ Ornithopter</div><div class="combat-breakdown"> Ornithopter 6/2 · 6 dmg</div><div class="combat-detail">6 damage → life 15 → 9</div>
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Signal Pest, Ornithopter</div><div class="combat-breakdown"> Ornithopter 8/2 · 8 dmg</div><div class="combat-detail">8 damage → life 14 → 6</div>
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
         <h4><span style="color:#0969da">Boros Energy</span> — 3 lands</h4>
-        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Guide%20of%20Souls&format=image&version=small" alt="Guide of Souls" loading="lazy" onerror="this.style.display='none'">Guide of Souls<span class="pt">1/2</span></span></div>
-        
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ajani&format=image&version=small" alt="Ajani" loading="lazy" onerror="this.style.display='none'">Ajani</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nacatl%20Pariah%20//%20Ajani&format=image&version=small" alt="Nacatl Pariah // Ajani" loading="lazy" onerror="this.style.display='none'">Nacatl Pariah // Ajani</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nacatl%20Avenger&format=image&version=small" alt="Nacatl Avenger" loading="lazy" onerror="this.style.display='none'">Nacatl Avenger<span class="pt">1/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Cat%20Token&format=image&version=small" alt="Cat Token" loading="lazy" onerror="this.style.display='none'">Cat Token<span class="pt">2/1</span></span></div>
+        <div class="other-list">⚔ Treasure Token</div>
         <div class="land-list">Sacred Foundry, Sacred Foundry, Sacred Foundry</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:#d1242f">Affinity</span> — 2 lands</h4>
-        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">6/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">0/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=small" alt="Construct Token" loading="lazy" onerror="this.style.display='none'">Construct Token<span class="pt">6/6</span></span></div>
-        <div class="other-list">⚔ Mox Opal, Cranial Plating</div>
-        <div class="land-list">Urza's Saga [T], Darksteel Citadel</div>
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Signal%20Pest&format=image&version=small" alt="Signal Pest" loading="lazy" onerror="this.style.display='none'">Signal Pest<span class="pt">0/1</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">7/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">0/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=small" alt="Construct Token" loading="lazy" onerror="this.style.display='none'">Construct Token<span class="pt">7/7</span></span></div>
+        <div class="other-list">⚔ Cranial Plating, Cranial Plating</div>
+        <div class="land-list">Urza's Saga [T], Darksteel Citadel [T]</div>
       </div>
     </div>
   </div>
@@ -871,36 +876,39 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="left">
       <span class="tnum bug">T4</span>
       <span class="player bug">Boros Energy</span>
-      <span class="life">Life: <b>9</b> &nbsp;|&nbsp; Opp: 16</span>
-      <span class="hand-count">3c</span>
-      <span class="star-marker" title="Key turn">★4</span>
+      <span class="life">Life: <b>6</b> &nbsp;|&nbsp; Opp: 12</span>
+      <span class="hand-count">4c</span>
+      <span class="star-marker" title="Key turn">★3</span>
     </div>
     <span class="arrow">&#9654;</span>
   </div>
   <div class="turn-body">
     <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Snow-Covered Plains</span></div>
-    <div class="section-label">Hand (3 cards)</div><div class="hand-pills"><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Thraben%20Charm&format=image&version=small" alt="Thraben Charm" loading="lazy" onerror="this.style.display='none'">Thraben Charm</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ajani%2C%20Nacatl%20Pariah%20//%20Ajani%2C%20Nacatl%20Avenger&format=image&version=small" alt="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger" loading="lazy" onerror="this.style.display='none'">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Snow-Covered%20Plains&format=image&version=small" alt="Snow-Covered Plains" loading="lazy" onerror="this.style.display='none'">Snow-Covered Plains</span></div>
+    <div class="section-label">Hand (4 cards)</div><div class="hand-pills"><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Thraben%20Charm&format=image&version=small" alt="Thraben Charm" loading="lazy" onerror="this.style.display='none'">Thraben Charm</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Galvanic%20Discharge&format=image&version=small" alt="Galvanic Discharge" loading="lazy" onerror="this.style.display='none'">Galvanic Discharge</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Guide%20of%20Souls&format=image&version=small" alt="Guide of Souls" loading="lazy" onerror="this.style.display='none'">Guide of Souls</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Snow-Covered%20Plains&format=image&version=small" alt="Snow-Covered Plains" loading="lazy" onerror="this.style.display='none'">Snow-Covered Plains</span></div>
     <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Snow-Covered Plains</span></div>
-<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Escape Phlage, Titan of Fire's Fury (exile 5 cards)</span><span class="reason-toggle" onclick="toggleReason('r2t4p1s2')" title="Show reasoning">·</span><div class="reasoning" id="r2t4p1s2" style="display:none">← curve_out</div></div>
-<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Phlage, Titan of Fire's Fury (1WR)</span></div>
-<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">DAMAGE</span><span class="action">Phlage: 3 damage to opponent, gain 3 life</span></div>
-<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Gain 1 life from Guide of Souls (life: 13)</span></div>
-<div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">+1 energy from Guide of Souls (total: 2)</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Thraben Charm (1W)</span><span class="reason-toggle" onclick="toggleReason('r2t4p1s2')" title="Show reasoning">·</span><div class="reasoning" id="r2t4p1s2" style="display:none">← curve_out [interaction]</div></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Thraben Charm destroys enchantment Urza's Saga</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">REMOVE</span><span class="action">Cast Galvanic Discharge (R)</span><span class="reason-toggle" onclick="toggleReason('r2t4p1s4')" title="Show reasoning">·</span><div class="reasoning" id="r2t4p1s4" style="display:none">← curve_out [interaction]</div></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">DAMAGE</span><span class="action">Galvanic Discharge deals 3 to Ornithopter</span></div>
+<div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Guide of Souls (W)</span><span class="reason-toggle" onclick="toggleReason('r2t4p1s6')" title="Show reasoning">·</span><div class="reasoning" id="r2t4p1s6" style="display:none">← curve_out [enablers]</div></div>
+<div class="play"><span class="step">7.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token</span></div>
+<div class="play"><span class="step">8.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player</span></div>
+<div class="play"><span class="step">9.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Cat Token (2/1) → 2 dmg to player</span></div>
 
-    
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token</div><div class="combat-breakdown"> Ajani, Nacatl Pariah // Ajani, Nacatl Avenger 1/2 · 1 dmg</div><div class="combat-breakdown"> Cat Token 2/1 · 2 dmg</div><div class="combat-detail">3 damage → life 12 → 9</div>
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
         <h4><span style="color:#0969da">Boros Energy</span> — 4 lands</h4>
-        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Guide%20of%20Souls&format=image&version=small" alt="Guide of Souls" loading="lazy" onerror="this.style.display='none'">Guide of Souls<span class="pt">1/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Phlage&format=image&version=small" alt="Phlage" loading="lazy" onerror="this.style.display='none'">Phlage</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Titan%20of%20Fire%27s%20Fury&format=image&version=small" alt="Titan of Fire's Fury" loading="lazy" onerror="this.style.display='none'">Titan of Fire's Fury<span class="pt">6/6</span></span></div>
-        
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ajani&format=image&version=small" alt="Ajani" loading="lazy" onerror="this.style.display='none'">Ajani</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nacatl%20Pariah%20//%20Ajani&format=image&version=small" alt="Nacatl Pariah // Ajani" loading="lazy" onerror="this.style.display='none'">Nacatl Pariah // Ajani</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nacatl%20Avenger&format=image&version=small" alt="Nacatl Avenger" loading="lazy" onerror="this.style.display='none'">Nacatl Avenger<span class="pt">1/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Cat%20Token&format=image&version=small" alt="Cat Token" loading="lazy" onerror="this.style.display='none'">Cat Token<span class="pt">2/1</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Guide%20of%20Souls&format=image&version=small" alt="Guide of Souls" loading="lazy" onerror="this.style.display='none'">Guide of Souls<span class="pt">1/2</span></span></div>
+        <div class="other-list">⚔ Treasure Token</div>
         <div class="land-list">Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Snow-Covered Plains [T]</div>
       </div>
       <div class="board-side opp">
-        <h4><span style="color:#d1242f">Affinity</span> — 2 lands</h4>
-        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">6/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">0/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=small" alt="Construct Token" loading="lazy" onerror="this.style.display='none'">Construct Token<span class="pt">6/6</span></span></div>
-        <div class="other-list">⚔ Mox Opal, Cranial Plating</div>
-        <div class="land-list">Urza's Saga, Darksteel Citadel</div>
+        <h4><span style="color:#d1242f">Affinity</span> — 1 land</h4>
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Signal%20Pest&format=image&version=small" alt="Signal Pest" loading="lazy" onerror="this.style.display='none'">Signal Pest<span class="pt">0/1</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">0/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=small" alt="Construct Token" loading="lazy" onerror="this.style.display='none'">Construct Token<span class="pt">6/6</span></span></div>
+        <div class="other-list">⚔ Cranial Plating, Cranial Plating</div>
+        <div class="land-list">Darksteel Citadel</div>
       </div>
     </div>
   </div>
@@ -909,36 +917,32 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="left">
       <span class="tnum opp">T4</span>
       <span class="player opp">Affinity</span>
-      <span class="life">Life: <b>13</b> &nbsp;|&nbsp; Opp: 13</span>
+      <span class="life">Life: <b>9</b> &nbsp;|&nbsp; Opp: 6</span>
       <span class="hand-count">3c</span>
-      <span class="star-marker" title="Key turn">★4</span>
+      <span class="star-marker" title="Key turn">★3</span>
     </div>
     <span class="arrow">&#9654;</span>
   </div>
   <div class="turn-body">
-    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Cranial Plating</span></div>
-    <div class="section-label">Hand (3 cards)</div><div class="hand-pills"><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Thought%20Monitor&format=image&version=small" alt="Thought Monitor" loading="lazy" onerror="this.style.display='none'">Thought Monitor</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nettlecyst&format=image&version=small" alt="Nettlecyst" loading="lazy" onerror="this.style.display='none'">Nettlecyst</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Cranial%20Plating&format=image&version=small" alt="Cranial Plating" loading="lazy" onerror="this.style.display='none'">Cranial Plating</span></div>
-    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Create 1x Construct token(s)</span></div>
-<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Urza's Saga Ch.III: Create Construct Token</span></div>
-<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Urza's Saga tutors Springleaf Drum</span></div>
-<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Sacrifice Urza's Saga (final chapter)</span></div>
-<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Ornithopter, Construct Token</span></div>
-<div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  [BLOCK-EMERGENCY] Guide of Souls (1/2) blocks Construct Token (8/8) — chump block</span></div>
-<div class="play"><span class="step">7.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Ornithopter (8/2) → 8 dmg to player</span></div>
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Frogmite</span></div>
+    <div class="section-label">Hand (3 cards)</div><div class="hand-pills"><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Thought%20Monitor&format=image&version=small" alt="Thought Monitor" loading="lazy" onerror="this.style.display='none'">Thought Monitor</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nettlecyst&format=image&version=small" alt="Nettlecyst" loading="lazy" onerror="this.style.display='none'">Nettlecyst</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Frogmite&format=image&version=small" alt="Frogmite" loading="lazy" onerror="this.style.display='none'">Frogmite</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Frogmite (4)</span><span class="reason-toggle" onclick="toggleReason('r2t4p2s1')" title="Show reasoning">·</span><div class="reasoning" id="r2t4p2s1" style="display:none">← curve_out [enablers]</div></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Signal Pest, Construct Token</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  [BLOCK-EMERGENCY] Guide of Souls (1/2) blocks Construct Token (8/7) — chump block</span></div>
 
-    <div class="section-label">Combat</div><div class="combat-detail">⚔ Ornithopter, Construct Token</div><div class="combat-detail">🛡 (see BLOCK lines below)</div><div class="combat-breakdown"> Ornithopter 8/2 · 8 dmg</div><div class="combat-detail">8 damage → life 13 → 5</div>
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Signal Pest, Construct Token</div><div class="combat-detail">🛡 (see BLOCK lines below)</div>
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
         <h4><span style="color:#0969da">Boros Energy</span> — 4 lands</h4>
-        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Phlage&format=image&version=small" alt="Phlage" loading="lazy" onerror="this.style.display='none'">Phlage</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Titan%20of%20Fire%27s%20Fury&format=image&version=small" alt="Titan of Fire's Fury" loading="lazy" onerror="this.style.display='none'">Titan of Fire's Fury<span class="pt">6/6</span></span></div>
-        
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ajani&format=image&version=small" alt="Ajani" loading="lazy" onerror="this.style.display='none'">Ajani</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nacatl%20Pariah%20//%20Ajani&format=image&version=small" alt="Nacatl Pariah // Ajani" loading="lazy" onerror="this.style.display='none'">Nacatl Pariah // Ajani</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nacatl%20Avenger&format=image&version=small" alt="Nacatl Avenger" loading="lazy" onerror="this.style.display='none'">Nacatl Avenger<span class="pt">1/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Cat%20Token&format=image&version=small" alt="Cat Token" loading="lazy" onerror="this.style.display='none'">Cat Token<span class="pt">2/1</span></span></div>
+        <div class="other-list">⚔ Treasure Token</div>
         <div class="land-list">Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:#d1242f">Affinity</span> — 1 land</h4>
-        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">8/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">0/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=small" alt="Construct Token" loading="lazy" onerror="this.style.display='none'">Construct Token<span class="pt">8/8</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=small" alt="Construct Token" loading="lazy" onerror="this.style.display='none'">Construct Token<span class="pt">8/8</span></span></div>
-        <div class="other-list">⚔ Mox Opal, Cranial Plating, Springleaf Drum</div>
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Signal%20Pest&format=image&version=small" alt="Signal Pest" loading="lazy" onerror="this.style.display='none'">Signal Pest<span class="pt">0/1</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">0/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=small" alt="Construct Token" loading="lazy" onerror="this.style.display='none'">Construct Token<span class="pt">7/7</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Frogmite&format=image&version=small" alt="Frogmite" loading="lazy" onerror="this.style.display='none'">Frogmite<span class="pt">2/2</span></span></div>
+        <div class="other-list">⚔ Cranial Plating, Cranial Plating</div>
         <div class="land-list">Darksteel Citadel</div>
       </div>
     </div>
@@ -948,37 +952,34 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="left">
       <span class="tnum bug">T5</span>
       <span class="player bug">Boros Energy</span>
-      <span class="life">Life: <b>5</b> &nbsp;|&nbsp; Opp: 13</span>
-      <span class="hand-count">3c</span>
-      
+      <span class="life">Life: <b>6</b> &nbsp;|&nbsp; Opp: 9</span>
+      <span class="hand-count">1c</span>
+      <span class="star-marker" title="Key turn">★4</span>
     </div>
     <span class="arrow">&#9654;</span>
   </div>
   <div class="turn-body">
     <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Phlage, Titan of Fire's Fury</span></div>
-    <div class="section-label">Hand (3 cards)</div><div class="hand-pills"><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Thraben%20Charm&format=image&version=small" alt="Thraben Charm" loading="lazy" onerror="this.style.display='none'">Thraben Charm</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ajani%2C%20Nacatl%20Pariah%20//%20Ajani%2C%20Nacatl%20Avenger&format=image&version=small" alt="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger" loading="lazy" onerror="this.style.display='none'">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Phlage%2C%20Titan%20of%20Fire%27s%20Fury&format=image&version=small" alt="Phlage, Titan of Fire's Fury" loading="lazy" onerror="this.style.display='none'">Phlage, Titan of Fire's Fury</span></div>
-    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Thraben Charm (1W)</span><span class="reason-toggle" onclick="toggleReason('r2t5p1s1')" title="Show reasoning">·</span><div class="reasoning" id="r2t5p1s1" style="display:none">← curve_out [interaction]</div></div>
-<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Thraben Charm: no high-value mode available</span></div>
-<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)</span><span class="reason-toggle" onclick="toggleReason('r2t5p1s3')" title="Show reasoning">·</span><div class="reasoning" id="r2t5p1s3" style="display:none">← curve_out [payoffs]</div></div>
-<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Create 1x Cat token(s)</span></div>
-<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Ajani creates 2/1 Cat Warrior token</span></div>
-<div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Gain 3 life from Phlage, Titan of Fire's Fury (life: 8)</span></div>
-<div class="play"><span class="step">7.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Phlage, Titan of Fire's Fury</span></div>
-<div class="play"><span class="step">8.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Phlage, Titan of Fire's Fury (6/6) → 6 dmg to player</span></div>
+    <div class="section-label">Hand (1 cards)</div><div class="hand-pills"><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Phlage%2C%20Titan%20of%20Fire%27s%20Fury&format=image&version=small" alt="Phlage, Titan of Fire's Fury" loading="lazy" onerror="this.style.display='none'">Phlage, Titan of Fire's Fury</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Phlage, Titan of Fire's Fury (1WR)</span><span class="reason-toggle" onclick="toggleReason('r2t5p1s1')" title="Show reasoning">·</span><div class="reasoning" id="r2t5p1s1" style="display:none">← curve_out</div></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">DAMAGE</span><span class="action">Phlage: 3 damage to opponent, gain 3 life</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Phlage sacrificed (not escaped)</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Cat Token</span></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  [BLOCK] Frogmite (2/2) blocks Cat Token (2/1) — trade (chump)</span></div>
 
-    <div class="section-label">Combat</div><div class="combat-detail">⚔ Phlage, Titan of Fire's Fury</div><div class="combat-breakdown"> Phlage, Titan of Fire's Fury 6/6 · 6 dmg</div><div class="combat-detail">6 damage → life 10 → 4</div>
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Cat Token</div><div class="combat-detail">🛡 (see BLOCK lines below)</div>
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
         <h4><span style="color:#0969da">Boros Energy</span> — 4 lands</h4>
-        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Phlage&format=image&version=small" alt="Phlage" loading="lazy" onerror="this.style.display='none'">Phlage</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Titan%20of%20Fire%27s%20Fury&format=image&version=small" alt="Titan of Fire's Fury" loading="lazy" onerror="this.style.display='none'">Titan of Fire's Fury<span class="pt">6/6</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ajani&format=image&version=small" alt="Ajani" loading="lazy" onerror="this.style.display='none'">Ajani</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nacatl%20Pariah%20//%20Ajani&format=image&version=small" alt="Nacatl Pariah // Ajani" loading="lazy" onerror="this.style.display='none'">Nacatl Pariah // Ajani</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nacatl%20Avenger&format=image&version=small" alt="Nacatl Avenger" loading="lazy" onerror="this.style.display='none'">Nacatl Avenger<span class="pt">1/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Cat%20Token&format=image&version=small" alt="Cat Token" loading="lazy" onerror="this.style.display='none'">Cat Token<span class="pt">2/1</span></span></div>
-        
-        <div class="land-list">Sacred Foundry [T], Sacred Foundry, Sacred Foundry, Snow-Covered Plains [T]</div>
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ajani&format=image&version=small" alt="Ajani" loading="lazy" onerror="this.style.display='none'">Ajani</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nacatl%20Pariah%20//%20Ajani&format=image&version=small" alt="Nacatl Pariah // Ajani" loading="lazy" onerror="this.style.display='none'">Nacatl Pariah // Ajani</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nacatl%20Avenger&format=image&version=small" alt="Nacatl Avenger" loading="lazy" onerror="this.style.display='none'">Nacatl Avenger<span class="pt">1/2</span></span></div>
+        <div class="other-list">⚔ Treasure Token</div>
+        <div class="land-list">Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry, Snow-Covered Plains [T]</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:#d1242f">Affinity</span> — 1 land</h4>
-        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">8/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">0/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=small" alt="Construct Token" loading="lazy" onerror="this.style.display='none'">Construct Token<span class="pt">8/8</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=small" alt="Construct Token" loading="lazy" onerror="this.style.display='none'">Construct Token<span class="pt">8/8</span></span></div>
-        <div class="other-list">⚔ Mox Opal, Cranial Plating, Springleaf Drum</div>
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Signal%20Pest&format=image&version=small" alt="Signal Pest" loading="lazy" onerror="this.style.display='none'">Signal Pest<span class="pt">0/1</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">0/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=small" alt="Construct Token" loading="lazy" onerror="this.style.display='none'">Construct Token<span class="pt">6/6</span><span class="equip-tag" title="Cranial Plating">⚔Cranial Plating</span></span></div>
+        <div class="other-list">⚔ Cranial Plating, Cranial Plating</div>
         <div class="land-list">Darksteel Citadel</div>
       </div>
     </div>
@@ -988,49 +989,589 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="left">
       <span class="tnum opp">T5</span>
       <span class="player opp">Affinity</span>
-      <span class="life">Life: <b>4</b> &nbsp;|&nbsp; Opp: 8</span>
-      <span class="hand-count">4c</span>
+      <span class="life">Life: <b>6</b> &nbsp;|&nbsp; Opp: 9</span>
+      <span class="hand-count">3c</span>
+      <span class="star-marker" title="Key turn">★4</span>
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Mox Opal</span></div>
+    <div class="section-label">Hand (3 cards)</div><div class="hand-pills"><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Thought%20Monitor&format=image&version=small" alt="Thought Monitor" loading="lazy" onerror="this.style.display='none'">Thought Monitor</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nettlecyst&format=image&version=small" alt="Nettlecyst" loading="lazy" onerror="this.style.display='none'">Nettlecyst</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Mox%20Opal&format=image&version=small" alt="Mox Opal" loading="lazy" onerror="this.style.display='none'">Mox Opal</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#fff8c5;color:#9a6700">TRIGGER</span><span class="action key">Equip Cranial Plating to Construct Token (cost 1)</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Mox Opal (0)</span><span class="reason-toggle" onclick="toggleReason('r2t5p2s2')" title="Show reasoning">·</span><div class="reasoning" id="r2t5p2s2" style="display:none">← curve_out</div></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Signal Pest, Construct Token</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  [BLOCK-EMERGENCY] Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) blocks Construct Token (15/7) — chump block</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Signal Pest, Construct Token</div><div class="combat-detail">🛡 (see BLOCK lines below)</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Boros Energy</span> — 4 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="other-list">⚔ Treasure Token</div>
+        <div class="land-list">Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Affinity</span> — 1 land</h4>
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Signal%20Pest&format=image&version=small" alt="Signal Pest" loading="lazy" onerror="this.style.display='none'">Signal Pest<span class="pt">0/1</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">0/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=small" alt="Construct Token" loading="lazy" onerror="this.style.display='none'">Construct Token<span class="pt">14/7</span></span></div>
+        <div class="other-list">⚔ Cranial Plating, Cranial Plating, Mox Opal</div>
+        <div class="land-list">Darksteel Citadel [T]</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g2t6">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T6</span>
+      <span class="player bug">Boros Energy</span>
+      <span class="life">Life: <b>9</b> &nbsp;|&nbsp; Opp: 6</span>
+      <span class="hand-count">1c</span>
       
     </div>
     <span class="arrow">&#9654;</span>
   </div>
   <div class="turn-body">
-    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Frogmite</span></div>
-    <div class="section-label">Hand (4 cards)</div><div class="hand-pills"><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Thought%20Monitor&format=image&version=small" alt="Thought Monitor" loading="lazy" onerror="this.style.display='none'">Thought Monitor</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nettlecyst&format=image&version=small" alt="Nettlecyst" loading="lazy" onerror="this.style.display='none'">Nettlecyst</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Cranial%20Plating&format=image&version=small" alt="Cranial Plating" loading="lazy" onerror="this.style.display='none'">Cranial Plating</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Frogmite&format=image&version=small" alt="Frogmite" loading="lazy" onerror="this.style.display='none'">Frogmite</span></div>
-    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Frogmite (4)</span><span class="reason-toggle" onclick="toggleReason('r2t5p2s1')" title="Show reasoning">·</span><div class="reasoning" id="r2t5p2s1" style="display:none">← curve_out [enablers]</div></div>
-<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action key">Cast Cranial Plating (2)</span><span class="reason-toggle" onclick="toggleReason('r2t5p2s2')" title="Show reasoning">·</span><div class="reasoning" id="r2t5p2s2" style="display:none">← curve_out [payoffs]</div></div>
-<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action key">Cranial Plating enters the battlefield (unattached)</span></div>
-<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Ornithopter, Construct Token, Construct Token</span></div>
-<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  [BLOCK-EMERGENCY] Cat Token (2/1) blocks Construct Token (10/10) — chump block</span></div>
-<div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  [BLOCK-EMERGENCY] Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) blocks Construct Token (10/10) — chump block</span></div>
-<div class="play"><span class="step">7.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Ornithopter (10/2) → 10 dmg to player</span></div>
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Elegant Parlor</span></div>
+    <div class="section-label">Hand (1 cards)</div><div class="hand-pills"><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Elegant%20Parlor&format=image&version=small" alt="Elegant Parlor" loading="lazy" onerror="this.style.display='none'">Elegant Parlor</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Escape Phlage, Titan of Fire's Fury (exile 5 cards)</span><span class="reason-toggle" onclick="toggleReason('r2t6p1s1')" title="Show reasoning">·</span><div class="reasoning" id="r2t6p1s1" style="display:none">← curve_out</div></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Phlage, Titan of Fire's Fury (1WR)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">DAMAGE</span><span class="action">Phlage: 3 damage to opponent, gain 3 life</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Elegant Parlor (enters tapped)</span></div>
 
-    <div class="section-label">Combat</div><div class="combat-detail">⚔ Ornithopter, Construct Token, Construct Token</div><div class="combat-detail">🛡 (see BLOCK lines below)</div><div class="combat-breakdown"> Ornithopter 10/2 · 10 dmg</div><div class="combat-lethal">☠ LETHAL — 10 damage → life 8 → -2</div>
+    
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
-        <h4><span style="color:#0969da">Boros Energy</span> — 4 lands</h4>
-        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Phlage&format=image&version=small" alt="Phlage" loading="lazy" onerror="this.style.display='none'">Phlage</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Titan%20of%20Fire%27s%20Fury&format=image&version=small" alt="Titan of Fire's Fury" loading="lazy" onerror="this.style.display='none'">Titan of Fire's Fury<span class="pt">6/6</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ajani&format=image&version=small" alt="Ajani" loading="lazy" onerror="this.style.display='none'">Ajani</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nacatl%20Pariah%20//%20Ajani&format=image&version=small" alt="Nacatl Pariah // Ajani" loading="lazy" onerror="this.style.display='none'">Nacatl Pariah // Ajani</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nacatl%20Avenger&format=image&version=small" alt="Nacatl Avenger" loading="lazy" onerror="this.style.display='none'">Nacatl Avenger<span class="pt">1/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Cat%20Token&format=image&version=small" alt="Cat Token" loading="lazy" onerror="this.style.display='none'">Cat Token<span class="pt">2/1</span></span></div>
-        
-        <div class="land-list">Sacred Foundry [T], Sacred Foundry, Sacred Foundry, Snow-Covered Plains [T]</div>
+        <h4><span style="color:#0969da">Boros Energy</span> — 5 lands</h4>
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Phlage&format=image&version=small" alt="Phlage" loading="lazy" onerror="this.style.display='none'">Phlage</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Titan%20of%20Fire%27s%20Fury&format=image&version=small" alt="Titan of Fire's Fury" loading="lazy" onerror="this.style.display='none'">Titan of Fire's Fury<span class="pt">6/6</span></span></div>
+        <div class="other-list">⚔ Treasure Token</div>
+        <div class="land-list">Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Snow-Covered Plains [T], Elegant Parlor [T]</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:#d1242f">Affinity</span> — 1 land</h4>
-        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">8/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">0/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=small" alt="Construct Token" loading="lazy" onerror="this.style.display='none'">Construct Token<span class="pt">8/8</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=small" alt="Construct Token" loading="lazy" onerror="this.style.display='none'">Construct Token<span class="pt">8/8</span></span></div>
-        <div class="other-list">⚔ Mox Opal, Cranial Plating, Springleaf Drum</div>
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Signal%20Pest&format=image&version=small" alt="Signal Pest" loading="lazy" onerror="this.style.display='none'">Signal Pest<span class="pt">0/1</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">0/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=small" alt="Construct Token" loading="lazy" onerror="this.style.display='none'">Construct Token<span class="pt">14/7</span><span class="equip-tag" title="Cranial Plating">⚔Cranial Plating</span></span></div>
+        <div class="other-list">⚔ Cranial Plating, Cranial Plating, Mox Opal</div>
         <div class="land-list">Darksteel Citadel</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g2t6">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T6</span>
+      <span class="player opp">Affinity</span>
+      <span class="life">Life: <b>3</b> &nbsp;|&nbsp; Opp: 12</span>
+      <span class="hand-count">3c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Memnite</span></div>
+    <div class="section-label">Hand (3 cards)</div><div class="hand-pills"><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Thought%20Monitor&format=image&version=small" alt="Thought Monitor" loading="lazy" onerror="this.style.display='none'">Thought Monitor</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nettlecyst&format=image&version=small" alt="Nettlecyst" loading="lazy" onerror="this.style.display='none'">Nettlecyst</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Memnite&format=image&version=small" alt="Memnite" loading="lazy" onerror="this.style.display='none'">Memnite</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#fff8c5;color:#9a6700">TRIGGER</span><span class="action key">Equip Cranial Plating to Construct Token (cost 1)</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Memnite (0)</span><span class="reason-toggle" onclick="toggleReason('r2t6p2s2')" title="Show reasoning">·</span><div class="reasoning" id="r2t6p2s2" style="display:none">← curve_out</div></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Signal Pest, Construct Token</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  [BLOCK-EMERGENCY] Phlage, Titan of Fire's Fury (6/6) blocks Construct Token (25/8) — chump block</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Signal Pest, Construct Token</div><div class="combat-detail">🛡 (see BLOCK lines below)</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Boros Energy</span> — 5 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="other-list">⚔ Treasure Token</div>
+        <div class="land-list">Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains, Elegant Parlor</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Affinity</span> — 1 land</h4>
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Signal%20Pest&format=image&version=small" alt="Signal Pest" loading="lazy" onerror="this.style.display='none'">Signal Pest<span class="pt">0/1</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">0/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=small" alt="Construct Token" loading="lazy" onerror="this.style.display='none'">Construct Token<span class="pt">24/8</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Memnite&format=image&version=small" alt="Memnite" loading="lazy" onerror="this.style.display='none'">Memnite<span class="pt">1/1</span></span></div>
+        <div class="other-list">⚔ Cranial Plating, Cranial Plating, Mox Opal</div>
+        <div class="land-list">Darksteel Citadel [T]</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g2t7">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T7</span>
+      <span class="player bug">Boros Energy</span>
+      <span class="life">Life: <b>12</b> &nbsp;|&nbsp; Opp: 3</span>
+      <span class="hand-count">1c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span></div>
+    <div class="section-label">Hand (1 cards)</div><div class="hand-pills"><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ajani%2C%20Nacatl%20Pariah%20//%20Ajani%2C%20Nacatl%20Avenger&format=image&version=small" alt="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger" loading="lazy" onerror="this.style.display='none'">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Escape Phlage, Titan of Fire's Fury (exile 5 cards)</span><span class="reason-toggle" onclick="toggleReason('r2t7p1s1')" title="Show reasoning">·</span><div class="reasoning" id="r2t7p1s1" style="display:none">← curve_out</div></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Phlage, Titan of Fire's Fury (1WR)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">DAMAGE</span><span class="action">Phlage: 3 damage to opponent, gain 3 life</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Boros Energy</span> — 5 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        <div class="other-list">⚔ Treasure Token</div>
+        <div class="land-list">Sacred Foundry, Sacred Foundry, Sacred Foundry, Snow-Covered Plains, Elegant Parlor</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Affinity</span> — 1 land</h4>
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Signal%20Pest&format=image&version=small" alt="Signal Pest" loading="lazy" onerror="this.style.display='none'">Signal Pest<span class="pt">0/1</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">0/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=small" alt="Construct Token" loading="lazy" onerror="this.style.display='none'">Construct Token<span class="pt">24/8</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Memnite&format=image&version=small" alt="Memnite" loading="lazy" onerror="this.style.display='none'">Memnite<span class="pt">1/1</span></span></div>
+        <div class="other-list">⚔ Cranial Plating, Cranial Plating, Mox Opal</div>
+        <div class="land-list">Darksteel Citadel [T]</div>
       </div>
     </div>
   </div>
 </div>
 <div class="result">
-  <h2 class="opp-win">Affinity WINS</h2>
-  <div class="reason">Via damage on turn 5</div>
+  <h2 class="bug-win">Boros Energy WINS</h2>
+  <div class="reason">Via damage on turn 7</div>
   <div class="stats">
-    Final life: <span style="color:#0969da">Boros Energy 8</span>
+    Final life: <span style="color:#0969da">Boros Energy 12</span>
     &nbsp;|&nbsp;
-    <span style="color:#d1242f">Affinity 4</span>
-    &nbsp;|&nbsp; Length: T5
+    <span style="color:#d1242f">Affinity 3</span>
+    &nbsp;|&nbsp; Length: T7
+  </div>
+</div>
+</div>
+<div class="game-panel " id="game-2">
+<div class="meta">
+  <span>Boros Energy is ON THE DRAW</span>
+  <span style="color:#484f58">Seed: 60100</span>
+</div>
+<div class="hands">
+  <div class="hand-box bug">
+    <h3><span style="color:#0969da">Affinity</span> — Opening Hand (P1)</h3>
+    <div class="mull-step"><span class="keep-tag">KEEP 7</span><span class="keep-reason">has key card(s): Cranial Plating, Ornithopter, 3 cheap spells</span></div><div class="hand-pills"><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Darksteel%20Citadel&format=image&version=small" alt="Darksteel Citadel" loading="lazy" onerror="this.style.display='none'">Darksteel Citadel</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Cranial%20Plating&format=image&version=small" alt="Cranial Plating" loading="lazy" onerror="this.style.display='none'">Cranial Plating</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Cranial%20Plating&format=image&version=small" alt="Cranial Plating" loading="lazy" onerror="this.style.display='none'">Cranial Plating</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Sojourner%27s%20Companion&format=image&version=small" alt="Sojourner's Companion" loading="lazy" onerror="this.style.display='none'">Sojourner's Companion</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Frogmite&format=image&version=small" alt="Frogmite" loading="lazy" onerror="this.style.display='none'">Frogmite</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Mistvault%20Bridge&format=image&version=small" alt="Mistvault Bridge" loading="lazy" onerror="this.style.display='none'">Mistvault Bridge</span></div>
+  </div>
+  <div class="hand-box opp">
+    <h3><span style="color:#d1242f">Boros Energy</span> — Opening Hand (P2)</h3>
+    <div class="mull-step"><span class="keep-tag">KEEP 7</span><span class="keep-reason">has key card(s): Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Ocelot Pride, 5 cheap spells</span></div><div class="hand-pills"><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ocelot%20Pride&format=image&version=small" alt="Ocelot Pride" loading="lazy" onerror="this.style.display='none'">Ocelot Pride</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Goblin%20Bombardment&format=image&version=small" alt="Goblin Bombardment" loading="lazy" onerror="this.style.display='none'">Goblin Bombardment</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ajani%2C%20Nacatl%20Pariah%20//%20Ajani%2C%20Nacatl%20Avenger&format=image&version=small" alt="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger" loading="lazy" onerror="this.style.display='none'">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Flooded%20Strand&format=image&version=small" alt="Flooded Strand" loading="lazy" onerror="this.style.display='none'">Flooded Strand</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ajani%2C%20Nacatl%20Pariah%20//%20Ajani%2C%20Nacatl%20Avenger&format=image&version=small" alt="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger" loading="lazy" onerror="this.style.display='none'">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Snow-Covered%20Plains&format=image&version=small" alt="Snow-Covered Plains" loading="lazy" onerror="this.style.display='none'">Snow-Covered Plains</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Wear%20//%20Tear&format=image&version=small" alt="Wear // Tear" loading="lazy" onerror="this.style.display='none'">Wear // Tear</span></div>
+  </div>
+</div>
+<div class="life-chart">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+    <h3>Life Totals</h3>
+    <span style="font-size:10px;color:#484f58">— dashed lines at 5, 10, 15 —</span>
+  </div>
+  <svg viewBox="0 0 760 80" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:80px"><line x1="10" y1="56" x2="750" y2="56" stroke="#d0d7de" stroke-width="1" stroke-dasharray="3,3"/><text x="6" y="59" fill="#484f58" font-size="7" text-anchor="end">5</text><line x1="10" y1="39" x2="750" y2="39" stroke="#d0d7de" stroke-width="1" stroke-dasharray="3,3"/><text x="6" y="42" fill="#484f58" font-size="7" text-anchor="end">10</text><line x1="10" y1="22" x2="750" y2="22" stroke="#d0d7de" stroke-width="1" stroke-dasharray="3,3"/><text x="6" y="25" fill="#484f58" font-size="7" text-anchor="end">15</text><polyline points="10,5 77,5 144,5 211,5 279,5 346,15 413,15 480,15 548,15 615,28 682,28 750,32" fill="none" stroke="#0969da" stroke-width="2" opacity=".85"/><polyline points="10,5 77,5 144,5 211,15 279,15 346,15 413,15 480,15 548,15 615,15 682,69 750,69" fill="none" stroke="#d1242f" stroke-width="2" opacity=".85"/><circle cx="10" cy="5" r="3" fill="#0969da"/><text x="10" y="0" fill="#0969da" font-size="8" text-anchor="middle">20</text><circle cx="750" cy="32" r="3" fill="#0969da"/><text x="750" y="27" fill="#0969da" font-size="8" text-anchor="end">12</text><circle cx="10" cy="5" r="3" fill="#d1242f"/><text x="10" y="0" fill="#d1242f" font-size="8" text-anchor="middle">20</text><circle cx="750" cy="69" r="3" fill="#d1242f"/><text x="750" y="64" fill="#d1242f" font-size="8" text-anchor="end">1</text><text x="10" y="76" fill="#0969da" font-size="8" font-weight="600">Affinity</text><text x="750" y="76" fill="#d1242f" font-size="8" font-weight="600" text-anchor="end">Boros Energy</text></svg>
+</div>
+<div class="controls">
+  <button onclick="expandAll()">Expand All</button>
+  <button onclick="collapseAll()">Collapse All</button>
+  <span class="kbd-hint">↑↓ navigate turns &nbsp;·&nbsp; Enter: expand/collapse</span>
+</div>
+<div class="turn bug" id="g3t1">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T1</span>
+      <span class="player bug">Affinity</span>
+      <span class="life">Life: <b>20</b> &nbsp;|&nbsp; Opp: 20</span>
+      <span class="hand-count">7c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    
+    <div class="section-label">Hand (7 cards)</div><div class="hand-pills"><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Darksteel%20Citadel&format=image&version=small" alt="Darksteel Citadel" loading="lazy" onerror="this.style.display='none'">Darksteel Citadel</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Cranial%20Plating&format=image&version=small" alt="Cranial Plating" loading="lazy" onerror="this.style.display='none'">Cranial Plating</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Cranial%20Plating&format=image&version=small" alt="Cranial Plating" loading="lazy" onerror="this.style.display='none'">Cranial Plating</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Sojourner%27s%20Companion&format=image&version=small" alt="Sojourner's Companion" loading="lazy" onerror="this.style.display='none'">Sojourner's Companion</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Frogmite&format=image&version=small" alt="Frogmite" loading="lazy" onerror="this.style.display='none'">Frogmite</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Mistvault%20Bridge&format=image&version=small" alt="Mistvault Bridge" loading="lazy" onerror="this.style.display='none'">Mistvault Bridge</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Darksteel Citadel</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Ornithopter (0)</span><span class="reason-toggle" onclick="toggleReason('r3t1p1s2')" title="Show reasoning">·</span><div class="reasoning" id="r3t1p1s2" style="display:none">← deploy_engine [enablers]</div></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Affinity</span> — 1 land</h4>
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">0/2</span></span></div>
+        
+        <div class="land-list">Darksteel Citadel</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 0 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        
+        <div class="land-list">none</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g3t1">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T1</span>
+      <span class="player opp">Boros Energy</span>
+      <span class="life">Life: <b>20</b> &nbsp;|&nbsp; Opp: 20</span>
+      <span class="hand-count">8c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Wrath of the Skies</span></div>
+    <div class="section-label">Hand (8 cards)</div><div class="hand-pills"><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ocelot%20Pride&format=image&version=small" alt="Ocelot Pride" loading="lazy" onerror="this.style.display='none'">Ocelot Pride</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Goblin%20Bombardment&format=image&version=small" alt="Goblin Bombardment" loading="lazy" onerror="this.style.display='none'">Goblin Bombardment</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ajani%2C%20Nacatl%20Pariah%20//%20Ajani%2C%20Nacatl%20Avenger&format=image&version=small" alt="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger" loading="lazy" onerror="this.style.display='none'">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Flooded%20Strand&format=image&version=small" alt="Flooded Strand" loading="lazy" onerror="this.style.display='none'">Flooded Strand</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ajani%2C%20Nacatl%20Pariah%20//%20Ajani%2C%20Nacatl%20Avenger&format=image&version=small" alt="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger" loading="lazy" onerror="this.style.display='none'">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Snow-Covered%20Plains&format=image&version=small" alt="Snow-Covered Plains" loading="lazy" onerror="this.style.display='none'">Snow-Covered Plains</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Wear%20//%20Tear&format=image&version=small" alt="Wear // Tear" loading="lazy" onerror="this.style.display='none'">Wear // Tear</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Wrath%20of%20the%20Skies&format=image&version=small" alt="Wrath of the Skies" loading="lazy" onerror="this.style.display='none'">Wrath of the Skies</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Flooded Strand</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f5f0ff;color:#6639ba">FETCH</span><span class="action">Crack Flooded Strand (pay 1 life) -&gt; Sacred Foundry (pay 2 life, untapped, life: 17)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Ocelot Pride (W)</span><span class="reason-toggle" onclick="toggleReason('r3t1p2s3')" title="Show reasoning">·</span><div class="reasoning" id="r3t1p2s3" style="display:none">← curve_out [enablers]</div></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Affinity</span> — 1 land</h4>
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">0/2</span></span></div>
+        
+        <div class="land-list">Darksteel Citadel</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 1 land</h4>
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ocelot%20Pride&format=image&version=small" alt="Ocelot Pride" loading="lazy" onerror="this.style.display='none'">Ocelot Pride<span class="pt">1/1</span></span></div>
+        
+        <div class="land-list">Sacred Foundry [T]</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g3t2">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T2</span>
+      <span class="player bug">Affinity</span>
+      <span class="life">Life: <b>20</b> &nbsp;|&nbsp; Opp: 17</span>
+      <span class="hand-count">6c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Island</span></div>
+    <div class="section-label">Hand (6 cards)</div><div class="hand-pills"><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Cranial%20Plating&format=image&version=small" alt="Cranial Plating" loading="lazy" onerror="this.style.display='none'">Cranial Plating</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Cranial%20Plating&format=image&version=small" alt="Cranial Plating" loading="lazy" onerror="this.style.display='none'">Cranial Plating</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Sojourner%27s%20Companion&format=image&version=small" alt="Sojourner's Companion" loading="lazy" onerror="this.style.display='none'">Sojourner's Companion</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Frogmite&format=image&version=small" alt="Frogmite" loading="lazy" onerror="this.style.display='none'">Frogmite</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Mistvault%20Bridge&format=image&version=small" alt="Mistvault Bridge" loading="lazy" onerror="this.style.display='none'">Mistvault Bridge</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Island&format=image&version=small" alt="Island" loading="lazy" onerror="this.style.display='none'">Island</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Island</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Frogmite (4)</span><span class="reason-toggle" onclick="toggleReason('r3t2p1s2')" title="Show reasoning">·</span><div class="reasoning" id="r3t2p1s2" style="display:none">← deploy_engine</div></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Affinity</span> — 2 lands</h4>
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">0/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Frogmite&format=image&version=small" alt="Frogmite" loading="lazy" onerror="this.style.display='none'">Frogmite<span class="pt">2/2</span></span></div>
+        
+        <div class="land-list">Darksteel Citadel [T], Island [T]</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 1 land</h4>
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ocelot%20Pride&format=image&version=small" alt="Ocelot Pride" loading="lazy" onerror="this.style.display='none'">Ocelot Pride<span class="pt">1/1</span></span></div>
+        
+        <div class="land-list">Sacred Foundry</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g3t2">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T2</span>
+      <span class="player opp">Boros Energy</span>
+      <span class="life">Life: <b>17</b> &nbsp;|&nbsp; Opp: 20</span>
+      <span class="hand-count">7c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Galvanic Discharge</span></div>
+    <div class="section-label">Hand (7 cards)</div><div class="hand-pills"><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Goblin%20Bombardment&format=image&version=small" alt="Goblin Bombardment" loading="lazy" onerror="this.style.display='none'">Goblin Bombardment</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ajani%2C%20Nacatl%20Pariah%20//%20Ajani%2C%20Nacatl%20Avenger&format=image&version=small" alt="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger" loading="lazy" onerror="this.style.display='none'">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ajani%2C%20Nacatl%20Pariah%20//%20Ajani%2C%20Nacatl%20Avenger&format=image&version=small" alt="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger" loading="lazy" onerror="this.style.display='none'">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Snow-Covered%20Plains&format=image&version=small" alt="Snow-Covered Plains" loading="lazy" onerror="this.style.display='none'">Snow-Covered Plains</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Wear%20//%20Tear&format=image&version=small" alt="Wear // Tear" loading="lazy" onerror="this.style.display='none'">Wear // Tear</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Wrath%20of%20the%20Skies&format=image&version=small" alt="Wrath of the Skies" loading="lazy" onerror="this.style.display='none'">Wrath of the Skies</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Galvanic%20Discharge&format=image&version=small" alt="Galvanic Discharge" loading="lazy" onerror="this.style.display='none'">Galvanic Discharge</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">REMOVE</span><span class="action">Cast Galvanic Discharge (R)</span><span class="reason-toggle" onclick="toggleReason('r3t2p2s1')" title="Show reasoning">·</span><div class="reasoning" id="r3t2p2s1" style="display:none">← curve_out [interaction]</div></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">DAMAGE</span><span class="action">Galvanic Discharge deals 3 to opponent</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Snow-Covered Plains</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Affinity</span> — 2 lands</h4>
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">0/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Frogmite&format=image&version=small" alt="Frogmite" loading="lazy" onerror="this.style.display='none'">Frogmite<span class="pt">2/2</span></span></div>
+        
+        <div class="land-list">Darksteel Citadel, Island</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 2 lands</h4>
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ocelot%20Pride&format=image&version=small" alt="Ocelot Pride" loading="lazy" onerror="this.style.display='none'">Ocelot Pride<span class="pt">1/1</span></span></div>
+        
+        <div class="land-list">Sacred Foundry [T], Snow-Covered Plains</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g3t3">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T3</span>
+      <span class="player bug">Affinity</span>
+      <span class="life">Life: <b>17</b> &nbsp;|&nbsp; Opp: 17</span>
+      <span class="hand-count">5c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Tanglepool Bridge</span></div>
+    <div class="section-label">Hand (5 cards)</div><div class="hand-pills"><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Cranial%20Plating&format=image&version=small" alt="Cranial Plating" loading="lazy" onerror="this.style.display='none'">Cranial Plating</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Cranial%20Plating&format=image&version=small" alt="Cranial Plating" loading="lazy" onerror="this.style.display='none'">Cranial Plating</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Sojourner%27s%20Companion&format=image&version=small" alt="Sojourner's Companion" loading="lazy" onerror="this.style.display='none'">Sojourner's Companion</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Mistvault%20Bridge&format=image&version=small" alt="Mistvault Bridge" loading="lazy" onerror="this.style.display='none'">Mistvault Bridge</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Tanglepool%20Bridge&format=image&version=small" alt="Tanglepool Bridge" loading="lazy" onerror="this.style.display='none'">Tanglepool Bridge</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Mistvault Bridge (enters tapped)</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Cycle Sojourner's Companion (pay 2 mana, draw a card)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Springleaf Drum (1)</span><span class="reason-toggle" onclick="toggleReason('r3t3p1s3')" title="Show reasoning">·</span><div class="reasoning" id="r3t3p1s3" style="display:none">← curve_out</div></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Frogmite</span></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  [BLOCK] Ocelot Pride (1/1) blocks Frogmite (2/2) — chump block</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Frogmite</div><div class="combat-detail">🛡 (see BLOCK lines below)</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Affinity</span> — 3 lands</h4>
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">0/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Frogmite&format=image&version=small" alt="Frogmite" loading="lazy" onerror="this.style.display='none'">Frogmite<span class="pt">2/2</span></span></div>
+        <div class="other-list">⚔ Springleaf Drum</div>
+        <div class="land-list">Darksteel Citadel [T], Island [T], Mistvault Bridge [T]</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 2 lands</h4>
+        <div class="board"><span style="color:#484f58">empty</span></div>
+        
+        <div class="land-list">Sacred Foundry, Snow-Covered Plains</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g3t3">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T3</span>
+      <span class="player opp">Boros Energy</span>
+      <span class="life">Life: <b>17</b> &nbsp;|&nbsp; Opp: 17</span>
+      <span class="hand-count">6c</span>
+      
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Wear // Tear</span></div>
+    <div class="section-label">Hand (6 cards)</div><div class="hand-pills"><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Goblin%20Bombardment&format=image&version=small" alt="Goblin Bombardment" loading="lazy" onerror="this.style.display='none'">Goblin Bombardment</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ajani%2C%20Nacatl%20Pariah%20//%20Ajani%2C%20Nacatl%20Avenger&format=image&version=small" alt="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger" loading="lazy" onerror="this.style.display='none'">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ajani%2C%20Nacatl%20Pariah%20//%20Ajani%2C%20Nacatl%20Avenger&format=image&version=small" alt="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger" loading="lazy" onerror="this.style.display='none'">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Wear%20//%20Tear&format=image&version=small" alt="Wear // Tear" loading="lazy" onerror="this.style.display='none'">Wear // Tear</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Wrath%20of%20the%20Skies&format=image&version=small" alt="Wrath of the Skies" loading="lazy" onerror="this.style.display='none'">Wrath of the Skies</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Wear%20//%20Tear&format=image&version=small" alt="Wear // Tear" loading="lazy" onerror="this.style.display='none'">Wear // Tear</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)</span><span class="reason-toggle" onclick="toggleReason('r3t3p2s1')" title="Show reasoning">·</span><div class="reasoning" id="r3t3p2s1" style="display:none">← curve_out [payoffs]</div></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Create 1x Cat token(s)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Ajani creates 2/1 Cat Warrior token</span></div>
+
+    
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Affinity</span> — 3 lands</h4>
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">0/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Frogmite&format=image&version=small" alt="Frogmite" loading="lazy" onerror="this.style.display='none'">Frogmite<span class="pt">2/2</span></span></div>
+        <div class="other-list">⚔ Springleaf Drum</div>
+        <div class="land-list">Darksteel Citadel, Island, Mistvault Bridge</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 2 lands</h4>
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ajani&format=image&version=small" alt="Ajani" loading="lazy" onerror="this.style.display='none'">Ajani</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nacatl%20Pariah%20//%20Ajani&format=image&version=small" alt="Nacatl Pariah // Ajani" loading="lazy" onerror="this.style.display='none'">Nacatl Pariah // Ajani</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nacatl%20Avenger&format=image&version=small" alt="Nacatl Avenger" loading="lazy" onerror="this.style.display='none'">Nacatl Avenger<span class="pt">1/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Cat%20Token&format=image&version=small" alt="Cat Token" loading="lazy" onerror="this.style.display='none'">Cat Token<span class="pt">2/1</span></span></div>
+        
+        <div class="land-list">Sacred Foundry [T], Snow-Covered Plains [T]</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g3t4">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T4</span>
+      <span class="player bug">Affinity</span>
+      <span class="life">Life: <b>17</b> &nbsp;|&nbsp; Opp: 17</span>
+      <span class="hand-count">5c</span>
+      <span class="star-marker" title="Key turn">★1</span>
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Urza's Saga</span></div>
+    <div class="section-label">Hand (5 cards)</div><div class="hand-pills"><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Cranial%20Plating&format=image&version=small" alt="Cranial Plating" loading="lazy" onerror="this.style.display='none'">Cranial Plating</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Cranial%20Plating&format=image&version=small" alt="Cranial Plating" loading="lazy" onerror="this.style.display='none'">Cranial Plating</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Sojourner%27s%20Companion&format=image&version=small" alt="Sojourner's Companion" loading="lazy" onerror="this.style.display='none'">Sojourner's Companion</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Tanglepool%20Bridge&format=image&version=small" alt="Tanglepool Bridge" loading="lazy" onerror="this.style.display='none'">Tanglepool Bridge</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=small" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'">Urza's Saga</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Urza's Saga</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action key">Cast Cranial Plating (2)</span><span class="reason-toggle" onclick="toggleReason('r3t4p1s2')" title="Show reasoning">·</span><div class="reasoning" id="r3t4p1s2" style="display:none">← curve_out [payoffs]</div></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action key">Cranial Plating enters the battlefield (unattached)</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#fff8c5;color:#9a6700">TRIGGER</span><span class="action key">Equip Cranial Plating to Frogmite (cost 1)</span></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action key">Cast Cranial Plating (2)</span><span class="reason-toggle" onclick="toggleReason('r3t4p1s5')" title="Show reasoning">·</span><div class="reasoning" id="r3t4p1s5" style="display:none">← curve_out [payoffs]</div></div>
+<div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action key">Cranial Plating enters the battlefield (unattached)</span></div>
+<div class="play"><span class="step">7.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Frogmite</span></div>
+<div class="play"><span class="step">8.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  [BLOCK-EMERGENCY] Cat Token (2/1) blocks Frogmite (9/2) — trade (chump)</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Frogmite</div><div class="combat-detail">🛡 (see BLOCK lines below)</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Affinity</span> — 4 lands</h4>
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">0/2</span></span></div>
+        <div class="other-list">⚔ Springleaf Drum, Cranial Plating, Cranial Plating</div>
+        <div class="land-list">Darksteel Citadel [T], Island, Mistvault Bridge, Urza's Saga</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 2 lands</h4>
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ajani&format=image&version=small" alt="Ajani" loading="lazy" onerror="this.style.display='none'">Ajani</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nacatl%20Pariah%20//%20Ajani&format=image&version=small" alt="Nacatl Pariah // Ajani" loading="lazy" onerror="this.style.display='none'">Nacatl Pariah // Ajani</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nacatl%20Avenger&format=image&version=small" alt="Nacatl Avenger" loading="lazy" onerror="this.style.display='none'">Nacatl Avenger<span class="pt">1/2</span></span></div>
+        
+        <div class="land-list">Sacred Foundry, Snow-Covered Plains</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g3t4">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T4</span>
+      <span class="player opp">Boros Energy</span>
+      <span class="life">Life: <b>17</b> &nbsp;|&nbsp; Opp: 17</span>
+      <span class="hand-count">6c</span>
+      <span class="star-marker" title="Key turn">★1</span>
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Galvanic Discharge</span></div>
+    <div class="section-label">Hand (6 cards)</div><div class="hand-pills"><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Goblin%20Bombardment&format=image&version=small" alt="Goblin Bombardment" loading="lazy" onerror="this.style.display='none'">Goblin Bombardment</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ajani%2C%20Nacatl%20Pariah%20//%20Ajani%2C%20Nacatl%20Avenger&format=image&version=small" alt="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger" loading="lazy" onerror="this.style.display='none'">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Wear%20//%20Tear&format=image&version=small" alt="Wear // Tear" loading="lazy" onerror="this.style.display='none'">Wear // Tear</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Wrath%20of%20the%20Skies&format=image&version=small" alt="Wrath of the Skies" loading="lazy" onerror="this.style.display='none'">Wrath of the Skies</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Wear%20//%20Tear&format=image&version=small" alt="Wear // Tear" loading="lazy" onerror="this.style.display='none'">Wear // Tear</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Galvanic%20Discharge&format=image&version=small" alt="Galvanic Discharge" loading="lazy" onerror="this.style.display='none'">Galvanic Discharge</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">REMOVE</span><span class="action">Cast Galvanic Discharge (R)</span><span class="reason-toggle" onclick="toggleReason('r3t4p2s1')" title="Show reasoning">·</span><div class="reasoning" id="r3t4p2s1" style="display:none">← curve_out [interaction]</div></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">DAMAGE</span><span class="action">Galvanic Discharge deals 3 to opponent</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</div><div class="combat-breakdown"> Ajani, Nacatl Pariah // Ajani, Nacatl Avenger 1/2 · 1 dmg</div><div class="combat-detail">1 damage → life 14 → 13</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Affinity</span> — 4 lands</h4>
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">0/2</span><span class="equip-tag" title="Cranial Plating">⚔Cranial Plating</span></span></div>
+        <div class="other-list">⚔ Springleaf Drum, Cranial Plating, Cranial Plating</div>
+        <div class="land-list">Darksteel Citadel, Island, Mistvault Bridge, Urza's Saga</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 2 lands</h4>
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ajani&format=image&version=small" alt="Ajani" loading="lazy" onerror="this.style.display='none'">Ajani</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nacatl%20Pariah%20//%20Ajani&format=image&version=small" alt="Nacatl Pariah // Ajani" loading="lazy" onerror="this.style.display='none'">Nacatl Pariah // Ajani</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nacatl%20Avenger&format=image&version=small" alt="Nacatl Avenger" loading="lazy" onerror="this.style.display='none'">Nacatl Avenger<span class="pt">1/2</span></span></div>
+        
+        <div class="land-list">Sacred Foundry [T], Snow-Covered Plains</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g3t5">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T5</span>
+      <span class="player bug">Affinity</span>
+      <span class="life">Life: <b>13</b> &nbsp;|&nbsp; Opp: 17</span>
+      <span class="hand-count">3c</span>
+      <span class="star-marker" title="Key turn">★2</span>
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Signal Pest</span></div>
+    <div class="section-label">Hand (3 cards)</div><div class="hand-pills"><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Sojourner%27s%20Companion&format=image&version=small" alt="Sojourner's Companion" loading="lazy" onerror="this.style.display='none'">Sojourner's Companion</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Tanglepool%20Bridge&format=image&version=small" alt="Tanglepool Bridge" loading="lazy" onerror="this.style.display='none'">Tanglepool Bridge</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Signal%20Pest&format=image&version=small" alt="Signal Pest" loading="lazy" onerror="this.style.display='none'">Signal Pest</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Tanglepool Bridge (enters tapped)</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#fff8c5;color:#9a6700">TRIGGER</span><span class="action key">Equip Cranial Plating to Ornithopter (cost 1)</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#fff8c5;color:#9a6700">TRIGGER</span><span class="action key">Equip Cranial Plating to Ornithopter (cost 1)</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Signal Pest (1)</span><span class="reason-toggle" onclick="toggleReason('r3t5p1s4')" title="Show reasoning">·</span><div class="reasoning" id="r3t5p1s4" style="display:none">← curve_out</div></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Ornithopter</span></div>
+<div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Ornithopter (16/2) → 16 dmg to player</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Ornithopter</div><div class="combat-breakdown"> Ornithopter 16/2 · 16 dmg</div><div class="combat-detail">16 damage → life 17 → 1</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Affinity</span> — 5 lands</h4>
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">16/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Signal%20Pest&format=image&version=small" alt="Signal Pest" loading="lazy" onerror="this.style.display='none'">Signal Pest<span class="pt">0/1</span></span></div>
+        <div class="other-list">⚔ Springleaf Drum, Cranial Plating, Cranial Plating</div>
+        <div class="land-list">Darksteel Citadel [T], Island [T], Mistvault Bridge, Urza's Saga, Tanglepool Bridge [T]</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 2 lands</h4>
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ajani&format=image&version=small" alt="Ajani" loading="lazy" onerror="this.style.display='none'">Ajani</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nacatl%20Pariah%20//%20Ajani&format=image&version=small" alt="Nacatl Pariah // Ajani" loading="lazy" onerror="this.style.display='none'">Nacatl Pariah // Ajani</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nacatl%20Avenger&format=image&version=small" alt="Nacatl Avenger" loading="lazy" onerror="this.style.display='none'">Nacatl Avenger<span class="pt">1/2</span></span></div>
+        
+        <div class="land-list">Sacred Foundry, Snow-Covered Plains</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn opp" id="g3t5">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum opp">T5</span>
+      <span class="player opp">Boros Energy</span>
+      <span class="life">Life: <b>1</b> &nbsp;|&nbsp; Opp: 13</span>
+      <span class="hand-count">6c</span>
+      <span class="star-marker" title="Key turn">★2</span>
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Arid Mesa</span></div>
+    <div class="section-label">Hand (6 cards)</div><div class="hand-pills"><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Goblin%20Bombardment&format=image&version=small" alt="Goblin Bombardment" loading="lazy" onerror="this.style.display='none'">Goblin Bombardment</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ajani%2C%20Nacatl%20Pariah%20//%20Ajani%2C%20Nacatl%20Avenger&format=image&version=small" alt="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger" loading="lazy" onerror="this.style.display='none'">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Wear%20//%20Tear&format=image&version=small" alt="Wear // Tear" loading="lazy" onerror="this.style.display='none'">Wear // Tear</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Wrath%20of%20the%20Skies&format=image&version=small" alt="Wrath of the Skies" loading="lazy" onerror="this.style.display='none'">Wrath of the Skies</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Wear%20//%20Tear&format=image&version=small" alt="Wear // Tear" loading="lazy" onerror="this.style.display='none'">Wear // Tear</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Arid%20Mesa&format=image&version=small" alt="Arid Mesa" loading="lazy" onerror="this.style.display='none'">Arid Mesa</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Goblin Bombardment (1R)</span><span class="reason-toggle" onclick="toggleReason('r3t5p2s1')" title="Show reasoning">·</span><div class="reasoning" id="r3t5p2s1" style="display:none">← curve_out</div></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Goblin Bombardment enters — sacrifice creatures for 1 damage each</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</div><div class="combat-breakdown"> Ajani, Nacatl Pariah // Ajani, Nacatl Avenger 1/2 · 1 dmg</div><div class="combat-detail">1 damage → life 13 → 12</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Affinity</span> — 5 lands</h4>
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">16/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Signal%20Pest&format=image&version=small" alt="Signal Pest" loading="lazy" onerror="this.style.display='none'">Signal Pest<span class="pt">0/1</span></span></div>
+        <div class="other-list">⚔ Springleaf Drum, Cranial Plating, Cranial Plating</div>
+        <div class="land-list">Darksteel Citadel, Island, Mistvault Bridge, Urza's Saga, Tanglepool Bridge</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 2 lands</h4>
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ajani&format=image&version=small" alt="Ajani" loading="lazy" onerror="this.style.display='none'">Ajani</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nacatl%20Pariah%20//%20Ajani&format=image&version=small" alt="Nacatl Pariah // Ajani" loading="lazy" onerror="this.style.display='none'">Nacatl Pariah // Ajani</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nacatl%20Avenger&format=image&version=small" alt="Nacatl Avenger" loading="lazy" onerror="this.style.display='none'">Nacatl Avenger<span class="pt">1/2</span></span></div>
+        <div class="other-list">⚔ Goblin Bombardment</div>
+        <div class="land-list">Sacred Foundry [T], Snow-Covered Plains [T]</div>
+      </div>
+    </div>
+  </div>
+</div><div class="turn bug" id="g3t6">
+  <div class="turn-header" onclick="toggle(this.parentElement)">
+    <div class="left">
+      <span class="tnum bug">T6</span>
+      <span class="player bug">Affinity</span>
+      <span class="life">Life: <b>12</b> &nbsp;|&nbsp; Opp: 1</span>
+      <span class="hand-count">2c</span>
+      <span class="star-marker" title="Key turn">★3</span>
+    </div>
+    <span class="arrow">&#9654;</span>
+  </div>
+  <div class="turn-body">
+    <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Spire of Industry</span></div>
+    <div class="section-label">Hand (2 cards)</div><div class="hand-pills"><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Sojourner%27s%20Companion&format=image&version=small" alt="Sojourner's Companion" loading="lazy" onerror="this.style.display='none'">Sojourner's Companion</span><span class="pill has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Spire%20of%20Industry&format=image&version=small" alt="Spire of Industry" loading="lazy" onerror="this.style.display='none'">Spire of Industry</span></div>
+    <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Create 1x Construct token(s)</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Urza's Saga Ch.II: Create Construct Token</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Spire of Industry</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Ornithopter, Signal Pest</span></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Ornithopter (19/2) → 19 dmg to player</span></div>
+
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Ornithopter, Signal Pest</div><div class="combat-breakdown"> Ornithopter 19/2 · 19 dmg</div><div class="combat-lethal">☠ LETHAL — 19 damage → life 1 → -18</div>
+    <div class="section-label">Board after turn</div>
+    <div class="board-grid">
+      <div class="board-side bug">
+        <h4><span style="color:#0969da">Affinity</span> — 5 lands</h4>
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=small" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'">Ornithopter<span class="pt">16/2</span></span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Signal%20Pest&format=image&version=small" alt="Signal Pest" loading="lazy" onerror="this.style.display='none'">Signal Pest<span class="pt">0/1</span></span></div>
+        <div class="other-list">⚔ Springleaf Drum, Cranial Plating, Cranial Plating</div>
+        <div class="land-list">Darksteel Citadel, Island, Mistvault Bridge, Urza's Saga, Tanglepool Bridge</div>
+      </div>
+      <div class="board-side opp">
+        <h4><span style="color:#d1242f">Boros Energy</span> — 2 lands</h4>
+        <div class="board"><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Ajani&format=image&version=small" alt="Ajani" loading="lazy" onerror="this.style.display='none'">Ajani</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nacatl%20Pariah%20//%20Ajani&format=image&version=small" alt="Nacatl Pariah // Ajani" loading="lazy" onerror="this.style.display='none'">Nacatl Pariah // Ajani</span><span class="creature-badge has-thumb"><img class="card-thumb" src="https://api.scryfall.com/cards/named?exact=Nacatl%20Avenger&format=image&version=small" alt="Nacatl Avenger" loading="lazy" onerror="this.style.display='none'">Nacatl Avenger<span class="pt">1/2</span></span></div>
+        <div class="other-list">⚔ Goblin Bombardment</div>
+        <div class="land-list">Sacred Foundry [T], Snow-Covered Plains [T]</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="result">
+  <h2 class="bug-win">Affinity WINS</h2>
+  <div class="reason">Via damage on turn 6</div>
+  <div class="stats">
+    Final life: <span style="color:#0969da">Affinity 12</span>
+    &nbsp;|&nbsp;
+    <span style="color:#d1242f">Boros Energy 1</span>
+    &nbsp;|&nbsp; Length: T6
   </div>
 </div>
 </div>

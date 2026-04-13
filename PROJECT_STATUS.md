@@ -139,7 +139,24 @@ from engine.card_database import CardDatabase  # singleton pattern
 
 ## 6. AI strategy accuracy
 
-**Overall grade: C+** (session 4-v2 — urgency_factor refined to (opp_clock-1)/4.0, clamp-floor removed so deferred-value permanents collapse to 0 EV when dying; oracle threat scoring with broader scaling regex; all other v1 wiring retained; 16×16 matrix at N=10 validates Boros at T1 67%/64% meta)
+**Overall grade: B-** (session 5 — Affinity matchup plan: scaling-equipment threat value (CP now recognized as top-priority removal target), EE reactive-only in Affinity gameplan, evasion-weighted CP equip target; Affinity WR dropped from 92.5% → 78% on the audit, CP delta flipped from negative to **+0.68**)
+
+### Session 5 fixes (AFFINITY_MATCHUP_PLAN.md — 2026-04-13)
+| Fix | File | Status | Audit signal |
+|-----|------|--------|--------------|
+| 1. Scaling equipment threat value | `ai/ev_player.py::_permanent_threat_value` | ✅ regex `\+N/+N for each <perm>` with count-driven scoring | CP delta: **−X → +0.68** |
+| 2. EE reactive-only | `decks/gameplans/affinity.json::reactive_only` | ✅ | EE delta: **−0.54 → −0.28** (still below >0 target) |
+| 3. Evasion-weighted CP equip | `ai/ev_player.py::_consider_equip` | ✅ flying×2.0, menace×1.5, trample×1.3 | CP lands on Ornithopter when available |
+
+**Affinity audit n=60 (before → after):**
+- Win rate: 92% → **78%** (14pp drop)
+- Cranial Plating: 74% → **91%** when cast, delta +X → **+0.68**
+- Engineered Explosives: 64% → 50% when cast, delta -0.54 → **-0.28**
+- Signal Pest: 87% → 70% when cast, delta -0.30 → -0.44 (worse — opp removal now correctly targets it; not a regression in isolation)
+
+Target outcomes from plan (Affinity vs Boros ~65-70%, vs Zoo ~60-70%): partial. Current matchup WRs are Boros 17% (Affinity 83%), Zoo 10% (Affinity 90%). The residual gap points to further structural opponent-side work (documented in plan §"Target outcomes").
+
+**Overall grade (old): C+** (session 4-v2 — urgency_factor refined)
 
 ### Session 4 fixes (AI_STRATEGY_IMPROVEMENT_PLAN.md v1 + AI_IMPROVEMENT_PLAN_V2.md refinements — 2026-04-13)
 | Task | Commit | Status | Smoke signal |

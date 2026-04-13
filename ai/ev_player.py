@@ -6,6 +6,7 @@ Combat, blocking, and response decisions delegate to existing modules.
 """
 from __future__ import annotations
 import random
+import re
 from typing import Dict, List, Optional, Tuple, Set, TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -1561,7 +1562,10 @@ class EVPlayer:
         """Evaluate how threatening an opponent's permanent is.
 
         Creatures: use creature_value().
-        Equipment: value = power bonus it grants (artifact count for Plating).
+        Scaling equipment (Cranial Plating, Nettlecyst): value = artifact
+          count on opp's board + 2 — oracle-detected via the regex
+          `+N/+N for each (artifact|creature|land)`, so any future
+          scaling equipment is handled without a card-name list.
         Planeswalkers: high value. Stax: high value. Other: CMC proxy.
         """
         from engine.cards import CardType
@@ -1570,14 +1574,28 @@ class EVPlayer:
         if t.is_creature:
             return creature_value(perm)
 
-        # Equipment giving power bonuses: value = power it adds to the board
-        if 'equipment' in getattr(t, 'tags', set()) or 'pump' in getattr(t, 'tags', set()):
-            oracle = (t.oracle_text or '').lower()
-            if 'artifact' in oracle and ('+1/+0' in oracle or 'gets' in oracle):
-                # Cranial Plating / Nettlecyst: value scales with artifact count
-                artifact_count = sum(1 for c in opp.battlefield
-                                     if CardType.ARTIFACT in c.template.card_types)
-                return artifact_count * 1.5
+        oracle = (t.oracle_text or '').lower()
+        tags = getattr(t, 'tags', set())
+
+        # Scaling equipment / enchantments — `+N/+N for each <permanent>`
+        # is the oracle fingerprint. Value is driven by opponent's current
+        # permanent count, not by CMC.
+        m = re.search(r'\+\w+/\+\w+\s+for each (artifact|creature|land)', oracle)
+        if m:
+            counter_type = m.group(1)
+            if counter_type == 'artifact':
+                count = sum(1 for c in opp.battlefield
+                            if CardType.ARTIFACT in c.template.card_types)
+            elif counter_type == 'creature':
+                count = len(opp.creatures)
+            else:
+                count = sum(1 for c in opp.battlefield if c.template.is_land)
+            # Even unattached, the equip-about-to-fire threat is count + 2
+            # (CMC-ish anchor so a 1-artifact board still ranks CP ≥ 3).
+            return float(count + 2)
+
+        # Static-boost equipment without a scaling clause: CMC proxy + 2
+        if 'equipment' in tags or 'pump' in tags:
             return (t.cmc or 0) + 2.0
 
         # Planeswalkers
@@ -1585,7 +1603,7 @@ class EVPlayer:
             return 8.0 + (getattr(perm, 'loyalty_counters', 0) or 0)
 
         # Stax/lock pieces
-        if 'stax' in getattr(t, 'tags', set()):
+        if 'stax' in tags:
             return 7.0
 
         # Mana sources
@@ -1741,11 +1759,21 @@ class EVPlayer:
             if cost is None or cost > available_mana:
                 continue
 
-            # Prefer evasive creatures (flying), then highest power
-            best = max(creatures, key=lambda c: (
-                1 if Keyword.FLYING in c.keywords else 0,
-                c.power or 0
-            ))
+            # Score each creature as an equip target. Evasion multiplies
+            # the value since unblocked damage compounds harder than raw
+            # power — a CP-attached flier is typically unblockable, while
+            # a ground creature of equal size often chump-blocked.
+            def _equip_target_score(c):
+                base = (c.power or 0) + (c.toughness or 0) * 0.3
+                if Keyword.FLYING in c.keywords:
+                    return base * 2.0
+                if Keyword.MENACE in c.keywords:
+                    return base * 1.5
+                if Keyword.TRAMPLE in c.keywords:
+                    return base * 1.3
+                return base
+
+            best = max(creatures, key=_equip_target_score)
 
             # Score equipping like deploying a creature with the bonus power
             bonus = self._estimate_equip_bonus(equip, player)
