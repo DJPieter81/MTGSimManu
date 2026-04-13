@@ -439,6 +439,12 @@ class EVPlayer:
                     ev += 2.0
                 if 'search your library' in o:
                     ev += 2.0
+                # Untap-lands ability (Teferi Hero of Dominaria pattern):
+                # mana advantage compounds with draw → substantial ongoing
+                # value beyond the loyalty/draw line items above. Oracle-
+                # detected, no card names.
+                if 'untap' in o and 'land' in o:
+                    ev += 3.0
             elif 'cost_reducer' in tags:
                 ev += 4.0
 

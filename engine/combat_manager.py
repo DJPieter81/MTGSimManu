@@ -172,9 +172,13 @@ class CombatManager:
         for p in game.players:
             for c in p.creatures:
                 c.reset_combat()
-            # Consume transient aggression flag after combat (Living End etc.)
-            if getattr(p, 'aggression_boost_turns', 0) > 0:
-                p.aggression_boost_turns -= 1
+        # Consume transient aggression flag after combat (Living End etc.)
+        # Only decrement the active player's flag — the inactive player's
+        # combat-phase doesn't represent a "wasted" attack opportunity for
+        # them (they don't attack on their opponent's turn).
+        active = game.players[game.active_player]
+        if getattr(active, 'aggression_boost_turns', 0) > 0:
+            active.aggression_boost_turns -= 1
 
         self._assignments = []
         self._attackers = []

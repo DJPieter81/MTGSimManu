@@ -1913,9 +1913,14 @@ class GameState:
         # Mark the controller's next combat as aggressive. Living End resets the
         # board in our favour; the AI should swing all-in even with blockers back
         # because the opponent has no creatures and any incremental damage is
-        # close to lethal. Consumed after the next combat phase.
+        # close to lethal.
+        #
+        # Set to 2 (not 1): the first decrement happens in end_combat on the
+        # turn Living End resolves, but the returned creatures have summoning
+        # sickness on that turn and can't attack anyway. We need the flag to
+        # SURVIVE that wasted decrement so the NEXT turn's combat sees it.
         self.players[controller].aggression_boost_turns = max(
-            getattr(self.players[controller], 'aggression_boost_turns', 0), 1
+            getattr(self.players[controller], 'aggression_boost_turns', 0), 2
         )
 
         # Signal the AI's GoalEngine to advance past CURVE_OUT / DEPLOY_ENGINE
