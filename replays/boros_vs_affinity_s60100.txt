@@ -269,22 +269,20 @@ T4 P2: Play Treasure Vault
 T4 P2: Equip Cranial Plating to Sojourner's Companion (cost 1)
   [Begin Combat]
   [Declare Attackers] P2 attacks with: Signal Pest, Memnite, Signal Pest, Sojourner's Companion
-T4 P2: Signal Pest battle cry — other attackers get +1/+0
-T4 P2: Signal Pest battle cry — other attackers get +1/+0
 T4 P2: Attack with Signal Pest, Memnite, Signal Pest, Sojourner's Companion
 T4 P1:   [BLOCK-EMERGENCY] Cat Token (2/1) blocks Sojourner's Companion (14/4) — chump block
   [Declare Blockers] P1 blocks: (see BLOCK lines below)
-T4 P2:   Signal Pest (2/1) → 2 dmg to player
-T4 P2:   Memnite (4/1) → 4 dmg to player
+T4 P2:   Signal Pest (1/1) → 1 dmg to player
+T4 P2:   Memnite (3/1) → 3 dmg to player
 T4 P2:   Signal Pest (1/1) → 1 dmg to player
 T4: Cat Token dies
-  [Combat Damage] 7 damage dealt → P1 life: 19 → 12
+  [Combat Damage] 5 damage dealt → P1 life: 19 → 14
   [End Combat]
   [Main 2]
   [End Step]
 
 ╔══ TURN 5 — Boros Energy (P1) ══════════════════════════
-║ Life: Boros Energy 12  |  Affinity 16
+║ Life: Boros Energy 14  |  Affinity 16
 ║ Hand: 3 cards  |  Opp hand: 2 cards
 ║ Lands: 4  |  Opp lands: 4
 ║ Library: 48  |  Graveyard: 4
@@ -316,7 +314,7 @@ T5 P1: Play Arena of Glory (enters tapped)
   [End Step]
 
 ╔══ TURN 5 — Affinity (P2) ══════════════════════════
-║ Life: Affinity 16  |  Boros Energy 12
+║ Life: Affinity 16  |  Boros Energy 14
 ║ Hand: 2 cards  |  Opp hand: 2 cards
 ║ Lands: 4  |  Opp lands: 5
 ║ Library: 48  |  Graveyard: 1
@@ -357,20 +355,16 @@ T5 P2: Cranial Plating enters the battlefield (unattached)
 T5 P2: Equip Cranial Plating to Sojourner's Companion (cost 1)
   [Begin Combat]
   [Declare Attackers] P2 attacks with: Signal Pest, Memnite, Signal Pest, Sojourner's Companion, Construct Token
-T5 P2: Signal Pest battle cry — other attackers get +1/+0
-T5 P2: Signal Pest battle cry — other attackers get +1/+0
 T5 P2: Attack with Signal Pest, Memnite, Signal Pest, Sojourner's Companion, Construct Token
 T5 P1:   [BLOCK-EMERGENCY] Elemental Token (1/1) blocks Sojourner's Companion (34/4) — chump block
 T5 P1:   [BLOCK-EMERGENCY] Elemental Token (1/1) blocks Construct Token (16/14) — chump block
-T5 P1:   [BLOCK-EMERGENCY] Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) blocks Memnite (4/1) — trade (chump)
   [Declare Blockers] P1 blocks: (see BLOCK lines below)
-T5 P2:   Signal Pest (2/1) → 2 dmg to player
 T5 P2:   Signal Pest (1/1) → 1 dmg to player
-T5: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger dies
+T5 P2:   Memnite (3/1) → 3 dmg to player
+T5 P2:   Signal Pest (1/1) → 1 dmg to player
 T5: Elemental Token dies
 T5: Elemental Token dies
-T5: Memnite dies
-  [Combat Damage] 3 damage dealt → P1 life: 12 → 9
+  [Combat Damage] 5 damage dealt → P1 life: 14 → 9
   [End Combat]
   [Main 2]
   [End Step]
@@ -379,13 +373,13 @@ T5: Memnite dies
 ║ Life: Boros Energy 9  |  Affinity 16
 ║ Hand: 2 cards  |  Opp hand: 1 cards
 ║ Lands: 5  |  Opp lands: 4
-║ Library: 45  |  Graveyard: 9
+║ Library: 45  |  Graveyard: 8
 ║ Boros Energy board:
-║   Creatures: Seasoned Pyromancer (2/2)
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Seasoned Pyromancer (2/2)
 ║   Other: Goblin Bombardment
 ║   Lands: Sacred Foundry, Sacred Foundry, Snow-Covered Mountain, Arena of Glory, Arena of Glory
 ║ Affinity board:
-║   Creatures: Signal Pest (0/1) [tapped], Signal Pest (0/1) [tapped], Sojourner's Companion (30/4) [tapped], Construct Token (13/13) [tapped], Construct Token (13/13), Thought Monitor (2/2), Ornithopter (0/2)
+║   Creatures: Signal Pest (0/1) [tapped], Memnite (1/1) [tapped], Signal Pest (0/1) [tapped], Sojourner's Companion (32/4) [tapped], Construct Token (14/14) [tapped], Construct Token (14/14), Thought Monitor (2/2), Ornithopter (0/2)
 ║   Other: Cranial Plating, Mox Opal, Cranial Plating
 ║   Lands: Spire of Industry [T], Darksteel Citadel [T], Treasure Vault [T], Darksteel Citadel
 ╚═══════════════════════════════════════════════════════
@@ -406,8 +400,9 @@ T6 P1: Cast Thraben Charm (1W)
     [Priority] P2 passes (no response)
 T6: Resolve Thraben Charm
 T6: Signal Pest dies
+T6: Memnite dies
 T6: Signal Pest dies
-T6 P1: Thraben Charm -1/-1 kills 2 tokens
+T6 P1: Thraben Charm -1/-1 kills 3 tokens
   [Begin Combat]
   [Declare Attackers] P1 does not attack
   [End Combat]
@@ -424,7 +419,7 @@ T6 P1: Thraben Charm -1/-1 kills 2 tokens
 ║   Other: Cranial Plating, Mox Opal, Cranial Plating
 ║   Lands: Spire of Industry, Darksteel Citadel, Treasure Vault, Darksteel Citadel
 ║ Boros Energy board:
-║   Creatures: Seasoned Pyromancer (2/2)
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Seasoned Pyromancer (2/2)
 ║   Other: Goblin Bombardment
 ║   Lands: Sacred Foundry [T], Sacred Foundry [T], Snow-Covered Mountain [T], Arena of Glory [T], Arena of Glory [T]
 ╚═══════════════════════════════════════════════════════
@@ -435,16 +430,16 @@ T6 P1: Thraben Charm -1/-1 kills 2 tokens
   [Begin Combat]
   [Declare Attackers] P2 attacks with: Sojourner's Companion, Construct Token, Construct Token, Thought Monitor
 T6 P2: Attack with Sojourner's Companion, Construct Token, Construct Token, Thought Monitor
-T6 P1:   [BLOCK-EMERGENCY] Seasoned Pyromancer (2/2) blocks Sojourner's Companion (26/4) — chump block
+T6 P1:   [BLOCK-EMERGENCY] Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) blocks Sojourner's Companion (26/4) — chump block
+T6 P1:   [BLOCK-EMERGENCY] Seasoned Pyromancer (2/2) blocks Construct Token (11/11) — chump block
   [Declare Blockers] P1 blocks: (see BLOCK lines below)
 T6 P2:   Construct Token (11/11) → 11 dmg to player
-T6 P2:   Construct Token (11/11) → 11 dmg to player
 T6 P2:   Thought Monitor (2/2) → 2 dmg to player
-P1 loses: life total -12
-  [Combat Damage] 24 damage dealt → P1 life: 12 → -12
+P1 loses: life total -1
+  [Combat Damage] 13 damage dealt → P1 life: 12 → -1
 
 >>> Affinity wins Game 1 on turn 6 via damage
-    Final life: Boros Energy=-12  Affinity=13
+    Final life: Boros Energy=-1  Affinity=13
 
 ======================================================================
   GAME 2: Boros Energy (P1) vs Affinity (P2)  —  seed 60101
@@ -673,7 +668,6 @@ T3 P2: Play Darksteel Citadel
 T3 P2: Equip Cranial Plating to Ornithopter (cost 1)
   [Begin Combat]
   [Declare Attackers] P2 attacks with: Signal Pest, Ornithopter
-T3 P2: Signal Pest battle cry — other attackers get +1/+0
 T3 P2: Attack with Signal Pest, Ornithopter
   [Declare Blockers] P1 does not block
 T3 P2:   Ornithopter (8/2) → 8 dmg to player
@@ -750,7 +744,6 @@ T4 P1:   Cat Token (2/1) → 2 dmg to player
   [Main 1]
   [Begin Combat]
   [Declare Attackers] P2 attacks with: Signal Pest, Construct Token
-T4 P2: Signal Pest battle cry — other attackers get +1/+0
 T4 P2: Attack with Signal Pest, Construct Token
 T4 P1:   [BLOCK-EMERGENCY] Guide of Souls (1/2) blocks Construct Token (7/6) — chump block
   [Declare Blockers] P1 blocks: (see BLOCK lines below)
@@ -819,7 +812,6 @@ T5 P2: Cast Frogmite (4)
 T5: Resolve Frogmite
   [Begin Combat]
   [Declare Attackers] P2 attacks with: Signal Pest, Construct Token
-T5 P2: Signal Pest battle cry — other attackers get +1/+0
 T5 P2: Attack with Signal Pest, Construct Token
   [Declare Blockers] P1 does not block
 T5 P2:   Construct Token (13/6) → 13 dmg to player

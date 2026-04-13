@@ -1231,17 +1231,33 @@ class EVPlayer:
         if emergency:
             emergency_blocks: Dict[int, List[int]] = {}
             e_used: Set[int] = set()
-            # Block biggest attackers with smallest blockers
+            # Block biggest attackers with smallest blockers.
+            # Two-pass: first try non-battle-cry blockers; fall back to battle cry
+            # only if they are the only option. Preserves attack amplification.
+            def _blocker_candidates(attacker, excl):
+                cands = []
+                for b in valid_blockers:
+                    if b.instance_id in excl:
+                        continue
+                    if Keyword.FLYING in attacker.keywords:
+                        if (Keyword.FLYING not in b.keywords and
+                                Keyword.REACH not in b.keywords):
+                            continue
+                    cands.append(b)
+                return cands
+
+            def _is_battle_cry(b):
+                bo = (b.template.oracle_text or '').lower()
+                return 'whenever this creature attacks' in bo
+
             for attacker in sorted(attackers, key=lambda a: a.power or 0, reverse=True):
                 best_chump = None
                 best_chump_val = 999
-                for blocker in valid_blockers:
-                    if blocker.instance_id in e_used:
-                        continue
-                    if Keyword.FLYING in attacker.keywords:
-                        if (Keyword.FLYING not in blocker.keywords and
-                                Keyword.REACH not in blocker.keywords):
-                            continue
+                cands = _blocker_candidates(attacker, e_used)
+                # Prefer non-battle-cry blockers; only use battle cry sources as last resort
+                non_bc = [b for b in cands if not _is_battle_cry(b)]
+                pool = non_bc if non_bc else cands
+                for blocker in pool:
                     val = creature_value(blocker)
                     if val < best_chump_val:
                         best_chump_val = val
@@ -1405,13 +1421,27 @@ class EVPlayer:
             if dmg >= opp.life:
                 return [-1]  # face = lethal, always go face
 
-            # Find best creature we can kill
+            # Find best creature we can kill — factoring in strategic priority.
+            # Attack-trigger sources (battle cry etc.) are high priority even when
+            # their raw creature_value is low: killing them removes ongoing damage
+            # amplification on every future attack.
+            # Equipment carries scaling value beyond its base P/T.
             best_kill_val = 0.0
             best_kill_id = None
             if opp.creatures:
                 for c in opp.creatures:
-                    if dmg >= (c.toughness or 0):
+                    remaining_toughness = (c.toughness or 0) - getattr(c, 'damage_marked', 0)
+                    if dmg >= remaining_toughness > 0 or remaining_toughness <= 0:
                         val = creature_value(c)
+                        c_oracle = (c.template.oracle_text or '').lower()
+                        c_cname = (c.template.name or '').lower().split(' //')[0].strip()
+                        # Attack-trigger premium: battle cry, Ragavan-style triggers
+                        if ('whenever this creature attacks' in c_oracle
+                                or (c_cname and f'whenever {c_cname} attacks' in c_oracle)):
+                            val += 5.0  # removing battle cry = removing ~3+ future damage/turn
+                        # Threat premium: high-power creatures that will kill us soon
+                        if (c.power or 0) >= 4:
+                            val += (c.power or 0) * 0.5
                         if val > best_kill_val:
                             best_kill_val = val
                             best_kill_id = c.instance_id

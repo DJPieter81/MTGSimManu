@@ -226,16 +226,10 @@ def resolve_attack_trigger(game: "GameState", attacker: "CardInstance",
 
     opponent = 1 - controller
 
-    # ── Battle cry: "each other attacking creature gets +1/+0" ──
-    if 'battle cry' in oracle or ('attacks' in oracle and 'other attacking' in oracle
-                                   and '+1/+0' in oracle):
-        player = game.players[controller]
-        for c in player.creatures:
-            if c.instance_id != attacker.instance_id and c.attacking:
-                c.temp_power_mod += 1
-        game.log.append(
-            f"T{game.display_turn} P{controller+1}: "
-            f"{attacker.name} battle cry — other attackers get +1/+0")
+    # Battle cry is handled by CombatManager._apply_battle_cry after all
+    # attackers are declared — skipped here to avoid double-application.
+    # (oracle_resolver fires per-attacker mid-loop; combat_manager fires once
+    # over the complete attacker list, which is the correct timing.)
 
     # ── "Whenever this creature attacks, deal N damage" ──
     if 'attacks' in oracle and 'damage' in oracle:
