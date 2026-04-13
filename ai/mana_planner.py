@@ -329,6 +329,46 @@ def choose_best_land(lands: list, needs: ManaNeeds,
     return best
 
 
+def should_stagger_shock(game, player_idx: int, land, archetype: str) -> bool:
+    """Should we defer paying life on an untapped shock to the next turn?
+
+    Returns True (defer → pay nothing, shock enters tapped) when we've
+    already paid life for another shock this turn AND we don't need the
+    extra mana urgently. Pure AI-layer observation: no PlayerState
+    mutation, no engine counters — detects "shock paid this turn" via
+    summoning_sick + untapped + untap_life_cost>0 on other lands.
+
+    Rules (all thresholds derived from game state):
+      * Never stagger for combo decks — every mana matters, life is noise.
+      * Never stagger if hand is empty (no need to keep life reserves).
+      * Stagger when at least one shock already entered untapped this turn
+        AND (a) incoming damage leaves us at <=12 life, OR
+            (b) hand has cards, indicating more turns to play.
+    """
+    if archetype == "combo":
+        return False
+    me = game.players[player_idx]
+    shocks_already = sum(
+        1 for other in me.lands
+        if other is not land
+        and not other.tapped
+        and getattr(other, 'summoning_sick', False)
+        and getattr(other.template, 'untap_life_cost', 0) > 0
+    )
+    if shocks_already < 1:
+        return False
+    opp = game.players[1 - player_idx]
+    incoming = sum((c.power or 0) for c in opp.creatures
+                   if not getattr(c, 'tapped', False))
+    # Racing: always defer second shock
+    if me.life - incoming <= 12:
+        return True
+    # More plays to make: defer to preserve life
+    if len(me.hand) > 0:
+        return True
+    return False
+
+
 def choose_fetch_target(library: list, fetch_colors: list,
                         needs: ManaNeeds,
                         gameplan_priorities: Optional[Dict[str, float]] = None,
