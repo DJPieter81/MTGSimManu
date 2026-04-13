@@ -56,7 +56,14 @@ def classify(play):
     if 'deals' in p or ('damage' in p and 'to' in p): return 'damage'
     return 'other'
 
-def pill(card): return f'<span class="pill">{esc(card)}</span>'
+def pill(card):
+    from urllib.parse import quote as _q
+    sf = card.split(" (")[0].strip()
+    img = "https://api.scryfall.com/cards/named?exact=" + _q(sf) + "&format=image&version=small"
+    q = chr(39)
+    thumb = f"<img class=\"card-thumb\" src=\"{img}\" alt=\"{esc(sf)}\" loading=\"lazy\" onerror=\"this.style.display={q}none{q}\">"
+    return f"<span class=\"pill has-thumb\">{thumb}{esc(card)}</span>"
+
 
 def life_svg(turns, p1n, p2n):
     lp1, lp2 = [20], [20]
@@ -147,7 +154,8 @@ def parse_game(block, gnum):
                  'life_active':20,'life_opp':20,'life_p1':20,'life_p2':20,
                  'plays':[],'combat':[],'drawn':None,'hand_snapshot':[],
                  'boards':{g['p1name']:{'creatures':'','lands':'','other':''},
-                           g['p2name']:{'creatures':'','lands':'','other':''}}}
+                           g['p2name']:{'creatures':'','lands':'','other':''}},
+                 'equip_map':{}}
             g['turns'].append(cur); cur_board_player=None; pending_goal=None; pending_response=None
         if not cur: continue
 
@@ -192,6 +200,24 @@ def parse_game(block, gnum):
                 v=obm.group(1).strip()
                 if v: cur['boards'][cur_board_player]['other']=v
 
+        # Track equipment attachments for creature badge rendering
+        em=re.search(r'T\d+ P(\d+): Equip (.+?) to (.+?) \(cost', line)
+        if em and cur:
+            eq_name=em.group(2).strip(); cr_name=em.group(3).strip()
+            emap = cur.setdefault('equip_map', {})
+            # Remove this equipment from wherever it was
+            for k in list(emap.keys()):
+                emap[k] = [e for e in emap[k] if e != eq_name]
+                if not emap[k]: del emap[k]
+            emap.setdefault(cr_name, []).append(eq_name)
+        falls=re.search(r': (.+?) falls off (.+?) \(unattached\)', line)
+        if falls and cur:
+            eq_name=falls.group(1).strip(); cr_name=falls.group(2).strip()
+            emap = cur.get('equip_map', {})
+            if cr_name in emap:
+                emap[cr_name] = [e for e in emap[cr_name] if e != eq_name]
+                if not emap[cr_name]: del emap[cr_name]
+
         # Response flag — "[Priority] P# responds with Card"
         resp=re.search(r'\[Priority\] P(\d) responds with (.+)', line)
         if resp: pending_response=(int(resp.group(1)), resp.group(2).strip())
@@ -212,8 +238,11 @@ def parse_game(block, gnum):
                 matches=[c for c in live_hands[pidx] if card.lower() in c.lower() or c.lower() in card.lower()]
                 if matches: live_hands[pidx].remove(matches[0])
 
-        dam=re.search(r'\[Combat Damage\] (\d+) damage dealt → P\d+ life: (\d+) → (\d+)', line)
-        if dam: cur['combat'].append(f'{dam.group(1)} damage → life {dam.group(2)} → {dam.group(3)}')
+        dam=re.search(r'\[Combat Damage\] (\d+) damage dealt → P\d+ life: (\d+) → (-?\d+)', line)
+        if dam:
+            lethal = int(dam.group(3)) <= 0
+            prefix = 'LETHAL:' if lethal else ''
+            cur['combat'].append(f'{prefix}{dam.group(1)} damage → life {dam.group(2)} → {dam.group(3)}')
         atk=re.search(r'P\d attacks with: (.+)', line)
         if atk: cur['combat'].append(f'⚔ {esc(atk.group(1))}')
         blk=re.search(r'P\d blocks: (.+)', line)
@@ -248,17 +277,29 @@ def hand_section(h):
         html+=f'<div class="hand-analysis">✓ Key {"pieces" if len(keys)>1 else "piece"}: {", ".join(esc(c) for c in keys[:3])}</div>'
     return html
 
-def creature_badges(s):
+def creature_badges(s, equip_map=None):
     if not s: return '<span style="color:#484f58">empty</span>'
     bits=re.split(r',\s*(?=[A-Z])',s)
     out=''
+    equip_map = equip_map or {}
     for b in bits:
         pm=re.search(r'(.+?)\s*\((\d+/\d+)\)',b.strip())
-        if pm: out+=f'<span class="creature-badge">{esc(pm.group(1).strip())}<span class="pt">{pm.group(2)}</span></span>'
-        else:
-            b2=re.sub(r'\s*\[.*?\]','',b.strip())
-            if b2: out+=f'<span class="creature-badge">{esc(b2)}</span>'
+        name = pm.group(1).strip() if pm else re.sub(r'\s*\[.*?\]','',b.strip())
+        pt   = pm.group(2) if pm else None
+        if not name: continue
+        # Equipment attached to this creature
+        equips = equip_map.get(name, [])
+        eq_html = ''.join(f'<span class="equip-tag" title="{esc(e)}">⚔{esc(e)}</span>' for e in equips)
+        # Scryfall image tooltip
+        sf_name = name.split(' (')[0].strip()  # strip tapped/damage markers
+        from urllib.parse import quote as _qu
+        img_url = "https://api.scryfall.com/cards/named?exact=" + _qu(sf_name) + "&format=image&version=small"
+        q = chr(39)
+        thumb = f'<img class="card-thumb" src="{img_url}" alt="{esc(sf_name)}" loading="lazy" onerror="this.style.display={q}none{q}">'
+        pt_html = f'<span class="pt">{pt}</span>' if pt else ''
+        out += f'<span class="creature-badge has-thumb">{thumb}{esc(name)}{pt_html}{eq_html}</span>'
     return out or '<span style="color:#484f58">empty</span>'
+
 
 def lc(s): return len([x for x in s.split(',') if x.strip()]) if s and s!='none' else 0
 
@@ -315,6 +356,8 @@ def turn_html(t, next_t, gnum, p1name, p2name, star_turns):
                 return f'<div class="combat-block emergency">🚨 {c[11:]}</div>'
             if c.startswith('BLOCK:'):
                 return f'<div class="combat-block">🛡 {c[6:]}</div>'
+            if c.startswith('LETHAL:'):
+                return f'<div class="combat-lethal">☠ LETHAL — {c[7:]}</div>'
             return f'<div class="combat-detail">{c}</div>'
         combat_html='<div class="section-label">Combat</div>'+''.join(_combat_line(c) for c in t['combat'])
 
@@ -345,14 +388,14 @@ def turn_html(t, next_t, gnum, p1name, p2name, star_turns):
     <div class="board-grid">
       <div class="board-side bug">
         <h4><span style="color:{P1C}">{esc(p1name)}</span> — {lc(p1_l)} land{"s" if lc(p1_l)!=1 else ""}</h4>
-        <div class="board">{creature_badges(p1_cr)}</div>
-        {f'<div class="other-list">⚙ {esc(p1_o[:160])}</div>' if p1_o else ''}
+        <div class="board">{creature_badges(p1_cr, src.get('equip_map',{}))}</div>
+        {f'<div class="other-list">⚔ {esc(p1_o[:160])}</div>' if p1_o else ''}
         <div class="land-list">{esc(p1_l[:140])}</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:{P2C}">{esc(p2name)}</span> — {lc(p2_l)} land{"s" if lc(p2_l)!=1 else ""}</h4>
-        <div class="board">{creature_badges(p2_cr)}</div>
-        {f'<div class="other-list">⚙ {esc(p2_o[:160])}</div>' if p2_o else ''}
+        <div class="board">{creature_badges(p2_cr, src.get('equip_map',{}))}</div>
+        {f'<div class="other-list">⚔ {esc(p2_o[:160])}</div>' if p2_o else ''}
         <div class="land-list">{esc(p2_l[:140])}</div>
       </div>
     </div>
@@ -530,6 +573,11 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
 .creature-badge .pt{color:#656d76;font-size:.9em}
 .land-list{color:#9198a1;font-size:.72em;margin-top:4px;line-height:1.5}
 .other-list{color:#6e40c9;font-size:.72em;margin-top:3px;line-height:1.5;font-style:italic}
+.equip-tag{background:#fff3cd;border:1px solid #e6ac00;border-radius:3px;color:#7a5c00;font-size:.7em;padding:1px 5px;margin-left:3px;font-style:normal}
+.combat-lethal{background:#fff0f0;border:1px solid #f5b8b0;border-left:4px solid #cf222e;border-radius:0 5px 5px 0;padding:7px 12px;margin:4px 0;font-weight:600;color:#cf222e;font-size:.85em}
+.has-thumb{position:relative;cursor:default}
+.has-thumb .card-thumb{display:none;position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);width:130px;border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.35);z-index:999;pointer-events:none}
+.has-thumb:hover .card-thumb{display:block}
 /* RESULT */
 .result{background:linear-gradient(135deg,#f0f4f8,#e8edf2);border:2px solid #d0d7de;border-radius:12px;padding:24px;text-align:center;margin-top:16px}
 .result h2{font-size:1.8em;margin-bottom:6px}
