@@ -81,6 +81,7 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
 .cat-badge{font-size:.62em;text-transform:uppercase;letter-spacing:.5px;padding:1px 5px;border-radius:3px;font-weight:700;margin-right:3px;min-width:46px;text-align:center;display:inline-block;flex-shrink:0;font-family:system-ui}
 /* COMBAT */
 .combat-detail{background:#fff8f8;border:1px solid #f5b8b0;border-radius:5px;padding:6px 10px;margin:3px 0;font-family:'Fira Code',monospace;font-size:.8em;color:#1f2328}
+.combat-breakdown{padding:3px 10px 3px 22px;font-size:.78em;color:#6e7781;font-family:'Fira Code',monospace;border-left:2px solid #f5b8b0;margin:1px 0 1px 10px}
 /* BOARD */
 .board-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
 .board-side{background:#ffffff;border:1px solid #d0d7de;border-radius:6px;padding:8px 10px}
@@ -300,8 +301,9 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
 <div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">DAMAGE</span><span class="action">Phlage: 3 damage to opponent, gain 3 life</span></div>
 <div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Phlage sacrificed (not escaped)</span></div>
 <div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span></div>
+<div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player</span></div>
 
-    <div class="section-label">Combat</div><div class="combat-detail">⚔ Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</div><div class="combat-detail">1 damage → life 17 → 16</div>
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</div><div class="combat-breakdown"> Ajani, Nacatl Pariah // Ajani, Nacatl Avenger 1/2 · 1 dmg</div><div class="combat-detail">1 damage → life 17 → 16</div>
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
@@ -405,8 +407,11 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
 <div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Signal Pest battle cry — other attackers get +1/+0</span></div>
 <div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Signal Pest battle cry — other attackers get +1/+0</span></div>
 <div class="play"><span class="step">7.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Signal Pest, Memnite, Signal Pest, Sojourner's Companion</span></div>
+<div class="play"><span class="step">8.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Signal Pest (2/1) → 2 dmg to player</span></div>
+<div class="play"><span class="step">9.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Memnite (4/1) → 4 dmg to player</span></div>
+<div class="play"><span class="step">10.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Signal Pest (1/1) → 1 dmg to player</span></div>
 
-    <div class="section-label">Combat</div><div class="combat-detail">⚔ Signal Pest, Memnite, Signal Pest, Sojourner's Companion</div><div class="combat-detail">7 damage → life 19 → 12</div>
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Signal Pest, Memnite, Signal Pest, Sojourner's Companion</div><div class="combat-breakdown"> Signal Pest 2/1 · 2 dmg</div><div class="combat-breakdown"> Memnite 4/1 · 4 dmg</div><div class="combat-breakdown"> Signal Pest 1/1 · 1 dmg</div><div class="combat-detail">7 damage → life 19 → 12</div>
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
@@ -483,8 +488,10 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
 <div class="play"><span class="step">12.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Signal Pest battle cry — other attackers get +1/+0</span></div>
 <div class="play"><span class="step">13.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Signal Pest battle cry — other attackers get +1/+0</span></div>
 <div class="play"><span class="step">14.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Signal Pest, Memnite, Signal Pest, Sojourner's Companion, Construct Token</span></div>
+<div class="play"><span class="step">15.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Signal Pest (2/1) → 2 dmg to player</span></div>
+<div class="play"><span class="step">16.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Signal Pest (1/1) → 1 dmg to player</span></div>
 
-    <div class="section-label">Combat</div><div class="combat-detail">⚔ Signal Pest, Memnite, Signal Pest, Sojourner's Companion, Construct Token</div><div class="combat-detail">3 damage → life 12 → 9</div>
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Signal Pest, Memnite, Signal Pest, Sojourner's Companion, Construct Token</div><div class="combat-breakdown"> Signal Pest 2/1 · 2 dmg</div><div class="combat-breakdown"> Signal Pest 1/1 · 1 dmg</div><div class="combat-detail">3 damage → life 12 → 9</div>
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
@@ -549,8 +556,12 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Mox Opal</span></div>
     <div class="section-label">Hand (1 cards)</div><div class="hand-pills"><span class="pill">Mox Opal</span></div>
     <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Sojourner's Companion, Construct Token, Construct Token, Thought Monitor, Ornithopter</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Sojourner's Companion (15/4) → 15 dmg to player</span></div>
+<div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Construct Token (11/11) → 11 dmg to player</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Construct Token (11/11) → 11 dmg to player</span></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Thought Monitor (2/2) → 2 dmg to player</span></div>
 
-    <div class="section-label">Combat</div><div class="combat-detail">⚔ Sojourner's Companion, Construct Token, Construct Token, Thought Monitor, Ornithopter</div>
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Sojourner's Companion, Construct Token, Construct Token, Thought Monitor, Ornithopter</div><div class="combat-breakdown"> Sojourner's Companion 15/4 · 15 dmg</div><div class="combat-breakdown"> Construct Token 11/11 · 11 dmg</div><div class="combat-breakdown"> Construct Token 11/11 · 11 dmg</div><div class="combat-breakdown"> Thought Monitor 2/2 · 2 dmg</div>
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
@@ -764,8 +775,9 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
 <div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">DAMAGE</span><span class="action">Phlage: 3 damage to opponent, gain 3 life</span></div>
 <div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Phlage sacrificed (not escaped)</span></div>
 <div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token</span></div>
+<div class="play"><span class="step">7.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player</span></div>
 
-    <div class="section-label">Combat</div><div class="combat-detail">⚔ Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token</div><div class="combat-detail">1 damage → life 17 → 16</div>
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token</div><div class="combat-breakdown"> Ajani, Nacatl Pariah // Ajani, Nacatl Avenger 1/2 · 1 dmg</div><div class="combat-detail">1 damage → life 17 → 16</div>
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
@@ -799,8 +811,9 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
 <div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Darksteel Citadel</span></div>
 <div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#fff8c5;color:#9a6700">TRIGGER</span><span class="action key">Equip Cranial Plating to Ornithopter (cost 1)</span></div>
 <div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Ornithopter, Ornithopter</span></div>
+<div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Ornithopter (6/2) → 6 dmg to player</span></div>
 
-    <div class="section-label">Combat</div><div class="combat-detail">⚔ Ornithopter, Ornithopter</div><div class="combat-detail">6 damage → life 14 → 8</div>
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Ornithopter, Ornithopter</div><div class="combat-breakdown"> Ornithopter 6/2 · 6 dmg</div><div class="combat-detail">6 damage → life 14 → 8</div>
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
@@ -836,8 +849,9 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
 <div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Thraben Charm destroys enchantment Urza's Saga</span></div>
 <div class="play"><span class="step">6.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Guide of Souls (W)</span><span class="reason-toggle" onclick="toggleReason('r2t4p1s6')" title="Show reasoning">·</span><div class="reasoning" id="r2t4p1s6" style="display:none">← curve_out [enablers]</div></div>
 <div class="play"><span class="step">7.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token</span></div>
+<div class="play"><span class="step">8.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player</span></div>
 
-    <div class="section-label">Combat</div><div class="combat-detail">⚔ Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token</div><div class="combat-detail">1 damage → life 16 → 15</div>
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token</div><div class="combat-breakdown"> Ajani, Nacatl Pariah // Ajani, Nacatl Avenger 1/2 · 1 dmg</div><div class="combat-detail">1 damage → life 16 → 15</div>
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
@@ -901,8 +915,9 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
 <div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">DAMAGE</span><span class="action">Phlage: 3 damage to opponent, gain 3 life</span></div>
 <div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Phlage sacrificed (not escaped)</span></div>
 <div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player</span></div>
 
-    <div class="section-label">Combat</div><div class="combat-detail">⚔ Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</div><div class="combat-detail">1 damage → life 12 → 11</div>
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</div><div class="combat-breakdown"> Ajani, Nacatl Pariah // Ajani, Nacatl Avenger 1/2 · 1 dmg</div><div class="combat-detail">1 damage → life 12 → 11</div>
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
@@ -934,8 +949,10 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#fff8c5;color:#9a6700">TRIGGER</span><span class="action key">Equip Cranial Plating to Ornithopter (cost 1)</span></div>
 <div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Frogmite (4)</span><span class="reason-toggle" onclick="toggleReason('r2t5p2s2')" title="Show reasoning">·</span><div class="reasoning" id="r2t5p2s2" style="display:none">← curve_out [enablers]</div></div>
 <div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Ornithopter, Construct Token</span></div>
+<div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Ornithopter (6/2) → 6 dmg to player</span></div>
+<div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Construct Token (6/6) → 6 dmg to player</span></div>
 
-    <div class="section-label">Combat</div><div class="combat-detail">⚔ Ornithopter, Construct Token</div>
+    <div class="section-label">Combat</div><div class="combat-detail">⚔ Ornithopter, Construct Token</div><div class="combat-breakdown"> Ornithopter 6/2 · 6 dmg</div><div class="combat-breakdown"> Construct Token 6/6 · 6 dmg</div>
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">

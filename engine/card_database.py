@@ -872,6 +872,16 @@ class CardDatabase:
 
         print(f"Loaded {count} cards ({errors} errors)")
 
+        if count < 1000:
+            import subprocess, pathlib
+            merge = pathlib.Path(__file__).parent.parent / 'merge_db.py'
+            if merge.exists():
+                print("DB too small — auto-running merge_db.py and reloading...")
+                subprocess.run(['python', str(merge)], cwd=str(merge.parent))
+                self.cards.clear()
+                self._raw_data.clear()
+                self.load(json_path)
+
     def _build_template(self, name: str, data: dict) -> Optional[CardTemplate]:
         """Build a CardTemplate from MTGJSON card data."""
         # Parse types

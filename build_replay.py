@@ -214,6 +214,10 @@ def parse_game(block, gnum):
         if atk: cur['combat'].append(f'⚔ {esc(atk.group(1))}')
         blk=re.search(r'P\d blocks: (.+)', line)
         if blk and blk.group(1).strip(): cur['combat'].append(f'🛡 {esc(blk.group(1))}')
+        brk=re.search(r'P\d+:\s{2}(.+?) \((\d+)/(\d+)\) → (\d+) dmg to player(.*)', line)
+        if brk:
+            note = ' (trample)' if 'trample' in brk.group(5) else ''
+            cur['combat'].append(f'BREAKDOWN:{esc(brk.group(1))} {brk.group(2)}/{brk.group(3)} · {brk.group(4)} dmg{note}')
 
     rm=re.search(r'>>> (.+?) wins Game \d+ on turn (\d+) via (.+)', '\n'.join(block))
     if rm: g['result']={'winner':rm.group(1),'turn':int(rm.group(2)),'how':rm.group(3)}
@@ -300,7 +304,11 @@ def turn_html(t, next_t, gnum, p1name, p2name, star_turns):
     # Combat
     combat_html=''
     if t['combat']:
-        combat_html='<div class="section-label">Combat</div>'+''.join(f'<div class="combat-detail">{c}</div>' for c in t['combat'])
+        def _combat_line(c):
+            if c.startswith('BREAKDOWN:'):
+                return f'<div class="combat-breakdown">{c[10:]}</div>'
+            return f'<div class="combat-detail">{c}</div>'
+        combat_html='<div class="section-label">Combat</div>'+''.join(_combat_line(c) for c in t['combat'])
 
     # Board — from next turn's header = state AFTER this turn's plays
     src=next_t if next_t else t
@@ -500,6 +508,7 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
 .cat-badge{font-size:.62em;text-transform:uppercase;letter-spacing:.5px;padding:1px 5px;border-radius:3px;font-weight:700;margin-right:3px;min-width:46px;text-align:center;display:inline-block;flex-shrink:0;font-family:system-ui}
 /* COMBAT */
 .combat-detail{background:#fff8f8;border:1px solid #f5b8b0;border-radius:5px;padding:6px 10px;margin:3px 0;font-family:'Fira Code',monospace;font-size:.8em;color:#1f2328}
+.combat-breakdown{padding:3px 10px 3px 22px;font-size:.78em;color:#6e7781;font-family:'Fira Code',monospace;border-left:2px solid #f5b8b0;margin:1px 0 1px 10px}
 /* BOARD */
 .board-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
 .board-side{background:#ffffff;border:1px solid #d0d7de;border-radius:6px;padding:8px 10px}

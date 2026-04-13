@@ -175,6 +175,7 @@ T3 P1: Phlage sacrificed (not escaped)
   [Declare Attackers] P1 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
 T3 P1: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
   [Declare Blockers] P2 does not block
+T3 P1:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
   [Combat Damage] 1 damage dealt → P2 life: 17 → 16
   [End Combat]
   [Main 2]
@@ -275,6 +276,9 @@ T4 P2: Signal Pest battle cry — other attackers get +1/+0
 T4 P2: Signal Pest battle cry — other attackers get +1/+0
 T4 P2: Attack with Signal Pest, Memnite, Signal Pest, Sojourner's Companion
   [Declare Blockers] P1 blocks: 
+T4 P2:   Signal Pest (2/1) → 2 dmg to player
+T4 P2:   Memnite (4/1) → 4 dmg to player
+T4 P2:   Signal Pest (1/1) → 1 dmg to player
 T4: Cat Token dies
   [Combat Damage] 7 damage dealt → P1 life: 19 → 12
   [End Combat]
@@ -359,6 +363,8 @@ T5 P2: Signal Pest battle cry — other attackers get +1/+0
 T5 P2: Signal Pest battle cry — other attackers get +1/+0
 T5 P2: Attack with Signal Pest, Memnite, Signal Pest, Sojourner's Companion, Construct Token
   [Declare Blockers] P1 blocks: 
+T5 P2:   Signal Pest (2/1) → 2 dmg to player
+T5 P2:   Signal Pest (1/1) → 1 dmg to player
 T5: Seasoned Pyromancer dies
 T5: Elemental Token dies
 T5: Elemental Token dies
@@ -429,6 +435,10 @@ T6 P1: Thraben Charm -1/-1 kills 2 tokens
   [Declare Attackers] P2 attacks with: Sojourner's Companion, Construct Token, Construct Token, Thought Monitor, Ornithopter
 T6 P2: Attack with Sojourner's Companion, Construct Token, Construct Token, Thought Monitor, Ornithopter
   [Declare Blockers] P1 does not block
+T6 P2:   Sojourner's Companion (15/4) → 15 dmg to player
+T6 P2:   Construct Token (11/11) → 11 dmg to player
+T6 P2:   Construct Token (11/11) → 11 dmg to player
+T6 P2:   Thought Monitor (2/2) → 2 dmg to player
 P1 loses: life total -27
   [Combat Damage] 39 damage dealt → P1 life: 12 → -27
 
@@ -634,6 +644,7 @@ T3 P1: Phlage sacrificed (not escaped)
   [Declare Attackers] P1 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
 T3 P1: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
   [Declare Blockers] P2 blocks: 
+T3 P1:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
 T3: Signal Pest dies
   [Combat Damage] 1 damage dealt → P2 life: 17 → 16
   [End Combat]
@@ -665,6 +676,7 @@ T3 P2: Equip Cranial Plating to Ornithopter (cost 1)
   [Declare Attackers] P2 attacks with: Ornithopter, Ornithopter
 T3 P2: Attack with Ornithopter, Ornithopter
   [Declare Blockers] P1 does not block
+T3 P2:   Ornithopter (6/2) → 6 dmg to player
   [Combat Damage] 6 damage dealt → P1 life: 14 → 8
   [End Combat]
   [Main 2]
@@ -712,6 +724,7 @@ T4: Resolve Guide of Souls
   [Declare Attackers] P1 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
 T4 P1: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
   [Declare Blockers] P2 blocks: 
+T4 P1:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
 T4: Cat Token dies
   [Combat Damage] 1 damage dealt → P2 life: 16 → 15
   [End Combat]
@@ -772,6 +785,7 @@ T5 P1: Phlage sacrificed (not escaped)
   [Declare Attackers] P1 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
 T5 P1: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
   [Declare Blockers] P2 does not block
+T5 P1:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
   [Combat Damage] 1 damage dealt → P2 life: 12 → 11
   [End Combat]
   [Main 2]
@@ -803,6 +817,8 @@ T5: Resolve Frogmite
   [Declare Attackers] P2 attacks with: Ornithopter, Construct Token
 T5 P2: Attack with Ornithopter, Construct Token
   [Declare Blockers] P1 does not block
+T5 P2:   Ornithopter (6/2) → 6 dmg to player
+T5 P2:   Construct Token (6/6) → 6 dmg to player
 P1 loses: life total -1
   [Combat Damage] 12 damage dealt → P1 life: 11 → -1
 

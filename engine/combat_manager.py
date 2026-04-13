@@ -259,6 +259,11 @@ class CombatManager:
                     game.players[self._active_player].damage_dealt_this_turn += remaining_damage
                     total_damage_dealt += remaining_damage
                     player_damage = remaining_damage
+                    game.log.append(
+                        f"T{game.display_turn} P{self._active_player+1}: "
+                        f"  {attacker.name} ({attacker.power}/{attacker.toughness})"
+                        f" → {remaining_damage} dmg to player (trample)"
+                    )
 
                 # Deathtouch from attacker — ensure blocker is marked as dead
                 if has_deathtouch:
@@ -275,6 +280,11 @@ class CombatManager:
                 game.players[self._active_player].damage_dealt_this_turn += attacker_power
                 total_damage_dealt = attacker_power
                 player_damage = attacker_power
+                game.log.append(
+                    f"T{game.display_turn} P{self._active_player+1}: "
+                    f"  {attacker.name} ({attacker.power}/{attacker.toughness})"
+                    f" → {attacker_power} dmg to player"
+                )
 
             # CR 702.15: Lifelink — gain life equal to ALL damage dealt
             if has_lifelink and total_damage_dealt > 0:
