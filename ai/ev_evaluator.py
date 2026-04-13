@@ -13,6 +13,7 @@ being 1 life ahead in an otherwise equal position.
 """
 from __future__ import annotations
 import math
+import re
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Set, Tuple, TYPE_CHECKING
 
@@ -71,6 +72,23 @@ class EVSnapshot:
         if self.opp_power <= 0:
             return 99.0
         return max(1.0, math.ceil(self.my_life / self.opp_power))
+
+    @property
+    def urgency_factor(self) -> float:
+        """How much future value do we actually get to realise?
+
+        Returns 0.0 (instant death) to 1.0 (no urgency). Used to discount
+        permanents that generate value only through future activations /
+        combat steps — e.g. Goblin Bombardment has no immediate effect; its
+        worth is proportional to the number of turns we stay alive to
+        sacrifice creatures into it.
+
+        Derived solely from `opp_clock`, which is itself oracle-detected
+        from opponent's creatures. No hardcoded matchup thresholds.
+        """
+        if self.opp_clock <= 0:
+            return 0.0
+        return min(1.0, self.opp_clock / 4.0)
 
     @property
     def has_lethal(self) -> bool:
@@ -230,6 +248,54 @@ def estimate_spell_ev(card: "CardInstance", snap: EVSnapshot,
     after_snap = _project_spell(card, snap, dk, game, player_idx)
     after = evaluate_board(after_snap, archetype, dk)
     return after - before
+
+
+def _has_immediate_effect(card: "CardInstance") -> bool:
+    """True if the spell generates value the turn it resolves.
+
+    Oracle-driven. No card names. Used to decide whether a spell's
+    projected value should be discounted by `urgency_factor` when we
+    are on a fast clock — permanents that only pay off over multiple
+    future turns (e.g. Goblin Bombardment, tap-activated engines) are
+    worth less when the opponent is about to kill us.
+
+    Default is True so unrecognised cards are never over-discounted.
+    """
+    t = card.template
+    oracle = (getattr(t, 'oracle_text', '') or '').lower()
+    tags = getattr(t, 'tags', set())
+
+    if t.is_creature:
+        return True  # bodies block / attack immediately
+    if 'removal' in tags or 'board_wipe' in tags:
+        return True  # removes a threat now
+    if 'draw' in tags or 'cantrip' in tags:
+        return True  # card advantage now
+    if 'counterspell' in tags:
+        return True  # protects against an incoming spell now
+    if 'ritual' in tags:
+        return True  # enables same-turn plays
+    # ETB value (Omnath, Thragtusk, PW ETB effects) — resolves immediately
+    if 'etb_value' in tags:
+        return True
+    if 'enters' in oracle and (
+            'deal' in oracle or 'gain' in oracle or 'exile' in oracle
+            or 'draw' in oracle or 'search your library' in oracle):
+        return True
+    # Planeswalkers provide loyalty activations this turn
+    from engine.cards import CardType
+    if hasattr(t, 'card_types') and CardType.PLANESWALKER in t.card_types:
+        return True
+    # Delayed-value permanents:
+    #   'sacrifice ... deal/damage'  — Goblin Bombardment (needs future acts)
+    #   'tap ...' without mana/draw  — tap-activated engines (Urza's Saga etc.)
+    if 'sacrifice' in oracle and ('deal' in oracle or 'damage' in oracle):
+        return False
+    if (re.search(r'\btap\b', oracle) is not None
+            and 'add' not in oracle
+            and 'draw' not in oracle):
+        return False
+    return True  # default: assume some immediate value
 
 
 def _project_spell(card: "CardInstance", snap: EVSnapshot,
@@ -792,6 +858,16 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
     after_value = evaluate_board(post_response, archetype, dk)
 
     ev = after_value - current_value
+
+    # Kill-clock urgency discount for slow permanents. Cards whose value
+    # only materialises through future turns (Goblin Bombardment, tap-
+    # activated engines) are worth less when opponent's clock is close.
+    # Clamped so the minimum multiplier is 0.5 — a delayed-value permanent
+    # is still worth at least half its steady-state value even under a
+    # fast clock, preventing total collapse of midrange plans. Derived
+    # purely from `opp_clock`, so no matchup thresholds are hardcoded.
+    if not _has_immediate_effect(card) and ev > 0:
+        ev *= max(0.5, snap.urgency_factor)
 
     # Low-CMC ETB-value creature floor: prevents the removal-projection from
     # shoving a 2-CMC creature with tangible on-board value (Psychic Frog,
