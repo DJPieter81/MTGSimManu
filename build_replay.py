@@ -146,8 +146,8 @@ def parse_game(block, gnum):
             cur={'num':int(tm.group(1)),'player':tm.group(2),'pidx':int(tm.group(3)),
                  'life_active':20,'life_opp':20,'life_p1':20,'life_p2':20,
                  'plays':[],'combat':[],'drawn':None,'hand_snapshot':[],
-                 'boards':{g['p1name']:{'creatures':'','lands':''},
-                           g['p2name']:{'creatures':'','lands':''}}}
+                 'boards':{g['p1name']:{'creatures':'','lands':'','other':''},
+                           g['p2name']:{'creatures':'','lands':'','other':''}}}
             g['turns'].append(cur); cur_board_player=None; pending_goal=None; pending_response=None
         if not cur: continue
 
@@ -187,6 +187,10 @@ def parse_game(block, gnum):
             if lbm:
                 v=lbm.group(1).strip()
                 if v not in ('(none)',''):  cur['boards'][cur_board_player]['lands']=v
+            obm=re.search(r'║\s+Other: (.+)', line)
+            if obm:
+                v=obm.group(1).strip()
+                if v: cur['boards'][cur_board_player]['other']=v
 
         # Response flag — "[Priority] P# responds with Card"
         resp=re.search(r'\[Priority\] P(\d) responds with (.+)', line)
@@ -312,10 +316,10 @@ def turn_html(t, next_t, gnum, p1name, p2name, star_turns):
 
     # Board — from next turn's header = state AFTER this turn's plays
     src=next_t if next_t else t
-    p1b=src['boards'].get(p1name,{'creatures':'','lands':''})
-    p2b=src['boards'].get(p2name,{'creatures':'','lands':''})
-    p1_cr,p1_l=p1b['creatures'],p1b['lands'] or 'none'
-    p2_cr,p2_l=p2b['creatures'],p2b['lands'] or 'none'
+    p1b=src['boards'].get(p1name,{'creatures':'','lands':'','other':''})
+    p2b=src['boards'].get(p2name,{'creatures':'','lands':'','other':''})
+    p1_cr,p1_l,p1_o=p1b['creatures'],p1b['lands'] or 'none',p1b.get('other','')
+    p2_cr,p2_l,p2_o=p2b['creatures'],p2b['lands'] or 'none',p2b.get('other','')
 
     return f'''<div class="turn {cls}" id="g{gnum}t{t["num"]}">
   <div class="turn-header" onclick="toggle(this.parentElement)">
@@ -338,11 +342,13 @@ def turn_html(t, next_t, gnum, p1name, p2name, star_turns):
       <div class="board-side bug">
         <h4><span style="color:{P1C}">{esc(p1name)}</span> — {lc(p1_l)} land{"s" if lc(p1_l)!=1 else ""}</h4>
         <div class="board">{creature_badges(p1_cr)}</div>
+        {f'<div class="other-list">⚙ {esc(p1_o[:160])}</div>' if p1_o else ''}
         <div class="land-list">{esc(p1_l[:140])}</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:{P2C}">{esc(p2name)}</span> — {lc(p2_l)} land{"s" if lc(p2_l)!=1 else ""}</h4>
         <div class="board">{creature_badges(p2_cr)}</div>
+        {f'<div class="other-list">⚙ {esc(p2_o[:160])}</div>' if p2_o else ''}
         <div class="land-list">{esc(p2_l[:140])}</div>
       </div>
     </div>
@@ -517,6 +523,7 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
 .creature-badge{background:#ddf4ff;border:1px solid #a8d8f0;border-radius:5px;padding:3px 8px;font-family:'Fira Code',monospace;font-size:.78em;color:#0969da;display:inline-flex;align-items:center;gap:4px}
 .creature-badge .pt{color:#656d76;font-size:.9em}
 .land-list{color:#9198a1;font-size:.72em;margin-top:4px;line-height:1.5}
+.other-list{color:#6e40c9;font-size:.72em;margin-top:3px;line-height:1.5;font-style:italic}
 /* RESULT */
 .result{background:linear-gradient(135deg,#f0f4f8,#e8edf2);border:2px solid #d0d7de;border-radius:12px;padding:24px;text-align:center;margin-top:16px}
 .result h2{font-size:1.8em;margin-bottom:6px}
