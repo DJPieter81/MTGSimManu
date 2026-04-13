@@ -335,7 +335,16 @@ Always save logs to `replays/` and commit. `build_replay.py` is in the repo with
 - Display end-of-turn board using **next turn's header** (turn N's header = state before N's plays; turn N+1's header = state after)
 - `╔══ TURN N ══╗` header sections are labelled `║ PlayerName board:` — match exactly
 
-**Design:** Light theme (white `#ffffff` bg, GitHub light palette), collapsible turn cards, 15 category badges, `.active` for keyboard nav, `boards` keyed by player name. P1 = `#0969da` (blue), P2 = `#d1242f` (red). See `/mtg-bo3-replayer-v2` skill for full spec.
+**Design:** Light theme (white `#ffffff` bg, GitHub light palette), collapsible turn cards, 15 category badges, `.active` for keyboard nav, `boards` keyed by player name. P1 = `#0969da` (blue), P2 = `#d1242f` (red). Reference: `templates/reference_replay.html`.
+
+**build_replay.py features (current):**
+- **Scryfall thumbnails** — every card pill and creature badge has a hover image (`api.scryfall.com/cards/named?exact=NAME&version=small`). Card names URL-encoded with `urllib.parse.quote`.
+- **Equipment tags** — `⚔Cranial Plating` badge on creature when equipped, tracked from `Equip X to Y` / `falls off` log lines into `equip_map` per turn.
+- **Lethal callout** — `☠ LETHAL — N damage → life X → -Y` red banner when combat damage kills a player.
+- **Per-attacker damage** — `BREAKDOWN:` lines show each unblocked attacker's P/T + individual damage contribution.
+- **Block reasoning** — `🛡 BLOCK:` (normal) and `🚨 BLOCK-EMRG:` (emergency) lines with blocker/attacker P/T and reason (chump/trade/favorable trade).
+- **Other permanents row** — equipment, mana rocks, enchantments shown between creatures and lands in board state.
+- **Dot-click reasoning** — `·` expands AI goal reasoning per play (unique IDs: `r{game}t{turn}p{pidx}s{step}`).
 
 ## Planning Reference — PROJECT_STATUS.md
 
