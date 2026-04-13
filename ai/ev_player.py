@@ -185,6 +185,17 @@ class EVPlayer:
         me = game.players[self.player_idx]
         opp = game.players[1 - self.player_idx]
 
+        # Consume any post-combo goal-advance signal set by mass-reanimate
+        # resolution (e.g. Living End). Engine sets game._pending_goal_advance
+        # when a board-resetting cascade lands; AI advances to PUSH_DAMAGE
+        # so it stops casting curve spells and starts swinging.
+        pending = getattr(game, '_pending_goal_advance', None)
+        if pending and self.player_idx in pending:
+            if self.goal_engine:
+                self.goal_engine.advance_goal(game,
+                                              reason='post_combo_aggression')
+            del pending[self.player_idx]
+
         # Check if current goal should advance before evaluating plays
         if self.goal_engine:
             self.goal_engine.check_transition(game, self.player_idx)

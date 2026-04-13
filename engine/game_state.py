@@ -1834,11 +1834,19 @@ class GameState:
         if found_card:
             self.log.append(f"T{self.display_turn}: Cascade hits {found_card.name}")
 
-            # Detect "exile all creatures + return from GY" effects (Living End, etc.)
+            # Detect "exile all creatures + return from GY" effects (Living
+            # End and similar mass-reanimate cards). Oracle pattern: spell
+            # mentions 'all creature cards' AND 'graveyard' AND a return-
+            # to-battlefield effect (puts/return + battlefield). Generic —
+            # works for Living End ("Each player exiles all creature cards
+            # from their graveyard ... then puts all cards they exiled this
+            # way onto the battlefield") and any future card matching the
+            # archetype.
             found_oracle = (found_card.template.oracle_text or '').lower()
             is_mass_reanimate = (
-                'sacrifices all creatures' in found_oracle
-                and 'puts all creature cards' in found_oracle
+                'all creature cards' in found_oracle
+                and 'graveyard' in found_oracle
+                and 'battlefield' in found_oracle
             )
             if is_mass_reanimate:
                 self._resolve_living_end(controller)
@@ -1909,6 +1917,15 @@ class GameState:
         self.players[controller].aggression_boost_turns = max(
             getattr(self.players[controller], 'aggression_boost_turns', 0), 1
         )
+
+        # Signal the AI's GoalEngine to advance past CURVE_OUT / DEPLOY_ENGINE
+        # into PUSH_DAMAGE on the next main-phase entry. Without this the
+        # cascade deck keeps casting tutors / ritual fodder instead of
+        # closing the game with the board it just produced. Consumed once
+        # by ev_player._execute_main_phase.
+        if not hasattr(self, '_pending_goal_advance'):
+            self._pending_goal_advance = {}
+        self._pending_goal_advance[controller] = 'post_combo_aggression'
 
     # ─── REANIMATION ─────────────────────────────────────────────
 
