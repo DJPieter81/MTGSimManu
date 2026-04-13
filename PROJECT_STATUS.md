@@ -139,7 +139,11 @@ from engine.card_database import CardDatabase  # singleton pattern
 
 ## 6. AI strategy accuracy
 
-**Overall grade: B-** (session 5 — Affinity matchup plan: scaling-equipment threat value (CP now recognized as top-priority removal target), EE reactive-only in Affinity gameplan, evasion-weighted CP equip target; Affinity WR dropped from 92.5% → 78% on the audit, CP delta flipped from negative to **+0.68**)
+**Overall grade: B-** (session 5b — Affinity matchup plan iteration: W//T and similar artifact-hate removal now correctly tagged in card database (artifact/enchantment/all_nonland added to removal target_types, lands excluded to prevent Boseiju confusion); added _score_spell overlay so artifact-hate removal scores positive EV against scaling equipment using _permanent_threat_value. W//T now destroys Cranial Plating when drawn. Affinity matchup WRs marginally improved; audit variance ~85-92%, EE delta improving toward zero)
+
+Session 5b changes (on top of session 5):
+  * engine/card_database.py: removal tag extended to artifact/enchantment/all_nonland target_types; lands filtered out (Channel lands like Boseiju stay untagged)
+  * ai/ev_player.py::_score_spell: artifact/enchantment-hate overlay using _permanent_threat_value × 0.5 for spells whose oracle contains target artifact/enchantment/nonland permanent/noncreature
 
 ### Session 5 fixes (AFFINITY_MATCHUP_PLAN.md — 2026-04-13)
 | Fix | File | Status | Audit signal |

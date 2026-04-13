@@ -1193,121 +1193,487 @@ T4: Cat Token dies
   [Upkeep]
   [Draw] P2 draws: Galvanic Discharge
   [Main 1]
-    → Goal: curve_out [interaction]
-    [Mana] Tap Sacred Foundry→R (paying for Galvanic Discharge, 2 mana remaining)
-T4 P2: Cast Galvanic Discharge (R)
+    → Goal: curve_out
+    [Mana] Tap Sacred Foundry→R, Snow-Covered Plains→W (paying for Wear // Tear, 2 mana remaining)
+T4 P2: Cast Wear // Tear (1R)
     [Priority] P1 passes (no response)
-T4: Resolve Galvanic Discharge
-T4 P2: Galvanic Discharge deals 3 to opponent
+T4: Resolve Wear // Tear
+T4: Cranial Plating moved battlefield -> graveyard (destroyed)
+T4 P2: Wear // Tear destroys Cranial Plating
+T4: Urza's Saga moved battlefield -> graveyard (destroyed)
+T4 P2: Wear // Tear destroys Urza's Saga
   [Begin Combat]
   [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
 T4 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
   [Declare Blockers] P1 does not block
 T4 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
-  [Combat Damage] 1 damage dealt → P1 life: 14 → 13
+  [Combat Damage] 1 damage dealt → P1 life: 17 → 16
   [End Combat]
   [Main 2]
   [End Step]
 
 ╔══ TURN 5 — Affinity (P1) ══════════════════════════
-║ Life: Affinity 13  |  Boros Energy 17
+║ Life: Affinity 16  |  Boros Energy 17
 ║ Hand: 1 cards  |  Opp hand: 5 cards
-║ Lands: 4  |  Opp lands: 2
-║ Library: 49  |  Graveyard: 2
+║ Lands: 3  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 4
 ║ Affinity board:
 ║   Creatures: Ornithopter (0/2)
-║   Other: Springleaf Drum, Cranial Plating, Cranial Plating
-║   Lands: Darksteel Citadel, Island, Mistvault Bridge, Urza's Saga
+║   Other: Springleaf Drum, Cranial Plating
+║   Lands: Darksteel Citadel, Island, Mistvault Bridge
 ║ Boros Energy board:
 ║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped]
-║   Lands: Sacred Foundry [T], Snow-Covered Plains
+║   Lands: Sacred Foundry [T], Snow-Covered Plains [T]
 ╚═══════════════════════════════════════════════════════
   [Untap] P1 untaps all permanents
   [Upkeep]
   [Draw] P1 draws: Signal Pest
   [Main 1]
-T5 P1: Play Tanglepool Bridge (enters tapped)
-T5 P1: Equip Cranial Plating to Ornithopter (cost 1)
-T5 P1: Equip Cranial Plating to Ornithopter (cost 1)
     → Goal: curve_out
+    [Mana] Tap Darksteel Citadel→C (paying for Signal Pest, 3 mana remaining)
 T5 P1: Cast Signal Pest (1)
     [Priority] P2 passes (no response)
 T5: Resolve Signal Pest
+T5 P1: Play Tanglepool Bridge (enters tapped)
   [Begin Combat]
-  [Declare Attackers] P1 attacks with: Ornithopter
-T5 P1: Attack with Ornithopter
-  [Declare Blockers] P2 does not block
-T5 P1:   Ornithopter (16/2) → 16 dmg to player
-  [Combat Damage] 16 damage dealt → P2 life: 17 → 1
+  [Declare Attackers] P1 does not attack
   [End Combat]
   [Main 2]
   [End Step]
 
 ╔══ TURN 5 — Boros Energy (P2) ══════════════════════════
-║ Life: Boros Energy 1  |  Affinity 13
+║ Life: Boros Energy 17  |  Affinity 16
 ║ Hand: 5 cards  |  Opp hand: 0 cards
-║ Lands: 2  |  Opp lands: 5
+║ Lands: 2  |  Opp lands: 4
 ║ Library: 48  |  Graveyard: 5
 ║ Boros Energy board:
 ║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)
 ║   Lands: Sacred Foundry, Snow-Covered Plains
 ║ Affinity board:
-║   Creatures: Ornithopter (16/2) [tapped], Signal Pest (0/1)
-║   Other: Springleaf Drum, Cranial Plating, Cranial Plating
-║   Lands: Darksteel Citadel [T], Island [T], Mistvault Bridge, Urza's Saga, Tanglepool Bridge [T]
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1)
+║   Other: Springleaf Drum, Cranial Plating
+║   Lands: Darksteel Citadel [T], Island, Mistvault Bridge, Tanglepool Bridge [T]
 ╚═══════════════════════════════════════════════════════
   [Untap] P2 untaps all permanents
   [Upkeep]
   [Draw] P2 draws: Arid Mesa
   [Main 1]
+T5 P2: Play Arid Mesa
+T5 P2: Crack Arid Mesa -> Sacred Foundry (tapped, no spells need mana)
     → Goal: curve_out
-    [Mana] Tap Sacred Foundry→R, Snow-Covered Plains→W (paying for Goblin Bombardment, 2 mana remaining)
-T5 P2: Cast Goblin Bombardment (1R)
+    [Mana] Tap Sacred Foundry→R, Snow-Covered Plains→W (paying for Wear // Tear, 2 mana remaining)
+T5 P2: Cast Wear // Tear (1R)
     [Priority] P1 passes (no response)
-T5: Resolve Goblin Bombardment
-T5 P2: Goblin Bombardment enters — sacrifice creatures for 1 damage each
+T5: Resolve Wear // Tear
+T5: Cranial Plating moved battlefield -> graveyard (destroyed)
+T5 P2: Wear // Tear destroys Cranial Plating
   [Begin Combat]
   [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
 T5 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
   [Declare Blockers] P1 does not block
 T5 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
-  [Combat Damage] 1 damage dealt → P1 life: 13 → 12
+  [Combat Damage] 1 damage dealt → P1 life: 16 → 15
   [End Combat]
   [Main 2]
   [End Step]
 
 ╔══ TURN 6 — Affinity (P1) ══════════════════════════
-║ Life: Affinity 12  |  Boros Energy 1
-║ Hand: 0 cards  |  Opp hand: 5 cards
-║ Lands: 5  |  Opp lands: 2
-║ Library: 48  |  Graveyard: 2
+║ Life: Affinity 15  |  Boros Energy 16
+║ Hand: 0 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 5
 ║ Affinity board:
-║   Creatures: Ornithopter (16/2), Signal Pest (0/1)
-║   Other: Springleaf Drum, Cranial Plating, Cranial Plating
-║   Lands: Darksteel Citadel, Island, Mistvault Bridge, Urza's Saga, Tanglepool Bridge
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1)
+║   Other: Springleaf Drum
+║   Lands: Darksteel Citadel, Island, Mistvault Bridge, Tanglepool Bridge
 ║ Boros Energy board:
 ║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped]
-║   Other: Goblin Bombardment
-║   Lands: Sacred Foundry [T], Snow-Covered Plains [T]
+║   Lands: Sacred Foundry [T], Snow-Covered Plains [T], Sacred Foundry [T]
 ╚═══════════════════════════════════════════════════════
   [Untap] P1 untaps all permanents
   [Upkeep]
-T6 P1: Create 1x Construct token(s)
-T6 P1: Urza's Saga Ch.II: Create Construct Token
   [Draw] P1 draws: Spire of Industry
   [Main 1]
 T6 P1: Play Spire of Industry
   [Begin Combat]
-  [Declare Attackers] P1 attacks with: Ornithopter, Signal Pest
-T6 P1: Attack with Ornithopter, Signal Pest
+  [Declare Attackers] P1 attacks with: Signal Pest
+T6 P1: Attack with Signal Pest
   [Declare Blockers] P2 does not block
-T6 P1:   Ornithopter (19/2) → 19 dmg to player
-P2 loses: life total -18
-  [Combat Damage] 19 damage dealt → P2 life: 1 → -18
+  [End Combat]
+  [Main 2]
+  [End Step]
 
->>> Affinity wins Game 3 on turn 6 via damage
-    Final life: Affinity=12  Boros Energy=-18
+╔══ TURN 6 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 16  |  Affinity 15
+║ Hand: 4 cards  |  Opp hand: 0 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 7
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)
+║   Lands: Sacred Foundry, Snow-Covered Plains, Sacred Foundry
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1) [tapped]
+║   Other: Springleaf Drum
+║   Lands: Darksteel Citadel, Island, Mistvault Bridge, Tanglepool Bridge, Spire of Industry
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Phlage, Titan of Fire's Fury
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Sacred Foundry→R, Snow-Covered Plains→W, Sacred Foundry→R (paying for Phlage, Titan of Fire's Fury, 3 mana remaining)
+T6 P2: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P1 passes (no response)
+T6: Resolve Phlage, Titan of Fire's Fury
+T6 P2: Phlage: 3 damage to opponent, gain 3 life
+T6 P2: Phlage sacrificed (not escaped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T6 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Declare Blockers] P1 does not block
+T6 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 12 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 11  |  Boros Energy 19
+║ Hand: 0 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 5
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1)
+║   Other: Springleaf Drum
+║   Lands: Darksteel Citadel, Island, Mistvault Bridge, Tanglepool Bridge, Spire of Industry
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped]
+║   Lands: Sacred Foundry [T], Snow-Covered Plains [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ornithopter
+  [Main 1]
+    → Goal: curve_out
+T7 P1: Cast Ornithopter (0)
+    [Priority] P2 passes (no response)
+T7: Resolve Ornithopter
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Signal Pest
+T7 P1: Attack with Signal Pest
+  [Declare Blockers] P2 does not block
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Affinity 11
+║ Hand: 4 cards  |  Opp hand: 0 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 8
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)
+║   Lands: Sacred Foundry, Snow-Covered Plains, Sacred Foundry
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1) [tapped], Ornithopter (0/2)
+║   Other: Springleaf Drum
+║   Lands: Darksteel Citadel, Island, Mistvault Bridge, Tanglepool Bridge, Spire of Industry
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ocelot Pride
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Snow-Covered Plains→W (paying for Ocelot Pride, 3 mana remaining)
+T7 P2: Cast Ocelot Pride (W)
+    [Priority] P1 passes (no response)
+T7: Resolve Ocelot Pride
+    → Goal: curve_out [interaction]
+    [Mana] Tap Sacred Foundry→R (paying for Galvanic Discharge, 2 mana remaining)
+T7 P2: Cast Galvanic Discharge (R)
+    [Priority] P1 passes (no response)
+T7: Resolve Galvanic Discharge
+T7 P2: Galvanic Discharge deals 3 to Signal Pest
+T7: Signal Pest dies
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T7 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Declare Blockers] P1 does not block
+T7 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 11 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 10  |  Boros Energy 19
+║ Hand: 0 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 6
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Ornithopter (0/2)
+║   Other: Springleaf Drum
+║   Lands: Darksteel Citadel, Island, Mistvault Bridge, Tanglepool Bridge, Spire of Industry
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Ocelot Pride (1/1)
+║   Lands: Sacred Foundry [T], Snow-Covered Plains [T], Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ornithopter
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Affinity 10
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 9
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Ocelot Pride (1/1)
+║   Lands: Sacred Foundry, Snow-Covered Plains, Sacred Foundry
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Ornithopter (0/2)
+║   Other: Springleaf Drum
+║   Lands: Darksteel Citadel, Island, Mistvault Bridge, Tanglepool Bridge, Spire of Industry
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R, Snow-Covered Plains→W (paying for Ragavan, Nimble Pilferer, 3 mana remaining)
+T8 P2: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P1 passes (no response)
+T8: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Ocelot Pride, Ragavan, Nimble Pilferer
+T8 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Ocelot Pride, Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T8 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T8 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T8 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T8 P2: Create 1x Treasure token(s)
+T8 P2: Ragavan, Nimble Pilferer exiles Sojourner's Companion from top of P1's library
+  [Combat Damage] 4 damage dealt → P1 life: 10 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+T8: Ragavan, Nimble Pilferer moved battlefield -> hand (Dash return)
+T8: Ragavan, Nimble Pilferer returned to hand (Dash)
+
+╔══ TURN 9 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 6  |  Boros Energy 20
+║ Hand: 1 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 44  |  Graveyard: 6
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Ornithopter (0/2)
+║   Other: Springleaf Drum
+║   Lands: Darksteel Citadel, Island, Mistvault Bridge, Tanglepool Bridge, Spire of Industry
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Ocelot Pride (1/1) [tapped]
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Snow-Covered Plains [T], Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Signal Pest
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Darksteel Citadel→C (paying for Signal Pest, 5 mana remaining)
+T9 P1: Cast Signal Pest (1)
+    [Priority] P2 passes (no response)
+T9: Resolve Signal Pest
+    → Goal: curve_out
+T9 P1: Cast Ornithopter (0)
+    [Priority] P2 passes (no response)
+T9: Resolve Ornithopter
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Affinity 6
+║ Hand: 4 cards  |  Opp hand: 0 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 43  |  Graveyard: 9
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Ocelot Pride (1/1)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Snow-Covered Plains, Sacred Foundry
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Ornithopter (0/2), Signal Pest (0/1), Ornithopter (0/2)
+║   Other: Springleaf Drum
+║   Lands: Darksteel Citadel [T], Island, Mistvault Bridge, Tanglepool Bridge, Spire of Industry
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Marsh Flats
+  [Main 1]
+T9 P2: Play Marsh Flats
+T9 P2: Crack Marsh Flats -> Sacred Foundry (tapped, no spells need mana)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R, Snow-Covered Plains→W (paying for Ragavan, Nimble Pilferer, 3 mana remaining)
+T9 P2: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P1 passes (no response)
+T9: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Ocelot Pride, Ragavan, Nimble Pilferer
+T9 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Ocelot Pride, Ragavan, Nimble Pilferer
+T9 P1:   [BLOCK-EMERGENCY] Ornithopter (0/2) blocks Ragavan, Nimble Pilferer (2/1) — chump block
+T9 P1:   [BLOCK-EMERGENCY] Ornithopter (0/2) blocks Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) — chump block
+T9 P1:   [BLOCK-EMERGENCY] Ornithopter (0/2) blocks Ocelot Pride (1/1) — chump block
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T9: Ornithopter dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+T9: Ragavan, Nimble Pilferer moved battlefield -> hand (Dash return)
+T9: Ragavan, Nimble Pilferer returned to hand (Dash)
+
+╔══ TURN 10 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 6  |  Boros Energy 20
+║ Hand: 0 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 43  |  Graveyard: 7
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1), Ornithopter (0/2)
+║   Other: Springleaf Drum
+║   Lands: Darksteel Citadel, Island, Mistvault Bridge, Tanglepool Bridge, Spire of Industry
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Ocelot Pride (1/1) [tapped]
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Snow-Covered Plains [T], Sacred Foundry, Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Springleaf Drum
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Darksteel Citadel→C (paying for Springleaf Drum, 5 mana remaining)
+T10 P1: Cast Springleaf Drum (1)
+    [Priority] P2 passes (no response)
+T10: Resolve Springleaf Drum
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Signal Pest
+T10 P1: Attack with Signal Pest
+  [Declare Blockers] P2 does not block
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Affinity 6
+║ Hand: 4 cards  |  Opp hand: 0 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 41  |  Graveyard: 10
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Ocelot Pride (1/1)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Snow-Covered Plains, Sacred Foundry, Sacred Foundry
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1) [tapped], Ornithopter (0/2)
+║   Other: Springleaf Drum, Springleaf Drum
+║   Lands: Darksteel Citadel [T], Island, Mistvault Bridge, Tanglepool Bridge, Spire of Industry
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thraben Charm
+  [Main 1]
+    → Goal: curve_out
+T10 P2: Escape Phlage, Titan of Fire's Fury (exile 5 cards)
+    [Mana] Tap Sacred Foundry→R, Sacred Foundry→R, Snow-Covered Plains→W, Sacred Foundry→W (paying for Phlage, Titan of Fire's Fury, 4 mana remaining)
+T10 P2: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P1 passes (no response)
+T10: Resolve Phlage, Titan of Fire's Fury
+T10 P2: Phlage: 3 damage to opponent, gain 3 life
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Ocelot Pride
+T10 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Ocelot Pride
+T10 P1:   [BLOCK-EMERGENCY] Ornithopter (0/2) blocks Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) — chump block
+T10 P1:   [BLOCK-EMERGENCY] Ornithopter (0/2) blocks Ocelot Pride (1/1) — chump block
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 3  |  Boros Energy 24
+║ Hand: 0 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 42  |  Graveyard: 7
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1), Ornithopter (0/2)
+║   Other: Springleaf Drum, Springleaf Drum
+║   Lands: Darksteel Citadel, Island, Mistvault Bridge, Tanglepool Bridge, Spire of Industry
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Ocelot Pride (1/1) [tapped], Phlage, Titan of Fire's Fury (6/6)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Snow-Covered Plains [T], Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Spire of Industry
+  [Main 1]
+T11 P1: Play Spire of Industry
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 24  |  Affinity 3
+║ Hand: 5 cards  |  Opp hand: 0 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 40  |  Graveyard: 4
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Ocelot Pride (1/1), Phlage, Titan of Fire's Fury (6/6)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Snow-Covered Plains, Sacred Foundry, Sacred Foundry
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1), Ornithopter (0/2)
+║   Other: Springleaf Drum, Springleaf Drum
+║   Lands: Darksteel Citadel, Island, Mistvault Bridge, Tanglepool Bridge, Spire of Industry, Spire of Industry
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Elegant Parlor
+  [Main 1]
+T11 P2: Play Elegant Parlor (enters tapped)
+    → Goal: curve_out [interaction]
+    [Mana] Tap Snow-Covered Plains→W (paying for Thraben Charm, 4 mana remaining)
+T11 P2: Cast Thraben Charm (1W)
+    [Priority] P1 passes (no response)
+T11: Resolve Thraben Charm
+T11 P2: Thraben Charm exiles opponent's graveyard (16 CMC)
+    → Goal: curve_out
+    [Mana] Tap Sacred Foundry→R (paying for Goblin Bombardment, 3 mana remaining)
+T11 P2: Cast Goblin Bombardment (1R)
+    [Priority] P1 passes (no response)
+T11: Resolve Goblin Bombardment
+T11 P2: Goblin Bombardment enters — sacrifice creatures for 1 damage each
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 2 mana remaining)
+T11 P2: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P1 passes (no response)
+T11: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Ocelot Pride, Phlage, Titan of Fire's Fury, Ragavan, Nimble Pilferer
+T11 P2: Gain 3 life from Phlage, Titan of Fire's Fury (life: 27)
+T11 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Ocelot Pride, Phlage, Titan of Fire's Fury, Ragavan, Nimble Pilferer
+P1 loses: life total 0
+
+>>> Boros Energy wins Game 3 on turn 11 via damage
+    Final life: Affinity=0  Boros Energy=27
 
 ======================================================================
-  MATCH RESULT: Affinity wins 2-1
+  MATCH RESULT: Boros Energy wins 2-1
 ======================================================================

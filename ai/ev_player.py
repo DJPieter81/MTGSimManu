@@ -532,6 +532,47 @@ class EVPlayer:
                     if (t.cmc or 0) <= 1:
                         ev += 1.0
 
+        # ── Artifact/enchantment-hate removal overlay ──
+        # Spells like Wear // Tear, Boseiju, Force of Vigor target non-
+        # creature permanents. `_project_spell` models removal as
+        # creature-killing; that projection gives ~zero EV when opp has
+        # no threatening creatures. For artifact/enchantment-hate, the
+        # real target-value comes from scaling equipment (CP, Nettlecyst)
+        # or stax pieces. Use `_permanent_threat_value` — the same oracle
+        # helper that drives `_choose_targets` — to score the best hit.
+        # Detection is purely oracle-driven (target artifact/enchantment/
+        # nonland permanent); no card names.
+        if ('removal' in tags and not 'board_wipe' in tags
+                and not t.is_creature):
+            o_lower = (t.oracle_text or '').lower()
+            hits_noncreature = ('target artifact' in o_lower
+                                or 'target enchantment' in o_lower
+                                or 'target nonland permanent' in o_lower
+                                or 'target noncreature' in o_lower)
+            if hits_noncreature:
+                from engine.cards import CardType
+                candidates = []
+                for c in opp.battlefield:
+                    if c.template.is_land:
+                        continue
+                    if c.template.is_creature and 'target creature' not in o_lower:
+                        continue
+                    if ('target artifact' in o_lower
+                            and CardType.ARTIFACT not in c.template.card_types):
+                        if not ('target enchantment' in o_lower
+                                or 'target nonland' in o_lower
+                                or 'target noncreature' in o_lower):
+                            continue
+                    candidates.append(c)
+                if candidates:
+                    best = max(candidates,
+                               key=lambda c: self._permanent_threat_value(c, opp))
+                    tv = self._permanent_threat_value(best, opp)
+                    # Scale roughly on par with the creature-threat overlay:
+                    # CP on a 5-artifact board → tv=7 → +3.5 EV, which
+                    # outranks a typical 2-CMC deploy.
+                    ev += tv * 0.5
+
         # ── Mana holdback: penalize tapping out when we hold instants ──
         # Trigger holdback when: opp has creatures, OR opp is a spell/combo deck
         # with hand cards (holdback for counterspells even vs creatureless opponents)
