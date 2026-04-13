@@ -1028,35 +1028,69 @@ class EVPlayer:
                             creature.temp_toughness_mod += 1
                 break
 
-        # Lethal: alpha strike
-        total_power = sum(c.power for c in valid if c.power and c.power > 0)
+        # Lethal: alpha strike — exclude 0-power non-trigger creatures (deal 0 damage).
+        def _has_combat_value(c):
+            """True if attacking with this creature produces board value.
+            Covers: positive power, damage-on-hit triggers, and any
+            on-attack triggers (battle cry, tapping, anthem effects, etc.).
+            Fully oracle-driven — no card names.
+            """
+            if (c.power or 0) > 0:
+                return True
+            oracle = (c.template.oracle_text or '').lower()
+            # Damage-on-hit triggers (Ragavan, etc.)
+            if 'combat damage to a player' in oracle:
+                return True
+            # On-attack triggers: battle cry, tapping permanents, draining, etc.
+            if 'whenever' in oracle and 'attacks' in oracle:
+                return True
+            return False
+        total_power = sum(c.power for c in valid if (c.power or 0) > 0)
         if total_power >= opp.life:
-            return valid
+            return [c for c in valid if _has_combat_value(c)]
 
         # No blockers = free damage. Always attack into an empty board.
+        # Still exclude 0-power non-trigger creatures — tapping them is pure waste.
         opp_blockers = game.get_valid_blockers(1 - self.player_idx)
         if not opp_blockers and valid:
-            return valid
+            return [c for c in valid if _has_combat_value(c)]
 
         # ── Free attackers: creatures that survive any block always attack ──
-        # If no blocker has power >= attacker.toughness, the attack is risk-free
+        # A creature is "free" if no untapped blocker has enough power to kill it,
+        # OR it has evasion that makes it unblockable in practice.
+        # Fix 1: block_ratio upper-bound removed — any blocker with power >= our
+        #         toughness is a real threat regardless of how oversized it is.
+        # Fix 2: 0-power creatures with no combat triggers are never free attackers —
+        #         they deal 0 damage even unblocked and only waste a tap.
         free_attackers = []
         non_free = []
-        block_ratio = getattr(self.profile, 'block_threat_power_ratio', 2.0)
         for c in valid:
-            atk_pwr = max(c.power or 0, 1)
+            # A creature with a triggered combat-damage ability (oracle-detected)
+            # has value even at 0 power (e.g. future designs). Pure 0-power
+            # creatures with no such trigger are excluded from free_attackers.
+            has_combat_trigger = (
+                'combat damage to a player' in (c.template.oracle_text or '').lower()
+                or 'whenever' in (c.template.oracle_text or '').lower()
+                and 'deals' in (c.template.oracle_text or '').lower()
+                and 'damage' in (c.template.oracle_text or '').lower()
+            )
+            deals_damage = (c.power or 0) > 0 or has_combat_trigger
+
+            # True if any untapped blocker can kill this attacker (power >= toughness).
+            # No upper-bound filter: a 4/4 blocking a 1/2 is a real threat.
             can_die_to_block = any(
                 (b.power or 0) >= (c.toughness or 0)
-                and (b.power or 0) <= atk_pwr * block_ratio
                 for b in opp_blockers
-                if not b.tapped  # only untapped creatures can block
+                if not b.tapped
             )
+            # Evasion: flying attacker with no flying/reach defenders.
+            # Reach check uses oracle text for generality (no keyword enum dependency).
             is_evasive = (
                 Keyword.FLYING in c.keywords and not any(
                     Keyword.FLYING in b.keywords or Keyword.REACH in b.keywords
                     for b in opp_blockers if not b.tapped)
             )
-            if not can_die_to_block or is_evasive:
+            if deals_damage and (not can_die_to_block or is_evasive):
                 free_attackers.append(c)
             else:
                 non_free.append(c)
@@ -1139,9 +1173,10 @@ class EVPlayer:
                 if killable:
                     safe.append(c)
 
-        # If racing or vs combo, send everything even if risky
+        # If racing or vs combo, send everything even if risky.
+        # Still exclude 0-power non-trigger creatures — they add no damage.
         if (is_racing or opp_is_spell_deck) and valid:
-            return valid
+            return [c for c in valid if _has_combat_value(c)]
 
         return safe if safe else []
 
