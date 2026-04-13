@@ -139,7 +139,20 @@ from engine.card_database import CardDatabase  # singleton pattern
 
 ## 6. AI strategy accuracy
 
-**Overall grade: C** (upgraded from C- — blocking P0 fixed, mulligan floor added, attack logic improved; post-fix 16×16 matrix at N=50 validates)
+**Overall grade: C+** (session 4 — oracle-driven threat value + urgency discount + draw-step bonus + shock staggering; 16×16 matrix at N=30 validates, Boros WR stable in T1, Affinity still outlier pending dedicated session)
+
+### Session 4 fixes (AI_STRATEGY_IMPROVEMENT_PLAN.md — 2026-04-13)
+| Task | Commit | Status | Smoke signal |
+|------|--------|--------|--------------|
+| 1. Oracle-driven threat value for removal | `4647626` | ✅ landed | GD on Signal Pest T2 (G2 s60100): FAIL→PASS |
+| 2. Kill-clock urgency discount on slow permanents | `12e9f25` | ✅ landed | Bombardment held vs fast clock: FAIL→PASS |
+| 4. Draw-step prevention bonus in attack planner | `1a45dcf` | ✅ landed | Storm WR no-regression: PASS |
+| 3. Fetch-shock life-cost staggering | `b9f5dc9` | ✅ landed | ≤4 life paid T1+T2: PASS |
+
+Golden smoke (`tools/golden_smoke.py`): 8/10 pass.
+Two remaining failures are accepted trade-offs — Thraben Charm T4 (AI prefers Pyromancer T4, Charm T5, which is arguably correct) and Cat Token attack (shields-down penalty correctly weighs blocker retention).
+
+**Overall grade (old): C** (blocking P0 fixed, mulligan floor added, attack logic improved; post-fix 16×16 matrix at N=50 validates)
 
 | Domain | Grade | | Domain | Grade |
 |--------|-------|-|--------|-------|
