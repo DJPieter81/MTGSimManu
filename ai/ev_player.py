@@ -648,8 +648,12 @@ class EVPlayer:
                     # Holding is worth fuel_available * (1/opp_life) more damage
                     mod -= fuel_available / opp_life * 40.0
                 else:
-                    # No fuel left — fire now. Value = damage dealt / opp_life
-                    mod += storm_copies / opp_life * 40.0
+                    # No fuel: fire only if lethal. Otherwise holding the finisher
+                    # for a real chain is strictly better than dealing 1-2 damage.
+                    if storm_copies >= opp_life:
+                        mod += storm_copies / opp_life * 40.0
+                    else:
+                        mod -= (opp_life - storm_copies) / opp_life * 20.0
 
         # ── Flashback-granting spells (Past in Flames etc.) ──
         if 'flashback' in tags and 'combo' in tags and t.is_sorcery:
