@@ -1032,9 +1032,12 @@ class EVPlayer:
         # If no blocker has power >= attacker.toughness, the attack is risk-free
         free_attackers = []
         non_free = []
+        block_ratio = getattr(self.profile, 'block_threat_power_ratio', 2.0)
         for c in valid:
+            atk_pwr = max(c.power or 0, 1)
             can_die_to_block = any(
                 (b.power or 0) >= (c.toughness or 0)
+                and (b.power or 0) <= atk_pwr * block_ratio
                 for b in opp_blockers
                 if not b.tapped  # only untapped creatures can block
             )

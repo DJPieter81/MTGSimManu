@@ -62,6 +62,9 @@ class StrategyProfile:
     # ── Combat ──
     attack_threshold: float = -0.5        # slightly negative: attack when trades are close
     aggro_closing_threshold_reduction: float = 2.0
+    # Opp won't block with creatures whose power exceeds attacker.power * this ratio
+    # (trading up forfeits offensive value the bigger creature would generate).
+    block_threat_power_ratio: float = 2.0
 
     # ── Mulligan ──
     mulligan_always_keep: int = 5
