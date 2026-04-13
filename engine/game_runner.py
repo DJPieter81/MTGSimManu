@@ -1490,8 +1490,22 @@ class GameRunner:
                         game.winner = active
                         return
         else:
-            # Not lethal: only sacrifice excess tokens (keep 2 for blocking)
-            tokens_to_sac = max(0, token_count - 2)
+            # Not lethal: sacrifice tokens when they provide race value.
+            # Keep 1 blocker; sacrifice the rest if we can deal meaningful damage
+            # or if opponent is in reach (life <= 8).
+            real_blocker_count = len(real_creatures)
+            min_keep = 1  # always keep at least 1 non-token creature for blocking
+            tokens_to_sac = token_count  # all tokens by default
+            if real_blocker_count < min_keep:
+                # Keep one token as a blocker
+                tokens_to_sac = max(0, token_count - 1)
+            # Sacrifice tokens when they contribute to the race.
+            # If opponent is out of reach AND we have few tokens, hold them for blocking.
+            # But if we are racing (opponent life <= our total power * 2), sacrifice freely.
+            my_total_pwr = sum(c.power or 0 for c in player.creatures)
+            is_racing_now = my_total_pwr > 0 and opponent.life <= my_total_pwr * 3
+            if not is_racing_now and opponent.life > 15 and tokens_to_sac < 2:
+                tokens_to_sac = 0
             sacced = 0
             for priority_val, creature in sacrificeable:
                 if sacced >= tokens_to_sac:

@@ -332,7 +332,7 @@ class CombatManager:
                               if 'battle cry' in (a.template.oracle_text or '').lower()]
         for source in battle_cry_sources:
             for other in attackers:
-                if other != source:
+                if other.instance_id != source.instance_id:
                     other.temp_power_mod += 1
 
     @property

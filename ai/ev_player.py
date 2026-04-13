@@ -1042,7 +1042,14 @@ class EVPlayer:
             if 'combat damage to a player' in oracle:
                 return True
             # On-attack triggers: battle cry, tapping permanents, draining, etc.
-            if 'whenever' in oracle and 'attacks' in oracle:
+            # Use 'whenever this creature attacks' to avoid false positives like
+            # 'whenever a creature attacks you, gain 1 life'.
+            if 'whenever this creature attacks' in oracle:
+                return True
+            # Some legends use their own name: 'whenever [Name] attacks'
+            # Detect by checking if the card name appears before 'attacks'
+            cname = (c.template.name or '').lower().split(' //')[0].strip()
+            if cname and f'whenever {cname} attacks' in oracle:
                 return True
             return False
         total_power = sum(c.power for c in valid if (c.power or 0) > 0)
@@ -1068,11 +1075,12 @@ class EVPlayer:
             # A creature with a triggered combat-damage ability (oracle-detected)
             # has value even at 0 power (e.g. future designs). Pure 0-power
             # creatures with no such trigger are excluded from free_attackers.
+            _oracle = (c.template.oracle_text or '').lower()
+            _cname = (c.template.name or '').lower().split(' //')[0].strip()
             has_combat_trigger = (
-                'combat damage to a player' in (c.template.oracle_text or '').lower()
-                or 'whenever' in (c.template.oracle_text or '').lower()
-                and 'deals' in (c.template.oracle_text or '').lower()
-                and 'damage' in (c.template.oracle_text or '').lower()
+                'combat damage to a player' in _oracle
+                or 'whenever this creature attacks' in _oracle
+                or (_cname and f'whenever {_cname} attacks' in _oracle)
             )
             deals_damage = (c.power or 0) > 0 or has_combat_trigger
 
@@ -1111,7 +1119,20 @@ class EVPlayer:
             pass
 
         # ── Racing rule: when opp life is within 2x our board power, race ──
-        is_racing = total_power > 0 and opp.life <= 2 * total_power
+        # Also account for opponent's tapped state: if most of their creatures are
+        # tapped they can only block with untapped creatures — effectively less defence.
+        opp_untapped_blockers = [c for c in opp.creatures if not c.tapped]
+        opp_untapped_block_power = sum(c.power or 0 for c in opp_untapped_blockers)
+        # Effective damage we can deal: total power minus what the untapped wall absorbs
+        effective_damage = max(0, total_power - opp_untapped_block_power)
+        is_racing = (
+            total_power > 0 and (
+                opp.life <= 2 * total_power          # standard race
+                or opp.life <= effective_damage * 2  # opponent mostly tapped
+            )
+        )
+        # Desperation: we're low on life and going to lose anyway — maximise damage
+        is_desperate = me.life <= 6 and total_power > 0 and opp.life > 0
 
         # ── Anti-combo: vs spell-based decks, creature attacks are always right ──
         opp_is_spell_deck = opp_archetype in ('combo', 'storm')
@@ -1173,9 +1194,9 @@ class EVPlayer:
                 if killable:
                     safe.append(c)
 
-        # If racing or vs combo, send everything even if risky.
+        # If racing, desperate, or vs combo, send everything even if risky.
         # Still exclude 0-power non-trigger creatures — they add no damage.
-        if (is_racing or opp_is_spell_deck) and valid:
+        if (is_racing or is_desperate or opp_is_spell_deck) and valid:
             return [c for c in valid if _has_combat_value(c)]
 
         return safe if safe else []
@@ -1190,8 +1211,17 @@ class EVPlayer:
             return {}
 
         me = game.players[self.player_idx]
+        opp = game.players[1 - self.player_idx]
         total_incoming = sum(a.power or 0 for a in attackers)
         biggest_attacker_power = max((a.power or 0 for a in attackers), default=0)
+
+        # Winning-state: if our untapped power >= opponent life next turn, don't block.
+        # Spending blockers is wasteful when we have lethal on board already.
+        my_untapped_power = sum(
+            (c.power or 0) for c in me.creatures if not c.tapped
+        )
+        if my_untapped_power >= opp.life and total_incoming < me.life:
+            return {}
 
         # EMERGENCY: block when incoming damage is dangerous
         # Triggers: lethal, would drop below 5 life, or single attacker > half our life
@@ -1268,6 +1298,24 @@ class EVPlayer:
                     if (Keyword.FLYING not in blocker.keywords and
                             Keyword.REACH not in blocker.keywords):
                         continue
+
+                # Non-emergency filter: skip useless blocks.
+                # (1) 0-power blocker that can't kill the attacker — saves face damage
+                #     but costs a permanent with 0 combat equity.
+                # (2) Battle-cry source — its ongoing attack value exceeds the damage saved
+                #     unless the block is a clean kill.
+                b_pow = blocker.power or 0
+                a_tou = attacker.toughness or 0
+                can_kill_attacker = b_pow >= a_tou or Keyword.DEATHTOUCH in blocker.keywords
+                b_oracle = (blocker.template.oracle_text or '').lower()
+                b_cname = (blocker.template.name or '').lower().split(' //')[0].strip()
+                is_battle_cry = ('whenever this creature attacks' in b_oracle or
+                                 (b_cname and f'whenever {b_cname} attacks' in b_oracle))
+                if not can_kill_attacker:
+                    if b_pow == 0:
+                        continue  # 0-power non-kill = pure waste
+                    if is_battle_cry:
+                        continue  # battle cry source worth more attacking than chump-blocking
 
                 val = evaluate_action(
                     game, self.player_idx,

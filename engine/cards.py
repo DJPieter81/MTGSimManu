@@ -364,17 +364,22 @@ class CardInstance:
         oracle = (self.template.oracle_text or '').lower()
         if _re.search(r'\+\d+/\+\d+\s+for\s+each\s+artifact\s+you\s+control', oracle):
             base = (self.template.power or 0) + self._get_artifact_count()
-        # Equipment scaling (Cranial Plating etc.)
+        # Equipment scaling (Cranial Plating, Nettlecyst, etc.)
+        # Tags are equipped_{instance_id} — unique per equipment, supports stacking.
         for tag in self.instance_tags:
-            if tag.endswith("_equipped"):
-                equip_name_prefix = tag[:-len("_equipped")]
-                for perm in self._get_controller_battlefield():
-                    perm_prefix = perm.template.name.lower().replace(" ", "_").replace("'", "").replace(",", "")
-                    if perm_prefix == equip_name_prefix:
-                        eq_oracle = (perm.template.oracle_text or '').lower()
-                        if 'for each artifact' in eq_oracle or 'artifact you control' in eq_oracle:
-                            base += self._get_artifact_count()
-                        break
+            if tag.startswith("equipped_"):
+                try:
+                    equip_iid = int(tag[len("equipped_"):])
+                    if self._game_state is None:
+                        continue
+                    equip_perm = self._game_state.get_card_by_id(equip_iid)
+                    if equip_perm is None:
+                        continue
+                    eq_oracle = (equip_perm.template.oracle_text or '').lower()
+                    if 'for each artifact' in eq_oracle or 'artifact you control' in eq_oracle:
+                        base += self._get_artifact_count()
+                except (ValueError, AttributeError):
+                    pass
         return base
 
     def _dynamic_base_toughness(self) -> int:
@@ -404,8 +409,28 @@ class CardInstance:
         # Same tightening as _dynamic_base_power — see note above.
         if _re.search(r'\+\d+/\+\d+\s+for\s+each\s+artifact\s+you\s+control', oracle):
             base = (self.template.toughness or 0) + self._get_artifact_count()
-        if "nettlecyst_equipped" in self.instance_tags:
-            base += self._get_artifact_count()
+        # Equipment toughness scaling — only applies when toughness component is non-zero.
+        # e.g. Nettlecyst: +1/+1 for each artifact → toughness bonus applies
+        # e.g. Cranial Plating: +1/+0 for each artifact → NO toughness bonus
+        import re as _re2
+        for tag in self.instance_tags:
+            if tag.startswith("equipped_"):
+                try:
+                    equip_iid = int(tag[len("equipped_"):])
+                    if self._game_state is None:
+                        continue
+                    equip_perm = self._game_state.get_card_by_id(equip_iid)
+                    if equip_perm is None:
+                        continue
+                    eq_oracle = (equip_perm.template.oracle_text or '').lower()
+                    # Parse +A/+B from the oracle — only add to toughness if B != 0
+                    m = _re2.search(r'gets \+(\w+)/\+(\w+)\s+for each', eq_oracle)
+                    if m:
+                        tou_component = m.group(2)
+                        if tou_component != '0':
+                            base += self._get_artifact_count()
+                except (ValueError, AttributeError):
+                    pass
         return base
 
     @property

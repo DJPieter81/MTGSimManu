@@ -364,7 +364,9 @@ def nettlecyst_etb(game, card, controller, targets=None, item=None):
     germs = [c for c in game.players[controller].creatures
              if "Germ" in c.name]
     if germs:
-        germs[-1].instance_tags.add("nettlecyst_equipped")
+        # Use instance_id-based tag so the generic equipment scaling in _dynamic_base_power
+        # and _dynamic_base_toughness picks it up correctly.
+        germs[-1].instance_tags.add(f"equipped_{card.instance_id}")
 
 
 @EFFECT_REGISTRY.register("Springleaf Drum", EffectTiming.ETB,

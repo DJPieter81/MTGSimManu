@@ -1187,12 +1187,11 @@ class GameState:
             land.tapped = True
             remaining -= 1
 
-        # Unequip from previous creature (if any)
-        # Generate standard equip tag from equipment name
-        equip_tag = template.name.lower().replace(" ", "_").replace("'", "").replace(",", "") + "_equipped"
-
         if 'equipment' in getattr(template, 'tags', set()) or 'pump' in getattr(template, 'tags', set()):
-            # Remove from any currently equipped creature
+            # Use instance_id-based tag so stacking the same equipment works correctly.
+            # Format: equipped_{equipment.instance_id}  (unique per equipment object)
+            equip_tag = f"equipped_{equipment.instance_id}"
+            # Remove this specific equipment from any creature it was previously on
             for c in player.creatures:
                 c.instance_tags.discard(equip_tag)
             # Attach to new creature
@@ -2588,21 +2587,22 @@ class GameState:
         # as unattached so the AI must pay to re-equip
         equip_tags_on_creature = [
             t for t in creature.instance_tags
-            if t.endswith("_equipped")
+            if t.startswith("equipped_")
         ]
         if equip_tags_on_creature:
             for tag in equip_tags_on_creature:
-                # Find the equipment on the battlefield and mark it unattached
-                # Match by checking each equipment's generated tag
-                for perm in self.players[controller].battlefield:
-                    perm_tag = perm.template.name.lower().replace(" ", "_").replace("'", "").replace(",", "") + "_equipped"
-                    if perm_tag == tag:
-                        perm.instance_tags.discard("equipment_attached")
-                        perm.instance_tags.add("equipment_unattached")
+                # Parse the equipment instance_id from the tag
+                try:
+                    equip_iid = int(tag[len("equipped_"):])
+                    equip_perm = self.get_card_by_id(equip_iid)
+                    if equip_perm:
+                        equip_perm.instance_tags.discard("equipment_attached")
+                        equip_perm.instance_tags.add("equipment_unattached")
                         self.log.append(
-                            f"T{self.display_turn}: {perm.template.name} falls off "
+                            f"T{self.display_turn}: {equip_perm.template.name} falls off "
                             f"{creature.name} (unattached)")
-                        break
+                except (ValueError, AttributeError):
+                    pass
 
         creature.zone = "graveyard"
         creature.reset_combat()
