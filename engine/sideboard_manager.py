@@ -55,11 +55,13 @@ def sideboard(mainboard: Dict[str, int], sideboard_cards: Dict[str, int],
                                                "spell pierce", "force of negation"]):
                 board_in_priority.append((card_name, count, 8))
 
-        # Board wipes vs creature decks
-        if any(w in opp_lower for w in ["energy", "zoo", "affinity", "prowess"]):
+        # Board wipes vs creature decks (affinity/pinnacle get priority boost:
+        # sweepers are the primary answer to their wide token boards)
+        if any(w in opp_lower for w in ["energy", "zoo", "affinity", "prowess", "pinnacle"]):
             if any(w in card_lower for w in ["wrath", "verdict", "damnation",
                                                "explosives", "ratchet"]):
-                board_in_priority.append((card_name, count, 7))
+                prio = 9 if any(w in opp_lower for w in ["affinity", "pinnacle"]) else 7
+                board_in_priority.append((card_name, count, prio))
 
         # Counterspells + lifegain vs burn/aggro
         if any(w in opp_lower for w in ["energy", "zoo", "prowess", "affinity"]):
