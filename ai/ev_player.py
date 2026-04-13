@@ -290,6 +290,14 @@ class EVPlayer:
                     is_dying = snap.am_dead_next or (snap.opp_power >= prof.dying_opp_power
                                                      and snap.opp_clock <= prof.dying_opp_clock)
                     has_big_target = self._has_high_threat_target(game, spell)
+                    # Control patience: control archetypes hold reactive
+                    # spells until there's *real* pressure (opp_clock <= 3).
+                    # Without this, Orim's Chant / Prismatic Ending /
+                    # Supreme Verdict get cast proactively on empty boards
+                    # and wind up in losses.
+                    if (prof.control_patience and not is_dying
+                            and snap.opp_clock >= 4):
+                        continue
                     if not is_dying and not has_big_target:
                         continue
 

@@ -76,6 +76,10 @@
   ],
   "reactive_only": [
     "Counterspell",
-    "Dovin's Veto"
+    "Dovin's Veto",
+    "Orim's Chant",
+    "Prismatic Ending",
+    "Supreme Verdict",
+    "Force of Negation"
   ]
 }
