@@ -156,6 +156,47 @@ def creature_value(card: "CardInstance") -> float:
     return creature_clock_impact_from_card(card, _DEFAULT_SNAP) * 20.0
 
 
+def creature_threat_value(card: "CardInstance") -> float:
+    """Evaluate a creature's threat level for removal-priority decisions.
+
+    Extends `creature_value()` with oracle-driven premiums that raw P/T
+    doesn't capture:
+      * Battle cry / attack triggers  → +8.0 (ongoing damage amplifier)
+      * Self-named attack triggers    → +8.0 (e.g. "Whenever <this card name>
+                                               attacks")
+      * Scaling creatures (`for each artifact`, `for each creature`) → +6.0
+      * Large raw P (≥4)              → +0.5 × power (big bodies still matter)
+
+    All detection is oracle-driven — no hardcoded card names. Accepts a
+    CardInstance (battlefield). The signature leaves room for a future
+    (template, instance=None) generalisation to score stack objects and
+    hand cards (see AI_STRATEGY_IMPROVEMENT_PLAN.md §Generalisation).
+    """
+    base = creature_value(card)
+    t = card.template
+    oracle = (getattr(t, 'oracle_text', '') or '').lower()
+    name = (getattr(t, 'name', '') or '').lower().split(' //')[0].strip()
+    premium = 0.0
+
+    # Battle cry / generic attack triggers (Signal Pest, Ragavan, etc.)
+    if 'whenever this creature attacks' in oracle:
+        premium += 8.0
+    # Self-named attack triggers (rare oracle pattern, same semantics)
+    if name and f'whenever {name} attacks' in oracle:
+        premium += 8.0
+
+    # Scaling threats — grow every turn as more permanents come down
+    if 'for each artifact' in oracle or 'for each creature' in oracle:
+        premium += 6.0
+
+    # Retain some weight on raw big bodies (evaluators still care)
+    p = card.power or 0
+    if p >= 4:
+        premium += p * 0.5
+
+    return base + premium
+
+
 # ─────────────────────────────────────────────────────────────
 # Per-archetype value functions
 # ─────────────────────────────────────────────────────────────
@@ -280,13 +321,25 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
     if 'removal' in tags and not 'board_wipe' in tags:
         if snap.opp_creature_count > 0 and game:
             opp = game.players[1 - player_idx]
-            # Target the highest-power creature we can kill
-            best_target_power = 0
-            for c in opp.creatures:
-                cp = c.power if c.power else 0
-                if cp > best_target_power:
-                    best_target_power = cp
-            projected.opp_power = max(0, projected.opp_power - best_target_power)
+            # Target the highest-THREAT creature (oracle-driven), not the
+            # highest-power one. This ensures battle-cry / scaling threats
+            # (e.g. Signal Pest, Ragavan) project correctly as removal-worthy
+            # even when their raw power is 0.
+            best_target = max(opp.creatures, key=creature_threat_value)
+            # Effective power removed includes a threat-equivalent bonus
+            # for triggered abilities the raw P/T doesn't capture.
+            eff_power = best_target.power or 0
+            o = (best_target.template.oracle_text or '').lower()
+            cname = (best_target.template.name or '').lower().split(' //')[0].strip()
+            if 'whenever this creature attacks' in o or (
+                    cname and f'whenever {cname} attacks' in o):
+                # Battle-cry / attack-trigger amplifier — add 2 virtual power
+                # (amplifies ~2 other attackers per combat on average).
+                eff_power = max(eff_power, 0) + 2
+            if 'for each artifact' in o or 'for each creature' in o:
+                # Scaling threat — approximate ongoing growth as +2 virtual power.
+                eff_power = max(eff_power, 2)
+            projected.opp_power = max(0, projected.opp_power - eff_power)
             projected.opp_creature_count = max(0, projected.opp_creature_count - 1)
 
     # Board wipe — kills all creatures
