@@ -1,99 +1,24 @@
-You are working on MTGSimManu (~/MTGSimManu), an MTG Modern metagame simulator. Your ONLY job is running iterate fixes for 6 hours. Nothing else.
+cd ~/MTGSimManu && git pull origin main
 
-## Setup (once)
-cd ~/MTGSimManu && git pull origin main && python3 merge_db.py
-
-Read CLAUDE.md (the quickstart). Read OVERNIGHT_TASK.md for file permissions.
-
-## WHAT YOU DO
-Run iterate fix loops. That is ALL. You do NOT build guides, update showcases, create HTML, refactor code, write documentation, or do anything other than iterate fixes.
-
-## WHAT YOU NEVER DO
-- Build deck guides or HTML outputs
-- Update showcase pages
-- Refactor or reorganize code
-- Write documentation or markdown files
-- Touch: game_state.py, card_effects.py, cards.py, combat_manager.py, game_runner.py, build_*.py, run_meta.py, iterate.py
-- Hardcode card names (use oracle text, tags, CMC, power/toughness, card types)
-- Use arbitrary constants (every number must derive from game state — ratios, fractions, scaling)
-
-## FILES YOU CAN CHANGE
-- ai/ev_player.py — spell scoring, attack/block decisions, combo patience
-- ai/board_eval.py — block/attack evaluation weights
-- ai/evaluator.py — spell value scoring, role assessment
-- ai/mulligan.py — hand evaluation, mulligan decisions
-- ai/gameplan.py — goal engine tuning
-- ai/strategy_profile.py — per-archetype thresholds (the tuning knobs)
-- engine/sideboard_manager.py — board-in/out rules (tag/oracle matching only)
-- decks/gameplans/*.json — mulligan keys, combo sets, goal sequences
-
-## THE LOOP
-
-### Step 1: Check
+Run this command:
 python3 iterate.py --check --n 5
 
-### Step 2: Pick an outlier
-Pick the worst HIGH outlier. If you have already tried and failed on that outlier twice, SKIP it and pick the next one. Log skipped outliers.
-
-### Step 3: Diagnose with TWO traces
+Read the output. Pick the worst outlier. Run two traces:
 python3 run_meta.py --verbose "DeckA" "DeckB" -s 90000
 python3 run_meta.py --verbose "DeckA" "DeckB" -s 90100
-Look for the PATTERN across both games, not one anecdote.
 
-### Step 4: Make ONE fix
-- Max 10 lines changed, max 1 file
-- Every number derived from game state (ratios, fractions), not invented
-- No card names — use oracle patterns, tags, types
+Make ONE fix. Rules:
+- Max 10 lines, 1 file
+- ONLY these files: ai/ev_player.py, ai/board_eval.py, ai/evaluator.py, ai/strategy_profile.py, engine/sideboard_manager.py, decks/gameplans/*.json
+- No card names in code. Use oracle text, tags, CMC, power/toughness.
+- No magic numbers. Derive from game state: ratios, fractions, scaling.
 
-### Step 5: Test
-python3 iterate.py --matchup "DeckA" "DeckB" --n 10
-Then spot-check:
-python3 -c "from run_meta import run_matchup; [print(f'{d}: {run_matchup(\"Boros Energy\",d,3)[\"pct1\"]}%') for d in ['Affinity','Domain Zoo','Izzet Prowess','Eldrazi Tron']]"
+Test: python3 iterate.py --matchup "DeckA" "DeckB" --n 10
+If improved >=5pp with no regression: git add, commit, push.
+If not: git checkout -- the file.
 
-Accept if: target improved >=5pp AND no spot-check regression >15pp.
-Reject: git checkout -- <file>
+Do NOT touch any other file. Do NOT build guides, replays, HTML, or docs. Do NOT fix build_replay.py or card_effects.py or game_state.py or combat_manager.py. Only iterate WR fixes.
 
-### Step 6: Commit if accepted
-git add <file> && git commit -m "Fix: <description>" && git pull --rebase origin main && git push origin main
+If the outlier is too hard after 2 traces, skip it and try the next outlier.
 
-### Step 7: Go to Step 1
-
-## WHEN STUCK ON WR OUTLIERS (all HIGH outliers skipped or too hard)
-
-Move to these tasks IN ORDER. These are still iterate fixes, not content creation.
-
-PRIORITY 2 — Fix MED outliers from iterate.py using same loop above.
-
-PRIORITY 3 — Improve game quality per deck. Pick a deck, run 3 verbose traces against different opponents, look for AI mistakes:
-- Mulligan keeping bad hands? Fix mulligan keys in decks/gameplans/<deck>.json
-- Casting spells in wrong order? Fix goal sequence in gameplan JSON
-- Wrong role assessment? Fix ai/evaluator.py assess_role thresholds
-- SB plan missing for a matchup? Add rules in sideboard_manager.py
-- Profile thresholds wrong for archetype? Fix ai/strategy_profile.py
-Test each fix the same way: --matchup at n=10, spot-check, commit or revert.
-
-PRIORITY 4 — If all above exhausted, run --verbose on random matchups and log bugs you find:
-echo "BUG: <deck> vs <deck> seed <N>: <description>" >> bugs_found.txt
-Do NOT fix engine bugs. Just log them.
-
-## TIME MANAGEMENT
-- Max 15 minutes per outlier attempt. If no fix found, skip and move on.
-- After every 5 iterations, run a full: python3 iterate.py --check --n 5
-- Track iteration count. Stop at 60 iterations or when you run out of things to fix.
-- NEVER stop early to do non-iterate work. If you are tempted to build a guide or update a showcase, that means you should move to PRIORITY 3 or 4 instead.
-
-## NO ARBITRARY CONSTANTS RULE
-Every number must be DERIVED from game state:
-- Ratios: a_power / b_toughness, my_creatures / opp_creatures
-- Fractions: damage / life, cards_in_hand / 7
-- CMC-based: cmc * modifier (CMC is real game data)
-- Profile-based: values from strategy_profile.py per archetype
-BAD: if x >= 8: y *= 2.0 (why 8? why 2.0?)
-GOOD: y *= (x / max(baseline, 1)) (scales with actual ratio)
-
-## GIT RULES
-- Always: git pull --rebase origin main BEFORE pushing
-- Never force-push
-- One commit per fix, descriptive message with before/after WR
-
-Start now. Run continuously. Do not stop for 6 hours or until you run out of work across all 4 priority levels.
+Check git log --oneline -5 first to see what previous launches already fixed.
