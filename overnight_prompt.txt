@@ -1,87 +1,99 @@
-You are working on MTGSimManu (~/MTGSimManu), an MTG Modern metagame simulator. Run an overnight iterate loop of small fixes to bring deck win rates closer to expected Modern ranges.
+You are working on MTGSimManu (~/MTGSimManu), an MTG Modern metagame simulator. Your ONLY job is running iterate fixes for 6 hours. Nothing else.
 
-## Setup
+## Setup (once)
 cd ~/MTGSimManu && git pull origin main && python3 merge_db.py
 
-Read CLAUDE.md first (it IS the quickstart). Then read OVERNIGHT_TASK.md for the priority list and file permissions.
+Read CLAUDE.md (the quickstart). Read OVERNIGHT_TASK.md for file permissions.
 
-## CRITICAL RULES — violations are bugs, not fixes
+## WHAT YOU DO
+Run iterate fix loops. That is ALL. You do NOT build guides, update showcases, create HTML, refactor code, write documentation, or do anything other than iterate fixes.
 
-### NO HARDCODED CARD NAMES
-Every check must use oracle text patterns, tags, CMC, power/toughness, or card types. Never `.name == "Card Name"`. Grep the codebase for `.name ==` patterns — if you are about to add one, STOP and find the oracle/tag equivalent.
+## WHAT YOU NEVER DO
+- Build deck guides or HTML outputs
+- Update showcase pages
+- Refactor or reorganize code
+- Write documentation or markdown files
+- Touch: game_state.py, card_effects.py, cards.py, combat_manager.py, game_runner.py, build_*.py, run_meta.py, iterate.py
+- Hardcode card names (use oracle text, tags, CMC, power/toughness, card types)
+- Use arbitrary constants (every number must derive from game state — ratios, fractions, scaling)
 
-### NO ARBITRARY CONSTANTS
-Every number you write must be DERIVED from game state, not invented. Bad vs good examples:
-
-BAD:  `if a_power >= 8: value *= 2.0`  — why 8? why 2.0?
-GOOD: `value *= (a_power / max(b_power, 1))` — scales with actual power ratio
-
-BAD:  `if snap.opp_creature_count >= 3: ev += 15.0`  — why 3? why 15?
-GOOD: `ev += snap.opp_creature_count * attacker_val` — scales with board state
-
-BAD:  `threshold = 0.7`  — magic number
-GOOD: `threshold = opp_clock / (opp_clock + my_clock)` — derived from game pressure
-
-The principle: if someone asks "why this number?", the answer must be "because the game state says so", never "I picked it".
-
-Acceptable derived values:
-- Ratios: a_power / b_toughness, my_creatures / opp_creatures
-- Game-state fractions: damage / life, cards_in_hand / 7
-- CMC-based: cmc * 1.5 (CMC is a real game property)
-- Tag-driven: len(opp.creatures) * removal_value_per_target
-- Profile-based: values from strategy_profile.py that are per-archetype (these ARE the tuning knobs)
-
-### NO REGRESSIONS
-After each fix, test BOTH the target matchup AND run a quick 4-deck spot check:
-```
-python3 iterate.py --matchup "DeckA" "DeckB" --n 10
-python3 -c "from run_meta import run_matchup; [print(f'{d}: {run_matchup(\"Boros Energy\",d,3)[\"pct1\"]}%') for d in ['Affinity','Domain Zoo','Izzet Prowess','Eldrazi Tron']]"
-```
-Revert if ANY matchup moves >15pp in the wrong direction.
-
-## The Loop (run until 6 hours elapsed or no HIGH outliers)
-
-### Phase 1: Diagnose (every iteration)
-```
-python3 iterate.py --check --n 5
-```
-
-### Phase 2: Pick worst outlier, trace it
-```
-python3 run_meta.py --verbose "DeckA" "DeckB" -s 90000
-python3 run_meta.py --verbose "DeckA" "DeckB" -s 90100
-```
-Read TWO traces. Look for the PATTERN, not one anecdote:
-- Cards in hand never cast? -> scoring issue
-- Blocks never happen? -> block eval issue
-- Attacks never happen? -> attack threshold issue
-- Wrong cards sideboarded? -> SB rule issue
-- Combo pieces wasted individually? -> combo patience issue
-
-### Phase 3: Fix (max 10 lines, 1 file, NO magic numbers)
-Derive your fix from the game state. Use ratios, scaling, and proportional logic.
-
-### Phase 4: Test + commit or revert
-Accept if: target improved >=5pp AND spot-check has no regression >15pp.
-
-### Phase 5: Log and continue
-Append a line to iterate_log.json with results. Go to Phase 1.
-
-## Files you CAN change
-- ai/ev_player.py — spell scoring, attack/block decisions
-- ai/board_eval.py — block/attack evaluation
-- engine/sideboard_manager.py — board-in/out rules (use tag/oracle matching, not card names)
-- ai/strategy_profile.py — per-archetype thresholds (these are the TUNING KNOBS)
+## FILES YOU CAN CHANGE
+- ai/ev_player.py — spell scoring, attack/block decisions, combo patience
+- ai/board_eval.py — block/attack evaluation weights
+- ai/evaluator.py — spell value scoring, role assessment
+- ai/mulligan.py — hand evaluation, mulligan decisions
+- ai/gameplan.py — goal engine tuning
+- ai/strategy_profile.py — per-archetype thresholds (the tuning knobs)
+- engine/sideboard_manager.py — board-in/out rules (tag/oracle matching only)
 - decks/gameplans/*.json — mulligan keys, combo sets, goal sequences
 
-## Files you MUST NOT change
-- engine/game_state.py, engine/card_effects.py, engine/cards.py
-- engine/combat_manager.py, engine/game_runner.py
-- build_*.py, run_meta.py, iterate.py
+## THE LOOP
 
-## Git rules
-- Always: git pull --rebase origin main before pushing
+### Step 1: Check
+python3 iterate.py --check --n 5
+
+### Step 2: Pick an outlier
+Pick the worst HIGH outlier. If you have already tried and failed on that outlier twice, SKIP it and pick the next one. Log skipped outliers.
+
+### Step 3: Diagnose with TWO traces
+python3 run_meta.py --verbose "DeckA" "DeckB" -s 90000
+python3 run_meta.py --verbose "DeckA" "DeckB" -s 90100
+Look for the PATTERN across both games, not one anecdote.
+
+### Step 4: Make ONE fix
+- Max 10 lines changed, max 1 file
+- Every number derived from game state (ratios, fractions), not invented
+- No card names — use oracle patterns, tags, types
+
+### Step 5: Test
+python3 iterate.py --matchup "DeckA" "DeckB" --n 10
+Then spot-check:
+python3 -c "from run_meta import run_matchup; [print(f'{d}: {run_matchup(\"Boros Energy\",d,3)[\"pct1\"]}%') for d in ['Affinity','Domain Zoo','Izzet Prowess','Eldrazi Tron']]"
+
+Accept if: target improved >=5pp AND no spot-check regression >15pp.
+Reject: git checkout -- <file>
+
+### Step 6: Commit if accepted
+git add <file> && git commit -m "Fix: <description>" && git pull --rebase origin main && git push origin main
+
+### Step 7: Go to Step 1
+
+## WHEN STUCK ON WR OUTLIERS (all HIGH outliers skipped or too hard)
+
+Move to these tasks IN ORDER. These are still iterate fixes, not content creation.
+
+PRIORITY 2 — Fix MED outliers from iterate.py using same loop above.
+
+PRIORITY 3 — Improve game quality per deck. Pick a deck, run 3 verbose traces against different opponents, look for AI mistakes:
+- Mulligan keeping bad hands? Fix mulligan keys in decks/gameplans/<deck>.json
+- Casting spells in wrong order? Fix goal sequence in gameplan JSON
+- Wrong role assessment? Fix ai/evaluator.py assess_role thresholds
+- SB plan missing for a matchup? Add rules in sideboard_manager.py
+- Profile thresholds wrong for archetype? Fix ai/strategy_profile.py
+Test each fix the same way: --matchup at n=10, spot-check, commit or revert.
+
+PRIORITY 4 — If all above exhausted, run --verbose on random matchups and log bugs you find:
+echo "BUG: <deck> vs <deck> seed <N>: <description>" >> bugs_found.txt
+Do NOT fix engine bugs. Just log them.
+
+## TIME MANAGEMENT
+- Max 15 minutes per outlier attempt. If no fix found, skip and move on.
+- After every 5 iterations, run a full: python3 iterate.py --check --n 5
+- Track iteration count. Stop at 60 iterations or when you run out of things to fix.
+- NEVER stop early to do non-iterate work. If you are tempted to build a guide or update a showcase, that means you should move to PRIORITY 3 or 4 instead.
+
+## NO ARBITRARY CONSTANTS RULE
+Every number must be DERIVED from game state:
+- Ratios: a_power / b_toughness, my_creatures / opp_creatures
+- Fractions: damage / life, cards_in_hand / 7
+- CMC-based: cmc * modifier (CMC is real game data)
+- Profile-based: values from strategy_profile.py per archetype
+BAD: if x >= 8: y *= 2.0 (why 8? why 2.0?)
+GOOD: y *= (x / max(baseline, 1)) (scales with actual ratio)
+
+## GIT RULES
+- Always: git pull --rebase origin main BEFORE pushing
 - Never force-push
-- Commit message format: "Fix: <what changed>\n\n<diagnosis>\n<fix logic — why this formula>\n<before->after WR>"
+- One commit per fix, descriptive message with before/after WR
 
-Start now. Run the loop continuously. Do not stop until 6 hours have passed or no HIGH outliers remain.
+Start now. Run continuously. Do not stop for 6 hours or until you run out of work across all 4 priority levels.
