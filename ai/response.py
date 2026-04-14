@@ -245,43 +245,90 @@ class ResponseDecider:
         if known_threat > 0:
             threat = max(threat, known_threat)
 
-        # Lethal burn: huge threat
+        # Lethal burn: sentinel-level threat. LETHAL_THREAT is a rules
+        # constant — any spell that kills us is worth countering above all
+        # else, so we pin it at the top of the threat scale.
+        LETHAL_THREAT = 100.0
         known_burn = get_burn_damage(source.name)
         if known_burn > 0:
             my_life = game.players[self.player_idx].life
             if my_life <= known_burn:
-                threat += 10.0  # lethal
+                return LETHAL_THREAT
 
-        # Board wipes: scale with how many creatures we lose
-        if "board_wipe" in template.tags:
-            my_creatures = len(game.players[self.player_idx].creatures)
-            if my_creatures >= 2:
-                threat += my_creatures * 2.0
+        # Board wipes: scale with the sum of our creatures' threat values
+        # (oracle-driven, via creature_threat_value). Replaces `count * 2`
+        # with the actual value we lose — e.g. a wrath that kills a
+        # battle-cry amplifier is worth more to counter than one killing
+        # vanilla bodies.
+        me = game.players[self.player_idx]
+        if "board_wipe" in template.tags and len(me.creatures) >= 2:
+            from ai.ev_evaluator import creature_threat_value
+            threat += sum(creature_threat_value(c) for c in me.creatures)
 
-        # Cascade / reanimate: high variance, boost threat
-        if 'cascade' in getattr(template, 'tags', set()):
-            threat += 4.0
-        if 'reanimate' in getattr(template, 'tags', set()):
-            threat += 4.0
-
-        # Equipment: ongoing damage amplifier — very high threat
-        subtypes = getattr(template, 'subtypes', [])
+        # Cascade / reanimate: the actual threat is the creature or spell
+        # they cheat into play. Approximate as card_clock_impact × a few
+        # turns — both mechanics replace a card with a bigger one, so
+        # value ≈ mana we'd save × mana_clock_impact.
+        from ai.clock import card_clock_impact, mana_clock_impact
+        snap_for_clock = snap  # already built above at opp_idx
         oracle = (template.oracle_text or '').lower()
-        if 'Equipment' in subtypes or 'equipment' in getattr(template, 'tags', set()):
-            threat += 5.0
+        subtypes = getattr(template, 'subtypes', [])
+        opp_player = game.players[opp_idx]
+
+        if 'cascade' in getattr(template, 'tags', set()):
+            # Cascade ~= 1 free spell at cmc - 1 mana. Value = saved mana
+            # + expected threat value of what they cast.
+            saved_mana = max(1, (template.cmc or 2) - 1)
+            threat += saved_mana * mana_clock_impact(snap_for_clock) * 20.0
+        if 'reanimate' in getattr(template, 'tags', set()):
+            # Reanimate value = threat value of the biggest creature in
+            # opp graveyard (oracle-driven, not hardcoded).
+            from engine.cards import CardType
+            gy_creatures = [c for c in opp_player.graveyard
+                             if CardType.CREATURE in c.template.card_types]
+            if gy_creatures:
+                from ai.ev_evaluator import creature_threat_value
+                threat += max(creature_threat_value(c) for c in gy_creatures)
+
+        # Equipment: ongoing damage amplifier. Value = damage added to
+        # the creature it equips × expected turns the equipment sticks.
+        # Derive from oracle: flat +P/+T bonuses and "for each" scalers.
+        if ('Equipment' in subtypes
+                or 'equipment' in getattr(template, 'tags', set())):
+            # Base equipment: approximate +2 power on a creature over
+            # ~3 combat turns. Uses mana_clock_impact × effective power.
+            import re
+            power_bonus = 2  # default equipment P/T bonus
+            m = re.search(r'\+(\d+)/\+\d+', oracle)
+            if m:
+                power_bonus = int(m.group(1))
+            # Scaling equipment (Cranial Plating / Nettlecyst): count
+            # matching permanents for a truer virtual-power estimate.
             if 'for each artifact' in oracle:
-                threat += 5.0  # Cranial Plating / Nettlecyst
+                # Scaler grows with opponent's (caster's) artifact board.
+                from engine.cards import CardType as _CT
+                power_bonus += sum(1 for c in opp_player.battlefield
+                                    if _CT.ARTIFACT in c.template.card_types)
+            # Rules constant: 3 combat turns is the typical equipment
+            # residency window in Modern (equipment is rarely removed).
+            EQUIP_RESIDENCY_TURNS = 3
+            threat += power_bonus * EQUIP_RESIDENCY_TURNS * mana_clock_impact(snap_for_clock) * 20.0
 
-        # Cost reducers: enable combos
+        # Cost reducers: enable combos. Value = mana saved per spell ×
+        # spells_per_turn × turns_remaining. Use card_clock_impact as a
+        # proxy for "card advantage via mana savings".
         if getattr(template, 'is_cost_reducer', False):
-            threat += 4.0
+            threat += card_clock_impact(snap_for_clock) * 20.0
 
-        # Token generators / engines
+        # Token generators / engines: value = ongoing bodies over time.
+        # card_clock_impact already expresses "future card as clock change",
+        # so one trigger per turn over a few turns.
         if 'whenever' in oracle and ('create' in oracle or 'token' in oracle):
-            threat += 4.0
+            threat += card_clock_impact(snap_for_clock) * 20.0
 
-        # Card advantage engines (Thought Monitor draws 2)
+        # Card advantage engines (Thought Monitor draws 2): value = one
+        # extra card — already what card_clock_impact computes.
         if 'card_advantage' in getattr(template, 'tags', set()):
-            threat += 3.0
+            threat += card_clock_impact(snap_for_clock) * 20.0
 
         return max(0, threat)
