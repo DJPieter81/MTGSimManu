@@ -946,13 +946,16 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
             if can_kill:
                 # Full lethal — entire win-swing is realized.
                 ev += p_resolves * win_swing
-            elif damage > 0 and storm_count >= 2:
-                # Non-lethal chain that still lands a finisher (Grapeshot for
-                # X<lethal). Credit the fractional life removed — this is the
-                # same principle as face burn: damage × (1/survival_turns).
-                # We intentionally do NOT credit chains without a finisher,
-                # because a chain with no damage leaves opp a full response
-                # window; the cards/mana expended don't offset that.
+            elif damage >= max(1, snap.opp_life // 2):
+                # Non-lethal chain but significant damage (≥half opp life).
+                # Credits chains that meaningfully accelerate the clock:
+                # Grapeshot at storm=5 dealing 5 damage to a 10-life opp is
+                # worth nearly the full win-swing (one more turn kills).
+                # Credit proportional to damage / opp_life. REQUIRES that
+                # damage already be a real finisher effect (Grapeshot with
+                # enough storm, Empty the Warrens with enough tokens) —
+                # chains that light up storm=1-2 and one-shot Grapeshot for
+                # 2 dmg no longer pass this gate (audit F-C1).
                 progress = min(1.0, damage / max(1, snap.opp_life))
                 ev += p_resolves * progress * win_swing
 
