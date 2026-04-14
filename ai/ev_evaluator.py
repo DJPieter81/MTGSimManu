@@ -946,16 +946,17 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
             if can_kill:
                 # Full lethal — entire win-swing is realized.
                 ev += p_resolves * win_swing
-            elif damage >= max(1, snap.opp_life // 2):
-                # Non-lethal chain but significant damage (≥half opp life).
-                # Credits chains that meaningfully accelerate the clock:
-                # Grapeshot at storm=5 dealing 5 damage to a 10-life opp is
-                # worth nearly the full win-swing (one more turn kills).
-                # Credit proportional to damage / opp_life. REQUIRES that
-                # damage already be a real finisher effect (Grapeshot with
-                # enough storm, Empty the Warrens with enough tokens) —
-                # chains that light up storm=1-2 and one-shot Grapeshot for
-                # 2 dmg no longer pass this gate (audit F-C1).
+            elif damage >= max(1, snap.opp_life // 2) or (
+                    snap.opp_clock <= 2 and damage > 0):
+                # Non-lethal chain credited in two cases:
+                #   1. Meaningful damage (≥½ opp life) — chain materially
+                #      accelerates the clock; audit F-C1.
+                #   2. We're about to die (opp_clock ≤ 2) and the chain
+                #      deals any damage — "Hail Mary" mode. Better to fire
+                #      Grapeshot for 2 damage now than hold it into death.
+                # The dual gate preserves the original patience against
+                # midrange opponents while keeping aggressive face-pressure
+                # against aggro we can't survive.
                 progress = min(1.0, damage / max(1, snap.opp_life))
                 ev += p_resolves * progress * win_swing
 
