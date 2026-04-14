@@ -526,6 +526,14 @@ class GoalEngine:
             score += max(0, 5 - (t.cmc or 0))
             if card.name in self.gameplan.mulligan_keys:
                 score += 8.0
+            # Reactive-only cards shouldn't be mulligan-keep signals. A
+            # deck's own gameplan marks them as "don't open with this" —
+            # opening hand on the play / draw wants enablers and threats,
+            # not answers waiting for a target. Cancel the mulligan_keys
+            # bonus for cards the deck itself has flagged reactive
+            # (audit F-R3-3 Zoo keeping Leyline Binding over creatures).
+            if card.name in self.gameplan.reactive_only:
+                score -= 8.0
             # Iterate ALL goals, not just the first. Multi-goal gameplans
             # place payoffs in later goals (Amulet Titan: Primeval Titan in
             # goal[1] RAMP, not goal[0] DEPLOY_ENGINE). Previously bottomed
