@@ -144,7 +144,7 @@ T2 P1:   Memnite (1/1) → 1 dmg to player
   [Main 1]
 T2 P2: Play Blood Crypt (tapped, no spells need mana)
     → Goal: curve_out
-    [Target] → Signal Pest (val 6.0 > face 4.5)
+    [Target] → Signal Pest: removes attack trigger — better than 3 face dmg
     [Mana] Tap Steam Vents→R (paying for Lightning Bolt, 1 mana remaining)
 T2 P2: Cast Lightning Bolt (R)
     [Priority] P1 passes (no response)
@@ -214,7 +214,7 @@ T3 P1:   Memnite (1/1) → 1 dmg to player
   [Draw] P2 draws: Indatha Triome
   [Main 1]
     → Goal: curve_out
-    [Target] → face (3 dmg, life 18, face_val 4.5)
+    [Target] → face (3 dmg, life 18 → 15): face damage worth more
     [Mana] Tap Steam Vents→R (paying for Lightning Bolt, 2 mana remaining)
 T3 P2: Cast Lightning Bolt (R)
     [Priority] P1 passes (no response)
@@ -284,7 +284,7 @@ T4 P1:   Memnite (1/1) → 1 dmg to player
   [Draw] P2 draws: Territorial Kavu
   [Main 1]
     → Goal: curve_out [payoffs]
-    [Target] → Signal Pest (val 6.0 > face 0.5)
+    [Target] → Signal Pest: removes attack trigger — better than 3 face dmg
     [Mana] Tap Indatha Triome→W, Steam Vents→R, Blood Crypt→B (paying for Phlage, Titan of Fire's Fury, 3 mana remaining)
 T4 P2: Cast Phlage, Titan of Fire's Fury (1WR)
     [Priority] P1 passes (no response)
@@ -813,7 +813,7 @@ T6: Resolve Teferi, Time Raveler
 T6 P1: Teferi bounces Nettlecyst
 T6 P1: Teferi draws Lightning Bolt
     → Goal: curve_out
-    [Target] → Thought Monitor (val 5.4 > face 4.5)
+    [Target] → Thought Monitor: 2/2 body — better than 3 face dmg
     [Mana] Tap Lush Portico→R (paying for Lightning Bolt, 2 mana remaining)
 T6 P1: Cast Lightning Bolt (R)
 T6: Resolve Lightning Bolt
@@ -902,7 +902,7 @@ T6: Territorial Kavu dies
   [Draw] P1 draws: Phlage, Titan of Fire's Fury
   [Main 1]
     → Goal: curve_out [payoffs]
-    [Target] → Signal Pest (val 6.0 > face 4.5)
+    [Target] → Signal Pest: removes attack trigger — better than 3 face dmg
     [Mana] Tap Indatha Triome→W, Arena of Glory→R (paying for Phlage, Titan of Fire's Fury, 4 mana remaining)
 T7 P1: Cast Phlage, Titan of Fire's Fury (1WR)
 T7: Resolve Phlage, Titan of Fire's Fury

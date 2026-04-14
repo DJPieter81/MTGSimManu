@@ -1624,6 +1624,7 @@ class EVPlayer:
             # Equipment carries scaling value beyond its base P/T.
             best_kill_val = 0.0
             best_kill_id = None
+            best_kill_why = ""
             if opp.creatures:
                 for c in opp.creatures:
                     remaining_toughness = (c.toughness or 0) - getattr(c, 'damage_marked', 0)
@@ -1631,16 +1632,28 @@ class EVPlayer:
                         val = creature_value(c)
                         c_oracle = (c.template.oracle_text or '').lower()
                         c_cname = (c.template.name or '').lower().split(' //')[0].strip()
+                        why_parts = []
                         # Attack-trigger premium: battle cry, Ragavan-style triggers
                         if ('whenever this creature attacks' in c_oracle
                                 or (c_cname and f'whenever {c_cname} attacks' in c_oracle)):
-                            val += 5.0  # removing battle cry = removing ~3+ future damage/turn
+                            val += 5.0
+                            why_parts.append("removes attack trigger")
+                        elif 'battle cry' in c_oracle:
+                            val += 5.0
+                            why_parts.append("removes battle cry pump")
+                        elif 'deals combat damage to a player' in c_oracle:
+                            val += 5.0
+                            why_parts.append("stops combat-damage engine")
                         # Threat premium: high-power creatures that will kill us soon
                         if (c.power or 0) >= 4:
                             val += (c.power or 0) * 0.5
+                            why_parts.append(f"high threat {c.power}/{c.toughness}")
+                        if not why_parts:
+                            why_parts.append(f"{c.power}/{c.toughness} body")
                         if val > best_kill_val:
                             best_kill_val = val
                             best_kill_id = c.instance_id
+                            best_kill_why = ", ".join(why_parts)
 
             # Compare: is killing a creature worth more than face damage?
             face_val = dmg * self.profile.burn_face_mult
@@ -1654,8 +1667,8 @@ class EVPlayer:
             # Prefer removing big creatures unless burn is near-lethal
             if best_kill_id and best_kill_val > face_val:
                 _c = next((c for c in opp.creatures if c.instance_id == best_kill_id), None)
-                self._last_target_reason = (f"→ {_c.name if _c else '?'} "
-                    f"(val {best_kill_val:.1f} > face {face_val:.1f})")
+                self._last_target_reason = (f"→ {_c.name if _c else '?'}: "
+                    f"{best_kill_why or 'killable'} — better than {dmg} face dmg")
                 return [best_kill_id]  # kill the creature
             if best_kill_id:
                 best_kill_card = next((c for c in opp.creatures
@@ -1663,10 +1676,19 @@ class EVPlayer:
                 if (best_kill_card
                         and (best_kill_card.power or 0) >= self.profile.burn_kill_min_power
                         and opp.life > dmg * self.profile.burn_kill_life_ratio):
-                    self._last_target_reason = (f"→ {best_kill_card.name} "
-                        f"(power {best_kill_card.power} >= threshold, life safe)")
+                    self._last_target_reason = (f"→ {best_kill_card.name}: "
+                        f"{best_kill_why or f'big threat {best_kill_card.power}/{best_kill_card.toughness}'} — life safe, burn not lethal")
                     return [best_kill_id]  # big threat, burn not near lethal
-            self._last_target_reason = f"→ face ({dmg} dmg, life {opp.life}, face_val {face_val:.1f})"
+            _why_face = []
+            if opp.life <= getattr(getattr(self, "profile", None), "burn_low_life_threshold", 8):
+                _why_face.append("opponent low life")
+            elif not game.players[self.player_idx].creatures:
+                _why_face.append("no clock yet — build pressure")
+            elif not best_kill_id:
+                _why_face.append("no killable target")
+            else:
+                _why_face.append("face damage worth more")
+            self._last_target_reason = f"→ face ({dmg} dmg, life {opp.life} → {opp.life - dmg}): {_why_face[0]}"
             return [-1]  # go face
 
         # Removal (non-burn): target best opponent permanent
