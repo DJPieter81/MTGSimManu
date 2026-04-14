@@ -707,9 +707,16 @@ class EVPlayer:
             has_finisher = _has_finisher()
             min_fuel = p.storm_min_fuel_to_go if reducers > 0 else p.storm_min_fuel_to_go + 2
 
-            # Draw spells (Reckless Impulse, Wrenn's Resolve) dig for finishers.
-            # With reducer on board + 3+ fuel, going off through draws is correct
-            # because: ritual → draw → draw finds finisher → cast it with floating mana
+            # Draw spells (Reckless Impulse, Wrenn's Resolve) — note they
+            # alone are NOT a substitute for finisher access. The previous
+            # draw-proxy gate ("has_draw + reducer + 3+ fuel → go") was
+            # overly optimistic: at storm=0 with no finisher or PiF in
+            # hand, committing 3+ rituals speculatively hoping to draw
+            # Grapeshot averages ~25% hit rate in a 50-card deck with
+            # 4 finishers. Audit seed storm_vs_boros Game 1 showed this
+            # burning 10 spells for 0 damage on T3, then losing T6.
+            # The principled gates below (finisher-in-hand, am_dead_next,
+            # opp_life ≤ fuel with finisher) are the only safe greenlights.
             has_draw = any(
                 any(dt in getattr(c.template, 'tags', set())
                     for dt in ('cantrip', 'card_advantage'))
@@ -719,10 +726,6 @@ class EVPlayer:
 
             can_go = ((has_finisher or has_pif) and total_fuel >= min_fuel
                       and mana >= (1 if reducers > 0 else 2))
-            # Draw spells as proxy finisher access: if enough fuel + draws,
-            # the chain will find Grapeshot/Wish naturally
-            if not can_go and has_draw and reducers > 0 and total_fuel >= 3:
-                can_go = True
             if snap.am_dead_next and fuel >= 1:
                 can_go = True
             if (has_finisher or has_pif) and opp_life <= total_fuel and total_fuel >= 2:
