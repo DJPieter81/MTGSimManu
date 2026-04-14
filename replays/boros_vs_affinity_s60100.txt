@@ -303,7 +303,7 @@ T5 P1: Cast Seasoned Pyromancer (1RR)
     [Priority] P2 passes (no response)
 T5: Resolve Seasoned Pyromancer
 T5 P1: Create 2x Elemental token(s)
-T5 P1: Seasoned Pyromancer: discard 2, draw 2, create 2 Elemental(s)
+T5 P1: Seasoned Pyromancer: discard 2, draw 2 (Thraben Charm, Arena of Glory), create 2 Elemental(s)
 T5 P1: Play Arena of Glory (enters tapped)
   [Begin Combat]
   [Declare Attackers] P1 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
@@ -338,7 +338,7 @@ T5 P2: Play Darksteel Citadel
 T5 P2: Cast Thought Monitor (6U)
     [Priority] P1 passes (no response)
 T5: Resolve Thought Monitor
-T5 P2: Thought Monitor ETB: draw 2 cards
+T5 P2: Thought Monitor ETB: draw 2 (Engineered Explosives, Mox Opal)
     → Goal: curve_out
 T5 P2: Cast Mox Opal (0)
     [Priority] P1 passes (no response)
@@ -981,7 +981,7 @@ T6 P2: Cast Seasoned Pyromancer (1RR)
     [Priority] P1 passes (no response)
 T6: Resolve Seasoned Pyromancer
 T6 P2: Create 1x Elemental token(s)
-T6 P2: Seasoned Pyromancer: discard 2, draw 2, create 1 Elemental(s)
+T6 P2: Seasoned Pyromancer: discard 2, draw 2 (Seasoned Pyromancer, Ragavan, Nimble Pilferer), create 1 Elemental(s)
   [Begin Combat]
   [Declare Attackers] P2 does not attack
   [End Combat]
@@ -1052,7 +1052,7 @@ T7: Resolve Ragavan, Nimble Pilferer
 T7 P2: Cast Seasoned Pyromancer (1RR)
     [Priority] P1 passes (no response)
 T7: Resolve Seasoned Pyromancer
-T7 P2: Seasoned Pyromancer: discard 2, draw 2 (no nonland discards)
+T7 P2: Seasoned Pyromancer: discard 2, draw 2 (Snow-Covered Plains, Flooded Strand) (no nonland discards)
   [Begin Combat]
   [Declare Attackers] P2 attacks with: Phlage, Titan of Fire's Fury, Ocelot Pride, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Seasoned Pyromancer, Ragavan, Nimble Pilferer
 T7 P2: Gain 3 life from Phlage, Titan of Fire's Fury (life: 9)
@@ -1317,7 +1317,7 @@ T3: Resolve Ornithopter
 T3 P2: Cast Thought Monitor (6U)
     [Priority] P1 passes (no response)
 T3: Resolve Thought Monitor
-T3 P2: Thought Monitor ETB: draw 2 cards
+T3 P2: Thought Monitor ETB: draw 2 (Treasure Vault, Island)
     → Goal: curve_out
 T3 P2: Cast Signal Pest (1)
     [Priority] P1 passes (no response)
@@ -1474,7 +1474,7 @@ T5: Ocelot Pride dies
 T6 P1: Cast Seasoned Pyromancer (1RR)
     [Priority] P2 passes (no response)
 T6: Resolve Seasoned Pyromancer
-T6 P1: Seasoned Pyromancer: discard 2, draw 2 (no nonland discards)
+T6 P1: Seasoned Pyromancer: discard 2, draw 2 (Arid Mesa, Wrath of the Skies) (no nonland discards)
 T6 P1: Play Arid Mesa
 T6 P1: Crack Arid Mesa -> Snow-Covered Plains (untapped)
   [Begin Combat]

@@ -868,15 +868,16 @@ def seasoned_pyromancer_etb(game, card, controller, targets=None, item=None):
             player.hand.remove(worst)
             worst.zone = "graveyard"
             player.graveyard.append(worst)
-    game.draw_cards(controller, 2)
+    _sp_drawn = game.draw_cards(controller, 2)
+    _sp_names = ", ".join(c.name for c in _sp_drawn)
     # Create 1/1 Elemental tokens for each nonland discarded
     if discarded_nonland > 0:
         game.create_token(controller, "elemental", count=discarded_nonland)
         game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Seasoned Pyromancer: discard 2, draw 2, create {discarded_nonland} Elemental(s)")
+                        f"Seasoned Pyromancer: discard 2, draw 2 ({_sp_names}), create {discarded_nonland} Elemental(s)")
     else:
         game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Seasoned Pyromancer: discard 2, draw 2 (no nonland discards)")
+                        f"Seasoned Pyromancer: discard 2, draw 2 ({_sp_names}) (no nonland discards)")
 
 
 @EFFECT_REGISTRY.register("Ranger-Captain of Eos", EffectTiming.ETB,
@@ -1993,9 +1994,10 @@ def spell_queller_etb(game, card, controller, targets=None, item=None):
 @EFFECT_REGISTRY.register("Thought Monitor", EffectTiming.ETB,
                            description="Draw 2 cards")
 def thought_monitor_etb(game, card, controller, targets=None, item=None):
-    game.draw_cards(controller, 2)
+    drawn = game.draw_cards(controller, 2)
+    names = ", ".join(c.name for c in drawn)
     game.log.append(f"T{game.display_turn} P{controller+1}: "
-                    f"Thought Monitor ETB: draw 2 cards")
+                    f"Thought Monitor ETB: draw 2 ({names})")
 
 
 @EFFECT_REGISTRY.register("Dispatch", EffectTiming.SPELL_RESOLVE,

@@ -1,0 +1,1328 @@
+Loaded 21759 cards (0 errors)
+======================================================================
+  GAME 1: Amulet Titan (P1) vs Affinity (P2)  —  seed 60307
+  Series: Amulet Titan 0 - 0 Affinity
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Affinity wins → chooses to play first
+║ P1 (on play): Affinity
+║ P2 (on draw): Amulet Titan
+╚═══════════════════════════════════════════════════════
+
+P1 (Amulet Titan) opening hand (6 lands, 1 spells):
+  • Tolaria West [Land, CMC 0]
+  • Shifting Woodland [Land, CMC 0]
+  • Dryad Arbor [Land, CMC 0]
+  • Simic Growth Chamber [Land, CMC 0]
+  • Primeval Titan [Creature, CMC 6]
+  • Echoing Deeps [Land, CMC 0]
+  • Simic Growth Chamber [Land, CMC 0]
+→ P1 MULLIGANS (6 lands (≥ 6))
+  New hand (4 lands, 3 spells): ['Arboreal Grazer', 'Primeval Titan', 'Simic Growth Chamber', "Green Sun's Zenith", "Urza's Saga", 'Simic Growth Chamber', "Urza's Saga"]
+→ P1 mulligans to 6, bottoms: ['Primeval Titan']
+  Keeps: ['Arboreal Grazer', 'Simic Growth Chamber', "Green Sun's Zenith", "Urza's Saga", 'Simic Growth Chamber', "Urza's Saga"]
+
+P2 (Affinity) opening hand (4 lands, 3 spells):
+  • Treasure Vault [Land, CMC 0]
+  • Springleaf Drum [Spell, CMC 1]
+  • Darksteel Citadel [Land, CMC 0]
+  • Tanglepool Bridge [Land, CMC 0]
+  • Darksteel Citadel [Land, CMC 0]
+  • Sojourner's Companion [Creature, CMC 7]
+  • Memnite [Creature, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Memnite, Springleaf Drum, 2 cheap spells
+
+
+╔══ TURN 1 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Treasure Vault
+    → Goal: deploy_engine [enablers]
+T1 P2: Cast Memnite (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Memnite
+    → Goal: deploy_engine [engines]
+    [Mana] Tap Treasure Vault→C (paying for Springleaf Drum, 1 mana remaining)
+T1 P2: Cast Springleaf Drum (1)
+    [Priority] P1 passes (no response)
+T1: Resolve Springleaf Drum
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: Memnite (1/1)
+║   Other: Springleaf Drum
+║   Lands: Treasure Vault [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Amulet of Vigor
+  [Main 1]
+T1 P1: Play Urza's Saga
+    → Goal: deploy_engine [engines]
+T1 P1: Cast Amulet of Vigor (1)
+    [Priority] P2 passes (no response)
+T1: Resolve Amulet of Vigor
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Amulet Titan 20
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Memnite (1/1)
+║   Other: Springleaf Drum
+║   Lands: Treasure Vault
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Sojourner's Companion
+  [Main 1]
+T2 P2: Play Tanglepool Bridge (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Memnite
+T2 P2: Attack with Memnite
+  [Declare Blockers] P1 does not block
+T2 P2:   Memnite (1/1) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 20 → 19
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 19  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Urza's Saga
+║ Affinity board:
+║   Creatures: Memnite (1/1) [tapped]
+║   Other: Springleaf Drum
+║   Lands: Treasure Vault, Tanglepool Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Lotus Field
+  [Main 1]
+T2 P1: Play Lotus Field (enters tapped)
+T2 P1: Amulet of Vigor untaps Lotus Field
+    → Goal: ramp
+    [Mana] Tap Lotus Field→G (paying for Green Sun's Zenith, 2 mana remaining)
+T2 P1: Cast Green Sun's Zenith (1G) (X=1)
+    [Priority] P2 passes (no response)
+T2: Resolve Green Sun's Zenith
+T2 P1: Green Sun's Zenith finds Dryad Arbor
+    → Goal: ramp [enablers]
+    [Mana] Tap Dryad Arbor→G (paying for Arboreal Grazer, 1 mana remaining)
+T2 P1: Cast Arboreal Grazer (G)
+    [Priority] P2 passes (no response)
+T2: Resolve Arboreal Grazer
+T2 P1: Amulet of Vigor untaps Simic Growth Chamber
+T2 P1: Arboreal Grazer puts Simic Growth Chamber onto battlefield
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Amulet Titan 19
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 52  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Memnite (1/1)
+║   Other: Springleaf Drum
+║   Lands: Treasure Vault, Tanglepool Bridge
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1) [tapped], Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor
+║   Lands: Urza's Saga [T], Lotus Field [T], Dryad Arbor [T], Simic Growth Chamber
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Razortide Bridge
+  [Main 1]
+T3 P2: Play Razortide Bridge (enters tapped)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Treasure Vault→C, Tanglepool Bridge→G (paying for Sojourner's Companion, 2 mana remaining)
+T3 P2: Cast Sojourner's Companion (7)
+    [Priority] P1 passes (no response)
+T3: Resolve Sojourner's Companion
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Memnite
+T3 P2: Attack with Memnite
+  [Declare Blockers] P1 does not block
+T3 P2:   Memnite (1/1) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 19 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 18  |  Affinity 20
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1), Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor
+║   Lands: Urza's Saga, Lotus Field, Dryad Arbor, Simic Growth Chamber
+║ Affinity board:
+║   Creatures: Memnite (1/1) [tapped], Sojourner's Companion (4/4)
+║   Other: Springleaf Drum
+║   Lands: Treasure Vault [T], Tanglepool Bridge [T], Razortide Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T3 P1: Create 1x Construct token(s)
+T3 P1: Urza's Saga Ch.II: Create Construct Token
+  [Draw] P1 draws: Urza's Saga
+  [Main 1]
+T3 P1: Play Simic Growth Chamber (enters tapped)
+T3 P1: Amulet of Vigor untaps Simic Growth Chamber
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Amulet Titan 18
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 51  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Memnite (1/1), Sojourner's Companion (4/4)
+║   Other: Springleaf Drum
+║   Lands: Treasure Vault, Tanglepool Bridge, Razortide Bridge
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1), Arboreal Grazer (0/3), Construct Token (2/2)
+║   Other: Amulet of Vigor
+║   Lands: Urza's Saga, Lotus Field, Dryad Arbor, Simic Growth Chamber, Simic Growth Chamber
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Spire of Industry
+  [Main 1]
+T4 P2: Play Spire of Industry
+T4 P2: Cycle Sojourner's Companion (pay 2 mana, draw a card)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Razortide Bridge→U, Spire of Industry→B (paying for Cranial Plating, 2 mana remaining)
+T4 P2: Cast Cranial Plating (2)
+    [Priority] P1 passes (no response)
+T4: Resolve Cranial Plating
+T4 P2: Cranial Plating enters the battlefield (unattached)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Memnite, Sojourner's Companion
+T4 P2: Attack with Memnite, Sojourner's Companion
+T4 P1:   [BLOCK] Dryad Arbor (1/1) blocks Sojourner's Companion (4/4) — chump block
+T4 P1:   [BLOCK] Construct Token (2/2) blocks Memnite (1/1) — favorable trade
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T4: Dryad Arbor dies
+T4: Memnite dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 18  |  Affinity 20
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Construct Token (2/2)
+║   Other: Amulet of Vigor
+║   Lands: Urza's Saga, Lotus Field, Simic Growth Chamber, Simic Growth Chamber
+║ Affinity board:
+║   Creatures: Sojourner's Companion (4/4) [tapped]
+║   Other: Springleaf Drum, Cranial Plating
+║   Lands: Treasure Vault [T], Tanglepool Bridge [T], Razortide Bridge [T], Spire of Industry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T4 P1: Create 1x Construct token(s)
+T4 P1: Urza's Saga Ch.III: Create Construct Token
+T4 P1: Urza's Saga tutors Amulet of Vigor
+T4 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Spelunking
+  [Main 1]
+T4 P1: Play Urza's Saga
+    → Goal: ramp [enablers]
+    [Mana] Tap Simic Growth Chamber→G, Urza's Saga→C (paying for Spelunking, 4 mana remaining)
+T4 P1: Cast Spelunking (2G)
+    [Priority] P2 passes (no response)
+T4: Resolve Spelunking
+T4 P1: Spelunking ETB: draw 1 (Forest)
+T4 P1: Spelunking ETB: draw a card
+T4 P1: Amulet of Vigor, Amulet of Vigor untaps Gruul Turf (x2)
+T4 P1: Gruul Turf returns Lotus Field to hand
+T4 P1: Spelunking puts Gruul Turf onto battlefield
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Construct Token
+T4 P1: Attack with Construct Token
+  [Declare Blockers] P2 does not block
+T4 P1:   Construct Token (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 20 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 16  |  Amulet Titan 18
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 2
+║ Affinity board:
+║   Creatures: Sojourner's Companion (4/4)
+║   Other: Springleaf Drum, Cranial Plating
+║   Lands: Treasure Vault, Tanglepool Bridge, Razortide Bridge, Spire of Industry
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Construct Token (4/4) [tapped], Construct Token (4/4)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber [T], Simic Growth Chamber, Urza's Saga [T], Gruul Turf
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Spire of Industry
+  [Main 1]
+T5 P2: Play Darksteel Citadel
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Sojourner's Companion
+T5 P2: Attack with Sojourner's Companion
+T5 P1:   [BLOCK] Construct Token (4/4) blocks Sojourner's Companion (4/4) — trade (chump)
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T5: Construct Token dies
+T5: Sojourner's Companion dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 18  |  Affinity 16
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 4
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Construct Token (3/3)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber, Simic Growth Chamber, Urza's Saga, Gruul Turf
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Springleaf Drum, Cranial Plating
+║   Lands: Treasure Vault, Tanglepool Bridge, Razortide Bridge, Spire of Industry, Darksteel Citadel
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Saga
+  [Main 1]
+T5 P1: Play Lotus Field (enters tapped)
+T5 P1: Amulet of Vigor, Amulet of Vigor untaps Lotus Field (x2)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Construct Token
+T5 P1: Attack with Construct Token
+  [Declare Blockers] P2 does not block
+T5 P1:   Construct Token (3/3) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 16 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 13  |  Amulet Titan 18
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 3
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Springleaf Drum, Cranial Plating
+║   Lands: Treasure Vault, Tanglepool Bridge, Razortide Bridge, Spire of Industry, Darksteel Citadel
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Construct Token (3/3) [tapped]
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber, Simic Growth Chamber, Urza's Saga, Gruul Turf, Lotus Field
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mox Opal
+  [Main 1]
+T6 P2: Play Darksteel Citadel
+    → Goal: curve_out
+T6 P2: Cast Mox Opal (0)
+    [Priority] P1 passes (no response)
+T6: Resolve Mox Opal
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 18  |  Affinity 13
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 45  |  Graveyard: 4
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Construct Token (3/3)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber, Simic Growth Chamber, Urza's Saga, Gruul Turf, Lotus Field
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Springleaf Drum, Cranial Plating, Mox Opal
+║   Lands: Treasure Vault, Tanglepool Bridge, Razortide Bridge, Spire of Industry, Darksteel Citadel, Darksteel Citadel
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T6 P1: Create 1x Construct token(s)
+T6 P1: Urza's Saga Ch.II: Create Construct Token
+  [Draw] P1 draws: Tolaria West
+  [Main 1]
+T6 P1: Play Urza's Saga
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Construct Token
+T6 P1: Attack with Construct Token
+  [Declare Blockers] P2 does not block
+T6 P1:   Construct Token (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 13 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 9  |  Amulet Titan 18
+║ Hand: 1 cards  |  Opp hand: 3 cards
+║ Lands: 6  |  Opp lands: 6
+║ Library: 47  |  Graveyard: 3
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Springleaf Drum, Cranial Plating, Mox Opal
+║   Lands: Treasure Vault, Tanglepool Bridge, Razortide Bridge, Spire of Industry, Darksteel Citadel, Darksteel Citadel
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Construct Token (4/4) [tapped], Construct Token (4/4)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber, Simic Growth Chamber, Urza's Saga, Gruul Turf, Lotus Field, Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thought Monitor
+  [Main 1]
+T7 P2: Play Spire of Industry
+    → Goal: curve_out [enablers]
+    [Mana] Tap Tanglepool Bridge→U (paying for Thought Monitor, 7 mana remaining)
+T7 P2: Cast Thought Monitor (6U)
+    [Priority] P1 passes (no response)
+T7: Resolve Thought Monitor
+T7 P2: Thought Monitor ETB: draw 2 (Thought Monitor, Mox Opal)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Razortide Bridge→U (paying for Thought Monitor, 6 mana remaining)
+T7 P2: Cast Thought Monitor (6U)
+    [Priority] P1 passes (no response)
+T7: Resolve Thought Monitor
+T7 P2: Thought Monitor ETB: draw 2 (Frogmite, Signal Pest)
+    → Goal: curve_out [enablers]
+T7 P2: Cast Frogmite (4)
+    [Priority] P1 passes (no response)
+T7: Resolve Frogmite
+    → Goal: curve_out
+T7 P2: Cast Signal Pest (1)
+    [Priority] P1 passes (no response)
+T7: Resolve Signal Pest
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 18  |  Affinity 9
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 6  |  Opp lands: 7
+║ Library: 44  |  Graveyard: 4
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Construct Token (4/4), Construct Token (4/4)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber, Simic Growth Chamber, Urza's Saga, Gruul Turf, Lotus Field, Urza's Saga
+║ Affinity board:
+║   Creatures: Thought Monitor (2/2), Thought Monitor (2/2), Frogmite (2/2), Signal Pest (0/1)
+║   Other: Springleaf Drum, Cranial Plating, Mox Opal
+║   Lands: Treasure Vault, Tanglepool Bridge [T], Razortide Bridge [T], Spire of Industry, Darksteel Citadel, Darksteel Citadel, Spire of Industry
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T7 P1: Create 1x Construct token(s)
+T7 P1: Urza's Saga Ch.III: Create Construct Token
+T7 P1: Urza's Saga tutors Amulet of Vigor
+T7 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Boseiju, Who Endures
+  [Main 1]
+T7 P1: Play Forest
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Construct Token, Construct Token
+T7 P1: Attack with Construct Token, Construct Token
+T7 P2:   [BLOCK-EMERGENCY] Frogmite (2/2) blocks Construct Token (6/6) — chump block
+T7 P2:   [BLOCK-EMERGENCY] Thought Monitor (2/2) blocks Construct Token (6/6) — chump block
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T7: Thought Monitor dies
+T7: Frogmite dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 9  |  Amulet Titan 18
+║ Hand: 1 cards  |  Opp hand: 3 cards
+║ Lands: 7  |  Opp lands: 6
+║ Library: 42  |  Graveyard: 5
+║ Affinity board:
+║   Creatures: Thought Monitor (2/2), Signal Pest (0/1)
+║   Other: Springleaf Drum, Cranial Plating, Mox Opal
+║   Lands: Treasure Vault, Tanglepool Bridge, Razortide Bridge, Spire of Industry, Darksteel Citadel, Darksteel Citadel, Spire of Industry
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Construct Token (6/6) [tapped], Construct Token (6/6) [tapped], Construct Token (6/6)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking, Amulet of Vigor
+║   Lands: Simic Growth Chamber, Simic Growth Chamber, Gruul Turf, Lotus Field, Urza's Saga, Forest
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Darksteel Citadel
+  [Main 1]
+T8 P2: Play Darksteel Citadel
+T8 P2: Equip Cranial Plating to Thought Monitor (cost 1)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Thought Monitor, Signal Pest
+T8 P2: Attack with Thought Monitor, Signal Pest
+T8 P1:   [BLOCK-EMERGENCY] Arboreal Grazer (0/3) blocks Thought Monitor (14/2) — chump block
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T8: Arboreal Grazer dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 18  |  Affinity 9
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 6  |  Opp lands: 8
+║ Library: 42  |  Graveyard: 6
+║ Amulet Titan board:
+║   Creatures: Construct Token (6/6), Construct Token (6/6), Construct Token (6/6)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking, Amulet of Vigor
+║   Lands: Simic Growth Chamber, Simic Growth Chamber, Gruul Turf, Lotus Field, Urza's Saga, Forest
+║ Affinity board:
+║   Creatures: Thought Monitor (13/2) [tapped], Signal Pest (0/1) [tapped]
+║   Other: Springleaf Drum, Cranial Plating, Mox Opal
+║   Lands: Treasure Vault [T], Tanglepool Bridge, Razortide Bridge, Spire of Industry, Darksteel Citadel, Darksteel Citadel, Spire of Industry, Darksteel Citadel
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T8 P1: Create 1x Construct token(s)
+T8 P1: Urza's Saga Ch.II: Create Construct Token
+  [Draw] P1 draws: Scapeshift
+  [Main 1]
+T8 P1: Play Urza's Saga
+    → Goal: ramp
+    [Mana] Tap Forest→G, Simic Growth Chamber→G (paying for Scapeshift, 7 mana remaining)
+T8 P1: Cast Scapeshift (2GG)
+    [Priority] P2 passes (no response)
+T8: Resolve Scapeshift
+T8 P1: Scapeshift sacrifices 7 lands
+T8 P1: Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Gruul Turf (x3)
+T8 P1: Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Gruul Turf (x3)
+T8 P1: Gruul Turf returns Gruul Turf to hand
+T8 P1: Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Gruul Turf (x3)
+T8 P1: Gruul Turf returns Gruul Turf to hand
+T8 P1: Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Simic Growth Chamber (x3)
+T8 P1: Simic Growth Chamber returns Gruul Turf to hand
+T8 P1: Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Crumbling Vestige (x3)
+T8 P1: Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Lotus Field (x3)
+T8 P1: Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Crumbling Vestige (x3)
+T8 P1: Scapeshift fetches 7 lands onto battlefield
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Construct Token, Construct Token, Construct Token
+T8 P1: Attack with Construct Token, Construct Token, Construct Token
+  [Declare Blockers] P2 does not block
+T8 P1:   Construct Token (7/7) → 7 dmg to player
+T8 P1:   Construct Token (7/7) → 7 dmg to player
+T8 P1:   Construct Token (7/7) → 7 dmg to player
+P2 loses: life total -12
+  [Combat Damage] 21 damage dealt → P2 life: 9 → -12
+
+>>> Amulet Titan wins Game 1 on turn 8 via damage
+    Final life: Amulet Titan=18  Affinity=-12
+
+======================================================================
+  GAME 2: Affinity (P1) vs Amulet Titan (P2)  —  seed 60308
+  Series: Amulet Titan 1 - 0 Affinity
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Affinity wins → chooses to play first
+║ P1 (on play): Affinity
+║ P2 (on draw): Amulet Titan
+╚═══════════════════════════════════════════════════════
+
+P1 (Affinity) opening hand (2 lands, 5 spells):
+  • Nettlecyst [Spell, CMC 3]
+  • Nettlecyst [Spell, CMC 3]
+  • Urza's Saga [Land, CMC 0]
+  • Mox Opal [Spell, CMC 0]
+  • Silverbluff Bridge [Land, CMC 0]
+  • Thought Monitor [Creature, CMC 7]
+  • Mox Opal [Spell, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Mox Opal, 4 cheap spells
+
+P2 (Amulet Titan) opening hand (5 lands, 2 spells):
+  • Scapeshift [Spell, CMC 4]
+  • Arboreal Grazer [Creature, CMC 1]
+  • Gruul Turf [Land, CMC 0]
+  • Simic Growth Chamber [Land, CMC 0]
+  • Gruul Turf [Land, CMC 0]
+  • Otawara, Soaring City [Land, CMC 0]
+  • Urza's Saga [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Arboreal Grazer, 1 cheap spells
+
+
+╔══ TURN 1 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Urza's Saga
+    → Goal: deploy_engine [engines]
+T1 P1: Cast Mox Opal (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Mox Opal
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal
+║   Lands: Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Primeval Titan
+  [Main 1]
+T1 P2: Play Urza's Saga
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal
+║   Lands: Urza's Saga
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ornithopter
+  [Main 1]
+T2 P1: Play Silverbluff Bridge (enters tapped)
+    → Goal: curve_out
+T2 P1: Cast Ornithopter (0)
+    [Priority] P2 passes (no response)
+T2: Resolve Ornithopter
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Urza's Saga
+║ Affinity board:
+║   Creatures: Ornithopter (0/2)
+║   Other: Mox Opal
+║   Lands: Urza's Saga, Silverbluff Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Boseiju, Who Endures
+  [Main 1]
+T2 P2: Play Boseiju, Who Endures
+    → Goal: deploy_engine [enablers]
+    [Mana] Tap Boseiju, Who Endures→G (paying for Arboreal Grazer, 2 mana remaining)
+T2 P2: Cast Arboreal Grazer (G)
+    [Priority] P1 passes (no response)
+T2: Resolve Arboreal Grazer
+T2 P2: Arboreal Grazer puts Gruul Turf onto battlefield
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Amulet Titan 20
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 52  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Ornithopter (0/2)
+║   Other: Mox Opal
+║   Lands: Urza's Saga, Silverbluff Bridge
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Lands: Urza's Saga, Boseiju, Who Endures [T], Gruul Turf [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T3 P1: Create 1x Construct token(s)
+T3 P1: Urza's Saga Ch.II: Create Construct Token
+  [Draw] P1 draws: Thought Monitor
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Silverbluff Bridge→U, Urza's Saga→C (paying for Thought Monitor, 2 mana remaining)
+T3 P1: Cast Thought Monitor (6U)
+    [Priority] P2 passes (no response)
+T3: Resolve Thought Monitor
+T3 P1: Thought Monitor ETB: draw 2 (Memnite, Razortide Bridge)
+T3 P1: Play Razortide Bridge (enters tapped)
+    → Goal: curve_out
+T3 P1: Cast Memnite (0)
+    [Priority] P2 passes (no response)
+T3: Resolve Memnite
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Lands: Urza's Saga, Boseiju, Who Endures, Gruul Turf
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Construct Token (7/7), Thought Monitor (2/2), Memnite (1/1)
+║   Other: Mox Opal
+║   Lands: Urza's Saga [T], Silverbluff Bridge [T], Razortide Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T3 P2: Create 1x Construct token(s)
+T3 P2: Urza's Saga Ch.II: Create Construct Token
+  [Draw] P2 draws: Spelunking
+  [Main 1]
+T3 P2: Play Otawara, Soaring City
+    → Goal: ramp [payoffs]
+    [Mana] Tap Boseiju, Who Endures→G, Gruul Turf→G, Urza's Saga→C (paying for Primeval Titan, 4 mana remaining)
+T3 P2: Cast Primeval Titan (4GG)
+    [Priority] P1 passes (no response)
+T3: Resolve Primeval Titan
+T3 P2: Primeval Titan searches for Gruul Turf
+T3 P2: Primeval Titan searches for Simic Growth Chamber
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Amulet Titan 20
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 6
+║ Library: 49  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Construct Token (7/7), Thought Monitor (2/2), Memnite (1/1)
+║   Other: Mox Opal
+║   Lands: Urza's Saga, Silverbluff Bridge, Razortide Bridge
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Construct Token (1/1), Primeval Titan (6/6)
+║   Lands: Urza's Saga [T], Boseiju, Who Endures [T], Gruul Turf [T], Otawara, Soaring City, Gruul Turf [T], Simic Growth Chamber [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T4 P1: Create 1x Construct token(s)
+T4 P1: Urza's Saga Ch.III: Create Construct Token
+T4 P1: Urza's Saga tutors Springleaf Drum
+T4 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Frogmite
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Silverbluff Bridge→U (paying for Thought Monitor, 2 mana remaining)
+T4 P1: Cast Thought Monitor (6U)
+    [Priority] P2 passes (no response)
+T4: Resolve Thought Monitor
+T4 P1: Thought Monitor ETB: draw 2 (Treasure Vault, Darksteel Citadel)
+T4 P1: Play Treasure Vault
+    → Goal: curve_out [enablers]
+T4 P1: Cast Frogmite (4)
+    [Priority] P2 passes (no response)
+T4: Resolve Frogmite
+    → Goal: curve_out [payoffs]
+T4 P1: Cast Nettlecyst (3)
+    [Priority] P2 passes (no response)
+T4: Resolve Nettlecyst
+T4 P1: Create 1x Germ token(s)
+    → Goal: curve_out [payoffs]
+T4 P1: Cast Nettlecyst (3)
+    [Priority] P2 passes (no response)
+T4: Resolve Nettlecyst
+T4 P1: Create 1x Germ token(s)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Construct Token, Thought Monitor, Memnite
+T4 P1: Attack with Construct Token, Thought Monitor, Memnite
+T4 P2:   [BLOCK-EMERGENCY] Construct Token (1/1) blocks Construct Token (14/14) — chump block
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T4 P1:   Thought Monitor (2/2) → 2 dmg to player
+T4 P1:   Memnite (1/1) → 1 dmg to player
+T4: Construct Token dies
+  [Combat Damage] 3 damage dealt → P2 life: 20 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 17  |  Affinity 20
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 6  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Primeval Titan (6/6)
+║   Lands: Urza's Saga, Boseiju, Who Endures, Gruul Turf, Otawara, Soaring City, Gruul Turf, Simic Growth Chamber
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Construct Token (14/14) [tapped], Thought Monitor (2/2) [tapped], Memnite (1/1) [tapped], Construct Token (14/14), Thought Monitor (2/2), Frogmite (2/2), Germ Token (14/14), Germ Token (14/14)
+║   Other: Mox Opal, Springleaf Drum, Nettlecyst, Nettlecyst
+║   Lands: Silverbluff Bridge [T], Razortide Bridge, Treasure Vault
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T4 P2: Create 1x Construct token(s)
+T4 P2: Urza's Saga Ch.III: Create Construct Token
+T4 P2: Urza's Saga tutors Amulet of Vigor
+T4 P2: Sacrifice Urza's Saga (final chapter)
+  [Draw] P2 draws: Green Sun's Zenith
+  [Main 1]
+T4 P2: Play Simic Growth Chamber (enters tapped)
+T4 P2: Amulet of Vigor untaps Simic Growth Chamber
+    → Goal: ramp [enablers]
+    [Mana] Tap Boseiju, Who Endures→G (paying for Spelunking, 6 mana remaining)
+T4 P2: Cast Spelunking (2G)
+    [Priority] P1 passes (no response)
+T4: Resolve Spelunking
+T4 P2: Spelunking ETB: draw 1 (Lotus Field)
+T4 P2: Spelunking ETB: draw a card
+T4 P2: Amulet of Vigor untaps Gruul Turf
+T4 P2: Gruul Turf returns Boseiju, Who Endures to hand
+T4 P2: Spelunking puts Gruul Turf onto battlefield
+    → Goal: ramp
+    [Mana] Tap Gruul Turf→G (paying for Green Sun's Zenith, 6 mana remaining)
+T4 P2: Cast Green Sun's Zenith (5G) (X=5)
+    [Priority] P1 passes (no response)
+T4: Resolve Green Sun's Zenith
+T4 P2: Green Sun's Zenith finds Dryad Arbor
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Amulet Titan 17
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 7
+║ Library: 45  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Construct Token (14/14), Thought Monitor (2/2), Memnite (1/1), Construct Token (14/14), Thought Monitor (2/2), Frogmite (2/2), Germ Token (14/14), Germ Token (14/14)
+║   Other: Mox Opal, Springleaf Drum, Nettlecyst, Nettlecyst
+║   Lands: Silverbluff Bridge, Razortide Bridge, Treasure Vault
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Primeval Titan (6/6), Construct Token (2/2), Dryad Arbor (1/1)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Gruul Turf [T], Otawara, Soaring City [T], Gruul Turf [T], Simic Growth Chamber [T], Simic Growth Chamber [T], Gruul Turf [T], Dryad Arbor
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Spire of Industry
+  [Main 1]
+T5 P1: Play Spire of Industry
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Construct Token, Thought Monitor, Memnite, Construct Token, Thought Monitor, Frogmite, Germ Token, Germ Token
+T5 P1: Attack with Construct Token, Thought Monitor, Memnite, Construct Token, Thought Monitor, Frogmite, Germ Token, Germ Token
+T5 P2:   [BLOCK-EMERGENCY] Dryad Arbor (1/1) blocks Construct Token (14/14) — chump block
+T5 P2:   [BLOCK-EMERGENCY] Construct Token (2/2) blocks Construct Token (14/14) — chump block
+T5 P2:   [BLOCK-EMERGENCY] Arboreal Grazer (0/3) blocks Germ Token (14/14) — chump block
+T5 P2:   [BLOCK-EMERGENCY] Primeval Titan (6/6) blocks Germ Token (14/14) — chump block
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T5 P1:   Thought Monitor (2/2) → 2 dmg to player
+T5 P1:   Memnite (1/1) → 1 dmg to player
+T5 P1:   Thought Monitor (2/2) → 2 dmg to player
+T5 P1:   Frogmite (2/2) → 2 dmg to player
+T5: Arboreal Grazer dies
+T5: Primeval Titan dies
+T5: Construct Token dies
+T5: Dryad Arbor dies
+  [Combat Damage] 7 damage dealt → P2 life: 17 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 10  |  Affinity 20
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 6  |  Opp lands: 4
+║ Library: 43  |  Graveyard: 7
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Gruul Turf, Otawara, Soaring City, Gruul Turf, Simic Growth Chamber, Simic Growth Chamber, Gruul Turf
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Construct Token (14/14) [tapped], Thought Monitor (2/2) [tapped], Memnite (1/1) [tapped], Construct Token (14/14) [tapped], Thought Monitor (2/2) [tapped], Frogmite (2/2) [tapped], Germ Token (14/14) [tapped], Germ Token (14/14) [tapped]
+║   Other: Mox Opal, Springleaf Drum, Nettlecyst, Nettlecyst
+║   Lands: Silverbluff Bridge, Razortide Bridge, Treasure Vault, Spire of Industry
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Gruul Turf
+  [Main 1]
+T5 P2: Play Lotus Field (enters tapped)
+T5 P2: Amulet of Vigor untaps Lotus Field
+    → Goal: ramp
+    [Mana] Tap Gruul Turf→G, Gruul Turf→G, Otawara, Soaring City→U (paying for Scapeshift, 7 mana remaining)
+T5 P2: Cast Scapeshift (2GG)
+    [Priority] P1 passes (no response)
+T5: Resolve Scapeshift
+T5 P2: Scapeshift sacrifices 7 lands
+T5 P2: Amulet of Vigor untaps Simic Growth Chamber
+T5 P2: Amulet of Vigor untaps Crumbling Vestige
+T5 P2: Amulet of Vigor untaps Crumbling Vestige
+T5 P2: Amulet of Vigor untaps Crumbling Vestige
+T5 P2: Amulet of Vigor untaps Lotus Field
+T5 P2: Amulet of Vigor untaps Crumbling Vestige
+T5 P2: Amulet of Vigor untaps Forest
+T5 P2: Scapeshift fetches 7 lands onto battlefield
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Amulet Titan 10
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 7
+║ Library: 44  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Construct Token (14/14), Thought Monitor (2/2), Memnite (1/1), Construct Token (14/14), Thought Monitor (2/2), Frogmite (2/2), Germ Token (14/14), Germ Token (14/14)
+║   Other: Mox Opal, Springleaf Drum, Nettlecyst, Nettlecyst
+║   Lands: Silverbluff Bridge, Razortide Bridge, Treasure Vault, Spire of Industry
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber, Crumbling Vestige, Crumbling Vestige, Crumbling Vestige, Lotus Field, Crumbling Vestige, Forest
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Cranial Plating
+  [Main 1]
+T6 P1: Play Darksteel Citadel
+    → Goal: curve_out [payoffs]
+T6 P1: Cast Cranial Plating (2)
+    [Priority] P2 passes (no response)
+T6: Resolve Cranial Plating
+T6 P1: Cranial Plating enters the battlefield (unattached)
+T6 P1: Equip Cranial Plating to Construct Token (cost 1)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Construct Token, Thought Monitor, Memnite, Construct Token, Thought Monitor, Frogmite, Germ Token, Germ Token
+T6 P1: Attack with Construct Token, Thought Monitor, Memnite, Construct Token, Thought Monitor, Frogmite, Germ Token, Germ Token
+  [Declare Blockers] P2 does not block
+T6 P1:   Construct Token (32/16) → 32 dmg to player
+T6 P1:   Thought Monitor (2/2) → 2 dmg to player
+T6 P1:   Memnite (1/1) → 1 dmg to player
+T6 P1:   Construct Token (16/16) → 16 dmg to player
+T6 P1:   Thought Monitor (2/2) → 2 dmg to player
+T6 P1:   Frogmite (2/2) → 2 dmg to player
+T6 P1:   Germ Token (16/16) → 16 dmg to player
+T6 P1:   Germ Token (16/16) → 16 dmg to player
+P2 loses: life total -77
+  [Combat Damage] 87 damage dealt → P2 life: 10 → -77
+
+>>> Affinity wins Game 2 on turn 6 via damage
+    Final life: Affinity=20  Amulet Titan=-77
+
+======================================================================
+  GAME 3: Amulet Titan (P1) vs Affinity (P2)  —  seed 60309
+  Series: Amulet Titan 1 - 1 Affinity
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Amulet Titan wins → chooses to play first
+║ P1 (on play): Amulet Titan
+║ P2 (on draw): Affinity
+╚═══════════════════════════════════════════════════════
+
+P1 (Amulet Titan) opening hand (2 lands, 5 spells):
+  • Urza's Saga [Land, CMC 0]
+  • Scapeshift [Spell, CMC 4]
+  • Scapeshift [Spell, CMC 4]
+  • Summoner's Pact [Spell, CMC 0]
+  • Primeval Titan [Creature, CMC 6]
+  • Crumbling Vestige [Land, CMC 0]
+  • Green Sun's Zenith [Spell, CMC 1]
+→ P1 MULLIGANS (no cost reducer and no ritual+cantrip+finisher backup)
+  New hand (3 lands, 4 spells): ['Spelunking', "Summoner's Pact", 'Echoing Deeps', "Green Sun's Zenith", 'Vexing Bauble', 'Gruul Turf', 'Tolaria West']
+→ P1 mulligans to 6, bottoms: ['Vexing Bauble']
+  Keeps: ['Spelunking', "Summoner's Pact", 'Echoing Deeps', "Green Sun's Zenith", 'Gruul Turf', 'Tolaria West']
+
+P2 (Affinity) opening hand (3 lands, 4 spells):
+  • Thought Monitor [Creature, CMC 7]
+  • Signal Pest [Creature, CMC 1]
+  • Nettlecyst [Spell, CMC 3]
+  • Spire of Industry [Land, CMC 0]
+  • Razortide Bridge [Land, CMC 0]
+  • Springleaf Drum [Spell, CMC 1]
+  • Urza's Saga [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Springleaf Drum, 3 cheap spells
+
+
+╔══ TURN 1 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 54  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Echoing Deeps
+    → Goal: deploy_engine
+T1 P1: Cast Summoner's Pact (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Summoner's Pact
+T1 P1: Summoner's Pact finds Primeval Titan
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Echoing Deeps
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Memnite
+  [Main 1]
+T1 P2: Play Spire of Industry
+    → Goal: deploy_engine [enablers]
+T1 P2: Cast Memnite (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Memnite
+    → Goal: deploy_engine
+    [Mana] Tap Spire of Industry→B (paying for Signal Pest, 1 mana remaining)
+T1 P2: Cast Signal Pest (1)
+    [Priority] P1 passes (no response)
+T1: Resolve Signal Pest
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Echoing Deeps
+║ Affinity board:
+║   Creatures: Memnite (1/1), Signal Pest (0/1)
+║   Lands: Spire of Industry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Dryad Arbor
+  [Main 1]
+T2 P1: Play Dryad Arbor
+    → Goal: deploy_engine [enablers]
+    [Mana] Tap Dryad Arbor→G (paying for Green Sun's Zenith, 2 mana remaining)
+T2 P1: Cast Green Sun's Zenith (1G) (X=1)
+    [Priority] P2 passes (no response)
+T2: Resolve Green Sun's Zenith
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Memnite (1/1), Signal Pest (0/1)
+║   Lands: Spire of Industry
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1) [tapped]
+║   Lands: Echoing Deeps [T], Dryad Arbor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Signal Pest
+  [Main 1]
+T2 P2: Play Urza's Saga
+    → Goal: deploy_engine [engines]
+T2 P2: Cast Springleaf Drum (1)
+    [Priority] P1 passes (no response)
+T2: Resolve Springleaf Drum
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Urza's Saga→C, Spire of Industry→B (paying for Nettlecyst, 2 mana remaining)
+T2 P2: Cast Nettlecyst (3)
+    [Priority] P1 passes (no response)
+T2: Resolve Nettlecyst
+T2 P2: Create 1x Germ token(s)
+    → Goal: curve_out
+T2 P2: Cast Signal Pest (1)
+    [Priority] P1 passes (no response)
+T2: Resolve Signal Pest
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Memnite, Signal Pest
+T2 P2: Attack with Memnite, Signal Pest
+  [Declare Blockers] P1 does not block
+T2 P2:   Memnite (2/1) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 20 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 18  |  Affinity 20
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1)
+║   Lands: Echoing Deeps, Dryad Arbor
+║ Affinity board:
+║   Creatures: Memnite (1/1) [tapped], Signal Pest (0/1) [tapped], Germ Token (5/5), Signal Pest (0/1)
+║   Other: Springleaf Drum, Nettlecyst
+║   Lands: Spire of Industry [T], Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Scapeshift
+  [Main 1]
+T3 P1: Play Gruul Turf (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Amulet Titan 18
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Memnite (1/1), Signal Pest (0/1), Germ Token (5/5), Signal Pest (0/1)
+║   Other: Springleaf Drum, Nettlecyst
+║   Lands: Spire of Industry, Urza's Saga
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1)
+║   Lands: Echoing Deeps, Dryad Arbor, Gruul Turf [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ornithopter
+  [Main 1]
+T3 P2: Play Razortide Bridge (enters tapped)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Spire of Industry→U (paying for Thought Monitor, 2 mana remaining)
+T3 P2: Cast Thought Monitor (6U)
+    [Priority] P1 passes (no response)
+T3: Resolve Thought Monitor
+T3 P2: Thought Monitor ETB: draw 2 (Engineered Explosives, Mox Opal)
+    → Goal: curve_out
+T3 P2: Cast Ornithopter (0)
+    [Priority] P1 passes (no response)
+T3: Resolve Ornithopter
+    → Goal: curve_out
+T3 P2: Cast Mox Opal (0)
+    [Priority] P1 passes (no response)
+T3: Resolve Mox Opal
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Memnite, Signal Pest, Germ Token, Signal Pest
+T3 P2: Attack with Memnite, Signal Pest, Germ Token, Signal Pest
+T3 P1:   [BLOCK-EMERGENCY] Dryad Arbor (1/1) blocks Germ Token (11/9) — chump block
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T3 P2:   Memnite (3/1) → 3 dmg to player
+T3 P2:   Signal Pest (1/1) → 1 dmg to player
+T3 P2:   Signal Pest (1/1) → 1 dmg to player
+T3: Dryad Arbor dies
+  [Combat Damage] 5 damage dealt → P1 life: 18 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 13  |  Affinity 20
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 3
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Echoing Deeps, Gruul Turf
+║ Affinity board:
+║   Creatures: Memnite (1/1) [tapped], Signal Pest (0/1) [tapped], Germ Token (9/9) [tapped], Signal Pest (0/1) [tapped], Thought Monitor (2/2), Ornithopter (0/2)
+║   Other: Springleaf Drum, Nettlecyst, Mox Opal
+║   Lands: Spire of Industry [T], Urza's Saga, Razortide Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Vexing Bauble
+  [Main 1]
+T4 P1: Play Tolaria West (enters tapped)
+    → Goal: ramp
+    [Mana] Tap Echoing Deeps→C (paying for Vexing Bauble, 2 mana remaining)
+T4 P1: Cast Vexing Bauble (1)
+    [Priority] P2 passes (no response)
+T4: Resolve Vexing Bauble
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Amulet Titan 13
+║ Hand: 1 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Memnite (1/1), Signal Pest (0/1), Germ Token (9/9), Signal Pest (0/1), Thought Monitor (2/2), Ornithopter (0/2)
+║   Other: Springleaf Drum, Nettlecyst, Mox Opal
+║   Lands: Spire of Industry, Urza's Saga, Razortide Bridge
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Vexing Bauble
+║   Lands: Echoing Deeps [T], Gruul Turf, Tolaria West [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T4 P2: Create 1x Construct token(s)
+T4 P2: Urza's Saga Ch.II: Create Construct Token
+  [Draw] P2 draws: Cranial Plating
+  [Main 1]
+    → Goal: curve_out [payoffs]
+T4 P2: Cast Cranial Plating (2)
+    [Priority] P1 passes (no response)
+T4: Resolve Cranial Plating
+T4 P2: Cranial Plating enters the battlefield (unattached)
+T4 P2: Equip Cranial Plating to Germ Token (cost 1)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Memnite, Signal Pest, Germ Token, Signal Pest, Thought Monitor
+T4 P2: Attack with Memnite, Signal Pest, Germ Token, Signal Pest, Thought Monitor
+  [Declare Blockers] P1 does not block
+T4 P2:   Memnite (3/1) → 3 dmg to player
+T4 P2:   Signal Pest (1/1) → 1 dmg to player
+T4 P2:   Germ Token (24/11) → 24 dmg to player
+T4 P2:   Signal Pest (1/1) → 1 dmg to player
+T4 P2:   Thought Monitor (4/2) → 4 dmg to player
+P1 loses: life total -20
+  [Combat Damage] 33 damage dealt → P1 life: 13 → -20
+
+>>> Affinity wins Game 3 on turn 4 via damage
+    Final life: Amulet Titan=-20  Affinity=20
+
+======================================================================
+  MATCH RESULT: Affinity wins 2-1
+======================================================================
