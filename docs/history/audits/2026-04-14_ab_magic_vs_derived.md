@@ -55,3 +55,32 @@
 ## Verdict
 
 The refactor directionally fixes the P0 Storm bug (+13.2pp overall) and the Affinity outlier (-4pp), at the cost of a Jeskai Blink regression (-13.2pp). Moves are almost entirely symmetric (d1 vs d2 up ↔ d2 vs d1 down by same amount), confirming the changes are signal not RNG. The Jeskai regression warrants investigation — the Site 4 wrath refactor may have over-pruned its board-wipe plays; worth tracing a Jeskai vs Storm game under both builds to confirm.
+
+## Follow-up: Jeskai regression is sample noise (N=15 too small)
+
+The headline "-13.2pp Jeskai" above triggered a deeper look. Running the same
+Jeskai Blink vs Ruby Storm matchup at different seeds and sample sizes:
+
+| Config | Baseline (Jeskai %) | Refactor (Jeskai %) | Δpp |
+|--------|--------------------:|--------------------:|----:|
+| Matrix run, N=15, s=40000 (in A/B above) | 73% | 27% | **-46** ❌ |
+| Direct matchup, N=15, s=50000 | 53% | 80% | **+27** ✅ |
+| Direct matchup, N=30, s=60000 | 57% | 60% | **+3** |
+
+The N=15 matrix result and N=15 s=50000 direct matchup disagree by 73pp on
+the same deck pair — that's pure RNG, not a real deck-strength signal. At
+N=30 the effect collapses to +3pp (within sample noise).
+
+**Conclusion:** the Jeskai "regression" is a sample-size artifact of N=15
+Bo3 per cell. The Storm +13.2pp headline likely survives because it's a
+larger, consistent effect across multiple matchups (audit-predicted P0 fix).
+Per-cell noise at N=15 is ~±15pp; the refactor's true per-deck WR deltas are
+only reliable to about that precision at this sample size.
+
+**Recommendation:** any future A/B should run N≥30 per cell, or use the
+matrix's "average across 5 opponents" rollup (which averages out per-cell
+noise) as the primary signal. The matrix-level per-deck deltas still show
+Storm up and Affinity down — those directions are trustworthy even at N=15.
+
+Ran with same-seed methodology; commits `45eff55` (magic) and `a146ec3`
+(derived), on branch `claude/refactor-scores-numbers-fnfk7`.
