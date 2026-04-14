@@ -61,10 +61,9 @@ def pill(card):
     sf = card.split(" (")[0].strip()
     img = "https://api.scryfall.com/cards/named?exact=" + _q(sf) + "&format=image&version=small"
     q = chr(39)
-    thumb = f"<img class=\"card-thumb\" src=\"{img}\" alt=\"{esc(sf)}\" loading=\"lazy\" onerror=\"this.style.display={q}none{q}\">"
-    return f"<span class=\"pill has-thumb\">{thumb}{esc(card)}</span>"
-
-
+    art = f"<img class=\"hand-card-art\" src=\"{img}\" alt=\"{esc(sf)}\" loading=\"lazy\" onerror=\"this.style.display={q}none{q}\">"
+    label = f"<span class=\"hand-card-label\">{esc(sf[:18])}</span>"
+    return f"<span class=\"hand-card\">{art}{label}</span>"
 def life_svg(turns, p1n, p2n):
     lp1, lp2 = [20], [20]
     for t in turns:
@@ -363,17 +362,34 @@ def turn_html(t, next_t, gnum, p1name, p2name, star_turns):
     # Combat
     combat_html=''
     if t['combat']:
+        breakdown_lines = [c for c in t["combat"] if c.startswith("BREAKDOWN:")]
+        has_breakdown = len(breakdown_lines) > 0
+
+        def _atk_card(b):
+            from urllib.parse import quote as _qu2
+            import re as _re2
+            m = _re2.match(r"BREAKDOWN:(.+?)\s+(\d+)/(\d+)\s+·\s+(\d+)\s+dmg(.*)", b[10:])
+            if not m: return f"<div class=\"combat-breakdown\">{b[10:]}</div>"
+            name,pw,tg,dmg,note = m.group(1),m.group(2),m.group(3),m.group(4),m.group(5).strip()
+            sf = name.split(" (")[0].strip()
+            img = "https://api.scryfall.com/cards/named?exact=" + _qu2(sf) + "&format=image&version=art_crop"
+            q = chr(39)
+            art = f"<img class=\"atk-art\" src=\"{img}\" alt=\"{esc(sf)}\" loading=\"lazy\" onerror=\"this.style.display={q}none{q}\">"
+            trample = "<span class=\"atk-trample\" title=\"Trample\">↠</span>" if "trample" in note else ""
+            return (f"<div class=\"atk-card\">{art}"
+                    f"<div class=\"atk-info\"><span class=\"atk-name\">{esc(sf[:14])}</span>"
+                    f"<span class=\"atk-pt\">{pw}/{tg}</span>"
+                    f"<span class=\"atk-dmg\">⚔{dmg}</span>{trample}</div></div>")
+
         def _combat_line(c):
-            if c.startswith('BREAKDOWN:'):
-                return f'<div class="combat-breakdown">{c[10:]}</div>'
-            if c.startswith('BLOCK-EMRG:'):
-                return f'<div class="combat-block emergency">🚨 {c[11:]}</div>'
-            if c.startswith('BLOCK:'):
-                return f'<div class="combat-block">🛡 {c[6:]}</div>'
-            if c.startswith('LETHAL:'):
-                return f'<div class="combat-lethal">☠ LETHAL — {c[7:]}</div>'
-            return f'<div class="combat-detail">{c}</div>'
-        combat_html='<div class="section-label">Combat</div>'+''.join(_combat_line(c) for c in t['combat'])
+            if c.startswith("BREAKDOWN:"): return ""
+            if c.startswith("BLOCK-EMRG:"): return f"<div class=\"combat-block emergency\">🚨 {c[11:]}</div>"
+            if c.startswith("BLOCK:"): return f"<div class=\"combat-block\">🛡 {c[6:]}</div>"
+            if c.startswith("LETHAL:"): return f"<div class=\"combat-lethal\">☠ LETHAL — {c[7:]}</div>"
+            if c.startswith("⚔") and has_breakdown: return ""
+            return f"<div class=\"combat-detail\">{c}</div>"
+        atk_strip = ("<div class=\"atk-strip\">" + "".join(_atk_card(b) for b in breakdown_lines) + "</div>") if breakdown_lines else ""
+        combat_html = "<div class=\"section-label\">Combat</div>" + atk_strip + "".join(_combat_line(c) for c in t["combat"])
 
     # Board — from next turn's header = state AFTER this turn's plays
     src=next_t if next_t else t
@@ -528,6 +544,18 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
 .hand-box h3{font-size:.8em;color:#656d76;margin-bottom:8px;font-weight:600}
 .hand-box.bug{border-left:3px solid #0969da}.hand-box.opp{border-left:3px solid #d1242f}
 .pill{display:inline-block;background:#eaeef2;border:1px solid #d0d7de;border-radius:10px;padding:2px 8px;margin:2px;font-size:.78em;font-family:'Fira Code','Consolas',monospace;color:#9a6700}
+.hand-pills{display:flex;flex-wrap:wrap;gap:5px;margin:4px 0 6px;align-items:flex-end}
+.hand-card{display:inline-flex;flex-direction:column;align-items:center;width:60px;border-radius:5px;overflow:hidden;border:1px solid #d0d7de;background:#fff;flex-shrink:0;vertical-align:bottom}
+.hand-card-art{width:60px;height:84px;object-fit:cover;object-position:top;display:block}
+.hand-card-label{font-size:.58em;padding:2px 3px;text-align:center;color:#57606a;font-family:'Fira Code',monospace;line-height:1.25;width:100%;background:#f6f8fa;word-break:break-word}
+.atk-strip{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px;align-items:flex-end}
+.atk-card{display:inline-flex;flex-direction:column;align-items:center;width:66px;border-radius:5px;overflow:hidden;border:1px solid #e6ac00;background:#fffbf0;flex-shrink:0}
+.atk-art{width:66px;height:48px;object-fit:cover;object-position:top;display:block}
+.atk-info{width:100%;padding:2px 4px 3px;text-align:center;background:#fffbf0}
+.atk-name{display:block;font-size:.58em;color:#57606a;font-family:'Fira Code',monospace;line-height:1.2;word-break:break-word}
+.atk-pt{font-size:.58em;color:#656d76}
+.atk-dmg{font-size:.65em;font-weight:700;color:#cf222e;margin-left:3px}
+.atk-trample{font-size:.68em;color:#0969da;margin-left:2px}
 .mull-pills{opacity:.5;margin:2px 0}.mull-pills .pill{font-size:.7em;text-decoration:line-through}
 .mull-step{display:flex;align-items:center;gap:6px;margin:5px 0 2px;font-size:.8em}
 .mull-label{color:#656d76;font-weight:600}
