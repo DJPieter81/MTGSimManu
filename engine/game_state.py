@@ -2409,10 +2409,38 @@ class GameState:
             return
 
         # Dispatch to card effect registry
+        # Snapshot opponent state before resolution to auto-generate target log
+        _opp = self.players[1 - controller]
+        _pre_life = _opp.life
+        _pre_creatures = {c.instance_id: (c.name, c.toughness) for c in _opp.creatures}
+        _pre_hand = len(_opp.hand)
+        _pre_log_len = len(self.log)
         if EFFECT_REGISTRY.execute(
             name, EffectTiming.SPELL_RESOLVE, self, card, controller,
             targets=item.targets, item=item
         ):
+            # Auto-generate target summary if no specific log was written
+            # (check if last log entry already describes this spell's effect)
+            # Check if handler wrote a meaningful log naming the spell
+            _handler_logs = self.log[_pre_log_len:]
+            _spell_logged = any(name in l for l in _handler_logs)
+            _already_logged = _spell_logged
+            if not _already_logged:
+                effects = []
+                # Creature deaths (prefer over face damage — spell targeted creature)
+                killed = [cname for iid, (cname, _) in _pre_creatures.items()
+                          if not any(c.instance_id == iid for c in _opp.creatures)]
+                if killed:
+                    effects.append(f"kills {', '.join(killed)}")
+                elif _opp.life < _pre_life:
+                    # Only log face damage if no creature died (not a creature spell)
+                    effects.append(f"{_pre_life - _opp.life} damage → life {_opp.life}")
+                # Discard
+                if len(_opp.hand) < _pre_hand:
+                    effects.append(f"opponent discards {_pre_hand - len(_opp.hand)}")
+                if effects:
+                    self.log.append(f"T{self.display_turn} P{controller+1}: "
+                                    f"{name} → {', '.join(effects)}")
             return  # Registry handled it
 
         # ── Generic fallback: parse abilities from oracle text ──
@@ -2684,6 +2712,7 @@ class GameState:
             cause="bounced"
         )
 
+        _discarded = []
     def _force_discard(self, player_idx: int, count: int, self_discard: bool = False):
         """Discard cards from hand.
         
@@ -2702,6 +2731,7 @@ class GameState:
                 # Opponent forced: discard highest CMC (least castable)
                 player.hand.sort(key=lambda c: c.template.cmc, reverse=True)
                 card = player.hand[0]
+            _discarded.append(card)
             self.zone_mgr.move_card(
                 self, card, "hand", "graveyard",
                 cause="forced discard" if not self_discard else "discard"

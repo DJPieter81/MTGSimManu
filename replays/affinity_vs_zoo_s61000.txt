@@ -149,6 +149,7 @@ T2 P2: Cast Lightning Bolt (R)
     [Priority] P1 passes (no response)
 T2: Resolve Lightning Bolt
 T2: Signal Pest dies
+T2 P2: Lightning Bolt → kills Signal Pest
   [Begin Combat]
   [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
 T2 P2: Attack with Ragavan, Nimble Pilferer
@@ -216,6 +217,7 @@ T3 P1:   Memnite (1/1) → 1 dmg to player
 T3 P2: Cast Lightning Bolt (R)
     [Priority] P1 passes (no response)
 T3: Resolve Lightning Bolt
+T3 P2: Lightning Bolt → 3 damage → life 15
 T3 P2: Play Indatha Triome (enters tapped)
   [Begin Combat]
   [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
@@ -812,6 +814,7 @@ T6 P1: Teferi draws Lightning Bolt
 T6 P1: Cast Lightning Bolt (R)
 T6: Resolve Lightning Bolt
 T6: Thought Monitor dies
+T6 P1: Lightning Bolt → kills Thought Monitor
 T6 P1: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
   [Begin Combat]
   [Declare Attackers] P1 attacks with: Doorkeeper Thrull
