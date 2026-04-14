@@ -6,6 +6,7 @@ Combat, blocking, and response decisions delegate to existing modules.
 """
 from __future__ import annotations
 import random
+import re
 from typing import Dict, List, Optional, Tuple, Set, TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -184,6 +185,17 @@ class EVPlayer:
         me = game.players[self.player_idx]
         opp = game.players[1 - self.player_idx]
 
+        # Consume any post-combo goal-advance signal set by mass-reanimate
+        # resolution (e.g. Living End). Engine sets game._pending_goal_advance
+        # when a board-resetting cascade lands; AI advances to PUSH_DAMAGE
+        # so it stops casting curve spells and starts swinging.
+        pending = getattr(game, '_pending_goal_advance', None)
+        if pending and self.player_idx in pending:
+            if self.goal_engine:
+                self.goal_engine.advance_goal(game,
+                                              reason='post_combo_aggression')
+            del pending[self.player_idx]
+
         # Check if current goal should advance before evaluating plays
         if self.goal_engine:
             self.goal_engine.check_transition(game, self.player_idx)
@@ -278,6 +290,14 @@ class EVPlayer:
                     is_dying = snap.am_dead_next or (snap.opp_power >= prof.dying_opp_power
                                                      and snap.opp_clock <= prof.dying_opp_clock)
                     has_big_target = self._has_high_threat_target(game, spell)
+                    # Control patience: control archetypes hold reactive
+                    # spells until there's *real* pressure (opp_clock <= 3).
+                    # Without this, Orim's Chant / Prismatic Ending /
+                    # Supreme Verdict get cast proactively on empty boards
+                    # and wind up in losses.
+                    if (prof.control_patience and not is_dying
+                            and snap.opp_clock >= 4):
+                        continue
                     if not is_dying and not has_big_target:
                         continue
 
@@ -419,6 +439,12 @@ class EVPlayer:
                     ev += 2.0
                 if 'search your library' in o:
                     ev += 2.0
+                # Untap-lands ability (Teferi Hero of Dominaria pattern):
+                # mana advantage compounds with draw → substantial ongoing
+                # value beyond the loyalty/draw line items above. Oracle-
+                # detected, no card names.
+                if 'untap' in o and 'land' in o:
+                    ev += 3.0
             elif 'cost_reducer' in tags:
                 ev += 4.0
 
@@ -530,6 +556,47 @@ class EVPlayer:
                     ev += premium * 0.5
                     if (t.cmc or 0) <= 1:
                         ev += 1.0
+
+        # ── Artifact/enchantment-hate removal overlay ──
+        # Spells like Wear // Tear, Boseiju, Force of Vigor target non-
+        # creature permanents. `_project_spell` models removal as
+        # creature-killing; that projection gives ~zero EV when opp has
+        # no threatening creatures. For artifact/enchantment-hate, the
+        # real target-value comes from scaling equipment (CP, Nettlecyst)
+        # or stax pieces. Use `_permanent_threat_value` — the same oracle
+        # helper that drives `_choose_targets` — to score the best hit.
+        # Detection is purely oracle-driven (target artifact/enchantment/
+        # nonland permanent); no card names.
+        if ('removal' in tags and not 'board_wipe' in tags
+                and not t.is_creature):
+            o_lower = (t.oracle_text or '').lower()
+            hits_noncreature = ('target artifact' in o_lower
+                                or 'target enchantment' in o_lower
+                                or 'target nonland permanent' in o_lower
+                                or 'target noncreature' in o_lower)
+            if hits_noncreature:
+                from engine.cards import CardType
+                candidates = []
+                for c in opp.battlefield:
+                    if c.template.is_land:
+                        continue
+                    if c.template.is_creature and 'target creature' not in o_lower:
+                        continue
+                    if ('target artifact' in o_lower
+                            and CardType.ARTIFACT not in c.template.card_types):
+                        if not ('target enchantment' in o_lower
+                                or 'target nonland' in o_lower
+                                or 'target noncreature' in o_lower):
+                            continue
+                    candidates.append(c)
+                if candidates:
+                    best = max(candidates,
+                               key=lambda c: self._permanent_threat_value(c, opp))
+                    tv = self._permanent_threat_value(best, opp)
+                    # Scale roughly on par with the creature-threat overlay:
+                    # CP on a 5-artifact board → tv=7 → +3.5 EV, which
+                    # outranks a typical 2-CMC deploy.
+                    ev += tv * 0.5
 
         # ── Mana holdback: penalize tapping out when we hold instants ──
         # Trigger holdback when: opp has creatures, OR opp is a spell/combo deck
@@ -1561,7 +1628,10 @@ class EVPlayer:
         """Evaluate how threatening an opponent's permanent is.
 
         Creatures: use creature_value().
-        Equipment: value = power bonus it grants (artifact count for Plating).
+        Scaling equipment (Cranial Plating, Nettlecyst): value = artifact
+          count on opp's board + 2 — oracle-detected via the regex
+          `+N/+N for each (artifact|creature|land)`, so any future
+          scaling equipment is handled without a card-name list.
         Planeswalkers: high value. Stax: high value. Other: CMC proxy.
         """
         from engine.cards import CardType
@@ -1570,14 +1640,28 @@ class EVPlayer:
         if t.is_creature:
             return creature_value(perm)
 
-        # Equipment giving power bonuses: value = power it adds to the board
-        if 'equipment' in getattr(t, 'tags', set()) or 'pump' in getattr(t, 'tags', set()):
-            oracle = (t.oracle_text or '').lower()
-            if 'artifact' in oracle and ('+1/+0' in oracle or 'gets' in oracle):
-                # Cranial Plating / Nettlecyst: value scales with artifact count
-                artifact_count = sum(1 for c in opp.battlefield
-                                     if CardType.ARTIFACT in c.template.card_types)
-                return artifact_count * 1.5
+        oracle = (t.oracle_text or '').lower()
+        tags = getattr(t, 'tags', set())
+
+        # Scaling equipment / enchantments — `+N/+N for each <permanent>`
+        # is the oracle fingerprint. Value is driven by opponent's current
+        # permanent count, not by CMC.
+        m = re.search(r'\+\w+/\+\w+\s+for each (artifact|creature|land)', oracle)
+        if m:
+            counter_type = m.group(1)
+            if counter_type == 'artifact':
+                count = sum(1 for c in opp.battlefield
+                            if CardType.ARTIFACT in c.template.card_types)
+            elif counter_type == 'creature':
+                count = len(opp.creatures)
+            else:
+                count = sum(1 for c in opp.battlefield if c.template.is_land)
+            # Even unattached, the equip-about-to-fire threat is count + 2
+            # (CMC-ish anchor so a 1-artifact board still ranks CP ≥ 3).
+            return float(count + 2)
+
+        # Static-boost equipment without a scaling clause: CMC proxy + 2
+        if 'equipment' in tags or 'pump' in tags:
             return (t.cmc or 0) + 2.0
 
         # Planeswalkers
@@ -1585,7 +1669,7 @@ class EVPlayer:
             return 8.0 + (getattr(perm, 'loyalty_counters', 0) or 0)
 
         # Stax/lock pieces
-        if 'stax' in getattr(t, 'tags', set()):
+        if 'stax' in tags:
             return 7.0
 
         # Mana sources
@@ -1624,16 +1708,20 @@ class EVPlayer:
     def _has_high_threat_target(self, game, spell) -> bool:
         """True if a removal spell has a target worth proactively casting for.
 
-        Threat value is oracle-driven via `creature_threat_value`. Catches
-        battle-cry sources, scaling threats, and big bodies — not raw power.
-        `prof.big_creature_power` (default 4) is reused as the EV floor,
-        not as a raw P/T cap.
+        Threat value is oracle-driven via `creature_threat_value` (for
+        creatures) and `_permanent_threat_value` (for artifacts /
+        enchantments like scaling equipment). `prof.big_creature_power`
+        is reused as the EV floor, not as a raw P/T cap.
+
+        Considers BOTH creatures and noncreature permanents so that a
+        nonland-permanent-hitting spell (Leyline Binding, Force of Vigor,
+        Wear // Tear) correctly releases from the reactive_only gate when
+        Cranial Plating / Nettlecyst / similar scaling equipment hits the
+        battlefield.
         """
         opp = game.players[1 - self.player_idx]
         tags = getattr(spell.template, 'tags', set())
         if 'removal' not in tags:
-            return False
-        if not opp.creatures:
             return False
 
         from decks.card_knowledge_loader import get_burn_damage
@@ -1641,14 +1729,32 @@ class EVPlayer:
         prof = self.profile
         floor = float(prof.big_creature_power)  # e.g. 4.0 EV floor
 
+        # Creature threats (battle cry, scaling, big body)
         for c in opp.creatures:
-            # For burn removal, skip creatures this spell cannot kill.
             if dmg > 0:
                 remaining = (c.toughness or 0) - getattr(c, 'damage_marked', 0)
                 if remaining > dmg:
                     continue
             if creature_threat_value(c) >= floor:
                 return True
+
+        # Noncreature-permanent threats — scaling equipment (CP, Nettlecyst),
+        # planeswalkers, stax pieces. Only applies if the spell can actually
+        # hit them (oracle mentions target artifact / enchantment / nonland /
+        # noncreature / permanent).
+        oracle = (spell.template.oracle_text or '').lower()
+        hits_noncreature = ('target artifact' in oracle
+                            or 'target enchantment' in oracle
+                            or 'target nonland permanent' in oracle
+                            or 'target noncreature' in oracle
+                            or 'target permanent' in oracle)
+        if hits_noncreature:
+            for perm in opp.battlefield:
+                if perm.template.is_land or perm.template.is_creature:
+                    continue
+                if self._permanent_threat_value(perm, opp) >= floor:
+                    return True
+
         return False
 
     def _spell_requires_targets(self, spell) -> bool:
@@ -1741,11 +1847,21 @@ class EVPlayer:
             if cost is None or cost > available_mana:
                 continue
 
-            # Prefer evasive creatures (flying), then highest power
-            best = max(creatures, key=lambda c: (
-                1 if Keyword.FLYING in c.keywords else 0,
-                c.power or 0
-            ))
+            # Score each creature as an equip target. Evasion multiplies
+            # the value since unblocked damage compounds harder than raw
+            # power — a CP-attached flier is typically unblockable, while
+            # a ground creature of equal size often chump-blocked.
+            def _equip_target_score(c):
+                base = (c.power or 0) + (c.toughness or 0) * 0.3
+                if Keyword.FLYING in c.keywords:
+                    return base * 2.0
+                if Keyword.MENACE in c.keywords:
+                    return base * 1.5
+                if Keyword.TRAMPLE in c.keywords:
+                    return base * 1.3
+                return base
+
+            best = max(creatures, key=_equip_target_score)
 
             # Score equipping like deploying a creature with the bonus power
             bonus = self._estimate_equip_bonus(equip, player)

@@ -69,5 +69,8 @@
     "Mox Opal",
     "Ornithopter",
     "Springleaf Drum"
+  ],
+  "reactive_only": [
+    "Engineered Explosives"
   ]
 }

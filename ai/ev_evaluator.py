@@ -302,6 +302,13 @@ def _has_immediate_effect(card: "CardInstance") -> bool:
         return True  # protects against an incoming spell now
     if 'ritual' in tags:
         return True  # enables same-turn plays
+    # Oracle-driven mana production (belt-and-suspenders over the 'ritual'
+    # tag): any spell whose text adds coloured mana contributes to THIS
+    # turn's mana pool and must not be urgency-discounted. Catches future
+    # mana-enabler cards whose tags don't include 'ritual'.
+    if 'add' in oracle and any(sym in oracle for sym in (
+            '{r}', '{g}', '{b}', '{u}', '{w}', 'mana of any')):
+        return True
     # ETB value (Omnath, Thragtusk, PW ETB effects) — resolves immediately
     if 'etb_value' in tags:
         return True

@@ -81,7 +81,14 @@
   "always_early": [
     "Teferi, Time Raveler"
   ],
-  "reactive_only": [],
+  "reactive_only": [
+    "Orim's Chant",
+    "Prismatic Ending",
+    "Supreme Verdict",
+    "Counterspell",
+    "Dovin's Veto",
+    "Force of Negation"
+  ],
   "critical_pieces": [
     "Isochron Scepter",
     "Orim's Chant"
