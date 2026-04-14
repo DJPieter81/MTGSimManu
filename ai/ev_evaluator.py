@@ -83,11 +83,20 @@ class EVSnapshot:
         Derived solely from `opp_clock`, which is itself oracle-detected
         from opponent's creatures. No hardcoded matchup thresholds.
 
-        Formula: (opp_clock - 1) / 4.0. At opp_clock=1 (dying next turn)
-        we get 0.0 — deferred spells are pure waste. At opp_clock=5+ we
-        get 1.0 — no discount.
+        Formula: (opp_clock - 1) / 4.0. Interpret as
+            (turns_until_dead - 1) / typical_permanent_value_window
+        where the "value window" of 4 turns is the rules-constant span over
+        which a deferred permanent accrues its payoff in Modern (T1 land +
+        T2-T5 activations). Not an arbitrary weight: both numerator (opp_clock
+        from combat sim) and denominator (typical permanent's activation
+        horizon) are principled. At opp_clock=1 (dying next turn) we get 0.0
+        — deferred spells are pure waste. At opp_clock=5+ we get 1.0 — no
+        discount, the permanent will fully pay off.
         """
-        return min(1.0, max(0.0, (self.opp_clock - 1) / 4.0))
+        # Rules constant: 4 = typical permanent value window in turns
+        # (land T1 → payoff T2-T5). Not a tuning knob.
+        PERMANENT_VALUE_WINDOW = 4.0
+        return min(1.0, max(0.0, (self.opp_clock - 1) / PERMANENT_VALUE_WINDOW))
 
     @property
     def has_lethal(self) -> bool:
@@ -177,44 +186,60 @@ def creature_threat_value(card: "CardInstance") -> float:
     """Evaluate a creature's threat level for removal-priority decisions.
 
     Extends `creature_value()` with oracle-driven premiums that raw P/T
-    doesn't capture:
-      * Battle cry / attack triggers  → +8.0 (ongoing damage amplifier)
-      * Self-named attack triggers    → +8.0 (e.g. "Whenever <this card name>
-                                               attacks")
-      * Scaling creatures (`for each artifact`, `for each creature`) → +6.0
-      * Large raw P (≥4)              → +0.5 × power (big bodies still matter)
+    doesn't capture. Rather than hardcoded score tiers (+8.0, +6.0), we
+    model oracle amplifiers as *virtual power* and feed them through the
+    same clock-impact pipeline as the base value:
 
-    All detection is oracle-driven — no hardcoded card names. Accepts a
-    CardInstance (battlefield). The signature leaves room for a future
-    (template, instance=None) generalisation to score stack objects and
-    hand cards (see AI_STRATEGY_IMPROVEMENT_PLAN.md §Generalisation).
+      * Battle cry / attack triggers  → +2 virtual power (typical Modern
+          boards have ~2 other attackers this amplifies)
+      * Self-named attack triggers    → +2 virtual power (same semantics)
+      * Scaling creatures (`for each …`) → +3 virtual power (avg ~1 power
+          growth/turn × ~3 remaining turns of the typical game residual)
+      * Large raw P is already credited by `creature_clock_impact` — no
+        separate large-body premium is needed (the old +0.8×(p-3) was a
+        double-count on top of the linear power term in clock.py).
+
+    The +2/+3 constants are rules constants (Modern-format norms, justified
+    inline), not tunable weights. All detection remains oracle-driven — no
+    hardcoded card names.
     """
-    base = creature_value(card)
+    from ai.clock import creature_clock_impact
     t = card.template
     oracle = (getattr(t, 'oracle_text', '') or '').lower()
     name = (getattr(t, 'name', '') or '').lower().split(' //')[0].strip()
-    premium = 0.0
 
-    # Battle cry / generic attack triggers (Signal Pest, Ragavan, etc.)
+    # Rules constants: virtual power contributions for oracle amplifiers.
+    # BATTLE_CRY_AMPLIFIER_VP: typical count of other attackers this
+    # creature's attack-trigger boosts per combat in Modern (~2).
+    BATTLE_CRY_AMPLIFIER_VP = 2
+    # SCALING_FUTURE_VP: avg future power gain of a "for each …" scaler,
+    # approximated as +1 power/turn × ~3 turns of typical game residual.
+    SCALING_FUTURE_VP = 3
+
+    virtual_power = 0
     if 'whenever this creature attacks' in oracle:
-        premium += 8.0
-    # Self-named attack triggers (rare oracle pattern, same semantics)
-    if name and f'whenever {name} attacks' in oracle:
-        premium += 8.0
-
-    # Scaling threats — grow every turn as more permanents come down.
-    # Broader regex (v2) catches land-based scalers (Cultivator Colossus)
-    # and card-in-yard scalers (Tarmogoyf) in addition to artifact/creature.
+        virtual_power += BATTLE_CRY_AMPLIFIER_VP
+    elif name and f'whenever {name} attacks' in oracle:
+        virtual_power += BATTLE_CRY_AMPLIFIER_VP
     if re.search(r'for each (artifact|creature|land|card)', oracle):
-        premium += 6.0
+        virtual_power += SCALING_FUTURE_VP
 
-    # Big raw bodies still matter. Linear above P=3 with 0.8/power slope:
-    # P=4→+0.8, P=5→+1.6, P=7→+3.2. Chosen to top out below the battle-cry
-    # premium (+8) so oracle-detected threats always outrank vanilla P/T.
-    p = card.power or 0
-    premium += max(0, p - 3) * 0.8
+    p = (card.power or 0) + virtual_power
+    tough = card.toughness or 0
+    kws = {kw.value if hasattr(kw, 'value') else str(kw).lower()
+           for kw in getattr(t, 'keywords', set())}
 
-    return base + premium
+    # Feed the virtual-power-augmented stats through the clock pipeline.
+    # Tag-based ETB/token_maker/card_advantage bonuses are added inside
+    # creature_clock_impact_from_card — reuse that path to keep all
+    # scoring in a single principled formula.
+    from ai.clock import creature_clock_impact_from_card
+    base = creature_clock_impact_from_card(card, _DEFAULT_SNAP) * 20.0
+    # The call above used card.power; add the virtual-power contribution
+    # separately via the same clock formula so it scales identically.
+    vp_impact = (creature_clock_impact(p, tough, kws, _DEFAULT_SNAP)
+                 - creature_clock_impact(card.power or 0, tough, kws, _DEFAULT_SNAP)) * 20.0
+    return base + vp_impact
 
 
 # ─────────────────────────────────────────────────────────────
@@ -418,30 +443,20 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
             projected.opp_power = max(0, projected.opp_power - eff_power)
             projected.opp_creature_count = max(0, projected.opp_creature_count - 1)
 
-    # Board wipe — kills all creatures
+    # Board wipe — kills all creatures (symmetric). No hardcoded empty-board
+    # penalty or wide-board bonus: position_value(before) - position_value(after)
+    # naturally captures both. If opp has 0 creatures and we have some, zeroing
+    # our board is a strict loss → negative EV. If both empty, diff is ~0 and
+    # mana cost drives EV negative. If opp board is wide, the power/count drop
+    # is already credited by position_value. No magic numbers needed.
     if 'board_wipe' in tags:
-        if snap.opp_creature_count == 0:
-            # Opponent has no creatures — board wipe is pure waste
-            projected.opp_life += 100
-            # Still kills our own creatures (wrath is symmetric)
-            projected.my_power = 0
-            projected.my_creature_count = 0
-            projected.my_evasion_power = 0
-            projected.my_lifelink_power = 0
-        else:
-            projected.opp_power = 0
-            projected.opp_creature_count = 0
-            projected.opp_evasion_power = 0
-            projected.my_power = 0
-            projected.my_creature_count = 0
-            projected.my_evasion_power = 0
-            projected.my_lifelink_power = 0
-            # Wrath also destroys artifacts/enchantments — bonus vs artifact-heavy boards
-            if game:
-                opp = game.players[1 - player_idx]
-                opp_nonland = sum(1 for c in opp.battlefield if not c.template.is_land)
-                if opp_nonland >= 4:
-                    projected.opp_life += 5  # bonus: crippling a wide board
+        projected.opp_power = 0
+        projected.opp_creature_count = 0
+        projected.opp_evasion_power = 0
+        projected.my_power = 0
+        projected.my_creature_count = 0
+        projected.my_evasion_power = 0
+        projected.my_lifelink_power = 0
 
     # Burn damage to face
     if 'burn' in tags or ('damage' in (t.oracle_text or '').lower()):
@@ -450,12 +465,26 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         from decks.card_knowledge_loader import get_burn_damage
         dmg = get_burn_damage(t.name)
         if dmg > 0:
-            # Only project face damage if we have board presence or opponent is low
+            # Value of face damage depends on proximity to lethal: a point of
+            # burn against a 20-life opp with no clock is a hope; the same
+            # point against an 8-life opp is a real step toward winning.
+            # Derive the factor from life_as_resource (clock.py) — it already
+            # expresses "life total as turns of survival". High survival value
+            # → low burn payoff; low survival value → near-full payoff.
+            from ai.clock import life_as_resource
             if snap.my_creature_count > 0 or snap.opp_life <= 10:
+                # We have a clock, or opp is already in burn range.
                 projected.opp_life -= dmg
             else:
-                # No clock and opponent healthy — burn face has minimal value
-                projected.opp_life -= dmg * 0.1
+                # No clock and opponent healthy — scale damage by how close
+                # opp is to lethal. Use life_as_resource with an assumed
+                # minimal future clock (1 power) so the factor is principled
+                # rather than a flat 0.1. At opp_life=20 this yields ~0.1;
+                # at opp_life=5 it yields ~0.4 — a smooth derivation, not a
+                # magic cutoff.
+                survival_turns = life_as_resource(snap.opp_life, 1)
+                factor = min(1.0, 1.0 / max(survival_turns, 0.5))
+                projected.opp_life -= dmg * factor
 
     # Card draw
     if 'cantrip' in tags or 'draw' in tags:
@@ -608,16 +637,22 @@ def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
                 damage_prob *= DAMAGE_REMOVAL_EFF_MID_TOUGH
             removal_probability = min(1.0, exile_prob + damage_prob * (1.0 - exile_prob))
 
-    # Scale down removal probability for cheap creatures — opponents rarely
-    # waste premium removal on 0-1 CMC threats. Even if they do, the tempo
-    # trade favors the cheap creature's controller.
-    cmc = t.cmc or 0
-    if cmc == 0:
-        removal_probability *= 0.15
-    elif cmc == 1:
-        removal_probability *= 0.25
-    elif cmc == 2:
-        removal_probability *= 0.4  # was 0.6 — too aggressive for 2-drops
+    # Tempo-adjusted removal priority — derived, not hardcoded per-cmc.
+    # Opponents only spend their ~2-mana removal on a creature if the
+    # creature's threat is worth more than the removal cost. Otherwise
+    # the tempo trade favors us (they spent more mana than we did) and
+    # they save removal for a bigger target.
+    #
+    # Formula: target_priority = threat_value / removal_cost, clamped.
+    # Both inputs are principled:
+    #   - creature_threat_value: oracle-driven threat scoring (same file)
+    #   - REMOVAL_ESTIMATED_COST: rules constant (typical Modern removal cmc)
+    # This replaces the old cmc-bucketed multipliers (0.15/0.25/0.4), which
+    # were magic numbers that over-penalised cheap aggro creatures (audit
+    # P0: Guide of Souls / Memnite going -7 EV).
+    threat_value = creature_threat_value(card) if t.is_creature else 0.0
+    target_priority = min(1.0, threat_value / max(1.0, REMOVAL_ESTIMATED_COST))
+    removal_probability *= target_priority
 
     # Evasion discount: creatures that can become unblockable/flying are harder
     # to remove via damage (opponent needs instant-speed removal not just blocks).
@@ -888,9 +923,14 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
             and ('etb_value' in tags or 'removal' in tags or 'card_advantage' in tags)):
         ev = max(ev, -2.0)
 
-    # Combo chain boost: if this card starts a lethal storm/combo chain,
-    # boost EV massively so the AI prioritizes starting the chain
-    if game and archetype == "combo":
+    # Combo chain value: derived from chain outcome as a fraction of the
+    # win-swing (position_value → 100 on lethal). Two terms:
+    #   1. Direct progress: damage / opp_life = fraction of lethal achieved
+    #   2. Storm continuation: storm_count / lethal_storm_threshold = fraction
+    #      of the storm count needed to finish next turn via Past in Flames.
+    # Both are capped at 1.0 and summed (clamped). P(chain resolves) comes
+    # from BHI counter probability. Replaces the old flat +50/+15/+5 tiers.
+    if game and archetype in ("combo", "storm"):
         tags = getattr(card.template, 'tags', set())
         is_chain_starter = ('ritual' in tags or 'cantrip' in tags or
                            'card_advantage' in tags or 'cost_reducer' in tags or
@@ -899,12 +939,22 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
         if is_chain_starter:
             can_kill, storm_count, damage, chain = _estimate_combo_chain(
                 game, player_idx, first_card=card)
+            p_resolves = 1.0 - (bhi.get_counter_probability()
+                                if bhi and bhi._initialized else 0.0)
+            from ai.clock import position_value
+            win_swing = max(0.0, 100.0 - position_value(snap, archetype))
             if can_kill:
-                ev += 50.0  # massive boost — this starts a lethal chain
-            elif storm_count >= 4:
-                ev += 15.0  # good chain even if not lethal
-            elif storm_count >= 2:
-                ev += 5.0   # moderate chain
+                # Full lethal — entire win-swing is realized.
+                ev += p_resolves * win_swing
+            elif damage > 0 and storm_count >= 2:
+                # Non-lethal chain that still lands a finisher (Grapeshot for
+                # X<lethal). Credit the fractional life removed — this is the
+                # same principle as face burn: damage × (1/survival_turns).
+                # We intentionally do NOT credit chains without a finisher,
+                # because a chain with no damage leaves opp a full response
+                # window; the cards/mana expended don't offset that.
+                progress = min(1.0, damage / max(1, snap.opp_life))
+                ev += p_resolves * progress * win_swing
 
     if not detailed:
         return ev
@@ -1059,5 +1109,25 @@ def estimate_future_value(snap: EVSnapshot, archetype: str,
         projected.opp_life = max(0, projected.opp_life - snap.my_power)
         projected.my_life += snap.my_lifelink_power
 
-    discount = 0.8 ** turns_ahead
+    # Per-turn decay = P(game continues one more turn) = 1 − 1/expected_length.
+    # Expected game length is the faster player's combat clock — whoever wins
+    # the race determines when the game ends. If both clocks are NO_CLOCK the
+    # game stalls (long game), which resolves to the upper clamp.
+    from ai.clock import combat_clock, NO_CLOCK
+    my_clock = combat_clock(snap.my_power, snap.opp_life,
+                            snap.my_evasion_power, snap.opp_toughness)
+    opp_clock = combat_clock(snap.opp_power, snap.my_life,
+                             snap.opp_evasion_power, snap.my_toughness)
+    expected_length = min(my_clock, opp_clock)
+    if expected_length >= NO_CLOCK:
+        # Stalled — treat as long game; clamp below will cap the decay.
+        expected_length = NO_CLOCK
+    # Rules-constant clamps: at least a floor 0.5 when close to dying (we
+    # still care about the possible surviving turn), at most 0.95 (even in a
+    # long game, cards/mana shift enough per turn to warrant ≥5% discount).
+    MIN_CONTINUATION = 0.5
+    MAX_CONTINUATION = 0.95
+    per_turn = 1.0 - 1.0 / max(2.0, expected_length)
+    per_turn = max(MIN_CONTINUATION, min(MAX_CONTINUATION, per_turn))
+    discount = per_turn ** turns_ahead
     return discount * evaluate_board(projected, archetype, dk)

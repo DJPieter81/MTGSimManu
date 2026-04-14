@@ -51,6 +51,7 @@ def classify(play):
         if any(x in p for x in ['grapeshot','empty the warrens']): return 'combo'
         if any(x in p for x in ['manamorphose','pyretic ritual','desperate ritual','seething song','reckless impulse',"wrenn's resolve"]): return 'mana'
         return 'spell'
+    if 'ch.' in p and ('saga' in p or 'chapter' in p or 'fable' in p): return 'trigger'
     if 'equip' in p: return 'trigger'
     if 'attack with' in p: return 'combat'
     if 'deals' in p or ('damage' in p and 'to' in p): return 'damage'
@@ -61,10 +62,9 @@ def pill(card):
     sf = card.split(" (")[0].strip()
     img = "https://api.scryfall.com/cards/named?exact=" + _q(sf) + "&format=image&version=small"
     q = chr(39)
-    thumb = f"<img class=\"card-thumb\" src=\"{img}\" alt=\"{esc(sf)}\" loading=\"lazy\" onerror=\"this.style.display={q}none{q}\">"
-    return f"<span class=\"pill has-thumb\">{thumb}{esc(card)}</span>"
-
-
+    art = f"<img class=\"hand-card-art\" src=\"{img}\" alt=\"{esc(sf)}\" loading=\"lazy\" onerror=\"this.style.display={q}none{q}\">"
+    label = f"<span class=\"hand-card-label\">{esc(sf[:18])}</span>"
+    return f"<span class=\"hand-card\">{art}{label}</span>"
 def life_svg(turns, p1n, p2n):
     lp1, lp2 = [20], [20]
     for t in turns:
@@ -291,17 +291,64 @@ def creature_badges(s, equip_map=None):
         equips = equip_map.get(name, [])
         eq_html = ''.join(f'<span class="equip-tag" title="{esc(e)}">⚔{esc(e)}</span>' for e in equips)
         # Scryfall image tooltip
-        sf_name = name.split(' (')[0].strip()  # strip tapped/damage markers
+        sf_name = name.split(' (')[0].strip()
         from urllib.parse import quote as _qu
-        img_url = "https://api.scryfall.com/cards/named?exact=" + _qu(sf_name) + "&format=image&version=small"
+        img_url = "https://api.scryfall.com/cards/named?exact=" + _qu(sf_name) + "&format=image&version=art_crop"
         q = chr(39)
-        thumb = f'<img class="card-thumb" src="{img_url}" alt="{esc(sf_name)}" loading="lazy" onerror="this.style.display={q}none{q}">'
+        art = f'<img class="badge-art" src="{img_url}" alt="{esc(sf_name)}" loading="lazy" onerror="this.style.display={q}none{q}">'
         pt_html = f'<span class="pt">{pt}</span>' if pt else ''
-        out += f'<span class="creature-badge has-thumb">{thumb}{esc(name)}{pt_html}{eq_html}</span>'
+        out += f'<span class="creature-badge">{art}<span class="badge-text">{esc(name)}{pt_html}{eq_html}</span></span>'
     return out or '<span style="color:#484f58">empty</span>'
 
 
-def lc(s): return len([x for x in s.split(',') if x.strip()]) if s and s!='none' else 0
+def other_badges(s):
+    """Render non-creature permanents (equipment, artifacts, enchantments) with art thumbnails."""
+    if not s: return ''
+    from urllib.parse import quote as _qu
+    items = [x.strip() for x in s.split(',') if x.strip()]
+    out = ''
+    for name in items:
+        sf_name = name.split(' (')[0].strip()
+        img_url = "https://api.scryfall.com/cards/named?exact=" + _qu(sf_name) + "&format=image&version=art_crop"
+        q = chr(39)
+        art = f'<img class="badge-art" src="{img_url}" alt="{esc(sf_name)}" loading="lazy" onerror="this.style.display={q}none{q}">'
+        out += f'<span class="creature-badge other-badge">{art}<span class="badge-text">{esc(name)}</span></span>'
+    return out
+
+def split_lands(s):
+    """Split a land string into (saga_names[], plain_land_string)."""
+    if not s or s == 'none': return [], s or 'none'
+    # Known saga / enchantment land names that should show as visual badges
+    SAGA_KEYWORDS = ('saga', 'urza', 'fable', 'witch')
+    items = [x.strip() for x in s.split(',') if x.strip()]
+    sagas, plains = [], []
+    for item in items:
+        name_part = item.replace('[T]','').strip().rstrip()
+        tapped = '[T]' in item
+        # Detect saga/enchantment land by name keywords
+        if any(k in name_part.lower() for k in SAGA_KEYWORDS):
+            sagas.append((name_part, tapped))
+        else:
+            plains.append(item)
+    plain_str = ', '.join(plains) if plains else 'none'
+    return sagas, plain_str
+
+def saga_badges(sagas):
+    """Render saga/enchantment lands as visual badges."""
+    if not sagas: return ''
+    from urllib.parse import quote as _qu
+    out = ''
+    for name, tapped in sagas:
+        sf = name.split(' (')[0].strip()
+        img_url = "https://api.scryfall.com/cards/named?exact=" + _qu(sf) + "&format=image&version=art_crop"
+        q = chr(39)
+        art = f'<img class="badge-art" src="{img_url}" alt="{esc(sf)}" loading="lazy" onerror="this.style.display={q}none{q}">'
+        tap_icon = '<span class="saga-tapped" title="Tapped">↷</span>' if tapped else ''
+        label = f'<span class="badge-text saga-label">{tap_icon}{esc(sf[:14])}</span>'
+        out += f'<span class="creature-badge saga-badge">{art}{label}</span>'
+    return out
+
+def lc(s): _, plain = split_lands(s); return len([x for x in plain.split(',') if x.strip()]) if plain and plain!='none' else 0
 
 SKIP = {'untaps all','upkeep','goal:','[mana]','[priority]','main 1','begin combat',
         'declare attackers p','declare blockers p','end combat','main 2','end step','resolve '}
@@ -349,24 +396,43 @@ def turn_html(t, next_t, gnum, p1name, p2name, star_turns):
     # Combat
     combat_html=''
     if t['combat']:
+        breakdown_lines = [c for c in t["combat"] if c.startswith("BREAKDOWN:")]
+        has_breakdown = len(breakdown_lines) > 0
+
+        def _atk_card(b):
+            from urllib.parse import quote as _qu2
+            import re as _re2
+            m = _re2.match(r"BREAKDOWN:(.+?)\s+(\d+)/(\d+)\s+·\s+(\d+)\s+dmg(.*)", b[10:])
+            if not m: return f"<div class=\"combat-breakdown\">{b[10:]}</div>"
+            name,pw,tg,dmg,note = m.group(1),m.group(2),m.group(3),m.group(4),m.group(5).strip()
+            sf = name.split(" (")[0].strip()
+            img = "https://api.scryfall.com/cards/named?exact=" + _qu2(sf) + "&format=image&version=art_crop"
+            q = chr(39)
+            art = f"<img class=\"atk-art\" src=\"{img}\" alt=\"{esc(sf)}\" loading=\"lazy\" onerror=\"this.style.display={q}none{q}\">"
+            trample = "<span class=\"atk-trample\" title=\"Trample\">↠</span>" if "trample" in note else ""
+            return (f"<div class=\"atk-card\">{art}"
+                    f"<div class=\"atk-info\"><span class=\"atk-name\">{esc(sf[:14])}</span>"
+                    f"<span class=\"atk-pt\">{pw}/{tg}</span>"
+                    f"<span class=\"atk-dmg\">⚔{dmg}</span>{trample}</div></div>")
+
         def _combat_line(c):
-            if c.startswith('BREAKDOWN:'):
-                return f'<div class="combat-breakdown">{c[10:]}</div>'
-            if c.startswith('BLOCK-EMRG:'):
-                return f'<div class="combat-block emergency">🚨 {c[11:]}</div>'
-            if c.startswith('BLOCK:'):
-                return f'<div class="combat-block">🛡 {c[6:]}</div>'
-            if c.startswith('LETHAL:'):
-                return f'<div class="combat-lethal">☠ LETHAL — {c[7:]}</div>'
-            return f'<div class="combat-detail">{c}</div>'
-        combat_html='<div class="section-label">Combat</div>'+''.join(_combat_line(c) for c in t['combat'])
+            if c.startswith("BREAKDOWN:"): return ""
+            if c.startswith("BLOCK-EMRG:"): return f"<div class=\"combat-block emergency\">🚨 {c[11:]}</div>"
+            if c.startswith("BLOCK:"): return f"<div class=\"combat-block\">🛡 {c[6:]}</div>"
+            if c.startswith("LETHAL:"): return f"<div class=\"combat-lethal\">☠ LETHAL — {c[7:]}</div>"
+            if c.startswith("⚔") and has_breakdown: return ""
+            return f"<div class=\"combat-detail\">{c}</div>"
+        atk_strip = ("<div class=\"atk-strip\">" + "".join(_atk_card(b) for b in breakdown_lines) + "</div>") if breakdown_lines else ""
+        combat_html = "<div class=\"section-label\">Combat</div>" + atk_strip + "".join(_combat_line(c) for c in t["combat"])
 
     # Board — from next turn's header = state AFTER this turn's plays
     src=next_t if next_t else t
     p1b=src['boards'].get(p1name,{'creatures':'','lands':'','other':''})
     p2b=src['boards'].get(p2name,{'creatures':'','lands':'','other':''})
-    p1_cr,p1_l,p1_o=p1b['creatures'],p1b['lands'] or 'none',p1b.get('other','')
-    p2_cr,p2_l,p2_o=p2b['creatures'],p2b['lands'] or 'none',p2b.get('other','')
+    p1_cr,p1_l_raw,p1_o=p1b['creatures'],p1b['lands'] or 'none',p1b.get('other','')
+    p2_cr,p2_l_raw,p2_o=p2b['creatures'],p2b['lands'] or 'none',p2b.get('other','')
+    p1_sagas, p1_l = split_lands(p1_l_raw)
+    p2_sagas, p2_l = split_lands(p2_l_raw)
 
     return f'''<div class="turn {cls}" id="g{gnum}t{t["num"]}">
   <div class="turn-header" onclick="toggle(this.parentElement)">
@@ -389,13 +455,15 @@ def turn_html(t, next_t, gnum, p1name, p2name, star_turns):
       <div class="board-side bug">
         <h4><span style="color:{P1C}">{esc(p1name)}</span> — {lc(p1_l)} land{"s" if lc(p1_l)!=1 else ""}</h4>
         <div class="board">{creature_badges(p1_cr, src.get('equip_map',{}))}</div>
-        {f'<div class="other-list">⚔ {esc(p1_o[:160])}</div>' if p1_o else ''}
+        {f'<div class="other-list">{other_badges(p1_o)}</div>' if p1_o else ''}
+        {f'<div class="other-list saga-row">{saga_badges(p1_sagas)}</div>' if p1_sagas else ''}
         <div class="land-list">{esc(p1_l[:140])}</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:{P2C}">{esc(p2name)}</span> — {lc(p2_l)} land{"s" if lc(p2_l)!=1 else ""}</h4>
         <div class="board">{creature_badges(p2_cr, src.get('equip_map',{}))}</div>
-        {f'<div class="other-list">⚔ {esc(p2_o[:160])}</div>' if p2_o else ''}
+        {f'<div class="other-list">{other_badges(p2_o)}</div>' if p2_o else ''}
+        {f'<div class="other-list saga-row">{saga_badges(p2_sagas)}</div>' if p2_sagas else ''}
         <div class="land-list">{esc(p2_l[:140])}</div>
       </div>
     </div>
@@ -514,6 +582,18 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
 .hand-box h3{font-size:.8em;color:#656d76;margin-bottom:8px;font-weight:600}
 .hand-box.bug{border-left:3px solid #0969da}.hand-box.opp{border-left:3px solid #d1242f}
 .pill{display:inline-block;background:#eaeef2;border:1px solid #d0d7de;border-radius:10px;padding:2px 8px;margin:2px;font-size:.78em;font-family:'Fira Code','Consolas',monospace;color:#9a6700}
+.hand-pills{display:flex;flex-wrap:wrap;gap:5px;margin:4px 0 6px;align-items:flex-end}
+.hand-card{display:inline-flex;flex-direction:column;align-items:center;width:60px;border-radius:5px;overflow:hidden;border:1px solid #d0d7de;background:#fff;flex-shrink:0;vertical-align:bottom}
+.hand-card-art{width:60px;height:84px;object-fit:cover;object-position:top;display:block}
+.hand-card-label{font-size:.58em;padding:2px 3px;text-align:center;color:#57606a;font-family:'Fira Code',monospace;line-height:1.25;width:100%;background:#f6f8fa;word-break:break-word}
+.atk-strip{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px;align-items:flex-end}
+.atk-card{display:inline-flex;flex-direction:column;align-items:center;width:66px;border-radius:5px;overflow:hidden;border:1px solid #e6ac00;background:#fffbf0;flex-shrink:0}
+.atk-art{width:66px;height:48px;object-fit:cover;object-position:top;display:block}
+.atk-info{width:100%;padding:2px 4px 3px;text-align:center;background:#fffbf0}
+.atk-name{display:block;font-size:.58em;color:#57606a;font-family:'Fira Code',monospace;line-height:1.2;word-break:break-word}
+.atk-pt{font-size:.58em;color:#656d76}
+.atk-dmg{font-size:.65em;font-weight:700;color:#cf222e;margin-left:3px}
+.atk-trample{font-size:.68em;color:#0969da;margin-left:2px}
 .mull-pills{opacity:.5;margin:2px 0}.mull-pills .pill{font-size:.7em;text-decoration:line-through}
 .mull-step{display:flex;align-items:center;gap:6px;margin:5px 0 2px;font-size:.8em}
 .mull-label{color:#656d76;font-weight:600}
@@ -568,12 +648,19 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
 .board-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
 .board-side{background:#ffffff;border:1px solid #d0d7de;border-radius:6px;padding:8px 10px}
 .board-side h4{font-size:.75em;color:#656d76;margin-bottom:6px;font-weight:600}
-.board{margin-bottom:4px;min-height:22px;display:flex;flex-wrap:wrap;gap:3px}
-.creature-badge{background:#ddf4ff;border:1px solid #a8d8f0;border-radius:5px;padding:3px 8px;font-family:'Fira Code',monospace;font-size:.78em;color:#0969da;display:inline-flex;align-items:center;gap:4px}
-.creature-badge .pt{color:#656d76;font-size:.9em}
+.board{margin-bottom:4px;min-height:22px;display:flex;flex-wrap:wrap;gap:5px;align-items:flex-start}
+.creature-badge{background:#ddf4ff;border:1px solid #a8d8f0;border-radius:6px;font-family:'Fira Code',monospace;font-size:.72em;color:#0969da;display:inline-flex;flex-direction:column;align-items:center;overflow:hidden;width:72px;vertical-align:top;text-align:center}
+.badge-art{width:72px;height:52px;object-fit:cover;object-position:top;display:block;flex-shrink:0}
+.badge-text{padding:2px 4px 3px;line-height:1.3;word-break:break-word;width:100%}
+.creature-badge .pt{color:#656d76;font-size:.88em;display:block}
 .land-list{color:#9198a1;font-size:.72em;margin-top:4px;line-height:1.5}
-.other-list{color:#6e40c9;font-size:.72em;margin-top:3px;line-height:1.5;font-style:italic}
+.other-list{margin-top:4px;display:flex;flex-wrap:wrap;gap:5px;align-items:flex-start}
 .equip-tag{background:#fff3cd;border:1px solid #e6ac00;border-radius:3px;color:#7a5c00;font-size:.7em;padding:1px 5px;margin-left:3px;font-style:normal}
+.saga-badge{background:#f0fff4;border-color:#2da44e;color:#1a7f37}
+.saga-label{color:#1a7f37}
+.saga-tapped{color:#9198a1;margin-right:2px}
+.saga-row{margin-top:3px}
+.other-badge{background:#f6f0ff;border-color:#b39ddb;color:#5e35b1}
 .combat-lethal{background:#fff0f0;border:1px solid #f5b8b0;border-left:4px solid #cf222e;border-radius:0 5px 5px 0;padding:7px 12px;margin:4px 0;font-weight:600;color:#cf222e;font-size:.85em}
 .has-thumb{position:relative;cursor:default}
 .has-thumb .card-thumb{display:none;position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);width:130px;border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.35);z-index:999;pointer-events:none}
