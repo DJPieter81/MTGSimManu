@@ -778,22 +778,19 @@ def isochron_scepter_etb(game, card, controller, targets=None, item=None):
     if not candidates:
         return
 
-    # Priority: Orim's Chant / lock pieces > removal > counter > cantrip.
+    # Engine must not score — delegate ranking to AI layer.
+    # Imprint value = one-shot EV of casting the spell, which is exactly what
+    # estimate_spell_ev computes. The Scepter gives a free copy each turn, so
+    # relative ordering of single-cast EV is the correct ranking of imprint
+    # targets (repeating a strictly better spell is strictly better).
+    from ai.ev_evaluator import estimate_spell_ev, snapshot_from_game
+    from ai.ev_player import _get_archetype
+    snap = snapshot_from_game(game, controller)
+    archetype = _get_archetype(player.deck_name)
+
     def _imprint_value(c):
-        name = c.template.name
-        tags = getattr(c.template, 'tags', set())
-        oracle = (c.template.oracle_text or '').lower()
-        if name == "Orim's Chant":
-            return 100
-        if 'removal' in tags and 'exile' in oracle:
-            return 60
-        if 'removal' in tags:
-            return 50
-        if 'counterspell' in tags:
-            return 40
-        if 'cantrip' in tags or 'draw' in tags:
-            return 20
-        return 10
+        return estimate_spell_ev(c, snap, archetype, dk=None,
+                                 game=game, player_idx=controller)
 
     best = max(candidates, key=_imprint_value)
     player.hand.remove(best)
