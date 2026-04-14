@@ -301,6 +301,20 @@ def creature_badges(s, equip_map=None):
     return out or '<span style="color:#484f58">empty</span>'
 
 
+def other_badges(s):
+    """Render non-creature permanents (equipment, artifacts, enchantments) with art thumbnails."""
+    if not s: return ''
+    from urllib.parse import quote as _qu
+    items = [x.strip() for x in s.split(',') if x.strip()]
+    out = ''
+    for name in items:
+        sf_name = name.split(' (')[0].strip()
+        img_url = "https://api.scryfall.com/cards/named?exact=" + _qu(sf_name) + "&format=image&version=art_crop"
+        q = chr(39)
+        art = f'<img class="badge-art" src="{img_url}" alt="{esc(sf_name)}" loading="lazy" onerror="this.style.display={q}none{q}">'
+        out += f'<span class="creature-badge other-badge">{art}<span class="badge-text">{esc(name)}</span></span>'
+    return out
+
 def lc(s): return len([x for x in s.split(',') if x.strip()]) if s and s!='none' else 0
 
 SKIP = {'untaps all','upkeep','goal:','[mana]','[priority]','main 1','begin combat',
@@ -389,13 +403,13 @@ def turn_html(t, next_t, gnum, p1name, p2name, star_turns):
       <div class="board-side bug">
         <h4><span style="color:{P1C}">{esc(p1name)}</span> — {lc(p1_l)} land{"s" if lc(p1_l)!=1 else ""}</h4>
         <div class="board">{creature_badges(p1_cr, src.get('equip_map',{}))}</div>
-        {f'<div class="other-list">⚔ {esc(p1_o[:160])}</div>' if p1_o else ''}
+        {f'<div class="other-list">{other_badges(p1_o)}</div>' if p1_o else ''}
         <div class="land-list">{esc(p1_l[:140])}</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:{P2C}">{esc(p2name)}</span> — {lc(p2_l)} land{"s" if lc(p2_l)!=1 else ""}</h4>
         <div class="board">{creature_badges(p2_cr, src.get('equip_map',{}))}</div>
-        {f'<div class="other-list">⚔ {esc(p2_o[:160])}</div>' if p2_o else ''}
+        {f'<div class="other-list">{other_badges(p2_o)}</div>' if p2_o else ''}
         <div class="land-list">{esc(p2_l[:140])}</div>
       </div>
     </div>
@@ -574,8 +588,9 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
 .badge-text{padding:2px 4px 3px;line-height:1.3;word-break:break-word;width:100%}
 .creature-badge .pt{color:#656d76;font-size:.88em;display:block}
 .land-list{color:#9198a1;font-size:.72em;margin-top:4px;line-height:1.5}
-.other-list{color:#6e40c9;font-size:.72em;margin-top:3px;line-height:1.5;font-style:italic}
+.other-list{margin-top:4px;display:flex;flex-wrap:wrap;gap:5px;align-items:flex-start}
 .equip-tag{background:#fff3cd;border:1px solid #e6ac00;border-radius:3px;color:#7a5c00;font-size:.7em;padding:1px 5px;margin-left:3px;font-style:normal}
+.other-badge{background:#f6f0ff;border-color:#b39ddb;color:#5e35b1}
 .combat-lethal{background:#fff0f0;border:1px solid #f5b8b0;border-left:4px solid #cf222e;border-radius:0 5px 5px 0;padding:7px 12px;margin:4px 0;font-weight:600;color:#cf222e;font-size:.85em}
 .has-thumb{position:relative;cursor:default}
 .has-thumb .card-thumb{display:none;position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);width:130px;border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.35);z-index:999;pointer-events:none}
