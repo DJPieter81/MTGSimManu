@@ -247,3 +247,187 @@ python run_meta.py --matrix -n 30 --save
 - [ ] Update `PROJECT_STATUS.md` grade + fix table
 - [ ] `git commit -m "fix(iter7): combat-trigger attack bonus, Bombardment lethal-push, live snapshot creature_value, continuous clock, exponential urgency, LE post-combo push"`
 - [ ] `git push origin main`
+
+---
+
+## Fix 7 — Ocelot Pride end-step token trigger
+
+**Status:** ✅ Confirmed working in Round 3 audit (grep pattern was wrong). Not a bug.
+
+---
+
+## Fix 8 — Endbringer activated abilities
+
+**Signal:** Endbringer is cast and attacks correctly, but `{T}: deal 1 damage` and `{C}{C}{T}: draw a card` never fire. Ability objects in DB are tagged as `AbilityType.ETB` and `AbilityType.CAST` — wrong.
+
+**Root cause:** The DB parser couldn't map `{T}: deal damage` → activated ability, so they default to ETB/CAST. The engine has no activated-ability-on-tap dispatch outside of planeswalkers.
+
+**Fix:** In `engine/game_runner.py` → `_process_upkeep_activations()` (or a new `_activate_tap_abilities()` pass in MAIN1), detect permanents with `{T}:` patterns in oracle and dispatch them. Oracle-driven — no card names:
+
+```python
+def _activate_tap_abilities(self, game, active):
+    """Activate {T}: abilities on non-PW, non-land permanents."""
+    player = game.players[active]
+    opp_idx = 1 - active
+    for card in list(player.battlefield):
+        if card.tapped or card.summoning_sick: continue
+        oracle = (card.template.oracle_text or '').lower()
+        # {T}: deal N damage to any target
+        if '{t}: this creature deals 1 damage' in oracle:
+            card.tapped = True
+            opp = game.players[opp_idx]
+            # Kill weakest creature or go face
+            killable = [c for c in opp.creatures if (c.toughness or 0) - c.damage_marked <= 1]
+            if killable:
+                target = min(killable, key=lambda c: c.template.cmc)
+                target.damage_marked += 1
+                if target.is_dead: game._creature_dies(target)
+                game.log.append(f"T{game.display_turn} P{active+1}: {card.name} pings {target.name}")
+            else:
+                opp.life -= 1
+                game.log.append(f"T{game.display_turn} P{active+1}: {card.name} deals 1 to face")
+        # {C}{C}{T}: draw a card  
+        if '{c}{c}' in oracle and '{t}: draw a card' in oracle:
+            mana = len(player.untapped_lands)
+            if mana >= 2 and not card.tapped:
+                # Only draw if ahead or card advantage needed
+                from ai.ev_evaluator import snapshot_from_game
+                snap = snapshot_from_game(game, active)
+                if snap.my_hand_size <= 3 or snap.my_clock < snap.opp_clock:
+                    game.tap_lands_for_mana(active, colorless=2)
+                    card.tapped = True
+                    drawn = game.draw_cards(active, 1)
+                    if drawn:
+                        game.log.append(f"T{game.display_turn} P{active+1}: {card.name} draws {drawn[0].name}")
+```
+
+Also fix: Endbringer untaps during **opponent's** untap step. Add to `resolve_untap_triggers()` or the untap step handler:
+```python
+# In TurnStep.UNTAP: untap opponent's permanents with "untap during each other player's untap step"
+for card in opp_player.battlefield:
+    oracle = (card.template.oracle_text or '').lower()
+    if "untap this creature during each other player's untap step" in oracle:
+        card.tapped = False
+```
+
+**Files:** `engine/game_runner.py` → `_process_main_phase()` + untap step
+
+**Verify:**
+```bash
+python run_meta.py --verbose tron dimir -s 50700 2>/dev/null | grep -E "Endbringer.*ping|Endbringer.*draw|Endbringer.*deal"
+# Expected: Endbringer pings or draws each turn
+```
+
+---
+
+## Fix 9 — Lava Dart flashback (sacrifice Mountain)
+
+**Signal:** Lava Dart casts from hand correctly but never flashbacks from GY.
+
+**Root cause:** `can_cast()` checks `card.has_flashback` but never checks whether the flashback *cost* (sacrifice a Mountain) can be paid. The flashback cost is non-mana (land sacrifice) — there's no `flashback_cost` field on `CardTemplate` and no sacrifice-land payment path.
+
+**Fix:** Parse flashback cost from oracle text when a card has `has_flashback = True` and it's being cast from GY. For `"Flashback—Sacrifice a [subtype]"` patterns, require that a matching land exists:
+
+```python
+# In can_cast(), after confirming card.has_flashback:
+oracle = (template.oracle_text or '').lower()
+import re
+m = re.search(r'flashback.*sacrifice a (\w+)', oracle)
+if m:
+    land_type = m.group(1)  # e.g. 'mountain'
+    has_land = any(land_type in (l.template.subtypes or []) or land_type in l.name.lower()
+                   for l in player.lands if not l.tapped)
+    if not has_land:
+        return False  # can't pay flashback cost
+```
+
+And in `cast_spell()` when casting from GY with flashback, execute the sacrifice:
+```python
+# After confirming flashback cast:
+m = re.search(r'flashback.*sacrifice a (\w+)', oracle_lower)
+if m:
+    land_type = m.group(1)
+    to_sacrifice = next((l for l in player.lands 
+                         if land_type in l.name.lower() or land_type in (l.template.subtypes or [])), None)
+    if to_sacrifice:
+        player.lands.remove(to_sacrifice)
+        player.battlefield.remove(to_sacrifice)
+        to_sacrifice.zone = 'graveyard'
+        player.graveyard.append(to_sacrifice)
+        game.log.append(f"T{game.display_turn} P{player_idx+1}: Flashback {card.name} — sacrifice {to_sacrifice.name}")
+```
+
+**Files:** `engine/game_state.py` → `can_cast()`, `cast_spell()`
+
+**Verify:**
+```bash
+python run_meta.py --verbose prowess dimir -s 50700 2>/dev/null | grep -E "Lava Dart.*flashback|flashback.*Lava|sacrifice.*Mountain"
+```
+
+---
+
+## Fix 10 — Mutagenic Growth phyrexian mana log visibility
+
+**Signal:** Mutagenic Growth never appears in audit logs even when Prowess wins. The phyrexian mana payment code exists (`game_state.py` line 1449) but casts are silent in verbose output.
+
+**Root cause:** The log for phyrexian mana payment (`player.life -= life_cost`) has no explicit log line. Only `Cast Mutagenic Growth (0)` appears, which looks like a free cast. AI also may not consider it outside of pump-targeting context.
+
+**Fix:** Add explicit log line when phyrexian life payment fires:
+```python
+if phyrexian_count > 0 and player.life > phyrexian_count * 2:
+    life_cost = phyrexian_count * 2
+    player.life -= life_cost
+    game.log.append(f"T{game.display_turn} P{player_idx+1}: "
+                   f"Phyrexian mana — pay {life_cost} life for {template.name} (life: {player.life})")
+```
+
+Also check AI targets Swiftspear/Slickshot with Mutagenic Growth when attacking (prowess context).
+
+**Files:** `engine/game_state.py` → phyrexian mana payment block
+
+**Verify:**
+```bash
+python run_meta.py --verbose prowess energy -s 50700 2>/dev/null | grep -E "Phyrexian|Mutagenic"
+```
+
+---
+
+## Audit Summary — All 16 Decks
+
+| Card | Deck | Status | Priority |
+|---|---|---|---|
+| Ajani transform trigger | Boros | ❌ Missing | P0 — in TRANSFORM_FIX_PLAN |
+| Fable Ch.II/III | Jeskai | ❌ Missing | P0 — in TRANSFORM_FIX_PLAN |
+| Ral coin flip → deterministic | Storm | ⚠️ Wrong | P1 — in TRANSFORM_FIX_PLAN |
+| Endbringer {T}: ping / draw | Tron | ❌ Missing | P1 — Fix 8 above |
+| Lava Dart flashback sacrifice | Prowess | ❌ Missing | P2 — Fix 9 above |
+| Mutagenic Growth phyrexian log | Prowess | ⚠️ Silent | P3 — Fix 10 above |
+| Ragavan attack threshold | Boros | ⚠️ Suppressed | P1 — Fix 1 above |
+| Goblin Bombardment lethal-push | Boros | ⚠️ Reactive | P1 — Fix 2 above |
+| creature_value blank snapshot | All | ⚠️ Wrong | P1 — Fix 3 above |
+| Continuous clock / exp urgency | All | ⚠️ Cliff | P2 — Fix 4+5 above |
+| Living End post-combo push | Living End | ⚠️ Reverts | P1 — Fix 6 above |
+| Sheoldred | Dimir | ✅ Works (SB only) | — |
+| Solitude/Subtlety evoke | Blink | ✅ Works | — |
+| Ephemerate blink | Blink | ✅ Works | — |
+| Goryo's Vengeance + exile EOT | Goryo's | ✅ Works | — |
+| Archon full trigger | Goryo's | ✅ Works | — |
+| Chalice of the Void | Tron | ✅ Works | — |
+| All Is Dust | Tron | ✅ Works (rare draw) | — |
+| Walking Ballista ping/grow | Tron | ✅ Works | — |
+| Thought-Knot Seer exile | Tron | ✅ Works | — |
+| Primeval Titan ETB+attack | Amulet | ✅ Works | — |
+| Amulet of Vigor untap | Amulet | ✅ Works | — |
+| Summoner's Pact upkeep | Amulet | ✅ Works | — |
+| Territorial Kavu domain | Zoo | ✅ Works | — |
+| Leyline Binding domain cost | Zoo | ✅ Works | — |
+| Leyline of the Guildpact | Zoo | ✅ Works | — |
+| Bowmasters opp draw drain | Dimir | ✅ Works | — |
+| Psychic Frog combat draw | Dimir | ✅ Works | — |
+| Murktide delve sizing | Dimir | ✅ Works | — |
+| Cascade (Shardless/Demonic) | Living End | ✅ Works | — |
+| Past in Flames flashback | Storm | ✅ Works | — |
+| Ocelot Pride end-step token | Boros | ✅ Works | — |
+| Swiftspear prowess | Prowess | ✅ Works | — |
+| Undying Evil temp keyword | Goryo's | ✅ Works | — |
+| Griselbrand pay 7 draw 7 | Goryo's | ✅ Works | — |
