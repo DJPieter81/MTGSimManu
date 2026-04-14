@@ -975,6 +975,12 @@ class GameRunner:
                                 break
                     role_str = f' [{card_role}]' if card_role else ''
                     game.log.append(f'    → Goal: {goal_name}{role_str}')
+                # Log target reasoning if available
+                if getattr(game, 'verbose', False):
+                    _tgt = getattr(ai, '_last_played_target_reason', '')
+                    if _tgt:
+                        game.log.append(f'    [Target] {_tgt}')
+                        ai._last_played_target_reason = ''
                 success = game.cast_spell(ai.player_idx, card, targets)
                 if not success:
                     # Track failed casts to prevent infinite loops.

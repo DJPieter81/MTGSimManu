@@ -41,14 +41,15 @@ def _get_archetype(deck_name: str) -> str:
 class Play:
     """A candidate play with its EV score and lookahead reasoning."""
     __slots__ = ('action', 'card', 'targets', 'ev', 'reason',
-                 'heuristic_ev', 'lookahead_ev', 'counter_pct', 'removal_pct')
+                 'heuristic_ev', 'lookahead_ev', 'counter_pct', 'removal_pct', 'target_reason')
 
-    def __init__(self, action: str, card, targets: list, ev: float, reason: str):
+    def __init__(self, action: str, card, targets: list, ev: float, reason: str, target_reason: str = ''):
         self.action = action  # "play_land", "cast_spell", "cycle"
         self.card = card
         self.targets = targets
         self.ev = ev
         self.reason = reason
+        self.target_reason = target_reason
         self.heuristic_ev = ev      # original heuristic score (before blend)
         self.lookahead_ev = 0.0     # raw lookahead delta
         self.counter_pct = 0.0      # opponent counter probability
@@ -73,6 +74,7 @@ class EVPlayer:
         self.archetype = _get_archetype(deck_name)
         self.rng = rng or random.Random()
         self._pw_activated_this_turn: Set[int] = set()
+        self._last_target_reason: str = ""
         self.strategic_logger = None
 
         # Strategy profile — data-driven weights for this archetype
@@ -312,8 +314,11 @@ class EVPlayer:
             if self._spell_requires_targets(spell) and not targets:
                 continue
 
+            _tgt_reason = getattr(self, "_last_target_reason", "")
+            self._last_target_reason = ""
             candidates.append(Play("cast_spell", spell, targets, ev,
-                                   f"{spell.name} (EV={ev:.1f})"))
+                                   f"{spell.name} (EV={ev:.1f})",
+                                   target_reason=_tgt_reason))
 
         # Consider equipping unattached equipment
         equip_play = self._consider_equip(game, me)
@@ -344,6 +349,7 @@ class EVPlayer:
         if best.ev < self.profile.pass_threshold:
             return None
 
+        self._last_played_target_reason = getattr(best, "target_reason", "")
         return (best.action, best.card, best.targets)
 
     # ═══════════════════════════════════════════════════════════
@@ -1647,6 +1653,9 @@ class EVPlayer:
 
             # Prefer removing big creatures unless burn is near-lethal
             if best_kill_id and best_kill_val > face_val:
+                _c = next((c for c in opp.creatures if c.instance_id == best_kill_id), None)
+                self._last_target_reason = (f"→ {_c.name if _c else '?'} "
+                    f"(val {best_kill_val:.1f} > face {face_val:.1f})")
                 return [best_kill_id]  # kill the creature
             if best_kill_id:
                 best_kill_card = next((c for c in opp.creatures
@@ -1654,7 +1663,10 @@ class EVPlayer:
                 if (best_kill_card
                         and (best_kill_card.power or 0) >= self.profile.burn_kill_min_power
                         and opp.life > dmg * self.profile.burn_kill_life_ratio):
+                    self._last_target_reason = (f"→ {best_kill_card.name} "
+                        f"(power {best_kill_card.power} >= threshold, life safe)")
                     return [best_kill_id]  # big threat, burn not near lethal
+            self._last_target_reason = f"→ face ({dmg} dmg, life {opp.life}, face_val {face_val:.1f})"
             return [-1]  # go face
 
         # Removal (non-burn): target best opponent permanent

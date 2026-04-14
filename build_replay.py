@@ -180,6 +180,11 @@ def parse_game(block, gnum):
         # Goal reasoning (line before play)
         gm=re.search(r'→ Goal: (.+)', line)
         if gm: pending_goal=gm.group(1).strip()
+        # Target reasoning (follows goal, shown as additional reasoning context)
+        tm=re.search(r'\[Target\] (.+)', line)
+        if tm:
+            extra = tm.group(1).strip()
+            pending_goal = (pending_goal + ' | ' + extra) if pending_goal else extra
 
         # Board sections keyed by player name
         bm=re.match(r'║ (.+?) board:', line)
