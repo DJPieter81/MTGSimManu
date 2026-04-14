@@ -657,13 +657,6 @@ class GameState:
                 return True  # Can escape
             elif not card.has_flashback:
                 return False  # No flashback, no escape — can't cast from graveyard
-        # Exile zone: only Ragavan-tagged cards are castable
-        if card.zone == 'exile':
-            if getattr(card, '_ragavan_castable_by', -1) != player_idx:
-                return False
-            if getattr(card, '_ragavan_castable_turn', -1) != self.display_turn:
-                return False
-
         # Cards with no mana cost cannot be cast from hand (MTG CR 202.1a)
         # This covers suspend-only cards (Living End, Ancestral Vision, etc.)
         # that can only be cast via cascade, suspend, or other special means.
@@ -1480,17 +1473,6 @@ class GameState:
             # If cast from GY via flashback (not escape), mark for exile after resolution
             if card.has_flashback and not (escaped if not free_cast else False):
                 cast_with_flashback = True
-        # Ragavan exile cast: remove from exile zone, treat as free cast
-        if card.zone == "exile" and hasattr(card, "_ragavan_castable_by"):
-            _oe = self.players[1 - player_idx].exile
-            _me = self.players[player_idx].exile
-            if card in _oe: _oe.remove(card)
-            elif card in _me: _me.remove(card)
-            if hasattr(self, "_ragavan_exiles") and card in self._ragavan_exiles:
-                self._ragavan_exiles.remove(card)
-            self.log.append(f"T{self.display_turn} P{player_idx+1}: "
-                            f"Cast {card.template.name} (Ragavan exile — free)")
-            free_cast = True
         card.zone = "stack"
         card._cast_with_flashback = cast_with_flashback
         card._evoked = evoked  # Track for sacrifice after ETB
@@ -3273,10 +3255,18 @@ class GameState:
 
     def end_of_turn_cleanup(self):
         """Handle end-of-turn delayed triggers (e.g., Goryo's exile, Dash return)."""
-        # Expire Ragavan exile castability (only valid until end of turn)
-        if hasattr(self, "_ragavan_exiles"):
-            self._ragavan_exiles = [c for c in self._ragavan_exiles
-                                    if getattr(c, "_ragavan_castable_turn", -1) == self.display_turn]
+        # Ragavan "may cast this turn": if card is still in hand, exile it
+        for player in self.players:
+            to_exile = [c for c in list(player.hand)
+                        if getattr(c, "_ragavan_return_to_exile", False)]
+            for card in to_exile:
+                player.hand.remove(card)
+                card.zone = "exile"
+                player.exile.append(card)
+                card._ragavan_return_to_exile = False
+                self.log.append(f"T{self.display_turn}: "
+                                f"{card.name} returned to exile (uncast)")
+
 
         # Dash: return dashed creatures to their owner's hand
         for player in self.players:
@@ -3353,14 +3343,6 @@ class GameState:
         for card in player.graveyard:
             if (card.has_flashback or card.template.escape_cost is not None) and \
                self.can_cast(player_idx, card):
-                legal.append(card)
-        # Ragavan-exiled cards: "until end of turn, you may cast that card"
-        for card in getattr(self, '_ragavan_exiles', []):
-            if (getattr(card, '_ragavan_castable_by', -1) == player_idx
-                    and getattr(card, '_ragavan_castable_turn', -1) == self.display_turn
-                    and card.zone == 'exile'
-                    and card not in legal
-                    and card.template.is_spell):
                 legal.append(card)
         # Include cycling cards from hand (cycling is a special action, not casting)
         for card in player.hand:

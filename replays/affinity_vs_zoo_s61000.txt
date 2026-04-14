@@ -158,9 +158,14 @@ T2 P2: Attack with Ragavan, Nimble Pilferer
 T2 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
 T2 P2: Create 1x Treasure token(s)
 T2 P2: Ragavan, Nimble Pilferer exiles Memnite from top of P1's library
+T2 P2: Ragavan, Nimble Pilferer — may cast Memnite this turn
   [Combat Damage] 2 damage dealt → P1 life: 20 → 18
   [End Combat]
   [Main 2]
+    → Goal: curve_out
+T2 P2: Cast Memnite (0)
+    [Priority] P1 passes (no response)
+T2: Resolve Memnite
   [End Step]
 
 ╔══ TURN 3 — Affinity (P1) ══════════════════════════
@@ -172,7 +177,7 @@ T2 P2: Ragavan, Nimble Pilferer exiles Memnite from top of P1's library
 ║   Creatures: Memnite (1/1), Ornithopter (0/2)
 ║   Lands: Spire of Industry, Urza's Saga
 ║ Domain Zoo board:
-║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped]
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Memnite (1/1)
 ║   Other: Treasure Token
 ║   Lands: Steam Vents [T], Blood Crypt [T]
 ╚═══════════════════════════════════════════════════════
@@ -189,15 +194,16 @@ T3 P1: Play Urza's Saga
   [Begin Combat]
   [Declare Attackers] P1 attacks with: Memnite
 T3 P1: Attack with Memnite
-  [Declare Blockers] P2 does not block
-T3 P1:   Memnite (1/1) → 1 dmg to player
-  [Combat Damage] 1 damage dealt → P2 life: 16 → 15
+T3 P2:   [BLOCK] Memnite (1/1) blocks Memnite (1/1) — trade (chump)
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T3: Memnite dies
+T3: Memnite dies
   [End Combat]
   [Main 2]
   [End Step]
 
 ╔══ TURN 3 — Domain Zoo (P2) ══════════════════════════
-║ Life: Domain Zoo 15  |  Affinity 18
+║ Life: Domain Zoo 16  |  Affinity 18
 ║ Hand: 5 cards  |  Opp hand: 1 cards
 ║ Lands: 2  |  Opp lands: 3
 ║ Library: 50  |  Graveyard: 2
@@ -206,13 +212,14 @@ T3 P1:   Memnite (1/1) → 1 dmg to player
 ║   Other: Treasure Token
 ║   Lands: Steam Vents, Blood Crypt
 ║ Affinity board:
-║   Creatures: Memnite (1/1) [tapped], Ornithopter (0/2), Frogmite (2/2)
+║   Creatures: Ornithopter (0/2), Frogmite (2/2)
 ║   Lands: Spire of Industry, Urza's Saga [T], Urza's Saga
 ╚═══════════════════════════════════════════════════════
   [Untap] P2 untaps all permanents
   [Upkeep]
   [Draw] P2 draws: Indatha Triome
   [Main 1]
+T3 P2: Play Indatha Triome (enters tapped)
     → Goal: curve_out
     [Target] → face (3 dmg, life 18 → 15): face damage worth more
     [Mana] Tap Steam Vents→R (paying for Lightning Bolt, 2 mana remaining)
@@ -220,7 +227,6 @@ T3 P2: Cast Lightning Bolt (R)
     [Priority] P1 passes (no response)
 T3: Resolve Lightning Bolt
 T3 P2: Lightning Bolt → 3 damage → life 15
-T3 P2: Play Indatha Triome (enters tapped)
   [Begin Combat]
   [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
 T3 P2: Attack with Ragavan, Nimble Pilferer
@@ -233,12 +239,12 @@ T3: Ragavan, Nimble Pilferer dies
   [End Step]
 
 ╔══ TURN 4 — Affinity (P1) ══════════════════════════
-║ Life: Affinity 15  |  Domain Zoo 15
+║ Life: Affinity 15  |  Domain Zoo 16
 ║ Hand: 1 cards  |  Opp hand: 4 cards
 ║ Lands: 3  |  Opp lands: 3
-║ Library: 51  |  Graveyard: 2
+║ Library: 51  |  Graveyard: 4
 ║ Affinity board:
-║   Creatures: Memnite (1/1), Ornithopter (0/2)
+║   Creatures: Ornithopter (0/2)
 ║   Lands: Spire of Industry, Urza's Saga, Urza's Saga
 ║ Domain Zoo board:
 ║   Creatures: (empty)
@@ -257,17 +263,13 @@ T4 P1: Cast Signal Pest (1)
     [Priority] P2 passes (no response)
 T4: Resolve Signal Pest
   [Begin Combat]
-  [Declare Attackers] P1 attacks with: Memnite
-T4 P1: Attack with Memnite
-  [Declare Blockers] P2 does not block
-T4 P1:   Memnite (1/1) → 1 dmg to player
-  [Combat Damage] 1 damage dealt → P2 life: 15 → 14
+  [Declare Attackers] P1 does not attack
   [End Combat]
   [Main 2]
   [End Step]
 
 ╔══ TURN 4 — Domain Zoo (P2) ══════════════════════════
-║ Life: Domain Zoo 14  |  Affinity 15
+║ Life: Domain Zoo 16  |  Affinity 15
 ║ Hand: 4 cards  |  Opp hand: 0 cards
 ║ Lands: 3  |  Opp lands: 4
 ║ Library: 49  |  Graveyard: 4
@@ -276,38 +278,48 @@ T4 P1:   Memnite (1/1) → 1 dmg to player
 ║   Other: Treasure Token
 ║   Lands: Steam Vents, Blood Crypt, Indatha Triome
 ║ Affinity board:
-║   Creatures: Memnite (1/1) [tapped], Ornithopter (0/2), Construct Token (5/5), Signal Pest (0/1)
+║   Creatures: Ornithopter (0/2), Construct Token (4/4), Signal Pest (0/1)
 ║   Lands: Spire of Industry, Urza's Saga, Urza's Saga, Tanglepool Bridge [T]
 ╚═══════════════════════════════════════════════════════
   [Untap] P2 untaps all permanents
   [Upkeep]
   [Draw] P2 draws: Territorial Kavu
   [Main 1]
-    → Goal: curve_out [payoffs]
-    [Target] → Signal Pest: removes attack trigger — better than 3 face dmg
-    [Mana] Tap Indatha Triome→W, Steam Vents→R, Blood Crypt→B (paying for Phlage, Titan of Fire's Fury, 3 mana remaining)
-T4 P2: Cast Phlage, Titan of Fire's Fury (1WR)
+    → Goal: curve_out
+    [Mana] Tap Indatha Triome→W (paying for Leyline Binding, 3 mana remaining)
+T4 P2: Cast Leyline Binding (5W)
     [Priority] P1 passes (no response)
-T4: Resolve Phlage, Titan of Fire's Fury
-T4 P2: Phlage: 3 damage to opponent, gain 3 life
-T4 P2: Phlage sacrificed (not escaped)
+T4: Resolve Leyline Binding
+T4: Construct Token moved battlefield -> exile (exiled)
+T4 P2: Leyline Binding exiles Construct Token
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→R, Blood Crypt→B (paying for Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, 2 mana remaining)
+T4 P2: Cast Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2R)
+    [Priority] P1 passes (no response)
+T4: Resolve Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+T4 P2: Create 1x Goblin token(s)
+T4 P2: Fable Ch.I: Create 2/2 Goblin Shaman with haste
   [Begin Combat]
-  [Declare Attackers] P2 does not attack
+  [Declare Attackers] P2 attacks with: Goblin Token
+T4 P2: Attack with Goblin Token
+  [Declare Blockers] P1 does not block
+T4 P2:   Goblin Token (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 15 → 13
   [End Combat]
   [Main 2]
   [End Step]
 
 ╔══ TURN 5 — Affinity (P1) ══════════════════════════
-║ Life: Affinity 12  |  Domain Zoo 17
-║ Hand: 0 cards  |  Opp hand: 4 cards
+║ Life: Affinity 13  |  Domain Zoo 16
+║ Hand: 0 cards  |  Opp hand: 3 cards
 ║ Lands: 4  |  Opp lands: 3
-║ Library: 50  |  Graveyard: 2
+║ Library: 50  |  Graveyard: 4
 ║ Affinity board:
-║   Creatures: Memnite (1/1), Ornithopter (0/2), Construct Token (5/5), Signal Pest (0/1)
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1)
 ║   Lands: Spire of Industry, Urza's Saga, Urza's Saga, Tanglepool Bridge
 ║ Domain Zoo board:
-║   Creatures: (empty)
-║   Other: Treasure Token
+║   Creatures: Goblin Token (2/2) [tapped]
+║   Other: Treasure Token, Leyline Binding, Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
 ║   Lands: Steam Vents [T], Blood Crypt [T], Indatha Triome [T]
 ╚═══════════════════════════════════════════════════════
   [Untap] P1 untaps all permanents
@@ -322,32 +334,31 @@ T5 P1: Sacrifice Urza's Saga (final chapter)
   [Main 1]
 T5 P1: Play Mistvault Bridge (enters tapped)
   [Begin Combat]
-  [Declare Attackers] P1 attacks with: Memnite, Construct Token, Signal Pest
-T5 P1: Attack with Memnite, Construct Token, Signal Pest
+  [Declare Attackers] P1 attacks with: Signal Pest
+T5 P1: Attack with Signal Pest
   [Declare Blockers] P2 does not block
-T5 P1:   Memnite (2/1) → 2 dmg to player
-T5 P1:   Construct Token (10/9) → 10 dmg to player
-  [Combat Damage] 12 damage dealt → P2 life: 17 → 5
   [End Combat]
   [Main 2]
   [End Step]
 
 ╔══ TURN 5 — Domain Zoo (P2) ══════════════════════════
-║ Life: Domain Zoo 5  |  Affinity 12
-║ Hand: 4 cards  |  Opp hand: 0 cards
+║ Life: Domain Zoo 16  |  Affinity 13
+║ Hand: 3 cards  |  Opp hand: 0 cards
 ║ Lands: 3  |  Opp lands: 4
-║ Library: 48  |  Graveyard: 5
+║ Library: 48  |  Graveyard: 4
 ║ Domain Zoo board:
-║   Creatures: (empty)
-║   Other: Treasure Token
+║   Creatures: Goblin Token (2/2)
+║   Other: Treasure Token, Leyline Binding, Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
 ║   Lands: Steam Vents, Blood Crypt, Indatha Triome
 ║ Affinity board:
-║   Creatures: Memnite (1/1) [tapped], Ornithopter (0/2), Construct Token (9/9) [tapped], Signal Pest (0/1) [tapped], Construct Token (9/9), Construct Token (9/9)
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1) [tapped], Construct Token (7/7), Construct Token (7/7)
 ║   Other: Mox Opal
 ║   Lands: Spire of Industry, Urza's Saga, Tanglepool Bridge, Mistvault Bridge [T]
 ╚═══════════════════════════════════════════════════════
   [Untap] P2 untaps all permanents
   [Upkeep]
+T5 P2: Create 1x Treasure token(s)
+T5 P2: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki Ch.II: adds mana (Treasure)
   [Draw] P2 draws: Leyline Binding
   [Main 1]
     → Goal: curve_out
@@ -357,36 +368,25 @@ T5 P2: Cast Leyline Binding (5W)
 T5: Resolve Leyline Binding
 T5: Construct Token moved battlefield -> exile (exiled)
 T5 P2: Leyline Binding exiles Construct Token
-    → Goal: curve_out
-    [Mana] Tap Steam Vents→R, Blood Crypt→B (paying for Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, 2 mana remaining)
-T5 P2: Cast Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2R)
-    [Priority] P1 passes (no response)
-T5: Resolve Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
-T5 P2: Create 1x Goblin token(s)
-T5 P2: Fable Ch.I: Create 2/2 Goblin Shaman with haste
   [Begin Combat]
-  [Declare Attackers] P2 attacks with: Goblin Token
-T5 P2: Attack with Goblin Token
-  [Declare Blockers] P1 does not block
-T5 P2:   Goblin Token (2/2) → 2 dmg to player
-  [Combat Damage] 2 damage dealt → P1 life: 12 → 10
+  [Declare Attackers] P2 does not attack
   [End Combat]
   [Main 2]
   [End Step]
 
 ╔══ TURN 6 — Affinity (P1) ══════════════════════════
-║ Life: Affinity 10  |  Domain Zoo 5
+║ Life: Affinity 13  |  Domain Zoo 16
 ║ Hand: 0 cards  |  Opp hand: 3 cards
 ║ Lands: 4  |  Opp lands: 3
-║ Library: 48  |  Graveyard: 3
+║ Library: 48  |  Graveyard: 5
 ║ Affinity board:
-║   Creatures: Memnite (1/1), Ornithopter (0/2), Signal Pest (0/1), Construct Token (8/8), Construct Token (8/8)
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1), Construct Token (6/6)
 ║   Other: Mox Opal
 ║   Lands: Spire of Industry, Urza's Saga, Tanglepool Bridge, Mistvault Bridge
 ║ Domain Zoo board:
-║   Creatures: Goblin Token (2/2) [tapped]
-║   Other: Treasure Token, Leyline Binding, Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
-║   Lands: Steam Vents [T], Blood Crypt [T], Indatha Triome [T]
+║   Creatures: Goblin Token (2/2)
+║   Other: Treasure Token, Leyline Binding, Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, Treasure Token, Leyline Binding
+║   Lands: Steam Vents, Blood Crypt, Indatha Triome [T]
 ╚═══════════════════════════════════════════════════════
   [Untap] P1 untaps all permanents
   [Upkeep]
@@ -398,17 +398,151 @@ T6 P1: Sacrifice Urza's Saga (final chapter)
   [Main 1]
 T6 P1: Play Razortide Bridge (enters tapped)
   [Begin Combat]
-  [Declare Attackers] P1 attacks with: Memnite, Signal Pest, Construct Token, Construct Token
-T6 P1: Attack with Memnite, Signal Pest, Construct Token, Construct Token
-  [Declare Blockers] P2 does not block
-T6 P1:   Memnite (2/1) → 2 dmg to player
-T6 P1:   Construct Token (12/11) → 12 dmg to player
-T6 P1:   Construct Token (12/11) → 12 dmg to player
-P2 loses: life total -21
-  [Combat Damage] 26 damage dealt → P2 life: 5 → -21
+  [Declare Attackers] P1 attacks with: Construct Token
+T6 P1: Attack with Construct Token
+T6 P2:   [BLOCK-EMERGENCY] Goblin Token (2/2) blocks Construct Token (9/9) — chump block
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T6: Goblin Token dies
+  [End Combat]
+  [Main 2]
+  [End Step]
 
->>> Affinity wins Game 1 on turn 6 via damage
-    Final life: Affinity=10  Domain Zoo=-21
+╔══ TURN 6 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 16  |  Affinity 13
+║ Hand: 3 cards  |  Opp hand: 0 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 5
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Treasure Token, Leyline Binding, Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, Treasure Token, Leyline Binding
+║   Lands: Steam Vents, Blood Crypt, Indatha Triome
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1), Construct Token (9/9) [tapped], Construct Token (9/9)
+║   Other: Mox Opal, Springleaf Drum
+║   Lands: Spire of Industry, Tanglepool Bridge, Mistvault Bridge, Razortide Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T6 P2: Create 1x Avatar token(s)
+T6 P2: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki Ch.III: transforms into Avatar Roku (4/4)
+  [Draw] P2 draws: Scion of Draco
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Target] → Signal Pest: removes attack trigger — better than 3 face dmg
+    [Mana] Tap Indatha Triome→W, Steam Vents→R (paying for Phlage, Titan of Fire's Fury, 3 mana remaining)
+T6 P2: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P1 passes (no response)
+T6: Resolve Phlage, Titan of Fire's Fury
+T6 P2: Phlage: 3 damage to opponent, gain 3 life
+T6 P2: Phlage sacrificed (not escaped)
+    → Goal: curve_out [payoffs]
+T6 P2: Cast Scion of Draco (12)
+    [Priority] P1 passes (no response)
+T6: Resolve Scion of Draco
+T6 P2: Scion of Draco enters (no Leyline — partial keywords)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 10  |  Domain Zoo 19
+║ Hand: 0 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 6
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1), Construct Token (9/9), Construct Token (9/9)
+║   Other: Mox Opal, Springleaf Drum
+║   Lands: Spire of Industry, Tanglepool Bridge, Mistvault Bridge, Razortide Bridge
+║ Domain Zoo board:
+║   Creatures: Avatar Roku (4/4), Scion of Draco (4/4)
+║   Other: Treasure Token, Leyline Binding, Treasure Token, Leyline Binding
+║   Lands: Steam Vents [T], Blood Crypt, Indatha Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Treasure Vault
+  [Main 1]
+T7 P1: Play Treasure Vault
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Signal Pest, Construct Token, Construct Token
+T7 P1: Attack with Signal Pest, Construct Token, Construct Token
+T7 P2:   [BLOCK-EMERGENCY] Scion of Draco (4/4) blocks Construct Token (11/10) — chump block
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T7 P1:   Construct Token (11/10) → 11 dmg to player
+T7: Scion of Draco dies
+  [Combat Damage] 11 damage dealt → P2 life: 19 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 8  |  Affinity 10
+║ Hand: 2 cards  |  Opp hand: 0 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 7
+║ Domain Zoo board:
+║   Creatures: Avatar Roku (4/4)
+║   Other: Treasure Token, Leyline Binding, Treasure Token, Leyline Binding
+║   Lands: Steam Vents, Blood Crypt, Indatha Triome
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1) [tapped], Construct Token (10/10) [tapped], Construct Token (10/10) [tapped]
+║   Other: Mox Opal, Springleaf Drum
+║   Lands: Spire of Industry, Tanglepool Bridge, Mistvault Bridge, Razortide Bridge, Treasure Vault
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wooded Foothills
+  [Main 1]
+T7 P2: Play Wooded Foothills
+T7 P2: Crack Wooded Foothills (pay 1 life) -> Temple Garden (tapped, life: 7)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Indatha Triome→G, Steam Vents→R (paying for Territorial Kavu, 3 mana remaining)
+T7 P2: Cast Territorial Kavu (RG)
+    [Priority] P1 passes (no response)
+T7: Resolve Territorial Kavu
+T7 P2: Territorial Kavu enters as 5/5 (domain=5)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Avatar Roku
+T7 P2: Attack with Avatar Roku
+  [Declare Blockers] P1 does not block
+T7 P2:   Avatar Roku (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 10 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 6  |  Domain Zoo 7
+║ Hand: 0 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 6
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1), Construct Token (10/10), Construct Token (10/10)
+║   Other: Mox Opal, Springleaf Drum
+║   Lands: Spire of Industry, Tanglepool Bridge, Mistvault Bridge, Razortide Bridge, Treasure Vault
+║ Domain Zoo board:
+║   Creatures: Avatar Roku (4/4) [tapped], Territorial Kavu (4/4)
+║   Other: Treasure Token, Leyline Binding, Treasure Token, Leyline Binding
+║   Lands: Steam Vents [T], Blood Crypt, Indatha Triome [T], Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Spire of Industry
+  [Main 1]
+T8 P1: Play Spire of Industry
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Signal Pest, Construct Token, Construct Token
+T8 P1: Attack with Signal Pest, Construct Token, Construct Token
+T8 P2:   [BLOCK-EMERGENCY] Territorial Kavu (4/4) blocks Construct Token (11/10) — chump block
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T8 P1:   Construct Token (11/10) → 11 dmg to player
+P2 loses: life total -4
+  [Combat Damage] 11 damage dealt → P2 life: 7 → -4
+
+>>> Affinity wins Game 1 on turn 8 via damage
+    Final life: Affinity=6  Domain Zoo=-4
 
 ======================================================================
   GAME 2: Domain Zoo (P1) vs Affinity (P2)  —  seed 61001

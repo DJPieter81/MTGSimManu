@@ -313,14 +313,23 @@ class CombatManager:
                                 f"{attacker.name} exiles {exiled.name} "
                                 f"from top of P{self._defending_player+1}'s library"
                             )
-                            # "Until end of turn, you may cast that card" — tag for free cast
+                            # "Until end of turn, you may cast that card"
+                            # Holistic fix: put the card in the active player's hand.
+                            # The engine already handles hand cards fully — no special
+                            # zone logic needed. EOT cleanup exiles uncast copies.
                             if 'until end of turn, you may cast' in a_oracle or 'you may cast that card' in a_oracle:
-                                exiled._ragavan_castable_by = self._active_player
-                                exiled._ragavan_castable_turn = game.display_turn
-                                exiled._free_cast_opportunity = True  # generic free-cast signal
-                                if not hasattr(game, '_ragavan_exiles'):
-                                    game._ragavan_exiles = []
-                                game._ragavan_exiles.append(exiled)
+                                # Remove from opp exile, give to active player
+                                opp.exile.remove(exiled)
+                                active_player = game.players[self._active_player]
+                                exiled.zone = "hand"
+                                exiled.controller = self._active_player
+                                exiled._free_cast_opportunity = True
+                                exiled._ragavan_return_to_exile = True  # EOT: exile if uncast
+                                active_player.hand.append(exiled)
+                                game.log.append(
+                                    f"T{game.display_turn} P{self._active_player+1}: "
+                                    f"{attacker.name} — may cast {exiled.name} this turn"
+                                )
                     if 'draw a card' in a_oracle:
                         game.draw_cards(self._active_player, 1)
                         game.log.append(
