@@ -51,6 +51,7 @@ def classify(play):
         if any(x in p for x in ['grapeshot','empty the warrens']): return 'combo'
         if any(x in p for x in ['manamorphose','pyretic ritual','desperate ritual','seething song','reckless impulse',"wrenn's resolve"]): return 'mana'
         return 'spell'
+    if 'ch.' in p and ('saga' in p or 'chapter' in p or 'fable' in p): return 'trigger'
     if 'equip' in p: return 'trigger'
     if 'attack with' in p: return 'combat'
     if 'deals' in p or ('damage' in p and 'to' in p): return 'damage'
@@ -314,7 +315,40 @@ def other_badges(s):
         out += f'<span class="creature-badge other-badge">{art}<span class="badge-text">{esc(name)}</span></span>'
     return out
 
-def lc(s): return len([x for x in s.split(',') if x.strip()]) if s and s!='none' else 0
+def split_lands(s):
+    """Split a land string into (saga_names[], plain_land_string)."""
+    if not s or s == 'none': return [], s or 'none'
+    # Known saga / enchantment land names that should show as visual badges
+    SAGA_KEYWORDS = ('saga', 'urza', 'fable', 'witch')
+    items = [x.strip() for x in s.split(',') if x.strip()]
+    sagas, plains = [], []
+    for item in items:
+        name_part = item.replace('[T]','').strip().rstrip()
+        tapped = '[T]' in item
+        # Detect saga/enchantment land by name keywords
+        if any(k in name_part.lower() for k in SAGA_KEYWORDS):
+            sagas.append((name_part, tapped))
+        else:
+            plains.append(item)
+    plain_str = ', '.join(plains) if plains else 'none'
+    return sagas, plain_str
+
+def saga_badges(sagas):
+    """Render saga/enchantment lands as visual badges."""
+    if not sagas: return ''
+    from urllib.parse import quote as _qu
+    out = ''
+    for name, tapped in sagas:
+        sf = name.split(' (')[0].strip()
+        img_url = "https://api.scryfall.com/cards/named?exact=" + _qu(sf) + "&format=image&version=art_crop"
+        q = chr(39)
+        art = f'<img class="badge-art" src="{img_url}" alt="{esc(sf)}" loading="lazy" onerror="this.style.display={q}none{q}">'
+        tap_icon = '<span class="saga-tapped" title="Tapped">↷</span>' if tapped else ''
+        label = f'<span class="badge-text saga-label">{tap_icon}{esc(sf[:14])}</span>'
+        out += f'<span class="creature-badge saga-badge">{art}{label}</span>'
+    return out
+
+def lc(s): _, plain = split_lands(s); return len([x for x in plain.split(',') if x.strip()]) if plain and plain!='none' else 0
 
 SKIP = {'untaps all','upkeep','goal:','[mana]','[priority]','main 1','begin combat',
         'declare attackers p','declare blockers p','end combat','main 2','end step','resolve '}
@@ -395,8 +429,10 @@ def turn_html(t, next_t, gnum, p1name, p2name, star_turns):
     src=next_t if next_t else t
     p1b=src['boards'].get(p1name,{'creatures':'','lands':'','other':''})
     p2b=src['boards'].get(p2name,{'creatures':'','lands':'','other':''})
-    p1_cr,p1_l,p1_o=p1b['creatures'],p1b['lands'] or 'none',p1b.get('other','')
-    p2_cr,p2_l,p2_o=p2b['creatures'],p2b['lands'] or 'none',p2b.get('other','')
+    p1_cr,p1_l_raw,p1_o=p1b['creatures'],p1b['lands'] or 'none',p1b.get('other','')
+    p2_cr,p2_l_raw,p2_o=p2b['creatures'],p2b['lands'] or 'none',p2b.get('other','')
+    p1_sagas, p1_l = split_lands(p1_l_raw)
+    p2_sagas, p2_l = split_lands(p2_l_raw)
 
     return f'''<div class="turn {cls}" id="g{gnum}t{t["num"]}">
   <div class="turn-header" onclick="toggle(this.parentElement)">
@@ -420,12 +456,14 @@ def turn_html(t, next_t, gnum, p1name, p2name, star_turns):
         <h4><span style="color:{P1C}">{esc(p1name)}</span> — {lc(p1_l)} land{"s" if lc(p1_l)!=1 else ""}</h4>
         <div class="board">{creature_badges(p1_cr, src.get('equip_map',{}))}</div>
         {f'<div class="other-list">{other_badges(p1_o)}</div>' if p1_o else ''}
+        {f'<div class="other-list saga-row">{saga_badges(p1_sagas)}</div>' if p1_sagas else ''}
         <div class="land-list">{esc(p1_l[:140])}</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:{P2C}">{esc(p2name)}</span> — {lc(p2_l)} land{"s" if lc(p2_l)!=1 else ""}</h4>
         <div class="board">{creature_badges(p2_cr, src.get('equip_map',{}))}</div>
         {f'<div class="other-list">{other_badges(p2_o)}</div>' if p2_o else ''}
+        {f'<div class="other-list saga-row">{saga_badges(p2_sagas)}</div>' if p2_sagas else ''}
         <div class="land-list">{esc(p2_l[:140])}</div>
       </div>
     </div>
@@ -618,6 +656,10 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
 .land-list{color:#9198a1;font-size:.72em;margin-top:4px;line-height:1.5}
 .other-list{margin-top:4px;display:flex;flex-wrap:wrap;gap:5px;align-items:flex-start}
 .equip-tag{background:#fff3cd;border:1px solid #e6ac00;border-radius:3px;color:#7a5c00;font-size:.7em;padding:1px 5px;margin-left:3px;font-style:normal}
+.saga-badge{background:#f0fff4;border-color:#2da44e;color:#1a7f37}
+.saga-label{color:#1a7f37}
+.saga-tapped{color:#9198a1;margin-right:2px}
+.saga-row{margin-top:3px}
 .other-badge{background:#f6f0ff;border-color:#b39ddb;color:#5e35b1}
 .combat-lethal{background:#fff0f0;border:1px solid #f5b8b0;border-left:4px solid #cf222e;border-radius:0 5px 5px 0;padding:7px 12px;margin:4px 0;font-weight:600;color:#cf222e;font-size:.85em}
 .has-thumb{position:relative;cursor:default}

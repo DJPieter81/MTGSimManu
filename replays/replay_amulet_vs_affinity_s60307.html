@@ -108,6 +108,10 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
 .land-list{color:#9198a1;font-size:.72em;margin-top:4px;line-height:1.5}
 .other-list{margin-top:4px;display:flex;flex-wrap:wrap;gap:5px;align-items:flex-start}
 .equip-tag{background:#fff3cd;border:1px solid #e6ac00;border-radius:3px;color:#7a5c00;font-size:.7em;padding:1px 5px;margin-left:3px;font-style:normal}
+.saga-badge{background:#f0fff4;border-color:#2da44e;color:#1a7f37}
+.saga-label{color:#1a7f37}
+.saga-tapped{color:#9198a1;margin-right:2px}
+.saga-row{margin-top:3px}
 .other-badge{background:#f6f0ff;border-color:#b39ddb;color:#5e35b1}
 .combat-lethal{background:#fff0f0;border:1px solid #f5b8b0;border-left:4px solid #cf222e;border-radius:0 5px 5px 0;padding:7px 12px;margin:4px 0;font-weight:600;color:#cf222e;font-size:.85em}
 .has-thumb{position:relative;cursor:default}
@@ -198,12 +202,14 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
         <h4><span style="color:#0969da">Amulet Titan</span> — 0 lands</h4>
         <div class="board"><span style="color:#484f58">empty</span></div>
         
+        
         <div class="land-list">none</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:#d1242f">Affinity</span> — 1 land</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Memnite&format=image&version=art_crop" alt="Memnite" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Memnite<span class="pt">1/1</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Springleaf%20Drum&format=image&version=art_crop" alt="Springleaf Drum" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Springleaf Drum</span></span></div>
+        
         <div class="land-list">Treasure Vault [T]</div>
       </div>
     </div>
@@ -229,15 +235,17 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
-        <h4><span style="color:#0969da">Amulet Titan</span> — 1 land</h4>
+        <h4><span style="color:#0969da">Amulet Titan</span> — 0 lands</h4>
         <div class="board"><span style="color:#484f58">empty</span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Amulet%20of%20Vigor&format=image&version=art_crop" alt="Amulet of Vigor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Amulet of Vigor</span></span></div>
-        <div class="land-list">Urza's Saga</div>
+        <div class="other-list saga-row"><span class="creature-badge saga-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=art_crop" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="badge-text saga-label">Urza's Saga</span></span></div>
+        <div class="land-list">none</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:#d1242f">Affinity</span> — 1 land</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Memnite&format=image&version=art_crop" alt="Memnite" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Memnite<span class="pt">1/1</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Springleaf%20Drum&format=image&version=art_crop" alt="Springleaf Drum" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Springleaf Drum</span></span></div>
+        
         <div class="land-list">Treasure Vault</div>
       </div>
     </div>
@@ -264,15 +272,17 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
-        <h4><span style="color:#0969da">Amulet Titan</span> — 1 land</h4>
+        <h4><span style="color:#0969da">Amulet Titan</span> — 0 lands</h4>
         <div class="board"><span style="color:#484f58">empty</span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Amulet%20of%20Vigor&format=image&version=art_crop" alt="Amulet of Vigor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Amulet of Vigor</span></span></div>
-        <div class="land-list">Urza's Saga</div>
+        <div class="other-list saga-row"><span class="creature-badge saga-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=art_crop" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="badge-text saga-label">Urza's Saga</span></span></div>
+        <div class="land-list">none</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:#d1242f">Affinity</span> — 2 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Memnite&format=image&version=art_crop" alt="Memnite" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Memnite<span class="pt">1/1</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Springleaf%20Drum&format=image&version=art_crop" alt="Springleaf Drum" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Springleaf Drum</span></span></div>
+        
         <div class="land-list">Treasure Vault, Tanglepool Bridge [T]</div>
       </div>
     </div>
@@ -303,15 +313,17 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
-        <h4><span style="color:#0969da">Amulet Titan</span> — 4 lands</h4>
+        <h4><span style="color:#0969da">Amulet Titan</span> — 3 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Dryad%20Arbor&format=image&version=art_crop" alt="Dryad Arbor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Dryad Arbor<span class="pt">1/1</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Arboreal%20Grazer&format=image&version=art_crop" alt="Arboreal Grazer" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Arboreal Grazer<span class="pt">0/3</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Amulet%20of%20Vigor&format=image&version=art_crop" alt="Amulet of Vigor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Amulet of Vigor</span></span></div>
-        <div class="land-list">Urza's Saga [T], Lotus Field [T], Dryad Arbor [T], Simic Growth Chamber</div>
+        <div class="other-list saga-row"><span class="creature-badge saga-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=art_crop" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="badge-text saga-label"><span class="saga-tapped" title="Tapped">↷</span>Urza's Saga</span></span></div>
+        <div class="land-list">Lotus Field [T], Dryad Arbor [T], Simic Growth Chamber</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:#d1242f">Affinity</span> — 2 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Memnite&format=image&version=art_crop" alt="Memnite" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Memnite<span class="pt">1/1</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Springleaf%20Drum&format=image&version=art_crop" alt="Springleaf Drum" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Springleaf Drum</span></span></div>
+        
         <div class="land-list">Treasure Vault, Tanglepool Bridge</div>
       </div>
     </div>
@@ -339,15 +351,17 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
-        <h4><span style="color:#0969da">Amulet Titan</span> — 4 lands</h4>
+        <h4><span style="color:#0969da">Amulet Titan</span> — 3 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Dryad%20Arbor&format=image&version=art_crop" alt="Dryad Arbor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Dryad Arbor<span class="pt">1/1</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Arboreal%20Grazer&format=image&version=art_crop" alt="Arboreal Grazer" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Arboreal Grazer<span class="pt">0/3</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Amulet%20of%20Vigor&format=image&version=art_crop" alt="Amulet of Vigor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Amulet of Vigor</span></span></div>
-        <div class="land-list">Urza's Saga, Lotus Field, Dryad Arbor, Simic Growth Chamber</div>
+        <div class="other-list saga-row"><span class="creature-badge saga-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=art_crop" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="badge-text saga-label">Urza's Saga</span></span></div>
+        <div class="land-list">Lotus Field, Dryad Arbor, Simic Growth Chamber</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:#d1242f">Affinity</span> — 3 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Memnite&format=image&version=art_crop" alt="Memnite" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Memnite<span class="pt">1/1</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Sojourner%27s%20Companion&format=image&version=art_crop" alt="Sojourner's Companion" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Sojourner's Companion<span class="pt">4/4</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Springleaf%20Drum&format=image&version=art_crop" alt="Springleaf Drum" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Springleaf Drum</span></span></div>
+        
         <div class="land-list">Treasure Vault [T], Tanglepool Bridge [T], Razortide Bridge [T]</div>
       </div>
     </div>
@@ -367,7 +381,7 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Urza's Saga</span></div>
     <div class="section-label">Hand (4 cards)</div><div class="hand-pills"><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Simic%20Growth%20Chamber&format=image&version=small" alt="Simic Growth Chamber" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Simic Growth Chamb</span></span><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Simic%20Growth%20Chamber&format=image&version=small" alt="Simic Growth Chamber" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Simic Growth Chamb</span></span><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=small" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Urza's Saga</span></span><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=small" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Urza's Saga</span></span></div>
     <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Create 1x Construct token(s)</span></div>
-<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Urza's Saga Ch.II: Create Construct Token</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#fff8c5;color:#9a6700">TRIGGER</span><span class="action">Urza's Saga Ch.II: Create Construct Token</span></div>
 <div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Simic Growth Chamber (enters tapped)</span></div>
 <div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Amulet of Vigor untaps Simic Growth Chamber</span></div>
 
@@ -375,15 +389,17 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
-        <h4><span style="color:#0969da">Amulet Titan</span> — 5 lands</h4>
+        <h4><span style="color:#0969da">Amulet Titan</span> — 4 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Dryad%20Arbor&format=image&version=art_crop" alt="Dryad Arbor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Dryad Arbor<span class="pt">1/1</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Arboreal%20Grazer&format=image&version=art_crop" alt="Arboreal Grazer" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Arboreal Grazer<span class="pt">0/3</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=art_crop" alt="Construct Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Construct Token<span class="pt">2/2</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Amulet%20of%20Vigor&format=image&version=art_crop" alt="Amulet of Vigor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Amulet of Vigor</span></span></div>
-        <div class="land-list">Urza's Saga, Lotus Field, Dryad Arbor, Simic Growth Chamber, Simic Growth Chamber</div>
+        <div class="other-list saga-row"><span class="creature-badge saga-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=art_crop" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="badge-text saga-label">Urza's Saga</span></span></div>
+        <div class="land-list">Lotus Field, Dryad Arbor, Simic Growth Chamber, Simic Growth Chamber</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:#d1242f">Affinity</span> — 3 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Memnite&format=image&version=art_crop" alt="Memnite" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Memnite<span class="pt">1/1</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Sojourner%27s%20Companion&format=image&version=art_crop" alt="Sojourner's Companion" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Sojourner's Companion<span class="pt">4/4</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Springleaf%20Drum&format=image&version=art_crop" alt="Springleaf Drum" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Springleaf Drum</span></span></div>
+        
         <div class="land-list">Treasure Vault, Tanglepool Bridge, Razortide Bridge</div>
       </div>
     </div>
@@ -414,15 +430,17 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
-        <h4><span style="color:#0969da">Amulet Titan</span> — 4 lands</h4>
+        <h4><span style="color:#0969da">Amulet Titan</span> — 3 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Arboreal%20Grazer&format=image&version=art_crop" alt="Arboreal Grazer" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Arboreal Grazer<span class="pt">0/3</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=art_crop" alt="Construct Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Construct Token<span class="pt">2/2</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Amulet%20of%20Vigor&format=image&version=art_crop" alt="Amulet of Vigor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Amulet of Vigor</span></span></div>
-        <div class="land-list">Urza's Saga, Lotus Field, Simic Growth Chamber, Simic Growth Chamber</div>
+        <div class="other-list saga-row"><span class="creature-badge saga-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=art_crop" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="badge-text saga-label">Urza's Saga</span></span></div>
+        <div class="land-list">Lotus Field, Simic Growth Chamber, Simic Growth Chamber</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:#d1242f">Affinity</span> — 4 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Sojourner%27s%20Companion&format=image&version=art_crop" alt="Sojourner's Companion" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Sojourner's Companion<span class="pt">4/4</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Springleaf%20Drum&format=image&version=art_crop" alt="Springleaf Drum" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Springleaf Drum</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Cranial%20Plating&format=image&version=art_crop" alt="Cranial Plating" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Cranial Plating</span></span></div>
+        
         <div class="land-list">Treasure Vault [T], Tanglepool Bridge [T], Razortide Bridge [T], Spire of Industry [T]</div>
       </div>
     </div>
@@ -442,7 +460,7 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Spelunking</span></div>
     <div class="section-label">Hand (4 cards)</div><div class="hand-pills"><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Simic%20Growth%20Chamber&format=image&version=small" alt="Simic Growth Chamber" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Simic Growth Chamb</span></span><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=small" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Urza's Saga</span></span><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=small" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Urza's Saga</span></span><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Spelunking&format=image&version=small" alt="Spelunking" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Spelunking</span></span></div>
     <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Create 1x Construct token(s)</span></div>
-<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Urza's Saga Ch.III: Create Construct Token</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#fff8c5;color:#9a6700">TRIGGER</span><span class="action">Urza's Saga Ch.III: Create Construct Token</span></div>
 <div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Urza's Saga tutors Amulet of Vigor</span></div>
 <div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Sacrifice Urza's Saga (final chapter)</span></div>
 <div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Urza's Saga</span></div>
@@ -458,15 +476,17 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
-        <h4><span style="color:#0969da">Amulet Titan</span> — 4 lands</h4>
+        <h4><span style="color:#0969da">Amulet Titan</span> — 3 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Arboreal%20Grazer&format=image&version=art_crop" alt="Arboreal Grazer" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Arboreal Grazer<span class="pt">0/3</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=art_crop" alt="Construct Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Construct Token<span class="pt">4/4</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=art_crop" alt="Construct Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Construct Token<span class="pt">4/4</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Amulet%20of%20Vigor&format=image&version=art_crop" alt="Amulet of Vigor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Amulet of Vigor</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Amulet%20of%20Vigor&format=image&version=art_crop" alt="Amulet of Vigor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Amulet of Vigor</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Spelunking&format=image&version=art_crop" alt="Spelunking" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Spelunking</span></span></div>
-        <div class="land-list">Simic Growth Chamber [T], Simic Growth Chamber, Urza's Saga [T], Gruul Turf</div>
+        <div class="other-list saga-row"><span class="creature-badge saga-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=art_crop" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="badge-text saga-label"><span class="saga-tapped" title="Tapped">↷</span>Urza's Saga</span></span></div>
+        <div class="land-list">Simic Growth Chamber [T], Simic Growth Chamber, Gruul Turf</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:#d1242f">Affinity</span> — 4 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Sojourner%27s%20Companion&format=image&version=art_crop" alt="Sojourner's Companion" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Sojourner's Companion<span class="pt">4/4</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Springleaf%20Drum&format=image&version=art_crop" alt="Springleaf Drum" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Springleaf Drum</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Cranial%20Plating&format=image&version=art_crop" alt="Cranial Plating" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Cranial Plating</span></span></div>
+        
         <div class="land-list">Treasure Vault, Tanglepool Bridge, Razortide Bridge, Spire of Industry</div>
       </div>
     </div>
@@ -493,15 +513,17 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
-        <h4><span style="color:#0969da">Amulet Titan</span> — 4 lands</h4>
+        <h4><span style="color:#0969da">Amulet Titan</span> — 3 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Arboreal%20Grazer&format=image&version=art_crop" alt="Arboreal Grazer" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Arboreal Grazer<span class="pt">0/3</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=art_crop" alt="Construct Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Construct Token<span class="pt">3/3</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Amulet%20of%20Vigor&format=image&version=art_crop" alt="Amulet of Vigor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Amulet of Vigor</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Amulet%20of%20Vigor&format=image&version=art_crop" alt="Amulet of Vigor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Amulet of Vigor</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Spelunking&format=image&version=art_crop" alt="Spelunking" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Spelunking</span></span></div>
-        <div class="land-list">Simic Growth Chamber, Simic Growth Chamber, Urza's Saga, Gruul Turf</div>
+        <div class="other-list saga-row"><span class="creature-badge saga-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=art_crop" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="badge-text saga-label">Urza's Saga</span></span></div>
+        <div class="land-list">Simic Growth Chamber, Simic Growth Chamber, Gruul Turf</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:#d1242f">Affinity</span> — 5 lands</h4>
         <div class="board"><span style="color:#484f58">empty</span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Springleaf%20Drum&format=image&version=art_crop" alt="Springleaf Drum" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Springleaf Drum</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Cranial%20Plating&format=image&version=art_crop" alt="Cranial Plating" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Cranial Plating</span></span></div>
+        
         <div class="land-list">Treasure Vault, Tanglepool Bridge, Razortide Bridge, Spire of Industry, Darksteel Citadel</div>
       </div>
     </div>
@@ -529,15 +551,17 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
-        <h4><span style="color:#0969da">Amulet Titan</span> — 5 lands</h4>
+        <h4><span style="color:#0969da">Amulet Titan</span> — 4 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Arboreal%20Grazer&format=image&version=art_crop" alt="Arboreal Grazer" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Arboreal Grazer<span class="pt">0/3</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=art_crop" alt="Construct Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Construct Token<span class="pt">3/3</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Amulet%20of%20Vigor&format=image&version=art_crop" alt="Amulet of Vigor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Amulet of Vigor</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Amulet%20of%20Vigor&format=image&version=art_crop" alt="Amulet of Vigor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Amulet of Vigor</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Spelunking&format=image&version=art_crop" alt="Spelunking" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Spelunking</span></span></div>
-        <div class="land-list">Simic Growth Chamber, Simic Growth Chamber, Urza's Saga, Gruul Turf, Lotus Field</div>
+        <div class="other-list saga-row"><span class="creature-badge saga-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=art_crop" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="badge-text saga-label">Urza's Saga</span></span></div>
+        <div class="land-list">Simic Growth Chamber, Simic Growth Chamber, Gruul Turf, Lotus Field</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:#d1242f">Affinity</span> — 5 lands</h4>
         <div class="board"><span style="color:#484f58">empty</span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Springleaf%20Drum&format=image&version=art_crop" alt="Springleaf Drum" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Springleaf Drum</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Cranial%20Plating&format=image&version=art_crop" alt="Cranial Plating" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Cranial Plating</span></span></div>
+        
         <div class="land-list">Treasure Vault, Tanglepool Bridge, Razortide Bridge, Spire of Industry, Darksteel Citadel</div>
       </div>
     </div>
@@ -563,15 +587,17 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
-        <h4><span style="color:#0969da">Amulet Titan</span> — 5 lands</h4>
+        <h4><span style="color:#0969da">Amulet Titan</span> — 4 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Arboreal%20Grazer&format=image&version=art_crop" alt="Arboreal Grazer" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Arboreal Grazer<span class="pt">0/3</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=art_crop" alt="Construct Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Construct Token<span class="pt">3/3</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Amulet%20of%20Vigor&format=image&version=art_crop" alt="Amulet of Vigor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Amulet of Vigor</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Amulet%20of%20Vigor&format=image&version=art_crop" alt="Amulet of Vigor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Amulet of Vigor</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Spelunking&format=image&version=art_crop" alt="Spelunking" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Spelunking</span></span></div>
-        <div class="land-list">Simic Growth Chamber, Simic Growth Chamber, Urza's Saga, Gruul Turf, Lotus Field</div>
+        <div class="other-list saga-row"><span class="creature-badge saga-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=art_crop" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="badge-text saga-label">Urza's Saga</span></span></div>
+        <div class="land-list">Simic Growth Chamber, Simic Growth Chamber, Gruul Turf, Lotus Field</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:#d1242f">Affinity</span> — 6 lands</h4>
         <div class="board"><span style="color:#484f58">empty</span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Springleaf%20Drum&format=image&version=art_crop" alt="Springleaf Drum" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Springleaf Drum</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Cranial%20Plating&format=image&version=art_crop" alt="Cranial Plating" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Cranial Plating</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Mox%20Opal&format=image&version=art_crop" alt="Mox Opal" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Mox Opal</span></span></div>
+        
         <div class="land-list">Treasure Vault, Tanglepool Bridge, Razortide Bridge, Spire of Industry, Darksteel Citadel, Darksteel Citadel</div>
       </div>
     </div>
@@ -591,7 +617,7 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Tolaria West</span></div>
     <div class="section-label">Hand (4 cards)</div><div class="hand-pills"><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Simic%20Growth%20Chamber&format=image&version=small" alt="Simic Growth Chamber" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Simic Growth Chamb</span></span><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=small" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Urza's Saga</span></span><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=small" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Urza's Saga</span></span><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Tolaria%20West&format=image&version=small" alt="Tolaria West" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Tolaria West</span></span></div>
     <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Create 1x Construct token(s)</span></div>
-<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Urza's Saga Ch.II: Create Construct Token</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#fff8c5;color:#9a6700">TRIGGER</span><span class="action">Urza's Saga Ch.II: Create Construct Token</span></div>
 <div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Urza's Saga</span></div>
 <div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#ffebe9;color:#d1242f">COMBAT</span><span class="action">Attack with Construct Token</span></div>
 <div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">  Construct Token (4/4) → 4 dmg to player</span></div>
@@ -600,15 +626,17 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
-        <h4><span style="color:#0969da">Amulet Titan</span> — 6 lands</h4>
+        <h4><span style="color:#0969da">Amulet Titan</span> — 4 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Arboreal%20Grazer&format=image&version=art_crop" alt="Arboreal Grazer" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Arboreal Grazer<span class="pt">0/3</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=art_crop" alt="Construct Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Construct Token<span class="pt">4/4</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=art_crop" alt="Construct Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Construct Token<span class="pt">4/4</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Amulet%20of%20Vigor&format=image&version=art_crop" alt="Amulet of Vigor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Amulet of Vigor</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Amulet%20of%20Vigor&format=image&version=art_crop" alt="Amulet of Vigor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Amulet of Vigor</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Spelunking&format=image&version=art_crop" alt="Spelunking" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Spelunking</span></span></div>
-        <div class="land-list">Simic Growth Chamber, Simic Growth Chamber, Urza's Saga, Gruul Turf, Lotus Field, Urza's Saga</div>
+        <div class="other-list saga-row"><span class="creature-badge saga-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=art_crop" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="badge-text saga-label">Urza's Saga</span></span><span class="creature-badge saga-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=art_crop" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="badge-text saga-label">Urza's Saga</span></span></div>
+        <div class="land-list">Simic Growth Chamber, Simic Growth Chamber, Gruul Turf, Lotus Field</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:#d1242f">Affinity</span> — 6 lands</h4>
         <div class="board"><span style="color:#484f58">empty</span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Springleaf%20Drum&format=image&version=art_crop" alt="Springleaf Drum" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Springleaf Drum</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Cranial%20Plating&format=image&version=art_crop" alt="Cranial Plating" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Cranial Plating</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Mox%20Opal&format=image&version=art_crop" alt="Mox Opal" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Mox Opal</span></span></div>
+        
         <div class="land-list">Treasure Vault, Tanglepool Bridge, Razortide Bridge, Spire of Industry, Darksteel Citadel, Darksteel Citadel</div>
       </div>
     </div>
@@ -639,15 +667,17 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
-        <h4><span style="color:#0969da">Amulet Titan</span> — 6 lands</h4>
+        <h4><span style="color:#0969da">Amulet Titan</span> — 4 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Arboreal%20Grazer&format=image&version=art_crop" alt="Arboreal Grazer" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Arboreal Grazer<span class="pt">0/3</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=art_crop" alt="Construct Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Construct Token<span class="pt">4/4</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=art_crop" alt="Construct Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Construct Token<span class="pt">4/4</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Amulet%20of%20Vigor&format=image&version=art_crop" alt="Amulet of Vigor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Amulet of Vigor</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Amulet%20of%20Vigor&format=image&version=art_crop" alt="Amulet of Vigor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Amulet of Vigor</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Spelunking&format=image&version=art_crop" alt="Spelunking" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Spelunking</span></span></div>
-        <div class="land-list">Simic Growth Chamber, Simic Growth Chamber, Urza's Saga, Gruul Turf, Lotus Field, Urza's Saga</div>
+        <div class="other-list saga-row"><span class="creature-badge saga-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=art_crop" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="badge-text saga-label">Urza's Saga</span></span><span class="creature-badge saga-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=art_crop" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="badge-text saga-label">Urza's Saga</span></span></div>
+        <div class="land-list">Simic Growth Chamber, Simic Growth Chamber, Gruul Turf, Lotus Field</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:#d1242f">Affinity</span> — 7 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Thought%20Monitor&format=image&version=art_crop" alt="Thought Monitor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Thought Monitor<span class="pt">2/2</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Thought%20Monitor&format=image&version=art_crop" alt="Thought Monitor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Thought Monitor<span class="pt">2/2</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Frogmite&format=image&version=art_crop" alt="Frogmite" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Frogmite<span class="pt">2/2</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Signal%20Pest&format=image&version=art_crop" alt="Signal Pest" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Signal Pest<span class="pt">0/1</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Springleaf%20Drum&format=image&version=art_crop" alt="Springleaf Drum" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Springleaf Drum</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Cranial%20Plating&format=image&version=art_crop" alt="Cranial Plating" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Cranial Plating</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Mox%20Opal&format=image&version=art_crop" alt="Mox Opal" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Mox Opal</span></span></div>
+        
         <div class="land-list">Treasure Vault, Tanglepool Bridge [T], Razortide Bridge [T], Spire of Industry, Darksteel Citadel, Darksteel Citadel, Spire of Industry</div>
       </div>
     </div>
@@ -667,7 +697,7 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Boseiju, Who Endures</span></div>
     <div class="section-label">Hand (4 cards)</div><div class="hand-pills"><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Simic%20Growth%20Chamber&format=image&version=small" alt="Simic Growth Chamber" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Simic Growth Chamb</span></span><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=small" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Urza's Saga</span></span><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Tolaria%20West&format=image&version=small" alt="Tolaria West" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Tolaria West</span></span><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Boseiju%2C%20Who%20Endures&format=image&version=small" alt="Boseiju, Who Endures" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Boseiju, Who Endur</span></span></div>
     <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Create 1x Construct token(s)</span></div>
-<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Urza's Saga Ch.III: Create Construct Token</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#fff8c5;color:#9a6700">TRIGGER</span><span class="action">Urza's Saga Ch.III: Create Construct Token</span></div>
 <div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Urza's Saga tutors Amulet of Vigor</span></div>
 <div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Sacrifice Urza's Saga (final chapter)</span></div>
 <div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Forest</span></div>
@@ -679,15 +709,17 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
-        <h4><span style="color:#0969da">Amulet Titan</span> — 6 lands</h4>
+        <h4><span style="color:#0969da">Amulet Titan</span> — 5 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Arboreal%20Grazer&format=image&version=art_crop" alt="Arboreal Grazer" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Arboreal Grazer<span class="pt">0/3</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=art_crop" alt="Construct Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Construct Token<span class="pt">6/6</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=art_crop" alt="Construct Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Construct Token<span class="pt">6/6</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=art_crop" alt="Construct Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Construct Token<span class="pt">6/6</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Amulet%20of%20Vigor&format=image&version=art_crop" alt="Amulet of Vigor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Amulet of Vigor</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Amulet%20of%20Vigor&format=image&version=art_crop" alt="Amulet of Vigor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Amulet of Vigor</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Spelunking&format=image&version=art_crop" alt="Spelunking" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Spelunking</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Amulet%20of%20Vigor&format=image&version=art_crop" alt="Amulet of Vigor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Amulet of Vigor</span></span></div>
-        <div class="land-list">Simic Growth Chamber, Simic Growth Chamber, Gruul Turf, Lotus Field, Urza's Saga, Forest</div>
+        <div class="other-list saga-row"><span class="creature-badge saga-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=art_crop" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="badge-text saga-label">Urza's Saga</span></span></div>
+        <div class="land-list">Simic Growth Chamber, Simic Growth Chamber, Gruul Turf, Lotus Field, Forest</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:#d1242f">Affinity</span> — 7 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Thought%20Monitor&format=image&version=art_crop" alt="Thought Monitor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Thought Monitor<span class="pt">2/2</span><span class="equip-tag" title="Cranial Plating">⚔Cranial Plating</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Signal%20Pest&format=image&version=art_crop" alt="Signal Pest" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Signal Pest<span class="pt">0/1</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Springleaf%20Drum&format=image&version=art_crop" alt="Springleaf Drum" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Springleaf Drum</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Cranial%20Plating&format=image&version=art_crop" alt="Cranial Plating" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Cranial Plating</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Mox%20Opal&format=image&version=art_crop" alt="Mox Opal" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Mox Opal</span></span></div>
+        
         <div class="land-list">Treasure Vault, Tanglepool Bridge, Razortide Bridge, Spire of Industry, Darksteel Citadel, Darksteel Citadel, Spire of Industry</div>
       </div>
     </div>
@@ -715,15 +747,17 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
-        <h4><span style="color:#0969da">Amulet Titan</span> — 6 lands</h4>
+        <h4><span style="color:#0969da">Amulet Titan</span> — 5 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=art_crop" alt="Construct Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Construct Token<span class="pt">6/6</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=art_crop" alt="Construct Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Construct Token<span class="pt">6/6</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=art_crop" alt="Construct Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Construct Token<span class="pt">6/6</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Amulet%20of%20Vigor&format=image&version=art_crop" alt="Amulet of Vigor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Amulet of Vigor</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Amulet%20of%20Vigor&format=image&version=art_crop" alt="Amulet of Vigor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Amulet of Vigor</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Spelunking&format=image&version=art_crop" alt="Spelunking" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Spelunking</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Amulet%20of%20Vigor&format=image&version=art_crop" alt="Amulet of Vigor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Amulet of Vigor</span></span></div>
-        <div class="land-list">Simic Growth Chamber, Simic Growth Chamber, Gruul Turf, Lotus Field, Urza's Saga, Forest</div>
+        <div class="other-list saga-row"><span class="creature-badge saga-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=art_crop" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="badge-text saga-label">Urza's Saga</span></span></div>
+        <div class="land-list">Simic Growth Chamber, Simic Growth Chamber, Gruul Turf, Lotus Field, Forest</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:#d1242f">Affinity</span> — 8 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Thought%20Monitor&format=image&version=art_crop" alt="Thought Monitor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Thought Monitor<span class="pt">13/2</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Signal%20Pest&format=image&version=art_crop" alt="Signal Pest" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Signal Pest<span class="pt">0/1</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Springleaf%20Drum&format=image&version=art_crop" alt="Springleaf Drum" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Springleaf Drum</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Cranial%20Plating&format=image&version=art_crop" alt="Cranial Plating" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Cranial Plating</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Mox%20Opal&format=image&version=art_crop" alt="Mox Opal" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Mox Opal</span></span></div>
+        
         <div class="land-list">Treasure Vault [T], Tanglepool Bridge, Razortide Bridge, Spire of Industry, Darksteel Citadel, Darksteel Citadel, Spire of Industry, Darkste</div>
       </div>
     </div>
@@ -743,7 +777,7 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Scapeshift</span></div>
     <div class="section-label">Hand (5 cards)</div><div class="hand-pills"><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Simic%20Growth%20Chamber&format=image&version=small" alt="Simic Growth Chamber" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Simic Growth Chamb</span></span><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=small" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Urza's Saga</span></span><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Tolaria%20West&format=image&version=small" alt="Tolaria West" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Tolaria West</span></span><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Boseiju%2C%20Who%20Endures&format=image&version=small" alt="Boseiju, Who Endures" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Boseiju, Who Endur</span></span><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Scapeshift&format=image&version=small" alt="Scapeshift" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Scapeshift</span></span></div>
     <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Create 1x Construct token(s)</span></div>
-<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Urza's Saga Ch.II: Create Construct Token</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#fff8c5;color:#9a6700">TRIGGER</span><span class="action">Urza's Saga Ch.II: Create Construct Token</span></div>
 <div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Urza's Saga</span></div>
 <div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Scapeshift (2GG)</span><span class="reason-toggle" onclick="toggleReason('r1t8p1s4')" title="Show reasoning">·</span><div class="reasoning" id="r1t8p1s4" style="display:none">← ramp</div></div>
 <div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Scapeshift sacrifices 7 lands</span></div>
@@ -767,15 +801,17 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
-        <h4><span style="color:#0969da">Amulet Titan</span> — 6 lands</h4>
+        <h4><span style="color:#0969da">Amulet Titan</span> — 5 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=art_crop" alt="Construct Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Construct Token<span class="pt">6/6</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=art_crop" alt="Construct Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Construct Token<span class="pt">6/6</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=art_crop" alt="Construct Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Construct Token<span class="pt">6/6</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Amulet%20of%20Vigor&format=image&version=art_crop" alt="Amulet of Vigor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Amulet of Vigor</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Amulet%20of%20Vigor&format=image&version=art_crop" alt="Amulet of Vigor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Amulet of Vigor</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Spelunking&format=image&version=art_crop" alt="Spelunking" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Spelunking</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Amulet%20of%20Vigor&format=image&version=art_crop" alt="Amulet of Vigor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Amulet of Vigor</span></span></div>
-        <div class="land-list">Simic Growth Chamber, Simic Growth Chamber, Gruul Turf, Lotus Field, Urza's Saga, Forest</div>
+        <div class="other-list saga-row"><span class="creature-badge saga-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=art_crop" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="badge-text saga-label">Urza's Saga</span></span></div>
+        <div class="land-list">Simic Growth Chamber, Simic Growth Chamber, Gruul Turf, Lotus Field, Forest</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:#d1242f">Affinity</span> — 8 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Thought%20Monitor&format=image&version=art_crop" alt="Thought Monitor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Thought Monitor<span class="pt">13/2</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Signal%20Pest&format=image&version=art_crop" alt="Signal Pest" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Signal Pest<span class="pt">0/1</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Springleaf%20Drum&format=image&version=art_crop" alt="Springleaf Drum" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Springleaf Drum</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Cranial%20Plating&format=image&version=art_crop" alt="Cranial Plating" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Cranial Plating</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Mox%20Opal&format=image&version=art_crop" alt="Mox Opal" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Mox Opal</span></span></div>
+        
         <div class="land-list">Treasure Vault [T], Tanglepool Bridge, Razortide Bridge, Spire of Industry, Darksteel Citadel, Darksteel Citadel, Spire of Industry, Darkste</div>
       </div>
     </div>
@@ -840,14 +876,16 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
-        <h4><span style="color:#0969da">Affinity</span> — 1 land</h4>
+        <h4><span style="color:#0969da">Affinity</span> — 0 lands</h4>
         <div class="board"><span style="color:#484f58">empty</span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Mox%20Opal&format=image&version=art_crop" alt="Mox Opal" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Mox Opal</span></span></div>
-        <div class="land-list">Urza's Saga</div>
+        <div class="other-list saga-row"><span class="creature-badge saga-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=art_crop" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="badge-text saga-label">Urza's Saga</span></span></div>
+        <div class="land-list">none</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:#d1242f">Amulet Titan</span> — 0 lands</h4>
         <div class="board"><span style="color:#484f58">empty</span></div>
+        
         
         <div class="land-list">none</div>
       </div>
@@ -873,16 +911,18 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
-        <h4><span style="color:#0969da">Affinity</span> — 1 land</h4>
+        <h4><span style="color:#0969da">Affinity</span> — 0 lands</h4>
         <div class="board"><span style="color:#484f58">empty</span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Mox%20Opal&format=image&version=art_crop" alt="Mox Opal" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Mox Opal</span></span></div>
-        <div class="land-list">Urza's Saga</div>
+        <div class="other-list saga-row"><span class="creature-badge saga-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=art_crop" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="badge-text saga-label">Urza's Saga</span></span></div>
+        <div class="land-list">none</div>
       </div>
       <div class="board-side opp">
-        <h4><span style="color:#d1242f">Amulet Titan</span> — 1 land</h4>
+        <h4><span style="color:#d1242f">Amulet Titan</span> — 0 lands</h4>
         <div class="board"><span style="color:#484f58">empty</span></div>
         
-        <div class="land-list">Urza's Saga</div>
+        <div class="other-list saga-row"><span class="creature-badge saga-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=art_crop" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="badge-text saga-label">Urza's Saga</span></span></div>
+        <div class="land-list">none</div>
       </div>
     </div>
   </div>
@@ -907,16 +947,18 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
-        <h4><span style="color:#0969da">Affinity</span> — 2 lands</h4>
+        <h4><span style="color:#0969da">Affinity</span> — 1 land</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=art_crop" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Ornithopter<span class="pt">0/2</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Mox%20Opal&format=image&version=art_crop" alt="Mox Opal" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Mox Opal</span></span></div>
-        <div class="land-list">Urza's Saga, Silverbluff Bridge [T]</div>
+        <div class="other-list saga-row"><span class="creature-badge saga-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=art_crop" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="badge-text saga-label">Urza's Saga</span></span></div>
+        <div class="land-list">Silverbluff Bridge [T]</div>
       </div>
       <div class="board-side opp">
-        <h4><span style="color:#d1242f">Amulet Titan</span> — 1 land</h4>
+        <h4><span style="color:#d1242f">Amulet Titan</span> — 0 lands</h4>
         <div class="board"><span style="color:#484f58">empty</span></div>
         
-        <div class="land-list">Urza's Saga</div>
+        <div class="other-list saga-row"><span class="creature-badge saga-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=art_crop" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="badge-text saga-label">Urza's Saga</span></span></div>
+        <div class="land-list">none</div>
       </div>
     </div>
   </div>
@@ -942,16 +984,18 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
-        <h4><span style="color:#0969da">Affinity</span> — 2 lands</h4>
+        <h4><span style="color:#0969da">Affinity</span> — 1 land</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=art_crop" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Ornithopter<span class="pt">0/2</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Mox%20Opal&format=image&version=art_crop" alt="Mox Opal" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Mox Opal</span></span></div>
-        <div class="land-list">Urza's Saga, Silverbluff Bridge</div>
+        <div class="other-list saga-row"><span class="creature-badge saga-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=art_crop" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="badge-text saga-label">Urza's Saga</span></span></div>
+        <div class="land-list">Silverbluff Bridge</div>
       </div>
       <div class="board-side opp">
-        <h4><span style="color:#d1242f">Amulet Titan</span> — 4 lands</h4>
+        <h4><span style="color:#d1242f">Amulet Titan</span> — 3 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Arboreal%20Grazer&format=image&version=art_crop" alt="Arboreal Grazer" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Arboreal Grazer<span class="pt">0/3</span></span></span></div>
         
-        <div class="land-list">Urza's Saga, Boseiju, Who Endures [T], Gruul Turf [T]</div>
+        <div class="other-list saga-row"><span class="creature-badge saga-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=art_crop" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="badge-text saga-label">Urza's Saga</span></span></div>
+        <div class="land-list">Boseiju, Who Endures [T], Gruul Turf [T]</div>
       </div>
     </div>
   </div>
@@ -970,7 +1014,7 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Thought Monitor</span></div>
     <div class="section-label">Hand (5 cards)</div><div class="hand-pills"><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Nettlecyst&format=image&version=small" alt="Nettlecyst" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Nettlecyst</span></span><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Nettlecyst&format=image&version=small" alt="Nettlecyst" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Nettlecyst</span></span><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Thought%20Monitor&format=image&version=small" alt="Thought Monitor" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Thought Monitor</span></span><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Mox%20Opal&format=image&version=small" alt="Mox Opal" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Mox Opal</span></span><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Thought%20Monitor&format=image&version=small" alt="Thought Monitor" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Thought Monitor</span></span></div>
     <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Create 1x Construct token(s)</span></div>
-<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Urza's Saga Ch.II: Create Construct Token</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#fff8c5;color:#9a6700">TRIGGER</span><span class="action">Urza's Saga Ch.II: Create Construct Token</span></div>
 <div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Thought Monitor (6U)</span><span class="reason-toggle" onclick="toggleReason('r2t3p1s3')" title="Show reasoning">·</span><div class="reasoning" id="r2t3p1s3" style="display:none">← curve_out [enablers]</div></div>
 <div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Thought Monitor ETB: draw 2 cards</span></div>
 <div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Razortide Bridge (enters tapped)</span></div>
@@ -980,16 +1024,18 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
-        <h4><span style="color:#0969da">Affinity</span> — 3 lands</h4>
+        <h4><span style="color:#0969da">Affinity</span> — 2 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=art_crop" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Ornithopter<span class="pt">0/2</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=art_crop" alt="Construct Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Construct Token<span class="pt">7/7</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Thought%20Monitor&format=image&version=art_crop" alt="Thought Monitor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Thought Monitor<span class="pt">2/2</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Memnite&format=image&version=art_crop" alt="Memnite" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Memnite<span class="pt">1/1</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Mox%20Opal&format=image&version=art_crop" alt="Mox Opal" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Mox Opal</span></span></div>
-        <div class="land-list">Urza's Saga [T], Silverbluff Bridge [T], Razortide Bridge [T]</div>
+        <div class="other-list saga-row"><span class="creature-badge saga-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=art_crop" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="badge-text saga-label"><span class="saga-tapped" title="Tapped">↷</span>Urza's Saga</span></span></div>
+        <div class="land-list">Silverbluff Bridge [T], Razortide Bridge [T]</div>
       </div>
       <div class="board-side opp">
-        <h4><span style="color:#d1242f">Amulet Titan</span> — 4 lands</h4>
+        <h4><span style="color:#d1242f">Amulet Titan</span> — 3 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Arboreal%20Grazer&format=image&version=art_crop" alt="Arboreal Grazer" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Arboreal Grazer<span class="pt">0/3</span></span></span></div>
         
-        <div class="land-list">Urza's Saga, Boseiju, Who Endures, Gruul Turf</div>
+        <div class="other-list saga-row"><span class="creature-badge saga-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=art_crop" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="badge-text saga-label">Urza's Saga</span></span></div>
+        <div class="land-list">Boseiju, Who Endures, Gruul Turf</div>
       </div>
     </div>
   </div>
@@ -1008,7 +1054,7 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Spelunking</span></div>
     <div class="section-label">Hand (7 cards)</div><div class="hand-pills"><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Scapeshift&format=image&version=small" alt="Scapeshift" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Scapeshift</span></span><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Gruul%20Turf&format=image&version=small" alt="Gruul Turf" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Gruul Turf</span></span><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Simic%20Growth%20Chamber&format=image&version=small" alt="Simic Growth Chamber" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Simic Growth Chamb</span></span><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Gruul%20Turf&format=image&version=small" alt="Gruul Turf" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Gruul Turf</span></span><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Otawara%2C%20Soaring%20City&format=image&version=small" alt="Otawara, Soaring City" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Otawara, Soaring C</span></span><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Primeval%20Titan&format=image&version=small" alt="Primeval Titan" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Primeval Titan</span></span><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Spelunking&format=image&version=small" alt="Spelunking" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Spelunking</span></span></div>
     <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Create 1x Construct token(s)</span></div>
-<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Urza's Saga Ch.II: Create Construct Token</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#fff8c5;color:#9a6700">TRIGGER</span><span class="action">Urza's Saga Ch.II: Create Construct Token</span></div>
 <div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Otawara, Soaring City</span></div>
 <div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Primeval Titan (4GG)</span><span class="reason-toggle" onclick="toggleReason('r2t3p2s4')" title="Show reasoning">·</span><div class="reasoning" id="r2t3p2s4" style="display:none">← ramp [payoffs]</div></div>
 <div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Primeval Titan searches for Gruul Turf</span></div>
@@ -1018,16 +1064,18 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="section-label">Board after turn</div>
     <div class="board-grid">
       <div class="board-side bug">
-        <h4><span style="color:#0969da">Affinity</span> — 3 lands</h4>
+        <h4><span style="color:#0969da">Affinity</span> — 2 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=art_crop" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Ornithopter<span class="pt">0/2</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=art_crop" alt="Construct Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Construct Token<span class="pt">7/7</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Thought%20Monitor&format=image&version=art_crop" alt="Thought Monitor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Thought Monitor<span class="pt">2/2</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Memnite&format=image&version=art_crop" alt="Memnite" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Memnite<span class="pt">1/1</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Mox%20Opal&format=image&version=art_crop" alt="Mox Opal" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Mox Opal</span></span></div>
-        <div class="land-list">Urza's Saga, Silverbluff Bridge, Razortide Bridge</div>
+        <div class="other-list saga-row"><span class="creature-badge saga-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=art_crop" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="badge-text saga-label">Urza's Saga</span></span></div>
+        <div class="land-list">Silverbluff Bridge, Razortide Bridge</div>
       </div>
       <div class="board-side opp">
-        <h4><span style="color:#d1242f">Amulet Titan</span> — 8 lands</h4>
+        <h4><span style="color:#d1242f">Amulet Titan</span> — 7 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Arboreal%20Grazer&format=image&version=art_crop" alt="Arboreal Grazer" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Arboreal Grazer<span class="pt">0/3</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=art_crop" alt="Construct Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Construct Token<span class="pt">1/1</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Primeval%20Titan&format=image&version=art_crop" alt="Primeval Titan" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Primeval Titan<span class="pt">6/6</span></span></span></div>
         
-        <div class="land-list">Urza's Saga [T], Boseiju, Who Endures [T], Gruul Turf [T], Otawara, Soaring City, Gruul Turf [T], Simic Growth Chamber [T]</div>
+        <div class="other-list saga-row"><span class="creature-badge saga-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=art_crop" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="badge-text saga-label"><span class="saga-tapped" title="Tapped">↷</span>Urza's Saga</span></span></div>
+        <div class="land-list">Boseiju, Who Endures [T], Gruul Turf [T], Otawara, Soaring City, Gruul Turf [T], Simic Growth Chamber [T]</div>
       </div>
     </div>
   </div>
@@ -1046,7 +1094,7 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Frogmite</span></div>
     <div class="section-label">Hand (5 cards)</div><div class="hand-pills"><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Nettlecyst&format=image&version=small" alt="Nettlecyst" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Nettlecyst</span></span><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Nettlecyst&format=image&version=small" alt="Nettlecyst" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Nettlecyst</span></span><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Mox%20Opal&format=image&version=small" alt="Mox Opal" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Mox Opal</span></span><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Thought%20Monitor&format=image&version=small" alt="Thought Monitor" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Thought Monitor</span></span><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Frogmite&format=image&version=small" alt="Frogmite" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Frogmite</span></span></div>
     <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Create 1x Construct token(s)</span></div>
-<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Urza's Saga Ch.III: Create Construct Token</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#fff8c5;color:#9a6700">TRIGGER</span><span class="action">Urza's Saga Ch.III: Create Construct Token</span></div>
 <div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Urza's Saga tutors Springleaf Drum</span></div>
 <div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Sacrifice Urza's Saga (final chapter)</span></div>
 <div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action">Cast Thought Monitor (6U)</span><span class="reason-toggle" onclick="toggleReason('r2t4p1s5')" title="Show reasoning">·</span><div class="reasoning" id="r2t4p1s5" style="display:none">← curve_out [enablers]</div></div>
@@ -1069,13 +1117,15 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
         <h4><span style="color:#0969da">Affinity</span> — 3 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=art_crop" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Ornithopter<span class="pt">0/2</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=art_crop" alt="Construct Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Construct Token<span class="pt">14/14</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Thought%20Monitor&format=image&version=art_crop" alt="Thought Monitor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Thought Monitor<span class="pt">2/2</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Memnite&format=image&version=art_crop" alt="Memnite" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Memnite<span class="pt">1/1</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=art_crop" alt="Construct Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Construct Token<span class="pt">14/14</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Thought%20Monitor&format=image&version=art_crop" alt="Thought Monitor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Thought Monitor<span class="pt">2/2</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Frogmite&format=image&version=art_crop" alt="Frogmite" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Frogmite<span class="pt">2/2</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Germ%20Token&format=image&version=art_crop" alt="Germ Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Germ Token<span class="pt">14/14</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Germ%20Token&format=image&version=art_crop" alt="Germ Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Germ Token<span class="pt">14/14</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Mox%20Opal&format=image&version=art_crop" alt="Mox Opal" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Mox Opal</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Springleaf%20Drum&format=image&version=art_crop" alt="Springleaf Drum" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Springleaf Drum</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Nettlecyst&format=image&version=art_crop" alt="Nettlecyst" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Nettlecyst</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Nettlecyst&format=image&version=art_crop" alt="Nettlecyst" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Nettlecyst</span></span></div>
+        
         <div class="land-list">Silverbluff Bridge [T], Razortide Bridge, Treasure Vault</div>
       </div>
       <div class="board-side opp">
-        <h4><span style="color:#d1242f">Amulet Titan</span> — 8 lands</h4>
+        <h4><span style="color:#d1242f">Amulet Titan</span> — 7 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Arboreal%20Grazer&format=image&version=art_crop" alt="Arboreal Grazer" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Arboreal Grazer<span class="pt">0/3</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Primeval%20Titan&format=image&version=art_crop" alt="Primeval Titan" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Primeval Titan<span class="pt">6/6</span></span></span></div>
         
-        <div class="land-list">Urza's Saga, Boseiju, Who Endures, Gruul Turf, Otawara, Soaring City, Gruul Turf, Simic Growth Chamber</div>
+        <div class="other-list saga-row"><span class="creature-badge saga-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=art_crop" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="badge-text saga-label">Urza's Saga</span></span></div>
+        <div class="land-list">Boseiju, Who Endures, Gruul Turf, Otawara, Soaring City, Gruul Turf, Simic Growth Chamber</div>
       </div>
     </div>
   </div>
@@ -1094,7 +1144,7 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Green Sun's Zenith</span></div>
     <div class="section-label">Hand (6 cards)</div><div class="hand-pills"><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Scapeshift&format=image&version=small" alt="Scapeshift" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Scapeshift</span></span><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Gruul%20Turf&format=image&version=small" alt="Gruul Turf" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Gruul Turf</span></span><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Simic%20Growth%20Chamber&format=image&version=small" alt="Simic Growth Chamber" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Simic Growth Chamb</span></span><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Gruul%20Turf&format=image&version=small" alt="Gruul Turf" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Gruul Turf</span></span><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Spelunking&format=image&version=small" alt="Spelunking" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Spelunking</span></span><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Green%20Sun%27s%20Zenith&format=image&version=small" alt="Green Sun's Zenith" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Green Sun's Zenith</span></span></div>
     <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Create 1x Construct token(s)</span></div>
-<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Urza's Saga Ch.III: Create Construct Token</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#fff8c5;color:#9a6700">TRIGGER</span><span class="action">Urza's Saga Ch.III: Create Construct Token</span></div>
 <div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Urza's Saga tutors Amulet of Vigor</span></div>
 <div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Sacrifice Urza's Saga (final chapter)</span></div>
 <div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#dafbe1;color:#1a7f37">LAND</span><span class="action">Play Simic Growth Chamber (enters tapped)</span></div>
@@ -1114,12 +1164,14 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
         <h4><span style="color:#0969da">Affinity</span> — 3 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=art_crop" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Ornithopter<span class="pt">0/2</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=art_crop" alt="Construct Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Construct Token<span class="pt">14/14</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Thought%20Monitor&format=image&version=art_crop" alt="Thought Monitor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Thought Monitor<span class="pt">2/2</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Memnite&format=image&version=art_crop" alt="Memnite" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Memnite<span class="pt">1/1</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=art_crop" alt="Construct Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Construct Token<span class="pt">14/14</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Thought%20Monitor&format=image&version=art_crop" alt="Thought Monitor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Thought Monitor<span class="pt">2/2</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Frogmite&format=image&version=art_crop" alt="Frogmite" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Frogmite<span class="pt">2/2</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Germ%20Token&format=image&version=art_crop" alt="Germ Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Germ Token<span class="pt">14/14</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Germ%20Token&format=image&version=art_crop" alt="Germ Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Germ Token<span class="pt">14/14</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Mox%20Opal&format=image&version=art_crop" alt="Mox Opal" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Mox Opal</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Springleaf%20Drum&format=image&version=art_crop" alt="Springleaf Drum" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Springleaf Drum</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Nettlecyst&format=image&version=art_crop" alt="Nettlecyst" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Nettlecyst</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Nettlecyst&format=image&version=art_crop" alt="Nettlecyst" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Nettlecyst</span></span></div>
+        
         <div class="land-list">Silverbluff Bridge, Razortide Bridge, Treasure Vault</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:#d1242f">Amulet Titan</span> — 8 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Arboreal%20Grazer&format=image&version=art_crop" alt="Arboreal Grazer" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Arboreal Grazer<span class="pt">0/3</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Primeval%20Titan&format=image&version=art_crop" alt="Primeval Titan" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Primeval Titan<span class="pt">6/6</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=art_crop" alt="Construct Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Construct Token<span class="pt">2/2</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Dryad%20Arbor&format=image&version=art_crop" alt="Dryad Arbor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Dryad Arbor<span class="pt">1/1</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Amulet%20of%20Vigor&format=image&version=art_crop" alt="Amulet of Vigor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Amulet of Vigor</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Spelunking&format=image&version=art_crop" alt="Spelunking" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Spelunking</span></span></div>
+        
         <div class="land-list">Gruul Turf [T], Otawara, Soaring City [T], Gruul Turf [T], Simic Growth Chamber [T], Simic Growth Chamber [T], Gruul Turf [T], Dryad Arbor</div>
       </div>
     </div>
@@ -1156,12 +1208,14 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
         <h4><span style="color:#0969da">Affinity</span> — 4 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=art_crop" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Ornithopter<span class="pt">0/2</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=art_crop" alt="Construct Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Construct Token<span class="pt">14/14</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Thought%20Monitor&format=image&version=art_crop" alt="Thought Monitor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Thought Monitor<span class="pt">2/2</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Memnite&format=image&version=art_crop" alt="Memnite" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Memnite<span class="pt">1/1</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=art_crop" alt="Construct Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Construct Token<span class="pt">14/14</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Thought%20Monitor&format=image&version=art_crop" alt="Thought Monitor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Thought Monitor<span class="pt">2/2</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Frogmite&format=image&version=art_crop" alt="Frogmite" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Frogmite<span class="pt">2/2</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Germ%20Token&format=image&version=art_crop" alt="Germ Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Germ Token<span class="pt">14/14</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Germ%20Token&format=image&version=art_crop" alt="Germ Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Germ Token<span class="pt">14/14</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Mox%20Opal&format=image&version=art_crop" alt="Mox Opal" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Mox Opal</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Springleaf%20Drum&format=image&version=art_crop" alt="Springleaf Drum" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Springleaf Drum</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Nettlecyst&format=image&version=art_crop" alt="Nettlecyst" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Nettlecyst</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Nettlecyst&format=image&version=art_crop" alt="Nettlecyst" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Nettlecyst</span></span></div>
+        
         <div class="land-list">Silverbluff Bridge, Razortide Bridge, Treasure Vault, Spire of Industry</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:#d1242f">Amulet Titan</span> — 7 lands</h4>
         <div class="board"><span style="color:#484f58">empty</span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Amulet%20of%20Vigor&format=image&version=art_crop" alt="Amulet of Vigor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Amulet of Vigor</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Spelunking&format=image&version=art_crop" alt="Spelunking" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Spelunking</span></span></div>
+        
         <div class="land-list">Gruul Turf, Otawara, Soaring City, Gruul Turf, Simic Growth Chamber, Simic Growth Chamber, Gruul Turf</div>
       </div>
     </div>
@@ -1200,12 +1254,14 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
         <h4><span style="color:#0969da">Affinity</span> — 4 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=art_crop" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Ornithopter<span class="pt">0/2</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=art_crop" alt="Construct Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Construct Token<span class="pt">14/14</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Thought%20Monitor&format=image&version=art_crop" alt="Thought Monitor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Thought Monitor<span class="pt">2/2</span><span class="equip-tag" title="Cranial Plating">⚔Cranial Plating</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Memnite&format=image&version=art_crop" alt="Memnite" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Memnite<span class="pt">1/1</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=art_crop" alt="Construct Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Construct Token<span class="pt">14/14</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Thought%20Monitor&format=image&version=art_crop" alt="Thought Monitor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Thought Monitor<span class="pt">2/2</span><span class="equip-tag" title="Cranial Plating">⚔Cranial Plating</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Frogmite&format=image&version=art_crop" alt="Frogmite" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Frogmite<span class="pt">2/2</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Germ%20Token&format=image&version=art_crop" alt="Germ Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Germ Token<span class="pt">14/14</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Germ%20Token&format=image&version=art_crop" alt="Germ Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Germ Token<span class="pt">14/14</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Mox%20Opal&format=image&version=art_crop" alt="Mox Opal" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Mox Opal</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Springleaf%20Drum&format=image&version=art_crop" alt="Springleaf Drum" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Springleaf Drum</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Nettlecyst&format=image&version=art_crop" alt="Nettlecyst" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Nettlecyst</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Nettlecyst&format=image&version=art_crop" alt="Nettlecyst" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Nettlecyst</span></span></div>
+        
         <div class="land-list">Silverbluff Bridge, Razortide Bridge, Treasure Vault, Spire of Industry</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:#d1242f">Amulet Titan</span> — 7 lands</h4>
         <div class="board"><span style="color:#484f58">empty</span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Amulet%20of%20Vigor&format=image&version=art_crop" alt="Amulet of Vigor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Amulet of Vigor</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Spelunking&format=image&version=art_crop" alt="Spelunking" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Spelunking</span></span></div>
+        
         <div class="land-list">Simic Growth Chamber, Crumbling Vestige, Crumbling Vestige, Crumbling Vestige, Lotus Field, Crumbling Vestige, Forest</div>
       </div>
     </div>
@@ -1245,12 +1301,14 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
         <h4><span style="color:#0969da">Affinity</span> — 4 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=art_crop" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Ornithopter<span class="pt">0/2</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=art_crop" alt="Construct Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Construct Token<span class="pt">14/14</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Thought%20Monitor&format=image&version=art_crop" alt="Thought Monitor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Thought Monitor<span class="pt">2/2</span><span class="equip-tag" title="Cranial Plating">⚔Cranial Plating</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Memnite&format=image&version=art_crop" alt="Memnite" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Memnite<span class="pt">1/1</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Construct%20Token&format=image&version=art_crop" alt="Construct Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Construct Token<span class="pt">14/14</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Thought%20Monitor&format=image&version=art_crop" alt="Thought Monitor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Thought Monitor<span class="pt">2/2</span><span class="equip-tag" title="Cranial Plating">⚔Cranial Plating</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Frogmite&format=image&version=art_crop" alt="Frogmite" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Frogmite<span class="pt">2/2</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Germ%20Token&format=image&version=art_crop" alt="Germ Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Germ Token<span class="pt">14/14</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Germ%20Token&format=image&version=art_crop" alt="Germ Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Germ Token<span class="pt">14/14</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Mox%20Opal&format=image&version=art_crop" alt="Mox Opal" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Mox Opal</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Springleaf%20Drum&format=image&version=art_crop" alt="Springleaf Drum" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Springleaf Drum</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Nettlecyst&format=image&version=art_crop" alt="Nettlecyst" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Nettlecyst</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Nettlecyst&format=image&version=art_crop" alt="Nettlecyst" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Nettlecyst</span></span></div>
+        
         <div class="land-list">Silverbluff Bridge, Razortide Bridge, Treasure Vault, Spire of Industry</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:#d1242f">Amulet Titan</span> — 7 lands</h4>
         <div class="board"><span style="color:#484f58">empty</span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Amulet%20of%20Vigor&format=image&version=art_crop" alt="Amulet of Vigor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Amulet of Vigor</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Spelunking&format=image&version=art_crop" alt="Spelunking" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Spelunking</span></span></div>
+        
         <div class="land-list">Simic Growth Chamber, Crumbling Vestige, Crumbling Vestige, Crumbling Vestige, Lotus Field, Crumbling Vestige, Forest</div>
       </div>
     </div>
@@ -1319,11 +1377,13 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
         <h4><span style="color:#0969da">Amulet Titan</span> — 1 land</h4>
         <div class="board"><span style="color:#484f58">empty</span></div>
         
+        
         <div class="land-list">Echoing Deeps</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:#d1242f">Affinity</span> — 0 lands</h4>
         <div class="board"><span style="color:#484f58">empty</span></div>
+        
         
         <div class="land-list">none</div>
       </div>
@@ -1354,11 +1414,13 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
         <h4><span style="color:#0969da">Amulet Titan</span> — 1 land</h4>
         <div class="board"><span style="color:#484f58">empty</span></div>
         
+        
         <div class="land-list">Echoing Deeps</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:#d1242f">Affinity</span> — 1 land</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Memnite&format=image&version=art_crop" alt="Memnite" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Memnite<span class="pt">1/1</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Signal%20Pest&format=image&version=art_crop" alt="Signal Pest" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Signal Pest<span class="pt">0/1</span></span></span></div>
+        
         
         <div class="land-list">Spire of Industry [T]</div>
       </div>
@@ -1388,11 +1450,13 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
         <h4><span style="color:#0969da">Amulet Titan</span> — 2 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Dryad%20Arbor&format=image&version=art_crop" alt="Dryad Arbor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Dryad Arbor<span class="pt">1/1</span></span></span></div>
         
+        
         <div class="land-list">Echoing Deeps [T], Dryad Arbor [T]</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:#d1242f">Affinity</span> — 1 land</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Memnite&format=image&version=art_crop" alt="Memnite" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Memnite<span class="pt">1/1</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Signal%20Pest&format=image&version=art_crop" alt="Signal Pest" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Signal Pest<span class="pt">0/1</span></span></span></div>
+        
         
         <div class="land-list">Spire of Industry</div>
       </div>
@@ -1427,13 +1491,15 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
         <h4><span style="color:#0969da">Amulet Titan</span> — 2 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Dryad%20Arbor&format=image&version=art_crop" alt="Dryad Arbor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Dryad Arbor<span class="pt">1/1</span></span></span></div>
         
+        
         <div class="land-list">Echoing Deeps, Dryad Arbor</div>
       </div>
       <div class="board-side opp">
-        <h4><span style="color:#d1242f">Affinity</span> — 2 lands</h4>
+        <h4><span style="color:#d1242f">Affinity</span> — 1 land</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Memnite&format=image&version=art_crop" alt="Memnite" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Memnite<span class="pt">1/1</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Signal%20Pest&format=image&version=art_crop" alt="Signal Pest" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Signal Pest<span class="pt">0/1</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Germ%20Token&format=image&version=art_crop" alt="Germ Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Germ Token<span class="pt">5/5</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Signal%20Pest&format=image&version=art_crop" alt="Signal Pest" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Signal Pest<span class="pt">0/1</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Springleaf%20Drum&format=image&version=art_crop" alt="Springleaf Drum" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Springleaf Drum</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Nettlecyst&format=image&version=art_crop" alt="Nettlecyst" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Nettlecyst</span></span></div>
-        <div class="land-list">Spire of Industry [T], Urza's Saga [T]</div>
+        <div class="other-list saga-row"><span class="creature-badge saga-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=art_crop" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="badge-text saga-label"><span class="saga-tapped" title="Tapped">↷</span>Urza's Saga</span></span></div>
+        <div class="land-list">Spire of Industry [T]</div>
       </div>
     </div>
   </div>
@@ -1460,13 +1526,15 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
         <h4><span style="color:#0969da">Amulet Titan</span> — 3 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Dryad%20Arbor&format=image&version=art_crop" alt="Dryad Arbor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Dryad Arbor<span class="pt">1/1</span></span></span></div>
         
+        
         <div class="land-list">Echoing Deeps, Dryad Arbor, Gruul Turf [T]</div>
       </div>
       <div class="board-side opp">
-        <h4><span style="color:#d1242f">Affinity</span> — 2 lands</h4>
+        <h4><span style="color:#d1242f">Affinity</span> — 1 land</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Memnite&format=image&version=art_crop" alt="Memnite" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Memnite<span class="pt">1/1</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Signal%20Pest&format=image&version=art_crop" alt="Signal Pest" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Signal Pest<span class="pt">0/1</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Germ%20Token&format=image&version=art_crop" alt="Germ Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Germ Token<span class="pt">5/5</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Signal%20Pest&format=image&version=art_crop" alt="Signal Pest" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Signal Pest<span class="pt">0/1</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Springleaf%20Drum&format=image&version=art_crop" alt="Springleaf Drum" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Springleaf Drum</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Nettlecyst&format=image&version=art_crop" alt="Nettlecyst" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Nettlecyst</span></span></div>
-        <div class="land-list">Spire of Industry, Urza's Saga</div>
+        <div class="other-list saga-row"><span class="creature-badge saga-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=art_crop" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="badge-text saga-label">Urza's Saga</span></span></div>
+        <div class="land-list">Spire of Industry</div>
       </div>
     </div>
   </div>
@@ -1502,13 +1570,15 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
         <h4><span style="color:#0969da">Amulet Titan</span> — 2 lands</h4>
         <div class="board"><span style="color:#484f58">empty</span></div>
         
+        
         <div class="land-list">Echoing Deeps, Gruul Turf</div>
       </div>
       <div class="board-side opp">
-        <h4><span style="color:#d1242f">Affinity</span> — 3 lands</h4>
+        <h4><span style="color:#d1242f">Affinity</span> — 2 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Memnite&format=image&version=art_crop" alt="Memnite" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Memnite<span class="pt">1/1</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Signal%20Pest&format=image&version=art_crop" alt="Signal Pest" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Signal Pest<span class="pt">0/1</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Germ%20Token&format=image&version=art_crop" alt="Germ Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Germ Token<span class="pt">9/9</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Signal%20Pest&format=image&version=art_crop" alt="Signal Pest" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Signal Pest<span class="pt">0/1</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Thought%20Monitor&format=image&version=art_crop" alt="Thought Monitor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Thought Monitor<span class="pt">2/2</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=art_crop" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Ornithopter<span class="pt">0/2</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Springleaf%20Drum&format=image&version=art_crop" alt="Springleaf Drum" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Springleaf Drum</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Nettlecyst&format=image&version=art_crop" alt="Nettlecyst" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Nettlecyst</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Mox%20Opal&format=image&version=art_crop" alt="Mox Opal" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Mox Opal</span></span></div>
-        <div class="land-list">Spire of Industry [T], Urza's Saga, Razortide Bridge [T]</div>
+        <div class="other-list saga-row"><span class="creature-badge saga-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=art_crop" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="badge-text saga-label">Urza's Saga</span></span></div>
+        <div class="land-list">Spire of Industry [T], Razortide Bridge [T]</div>
       </div>
     </div>
   </div>
@@ -1536,13 +1606,15 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
         <h4><span style="color:#0969da">Amulet Titan</span> — 3 lands</h4>
         <div class="board"><span style="color:#484f58">empty</span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Vexing%20Bauble&format=image&version=art_crop" alt="Vexing Bauble" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Vexing Bauble</span></span></div>
+        
         <div class="land-list">Echoing Deeps [T], Gruul Turf, Tolaria West [T]</div>
       </div>
       <div class="board-side opp">
-        <h4><span style="color:#d1242f">Affinity</span> — 3 lands</h4>
+        <h4><span style="color:#d1242f">Affinity</span> — 2 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Memnite&format=image&version=art_crop" alt="Memnite" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Memnite<span class="pt">1/1</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Signal%20Pest&format=image&version=art_crop" alt="Signal Pest" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Signal Pest<span class="pt">0/1</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Germ%20Token&format=image&version=art_crop" alt="Germ Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Germ Token<span class="pt">9/9</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Signal%20Pest&format=image&version=art_crop" alt="Signal Pest" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Signal Pest<span class="pt">0/1</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Thought%20Monitor&format=image&version=art_crop" alt="Thought Monitor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Thought Monitor<span class="pt">2/2</span><span class="equip-tag" title="Cranial Plating">⚔Cranial Plating</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=art_crop" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Ornithopter<span class="pt">0/2</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Springleaf%20Drum&format=image&version=art_crop" alt="Springleaf Drum" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Springleaf Drum</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Nettlecyst&format=image&version=art_crop" alt="Nettlecyst" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Nettlecyst</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Mox%20Opal&format=image&version=art_crop" alt="Mox Opal" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Mox Opal</span></span></div>
-        <div class="land-list">Spire of Industry, Urza's Saga, Razortide Bridge</div>
+        <div class="other-list saga-row"><span class="creature-badge saga-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=art_crop" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="badge-text saga-label">Urza's Saga</span></span></div>
+        <div class="land-list">Spire of Industry, Razortide Bridge</div>
       </div>
     </div>
   </div>
@@ -1561,7 +1633,7 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
     <div class="section-label">Draw</div><div class="draw-row"><span class="cat-badge" style="background:#f0f0ff;color:#5a5a9a">DRAW</span><span class="pill">Cranial Plating</span></div>
     <div class="section-label">Hand (1 cards)</div><div class="hand-pills"><span class="hand-card"><img class="hand-card-art" src="https://api.scryfall.com/cards/named?exact=Cranial%20Plating&format=image&version=small" alt="Cranial Plating" loading="lazy" onerror="this.style.display='none'"><span class="hand-card-label">Cranial Plating</span></span></div>
     <div class="section-label">Plays</div><div class="play"><span class="step">1.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Create 1x Construct token(s)</span></div>
-<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action">Urza's Saga Ch.II: Create Construct Token</span></div>
+<div class="play"><span class="step">2.</span><span class="cat-badge" style="background:#fff8c5;color:#9a6700">TRIGGER</span><span class="action">Urza's Saga Ch.II: Create Construct Token</span></div>
 <div class="play"><span class="step">3.</span><span class="cat-badge" style="background:#ddf4ff;color:#0969da">SPELL</span><span class="action key">Cast Cranial Plating (2)</span><span class="reason-toggle" onclick="toggleReason('r3t4p2s3')" title="Show reasoning">·</span><div class="reasoning" id="r3t4p2s3" style="display:none">← curve_out [payoffs]</div></div>
 <div class="play"><span class="step">4.</span><span class="cat-badge" style="background:#f6f8fa;color:#656d76">OTHER</span><span class="action key">Cranial Plating enters the battlefield (unattached)</span></div>
 <div class="play"><span class="step">5.</span><span class="cat-badge" style="background:#fff8c5;color:#9a6700">TRIGGER</span><span class="action key">Equip Cranial Plating to Thought Monitor (cost 1)</span></div>
@@ -1579,13 +1651,15 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
         <h4><span style="color:#0969da">Amulet Titan</span> — 3 lands</h4>
         <div class="board"><span style="color:#484f58">empty</span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Vexing%20Bauble&format=image&version=art_crop" alt="Vexing Bauble" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Vexing Bauble</span></span></div>
+        
         <div class="land-list">Echoing Deeps [T], Gruul Turf, Tolaria West [T]</div>
       </div>
       <div class="board-side opp">
-        <h4><span style="color:#d1242f">Affinity</span> — 3 lands</h4>
+        <h4><span style="color:#d1242f">Affinity</span> — 2 lands</h4>
         <div class="board"><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Memnite&format=image&version=art_crop" alt="Memnite" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Memnite<span class="pt">1/1</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Signal%20Pest&format=image&version=art_crop" alt="Signal Pest" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Signal Pest<span class="pt">0/1</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Germ%20Token&format=image&version=art_crop" alt="Germ Token" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Germ Token<span class="pt">9/9</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Signal%20Pest&format=image&version=art_crop" alt="Signal Pest" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Signal Pest<span class="pt">0/1</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Thought%20Monitor&format=image&version=art_crop" alt="Thought Monitor" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Thought Monitor<span class="pt">2/2</span><span class="equip-tag" title="Cranial Plating">⚔Cranial Plating</span></span></span><span class="creature-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Ornithopter&format=image&version=art_crop" alt="Ornithopter" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Ornithopter<span class="pt">0/2</span></span></span></div>
         <div class="other-list"><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Springleaf%20Drum&format=image&version=art_crop" alt="Springleaf Drum" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Springleaf Drum</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Nettlecyst&format=image&version=art_crop" alt="Nettlecyst" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Nettlecyst</span></span><span class="creature-badge other-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Mox%20Opal&format=image&version=art_crop" alt="Mox Opal" loading="lazy" onerror="this.style.display='none'"><span class="badge-text">Mox Opal</span></span></div>
-        <div class="land-list">Spire of Industry, Urza's Saga, Razortide Bridge</div>
+        <div class="other-list saga-row"><span class="creature-badge saga-badge"><img class="badge-art" src="https://api.scryfall.com/cards/named?exact=Urza%27s%20Saga&format=image&version=art_crop" alt="Urza's Saga" loading="lazy" onerror="this.style.display='none'"><span class="badge-text saga-label">Urza's Saga</span></span></div>
+        <div class="land-list">Spire of Industry, Razortide Bridge</div>
       </div>
     </div>
   </div>
