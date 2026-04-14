@@ -505,3 +505,129 @@ for c in game.players[1 - controller].battlefield:
 python run_meta.py --verbose "Domain Zoo" "Jeskai Blink" -s 51030 | grep "Doorkeeper\|ETB suppressed"
 # Blink's Solitude/Omnath ETBs should be suppressed while Doorkeeper is on Zoo's side
 ```
+
+---
+
+## Fix 14 — Block priority for combat-damage-trigger creatures
+
+**Signal:** In Affinity vs Boros replay, Affinity had Memnite (1/1), Signal Pest (0/1), Ornithopter (0/2) untapped but none blocked Ragavan (2/1). Trading Memnite for Ragavan stops an ongoing Treasure+exile engine; the AI doesn't recognise this.
+
+**Root cause:** The block-value calculation doesn't distinguish between creatures with ongoing combat-trigger value and vanilla creatures. Blocking a 2/1 Ragavan with a 1/1 Memnite is always a "bad trade" by P/T — but the recurring value Ragavan generates means it's worth trading up.
+
+**Fix:** In `decide_blockers()` / `_score_blocker()` in `ai/ev_player.py`, apply a premium to blocking combat-damage-trigger creatures. Uses the same `_has_combat_damage_trigger()` oracle helper from Fix 1:
+
+```python
+def _block_target_premium(attacker) -> float:
+    """Extra EV from blocking this attacker beyond its raw P/T."""
+    oracle = (attacker.template.oracle_text or '').lower()
+    if 'deals combat damage to a player' in oracle:
+        # Recurring engine (Ragavan Treasure+exile, Psychic Frog pump):
+        # each hit gives opponent ~2 EV worth of advantage.
+        # Block now = deny that advantage for all future turns.
+        return 3.0
+    return 0.0
+```
+
+Apply in the block-scoring path: add `_block_target_premium(attacker)` to the value of assigning a blocker to that attacker.
+
+**Files:** `ai/ev_player.py` → `decide_blockers()` or equivalent block selection
+
+**Verify:**
+```bash
+python run_meta.py --verbose affinity zoo -s 61000 2>/dev/null | grep -E "BLOCK.*Ragavan|Ragavan.*BLOCK"
+# Expected: Affinity blocks Ragavan with Memnite early instead of letting it hit
+python run_meta.py --matchup affinity zoo -n 20 2>/dev/null | tail -3
+# Affinity WR should improve ~5pp vs Zoo
+```
+
+---
+
+## Fix 15 — Battle cry attacker optimisation
+
+**Signal:** Same replay, T2 Affinity attacks with Memnite (1/1) alone for 1 damage. Signal Pest is untapped — if Signal Pest also attacks, it gives battle cry (+1/+0) to Memnite, dealing 2 damage instead of 1. Or: hold Memnite back to block Ragavan (Fix 14) and don't attack at all.
+
+**Root cause:** The attack-selection loop evaluates each attacker independently. It doesn't model that attacking with Signal Pest increases other attackers' power. The battle cry bonus is calculated *during combat* but not *during attack selection*. So Signal Pest scores 0 expected damage (0/1 body) and doesn't get selected, even though its real value is the +1/+0 it gives others.
+
+**Fix:** In `decide_attackers()`, when computing attack EV, include the battle cry pump for co-attackers. Detect via oracle:
+
+```python
+def _has_battle_cry(creature) -> bool:
+    return 'battle cry' in (creature.template.oracle_text or '').lower()
+
+def _projected_attack_power(attackers: list) -> int:
+    """Total damage factoring in battle cry from co-attackers."""
+    battle_cry_count = sum(1 for a in attackers if _has_battle_cry(a))
+    return sum((a.power or 0) + battle_cry_count for a in attackers
+               if not _has_battle_cry(a)) + \
+           sum((a.power or 0) for a in attackers if _has_battle_cry(a))
+```
+
+Use `_projected_attack_power` instead of raw power sum when scoring attack combinations.
+
+**Files:** `ai/ev_player.py` → `decide_attackers()`
+
+**Verify:**
+```bash
+python run_meta.py --verbose affinity zoo -s 61000 2>/dev/null | grep -E "T2.*P1.*Attack"
+# Expected: Signal Pest included in attack group when Memnite attacks
+python run_meta.py --audit affinity -n 40 2>/dev/null | grep "Signal Pest"
+# Signal Pest delta should improve
+```
+
+---
+
+## Fix 14 — Block priority for combat-damage-trigger creatures
+
+**Signal:** Affinity vs Zoo replay, Affinity had Memnite/Signal Pest/Ornithopter untapped but none blocked Ragavan. Trading Memnite for Ragavan stops an ongoing Treasure+exile engine worth ~2 EV per hit.
+
+**Root cause:** Block-value calc treats Ragavan as a vanilla 2/1. Doesn't model recurring trigger value.
+
+**Fix:** In `decide_blockers()` in `ai/ev_player.py`, add a premium for blocking combat-damage-trigger attackers using the same oracle helper from Fix 1:
+
+```python
+def _block_target_premium(attacker) -> float:
+    oracle = (attacker.template.oracle_text or '').lower()
+    if 'deals combat damage to a player' in oracle:
+        return 3.0  # deny recurring Treasure/exile/pump advantage
+    return 0.0
+```
+
+Add `_block_target_premium(attacker)` to blocker assignment score.
+
+**Files:** `ai/ev_player.py` → `decide_blockers()`
+
+**Verify:**
+```bash
+python run_meta.py --verbose affinity zoo -s 61000 2>/dev/null | grep -E "BLOCK.*Ragavan|Ragavan.*BLOCK"
+# Expected: Affinity blocks Ragavan T2 with Memnite
+```
+
+---
+
+## Fix 15 — Battle cry attacker selection optimisation
+
+**Signal:** Same replay, T2 Affinity attacks Memnite alone for 1. Signal Pest untapped — if it attacks too, battle cry gives Memnite +1/+0 → 2 damage total. AI evaluates Signal Pest independently (0/1 = 0 damage) so doesn't include it.
+
+**Root cause:** `decide_attackers()` scores each attacker independently. Battle cry pump is computed during combat resolution, not during attack selection. Signal Pest's real attack value is the +1/+0 it grants others, not its own 0 power.
+
+**Fix:** In `decide_attackers()`, project battle cry bonus into the attack score:
+
+```python
+def _has_battle_cry(c) -> bool:
+    return 'battle cry' in (c.template.oracle_text or '').lower()
+
+# When scoring an attacker set, add N battle_cry_sources to each non-battle-cry attacker's power
+battle_cry_n = sum(1 for a in candidate_attackers if _has_battle_cry(a))
+projected_power = sum((a.power or 0) + battle_cry_n
+                      for a in candidate_attackers if not _has_battle_cry(a))
+```
+
+Include Signal Pest in attack group whenever ≥1 other attacker exists.
+
+**Files:** `ai/ev_player.py` → `decide_attackers()`
+
+**Verify:**
+```bash
+python run_meta.py --audit affinity -n 40 2>/dev/null | grep "Signal Pest"
+# Signal Pest delta should improve; avg attack turn should decrease
+```
