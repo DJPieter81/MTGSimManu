@@ -415,39 +415,55 @@ class EVPlayer:
         from engine.cards import CardType
         if not t.is_creature and not t.is_instant and not t.is_sorcery:
             if CardType.PLANESWALKER in t.card_types:
-                # Planeswalkers are sticky card-advantage engines. Loyalty
-                # approximates the number of loyalty activations before they
-                # die — each worth roughly one card's clock impact (draw,
-                # removal, damage, or tokens). Base stickiness bonus reflects
-                # that the opponent must divert resources to kill them.
-                # Without this, the projection-based EV undervalues planeswalkers
-                # (no power/toughness on entry) and decks like 4c Omnath /
-                # Jeskai Blink hold Wrenn & Six and Teferi in hand all game.
+                # Planeswalkers are sticky card-advantage engines. Each
+                # loyalty activation ≈ one card's clock impact (draw,
+                # removal, damage, tokens). Stickiness bonus: opp must
+                # divert removal to kill them → effectively a 1-for-1
+                # card exchange in our favor on the turn it resolves.
+                # Derives from clock.card_clock_impact — no flat tiers.
+                from ai.clock import card_clock_impact
                 loyalty = t.loyalty or 3
-                ev += 5.0 + 1.5 * loyalty
-                # Extra bump if oracle text indicates high-impact ability:
-                # draw (card advantage), deal damage (removal/reach), search
-                # library (ramp), or return to hand (tempo).
-                o = (t.oracle_text or '').lower()
-                if 'draw' in o and 'card' in o:
-                    ev += 2.0
-                if 'deal' in o and 'damage' in o:
-                    ev += 2.0
-                if 'search your library' in o:
-                    ev += 2.0
+                # Expected activations before death: loyalty-1 because the
+                # enters-with-loyalty first use is net-0; subsequent uses
+                # generate value. +1 accounts for the opp-removal cost.
+                expected_activations = max(1, loyalty - 1) + 1
+                card_val = card_clock_impact(snap) * 20.0  # scale to board-eval units
+                ev += expected_activations * card_val
+                # No additional per-oracle bumps: loyalty × card_val already
+                # integrates over whatever the planeswalker actually does.
             elif 'cost_reducer' in tags:
-                ev += 4.0
+                # Saves ~1 mana per spell over the remaining game — derive
+                # from card_clock_impact × turns_remaining rather than +4.
+                from ai.clock import card_clock_impact, combat_clock, NO_CLOCK
+                my_c = combat_clock(snap.my_power, snap.opp_life,
+                                     snap.my_evasion_power, snap.opp_toughness)
+                opp_c = combat_clock(snap.opp_power, snap.my_life,
+                                      snap.opp_evasion_power, snap.my_toughness)
+                turns = min(my_c, opp_c)
+                if turns >= NO_CLOCK:
+                    turns = 6.0  # rules constant: Modern midgame horizon
+                turns = max(2.0, min(turns, 8.0))
+                ev += turns * card_clock_impact(snap) * 20.0
 
         # ── Duplicate Chalice-of-the-Void / hate permanent penalty ──
-        # Casting a second Chalice with the same X is useless (same CMC locked)
+        # Casting a second Chalice with the same X is useless (same CMC
+        # locked). The value of a redundant permanent is zero; penalty
+        # equals the mana we'd waste casting it, derived from mana_clock_impact
+        # rather than a flat -8.
         if t.x_cost_data and 'charge_counter' in (t.oracle_text or '').lower():
             existing = [c for c in me.battlefield if c.name == t.name]
             if existing:
-                ev -= 8.0  # strongly penalise duplicate hate permanent
+                from ai.clock import mana_clock_impact
+                cmc = t.cmc or 2
+                ev -= cmc * mana_clock_impact(snap) * 20.0
 
         # ── Board wipe hard gate ──
+        # Empty-board wrath is pure waste (we self-wipe for nothing). Mark
+        # as structurally-rejected via a rules-constant sentinel below the
+        # pass_threshold in any archetype profile.
         if 'board_wipe' in tags and snap.opp_creature_count == 0:
-            return min(ev, -50.0)
+            WRATH_WASTE_SENTINEL = -50.0  # rules: forces pass under any profile
+            return min(ev, WRATH_WASTE_SENTINEL)
 
         # ── X-cost board wipe: hold when the X-budget can't meaningfully clear ──
         # Tuned through three passes:
