@@ -174,6 +174,13 @@ def parse_game(block, gnum):
             live_hands[p].append(card)
             cur['hand_snapshot']=list(live_hands[cur['pidx']])
 
+        # Ragavan / free-cast: card added to active player hand from exile
+        rm=re.search(r'T\d+ P(\d): .+ — may cast (.+) this turn', line)
+        if rm:
+            p,card=int(rm.group(1)),rm.group(2).strip()
+            live_hands[p].append(card)
+            cur['hand_snapshot']=list(live_hands[cur['pidx']])
+
         if '[Draw] Skipped' in line:
             cur['hand_snapshot']=list(live_hands[cur['pidx']])
 
