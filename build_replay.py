@@ -291,13 +291,13 @@ def creature_badges(s, equip_map=None):
         equips = equip_map.get(name, [])
         eq_html = ''.join(f'<span class="equip-tag" title="{esc(e)}">⚔{esc(e)}</span>' for e in equips)
         # Scryfall image tooltip
-        sf_name = name.split(' (')[0].strip()  # strip tapped/damage markers
+        sf_name = name.split(' (')[0].strip()
         from urllib.parse import quote as _qu
-        img_url = "https://api.scryfall.com/cards/named?exact=" + _qu(sf_name) + "&format=image&version=small"
+        img_url = "https://api.scryfall.com/cards/named?exact=" + _qu(sf_name) + "&format=image&version=art_crop"
         q = chr(39)
-        thumb = f'<img class="card-thumb" src="{img_url}" alt="{esc(sf_name)}" loading="lazy" onerror="this.style.display={q}none{q}">'
+        art = f'<img class="badge-art" src="{img_url}" alt="{esc(sf_name)}" loading="lazy" onerror="this.style.display={q}none{q}">'
         pt_html = f'<span class="pt">{pt}</span>' if pt else ''
-        out += f'<span class="creature-badge has-thumb">{thumb}{esc(name)}{pt_html}{eq_html}</span>'
+        out += f'<span class="creature-badge">{art}<span class="badge-text">{esc(name)}{pt_html}{eq_html}</span></span>'
     return out or '<span style="color:#484f58">empty</span>'
 
 
@@ -568,9 +568,11 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
 .board-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
 .board-side{background:#ffffff;border:1px solid #d0d7de;border-radius:6px;padding:8px 10px}
 .board-side h4{font-size:.75em;color:#656d76;margin-bottom:6px;font-weight:600}
-.board{margin-bottom:4px;min-height:22px;display:flex;flex-wrap:wrap;gap:3px}
-.creature-badge{background:#ddf4ff;border:1px solid #a8d8f0;border-radius:5px;padding:3px 8px;font-family:'Fira Code',monospace;font-size:.78em;color:#0969da;display:inline-flex;align-items:center;gap:4px}
-.creature-badge .pt{color:#656d76;font-size:.9em}
+.board{margin-bottom:4px;min-height:22px;display:flex;flex-wrap:wrap;gap:5px;align-items:flex-start}
+.creature-badge{background:#ddf4ff;border:1px solid #a8d8f0;border-radius:6px;font-family:'Fira Code',monospace;font-size:.72em;color:#0969da;display:inline-flex;flex-direction:column;align-items:center;overflow:hidden;width:72px;vertical-align:top;text-align:center}
+.badge-art{width:72px;height:52px;object-fit:cover;object-position:top;display:block;flex-shrink:0}
+.badge-text{padding:2px 4px 3px;line-height:1.3;word-break:break-word;width:100%}
+.creature-badge .pt{color:#656d76;font-size:.88em;display:block}
 .land-list{color:#9198a1;font-size:.72em;margin-top:4px;line-height:1.5}
 .other-list{color:#6e40c9;font-size:.72em;margin-top:3px;line-height:1.5;font-style:italic}
 .equip-tag{background:#fff3cd;border:1px solid #e6ac00;border-radius:3px;color:#7a5c00;font-size:.7em;padding:1px 5px;margin-left:3px;font-style:normal}
