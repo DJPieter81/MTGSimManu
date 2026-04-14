@@ -241,6 +241,19 @@ python build_replay.py replays/log.txt replay.html 55555
 - **Sideboards must be passed** to `run_game()` for Wish/tutor effects to find sideboard cards.
 - **Keyword detection uses word boundaries** — "flash" won't match "flashback".
 - **Color solver uses re-sorting greedy** — handles 4-color WURG correctly.
+- **No arbitrary scores or magic numbers in AI scoring.** Every numeric value used in `ai/ev_evaluator.py`, `ai/ev_player.py`, `ai/turn_planner.py`, `ai/response.py` must either:
+  1. Be **derived from a principled subsystem** — `ai/clock.py` (turns-to-lethal, life-as-resource), `ai/bhi.py` (Bayesian opponent model), `ai/combo_calc.py` / `ai/combo_chain.py` (resource math), `ai/gameplan.py` (deck-declared roles), or `ai/strategy_profile.py` (per-archetype tuning weights).
+  2. Or be a **rules constant** with an inline comment justifying it (e.g. `NO_CLOCK = 99.0  # sentinel: no creatures means no combat clock`).
+
+  Anti-patterns to reject in PRs:
+  - `score += 8.0  # card draw is good` → derive from `expected_card_ev × cards_drawn`.
+  - `if probability < 0.15: ...` → query BHI, not a literal.
+  - `if 'Lightning Bolt' in card.name: score += 5` → use oracle text and tags, not card names.
+  - Per-card EV tables in code or JSON → extend oracle-driven detection in `creature_threat_value()` instead.
+
+  **Engine layer never scores.** `engine/*.py` enforces rules only. Any threat valuation, EV computation, or strategic ranking belongs in `ai/*.py`. If you find scoring code in the engine layer, lift it to AI rather than extending it in place.
+
+  When in doubt: the formula should still make sense if applied to a card the deck has never seen before.
 
 ## Known Issues — LLM-Judge Strategy Audit
 
