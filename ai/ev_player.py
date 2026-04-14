@@ -1677,8 +1677,7 @@ class EVPlayer:
                         and (best_kill_card.power or 0) >= self.profile.burn_kill_min_power
                         and opp.life > dmg * self.profile.burn_kill_life_ratio):
                     self._last_target_reason = (f"→ {best_kill_card.name}: "
-                        f"{best_kill_why or f'big threat {best_kill_card.power}/{best_kill_card.toughness}'} — life safe, burn not lethal")
-                    return [best_kill_id]  # big threat, burn not near lethal
+                        f"({best_kill_why or self._target_why(best_kill_card)}) — life safe")
             _why_face = []
             if opp.life <= getattr(getattr(self, "profile", None), "burn_low_life_threshold", 8):
                 _why_face.append("opponent low life")
