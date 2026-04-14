@@ -431,3 +431,77 @@ python run_meta.py --verbose prowess energy -s 50700 2>/dev/null | grep -E "Phyr
 | Swiftspear prowess | Prowess | ✅ Works | — |
 | Undying Evil temp keyword | Goryo's | ✅ Works | — |
 | Griselbrand pay 7 draw 7 | Goryo's | ✅ Works | — |
+
+---
+
+## Fix 11 — Witch Enchanter ETB destroy
+
+**File:** `engine/card_effects.py`
+
+No EFFECT_REGISTRY entry. Oracle: "When this creature enters, destroy target artifact or enchantment an opponent controls."
+
+```python
+@EFFECT_REGISTRY.register("Witch Enchanter // Witch-Blessed Meadow", EffectTiming.ETB,
+                           description="Destroy target artifact or enchantment opponent controls")
+def witch_enchanter_etb(game, card, controller, targets=None, item=None):
+    from .cards import CardType
+    opp = game.players[1 - controller]
+    ae = [c for c in opp.battlefield if not c.template.is_land and
+          (CardType.ARTIFACT in c.template.card_types or
+           CardType.ENCHANTMENT in c.template.card_types)]
+    if ae:
+        target = max(ae, key=_threat_score)
+        game._permanent_destroyed(target)
+        game.log.append(f"T{game.display_turn} P{controller+1}: Witch Enchanter destroys {target.name}")
+```
+
+**Verify:** `python run_meta.py --verbose "Jeskai Blink" affinity -s 51025 | grep "Witch.*destroy"`
+
+---
+
+## Fix 12 — Emry {T}: cast artifact from graveyard
+
+**File:** `engine/game_runner.py` — extend `_activate_tap_abilities()` (Fix 8)
+
+Emry mills 4 correctly but never activates `{T}: Choose target artifact in GY, cast it this turn`. Add to tap-ability loop:
+
+```python
+if 'choose target artifact card in your graveyard' in oracle and not card.tapped:
+    from engine.cards import CardType
+    artifacts_in_gy = [c for c in player.graveyard
+                       if CardType.ARTIFACT in c.template.card_types
+                       and (c.template.cmc or 0) <= len(player.untapped_lands) + 2]
+    if artifacts_in_gy:
+        best = max(artifacts_in_gy, key=lambda c: c.template.cmc or 0)
+        card.tapped = True
+        player.graveyard.remove(best)
+        game.cast_spell(active, best, free_cast=True)
+        game.log.append(f"T{game.display_turn} P{active+1}: Emry casts {best.name} from GY")
+```
+
+**Verify:** `python run_meta.py --verbose "Pinnacle Affinity" energy -s 51030 | grep "Emry.*cast"`
+
+---
+
+## Fix 13 — Doorkeeper Thrull ETB suppression
+
+**File:** `engine/oracle_resolver.py` → `resolve_etb_from_oracle()` + `engine/game_state.py` → `trigger_etb()`
+
+Doorkeeper Thrull sets a flag but ETB handlers never check it. When Doorkeeper is on the opponent's side, ETB triggers from permanents they don't control should be suppressed.
+
+```python
+# In resolve_etb_from_oracle(), before dispatching:
+for c in game.players[1 - controller].battlefield:
+    oracle_c = (c.template.oracle_text or '').lower()
+    if "artifacts and creatures entering don't cause abilities to trigger" in oracle_c:
+        game.log.append(f"T{game.display_turn}: {card.name} ETB suppressed by {c.name}")
+        return
+
+# Also in trigger_etb() in game_state.py, same check before calling EFFECT_REGISTRY handlers
+```
+
+**Verify:**
+```bash
+python run_meta.py --verbose "Domain Zoo" "Jeskai Blink" -s 51030 | grep "Doorkeeper\|ETB suppressed"
+# Blink's Solitude/Omnath ETBs should be suppressed while Doorkeeper is on Zoo's side
+```

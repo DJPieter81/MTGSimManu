@@ -198,3 +198,72 @@ Full audit both Azorius decks n=40
 - [ ] Update `PROJECT_STATUS.md`
 - [ ] `git commit -m "fix(control): Orim's Chant proactive gate, WST/Titan search trigger, MoL tags, board wipe self-check"`
 - [ ] `git push origin main`
+
+---
+
+## Sideboard Coverage Fix — 6 decks with 0 sideboard changes
+
+**Decks:** Ruby Storm, Affinity, Amulet Titan, Goryo's Vengeance, Living End, Pinnacle Affinity
+
+**Root cause:** `sideboard_manager.py` only has 8 `board_in` conditions, all keyed on opponent archetype keywords. Cards with valid keyword matches fail because the opponent condition doesn't fire. 6 decks never sideboard at all in any matchup.
+
+**Missing patterns:**
+
+```python
+# Pattern 1: Protective counterspells vs interactive decks (Goryo, LE, Storm, Amulet)
+# Board in Force of Negation, Flusterstorm vs any deck with counters/removal
+if any(w in opp_lower for w in ['control', 'dimir', 'jeskai', 'blink', 'energy',
+                                  'zoo', 'prowess', 'omnath']):
+    if any(w in card_lower for w in ['force of negation', 'flusterstorm', 'mystical dispute']):
+        board_in_priority.append((card_name, count, 8))
+
+# Pattern 2: Graveyard hate FROM combo decks (Goryo boards Leyline vs LE, Affinity boards Relic)
+if any(w in opp_lower for w in ['goryo', 'living end', 'dredge', 'affinity', 'pinnacle']):
+    if any(w in card_lower for w in ['leyline of the void', 'relic', 'rest in peace',
+                                      'endurance', 'nihil', 'tormod', 'crypt']):
+        board_in_priority.append((card_name, count, 9))
+
+# Pattern 3: Hate artifacts board in OWN artifact hate (Affinity boards Hurkyl's vs mirror)
+if any(w in opp_lower for w in ['affinity', 'pinnacle']):
+    if any(w in card_lower for w in ['hurkyl', 'haywire', 'wear', 'meltdown']):
+        board_in_priority.append((card_name, count, 8))
+
+# Pattern 4: Extra win cons in Storm (more Grapeshot/Empty vs slower decks)
+if any(w in opp_lower for w in ['control', 'tron', 'omnath', 'blink']):
+    if any(w in card_lower for w in ['empty the warrens', 'grapeshot']):
+        board_in_priority.append((card_name, count, 6))
+
+# Pattern 5: Trinisphere from Amulet vs storm/cascade (must resolve before they combo)
+if any(w in opp_lower for w in ['storm', 'living end', 'cascade']):
+    if 'trinisphere' in card_lower:
+        board_in_priority.append((card_name, count, 9))
+
+# Pattern 6: Board wipes from Affinity vs token/wide decks
+if any(w in opp_lower for w in ['energy', 'zoo', 'prowess']):
+    if any(w in card_lower for w in ['brotherhood', 'meltdown', 'explosives', 'ratchet']):
+        board_in_priority.append((card_name, count, 8))
+
+# Pattern 7: Torpor Orb / Ethersworn Canonist from Affinity vs ETB/spell decks
+if any(w in opp_lower for w in ['blink', 'omnath', 'jeskai', 'storm']):
+    if any(w in card_lower for w in ['torpor', 'canonist', 'ethersworn']):
+        board_in_priority.append((card_name, count, 7))
+```
+
+**Board-out patterns also need expansion** — currently only boards out removal vs combo, but many matchups need to board out dead cards (e.g., Affinity boards out Metallic Rebuke in non-counter matchups).
+
+**Files:** `engine/sideboard_manager.py`
+
+**Verify:**
+```bash
+python3 -c "
+from engine.sideboard_manager import sideboard
+from decks.modern_meta import MODERN_DECKS
+for d1, d2 in [('Affinity','Goryo\\'s Vengeance'), ('Goryo\\'s Vengeance','control'),
+               ('Living End','Boros Energy'), ('Amulet Titan','Ruby Storm')]:
+    d = MODERN_DECKS[d1]
+    m, s = sideboard(d['mainboard'], d['sideboard'], d1, d2)
+    changes = sum(1 for c in set(list(m)+list(d['mainboard'])) if m.get(c,0) != d['mainboard'].get(c,0))
+    print(f'{d1} vs {d2}: {changes} changes')
+"
+# Target: all 4 show >0 changes
+```
