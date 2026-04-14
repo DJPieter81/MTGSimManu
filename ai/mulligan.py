@@ -256,7 +256,48 @@ class MulliganDecider:
         else:
             scored = [(c, self._card_keep_score(c, hand)) for c in hand]
         scored.sort(key=lambda x: x[1])
-        return [c for c, _ in scored[:count]]
+
+        # Enforce mulligan_min_lands floor on the KEPT hand. Without this,
+        # a 7-card hand with 2 lands + 5 mulligan_key creatures will bottom
+        # both lands (scored ~10) below any keyed creature (scored 12+),
+        # leaving a 5-card hand with zero lands. Audit F-R5-B1: Boros at
+        # seed 55555 bottomed Marsh Flats + Arena of Glory to keep 5
+        # creatures, then drew into lands naturally — but for 2 turns had
+        # no mana.
+        min_lands = 2  # default floor
+        if self.goal_engine and self.goal_engine.gameplan:
+            min_lands = self.goal_engine.gameplan.mulligan_min_lands or 2
+        lands_in_hand = [c for c in hand if c.template.is_land]
+        kept_count = len(hand) - count
+        # Protect at least min(min_lands, total_lands_available) lands in
+        # the kept hand. We can't guarantee a floor if the hand doesn't
+        # have enough lands to begin with.
+        land_floor = min(min_lands, len(lands_in_hand))
+
+        bottom = [c for c, _ in scored[:count]]
+        # Count lands we'd be bottoming; if too many, swap lowest-scored
+        # non-land in the kept hand for the lowest-scored land in bottom.
+        bottomed_lands = [c for c in bottom if c.template.is_land]
+        kept_lands = len(lands_in_hand) - len(bottomed_lands)
+        if kept_lands < land_floor and bottomed_lands:
+            # Find non-lands in the kept hand, bottom the lowest-scored
+            # of them instead to preserve a land in the kept hand.
+            kept = [c for c, _ in scored[count:]]  # higher-scored, the keep pile
+            kept_nonland_scored = sorted(
+                [(c, self.goal_engine.card_keep_score(c, hand)
+                  if self.goal_engine else self._card_keep_score(c, hand))
+                 for c in kept if not c.template.is_land],
+                key=lambda x: x[1]
+            )
+            needed = land_floor - kept_lands
+            # Swap bottom lands for kept non-lands (lowest-scored first)
+            for i in range(min(needed, len(kept_nonland_scored),
+                               len(bottomed_lands))):
+                swap_from_bottom = bottomed_lands[i]
+                swap_into_bottom = kept_nonland_scored[i][0]
+                bottom.remove(swap_from_bottom)
+                bottom.append(swap_into_bottom)
+        return bottom
 
     def _card_keep_score(self, card: "CardInstance", hand: List["CardInstance"]) -> float:
         """Score a card for mulligan bottom. Higher = more valuable to keep."""
