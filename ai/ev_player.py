@@ -373,6 +373,16 @@ class EVPlayer:
         ev = compute_play_ev(card, snap, self.archetype, game, self.player_idx,
                              bhi=self.bhi)
 
+        # ── Free cast bonus (generic) ──
+        # Any spell offered for 0 effective mana (Ragavan exile, cascade,
+        # suspend, Wish-style effects) represents pure card advantage.
+        # Tag: _free_cast_opportunity set by whatever granted the cast.
+        # Rule: ev >= 0 always (never skip a free spell that doesn't hurt).
+        #       +1.5 bonus on top of projection to reflect tempo gain.
+        if getattr(card, "_free_cast_opportunity", False):
+            ev = max(ev, 0.0)  # floor: never negative
+            ev += 1.5          # tempo: got it for free
+
         # ── Evoke overlay: projection doesn't model 2-card cost ──
         if ('evoke' in tags or 'evoke_pitch' in tags) and snap.my_mana < (t.cmc or 0):
             # Evoking costs an extra card — subtract its future clock value

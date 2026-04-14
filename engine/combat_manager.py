@@ -313,6 +313,14 @@ class CombatManager:
                                 f"{attacker.name} exiles {exiled.name} "
                                 f"from top of P{self._defending_player+1}'s library"
                             )
+                            # "Until end of turn, you may cast that card" — tag for free cast
+                            if 'until end of turn, you may cast' in a_oracle or 'you may cast that card' in a_oracle:
+                                exiled._ragavan_castable_by = self._active_player
+                                exiled._ragavan_castable_turn = game.display_turn
+                                exiled._free_cast_opportunity = True  # generic free-cast signal
+                                if not hasattr(game, '_ragavan_exiles'):
+                                    game._ragavan_exiles = []
+                                game._ragavan_exiles.append(exiled)
                     if 'draw a card' in a_oracle:
                         game.draw_cards(self._active_player, 1)
                         game.log.append(

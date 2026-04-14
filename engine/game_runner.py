@@ -542,6 +542,7 @@ class GameRunner:
                                 game.log.append(f"T{game.display_turn} P{active+1}: "
                                                 f"Rebound {rc.name} skipped (no valid target)")
                                 continue
+                            rc._free_cast_opportunity = True  # rebound: free cast
                             game.cast_spell(active, rc, free_cast=True)
                             game.log.append(f"T{game.display_turn} P{active+1}: "
                                             f"Rebound {rc.name}")
