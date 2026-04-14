@@ -526,14 +526,22 @@ class GoalEngine:
             score += max(0, 5 - (t.cmc or 0))
             if card.name in self.gameplan.mulligan_keys:
                 score += 8.0
-            first_goal = self.gameplan.goals[0] if self.gameplan.goals else None
-            if first_goal:
-                for role_name, role_cards in first_goal.card_roles.items():
+            # Iterate ALL goals, not just the first. Multi-goal gameplans
+            # place payoffs in later goals (Amulet Titan: Primeval Titan in
+            # goal[1] RAMP, not goal[0] DEPLOY_ENGINE). Previously bottomed
+            # the deck's win condition because only goal[0] was scanned.
+            # Take the MAX role weight across goals so a payoff in any goal
+            # gets the payoff weight regardless of goal ordering.
+            best_role_weight = 0.0
+            role_weight = {'engines': 8.0, 'payoffs': 7.0, 'enablers': 6.0,
+                           'fillers': 3.0, 'protection': 4.0, 'interaction': 5.0}
+            for goal in self.gameplan.goals:
+                for role_name, role_cards in goal.card_roles.items():
                     if card.name in role_cards:
-                        role_weight = {'engines': 8.0, 'payoffs': 7.0, 'enablers': 6.0,
-                                       'fillers': 3.0, 'protection': 4.0, 'interaction': 5.0}
-                        score += role_weight.get(role_name, 4.0)
-                        break
+                        w = role_weight.get(role_name, 4.0)
+                        if w > best_role_weight:
+                            best_role_weight = w
+            score += best_role_weight
             if card.name in self.gameplan.always_early:
                 score += 6.0
             else:

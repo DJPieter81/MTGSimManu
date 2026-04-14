@@ -740,7 +740,13 @@ class EVPlayer:
         # ── Finisher-access gate for mid-chain ──
         if p.storm_patience and storm >= 1 and 'ritual' in tags:
             if not _has_finisher() and not _has_flashback_combo():
-                if not snap.am_dead_next:
+                # Waive the penalty when we're about to die: am_dead_next
+                # catches "dies to combat this turn" but misses "dies next
+                # turn to scheduled damage" (opp_clock ≤ 2). Under time
+                # pressure, building fuel is still valuable — a cantrip
+                # drawn off the ritual might hit a finisher. Same "hail
+                # Mary" shape as the chain-credit dual-gate in ev_evaluator.
+                if not snap.am_dead_next and snap.opp_clock > 2:
                     # Wasting rituals without finisher access (reduced from 20 to match PiF fix)
                     mod -= (storm + 2) / opp_life * 5.0
 
