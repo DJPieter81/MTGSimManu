@@ -1491,17 +1491,21 @@ class GameState:
             # AI chooses optimal X based on oracle text:
             oracle = (template.oracle_text or '').lower()
             if 'charge counter' in oracle and 'whenever' in oracle:
-                # Hate permanent (Chalice-style): pick X to maximize disruption
+                # Hate permanent (Chalice-style): pick X to maximize disruption.
+                # INCLUDE X=0 as a valid candidate — Affinity runs ~8 zero-cost
+                # artifacts (Memnite, Ornithopter, Mox Opal, Springleaf Drum).
+                # Previously filtered out by `if cm > 0`, so Chalice defaulted
+                # to X=1 and never locked Affinity's engine (audit F-R3-1).
                 opp = self.players[1 - player_idx]
-                # Count CMC distribution in opponent's known cards (library + hand estimate)
                 cmc_counts = {}
                 for c in opp.library:
                     if not c.template.is_land:
                         cm = c.template.cmc or 0
-                        if cm > 0:
-                            cmc_counts[cm] = cmc_counts.get(cm, 0) + 1
-                # Pick the CMC with the most spells, capped at available mana
-                if cmc_counts and x_value >= 1:
+                        cmc_counts[cm] = cmc_counts.get(cm, 0) + 1
+                # Pick the CMC with the most spells, capped at available mana.
+                # X=0 is always castable (available mana >= 0); accept it
+                # when x_value >= 0 (which is always true after the cast).
+                if cmc_counts:
                     # Bug guard: cmc_counts non-empty doesn't guarantee any
                     # CMC fits under x_value — the filter can still produce an
                     # empty sequence. Materialize the candidate list and fall
