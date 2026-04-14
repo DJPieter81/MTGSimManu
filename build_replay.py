@@ -282,7 +282,8 @@ def creature_badges(s, equip_map=None):
     bits=re.split(r',\s*(?=[A-Z])',s)
     out=''
     equip_map = equip_map or {}
-    for b in bits:
+    for b in bits:  # b may contain [tapped]
+        is_tapped = "[tapped]" in b.lower()
         pm=re.search(r'(.+?)\s*\((\d+/\d+)\)',b.strip())
         name = pm.group(1).strip() if pm else re.sub(r'\s*\[.*?\]','',b.strip())
         pt   = pm.group(2) if pm else None
@@ -297,7 +298,7 @@ def creature_badges(s, equip_map=None):
         q = chr(39)
         art = f'<img class="badge-art" src="{img_url}" alt="{esc(sf_name)}" loading="lazy" onerror="this.style.display={q}none{q}">'
         pt_html = f'<span class="pt">{pt}</span>' if pt else ''
-        out += f'<span class="creature-badge">{art}<span class="badge-text">{esc(name)}{pt_html}{eq_html}</span></span>'
+        tap_cls = " tapped" if is_tapped else ""; tap_icon = "<span class=\"tap-icon\">↷</span>" if is_tapped else ""; out += f'<span class="creature-badge{tap_cls}">{art}<span class="badge-text">{tap_icon}{esc(name)}{pt_html}{eq_html}</span></span>'
     return out or '<span style="color:#484f58">empty</span>'
 
 
@@ -332,6 +333,18 @@ def split_lands(s):
             plains.append(item)
     plain_str = ', '.join(plains) if plains else 'none'
     return sagas, plain_str
+
+def land_pills(s):
+    if not s or s == "none": return "<span style=\"color:#9198a1\">none</span>"
+    items = [x.strip() for x in s.split(",") if x.strip()]
+    out = ""
+    for item in items:
+        tapped = "[T]" in item
+        name = item.replace("[T]","").strip()
+        cls = "land-pill tapped-land" if tapped else "land-pill"
+        icon = "↷ " if tapped else ""
+        out += f"<span class=\"{cls}\">{icon}{esc(name)}</span>"
+    return out or "<span style=\"color:#9198a1\">none</span>"
 
 def saga_badges(sagas):
     """Render saga/enchantment lands as visual badges."""
@@ -457,14 +470,14 @@ def turn_html(t, next_t, gnum, p1name, p2name, star_turns):
         <div class="board">{creature_badges(p1_cr, src.get('equip_map',{}))}</div>
         {f'<div class="other-list">{other_badges(p1_o)}</div>' if p1_o else ''}
         {f'<div class="other-list saga-row">{saga_badges(p1_sagas)}</div>' if p1_sagas else ''}
-        <div class="land-list">{esc(p1_l[:140])}</div>
+        <div class="land-list">{land_pills(p1_l)}</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:{P2C}">{esc(p2name)}</span> — {lc(p2_l)} land{"s" if lc(p2_l)!=1 else ""}</h4>
         <div class="board">{creature_badges(p2_cr, src.get('equip_map',{}))}</div>
         {f'<div class="other-list">{other_badges(p2_o)}</div>' if p2_o else ''}
         {f'<div class="other-list saga-row">{saga_badges(p2_sagas)}</div>' if p2_sagas else ''}
-        <div class="land-list">{esc(p2_l[:140])}</div>
+        <div class="land-list">{land_pills(p2_l)}</div>
       </div>
     </div>
   </div>
@@ -649,11 +662,11 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
 .board-side{background:#ffffff;border:1px solid #d0d7de;border-radius:6px;padding:8px 10px}
 .board-side h4{font-size:.75em;color:#656d76;margin-bottom:6px;font-weight:600}
 .board{margin-bottom:4px;min-height:22px;display:flex;flex-wrap:wrap;gap:5px;align-items:flex-start}
-.creature-badge{background:#ddf4ff;border:1px solid #a8d8f0;border-radius:6px;font-family:'Fira Code',monospace;font-size:.72em;color:#0969da;display:inline-flex;flex-direction:column;align-items:center;overflow:hidden;width:72px;vertical-align:top;text-align:center}
+.creature-badge{background:#ddf4ff;border:1px solid #a8d8f0;border-radius:6px;font-family:'Fira Code',monospace;font-size:.72em;color:#0969da;display:inline-flex;flex-direction:column;align-items:center;overflow:hidden;width:72px;vertical-align:top;text-align:center}.creature-badge.tapped{opacity:.5;filter:saturate(.3)}.tap-icon{font-size:.75em;color:#9a6700}
 .badge-art{width:72px;height:52px;object-fit:cover;object-position:top;display:block;flex-shrink:0}
 .badge-text{padding:2px 4px 3px;line-height:1.3;word-break:break-word;width:100%}
 .creature-badge .pt{color:#656d76;font-size:.88em;display:block}
-.land-list{color:#9198a1;font-size:.72em;margin-top:4px;line-height:1.5}
+.land-list{margin-top:4px;display:flex;flex-wrap:wrap;gap:3px}.land-pill{display:inline-block;background:#f6f8fa;border:1px solid #d0d7de;border-radius:4px;padding:1px 5px;font-size:.68em;color:#57606a;font-family:"Fira Code",monospace}.tapped-land{background:#fff8e1;border-color:#e6ac00;color:#9a6700;opacity:.75}
 .other-list{margin-top:4px;display:flex;flex-wrap:wrap;gap:5px;align-items:flex-start}
 .equip-tag{background:#fff3cd;border:1px solid #e6ac00;border-radius:3px;color:#7a5c00;font-size:.7em;padding:1px 5px;margin-left:3px;font-style:normal}
 .saga-badge{background:#f0fff4;border-color:#2da44e;color:#1a7f37}
