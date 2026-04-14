@@ -346,6 +346,28 @@ def land_pills(s):
         out += f"<span class=\"{cls}\">{icon}{esc(name)}</span>"
     return out or "<span style=\"color:#9198a1\">none</span>"
 
+_LAND_MANA = {"Plains":("W",),"Island":("U",),"Swamp":("B",),"Mountain":("R",),"Forest":("G",),"Snow-Covered Plains":("W",),"Snow-Covered Island":("U",),"Snow-Covered Swamp":("B",),"Snow-Covered Mountain":("R",),"Snow-Covered Forest":("G",),"Sacred Foundry":("R","W"),"Hallowed Fountain":("U","W"),"Steam Vents":("U","R"),"Blood Crypt":("B","R"),"Overgrown Tomb":("B","G"),"Watery Grave":("U","B"),"Temple Garden":("G","W"),"Godless Shrine":("B","W"),"Stomping Ground":("G","R"),"Breeding Pool":("G","U"),"Arid Mesa":("any",),"Scalding Tarn":("any",),"Misty Rainforest":("any",),"Verdant Catacombs":("any",),"Marsh Flats":("any",),"Flooded Strand":("any",),"Windswept Heath":("any",),"Wooded Foothills":("any",),"Polluted Delta":("any",),"Bloodstained Mire":("any",),"Darksteel Citadel":("C",),"Treasure Vault":("C",),"Urza's Saga":("C",),"Spire of Industry":("C",),"Tanglepool Bridge":("C",),"Simic Growth Chamber":("G","U"),"Gruul Turf":("G","R"),"Lotus Field":("any",),"Dryad Arbor":("G",),"Arena of Glory":("R",),"Demolition Field":("C",),"Gemstone Caverns":("any",),"Boseiju, Who Endures":("G",),"Otawara, Soaring City":("U",),"Sokenzan, Crucible of Defiance":("R",),"Eiganjo, Seat of the Empire":("W",),}
+_MANA_COLS = {"W":"#f9e79f","U":"#85c1e9","B":"#b2bec3","R":"#f1948a","G":"#82e0aa","C":"#d7dbdd","any":"#c39bd3"}
+
+def mana_summary(land_str):
+    if not land_str or land_str == "none": return ""
+    from collections import Counter
+    items = [x.strip() for x in land_str.split(",") if x.strip()]
+    untapped = [x.replace("[T]","").strip() for x in items if "[T]" not in x]
+    if not untapped: return "<span class=\"mana-zero\">0 mana</span>"
+    counts = Counter()
+    for name in untapped:
+        for c in _LAND_MANA.get(name, ("?",)): counts[c] += 1
+    total = len(untapped)
+    pips = ""
+    for col in ["W","U","B","R","G","C","any","?"]:
+        n = counts.get(col, 0)
+        if n:
+            bg = _MANA_COLS.get(col, "#eee")
+            lbl = {"W":"W","U":"U","B":"B","R":"R","G":"G","C":"◇","any":"?","?":"?"}.get(col,col)
+            pips += f"<span class=\"mana-pip\" style=\"background:{bg}\" title=\"{n} {col}\">{n}{lbl}</span>"
+    return f"<span class=\"mana-bar\">{pips}<span class=\"mana-total\">{total} open</span></span>"
+
 def saga_badges(sagas):
     """Render saga/enchantment lands as visual badges."""
     if not sagas: return ''
@@ -446,6 +468,8 @@ def turn_html(t, next_t, gnum, p1name, p2name, star_turns):
     p2_cr,p2_l_raw,p2_o=p2b['creatures'],p2b['lands'] or 'none',p2b.get('other','')
     p1_sagas, p1_l = split_lands(p1_l_raw)
     p2_sagas, p2_l = split_lands(p2_l_raw)
+    p1_mana = mana_summary(p1_l)
+    p2_mana = mana_summary(p2_l)
 
     return f'''<div class="turn {cls}" id="g{gnum}t{t["num"]}">
   <div class="turn-header" onclick="toggle(this.parentElement)">
@@ -470,14 +494,14 @@ def turn_html(t, next_t, gnum, p1name, p2name, star_turns):
         <div class="board">{creature_badges(p1_cr, src.get('equip_map',{}))}</div>
         {f'<div class="other-list">{other_badges(p1_o)}</div>' if p1_o else ''}
         {f'<div class="other-list saga-row">{saga_badges(p1_sagas)}</div>' if p1_sagas else ''}
-        <div class="land-list">{land_pills(p1_l)}</div>
+        {p1_mana}<div class="land-list">{land_pills(p1_l)}</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:{P2C}">{esc(p2name)}</span> — {lc(p2_l)} land{"s" if lc(p2_l)!=1 else ""}</h4>
         <div class="board">{creature_badges(p2_cr, src.get('equip_map',{}))}</div>
         {f'<div class="other-list">{other_badges(p2_o)}</div>' if p2_o else ''}
         {f'<div class="other-list saga-row">{saga_badges(p2_sagas)}</div>' if p2_sagas else ''}
-        <div class="land-list">{land_pills(p2_l)}</div>
+        {p2_mana}<div class="land-list">{land_pills(p2_l)}</div>
       </div>
     </div>
   </div>
@@ -666,7 +690,7 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
 .badge-art{width:72px;height:52px;object-fit:cover;object-position:top;display:block;flex-shrink:0}
 .badge-text{padding:2px 4px 3px;line-height:1.3;word-break:break-word;width:100%}
 .creature-badge .pt{color:#656d76;font-size:.88em;display:block}
-.land-list{margin-top:4px;display:flex;flex-wrap:wrap;gap:3px}.land-pill{display:inline-block;background:#f6f8fa;border:1px solid #d0d7de;border-radius:4px;padding:1px 5px;font-size:.68em;color:#57606a;font-family:"Fira Code",monospace}.tapped-land{background:#fff8e1;border-color:#e6ac00;color:#9a6700;opacity:.75}
+.land-list{margin-top:4px;display:flex;flex-wrap:wrap;gap:3px}.land-pill{display:inline-block;background:#f6f8fa;border:1px solid #d0d7de;border-radius:4px;padding:1px 5px;font-size:.68em;color:#57606a;font-family:"Fira Code",monospace}.tapped-land{background:#fff8e1;border-color:#e6ac00;color:#9a6700;opacity:.75}.mana-bar{display:flex;align-items:center;gap:3px;margin:4px 0 2px;flex-wrap:wrap}.mana-pip{display:inline-block;border-radius:50%;width:20px;height:20px;text-align:center;line-height:20px;font-size:.65em;font-weight:700;color:#1f2328;border:1px solid rgba(0,0,0,.15);flex-shrink:0}.mana-total{font-size:.65em;color:#57606a;margin-left:2px}.mana-zero{font-size:.65em;color:#9198a1;display:block;margin:3px 0}
 .other-list{margin-top:4px;display:flex;flex-wrap:wrap;gap:5px;align-items:flex-start}
 .equip-tag{background:#fff3cd;border:1px solid #e6ac00;border-radius:3px;color:#7a5c00;font-size:.7em;padding:1px 5px;margin-left:3px;font-style:normal}
 .saga-badge{background:#f0fff4;border-color:#2da44e;color:#1a7f37}
