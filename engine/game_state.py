@@ -1043,7 +1043,7 @@ class GameState:
                     best_land.entered_battlefield_this_turn = True
                     best_land.tapped = True
                     self.log.append(f"T{self.display_turn} P{player_idx+1}: "
-                                   f"Crack {fetch_name} -> {best_land.name} (tapped, no spells need mana)")
+                                   f"Crack {fetch_name} (pay 1 life) -> {best_land.name} (tapped, life: {player.life})")
             else:
                 # Fabled Passage: tapped if < 4 lands; Zendikar fetches: always untapped
                 best_land.enter_battlefield()
