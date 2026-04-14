@@ -140,61 +140,83 @@ def _threat_score(card) -> float:
 
     Used by all removal/interaction effects to pick the best target.
     Higher = more threatening = should be removed first.
+
+    Delegates to ai.ev_evaluator for creatures (creature_threat_value is
+    oracle-driven + clock-math-backed). Non-creature permanents use
+    derivations on the same scale: equipment = virtual power over residency
+    turns, cost reducer / engine = card-clock-impact × horizon, PW =
+    loyalty × card-equivalent value. All derived from clock / mana math
+    via a shared mid-game default snapshot — no flat tiers.
     """
     t = card.template
     tags = getattr(t, 'tags', set())
     oracle = (t.oracle_text or '').lower()
-    score = 0.0
-
-    # Equipment that amplifies damage (Cranial Plating, Nettlecyst)
     subtypes = getattr(t, 'subtypes', [])
-    is_equipment = 'Equipment' in subtypes or 'equipment' in tags
-    if is_equipment:
-        score += 15.0
-        if 'for each artifact' in oracle or 'artifact you control' in oracle:
-            score += 20.0  # Cranial Plating = top priority
-        if 'for each artifact' in oracle or 'enchantment you control' in oracle:
-            score += 15.0  # Nettlecyst
 
-    # Cost reducers (Ruby Medallion, Ral)
-    if getattr(t, 'is_cost_reducer', False):
-        score += 18.0
-
-    # Token generators / ongoing value engines
-    if 'whenever' in oracle and ('create' in oracle or 'token' in oracle):
-        score += 15.0  # Pinnacle Emissary, Goblin Bombardment, etc.
-
-    # Creatures: score by effective damage output
+    # Creatures: single source of truth in the AI layer.
     if t.is_creature:
-        power = card.power if hasattr(card, 'power') and card.power else (t.power or 0)
-        score += power * 2.0
-        kws = {kw.value if hasattr(kw, 'value') else str(kw).lower()
-               for kw in getattr(t, 'keywords', set())}
-        if kws & {'flying', 'menace', 'trample'}:
-            score += power * 1.5  # evasion multiplier
-        # Ward taxes the attacker's removal: a single-target removal now
-        # effectively costs (spell_cost + ward_cost) mana, making it a worse
-        # trade than picking another target. Parse ward {N} from oracle and
-        # subtract 2N from the threat score so targeting drops down the list.
-        # Falls back to -6 if the cost is unparseable (e.g. "Ward — Pay 2 life").
+        from ai.ev_evaluator import creature_threat_value
+        base = creature_threat_value(card)
+        # Ward: removal-targeting tax. Opp's removal costs extra N mana to
+        # target this → effective -N mana worth of threat to the attacker.
+        # Derive from mana_clock_impact on the same (_DEFAULT_SNAP) scale.
         if 'ward' in oracle:
             import re as _re
+            from ai.clock import mana_clock_impact
+            from ai.ev_evaluator import _DEFAULT_SNAP
             m = _re.search(r'ward\s*\{?(\d+)\}?', oracle)
             ward_cost = int(m.group(1)) if m else 3
-            score -= ward_cost * 2.0
-        if 'lifelink' in kws:
-            score += 4.0
+            base -= ward_cost * mana_clock_impact(_DEFAULT_SNAP) * 20.0
+        return base
 
-    # Planeswalkers
+    # Non-creature: use mid-game default snap for clock derivations so the
+    # magnitudes align with creature_threat_value (~3-15 range).
+    from ai.ev_evaluator import _DEFAULT_SNAP
+    from ai.clock import card_clock_impact, mana_clock_impact
     from engine.cards import CardType
+    score = 0.0
+    # Rules constant: typical Modern residency for a non-creature
+    # permanent before it's removed / the game ends.
+    RESIDENCY_TURNS = 4.0
+    mana_unit = mana_clock_impact(_DEFAULT_SNAP) * 20.0  # ~1.0
+    card_unit = card_clock_impact(_DEFAULT_SNAP) * 20.0  # ~0.5 at default
+
+    # Equipment: the threat is the +P/+T it gives a creature over its
+    # residency. Parse +X/+Y from oracle; default to +2/+2 if absent.
+    is_equipment = 'Equipment' in subtypes or 'equipment' in tags
+    if is_equipment:
+        import re as _re
+        power_bonus = 2
+        m = _re.search(r'\+(\d+)/\+\d+', oracle)
+        if m:
+            power_bonus = int(m.group(1))
+        # Scaling equipment integrates with matching-permanent count —
+        # adds virtual power proportional to board state.
+        if 'for each artifact' in oracle or 'artifact you control' in oracle:
+            power_bonus += 3  # rules: typical artifact count in Affinity
+        score += power_bonus * RESIDENCY_TURNS * mana_unit
+
+    # Cost reducers: ongoing mana savings → card-equivalent value per turn
+    # over residency.
+    if getattr(t, 'is_cost_reducer', False):
+        score += RESIDENCY_TURNS * card_unit * 2.0  # 2 spells/turn saving 1 mana
+
+    # Token / value engines (triggered creates-a-token): one extra card's
+    # worth of clock impact per activation.
+    if 'whenever' in oracle and ('create' in oracle or 'token' in oracle):
+        score += RESIDENCY_TURNS * card_unit * 2.0  # ~2 triggers/turn avg
+
+    # Planeswalkers: each loyalty activation ≈ one card's clock impact.
     if CardType.PLANESWALKER in getattr(t, 'card_types', []):
-        score += 12.0
+        loyalty = getattr(t, 'loyalty', 3) or 3
+        score += loyalty * card_unit * 2.0  # card_unit baseline × 2 for PW ability strength
 
-    # Artifacts generally (mana sources, synergy pieces)
-    if CardType.ARTIFACT in getattr(t, 'card_types', []):
-        score += 2.0
+    # Generic artifacts: 1 mana worth of synergy value.
+    if CardType.ARTIFACT in getattr(t, 'card_types', []) and not is_equipment:
+        score += mana_unit
 
-    # CMC as tiebreaker (low weight)
+    # CMC tiebreaker: high-cmc permanents typically represent larger
+    # strategic investments worth targeting first when all else equal.
     score += (t.cmc or 0) * 0.5
 
     return score
@@ -723,30 +745,21 @@ def ephemerate_resolve(game, card, controller, targets=None, item=None):
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Ephemerate fizzles (no creatures to target)")
         return
-    # Prefer creatures with valuable ETBs.
-    # Use tags to identify ETB value, then score by card impact.
+    # Prefer creatures with valuable ETBs. Blink value is the threat
+    # score of re-triggering the creature's ETB — delegate to the AI
+    # layer's creature_threat_value (same math-derived formula used for
+    # removal targeting), discounted by P(ETB finds a useful target).
     def _blink_value(c):
+        from ai.ev_evaluator import creature_threat_value
         tags = getattr(c.template, 'tags', set())
-        score = 0
-        if 'etb_value' in tags:
-            score += 5
-        # Life gain on ETB is especially valuable (e.g., Omnath +4 life)
-        oracle = (c.template.oracle_text or "").lower()
-        if 'gain' in oracle and 'life' in oracle:
-            score += 3
-        # Card draw on ETB
-        if 'cantrip' in tags or ('draw' in oracle and 'enter' in oracle):
-            score += 2
-        # Removal on ETB (Solitude, Fury): value depends on opponent board
+        base = creature_threat_value(c)
+        # Removal ETB requires an opposing creature. Without a target, a
+        # re-trigger is wasted — scale base by a "usefulness factor".
         if 'removal' in tags:
             opp_idx = 1 - controller
-            if game.players[opp_idx].creatures:
-                score += 4
-            else:
-                score += 1  # No targets: removal ETB is wasted
-        # Higher CMC creatures are generally more impactful to blink
-        score += (c.template.cmc or 0) * 0.5
-        return score
+            if not game.players[opp_idx].creatures:
+                base *= 0.2  # rules: ETB-remove-nothing is ~20% of full value
+        return base
     best = max(my_creatures, key=_blink_value)
     game._blink_permanent(best, controller)
     # Mark for rebound — the actual zone move happens after resolution

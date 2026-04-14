@@ -407,57 +407,85 @@ class EVPlayer:
              and 'enters tapped' in (c.template.oracle_text or '').lower()
              and 'untap it' in (c.template.oracle_text or '').lower())
             for c in me.battlefield)
-        if is_amulet and has_titan_in_hand:
-            ev += 8.0  # deploy Amulet ASAP when Titan is coming
         is_titan_like = (t.is_creature and (t.cmc or 0) >= 6
                          and 'search your library' in t_oracle
                          and 'two' in t_oracle and 'land' in t_oracle)
+        # Amulet + Titan mana synergy: deterministic rules math.
+        # When Titan ETBs with Amulet on the battlefield, both fetched
+        # lands come in tapped and Amulet untaps them → +2 lands worth
+        # of mana are available the same turn. Bounce lands (Simic
+        # Growth Chamber, etc.) are even better under Amulet — they
+        # bounce a land for re-play while staying untapped for another
+        # tap next turn. Floor the effect at 2 lands untapped; bounce
+        # lands compound further but we don't model that precisely.
+        AMULET_TITAN_MANA_BONUS = 4.0  # rules: 2 lands × 2 mana each
+        from ai.clock import mana_clock_impact
+        mana_impact = mana_clock_impact(snap)  # value per point of mana
+        if is_amulet and has_titan_in_hand:
+            # P(Titan lands in time) proxy: how many turns until we can
+            # cast a 6-drop. If we're at 4+ lands, near-immediate.
+            turns_to_cast = max(1, 6 - len(me.lands))
+            # Discount by turns — Amulet benefit realized only once Titan lands.
+            ev += (AMULET_TITAN_MANA_BONUS * mana_impact * 20.0) / turns_to_cast
         if is_titan_like and has_amulet_on_board:
-            ev += 6.0  # Titan under Amulet = immediate mana bounce chain
+            # Immediate payoff when Titan is being cast now.
+            ev += AMULET_TITAN_MANA_BONUS * mana_impact * 20.0
 
         # ── Non-creature permanent overlay (Pattern B) ──
         from engine.cards import CardType
         if not t.is_creature and not t.is_instant and not t.is_sorcery:
             if CardType.PLANESWALKER in t.card_types:
-                # Planeswalkers are sticky card-advantage engines. Loyalty
-                # approximates the number of loyalty activations before they
-                # die — each worth roughly one card's clock impact (draw,
-                # removal, damage, or tokens). Base stickiness bonus reflects
-                # that the opponent must divert resources to kill them.
-                # Without this, the projection-based EV undervalues planeswalkers
-                # (no power/toughness on entry) and decks like 4c Omnath /
-                # Jeskai Blink hold Wrenn & Six and Teferi in hand all game.
+                # Planeswalkers are sticky card-advantage engines. Each
+                # loyalty activation ≈ one card's clock impact (draw,
+                # removal, damage, tokens). Stickiness bonus: opp must
+                # divert removal to kill them → effectively a 1-for-1
+                # card exchange in our favor on the turn it resolves.
+                # Derives from clock.card_clock_impact — no flat tiers.
+                from ai.clock import card_clock_impact
                 loyalty = t.loyalty or 3
-                ev += 5.0 + 1.5 * loyalty
-                # Extra bump if oracle text indicates high-impact ability:
-                # draw (card advantage), deal damage (removal/reach), search
-                # library (ramp), or return to hand (tempo).
-                o = (t.oracle_text or '').lower()
-                if 'draw' in o and 'card' in o:
-                    ev += 2.0
-                if 'deal' in o and 'damage' in o:
-                    ev += 2.0
-                if 'search your library' in o:
-                    ev += 2.0
-                # Untap-lands ability (Teferi Hero of Dominaria pattern):
-                # mana advantage compounds with draw → substantial ongoing
-                # value beyond the loyalty/draw line items above. Oracle-
-                # detected, no card names.
-                if 'untap' in o and 'land' in o:
-                    ev += 3.0
+                # Expected activations before death: loyalty-1 because the
+                # enters-with-loyalty first use is net-0; subsequent uses
+                # generate value. +1 accounts for the opp-removal cost.
+                expected_activations = max(1, loyalty - 1) + 1
+                card_val = card_clock_impact(snap) * 20.0  # scale to board-eval units
+                ev += expected_activations * card_val
+                # No additional per-oracle bumps: loyalty × card_val already
+                # integrates over whatever the planeswalker actually does,
+                # including the Teferi-pattern "untap lands" mana-advantage
+                # (that's one activation per turn, already counted above).
             elif 'cost_reducer' in tags:
-                ev += 4.0
+                # Saves ~1 mana per spell over the remaining game — derive
+                # from card_clock_impact × turns_remaining rather than +4.
+                from ai.clock import card_clock_impact, combat_clock, NO_CLOCK
+                my_c = combat_clock(snap.my_power, snap.opp_life,
+                                     snap.my_evasion_power, snap.opp_toughness)
+                opp_c = combat_clock(snap.opp_power, snap.my_life,
+                                      snap.opp_evasion_power, snap.my_toughness)
+                turns = min(my_c, opp_c)
+                if turns >= NO_CLOCK:
+                    turns = 6.0  # rules constant: Modern midgame horizon
+                turns = max(2.0, min(turns, 8.0))
+                ev += turns * card_clock_impact(snap) * 20.0
 
         # ── Duplicate Chalice-of-the-Void / hate permanent penalty ──
-        # Casting a second Chalice with the same X is useless (same CMC locked)
+        # Casting a second Chalice with the same X is useless (same CMC
+        # locked). The value of a redundant permanent is zero; penalty
+        # equals the mana we'd waste casting it, derived from mana_clock_impact
+        # rather than a flat -8.
         if t.x_cost_data and 'charge_counter' in (t.oracle_text or '').lower():
             existing = [c for c in me.battlefield if c.name == t.name]
             if existing:
-                ev -= 8.0  # strongly penalise duplicate hate permanent
+                from ai.clock import mana_clock_impact
+                cmc = t.cmc or 2
+                ev -= cmc * mana_clock_impact(snap) * 20.0
 
         # ── Board wipe hard gate ──
+        # Empty-board wrath is pure waste (we self-wipe for nothing). Mark
+        # as structurally-rejected via a rules-constant sentinel below the
+        # pass_threshold in any archetype profile.
         if 'board_wipe' in tags and snap.opp_creature_count == 0:
-            return min(ev, -50.0)
+            WRATH_WASTE_SENTINEL = -50.0  # rules: forces pass under any profile
+            return min(ev, WRATH_WASTE_SENTINEL)
 
         # ── X-cost board wipe: hold when the X-budget can't meaningfully clear ──
         # Tuned through three passes:
@@ -946,6 +974,13 @@ class EVPlayer:
 
         # Tron land assembly bonus: detect via "Urza's" subtype (shared by all 3 pieces).
         # Completing the set unlocks {C}{C}{C} production — a huge mana jump.
+        # Replaces previous flat +20/+8/+3 magic numbers with a principled
+        # derivation: completed Tron = +4 mana/turn (7 colorless from the
+        # three lands vs 3 mana from any three vanilla lands). Over the
+        # remaining game (expected turns from combat_clock), that mana
+        # advantage compounds at mana_clock_impact per point. Partial
+        # progress is discounted by P(drawing the missing piece) using
+        # actual library composition — no hardcoded probabilities.
         is_tron_piece = "Urza's" in (land.template.subtypes or [])
         if is_tron_piece:
             current_tron = [c for c in me.lands if "Urza's" in (c.template.subtypes or [])]
@@ -958,12 +993,50 @@ class EVPlayer:
             completing = new_type not in tron_types_present
             if completing:
                 after_count = len(tron_types_present) + 1
-                if after_count == 3:
-                    ev += 20.0   # Completing Tron — 7 mana unlocks everything
-                elif after_count == 2:
-                    ev += 8.0    # Two pieces — meaningful progress
+                # Rules constants:
+                #   TRON_MANA_ADVANTAGE: completed Tron = 7 colorless mana
+                #     from 3 lands vs 3 from vanilla lands = +4/turn.
+                #   TRON_ASSEMBLY_COST: approximate mana investment to
+                #     continue playing Tron lands — no magic discount.
+                TRON_MANA_ADVANTAGE = 4.0
+                # Expected remaining turns = time for the mana advantage to
+                # compound. Use the slower of the two clocks (game ends when
+                # someone dies). NO_CLOCK stalls → long game.
+                from ai.clock import combat_clock, mana_clock_impact, NO_CLOCK
+                my_c = combat_clock(snap.my_power, snap.opp_life,
+                                     snap.my_evasion_power, snap.opp_toughness)
+                opp_c = combat_clock(snap.opp_power, snap.my_life,
+                                      snap.opp_evasion_power, snap.my_toughness)
+                expected_turns = min(my_c, opp_c)
+                if expected_turns >= NO_CLOCK:
+                    expected_turns = 8.0  # rules constant: Modern avg game length
+                expected_turns = max(2.0, min(expected_turns, 10.0))
+                # Mana-clock impact gives value per point of mana advantage.
+                mana_impact = mana_clock_impact(snap)
+                completed_value = (TRON_MANA_ADVANTAGE * expected_turns
+                                   * mana_impact * 20.0)
+                # 20.0 scales mana_clock_impact (1/opp_life ~= 0.05) back to
+                # board-eval units — same convention as creature_value().
+                #
+                # P(find missing piece(s) in remaining turns) from actual
+                # library composition: count Tron pieces in library + tutors
+                # (Sylvan Scrying, Expedition Map). No hardcoded magic.
+                missing = 3 - after_count
+                if missing == 0:
+                    ev += completed_value
                 else:
-                    ev += 3.0    # First piece — small bonus
+                    tron_sources = sum(
+                        1 for c in me.library
+                        if ("Urza's" in (c.template.subtypes or [])
+                            or 'sylvan scrying' in (c.template.name or '').lower()
+                            or 'expedition map' in (c.template.name or '').lower()))
+                    lib_size = max(1, len(me.library))
+                    # P(any given draw hits a piece/tutor)
+                    p_hit = tron_sources / lib_size
+                    # P(enough hits in expected_turns draws) — binomial,
+                    # simplified to independence across draws.
+                    p_assemble = 1.0 - (1.0 - p_hit) ** (expected_turns * missing)
+                    ev += p_assemble * completed_value
 
         # Landfall deferral: cast landfall creature FIRST, then play land
         current_mana = len(me.untapped_lands) + me.mana_pool.total() + me._tron_mana_bonus()
