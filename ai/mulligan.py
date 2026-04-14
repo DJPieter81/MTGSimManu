@@ -173,6 +173,34 @@ class MulliganDecider:
                         return True
                     # Fall through — key-card-without-development isn't keepable.
 
+            # Critical-piece check: decks with a big payoff (Amulet Titan →
+            # Primeval Titan, Living End → Living End, Storm → Grapeshot) can
+            # keep a hand that has the payoff + enough lands to cast it, even
+            # without cheap developmental spells. Without this gate, Amulet
+            # Titan mulligans 6-card hands like {5 lands, 2 Primeval Titans}
+            # as "no castable spells" and bottoms its own win condition
+            # (audit F-R5-AM1). Only applies when the deck explicitly
+            # declares critical_pieces AND lands can support the payoff's
+            # CMC; no speculative keeps.
+            if gp.critical_pieces:
+                hand_names = {c.name for c in hand}
+                found_critical = hand_names & gp.critical_pieces
+                if found_critical:
+                    # Max CMC of the critical piece(s) the hand contains.
+                    crit_cards = [c for c in hand if c.name in found_critical]
+                    max_cmc = max((c.template.cmc or 0) for c in crit_cards)
+                    # Need enough lands to eventually cast the piece. Ramp
+                    # decks cast CMC-6 Titans on 4-5 lands via bounce lands
+                    # + Amulet; allow land_count >= max_cmc - 2 as the
+                    # floor (lower bound: mulligan_min_lands).
+                    land_floor = max(gp.mulligan_min_lands or 2, max_cmc - 2)
+                    if land_count >= land_floor:
+                        self.last_reason = (
+                            f"has critical piece(s): {', '.join(sorted(found_critical))}, "
+                            f"{land_count} lands"
+                        )
+                        return True
+
             # Generic check
             if cheap_spells >= 1:
                 self.last_reason = f"{land_count} lands, {cheap_spells} castable spells"
