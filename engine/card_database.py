@@ -535,13 +535,18 @@ class OracleTextParser:
             if mana_value <= 2 and "Creature" in types:
                 tags.add("early_play")
 
-        # Removal — but NOT blink spells that exile your own creatures
+        # Removal — but NOT blink spells that exile your own creatures,
+        # and NOT lands (Channel lands like Boseiju have a destroy-mode
+        # but their primary role is mana production — tagging them as
+        # "removal" confuses mulligan / deploy logic).
+        is_land = "Land" in types
         is_blink = any("you control" in e.raw_text.lower() and e.effect_type == "exile"
                        and ("return" in e.raw_text.lower() or "then return" in e.raw_text.lower())
                        for e in effects)
         for e in effects:
-            if e.effect_type in ("damage", "destroy", "exile") and e.target_type in (
-                "creature", "any", "nonland_permanent", "permanent", "all_creatures"
+            if (not is_land) and e.effect_type in ("damage", "destroy", "exile") and e.target_type in (
+                "creature", "any", "nonland_permanent", "permanent", "all_creatures",
+                "artifact", "enchantment", "all_nonland",
             ):
                 if is_blink and e.effect_type == "exile":
                     tags.add("blink")

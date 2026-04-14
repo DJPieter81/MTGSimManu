@@ -84,6 +84,14 @@ class StrategyProfile:
     storm_patience: bool = False
     storm_min_fuel_to_go: int = 2
 
+    # ── Control patience ──
+    # When True, reactive-only spells are suppressed in main phase unless
+    # the AI is actually dying (snap.am_dead_next or opp_clock <= dying
+    # thresholds). Mirrors `storm_patience` — same gate-suppression idea
+    # but for control archetypes that should hold up mana for the
+    # opponent's turn instead of casting Verdict/Chant on an empty board.
+    control_patience: bool = False
+
     # ── Burn target comparison ──
     creature_value_mult: float = 1.5
 
@@ -113,6 +121,7 @@ MIDRANGE = StrategyProfile(
 
 CONTROL = StrategyProfile(
     burn_face_mult=0.0,
+    control_patience=True,
 )
 
 COMBO = StrategyProfile(

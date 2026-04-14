@@ -87,7 +87,11 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
                 pass
         # Avoid double-triggering if also handled by EFFECT_REGISTRY
         if 'draw' not in str(getattr(card, '_etb_effects_fired', [])):
-            game.draw_cards(controller, amount)
+            drawn = game.draw_cards(controller, amount)
+            names = ", ".join(c.name for c in drawn) if drawn else ""
+            if names:
+                game.log.append(f"T{game.display_turn} P{controller+1}: "
+                                f"{card.name} ETB: draw {amount} ({names})")
 
     # ── "When this creature enters, gain N life" ──
     # Only fire for unconditional gains — skip conditional ones like

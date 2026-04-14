@@ -139,7 +139,76 @@ from engine.card_database import CardDatabase  # singleton pattern
 
 ## 6. AI strategy accuracy
 
-**Overall grade: C+** (session 4-v2 — urgency_factor refined to (opp_clock-1)/4.0, clamp-floor removed so deferred-value permanents collapse to 0 EV when dying; oracle threat scoring with broader scaling regex; all other v1 wiring retained; 16×16 matrix at N=10 validates Boros at T1 67%/64% meta)
+**Overall grade: B** (post-iter6 — Affinity matchup plan iteration 2: extended `_has_high_threat_target` to also consider noncreature permanents (scaling equipment like Cranial Plating, Nettlecyst, planeswalkers, stax) in addition to creatures. Leyline Binding added to Domain Zoo's reactive_only list so it holds for CP instead of burning on Ornithopters T2. Affinity field WR 82% → **77%** (−5pp); CP removal count nearly doubled; CP delta +0.44.)
+
+**Affinity matchup iter2 (post-iter6 — 2026-04-13):**
+| Metric | iter5/iter6 | Current |
+|--------|------------|---------|
+| Affinity field WR | 82% | **77%** |
+| CP delta (audit) | +0.30 | **+0.44** |
+| CP removed count (60 games) | 5 | **9** |
+| Affinity vs Zoo WR | 93% | 87% |
+| Affinity vs Boros WR | 77% | 80% |
+
+**Iteration 6 fixes (ITERATION_6_PLAN.md — 2026-04-13)**
+
+### Iteration 6 fixes (ITERATION_6_PLAN.md — 2026-04-13)
+| Fix | Files | Status |
+|-----|-------|--------|
+| A. Living End aggression timing | `engine/game_state.py`, `engine/combat_manager.py` | ✅ landed (`24fb118`) |
+| B. Ritual immediate-effect | `ai/ev_evaluator.py` | already in iter5 (`bc51028`) |
+| C1. control_patience gate | `ai/strategy_profile.py`, `ai/ev_player.py` | already in iter5 (`bc602db`) |
+| C2. Teferi untap bonus | `ai/ev_player.py` | ✅ landed (`24fb118`) |
+| D. Undying Evil → reactive_only | `decks/gameplans/goryos_vengeance.json` | already present |
+
+Aggression-flag semantics: combat_manager.end_combat now only decrements the **active player**'s aggression_boost_turns (was: both). Combined with `=2` (was: =1), the flag survives one wasted same-turn combat (creatures with summoning sickness) into the next turn's combat.
+
+
+
+### Iteration 5 fixes (ITERATION_5_PLAN.md — 2026-04-13)
+| Fix | Files | Status | Audit/WR signal |
+|-----|-------|--------|-----------------|
+| 1. Ritual oracle mana-detection in _has_immediate_effect | `ai/ev_evaluator.py` | ✅ landed (`bc51028`) | All Storm rituals already covered by 'ritual' tag — change is belt-and-suspenders. Storm WR essentially unchanged. |
+| 2. Post-combo goal advance for mass-reanimate | `engine/game_state.py`, `ai/ev_player.py` | ✅ landed (`41f2e16`) | **Living End vs Tron 0% → 20%; field WR 3% → 40%** |
+| 3. control_patience gate + populate Azorius reactive_only | `ai/strategy_profile.py`, `ai/ev_player.py`, 3× `decks/gameplans/*.json` | ✅ landed (`bc602db`) | **Azorius WR 15% → 23%** (n=30); Counterspell delta +0.52, Teferi cast more often |
+
+**Living End audit (n=30):**
+- Win rate: 3% → **40%** (12 wins / 30 games)
+- Win conditions: damage:11 + timeout:1 (was damage:4)
+- Root cause was dual: (a) cascade-detection oracle pattern was too strict and never matched Living End's actual oracle, so `_resolve_living_end` was dead code; (b) even when creatures returned, GoalEngine kept running cascade-deck enabling goals.
+
+**Storm audit (n=60):**
+- Win rate: 25-30% → 30% (18/60); damage:17 + timeout:1
+- Grapeshot delta +0.94, Wish delta +0.78 — finishers correctly correlate with wins
+- Below 35-40% target; remaining gap is in storm_patience / _combo_modifier tuning (out of iteration-5 scope per plan)
+
+**Matrix n=10 power rankings (post-iter5):**
+- Living End: 6%/4% → **27%/23%** (huge)
+- Azorius Control (WST): 33%/29% → 33%/35%
+- Living End move from worst-deck slot
+
+Two persistent smoke failures (#1/#2 GD on Signal Pest, #6 Thraben Charm T4, #7 Cat Token) are unrelated to iteration-5 work and documented for future sessions.
+
+Session 5b changes (on top of session 5):
+  * engine/card_database.py: removal tag extended to artifact/enchantment/all_nonland target_types; lands filtered out (Channel lands like Boseiju stay untagged)
+  * ai/ev_player.py::_score_spell: artifact/enchantment-hate overlay using _permanent_threat_value × 0.5 for spells whose oracle contains target artifact/enchantment/nonland permanent/noncreature
+
+### Session 5 fixes (AFFINITY_MATCHUP_PLAN.md — 2026-04-13)
+| Fix | File | Status | Audit signal |
+|-----|------|--------|--------------|
+| 1. Scaling equipment threat value | `ai/ev_player.py::_permanent_threat_value` | ✅ regex `\+N/+N for each <perm>` with count-driven scoring | CP delta: **−X → +0.68** |
+| 2. EE reactive-only | `decks/gameplans/affinity.json::reactive_only` | ✅ | EE delta: **−0.54 → −0.28** (still below >0 target) |
+| 3. Evasion-weighted CP equip | `ai/ev_player.py::_consider_equip` | ✅ flying×2.0, menace×1.5, trample×1.3 | CP lands on Ornithopter when available |
+
+**Affinity audit n=60 (before → after):**
+- Win rate: 92% → **78%** (14pp drop)
+- Cranial Plating: 74% → **91%** when cast, delta +X → **+0.68**
+- Engineered Explosives: 64% → 50% when cast, delta -0.54 → **-0.28**
+- Signal Pest: 87% → 70% when cast, delta -0.30 → -0.44 (worse — opp removal now correctly targets it; not a regression in isolation)
+
+Target outcomes from plan (Affinity vs Boros ~65-70%, vs Zoo ~60-70%): partial. Current matchup WRs are Boros 17% (Affinity 83%), Zoo 10% (Affinity 90%). The residual gap points to further structural opponent-side work (documented in plan §"Target outcomes").
+
+**Overall grade (old): C+** (session 4-v2 — urgency_factor refined)
 
 ### Session 4 fixes (AI_STRATEGY_IMPROVEMENT_PLAN.md v1 + AI_IMPROVEMENT_PLAN_V2.md refinements — 2026-04-13)
 | Task | Commit | Status | Smoke signal |

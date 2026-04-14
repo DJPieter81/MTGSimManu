@@ -51,6 +51,7 @@ def classify(play):
         if any(x in p for x in ['grapeshot','empty the warrens']): return 'combo'
         if any(x in p for x in ['manamorphose','pyretic ritual','desperate ritual','seething song','reckless impulse',"wrenn's resolve"]): return 'mana'
         return 'spell'
+    if 'ch.' in p and ('saga' in p or 'chapter' in p or 'fable' in p): return 'trigger'
     if 'equip' in p: return 'trigger'
     if 'attack with' in p: return 'combat'
     if 'deals' in p or ('damage' in p and 'to' in p): return 'damage'
@@ -61,10 +62,9 @@ def pill(card):
     sf = card.split(" (")[0].strip()
     img = "https://api.scryfall.com/cards/named?exact=" + _q(sf) + "&format=image&version=small"
     q = chr(39)
-    thumb = f"<img class=\"card-thumb\" src=\"{img}\" alt=\"{esc(sf)}\" loading=\"lazy\" onerror=\"this.style.display={q}none{q}\">"
-    return f"<span class=\"pill has-thumb\">{thumb}{esc(card)}</span>"
-
-
+    art = f"<img class=\"hand-card-art\" src=\"{img}\" alt=\"{esc(sf)}\" loading=\"lazy\" onerror=\"this.style.display={q}none{q}\">"
+    label = f"<span class=\"hand-card-label\">{esc(sf[:18])}</span>"
+    return f"<span class=\"hand-card\">{art}{label}</span>"
 def life_svg(turns, p1n, p2n):
     lp1, lp2 = [20], [20]
     for t in turns:
@@ -245,8 +245,14 @@ def parse_game(block, gnum):
             cur['combat'].append(f'{prefix}{dam.group(1)} damage → life {dam.group(2)} → {dam.group(3)}')
         atk=re.search(r'P\d attacks with: (.+)', line)
         if atk: cur['combat'].append(f'⚔ {esc(atk.group(1))}')
+        # Capture per-creature block assignments (these are the actionable lines)
+        bemrg=re.search(r'\[BLOCK-EMERGENCY\] (.+)', line)
+        if bemrg: cur['combat'].append(f'BLOCK-EMRG: {esc(bemrg.group(1))}')
+        bnorm=re.search(r'\[BLOCK\] (.+)', line)
+        if bnorm: cur['combat'].append(f'BLOCK: {esc(bnorm.group(1))}')
+        # Legacy fallback: "P# blocks:" summary line (ignored if per-creature lines present)
         blk=re.search(r'P\d blocks: (.+)', line)
-        if blk and blk.group(1).strip(): cur['combat'].append(f'🛡 {esc(blk.group(1))}')
+        if blk and blk.group(1).strip() and '(see BLOCK' not in blk.group(1): cur['combat'].append(f'🛡 {esc(blk.group(1))}')
         brk=re.search(r'P\d+:\s{2}(.+?) \((\d+)/(\d+)\) → (\d+) dmg to player(.*)', line)
         if brk:
             note = ' (trample)' if 'trample' in brk.group(5) else ''
@@ -282,7 +288,8 @@ def creature_badges(s, equip_map=None):
     bits=re.split(r',\s*(?=[A-Z])',s)
     out=''
     equip_map = equip_map or {}
-    for b in bits:
+    for b in bits:  # b may contain [tapped]
+        is_tapped = "[tapped]" in b.lower()
         pm=re.search(r'(.+?)\s*\((\d+/\d+)\)',b.strip())
         name = pm.group(1).strip() if pm else re.sub(r'\s*\[.*?\]','',b.strip())
         pt   = pm.group(2) if pm else None
@@ -291,17 +298,98 @@ def creature_badges(s, equip_map=None):
         equips = equip_map.get(name, [])
         eq_html = ''.join(f'<span class="equip-tag" title="{esc(e)}">⚔{esc(e)}</span>' for e in equips)
         # Scryfall image tooltip
-        sf_name = name.split(' (')[0].strip()  # strip tapped/damage markers
+        sf_name = name.split(' (')[0].strip()
         from urllib.parse import quote as _qu
-        img_url = "https://api.scryfall.com/cards/named?exact=" + _qu(sf_name) + "&format=image&version=small"
+        img_url = "https://api.scryfall.com/cards/named?exact=" + _qu(sf_name) + "&format=image&version=art_crop"
         q = chr(39)
-        thumb = f'<img class="card-thumb" src="{img_url}" alt="{esc(sf_name)}" loading="lazy" onerror="this.style.display={q}none{q}">'
+        art = f'<img class="badge-art" src="{img_url}" alt="{esc(sf_name)}" loading="lazy" onerror="this.style.display={q}none{q}">'
         pt_html = f'<span class="pt">{pt}</span>' if pt else ''
-        out += f'<span class="creature-badge has-thumb">{thumb}{esc(name)}{pt_html}{eq_html}</span>'
+        tap_cls = " tapped" if is_tapped else ""; tap_icon = "<span class=\"tap-icon\">↷</span>" if is_tapped else ""; out += f'<span class="creature-badge{tap_cls}">{art}<span class="badge-text">{tap_icon}{esc(name)}{pt_html}{eq_html}</span></span>'
     return out or '<span style="color:#484f58">empty</span>'
 
 
-def lc(s): return len([x for x in s.split(',') if x.strip()]) if s and s!='none' else 0
+def other_badges(s):
+    """Render non-creature permanents (equipment, artifacts, enchantments) with art thumbnails."""
+    if not s: return ''
+    from urllib.parse import quote as _qu
+    items = [x.strip() for x in s.split(',') if x.strip()]
+    out = ''
+    for name in items:
+        sf_name = name.split(' (')[0].strip()
+        img_url = "https://api.scryfall.com/cards/named?exact=" + _qu(sf_name) + "&format=image&version=art_crop"
+        q = chr(39)
+        art = f'<img class="badge-art" src="{img_url}" alt="{esc(sf_name)}" loading="lazy" onerror="this.style.display={q}none{q}">'
+        out += f'<span class="creature-badge other-badge">{art}<span class="badge-text">{esc(name)}</span></span>'
+    return out
+
+def split_lands(s):
+    """Split a land string into (saga_names[], plain_land_string)."""
+    if not s or s == 'none': return [], s or 'none'
+    # Known saga / enchantment land names that should show as visual badges
+    SAGA_KEYWORDS = ('saga', 'urza', 'fable', 'witch')
+    items = [x.strip() for x in s.split(',') if x.strip()]
+    sagas, plains = [], []
+    for item in items:
+        name_part = item.replace('[T]','').strip().rstrip()
+        tapped = '[T]' in item
+        # Detect saga/enchantment land by name keywords
+        if any(k in name_part.lower() for k in SAGA_KEYWORDS):
+            sagas.append((name_part, tapped))
+        else:
+            plains.append(item)
+    plain_str = ', '.join(plains) if plains else 'none'
+    return sagas, plain_str
+
+def land_pills(s):
+    if not s or s == "none": return "<span style=\"color:#9198a1\">none</span>"
+    items = [x.strip() for x in s.split(",") if x.strip()]
+    out = ""
+    for item in items:
+        tapped = "[T]" in item
+        name = item.replace("[T]","").strip()
+        cls = "land-pill tapped-land" if tapped else "land-pill"
+        icon = "↷ " if tapped else ""
+        out += f"<span class=\"{cls}\">{icon}{esc(name)}</span>"
+    return out or "<span style=\"color:#9198a1\">none</span>"
+
+_LAND_MANA = {"Plains":("W",),"Island":("U",),"Swamp":("B",),"Mountain":("R",),"Forest":("G",),"Snow-Covered Plains":("W",),"Snow-Covered Island":("U",),"Snow-Covered Swamp":("B",),"Snow-Covered Mountain":("R",),"Snow-Covered Forest":("G",),"Sacred Foundry":("R","W"),"Hallowed Fountain":("U","W"),"Steam Vents":("U","R"),"Blood Crypt":("B","R"),"Overgrown Tomb":("B","G"),"Watery Grave":("U","B"),"Temple Garden":("G","W"),"Godless Shrine":("B","W"),"Stomping Ground":("G","R"),"Breeding Pool":("G","U"),"Arid Mesa":("any",),"Scalding Tarn":("any",),"Misty Rainforest":("any",),"Verdant Catacombs":("any",),"Marsh Flats":("any",),"Flooded Strand":("any",),"Windswept Heath":("any",),"Wooded Foothills":("any",),"Polluted Delta":("any",),"Bloodstained Mire":("any",),"Darksteel Citadel":("C",),"Treasure Vault":("C",),"Urza's Saga":("C",),"Spire of Industry":("C",),"Tanglepool Bridge":("C",),"Simic Growth Chamber":("G","U"),"Gruul Turf":("G","R"),"Lotus Field":("any",),"Dryad Arbor":("G",),"Arena of Glory":("R",),"Demolition Field":("C",),"Gemstone Caverns":("any",),"Boseiju, Who Endures":("G",),"Otawara, Soaring City":("U",),"Sokenzan, Crucible of Defiance":("R",),"Eiganjo, Seat of the Empire":("W",),}
+_MANA_COLS = {"W":"#f9e79f","U":"#85c1e9","B":"#b2bec3","R":"#f1948a","G":"#82e0aa","C":"#d7dbdd","any":"#c39bd3"}
+
+def mana_summary(land_str):
+    if not land_str or land_str == "none": return ""
+    from collections import Counter
+    items = [x.strip() for x in land_str.split(",") if x.strip()]
+    untapped = [x.replace("[T]","").strip() for x in items if "[T]" not in x]
+    if not untapped: return "<span class=\"mana-zero\">0 mana</span>"
+    counts = Counter()
+    for name in untapped:
+        for c in _LAND_MANA.get(name, ("?",)): counts[c] += 1
+    total = len(untapped)
+    pips = ""
+    for col in ["W","U","B","R","G","C","any","?"]:
+        n = counts.get(col, 0)
+        if n:
+            bg = _MANA_COLS.get(col, "#eee")
+            lbl = {"W":"W","U":"U","B":"B","R":"R","G":"G","C":"◇","any":"?","?":"?"}.get(col,col)
+            pips += f"<span class=\"mana-pip\" style=\"background:{bg}\" title=\"{n} {col}\">{n}{lbl}</span>"
+    return f"<span class=\"mana-bar\">{pips}<span class=\"mana-total\">{total} open</span></span>"
+
+def saga_badges(sagas):
+    """Render saga/enchantment lands as visual badges."""
+    if not sagas: return ''
+    from urllib.parse import quote as _qu
+    out = ''
+    for name, tapped in sagas:
+        sf = name.split(' (')[0].strip()
+        img_url = "https://api.scryfall.com/cards/named?exact=" + _qu(sf) + "&format=image&version=art_crop"
+        q = chr(39)
+        art = f'<img class="badge-art" src="{img_url}" alt="{esc(sf)}" loading="lazy" onerror="this.style.display={q}none{q}">'
+        tap_icon = '<span class="saga-tapped" title="Tapped">↷</span>' if tapped else ''
+        label = f'<span class="badge-text saga-label">{tap_icon}{esc(sf[:14])}</span>'
+        out += f'<span class="creature-badge saga-badge">{art}{label}</span>'
+    return out
+
+def lc(s): _, plain = split_lands(s); return len([x for x in plain.split(',') if x.strip()]) if plain and plain!='none' else 0
 
 SKIP = {'untaps all','upkeep','goal:','[mana]','[priority]','main 1','begin combat',
         'declare attackers p','declare blockers p','end combat','main 2','end step','resolve '}
@@ -349,24 +437,101 @@ def turn_html(t, next_t, gnum, p1name, p2name, star_turns):
     # Combat
     combat_html=''
     if t['combat']:
+        breakdown_lines = [c for c in t["combat"] if c.startswith("BREAKDOWN:")]
+        # Parse all attackers from the ⚔ line (covers blocked ones too)
+        import re as _re_atk
+        all_atk_line = next((c for c in t["combat"] if c.startswith("⚔")), "")
+        all_attackers = [a.strip() for a in all_atk_line[1:].split(",") if a.strip()] if all_atk_line else []
+        # Map attacker name -> damage from BREAKDOWN lines
+        dmg_map = {}
+        for bd in breakdown_lines:
+            m = _re_atk.match(r"BREAKDOWN:(.+?)\s+(\d+)/(\d+)\s+·\s+(\d+)\s+dmg(.*)", bd[10:])
+            if m: dmg_map[m.group(1).strip()] = (m.group(2), m.group(3), m.group(4), m.group(5).strip())
+        # Use all_attackers to drive the strip; fall back to breakdown_lines if ⚔ line missing
+        has_breakdown = bool(all_attackers or breakdown_lines)
+
+        # Parse BLOCK lines -> attacker_name: [{blocker info}]
+        import re as _re3
+        _blk_pat = _re3.compile(r"(.+?)\s+\((\d+)/(\d+)\)\s+blocks\s+(.+?)\s+\((\d+)/(\d+)\)\s+—\s+(.+)")
+        block_map = {}
+        for c in t["combat"]:
+            if c.startswith("BLOCK:") or c.startswith("BLOCK-EMRG:"):
+                body = c[11:] if c.startswith("BLOCK-EMRG:") else c[6:]
+                bm = _blk_pat.match(body.strip())
+                if bm:
+                    atk_name = bm.group(4).strip()
+                    block_map.setdefault(atk_name, []).append({
+                        "name": bm.group(1).strip(), "pw": bm.group(2), "tg": bm.group(3),
+                        "reason": bm.group(7), "emrg": c.startswith("BLOCK-EMRG:")
+                    })
+
+        def _blocker_mini(bl):
+            from urllib.parse import quote as _qu3
+            sf = bl["name"].split(" (")[0].strip()
+            img = "https://api.scryfall.com/cards/named?exact=" + _qu3(sf) + "&format=image&version=art_crop"
+            q = chr(39)
+            art = '<img class="blk-art" src="' + img + '" alt="' + esc(sf) + '" loading="lazy" onerror="this.style.display=' + q + 'none' + q + '">'
+            icon = "🚨" if bl["emrg"] else "🛡"
+            is_chump = "chump" in bl["reason"] and "trade" not in bl["reason"]
+            cls = "blk-card chump" if is_chump else "blk-card trade"
+            return ('<div class="' + cls + '">' + art +
+                    '<div class="blk-info"><span class="blk-icon">' + icon + '</span>' +
+                    '<span class="blk-name">' + esc(sf[:12]) + '</span>' +
+                    '<span class="blk-pt">' + bl["pw"] + '/' + bl["tg"] + '</span></div></div>')
+
+        def _atk_card(name_or_bd):
+            from urllib.parse import quote as _qu2
+            import re as _re2
+            # Accept either a raw attacker name or a BREAKDOWN: line
+            if isinstance(name_or_bd, str) and name_or_bd.startswith("BREAKDOWN:"):
+                m = _re2.match(r"BREAKDOWN:(.+?)\s+(\d+)/(\d+)\s+·\s+(\d+)\s+dmg(.*)", name_or_bd[10:])
+                if not m: return '<div class="combat-breakdown">' + name_or_bd[10:] + '</div>'
+                name,pw,tg,dmg,note = m.group(1),m.group(2),m.group(3),m.group(4),m.group(5).strip()
+            else:
+                name = name_or_bd
+                info = dmg_map.get(name, ('?','?','0',''))
+                pw,tg,dmg,note = info
+            sf = name.split(" (")[0].strip()
+            q = chr(39)
+            from urllib.parse import quote as _qu2b
+            img = "https://api.scryfall.com/cards/named?exact=" + _qu2b(sf) + "&format=image&version=art_crop"
+            art = '<img class="atk-art" src="' + img + '" alt="' + esc(sf) + '" loading="lazy" onerror="this.style.display=' + q + 'none' + q + '">'
+            trample = '<span class="atk-trample" title="Trample">↠</span>' if "trample" in note else ""
+            blocked = bool(block_map.get(name))
+            dmg_badge = ('<span class="atk-dmg">⚔' + dmg + '</span>') if int(dmg) > 0 else '<span class="atk-dmg blocked">✕0</span>'
+            atk_cls = "atk-card blocked" if blocked else "atk-card"
+            blockers_html = "".join(_blocker_mini(bl) for bl in block_map.get(name, []))
+            arrow = '<div class="block-arrow">▼</div>' if blocked else ""
+            return ('<div class="combat-pair">' +
+                    '<div class="' + atk_cls + '">' + art +
+                    '<div class="atk-info"><span class="atk-name">' + esc(sf[:14]) + '</span>' +
+                    '<span class="atk-pt">' + pw + '/' + tg + '</span>' +
+                    dmg_badge + trample + '</div></div>' +
+                    arrow + blockers_html +
+                    '</div>')
+
         def _combat_line(c):
-            if c.startswith('BREAKDOWN:'):
-                return f'<div class="combat-breakdown">{c[10:]}</div>'
-            if c.startswith('BLOCK-EMRG:'):
-                return f'<div class="combat-block emergency">🚨 {c[11:]}</div>'
-            if c.startswith('BLOCK:'):
-                return f'<div class="combat-block">🛡 {c[6:]}</div>'
-            if c.startswith('LETHAL:'):
-                return f'<div class="combat-lethal">☠ LETHAL — {c[7:]}</div>'
-            return f'<div class="combat-detail">{c}</div>'
-        combat_html='<div class="section-label">Combat</div>'+''.join(_combat_line(c) for c in t['combat'])
+            if c.startswith("BREAKDOWN:"): return ""
+            if c.startswith("BLOCK-EMRG:") or c.startswith("BLOCK:"): return ""
+            if c.startswith("LETHAL:"): return '<div class="combat-lethal">☠ LETHAL — ' + c[7:] + '</div>'
+            if c.startswith("⚔") and has_breakdown: return ""
+            return '<div class="combat-detail">' + c + '</div>'
+        _atk_source = all_attackers if all_attackers else [b for b in breakdown_lines]
+        atk_strip = ('<div class="atk-strip">' + "".join(_atk_card(a) for a in _atk_source) + '</div>') if has_breakdown else ""
+        combat_html = '<div class="section-label">Combat</div>' + atk_strip + "".join(_combat_line(c) for c in t["combat"])
+
+
 
     # Board — from next turn's header = state AFTER this turn's plays
     src=next_t if next_t else t
     p1b=src['boards'].get(p1name,{'creatures':'','lands':'','other':''})
     p2b=src['boards'].get(p2name,{'creatures':'','lands':'','other':''})
-    p1_cr,p1_l,p1_o=p1b['creatures'],p1b['lands'] or 'none',p1b.get('other','')
-    p2_cr,p2_l,p2_o=p2b['creatures'],p2b['lands'] or 'none',p2b.get('other','')
+    p1_cr,p1_l_raw,p1_o=p1b['creatures'],p1b['lands'] or 'none',p1b.get('other','')
+    p2_cr,p2_l_raw,p2_o=p2b['creatures'],p2b['lands'] or 'none',p2b.get('other','')
+    p1_sagas, p1_l = split_lands(p1_l_raw)
+    p2_sagas, p2_l = split_lands(p2_l_raw)
+    p1_mana = mana_summary(p1_l)
+    p2_mana = mana_summary(p2_l)
 
     return f'''<div class="turn {cls}" id="g{gnum}t{t["num"]}">
   <div class="turn-header" onclick="toggle(this.parentElement)">
@@ -389,14 +554,16 @@ def turn_html(t, next_t, gnum, p1name, p2name, star_turns):
       <div class="board-side bug">
         <h4><span style="color:{P1C}">{esc(p1name)}</span> — {lc(p1_l)} land{"s" if lc(p1_l)!=1 else ""}</h4>
         <div class="board">{creature_badges(p1_cr, src.get('equip_map',{}))}</div>
-        {f'<div class="other-list">⚔ {esc(p1_o[:160])}</div>' if p1_o else ''}
-        <div class="land-list">{esc(p1_l[:140])}</div>
+        {f'<div class="other-list">{other_badges(p1_o)}</div>' if p1_o else ''}
+        {f'<div class="other-list saga-row">{saga_badges(p1_sagas)}</div>' if p1_sagas else ''}
+        {p1_mana}<div class="land-list">{land_pills(p1_l)}</div>
       </div>
       <div class="board-side opp">
         <h4><span style="color:{P2C}">{esc(p2name)}</span> — {lc(p2_l)} land{"s" if lc(p2_l)!=1 else ""}</h4>
         <div class="board">{creature_badges(p2_cr, src.get('equip_map',{}))}</div>
-        {f'<div class="other-list">⚔ {esc(p2_o[:160])}</div>' if p2_o else ''}
-        <div class="land-list">{esc(p2_l[:140])}</div>
+        {f'<div class="other-list">{other_badges(p2_o)}</div>' if p2_o else ''}
+        {f'<div class="other-list saga-row">{saga_badges(p2_sagas)}</div>' if p2_sagas else ''}
+        {p2_mana}<div class="land-list">{land_pills(p2_l)}</div>
       </div>
     </div>
   </div>
@@ -514,6 +681,30 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
 .hand-box h3{font-size:.8em;color:#656d76;margin-bottom:8px;font-weight:600}
 .hand-box.bug{border-left:3px solid #0969da}.hand-box.opp{border-left:3px solid #d1242f}
 .pill{display:inline-block;background:#eaeef2;border:1px solid #d0d7de;border-radius:10px;padding:2px 8px;margin:2px;font-size:.78em;font-family:'Fira Code','Consolas',monospace;color:#9a6700}
+.hand-pills{display:flex;flex-wrap:wrap;gap:5px;margin:4px 0 6px;align-items:flex-end}
+.hand-card{display:inline-flex;flex-direction:column;align-items:center;width:60px;border-radius:5px;overflow:hidden;border:1px solid #d0d7de;background:#fff;flex-shrink:0;vertical-align:bottom}
+.hand-card-art{width:60px;height:84px;object-fit:cover;object-position:top;display:block}
+.hand-card-label{font-size:.58em;padding:2px 3px;text-align:center;color:#57606a;font-family:'Fira Code',monospace;line-height:1.25;width:100%;background:#f6f8fa;word-break:break-word}
+.atk-strip{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px;align-items:flex-end}
+.atk-card{display:inline-flex;flex-direction:column;align-items:center;width:66px;border-radius:5px;overflow:hidden;border:1px solid #e6ac00;background:#fffbf0;flex-shrink:0}
+.atk-art{width:66px;height:48px;object-fit:cover;object-position:top;display:block}
+.atk-info{width:100%;padding:2px 4px 3px;text-align:center;background:#fffbf0}
+.atk-name{display:block;font-size:.58em;color:#57606a;font-family:'Fira Code',monospace;line-height:1.2;word-break:break-word}
+.atk-pt{font-size:.58em;color:#656d76}
+.atk-dmg{font-size:.65em;font-weight:700;color:#cf222e;margin-left:3px}
+.atk-trample{font-size:.68em;color:#0969da;margin-left:2px}
+.combat-pair{display:inline-flex;flex-direction:column;align-items:center;gap:2px}
+.atk-card.blocked{border-color:#cf222e;opacity:.85}
+.atk-dmg.blocked{color:#9198a1}
+.block-arrow{font-size:.75em;color:#cf222e;line-height:1;text-align:center}
+.blk-card{display:inline-flex;flex-direction:column;align-items:center;width:58px;border-radius:4px;overflow:hidden;border:1px solid #ccc;background:#fafafa;flex-shrink:0}
+.blk-card.chump{border-color:#f1948a;background:#fff5f5}
+.blk-card.trade{border-color:#82e0aa;background:#f0fff4}
+.blk-art{width:58px;height:42px;object-fit:cover;object-position:top;display:block}
+.blk-info{width:100%;padding:1px 3px;text-align:center}
+.blk-icon{font-size:.7em}
+.blk-name{display:block;font-size:.55em;color:#57606a;font-family:"Fira Code",monospace;word-break:break-word;line-height:1.2}
+.blk-pt{display:block;font-size:.58em;color:#656d76}
 .mull-pills{opacity:.5;margin:2px 0}.mull-pills .pill{font-size:.7em;text-decoration:line-through}
 .mull-step{display:flex;align-items:center;gap:6px;margin:5px 0 2px;font-size:.8em}
 .mull-label{color:#656d76;font-weight:600}
@@ -568,12 +759,19 @@ body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-seri
 .board-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
 .board-side{background:#ffffff;border:1px solid #d0d7de;border-radius:6px;padding:8px 10px}
 .board-side h4{font-size:.75em;color:#656d76;margin-bottom:6px;font-weight:600}
-.board{margin-bottom:4px;min-height:22px;display:flex;flex-wrap:wrap;gap:3px}
-.creature-badge{background:#ddf4ff;border:1px solid #a8d8f0;border-radius:5px;padding:3px 8px;font-family:'Fira Code',monospace;font-size:.78em;color:#0969da;display:inline-flex;align-items:center;gap:4px}
-.creature-badge .pt{color:#656d76;font-size:.9em}
-.land-list{color:#9198a1;font-size:.72em;margin-top:4px;line-height:1.5}
-.other-list{color:#6e40c9;font-size:.72em;margin-top:3px;line-height:1.5;font-style:italic}
+.board{margin-bottom:4px;min-height:22px;display:flex;flex-wrap:wrap;gap:5px;align-items:flex-start}
+.creature-badge{background:#ddf4ff;border:1px solid #a8d8f0;border-radius:6px;font-family:'Fira Code',monospace;font-size:.72em;color:#0969da;display:inline-flex;flex-direction:column;align-items:center;overflow:hidden;width:72px;vertical-align:top;text-align:center}.creature-badge.tapped{opacity:.5;filter:saturate(.3)}.tap-icon{font-size:.75em;color:#9a6700}
+.badge-art{width:72px;height:52px;object-fit:cover;object-position:top;display:block;flex-shrink:0}
+.badge-text{padding:2px 4px 3px;line-height:1.3;word-break:break-word;width:100%}
+.creature-badge .pt{color:#656d76;font-size:.88em;display:block}
+.land-list{margin-top:4px;display:flex;flex-wrap:wrap;gap:3px}.land-pill{display:inline-block;background:#f6f8fa;border:1px solid #d0d7de;border-radius:4px;padding:1px 5px;font-size:.68em;color:#57606a;font-family:"Fira Code",monospace}.tapped-land{background:#fff8e1;border-color:#e6ac00;color:#9a6700;opacity:.75}.mana-bar{display:flex;align-items:center;gap:3px;margin:4px 0 2px;flex-wrap:wrap}.mana-pip{display:inline-block;border-radius:50%;width:20px;height:20px;text-align:center;line-height:20px;font-size:.65em;font-weight:700;color:#1f2328;border:1px solid rgba(0,0,0,.15);flex-shrink:0}.mana-total{font-size:.65em;color:#57606a;margin-left:2px}.mana-zero{font-size:.65em;color:#9198a1;display:block;margin:3px 0}
+.other-list{margin-top:4px;display:flex;flex-wrap:wrap;gap:5px;align-items:flex-start}
 .equip-tag{background:#fff3cd;border:1px solid #e6ac00;border-radius:3px;color:#7a5c00;font-size:.7em;padding:1px 5px;margin-left:3px;font-style:normal}
+.saga-badge{background:#f0fff4;border-color:#2da44e;color:#1a7f37}
+.saga-label{color:#1a7f37}
+.saga-tapped{color:#9198a1;margin-right:2px}
+.saga-row{margin-top:3px}
+.other-badge{background:#f6f0ff;border-color:#b39ddb;color:#5e35b1}
 .combat-lethal{background:#fff0f0;border:1px solid #f5b8b0;border-left:4px solid #cf222e;border-radius:0 5px 5px 0;padding:7px 12px;margin:4px 0;font-weight:600;color:#cf222e;font-size:.85em}
 .has-thumb{position:relative;cursor:default}
 .has-thumb .card-thumb{display:none;position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);width:130px;border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.35);z-index:999;pointer-events:none}

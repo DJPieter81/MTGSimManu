@@ -68,5 +68,8 @@
   "mulligan_require_creature_cmc": 2,
   "always_early": [
     "Ragavan, Nimble Pilferer"
+  ],
+  "reactive_only": [
+    "Leyline Binding"
   ]
 }
