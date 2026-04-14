@@ -946,13 +946,17 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
             if can_kill:
                 # Full lethal — entire win-swing is realized.
                 ev += p_resolves * win_swing
-            elif damage > 0 and storm_count >= 2:
-                # Non-lethal chain that still lands a finisher (Grapeshot for
-                # X<lethal). Credit the fractional life removed — this is the
-                # same principle as face burn: damage × (1/survival_turns).
-                # We intentionally do NOT credit chains without a finisher,
-                # because a chain with no damage leaves opp a full response
-                # window; the cards/mana expended don't offset that.
+            elif damage >= max(1, snap.opp_life // 2) or (
+                    snap.opp_clock <= 2 and damage > 0):
+                # Non-lethal chain credited in two cases:
+                #   1. Meaningful damage (≥½ opp life) — chain materially
+                #      accelerates the clock; audit F-C1.
+                #   2. We're about to die (opp_clock ≤ 2) and the chain
+                #      deals any damage — "Hail Mary" mode. Better to fire
+                #      Grapeshot for 2 damage now than hold it into death.
+                # The dual gate preserves the original patience against
+                # midrange opponents while keeping aggressive face-pressure
+                # against aggro we can't survive.
                 progress = min(1.0, damage / max(1, snap.opp_life))
                 ev += p_resolves * progress * win_swing
 
