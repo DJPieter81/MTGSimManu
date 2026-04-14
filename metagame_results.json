@@ -1,36 +1,36 @@
 {
-  "timestamp": "2026-04-14T10:27:41.421615",
+  "timestamp": "2026-04-14T10:42:28.026916",
   "type": "matrix",
   "rankings": [
     [
-      88.8,
+      92.8,
       "Affinity",
-      88.2
+      93.2
     ],
     [
       55.6,
       "Pinnacle Affinity",
-      56.1
+      55.1
     ],
     [
-      49.6,
+      50.0,
       "Boros Energy",
-      50.8
+      51.9
     ],
     [
-      46.0,
+      44.4,
       "Eldrazi Tron",
-      46.9
+      47.8
     ],
     [
-      37.6,
+      34.8,
       "Jeskai Blink",
-      38.6
+      33.2
     ],
     [
       22.4,
       "Ruby Storm",
-      24.2
+      24.0
     ]
   ],
   "names": [
@@ -42,36 +42,36 @@
     "Pinnacle Affinity"
   ],
   "matrix": {
-    "Boros Energy|Jeskai Blink": 60,
-    "Jeskai Blink|Boros Energy": 40,
+    "Eldrazi Tron|Pinnacle Affinity": 24,
+    "Pinnacle Affinity|Eldrazi Tron": 76,
+    "Eldrazi Tron|Affinity": 6,
+    "Affinity|Eldrazi Tron": 94,
     "Jeskai Blink|Affinity": 8,
     "Affinity|Jeskai Blink": 92,
-    "Boros Energy|Eldrazi Tron": 54,
-    "Eldrazi Tron|Boros Energy": 46,
-    "Eldrazi Tron|Affinity": 10,
-    "Affinity|Eldrazi Tron": 90,
-    "Boros Energy|Affinity": 14,
-    "Affinity|Boros Energy": 86,
-    "Jeskai Blink|Eldrazi Tron": 42,
-    "Eldrazi Tron|Jeskai Blink": 58,
+    "Jeskai Blink|Eldrazi Tron": 34,
+    "Eldrazi Tron|Jeskai Blink": 66,
+    "Boros Energy|Eldrazi Tron": 50,
+    "Eldrazi Tron|Boros Energy": 50,
+    "Boros Energy|Jeskai Blink": 70,
+    "Jeskai Blink|Boros Energy": 30,
+    "Boros Energy|Affinity": 6,
+    "Affinity|Boros Energy": 94,
+    "Boros Energy|Pinnacle Affinity": 48,
+    "Pinnacle Affinity|Boros Energy": 52,
+    "Jeskai Blink|Pinnacle Affinity": 42,
+    "Pinnacle Affinity|Jeskai Blink": 58,
     "Affinity|Pinnacle Affinity": 86,
     "Pinnacle Affinity|Affinity": 14,
-    "Eldrazi Tron|Pinnacle Affinity": 36,
-    "Pinnacle Affinity|Eldrazi Tron": 64,
-    "Boros Energy|Pinnacle Affinity": 46,
-    "Pinnacle Affinity|Boros Energy": 54,
-    "Jeskai Blink|Pinnacle Affinity": 32,
-    "Pinnacle Affinity|Jeskai Blink": 68,
-    "Ruby Storm|Affinity": 10,
-    "Affinity|Ruby Storm": 90,
-    "Boros Energy|Ruby Storm": 74,
-    "Ruby Storm|Boros Energy": 26,
-    "Jeskai Blink|Ruby Storm": 66,
-    "Ruby Storm|Jeskai Blink": 34,
-    "Eldrazi Tron|Ruby Storm": 80,
-    "Ruby Storm|Eldrazi Tron": 20,
+    "Ruby Storm|Affinity": 2,
+    "Affinity|Ruby Storm": 98,
+    "Boros Energy|Ruby Storm": 76,
+    "Ruby Storm|Boros Energy": 24,
+    "Jeskai Blink|Ruby Storm": 60,
+    "Ruby Storm|Jeskai Blink": 40,
     "Ruby Storm|Pinnacle Affinity": 22,
-    "Pinnacle Affinity|Ruby Storm": 78
+    "Pinnacle Affinity|Ruby Storm": 78,
+    "Eldrazi Tron|Ruby Storm": 76,
+    "Ruby Storm|Eldrazi Tron": 24
   },
   "tier1": [
     "Affinity",
