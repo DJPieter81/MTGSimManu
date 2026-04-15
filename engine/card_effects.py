@@ -869,14 +869,6 @@ def ranger_captain_etb(game, card, controller, targets=None, item=None):
         game.rng.shuffle(player.library)
 
 
-@EFFECT_REGISTRY.register("Ragavan, Nimble Pilferer", EffectTiming.ETB,
-                           description="Create Treasure token on combat damage")
-def ragavan_etb(game, card, controller, targets=None, item=None):
-    # Ragavan's ETB does nothing — his ability triggers on combat damage.
-    # The combat damage trigger is handled in CombatManager._deal_combat_damage.
-    pass
-
-
 @EFFECT_REGISTRY.register("The Legend of Roku", EffectTiming.ETB,
                            description="Saga Ch.I: exile top 3, may play until end of next turn")
 def legend_of_roku_etb(game, card, controller, targets=None, item=None):
