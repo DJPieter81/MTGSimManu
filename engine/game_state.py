@@ -2425,11 +2425,20 @@ class GameState:
                                     f"{name} → {', '.join(effects)}")
             return  # Registry handled it
 
+        # ── Oracle-pattern fallback: try pattern-matched effects first ──
+        # When no EFFECT_REGISTRY handler exists, resolve_spell_from_oracle
+        # parses common oracle-text patterns (destroy/exile nonland, reanimate,
+        # bounce, exile-may-play, draw) and fires the matching effect.
+        from .oracle_resolver import resolve_spell_from_oracle
+        if resolve_spell_from_oracle(self, card, controller, targets=item.targets):
+            # Oracle pattern handled it — still run generic ability parser
+            # below as additional best-effort (matches prior behaviour where
+            # multiple effects on one card could each fire).
+            pass
+
         # ── Generic fallback: parse abilities from oracle text ──
-        # All named card effects are now handled by EFFECT_REGISTRY (card_effects.py).
         # Legacy named-card blocks have been removed (Phase 2D migration).
         # Only the generic ability parser below remains as a last resort.
-        # (Legacy named-card blocks deleted — all handled by EFFECT_REGISTRY)
 
         # ── Generic effect handling ──
         effects = []

@@ -281,17 +281,21 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
 
 
 def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
-                               controller: int, targets: list = None):
+                               controller: int, targets: list = None) -> bool:
     """Resolve instant/sorcery effects by parsing oracle text.
 
     Called when a spell resolves. Handles common spell patterns.
     This supplements the existing _execute_spell_effects fallback.
+
+    Returns True if ANY pattern fired (so the caller can skip further
+    generic handling). Returns False if oracle did not match any pattern.
     """
     oracle = (card.template.oracle_text or '').lower()
     if not oracle:
-        return
+        return False
 
     opponent = 1 - controller
+    fired = False
 
     # ── "Target opponent reveals their hand. You choose a nonland card
     #     and that player discards it." (Thoughtseize, Inquisition) ──
@@ -308,11 +312,131 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
                 game.log.append(
                     f"T{game.display_turn} P{controller+1}: "
                     f"{card.name} discards {best.name}")
+                fired = True
         # Life loss for Thoughtseize
         if 'you lose' in oracle and 'life' in oracle:
             m = re.search(r'lose\s+(\d+)\s+life', oracle)
             if m:
                 game.players[controller].life -= int(m.group(1))
+
+    # ── "Destroy target nonland permanent [with mana value X or less]"
+    #     (Abrupt Decay: MV<=3, Assassin's Trophy: any, Prismatic Ending: X)
+    #     "Exile target nonland permanent" (Celestial Purge, March of Otherworldly Light)
+    if (('destroy target' in oracle or 'exile target' in oracle)
+            and 'nonland permanent' in oracle):
+        opp = game.players[opponent]
+        nonland = [c for c in opp.battlefield if not c.template.is_land]
+        # Apply mana-value restriction if the oracle has one
+        m_mv = re.search(
+            r'mana value (?:of\s+)?(\d+) or less', oracle)
+        if m_mv:
+            max_mv = int(m_mv.group(1))
+            nonland = [c for c in nonland if (c.template.cmc or 0) <= max_mv]
+        # Color restrictions (Celestial Purge: "black or red")
+        if 'black or red' in oracle:
+            nonland = [c for c in nonland
+                       if any(col in getattr(c.template, 'color_identity', [])
+                              for col in ['B', 'R']) or
+                       any(str(col).upper() in ('BLACK', 'RED', 'B', 'R')
+                           for col in getattr(c.template, 'color_identity', []))]
+        if nonland:
+            best = max(nonland, key=lambda c: _permanent_threat_value(c, opp))
+            dest_zone = 'exile' if 'exile target' in oracle else 'graveyard'
+            opp.battlefield.remove(best)
+            best.zone = dest_zone
+            (opp.exile if dest_zone == 'exile' else opp.graveyard).append(best)
+            verb = 'exiles' if dest_zone == 'exile' else 'destroys'
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: "
+                f"{card.name} {verb} {best.name}")
+            fired = True
+
+    # ── "Return target creature card from a graveyard to the battlefield"
+    #     (Persist, Unburial Rites) ──
+    if ('return target creature card' in oracle
+            and 'graveyard' in oracle
+            and 'battlefield' in oracle):
+        gy = game.players[controller].graveyard
+        creatures = [c for c in gy if c.template.is_creature]
+        if creatures:
+            best = max(creatures,
+                       key=lambda c: (c.template.power or 0)
+                       + (c.template.toughness or 0))
+            game.reanimate(controller, best)
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: "
+                f"{card.name} reanimates {best.name}")
+            fired = True
+
+    # ── "Return target nonland permanent to its owner's hand" (bounce) ──
+    if ('return target' in oracle and "owner's hand" in oracle
+            and ('nonland permanent' in oracle
+                 or 'creature' in oracle and 'target creature' in oracle)):
+        opp = game.players[opponent]
+        candidates = [c for c in opp.battlefield if not c.template.is_land]
+        if 'nonland permanent' not in oracle and 'creature' in oracle:
+            candidates = [c for c in candidates if c.template.is_creature]
+        if candidates:
+            best = max(candidates, key=lambda c: _permanent_threat_value(c, opp))
+            opp.battlefield.remove(best)
+            best.zone = 'hand'
+            best.tapped = False
+            opp.hand.append(best)
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: "
+                f"{card.name} returns {best.name} to hand")
+            fired = True
+
+    # ── "Exile the top N cards... you may play them until end of turn"
+    #     (Reckless Impulse, Wrenn's Resolve, Galvanic Relay,
+    #      Glimpse the Impossible, March of Reckless Joy,
+    #      Valakut Awakening). Simplified: treat exile+may-play as a draw.
+    if ('exile' in oracle and 'may play' in oracle
+            and ('this turn' in oracle or 'end of turn' in oracle
+                 or 'end of your next turn' in oracle)):
+        m = re.search(r'exile the top (\w+|\d+) cards?', oracle)
+        word_to_num = {'a': 1, 'one': 1, 'two': 2, 'three': 3, 'four': 4,
+                       'five': 5, 'six': 6, 'seven': 7}
+        count = 2
+        if m:
+            val = m.group(1)
+            try:
+                count = int(val)
+            except ValueError:
+                count = word_to_num.get(val, 2)
+        drawn = game.draw_cards(controller, count)
+        names = ", ".join(c.name for c in drawn) if drawn else ""
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: "
+            f"{card.name}: exile {count} → may play ({names})")
+        fired = True
+
+    # ── "Draw N cards" (simple cantrips: Preordain, Sleight of Hand,
+    #     Heroes' Hangout, Stock Up etc.) — only if no other more specific
+    #     pattern has fired, to avoid double-draw.
+    if not fired and 'draw' in oracle and 'card' in oracle:
+        # Only fire for spells that are basically "draw N" — skip complex
+        # draws guarded by conditions ("if... draw").
+        if ('if' not in oracle or 'otherwise' in oracle
+                or oracle.count('if') == 0):
+            m = re.search(r'draw\s+(\w+)\s+card', oracle)
+            if m:
+                word_to_num = {'a': 1, 'one': 1, 'two': 2, 'three': 3, 'four': 4,
+                               'five': 5, 'six': 6, 'seven': 7}
+                try:
+                    count = int(m.group(1))
+                except ValueError:
+                    count = word_to_num.get(m.group(1), 1)
+                # Skip if oracle implies this is a trigger, not a spell effect
+                if 'whenever' not in oracle and 'when' not in oracle:
+                    drawn = game.draw_cards(controller, count)
+                    names = ", ".join(c.name for c in drawn) if drawn else ""
+                    game.log.append(
+                        f"T{game.display_turn} P{controller+1}: "
+                        f"{card.name}: draw {count} ({names})")
+                    fired = True
+
+    return fired
 
 
 def resolve_attack_trigger(game: "GameState", attacker: "CardInstance",
