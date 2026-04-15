@@ -162,6 +162,30 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
                 f"T{game.display_turn} P{controller+1}: "
                 f"{card.name} exiles {best.name}")
 
+    # ── "When this creature enters, return target card from your graveyard
+    #     to your hand" (Eternal Witness, Greenwarden, Archaeomancer-style) ──
+    if ('enters' in oracle and 'return target' in oracle
+            and 'graveyard' in oracle and "to your hand" in oracle):
+        player = game.players[controller]
+        if player.graveyard:
+            # Restrict to instant/sorcery if oracle says so
+            pool = player.graveyard
+            if 'instant or sorcery card' in oracle:
+                pool = [c for c in pool
+                        if c.template.is_instant or c.template.is_sorcery]
+            elif 'creature card' in oracle:
+                pool = [c for c in pool if c.template.is_creature]
+            else:
+                pool = [c for c in pool if not c.template.is_land]
+            if pool:
+                best = max(pool, key=lambda c: c.template.cmc or 0)
+                player.graveyard.remove(best)
+                best.zone = "hand"
+                player.hand.append(best)
+                game.log.append(
+                    f"T{game.display_turn} P{controller+1}: "
+                    f"{card.name} returns {best.name} from GY to hand")
+
     # ── "When this creature enters, draw a card" ──
     if 'enters' in oracle and 'draw' in oracle and 'card' in oracle:
         amount = 1
