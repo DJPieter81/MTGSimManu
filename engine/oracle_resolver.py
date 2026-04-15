@@ -22,6 +22,94 @@ if TYPE_CHECKING:
     from engine.cards import CardInstance, CardTemplate
 
 
+# ═══════════════════════════════════════════════════════════════════
+# Oracle-driven target selection helpers
+# ═══════════════════════════════════════════════════════════════════
+# These replace hardcoded per-card targeting logic. No card names.
+# Every scoring decision must derive from oracle text or template data.
+
+def _permanent_threat_value(card: "CardInstance", owner_player) -> float:
+    """Score a permanent by how much it threatens us. Higher = more valuable
+    to remove. Oracle-driven only — no card names.
+
+    Used by removal/exile/bounce patterns to pick the best target on
+    the opponent's battlefield.
+    """
+    template = card.template
+    oracle = (template.oracle_text or '').lower()
+    val = 0.0
+
+    # Creature body value (power heavier — pressure matters more than durability)
+    if template.is_creature:
+        p = card.power or template.power or 0
+        t = card.toughness or template.toughness or 0
+        val += p * 1.2 + t * 0.4
+
+        # Combat-trigger creatures get a big bump — they generate value each turn
+        if 'whenever this creature attacks' in oracle or 'when this creature attacks' in oracle:
+            val += 5.0
+        # ETB/dies triggers on a deployed creature are past us; only small residual
+        if 'dies' in oracle:
+            val += 1.0
+
+    # Planeswalkers: loyalty is the resource; +0.5 per loyalty
+    if 'planeswalker' in ' '.join(ct.value for ct in template.card_types).lower() \
+            if hasattr(template, 'card_types') else False:
+        val += (getattr(card, 'loyalty_counters', 0) or template.loyalty or 0) * 0.5 + 3.0
+
+    # Per-permanent scaling triggers (Cranial Plating, Ravager, etc.)
+    if re.search(r'for each (artifact|creature|land|enchantment|permanent)', oracle):
+        val += 4.0
+
+    # Equipment/Auras that pump attached creature
+    if 'equipped creature gets' in oracle or 'enchanted creature gets' in oracle:
+        val += 3.0
+
+    # Mana-producing permanents that are not basic lands (rocks, dorks)
+    if not template.is_land and 'add' in oracle and '{' in oracle:
+        val += 2.0
+
+    # Repeatable card advantage / engines
+    if 'whenever' in oracle and ('draw' in oracle or 'create' in oracle):
+        val += 3.5
+
+    # CMC is a decent baseline for investment
+    val += (template.cmc or 0) * 0.3
+
+    return val
+
+
+def _pick_damage_target(game: "GameState", controller: int, amount: int):
+    """Pick the best creature target for N damage, or None to go face.
+
+    Oracle-driven threat scoring. No card names. Used by ETB damage,
+    attack trigger damage, and direct damage spells to route burn
+    into high-value creature kills when face damage isn't urgent.
+    """
+    opp = game.players[1 - controller]
+    killable = []
+    for c in opp.battlefield:
+        if not c.template.is_creature:
+            continue
+        tough = c.toughness or c.template.toughness or 0
+        if tough <= 0:
+            continue
+        already = getattr(c, 'damage_marked', 0)
+        if tough - already <= amount:
+            killable.append(c)
+
+    if not killable:
+        return None
+
+    best = max(killable, key=lambda c: _permanent_threat_value(c, opp))
+    # Only go creature-side if the kill is meaningfully valuable vs face damage.
+    # Threshold scales with burn amount — a 1-dmg burn needs a bigger target
+    # to skip face, a 3-dmg burn is happy to kill a modest creature.
+    if _permanent_threat_value(best, opp) >= amount * 0.8:
+        return best
+    return None
+
+
 def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
                              controller: int):
     """Resolve ETB effects by parsing the card's oracle text.
@@ -112,13 +200,22 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
         if m:
             amount = int(m.group(1))
             if 'any target' in oracle or 'target' in oracle:
-                # Target opponent by default (AI always targets opp)
-                game.players[opponent].life -= amount
-                game.players[controller].damage_dealt_this_turn += amount
-                game.log.append(
-                    f"T{game.display_turn} P{controller+1}: "
-                    f"{card.name} ETB: {amount} damage to opponent "
-                    f"(life: {game.players[opponent].life})")
+                # Oracle-driven target pick: route to creature kill when valuable,
+                # else face damage. No card-name branches.
+                target = _pick_damage_target(game, controller, amount)
+                if target is not None:
+                    target.damage_marked = getattr(target, 'damage_marked', 0) + amount
+                    game.log.append(
+                        f"T{game.display_turn} P{controller+1}: "
+                        f"{card.name} ETB: {amount} damage to {target.name}")
+                    game.check_state_based_actions()
+                else:
+                    game.players[opponent].life -= amount
+                    game.players[controller].damage_dealt_this_turn += amount
+                    game.log.append(
+                        f"T{game.display_turn} P{controller+1}: "
+                        f"{card.name} ETB: {amount} damage to opponent "
+                        f"(life: {game.players[opponent].life})")
 
     # ── Bounce land: "When this land enters, return a land you control
     #    to its owner's hand." (Gruul Turf, Simic Growth Chamber, etc.) ──
@@ -240,8 +337,15 @@ def resolve_attack_trigger(game: "GameState", attacker: "CardInstance",
         m = re.search(r'deals?\s+(\d+)\s+damage', oracle)
         if m:
             amount = int(m.group(1))
-            game.players[opponent].life -= amount
-            game.players[controller].damage_dealt_this_turn += amount
+            # Oracle-driven target pick: route to creature kill when valuable,
+            # else face damage. Same logic as ETB damage.
+            target = _pick_damage_target(game, controller, amount)
+            if target is not None:
+                target.damage_marked = getattr(target, 'damage_marked', 0) + amount
+                game.check_state_based_actions()
+            else:
+                game.players[opponent].life -= amount
+                game.players[controller].damage_dealt_this_turn += amount
 
     # ── "Whenever this creature attacks, gain N life" ──
     if 'attacks' in oracle and 'gain' in oracle and 'life' in oracle:

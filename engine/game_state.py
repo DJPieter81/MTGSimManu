@@ -2694,14 +2694,14 @@ class GameState:
             cause="bounced"
         )
 
-        _discarded = []
     def _force_discard(self, player_idx: int, count: int, self_discard: bool = False):
         """Discard cards from hand.
-        
+
         self_discard=True means the player chose to discard (Faithful Mending, etc.)
         self_discard=False means opponent forced the discard (Thoughtseize, etc.)
         """
         player = self.players[player_idx]
+        _discarded = []
         for _ in range(min(count, len(player.hand))):
             if not player.hand:
                 break
