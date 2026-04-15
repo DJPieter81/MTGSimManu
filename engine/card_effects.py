@@ -337,18 +337,6 @@ def eternal_witness_etb(game, card, controller, targets=None, item=None):
                         f"Eternal Witness returns {best.name} from GY")
 
 
-@EFFECT_REGISTRY.register("Quantum Riddler", EffectTiming.ETB,
-                           description="Draw a card")
-def quantum_riddler_etb(game, card, controller, targets=None, item=None):
-    # Oracle: "When this creature enters, draw a card."
-    # Static replacement: "As long as you have one or fewer cards in hand,
-    # if you would draw one or more cards, you draw that many cards plus one instead."
-    # The ETB draws 1. The static replacement (if applicable) is a separate effect.
-    game.draw_cards(controller, 1)
-    game.log.append(f"T{game.display_turn} P{controller+1}: "
-                    f"Quantum Riddler ETB: draw a card")
-
-
 @EFFECT_REGISTRY.register("Mox Opal", EffectTiming.ETB,
                            description="Metalcraft: produces any color mana")
 def mox_opal_etb(game, card, controller, targets=None, item=None):
@@ -1907,12 +1895,6 @@ def snapcaster_mage_etb(game, card, controller, targets=None, item=None):
                         f"Snapcaster gives flashback to {best.name}")
 
 
-@EFFECT_REGISTRY.register("Wall of Omens", EffectTiming.ETB,
-                           description="Draw a card")
-def wall_of_omens_etb(game, card, controller, targets=None, item=None):
-    game.draw_cards(controller, 1)
-
-
 @EFFECT_REGISTRY.register("Spell Queller", EffectTiming.ETB,
                            description="Exile target spell with CMC 4 or less from stack")
 def spell_queller_etb(game, card, controller, targets=None, item=None):
@@ -1930,15 +1912,6 @@ def spell_queller_etb(game, card, controller, targets=None, item=None):
 
 
 # ─── Affinity cards ─────────────────────────────────────────────────────
-
-@EFFECT_REGISTRY.register("Thought Monitor", EffectTiming.ETB,
-                           description="Draw 2 cards")
-def thought_monitor_etb(game, card, controller, targets=None, item=None):
-    drawn = game.draw_cards(controller, 2)
-    names = ", ".join(c.name for c in drawn)
-    game.log.append(f"T{game.display_turn} P{controller+1}: "
-                    f"Thought Monitor ETB: draw 2 ({names})")
-
 
 @EFFECT_REGISTRY.register("Dispatch", EffectTiming.SPELL_RESOLVE,
                            description="Tap creature; with metalcraft, exile it instead")
