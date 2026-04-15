@@ -351,13 +351,19 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
                 f"{card.name} {verb} {best.name}")
             fired = True
 
-    # ── "Return target creature card from a graveyard to the battlefield"
-    #     (Persist, Unburial Rites) ──
-    if ('return target creature card' in oracle
+    # ── "Return target [adj] creature card from a graveyard to the battlefield"
+    #     (Persist: nonlegendary creature card; Unburial Rites: creature card) ──
+    if (re.search(r'return target\s+(\w+\s+)?creature card', oracle)
             and 'graveyard' in oracle
             and 'battlefield' in oracle):
         gy = game.players[controller].graveyard
         creatures = [c for c in gy if c.template.is_creature]
+        # Honour nonlegendary restriction if present
+        if 'nonlegendary' in oracle:
+            from engine.cards import Supertype
+            creatures = [c for c in creatures
+                         if Supertype.LEGENDARY not in
+                         getattr(c.template, 'supertypes', [])]
         if creatures:
             best = max(creatures,
                        key=lambda c: (c.template.power or 0)

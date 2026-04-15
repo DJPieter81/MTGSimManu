@@ -511,17 +511,6 @@ def goryos_vengeance_resolve(game, card, controller, targets=None, item=None):
         game.reanimate(controller, best, exile_at_eot=True, give_haste=True)
 
 
-@EFFECT_REGISTRY.register("Persist", EffectTiming.SPELL_RESOLVE,
-                           description="Reanimate creature from graveyard")
-def persist_resolve(game, card, controller, targets=None, item=None):
-    gy = game.players[controller].graveyard
-    creatures = [c for c in gy if c.template.is_creature]
-    if creatures:
-        best = max(creatures,
-                   key=lambda c: (c.template.power or 0) + (c.template.toughness or 0))
-        game.reanimate(controller, best)
-
-
 @EFFECT_REGISTRY.register("Unmarked Grave", EffectTiming.SPELL_RESOLVE,
                            description="Tutor nonlegendary card to graveyard")
 def unmarked_grave_resolve(game, card, controller, targets=None, item=None):
@@ -1057,12 +1046,6 @@ def expressive_iteration_resolve(game, card, controller, targets=None, item=None
         player.library.append(c)
 
 
-@EFFECT_REGISTRY.register("Preordain", EffectTiming.SPELL_RESOLVE,
-                           description="Scry 2, draw 1 (simplified: draw 1)")
-def preordain_resolve(game, card, controller, targets=None, item=None):
-    game.draw_cards(controller, 1)
-
-
 @EFFECT_REGISTRY.register("Tribal Flames", EffectTiming.SPELL_RESOLVE,
                            description="Deal damage equal to domain (basic land types)")
 def tribal_flames_resolve(game, card, controller, targets=None, item=None):
@@ -1373,20 +1356,6 @@ def kolaghans_command_resolve(game, card, controller, targets=None, item=None):
         game._force_discard(opponent, 1)
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Kolaghan's Command: opponent discards")
-
-
-@EFFECT_REGISTRY.register("Abrupt Decay", EffectTiming.SPELL_RESOLVE,
-                           description="Destroy target nonland permanent with MV 3 or less")
-def abrupt_decay_resolve(game, card, controller, targets=None, item=None):
-    opponent = 1 - controller
-    opp = game.players[opponent]
-    valid = [c for c in opp.battlefield
-             if not c.template.is_land and c.template.cmc <= 3]
-    if valid:
-        target = max(valid, key=lambda c: _nonland_permanent_threat(c, opp.battlefield))
-        game._permanent_destroyed(target)
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Abrupt Decay destroys {target.name}")
 
 
 @EFFECT_REGISTRY.register("Assassin's Trophy", EffectTiming.SPELL_RESOLVE,
@@ -1841,49 +1810,7 @@ def sleight_of_hand_resolve(game, card, controller, targets=None, item=None):
     game.draw_cards(controller, 1)
 
 
-@EFFECT_REGISTRY.register("Reckless Impulse", EffectTiming.SPELL_RESOLVE,
-                           description="Exile top 2, may play until end of next turn")
-def reckless_impulse_resolve(game, card, controller, targets=None, item=None):
-    # Simplified: draw 2 cards (exile-draw approximation)
-    game.draw_cards(controller, 2)
 
-
-@EFFECT_REGISTRY.register("Wrenn's Resolve", EffectTiming.SPELL_RESOLVE,
-                           description="Exile top 2, may play until end of next turn")
-def wrenns_resolve_resolve(game, card, controller, targets=None, item=None):
-    # Simplified: draw 2 cards (exile-draw approximation)
-    game.draw_cards(controller, 2)
-
-
-@EFFECT_REGISTRY.register("Heroes' Hangout", EffectTiming.SPELL_RESOLVE,
-                           description="Scry 2, draw 1")
-def heroes_hangout_resolve(game, card, controller, targets=None, item=None):
-    game.draw_cards(controller, 1)
-
-
-@EFFECT_REGISTRY.register("Glimpse the Impossible", EffectTiming.SPELL_RESOLVE,
-                           description="Exile top 3, may play this turn")
-def glimpse_the_impossible_resolve(game, card, controller, targets=None, item=None):
-    # Simplified: draw 2 cards (exile-play approximation)
-    game.draw_cards(controller, 2)
-
-
-@EFFECT_REGISTRY.register("Valakut Awakening // Valakut Stoneforge", EffectTiming.SPELL_RESOLVE,
-                           description="Put cards from hand on bottom, draw that many + 1")
-def valakut_awakening_resolve(game, card, controller, targets=None, item=None):
-    # Simplified: draw 3 (redraw hand minus best cards)
-    player = game.players[controller]
-    hand_size = len(player.hand)
-    # Put worst cards on bottom, keep best, draw replacements
-    # Simplified: draw 2 (net card selection)
-    game.draw_cards(controller, 2)
-
-
-@EFFECT_REGISTRY.register("March of Reckless Joy", EffectTiming.SPELL_RESOLVE,
-                           description="Exile top cards equal to cards exiled + 2")
-def march_of_reckless_joy_resolve(game, card, controller, targets=None, item=None):
-    # Simplified: draw 2 (exile-play)
-    game.draw_cards(controller, 2)
 
 
 # ═══════════════════════════════════════════════════════════════════
