@@ -1,0 +1,655 @@
+Loaded 21759 cards (0 errors)
+======================================================================
+  GAME 1: Affinity (P1) vs Domain Zoo (P2)  —  seed 60200
+  Series: Affinity 0 - 0 Domain Zoo
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Domain Zoo wins → chooses to play first
+║ P1 (on play): Domain Zoo
+║ P2 (on draw): Affinity
+╚═══════════════════════════════════════════════════════
+
+P1 (Affinity) opening hand (3 lands, 4 spells):
+  • Frogmite [Creature, CMC 4]
+  • Signal Pest [Creature, CMC 1]
+  • Treasure Vault [Land, CMC 0]
+  • Thought Monitor [Creature, CMC 7]
+  • Urza's Saga [Land, CMC 0]
+  • Cranial Plating [Spell, CMC 2]
+  • Darksteel Citadel [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Cranial Plating, 2 cheap spells
+
+P2 (Domain Zoo) opening hand (1 lands, 6 spells):
+  • Stubborn Denial [Spell, CMC 1]
+  • Consign to Memory [Spell, CMC 1]
+  • Lush Portico [Land, CMC 0]
+  • Lightning Bolt [Spell, CMC 1]
+  • The Legend of Roku // Avatar Roku [Spell, CMC 4]
+  • Doorkeeper Thrull [Creature, CMC 2]
+  • Leyline Binding [Spell, CMC 6]
+→ P2 KEEPS 7 — has key card(s): Doorkeeper Thrull, Leyline Binding, 4 cheap spells
+
+
+╔══ TURN 1 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Lush Portico (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Domain Zoo 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Lush Portico [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Memnite
+  [Main 1]
+T1 P1: Play Urza's Saga
+    → Goal: deploy_engine [enablers]
+T1 P1: Cast Memnite (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Memnite
+    → Goal: deploy_engine
+T1 P1: Cast Signal Pest (1)
+    [Priority] P2 passes (no response)
+T1: Resolve Signal Pest
+    → Goal: deploy_engine
+    [Mana] Tap Urza's Saga→C (paying for Frogmite, 1 mana remaining)
+T1 P1: Cast Frogmite (4)
+    [Priority] P2 passes (no response)
+T1: Resolve Frogmite
+    → Goal: deploy_engine
+T1 P1: Cast Cranial Plating (2)
+    [Priority] P2 passes (no response)
+T1: Resolve Cranial Plating
+T1 P1: Cranial Plating enters the battlefield (unattached)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Lush Portico
+║ Affinity board:
+║   Creatures: Memnite (1/1), Signal Pest (0/1), Frogmite (2/2)
+║   Other: Cranial Plating
+║   Lands: Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Phlage, Titan of Fire's Fury
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Domain Zoo 20
+║ Hand: 3 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Memnite (1/1), Signal Pest (0/1), Frogmite (2/2)
+║   Other: Cranial Plating
+║   Lands: Urza's Saga
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Lush Portico
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ornithopter
+  [Main 1]
+T2 P1: Play Treasure Vault
+T2 P1: Equip Cranial Plating to Frogmite (cost 1)
+    → Goal: deploy_engine [enablers]
+T2 P1: Cast Ornithopter (0)
+    [Priority] P2 passes (no response)
+T2: Resolve Ornithopter
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Memnite, Signal Pest, Frogmite
+T2 P1: Attack with Memnite, Signal Pest, Frogmite
+  [Declare Blockers] P2 does not block
+T2 P1:   Memnite (2/1) → 2 dmg to player
+T2 P1:   Frogmite (9/2) → 9 dmg to player
+  [Combat Damage] 11 damage dealt → P2 life: 20 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 9  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 2 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Lush Portico
+║ Affinity board:
+║   Creatures: Memnite (1/1) [tapped], Signal Pest (0/1) [tapped], Frogmite (8/2) [tapped], Ornithopter (0/2)
+║   Other: Cranial Plating
+║   Lands: Urza's Saga [T], Treasure Vault
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Territorial Kavu
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T3: Phlage, Titan of Fire's Fury moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 3 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Domain Zoo 9
+║ Hand: 2 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 1
+║ Library: 51  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Memnite (1/1), Signal Pest (0/1), Frogmite (8/2), Ornithopter (0/2)
+║   Other: Cranial Plating
+║   Lands: Urza's Saga, Treasure Vault
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Lush Portico
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T3 P1: Create 1x Construct token(s)
+T3 P1: Urza's Saga Ch.II: Create Construct Token
+  [Draw] P1 draws: Thought Monitor
+  [Main 1]
+T3 P1: Play Darksteel Citadel
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Memnite, Signal Pest, Frogmite
+T3 P1: Attack with Memnite, Signal Pest, Frogmite
+  [Declare Blockers] P2 does not block
+T3 P1:   Memnite (2/1) → 2 dmg to player
+T3 P1:   Frogmite (11/2) → 11 dmg to player
+P2 loses: life total -4
+  [Combat Damage] 13 damage dealt → P2 life: 9 → -4
+
+>>> Affinity wins Game 1 on turn 3 via damage
+    Final life: Affinity=20  Domain Zoo=-4
+
+======================================================================
+  GAME 2: Domain Zoo (P1) vs Affinity (P2)  —  seed 60201
+  Series: Affinity 1 - 0 Domain Zoo
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Domain Zoo wins → chooses to play first
+║ P1 (on play): Domain Zoo
+║ P2 (on draw): Affinity
+╚═══════════════════════════════════════════════════════
+
+P1 (Domain Zoo) opening hand (3 lands, 4 spells):
+  • The Legend of Roku // Avatar Roku [Spell, CMC 4]
+  • Wooded Foothills [Land, CMC 0]
+  • Territorial Kavu [Creature, CMC 2]
+  • Steam Vents [Land, CMC 0]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Plains [Land, CMC 0]
+  • Lightning Bolt [Spell, CMC 1]
+→ P1 KEEPS 7 — has key card(s): Ragavan, Nimble Pilferer, Territorial Kavu, 3 cheap spells
+
+P2 (Affinity) opening hand (2 lands, 5 spells):
+  • Cranial Plating [Spell, CMC 2]
+  • Frogmite [Creature, CMC 4]
+  • Darksteel Citadel [Land, CMC 0]
+  • Sojourner's Companion [Creature, CMC 7]
+  • Treasure Vault [Land, CMC 0]
+  • Memnite [Creature, CMC 0]
+  • Springleaf Drum [Spell, CMC 1]
+→ P2 KEEPS 7 — has key card(s): Cranial Plating, Memnite, Springleaf Drum, 3 cheap spells
+
+
+╔══ TURN 1 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Wooded Foothills
+T1 P1: Crack Wooded Foothills (pay 1 life) -> Steam Vents (pay 2 life, untapped, life: 17)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T1 P1: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P2 passes (no response)
+T1: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Domain Zoo 17
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mox Opal
+  [Main 1]
+T1 P2: Play Darksteel Citadel
+    → Goal: deploy_engine [engines]
+T1 P2: Cast Mox Opal (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Mox Opal
+    → Goal: curve_out
+    [Mana] Tap Darksteel Citadel→C (paying for Springleaf Drum, 1 mana remaining)
+T1 P2: Cast Springleaf Drum (1)
+    [Priority] P1 passes (no response)
+T1: Resolve Springleaf Drum
+    → Goal: curve_out
+T1 P2: Cast Memnite (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Memnite
+    → Goal: curve_out [enablers]
+T1 P2: Cast Frogmite (4)
+    [Priority] P1 passes (no response)
+T1: Resolve Frogmite
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 17  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Steam Vents
+║ Affinity board:
+║   Creatures: Memnite (1/1), Frogmite (2/2)
+║   Other: Mox Opal, Springleaf Drum
+║   Lands: Darksteel Citadel [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Territorial Kavu
+  [Main 1]
+    → Goal: curve_out
+    [Target] → face (3 dmg, life 20 → 17): face damage worth more
+    [Mana] Tap Steam Vents→R (paying for Lightning Bolt, 1 mana remaining)
+T2 P1: Cast Lightning Bolt (R)
+    [Priority] P2 passes (no response)
+T2: Resolve Lightning Bolt
+T2 P1: Lightning Bolt → 3 damage → life 17
+T2 P1: Play Plains
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer
+T2 P1: Attack with Ragavan, Nimble Pilferer
+T2 P2:   [BLOCK] Memnite (1/1) blocks Ragavan, Nimble Pilferer (2/1) — trade (chump)
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T2: Ragavan, Nimble Pilferer dies
+T2: Memnite dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 17  |  Domain Zoo 17
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Frogmite (2/2)
+║   Other: Mox Opal, Springleaf Drum
+║   Lands: Darksteel Citadel
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents [T], Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Signal Pest
+  [Main 1]
+T2 P2: Play Treasure Vault
+T2 P2: Cycle Sojourner's Companion (pay 2 mana, draw a card)
+    → Goal: curve_out
+T2 P2: Cast Signal Pest (1)
+    [Priority] P1 passes (no response)
+T2: Resolve Signal Pest
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Frogmite
+T2 P2: Attack with Frogmite
+  [Declare Blockers] P1 does not block
+T2 P2:   Frogmite (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 17 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 15  |  Affinity 17
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Plains
+║ Affinity board:
+║   Creatures: Frogmite (2/2) [tapped], Signal Pest (0/1)
+║   Other: Mox Opal, Springleaf Drum
+║   Lands: Darksteel Citadel [T], Treasure Vault [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arid Mesa
+  [Main 1]
+T3 P1: Play Arid Mesa
+T3 P1: Crack Arid Mesa (pay 1 life) -> Temple Garden (tapped, life: 14)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 17  |  Domain Zoo 14
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 2
+║ Affinity board:
+║   Creatures: Frogmite (2/2), Signal Pest (0/1)
+║   Other: Mox Opal, Springleaf Drum
+║   Lands: Darksteel Citadel, Treasure Vault
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Plains, Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ornithopter
+  [Main 1]
+T3 P2: Play Urza's Saga
+    → Goal: curve_out [payoffs]
+T3 P2: Cast Cranial Plating (2)
+    [Priority] P1 passes (no response)
+T3: Resolve Cranial Plating
+T3 P2: Cranial Plating enters the battlefield (unattached)
+T3 P2: Equip Cranial Plating to Frogmite (cost 1)
+    → Goal: curve_out
+T3 P2: Cast Ornithopter (0)
+    [Priority] P1 passes (no response)
+T3: Resolve Ornithopter
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Frogmite, Signal Pest
+T3 P2: Attack with Frogmite, Signal Pest
+  [Declare Blockers] P1 does not block
+T3 P2:   Frogmite (11/2) → 11 dmg to player
+  [Combat Damage] 11 damage dealt → P1 life: 14 → 3
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 3  |  Affinity 17
+║ Hand: 4 cards  |  Opp hand: 0 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 4
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Plains, Temple Garden
+║ Affinity board:
+║   Creatures: Frogmite (10/2) [tapped], Signal Pest (0/1) [tapped], Ornithopter (0/2)
+║   Other: Mox Opal, Springleaf Drum, Cranial Plating
+║   Lands: Darksteel Citadel [T], Treasure Vault, Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Doorkeeper Thrull
+  [Main 1]
+T4 P1: Play Steam Vents (pay 2 life, untapped, life: 1)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Temple Garden→G, Steam Vents→R (paying for Territorial Kavu, 4 mana remaining)
+T4 P1: Cast Territorial Kavu (RG)
+    [Priority] P2 passes (no response)
+T4: Resolve Territorial Kavu
+T4 P1: Territorial Kavu enters as 4/4 (domain=4)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Plains→W, Steam Vents→R (paying for Doorkeeper Thrull, 2 mana remaining)
+T4 P1: Cast Doorkeeper Thrull (1W)
+    [Priority] P2 passes (no response)
+T4: Resolve Doorkeeper Thrull
+T4 P1: Doorkeeper Thrull: opponent ETB triggers suppressed
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 17  |  Domain Zoo 1
+║ Hand: 0 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 2
+║ Affinity board:
+║   Creatures: Frogmite (10/2), Signal Pest (0/1), Ornithopter (0/2)
+║   Other: Mox Opal, Springleaf Drum, Cranial Plating
+║   Lands: Darksteel Citadel, Treasure Vault, Urza's Saga
+║ Domain Zoo board:
+║   Creatures: Territorial Kavu (4/4), Doorkeeper Thrull (1/2)
+║   Lands: Steam Vents [T], Plains [T], Temple Garden [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Island
+  [Main 1]
+T4 P2: Play Island
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Frogmite, Signal Pest
+T4 P2: Attack with Frogmite, Signal Pest
+T4 P1:   [BLOCK-EMERGENCY] Doorkeeper Thrull (1/2) blocks Frogmite (11/2) — chump block
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T4: Doorkeeper Thrull dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 1  |  Affinity 17
+║ Hand: 2 cards  |  Opp hand: 0 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 5
+║ Domain Zoo board:
+║   Creatures: Territorial Kavu (4/4)
+║   Lands: Steam Vents, Plains, Temple Garden, Steam Vents
+║ Affinity board:
+║   Creatures: Frogmite (10/2) [tapped], Signal Pest (0/1) [tapped], Ornithopter (0/2)
+║   Other: Mox Opal, Springleaf Drum, Cranial Plating
+║   Lands: Darksteel Citadel, Treasure Vault, Urza's Saga, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mountain
+  [Main 1]
+T5 P1: Play Mountain
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Temple Garden→G, Mountain→R (paying for Territorial Kavu, 5 mana remaining)
+T5 P1: Cast Territorial Kavu (RG)
+    [Priority] P2 passes (no response)
+T5: Resolve Territorial Kavu
+T5 P1: Territorial Kavu enters as 4/4 (domain=4)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Territorial Kavu
+T5 P1: Attack with Territorial Kavu
+  [Declare Blockers] P2 does not block
+T5 P1:   Territorial Kavu (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 17 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 13  |  Domain Zoo 1
+║ Hand: 0 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 2
+║ Affinity board:
+║   Creatures: Frogmite (10/2), Signal Pest (0/1), Ornithopter (0/2)
+║   Other: Mox Opal, Springleaf Drum, Cranial Plating
+║   Lands: Darksteel Citadel, Treasure Vault, Urza's Saga, Island
+║ Domain Zoo board:
+║   Creatures: Territorial Kavu (4/4) [tapped], Territorial Kavu (4/4)
+║   Lands: Steam Vents, Plains, Temple Garden [T], Steam Vents, Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T5 P2: Create 1x Construct token(s)
+T5 P2: Urza's Saga Ch.II: Create Construct Token
+  [Draw] P2 draws: Nettlecyst
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Darksteel Citadel→C (paying for Nettlecyst, 4 mana remaining)
+T5 P2: Cast Nettlecyst (3)
+    [Priority] P1 passes (no response)
+T5: Resolve Nettlecyst
+T5 P2: Create 1x Germ token(s)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Frogmite, Signal Pest
+T5 P2: Attack with Frogmite, Signal Pest
+T5 P1:   [BLOCK-EMERGENCY] Territorial Kavu (4/4) blocks Frogmite (13/2) — trade (chump)
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T5: Territorial Kavu dies
+T5: Cranial Plating falls off Frogmite (unattached)
+T5: Frogmite dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 1  |  Affinity 13
+║ Hand: 1 cards  |  Opp hand: 0 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 6
+║ Domain Zoo board:
+║   Creatures: Territorial Kavu (4/4)
+║   Lands: Steam Vents, Plains, Temple Garden, Steam Vents, Mountain
+║ Affinity board:
+║   Creatures: Signal Pest (0/1) [tapped], Ornithopter (0/2), Construct Token (9/9), Germ Token (9/9)
+║   Other: Mox Opal, Springleaf Drum, Cranial Plating, Nettlecyst
+║   Lands: Darksteel Citadel [T], Treasure Vault, Urza's Saga, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arid Mesa
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Mountain→R, Steam Vents→R, Plains→W, Temple Garden→G (paying for The Legend of Roku // Avatar Roku, 5 mana remaining)
+T6 P1: Cast The Legend of Roku // Avatar Roku (2RR)
+    [Priority] P2 passes (no response)
+T6: Resolve The Legend of Roku // Avatar Roku
+T6 P1: The Legend of Roku // Avatar Roku ETB: draw 1 (Ragavan, Nimble Pilferer)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Territorial Kavu
+T6 P1: Attack with Territorial Kavu
+  [Declare Blockers] P2 does not block
+T6 P1:   Territorial Kavu (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 13 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 9  |  Domain Zoo 1
+║ Hand: 0 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 3
+║ Affinity board:
+║   Creatures: Signal Pest (0/1), Ornithopter (0/2), Construct Token (9/9), Germ Token (9/9)
+║   Other: Mox Opal, Springleaf Drum, Cranial Plating, Nettlecyst
+║   Lands: Darksteel Citadel, Treasure Vault, Urza's Saga, Island
+║ Domain Zoo board:
+║   Creatures: Territorial Kavu (4/4) [tapped]
+║   Other: The Legend of Roku // Avatar Roku
+║   Lands: Steam Vents [T], Plains [T], Temple Garden [T], Steam Vents, Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T6 P2: Create 1x Construct token(s)
+T6 P2: Urza's Saga Ch.III: Create Construct Token
+T6 P2: Urza's Saga tutors Springleaf Drum
+T6 P2: Sacrifice Urza's Saga (final chapter)
+  [Draw] P2 draws: Cranial Plating
+  [Main 1]
+T6 P2: Equip Cranial Plating to Construct Token (cost 1)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Treasure Vault→C, Island→U (paying for Cranial Plating, 2 mana remaining)
+T6 P2: Cast Cranial Plating (2)
+    [Priority] P1 passes (no response)
+T6: Resolve Cranial Plating
+T6 P2: Cranial Plating enters the battlefield (unattached)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Signal Pest, Construct Token, Germ Token
+T6 P2: Attack with Signal Pest, Construct Token, Germ Token
+  [Declare Blockers] P1 does not block
+T6 P2:   Construct Token (25/12) → 25 dmg to player
+T6 P2:   Germ Token (13/12) → 13 dmg to player
+P1 loses: life total -37
+  [Combat Damage] 38 damage dealt → P1 life: 1 → -37
+
+>>> Affinity wins Game 2 on turn 6 via damage
+    Final life: Domain Zoo=-37  Affinity=9
+
+======================================================================
+  MATCH RESULT: Affinity wins 2-0
+======================================================================

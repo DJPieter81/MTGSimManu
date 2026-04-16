@@ -2694,7 +2694,6 @@ class GameState:
             cause="bounced"
         )
 
-        _discarded = []
     def _force_discard(self, player_idx: int, count: int, self_discard: bool = False):
         """Discard cards from hand.
         
@@ -2713,7 +2712,6 @@ class GameState:
                 # Opponent forced: discard highest CMC (least castable)
                 player.hand.sort(key=lambda c: c.template.cmc, reverse=True)
                 card = player.hand[0]
-            _discarded.append(card)
             self.zone_mgr.move_card(
                 self, card, "hand", "graveyard",
                 cause="forced discard" if not self_discard else "discard"
