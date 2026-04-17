@@ -22,6 +22,71 @@ if TYPE_CHECKING:
     from engine.cards import CardInstance, CardTemplate
 
 
+def _pick_damage_target(game: "GameState", controller: int,
+                         amount: int) -> Optional["CardInstance"]:
+    """Oracle-driven target picker for "deal N damage to any target".
+
+    Returns the best killable opposing creature, or None (meaning
+    "go face"). No card names — threat is scored from oracle text
+    amplifiers (attack triggers, scaling clauses) plus raw P/T.
+
+    Face is preferred over creature targeting when the face value
+    (`amount * FACE_VALUE_PER_DAMAGE`) exceeds the creature's
+    threat score. This means:
+      * Phlage ETB (3 dmg) will kill a 2/2 Signal Pest because the
+        battle-cry amplifier pushes its threat above face value.
+      * A spell facing a pure-body 2/2 Grizzly Bear still goes face
+        if the face damage is more valuable than trading for a
+        vanilla body.
+    """
+    opp_idx = 1 - controller
+    opp = game.players[opp_idx]
+    killable = [
+        c for c in opp.creatures
+        if ((c.toughness or 0) - getattr(c, 'damage_marked', 0)) <= amount
+        and (c.toughness or 0) > 0
+    ]
+    if not killable:
+        return None
+
+    def threat_score(c) -> float:
+        # Raw body
+        val = (c.power or 0) + (c.toughness or 0) * 0.3
+        oracle = (c.template.oracle_text or '').lower()
+        name = (c.template.name or '').lower().split(' //')[0].strip()
+        # Attack-trigger amplifiers (battle cry, self-named attack triggers).
+        # +3 matches the BATTLE_CRY_AMPLIFIER_VP convention used in
+        # creature_threat_value (ai/ev_evaluator.py) so engine-level
+        # targeting picks the same "high-threat" creatures the AI would
+        # prioritise for proactive removal.
+        if 'whenever this creature attacks' in oracle:
+            val += 3.0
+        elif name and f'whenever {name} attacks' in oracle:
+            val += 3.0
+        # Scaling clauses (for each artifact/creature/land/card)
+        if re.search(r'for each (artifact|creature|land|card)', oracle):
+            val += 3.0
+        # Large bodies beyond typical burn range
+        val += max(0, (c.power or 0) - 3) * 0.8
+        # Overkill waste: damage above what's needed to kill is lost face burn.
+        remaining = (c.toughness or 0) - getattr(c, 'damage_marked', 0)
+        waste = max(0, amount - remaining)
+        val -= waste * 0.8
+        return val
+
+    best = max(killable, key=threat_score)
+    # Rules constant: face-burn value per damage. 1.0 × amount so
+    # "3 damage to face" = 3.0 threat floor. Creatures need genuine
+    # ongoing value (Ragavan-class attack triggers, scaling threats,
+    # big bodies) to outbid face; 1-toughness battle-cry carriers
+    # don't, because the overkill waste matches the amplifier bonus.
+    # This matches the pre-refactor Phlage-goes-face default for
+    # small aggro boards while still redirecting burn onto real
+    # threats (Murktide, Tarmogoyf, Cranial Plating-attached bombs).
+    FACE_VALUE_PER_DAMAGE = 1.0
+    return best if threat_score(best) > amount * FACE_VALUE_PER_DAMAGE else None
+
+
 def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
                              controller: int):
     """Resolve ETB effects by parsing the card's oracle text.
@@ -111,8 +176,20 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
         m = re.search(r'deals?\s+(\d+)\s+damage', oracle)
         if m:
             amount = int(m.group(1))
-            if 'any target' in oracle or 'target' in oracle:
-                # Target opponent by default (AI always targets opp)
+            # Only redirect onto a creature when oracle explicitly says
+            # "any target". Loose "target" phrasing (e.g. "target creature
+            # deals X damage") is ambiguous and regressed the baseline.
+            if 'any target' in oracle:
+                target = _pick_damage_target(game, controller, amount)
+            else:
+                target = None
+            if target is not None:
+                target.damage_marked = getattr(target, 'damage_marked', 0) + amount
+                game.log.append(
+                    f"T{game.display_turn} P{controller+1}: "
+                    f"{card.name} ETB: {amount} damage to {target.name}")
+                game.check_state_based_actions()
+            elif 'any target' in oracle or 'opponent' in oracle:
                 game.players[opponent].life -= amount
                 game.players[controller].damage_dealt_this_turn += amount
                 game.log.append(
@@ -240,8 +317,17 @@ def resolve_attack_trigger(game: "GameState", attacker: "CardInstance",
         m = re.search(r'deals?\s+(\d+)\s+damage', oracle)
         if m:
             amount = int(m.group(1))
-            game.players[opponent].life -= amount
-            game.players[controller].damage_dealt_this_turn += amount
+            target = _pick_damage_target(game, controller, amount) \
+                if 'any target' in oracle else None
+            if target is not None:
+                target.damage_marked = getattr(target, 'damage_marked', 0) + amount
+                game.log.append(
+                    f"T{game.display_turn} P{controller+1}: "
+                    f"{attacker.name} attack trigger: {amount} damage to {target.name}")
+                game.check_state_based_actions()
+            else:
+                game.players[opponent].life -= amount
+                game.players[controller].damage_dealt_this_turn += amount
 
     # ── "Whenever this creature attacks, gain N life" ──
     if 'attacks' in oracle and 'gain' in oracle and 'life' in oracle:

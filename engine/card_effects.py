@@ -408,16 +408,25 @@ def springleaf_drum_etb(game, card, controller, targets=None, item=None):
 @EFFECT_REGISTRY.register("Phlage, Titan of Fire's Fury", EffectTiming.ETB,
                            description="ETB: sacrifice unless escaped; deal 3 damage, gain 3 life")
 def phlage_etb(game, card, controller, targets=None, item=None):
-    # Oracle: "When Phlage enters, sacrifice it unless it escaped."
-    # "Whenever Phlage enters or attacks, it deals 3 damage to any target
-    # and you gain 3 life."
+    # Oracle: "When Phlage enters, sacrifice it unless it was cast from
+    # a graveyard." "Whenever Phlage enters or attacks, it deals 3 damage
+    # to any target and you gain 3 life."
+    # Damage uses the generic _pick_damage_target so high-threat creatures
+    # (Ragavan, Murktide, scaling threats) are hit instead of face; small
+    # aggro bodies still go face thanks to the overkill-waste deduction.
+    from engine.oracle_resolver import _pick_damage_target
     opponent = 1 - controller
-
-    # Damage + lifegain triggers on enter (whether escaped or not)
-    game.players[opponent].life -= 3
+    target = _pick_damage_target(game, controller, 3)
+    if target is not None:
+        target.damage_marked = getattr(target, 'damage_marked', 0) + 3
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
+                        f"Phlage: 3 damage to {target.name}, gain 3 life")
+        game.check_state_based_actions()
+    else:
+        game.players[opponent].life -= 3
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
+                        f"Phlage: 3 damage to opponent, gain 3 life")
     game.players[controller].life += 3
-    game.log.append(f"T{game.display_turn} P{controller+1}: "
-                    f"Phlage: 3 damage to opponent, gain 3 life")
 
     # Sacrifice unless escaped
     escaped = getattr(card, '_escaped', False)

@@ -2694,10 +2694,9 @@ class GameState:
             cause="bounced"
         )
 
-        _discarded = []
     def _force_discard(self, player_idx: int, count: int, self_discard: bool = False):
         """Discard cards from hand.
-        
+
         self_discard=True means the player chose to discard (Faithful Mending, etc.)
         self_discard=False means opponent forced the discard (Thoughtseize, etc.)
         """
@@ -2706,14 +2705,10 @@ class GameState:
             if not player.hand:
                 break
             if self_discard:
-                # Smart discard: prefer cards that are good in the graveyard
-                # or least useful in hand
                 card = self._choose_self_discard(player)
             else:
-                # Opponent forced: discard highest CMC (least castable)
                 player.hand.sort(key=lambda c: c.template.cmc, reverse=True)
                 card = player.hand[0]
-            _discarded.append(card)
             self.zone_mgr.move_card(
                 self, card, "hand", "graveyard",
                 cause="forced discard" if not self_discard else "discard"
