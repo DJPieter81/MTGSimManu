@@ -1847,31 +1847,11 @@ def griselbrand_resolve(game, card, controller, targets=None, item=None):
 # "put one of them into your hand" and draws 1 as approximation.
 
 
-@EFFECT_REGISTRY.register("Reckless Impulse", EffectTiming.SPELL_RESOLVE,
-                           description="Exile top 2, may play until end of next turn")
-def reckless_impulse_resolve(game, card, controller, targets=None, item=None):
-    # Simplified: draw 2 cards (exile-draw approximation)
-    game.draw_cards(controller, 2)
-
-
-@EFFECT_REGISTRY.register("Wrenn's Resolve", EffectTiming.SPELL_RESOLVE,
-                           description="Exile top 2, may play until end of next turn")
-def wrenns_resolve_resolve(game, card, controller, targets=None, item=None):
-    # Simplified: draw 2 cards (exile-draw approximation)
-    game.draw_cards(controller, 2)
-
-
-@EFFECT_REGISTRY.register("Heroes' Hangout", EffectTiming.SPELL_RESOLVE,
-                           description="Scry 2, draw 1")
-def heroes_hangout_resolve(game, card, controller, targets=None, item=None):
-    game.draw_cards(controller, 1)
-
-
-@EFFECT_REGISTRY.register("Glimpse the Impossible", EffectTiming.SPELL_RESOLVE,
-                           description="Exile top 3, may play this turn")
-def glimpse_the_impossible_resolve(game, card, controller, targets=None, item=None):
-    # Simplified: draw 2 cards (exile-play approximation)
-    game.draw_cards(controller, 2)
+# Reckless Impulse / Wrenn's Resolve / Glimpse the Impossible handlers
+# removed — oracle_resolver.resolve_spell_from_oracle covers the
+# "exile the top N cards … you may play those cards" pattern as draw N.
+# Heroes' Hangout removed — oracle says "Scry 2. Draw a card." which
+# matches the existing draw-a-card pattern.
 
 
 @EFFECT_REGISTRY.register("Valakut Awakening // Valakut Stoneforge", EffectTiming.SPELL_RESOLVE,

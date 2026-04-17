@@ -335,10 +335,13 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
 
     # ── Card draw on spell resolution ──
     # Covers "draw a card" / "draw N cards" + the look-and-keep variant
-    # used by Sleight of Hand ("put one of them into your hand"). Scry-
-    # then-draw patterns (Preordain) match because "draw a card" is
-    # explicit in the oracle.
-    word_to_num = {'a': 1, 'one': 1, 'two': 2, 'three': 3, 'four': 4}
+    # used by Sleight of Hand ("put one of them into your hand") + the
+    # "exile top N, you may play those cards" variant (Reckless Impulse /
+    # Wrenn's Resolve / Glimpse the Impossible) approximated as draw N.
+    # Scry-then-draw patterns (Preordain) match because "draw a card"
+    # is explicit in the oracle.
+    word_to_num = {'a': 1, 'one': 1, 'two': 2, 'three': 3,
+                   'four': 4, 'five': 5}
     draw_n = 0
     m_draw = re.search(r'draw\s+(\w+)\s+cards?', oracle)
     if m_draw:
@@ -350,6 +353,22 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
     elif 'put one of them into your hand' in oracle:
         # Look-at-top-N keep-1 → draw 1 (Sleight of Hand pattern)
         draw_n = 1
+    elif ('exile the top' in oracle
+          and ('you may play those cards' in oracle
+               or 'you may play that card' in oracle)
+          and 'storm' not in oracle):
+        # Exile-and-may-play-this-turn → approximate as draw N. Excludes
+        # storm-tagged spells (Galvanic Relay) whose storm copies need
+        # the dedicated handler. Excludes X-cost spells (March of
+        # Reckless Joy) whose count depends on mana spent on X.
+        m_exile = re.search(r'exile the top (\w+) cards? of your library',
+                            oracle)
+        if m_exile and not card.template.x_cost_data:
+            tok = m_exile.group(1)
+            try:
+                draw_n = int(tok)
+            except ValueError:
+                draw_n = word_to_num.get(tok, 0)
     if draw_n > 0:
         drawn = game.draw_cards(controller, draw_n)
         names = ", ".join(c.name for c in drawn) if drawn else ""
