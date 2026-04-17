@@ -405,9 +405,30 @@ class GoalEngine:
 
     @property
     def current_goal(self) -> Goal:
+        # Post-combo push override: while post_combo_push_turns > 0 (set by
+        # mass-reanimate resolutions like Living End), force the final
+        # PUSH_DAMAGE goal regardless of normal transition rules. This
+        # keeps the deck swinging for 2-3 turns while the opponent has no
+        # board, rather than reverting to curve_out / deploy_engine mid-push.
+        me = self._get_me()
+        if me is not None and getattr(me, 'post_combo_push_turns', 0) > 0:
+            for g in self.gameplan.goals:
+                if g.goal_type == GoalType.PUSH_DAMAGE:
+                    return g
         if self.current_goal_idx < len(self.gameplan.goals):
             return self.gameplan.goals[self.current_goal_idx]
         return self.gameplan.goals[-1]  # stay on last goal
+
+    def _get_me(self):
+        """Return the PlayerState for this engine's player, or None.
+        Requires the engine to have been linked to a game (see decide_main_phase)."""
+        game = getattr(self, '_game_ref', None)
+        if game is None:
+            return None
+        try:
+            return game.players[self._player_idx]
+        except Exception:
+            return None
 
     def advance_goal(self, game=None, reason: str = ""):
         """Move to the next goal in the sequence."""
@@ -425,6 +446,10 @@ class GoalEngine:
     def check_transition(self, game, player_idx: int):
         """Check if current goal should advance based on board state.
         Call at the start of each main phase."""
+        # Pin the engine to this game/player so `current_goal` can detect
+        # post_combo_push override without threading extra state through.
+        self._game_ref = game
+        self._player_idx = player_idx
         goal = self.current_goal
         me = game.players[player_idx]
 

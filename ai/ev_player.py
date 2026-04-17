@@ -290,18 +290,20 @@ class EVPlayer:
                 if not spell.template.is_creature:
                     prof = self.profile
                     is_dying = snap.am_dead_next or (snap.opp_power >= prof.dying_opp_power
-                                                     and snap.opp_clock <= prof.dying_opp_clock)
-                    has_big_target = self._has_high_threat_target(game, spell)
-                    # Control patience: control archetypes hold reactive
-                    # spells until there's *real* pressure (opp_clock <= 3).
-                    # Without this, Orim's Chant / Prismatic Ending /
-                    # Supreme Verdict get cast proactively on empty boards
-                    # and wind up in losses.
-                    if (prof.control_patience and not is_dying
-                            and snap.opp_clock >= 4):
-                        continue
-                    if not is_dying and not has_big_target:
-                        continue
+                                                     and snap.opp_clock_discrete <= prof.dying_opp_clock)
+                    has_big_target = self._has_high_threat_target(game, spell, snap)
+                    # has_big_target overrides control_patience: if a real
+                    # threat is on board (oracle-driven threat floor), the
+                    # reactive-only spell should fire proactively even for
+                    # control decks that otherwise hold until late. Audit
+                    # finding: Azorius Prismatic Ending sat in hand until
+                    # Cranial Plating had already locked the game.
+                    if is_dying or has_big_target:
+                        pass  # allow through reactive-only gate
+                    elif prof.control_patience and snap.opp_clock_discrete >= 4:
+                        continue  # control: no pressure, no threat — hold
+                    else:
+                        continue  # non-control: no threat, not dying — hold
 
             ev = self._score_spell(spell, snap, game, me, opp)
             targets = self._choose_targets(game, spell)
@@ -503,6 +505,22 @@ class EVPlayer:
             WRATH_WASTE_SENTINEL = -50.0  # rules: forces pass under any profile
             return min(ev, WRATH_WASTE_SENTINEL)
 
+        # ── Self-wipe gate ──
+        # When we're ahead on the board and not dying, wiping destroys our
+        # own equity (WST, Sanctifier, etc.) for no net gain. Audit: Wrath
+        # of the Skies WinCR 18% in WST because the deck self-wipes its own
+        # value engines. If we're winning the board fight and have time
+        # (opp_clock_discrete >= 3), board wipes are strictly negative EV.
+        if 'board_wipe' in tags and snap.opp_creature_count > 0:
+            WRATH_WASTE_SENTINEL = -50.0
+            am_dying = snap.am_dead_next or snap.opp_clock_discrete <= 2
+            ahead_on_board = (
+                snap.my_creature_count >= snap.opp_creature_count
+                and snap.my_power > snap.opp_power
+            )
+            if ahead_on_board and not am_dying:
+                return min(ev, WRATH_WASTE_SENTINEL)
+
         # ── X-cost board wipe: hold when the X-budget can't meaningfully clear ──
         # Tuned through three passes:
         #   v1 (≥2 kills) — too strict: Azorius never wraths vs 1 Ragavan.
@@ -588,8 +606,8 @@ class EVPlayer:
                         continue
                 reachable.append(c)
             if reachable:
-                best = max(reachable, key=lambda c: creature_threat_value(c))
-                premium = creature_threat_value(best) - creature_value(best)
+                best = max(reachable, key=lambda c: creature_threat_value(c, snap))
+                premium = creature_threat_value(best, snap) - creature_value(best, snap)
                 if premium > 0:
                     # Scale: premium * 0.5 (battle-cry ≈ +4 ev) brings removal
                     # into tiebreaker range with equal-CMC deploys. The extra
@@ -635,8 +653,8 @@ class EVPlayer:
                     candidates.append(c)
                 if candidates:
                     best = max(candidates,
-                               key=lambda c: self._permanent_threat_value(c, opp))
-                    tv = self._permanent_threat_value(best, opp)
+                               key=lambda c: self._permanent_threat_value(c, opp, snap))
+                    tv = self._permanent_threat_value(best, opp, snap)
                     # Scale roughly on par with the creature-threat overlay:
                     # CP on a 5-artifact board → tv=7 → +3.5 EV, which
                     # outranks a typical 2-CMC deploy.
@@ -765,7 +783,7 @@ class EVPlayer:
                 # pressure, building fuel is still valuable — a cantrip
                 # drawn off the ritual might hit a finisher. Same "hail
                 # Mary" shape as the chain-credit dual-gate in ev_evaluator.
-                if not snap.am_dead_next and snap.opp_clock > 2:
+                if not snap.am_dead_next and snap.opp_clock_discrete > 2:
                     # Wasting rituals without finisher access (reduced from 20 to match PiF fix)
                     mod -= (storm + 2) / opp_life * 5.0
 
@@ -1602,9 +1620,13 @@ class EVPlayer:
 
     def _choose_targets(self, game, spell) -> List[int]:
         """Choose targets for a spell."""
+        from ai.ev_evaluator import snapshot_from_game
         t = spell.template
         tags = getattr(t, 'tags', set())
         opp = game.players[1 - self.player_idx]
+        # Live snapshot so creature_value / threat_value reflect actual
+        # board state, not a blank default board.
+        snap = snapshot_from_game(game, self.player_idx)
 
         # Burn spells FIRST — they can always target face as fallback
         from decks.card_knowledge_loader import get_burn_damage
@@ -1629,7 +1651,7 @@ class EVPlayer:
                 for c in opp.creatures:
                     remaining_toughness = (c.toughness or 0) - getattr(c, 'damage_marked', 0)
                     if dmg >= remaining_toughness > 0 or remaining_toughness <= 0:
-                        val = creature_value(c)
+                        val = creature_value(c, snap)
                         c_oracle = (c.template.oracle_text or '').lower()
                         c_cname = (c.template.name or '').lower().split(' //')[0].strip()
                         why_parts = []
@@ -1705,13 +1727,13 @@ class EVPlayer:
                 from engine.cards import CardType
                 nonland = [c for c in opp.battlefield if not c.template.is_land]
                 if nonland:
-                    best = max(nonland, key=lambda c: self._permanent_threat_value(c, opp))
+                    best = max(nonland, key=lambda c: self._permanent_threat_value(c, opp, snap))
                     return [best.instance_id]
                 return []
             else:
                 # Creature-only removal
                 if opp.creatures:
-                    best = max(opp.creatures, key=lambda c: creature_value(c))
+                    best = max(opp.creatures, key=lambda c: creature_value(c, snap))
                     return [best.instance_id]
                 return []
 
@@ -1731,10 +1753,10 @@ class EVPlayer:
             etb_creatures = [c for c in me.creatures
                              if 'etb_value' in getattr(c.template, 'tags', set())]
             if etb_creatures:
-                best = max(etb_creatures, key=lambda c: creature_value(c))
+                best = max(etb_creatures, key=lambda c: creature_value(c, snap))
                 return [best.instance_id]
             elif me.creatures:
-                best = max(me.creatures, key=lambda c: creature_value(c))
+                best = max(me.creatures, key=lambda c: creature_value(c, snap))
                 return [best.instance_id]
 
         # Reanimate: target best creature in our graveyard
@@ -1749,7 +1771,7 @@ class EVPlayer:
 
         return []
 
-    def _permanent_threat_value(self, perm, opp) -> float:
+    def _permanent_threat_value(self, perm, opp, snap=None) -> float:
         """Evaluate how threatening an opponent's permanent is.
 
         Creatures: use creature_value().
@@ -1763,7 +1785,7 @@ class EVPlayer:
         t = perm.template
 
         if t.is_creature:
-            return creature_value(perm)
+            return creature_value(perm, snap)
 
         oracle = (t.oracle_text or '').lower()
         tags = getattr(t, 'tags', set())
@@ -1816,6 +1838,8 @@ class EVPlayer:
         """
         if not creatures:
             return None
+        from ai.ev_evaluator import snapshot_from_game
+        snap = snapshot_from_game(game, player_idx)
         candidates = list(creatures)
         # For burn removal, filter out creatures this spell cannot kill.
         from decks.card_knowledge_loader import get_burn_damage
@@ -1828,9 +1852,9 @@ class EVPlayer:
             # may still want to fire for triggered-damage purposes).
             if killable:
                 candidates = killable
-        return max(candidates, key=lambda c: creature_threat_value(c))
+        return max(candidates, key=lambda c: creature_threat_value(c, snap))
 
-    def _has_high_threat_target(self, game, spell) -> bool:
+    def _has_high_threat_target(self, game, spell, snap=None) -> bool:
         """True if a removal spell has a target worth proactively casting for.
 
         Threat value is oracle-driven via `creature_threat_value` (for
@@ -1860,7 +1884,7 @@ class EVPlayer:
                 remaining = (c.toughness or 0) - getattr(c, 'damage_marked', 0)
                 if remaining > dmg:
                     continue
-            if creature_threat_value(c) >= floor:
+            if creature_threat_value(c, snap) >= floor:
                 return True
 
         # Noncreature-permanent threats — scaling equipment (CP, Nettlecyst),
@@ -1877,7 +1901,7 @@ class EVPlayer:
             for perm in opp.battlefield:
                 if perm.template.is_land or perm.template.is_creature:
                     continue
-                if self._permanent_threat_value(perm, opp) >= floor:
+                if self._permanent_threat_value(perm, opp, snap) >= floor:
                     return True
 
         return False

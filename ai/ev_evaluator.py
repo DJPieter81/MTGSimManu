@@ -61,42 +61,53 @@ class EVSnapshot:
 
     @property
     def my_clock(self) -> float:
-        """Turns until I kill opponent (lower = better for me)."""
+        """Turns until I kill opponent (continuous; lower = better).
+        Continuous division gives smooth gradient for EV scoring.
+        Use my_clock_discrete for boolean rule checks ("will it die?").
+        """
         if self.my_power <= 0:
             return 99.0
-        return max(1.0, math.ceil(self.opp_life / self.my_power))
+        return max(1.0, self.opp_life / self.my_power)
 
     @property
     def opp_clock(self) -> float:
-        """Turns until opponent kills me (lower = worse for me)."""
+        """Turns until opponent kills me (continuous; lower = worse)."""
         if self.opp_power <= 0:
             return 99.0
-        return max(1.0, math.ceil(self.my_life / self.opp_power))
+        return max(1.0, self.my_life / self.opp_power)
+
+    @property
+    def my_clock_discrete(self) -> int:
+        """Integer turns-to-kill for rule-based checks."""
+        if self.my_power <= 0:
+            return 99
+        return max(1, math.ceil(self.opp_life / self.my_power))
+
+    @property
+    def opp_clock_discrete(self) -> int:
+        """Integer turns-to-die for rule-based checks (will I survive untap?)."""
+        if self.opp_power <= 0:
+            return 99
+        return max(1, math.ceil(self.my_life / self.opp_power))
 
     @property
     def urgency_factor(self) -> float:
         """Fraction of future turns we actually get. 1.0 = no urgency,
-        0.0 = dying now. Used to discount deferred-value permanents
-        (Goblin Bombardment, tap-activated engines) — their worth is
-        proportional to how many turns we stay alive to activate them.
+        0.0 = dying now. Exponential approach — C^inf smooth near the
+        boundary and less sensitive to small power-estimation errors.
 
-        Derived solely from `opp_clock`, which is itself oracle-detected
-        from opponent's creatures. No hardcoded matchup thresholds.
+            slack = max(0, opp_clock - 1)
+            urgency = 1 - exp(-slack / PERMANENT_VALUE_WINDOW)
 
-        Formula: (opp_clock - 1) / 4.0. Interpret as
-            (turns_until_dead - 1) / typical_permanent_value_window
-        where the "value window" of 4 turns is the rules-constant span over
-        which a deferred permanent accrues its payoff in Modern (T1 land +
-        T2-T5 activations). Not an arbitrary weight: both numerator (opp_clock
-        from combat sim) and denominator (typical permanent's activation
-        horizon) are principled. At opp_clock=1 (dying next turn) we get 0.0
-        — deferred spells are pure waste. At opp_clock=5+ we get 1.0 — no
-        discount, the permanent will fully pay off.
+        opp_clock=1 → 0.0 (dying); opp_clock=3 → 0.39; opp_clock=5 → 0.63;
+        opp_clock=∞ → 1.0. Denominator `PERMANENT_VALUE_WINDOW=2.0` is the
+        rules-constant half-life of a typical deferred permanent's payoff
+        curve (first activation T+1, bulk of value across ~2 additional
+        turns). No matchup thresholds.
         """
-        # Rules constant: 4 = typical permanent value window in turns
-        # (land T1 → payoff T2-T5). Not a tuning knob.
-        PERMANENT_VALUE_WINDOW = 4.0
-        return min(1.0, max(0.0, (self.opp_clock - 1) / PERMANENT_VALUE_WINDOW))
+        PERMANENT_VALUE_WINDOW = 2.0
+        slack = max(0.0, self.opp_clock - 1.0)
+        return 1.0 - math.exp(-slack / PERMANENT_VALUE_WINDOW)
 
     @property
     def has_lethal(self) -> bool:
@@ -170,19 +181,26 @@ _DEFAULT_SNAP = EVSnapshot(
     opp_evasion_power=0,
 )
 
-def creature_value(card: "CardInstance") -> float:
+def creature_value(card: "CardInstance", snap: Optional[EVSnapshot] = None) -> float:
     """Evaluate a creature's worth on the battlefield.
 
     Uses clock-based impact: how much does this creature change
     the turns-to-win calculation? Scaled to ~3-10 range for
     compatibility with targeting/blocking comparisons.
+
+    When `snap` is provided, the value reflects the *current* game
+    state (life totals, existing board power, blockers) — so small
+    creatures aren't overvalued on a blank default board and large
+    ones aren't undervalued against heavy pressure. Falls back to
+    `_DEFAULT_SNAP` when caller has no snapshot in scope.
     """
     from ai.clock import creature_clock_impact_from_card
+    effective_snap = snap if snap is not None else _DEFAULT_SNAP
     # Clock impact is ~0.05-0.5; scale by 20 (opp_life) to get ~1-10 range
-    return creature_clock_impact_from_card(card, _DEFAULT_SNAP) * 20.0
+    return creature_clock_impact_from_card(card, effective_snap) * 20.0
 
 
-def creature_threat_value(card: "CardInstance") -> float:
+def creature_threat_value(card: "CardInstance", snap: Optional[EVSnapshot] = None) -> float:
     """Evaluate a creature's threat level for removal-priority decisions.
 
     Extends `creature_value()` with oracle-driven premiums that raw P/T
@@ -234,11 +252,12 @@ def creature_threat_value(card: "CardInstance") -> float:
     # creature_clock_impact_from_card — reuse that path to keep all
     # scoring in a single principled formula.
     from ai.clock import creature_clock_impact_from_card
-    base = creature_clock_impact_from_card(card, _DEFAULT_SNAP) * 20.0
+    effective_snap = snap if snap is not None else _DEFAULT_SNAP
+    base = creature_clock_impact_from_card(card, effective_snap) * 20.0
     # The call above used card.power; add the virtual-power contribution
     # separately via the same clock formula so it scales identically.
-    vp_impact = (creature_clock_impact(p, tough, kws, _DEFAULT_SNAP)
-                 - creature_clock_impact(card.power or 0, tough, kws, _DEFAULT_SNAP)) * 20.0
+    vp_impact = (creature_clock_impact(p, tough, kws, effective_snap)
+                 - creature_clock_impact(card.power or 0, tough, kws, effective_snap)) * 20.0
     return base + vp_impact
 
 
@@ -947,7 +966,7 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
                 # Full lethal — entire win-swing is realized.
                 ev += p_resolves * win_swing
             elif damage >= max(1, snap.opp_life // 2) or (
-                    snap.opp_clock <= 2 and damage > 0):
+                    snap.opp_clock_discrete <= 2 and damage > 0):
                 # Non-lethal chain credited in two cases:
                 #   1. Meaningful damage (≥½ opp life) — chain materially
                 #      accelerates the clock; audit F-C1.

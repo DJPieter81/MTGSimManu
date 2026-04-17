@@ -141,6 +141,28 @@ from engine.card_database import CardDatabase  # singleton pattern
 
 **Overall grade: B** (post-iter6 — Affinity matchup plan iteration 2: extended `_has_high_threat_target` to also consider noncreature permanents (scaling equipment like Cranial Plating, Nettlecyst, planeswalkers, stax) in addition to creatures. Leyline Binding added to Domain Zoo's reactive_only list so it holds for CP instead of burning on Ornithopters T2. Affinity field WR 82% → **77%** (−5pp); CP removal count nearly doubled; CP delta +0.44.)
 
+**Unified refactor session (2026-04-17 — branch `claude/review-refactoring-docs-piRZ5`):** synthesised the 6 in-flight planning docs (ORACLE_REFACTOR_PLAN_V2, AI_IMPROVEMENT_PLAN_V2, ITERATION_7_PLAN, TRANSFORM_FIX_PLAN, CONTROL_DECK_PLAN, AFFINITY_MATCHUP_PLAN) into one ordered plan and shipped Phases A-I. ~60% of the items were already present from prior sessions; the new work is summarised below.
+
+**Phases shipped this session (commits 5a04771, 873c493, d7441dd, 58308ad, ac92259, dcb9bb6):**
+
+| Phase | Plan source | Outcome |
+|-------|-------------|---------|
+| A — EVSnapshot smoothing | Iter7 #4, #5 | `opp_clock` continuous + `opp_clock_discrete` companion; `urgency_factor` exponential `1-exp(-slack/2)`. |
+| B — Live-snapshot creature_value | Iter7 #3 | `creature_value(card, snap=None)` plumbed through removal/threat call chain. |
+| C — Generic damage target picker | Oracle V2 #1 | `_pick_damage_target()` in oracle_resolver routes "any target" damage to threat-scored creature or face. Phlage ETB delete. |
+| D — Transform mechanics | Transform #1, #2, #3 | Generic `_transform_permanent()` helper + subtype-death + count-based-cast triggers + Fable Ch.II/III. |
+| E — Tap-ability dispatch | Iter7 #8, #9, #11, #12 | `_activate_tap_abilities()` (Endbringer ping/draw, Emry GY-cast); opponent-untap-step; flashback-sacrifice cost; Witch Enchanter ETB destroy oracle pattern. |
+| F — ETB suppression | Iter7 #13 | Doorkeeper Thrull static checked from `_handle_permanent_etb` before dispatch. |
+| G — Living End post-combo push | Iter7 #6 | `PlayerState.post_combo_push_turns=3` + `GoalEngine.current_goal` override forces PUSH_DAMAGE while flag set. |
+| H — Wrath self-wipe + control_patience | CONTROL_DECK_PLAN, audit | Self-wipe hard gate (don't board-wipe when ahead+not-dying); `has_big_target` overrides `control_patience` for reactive-only single-target removal. |
+| I — Oracle deletions (Groups A+B) | Oracle V2 #2, #3 | 7 handlers deleted: Preordain, Sleight of Hand, Wall of Omens, Reckless Impulse, Wrenn's Resolve, Glimpse the Impossible, Heroes' Hangout. `resolve_spell_from_oracle` gained generic draw + exile-and-may-play patterns and is now invoked as a SPELL_RESOLVE fallback. |
+
+**Phase I scope adjustment:** Groups C-F (removal, reanimate, tokens, mana) deferred. Inspection showed the handlers encode meaningful per-card restrictions (Prismatic Ending devotion-based CMC; Abrupt Decay CMC≤3; Celestial Purge R/B only; Persist CMC≤3 reanimate; Empty the Warrens storm-dependent token count; rituals coupled to mana production system). A blanket "destroy any nonland permanent" oracle pattern would over-power them and regress correctness. A future pass needs restriction-aware regex (e.g., `mana value (\d+) or less`, `red or black permanent`) before these are safe to delete.
+
+**Handler count: 115 → 108 (target ≤25 deferred)**.
+**`card_effects.py`: 2,788 → ~2,770 LOC (placeholder comments offset deletions; cleanup pass pending)**.
+**`oracle_resolver.py`: 485 → ~720 LOC (added damage picker, transform helper, draw + exile-may-play + ETB-destroy patterns)**.
+
 **Affinity matchup iter2 (post-iter6 — 2026-04-13):**
 | Metric | iter5/iter6 | Current |
 |--------|------------|---------|

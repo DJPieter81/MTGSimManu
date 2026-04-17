@@ -120,12 +120,17 @@ class TestEVSnapshot:
 
     def test_clock_calculation(self):
         snap = EVSnapshot(my_power=5, opp_life=20, opp_power=3, my_life=20)
-        assert snap.my_clock == 4.0  # ceil(20/5)
-        assert snap.opp_clock == 7.0  # ceil(20/3)
+        # Continuous (smooth EV gradient)
+        assert snap.my_clock == 4.0  # 20/5
+        assert abs(snap.opp_clock - 20/3) < 1e-9  # ~6.667
+        # Discrete (boolean rule checks)
+        assert snap.my_clock_discrete == 4  # ceil(20/5)
+        assert snap.opp_clock_discrete == 7  # ceil(20/3)
 
     def test_no_power_clock(self):
         snap = EVSnapshot(my_power=0, opp_life=20)
         assert snap.my_clock == 99.0
+        assert snap.my_clock_discrete == 99
 
     def test_has_lethal(self):
         snap = EVSnapshot(my_power=10, opp_life=5)

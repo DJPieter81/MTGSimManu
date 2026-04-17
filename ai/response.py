@@ -263,7 +263,7 @@ class ResponseDecider:
         me = game.players[self.player_idx]
         if "board_wipe" in template.tags and len(me.creatures) >= 2:
             from ai.ev_evaluator import creature_threat_value
-            threat += sum(creature_threat_value(c) for c in me.creatures)
+            threat += sum(creature_threat_value(c, snap) for c in me.creatures)
 
         # Cascade / reanimate: the actual threat is the creature or spell
         # they cheat into play. Approximate as card_clock_impact × a few
@@ -288,7 +288,7 @@ class ResponseDecider:
                              if CardType.CREATURE in c.template.card_types]
             if gy_creatures:
                 from ai.ev_evaluator import creature_threat_value
-                threat += max(creature_threat_value(c) for c in gy_creatures)
+                threat += max(creature_threat_value(c, snap) for c in gy_creatures)
 
         # Equipment: ongoing damage amplifier. Value = damage added to
         # the creature it equips × expected turns the equipment sticks.

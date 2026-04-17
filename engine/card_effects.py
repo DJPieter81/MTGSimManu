@@ -408,16 +408,25 @@ def springleaf_drum_etb(game, card, controller, targets=None, item=None):
 @EFFECT_REGISTRY.register("Phlage, Titan of Fire's Fury", EffectTiming.ETB,
                            description="ETB: sacrifice unless escaped; deal 3 damage, gain 3 life")
 def phlage_etb(game, card, controller, targets=None, item=None):
-    # Oracle: "When Phlage enters, sacrifice it unless it escaped."
-    # "Whenever Phlage enters or attacks, it deals 3 damage to any target
-    # and you gain 3 life."
+    # Oracle: "When Phlage enters, sacrifice it unless it was cast from
+    # a graveyard." "Whenever Phlage enters or attacks, it deals 3 damage
+    # to any target and you gain 3 life."
+    # Damage uses the generic _pick_damage_target so high-threat creatures
+    # (Ragavan, Murktide, scaling threats) are hit instead of face; small
+    # aggro bodies still go face thanks to the overkill-waste deduction.
+    from engine.oracle_resolver import _pick_damage_target
     opponent = 1 - controller
-
-    # Damage + lifegain triggers on enter (whether escaped or not)
-    game.players[opponent].life -= 3
+    target = _pick_damage_target(game, controller, 3)
+    if target is not None:
+        target.damage_marked = getattr(target, 'damage_marked', 0) + 3
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
+                        f"Phlage: 3 damage to {target.name}, gain 3 life")
+        game.check_state_based_actions()
+    else:
+        game.players[opponent].life -= 3
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
+                        f"Phlage: 3 damage to opponent, gain 3 life")
     game.players[controller].life += 3
-    game.log.append(f"T{game.display_turn} P{controller+1}: "
-                    f"Phlage: 3 damage to opponent, gain 3 life")
 
     # Sacrifice unless escaped
     escaped = getattr(card, '_escaped', False)
@@ -1057,10 +1066,9 @@ def expressive_iteration_resolve(game, card, controller, targets=None, item=None
         player.library.append(c)
 
 
-@EFFECT_REGISTRY.register("Preordain", EffectTiming.SPELL_RESOLVE,
-                           description="Scry 2, draw 1 (simplified: draw 1)")
-def preordain_resolve(game, card, controller, targets=None, item=None):
-    game.draw_cards(controller, 1)
+# Preordain handler removed — oracle_resolver.resolve_spell_from_oracle
+# now matches "draw a card" and fires the draw. Scry portion is approximated
+# as no-op (AI doesn't model deck order).
 
 
 @EFFECT_REGISTRY.register("Tribal Flames", EffectTiming.SPELL_RESOLVE,
@@ -1835,37 +1843,15 @@ def griselbrand_resolve(game, card, controller, targets=None, item=None):
     pass
 
 
-@EFFECT_REGISTRY.register("Sleight of Hand", EffectTiming.SPELL_RESOLVE,
-                           description="Look at top 2, keep 1")
-def sleight_of_hand_resolve(game, card, controller, targets=None, item=None):
-    game.draw_cards(controller, 1)
+# Sleight of Hand handler removed — oracle_resolver detects
+# "put one of them into your hand" and draws 1 as approximation.
 
 
-@EFFECT_REGISTRY.register("Reckless Impulse", EffectTiming.SPELL_RESOLVE,
-                           description="Exile top 2, may play until end of next turn")
-def reckless_impulse_resolve(game, card, controller, targets=None, item=None):
-    # Simplified: draw 2 cards (exile-draw approximation)
-    game.draw_cards(controller, 2)
-
-
-@EFFECT_REGISTRY.register("Wrenn's Resolve", EffectTiming.SPELL_RESOLVE,
-                           description="Exile top 2, may play until end of next turn")
-def wrenns_resolve_resolve(game, card, controller, targets=None, item=None):
-    # Simplified: draw 2 cards (exile-draw approximation)
-    game.draw_cards(controller, 2)
-
-
-@EFFECT_REGISTRY.register("Heroes' Hangout", EffectTiming.SPELL_RESOLVE,
-                           description="Scry 2, draw 1")
-def heroes_hangout_resolve(game, card, controller, targets=None, item=None):
-    game.draw_cards(controller, 1)
-
-
-@EFFECT_REGISTRY.register("Glimpse the Impossible", EffectTiming.SPELL_RESOLVE,
-                           description="Exile top 3, may play this turn")
-def glimpse_the_impossible_resolve(game, card, controller, targets=None, item=None):
-    # Simplified: draw 2 cards (exile-play approximation)
-    game.draw_cards(controller, 2)
+# Reckless Impulse / Wrenn's Resolve / Glimpse the Impossible handlers
+# removed — oracle_resolver.resolve_spell_from_oracle covers the
+# "exile the top N cards … you may play those cards" pattern as draw N.
+# Heroes' Hangout removed — oracle says "Scry 2. Draw a card." which
+# matches the existing draw-a-card pattern.
 
 
 @EFFECT_REGISTRY.register("Valakut Awakening // Valakut Stoneforge", EffectTiming.SPELL_RESOLVE,
@@ -1980,10 +1966,8 @@ def snapcaster_mage_etb(game, card, controller, targets=None, item=None):
                         f"Snapcaster gives flashback to {best.name}")
 
 
-@EFFECT_REGISTRY.register("Wall of Omens", EffectTiming.ETB,
-                           description="Draw a card")
-def wall_of_omens_etb(game, card, controller, targets=None, item=None):
-    game.draw_cards(controller, 1)
+# Wall of Omens ETB handler removed — oracle_resolver ETB-draw pattern
+# already fires "When this creature enters, draw a card".
 
 
 @EFFECT_REGISTRY.register("Spell Queller", EffectTiming.ETB,

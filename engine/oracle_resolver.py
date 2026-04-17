@@ -22,6 +22,71 @@ if TYPE_CHECKING:
     from engine.cards import CardInstance, CardTemplate
 
 
+def _pick_damage_target(game: "GameState", controller: int,
+                         amount: int) -> Optional["CardInstance"]:
+    """Oracle-driven target picker for "deal N damage to any target".
+
+    Returns the best killable opposing creature, or None (meaning
+    "go face"). No card names — threat is scored from oracle text
+    amplifiers (attack triggers, scaling clauses) plus raw P/T.
+
+    Face is preferred over creature targeting when the face value
+    (`amount * FACE_VALUE_PER_DAMAGE`) exceeds the creature's
+    threat score. This means:
+      * Phlage ETB (3 dmg) will kill a 2/2 Signal Pest because the
+        battle-cry amplifier pushes its threat above face value.
+      * A spell facing a pure-body 2/2 Grizzly Bear still goes face
+        if the face damage is more valuable than trading for a
+        vanilla body.
+    """
+    opp_idx = 1 - controller
+    opp = game.players[opp_idx]
+    killable = [
+        c for c in opp.creatures
+        if ((c.toughness or 0) - getattr(c, 'damage_marked', 0)) <= amount
+        and (c.toughness or 0) > 0
+    ]
+    if not killable:
+        return None
+
+    def threat_score(c) -> float:
+        # Raw body
+        val = (c.power or 0) + (c.toughness or 0) * 0.3
+        oracle = (c.template.oracle_text or '').lower()
+        name = (c.template.name or '').lower().split(' //')[0].strip()
+        # Attack-trigger amplifiers (battle cry, self-named attack triggers).
+        # +3 matches the BATTLE_CRY_AMPLIFIER_VP convention used in
+        # creature_threat_value (ai/ev_evaluator.py) so engine-level
+        # targeting picks the same "high-threat" creatures the AI would
+        # prioritise for proactive removal.
+        if 'whenever this creature attacks' in oracle:
+            val += 3.0
+        elif name and f'whenever {name} attacks' in oracle:
+            val += 3.0
+        # Scaling clauses (for each artifact/creature/land/card)
+        if re.search(r'for each (artifact|creature|land|card)', oracle):
+            val += 3.0
+        # Large bodies beyond typical burn range
+        val += max(0, (c.power or 0) - 3) * 0.8
+        # Overkill waste: damage above what's needed to kill is lost face burn.
+        remaining = (c.toughness or 0) - getattr(c, 'damage_marked', 0)
+        waste = max(0, amount - remaining)
+        val -= waste * 0.8
+        return val
+
+    best = max(killable, key=threat_score)
+    # Rules constant: face-burn value per damage. 1.0 × amount so
+    # "3 damage to face" = 3.0 threat floor. Creatures need genuine
+    # ongoing value (Ragavan-class attack triggers, scaling threats,
+    # big bodies) to outbid face; 1-toughness battle-cry carriers
+    # don't, because the overkill waste matches the amplifier bonus.
+    # This matches the pre-refactor Phlage-goes-face default for
+    # small aggro boards while still redirecting burn onto real
+    # threats (Murktide, Tarmogoyf, Cranial Plating-attached bombs).
+    FACE_VALUE_PER_DAMAGE = 1.0
+    return best if threat_score(best) > amount * FACE_VALUE_PER_DAMAGE else None
+
+
 def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
                              controller: int):
     """Resolve ETB effects by parsing the card's oracle text.
@@ -74,6 +139,41 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
                 f"T{game.display_turn} P{controller+1}: "
                 f"{card.name} exiles {best.name}")
 
+    # ── "When this creature enters, destroy target artifact or
+    #     enchantment an opponent controls" (Witch Enchanter etc.) ──
+    if ('enters' in oracle and 'destroy target' in oracle
+            and 'opponent controls' in oracle
+            and ('artifact' in oracle or 'enchantment' in oracle)):
+        from engine.cards import CardType, Keyword
+        opp = game.players[opponent]
+        # Match exact oracle: artifact-only, enchantment-only, or either
+        wants_artifact = 'artifact' in oracle
+        wants_enchant = 'enchantment' in oracle
+        candidates = [
+            c for c in opp.battlefield
+            if not c.template.is_land
+            and Keyword.INDESTRUCTIBLE not in c.keywords
+            and (
+                (wants_artifact and CardType.ARTIFACT in c.template.card_types)
+                or (wants_enchant and CardType.ENCHANTMENT in c.template.card_types)
+            )
+        ]
+        if candidates:
+            # Prefer scaling/recurring threats; reuse permanent-threat math
+            def score(c):
+                o = (c.template.oracle_text or '').lower()
+                base = (c.template.cmc or 0)
+                if re.search(r'for each (artifact|creature|land)', o):
+                    base += 5
+                if 'whenever this creature attacks' in o:
+                    base += 4
+                return base
+            target = max(candidates, key=score)
+            game._permanent_destroyed(target)
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: "
+                f"{card.name} ETB destroys {target.name}")
+
     # ── "When this creature enters, draw a card" ──
     if 'enters' in oracle and 'draw' in oracle and 'card' in oracle:
         amount = 1
@@ -111,8 +211,20 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
         m = re.search(r'deals?\s+(\d+)\s+damage', oracle)
         if m:
             amount = int(m.group(1))
-            if 'any target' in oracle or 'target' in oracle:
-                # Target opponent by default (AI always targets opp)
+            # Only redirect onto a creature when oracle explicitly says
+            # "any target". Loose "target" phrasing (e.g. "target creature
+            # deals X damage") is ambiguous and regressed the baseline.
+            if 'any target' in oracle:
+                target = _pick_damage_target(game, controller, amount)
+            else:
+                target = None
+            if target is not None:
+                target.damage_marked = getattr(target, 'damage_marked', 0) + amount
+                game.log.append(
+                    f"T{game.display_turn} P{controller+1}: "
+                    f"{card.name} ETB: {amount} damage to {target.name}")
+                game.check_state_based_actions()
+            elif 'any target' in oracle or 'opponent' in oracle:
                 game.players[opponent].life -= amount
                 game.players[controller].damage_dealt_this_turn += amount
                 game.log.append(
@@ -184,17 +296,19 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
 
 
 def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
-                               controller: int, targets: list = None):
+                               controller: int, targets: list = None) -> bool:
     """Resolve instant/sorcery effects by parsing oracle text.
 
-    Called when a spell resolves. Handles common spell patterns.
-    This supplements the existing _execute_spell_effects fallback.
+    Called when a spell resolves AND no EFFECT_REGISTRY handler took it.
+    Returns True when an effect was applied, so callers can skip the
+    legacy ability-description fallback.
     """
     oracle = (card.template.oracle_text or '').lower()
     if not oracle:
-        return
+        return False
 
     opponent = 1 - controller
+    handled = False
 
     # ── "Target opponent reveals their hand. You choose a nonland card
     #     and that player discards it." (Thoughtseize, Inquisition) ──
@@ -211,11 +325,60 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
                 game.log.append(
                     f"T{game.display_turn} P{controller+1}: "
                     f"{card.name} discards {best.name}")
+                handled = True
         # Life loss for Thoughtseize
         if 'you lose' in oracle and 'life' in oracle:
             m = re.search(r'lose\s+(\d+)\s+life', oracle)
             if m:
                 game.players[controller].life -= int(m.group(1))
+                handled = True
+
+    # ── Card draw on spell resolution ──
+    # Covers "draw a card" / "draw N cards" + the look-and-keep variant
+    # used by Sleight of Hand ("put one of them into your hand") + the
+    # "exile top N, you may play those cards" variant (Reckless Impulse /
+    # Wrenn's Resolve / Glimpse the Impossible) approximated as draw N.
+    # Scry-then-draw patterns (Preordain) match because "draw a card"
+    # is explicit in the oracle.
+    word_to_num = {'a': 1, 'one': 1, 'two': 2, 'three': 3,
+                   'four': 4, 'five': 5}
+    draw_n = 0
+    m_draw = re.search(r'draw\s+(\w+)\s+cards?', oracle)
+    if m_draw:
+        tok = m_draw.group(1)
+        try:
+            draw_n = int(tok)
+        except ValueError:
+            draw_n = word_to_num.get(tok, 0)
+    elif 'put one of them into your hand' in oracle:
+        # Look-at-top-N keep-1 → draw 1 (Sleight of Hand pattern)
+        draw_n = 1
+    elif ('exile the top' in oracle
+          and ('you may play those cards' in oracle
+               or 'you may play that card' in oracle)
+          and 'storm' not in oracle):
+        # Exile-and-may-play-this-turn → approximate as draw N. Excludes
+        # storm-tagged spells (Galvanic Relay) whose storm copies need
+        # the dedicated handler. Excludes X-cost spells (March of
+        # Reckless Joy) whose count depends on mana spent on X.
+        m_exile = re.search(r'exile the top (\w+) cards? of your library',
+                            oracle)
+        if m_exile and not card.template.x_cost_data:
+            tok = m_exile.group(1)
+            try:
+                draw_n = int(tok)
+            except ValueError:
+                draw_n = word_to_num.get(tok, 0)
+    if draw_n > 0:
+        drawn = game.draw_cards(controller, draw_n)
+        names = ", ".join(c.name for c in drawn) if drawn else ""
+        if drawn:
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: "
+                f"{card.name} → draw {draw_n} ({names})")
+        handled = True
+
+    return handled
 
 
 def resolve_attack_trigger(game: "GameState", attacker: "CardInstance",
@@ -240,8 +403,17 @@ def resolve_attack_trigger(game: "GameState", attacker: "CardInstance",
         m = re.search(r'deals?\s+(\d+)\s+damage', oracle)
         if m:
             amount = int(m.group(1))
-            game.players[opponent].life -= amount
-            game.players[controller].damage_dealt_this_turn += amount
+            target = _pick_damage_target(game, controller, amount) \
+                if 'any target' in oracle else None
+            if target is not None:
+                target.damage_marked = getattr(target, 'damage_marked', 0) + amount
+                game.log.append(
+                    f"T{game.display_turn} P{controller+1}: "
+                    f"{attacker.name} attack trigger: {amount} damage to {target.name}")
+                game.check_state_based_actions()
+            else:
+                game.players[opponent].life -= amount
+                game.players[controller].damage_dealt_this_turn += amount
 
     # ── "Whenever this creature attacks, gain N life" ──
     if 'attacks' in oracle and 'gain' in oracle and 'life' in oracle:
@@ -316,45 +488,107 @@ def resolve_dies_trigger(game: "GameState", card: "CardInstance",
                 best.zone = "hand"
                 player.hand.append(best)
 
+    # ── Subtype-death transform trigger (Ajani, Nacatl Pariah) ──
+    # "Whenever one or more other [Subtype]s you control die, you may
+    #  exile [this], then return [it] to the battlefield transformed."
+    # Generic: any controller-permanent with this trigger pattern fires
+    # when a creature of the matching subtype dies under our control.
+    # Tokens may carry the subtype in their name (e.g. "Cat Token"),
+    # not in a subtypes list — check both.
+    dying_subtypes = [s.lower() for s in (card.template.subtypes or [])]
+    dying_name = (card.template.name or '').lower()
+    player = game.players[controller]
+    for perm in list(player.battlefield):
+        if perm.instance_id == card.instance_id:
+            continue
+        if getattr(perm, 'is_transformed', False):
+            continue
+        p_oracle = (perm.template.oracle_text or '').lower()
+        m = re.search(
+            r'whenever one or more other (\w+?)s?\s+you control die',
+            p_oracle,
+        )
+        if not m:
+            continue
+        subtype = m.group(1)
+        if subtype not in dying_subtypes and subtype not in dying_name:
+            continue
+        # Require the transform clause in the same oracle
+        if 'transformed' not in p_oracle or 'exile' not in p_oracle:
+            continue
+        _transform_permanent(game, perm, controller)
+
+
+def _parse_count_threshold(oracle: str) -> Optional[int]:
+    """Parse "(two|three|four|five|N) or more" threshold from oracle.
+    Returns None if no numeric threshold is present.
+    """
+    m = re.search(r'(two|three|four|five|six|seven|\d+)\s+or\s+more', oracle)
+    if not m:
+        return None
+    word_map = {'two': 2, 'three': 3, 'four': 4, 'five': 5,
+                'six': 6, 'seven': 7}
+    raw = m.group(1)
+    if raw.isdigit():
+        return int(raw)
+    return word_map.get(raw)
+
 
 def _handle_coin_flip_transform(game: "GameState", controller: int,
-                                creature: "CardInstance"):
-    """Handle Ral-style coin flip: flip a coin, on win → exile and return
-    transformed as a planeswalker with loyalty = 3 + spells cast this turn.
-
-    On loss: deals 1 damage to controller (from Ral's oracle text).
+                                 creature: "CardInstance") -> None:
+    """Ral, Monsoon Mage coin-flip transform. Win → transform with
+    loyalty = back_face_loyalty + spells_cast_this_turn. Lose → 1 damage.
+    Delegates state transition to `_transform_permanent`.
     """
     player = game.players[controller]
     result = game.rng.choice(["win", "lose"])
-
     if result == "lose":
-        # Ral deals 1 damage to controller on losing the flip
         player.life -= 1
         game.log.append(f"T{game.display_turn} P{controller+1}: "
-                       f"{creature.name} — lost coin flip, takes 1 damage")
+                        f"{creature.name} — lost coin flip, takes 1 damage")
         return
-
-    # Won the flip → transform creature into planeswalker
     spells_this_turn = player.spells_cast_this_turn
-    base_loyalty = creature.template.back_face_loyalty or 2
-    starting_loyalty = base_loyalty + spells_this_turn
-
-    # Remove creature from battlefield
-    if creature in player.battlefield:
-        player.battlefield.remove(creature)
-
-    # Transform: set as planeswalker with loyalty
-    creature.is_transformed = True
-    creature.loyalty_counters = starting_loyalty
-    creature.damage_marked = 0
-
-    # Return to battlefield as planeswalker
-    creature.zone = "battlefield"
-    player.battlefield.append(creature)
-
     game.log.append(f"T{game.display_turn} P{controller+1}: "
-                   f"{creature.name} — won coin flip! Transforms with "
-                   f"{starting_loyalty} loyalty ({spells_this_turn} spells cast)")
+                    f"{creature.name} — won coin flip!")
+    _transform_permanent(game, creature, controller,
+                          extra_loyalty=spells_this_turn)
+
+
+def _transform_permanent(game: "GameState", perm: "CardInstance",
+                          controller: int, extra_loyalty: int = 0) -> None:
+    """Generic DFC transform: exile the permanent's front face and return
+    it as its back face (marked `is_transformed = True`).
+
+    Loyalty is set to `back_face_loyalty + extra_loyalty` when the back
+    face is a planeswalker. Damage clears on transform. ETB triggers
+    on the transformed side fire via `_handle_permanent_etb`.
+
+    No card names. Callers detect the transform condition; this helper
+    just executes the state transition consistently.
+    """
+    player = game.players[controller]
+    if perm in player.battlefield:
+        player.battlefield.remove(perm)
+
+    perm.is_transformed = True
+    perm.damage_marked = 0
+
+    back_loyalty = getattr(perm.template, 'back_face_loyalty', 0) or 0
+    if back_loyalty > 0:
+        perm.loyalty_counters = back_loyalty + extra_loyalty
+
+    perm.zone = "battlefield"
+    player.battlefield.append(perm)
+
+    loy_str = (f" (loyalty: {perm.loyalty_counters})"
+               if back_loyalty > 0 else "")
+    extra_str = (f" [+{extra_loyalty} extra]" if extra_loyalty else "")
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
+                    f"{perm.template.name} transforms!{loy_str}{extra_str}")
+
+    # Fire ETB triggers for the transformed (back) face
+    if hasattr(game, '_handle_permanent_etb'):
+        game._handle_permanent_etb(perm, controller)
 
 
 def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
@@ -398,16 +632,26 @@ def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
             if 'draw a card' in oracle and 'noncreature' not in oracle:
                 game.draw_cards(caster_idx, 1)
 
-        # ── Ral-style coin flip transform trigger ──
-        # "Whenever you cast an instant or sorcery spell, flip a coin"
-        # On winning flip: exile creature, return transformed as planeswalker
-        # Only triggers while still a creature (not already transformed)
-        if ('flip a coin' in oracle
-                and ('instant or sorcery' in oracle or 'instant and sorcery' in oracle)
-                and (spell_cast.template.is_instant or spell_cast.template.is_sorcery)
+        # ── Transform-on-cast trigger ──
+        # Two patterns, both oracle-driven:
+        #   a) "flip a coin, if you win, exile ..., return transformed" (Ral)
+        #   b) "if you've cast N or more ... spells, exile ..., return
+        #      transformed" (deterministic variant; no card names).
+        if ((spell_cast.template.is_instant or spell_cast.template.is_sorcery)
                 and permanent.template.is_creature
-                and not getattr(permanent, 'is_transformed', False)):
-            _handle_coin_flip_transform(game, caster_idx, permanent)
+                and 'transformed' in oracle
+                and not getattr(permanent, 'is_transformed', False)
+                and ('instant or sorcery' in oracle
+                     or 'instant and/or sorcery' in oracle
+                     or 'instant and sorcery' in oracle)):
+            if 'flip a coin' in oracle:
+                _handle_coin_flip_transform(game, caster_idx, permanent)
+            else:
+                threshold = _parse_count_threshold(oracle)
+                if (threshold is not None
+                        and player.spells_cast_this_turn >= threshold):
+                    _transform_permanent(game, permanent, caster_idx,
+                                          extra_loyalty=player.spells_cast_this_turn)
 
         # ── "Whenever an opponent draws a card" (Orcish Bowmasters) ──
         # Already handled by EFFECT_REGISTRY — skip to avoid double-fire

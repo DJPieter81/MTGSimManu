@@ -108,6 +108,7 @@ class PlayerState:
     # Transient combat-aggression flag: set by board-refill events like Living End
     # so the next combat phase swings hard. Decremented after combat.
     aggression_boost_turns: int = 0
+    post_combo_push_turns: int = 0  # sustained PUSH_DAMAGE window after mass reanimate
 
     @property
     def is_alive(self) -> bool:
@@ -657,6 +658,24 @@ class GameState:
                 return True  # Can escape
             elif not card.has_flashback:
                 return False  # No flashback, no escape — can't cast from graveyard
+            else:
+                # Generic flashback-with-additional-cost parsing.
+                # "Flashback—Sacrifice a {subtype}." (Lava Dart pattern)
+                # If the printed flashback cost requires sacrificing a land
+                # subtype, ensure such a land is available to sacrifice.
+                import re as _re_fb
+                fb_oracle = (template.oracle_text or '').lower()
+                m = _re_fb.search(r'flashback\s*[—\-:]\s*sacrifice a (\w+)', fb_oracle)
+                if m:
+                    needed = m.group(1).strip()
+                    # Match by subtype (Mountain/Island/etc.) or name token
+                    matches = [
+                        l for l in player.lands
+                        if needed in [s.lower() for s in (l.template.subtypes or [])]
+                        or needed in (l.template.name or '').lower()
+                    ]
+                    if not matches:
+                        return False  # cannot pay flashback sacrifice cost
         # Cards with no mana cost cannot be cast from hand (MTG CR 202.1a)
         # This covers suspend-only cards (Living End, Ancestral Vision, etc.)
         # that can only be cast via cascade, suspend, or other special means.
@@ -1473,6 +1492,27 @@ class GameState:
             # If cast from GY via flashback (not escape), mark for exile after resolution
             if card.has_flashback and not (escaped if not free_cast else False):
                 cast_with_flashback = True
+                # Pay flashback additional cost (sacrifice a {subtype}).
+                # can_cast already guarantees a matching land exists.
+                import re as _re_fbc
+                fb_oracle_c = (template.oracle_text or '').lower()
+                m_fb = _re_fbc.search(
+                    r'flashback\s*[—\-:]\s*sacrifice a (\w+)', fb_oracle_c)
+                if m_fb:
+                    needed = m_fb.group(1).strip()
+                    sac = next((
+                        l for l in player.lands
+                        if needed in [s.lower() for s in (l.template.subtypes or [])]
+                        or needed in (l.template.name or '').lower()
+                    ), None)
+                    if sac is not None:
+                        if sac in player.battlefield:
+                            player.battlefield.remove(sac)
+                        sac.zone = 'graveyard'
+                        player.graveyard.append(sac)
+                        self.log.append(
+                            f"T{self.display_turn} P{player_idx+1}: "
+                            f"Flashback {template.name} — sacrifice {sac.name}")
         card.zone = "stack"
         card._cast_with_flashback = cast_with_flashback
         card._evoked = evoked  # Track for sacrifice after ETB
@@ -1776,8 +1816,30 @@ class GameState:
         )
         is_creature = CardType.CREATURE in template.card_types
 
+        # Doorkeeper Thrull static: "Artifacts and creatures entering the
+        # battlefield don't cause abilities to trigger." Generic oracle
+        # check (no card name) — triggers when any permanent on the board
+        # has that static clause.
+        is_artifact = CardType.ARTIFACT in template.card_types
+        doorkeeper_active = False
+        if is_creature or is_artifact:
+            for p in self.players:
+                for perm in p.battlefield:
+                    if perm.instance_id == card.instance_id:
+                        continue
+                    perm_oracle = (perm.template.oracle_text or '').lower()
+                    if ("artifacts and creatures entering "
+                            "don't cause abilities to trigger") in perm_oracle \
+                            or "creatures entering the battlefield don't cause abilities to trigger" in perm_oracle:
+                        doorkeeper_active = True
+                        break
+                if doorkeeper_active:
+                    break
+
         if torpor_active and is_creature:
             self.log.append(f"T{self.display_turn}: {template.name} ETB suppressed by Torpor Orb")
+        elif doorkeeper_active:
+            self.log.append(f"T{self.display_turn}: {template.name} ETB suppressed by Doorkeeper Thrull")
         else:
             # Dispatch to card effect registry for card-specific ETB logic
             has_specific_handler = template.name in EFFECT_REGISTRY._handlers
@@ -1925,6 +1987,14 @@ class GameState:
         # SURVIVE that wasted decrement so the NEXT turn's combat sees it.
         self.players[controller].aggression_boost_turns = max(
             getattr(self.players[controller], 'aggression_boost_turns', 0), 2
+        )
+
+        # Sustained post-combo push: GoalEngine stays in PUSH_DAMAGE for
+        # the next 3 turns. Opponent has no board; any incremental damage
+        # is worth vastly more than the usual curve-out / deploy-engine
+        # fill-in plays. Decremented each upkeep.
+        self.players[controller].post_combo_push_turns = max(
+            getattr(self.players[controller], 'post_combo_push_turns', 0), 3
         )
 
         # Signal the AI's GoalEngine to advance past CURVE_OUT / DEPLOY_ENGINE
@@ -2425,6 +2495,15 @@ class GameState:
                                     f"{name} → {', '.join(effects)}")
             return  # Registry handled it
 
+        # ── Oracle-driven spell resolver (Phase I migration target) ──
+        # When no EFFECT_REGISTRY handler claimed the spell, parse oracle
+        # text for generic patterns (draw, discard, etc.). Returns True
+        # when an effect fires, in which case the legacy ability-parser
+        # below is skipped.
+        from .oracle_resolver import resolve_spell_from_oracle
+        if resolve_spell_from_oracle(self, card, controller, item.targets):
+            return
+
         # ── Generic fallback: parse abilities from oracle text ──
         # All named card effects are now handled by EFFECT_REGISTRY (card_effects.py).
         # Legacy named-card blocks have been removed (Phase 2D migration).
@@ -2694,10 +2773,9 @@ class GameState:
             cause="bounced"
         )
 
-        _discarded = []
     def _force_discard(self, player_idx: int, count: int, self_discard: bool = False):
         """Discard cards from hand.
-        
+
         self_discard=True means the player chose to discard (Faithful Mending, etc.)
         self_discard=False means opponent forced the discard (Thoughtseize, etc.)
         """
@@ -2706,14 +2784,10 @@ class GameState:
             if not player.hand:
                 break
             if self_discard:
-                # Smart discard: prefer cards that are good in the graveyard
-                # or least useful in hand
                 card = self._choose_self_discard(player)
             else:
-                # Opponent forced: discard highest CMC (least castable)
                 player.hand.sort(key=lambda c: c.template.cmc, reverse=True)
                 card = player.hand[0]
-            _discarded.append(card)
             self.zone_mgr.move_card(
                 self, card, "hand", "graveyard",
                 cause="forced discard" if not self_discard else "discard"
@@ -3064,6 +3138,14 @@ class GameState:
         for card in player.battlefield:
             card.untap()
             card.new_turn()
+        # Opponent permanents that untap during *each other player's* untap
+        # step (Endbringer pattern). No new_turn() — they remain marked as
+        # acting on their controller's turn cycle.
+        opp = self.players[1 - player_idx]
+        for card in opp.battlefield:
+            otext = (card.template.oracle_text or '').lower()
+            if "untap" in otext and "during each other player's untap step" in otext:
+                card.untap()
         player.reset_turn_tracking()
         # Recalculate extra land drops from permanents on battlefield
         # (Azusa gives +2, Dryad of the Ilysian Grove gives +1)
