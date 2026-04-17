@@ -575,6 +575,9 @@ class GameRunner:
                     self._activate_planeswalkers(game, ai)
                     if game.game_over:
                         break
+                    self._activate_tap_abilities(game, active)
+                    if game.game_over:
+                        break
                     self._activate_griselbrand(game, active)
                     if game.game_over:
                         break
@@ -646,6 +649,9 @@ class GameRunner:
                     if game.game_over:
                         break
                     self._activate_planeswalkers(game, ai)
+                    if game.game_over:
+                        break
+                    self._activate_tap_abilities(game, active)
                     if game.game_over:
                         break
                     # Griselbrand activation in MAIN2 (in case reanimated during MAIN2)
@@ -1639,6 +1645,125 @@ class GameRunner:
                         f"T{game.display_turn} P{active+1}: "
                         f"Ratchet Bomb ({new_charges}) destroys "
                         f"{len(targets_at_cmc)} permanents")
+
+    def _activate_tap_abilities(self, game: GameState, active: int):
+        """Generic {T}: ability dispatch for non-planeswalker permanents.
+
+        Oracle-driven — no card names. Covers patterns like Endbringer's
+        {T}: ping / {C}{C}{T}: draw and Emry's {T}: cast-artifact-from-GY.
+        Skips tapped or summoning-sick creatures. One activation per
+        permanent per turn (the tap state itself enforces this)."""
+        import re
+        from engine.cards import CardType
+        from engine.oracle_resolver import _pick_damage_target
+        player = game.players[active]
+        opponent_idx = 1 - active
+
+        for perm in list(player.battlefield):
+            if perm.tapped:
+                continue
+            # Creatures need haste or to have entered before this turn
+            if perm.template.is_creature and getattr(perm, 'summoning_sick', False):
+                continue
+            oracle = (perm.template.oracle_text or '').lower()
+            if '{t}' not in oracle:
+                continue
+
+            # ── {T}: This creature deals N damage to any target. ──
+            m_ping = re.search(
+                r'\{t\}\s*:\s*this creature deals\s+(\d+)\s+damage to any target',
+                oracle)
+            if m_ping:
+                amount = int(m_ping.group(1))
+                target = _pick_damage_target(game, active, amount)
+                perm.tapped = True
+                if target is not None:
+                    target.damage_marked = getattr(target, 'damage_marked', 0) + amount
+                    game.log.append(
+                        f"T{game.display_turn} P{active+1}: "
+                        f"{perm.name} pings {target.name} for {amount}")
+                    game.check_state_based_actions()
+                else:
+                    opp = game.players[opponent_idx]
+                    opp.life -= amount
+                    player.damage_dealt_this_turn += amount
+                    game.log.append(
+                        f"T{game.display_turn} P{active+1}: "
+                        f"{perm.name} pings opponent for {amount} "
+                        f"(life: {opp.life})")
+                    if opp.life <= 0:
+                        game.game_over = True
+                        game.winner = active
+                        return
+                continue  # one activation per permanent per turn
+
+            # ── {C}{C}, {T}: Draw a card. ──
+            # Generic colourless-only card-draw activation. Gated on hand
+            # size or losing-on-clock so we don't burn mana fixing for nothing.
+            if re.search(r'\{c\}\{c\}\s*,\s*\{t\}\s*:\s*draw a card', oracle):
+                if len(player.untapped_lands) < 2:
+                    continue
+                from ai.ev_evaluator import snapshot_from_game
+                snap = snapshot_from_game(game, active)
+                want_draw = (
+                    len(player.hand) <= 3
+                    or snap.my_clock_discrete > snap.opp_clock_discrete
+                )
+                if not want_draw:
+                    continue
+                tapped = 0
+                for land in list(player.lands):
+                    if tapped >= 2:
+                        break
+                    if not land.tapped:
+                        land.tapped = True
+                        tapped += 1
+                if tapped < 2:
+                    continue
+                perm.tapped = True
+                drawn = game.draw_cards(active, 1)
+                drawn_name = drawn[0].name if drawn else '?'
+                game.log.append(
+                    f"T{game.display_turn} P{active+1}: "
+                    f"{perm.name} {{C}}{{C}}, {{T}} → draw {drawn_name}")
+                continue
+
+            # ── {T}: Choose target artifact card in your graveyard.
+            #        You may cast that card this turn. (Emry pattern) ──
+            if 'choose target artifact card in your graveyard' in oracle:
+                artifacts = [
+                    c for c in player.graveyard
+                    if CardType.ARTIFACT in c.template.card_types
+                    and not c.template.is_land  # artifact lands aren't "cast"
+                    and (c.template.cmc or 0) <= len(player.untapped_lands)
+                ]
+                if not artifacts:
+                    continue
+                # Prefer the highest-CMC affordable artifact (max value per
+                # activation); ties broken by oracle length (richer effects).
+                target_card = max(
+                    artifacts,
+                    key=lambda c: (
+                        c.template.cmc or 0,
+                        len(c.template.oracle_text or ''),
+                    ))
+                # Move GY → hand temporarily so can_cast accepts it as a
+                # normal cast (Emry "you still pay its costs").
+                player.graveyard.remove(target_card)
+                target_card.zone = 'hand'
+                player.hand.append(target_card)
+                if not game.can_cast(active, target_card):
+                    # Revert
+                    player.hand.remove(target_card)
+                    target_card.zone = 'graveyard'
+                    player.graveyard.append(target_card)
+                    continue
+                perm.tapped = True
+                game.log.append(
+                    f"T{game.display_turn} P{active+1}: "
+                    f"{perm.name} {{T}} → cast {target_card.name} from GY")
+                game.cast_spell(active, target_card)
+                continue
 
     def _activate_sacrifice_abilities(self, game: GameState, active: int):
         """Generic sacrifice ability activation. Parses oracle text for

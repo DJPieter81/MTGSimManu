@@ -139,6 +139,41 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
                 f"T{game.display_turn} P{controller+1}: "
                 f"{card.name} exiles {best.name}")
 
+    # ── "When this creature enters, destroy target artifact or
+    #     enchantment an opponent controls" (Witch Enchanter etc.) ──
+    if ('enters' in oracle and 'destroy target' in oracle
+            and 'opponent controls' in oracle
+            and ('artifact' in oracle or 'enchantment' in oracle)):
+        from engine.cards import CardType, Keyword
+        opp = game.players[opponent]
+        # Match exact oracle: artifact-only, enchantment-only, or either
+        wants_artifact = 'artifact' in oracle
+        wants_enchant = 'enchantment' in oracle
+        candidates = [
+            c for c in opp.battlefield
+            if not c.template.is_land
+            and Keyword.INDESTRUCTIBLE not in c.keywords
+            and (
+                (wants_artifact and CardType.ARTIFACT in c.template.card_types)
+                or (wants_enchant and CardType.ENCHANTMENT in c.template.card_types)
+            )
+        ]
+        if candidates:
+            # Prefer scaling/recurring threats; reuse permanent-threat math
+            def score(c):
+                o = (c.template.oracle_text or '').lower()
+                base = (c.template.cmc or 0)
+                if re.search(r'for each (artifact|creature|land)', o):
+                    base += 5
+                if 'whenever this creature attacks' in o:
+                    base += 4
+                return base
+            target = max(candidates, key=score)
+            game._permanent_destroyed(target)
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: "
+                f"{card.name} ETB destroys {target.name}")
+
     # ── "When this creature enters, draw a card" ──
     if 'enters' in oracle and 'draw' in oracle and 'card' in oracle:
         amount = 1

@@ -658,6 +658,24 @@ class GameState:
                 return True  # Can escape
             elif not card.has_flashback:
                 return False  # No flashback, no escape — can't cast from graveyard
+            else:
+                # Generic flashback-with-additional-cost parsing.
+                # "Flashback—Sacrifice a {subtype}." (Lava Dart pattern)
+                # If the printed flashback cost requires sacrificing a land
+                # subtype, ensure such a land is available to sacrifice.
+                import re as _re_fb
+                fb_oracle = (template.oracle_text or '').lower()
+                m = _re_fb.search(r'flashback\s*[—\-:]\s*sacrifice a (\w+)', fb_oracle)
+                if m:
+                    needed = m.group(1).strip()
+                    # Match by subtype (Mountain/Island/etc.) or name token
+                    matches = [
+                        l for l in player.lands
+                        if needed in [s.lower() for s in (l.template.subtypes or [])]
+                        or needed in (l.template.name or '').lower()
+                    ]
+                    if not matches:
+                        return False  # cannot pay flashback sacrifice cost
         # Cards with no mana cost cannot be cast from hand (MTG CR 202.1a)
         # This covers suspend-only cards (Living End, Ancestral Vision, etc.)
         # that can only be cast via cascade, suspend, or other special means.
@@ -1474,6 +1492,27 @@ class GameState:
             # If cast from GY via flashback (not escape), mark for exile after resolution
             if card.has_flashback and not (escaped if not free_cast else False):
                 cast_with_flashback = True
+                # Pay flashback additional cost (sacrifice a {subtype}).
+                # can_cast already guarantees a matching land exists.
+                import re as _re_fbc
+                fb_oracle_c = (template.oracle_text or '').lower()
+                m_fb = _re_fbc.search(
+                    r'flashback\s*[—\-:]\s*sacrifice a (\w+)', fb_oracle_c)
+                if m_fb:
+                    needed = m_fb.group(1).strip()
+                    sac = next((
+                        l for l in player.lands
+                        if needed in [s.lower() for s in (l.template.subtypes or [])]
+                        or needed in (l.template.name or '').lower()
+                    ), None)
+                    if sac is not None:
+                        if sac in player.battlefield:
+                            player.battlefield.remove(sac)
+                        sac.zone = 'graveyard'
+                        player.graveyard.append(sac)
+                        self.log.append(
+                            f"T{self.display_turn} P{player_idx+1}: "
+                            f"Flashback {template.name} — sacrifice {sac.name}")
         card.zone = "stack"
         card._cast_with_flashback = cast_with_flashback
         card._evoked = evoked  # Track for sacrifice after ETB
@@ -3090,6 +3129,14 @@ class GameState:
         for card in player.battlefield:
             card.untap()
             card.new_turn()
+        # Opponent permanents that untap during *each other player's* untap
+        # step (Endbringer pattern). No new_turn() — they remain marked as
+        # acting on their controller's turn cycle.
+        opp = self.players[1 - player_idx]
+        for card in opp.battlefield:
+            otext = (card.template.oracle_text or '').lower()
+            if "untap" in otext and "during each other player's untap step" in otext:
+                card.untap()
         player.reset_turn_tracking()
         # Recalculate extra land drops from permanents on battlefield
         # (Azusa gives +2, Dryad of the Ilysian Grove gives +1)
