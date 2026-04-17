@@ -296,17 +296,19 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
 
 
 def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
-                               controller: int, targets: list = None):
+                               controller: int, targets: list = None) -> bool:
     """Resolve instant/sorcery effects by parsing oracle text.
 
-    Called when a spell resolves. Handles common spell patterns.
-    This supplements the existing _execute_spell_effects fallback.
+    Called when a spell resolves AND no EFFECT_REGISTRY handler took it.
+    Returns True when an effect was applied, so callers can skip the
+    legacy ability-description fallback.
     """
     oracle = (card.template.oracle_text or '').lower()
     if not oracle:
-        return
+        return False
 
     opponent = 1 - controller
+    handled = False
 
     # ── "Target opponent reveals their hand. You choose a nonland card
     #     and that player discards it." (Thoughtseize, Inquisition) ──
@@ -323,11 +325,41 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
                 game.log.append(
                     f"T{game.display_turn} P{controller+1}: "
                     f"{card.name} discards {best.name}")
+                handled = True
         # Life loss for Thoughtseize
         if 'you lose' in oracle and 'life' in oracle:
             m = re.search(r'lose\s+(\d+)\s+life', oracle)
             if m:
                 game.players[controller].life -= int(m.group(1))
+                handled = True
+
+    # ── Card draw on spell resolution ──
+    # Covers "draw a card" / "draw N cards" + the look-and-keep variant
+    # used by Sleight of Hand ("put one of them into your hand"). Scry-
+    # then-draw patterns (Preordain) match because "draw a card" is
+    # explicit in the oracle.
+    word_to_num = {'a': 1, 'one': 1, 'two': 2, 'three': 3, 'four': 4}
+    draw_n = 0
+    m_draw = re.search(r'draw\s+(\w+)\s+cards?', oracle)
+    if m_draw:
+        tok = m_draw.group(1)
+        try:
+            draw_n = int(tok)
+        except ValueError:
+            draw_n = word_to_num.get(tok, 0)
+    elif 'put one of them into your hand' in oracle:
+        # Look-at-top-N keep-1 → draw 1 (Sleight of Hand pattern)
+        draw_n = 1
+    if draw_n > 0:
+        drawn = game.draw_cards(controller, draw_n)
+        names = ", ".join(c.name for c in drawn) if drawn else ""
+        if drawn:
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: "
+                f"{card.name} → draw {draw_n} ({names})")
+        handled = True
+
+    return handled
 
 
 def resolve_attack_trigger(game: "GameState", attacker: "CardInstance",

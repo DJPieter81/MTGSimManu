@@ -2495,6 +2495,15 @@ class GameState:
                                     f"{name} → {', '.join(effects)}")
             return  # Registry handled it
 
+        # ── Oracle-driven spell resolver (Phase I migration target) ──
+        # When no EFFECT_REGISTRY handler claimed the spell, parse oracle
+        # text for generic patterns (draw, discard, etc.). Returns True
+        # when an effect fires, in which case the legacy ability-parser
+        # below is skipped.
+        from .oracle_resolver import resolve_spell_from_oracle
+        if resolve_spell_from_oracle(self, card, controller, item.targets):
+            return
+
         # ── Generic fallback: parse abilities from oracle text ──
         # All named card effects are now handled by EFFECT_REGISTRY (card_effects.py).
         # Legacy named-card blocks have been removed (Phase 2D migration).

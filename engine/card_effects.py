@@ -1066,10 +1066,9 @@ def expressive_iteration_resolve(game, card, controller, targets=None, item=None
         player.library.append(c)
 
 
-@EFFECT_REGISTRY.register("Preordain", EffectTiming.SPELL_RESOLVE,
-                           description="Scry 2, draw 1 (simplified: draw 1)")
-def preordain_resolve(game, card, controller, targets=None, item=None):
-    game.draw_cards(controller, 1)
+# Preordain handler removed — oracle_resolver.resolve_spell_from_oracle
+# now matches "draw a card" and fires the draw. Scry portion is approximated
+# as no-op (AI doesn't model deck order).
 
 
 @EFFECT_REGISTRY.register("Tribal Flames", EffectTiming.SPELL_RESOLVE,
@@ -1844,10 +1843,8 @@ def griselbrand_resolve(game, card, controller, targets=None, item=None):
     pass
 
 
-@EFFECT_REGISTRY.register("Sleight of Hand", EffectTiming.SPELL_RESOLVE,
-                           description="Look at top 2, keep 1")
-def sleight_of_hand_resolve(game, card, controller, targets=None, item=None):
-    game.draw_cards(controller, 1)
+# Sleight of Hand handler removed — oracle_resolver detects
+# "put one of them into your hand" and draws 1 as approximation.
 
 
 @EFFECT_REGISTRY.register("Reckless Impulse", EffectTiming.SPELL_RESOLVE,
@@ -1989,10 +1986,8 @@ def snapcaster_mage_etb(game, card, controller, targets=None, item=None):
                         f"Snapcaster gives flashback to {best.name}")
 
 
-@EFFECT_REGISTRY.register("Wall of Omens", EffectTiming.ETB,
-                           description="Draw a card")
-def wall_of_omens_etb(game, card, controller, targets=None, item=None):
-    game.draw_cards(controller, 1)
+# Wall of Omens ETB handler removed — oracle_resolver ETB-draw pattern
+# already fires "When this creature enters, draw a card".
 
 
 @EFFECT_REGISTRY.register("Spell Queller", EffectTiming.ETB,
