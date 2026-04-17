@@ -172,6 +172,48 @@ from engine.card_database import CardDatabase  # singleton pattern
 | Affinity vs Zoo WR | 93% | 87% |
 | Affinity vs Boros WR | 77% | 80% |
 
+**Affinity matchup re-verify (2026-04-16, branch `claude/affinity-matchup-plan-qQfUQ`):**
+
+All three AFFINITY_MATCHUP_PLAN.md fixes confirmed live in branch (commits
+`572d9d5`, `35256f8`, `7551c5b`). Re-ran the plan's verification checklist
+against current `main`-HEAD:
+
+| Metric | Plan target | Re-verified n=60 |
+|--------|-------------|------------------|
+| Affinity field WR | 55-65% | **82%** (49/60) |
+| Cranial Plating delta | > 0 | **+0.09** |
+| Signal Pest delta | ≥ 0 | **+0.23** (was −0.30 baseline) |
+| Springleaf Drum delta | ≥ 0 | **+0.15** (was −0.39 baseline) |
+| Engineered Explosives delta | > 0 | **−0.29** (was −0.54 baseline) — improved but still negative |
+| Affinity vs Boros WR (n=30) | 65-70% | **80%** |
+| Affinity vs Zoo WR (n=30) | 60-70% | **80%** |
+| Affinity vs Prowess WR (n=20) | n/a | 75% |
+| Affinity vs Dimir WR (n=20) | n/a | 100% |
+
+Fix 1 (CP threat scaling) verified in `bo3 zoo affinity -s 60200`: Zoo casts
+Leyline Binding twice (T3 on Signal Pest, T5 on Thought Monitor) instead of
+sitting in hand. SB swap-in of Wear // Tear in Boros vs Affinity (verified in
+`bo3 energy affinity -s 60200`).
+
+Fix 3 (CP equip evasion preference) verified: Cranial Plating equips to
+Ornithopter (T4, T5, T6, T7 across the two replays), Thought Monitor (T5,
+flying), and Frogmite/Construct only as fallback when no flier is available.
+
+**Engine fix (this session):** removed orphan `_discarded = []` /
+`_discarded.append(card)` lines in `engine/game_state.py::_force_discard`
+(introduced in `9a237d7`, scope-leaked outside its function and raised
+`NameError` on every Thoughtseize / Inquisition resolution — was blocking
+`run_meta.py --audit` entirely). Variable was never read.
+
+**Open work** (not in scope for AFFINITY_MATCHUP_PLAN.md):
+- EE delta still negative (−0.29). Cast 13× over 60 games; loss-rate per cast
+  (5/11 = 0.45×) still exceeds win-rate per cast (8/49 = 0.16×). The reactive
+  gate is releasing EE in marginal spots — a tighter gate or `expected target
+  EV` floor would push this positive.
+- WRs vs Boros/Zoo still 10-15pp above plan's 65-70% target. Structural
+  opponent-side work (Boros wrath threshold, Zoo combat aggression vs small
+  artifacts) remains for a follow-up plan.
+
 **Iteration 6 fixes (ITERATION_6_PLAN.md — 2026-04-13)**
 
 ### Iteration 6 fixes (ITERATION_6_PLAN.md — 2026-04-13)
