@@ -108,6 +108,7 @@ class PlayerState:
     # Transient combat-aggression flag: set by board-refill events like Living End
     # so the next combat phase swings hard. Decremented after combat.
     aggression_boost_turns: int = 0
+    post_combo_push_turns: int = 0  # sustained PUSH_DAMAGE window after mass reanimate
 
     @property
     def is_alive(self) -> bool:
@@ -1776,8 +1777,30 @@ class GameState:
         )
         is_creature = CardType.CREATURE in template.card_types
 
+        # Doorkeeper Thrull static: "Artifacts and creatures entering the
+        # battlefield don't cause abilities to trigger." Generic oracle
+        # check (no card name) — triggers when any permanent on the board
+        # has that static clause.
+        is_artifact = CardType.ARTIFACT in template.card_types
+        doorkeeper_active = False
+        if is_creature or is_artifact:
+            for p in self.players:
+                for perm in p.battlefield:
+                    if perm.instance_id == card.instance_id:
+                        continue
+                    perm_oracle = (perm.template.oracle_text or '').lower()
+                    if ("artifacts and creatures entering "
+                            "don't cause abilities to trigger") in perm_oracle \
+                            or "creatures entering the battlefield don't cause abilities to trigger" in perm_oracle:
+                        doorkeeper_active = True
+                        break
+                if doorkeeper_active:
+                    break
+
         if torpor_active and is_creature:
             self.log.append(f"T{self.display_turn}: {template.name} ETB suppressed by Torpor Orb")
+        elif doorkeeper_active:
+            self.log.append(f"T{self.display_turn}: {template.name} ETB suppressed by Doorkeeper Thrull")
         else:
             # Dispatch to card effect registry for card-specific ETB logic
             has_specific_handler = template.name in EFFECT_REGISTRY._handlers
@@ -1925,6 +1948,14 @@ class GameState:
         # SURVIVE that wasted decrement so the NEXT turn's combat sees it.
         self.players[controller].aggression_boost_turns = max(
             getattr(self.players[controller], 'aggression_boost_turns', 0), 2
+        )
+
+        # Sustained post-combo push: GoalEngine stays in PUSH_DAMAGE for
+        # the next 3 turns. Opponent has no board; any incremental damage
+        # is worth vastly more than the usual curve-out / deploy-engine
+        # fill-in plays. Decremented each upkeep.
+        self.players[controller].post_combo_push_turns = max(
+            getattr(self.players[controller], 'post_combo_push_turns', 0), 3
         )
 
         # Signal the AI's GoalEngine to advance past CURVE_OUT / DEPLOY_ENGINE

@@ -179,6 +179,8 @@ class CombatManager:
         active = game.players[game.active_player]
         if getattr(active, 'aggression_boost_turns', 0) > 0:
             active.aggression_boost_turns -= 1
+        if getattr(active, 'post_combo_push_turns', 0) > 0:
+            active.post_combo_push_turns -= 1
 
         self._assignments = []
         self._attackers = []

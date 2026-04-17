@@ -1336,6 +1336,31 @@ class GameRunner:
                         game.trigger_etb(best, active)
                     sagas_to_sacrifice.append(card)
 
+            # --- Fable of the Mirror-Breaker (loot + transform) ---
+            # Detected by Ch.II discard/draw-that-many clause; distinct
+            # from the Roku transform pattern.
+            elif ('discard' in card_oracle and 'draw that many' in card_oracle):
+                if lore == 2:
+                    # Ch.II: discard up to 2, draw that many
+                    hand_size = len(player.hand)
+                    to_discard = min(2, hand_size)
+                    if to_discard > 0:
+                        game._force_discard(active, to_discard, self_discard=True)
+                        drawn = game.draw_cards(active, to_discard)
+                        names = ", ".join(c.name for c in drawn) if drawn else "0 drawn"
+                        game.log.append(f"T{game.display_turn} P{active+1}: "
+                                        f"{card.name} Ch.II: loot {to_discard} "
+                                        f"(drew: {names})")
+                elif lore >= 3:
+                    # Ch.III: exile Saga, return transformed (Reflection of
+                    # Kiki-Jiki — copy ability handled by activated-ability
+                    # dispatch in Phase E when applicable).
+                    game.log.append(f"T{game.display_turn} P{active+1}: "
+                                    f"{card.name} Ch.III: transforming into "
+                                    f"Reflection of Kiki-Jiki")
+                    from engine.oracle_resolver import _transform_permanent
+                    _transform_permanent(game, card, active)
+
             # --- Transform sagas (Legend of Roku pattern) ---
             elif 'transform' in card_oracle or 'return it to the battlefield transformed' in card_oracle:
                 if lore == 2:
