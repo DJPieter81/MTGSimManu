@@ -292,16 +292,18 @@ class EVPlayer:
                     is_dying = snap.am_dead_next or (snap.opp_power >= prof.dying_opp_power
                                                      and snap.opp_clock_discrete <= prof.dying_opp_clock)
                     has_big_target = self._has_high_threat_target(game, spell, snap)
-                    # Control patience: control archetypes hold reactive
-                    # spells until there's *real* pressure (opp_clock <= 3).
-                    # Without this, Orim's Chant / Prismatic Ending /
-                    # Supreme Verdict get cast proactively on empty boards
-                    # and wind up in losses.
-                    if (prof.control_patience and not is_dying
-                            and snap.opp_clock_discrete >= 4):
-                        continue
-                    if not is_dying and not has_big_target:
-                        continue
+                    # has_big_target overrides control_patience: if a real
+                    # threat is on board (oracle-driven threat floor), the
+                    # reactive-only spell should fire proactively even for
+                    # control decks that otherwise hold until late. Audit
+                    # finding: Azorius Prismatic Ending sat in hand until
+                    # Cranial Plating had already locked the game.
+                    if is_dying or has_big_target:
+                        pass  # allow through reactive-only gate
+                    elif prof.control_patience and snap.opp_clock_discrete >= 4:
+                        continue  # control: no pressure, no threat — hold
+                    else:
+                        continue  # non-control: no threat, not dying — hold
 
             ev = self._score_spell(spell, snap, game, me, opp)
             targets = self._choose_targets(game, spell)
@@ -502,6 +504,22 @@ class EVPlayer:
         if 'board_wipe' in tags and snap.opp_creature_count == 0:
             WRATH_WASTE_SENTINEL = -50.0  # rules: forces pass under any profile
             return min(ev, WRATH_WASTE_SENTINEL)
+
+        # ── Self-wipe gate ──
+        # When we're ahead on the board and not dying, wiping destroys our
+        # own equity (WST, Sanctifier, etc.) for no net gain. Audit: Wrath
+        # of the Skies WinCR 18% in WST because the deck self-wipes its own
+        # value engines. If we're winning the board fight and have time
+        # (opp_clock_discrete >= 3), board wipes are strictly negative EV.
+        if 'board_wipe' in tags and snap.opp_creature_count > 0:
+            WRATH_WASTE_SENTINEL = -50.0
+            am_dying = snap.am_dead_next or snap.opp_clock_discrete <= 2
+            ahead_on_board = (
+                snap.my_creature_count >= snap.opp_creature_count
+                and snap.my_power > snap.opp_power
+            )
+            if ahead_on_board and not am_dying:
+                return min(ev, WRATH_WASTE_SENTINEL)
 
         # ── X-cost board wipe: hold when the X-budget can't meaningfully clear ──
         # Tuned through three passes:
