@@ -453,17 +453,22 @@ def main():
     html = patch(html, D, overall_grade, radar_data)
     
     # Write
+    # Always patch templates/reference_showcase.html in-place (this is the
+    # public URL users link to). Patches are regex-based and idempotent, so
+    # overwriting the template is safe — the next run reads it back as input
+    # and produces the same output with fresh data.
+    with open(tmpl_path, 'w') as f:
+        f.write(html)
+    print(f"✓ Showcase patched in-place: {tmpl_path}")
+
     if out_path:
+        # Also write to the explicit output path (e.g. mtgsimmanu_showcase.html
+        # at repo root, or /mnt/user-data/outputs/…).
         os.makedirs(os.path.dirname(out_path) or '.', exist_ok=True)
         with open(out_path, 'w') as f:
             f.write(html)
         print(f"✓ Showcase written to {out_path}")
     else:
-        # Default: write to both repo and outputs
-        with open(tmpl_path, 'w') as f:
-            f.write(html)
-        print(f"✓ Showcase patched in-place: {tmpl_path}")
-        
         out = '/mnt/user-data/outputs/reference_showcase.html'
         os.makedirs(os.path.dirname(out), exist_ok=True)
         with open(out, 'w') as f:
