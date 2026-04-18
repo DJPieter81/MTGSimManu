@@ -1569,8 +1569,16 @@ def arboreal_grazer_etb(game, card, controller, targets=None, item=None):
         player.hand.remove(land)
         land.enter_battlefield()
         land.controller = controller
+        # Grazer puts the land onto the battlefield tapped, so it enters
+        # tapped regardless of the template's enters_tapped field.
+        land.tapped = True
         player.battlefield.append(land)
+        # Apply Amulet-style untap triggers AND Spelunking-style "lands
+        # enter untapped" static abilities — both needed for Amulet Titan's
+        # mana chain. Previously only Amulet triggers applied, which left
+        # Spelunking's replacement-effect untap unapplied on Grazer lands.
         game._apply_untap_on_enter_triggers(land, controller)
+        game._apply_lands_enter_untapped(land, controller)
         game._trigger_landfall(controller)
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Arboreal Grazer puts {land.name} onto battlefield")
@@ -1611,8 +1619,14 @@ def _primeval_titan_search(game, controller):
         player.library.remove(land)
         land.enter_battlefield()
         land.controller = controller
+        # Titan puts lands onto the battlefield tapped.
+        land.tapped = True
         player.battlefield.append(land)
+        # Apply Amulet-style untap AND Spelunking-style untapped-static to
+        # keep all land-entry paths consistent. Without Spelunking here,
+        # Amulet Titan's combo loop breaks on Titan-fetched bounce lands.
         game._apply_untap_on_enter_triggers(land, controller)
+        game._apply_lands_enter_untapped(land, controller)
         game._trigger_landfall(controller)
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Primeval Titan searches for {land.name}")

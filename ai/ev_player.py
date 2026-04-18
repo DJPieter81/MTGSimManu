@@ -402,8 +402,30 @@ class EVPlayer:
             elif snap.opp_creature_count == 0 and 'removal' in tags:
                 ev -= 20.0  # never evoke removal with no targets
 
+        # Oracle text lower-cased once for all downstream checks.
+        t_oracle = (t.oracle_text or '').lower()
+
         # ── Combo sequencing overlay ──
         ev += self._combo_modifier(card, snap, game, me, opp)
+
+        # ── Fizzle detection: land-sacrifice spells without critical mass ──
+        # Spells like Scapeshift ("Sacrifice any number of lands. Search
+        # your library for up to that many land cards...") do nothing if
+        # the controller has too few lands to sacrifice — the engine fizzles
+        # the cast (engine/card_effects.py:scapeshift_resolve requires 4+
+        # lands). Without this guard the AI burns 4 mana on a wasted cast
+        # on T3, as seen in Amulet Titan vs Dimir traces.
+        # Oracle-driven detection — no hardcoded card names.
+        if 'sacrifice any number of lands' in t_oracle and 'search your library' in t_oracle:
+            my_land_count = sum(1 for c in me.battlefield if c.template.is_land)
+            # Rules constant matching engine threshold at
+            # engine/card_effects.py:scapeshift_resolve.
+            LAND_SACRIFICE_MIN_LANDS = 4
+            if my_land_count < LAND_SACRIFICE_MIN_LANDS:
+                # Force the score below pass_threshold so the AI holds the
+                # spell until critical mass is available. Derivation: profile-
+                # driven, no magic numbers — uses the existing gate constant.
+                ev = min(ev, p.pass_threshold - 1.0)
 
         # ── Amulet + Titan ramp combo ──
         # Generic detection: if we hold Primeval Titan (or any 6-mana "when
@@ -412,7 +434,7 @@ class EVPlayer:
         # bounce-land loop effectively doubles our ramp, enabling Titan 1-2
         # turns earlier. `_combo_modifier` skips ramp archetypes, so wire it
         # here. Similarly bump the Titan itself when Amulet is already down.
-        t_oracle = (t.oracle_text or '').lower()
+        # (t_oracle defined above just after _combo_modifier call.)
         is_amulet = ('whenever' in t_oracle and 'enters tapped' in t_oracle
                      and 'untap it' in t_oracle)
         has_titan_in_hand = any(
@@ -1165,13 +1187,17 @@ class EVPlayer:
 
         Accounts for mana efficiency: cheap removal on cheap threats
         is better than expensive removal on cheap threats.
+
+        Uses creature_threat_value (oracle-driven, accounts for scaling/attack triggers)
+        instead of creature_value (raw clock impact). This ensures Affinity Constructs
+        with artifact affinity and other threat amplifiers are correctly prioritized.
         """
         if not opp.creatures:
             return 0.0
         removal_cmc = removal.template.cmc or 0
         best = 0.0
         for c in opp.creatures:
-            val = creature_value(c)
+            val = creature_threat_value(c)
             # Penalize overkill: using 5-mana removal on a 1/1 is wasteful
             target_cmc = c.template.cmc or 0
             if removal_cmc > target_cmc + self.profile.removal_overkill_cmc_diff:
