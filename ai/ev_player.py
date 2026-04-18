@@ -93,10 +93,22 @@ class EVPlayer:
         from ai.turn_planner import CombatPlanner
         self.combat_planner = CombatPlanner()
 
-        # Mulligan decider — reuse existing
+        # Mulligan decider — reuse existing.
+        # archetype is a string from DECK_ARCHETYPE_OVERRIDES; some decks
+        # (Ruby Storm) use "storm" which isn't an ArchetypeStrategy enum
+        # value. Storm shares COMBO's mulligan semantics (need ritual +
+        # cantrip + finisher), so alias it here. Previously defaulted to
+        # MIDRANGE — which silently skipped the combo-ritual backup check
+        # at mulligan.py:111, causing Storm to keep ritual-less hands.
         from ai.mulligan import MulliganDecider
         from ai.strategy_profile import ArchetypeStrategy
-        arch_enum = ArchetypeStrategy(self.archetype) if self.archetype in [e.value for e in ArchetypeStrategy] else ArchetypeStrategy.MIDRANGE
+        _COMBO_ALIASES = {"storm"}  # strings treated as COMBO for mulligan
+        if self.archetype in [e.value for e in ArchetypeStrategy]:
+            arch_enum = ArchetypeStrategy(self.archetype)
+        elif self.archetype in _COMBO_ALIASES:
+            arch_enum = ArchetypeStrategy.COMBO
+        else:
+            arch_enum = ArchetypeStrategy.MIDRANGE
         self._mulligan_decider = MulliganDecider(arch_enum, self.goal_engine)
 
         # Response decider — reuse existing

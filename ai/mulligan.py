@@ -109,9 +109,18 @@ class MulliganDecider:
             # compared an ArchetypeStrategy enum against string literals, which
             # always evaluated False — making this entire guardrail dead code.
             if gp.always_early and cards_in_hand >= 7 and self.archetype == ArchetypeStrategy.COMBO:
+                # Include only IMMEDIATE cost-reducers: the always_early
+                # list (curated per deck — e.g. Ruby Medallion) plus any
+                # non-creature cost_reducer-tagged card in hand.
+                # Creatures tagged as cost_reducer (e.g. Ral, Monsoon Mage)
+                # need to be cast AND flipped/attacked to actually reduce
+                # costs — they don't make a ritual-less hand playable.
+                # Rule: summoning-sick creatures don't contribute mana on
+                # their first turn, so they're not "immediate" mana engines.
                 reducer_names = gp.always_early | {
                     n for n in hand_names
                     if any('cost_reducer' in getattr(c.template, 'tags', set())
+                           and not c.template.is_creature
                            for c in hand if c.name == n)
                 }
                 if not (hand_names & reducer_names):
