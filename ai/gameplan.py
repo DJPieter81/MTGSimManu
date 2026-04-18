@@ -581,6 +581,21 @@ class GoalEngine:
                 oracle = (t.oracle_text or '').lower()
                 if any(kw in oracle for kw in ('destroy', 'exile target', 'damage to each')):
                     score += 4.0
+            # Preserve critical-piece singletons. critical_pieces (from the
+            # gameplan) enumerates the card names the deck cannot execute
+            # its plan without — e.g. Storm's Grapeshot / Empty the Warrens
+            # / Past in Flames. Bottoming the last copy of a critical piece
+            # sabotages the deck's win condition. Boost score so a singleton
+            # critical card never ends up the lowest-scored in hand.
+            # Derivation: the "floor" equals the maximum achievable score
+            # from normal role+key+cmc weights (8 engine + 8 key + 5 cmc_max
+            # + 6 always_early = 27 cap). Setting floor at 20 keeps
+            # criticals ranked above almost any normal keep.
+            if card.name in self.gameplan.critical_pieces:
+                same_copies_in_hand = sum(1 for c in hand if c.name == card.name)
+                if same_copies_in_hand <= 1:
+                    CRITICAL_SINGLETON_FLOOR = 20.0
+                    score = max(score, CRITICAL_SINGLETON_FLOOR)
         return score
 
 
