@@ -116,16 +116,39 @@ def sideboard(mainboard: Dict[str, int], sideboard_cards: Dict[str, int],
             if any(w in card_lower for w in ["drown in the loch", "consider"]):
                 board_out_priority.append((card_name, min(count, 2), 6))
 
-        # Board out slow engines vs fast artifact aggro
-        # "fable" = Fable of the Mirror-Breaker (3CMC enchantment engine, too
-        # slow vs T4-kill Affinity). "consign" = Consign to Memory (counters
-        # artifact spells that are already resolved by the time you can hold
-        # up UU — mostly dead). "witch enchanter" = slow creature without a
-        # target vs artifact deck.
+        # Board out slow engines vs fast artifact aggro.
+        # Patterns cover commonly-slow / situational cards across decks that
+        # struggle to find swap-out candidates vs T4-kill Affinity. Each
+        # pattern justifies why it's weak in the artifact matchup:
+        #   - "fable" = Fable of the Mirror-Breaker (3CMC enchantment engine,
+        #     too slow). "consign" = Consign to Memory (dead counter vs already-
+        #     resolved artifact spells). "witch enchanter" = slow creature w/o
+        #     target vs artifact deck.
+        #   - "elesh norn" (7CMC, Affinity kills T4-5 before it casts).
+        #   - "endurance" (4CMC, graveyard hate not relevant vs Affinity).
+        #   - "persist" (reanimate, needs GY setup — too slow vs T5 kill).
+        #   - "undying evil" (1CMC combat trick, marginal vs wide boards).
+        #   - "summoner's pact" (slow tutor, loses Amulet tempo).
+        #   - "violent urge" (4CMC pump) and "mutagenic growth" (phyrexian
+        #     pump; life cost bad vs Cranial Plating damage) — situational.
+        #   - "vexing bauble" (1x noncommittal artifact).
+        #   - "archon of cruelty" (7CMC reanimator target too slow to deploy).
         if any(w in opp_lower for w in ["affinity", "pinnacle"]):
+            # NOTE: do NOT list "elesh norn" (shuts down Construct/Mox Opal
+            # ETB triggers — anti-Affinity tech), "archon of cruelty"
+            # (Goryo's reanimator payoff — needed IN the deck), or
+            # "endurance" (3/4 flash reach blocker, actively useful vs
+            # Affinity's ground attackers — boarding it out swaps a live
+            # blocker for a single Boseiju land-destroy). Previous
+            # versions caught these and caused 4c Omnath / Goryo's
+            # regressions.
             if any(w in card_lower for w in ["bombardment", "voice of victory",
                                                "static prison", "fable",
-                                               "consign", "witch enchanter"]):
+                                               "consign", "witch enchanter",
+                                               "undying evil",
+                                               "summoner's pact",
+                                               "mutagenic growth",
+                                               "vexing bauble"]):
                 board_out_priority.append((card_name, min(count, 2), 6))
 
         # Board out Blood Moon vs R-based and aggro decks (their lands already produce R)
