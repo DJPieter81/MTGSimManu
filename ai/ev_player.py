@@ -259,7 +259,11 @@ class EVPlayer:
         # COMBO KILL OVERRIDE: if chain evaluator sees a lethal line,
         # force-advance goal to EXECUTE_PAYOFF so ritual/draw cards
         # get scored as chain starters instead of generic spells.
-        if self.goal_engine and self.archetype == "combo":
+        # Accept "storm" as a COMBO alias — Ruby Storm is the only deck
+        # with that archetype string and its _estimate_combo_chain math
+        # (ritual-first simulation) is exactly what Storm needs. Same
+        # alias pattern as the mulligan decider (see __init__).
+        if self.goal_engine and self.archetype in ("combo", "storm"):
             from ai.ev_evaluator import _estimate_combo_chain
             can_kill, storm_count, damage, chain = _estimate_combo_chain(
                 game, self.player_idx)
@@ -820,6 +824,22 @@ class EVPlayer:
                 if not snap.am_dead_next and snap.opp_clock_discrete > 2:
                     # Wasting rituals without finisher access (reduced from 20 to match PiF fix)
                     mod -= (storm + 2) / opp_life * 5.0
+            else:
+                # Finisher IS accessible mid-chain. This ritual's net mana
+                # is oracle-derived (template.ritual_mana = (color, amount)
+                # parsed from "Add {R}{R}{R}"): net = amount - cmc. Each +1
+                # net mana enables ~1 more future storm copy ≈ +1 Grapeshot
+                # damage. Prefer casting pure rituals BEFORE cantrips in
+                # the chain ordering so the mana bank exists for the
+                # finisher. Fully generic: per-card net mana from parsed
+                # oracle data, no hardcoded constants.
+                ritual_data = getattr(t, 'ritual_mana', None)
+                if ritual_data:
+                    produced = ritual_data[1]
+                    net_mana = max(0, produced - (t.cmc or 0))
+                    if net_mana > 0:
+                        LETHAL_VALUE = 100.0  # rules constant, winning-the-game
+                        mod += (net_mana / opp_life) * LETHAL_VALUE * p.storm_chain_continuation_p
 
         # ── Cantrips while waiting (storm=0): dig for pieces ──
         is_cantrip = ('cantrip' in tags or 'draw' in tags) and 'flashback' not in tags
