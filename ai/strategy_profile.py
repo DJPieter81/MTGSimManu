@@ -83,6 +83,15 @@ class StrategyProfile:
     has_combo_chain: bool = False
     storm_patience: bool = False
     storm_min_fuel_to_go: int = 2
+    # Expected probability that a "fuel" spell (ritual / cantrip / draw)
+    # in hand will successfully contribute +1 storm copy to a chain this turn,
+    # accounting for counters, mana constraints, and draw variance. Used
+    # in ev_player.py to derive the hold-vs-fire penalty for storm finishers:
+    #   hold_benefit = (fuel_available / opp_life) × LETHAL_VALUE × chain_p
+    # where LETHAL_VALUE=100.0 (winning a game) is the rules-derived scaling
+    # already used at the lethal-reward line in the same function.
+    # Default 0.0 = profile doesn't chain combos (STORM overrides to empirical ~0.4).
+    storm_chain_continuation_p: float = 0.0
 
     # ── Control patience ──
     # When True, reactive-only spells are suppressed in main phase unless
@@ -133,6 +142,11 @@ STORM = StrategyProfile(
     has_combo_chain=True,
     storm_patience=True,
     storm_min_fuel_to_go=2,
+    # 0.4 = preserves existing 40.0 effective coefficient (old magic number)
+    # when multiplied by LETHAL_VALUE=100.0 in ev_player.py storm finisher gate.
+    # Back-of-envelope: chain disruption from counters + top-deck variance in
+    # 60-card deck averages ~40-50% success per incremental fuel card.
+    storm_chain_continuation_p=0.4,
     holdback_applies=False,
 )
 

@@ -819,16 +819,30 @@ class EVPlayer:
                     and Kw.STORM not in getattr(c.template, 'keywords', set())
                 )
                 if fuel_available > 0:
-                    # Each fuel spell adds 1 storm copy = 1/opp_life clock change
-                    # Holding is worth fuel_available * (1/opp_life) more damage
-                    mod -= fuel_available / opp_life * 40.0
+                    # Principled derivation: firing Grapeshot now at storm=K
+                    # deals K damage = K/opp_life fraction of a kill. Holding
+                    # to chain fuel_available more storm copies gains up to
+                    # (K+fuel)/opp_life fraction. Each fraction-of-kill is
+                    # worth LETHAL_VALUE=100.0 EV (matches the +100 lethal
+                    # award two lines above; 100 = "winning the game").
+                    # Discounted by storm_chain_continuation_p from the
+                    # strategy profile (rough probability a fuel spell
+                    # actually contributes +1 storm under disruption).
+                    LETHAL_VALUE = 100.0  # fraction-of-kill → EV scale (= line 809 lethal award)
+                    mod -= (fuel_available / opp_life) * LETHAL_VALUE * p.storm_chain_continuation_p
                 else:
-                    # No fuel: fire only if lethal. Otherwise holding the finisher
-                    # for a real chain is strictly better than dealing 1-2 damage.
+                    # No fuel: fire only if lethal. Otherwise holding the
+                    # finisher for a draw-into-fuel turn is strictly better
+                    # than dealing 1-2 damage with no follow-up.
                     if storm_copies >= opp_life:
-                        mod += storm_copies / opp_life * 40.0
+                        # Redundant with line 809 lethal branch, but keep for clarity.
+                        LETHAL_VALUE = 100.0
+                        mod += (storm_copies / opp_life) * LETHAL_VALUE * p.storm_chain_continuation_p
                     else:
-                        mod -= (opp_life - storm_copies) / opp_life * 20.0
+                        # Missed-lethal penalty: unused damage fraction × half-kill
+                        # value, since a partial Grapeshot still advances the clock.
+                        LETHAL_VALUE = 100.0
+                        mod -= ((opp_life - storm_copies) / opp_life) * LETHAL_VALUE * (p.storm_chain_continuation_p / 2.0)
 
         # ── Flashback-granting spells (Past in Flames etc.) ──
         if 'flashback' in tags and 'combo' in tags and t.is_sorcery:
