@@ -390,6 +390,40 @@ def patch(html, D, overall_grade, radar_data):
     n = len(D['decks'])
     html = re.sub(r'\b16[×x]16\b', f'{n}×{n}', html)
     html = re.sub(r'\b16 decks\b', f'{n} decks', html)
+
+    # 8b. Total match count (hero text, counter, section titles)
+    # Read actual Bo3 count from metagame_results.json if present.
+    # matches_per_pair in D is always 100 (percentage), so can't infer n_bo3 from it.
+    n_bo3 = None
+    try:
+        with open('metagame_results.json') as f:
+            n_bo3 = json.load(f).get('n_games')
+    except (FileNotFoundError, json.JSONDecodeError):
+        pass
+    if n_bo3:
+        n_pairs = n * (n - 1) // 2
+        total = n_pairs * n_bo3
+        total_fmt = f'{total:,}'
+        # Hero text: "16 decks. 24,000 Bo3 matches. An EV-based..."
+        # Anchor to "decks. " prefix to avoid matching "50 Bo3 matches per pairing".
+        html = re.sub(r'(decks\.\s+)[\d,]+ Bo3 matches',
+                      f'\\g<1>{total_fmt} Bo3 matches', html)
+        # Per-pairing phrase: "Every win rate backed by 50 Bo3 matches per pairing"
+        html = re.sub(r'\b[\d,]+ Bo3 matches per pairing\b',
+                      f'{n_bo3} Bo3 matches per pairing', html)
+        # Counter data-target — anchor to this specific counter (non-greedy would
+        # match the first data-target and gobble up intervening counters).
+        html = re.sub(
+            r'data-target="\d+"(>0</div><div class="unit">Bo3 Matches)',
+            f'data-target="{total}"\\1',
+            html,
+        )
+        # Section title "24,000 matches under the microscope"
+        html = re.sub(r'\b[\d,]+ matches under the microscope\b',
+                      f'{total_fmt} matches under the microscope', html)
+        # Chart subtitle "How 24,000 simulated Bo3 matches ended"
+        html = re.sub(r'How [\d,]+ simulated Bo3 matches ended',
+                      f'How {total_fmt} simulated Bo3 matches ended', html)
     
     # 9. Replay gallery
     gallery = build_replay_gallery()
