@@ -365,14 +365,14 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
   </div>
   <div class="deck-cloud reveal">
     <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_affinity.html" class="deck-chip t1" style="text-decoration:none;color:inherit">Affinity<span class="meta">6%</span></a>
+    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_domain_zoo.html" class="deck-chip t1" style="text-decoration:none;color:inherit">Domain Zoo<span class="meta">3%</span></a>
     <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_boros_energy.html" class="deck-chip t1" style="text-decoration:none;color:inherit">Boros Energy<span class="meta">21%</span></a>
     <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_eldrazi_tron.html" class="deck-chip t1" style="text-decoration:none;color:inherit">Eldrazi Tron<span class="meta">7%</span></a>
-    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_domain_zoo.html" class="deck-chip t1" style="text-decoration:none;color:inherit">Domain Zoo<span class="meta">3%</span></a>
-    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_dimir_midrange.html" class="deck-chip t1" style="text-decoration:none;color:inherit">Dimir Midrange<span class="meta">3%</span></a>
     <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_pinnacle_affinity.html" class="deck-chip t1" style="text-decoration:none;color:inherit">Pinnacle Affinity<span class="meta">2%</span></a>
     <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_jeskai_blink.html" class="deck-chip t2" style="text-decoration:none;color:inherit">Jeskai Blink<span class="meta">9%</span></a>
+    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_dimir_midrange.html" class="deck-chip t2" style="text-decoration:none;color:inherit">Dimir Midrange<span class="meta">3%</span></a>
     <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_4c_omnath.html" class="deck-chip t2" style="text-decoration:none;color:inherit">4c Omnath<span class="meta">4%</span></a>
-    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_izzet_prowess.html" class="deck-chip " style="text-decoration:none;color:inherit">Izzet Prowess<span class="meta">5%</span></a>
+    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_izzet_prowess.html" class="deck-chip t2" style="text-decoration:none;color:inherit">Izzet Prowess<span class="meta">5%</span></a>
     <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_amulet_titan.html" class="deck-chip " style="text-decoration:none;color:inherit">Amulet Titan<span class="meta">4%</span></a>
     <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_azorius_control_wst.html" class="deck-chip " style="text-decoration:none;color:inherit">Azorius Control (WST)<span class="meta">7%</span></a>
     <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_45c_control.html" class="deck-chip " style="text-decoration:none;color:inherit">4/5c Control<span class="meta">7%</span></a>
@@ -771,9 +771,9 @@ const gold='#b8941e',teal='#0f6e56',amber='#d4850b',red='#a32d2d',blue='#185fa5'
 let selectedDeck=null;
 
 // WR chart labels → full names
-const wrLabels=['Affinity','Boros','ETron','Zoo','Dimir','P.Affin','Jeskai','Omnath','Prowess','Amulet','WST','4/5c','Goryo','Storm','LivEnd','AzCtrl'];
-const wrFull=['Affinity','Boros Energy','Eldrazi Tron','Domain Zoo','Dimir Midrange','Pinnacle Affinity','Jeskai Blink','4c Omnath','Izzet Prowess','Amulet Titan','Azorius Control (WST)','4/5c Control',"Goryo's Vengeance",'Ruby Storm','Living End','Azorius Control'];
-const wrData=[86.2,70.1,67.3,65.0,60.9,60.3,56.2,52.6,44.7,41.3,34.4,31.0,29.7,28.0,21.9,12.3];
+const wrLabels=['Affinity','Zoo','Boros','ETron','P.Affin','Jeskai','Dimir','Omnath','Prowess','Amulet','WST','4/5c','Goryo','Storm','LivEnd','AzCtrl'];
+const wrFull=['Affinity','Domain Zoo','Boros Energy','Eldrazi Tron','Pinnacle Affinity','Jeskai Blink','Dimir Midrange','4c Omnath','Izzet Prowess','Amulet Titan','Azorius Control (WST)','4/5c Control',"Goryo's Vengeance",'Ruby Storm','Living End','Azorius Control'];
+const wrData=[88.4,69.9,68.2,66.5,60.2,57.4,57.4,55.7,46.6,38.7,35.8,30.6,30.5,30.1,20.7,9.8];
 const wrBgDef=['#fde8e8','#e6f5ee','#e6f5ee','#e6f5ee','#e6f5ee','#e6f5ee','#fdf5e6','#fdf5e6','#fdf5e6','#fdf5e6','#fde8e8','#fde8e8','#fde8e8','#fde8e8','#fde8e8','#fde8e8'];
 const wrBrDef=[red,teal,teal,teal,teal,teal,amber,amber,amber,amber,red,red,red,red,red,red];
 
@@ -879,7 +879,7 @@ function clearSelection(){
 // Heatmap — full interactivity
 const decksFull=['Boros Energy','Jeskai Blink','Ruby Storm','Affinity','Eldrazi Tron','Amulet Titan',"Goryo's Vengeance",'Domain Zoo','Living End','Izzet Prowess','Dimir Midrange','4c Omnath','4/5c Control','Azorius Control (WST)','Azorius Control'];
 const decks=['Boros','Jesk','Storm','Affi','ETron','AmTi','Gory','Zoo','LivE','Prow','Dimir','4cOm','4/5c','WST','AzCtrl'];
-const wins=[[0,60,90,30,46,76,86,54,94,68,58,66,90,72,100],[40,0,80,14,48,76,64,26,82,70,30,46,68,74,96],[10,20,0,6,16,44,62,20,72,20,2,26,74,20,64],[70,86,94,0,90,100,96,82,88,88,92,88,92,96,96],[54,52,84,10,0,74,88,36,78,82,66,82,88,100,100],[24,24,56,0,26,0,64,34,64,46,20,44,66,76,92],[14,36,38,4,12,36,0,16,66,36,16,26,44,42,68],[46,74,80,18,64,66,84,0,86,64,62,64,78,86,96],[6,18,28,12,22,36,34,14,0,20,30,8,20,40,58],[32,30,80,12,18,54,64,36,80,0,38,44,70,24,98],[42,70,98,8,34,80,84,38,70,62,0,58,84,76,98],[34,54,74,12,18,56,74,36,92,56,42,0,68,80,98],[10,32,26,8,12,34,56,22,80,30,16,32,0,64,72],[28,26,80,4,0,24,58,14,60,76,24,20,36,0,58],[0,4,36,4,0,8,32,4,42,2,2,2,28,42,0]];
+const wins=[[0,64,92,24,60,76,84,30,86,62,62,52,84,64,100],[36,0,72,12,42,84,76,30,90,72,38,50,78,86,96],[8,28,0,2,12,48,56,34,92,16,8,26,80,16,76],[76,88,98,0,92,98,98,66,92,90,76,98,98,96,100],[40,58,88,8,0,76,92,52,92,82,70,84,90,100,100],[24,16,52,2,24,0,58,22,72,20,34,42,60,78,86],[16,24,44,2,8,42,0,14,66,18,18,34,44,60,76],[70,70,66,34,48,78,86,0,84,58,58,72,86,90,94],[14,10,8,8,8,28,34,16,0,38,34,14,24,40,46],[38,28,84,10,18,80,82,42,62,0,42,38,62,22,100],[38,62,92,24,30,66,82,42,66,58,0,36,88,74,88],[48,50,74,2,16,58,66,28,86,62,64,0,82,82,94],[16,22,20,2,10,40,56,14,76,38,12,18,0,58,90],[36,14,84,4,0,22,40,10,60,78,26,18,42,0,72],[0,4,24,0,0,14,24,6,54,0,12,6,10,28,0]];
 const archetype=['aggro','midrange','combo','aggro','ramp','combo','combo','aggro','combo','aggro','midrange','midrange','control','control','control'];
 const avgTurns=[[0,8,5,6,8,7,6,6,6,6,7,7,6,7,7],[8,0,6,7,8,9,8,7,7,6,8,9,8,10,9],[5,6,0,5,6,7,8,6,6,5,6,8,7,9,8],[6,7,5,0,7,6,6,6,6,6,6,6,6,8,6],[8,8,6,7,0,9,8,7,0,7,8,8,8,8,8],[7,9,7,6,9,0,8,8,9,7,8,11,10,10,10],[6,8,8,6,8,8,0,7,8,7,7,10,10,10,10],[6,7,6,6,7,8,7,0,7,6,7,8,8,9,8],[6,7,6,6,0,9,8,7,0,6,7,9,9,0,10],[6,6,5,6,7,7,7,6,6,0,7,6,6,9,8],[7,8,6,6,8,8,7,7,7,7,0,8,8,9,9],[7,9,8,6,8,11,10,8,9,6,8,0,10,10,11],[6,8,7,6,8,10,10,8,9,6,8,10,0,10,10],[7,10,9,8,8,10,10,9,0,9,9,10,10,0,12],[7,9,8,6,8,10,10,8,10,8,9,11,10,12,0]];
 
@@ -975,13 +975,13 @@ document.querySelectorAll('.deck-chip').forEach(chip=>{
 // Validation bars with expected ranges
 const valData=[
   {name:'Affinity',wr:89,lo:45,hi:60,pass:0,detail:'<strong>Above expected range (45-60%).</strong> Actual 89% — structural advantage or sim artifact.'},
-  {name:'Boros Energy',wr:70,lo:50,hi:70,pass:1,detail:'In range (50-70%). Performing as expected at 70%.'},
-  {name:'Eldrazi Tron',wr:68,lo:50,hi:65,pass:0,detail:'<strong>Above expected range (50-65%).</strong> Actual 68% — structural advantage or sim artifact.'},
-  {name:'Domain Zoo',wr:67,lo:50,hi:65,pass:0,detail:'<strong>Above expected range (50-65%).</strong> Actual 67% — structural advantage or sim artifact.'},
-  {name:'Dimir Midrange',wr:63,lo:45,hi:60,pass:0,detail:'<strong>Above expected range (45-60%).</strong> Actual 63% — structural advantage or sim artifact.'},
-  {name:'Jeskai Blink',wr:57,lo:45,hi:60,pass:1,detail:'In range (45-60%). Performing as expected at 57%.'},
-  {name:'Izzet Prowess',wr:48,lo:45,hi:60,pass:1,detail:'In range (45-60%). Performing as expected at 48%.'},
-  {name:'Ruby Storm',wr:31,lo:40,hi:55,pass:0,detail:'<strong>Below expected range (40-55%).</strong> Actual 31% — possible engine weakness.'}
+  {name:'Eldrazi Tron',wr:71,lo:50,hi:65,pass:0,detail:'<strong>Above expected range (50-65%).</strong> Actual 71% — structural advantage or sim artifact.'},
+  {name:'Domain Zoo',wr:69,lo:50,hi:65,pass:0,detail:'<strong>Above expected range (50-65%).</strong> Actual 69% — structural advantage or sim artifact.'},
+  {name:'Boros Energy',wr:67,lo:50,hi:70,pass:1,detail:'In range (50-70%). Performing as expected at 67%.'},
+  {name:'Dimir Midrange',wr:60,lo:45,hi:60,pass:1,detail:'In range (45-60%). Performing as expected at 60%.'},
+  {name:'Jeskai Blink',wr:60,lo:45,hi:60,pass:1,detail:'In range (45-60%). Performing as expected at 60%.'},
+  {name:'Izzet Prowess',wr:50,lo:45,hi:60,pass:1,detail:'In range (45-60%). Performing as expected at 50%.'},
+  {name:'Ruby Storm',wr:35,lo:40,hi:55,pass:0,detail:'<strong>Below expected range (40-55%).</strong> Actual 35% — possible engine weakness.'}
 ];
 const valEl=document.getElementById('valBars'),valDet=document.getElementById('valDetail');
 valData.forEach((d,i)=>{

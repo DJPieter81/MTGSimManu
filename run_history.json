@@ -1,7 +1,70 @@
 {
-  "generated": "2026-04-18T07:15:12.752697",
-  "count": 63,
+  "generated": "2026-04-18T12:06:27.123004",
+  "count": 69,
   "runs": [
+    {
+      "file": "replay_pinnacle_affinity_vs_affinity_s60202.html",
+      "d1": "Pinnacle Affinity",
+      "d2": "Affinity",
+      "tag": "replay",
+      "ts": "2026-04-18T07:15:52.970401",
+      "type": "replay",
+      "path": "replays/replay_pinnacle_affinity_vs_affinity_s60202.html",
+      "size_kb": 208.3
+    },
+    {
+      "file": "pinnacle_affinity_vs_affinity_s60202.txt",
+      "d1": "Pinnacle Affinity",
+      "d2": "Affinity",
+      "seed": "60202",
+      "tag": "bo3",
+      "ts": "2026-04-18T07:15:52.888559",
+      "type": "bo3-log",
+      "path": "replays/pinnacle_affinity_vs_affinity_s60202.txt",
+      "size_kb": 34.2
+    },
+    {
+      "file": "replay_ruby_storm_vs_dimir_midrange_s60201.html",
+      "d1": "Ruby Storm",
+      "d2": "Dimir Midrange",
+      "tag": "replay",
+      "ts": "2026-04-18T07:15:48.664356",
+      "type": "replay",
+      "path": "replays/replay_ruby_storm_vs_dimir_midrange_s60201.html",
+      "size_kb": 232.0
+    },
+    {
+      "file": "ruby_storm_vs_dimir_midrange_s60201.txt",
+      "d1": "Ruby Storm",
+      "d2": "Dimir Midrange",
+      "seed": "60201",
+      "tag": "bo3",
+      "ts": "2026-04-18T07:15:48.574256",
+      "type": "bo3-log",
+      "path": "replays/ruby_storm_vs_dimir_midrange_s60201.txt",
+      "size_kb": 49.0
+    },
+    {
+      "file": "replay_azorius_control_vs_boros_energy_s60200.html",
+      "d1": "Azorius Control",
+      "d2": "Boros Energy",
+      "tag": "replay",
+      "ts": "2026-04-18T07:15:40.041832",
+      "type": "replay",
+      "path": "replays/replay_azorius_control_vs_boros_energy_s60200.html",
+      "size_kb": 316.7
+    },
+    {
+      "file": "azorius_control_vs_boros_energy_s60200.txt",
+      "d1": "Azorius Control",
+      "d2": "Boros Energy",
+      "seed": "60200",
+      "tag": "bo3",
+      "ts": "2026-04-18T07:15:39.886153",
+      "type": "bo3-log",
+      "path": "replays/azorius_control_vs_boros_energy_s60200.txt",
+      "size_kb": 69.6
+    },
     {
       "file": "metagame_results.json",
       "decks": 0,
