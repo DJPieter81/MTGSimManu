@@ -54,8 +54,11 @@ for key, win_count in results['matrix'].items():
     new_wins[i][j] = win_count
 
 # Update D.wins and matches_per_pair
+# results['matrix'] stores values as percentages (wins[i][j] + wins[j][i] == 100),
+# independent of results['n_games'] (actual Bo3 count). Dashboard/guides divide
+# wins by matches_per_pair to get WR%, so matches_per_pair MUST be 100, not n_games.
 D['wins'] = new_wins
-D['matches_per_pair'] = results['n_games']
+D['matches_per_pair'] = 100
 
 # Recompute D.overall stats
 # wins[i][j] is count of games deck i won vs deck j out of 100 games (50 BO3 matches)
