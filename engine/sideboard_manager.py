@@ -42,11 +42,17 @@ def sideboard(mainboard: Dict[str, int], sideboard_cards: Dict[str, int],
 
         # Artifact hate vs artifact decks
         # pithing catches Pithing Needle (Tron SB), meltdown catches Meltdown
-        # (Storm/Izzet SB), boseiju catches Boseiju, Who Endures (LE/Omnath/4-5c SB)
-        if any(w in opp_lower for w in ["affinity", "tron"]):
+        # (Storm/Izzet SB), boseiju catches Boseiju, Who Endures (LE/Omnath/4-5c SB).
+        # "time raveler" catches Teferi, Time Raveler (bounces Urza's Saga tokens);
+        # "orchid phantom" catches White Orchid Phantom (land destruction vs
+        # Razortide / Silverbluff / Treasure Vault); "clarion conqueror" creates
+        # 2/2 prison tokens that tax artifact attackers.
+        if any(w in opp_lower for w in ["affinity", "tron", "pinnacle"]):
             if any(w in card_lower for w in ["wear", "force of vigor", "collector",
                                                "haywire", "shattering", "hurkyl",
-                                               "pithing", "meltdown", "boseiju"]):
+                                               "pithing", "meltdown", "boseiju",
+                                               "time raveler", "orchid phantom",
+                                               "clarion conqueror"]):
                 board_in_priority.append((card_name, count, 9))
 
         # Counterspells vs combo
@@ -111,9 +117,15 @@ def sideboard(mainboard: Dict[str, int], sideboard_cards: Dict[str, int],
                 board_out_priority.append((card_name, min(count, 2), 6))
 
         # Board out slow engines vs fast artifact aggro
+        # "fable" = Fable of the Mirror-Breaker (3CMC enchantment engine, too
+        # slow vs T4-kill Affinity). "consign" = Consign to Memory (counters
+        # artifact spells that are already resolved by the time you can hold
+        # up UU — mostly dead). "witch enchanter" = slow creature without a
+        # target vs artifact deck.
         if any(w in opp_lower for w in ["affinity", "pinnacle"]):
             if any(w in card_lower for w in ["bombardment", "voice of victory",
-                                               "static prison"]):
+                                               "static prison", "fable",
+                                               "consign", "witch enchanter"]):
                 board_out_priority.append((card_name, min(count, 2), 6))
 
         # Board out Blood Moon vs R-based and aggro decks (their lands already produce R)
