@@ -129,6 +129,21 @@ class ResponseDecider:
                     continue
                 response_value = threat
                 cost = instant.template.cmc
+                # Pitch-cost counters (Force of Negation, Force of Will,
+                # Pact of Negation): on opponent's turn, can be cast for
+                # free by exiling a same-color card from hand. Effective
+                # cost drops to 1 card (the pitched card), so treat them
+                # as cost=1 for the threshold gate — matching the engine's
+                # can_cast alternative-cost path at game_state.py:868-891.
+                # Without this, FoN at CMC 4 fails the `cost <= 2` check and
+                # never fires at moderate threat (<3.0) despite being free.
+                inst_oracle = (instant.template.oracle_text or '').lower()
+                is_pitch_counter = (
+                    'exile a' in inst_oracle and 'rather than pay' in inst_oracle
+                    and getattr(game, 'active_player', None) != self.player_idx
+                )
+                if is_pitch_counter:
+                    cost = 1  # one exiled card, no mana
                 if response_value >= 3.0 or (response_value >= 1.5 and cost <= 2):
                     if self.strategic_logger:
                         self.strategic_logger.log_response(
