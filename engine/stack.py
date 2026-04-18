@@ -4,7 +4,7 @@ Implements the stack for spell and ability resolution with proper priority passi
 """
 from __future__ import annotations
 from dataclasses import dataclass, field
-from typing import List, Optional, TYPE_CHECKING, Callable
+from typing import List, Optional, Set, TYPE_CHECKING, Callable
 from enum import Enum
 
 if TYPE_CHECKING:
@@ -38,6 +38,11 @@ class StackItem:
     evoked: bool = False
     # Spliced card templates (splice onto Arcane)
     spliced: List = field(default_factory=list)
+    # Colors of mana actually spent to cast this spell, per the Converge
+    # rule ("number of colors of mana spent to cast this spell"). Populated
+    # by cast_spell() from lands_to_tap + drained mana-pool colors.
+    # Empty set for free casts or when payment tracking isn't available.
+    colors_spent: Set[str] = field(default_factory=set)
 
     @property
     def name(self) -> str:

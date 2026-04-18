@@ -702,11 +702,18 @@ def wrath_of_the_skies_resolve(game, card, controller, targets=None, item=None):
 def prismatic_ending_resolve(game, card, controller, targets=None, item=None):
     opponent = 1 - controller
     opp = game.players[opponent]
-    player_lands = game.players[controller].lands
-    colors = set()
-    for land in player_lands:
-        for c in (land.template.produces_mana or []):
-            colors.add(c)
+    # Converge: X = number of distinct colors of mana actually spent to cast
+    # this spell. Captured at cast time into item.colors_spent by the engine
+    # (tap_lands_for_mana + mana-pool diff). Fallback: if item is missing
+    # (older test harnesses), approximate from untapped land colors — imperfect
+    # but matches the pre-tracking heuristic.
+    colors = set(getattr(item, 'colors_spent', set())) if item else set()
+    if not colors:
+        player = game.players[controller]
+        for land in player.untapped_lands:
+            for c in (land.template.produces_mana or []):
+                colors.add(c)
+    colors.discard('C')  # Converge counts colored pips only
     max_cmc = min(len(colors), 5)
     if max_cmc < 1:
         max_cmc = 1
@@ -716,7 +723,7 @@ def prismatic_ending_resolve(game, card, controller, targets=None, item=None):
         target = max(exile_targets, key=lambda c: _nonland_permanent_threat(c, opp.battlefield))
         game._exile_permanent(target)
         game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Prismatic Ending exiles {target.name}")
+                        f"Prismatic Ending exiles {target.name} (X={max_cmc})")
 
 
 @EFFECT_REGISTRY.register("March of Otherworldly Light", EffectTiming.SPELL_RESOLVE,

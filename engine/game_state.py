@@ -466,8 +466,19 @@ class GameState:
 
     def tap_lands_for_mana(self, player_idx: int, cost: ManaCost,
                            card_name: str = None) -> bool:
-        """Tap lands to pay a mana cost. Returns True if successful."""
+        """Tap lands to pay a mana cost. Returns True if successful.
+
+        Side effect: sets self._last_colors_spent to the set of colors of
+        mana spent to pay this cost (for Converge mechanic). Colors come
+        from the lands tapped in this call PLUS colors drained from the
+        pre-existing mana pool. Empty if cost was 0 or payment failed.
+        """
         player = self.players[player_idx]
+        # Snapshot mana pool BEFORE payment so we can detect which colors
+        # were drained from pre-existing ritual/pool mana (Converge rule).
+        _pre_pool = {c: player.mana_pool.get(c) for c in ["W", "U", "B", "R", "G", "C"]}
+        # Reset the colors-spent tracker. Populated at the end of this call.
+        self._last_colors_spent = set()
 
         # Cost reductions
         reduction = 0
@@ -632,7 +643,20 @@ class GameState:
             self.log.append(f'    [Mana] Tap {", ".join(tapped_names)} '
                             f'(paying for {card_name}, {remaining_mana} mana remaining)')
 
-        return player.mana_pool.pay(cost)
+        ok = player.mana_pool.pay(cost)
+        if ok:
+            # Record colors-of-mana-spent for Converge and similar mechanics.
+            # Includes colors tapped from lands in this call + any colors
+            # that existed in the pre-call mana pool and were drained below
+            # pre-levels (i.e. spent on this cost rather than carried over).
+            # Note: _pre_pool doesn't account for any mana the lands_to_tap
+            # loop ADDED to the pool before .pay() drained it — that's OK
+            # because those colors are captured in the lands_to_tap side.
+            self._last_colors_spent = {color for land, color in lands_to_tap}
+            for c in ["W", "U", "B", "R", "G"]:
+                if _pre_pool[c] > 0 and player.mana_pool.get(c) < _pre_pool[c]:
+                    self._last_colors_spent.add(c)
+        return ok
 
     def can_cast(self, player_idx: int, card: CardInstance) -> bool:
         """Check if a player can cast a card."""
@@ -1576,12 +1600,35 @@ class GameState:
                     if to_remove <= 0:
                         break
                 remaining -= from_pool
-            # Pay rest from lands
-            for land in player.untapped_lands:
-                if remaining <= 0:
-                    break
+            # Pay rest from lands. For Converge-style spells (oracle references
+            # "colors of mana spent"), greedily pick lands that contribute a
+            # NEW color first, maximising distinct colors paid → maximising X.
+            # For non-Converge X-spells this reduces to arbitrary selection
+            # (same as the old behavior because set-difference is 0-or-more).
+            xpay_colors = set(getattr(self, '_last_colors_spent', set()))
+            oracle = (template.oracle_text or '').lower()
+            is_converge = 'converge' in oracle or 'colors of mana spent' in oracle
+            lands_pool = list(player.untapped_lands)
+            while remaining > 0 and lands_pool:
+                if is_converge:
+                    # MRV-style: prefer lands that produce a color we haven't spent yet
+                    lands_pool.sort(
+                        key=lambda l: -len(set(l.template.produces_mana or []) - xpay_colors)
+                    )
+                land = lands_pool.pop(0)
                 land.tapped = True
                 remaining -= 1
+                produced = list(land.template.produces_mana or [])
+                if is_converge:
+                    # Pick a new color if possible, else any produced color
+                    new_cols = [c for c in produced if c not in xpay_colors]
+                    pick = new_cols[0] if new_cols else (produced[0] if produced else 'C')
+                else:
+                    pick = produced[0] if produced else 'C'
+                if pick and pick != 'C':
+                    xpay_colors.add(pick)
+            # Surface the updated color set for the stack item / Converge resolvers
+            self._last_colors_spent = xpay_colors
 
         stack_item = StackItem(
             item_type=StackItemType.SPELL,
@@ -1589,6 +1636,10 @@ class GameState:
             controller=player_idx,
             targets=targets or [],
             x_value=x_value,
+            # Snapshot the colors actually spent for Converge ("number of
+            # colors of mana spent to cast this spell"). Populated by the
+            # most recent tap_lands_for_mana() call; empty for free casts.
+            colors_spent=set(getattr(self, '_last_colors_spent', set())),
         )
 
         # ── Splice onto Arcane: when casting an Arcane spell, splice cards
