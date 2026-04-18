@@ -773,12 +773,15 @@ class EVPlayer:
             # burning 10 spells for 0 damage on T3, then losing T6.
             # The principled gates below (finisher-in-hand, am_dead_next,
             # opp_life ≤ fuel with finisher) are the only safe greenlights.
-            has_draw = any(
-                any(dt in getattr(c.template, 'tags', set())
-                    for dt in ('cantrip', 'card_advantage'))
-                for c in me.hand if c.instance_id != card.instance_id
-                and not c.template.is_land
-            )
+            # Count dig-spells in hand: each cantrip/draw will reveal one
+            # library card before the chain closes. Used below to compute
+            # the probability of drawing into a finisher when none is in
+            # hand yet.
+            dig_cards = [c for c in me.hand if c.instance_id != card.instance_id
+                         and not c.template.is_land
+                         and any(dt in getattr(c.template, 'tags', set())
+                                 for dt in ('cantrip', 'card_advantage'))]
+            has_draw = bool(dig_cards)
 
             can_go = ((has_finisher or has_pif) and total_fuel >= min_fuel
                       and mana >= (1 if reducers > 0 else 2))
@@ -786,6 +789,55 @@ class EVPlayer:
                 can_go = True
             if (has_finisher or has_pif) and opp_life <= total_fuel and total_fuel >= 2:
                 can_go = True
+
+            # ── Speculative draw-proxy gate (principled replacement) ──
+            # Prior version of this gate (removed in ff4a1cc) was a flat
+            # boolean: "has_draw + reducer + 3+ fuel → go". That was too
+            # permissive at ~25% expected hit rate. Principled version:
+            # compute the actual hypergeometric probability of drawing at
+            # least one finisher across the remaining dig cards, and only
+            # greenlight when that probability meets the profile's storm
+            # chain-continuation confidence.
+            #
+            # P(hit ≥ 1 finisher in `dig_count` draws from library):
+            #   = 1 - C(lib_size - finishers, dig_count) / C(lib_size, dig_count)
+            # where `finishers` counts Grapeshot, Empty the Warrens, Wish,
+            # and Past in Flames remaining in the library (oracle-detected).
+            #
+            # Gate fires only if:
+            #   P(hit) ≥ p.storm_chain_continuation_p  (same weight that
+            #     already tunes the chain-vs-fire decision at line 824)
+            #   AND total_fuel ≥ min_fuel (so if we do hit, we can close)
+            #   AND reducers > 0 OR total_fuel >= min_fuel + 2 (extra
+            #     fuel buffer when mana efficiency is lower)
+            if not can_go and has_draw and total_fuel >= min_fuel:
+                # Count finishers remaining in library via same oracle
+                # patterns used by _has_finisher / _has_flashback_combo.
+                def _is_finisher_card(c):
+                    t = c.template
+                    return (Kw.STORM in getattr(t, 'keywords', set())
+                            or 'tutor' in getattr(t, 'tags', set())
+                            or ('flashback' in getattr(t, 'tags', set())
+                                and 'combo' in getattr(t, 'tags', set())))
+                lib_size = len(me.library)
+                finishers_in_lib = sum(1 for c in me.library if _is_finisher_card(c))
+                dig_count = len(dig_cards)
+                if lib_size > 0 and finishers_in_lib > 0 and dig_count > 0:
+                    from math import comb
+                    # Hypergeometric: P(hit ≥ 1)
+                    if lib_size - finishers_in_lib >= dig_count:
+                        p_miss = comb(lib_size - finishers_in_lib, dig_count) / comb(lib_size, dig_count)
+                    else:
+                        p_miss = 0.0  # can't miss — too few non-finishers
+                    p_hit = 1.0 - p_miss
+                    # Gate: hit probability meets profile confidence, AND
+                    # either cost reducers are live OR we have surplus fuel
+                    # (raises the bar when each ritual is full-cost).
+                    enough_mana_buffer = (reducers > 0
+                                           or total_fuel >= min_fuel + 2)
+                    if (p_hit >= p.storm_chain_continuation_p
+                            and enough_mana_buffer):
+                        can_go = True
 
             # Value of going off = expected storm / opp_life (fraction of kill)
             # Scaled to match spell scoring range (~10-20 for good plays)
