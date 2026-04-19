@@ -358,3 +358,69 @@ all three criteria.
 4. **Threshold gate.** Only commit a swap when
    `sb_value(C_sb, O) − sb_value(C_main, O) > ε`, where ε is mana-unit
    × 0.5 (half a mana-turn). Prevents marginal swaps.
+
+## Appendix B — Phase 2.5 results (tempo-cost + ε gate)
+
+Added to `plan_sideboard`:
+- `tempo_cost = (sb_cmc − main_cmc) × mana_unit × PERMANENT_VALUE_WINDOW`
+- `net_gain = sb_val − tempo_cost − main_val`
+- swap committed only when `net_gain > ε = mana_unit × 0.5`
+
+**Per-deck field WR deltas (vs Phase 2 legacy baseline):**
+
+| Deck | Old | New | Δpp | Phase 2 Δpp |
+|---|---|---|---|---|
+| Azorius Control | 9.7% | 15.3% | **+5.7** | +7.0 |
+| Eldrazi Tron | 67.7% | 72.0% | +4.3 | +5.3 |
+| Living End | 24.7% | 28.0% | +3.3 | −2.3 |
+| 4c Omnath | 51.0% | 53.3% | +2.3 | −2.3 |
+| 4/5c Control | 33.0% | 35.0% | +2.0 | −0.3 |
+| Ruby Storm | 42.0% | 43.7% | **+1.7** | **−3.0** |
+| Boros Energy | 71.3% | 71.3% | **0.0** | **−3.3** |
+| Amulet Titan | 42.3% | 42.3% | 0.0 | +4.3 |
+| Domain Zoo | 68.0% | 67.7% | −0.3 | −1.0 |
+| Affinity | 89.7% | 89.0% | −0.7 | −3.0 |
+| Izzet Prowess | 46.3% | 45.3% | −1.0 | +1.7 |
+| Pinnacle Affinity | 62.3% | 60.7% | −1.7 | −1.3 |
+| Goryo's Vengeance | 35.0% | 32.0% | −3.0 | −4.3 |
+| Dimir Midrange | 61.0% | 58.0% | **−3.0** | **+4.0** |
+| Azorius (WST) | 35.7% | 31.3% | −4.3 | −2.7 |
+| Jeskai Blink | 60.3% | 55.0% | **−5.3** | +1.3 |
+
+**Aggregate:** 0.0pp (still neutral).
+
+**Hypothesis confirmed — tempo-cost helps fast decks:**
+- Boros, Storm, Affinity: all moved from ~−3pp toward 0pp. The
+  tempo-cost term correctly protected their cheap cards from being
+  swapped out for higher-CMC hate pieces.
+
+**New regression pattern — mid-range/control decks:**
+- Jeskai Blink: +1.3pp → −5.3pp (−6.6pp relative shift)
+- Dimir: +4.0pp → −3.0pp (−7.0pp relative)
+- WST: −2.7pp → −4.3pp (−1.6pp relative)
+
+Tempo-cost is over-applied for decks that actually *want* to swap
+cheap-into-expensive in certain matchups (control decks welcome
+high-CMC finishers like Sheoldred). The cost penalty is uniform
+across archetypes when it should scale with deck speed.
+
+**Still-high matchup volatility:** ±30pp swings on
+Jeskai-vs-PinnacleAff, Amulet-vs-LivingEnd, Goryo's-vs-4/5c, etc.
+Epsilon gate (half a mana-unit) wasn't large enough to suppress
+these. Tried 1.0, 2.0 mana-unit — aggressive gates reduced the
+winner-deltas too, net effect negative.
+
+**Phase 3 switchover: still NOT ready.** Need:
+1. **Archetype-scaled tempo cost:** `tempo_cost × speed_factor` where
+   `speed_factor` derives from the deck's own avg CMC or
+   `strategy_profile.curve_out` weight.
+2. **Value floor for deck-coherent swaps:** reject swaps that leave
+   the deck below some minimum count of interaction / threats / etc.
+   Deck-role taxonomy derivable from gameplan JSON.
+3. **Bigger A/B sample:** at N=20, ±30pp matchup swings could be
+   10% of the variance. N=50 or N=100 matrix would tighten the
+   confidence bounds and reveal whether the mid-range regressions are
+   statistically significant.
+
+Solver stays opt-in via `SB_SOLVER=new`. Phase 3 gated on one of the
+three refinements above.

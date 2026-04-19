@@ -442,8 +442,24 @@ def plan_sideboard(
             main_idx += 1
             continue
 
-        # Swap only when the SB card's value exceeds the main card's value.
-        if sb_val <= main_val:
+        # Tempo-cost term: swapping a low-CMC main card for a high-CMC SB card
+        # costs tempo (we cast slower; opp gets extra turns). Derived as
+        #   (sb_cmc − main_cmc) × mana_clock_impact × 20 × residency
+        # Same units as sb_value (mana_clock_impact × 20 ≈ 1.0 at default
+        # snap). Positive for higher-CMC SB cards, negative for downshifts.
+        from ai.clock import mana_clock_impact
+        from ai.ev_evaluator import _DEFAULT_SNAP
+        mana_unit = mana_clock_impact(_DEFAULT_SNAP) * 20.0  # ~1.0
+        sb_cmc = sb_tmpl.cmc or 0
+        main_cmc = main_tmpl.cmc or 0
+        tempo_cost = (sb_cmc - main_cmc) * mana_unit * PERMANENT_VALUE_WINDOW
+
+        # ε-threshold gate: only commit swaps where net gain exceeds half a
+        # mana-unit. Prevents churn from marginal-delta swaps that won't
+        # meaningfully change the matchup.
+        epsilon = mana_unit * 0.5
+        net_gain = (sb_val - tempo_cost) - main_val
+        if net_gain <= epsilon:
             break  # no further profitable swaps
 
         # Execute one swap.
@@ -458,7 +474,8 @@ def plan_sideboard(
         new_sb[main_name] = new_sb.get(main_name, 0) + 1
 
         log.append(
-            f"swap: -{main_name} (v={main_val:.2f}) +{sb_name} (v={sb_val:.2f})"
+            f"swap: -{main_name} (v={main_val:.2f}) +{sb_name} "
+            f"(v={sb_val:.2f}, tempo={tempo_cost:+.2f}, net={net_gain:+.2f})"
         )
 
     return new_main, new_sb, log
