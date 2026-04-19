@@ -151,7 +151,15 @@ def sideboard(mainboard: Dict[str, int], sideboard_cards: Dict[str, int],
                                                "vexing bauble"]):
                 board_out_priority.append((card_name, min(count, 2), 6))
 
-        # Board out Blood Moon vs R-based and aggro decks (their lands already produce R)
+        # Board out Blood Moon vs mono-R and base-R aggro decks. Rationale:
+        # SB slot pressure — these matchups have better anti-aggro boards-in
+        # (Wrath, Wear/Tear, Bombardment retention) and Blood Moon at 3CMC
+        # typically arrives T3-T4, after T5 kill decks have already set up.
+        # Affinity/Pinnacle considered for this list during investigation
+        # (their Saga lands would seem like great Blood Moon targets) but
+        # falsified at N=20: keeping Blood Moon forces cuts of Bombardment +
+        # Voice of Victory, both of which outperform it in the matchup. See
+        # docs/experiments/2026-04-19_blood_moon_sb_hypothesis_failed.md.
         if any(w in opp_lower for w in ["prowess", "energy", "storm", "affinity", "pinnacle"]):
             if "blood moon" in card_lower:
                 board_out_priority.append((card_name, min(count, 2), 8))
