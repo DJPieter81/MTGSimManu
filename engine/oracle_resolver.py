@@ -363,6 +363,33 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
                 game.players[controller].life -= int(m.group(1))
                 handled = True
 
+    # ── "Return target (nonlegendary )?creature card from your graveyard
+    #     to the battlefield" — Persist (nonlegendary), Unburial Rites (any).
+    #     Goryo's Vengeance is legendary-only with haste + exile-at-EOT and
+    #     keeps its dedicated handler.
+    if (re.search(r'return target\s+(\w+\s+)?creature card', oracle)
+            and 'graveyard' in oracle
+            and 'battlefield' in oracle
+            and not re.search(r'return target legendary creature', oracle)):
+        gy = game.players[controller].graveyard
+        creatures = [c for c in gy if c.template.is_creature]
+        if 'nonlegendary' in oracle:
+            from engine.cards import Supertype
+            creatures = [c for c in creatures
+                         if Supertype.LEGENDARY not in
+                         getattr(c.template, 'supertypes', [])]
+        if creatures:
+            # Pick the biggest body — reanimation's value is in the
+            # largest recouped investment.
+            best = max(creatures,
+                       key=lambda c: (c.template.power or 0)
+                       + (c.template.toughness or 0))
+            game.reanimate(controller, best)
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: "
+                f"{card.name} reanimates {best.name}")
+            handled = True
+
     # ── Card draw on spell resolution ──
     # Covers "draw a card" / "draw N cards" + the look-and-keep variant
     # used by Sleight of Hand ("put one of them into your hand") + the

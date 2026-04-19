@@ -470,17 +470,6 @@ def goryos_vengeance_resolve(game, card, controller, targets=None, item=None):
         game.reanimate(controller, best, exile_at_eot=True, give_haste=True)
 
 
-@EFFECT_REGISTRY.register("Persist", EffectTiming.SPELL_RESOLVE,
-                           description="Reanimate creature from graveyard")
-def persist_resolve(game, card, controller, targets=None, item=None):
-    gy = game.players[controller].graveyard
-    creatures = [c for c in gy if c.template.is_creature]
-    if creatures:
-        best = max(creatures,
-                   key=lambda c: (c.template.power or 0) + (c.template.toughness or 0))
-        game.reanimate(controller, best)
-
-
 @EFFECT_REGISTRY.register("Unmarked Grave", EffectTiming.SPELL_RESOLVE,
                            description="Tutor nonlegendary card to graveyard")
 def unmarked_grave_resolve(game, card, controller, targets=None, item=None):
