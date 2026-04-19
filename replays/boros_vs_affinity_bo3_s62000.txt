@@ -1,0 +1,769 @@
+Loaded 21759 cards (0 errors)
+  Sideboard (Boros Energy vs Affinity): +2 Wear // Tear, +2 Wrath of the Skies, -1 Blood Moon, -1 Goblin Bombardment, -2 Voice of Victory
+======================================================================
+  GAME 1: Boros Energy (P1) vs Affinity (P2)  —  seed 62000
+  Series: Boros Energy 0 - 0 Affinity
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Affinity wins → chooses to play first
+║ P1 (on play): Affinity
+║ P2 (on draw): Boros Energy
+╚═══════════════════════════════════════════════════════
+
+P1 (Boros Energy) opening hand (1 lands, 6 spells):
+  • Windswept Heath [Land, CMC 0]
+  • The Legend of Roku // Avatar Roku [Spell, CMC 4]
+  • Thraben Charm [Spell, CMC 2]
+  • Ajani, Nacatl Pariah // Ajani, Nacatl Avenger [Creature, CMC 2]
+  • Seasoned Pyromancer [Creature, CMC 3]
+  • Galvanic Discharge [Spell, CMC 1]
+  • Voice of Victory [Creature, CMC 2]
+→ P1 MULLIGANS (too few lands (1 < 2))
+  New hand (4 lands, 3 spells): ['Seasoned Pyromancer', 'Marsh Flats', 'Sacred Foundry', 'Windswept Heath', 'Seasoned Pyromancer', 'Arena of Glory', 'Blood Moon']
+→ P1 MULLIGANS (too many lands (4 > 3))
+  New hand (2 lands, 5 spells): ['Ragavan, Nimble Pilferer', 'Arid Mesa', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Elegant Parlor', 'Seasoned Pyromancer', 'Voice of Victory']
+→ P1 mulligans to 5, bottoms: ['Seasoned Pyromancer', 'Voice of Victory']
+  Keeps: ['Ragavan, Nimble Pilferer', 'Arid Mesa', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Elegant Parlor']
+
+P2 (Affinity) opening hand (2 lands, 5 spells):
+  • Mox Opal [Spell, CMC 0]
+  • Razortide Bridge [Land, CMC 0]
+  • Tanglepool Bridge [Land, CMC 0]
+  • Thought Monitor [Creature, CMC 7]
+  • Thought Monitor [Creature, CMC 7]
+  • Ornithopter [Creature, CMC 0]
+  • Thought Monitor [Creature, CMC 7]
+→ P2 KEEPS 7 — has key card(s): Mox Opal, Ornithopter, 2 cheap spells
+
+
+╔══ TURN 1 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Boros Energy 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Razortide Bridge (enters tapped)
+    → Goal: deploy_engine [engines]
+T1 P2: Cast Mox Opal (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Mox Opal
+    → Goal: curve_out
+T1 P2: Cast Ornithopter (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Ornithopter
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 20  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 55  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: Ornithopter (0/2)
+║   Other: Mox Opal
+║   Lands: Razortide Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Galvanic Discharge
+  [Main 1]
+T1 P1: Play Arid Mesa
+T1 P1: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (pay 2 life, untapped, life: 17)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T1 P1: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P2 passes (no response)
+T1: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Boros Energy 17
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Ornithopter (0/2)
+║   Other: Mox Opal
+║   Lands: Razortide Bridge
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Memnite
+  [Main 1]
+T2 P2: Play Tanglepool Bridge (enters tapped)
+    → Goal: curve_out
+T2 P2: Cast Memnite (0)
+    [Priority] P1 passes (no response)
+T2: Resolve Memnite
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 17  |  Affinity 20
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 53  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Memnite (1/1)
+║   Other: Mox Opal
+║   Lands: Razortide Bridge, Tanglepool Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Galvanic Discharge
+  [Main 1]
+T2 P1: Play Elegant Parlor (enters tapped)
+    → Goal: curve_out [interaction]
+    [Target] → Memnite: marginal threat 9.0 (1/1 body) — better than 3 face dmg
+    [Mana] Tap Sacred Foundry→R (paying for Galvanic Discharge, 1 mana remaining)
+T2 P1: Cast Galvanic Discharge (R)
+    [Priority] P2 passes (no response)
+T2: Resolve Galvanic Discharge
+T2 P1: Galvanic Discharge deals 3 to Memnite
+T2: Memnite dies
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer
+T2 P1: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P2 does not block
+T2 P1:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T2 P1: Create 1x Treasure token(s)
+T2 P1: Ragavan, Nimble Pilferer exiles Ornithopter from top of P2's library
+T2 P1: Ragavan, Nimble Pilferer — may cast Ornithopter this turn
+  [Combat Damage] 2 damage dealt → P2 life: 20 → 18
+  [End Combat]
+  [Main 2]
+    → Goal: curve_out
+T2 P1: Cast Ornithopter (0)
+    [Priority] P2 passes (no response)
+T2: Resolve Ornithopter
+  [End Step]
+
+╔══ TURN 3 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 18  |  Boros Energy 17
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Ornithopter (0/2)
+║   Other: Mox Opal
+║   Lands: Razortide Bridge, Tanglepool Bridge
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Ornithopter (0/2)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Signal Pest
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Razortide Bridge→U (paying for Signal Pest, 2 mana remaining)
+T3 P2: Cast Signal Pest (1)
+    [Priority] P1 passes (no response)
+T3: Resolve Signal Pest
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 17  |  Affinity 18
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Ornithopter (0/2)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Elegant Parlor
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1)
+║   Other: Mox Opal
+║   Lands: Razortide Bridge [T], Tanglepool Bridge
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Windswept Heath
+  [Main 1]
+T3 P1: Play Windswept Heath
+T3 P1: Crack Windswept Heath (pay 1 life) -> Sacred Foundry (tapped, life: 16)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→W, Elegant Parlor→R (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 2 mana remaining)
+T3 P1: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P2 passes (no response)
+T3: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T3 P1: Create 1x Cat token(s)
+T3 P1: Ajani creates 2/1 Cat Warrior token
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer
+T3 P1: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P2 does not block
+T3 P1:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T3 P1: Create 1x Treasure token(s)
+T3 P1: Ragavan, Nimble Pilferer exiles Silverbluff Bridge from top of P2's library
+T3 P1: Ragavan, Nimble Pilferer — may cast Silverbluff Bridge this turn
+  [Combat Damage] 2 damage dealt → P2 life: 18 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+T3: Silverbluff Bridge returned to exile (uncast)
+
+╔══ TURN 4 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 16  |  Boros Energy 16
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1)
+║   Other: Mox Opal
+║   Lands: Razortide Bridge, Tanglepool Bridge
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Ornithopter (0/2), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Other: Treasure Token, Treasure Token
+║   Lands: Sacred Foundry [T], Elegant Parlor [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Cranial Plating
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Razortide Bridge→U, Tanglepool Bridge→G (paying for Cranial Plating, 2 mana remaining)
+T4 P2: Cast Cranial Plating (2)
+    [Priority] P1 passes (no response)
+T4: Resolve Cranial Plating
+T4 P2: Cranial Plating enters the battlefield (unattached)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 16  |  Affinity 16
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 3
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Ornithopter (0/2), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Other: Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Elegant Parlor, Sacred Foundry
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1)
+║   Other: Mox Opal, Cranial Plating
+║   Lands: Razortide Bridge [T], Tanglepool Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Guide of Souls
+  [Main 1]
+    → Goal: curve_out [interaction]
+    [Target] → face (3 dmg, life 16 → 13): no killable target
+    [Mana] Tap Sacred Foundry→R (paying for Galvanic Discharge, 3 mana remaining)
+T4 P1: Cast Galvanic Discharge (R)
+    [Priority] P2 passes (no response)
+T4: Resolve Galvanic Discharge
+T4 P1: Galvanic Discharge deals 3 to opponent
+    → Goal: curve_out [enablers]
+    [Mana] Tap Elegant Parlor→W (paying for Guide of Souls, 2 mana remaining)
+T4 P1: Cast Guide of Souls (W)
+    [Priority] P2 passes (no response)
+T4: Resolve Guide of Souls
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+T4 P1: Attack with Ragavan, Nimble Pilferer, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+  [Declare Blockers] P2 does not block
+T4 P1:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T4 P1: Create 1x Treasure token(s)
+T4 P1: Ragavan, Nimble Pilferer exiles Sojourner's Companion from top of P2's library
+T4 P1: Ragavan, Nimble Pilferer — may cast Sojourner's Companion this turn
+T4 P1:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T4 P1:   Cat Token (2/1) → 2 dmg to player
+  [Combat Damage] 5 damage dealt → P2 life: 13 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Sojourner's Companion returned to exile (uncast)
+
+╔══ TURN 5 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 8  |  Boros Energy 16
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1)
+║   Other: Mox Opal, Cranial Plating
+║   Lands: Razortide Bridge, Tanglepool Bridge
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Ornithopter (0/2), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Cat Token (2/1) [tapped], Guide of Souls (1/2)
+║   Other: Treasure Token, Treasure Token, Treasure Token
+║   Lands: Sacred Foundry [T], Elegant Parlor [T], Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Springleaf Drum
+  [Main 1]
+T5 P2: Equip Cranial Plating to Ornithopter (cost 1)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Tanglepool Bridge→U (paying for Thought Monitor, 1 mana remaining)
+T5 P2: Cast Thought Monitor (6U)
+    [Priority] P1 passes (no response)
+T5: Resolve Thought Monitor
+T5 P2: Thought Monitor ETB: draw 2 (Sojourner's Companion, Mox Opal)
+    → Goal: curve_out [enablers]
+T5 P2: Cast Sojourner's Companion (7)
+    [Priority] P1 passes (no response)
+T5: Resolve Sojourner's Companion
+    → Goal: curve_out
+T5 P2: Cast Springleaf Drum (1)
+    [Priority] P1 passes (no response)
+T5: Resolve Springleaf Drum
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ornithopter, Signal Pest
+T5 P2: Attack with Ornithopter, Signal Pest
+T5 P1:   [BLOCK-EMERGENCY] Ornithopter (0/2) blocks Ornithopter (10/2) — chump block
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T5: Ornithopter dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 16  |  Affinity 8
+║ Hand: 1 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 4
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1), Guide of Souls (1/2)
+║   Other: Treasure Token, Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Elegant Parlor, Sacred Foundry
+║ Affinity board:
+║   Creatures: Ornithopter (9/2) [tapped], Signal Pest (0/1) [tapped], Thought Monitor (2/2), Sojourner's Companion (4/4)
+║   Other: Mox Opal, Cranial Plating, Springleaf Drum
+║   Lands: Razortide Bridge [T], Tanglepool Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Galvanic Discharge
+  [Main 1]
+    → Goal: curve_out [interaction]
+    [Target] → face (3 dmg, life 8 → 5): opponent low life
+    [Mana] Tap Sacred Foundry→R (paying for Galvanic Discharge, 3 mana remaining)
+T5 P1: Cast Galvanic Discharge (R)
+    [Priority] P2 passes (no response)
+T5: Resolve Galvanic Discharge
+T5 P1: Galvanic Discharge deals 3 to opponent
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token, Guide of Souls
+T5 P1: Attack with Ragavan, Nimble Pilferer, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token, Guide of Souls
+T5 P2:   [BLOCK-EMERGENCY] Sojourner's Companion (4/4) blocks Ragavan, Nimble Pilferer (2/1) — favorable trade
+T5 P2:   [BLOCK-EMERGENCY] Thought Monitor (2/2) blocks Cat Token (2/1) — trade (chump)
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T5 P1:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T5 P1:   Guide of Souls (1/2) → 1 dmg to player
+T5: Ragavan, Nimble Pilferer dies
+T5: Cat Token dies
+T5: Thought Monitor dies
+  [Combat Damage] 2 damage dealt → P2 life: 5 → 3
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 3  |  Boros Energy 16
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 44  |  Graveyard: 3
+║ Affinity board:
+║   Creatures: Ornithopter (8/2), Signal Pest (0/1), Sojourner's Companion (4/4)
+║   Other: Mox Opal, Cranial Plating, Springleaf Drum
+║   Lands: Razortide Bridge, Tanglepool Bridge
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Guide of Souls (1/2) [tapped]
+║   Other: Treasure Token, Treasure Token, Treasure Token
+║   Lands: Sacred Foundry [T], Elegant Parlor, Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Signal Pest
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Razortide Bridge→U (paying for Thought Monitor, 2 mana remaining)
+T6 P2: Cast Thought Monitor (6U)
+    [Priority] P1 passes (no response)
+T6: Resolve Thought Monitor
+T6 P2: Thought Monitor ETB: draw 2 (Springleaf Drum, Darksteel Citadel)
+T6 P2: Play Darksteel Citadel
+    → Goal: curve_out
+T6 P2: Cast Signal Pest (1)
+    [Priority] P1 passes (no response)
+T6: Resolve Signal Pest
+    → Goal: curve_out [enablers]
+    [Mana] Tap Tanglepool Bridge→U (paying for Thought Monitor, 2 mana remaining)
+T6 P2: Cast Thought Monitor (6U)
+    [Priority] P1 passes (no response)
+T6: Resolve Thought Monitor
+T6 P2: Thought Monitor ETB: draw 2 (Sojourner's Companion, Springleaf Drum)
+    → Goal: curve_out [enablers]
+T6 P2: Cast Sojourner's Companion (7)
+    [Priority] P1 passes (no response)
+T6: Resolve Sojourner's Companion
+    → Goal: curve_out
+T6 P2: Cast Springleaf Drum (1)
+    [Priority] P1 passes (no response)
+T6: Resolve Springleaf Drum
+    → Goal: curve_out
+T6 P2: Cast Springleaf Drum (1)
+    [Priority] P1 passes (no response)
+T6: Resolve Springleaf Drum
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ornithopter, Signal Pest, Sojourner's Companion
+T6 P2: Attack with Ornithopter, Signal Pest, Sojourner's Companion
+  [Declare Blockers] P1 does not block
+T6 P2:   Ornithopter (16/2) → 16 dmg to player
+T6 P2:   Sojourner's Companion (5/4) → 5 dmg to player
+P1 loses: life total -5
+  [Combat Damage] 21 damage dealt → P1 life: 16 → -5
+
+>>> Affinity wins Game 1 on turn 6 via damage
+    Final life: Boros Energy=-5  Affinity=3
+
+======================================================================
+  GAME 2: Boros Energy (P1) vs Affinity (P2)  —  seed 62001
+  Series: Boros Energy 0 - 1 Affinity
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Boros Energy wins → chooses to play first
+║ P1 (on play): Boros Energy
+║ P2 (on draw): Affinity
+╚═══════════════════════════════════════════════════════
+
+P1 (Boros Energy) opening hand (3 lands, 4 spells):
+  • Arid Mesa [Land, CMC 0]
+  • Marsh Flats [Land, CMC 0]
+  • Arid Mesa [Land, CMC 0]
+  • Wrath of the Skies [Spell, CMC 2]
+  • Goblin Bombardment [Spell, CMC 2]
+  • Guide of Souls [Creature, CMC 1]
+  • Phlage, Titan of Fire's Fury [Creature, CMC 3]
+→ P1 KEEPS 7 — has key card(s): Guide of Souls, 4 cheap spells
+
+P2 (Affinity) opening hand (2 lands, 5 spells):
+  • Engineered Explosives [Spell, CMC 0]
+  • Frogmite [Creature, CMC 4]
+  • Cranial Plating [Spell, CMC 2]
+  • Razortide Bridge [Land, CMC 0]
+  • Tanglepool Bridge [Land, CMC 0]
+  • Engineered Explosives [Spell, CMC 0]
+  • Thought Monitor [Creature, CMC 7]
+→ P2 KEEPS 7 — has key card(s): Cranial Plating, 3 cheap spells
+
+
+╔══ TURN 1 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Arid Mesa
+T1 P1: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (pay 2 life, untapped, life: 17)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Guide of Souls, 1 mana remaining)
+T1 P1: Cast Guide of Souls (W)
+    [Priority] P2 passes (no response)
+T1: Resolve Guide of Souls
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Boros Energy 17
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mistvault Bridge
+  [Main 1]
+T1 P2: Play Razortide Bridge (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 17  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2)
+║   Lands: Sacred Foundry
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: Razortide Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Galvanic Discharge
+  [Main 1]
+T2 P1: Play Marsh Flats
+T2 P1: Crack Marsh Flats (pay 1 life) -> Sacred Foundry (pay 2 life, untapped, life: 14)
+    → Goal: curve_out [interaction]
+    [Target] → face (3 dmg, life 20 → 17): no killable target
+    [Mana] Tap Sacred Foundry→R (paying for Galvanic Discharge, 2 mana remaining)
+T2 P1: Cast Galvanic Discharge (R)
+    [Priority] P2 passes (no response)
+T2: Resolve Galvanic Discharge
+T2 P1: Galvanic Discharge deals 3 to opponent
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Guide of Souls
+T2 P1: Attack with Guide of Souls
+  [Declare Blockers] P2 does not block
+T2 P1:   Guide of Souls (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P2 life: 17 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 16  |  Boros Energy 14
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: Razortide Bridge
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2) [tapped]
+║   Lands: Sacred Foundry [T], Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mox Opal
+  [Main 1]
+T2 P2: Play Tanglepool Bridge (enters tapped)
+    → Goal: deploy_engine [engines]
+T2 P2: Cast Mox Opal (0)
+    [Priority] P1 passes (no response)
+T2: Resolve Mox Opal
+    → Goal: curve_out [enablers]
+    [Mana] Tap Razortide Bridge→U (paying for Frogmite, 1 mana remaining)
+T2 P2: Cast Frogmite (4)
+    [Priority] P1 passes (no response)
+T2: Resolve Frogmite
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 14  |  Affinity 16
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 3
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ Affinity board:
+║   Creatures: Frogmite (2/2)
+║   Other: Mox Opal
+║   Lands: Razortide Bridge [T], Tanglepool Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Marsh Flats
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Sacred Foundry→R, Sacred Foundry→R (paying for Goblin Bombardment, 2 mana remaining)
+T3 P1: Cast Goblin Bombardment (1R)
+    [Priority] P2 passes (no response)
+T3: Resolve Goblin Bombardment
+T3 P1: Goblin Bombardment enters — sacrifice creatures for 1 damage each
+T3 P1: Play Marsh Flats
+T3 P1: Crack Marsh Flats (pay 1 life) -> Sacred Foundry (tapped, life: 13)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 16  |  Boros Energy 13
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Frogmite (2/2)
+║   Other: Mox Opal
+║   Lands: Razortide Bridge, Tanglepool Bridge
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2)
+║   Other: Goblin Bombardment
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Signal Pest
+  [Main 1]
+T3 P2: Play Mistvault Bridge (enters tapped)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Razortide Bridge→U (paying for Cranial Plating, 2 mana remaining)
+T3 P2: Cast Cranial Plating (2)
+    [Priority] P1 passes (no response)
+T3: Resolve Cranial Plating
+T3 P2: Cranial Plating enters the battlefield (unattached)
+T3 P2: Equip Cranial Plating to Frogmite (cost 1)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Frogmite
+T3 P2: Attack with Frogmite
+T3 P1:   [BLOCK-EMERGENCY] Guide of Souls (1/2) blocks Frogmite (8/2) — chump block
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T3: Guide of Souls dies
+  [End Combat]
+  [Main 2]
+    → Goal: curve_out
+T3 P2: Cast Signal Pest (1)
+    [Priority] P1 passes (no response)
+T3: Resolve Signal Pest
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 13  |  Affinity 16
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 5
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Other: Goblin Bombardment
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry
+║ Affinity board:
+║   Creatures: Frogmite (9/2) [tapped], Signal Pest (0/1)
+║   Other: Mox Opal, Cranial Plating
+║   Lands: Razortide Bridge [T], Tanglepool Bridge [T], Mistvault Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ranger-Captain of Eos
+  [Main 1]
+    → Goal: curve_out
+    [Target] → Frogmite: marginal threat 15.1 (9/2 body) — better than 3 face dmg
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R, Sacred Foundry→R (paying for Phlage, Titan of Fire's Fury, 3 mana remaining)
+T4 P1: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P2 passes (no response)
+T4: Resolve Phlage, Titan of Fire's Fury
+T4 P1: Phlage: 3 damage to Frogmite, gain 3 life
+T4: Cranial Plating falls off Frogmite (unattached)
+T4: Frogmite dies
+T4 P1: Phlage sacrificed (not escaped)
+T4 P1: Play Arid Mesa
+T4 P1: Crack Arid Mesa -> Plains (untapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 16  |  Boros Energy 15
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Signal Pest (0/1)
+║   Other: Mox Opal, Cranial Plating
+║   Lands: Razortide Bridge, Tanglepool Bridge, Mistvault Bridge
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Other: Goblin Bombardment
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Memnite
+  [Main 1]
+T4 P2: Equip Cranial Plating to Signal Pest (cost 1)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Tanglepool Bridge→U (paying for Thought Monitor, 2 mana remaining)
+T4 P2: Cast Thought Monitor (6U)
+    [Priority] P1 passes (no response)
+T4: Resolve Thought Monitor
+T4 P2: Thought Monitor ETB: draw 2 (Cranial Plating, Spire of Industry)
+T4 P2: Play Spire of Industry
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Mistvault Bridge→B (paying for Cranial Plating, 2 mana remaining)
+T4 P2: Cast Cranial Plating (2)
+    [Priority] P1 passes (no response)
+T4: Resolve Cranial Plating
+T4 P2: Cranial Plating enters the battlefield (unattached)
+T4 P2: Equip Cranial Plating to Signal Pest (cost 1)
+    → Goal: curve_out
+T4 P2: Cast Memnite (0)
+    [Priority] P1 passes (no response)
+T4: Resolve Memnite
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Signal Pest
+T4 P2: Attack with Signal Pest
+  [Declare Blockers] P1 does not block
+T4 P2:   Signal Pest (18/1) → 18 dmg to player
+P1 loses: life total -3
+  [Combat Damage] 18 damage dealt → P1 life: 15 → -3
+
+>>> Affinity wins Game 2 on turn 4 via damage
+    Final life: Boros Energy=-3  Affinity=16
+
+======================================================================
+  MATCH RESULT: Affinity wins 2-0
+======================================================================

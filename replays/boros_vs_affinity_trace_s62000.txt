@@ -1,0 +1,527 @@
+Loaded 21759 cards (0 errors)
+=== Boros Energy vs Affinity (seed 62000) ===
+Result: Affinity wins T6 via damage
+Life: P1=-5 P2=3
+
+  [MAIN1]
+
+T1 Affinity | life=20 mana=0 hand=5+2L gy=0
+  Hand: ['Mox Opal', 'Thought Monitor', 'Thought Monitor', 'Ornithopter', 'Thought Monitor']
+  Opp board: [] (life=20)
+  EV scores:
+     +33.0  play_land: Razortide Bridge <--
+     +33.0  play_land: Tanglepool Bridge
+      -0.0  cast_spell: Mox Opal  [h=-0.0 la=-0.0]
+      -0.0  cast_spell: Ornithopter  [h=-0.0 la=-0.0]
+  >>> PLAY_LAND: Razortide Bridge
+  [MAIN1]
+
+T1 Affinity | life=20 mana=0 hand=5+1L gy=0
+  Hand: ['Mox Opal', 'Thought Monitor', 'Thought Monitor', 'Ornithopter', 'Thought Monitor']
+  Opp board: [] (life=20)
+  EV scores:
+      -0.0  cast_spell: Mox Opal <--  [h=-0.0 la=-0.0]
+      -0.0  cast_spell: Ornithopter  [h=-0.0 la=-0.0]
+  >>> CAST_SPELL: Mox Opal
+  [MAIN1]
+
+T1 Affinity | life=20 mana=0 hand=4+1L gy=0
+  Hand: ['Thought Monitor', 'Thought Monitor', 'Ornithopter', 'Thought Monitor']
+  Permanents: ['Mox Opal']
+  Opp board: [] (life=20)
+  EV scores:
+      -0.0  cast_spell: Ornithopter <--  [h=-0.0 la=-0.0]
+  >>> CAST_SPELL: Ornithopter
+  [MAIN1]
+
+T1 Affinity | life=20 mana=0 hand=3+1L gy=0
+  Hand: ['Thought Monitor', 'Thought Monitor', 'Thought Monitor']
+  Board: ['Ornithopter (0/2)']
+  Permanents: ['Mox Opal']
+  Opp board: [] (life=20)
+  EV scores:
+      -0.0  cast_spell: Ornithopter <--  [h=-0.0 la=-0.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T1 Affinity | life=20 mana=0 hand=3+1L gy=0
+  Hand: ['Thought Monitor', 'Thought Monitor', 'Thought Monitor']
+  Board: ['Ornithopter (0/2)']
+  Permanents: ['Mox Opal']
+  Opp board: [] (life=20)
+  EV scores:
+      -0.0  cast_spell: Ornithopter <--  [h=-0.0 la=-0.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T2 Boros Energy | life=20 mana=0 hand=4+2L gy=0
+  Hand: ['Ragavan, Nimble Pilferer', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Galvanic Discharge']
+  Opp board: ['Ornithopter (0/2)'] (life=20)
+  EV scores:
+     +38.0  play_land: Arid Mesa <--
+     +20.0  play_land: Elegant Parlor
+  >>> PLAY_LAND: Arid Mesa
+  [MAIN1]
+
+T2 Boros Energy | life=17 mana=1 hand=4+1L gy=1
+  Hand: ['Ragavan, Nimble Pilferer', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Galvanic Discharge']
+  Opp board: ['Ornithopter (0/2)'] (life=20)
+  EV scores:
+      +1.3  cast_spell: Ragavan, Nimble Pilferer <--  [h=+1.3 la=+1.3]
+      +0.1  cast_spell: Galvanic Discharge  [h=+0.1 la=+0.1]
+  >>> CAST_SPELL: Ragavan, Nimble Pilferer
+  [MAIN1]
+
+T2 Boros Energy | life=17 mana=0 hand=3+1L gy=1
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Galvanic Discharge']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Opp board: ['Ornithopter (0/2)'] (life=20)
+  EV scores:
+      +1.3  cast_spell: Ragavan, Nimble Pilferer <--  [h=+1.3 la=+1.3]
+      +0.1  cast_spell: Galvanic Discharge  [h=+0.1 la=+0.1]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T2 Boros Energy | life=17 mana=0 hand=3+1L gy=1
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Galvanic Discharge']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Opp board: ['Ornithopter (0/2)'] (life=20)
+  EV scores:
+      +1.3  cast_spell: Ragavan, Nimble Pilferer <--  [h=+1.3 la=+1.3]
+      +0.1  cast_spell: Galvanic Discharge  [h=+0.1 la=+0.1]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T3 Affinity | life=20 mana=1 hand=4+1L gy=0
+  Hand: ['Thought Monitor', 'Thought Monitor', 'Thought Monitor', 'Memnite']
+  Board: ['Ornithopter (0/2)']
+  Permanents: ['Mox Opal']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  EV scores:
+     +27.0  play_land: Tanglepool Bridge <--
+      +9.0  cast_spell: Memnite  [h=+9.0 la=+9.0]
+  >>> PLAY_LAND: Tanglepool Bridge
+  [MAIN1]
+
+T3 Affinity | life=20 mana=1 hand=4+0L gy=0
+  Hand: ['Thought Monitor', 'Thought Monitor', 'Thought Monitor', 'Memnite']
+  Board: ['Ornithopter (0/2)']
+  Permanents: ['Mox Opal']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  EV scores:
+      +9.0  cast_spell: Memnite <--  [h=+9.0 la=+9.0]
+  >>> CAST_SPELL: Memnite
+  [MAIN1]
+
+T3 Affinity | life=20 mana=1 hand=3+0L gy=0
+  Hand: ['Thought Monitor', 'Thought Monitor', 'Thought Monitor']
+  Board: ['Ornithopter (0/2)', 'Memnite (1/1)']
+  Permanents: ['Mox Opal']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  EV scores:
+      +9.0  cast_spell: Memnite <--  [h=+9.0 la=+9.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T3 Affinity | life=20 mana=1 hand=3+0L gy=0
+  Hand: ['Thought Monitor', 'Thought Monitor', 'Thought Monitor']
+  Board: ['Ornithopter (0/2)', 'Memnite (1/1)']
+  Permanents: ['Mox Opal']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  EV scores:
+      +9.0  cast_spell: Memnite <--  [h=+9.0 la=+9.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T4 Boros Energy | life=17 mana=1 hand=4+1L gy=1
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Galvanic Discharge', 'Galvanic Discharge']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Opp board: ['Ornithopter (0/2)', 'Memnite (1/1)'] (life=20)
+  EV scores:
+      +7.0  play_land: Elegant Parlor <--
+      -3.4  cast_spell: Galvanic Discharge  [h=-3.4 la=-3.4]
+      -3.4  cast_spell: Galvanic Discharge  [h=-3.4 la=-3.4]
+  >>> PLAY_LAND: Elegant Parlor
+  [MAIN1]
+
+T4 Boros Energy | life=17 mana=1 hand=4+0L gy=1
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Galvanic Discharge', 'Galvanic Discharge']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Opp board: ['Ornithopter (0/2)', 'Memnite (1/1)'] (life=20)
+  EV scores:
+      -3.4  cast_spell: Galvanic Discharge <--  [h=-3.4 la=-3.4]
+      -3.4  cast_spell: Galvanic Discharge  [h=-3.4 la=-3.4]
+  >>> CAST_SPELL: Galvanic Discharge
+  [MAIN1]
+
+T4 Boros Energy | life=17 mana=0 hand=3+0L gy=2
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Galvanic Discharge']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Opp board: ['Ornithopter (0/2)'] (life=20)
+  EV scores:
+      -3.4  cast_spell: Galvanic Discharge <--  [h=-3.4 la=-3.4]
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ragavan, Nimble Pilferer']
+  [MAIN2]
+
+T4 Boros Energy | life=17 mana=0 hand=4+0L gy=2
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Galvanic Discharge', 'Ornithopter']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Treasure Token']
+  Opp board: ['Ornithopter (0/2)'] (life=18)
+  EV scores:
+      +1.5  cast_spell: Ornithopter <--  [h=+1.5 la=+1.5]
+  >>> CAST_SPELL: Ornithopter
+  [MAIN2]
+
+T4 Boros Energy | life=17 mana=0 hand=3+0L gy=2
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Galvanic Discharge']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Ornithopter (0/2)']
+  Permanents: ['Treasure Token']
+  Opp board: ['Ornithopter (0/2)'] (life=18)
+  EV scores:
+      +1.5  cast_spell: Ornithopter <--  [h=+1.5 la=+1.5]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T5 Affinity | life=18 mana=2 hand=4+0L gy=1
+  Hand: ['Thought Monitor', 'Thought Monitor', 'Thought Monitor', 'Signal Pest']
+  Board: ['Ornithopter (0/2)']
+  Permanents: ['Mox Opal']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Ornithopter (0/2)'] (life=17)
+  EV scores:
+      -4.2  cast_spell: Signal Pest <--  [h=-4.2 la=-4.2]
+  >>> CAST_SPELL: Signal Pest
+  [MAIN1]
+
+T5 Affinity | life=18 mana=1 hand=3+0L gy=1
+  Hand: ['Thought Monitor', 'Thought Monitor', 'Thought Monitor']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)']
+  Permanents: ['Mox Opal']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Ornithopter (0/2)'] (life=17)
+  EV scores:
+      -4.2  cast_spell: Signal Pest <--  [h=-4.2 la=-4.2]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T5 Affinity | life=18 mana=1 hand=3+0L gy=1
+  Hand: ['Thought Monitor', 'Thought Monitor', 'Thought Monitor']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)']
+  Permanents: ['Mox Opal']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Ornithopter (0/2)'] (life=17)
+  EV scores:
+      -4.2  cast_spell: Signal Pest <--  [h=-4.2 la=-4.2]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T6 Boros Energy | life=17 mana=2 hand=3+1L gy=2
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Galvanic Discharge']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Ornithopter (0/2)']
+  Permanents: ['Treasure Token']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=18)
+  EV scores:
+     +22.0  play_land: Windswept Heath <--
+      +8.1  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger  [h=+8.1 la=+8.1]
+      +8.1  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger  [h=+8.1 la=+8.1]
+      +3.2  cast_spell: Galvanic Discharge  [h=+3.2 la=+3.2]
+  >>> PLAY_LAND: Windswept Heath
+  [MAIN1]
+
+T6 Boros Energy | life=16 mana=2 hand=3+0L gy=3
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Galvanic Discharge']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Ornithopter (0/2)']
+  Permanents: ['Treasure Token']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=18)
+  EV scores:
+      +8.2  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <--  [h=+8.2 la=+8.2]
+      +8.2  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger  [h=+8.2 la=+8.2]
+      +3.2  cast_spell: Galvanic Discharge  [h=+3.2 la=+3.2]
+  >>> CAST_SPELL: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [MAIN1]
+
+T6 Boros Energy | life=16 mana=0 hand=2+0L gy=3
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Galvanic Discharge']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Ornithopter (0/2)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
+  Permanents: ['Treasure Token']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=18)
+  EV scores:
+      +8.2  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <--  [h=+8.2 la=+8.2]
+      +8.2  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger  [h=+8.2 la=+8.2]
+      +3.2  cast_spell: Galvanic Discharge  [h=+3.2 la=+3.2]
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ragavan, Nimble Pilferer']
+  [MAIN2]
+
+T6 Boros Energy | life=16 mana=0 hand=2+1L gy=3
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Galvanic Discharge']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Ornithopter (0/2)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
+  Permanents: ['Treasure Token', 'Treasure Token']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=16)
+  EV scores:
+      +8.2  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <--  [h=+8.2 la=+8.2]
+      +8.2  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger  [h=+8.2 la=+8.2]
+      +3.2  cast_spell: Galvanic Discharge  [h=+3.2 la=+3.2]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T7 Affinity | life=16 mana=2 hand=4+0L gy=1
+  Hand: ['Thought Monitor', 'Thought Monitor', 'Thought Monitor', 'Cranial Plating']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)']
+  Permanents: ['Mox Opal']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Ornithopter (0/2)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=16)
+  EV scores:
+      +0.7  cast_spell: Cranial Plating <--  [h=+0.7 la=+0.7]
+      +0.7  cast_spell: Thought Monitor  [h=+0.7 la=+0.7]
+      +0.7  cast_spell: Thought Monitor  [h=+0.7 la=+0.7]
+      +0.7  cast_spell: Thought Monitor  [h=+0.7 la=+0.7]
+  >>> CAST_SPELL: Cranial Plating
+  [MAIN1]
+
+T7 Affinity | life=16 mana=0 hand=3+0L gy=1
+  Hand: ['Thought Monitor', 'Thought Monitor', 'Thought Monitor']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)']
+  Permanents: ['Mox Opal', 'Cranial Plating']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Ornithopter (0/2)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=16)
+  EV scores:
+      +0.7  cast_spell: Cranial Plating <--  [h=+0.7 la=+0.7]
+      +0.7  cast_spell: Thought Monitor  [h=+0.7 la=+0.7]
+      +0.7  cast_spell: Thought Monitor  [h=+0.7 la=+0.7]
+      +0.7  cast_spell: Thought Monitor  [h=+0.7 la=+0.7]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T7 Affinity | life=16 mana=0 hand=3+0L gy=1
+  Hand: ['Thought Monitor', 'Thought Monitor', 'Thought Monitor']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)']
+  Permanents: ['Mox Opal', 'Cranial Plating']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Ornithopter (0/2)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=16)
+  EV scores:
+      +0.7  cast_spell: Cranial Plating <--  [h=+0.7 la=+0.7]
+      +0.7  cast_spell: Thought Monitor  [h=+0.7 la=+0.7]
+      +0.7  cast_spell: Thought Monitor  [h=+0.7 la=+0.7]
+      +0.7  cast_spell: Thought Monitor  [h=+0.7 la=+0.7]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T8 Boros Energy | life=16 mana=3 hand=3+0L gy=3
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Galvanic Discharge', 'Guide of Souls']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Ornithopter (0/2)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
+  Permanents: ['Treasure Token', 'Treasure Token']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=16)
+  EV scores:
+      +2.2  cast_spell: Galvanic Discharge <--  [h=+2.2 la=+2.2]
+      +1.9  cast_spell: Guide of Souls  [h=+1.9 la=+1.9]
+  >>> CAST_SPELL: Galvanic Discharge
+  [MAIN1]
+
+T8 Boros Energy | life=16 mana=2 hand=2+0L gy=4
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Guide of Souls']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Ornithopter (0/2)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
+  Permanents: ['Treasure Token', 'Treasure Token']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=13)
+  EV scores:
+      +3.5  cast_spell: Guide of Souls <--  [h=+3.5 la=+3.5]
+  >>> CAST_SPELL: Guide of Souls
+  [MAIN1]
+
+T8 Boros Energy | life=16 mana=1 hand=1+0L gy=4
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Ornithopter (0/2)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Guide of Souls (1/2)']
+  Permanents: ['Treasure Token', 'Treasure Token']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=13)
+  EV scores:
+      +3.5  cast_spell: Guide of Souls <--  [h=+3.5 la=+3.5]
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ragavan, Nimble Pilferer', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Cat Token']
+  [MAIN2]
+
+T8 Boros Energy | life=16 mana=1 hand=2+0L gy=4
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', "Sojourner's Companion"]
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Ornithopter (0/2)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Guide of Souls (1/2)']
+  Permanents: ['Treasure Token', 'Treasure Token', 'Treasure Token']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=8)
+  EV scores:
+      +3.5  cast_spell: Guide of Souls <--  [h=+3.5 la=+3.5]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T9 Affinity | life=8 mana=2 hand=4+0L gy=1
+  Hand: ['Thought Monitor', 'Thought Monitor', 'Thought Monitor', 'Springleaf Drum']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)']
+  Permanents: ['Mox Opal', 'Cranial Plating']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Ornithopter (0/2)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Guide of Souls (1/2)'] (life=16)
+  EV scores:
+      +9.0  equip: Cranial Plating <--
+      -0.3  cast_spell: Springleaf Drum  [h=-0.3 la=-0.3]
+     -12.3  cast_spell: Thought Monitor  [h=-12.3 la=-12.3 rmv=20%]
+     -12.3  cast_spell: Thought Monitor  [h=-12.3 la=-12.3 rmv=20%]
+     -12.3  cast_spell: Thought Monitor  [h=-12.3 la=-12.3 rmv=20%]
+  >>> EQUIP: Cranial Plating
+  [MAIN1]
+
+T9 Affinity | life=8 mana=1 hand=4+0L gy=1
+  Hand: ['Thought Monitor', 'Thought Monitor', 'Thought Monitor', 'Springleaf Drum']
+  Board: ['Ornithopter (6/2)', 'Signal Pest (0/1)']
+  Permanents: ['Mox Opal', 'Cranial Plating']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Ornithopter (0/2)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Guide of Souls (1/2)'] (life=16)
+  EV scores:
+      +0.3  cast_spell: Thought Monitor <--  [h=+0.3 la=+0.3 rmv=20%]
+      +0.3  cast_spell: Thought Monitor  [h=+0.3 la=+0.3 rmv=20%]
+      +0.3  cast_spell: Thought Monitor  [h=+0.3 la=+0.3 rmv=20%]
+      -0.1  cast_spell: Springleaf Drum  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Thought Monitor
+  [MAIN1]
+
+T9 Affinity | life=8 mana=0 hand=5+0L gy=1
+  Hand: ['Thought Monitor', 'Thought Monitor', 'Springleaf Drum', "Sojourner's Companion", 'Mox Opal']
+  Board: ['Ornithopter (7/2)', 'Signal Pest (0/1)', 'Thought Monitor (2/2)']
+  Permanents: ['Mox Opal', 'Cranial Plating']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Ornithopter (0/2)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Guide of Souls (1/2)'] (life=16)
+  EV scores:
+      +2.7  cast_spell: Sojourner's Companion <--  [h=+2.7 la=+2.7 rmv=13%]
+      -0.0  cast_spell: Springleaf Drum  [h=-0.0 la=-0.0]
+  >>> CAST_SPELL: Sojourner's Companion
+  [MAIN1]
+
+T9 Affinity | life=8 mana=0 hand=4+0L gy=1
+  Hand: ['Thought Monitor', 'Thought Monitor', 'Springleaf Drum', 'Mox Opal']
+  Board: ['Ornithopter (8/2)', 'Signal Pest (0/1)', 'Thought Monitor (2/2)', "Sojourner's Companion (4/4)"]
+  Permanents: ['Mox Opal', 'Cranial Plating']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Ornithopter (0/2)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Guide of Souls (1/2)'] (life=16)
+  EV scores:
+      -0.0  cast_spell: Springleaf Drum <--  [h=-0.0 la=-0.0]
+  >>> CAST_SPELL: Springleaf Drum
+  [MAIN1]
+
+T9 Affinity | life=8 mana=0 hand=3+0L gy=1
+  Hand: ['Thought Monitor', 'Thought Monitor', 'Mox Opal']
+  Board: ['Ornithopter (9/2)', 'Signal Pest (0/1)', 'Thought Monitor (2/2)', "Sojourner's Companion (4/4)"]
+  Permanents: ['Mox Opal', 'Cranial Plating', 'Springleaf Drum']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Ornithopter (0/2)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Guide of Souls (1/2)'] (life=16)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ornithopter', 'Signal Pest']
+  [MAIN2]
+
+T9 Affinity | life=8 mana=0 hand=3+0L gy=2
+  Hand: ['Thought Monitor', 'Thought Monitor', 'Mox Opal']
+  Board: ['Ornithopter (10/2)', 'Signal Pest (0/1)', 'Thought Monitor (2/2)', "Sojourner's Companion (4/4)"]
+  Permanents: ['Mox Opal', 'Cranial Plating', 'Springleaf Drum']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Guide of Souls (1/2)'] (life=16)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T10 Boros Energy | life=16 mana=3 hand=2+0L gy=4
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Galvanic Discharge']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Guide of Souls (1/2)']
+  Permanents: ['Treasure Token', 'Treasure Token', 'Treasure Token']
+  Opp board: ['Ornithopter (9/2)', 'Signal Pest (0/1)', 'Thought Monitor (2/2)', "Sojourner's Companion (4/4)"] (life=8)
+  EV scores:
+      +2.8  cast_spell: Galvanic Discharge <--  [h=+2.8 la=+2.8]
+  >>> CAST_SPELL: Galvanic Discharge
+  [MAIN1]
+
+T10 Boros Energy | life=16 mana=2 hand=1+0L gy=5
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Guide of Souls (1/2)']
+  Permanents: ['Treasure Token', 'Treasure Token', 'Treasure Token']
+  Opp board: ['Ornithopter (9/2)', 'Signal Pest (0/1)', 'Thought Monitor (2/2)', "Sojourner's Companion (4/4)"] (life=5)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ragavan, Nimble Pilferer', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Cat Token', 'Guide of Souls']
+  [MAIN2]
+
+T10 Boros Energy | life=16 mana=2 hand=1+0L gy=7
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+  Board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Guide of Souls (1/2)']
+  Permanents: ['Treasure Token', 'Treasure Token', 'Treasure Token']
+  Opp board: ['Ornithopter (8/2)', 'Signal Pest (0/1)', "Sojourner's Companion (4/4)"] (life=3)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T11 Affinity | life=3 mana=2 hand=4+0L gy=3
+  Hand: ['Thought Monitor', 'Thought Monitor', 'Mox Opal', 'Signal Pest']
+  Board: ['Ornithopter (8/2)', 'Signal Pest (0/1)', "Sojourner's Companion (4/4)"]
+  Permanents: ['Mox Opal', 'Cranial Plating', 'Springleaf Drum']
+  Opp board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Guide of Souls (1/2)'] (life=16)
+  EV scores:
+      -0.6  cast_spell: Thought Monitor <--  [h=-0.6 la=-0.6 rmv=20%]
+      -0.6  cast_spell: Thought Monitor  [h=-0.6 la=-0.6 rmv=20%]
+      -0.8  cast_spell: Signal Pest  [h=-0.8 la=-0.8 rmv=4%]
+  >>> CAST_SPELL: Thought Monitor
+  [MAIN1]
+
+T11 Affinity | life=3 mana=1 hand=4+1L gy=3
+  Hand: ['Thought Monitor', 'Mox Opal', 'Signal Pest', 'Springleaf Drum']
+  Board: ['Ornithopter (9/2)', 'Signal Pest (0/1)', "Sojourner's Companion (4/4)", 'Thought Monitor (2/2)']
+  Permanents: ['Mox Opal', 'Cranial Plating', 'Springleaf Drum']
+  Opp board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Guide of Souls (1/2)'] (life=16)
+  EV scores:
+     +43.0  play_land: Darksteel Citadel <--
+      -0.0  cast_spell: Thought Monitor  [h=-0.0 la=-0.0 rmv=20%]
+      -0.1  cast_spell: Signal Pest  [h=-0.1 la=-0.1 rmv=4%]
+      -0.1  cast_spell: Springleaf Drum  [h=-0.1 la=-0.1]
+  >>> PLAY_LAND: Darksteel Citadel
+  [MAIN1]
+
+T11 Affinity | life=3 mana=2 hand=4+0L gy=3
+  Hand: ['Thought Monitor', 'Mox Opal', 'Signal Pest', 'Springleaf Drum']
+  Board: ['Ornithopter (10/2)', 'Signal Pest (0/1)', "Sojourner's Companion (4/4)", 'Thought Monitor (2/2)']
+  Permanents: ['Mox Opal', 'Cranial Plating', 'Springleaf Drum']
+  Opp board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Guide of Souls (1/2)'] (life=16)
+  EV scores:
+      -0.2  cast_spell: Signal Pest <--  [h=-0.2 la=-0.2 rmv=4%]
+      -0.2  cast_spell: Thought Monitor  [h=-0.2 la=-0.2 rmv=20%]
+      -0.2  cast_spell: Springleaf Drum  [h=-0.2 la=-0.2]
+  >>> CAST_SPELL: Signal Pest
+  [MAIN1]
+
+T11 Affinity | life=3 mana=2 hand=3+0L gy=3
+  Hand: ['Thought Monitor', 'Mox Opal', 'Springleaf Drum']
+  Board: ['Ornithopter (11/2)', 'Signal Pest (0/1)', "Sojourner's Companion (4/4)", 'Thought Monitor (2/2)', 'Signal Pest (0/1)']
+  Permanents: ['Mox Opal', 'Cranial Plating', 'Springleaf Drum']
+  Opp board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Guide of Souls (1/2)'] (life=16)
+  EV scores:
+      +9.9  cast_spell: Thought Monitor <--  [h=+9.9 la=+9.9 rmv=20%]
+      -0.2  cast_spell: Springleaf Drum  [h=-0.2 la=-0.2]
+  >>> CAST_SPELL: Thought Monitor
+  [MAIN1]
+
+T11 Affinity | life=3 mana=1 hand=4+0L gy=3
+  Hand: ['Mox Opal', 'Springleaf Drum', "Sojourner's Companion", 'Springleaf Drum']
+  Board: ['Ornithopter (12/2)', 'Signal Pest (0/1)', "Sojourner's Companion (4/4)", 'Thought Monitor (2/2)', 'Signal Pest (0/1)', 'Thought Monitor (2/2)']
+  Permanents: ['Mox Opal', 'Cranial Plating', 'Springleaf Drum']
+  Opp board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Guide of Souls (1/2)'] (life=16)
+  EV scores:
+      +0.1  cast_spell: Sojourner's Companion <--  [h=+0.1 la=+0.1 rmv=13%]
+      -0.1  cast_spell: Springleaf Drum  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Springleaf Drum  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Sojourner's Companion
+  [MAIN1]
+
+T11 Affinity | life=3 mana=1 hand=3+0L gy=3
+  Hand: ['Mox Opal', 'Springleaf Drum', 'Springleaf Drum']
+  Board: ['Ornithopter (13/2)', 'Signal Pest (0/1)', "Sojourner's Companion (4/4)", 'Thought Monitor (2/2)', 'Signal Pest (0/1)', 'Thought Monitor (2/2)', "Sojourner's Companion (4/4)"]
+  Permanents: ['Mox Opal', 'Cranial Plating', 'Springleaf Drum']
+  Opp board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Guide of Souls (1/2)'] (life=16)
+  EV scores:
+      -0.1  cast_spell: Springleaf Drum <--  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Springleaf Drum  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Springleaf Drum
+  [MAIN1]
+
+T11 Affinity | life=3 mana=1 hand=2+0L gy=3
+  Hand: ['Mox Opal', 'Springleaf Drum']
+  Board: ['Ornithopter (14/2)', 'Signal Pest (0/1)', "Sojourner's Companion (4/4)", 'Thought Monitor (2/2)', 'Signal Pest (0/1)', 'Thought Monitor (2/2)', "Sojourner's Companion (4/4)"]
+  Permanents: ['Mox Opal', 'Cranial Plating', 'Springleaf Drum', 'Springleaf Drum']
+  Opp board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Guide of Souls (1/2)'] (life=16)
+  EV scores:
+      -0.1  cast_spell: Springleaf Drum <--  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Springleaf Drum
+  [MAIN1]
+
+T11 Affinity | life=3 mana=1 hand=1+0L gy=3
+  Hand: ['Mox Opal']
+  Board: ['Ornithopter (15/2)', 'Signal Pest (0/1)', "Sojourner's Companion (4/4)", 'Thought Monitor (2/2)', 'Signal Pest (0/1)', 'Thought Monitor (2/2)', "Sojourner's Companion (4/4)"]
+  Permanents: ['Mox Opal', 'Cranial Plating', 'Springleaf Drum', 'Springleaf Drum', 'Springleaf Drum']
+  Opp board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Guide of Souls (1/2)'] (life=16)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ornithopter', 'Signal Pest', "Sojourner's Companion"]
