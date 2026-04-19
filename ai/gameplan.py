@@ -489,26 +489,44 @@ class GoalEngine:
             reason = "Disruption window passed"
 
         elif gt == GoalType.FILL_RESOURCE:
-            # Check resource target (GY creatures for Living End, etc.)
+            # Check resource target (GY creatures for Living End, mana for
+            # Amulet, storm count for Storm, battlefield size for go-wide).
             zone = goal.resource_zone
             target = goal.resource_target or 3
+            min_cmc = getattr(goal, 'resource_min_cmc', 0)
+            resource_progress = 0
             if zone == "graveyard":
-                min_cmc = getattr(goal, 'resource_min_cmc', 0)
                 from engine.cards import CardType
-                gy_creatures = sum(1 for c in me.graveyard
-                                   if CardType.CREATURE in c.template.card_types
-                                   and (c.template.cmc or 0) >= min_cmc)
-                if gy_creatures >= target:
-                    should_advance = True
-                    reason = f"{gy_creatures} creatures in GY (need {target})"
-            # Also advance if payoff is in hand and some resources ready
+                resource_progress = sum(1 for c in me.graveyard
+                                         if CardType.CREATURE in c.template.card_types
+                                         and (c.template.cmc or 0) >= min_cmc)
+            elif zone == "storm":
+                resource_progress = me.spells_cast_this_turn
+            elif zone == "mana":
+                resource_progress = me.available_mana_estimate
+            elif zone == "battlefield":
+                resource_progress = len(me.creatures)
+
+            if resource_progress >= target:
+                should_advance = True
+                reason = f"{resource_progress}/{target} ready in {zone}"
+            # Payoff-in-hand fallback — require at least half the target so
+            # we don't fire the combo into an empty resource pool. Living
+            # End advancing at GY=0 bricks the combo: the cascade finds
+            # Living End but returns zero creatures (seed 60103). Half-
+            # target means the payoff is worth casting on the trajectory
+            # we're already on, not a hope-and-pray.
             next_goal_idx = self.current_goal_idx + 1
-            if next_goal_idx < len(self.gameplan.goals):
+            if (not should_advance
+                    and next_goal_idx < len(self.gameplan.goals)):
                 next_payoffs = self.gameplan.goals[next_goal_idx].card_roles.get('payoffs', set())
                 has_payoff = any(c.name in next_payoffs for c in me.hand)
-                if has_payoff and self.turns_in_goal >= 2:
+                half_target = max(1, target // 2)
+                if (has_payoff and self.turns_in_goal >= 2
+                        and resource_progress >= half_target):
                     should_advance = True
-                    reason = "Payoff in hand, resources partially ready"
+                    reason = (f"Payoff in hand, "
+                              f"{resource_progress}/{target} partial in {zone}")
 
         elif gt == GoalType.INTERACT:
             # Control: advance after min_turns
