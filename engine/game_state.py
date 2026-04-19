@@ -3570,12 +3570,14 @@ class GameState:
             player.hand.remove(card)
         card.zone = "graveyard"
         player.graveyard.append(card)
-        # Draw a card
-        self.draw_cards(player_idx, 1)
-        # Log
+        # Draw a card; include the drawn card's name in the log so that
+        # any card "appearing from nowhere" on a later turn can be traced
+        # back to the cycle that produced it (conservation-invariant).
+        drawn = self.draw_cards(player_idx, 1)
+        drawn_name = drawn[0].name if drawn else "—"
         cost_desc = f"pay {cost['life']} life" if cost["life"] > 0 else f"pay {cost['mana']} mana"
         self.log.append(f"T{self.display_turn} P{player_idx+1}: "
-                       f"Cycle {card.name} ({cost_desc}, draw a card)")
+                       f"Cycle {card.name} ({cost_desc}, draw: {drawn_name})")
         return True
 
     ALL_COLORS = ["W", "U", "B", "R", "G"]
