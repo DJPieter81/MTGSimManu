@@ -208,9 +208,19 @@ def _clause_gy_hate(oracle: str,
     Scales with opp's GY reliance. Against a deck that doesn't use GY at all,
     returns 0. Against Living End / Goryo's / Dredge, high value.
     """
-    hates_gy = ('exile' in oracle and 'graveyard' in oracle) \
-               or "can't cast spells from" in oracle \
-               or 'leyline of the void' in oracle
+    # True GY hate: exile opponent's GY or shut off GY-casting mechanics.
+    # Must NOT match cards that MOVE cards out of GY onto the battlefield
+    # (Living End, reanimation spells — those are reanimator enablers).
+    hates_gy = False
+    if re.search(r"exile [\w\s']*?graveyard", oracle) \
+            and 'onto the battlefield' not in oracle:
+        hates_gy = True
+    if re.search(r'exile all (cards from )?graveyards?', oracle):
+        hates_gy = True
+    if re.search(r"can'?t (be )?cast (spells )?from", oracle) and 'graveyard' in oracle:
+        hates_gy = True
+    if 'if a card would be put into' in oracle and 'graveyard' in oracle and 'exile' in oracle:
+        hates_gy = True
     if not hates_gy:
         return 0.0
     reliance = _gy_reliance(opp_templates, opp_gameplan)
@@ -220,6 +230,41 @@ def _clause_gy_hate(oracle: str,
     # Creatures denied ≈ opp's average creatures-in-GY at combo time (~5).
     EXPECTED_GY_CREATURES_DENIED = 5.0  # rules constant: full Living End return
     return reliance * EXPECTED_GY_CREATURES_DENIED * PERMANENT_VALUE_WINDOW
+
+
+def _clause_body_value(template: "CardTemplate") -> float:
+    """Intrinsic body value — opponent-independent.
+
+    Creatures: creature_threat_value on the shared default mid-game snap.
+    Cascade spells: credit for the free spell they cast (cascade_value).
+    Non-creature, non-cascade spells: no intrinsic bonus here; they score
+    via their matchup-specific clauses (removal/counter/hate/protection).
+
+    This keeps deck-core cards (cascaders for Living End, finishers for
+    Storm, big creatures for reanimator) from scoring 0 and being
+    swapped out wholesale.
+    """
+    if template.is_creature:
+        from ai.ev_evaluator import creature_threat_value, _DEFAULT_SNAP
+        from engine.cards import CardInstance
+        inst = CardInstance(template=template, owner=0, controller=0,
+                             instance_id=-1, zone="library")
+        return creature_threat_value(inst, _DEFAULT_SNAP)
+
+    # Cascade spells cast a free spell on resolution. Their body value
+    # equals roughly one cast's EV. Approximate via creature_threat_value
+    # of an average creature (same mid-game default scale).
+    oracle = (template.oracle_text or '').lower()
+    tags = template.tags or set()
+    if 'cascade' in oracle or 'cascade' in tags:
+        from ai.clock import mana_clock_impact
+        from ai.ev_evaluator import _DEFAULT_SNAP
+        # One free cast ≈ cmc-limit worth of mana advantage.
+        # Using mana_clock_impact × 20 (unit conversion) × cmc of cascade
+        # floor ≈ creature_clock_impact × average_hit_cmc.
+        return (template.cmc or 0) * mana_clock_impact(_DEFAULT_SNAP) * 20.0
+
+    return 0.0
 
 
 def _clause_artifact_removal(oracle: str,
@@ -261,6 +306,7 @@ def sb_value(template: "CardTemplate",
     body_power = template.power or 0
 
     value = 0.0
+    value += _clause_body_value(template)
     value += _clause_creature_removal(oracle, opp_templates)
     value += _clause_counterspell(oracle, opp_templates)
     value += _clause_protection_color(oracle, opp_templates, body_power)
@@ -270,6 +316,21 @@ def sb_value(template: "CardTemplate",
     return value
 
 
+def _critical_pieces(gameplan) -> set:
+    """Cards that are off-limits for swapping out: combo cores, mulligan
+    keys, finishers declared in the gameplan JSON. Returns a set of names.
+    """
+    protected = set()
+    if gameplan is None:
+        return protected
+    for key in ('mulligan_keys', 'critical_pieces', 'always_early'):
+        vals = getattr(gameplan, key, None) or []
+        protected.update(vals)
+    for combo_set in getattr(gameplan, 'mulligan_combo_sets', []) or []:
+        protected.update(combo_set)
+    return protected
+
+
 def plan_sideboard(
     my_main: Dict[str, int],
     my_sb: Dict[str, int],
@@ -277,6 +338,7 @@ def plan_sideboard(
     card_db: "CardDatabase",
     opp_mainboard: Optional[Dict[str, int]] = None,
     opp_gameplan_loader: Optional[Callable] = None,
+    my_deck_name: Optional[str] = None,
 ) -> Tuple[Dict[str, int], Dict[str, int], List[str]]:
     """Plan Bo3 sideboard swaps using oracle-driven values.
 
@@ -287,10 +349,25 @@ def plan_sideboard(
     Caller supplies `opp_mainboard` (dict of name→count) — the SB plan
     depends on opp's real deck composition, not the deck name alone.
 
+    Cards declared as combo-critical / mulligan-key in the caller's own
+    gameplan JSON are protected from being swapped OUT. A Living End
+    cascader (Shardless Agent) or a Storm finisher (Grapeshot) never
+    scores high on opponent-facing clauses, but the deck bricks without
+    them — the critical-piece list preserves deck identity.
+
     Returns (new_main, new_sb, rationale_log).
     """
     if not my_sb or not opp_mainboard:
         return dict(my_main), dict(my_sb), []
+
+    # Load our own gameplan to protect combo pieces.
+    my_protected: set = set()
+    if opp_gameplan_loader is not None and my_deck_name is not None:
+        try:
+            my_gp = opp_gameplan_loader(my_deck_name)
+            my_protected = _critical_pieces(my_gp)
+        except Exception:
+            my_protected = set()
 
     # Build opp's template list (for density math).
     opp_templates: List = []
@@ -358,6 +435,11 @@ def plan_sideboard(
                 main_idx += 1
             if sb_tmpl.is_land:
                 sb_idx += 1
+            continue
+
+        # Protect combo pieces and mulligan keys from being swapped out.
+        if main_name in my_protected:
+            main_idx += 1
             continue
 
         # Swap only when the SB card's value exceeds the main card's value.

@@ -1,11 +1,15 @@
 """
 Sideboard manager — extracted from GameRunner (Phase 4C).
 
-Handles AI sideboarding between games in a best-of-3 match.
-Uses archetype-aware heuristics to determine what to board in/out.
+Two backends:
+  - Legacy (default): archetype-keyword string matching below.
+  - Solver (opt-in via SB_SOLVER=new): oracle-driven marginal-value
+    solver from ai/sideboard_solver.py. See
+    docs/proposals/sideboard_solver.md.
 """
 from __future__ import annotations
 
+import os
 from typing import Dict, Tuple
 
 
@@ -15,9 +19,21 @@ def sideboard(mainboard: Dict[str, int], sideboard_cards: Dict[str, int],
 
     Returns (new_mainboard, new_sideboard).
     Also prints swap log to stderr for debugging.
+
+    Backend: env var `SB_SOLVER=new` routes to oracle-driven solver;
+    otherwise falls through to the legacy string-match logic below.
     """
     if not sideboard_cards:
         return mainboard, sideboard_cards
+
+    if os.environ.get("SB_SOLVER", "old").lower() == "new":
+        try:
+            return _solver_sideboard(mainboard, sideboard_cards,
+                                      my_deck, opponent_deck)
+        except Exception as exc:  # pragma: no cover — fallback on any solver error
+            import sys
+            print(f"  [SB solver fell back to legacy: {exc}]", file=sys.stderr)
+            # fall through to legacy
 
     new_main = dict(mainboard)
     new_side = dict(sideboard_cards)
@@ -241,3 +257,67 @@ def sideboard(mainboard: Dict[str, int], sideboard_cards: Dict[str, int],
         print(f"  Sideboard ({my_deck} vs {opponent_deck}): {', '.join(sorted(swap_log))}", file=sys.stderr)
 
     return new_main, new_side
+
+
+# ─────────────────────────────────────────────────────────────
+# Oracle-driven solver backend (SB_SOLVER=new)
+# ─────────────────────────────────────────────────────────────
+
+_SB_SOLVER_CARD_DB = None
+
+
+def _get_card_db():
+    """Lazy CardDatabase singleton — SB planning needs template lookups."""
+    global _SB_SOLVER_CARD_DB
+    if _SB_SOLVER_CARD_DB is None:
+        from engine.card_database import CardDatabase
+        _SB_SOLVER_CARD_DB = CardDatabase()
+    return _SB_SOLVER_CARD_DB
+
+
+def _load_gameplan(deck_name: str):
+    """Load opp's DeckGameplan if one exists — richer GY-reliance signal."""
+    try:
+        from ai.gameplan import get_gameplan
+        return get_gameplan(deck_name)
+    except Exception:
+        return None
+
+
+def _solver_sideboard(mainboard: Dict[str, int],
+                      sideboard_cards: Dict[str, int],
+                      my_deck: str,
+                      opponent_deck: str
+                      ) -> Tuple[Dict[str, int], Dict[str, int]]:
+    """Oracle-driven sideboard backend.
+
+    Loads opp's decklist from decks/modern_meta.py:MODERN_DECKS and
+    delegates per-card value scoring to ai/sideboard_solver.sb_value.
+    """
+    from decks.modern_meta import MODERN_DECKS
+    from ai.sideboard_solver import plan_sideboard
+
+    opp_deck = MODERN_DECKS.get(opponent_deck)
+    if opp_deck is None:
+        # Unknown opp deck — fall through to legacy.
+        raise ValueError(f"unknown opponent deck: {opponent_deck}")
+
+    opp_main = opp_deck.get("mainboard") or {}
+    card_db = _get_card_db()
+
+    new_main, new_sb, log = plan_sideboard(
+        mainboard, sideboard_cards,
+        opp_deck_name=opponent_deck,
+        card_db=card_db,
+        opp_mainboard=opp_main,
+        opp_gameplan_loader=_load_gameplan,
+        my_deck_name=my_deck,
+    )
+
+    if log:
+        import sys
+        swap_summary = ", ".join(log)
+        print(f"  SB-solver ({my_deck} vs {opponent_deck}): {swap_summary}",
+              file=sys.stderr)
+
+    return new_main, new_sb

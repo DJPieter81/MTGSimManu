@@ -83,15 +83,23 @@ class TestColorProtection:
             f"(red-heavy). Got {v:.2f}."
         )
 
-    def test_kor_firewalker_vs_amulet_near_zero(self, card_db):
+    def test_kor_firewalker_vs_amulet_body_only(self, card_db):
+        """Vs a non-red deck, Firewalker's value is its body (no protection
+        bonus). The body_value clause credits the 2/2 baseline; the
+        protection clause contributes 0. Scaling test below confirms
+        the matchup-specific delta exists when colour density > 0."""
         templates = _deck_templates(card_db, AMULET_STUB)
         firewalker = card_db.get_card("Kor Firewalker")
         if firewalker is None:
             pytest.skip("Kor Firewalker not in DB")
-        v = sb_value(firewalker, templates)
-        # Amulet has no red sources → protection is worthless
-        assert v < 1.0, (
-            f"Kor Firewalker should be near-zero vs Amulet (no red). Got {v:.2f}."
+        from ai.sideboard_solver import _clause_protection_color
+        oracle = (firewalker.oracle_text or '').lower()
+        # Protection clause alone must return 0 vs a non-red deck.
+        prot_only = _clause_protection_color(oracle, templates,
+                                              firewalker.power or 0)
+        assert prot_only == 0, (
+            f"Protection clause should contribute 0 vs a non-red deck. "
+            f"Got {prot_only:.2f}."
         )
 
     def test_protection_scales_with_color_density(self, card_db):

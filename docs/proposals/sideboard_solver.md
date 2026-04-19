@@ -292,3 +292,69 @@ This proposal, if implemented, supersedes:
 3. **Integration with mulligan.** A better SB changes mulligan priority
    ("keep if hand has anti-Burn tech"). Phase 5 future work — out of
    scope for this proposal.
+
+---
+
+## Appendix A — Phase 2 A/B results (2026-04-19)
+
+Both backends run at 16×16 N=20, same codebase (post-critical-pieces
+protection + GY-hate regex tightening).
+
+**Per-deck field WR deltas:**
+
+| Deck | Old | New | Δpp |
+|---|---|---|---|
+| Azorius Control | 9.7% | 16.7% | **+7.0** |
+| Eldrazi Tron | 67.7% | 73.0% | **+5.3** |
+| Amulet Titan | 42.3% | 46.7% | +4.3 |
+| Dimir Midrange | 61.0% | 65.0% | +4.0 |
+| Izzet Prowess | 46.3% | 48.0% | +1.7 |
+| Jeskai Blink | 60.3% | 61.7% | +1.3 |
+| 4/5c Control | 33.0% | 32.7% | −0.3 |
+| Domain Zoo | 68.0% | 67.0% | −1.0 |
+| Pinnacle Affinity | 62.3% | 61.0% | −1.3 |
+| Living End | 24.7% | 22.3% | −2.3 |
+| 4c Omnath | 51.0% | 48.7% | −2.3 |
+| Azorius Control (WST) | 35.7% | 33.0% | −2.7 |
+| Affinity | 89.7% | 86.7% | −3.0 |
+| Ruby Storm | 42.0% | 39.0% | −3.0 |
+| Boros Energy | 71.3% | 68.0% | −3.3 |
+| Goryo's Vengeance | 35.0% | 30.7% | **−4.3** |
+
+**Aggregate:** +0.1pp (neutral).
+
+**Matchup volatility:** ±25–35pp swings on specific pairings
+(Amulet-vs-Prowess ±35, Affinity-vs-PinnacleAff ±30). The solver is
+making large SB changes that don't always land — high variance signals
+underfitting in the value formulas.
+
+**Acceptance criteria check:**
+- "≥5pp improvement on outlier matchups" — Azorius **+7pp ✓**, Tron
+  **+5pp ✓** (marginal).
+- "without regression elsewhere" — Goryo's **−4pp ✗** (over the ±3
+  tolerance).
+- Aggregate ≥ 0 — **+0.1pp ✓** (but only barely).
+
+**Decision: DO NOT ship.** Solver stays opt-in under `SB_SOLVER=new`
+while the formulas iterate. Phase 3 gated on a future run that meets
+all three criteria.
+
+**Suggested Phase 2.5 refinements (before re-testing):**
+
+1. **Goryo's regression diagnosis.** Goryo's −4pp suggests the solver
+   swaps out something core. Check whether `critical_pieces` covers
+   every reanimator chain card (Faithful Mending, Unmarked Grave,
+   Archon of Cruelty, Persist, Unburial Rites, Goryo's Vengeance).
+2. **Boros / Storm / Affinity ~−3pp.** All three are fast decks where
+   swapping ANY mainboard card for a specialist hate piece slows the
+   deck. The solver needs a "tempo cost" term — swapping a 2-CMC
+   creature for a 3-CMC hate piece costs half a tempo turn, roughly
+   `(new_cmc - old_cmc) × mana_clock_impact × 20 × residency`. Subtract
+   from `sb_value`.
+3. **High-variance pairings.** Amulet-vs-Prowess at ±35pp suggests the
+   solver is making a single categorical swap (Blood Moon in, removal
+   out?) that dominates. Cap per-matchup swap count at 4 initially, or
+   require swap deltas to compound rather than single large moves.
+4. **Threshold gate.** Only commit a swap when
+   `sb_value(C_sb, O) − sb_value(C_main, O) > ε`, where ε is mana-unit
+   × 0.5 (half a mana-turn). Prevents marginal swaps.
