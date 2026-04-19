@@ -38,7 +38,19 @@ METAGAME_SHARES = {
 # Full decklists: mainboard + sideboard
 MODERN_DECKS: Dict[str, Dict[str, Dict[str, int]]] = {
     "Boros Energy": {
-        # RandomOctopus — 1st Place, Modern Challenge 64 (April 4, 2026)
+        # rarakkyo — 5-8, Modern Challenge 32 (April 18, 2026)
+        # Identical 75 to Rashek's Apr-16 Challenge 64 list — the consensus
+        # current tuning. Key shifts from the RandomOctopus (Apr 4) list:
+        #   - Orim's Chant moved MB (2) → SB (2)   [aligns with bug 2 fix:
+        #     unkicked Chant no longer Time-Walks, so it's correctly SB-only]
+        #   - Static Prison cut (1 → 0)
+        #   - Flooded Strand (4) → Windswept Heath (4)
+        #   - +1 Ranger-Captain of Eos MB (silence effect vs combo)
+        #   - +1 Blood Moon MB (proactive vs greedy manabases)
+        #   - +1 The Legend of Roku MB (recursive threat)
+        #   - +1 Dalkovan Encampment (manland)
+        #   - Sideboard retooled: -Wrath, -Charmaw ratios, +Surgical, +Vexing
+        #     Bauble, +Damping Sphere, +Orim's Chant, +Celestial Purge single
         "mainboard": {
             "Ragavan, Nimble Pilferer": 4,
             "Ocelot Pride": 4,
@@ -47,28 +59,34 @@ MODERN_DECKS: Dict[str, Dict[str, Dict[str, int]]] = {
             "Phlage, Titan of Fire's Fury": 4,
             "Seasoned Pyromancer": 3,
             "Voice of Victory": 2,
+            "Ranger-Captain of Eos": 1,
             "Galvanic Discharge": 4,
-            "Thraben Charm": 3,
-            "Static Prison": 1,
+            "Thraben Charm": 2,
+            "Blood Moon": 1,
             "Goblin Bombardment": 3,
-            "Orim's Chant": 2,
+            "The Legend of Roku": 1,
             "Arid Mesa": 4,
-            "Flooded Strand": 4,
+            "Windswept Heath": 4,
             "Marsh Flats": 3,
             "Arena of Glory": 3,
             "Sacred Foundry": 3,
             "Elegant Parlor": 2,
-            "Snow-Covered Plains": 2,
-            "Snow-Covered Mountain": 1,
+            "Dalkovan Encampment": 1,
+            "Plains": 2,
+            "Mountain": 1,
         },
         "sideboard": {
-            "Wrath of the Skies": 3,
-            "High Noon": 2,
-            "Obsidian Charmaw": 2,
-            "Blood Moon": 2,
-            "The Legend of Roku": 2,
-            "Wear // Tear": 3,
+            "Blood Moon": 1,
             "Celestial Purge": 1,
+            "Damping Sphere": 1,
+            "High Noon": 1,
+            "Obsidian Charmaw": 2,
+            "Orim's Chant": 2,
+            "Surgical Extraction": 1,
+            "The Legend of Roku": 1,
+            "Vexing Bauble": 1,
+            "Wear // Tear": 2,
+            "Wrath of the Skies": 2,
         },
     },
     "Jeskai Blink": {
