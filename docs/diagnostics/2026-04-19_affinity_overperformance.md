@@ -1,3 +1,18 @@
+---
+title: Affinity Overperformance — 5 Hypotheses
+status: superseded
+priority: historical
+session: 2026-04-19
+supersedes_fields: []
+supersedes: []
+superseded_by:
+  - docs/design/ev_correctness_overhaul.md
+tags:
+  - affinity
+  - hypothesis
+  - ranking
+summary: Ranking of why Affinity sim WR (~88%) exceeds real-world (~55%). Input to the overhaul design.
+---
 # Diagnostic — Affinity's ~80% sim WR vs ~55% real-world
 
 **Date:** 2026-04-19 (continued)

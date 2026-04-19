@@ -1,3 +1,15 @@
+---
+title: Bo3 play/draw rule not implemented
+status: active
+priority: secondary
+session: 2026-04-19
+tags:
+  - bo3
+  - rules
+  - engine
+  - quick-fix
+summary: "engine/game_state.py:410 rolls fresh random die every Bo3 game. Loser-chooses-play not implemented. ~30 min fix. Parallel to primary EV work."
+---
 # Diagnostic: Bo3 play/draw rule not implemented
 
 **Date:** 2026-04-19

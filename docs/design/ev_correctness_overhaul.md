@@ -1,3 +1,22 @@
+---
+title: EV Correctness Overhaul
+status: active
+priority: primary
+session: 2026-04-19
+supersedes_fields:
+  - docs/handoff/2026-04-19_next-session-brief.md
+depends_on:
+  - docs/diagnostics/2026-04-19_affinity_investigation.md
+  - docs/experiments/2026-04-19_blood_moon_sb_hypothesis_failed.md
+  - docs/experiments/2026-04-19_mardu_energy_failed.md
+tags:
+  - ev-scoring
+  - design
+  - option-c
+  - mulligan
+  - targeting
+summary: "Six bugs traceable to one root: EV baseline is 'do nothing this turn' when it should be 'best alternative, incl. cast-later.' Six-phase execution with failing-tests-first protocol."
+---
 # EV Correctness Overhaul — Design Doc
 
 **Created:** 2026-04-19 (end of claude.ai session)

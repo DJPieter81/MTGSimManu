@@ -1,3 +1,14 @@
+---
+title: FALSIFIED: Mardu Energy brew
+status: falsified
+priority: historical
+session: 2026-04-19
+tags:
+  - brew
+  - falsified
+  - do-not-retry
+summary: "Boros+black splash: -4pp avg WR, lost ET/Affinity critical matchups. Don't splash to solve a matchup; pick a deck that wants the splash."
+---
 # Failed Experiment: Mardu Energy (Apr 2026)
 
 **Designed:** 2026-04-19

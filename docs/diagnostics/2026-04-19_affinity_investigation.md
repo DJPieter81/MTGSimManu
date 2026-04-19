@@ -1,3 +1,14 @@
+---
+title: Affinity Diagnostic — 3 Bo3 Traces
+status: historical
+priority: secondary
+session: 2026-04-19
+tags:
+  - affinity
+  - diagnostic
+  - traces
+summary: Original 3-Bo3 investigation (Boros/Jeskai/Dimir vs Affinity) that surfaced bugs 1-6. All listed engine bugs now landed via Claude Code.
+---
 # Affinity Diagnostic — Why Nobody Beats Affinity (3 Bo3 Traces)
 
 **Date:** 2026-04-19  

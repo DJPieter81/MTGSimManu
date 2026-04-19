@@ -1,3 +1,15 @@
+---
+title: Next-session handoff brief (original)
+status: superseded
+priority: historical
+session: 2026-04-19
+superseded_by:
+  - docs/design/ev_correctness_overhaul.md
+tags:
+  - handoff
+  - historical
+summary: Original bug queue. Bugs 1-6 have landed. Bugs 7+ absorbed into the EV overhaul design doc.
+---
 # Handoff Brief — 2026-04-19 → Next Session (Claude Code)
 
 **Status:** Moving from claude.ai (analysis) to Claude Code (engine surgery). This doc is the context carry-over. Read start-to-finish before touching code.

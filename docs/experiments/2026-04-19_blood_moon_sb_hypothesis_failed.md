@@ -1,3 +1,14 @@
+---
+title: FALSIFIED: Blood Moon SB retention vs Affinity
+status: falsified
+priority: historical
+session: 2026-04-19
+tags:
+  - sideboard
+  - falsified
+  - do-not-retry
+summary: Keeping Blood Moon MB post-SB vs Affinity dropped Boros 30% -> 10-15%. Slot pressure means better cuts preserved.
+---
 # Failed Experiment: Blood Moon MB-retention vs Affinity (Apr 2026)
 
 **Designed:** 2026-04-19 (late session)  
