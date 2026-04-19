@@ -1,0 +1,509 @@
+Loaded 21759 cards (0 errors)
+=== Dimir Midrange vs Affinity (seed 60400) ===
+Result: Dimir Midrange wins T8 via damage
+Life: P1=13 P2=-4
+
+  [MAIN1]
+
+T1 Dimir Midrange | life=20 mana=0 hand=5+2L gy=0
+  Hand: ['Orcish Bowmasters', 'Orcish Bowmasters', 'Orcish Bowmasters', 'Thoughtseize', 'Fatal Push']
+  Opp board: [] (life=20)
+  EV scores:
+     +41.0  play_land: Polluted Delta <--
+     +23.0  play_land: Creeping Tar Pit
+  >>> PLAY_LAND: Polluted Delta
+  [MAIN1]
+
+T1 Dimir Midrange | life=17 mana=1 hand=5+1L gy=1
+  Hand: ['Orcish Bowmasters', 'Orcish Bowmasters', 'Orcish Bowmasters', 'Thoughtseize', 'Fatal Push']
+  Opp board: [] (life=20)
+  EV scores:
+      -2.1  cast_spell: Thoughtseize <--  [h=-2.1 la=-2.1]
+  >>> CAST_SPELL: Thoughtseize
+  [MAIN1]
+
+T1 Dimir Midrange | life=15 mana=0 hand=4+1L gy=2
+  Hand: ['Orcish Bowmasters', 'Orcish Bowmasters', 'Orcish Bowmasters', 'Fatal Push']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-3.0)
+  [MAIN2]
+
+T1 Dimir Midrange | life=15 mana=0 hand=4+1L gy=2
+  Hand: ['Orcish Bowmasters', 'Orcish Bowmasters', 'Orcish Bowmasters', 'Fatal Push']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-3.0)
+  [MAIN1]
+
+T2 Affinity | life=20 mana=0 hand=6+1L gy=1
+  Hand: ['Frogmite', 'Nettlecyst', 'Springleaf Drum', 'Signal Pest', 'Ornithopter', 'Signal Pest']
+  Opp board: [] (life=15)
+  EV scores:
+      +8.0  play_land: Razortide Bridge <--
+      -0.0  cast_spell: Ornithopter  [h=-0.0 la=-0.0]
+  >>> PLAY_LAND: Razortide Bridge
+  [MAIN1]
+
+T2 Affinity | life=20 mana=0 hand=6+0L gy=1
+  Hand: ['Frogmite', 'Nettlecyst', 'Springleaf Drum', 'Signal Pest', 'Ornithopter', 'Signal Pest']
+  Opp board: [] (life=15)
+  EV scores:
+      -0.0  cast_spell: Ornithopter <--  [h=-0.0 la=-0.0]
+  >>> CAST_SPELL: Ornithopter
+  [MAIN1]
+
+T2 Affinity | life=20 mana=0 hand=5+0L gy=1
+  Hand: ['Frogmite', 'Nettlecyst', 'Springleaf Drum', 'Signal Pest', 'Signal Pest']
+  Board: ['Ornithopter (0/2)']
+  Opp board: [] (life=15)
+  EV scores:
+      -0.0  cast_spell: Ornithopter <--  [h=-0.0 la=-0.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T2 Affinity | life=20 mana=0 hand=5+0L gy=1
+  Hand: ['Frogmite', 'Nettlecyst', 'Springleaf Drum', 'Signal Pest', 'Signal Pest']
+  Board: ['Ornithopter (0/2)']
+  Opp board: [] (life=15)
+  EV scores:
+      -0.0  cast_spell: Ornithopter <--  [h=-0.0 la=-0.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T3 Dimir Midrange | life=15 mana=1 hand=5+1L gy=2
+  Hand: ['Orcish Bowmasters', 'Orcish Bowmasters', 'Orcish Bowmasters', 'Fatal Push', 'Drown in the Loch']
+  Opp board: ['Ornithopter (0/2)'] (life=20)
+  EV scores:
+      +7.0  play_land: Creeping Tar Pit <--
+      -0.1  cast_spell: Fatal Push  [h=-0.1 la=-0.1]
+  >>> PLAY_LAND: Creeping Tar Pit
+  [MAIN1]
+
+T3 Dimir Midrange | life=15 mana=1 hand=5+0L gy=2
+  Hand: ['Orcish Bowmasters', 'Orcish Bowmasters', 'Orcish Bowmasters', 'Fatal Push', 'Drown in the Loch']
+  Opp board: ['Ornithopter (0/2)'] (life=20)
+  EV scores:
+      -0.1  cast_spell: Fatal Push <--  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Fatal Push
+  [MAIN1]
+
+T3 Dimir Midrange | life=15 mana=0 hand=4+0L gy=3
+  Hand: ['Orcish Bowmasters', 'Orcish Bowmasters', 'Orcish Bowmasters', 'Drown in the Loch']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-3.0)
+  [MAIN2]
+
+T3 Dimir Midrange | life=15 mana=0 hand=4+0L gy=3
+  Hand: ['Orcish Bowmasters', 'Orcish Bowmasters', 'Orcish Bowmasters', 'Drown in the Loch']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-3.0)
+  [MAIN1]
+
+T4 Affinity | life=20 mana=1 hand=6+0L gy=2
+  Hand: ['Frogmite', 'Nettlecyst', 'Springleaf Drum', 'Signal Pest', 'Signal Pest', "Sojourner's Companion"]
+  Opp board: [] (life=15)
+  EV scores:
+      -0.1  cast_spell: Springleaf Drum <--  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Signal Pest  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Signal Pest  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Springleaf Drum
+  [MAIN1]
+
+T4 Affinity | life=20 mana=0 hand=5+0L gy=2
+  Hand: ['Frogmite', 'Nettlecyst', 'Signal Pest', 'Signal Pest', "Sojourner's Companion"]
+  Permanents: ['Springleaf Drum']
+  Opp board: [] (life=15)
+  EV scores:
+      -0.1  cast_spell: Springleaf Drum <--  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Signal Pest  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Signal Pest  [h=-0.1 la=-0.1]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T4 Affinity | life=20 mana=0 hand=5+0L gy=2
+  Hand: ['Frogmite', 'Nettlecyst', 'Signal Pest', 'Signal Pest', "Sojourner's Companion"]
+  Permanents: ['Springleaf Drum']
+  Opp board: [] (life=15)
+  EV scores:
+      -0.1  cast_spell: Springleaf Drum <--  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Signal Pest  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Signal Pest  [h=-0.1 la=-0.1]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T5 Dimir Midrange | life=15 mana=2 hand=4+1L gy=3
+  Hand: ['Orcish Bowmasters', 'Orcish Bowmasters', 'Orcish Bowmasters', 'Drown in the Loch']
+  Opp board: [] (life=20)
+  EV scores:
+     +15.0  play_land: Watery Grave <--
+      +6.1  cast_spell: Orcish Bowmasters  [h=+6.1 la=+6.1]
+      +6.1  cast_spell: Orcish Bowmasters  [h=+6.1 la=+6.1]
+      +6.1  cast_spell: Orcish Bowmasters  [h=+6.1 la=+6.1]
+  >>> PLAY_LAND: Watery Grave
+  [MAIN1]
+
+T5 Dimir Midrange | life=15 mana=2 hand=4+0L gy=3
+  Hand: ['Orcish Bowmasters', 'Orcish Bowmasters', 'Orcish Bowmasters', 'Drown in the Loch']
+  Opp board: [] (life=20)
+  EV scores:
+      +6.1  cast_spell: Orcish Bowmasters <--  [h=+6.1 la=+6.1]
+      +6.1  cast_spell: Orcish Bowmasters  [h=+6.1 la=+6.1]
+      +6.1  cast_spell: Orcish Bowmasters  [h=+6.1 la=+6.1]
+  >>> CAST_SPELL: Orcish Bowmasters
+  [MAIN1]
+
+T5 Dimir Midrange | life=15 mana=0 hand=3+0L gy=3
+  Hand: ['Orcish Bowmasters', 'Orcish Bowmasters', 'Drown in the Loch']
+  Board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)']
+  Opp board: [] (life=19)
+  EV scores:
+      +6.1  cast_spell: Orcish Bowmasters <--  [h=+6.1 la=+6.1]
+      +6.1  cast_spell: Orcish Bowmasters  [h=+6.1 la=+6.1]
+      +6.1  cast_spell: Orcish Bowmasters  [h=+6.1 la=+6.1]
+  >>> PASS (threshold=-3.0)
+  [MAIN2]
+
+T5 Dimir Midrange | life=15 mana=0 hand=3+0L gy=3
+  Hand: ['Orcish Bowmasters', 'Orcish Bowmasters', 'Drown in the Loch']
+  Board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)']
+  Opp board: [] (life=19)
+  EV scores:
+      +6.1  cast_spell: Orcish Bowmasters <--  [h=+6.1 la=+6.1]
+      +6.1  cast_spell: Orcish Bowmasters  [h=+6.1 la=+6.1]
+      +6.1  cast_spell: Orcish Bowmasters  [h=+6.1 la=+6.1]
+  >>> PASS (threshold=-3.0)
+  [MAIN1]
+
+T6 Affinity | life=19 mana=1 hand=6+0L gy=2
+  Hand: ['Frogmite', 'Nettlecyst', 'Signal Pest', 'Signal Pest', "Sojourner's Companion", 'Memnite']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=15)
+  EV scores:
+      -2.2  cast_spell: Signal Pest <--  [h=-2.2 la=-2.2]
+      -2.2  cast_spell: Signal Pest  [h=-2.2 la=-2.2]
+     -23.1  cast_spell: Memnite  [h=-23.1 la=-23.1]
+  >>> CAST_SPELL: Signal Pest
+  [MAIN1]
+
+T6 Affinity | life=19 mana=0 hand=5+0L gy=2
+  Hand: ['Frogmite', 'Nettlecyst', 'Signal Pest', "Sojourner's Companion", 'Memnite']
+  Board: ['Signal Pest (0/1)']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=15)
+  EV scores:
+     -18.0  cast_spell: Memnite <--  [h=-18.0 la=-18.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T6 Affinity | life=19 mana=0 hand=5+0L gy=2
+  Hand: ['Frogmite', 'Nettlecyst', 'Signal Pest', "Sojourner's Companion", 'Memnite']
+  Board: ['Signal Pest (0/1)']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=15)
+  EV scores:
+     -18.0  cast_spell: Memnite <--  [h=-18.0 la=-18.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T7 Dimir Midrange | life=15 mana=3 hand=4+0L gy=3
+  Hand: ['Orcish Bowmasters', 'Orcish Bowmasters', 'Drown in the Loch', 'Counterspell']
+  Board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)']
+  Opp board: ['Signal Pest (0/1)'] (life=19)
+  EV scores:
+      +8.0  cast_spell: Orcish Bowmasters <--  [h=+8.0 la=+8.0]
+      +8.0  cast_spell: Orcish Bowmasters  [h=+8.0 la=+8.0]
+  >>> CAST_SPELL: Orcish Bowmasters
+  [MAIN1]
+
+T7 Dimir Midrange | life=15 mana=1 hand=3+0L gy=3
+  Hand: ['Orcish Bowmasters', 'Drown in the Loch', 'Counterspell']
+  Board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)']
+  Opp board: [] (life=19)
+  EV scores:
+      +8.0  cast_spell: Orcish Bowmasters <--  [h=+8.0 la=+8.0]
+      +8.0  cast_spell: Orcish Bowmasters  [h=+8.0 la=+8.0]
+  >>> PASS (threshold=-3.0)
+  >>> ATTACK: ['Orcish Bowmasters', 'Orc Army']
+  [MAIN2]
+
+T7 Dimir Midrange | life=15 mana=1 hand=3+0L gy=3
+  Hand: ['Orcish Bowmasters', 'Drown in the Loch', 'Counterspell']
+  Board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)']
+  Opp board: [] (life=17)
+  EV scores:
+      +8.0  cast_spell: Orcish Bowmasters <--  [h=+8.0 la=+8.0]
+      +8.0  cast_spell: Orcish Bowmasters  [h=+8.0 la=+8.0]
+  >>> PASS (threshold=-3.0)
+  [MAIN1]
+
+T8 Affinity | life=17 mana=1 hand=5+1L gy=3
+  Hand: ['Frogmite', 'Nettlecyst', 'Signal Pest', "Sojourner's Companion", 'Memnite']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=15)
+  EV scores:
+     +31.0  play_land: Spire of Industry <--
+      +0.1  cast_spell: Memnite  [h=+0.1 la=+0.1 rmv=6%]
+      -0.1  cast_spell: Signal Pest  [h=-0.1 la=-0.1 rmv=5%]
+  >>> PLAY_LAND: Spire of Industry
+  [MAIN1]
+
+T8 Affinity | life=17 mana=2 hand=5+0L gy=3
+  Hand: ['Frogmite', 'Nettlecyst', 'Signal Pest', "Sojourner's Companion", 'Memnite']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=15)
+  EV scores:
+      +8.2  cycle: Sojourner's Companion <--
+      +0.1  cast_spell: Memnite  [h=+0.1 la=+0.1 rmv=6%]
+      -0.1  cast_spell: Signal Pest  [h=-0.1 la=-0.1 rmv=5%]
+      -0.2  cast_spell: Frogmite  [h=-0.2 la=-0.2 rmv=42%]
+  >>> CYCLE: Sojourner's Companion
+  [MAIN1]
+
+T8 Affinity | life=15 mana=0 hand=5+0L gy=4
+  Hand: ['Frogmite', 'Nettlecyst', 'Signal Pest', 'Memnite', 'Frogmite']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=15)
+  EV scores:
+      +0.0  cast_spell: Memnite <--
+  >>> CAST_SPELL: Memnite
+  [MAIN1]
+
+T8 Affinity | life=15 mana=0 hand=4+0L gy=4
+  Hand: ['Frogmite', 'Nettlecyst', 'Signal Pest', 'Frogmite']
+  Board: ['Memnite (1/1)']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=15)
+  EV scores:
+      +0.0  cast_spell: Memnite <--
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T8 Affinity | life=15 mana=0 hand=4+0L gy=4
+  Hand: ['Frogmite', 'Nettlecyst', 'Signal Pest', 'Frogmite']
+  Board: ['Memnite (1/1)']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=15)
+  EV scores:
+      +0.0  cast_spell: Memnite <--
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T9 Dimir Midrange | life=15 mana=3 hand=4+0L gy=3
+  Hand: ['Orcish Bowmasters', 'Drown in the Loch', 'Counterspell', 'Counterspell']
+  Board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)']
+  Opp board: ['Memnite (1/1)'] (life=15)
+  EV scores:
+      +4.1  cast_spell: Orcish Bowmasters <--  [h=+4.1 la=+4.1]
+  >>> CAST_SPELL: Orcish Bowmasters
+  [MAIN1]
+
+T9 Dimir Midrange | life=15 mana=1 hand=3+0L gy=3
+  Hand: ['Drown in the Loch', 'Counterspell', 'Counterspell']
+  Board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)']
+  Opp board: [] (life=15)
+  EV scores:
+      +4.1  cast_spell: Orcish Bowmasters <--  [h=+4.1 la=+4.1]
+  >>> PASS (threshold=-3.0)
+  >>> ATTACK: ['Orcish Bowmasters', 'Orc Army', 'Orcish Bowmasters', 'Orc Army']
+  [MAIN2]
+
+T9 Dimir Midrange | life=15 mana=1 hand=3+0L gy=3
+  Hand: ['Drown in the Loch', 'Counterspell', 'Counterspell']
+  Board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)']
+  Opp board: [] (life=11)
+  EV scores:
+      +4.1  cast_spell: Orcish Bowmasters <--  [h=+4.1 la=+4.1]
+  >>> PASS (threshold=-3.0)
+  [MAIN1]
+
+T10 Affinity | life=11 mana=2 hand=5+0L gy=5
+  Hand: ['Frogmite', 'Nettlecyst', 'Signal Pest', 'Frogmite', 'Cranial Plating']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=15)
+  EV scores:
+      -0.1  cast_spell: Signal Pest <--  [h=-0.1 la=-0.1 rmv=5%]
+      -0.2  cast_spell: Frogmite  [h=-0.2 la=-0.2 rmv=42%]
+      -0.2  cast_spell: Frogmite  [h=-0.2 la=-0.2 rmv=42%]
+      -0.3  cast_spell: Cranial Plating  [h=-0.3 la=-0.3]
+  >>> CAST_SPELL: Signal Pest
+  [MAIN1]
+
+T10 Affinity | life=11 mana=1 hand=4+0L gy=5
+  Hand: ['Frogmite', 'Nettlecyst', 'Frogmite', 'Cranial Plating']
+  Board: ['Signal Pest (0/1)']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=15)
+  EV scores:
+      -0.5  cast_spell: Frogmite <--  [h=-0.5 la=-0.5 rmv=42%]
+      -0.5  cast_spell: Frogmite  [h=-0.5 la=-0.5 rmv=42%]
+  >>> CAST_SPELL: Frogmite
+  [MAIN1]
+
+T10 Affinity | life=11 mana=0 hand=3+0L gy=5
+  Hand: ['Nettlecyst', 'Frogmite', 'Cranial Plating']
+  Board: ['Signal Pest (0/1)', 'Frogmite (2/2)']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=15)
+  EV scores:
+      -6.5  cast_spell: Frogmite <--  [h=-6.5 la=-6.5 rmv=42%]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T10 Affinity | life=11 mana=0 hand=3+0L gy=5
+  Hand: ['Nettlecyst', 'Frogmite', 'Cranial Plating']
+  Board: ['Signal Pest (0/1)', 'Frogmite (2/2)']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=15)
+  EV scores:
+      -6.5  cast_spell: Frogmite <--  [h=-6.5 la=-6.5 rmv=42%]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T11 Dimir Midrange | life=15 mana=3 hand=3+1L gy=3
+  Hand: ['Drown in the Loch', 'Counterspell', 'Counterspell']
+  Board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)']
+  Opp board: ['Signal Pest (0/1)', 'Frogmite (2/2)'] (life=11)
+  EV scores:
+      +7.0  play_land: Darkslick Shores <--
+      +2.3  cast_spell: Drown in the Loch  [h=+2.3 la=+2.3]
+  >>> PLAY_LAND: Darkslick Shores
+  [MAIN1]
+
+T11 Dimir Midrange | life=15 mana=3 hand=3+0L gy=3
+  Hand: ['Drown in the Loch', 'Counterspell', 'Counterspell']
+  Board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)']
+  Opp board: ['Signal Pest (0/1)', 'Frogmite (2/2)'] (life=11)
+  EV scores:
+      +2.5  cast_spell: Drown in the Loch <--  [h=+2.5 la=+2.5]
+  >>> CAST_SPELL: Drown in the Loch
+  [MAIN1]
+
+T11 Dimir Midrange | life=15 mana=1 hand=2+0L gy=4
+  Hand: ['Counterspell', 'Counterspell']
+  Board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)']
+  Opp board: ['Signal Pest (0/1)'] (life=11)
+  >>> PASS (threshold=-3.0)
+  >>> ATTACK: ['Orcish Bowmasters', 'Orc Army', 'Orcish Bowmasters', 'Orc Army', 'Orcish Bowmasters', 'Orc Army']
+  [MAIN2]
+
+T11 Dimir Midrange | life=15 mana=1 hand=2+0L gy=4
+  Hand: ['Counterspell', 'Counterspell']
+  Board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)']
+  Opp board: [] (life=6)
+  >>> PASS (threshold=-3.0)
+  [MAIN1]
+
+T12 Affinity | life=6 mana=2 hand=4+0L gy=7
+  Hand: ['Nettlecyst', 'Frogmite', 'Cranial Plating', 'Signal Pest']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=15)
+  EV scores:
+      -0.1  cast_spell: Signal Pest <--  [h=-0.1 la=-0.1 rmv=4%]
+      -0.3  cast_spell: Cranial Plating  [h=-0.3 la=-0.3]
+      -1.2  cast_spell: Frogmite  [h=-1.2 la=-1.2 rmv=31%]
+  >>> CAST_SPELL: Signal Pest
+  [MAIN1]
+
+T12 Affinity | life=6 mana=1 hand=3+0L gy=7
+  Hand: ['Nettlecyst', 'Frogmite', 'Cranial Plating']
+  Board: ['Signal Pest (0/1)']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=15)
+  EV scores:
+      -0.0  cast_spell: Frogmite <--  [h=-0.0 la=-0.0 rmv=31%]
+  >>> CAST_SPELL: Frogmite
+  [MAIN1]
+
+T12 Affinity | life=6 mana=0 hand=2+0L gy=7
+  Hand: ['Nettlecyst', 'Cranial Plating']
+  Board: ['Signal Pest (0/1)', 'Frogmite (2/2)']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=15)
+  EV scores:
+      -0.0  cast_spell: Frogmite <--  [h=-0.0 la=-0.0 rmv=31%]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T12 Affinity | life=6 mana=0 hand=2+0L gy=7
+  Hand: ['Nettlecyst', 'Cranial Plating']
+  Board: ['Signal Pest (0/1)', 'Frogmite (2/2)']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=15)
+  EV scores:
+      -0.0  cast_spell: Frogmite <--  [h=-0.0 la=-0.0 rmv=31%]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T13 Dimir Midrange | life=15 mana=4 hand=3+0L gy=4
+  Hand: ['Counterspell', 'Counterspell', 'Psychic Frog']
+  Board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)']
+  Opp board: ['Signal Pest (0/1)', 'Frogmite (2/2)'] (life=6)
+  EV scores:
+      +9.7  cast_spell: Psychic Frog <--  [h=+9.7 la=+9.7]
+  >>> CAST_SPELL: Psychic Frog
+  [MAIN1]
+
+T13 Dimir Midrange | life=15 mana=2 hand=2+0L gy=4
+  Hand: ['Counterspell', 'Counterspell']
+  Board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Psychic Frog (1/2)']
+  Opp board: ['Signal Pest (0/1)', 'Frogmite (2/2)'] (life=6)
+  >>> PASS (threshold=-3.0)
+  >>> ATTACK: ['Orcish Bowmasters', 'Orc Army', 'Orcish Bowmasters', 'Orc Army', 'Orcish Bowmasters', 'Orc Army']
+  [MAIN2]
+
+T13 Dimir Midrange | life=15 mana=2 hand=2+0L gy=5
+  Hand: ['Counterspell', 'Counterspell']
+  Board: ['Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Psychic Frog (1/2)']
+  Opp board: ['Frogmite (2/2)'] (life=2)
+  >>> PASS (threshold=-3.0)
+  [MAIN1]
+
+T14 Affinity | life=2 mana=2 hand=2+1L gy=8
+  Hand: ['Nettlecyst', 'Cranial Plating']
+  Board: ['Frogmite (2/2)']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Psychic Frog (1/2)'] (life=15)
+  EV scores:
+      +7.0  play_land: Silverbluff Bridge <--
+      -0.1  cast_spell: Nettlecyst  [h=-0.1 la=-0.1 ctr=31%]
+      -0.1  cast_spell: Cranial Plating  [h=-0.1 la=-0.1 ctr=31%]
+  >>> PLAY_LAND: Silverbluff Bridge
+  [MAIN1]
+
+T14 Affinity | life=2 mana=2 hand=2+0L gy=8
+  Hand: ['Nettlecyst', 'Cranial Plating']
+  Board: ['Frogmite (2/2)']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Psychic Frog (1/2)'] (life=15)
+  EV scores:
+      +0.0  cast_spell: Nettlecyst <--
+      +0.0  cast_spell: Cranial Plating
+  >>> CAST_SPELL: Nettlecyst
+  [MAIN1]
+
+T14 Affinity | life=2 mana=0 hand=1+0L gy=9
+  Hand: ['Cranial Plating']
+  Board: ['Frogmite (2/2)']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Psychic Frog (1/2)'] (life=15)
+  EV scores:
+      +0.0  cast_spell: Cranial Plating <--
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Frogmite']
+  [MAIN2]
+
+T14 Affinity | life=2 mana=0 hand=1+0L gy=9
+  Hand: ['Cranial Plating']
+  Board: ['Frogmite (2/2)']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Psychic Frog (1/2)'] (life=13)
+  EV scores:
+      +0.0  cast_spell: Cranial Plating <--
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T15 Dimir Midrange | life=13 mana=4 hand=2+0L gy=6
+  Hand: ['Counterspell', 'Spell Pierce']
+  Board: ['Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Psychic Frog (1/2)']
+  Opp board: ['Frogmite (2/2)'] (life=2)
+  >>> PASS (threshold=-3.0)
+  >>> ATTACK: ['Orc Army', 'Orcish Bowmasters', 'Orc Army', 'Orcish Bowmasters', 'Orc Army', 'Psychic Frog']

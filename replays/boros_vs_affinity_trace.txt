@@ -1,0 +1,446 @@
+Loaded 21759 cards (0 errors)
+=== Boros Energy vs Affinity (seed 60200) ===
+Result: Affinity wins T5 via damage
+Life: P1=-1 P2=10
+
+  [MAIN1]
+
+T1 Affinity | life=20 mana=0 hand=5+2L gy=0
+  Hand: ['Cranial Plating', 'Cranial Plating', 'Thought Monitor', 'Ornithopter', "Sojourner's Companion"]
+  Opp board: [] (life=20)
+  EV scores:
+     +42.0  play_land: Spire of Industry <--
+     +19.0  play_land: Darksteel Citadel
+      -0.0  cast_spell: Ornithopter  [h=-0.0 la=-0.0]
+  >>> PLAY_LAND: Spire of Industry
+  [MAIN1]
+
+T1 Affinity | life=20 mana=1 hand=5+1L gy=0
+  Hand: ['Cranial Plating', 'Cranial Plating', 'Thought Monitor', 'Ornithopter', "Sojourner's Companion"]
+  Opp board: [] (life=20)
+  EV scores:
+      -0.0  cast_spell: Ornithopter <--  [h=-0.0 la=-0.0]
+  >>> CAST_SPELL: Ornithopter
+  [MAIN1]
+
+T1 Affinity | life=20 mana=1 hand=4+1L gy=0
+  Hand: ['Cranial Plating', 'Cranial Plating', 'Thought Monitor', "Sojourner's Companion"]
+  Board: ['Ornithopter (0/2)']
+  Opp board: [] (life=20)
+  EV scores:
+      -0.0  cast_spell: Ornithopter <--  [h=-0.0 la=-0.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T1 Affinity | life=20 mana=1 hand=4+1L gy=0
+  Hand: ['Cranial Plating', 'Cranial Plating', 'Thought Monitor', "Sojourner's Companion"]
+  Board: ['Ornithopter (0/2)']
+  Opp board: [] (life=20)
+  EV scores:
+      -0.0  cast_spell: Ornithopter <--  [h=-0.0 la=-0.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T2 Boros Energy | life=20 mana=0 hand=5+3L gy=0
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Voice of Victory', 'Galvanic Discharge', "Orim's Chant", "Phlage, Titan of Fire's Fury"]
+  Opp board: ['Ornithopter (0/2)'] (life=20)
+  EV scores:
+     +41.0  play_land: Arid Mesa <--
+     +38.0  play_land: Flooded Strand
+     +31.0  play_land: Snow-Covered Plains
+  >>> PLAY_LAND: Arid Mesa
+  [MAIN1]
+
+T2 Boros Energy | life=17 mana=1 hand=5+2L gy=1
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Voice of Victory', 'Galvanic Discharge', "Orim's Chant", "Phlage, Titan of Fire's Fury"]
+  Opp board: ['Ornithopter (0/2)'] (life=20)
+  EV scores:
+      +0.1  cast_spell: Galvanic Discharge <--  [h=+0.1 la=+0.1]
+      -0.1  cast_spell: Orim's Chant  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Galvanic Discharge
+  [MAIN1]
+
+T2 Boros Energy | life=17 mana=0 hand=4+2L gy=2
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Voice of Victory', "Orim's Chant", "Phlage, Titan of Fire's Fury"]
+  Opp board: ['Ornithopter (0/2)'] (life=17)
+  EV scores:
+      -0.1  cast_spell: Orim's Chant <--  [h=-0.1 la=-0.1]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T2 Boros Energy | life=17 mana=0 hand=4+2L gy=2
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Voice of Victory', "Orim's Chant", "Phlage, Titan of Fire's Fury"]
+  Opp board: ['Ornithopter (0/2)'] (life=17)
+  EV scores:
+      -0.1  cast_spell: Orim's Chant <--  [h=-0.1 la=-0.1]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T3 Affinity | life=17 mana=1 hand=5+1L gy=0
+  Hand: ['Cranial Plating', 'Cranial Plating', 'Thought Monitor', "Sojourner's Companion", 'Signal Pest']
+  Board: ['Ornithopter (0/2)']
+  Opp board: [] (life=17)
+  EV scores:
+     +15.0  play_land: Darksteel Citadel <--
+      -0.1  cast_spell: Signal Pest  [h=-0.1 la=-0.1]
+  >>> PLAY_LAND: Darksteel Citadel
+  [MAIN1]
+
+T3 Affinity | life=17 mana=2 hand=5+0L gy=0
+  Hand: ['Cranial Plating', 'Cranial Plating', 'Thought Monitor', "Sojourner's Companion", 'Signal Pest']
+  Board: ['Ornithopter (0/2)']
+  Opp board: [] (life=17)
+  EV scores:
+      +8.0  cycle: Sojourner's Companion <--
+      -0.1  cast_spell: Signal Pest  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Cranial Plating  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Cranial Plating  [h=-0.1 la=-0.1]
+  >>> CYCLE: Sojourner's Companion
+  [MAIN1]
+
+T3 Affinity | life=17 mana=0 hand=5+0L gy=1
+  Hand: ['Cranial Plating', 'Cranial Plating', 'Thought Monitor', 'Signal Pest', 'Springleaf Drum']
+  Board: ['Ornithopter (0/2)']
+  Opp board: [] (life=17)
+  EV scores:
+      -0.1  cast_spell: Signal Pest <--  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Cranial Plating  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Cranial Plating  [h=-0.1 la=-0.1]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T3 Affinity | life=17 mana=0 hand=5+0L gy=1
+  Hand: ['Cranial Plating', 'Cranial Plating', 'Thought Monitor', 'Signal Pest', 'Springleaf Drum']
+  Board: ['Ornithopter (0/2)']
+  Opp board: [] (life=17)
+  EV scores:
+      -0.1  cast_spell: Signal Pest <--  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Cranial Plating  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Cranial Plating  [h=-0.1 la=-0.1]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T4 Boros Energy | life=17 mana=1 hand=5+2L gy=2
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Voice of Victory', "Orim's Chant", "Phlage, Titan of Fire's Fury", 'Ragavan, Nimble Pilferer']
+  Opp board: ['Ornithopter (0/2)'] (life=17)
+  EV scores:
+     +22.0  play_land: Flooded Strand <--
+     +15.0  play_land: Snow-Covered Plains
+      +7.5  cast_spell: Ragavan, Nimble Pilferer  [h=+7.5 la=+7.5]
+      -0.1  cast_spell: Orim's Chant  [h=-0.1 la=-0.1]
+  >>> PLAY_LAND: Flooded Strand
+  [MAIN1]
+
+T4 Boros Energy | life=14 mana=2 hand=5+1L gy=3
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Voice of Victory', "Orim's Chant", "Phlage, Titan of Fire's Fury", 'Ragavan, Nimble Pilferer']
+  Opp board: ['Ornithopter (0/2)'] (life=17)
+  EV scores:
+      +7.5  cast_spell: Ragavan, Nimble Pilferer <--  [h=+7.5 la=+7.5]
+      +5.1  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger  [h=+5.1 la=+5.1]
+      +5.1  cast_spell: Voice of Victory  [h=+5.1 la=+5.1]
+      -0.2  cast_spell: Orim's Chant  [h=-0.2 la=-0.2]
+  >>> CAST_SPELL: Ragavan, Nimble Pilferer
+  [MAIN1]
+
+T4 Boros Energy | life=14 mana=1 hand=4+1L gy=3
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Voice of Victory', "Orim's Chant", "Phlage, Titan of Fire's Fury"]
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Opp board: ['Ornithopter (0/2)'] (life=17)
+  EV scores:
+      -0.1  cast_spell: Orim's Chant <--  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Orim's Chant
+  [MAIN1]
+
+T4 Boros Energy | life=14 mana=0 hand=3+1L gy=4
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Voice of Victory', "Phlage, Titan of Fire's Fury"]
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Opp board: ['Ornithopter (0/2)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T4 Boros Energy | life=14 mana=0 hand=3+1L gy=4
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Voice of Victory', "Phlage, Titan of Fire's Fury"]
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Opp board: ['Ornithopter (0/2)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T5 Affinity | life=17 mana=2 hand=5+1L gy=1
+  Hand: ['Cranial Plating', 'Cranial Plating', 'Thought Monitor', 'Signal Pest', 'Springleaf Drum']
+  Board: ['Ornithopter (0/2)']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=14)
+  EV scores:
+      +7.0  play_land: Silverbluff Bridge <--
+      -0.2  cast_spell: Springleaf Drum  [h=-0.2 la=-0.2]
+      -0.3  cast_spell: Cranial Plating  [h=-0.3 la=-0.3]
+      -0.3  cast_spell: Cranial Plating  [h=-0.3 la=-0.3]
+      -4.2  cast_spell: Signal Pest  [h=-4.2 la=-4.2]
+  >>> PLAY_LAND: Silverbluff Bridge
+  [MAIN1]
+
+T5 Affinity | life=17 mana=2 hand=5+0L gy=1
+  Hand: ['Cranial Plating', 'Cranial Plating', 'Thought Monitor', 'Signal Pest', 'Springleaf Drum']
+  Board: ['Ornithopter (0/2)']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=14)
+  EV scores:
+      -0.2  cast_spell: Springleaf Drum <--  [h=-0.2 la=-0.2]
+      -0.3  cast_spell: Cranial Plating  [h=-0.3 la=-0.3]
+      -0.3  cast_spell: Cranial Plating  [h=-0.3 la=-0.3]
+      -4.2  cast_spell: Signal Pest  [h=-4.2 la=-4.2]
+  >>> CAST_SPELL: Springleaf Drum
+  [MAIN1]
+
+T5 Affinity | life=17 mana=1 hand=4+0L gy=1
+  Hand: ['Cranial Plating', 'Cranial Plating', 'Thought Monitor', 'Signal Pest']
+  Board: ['Ornithopter (0/2)']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=14)
+  EV scores:
+      -4.1  cast_spell: Signal Pest <--  [h=-4.1 la=-4.1]
+  >>> CAST_SPELL: Signal Pest
+  [MAIN1]
+
+T5 Affinity | life=17 mana=0 hand=3+0L gy=1
+  Hand: ['Cranial Plating', 'Cranial Plating', 'Thought Monitor']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=14)
+  EV scores:
+      -4.1  cast_spell: Signal Pest <--  [h=-4.1 la=-4.1]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T5 Affinity | life=17 mana=0 hand=3+0L gy=1
+  Hand: ['Cranial Plating', 'Cranial Plating', 'Thought Monitor']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=14)
+  EV scores:
+      -4.1  cast_spell: Signal Pest <--  [h=-4.1 la=-4.1]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T6 Boros Energy | life=14 mana=2 hand=3+2L gy=4
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Voice of Victory', "Phlage, Titan of Fire's Fury"]
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=17)
+  EV scores:
+     +22.0  play_land: Flooded Strand <--
+     +15.0  play_land: Snow-Covered Plains
+      +7.6  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger  [h=+7.6 la=+7.6]
+      +7.6  cast_spell: Voice of Victory  [h=+7.6 la=+7.6]
+  >>> PLAY_LAND: Flooded Strand
+  [MAIN1]
+
+T6 Boros Energy | life=11 mana=3 hand=3+1L gy=5
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Voice of Victory', "Phlage, Titan of Fire's Fury"]
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=17)
+  EV scores:
+     +16.8  cast_spell: Phlage, Titan of Fire's Fury <--  [h=+16.8 la=+16.8]
+      +7.7  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger  [h=+7.7 la=+7.7]
+      +7.7  cast_spell: Voice of Victory  [h=+7.7 la=+7.7]
+  >>> CAST_SPELL: Phlage, Titan of Fire's Fury
+  [MAIN1]
+
+T6 Boros Energy | life=14 mana=0 hand=2+1L gy=6
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Voice of Victory']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=14)
+  EV scores:
+      +7.7  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <--  [h=+7.7 la=+7.7]
+      +7.7  cast_spell: Voice of Victory  [h=+7.7 la=+7.7]
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ragavan, Nimble Pilferer']
+  [MAIN2]
+
+T6 Boros Energy | life=14 mana=0 hand=3+1L gy=6
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Voice of Victory', "Sojourner's Companion"]
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Treasure Token']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=12)
+  EV scores:
+      +7.7  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <--  [h=+7.7 la=+7.7]
+      +7.7  cast_spell: Voice of Victory  [h=+7.7 la=+7.7]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T7 Affinity | life=12 mana=3 hand=3+1L gy=1
+  Hand: ['Cranial Plating', 'Cranial Plating', 'Thought Monitor']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=14)
+  EV scores:
+     +41.6  cast_spell: Thought Monitor <--  [h=+41.6 la=+41.6]
+      +7.0  play_land: Razortide Bridge
+      -0.3  cast_spell: Cranial Plating  [h=-0.3 la=-0.3]
+      -0.3  cast_spell: Cranial Plating  [h=-0.3 la=-0.3]
+  >>> CAST_SPELL: Thought Monitor
+  [MAIN1]
+
+T7 Affinity | life=12 mana=1 hand=4+1L gy=1
+  Hand: ['Cranial Plating', 'Cranial Plating', 'Springleaf Drum', 'Mox Opal']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Thought Monitor (2/2)']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=14)
+  EV scores:
+      +7.0  play_land: Razortide Bridge <--
+      -0.1  cast_spell: Mox Opal  [h=-0.1 la=-0.1]
+      -0.2  cast_spell: Cranial Plating  [h=-0.2 la=-0.2]
+      -0.2  cast_spell: Cranial Plating  [h=-0.2 la=-0.2]
+      -0.2  cast_spell: Springleaf Drum  [h=-0.2 la=-0.2]
+  >>> PLAY_LAND: Razortide Bridge
+  [MAIN1]
+
+T7 Affinity | life=12 mana=1 hand=4+0L gy=1
+  Hand: ['Cranial Plating', 'Cranial Plating', 'Springleaf Drum', 'Mox Opal']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Thought Monitor (2/2)']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=14)
+  EV scores:
+      -0.1  cast_spell: Mox Opal <--  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Cranial Plating  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Cranial Plating  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Springleaf Drum  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Mox Opal
+  [MAIN1]
+
+T7 Affinity | life=12 mana=1 hand=3+0L gy=1
+  Hand: ['Cranial Plating', 'Cranial Plating', 'Springleaf Drum']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Thought Monitor (2/2)']
+  Permanents: ['Springleaf Drum', 'Mox Opal']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=14)
+  EV scores:
+      -0.1  cast_spell: Cranial Plating <--  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Cranial Plating  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Springleaf Drum  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Cranial Plating
+  [MAIN1]
+
+T7 Affinity | life=12 mana=0 hand=2+0L gy=1
+  Hand: ['Cranial Plating', 'Springleaf Drum']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Thought Monitor (2/2)']
+  Permanents: ['Springleaf Drum', 'Mox Opal', 'Cranial Plating']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=14)
+  EV scores:
+      -0.0  cast_spell: Springleaf Drum <--  [h=-0.0 la=-0.0]
+  >>> CAST_SPELL: Springleaf Drum
+  [MAIN1]
+
+T7 Affinity | life=12 mana=0 hand=1+0L gy=1
+  Hand: ['Cranial Plating']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Thought Monitor (2/2)']
+  Permanents: ['Springleaf Drum', 'Mox Opal', 'Cranial Plating', 'Springleaf Drum']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=14)
+  EV scores:
+      -0.0  cast_spell: Springleaf Drum <--  [h=-0.0 la=-0.0]
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Signal Pest']
+  [MAIN2]
+
+T7 Affinity | life=12 mana=0 hand=1+0L gy=1
+  Hand: ['Cranial Plating']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Thought Monitor (2/2)']
+  Permanents: ['Springleaf Drum', 'Mox Opal', 'Cranial Plating', 'Springleaf Drum']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=14)
+  EV scores:
+      -0.0  cast_spell: Springleaf Drum <--  [h=-0.0 la=-0.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T8 Boros Energy | life=14 mana=3 hand=3+1L gy=6
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Voice of Victory', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Treasure Token']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Thought Monitor (2/2)'] (life=12)
+  EV scores:
+     +35.9  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <--  [h=+35.9 la=+35.9]
+     +35.9  cast_spell: Voice of Victory  [h=+35.9 la=+35.9]
+     +35.9  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger  [h=+35.9 la=+35.9]
+     +15.0  play_land: Snow-Covered Plains
+  >>> CAST_SPELL: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [MAIN1]
+
+T8 Boros Energy | life=14 mana=1 hand=2+1L gy=6
+  Hand: ['Voice of Victory', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
+  Permanents: ['Treasure Token']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Thought Monitor (2/2)'] (life=12)
+  EV scores:
+     +15.0  play_land: Snow-Covered Plains <--
+  >>> PLAY_LAND: Snow-Covered Plains
+  [MAIN1]
+
+T8 Boros Energy | life=14 mana=2 hand=2+0L gy=6
+  Hand: ['Voice of Victory', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
+  Permanents: ['Treasure Token']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Thought Monitor (2/2)'] (life=12)
+  EV scores:
+      +2.6  cast_spell: Voice of Victory <--  [h=+2.6 la=+2.6]
+  >>> CAST_SPELL: Voice of Victory
+  [MAIN1]
+
+T8 Boros Energy | life=14 mana=0 hand=1+0L gy=6
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Voice of Victory (1/3)']
+  Permanents: ['Treasure Token']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Thought Monitor (2/2)'] (life=12)
+  EV scores:
+      +2.6  cast_spell: Voice of Victory <--  [h=+2.6 la=+2.6]
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ragavan, Nimble Pilferer']
+  [MAIN2]
+
+T8 Boros Energy | life=14 mana=0 hand=2+0L gy=6
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Frogmite']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Voice of Victory (1/3)']
+  Permanents: ['Treasure Token', 'Treasure Token']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Thought Monitor (2/2)'] (life=10)
+  EV scores:
+      +2.6  cast_spell: Voice of Victory <--  [h=+2.6 la=+2.6]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T9 Affinity | life=10 mana=4 hand=2+0L gy=1
+  Hand: ['Cranial Plating', 'Memnite']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Thought Monitor (2/2)']
+  Permanents: ['Springleaf Drum', 'Mox Opal', 'Cranial Plating', 'Springleaf Drum']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Voice of Victory (1/3)'] (life=14)
+  EV scores:
+     +15.0  equip: Cranial Plating <--
+      +2.2  cast_spell: Memnite  [h=+2.2 la=+2.2]
+      -0.3  cast_spell: Cranial Plating  [h=-0.3 la=-0.3]
+  >>> EQUIP: Cranial Plating
+  [MAIN1]
+
+T9 Affinity | life=10 mana=3 hand=2+0L gy=1
+  Hand: ['Cranial Plating', 'Memnite']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Thought Monitor (12/2)']
+  Permanents: ['Springleaf Drum', 'Mox Opal', 'Cranial Plating', 'Springleaf Drum']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Voice of Victory (1/3)'] (life=14)
+  EV scores:
+      -0.1  cast_spell: Memnite <--  [h=-0.1 la=-0.1]
+      -0.3  cast_spell: Cranial Plating  [h=-0.3 la=-0.3]
+  >>> CAST_SPELL: Memnite
+  [MAIN1]
+
+T9 Affinity | life=10 mana=3 hand=1+0L gy=1
+  Hand: ['Cranial Plating']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Thought Monitor (13/2)', 'Memnite (1/1)']
+  Permanents: ['Springleaf Drum', 'Mox Opal', 'Cranial Plating', 'Springleaf Drum']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Voice of Victory (1/3)'] (life=14)
+  EV scores:
+      -0.2  cast_spell: Cranial Plating <--  [h=-0.2 la=-0.2]
+  >>> CAST_SPELL: Cranial Plating
+  [MAIN1]
+
+T9 Affinity | life=10 mana=2 hand=0+0L gy=1
+  Hand: []
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Thought Monitor (14/2)', 'Memnite (1/1)']
+  Permanents: ['Springleaf Drum', 'Mox Opal', 'Cranial Plating', 'Springleaf Drum', 'Cranial Plating']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Voice of Victory (1/3)'] (life=14)
+  EV scores:
+      -0.2  cast_spell: Cranial Plating <--  [h=-0.2 la=-0.2]
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Signal Pest', 'Thought Monitor']

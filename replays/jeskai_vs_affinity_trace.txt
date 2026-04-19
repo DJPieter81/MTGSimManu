@@ -1,0 +1,730 @@
+Loaded 21759 cards (0 errors)
+=== Jeskai Blink vs Affinity (seed 60300) ===
+Result: Affinity wins T10 via damage
+Life: P1=-6 P2=2
+
+  [MAIN1]
+
+T1 Affinity | life=20 mana=0 hand=5+2L gy=0
+  Hand: ['Cranial Plating', 'Signal Pest', 'Ornithopter', 'Mox Opal', 'Springleaf Drum']
+  Opp board: [] (life=20)
+  EV scores:
+      +8.0  play_land: Mistvault Bridge <--
+      +8.0  play_land: Mistvault Bridge
+      -0.0  cast_spell: Ornithopter  [h=-0.0 la=-0.0]
+      -0.0  cast_spell: Mox Opal  [h=-0.0 la=-0.0]
+  >>> PLAY_LAND: Mistvault Bridge
+  [MAIN1]
+
+T1 Affinity | life=20 mana=0 hand=5+1L gy=0
+  Hand: ['Cranial Plating', 'Signal Pest', 'Ornithopter', 'Mox Opal', 'Springleaf Drum']
+  Opp board: [] (life=20)
+  EV scores:
+      -0.0  cast_spell: Ornithopter <--  [h=-0.0 la=-0.0]
+      -0.0  cast_spell: Mox Opal  [h=-0.0 la=-0.0]
+  >>> CAST_SPELL: Ornithopter
+  [MAIN1]
+
+T1 Affinity | life=20 mana=0 hand=4+1L gy=0
+  Hand: ['Cranial Plating', 'Signal Pest', 'Mox Opal', 'Springleaf Drum']
+  Board: ['Ornithopter (0/2)']
+  Opp board: [] (life=20)
+  EV scores:
+      -0.0  cast_spell: Mox Opal <--  [h=-0.0 la=-0.0]
+  >>> CAST_SPELL: Mox Opal
+  [MAIN1]
+
+T1 Affinity | life=20 mana=0 hand=3+1L gy=0
+  Hand: ['Cranial Plating', 'Signal Pest', 'Springleaf Drum']
+  Board: ['Ornithopter (0/2)']
+  Permanents: ['Mox Opal']
+  Opp board: [] (life=20)
+  EV scores:
+      -0.0  cast_spell: Mox Opal <--  [h=-0.0 la=-0.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T1 Affinity | life=20 mana=0 hand=3+1L gy=0
+  Hand: ['Cranial Plating', 'Signal Pest', 'Springleaf Drum']
+  Board: ['Ornithopter (0/2)']
+  Permanents: ['Mox Opal']
+  Opp board: [] (life=20)
+  EV scores:
+      -0.0  cast_spell: Mox Opal <--  [h=-0.0 la=-0.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T2 Jeskai Blink | life=20 mana=0 hand=3+5L gy=0
+  Hand: ['Galvanic Discharge', 'Phelia, Exuberant Shepherd', 'Phelia, Exuberant Shepherd']
+  Opp board: ['Ornithopter (0/2)'] (life=20)
+  EV scores:
+     +32.0  play_land: Flooded Strand <--
+     +32.0  play_land: Sacred Foundry
+     +29.0  play_land: Scalding Tarn
+     +17.0  play_land: Elegant Parlor
+     +14.0  play_land: Meticulous Archive
+  >>> PLAY_LAND: Flooded Strand
+  [MAIN1]
+
+T2 Jeskai Blink | life=17 mana=1 hand=3+4L gy=1
+  Hand: ['Galvanic Discharge', 'Phelia, Exuberant Shepherd', 'Phelia, Exuberant Shepherd']
+  Opp board: ['Ornithopter (0/2)'] (life=20)
+  EV scores:
+      +0.0  cast_spell: Galvanic Discharge <--  [h=+0.0 la=+0.0]
+  >>> CAST_SPELL: Galvanic Discharge
+  [MAIN1]
+
+T2 Jeskai Blink | life=17 mana=0 hand=2+4L gy=2
+  Hand: ['Phelia, Exuberant Shepherd', 'Phelia, Exuberant Shepherd']
+  Opp board: ['Ornithopter (0/2)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T2 Jeskai Blink | life=17 mana=0 hand=2+4L gy=2
+  Hand: ['Phelia, Exuberant Shepherd', 'Phelia, Exuberant Shepherd']
+  Opp board: ['Ornithopter (0/2)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T3 Affinity | life=17 mana=1 hand=4+1L gy=0
+  Hand: ['Cranial Plating', 'Signal Pest', 'Springleaf Drum', 'Engineered Explosives']
+  Board: ['Ornithopter (0/2)']
+  Permanents: ['Mox Opal']
+  Opp board: [] (life=17)
+  EV scores:
+      +7.0  play_land: Mistvault Bridge <--
+      -0.1  cast_spell: Signal Pest  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Springleaf Drum  [h=-0.1 la=-0.1]
+  >>> PLAY_LAND: Mistvault Bridge
+  [MAIN1]
+
+T3 Affinity | life=17 mana=1 hand=4+0L gy=0
+  Hand: ['Cranial Plating', 'Signal Pest', 'Springleaf Drum', 'Engineered Explosives']
+  Board: ['Ornithopter (0/2)']
+  Permanents: ['Mox Opal']
+  Opp board: [] (life=17)
+  EV scores:
+      -0.0  cast_spell: Signal Pest <--  [h=-0.0 la=-0.0]
+      -0.0  cast_spell: Springleaf Drum  [h=-0.0 la=-0.0]
+  >>> CAST_SPELL: Signal Pest
+  [MAIN1]
+
+T3 Affinity | life=17 mana=0 hand=3+0L gy=0
+  Hand: ['Cranial Plating', 'Springleaf Drum', 'Engineered Explosives']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)']
+  Permanents: ['Mox Opal']
+  Opp board: [] (life=17)
+  EV scores:
+      -0.0  cast_spell: Signal Pest <--  [h=-0.0 la=-0.0]
+      -0.0  cast_spell: Springleaf Drum  [h=-0.0 la=-0.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T3 Affinity | life=17 mana=0 hand=3+0L gy=0
+  Hand: ['Cranial Plating', 'Springleaf Drum', 'Engineered Explosives']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)']
+  Permanents: ['Mox Opal']
+  Opp board: [] (life=17)
+  EV scores:
+      -0.0  cast_spell: Signal Pest <--  [h=-0.0 la=-0.0]
+      -0.0  cast_spell: Springleaf Drum  [h=-0.0 la=-0.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T4 Jeskai Blink | life=17 mana=1 hand=3+4L gy=2
+  Hand: ['Phelia, Exuberant Shepherd', 'Phelia, Exuberant Shepherd', 'Witch Enchanter // Witch-Blessed Meadow']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=17)
+  EV scores:
+     +28.0  play_land: Sacred Foundry <--
+     +20.0  play_land: Meticulous Archive
+     +20.0  play_land: Elegant Parlor
+     +18.0  play_land: Scalding Tarn
+  >>> PLAY_LAND: Sacred Foundry
+  [MAIN1]
+
+T4 Jeskai Blink | life=15 mana=2 hand=3+3L gy=2
+  Hand: ['Phelia, Exuberant Shepherd', 'Phelia, Exuberant Shepherd', 'Witch Enchanter // Witch-Blessed Meadow']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=17)
+  EV scores:
+      +0.8  cast_spell: Phelia, Exuberant Shepherd <--  [h=+0.8 la=+0.8]
+      +0.8  cast_spell: Phelia, Exuberant Shepherd  [h=+0.8 la=+0.8]
+  >>> CAST_SPELL: Phelia, Exuberant Shepherd
+  [MAIN1]
+
+T4 Jeskai Blink | life=15 mana=0 hand=2+3L gy=2
+  Hand: ['Phelia, Exuberant Shepherd', 'Witch Enchanter // Witch-Blessed Meadow']
+  Board: ['Phelia, Exuberant Shepherd (2/2)']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=17)
+  EV scores:
+      +0.8  cast_spell: Phelia, Exuberant Shepherd <--  [h=+0.8 la=+0.8]
+      +0.8  cast_spell: Phelia, Exuberant Shepherd  [h=+0.8 la=+0.8]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T4 Jeskai Blink | life=15 mana=0 hand=2+3L gy=2
+  Hand: ['Phelia, Exuberant Shepherd', 'Witch Enchanter // Witch-Blessed Meadow']
+  Board: ['Phelia, Exuberant Shepherd (2/2)']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=17)
+  EV scores:
+      +0.8  cast_spell: Phelia, Exuberant Shepherd <--  [h=+0.8 la=+0.8]
+      +0.8  cast_spell: Phelia, Exuberant Shepherd  [h=+0.8 la=+0.8]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T5 Affinity | life=17 mana=2 hand=4+0L gy=0
+  Hand: ['Cranial Plating', 'Springleaf Drum', 'Engineered Explosives', 'Springleaf Drum']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)']
+  Permanents: ['Mox Opal']
+  Opp board: ['Phelia, Exuberant Shepherd (2/2)'] (life=15)
+  EV scores:
+      -0.1  cast_spell: Springleaf Drum <--  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Springleaf Drum  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Cranial Plating  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Springleaf Drum
+  [MAIN1]
+
+T5 Affinity | life=17 mana=1 hand=3+0L gy=0
+  Hand: ['Cranial Plating', 'Engineered Explosives', 'Springleaf Drum']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)']
+  Permanents: ['Mox Opal', 'Springleaf Drum']
+  Opp board: ['Phelia, Exuberant Shepherd (2/2)'] (life=15)
+  EV scores:
+      -0.1  cast_spell: Springleaf Drum <--  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Springleaf Drum
+  [MAIN1]
+
+T5 Affinity | life=17 mana=0 hand=2+0L gy=0
+  Hand: ['Cranial Plating', 'Engineered Explosives']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)']
+  Permanents: ['Mox Opal', 'Springleaf Drum', 'Springleaf Drum']
+  Opp board: ['Phelia, Exuberant Shepherd (2/2)'] (life=15)
+  EV scores:
+      -0.1  cast_spell: Springleaf Drum <--  [h=-0.1 la=-0.1]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T5 Affinity | life=17 mana=0 hand=2+0L gy=0
+  Hand: ['Cranial Plating', 'Engineered Explosives']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)']
+  Permanents: ['Mox Opal', 'Springleaf Drum', 'Springleaf Drum']
+  Opp board: ['Phelia, Exuberant Shepherd (2/2)'] (life=15)
+  EV scores:
+      -0.1  cast_spell: Springleaf Drum <--  [h=-0.1 la=-0.1]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T6 Jeskai Blink | life=15 mana=2 hand=3+3L gy=2
+  Hand: ['Phelia, Exuberant Shepherd', 'Witch Enchanter // Witch-Blessed Meadow', 'Galvanic Discharge']
+  Board: ['Phelia, Exuberant Shepherd (2/2)']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=17)
+  EV scores:
+     +18.0  play_land: Scalding Tarn <--
+      +7.0  play_land: Meticulous Archive
+      +7.0  play_land: Elegant Parlor
+      +3.2  cast_spell: Galvanic Discharge  [h=+3.2 la=+3.2]
+  >>> PLAY_LAND: Scalding Tarn
+  [MAIN1]
+
+T6 Jeskai Blink | life=14 mana=2 hand=3+2L gy=3
+  Hand: ['Phelia, Exuberant Shepherd', 'Witch Enchanter // Witch-Blessed Meadow', 'Galvanic Discharge']
+  Board: ['Phelia, Exuberant Shepherd (2/2)']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=17)
+  EV scores:
+      +3.2  cast_spell: Galvanic Discharge <--  [h=+3.2 la=+3.2]
+  >>> CAST_SPELL: Galvanic Discharge
+  [MAIN1]
+
+T6 Jeskai Blink | life=14 mana=1 hand=2+2L gy=4
+  Hand: ['Phelia, Exuberant Shepherd', 'Witch Enchanter // Witch-Blessed Meadow']
+  Board: ['Phelia, Exuberant Shepherd (2/2)']
+  Opp board: ['Ornithopter (0/2)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Phelia, Exuberant Shepherd']
+  [MAIN2]
+
+T6 Jeskai Blink | life=14 mana=1 hand=2+2L gy=4
+  Hand: ['Phelia, Exuberant Shepherd', 'Witch Enchanter // Witch-Blessed Meadow']
+  Board: ['Phelia, Exuberant Shepherd (2/2)']
+  Opp board: ['Ornithopter (0/2)'] (life=15)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T7 Affinity | life=15 mana=2 hand=3+0L gy=1
+  Hand: ['Cranial Plating', 'Engineered Explosives', 'Nettlecyst']
+  Board: ['Ornithopter (0/2)']
+  Permanents: ['Mox Opal', 'Springleaf Drum']
+  Opp board: ['Phelia, Exuberant Shepherd (2/2)'] (life=14)
+  EV scores:
+      -0.0  cast_spell: Cranial Plating <--  [h=-0.0 la=-0.0]
+  >>> CAST_SPELL: Cranial Plating
+  [MAIN1]
+
+T7 Affinity | life=15 mana=0 hand=2+0L gy=1
+  Hand: ['Engineered Explosives', 'Nettlecyst']
+  Board: ['Ornithopter (0/2)']
+  Permanents: ['Mox Opal', 'Springleaf Drum', 'Cranial Plating']
+  Opp board: ['Phelia, Exuberant Shepherd (2/2)'] (life=14)
+  EV scores:
+      -0.0  cast_spell: Cranial Plating <--  [h=-0.0 la=-0.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T7 Affinity | life=15 mana=0 hand=2+0L gy=1
+  Hand: ['Engineered Explosives', 'Nettlecyst']
+  Board: ['Ornithopter (0/2)']
+  Permanents: ['Mox Opal', 'Springleaf Drum', 'Cranial Plating']
+  Opp board: ['Phelia, Exuberant Shepherd (2/2)'] (life=14)
+  EV scores:
+      -0.0  cast_spell: Cranial Plating <--  [h=-0.0 la=-0.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T8 Jeskai Blink | life=14 mana=3 hand=2+3L gy=4
+  Hand: ['Phelia, Exuberant Shepherd', 'Witch Enchanter // Witch-Blessed Meadow']
+  Board: ['Phelia, Exuberant Shepherd (2/2)']
+  Opp board: ['Ornithopter (0/2)'] (life=15)
+  EV scores:
+      +7.0  play_land: Meticulous Archive <--
+      +7.0  play_land: Elegant Parlor
+      +7.0  play_land: Thundering Falls
+  >>> PLAY_LAND: Meticulous Archive
+  [MAIN1]
+
+T8 Jeskai Blink | life=14 mana=3 hand=2+2L gy=4
+  Hand: ['Phelia, Exuberant Shepherd', 'Witch Enchanter // Witch-Blessed Meadow']
+  Board: ['Phelia, Exuberant Shepherd (2/2)']
+  Opp board: ['Ornithopter (0/2)'] (life=15)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Phelia, Exuberant Shepherd']
+  [MAIN2]
+
+T8 Jeskai Blink | life=14 mana=3 hand=2+2L gy=4
+  Hand: ['Phelia, Exuberant Shepherd', 'Witch Enchanter // Witch-Blessed Meadow']
+  Board: ['Phelia, Exuberant Shepherd (2/2)']
+  Opp board: ['Ornithopter (0/2)'] (life=13)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T9 Affinity | life=13 mana=2 hand=3+0L gy=1
+  Hand: ['Engineered Explosives', 'Nettlecyst', "Sojourner's Companion"]
+  Board: ['Ornithopter (0/2)']
+  Permanents: ['Mox Opal', 'Springleaf Drum']
+  Opp board: ['Phelia, Exuberant Shepherd (2/2)'] (life=14)
+  EV scores:
+      +8.4  cycle: Sojourner's Companion <--
+      +0.1  cast_spell: Sojourner's Companion  [h=+0.1 la=+0.1 ctr=24% rmv=56%]
+  >>> CYCLE: Sojourner's Companion
+  [MAIN1]
+
+T9 Affinity | life=13 mana=0 hand=3+0L gy=2
+  Hand: ['Engineered Explosives', 'Nettlecyst', 'Thought Monitor']
+  Board: ['Ornithopter (0/2)']
+  Permanents: ['Mox Opal', 'Springleaf Drum']
+  Opp board: ['Phelia, Exuberant Shepherd (2/2)'] (life=14)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T9 Affinity | life=13 mana=0 hand=3+0L gy=2
+  Hand: ['Engineered Explosives', 'Nettlecyst', 'Thought Monitor']
+  Board: ['Ornithopter (0/2)']
+  Permanents: ['Mox Opal', 'Springleaf Drum']
+  Opp board: ['Phelia, Exuberant Shepherd (2/2)'] (life=14)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T10 Jeskai Blink | life=14 mana=4 hand=2+2L gy=5
+  Hand: ['Witch Enchanter // Witch-Blessed Meadow', 'Quantum Riddler']
+  Board: ['Phelia, Exuberant Shepherd (2/2)']
+  Opp board: ['Ornithopter (0/2)'] (life=13)
+  EV scores:
+      +7.0  play_land: Elegant Parlor <--
+      +7.0  play_land: Thundering Falls
+      +5.8  cast_spell: Witch Enchanter // Witch-Blessed Meadow  [h=+5.8 la=+5.8]
+  >>> PLAY_LAND: Elegant Parlor
+  [MAIN1]
+
+T10 Jeskai Blink | life=14 mana=4 hand=2+1L gy=5
+  Hand: ['Witch Enchanter // Witch-Blessed Meadow', 'Quantum Riddler']
+  Board: ['Phelia, Exuberant Shepherd (2/2)']
+  Opp board: ['Ornithopter (0/2)'] (life=13)
+  EV scores:
+      +5.9  cast_spell: Witch Enchanter // Witch-Blessed Meadow <--  [h=+5.9 la=+5.9]
+  >>> CAST_SPELL: Witch Enchanter // Witch-Blessed Meadow
+  [MAIN1]
+
+T10 Jeskai Blink | life=14 mana=0 hand=1+1L gy=5
+  Hand: ['Quantum Riddler']
+  Board: ['Phelia, Exuberant Shepherd (2/2)', 'Witch Enchanter // Witch-Blessed Meadow (2/2)']
+  Opp board: ['Ornithopter (0/2)'] (life=13)
+  EV scores:
+      +5.9  cast_spell: Witch Enchanter // Witch-Blessed Meadow <--  [h=+5.9 la=+5.9]
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Phelia, Exuberant Shepherd']
+  [MAIN2]
+
+T10 Jeskai Blink | life=14 mana=0 hand=1+1L gy=5
+  Hand: ['Quantum Riddler']
+  Board: ['Phelia, Exuberant Shepherd (3/3)']
+  Opp board: ['Ornithopter (0/2)'] (life=10)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T11 Affinity | life=10 mana=2 hand=4+0L gy=3
+  Hand: ['Engineered Explosives', 'Nettlecyst', 'Thought Monitor', "Sojourner's Companion"]
+  Board: ['Ornithopter (0/2)']
+  Permanents: ['Mox Opal']
+  Opp board: ['Phelia, Exuberant Shepherd (3/3)'] (life=14)
+  EV scores:
+      +8.4  cycle: Sojourner's Companion <--
+      +6.5  cast_spell: Engineered Explosives  [h=+6.5 la=+6.5]
+  >>> CYCLE: Sojourner's Companion
+  [MAIN1]
+
+T11 Affinity | life=10 mana=0 hand=3+1L gy=4
+  Hand: ['Engineered Explosives', 'Nettlecyst', 'Thought Monitor']
+  Board: ['Ornithopter (0/2)']
+  Permanents: ['Mox Opal']
+  Opp board: ['Phelia, Exuberant Shepherd (3/3)'] (life=14)
+  EV scores:
+     +19.0  play_land: Treasure Vault <--
+  >>> PLAY_LAND: Treasure Vault
+  [MAIN1]
+
+T11 Affinity | life=10 mana=1 hand=3+0L gy=4
+  Hand: ['Engineered Explosives', 'Nettlecyst', 'Thought Monitor']
+  Board: ['Ornithopter (0/2)']
+  Permanents: ['Mox Opal']
+  Opp board: ['Phelia, Exuberant Shepherd (3/3)'] (life=14)
+  EV scores:
+     -20.0  cast_spell: Engineered Explosives <--  [h=-20.0 la=-20.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T11 Affinity | life=10 mana=1 hand=3+0L gy=4
+  Hand: ['Engineered Explosives', 'Nettlecyst', 'Thought Monitor']
+  Board: ['Ornithopter (0/2)']
+  Permanents: ['Mox Opal']
+  Opp board: ['Phelia, Exuberant Shepherd (3/3)'] (life=14)
+  EV scores:
+     -20.0  cast_spell: Engineered Explosives <--  [h=-20.0 la=-20.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T12 Jeskai Blink | life=14 mana=5 hand=2+1L gy=5
+  Hand: ['Quantum Riddler', "Phlage, Titan of Fire's Fury"]
+  Board: ['Phelia, Exuberant Shepherd (3/3)']
+  Opp board: ['Ornithopter (0/2)'] (life=10)
+  EV scores:
+     +19.6  cast_spell: Phlage, Titan of Fire's Fury <--  [h=+19.6 la=+19.6]
+      +7.5  cast_spell: Quantum Riddler  [h=+7.5 la=+7.5]
+      +7.0  play_land: Thundering Falls
+  >>> CAST_SPELL: Phlage, Titan of Fire's Fury
+  [MAIN1]
+
+T12 Jeskai Blink | life=17 mana=2 hand=1+1L gy=6
+  Hand: ['Quantum Riddler']
+  Board: ['Phelia, Exuberant Shepherd (3/3)']
+  Opp board: ['Ornithopter (0/2)'] (life=7)
+  EV scores:
+     +10.0  play_land: Thundering Falls <--
+  >>> PLAY_LAND: Thundering Falls
+  [MAIN1]
+
+T12 Jeskai Blink | life=17 mana=2 hand=1+0L gy=6
+  Hand: ['Quantum Riddler']
+  Board: ['Phelia, Exuberant Shepherd (3/3)']
+  Opp board: ['Ornithopter (0/2)'] (life=7)
+  EV scores:
+     +10.0  play_land: Thundering Falls <--
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Phelia, Exuberant Shepherd']
+  [MAIN2]
+
+T12 Jeskai Blink | life=17 mana=2 hand=1+0L gy=6
+  Hand: ['Quantum Riddler']
+  Board: ['Phelia, Exuberant Shepherd (3/3)']
+  Opp board: [] (life=7)
+  EV scores:
+     +10.0  play_land: Thundering Falls <--
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T13 Affinity | life=7 mana=3 hand=3+1L gy=5
+  Hand: ['Engineered Explosives', 'Nettlecyst', 'Thought Monitor']
+  Opp board: ['Phelia, Exuberant Shepherd (3/3)'] (life=17)
+  EV scores:
+     +11.0  play_land: Razortide Bridge <--
+      -0.4  cast_spell: Nettlecyst  [h=-0.4 la=-0.4 ctr=7%]
+      -2.8  cast_spell: Engineered Explosives  [h=-2.8 la=-2.8 ctr=7%]
+  >>> PLAY_LAND: Razortide Bridge
+  [MAIN1]
+
+T13 Affinity | life=7 mana=3 hand=3+0L gy=5
+  Hand: ['Engineered Explosives', 'Nettlecyst', 'Thought Monitor']
+  Opp board: ['Phelia, Exuberant Shepherd (3/3)'] (life=17)
+  EV scores:
+      +0.4  cast_spell: Nettlecyst <--  [h=+0.4 la=+0.4 ctr=7%]
+      +0.3  cast_spell: Thought Monitor  [h=+0.3 la=+0.3 ctr=7% rmv=24%]
+      -2.8  cast_spell: Engineered Explosives  [h=-2.8 la=-2.8 ctr=7%]
+  >>> CAST_SPELL: Nettlecyst
+  [MAIN1]
+
+T13 Affinity | life=7 mana=0 hand=2+0L gy=5
+  Hand: ['Engineered Explosives', 'Thought Monitor']
+  Board: ['Germ Token (5/5)']
+  Permanents: ['Nettlecyst']
+  Opp board: ['Phelia, Exuberant Shepherd (3/3)'] (life=17)
+  EV scores:
+      +0.4  cast_spell: Nettlecyst <--  [h=+0.4 la=+0.4 ctr=7%]
+      +0.3  cast_spell: Thought Monitor  [h=+0.3 la=+0.3 ctr=7% rmv=24%]
+      -2.8  cast_spell: Engineered Explosives  [h=-2.8 la=-2.8 ctr=7%]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T13 Affinity | life=7 mana=0 hand=2+0L gy=5
+  Hand: ['Engineered Explosives', 'Thought Monitor']
+  Board: ['Germ Token (5/5)']
+  Permanents: ['Nettlecyst']
+  Opp board: ['Phelia, Exuberant Shepherd (3/3)'] (life=17)
+  EV scores:
+      +0.4  cast_spell: Nettlecyst <--  [h=+0.4 la=+0.4 ctr=7%]
+      +0.3  cast_spell: Thought Monitor  [h=+0.3 la=+0.3 ctr=7% rmv=24%]
+      -2.8  cast_spell: Engineered Explosives  [h=-2.8 la=-2.8 ctr=7%]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T14 Jeskai Blink | life=17 mana=6 hand=1+1L gy=6
+  Hand: ['Quantum Riddler']
+  Board: ['Phelia, Exuberant Shepherd (3/3)']
+  Opp board: ['Germ Token (5/5)'] (life=7)
+  EV scores:
+     +18.0  play_land: Scalding Tarn <--
+      +8.6  cast_spell: Quantum Riddler  [h=+8.6 la=+8.6]
+  >>> CAST_SPELL: Phlage, Titan of Fire's Fury
+  [MAIN1]
+
+T14 Jeskai Blink | life=20 mana=2 hand=1+1L gy=0
+  Hand: ['Quantum Riddler']
+  Board: ['Phelia, Exuberant Shepherd (3/3)', "Phlage, Titan of Fire's Fury (6/6)"]
+  Opp board: ['Germ Token (5/5)'] (life=4)
+  EV scores:
+     +15.0  play_land: Scalding Tarn <--
+  >>> PLAY_LAND: Scalding Tarn
+  [MAIN1]
+
+T14 Jeskai Blink | life=19 mana=3 hand=1+0L gy=1
+  Hand: ['Quantum Riddler']
+  Board: ['Phelia, Exuberant Shepherd (3/3)', "Phlage, Titan of Fire's Fury (6/6)"]
+  Opp board: ['Germ Token (5/5)'] (life=4)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Phelia, Exuberant Shepherd']
+  [MAIN2]
+
+T14 Jeskai Blink | life=19 mana=3 hand=1+0L gy=2
+  Hand: ['Quantum Riddler']
+  Opp board: ['Germ Token (5/5)'] (life=4)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T15 Affinity | life=4 mana=4 hand=3+0L gy=5
+  Hand: ['Engineered Explosives', 'Thought Monitor', 'Springleaf Drum']
+  Board: ['Germ Token (5/5)']
+  Permanents: ['Nettlecyst']
+  Opp board: [] (life=19)
+  EV scores:
+      +0.0  cast_spell: Springleaf Drum <--
+      -0.3  cast_spell: Thought Monitor  [h=-0.3 la=-0.3 ctr=7% rmv=24%]
+  >>> CAST_SPELL: Springleaf Drum
+  [MAIN1]
+
+T15 Affinity | life=4 mana=3 hand=2+0L gy=5
+  Hand: ['Engineered Explosives', 'Thought Monitor']
+  Board: ['Germ Token (6/6)']
+  Permanents: ['Nettlecyst', 'Springleaf Drum']
+  Opp board: [] (life=19)
+  EV scores:
+      +2.0  cast_spell: Thought Monitor <--  [h=+2.0 la=+2.0 ctr=7% rmv=24%]
+  >>> CAST_SPELL: Thought Monitor
+  [MAIN1]
+
+T15 Affinity | life=4 mana=2 hand=1+2L gy=5
+  Hand: ['Engineered Explosives']
+  Board: ['Germ Token (7/7)', 'Thought Monitor (2/2)']
+  Permanents: ['Nettlecyst', 'Springleaf Drum']
+  Opp board: [] (life=19)
+  EV scores:
+     +19.5  play_land: Urza's Saga <--
+     +15.0  play_land: Treasure Vault
+  >>> PLAY_LAND: Urza's Saga
+  [MAIN1]
+
+T15 Affinity | life=4 mana=3 hand=1+1L gy=5
+  Hand: ['Engineered Explosives']
+  Board: ['Germ Token (7/7)', 'Thought Monitor (2/2)']
+  Permanents: ['Nettlecyst', 'Springleaf Drum']
+  Opp board: [] (life=19)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Germ Token']
+  [MAIN2]
+
+T15 Affinity | life=4 mana=3 hand=1+1L gy=5
+  Hand: ['Engineered Explosives']
+  Board: ['Germ Token (7/7)', 'Thought Monitor (2/2)']
+  Permanents: ['Nettlecyst', 'Springleaf Drum']
+  Opp board: [] (life=12)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T16 Jeskai Blink | life=12 mana=7 hand=2+0L gy=2
+  Hand: ['Quantum Riddler', 'Quantum Riddler']
+  Opp board: ['Germ Token (7/7)', 'Thought Monitor (2/2)'] (life=4)
+  EV scores:
+      +3.0  cast_spell: Quantum Riddler <--  [h=+3.0 la=+3.0]
+      +3.0  cast_spell: Quantum Riddler  [h=+3.0 la=+3.0]
+  >>> CAST_SPELL: Quantum Riddler
+  [MAIN1]
+
+T16 Jeskai Blink | life=12 mana=2 hand=2+0L gy=2
+  Hand: ['Quantum Riddler', 'Quantum Riddler']
+  Board: ['Quantum Riddler (4/6)']
+  Opp board: ['Germ Token (7/7)', 'Thought Monitor (2/2)'] (life=4)
+  EV scores:
+      +3.0  cast_spell: Quantum Riddler <--  [h=+3.0 la=+3.0]
+      +3.0  cast_spell: Quantum Riddler  [h=+3.0 la=+3.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T16 Jeskai Blink | life=12 mana=2 hand=2+0L gy=2
+  Hand: ['Quantum Riddler', 'Quantum Riddler']
+  Board: ['Quantum Riddler (4/6)']
+  Opp board: ['Germ Token (7/7)', 'Thought Monitor (2/2)'] (life=4)
+  EV scores:
+      +3.0  cast_spell: Quantum Riddler <--  [h=+3.0 la=+3.0]
+      +3.0  cast_spell: Quantum Riddler  [h=+3.0 la=+3.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T17 Affinity | life=4 mana=5 hand=1+2L gy=5
+  Hand: ['Engineered Explosives']
+  Board: ['Germ Token (7/7)', 'Thought Monitor (2/2)']
+  Permanents: ['Nettlecyst', 'Springleaf Drum']
+  Opp board: ['Quantum Riddler (4/6)'] (life=12)
+  EV scores:
+     +15.0  play_land: Treasure Vault <--
+     +15.0  play_land: Urza's Saga
+      -2.0  cast_spell: Engineered Explosives  [h=-2.0 la=-2.0 ctr=13%]
+  >>> PLAY_LAND: Treasure Vault
+  [MAIN1]
+
+T17 Affinity | life=4 mana=6 hand=1+1L gy=5
+  Hand: ['Engineered Explosives']
+  Board: ['Germ Token (8/8)', 'Thought Monitor (2/2)']
+  Permanents: ['Nettlecyst', 'Springleaf Drum']
+  Opp board: ['Quantum Riddler (4/6)'] (life=12)
+  EV scores:
+      -2.7  cast_spell: Engineered Explosives <--  [h=-2.7 la=-2.7 ctr=13%]
+  >>> CAST_SPELL: Engineered Explosives
+  [MAIN1]
+
+T17 Affinity | life=4 mana=0 hand=0+1L gy=5
+  Hand: []
+  Board: ['Germ Token (9/9)', 'Thought Monitor (2/2)']
+  Permanents: ['Nettlecyst', 'Springleaf Drum', 'Engineered Explosives']
+  Opp board: ['Quantum Riddler (4/6)'] (life=12)
+  EV scores:
+      -2.7  cast_spell: Engineered Explosives <--  [h=-2.7 la=-2.7 ctr=13%]
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Germ Token']
+  [MAIN2]
+
+T17 Affinity | life=4 mana=0 hand=0+1L gy=5
+  Hand: []
+  Board: ['Germ Token (9/9)', 'Thought Monitor (2/2)']
+  Permanents: ['Nettlecyst', 'Springleaf Drum', 'Engineered Explosives']
+  Opp board: ['Quantum Riddler (4/6)'] (life=3)
+  EV scores:
+      -2.7  cast_spell: Engineered Explosives <--  [h=-2.7 la=-2.7 ctr=13%]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T18 Jeskai Blink | life=3 mana=7 hand=3+0L gy=2
+  Hand: ['Quantum Riddler', 'Quantum Riddler', 'Ragavan, Nimble Pilferer']
+  Board: ['Quantum Riddler (4/6)']
+  Opp board: ['Germ Token (9/9)', 'Thought Monitor (2/2)'] (life=4)
+  EV scores:
+      +0.2  cast_spell: Ragavan, Nimble Pilferer <--  [h=+0.2 la=+0.2]
+      -1.2  cast_spell: Quantum Riddler  [h=-1.2 la=-1.2]
+      -1.2  cast_spell: Quantum Riddler  [h=-1.2 la=-1.2]
+  >>> CAST_SPELL: Ragavan, Nimble Pilferer
+  [MAIN1]
+
+T18 Jeskai Blink | life=3 mana=5 hand=2+0L gy=2
+  Hand: ['Quantum Riddler', 'Quantum Riddler']
+  Board: ['Quantum Riddler (4/6)', 'Ragavan, Nimble Pilferer (2/1)']
+  Opp board: ['Germ Token (9/9)', 'Thought Monitor (2/2)'] (life=4)
+  EV scores:
+      -1.5  cast_spell: Quantum Riddler <--  [h=-1.5 la=-1.5]
+      -1.5  cast_spell: Quantum Riddler  [h=-1.5 la=-1.5]
+  >>> CAST_SPELL: Quantum Riddler
+  [MAIN1]
+
+T18 Jeskai Blink | life=3 mana=0 hand=1+0L gy=3
+  Hand: ['Quantum Riddler']
+  Board: ['Quantum Riddler (4/6)', 'Ragavan, Nimble Pilferer (2/1)']
+  Opp board: ['Germ Token (9/9)', 'Thought Monitor (2/2)'] (life=4)
+  EV scores:
+      -1.5  cast_spell: Quantum Riddler <--  [h=-1.5 la=-1.5]
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Quantum Riddler', 'Ragavan, Nimble Pilferer']
+  [MAIN2]
+
+T18 Jeskai Blink | life=3 mana=0 hand=1+1L gy=3
+  Hand: ['Quantum Riddler']
+  Board: ['Quantum Riddler (4/6)', 'Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Treasure Token']
+  Opp board: ['Germ Token (8/8)'] (life=2)
+  EV scores:
+     +14.0  play_land: Tanglepool Bridge <--
+  >>> PLAY_LAND: Tanglepool Bridge
+  [MAIN2]
+
+T18 Jeskai Blink | life=3 mana=0 hand=1+0L gy=3
+  Hand: ['Quantum Riddler']
+  Board: ['Quantum Riddler (4/6)', 'Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Treasure Token']
+  Opp board: ['Germ Token (8/8)'] (life=2)
+  EV scores:
+     +14.0  play_land: Tanglepool Bridge <--
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T19 Affinity | life=2 mana=6 hand=1+1L gy=6
+  Hand: ['Memnite']
+  Board: ['Germ Token (9/9)', 'Construct Token (9/9)']
+  Permanents: ['Nettlecyst', 'Springleaf Drum', 'Engineered Explosives']
+  Opp board: ['Quantum Riddler (4/6)'] (life=3)
+  EV scores:
+     +15.0  play_land: Urza's Saga <--
+      -0.8  cast_spell: Memnite  [h=-0.8 la=-0.8]
+  >>> PLAY_LAND: Urza's Saga
+  [MAIN1]
+
+T19 Affinity | life=2 mana=7 hand=1+0L gy=6
+  Hand: ['Memnite']
+  Board: ['Germ Token (9/9)', 'Construct Token (9/9)']
+  Permanents: ['Nettlecyst', 'Springleaf Drum', 'Engineered Explosives']
+  Opp board: ['Quantum Riddler (4/6)'] (life=3)
+  EV scores:
+      -0.8  cast_spell: Memnite <--  [h=-0.8 la=-0.8]
+  >>> CAST_SPELL: Memnite
+  [MAIN1]
+
+T19 Affinity | life=2 mana=7 hand=0+0L gy=6
+  Hand: []
+  Board: ['Germ Token (10/10)', 'Construct Token (10/10)', 'Memnite (1/1)']
+  Permanents: ['Nettlecyst', 'Springleaf Drum', 'Engineered Explosives']
+  Opp board: ['Quantum Riddler (4/6)'] (life=3)
+  EV scores:
+      -0.8  cast_spell: Memnite <--  [h=-0.8 la=-0.8]
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Germ Token']
