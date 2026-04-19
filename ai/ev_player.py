@@ -662,11 +662,10 @@ class EVPlayer:
         # creature permanents. `_project_spell` models removal as
         # creature-killing; that projection gives ~zero EV when opp has
         # no threatening creatures. For artifact/enchantment-hate, the
-        # real target-value comes from scaling equipment (CP, Nettlecyst)
-        # or stax pieces. Use `_permanent_threat_value` — the same oracle
-        # helper that drives `_choose_targets` — to score the best hit.
-        # Detection is purely oracle-driven (target artifact/enchantment/
-        # nonland permanent); no card names.
+        # real target-value is the marginal contribution of the best
+        # hittable permanent — exactly what `permanent_threat` returns.
+        # Detection is purely oracle-driven (target artifact / enchantment
+        # / nonland permanent / noncreature permanent); no card names.
         if ('removal' in tags and not 'board_wipe' in tags
                 and not t.is_creature):
             o_lower = (t.oracle_text or '').lower()
@@ -676,6 +675,7 @@ class EVPlayer:
                                 or 'target noncreature' in o_lower)
             if hits_noncreature:
                 from engine.cards import CardType
+                from ai.permanent_threat import permanent_threat
                 candidates = []
                 for c in opp.battlefield:
                     if c.template.is_land:
@@ -691,12 +691,12 @@ class EVPlayer:
                     candidates.append(c)
                 if candidates:
                     best = max(candidates,
-                               key=lambda c: self._permanent_threat_value(c, opp, snap))
-                    tv = self._permanent_threat_value(best, opp, snap)
-                    # Scale roughly on par with the creature-threat overlay:
-                    # CP on a 5-artifact board → tv=7 → +3.5 EV, which
-                    # outranks a typical 2-CMC deploy.
-                    ev += tv * 0.5
+                               key=lambda c: permanent_threat(c, opp, game))
+                    tv = permanent_threat(best, opp, game)
+                    # Marginal threat is already in position-value units
+                    # (the same scale as _score_spell's lookahead delta).
+                    # Add it directly — no halving / no tier remapping.
+                    ev += tv
 
         # ── Mana holdback: penalize tapping out when we hold instants ──
         # Trigger holdback when: opp has creatures, OR opp is a spell/combo deck
@@ -1752,27 +1752,14 @@ class EVPlayer:
             if dmg >= opp.life:
                 return [-1]  # face = lethal, always go face
 
-            # Find best creature we can kill — factoring in strategic priority.
-            # Attack-trigger sources (battle cry etc.) are high priority even when
-            # their raw creature_value is low: killing them removes ongoing damage
-            # amplification on every future attack.
-            # Equipment carries scaling value beyond its base P/T.
-            # Opp artifact-synergy signal — oracle-driven (no card names).
-            # Any opposing permanent whose text scales with artifact count
-            # means every opposing artifact creature is also a strategic
-            # piece (Plating-style scaling, metalcraft enabler, affinity
-            # enabler). Killing such a creature denies the scaling.
-            from ai.ev_evaluator import creature_threat_value as _ctv
-            from engine.cards import CardType
-            _opp_artifact_synergy = False
-            for _perm in opp.battlefield:
-                _po = (_perm.template.oracle_text or '').lower()
-                if ('for each artifact' in _po
-                        or 'metalcraft' in _po
-                        or 'affinity for artifacts' in _po):
-                    _opp_artifact_synergy = True
-                    break
-
+            # Pick the highest-threat killable creature via the marginal-
+            # contribution formula: threat(c) = V_opp(B) - V_opp(B \ {c}).
+            # Scaling (equipment bonuses, "for each artifact" bonuses,
+            # synergy-denial) falls out naturally — removing a key enabler
+            # strips every dependent bonus, which shows up as a larger
+            # position-value drop. No per-synergy bolt-on, no battle-cry
+            # premium, no archetype detection; the threat formula decides.
+            from ai.permanent_threat import permanent_threat
             best_kill_val = 0.0
             best_kill_id = None
             best_kill_why = ""
@@ -1780,45 +1767,12 @@ class EVPlayer:
                 for c in opp.creatures:
                     remaining_toughness = (c.toughness or 0) - getattr(c, 'damage_marked', 0)
                     if dmg >= remaining_toughness > 0 or remaining_toughness <= 0:
-                        val = creature_value(c, snap)
-                        c_oracle = (c.template.oracle_text or '').lower()
-                        c_cname = (c.template.name or '').lower().split(' //')[0].strip()
-                        why_parts = []
-                        # Attack-trigger premium: battle cry, Ragavan-style triggers
-                        if ('whenever this creature attacks' in c_oracle
-                                or (c_cname and f'whenever {c_cname} attacks' in c_oracle)):
-                            val += 5.0
-                            why_parts.append("removes attack trigger")
-                        elif 'battle cry' in c_oracle:
-                            val += 5.0
-                            why_parts.append("removes battle cry pump")
-                        elif 'deals combat damage to a player' in c_oracle:
-                            val += 5.0
-                            why_parts.append("stops combat-damage engine")
-                        # Threat premium: high-power creatures that will kill us soon
-                        if (c.power or 0) >= 4:
-                            val += (c.power or 0) * 0.5
-                            why_parts.append(f"high threat {c.power}/{c.toughness}")
-                        # Artifact-synergy denial: when opp's board shows
-                        # artifact-scaling text, even a 0/P Construct/
-                        # Ornithopter-class body is load-bearing for opp's
-                        # plan. Premium equals the creature's threat score
-                        # as a future Plating/Nettlecyst wielder — use
-                        # creature_threat_value on the *same* snap so the
-                        # value is derived from the clock pipeline, not a
-                        # magic constant.
-                        if (_opp_artifact_synergy
-                                and CardType.ARTIFACT in c.template.card_types):
-                            _synergy_premium = max(1.0, _ctv(c, snap))
-                            val += _synergy_premium
-                            why_parts.append(
-                                f"denies artifact synergy (+{_synergy_premium:.1f})")
-                        if not why_parts:
-                            why_parts.append(f"{c.power}/{c.toughness} body")
+                        val = permanent_threat(c, opp, game)
                         if val > best_kill_val:
                             best_kill_val = val
                             best_kill_id = c.instance_id
-                            best_kill_why = ", ".join(why_parts)
+                            best_kill_why = (f"marginal threat {val:.1f} "
+                                             f"({c.power}/{c.toughness} body)")
 
             # Compare: is killing a creature worth more than face damage?
             face_val = dmg * self.profile.burn_face_mult
@@ -1866,11 +1820,12 @@ class EVPlayer:
                                    or 'artifact' in oracle)
 
             if can_hit_noncreature:
-                # Evaluate all nonland permanents — equipment is high priority
-                from engine.cards import CardType
+                # Evaluate all nonland permanents via marginal threat.
+                from ai.permanent_threat import permanent_threat
                 nonland = [c for c in opp.battlefield if not c.template.is_land]
                 if nonland:
-                    best = max(nonland, key=lambda c: self._permanent_threat_value(c, opp, snap))
+                    best = max(nonland,
+                               key=lambda c: permanent_threat(c, opp, game))
                     return [best.instance_id]
                 return []
             else:
@@ -1914,61 +1869,6 @@ class EVPlayer:
 
         return []
 
-    def _permanent_threat_value(self, perm, opp, snap=None) -> float:
-        """Evaluate how threatening an opponent's permanent is.
-
-        Creatures: use creature_value().
-        Scaling equipment (Cranial Plating, Nettlecyst): value = artifact
-          count on opp's board + 2 — oracle-detected via the regex
-          `+N/+N for each (artifact|creature|land)`, so any future
-          scaling equipment is handled without a card-name list.
-        Planeswalkers: high value. Stax: high value. Other: CMC proxy.
-        """
-        from engine.cards import CardType
-        t = perm.template
-
-        if t.is_creature:
-            return creature_value(perm, snap)
-
-        oracle = (t.oracle_text or '').lower()
-        tags = getattr(t, 'tags', set())
-
-        # Scaling equipment / enchantments — `+N/+N for each <permanent>`
-        # is the oracle fingerprint. Value is driven by opponent's current
-        # permanent count, not by CMC.
-        m = re.search(r'\+\w+/\+\w+\s+for each (artifact|creature|land)', oracle)
-        if m:
-            counter_type = m.group(1)
-            if counter_type == 'artifact':
-                count = sum(1 for c in opp.battlefield
-                            if CardType.ARTIFACT in c.template.card_types)
-            elif counter_type == 'creature':
-                count = len(opp.creatures)
-            else:
-                count = sum(1 for c in opp.battlefield if c.template.is_land)
-            # Even unattached, the equip-about-to-fire threat is count + 2
-            # (CMC-ish anchor so a 1-artifact board still ranks CP ≥ 3).
-            return float(count + 2)
-
-        # Static-boost equipment without a scaling clause: CMC proxy + 2
-        if 'equipment' in tags or 'pump' in tags:
-            return (t.cmc or 0) + 2.0
-
-        # Planeswalkers
-        if CardType.PLANESWALKER in t.card_types:
-            return 8.0 + (getattr(perm, 'loyalty_counters', 0) or 0)
-
-        # Stax/lock pieces
-        if 'stax' in tags:
-            return 7.0
-
-        # Mana sources
-        if getattr(t, 'produces_mana', None):
-            return 3.0
-
-        # Default: CMC proxy
-        return (t.cmc or 0) + 1.0
-
     def _pick_best_removal_target(self, card, creatures, player,
                                    game, player_idx) -> Optional["CardInstance"]:
         """Pick the best target for a removal spell.
@@ -2000,16 +1900,12 @@ class EVPlayer:
     def _has_high_threat_target(self, game, spell, snap=None) -> bool:
         """True if a removal spell has a target worth proactively casting for.
 
-        Threat value is oracle-driven via `creature_threat_value` (for
-        creatures) and `_permanent_threat_value` (for artifacts /
-        enchantments like scaling equipment). `prof.big_creature_power`
-        is reused as the EV floor, not as a raw P/T cap.
-
-        Considers BOTH creatures and noncreature permanents so that a
-        nonland-permanent-hitting spell (Leyline Binding, Force of Vigor,
-        Wear // Tear) correctly releases from the reactive_only gate when
-        Cranial Plating / Nettlecyst / similar scaling equipment hits the
-        battlefield.
+        Creatures use `creature_threat_value` (oracle-driven virtual
+        power through the clock pipeline).  Noncreature permanents use
+        the marginal-contribution formula in `ai.permanent_threat` —
+        its value is in position-value units, so the same
+        `big_creature_power` floor (a threat amount, not a raw P/T)
+        applies to both branches uniformly.
         """
         opp = game.players[1 - self.player_idx]
         tags = getattr(spell.template, 'tags', set())
@@ -2021,7 +1917,6 @@ class EVPlayer:
         prof = self.profile
         floor = float(prof.big_creature_power)  # e.g. 4.0 EV floor
 
-        # Creature threats (battle cry, scaling, big body)
         for c in opp.creatures:
             if dmg > 0:
                 remaining = (c.toughness or 0) - getattr(c, 'damage_marked', 0)
@@ -2030,10 +1925,6 @@ class EVPlayer:
             if creature_threat_value(c, snap) >= floor:
                 return True
 
-        # Noncreature-permanent threats — scaling equipment (CP, Nettlecyst),
-        # planeswalkers, stax pieces. Only applies if the spell can actually
-        # hit them (oracle mentions target artifact / enchantment / nonland /
-        # noncreature / permanent).
         oracle = (spell.template.oracle_text or '').lower()
         hits_noncreature = ('target artifact' in oracle
                             or 'target enchantment' in oracle
@@ -2041,10 +1932,11 @@ class EVPlayer:
                             or 'target noncreature' in oracle
                             or 'target permanent' in oracle)
         if hits_noncreature:
+            from ai.permanent_threat import permanent_threat
             for perm in opp.battlefield:
                 if perm.template.is_land or perm.template.is_creature:
                     continue
-                if self._permanent_threat_value(perm, opp, snap) >= floor:
+                if permanent_threat(perm, opp, game) >= floor:
                     return True
 
         return False

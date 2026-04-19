@@ -135,31 +135,30 @@ EFFECT_REGISTRY = CardEffectRegistry()
 # Threat Scoring — smart targeting for removal/interaction
 # ═══════════════════════════════════════════════════════════════════
 
-def _threat_score(card) -> float:
+def _threat_score(card, game=None, owner=None) -> float:
     """Score a permanent by actual game threat, not CMC.
 
-    Used by all removal/interaction effects to pick the best target.
+    Used by removal / interaction effects to pick the best target.
     Higher = more threatening = should be removed first.
 
-    Delegates to ai.ev_evaluator for creatures (creature_threat_value is
-    oracle-driven + clock-math-backed). Non-creature permanents use
-    derivations on the same scale: equipment = virtual power over residency
-    turns, cost reducer / engine = card-clock-impact × horizon, PW =
-    loyalty × card-equivalent value. All derived from clock / mana math
-    via a shared mid-game default snapshot — no flat tiers.
+    Creatures: delegate to `ai.ev_evaluator.creature_threat_value`
+    (oracle-driven, clock-math-backed).  Ward is modelled as a
+    removal-targeting tax and subtracted on the same scale.
+
+    Non-creature permanents: when `game` and `owner` (the player
+    controlling `card`) are supplied, delegate to the marginal-
+    contribution formula `ai.permanent_threat.permanent_threat`,
+    which returns the drop in the owner's position value when
+    `card` is removed.  When context is unavailable (legacy
+    callsites that don't have the game in scope), fall back to a
+    neutral CMC proxy so scoring remains monotonic.
     """
     t = card.template
-    tags = getattr(t, 'tags', set())
     oracle = (t.oracle_text or '').lower()
-    subtypes = getattr(t, 'subtypes', [])
 
-    # Creatures: single source of truth in the AI layer.
     if t.is_creature:
         from ai.ev_evaluator import creature_threat_value
         base = creature_threat_value(card)
-        # Ward: removal-targeting tax. Opp's removal costs extra N mana to
-        # target this → effective -N mana worth of threat to the attacker.
-        # Derive from mana_clock_impact on the same (_DEFAULT_SNAP) scale.
         if 'ward' in oracle:
             import re as _re
             from ai.clock import mana_clock_impact
@@ -169,57 +168,14 @@ def _threat_score(card) -> float:
             base -= ward_cost * mana_clock_impact(_DEFAULT_SNAP) * 20.0
         return base
 
-    # Non-creature: use mid-game default snap for clock derivations so the
-    # magnitudes align with creature_threat_value (~3-15 range).
-    from ai.ev_evaluator import _DEFAULT_SNAP
-    from ai.clock import card_clock_impact, mana_clock_impact
-    from engine.cards import CardType
-    score = 0.0
-    # Rules constant: typical Modern residency for a non-creature
-    # permanent before it's removed / the game ends.
-    RESIDENCY_TURNS = 4.0
-    mana_unit = mana_clock_impact(_DEFAULT_SNAP) * 20.0  # ~1.0
-    card_unit = card_clock_impact(_DEFAULT_SNAP) * 20.0  # ~0.5 at default
+    if game is not None and owner is not None:
+        from ai.permanent_threat import permanent_threat
+        return permanent_threat(card, owner, game)
 
-    # Equipment: the threat is the +P/+T it gives a creature over its
-    # residency. Parse +X/+Y from oracle; default to +2/+2 if absent.
-    is_equipment = 'Equipment' in subtypes or 'equipment' in tags
-    if is_equipment:
-        import re as _re
-        power_bonus = 2
-        m = _re.search(r'\+(\d+)/\+\d+', oracle)
-        if m:
-            power_bonus = int(m.group(1))
-        # Scaling equipment integrates with matching-permanent count —
-        # adds virtual power proportional to board state.
-        if 'for each artifact' in oracle or 'artifact you control' in oracle:
-            power_bonus += 3  # rules: typical artifact count in Affinity
-        score += power_bonus * RESIDENCY_TURNS * mana_unit
-
-    # Cost reducers: ongoing mana savings → card-equivalent value per turn
-    # over residency.
-    if getattr(t, 'is_cost_reducer', False):
-        score += RESIDENCY_TURNS * card_unit * 2.0  # 2 spells/turn saving 1 mana
-
-    # Token / value engines (triggered creates-a-token): one extra card's
-    # worth of clock impact per activation.
-    if 'whenever' in oracle and ('create' in oracle or 'token' in oracle):
-        score += RESIDENCY_TURNS * card_unit * 2.0  # ~2 triggers/turn avg
-
-    # Planeswalkers: each loyalty activation ≈ one card's clock impact.
-    if CardType.PLANESWALKER in getattr(t, 'card_types', []):
-        loyalty = getattr(t, 'loyalty', 3) or 3
-        score += loyalty * card_unit * 2.0  # card_unit baseline × 2 for PW ability strength
-
-    # Generic artifacts: 1 mana worth of synergy value.
-    if CardType.ARTIFACT in getattr(t, 'card_types', []) and not is_equipment:
-        score += mana_unit
-
-    # CMC tiebreaker: high-cmc permanents typically represent larger
-    # strategic investments worth targeting first when all else equal.
-    score += (t.cmc or 0) * 0.5
-
-    return score
+    # Context-free fallback: CMC proxy.  Only reached when a caller
+    # scores a non-creature permanent without threading `game`
+    # through.  All callers with game in scope pass it.
+    return float(t.cmc or 0)
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -752,7 +708,7 @@ def march_otherworldly_light_resolve(game, card, controller, targets=None, item=
                           or CardType.ENCHANTMENT in c.template.card_types)
                      and c.template.cmc <= x_val]
     if exile_targets:
-        target = max(exile_targets, key=_threat_score)
+        target = max(exile_targets, key=lambda c: _threat_score(c, game, opp))
         game._exile_permanent(target)
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"March of Otherworldly Light exiles {target.name}")
@@ -1273,7 +1229,7 @@ def wear_tear_resolve(game, card, controller, targets=None, item=None):
     artifacts = [c for c in opp.battlefield
                  if CardType.ARTIFACT in c.template.card_types]
     if artifacts:
-        target = max(artifacts, key=_threat_score)
+        target = max(artifacts, key=lambda c: _threat_score(c, game, opp))
         game._permanent_destroyed(target)
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Wear // Tear destroys {target.name}")
@@ -1283,7 +1239,7 @@ def wear_tear_resolve(game, card, controller, targets=None, item=None):
                     if CardType.ENCHANTMENT in c.template.card_types
                     and not c.template.is_creature]
     if enchantments:
-        target = max(enchantments, key=_threat_score)
+        target = max(enchantments, key=lambda c: _threat_score(c, game, opp))
         game._permanent_destroyed(target)
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Wear // Tear destroys {target.name}")
@@ -1309,7 +1265,8 @@ def pick_your_poison_resolve(game, card, controller, targets=None, item=None):
 
     if artifacts_enchantments:
         # Sacrifice highest value artifact/enchantment
-        target = max(artifacts_enchantments, key=_threat_score)
+        target = max(artifacts_enchantments,
+                     key=lambda c: _threat_score(c, game, opp))
         game._permanent_destroyed(target)
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Pick Your Poison: opponent sacrifices {target.name}")
@@ -1372,7 +1329,7 @@ def kolaghans_command_resolve(game, card, controller, targets=None, item=None):
     artifacts = [c for c in opp.battlefield
                  if CardType.ARTIFACT in c.template.card_types]
     if artifacts:
-        target = max(artifacts, key=_threat_score)
+        target = max(artifacts, key=lambda c: _threat_score(c, game, opp))
         game._permanent_destroyed(target)
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Kolaghan's Command destroys {target.name}")
@@ -2333,7 +2290,7 @@ def teferi_t3_etb(game, card, controller, targets=None, item=None):
     # Bounce best opponent nonland permanent (by threat)
     nonlands = [c for c in opp.battlefield if not c.template.is_land]
     if nonlands:
-        target = max(nonlands, key=_threat_score)
+        target = max(nonlands, key=lambda c: _threat_score(c, game, opp))
         opp.battlefield.remove(target)
         if target in opp.creatures:
             opp.creatures.remove(target)
@@ -2452,7 +2409,7 @@ def celestial_purge_resolve(game, card, controller, targets=None, item=None):
                  if not c.template.is_land
                  and any(col.value in ('R', 'B') for col in c.template.color_identity)]
     if red_black:
-        target = max(red_black, key=_threat_score)
+        target = max(red_black, key=lambda c: _threat_score(c, game, opp))
         game._exile_permanent(target)
         game.log.append(
             f"T{game.display_turn} P{controller+1}: "
@@ -2483,7 +2440,7 @@ def thraben_charm_resolve(game, card, controller, targets=None, item=None):
     opp_tokens = sum(1 for c in opp.creatures if (c.toughness or c.template.toughness or 0) <= 1)
 
     if enchantments:
-        target = max(enchantments, key=_threat_score)
+        target = max(enchantments, key=lambda c: _threat_score(c, game, opp))
         game._permanent_destroyed(target)
         game.log.append(
             f"T{game.display_turn} P{controller+1}: "
@@ -2551,7 +2508,8 @@ def phelia_attack(game, card, controller, targets=None, item=None):
         target_owner = controller
     elif opp_nonlands:
         # Tempo: exile opponent's best nonland (it returns at end step)
-        target = max(opp_nonlands, key=_threat_score)
+        target = max(opp_nonlands,
+                     key=lambda c: _threat_score(c, game, opp))
         target_owner = opp_idx
 
     if target is None:
