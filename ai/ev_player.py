@@ -1716,6 +1716,22 @@ class EVPlayer:
             # their raw creature_value is low: killing them removes ongoing damage
             # amplification on every future attack.
             # Equipment carries scaling value beyond its base P/T.
+            # Opp artifact-synergy signal — oracle-driven (no card names).
+            # Any opposing permanent whose text scales with artifact count
+            # means every opposing artifact creature is also a strategic
+            # piece (Plating-style scaling, metalcraft enabler, affinity
+            # enabler). Killing such a creature denies the scaling.
+            from ai.ev_evaluator import creature_threat_value as _ctv
+            from engine.cards import CardType
+            _opp_artifact_synergy = False
+            for _perm in opp.battlefield:
+                _po = (_perm.template.oracle_text or '').lower()
+                if ('for each artifact' in _po
+                        or 'metalcraft' in _po
+                        or 'affinity for artifacts' in _po):
+                    _opp_artifact_synergy = True
+                    break
+
             best_kill_val = 0.0
             best_kill_id = None
             best_kill_why = ""
@@ -1742,6 +1758,20 @@ class EVPlayer:
                         if (c.power or 0) >= 4:
                             val += (c.power or 0) * 0.5
                             why_parts.append(f"high threat {c.power}/{c.toughness}")
+                        # Artifact-synergy denial: when opp's board shows
+                        # artifact-scaling text, even a 0/P Construct/
+                        # Ornithopter-class body is load-bearing for opp's
+                        # plan. Premium equals the creature's threat score
+                        # as a future Plating/Nettlecyst wielder — use
+                        # creature_threat_value on the *same* snap so the
+                        # value is derived from the clock pipeline, not a
+                        # magic constant.
+                        if (_opp_artifact_synergy
+                                and CardType.ARTIFACT in c.template.card_types):
+                            _synergy_premium = max(1.0, _ctv(c, snap))
+                            val += _synergy_premium
+                            why_parts.append(
+                                f"denies artifact synergy (+{_synergy_premium:.1f})")
                         if not why_parts:
                             why_parts.append(f"{c.power}/{c.toughness} body")
                         if val > best_kill_val:
