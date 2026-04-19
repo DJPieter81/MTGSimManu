@@ -58,6 +58,14 @@ class EVSnapshot:
     opp_evasion_power: int = 0
     # Cards drawn this turn
     cards_drawn_this_turn: int = 0
+    # Expected power contribution from recurring-trigger tokens over the
+    # permanent's expected residency. NOT an on-board quantity; this is
+    # a forward projection credited by `_project_spell` for cards whose
+    # tokens arrive over time (end-step/cast/attack/combat-damage
+    # triggers) rather than immediately on ETB. `position_value` reads
+    # it via `snap.my_power + persistent_power × urgency_factor` so the
+    # credit shrinks as the opponent's clock tightens.
+    persistent_power: float = 0.0
 
     @property
     def my_clock(self) -> float:
@@ -352,74 +360,174 @@ def _has_immediate_effect(card: "CardInstance") -> bool:
     return True  # default: assume some immediate value
 
 
-def _project_token_bonus(oracle_l: str,
-                          opp_creature_count: int) -> Tuple[int, int]:
-    """Classify a `token_maker` oracle clause and return
-    (projected_power_bonus, projected_creature_count_bonus).
+def _project_token_bonus(oracle_l: str, snap: "EVSnapshot"
+                          ) -> Tuple[int, int, float]:
+    """Classify every token-making clause in a card's oracle text and
+    return `(immediate_power, immediate_count, persistent_power)`.
 
-    Three oracle-driven classes (no card names):
+    *Immediate* credit applies to tokens that exist at the moment the
+    spell finishes resolving — ETB-triggered creature tokens and any
+    amass clause inherited from an ETB trigger. These bump on-board
+    power the same turn the card is cast.
 
-      1. ETB creature token   — "when <this> enters ... create ... creature"
-                                 Immediate, guaranteed. Parse the P/T in
-                                 the oracle. Fallback to 1/1 when the P/T
-                                 isn't printed.
-      2. Attack trigger token — "whenever <this> attacks ... create ..."
-                                 Conditional on a profitable attack. Credit
-                                 only when opp has no creatures (an
-                                 unopposed attack is expected to connect).
-      3. Combat-damage         — "whenever <this> deals combat damage ...
-         treasure token          create a Treasure token"
-                                 Zero power bonus (treasures are mana
-                                 tokens, not creatures). Also doubly
-                                 conditional: need to deal combat damage
-                                 first.
+    *Persistent* credit applies to tokens produced by recurring
+    triggers that fire over the permanent's residency on the
+    battlefield — attack triggers, combat-damage triggers (creature
+    tokens only), end-step triggers, cast triggers, and the "whenever
+    an opponent draws" pattern used by amass-on-draw cards. Value is
+    `trigger_rate × residency × token_power`. Residency is reused
+    from the canonical `PERMANENT_VALUE_WINDOW = 2.0` rules constant
+    already declared in `EVSnapshot.urgency_factor` — we don't
+    introduce a second residency number.
 
-    Any other create-token pattern (cast-trigger card-advantage tokens,
-    end-of-turn triggers, etc.) is left out of the power projection —
-    it's not the class of effect this bonus models.
+    Non-creature tokens (treasure / food / clue / gold / blood / map /
+    powerstone) contribute zero power in either column. Their mana /
+    card-advantage value belongs in a separate subsystem extension
+    and is explicitly out of scope.
+
+    All trigger rates are derived from snap fields or declared rules
+    constants — no magic weights.
     """
-    # Class 1 — ETB creature token.
-    etb_match = re.search(
-        r'when[s]? (?:[a-z\'\-\s]+ )?enters'
-        r'.*?create(?: a| an| \w+)? (\d+)/(\d+) [a-z\-\s,]*?creature token',
-        oracle_l, re.DOTALL,
-    )
-    if etb_match:
-        p = int(etb_match.group(1))
-        return (max(0, p), 1)
-    if re.search(
-        r'when[s]? (?:[a-z\'\-\s]+ )?enters'
-        r'.*?create .*?creature token',
-        oracle_l, re.DOTALL,
-    ):
-        # Creature token clause present but P/T not parsed — assume 1/1.
-        return (1, 1)
+    # Rules constants, all justified inline:
+    #   RESIDENCY — from EVSnapshot.urgency_factor's
+    #     PERMANENT_VALUE_WINDOW. A typical deferred permanent has
+    #     first payoff T+1 with bulk of value across ~2 additional
+    #     turns; using the same number keeps the two deferred-value
+    #     systems coherent.
+    #   MODERN_SPELLS_PER_TURN — Modern decks cast ~1 spell per turn
+    #     on average (samples: Boros 10 lands / 50 nonlands over 10
+    #     turns ≈ 1 castable spell/turn; Dimir similar).
+    #   OPP_DRAWS_PER_TURN — fixed by the game's draw step (rules).
+    RESIDENCY = 2.0
+    MODERN_SPELLS_PER_TURN = 1.0
+    OPP_DRAWS_PER_TURN = 1.0
 
-    # Class 3 — combat-damage treasure token. Check BEFORE the generic
-    # attack-trigger branch so Ragavan-style treasure makers don't slip
-    # through as attack-trigger power.
-    if re.search(
-        r'whenever [a-z\'\-\s]+ deals combat damage'
-        r'.*?create .*?treasure token',
-        oracle_l, re.DOTALL,
-    ):
-        return (0, 0)
+    NON_CREATURE_TOKENS = ('treasure token', 'food token',
+                            'clue token', 'gold token', 'blood token',
+                            'map token', 'powerstone token')
+    AMASS_WORD_MAP = {
+        'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5,
+        'six': 6, 'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10,
+    }
 
-    # Class 2 — attack-trigger creature token. Unopposed attack gets credit.
-    if re.search(
-        r'whenever [a-z\'\-\s]+ attacks'
-        r'.*?create .*?creature token',
-        oracle_l, re.DOTALL,
-    ):
-        if opp_creature_count == 0:
-            return (1, 1)
-        return (0, 0)
+    def _clause_token_power(clause: str) -> int:
+        """Power produced per token firing of this clause."""
+        m = re.search(r'(\d+)/(\d+)\s+[\w\-\s,]*?creature token', clause)
+        if m:
+            return int(m.group(1))
+        # Amass N (numeric or word form) — 0/0 Army + N +1/+1 counters.
+        m = re.search(r'amass [\w\s\-]*?(\d+)', clause)
+        if m:
+            return int(m.group(1))
+        m = re.search(r'amass [\w\-]+\s+(\w+)', clause)
+        if m and m.group(1) in AMASS_WORD_MAP:
+            return AMASS_WORD_MAP[m.group(1)]
+        for nct in NON_CREATURE_TOKENS:
+            if nct in clause:
+                return 0
+        if 'creature token' in clause:
+            return 1
+        return 0
 
-    # Unknown clause class — be conservative and award nothing. The
-    # surrounding creature-deployment branch already covers the card's
-    # printed body; tokens outside these three classes need dedicated
-    # modelling (e.g. recurring card-draw tokens).
-    return (0, 0)
+    def _trigger_classes(clause: str) -> List[str]:
+        """Return every trigger class present in a clause.
+
+        A single clause can declare multiple conjoined triggers,
+        e.g. "When this creature enters AND whenever an opponent
+        draws ...". The effect fires under each, so all matches must
+        be credited independently.
+        """
+        found = []
+        # combat_damage must come first — its pattern contains the
+        # word "deals" which wouldn't cross-match with "attacks", but
+        # the generic attack pattern below would otherwise also hit
+        # clauses like "whenever ~ attacks AND deals combat damage".
+        if re.search(r'whenever [a-z\'\-\s]+ deals combat damage', clause):
+            found.append('combat_damage')
+        if re.search(r'when[s]? (?:[a-z\'\-\s]+ )?enters', clause):
+            found.append('etb')
+        if re.search(r'whenever [a-z\'\-\s]+ attacks', clause):
+            found.append('attack')
+        if re.search(r'at the beginning of (?:your|each)(?: [a-z\-]+)? end step',
+                     clause):
+            found.append('end_step')
+        if re.search(r'whenever you cast', clause):
+            found.append('cast')
+        if re.search(r'whenever (?:an? )?opponent draws', clause):
+            found.append('opp_draws')
+        if re.search(r'whenever [a-z\'\-\s]+ dies', clause):
+            found.append('dies')
+        return found
+
+    def _persistent_rate(trigger_class: str) -> float:
+        """Expected firings per turn, derived from snap.
+
+        All cases return either 0.0 or a derived rate; no magic
+        intermediate constants.
+        """
+        if trigger_class == 'etb':
+            return 0.0  # credited as immediate
+        if trigger_class == 'attack':
+            # Fires once per attack step. We attack when we're ahead
+            # on combat (my_power > 0) and don't die first (opp_clock
+            # > 1, i.e. we survive the incoming turn).
+            if snap.my_power > 0 and snap.opp_clock > 1:
+                return 1.0
+            return 0.0
+        if trigger_class == 'combat_damage':
+            # Conditional on attacking and connecting. Connection
+            # probability from snap: if opp has no blockers, we connect.
+            # Otherwise we need more power than their total toughness
+            # to push damage through. Binary derivation — no blend.
+            if snap.my_power <= 0 or snap.opp_clock <= 1:
+                return 0.0
+            if snap.opp_creature_count == 0:
+                return 1.0
+            if snap.my_power > snap.opp_toughness:
+                return 1.0
+            return 0.0
+        if trigger_class == 'end_step':
+            # Triggers every end step unconditionally (rules).
+            return 1.0
+        if trigger_class == 'cast':
+            return MODERN_SPELLS_PER_TURN
+        if trigger_class == 'opp_draws':
+            return OPP_DRAWS_PER_TURN
+        if trigger_class == 'dies':
+            return 0.0  # Fires once at end of lifetime — out of scope.
+        return 0.0
+
+    immediate_power = 0
+    immediate_count = 0
+    persistent_power = 0.0
+
+    clauses = re.split(r'(?:\.|\n)+', oracle_l)
+    last_triggers: List[str] = []
+    for clause in clauses:
+        own_triggers = _trigger_classes(clause)
+        if own_triggers:
+            last_triggers = own_triggers
+        if 'create' not in clause and 'amass' not in clause:
+            continue
+        power = _clause_token_power(clause)
+        if power <= 0:
+            continue
+        triggers = own_triggers if own_triggers else last_triggers
+        # Credit each declared trigger independently — conjoined
+        # triggers fire separately (Bowmasters: ETB + opp-draw).
+        etb_credited = False
+        for trigger in triggers:
+            if trigger == 'etb':
+                if not etb_credited:
+                    immediate_power += power
+                    immediate_count += 1
+                    etb_credited = True
+            else:
+                rate = _persistent_rate(trigger)
+                if rate > 0:
+                    persistent_power += power * rate * RESIDENCY
+
+    return (immediate_power, immediate_count, persistent_power)
 
 
 def _project_spell(card: "CardInstance", snap: EVSnapshot,
@@ -479,25 +587,22 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         if 'lifelink' in kws:
             projected.my_lifelink_power += max(0, p)
 
-        # Token makers: bonus depends on what the token IS and when it
-        # shows up. The `token_maker` tag groups three very different
-        # classes of effect under one label — we have to disambiguate from
-        # oracle text (no hardcoded card names).
-        #
-        #   ETB creature token              → immediate power (parse size).
-        #   attack-trigger creature token   → conditional; credit only if a
-        #                                     profitable attack seems likely.
-        #   combat-damage Treasure token    → zero power (treasures are mana,
-        #                                     not creatures, and the trigger
-        #                                     is itself conditional on dealing
-        #                                     combat damage).
+        # Token makers: the `token_maker` tag groups three classes of
+        # effect under one label — ETB-triggered tokens (immediate),
+        # recurring-trigger tokens (lifetime), and non-creature tokens
+        # (zero power contribution). `_project_token_bonus` walks the
+        # oracle clause-by-clause and returns the split. Immediate
+        # contributions bump on-board power/count; persistent
+        # contributions accumulate into `persistent_power` and are
+        # discounted by `urgency_factor` in `position_value`.
         if 'token_maker' in tags:
             oracle_l = (t.oracle_text or '').lower()
-            p_bonus, count_bonus = _project_token_bonus(
-                oracle_l, snap.opp_creature_count
+            p_imm, count_imm, p_persist = _project_token_bonus(
+                oracle_l, snap
             )
-            projected.my_power += p_bonus
-            projected.my_creature_count += count_bonus
+            projected.my_power += p_imm
+            projected.my_creature_count += count_imm
+            projected.persistent_power += p_persist
 
     # Reanimation — bring back best creature from graveyard
     if 'reanimate' in tags and game:

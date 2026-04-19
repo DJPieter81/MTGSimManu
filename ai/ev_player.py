@@ -1059,7 +1059,20 @@ class EVPlayer:
         land_produces = set(FETCH_LAND_COLORS[land.name]) if is_fetch else set(land.template.produces_mana)
 
         new_colors = land_produces - existing_colors
-        ev += len(new_colors) * 4.0
+        # Gate the anticipatory color-diversity bonus by whether the hand
+        # actually contains colored-cost spells. A pure-colorless hand
+        # (classic Affinity: Mox Opal, Ornithopter, Cranial Plating) gets
+        # no value from colored mana access — otherwise a rainbow land
+        # like Spire of Industry out-scores the strictly better artifact
+        # land purely on "might be useful later" potential.
+        hand_needs_colors = any(
+            (s.template.mana_cost.white + s.template.mana_cost.blue
+             + s.template.mana_cost.black + s.template.mana_cost.red
+             + s.template.mana_cost.green) > 0
+            for s in me.hand if not s.template.is_land
+        )
+        if hand_needs_colors:
+            ev += len(new_colors) * 4.0
 
         # Specific spell enablement: this land's colors unlock a spell in hand
         # Check me.hand (not just legal spells) so color-gated 1-drops count
@@ -1075,6 +1088,34 @@ class EVPlayer:
 
         if is_fetch:
             ev += 3.0  # fetch flexibility
+
+        # Artifact-land synergy bonus. When the player's visible cards
+        # carry artifact-scaling text, an artifact-typed land contributes
+        # beyond its mana: it bumps Mox Opal's metalcraft count, adds a
+        # point to Cranial Plating / Nettlecyst scaling, and lowers the
+        # cost of Thought Monitor / Frogmite affinity discounts.
+        #
+        # Per-signal bonus is derived from "+1 power (or +1 mana) per
+        # artifact × residency × mana_clock_impact × 20":
+        #   1 power × ~4 residency turns × ~0.05 impact × 20 = ~4.0.
+        # Using a single rules constant (SYNERGY_ARTIFACT_BONUS) keeps
+        # the derivation traceable without per-card magic.
+        from engine.cards import CardType
+        if CardType.ARTIFACT in land.template.card_types:
+            synergy_signals = 0
+            for c in list(me.hand) + list(me.battlefield):
+                if c is land:
+                    continue
+                c_oracle = (c.template.oracle_text or '').lower()
+                if ('for each artifact' in c_oracle
+                        or 'metalcraft' in c_oracle
+                        or 'affinity for artifacts' in c_oracle):
+                    synergy_signals += 1
+            if synergy_signals > 0:
+                # Rules constant: 1 power (or 1 mana) gained per synergy
+                # card × residency × mana_clock_impact × 20 ≈ 4.
+                SYNERGY_ARTIFACT_BONUS = 4.0
+                ev += synergy_signals * SYNERGY_ARTIFACT_BONUS
 
         # Landfall: each trigger ≈ ETB effect value (life, damage, ramp)
         landfall_count = sum(1 for c in me.battlefield
@@ -1716,6 +1757,22 @@ class EVPlayer:
             # their raw creature_value is low: killing them removes ongoing damage
             # amplification on every future attack.
             # Equipment carries scaling value beyond its base P/T.
+            # Opp artifact-synergy signal — oracle-driven (no card names).
+            # Any opposing permanent whose text scales with artifact count
+            # means every opposing artifact creature is also a strategic
+            # piece (Plating-style scaling, metalcraft enabler, affinity
+            # enabler). Killing such a creature denies the scaling.
+            from ai.ev_evaluator import creature_threat_value as _ctv
+            from engine.cards import CardType
+            _opp_artifact_synergy = False
+            for _perm in opp.battlefield:
+                _po = (_perm.template.oracle_text or '').lower()
+                if ('for each artifact' in _po
+                        or 'metalcraft' in _po
+                        or 'affinity for artifacts' in _po):
+                    _opp_artifact_synergy = True
+                    break
+
             best_kill_val = 0.0
             best_kill_id = None
             best_kill_why = ""
@@ -1742,6 +1799,20 @@ class EVPlayer:
                         if (c.power or 0) >= 4:
                             val += (c.power or 0) * 0.5
                             why_parts.append(f"high threat {c.power}/{c.toughness}")
+                        # Artifact-synergy denial: when opp's board shows
+                        # artifact-scaling text, even a 0/P Construct/
+                        # Ornithopter-class body is load-bearing for opp's
+                        # plan. Premium equals the creature's threat score
+                        # as a future Plating/Nettlecyst wielder — use
+                        # creature_threat_value on the *same* snap so the
+                        # value is derived from the clock pipeline, not a
+                        # magic constant.
+                        if (_opp_artifact_synergy
+                                and CardType.ARTIFACT in c.template.card_types):
+                            _synergy_premium = max(1.0, _ctv(c, snap))
+                            val += _synergy_premium
+                            why_parts.append(
+                                f"denies artifact synergy (+{_synergy_premium:.1f})")
                         if not why_parts:
                             why_parts.append(f"{c.power}/{c.toughness} body")
                         if val > best_kill_val:
