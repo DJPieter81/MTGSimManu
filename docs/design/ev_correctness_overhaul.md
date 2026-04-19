@@ -9,7 +9,7 @@
 
 ## Executive summary
 
-The AI's EV scoring system has a **foundational baseline problem** that produces multiple downstream bugs. Investigation over the session identified five related problems, all traceable to the same underlying issue: **the EV system compares "cast this spell" against "do nothing this turn," when the correct comparison is "cast this spell" against "the best alternative action, including doing the same thing later."**
+The AI's EV scoring system has a **foundational baseline problem** that produces multiple downstream bugs. Investigation over the session identified six related problems, all traceable to the same underlying issue: **the EV system compares "cast this spell" against "do nothing this turn," when the correct comparison is "cast this spell" against "the best alternative action, including doing the same thing later."** The principle extends to mulligan decisions (is this 7 better than the expected 6?) — same math, same signals.
 
 This doc specifies the general principle, lists the specific bugs that arise from it, and details a proposed fix. The fix is structural, not local — it lives in `compute_play_ev` and changes what EV "means" for every spell. All specific bug reports in this doc resolve when the general fix lands.
 
@@ -82,6 +82,16 @@ If nothing, don't cast. Preserve hand optionality. Let the card sit until its ef
 **ALSO a separate rules bug:** Sojourner's Companion oracle is "**Artifact landcycling {2}** — search your library for an artifact land card, reveal it, put it into your hand, then shuffle." Not plain cycling. `grep -r landcycling engine/ ai/` returns zero hits — **the engine doesn't implement landcycling at all**. It's being processed as regular cycling (draw a random card). This is an engine-rules bug separate from the scoring bug.
 
 **What changes:** (1) scoring gate on cycle bonus fires only when a reanimation path exists in deck/board/hand. (2) Engine implements landcycling as a distinct action that tutors a specified land type. (3) AI scoring for landcycling reflects the tutor value (≈ value of the specific land tutored, minus 2 mana cost).
+
+### Bug F — Rigid mulligan heuristic ships anti-matchup hands back
+
+**Observed:** `replays/boros_rarakkyo_vs_affinity_s63000_bo3.txt` G2 — Boros shipped a 7-card hand of `3 lands, 2× Phlage, Wear // Tear, Galvanic Discharge` back to mulligan. Rule fired: "no creature with CMC ≤ 2". Replaced with a 6-card hand containing zero removal and zero artifact hate, bottoming Phlage.
+
+**Root cause:** `ai/mulligan.py` uses rigid rules like "must have a creature with CMC ≤ 2" — same class of pattern-match heuristic as Blood Moon SB cutting. The rule is archetype-appropriate for Boros as a curve-out aggro deck but **blind to matchup context**. Vs Affinity, a hand of 3 lands + Phlage × 2 + Discharge + Wear is arguably the best possible keep in the 75 — every card matters. The mulligan decider sees no ≤2-CMC creature and ships it.
+
+**What changes:** Mulligan decision must be **EV-comparison** — does the 7-card hand's expected winrate vs the specific opponent archetype beat the 6-card hand's expected winrate? That uses the same `position_value` + signals machinery as the rest of the design. A hand with removal, artifact hate, and a T3 Phlage lands-and-plays at appropriate points on the curve and has measurable vs-Affinity-specific value. The "must have 2-drop" rule should emerge naturally from the math when relevant (slow hands vs aggro race), not be enforced as a rigid gate.
+
+**Signal list stays the same** — same 13 signals from §3 apply to hand evaluation. An opening hand's "EV" is the sum of each card's `_enumerate_this_turn_signals` over the first ~4 turns, accounting for expected draws. If no card fires any signal across 4 turns, it's a mull candidate. If multiple cards fire high-value signals (like Wear vs Affinity, Phlage vs aggro), it's a keep regardless of curve position.
 
 ---
 
@@ -219,6 +229,7 @@ Each bug listed in §2 gets a failing test **before** any fix. Tests must demons
 | D | `test_permanent_threat_ornithopter_vs_affinity.py` | Setup: opp plays Affinity with Plating on board. Assert: `permanent_threat(Ornithopter, opp, game) > 0`. Regression: same setup vs Zoo-owner, threat should be ≈0. |
 | E.1 | `test_cycle_non_reanimate_deck_scores_low.py` | Setup: Affinity has cyclable creature + no reanimation in deck. Assert: cycle EV < cast EV of the same card next turn. |
 | E.2 | `test_landcycling_searches_library.py` | Setup: Sojourner's Companion in hand, library contains artifact lands. Trigger cycle. Assert: artifact land in hand, library shuffled. |
+| F | `test_mull_keeps_anti_matchup_hand.py` | Setup: Boros, G2 vs Affinity, hand = 3 lands + 2 Phlage + Wear//Tear + Discharge. Assert: keep (not mull). Regression: Boros G1 vs Affinity, hand = 6 lands + 1 Phlage, assert mull (too many lands). |
 
 Each test must fail at HEAD before the corresponding fix. After the fix, all pass, and the full suite must still be green (currently 180/181, with `test_pinnacle_emissary_cast_trigger_accrues_persistent` a pre-existing unrelated failure).
 
@@ -247,13 +258,17 @@ Each test must fail at HEAD before the corresponding fix. After the fix, all pas
 12. Implement `landcycling` / `typecycling` as distinct paths in the cycling resolver.
 13. Bug E.2 test passes.
 
+**Phase 4.5: mulligan unification (Bug F)**
+14. Replace rigid rules in `ai/mulligan.py` with signal-based evaluation that reuses `_enumerate_this_turn_signals` on each card in hand over first N draws.
+15. Bug F test passes. Regression: rigid-rule tests that catch obvious mulls (0 lands, 7 lands) still pass.
+
 **Phase 5: retire prototype**
-14. Delete the `TODO(prototype/card_ev_overrides)` block in `ai/ev_player.py:533-611`. The general fix subsumes it.
-15. Re-run N=20 Boros vs Affinity at seed 50000. Expected: parity with prototype (≥30% Boros WR) or better.
+16. Delete the `TODO(prototype/card_ev_overrides)` block in `ai/ev_player.py:533-611`. The general fix subsumes it.
+17. Re-run N=20 Boros vs Affinity at seed 50000. Expected: parity with prototype (≥30% Boros WR) or better.
 
 **Phase 6: validate**
-16. Full N=50 matrix. Compare to the baseline committed as `metagame_data.jsx` before Phase 1.
-17. Commit deltas. Document any unexpected regressions in new experiment log.
+18. Full N=50 matrix. Compare to the baseline committed as `metagame_data.jsx` before Phase 1.
+19. Commit deltas. Document any unexpected regressions in new experiment log.
 
 ---
 
@@ -261,7 +276,7 @@ Each test must fail at HEAD before the corresponding fix. After the fix, all pas
 
 - **Does not introduce card-specific overrides.** No `card_ev_overrides.json` in this doc. The general principle covers the known cases. If edge cases emerge after Phase 6, then `card_ev_overrides` becomes the extension point for overrides — but only for cards where oracle text can't express the signal.
 - **Does not touch sideboarding.** Bug F list from the handoff brief stays deferred (sideboarding was already shown not to be the lever — `docs/experiments/2026-04-19_blood_moon_sb_hypothesis_failed.md`).
-- **Does not touch mulligan.** Separate concern.
+- **Does not touch mulligan *in a separate system*.** Mulligan IS touched, but using the same signal-based EV framework as the rest — not as separate rules (see Bug F). This converges rather than diverges the codebase.
 - **Does not add archetype-specific EV paths.** All signals are oracle-driven.
 - **Does not add new numeric constants.** All derived from clock primitives, BHI probabilities, or oracle counts.
 
@@ -306,12 +321,14 @@ python -m pytest tests/ -q  # confirm 180/181 baseline
 
 ## 11. Session notes worth preserving
 
-Three corrections from the investigator (Pieter) during design, incorporated in this doc:
+Four corrections from the investigator (Pieter) during design, incorporated in this doc:
 
 1. **"No magic numbers. Should be a general calculation."** Early drafts had `ev -= 1.0` and similar penalties. Removed. All costs derived from existing clock/BHI primitives.
 
 2. **"It is not specific to zero mana spells — it is just that there is no clear reason to play the card."** Early drafts limited the rule to 0-cost creatures. Generalized to all spells: the principle is deferrability, not cost.
 
 3. **"We should include the other fixes."** Early drafts focused narrowly on Bug A (Ornithopter). Expanded to Bugs A-E as one coherent overhaul, since they share root cause.
+
+4. **"G2 not sure if Boros should mull here with all that removal on the draw."** Adding Bug F surfaced that mulligan decisions are the same class of heuristic as the other bugs — a rigid "must have a 2-drop" rule that fires wrong in specific matchups, exactly parallel to the Blood Moon SB cut. The mulligan system should share the signal-based EV framework rather than being a separate concern.
 
 These corrections improved the design significantly. The current form treats the five bugs as symptoms of one missing piece: **EV baseline is "do nothing this turn" when it should be "best alternative action this turn, including future casts of the same card."**
