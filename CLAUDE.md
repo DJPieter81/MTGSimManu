@@ -604,3 +604,36 @@ Read `CROSS_PROJECT_SYNC.md` before any cross-project work. It tracks:
 - Common standards (file naming, GitHub Pages URLs, skill format)
 
 Same file exists in both repos — keep them in sync.
+
+## Current Priorities & Outstanding Work (2026-04-19)
+
+**Read these on session start. Order = priority.**
+
+### Primary — EV correctness overhaul (active design, not yet implemented)
+
+`docs/design/ev_correctness_overhaul.md` — six bugs (A-F), all traceable to one root cause: EV baseline is "do nothing this turn" when it should be "best alternative action, including cast-later." Includes mulligan, removal targeting, permanent_threat, X-cost optimization. Six-phase execution plan, six failing tests specified (Option C protocol). Zero magic numbers. Retires the `TODO(prototype/card_ev_overrides)` block in `ai/ev_player.py:~533-611` once the general principle lands.
+
+### Standalone diagnostics (do independently, any time)
+
+- `docs/diagnostics/2026-04-19_bo3_play_draw_rule.md` — Bo3 doesn't implement loser-chooses-play. Fresh random die every game. ~30 min fix. Doesn't block EV overhaul; recommend fixing *after* to avoid muddying baseline.
+- `docs/diagnostics/2026-04-19_affinity_investigation.md` — deep dive from earlier in session. Original discovery of the five engine bugs (1-6 in the handoff brief) that are now landed. Historical context for how we got here.
+- `docs/diagnostics/2026-04-19_affinity_overperformance.md` — five-hypothesis ranking of why Affinity sim WR (~88%) exceeds real-world (~55%). Input to the overhaul design doc.
+
+### Falsified hypotheses (don't re-run)
+
+- `docs/experiments/2026-04-19_blood_moon_sb_hypothesis_failed.md` — Blood Moon SB retention vs Affinity: made WR *worse*. Do not re-attempt without reading this first.
+- `docs/experiments/2026-04-19_mardu_energy_failed.md` — Boros + black splash brew: −4pp avg WR, lost ET/Affinity critical matchups. Lesson: don't splash to solve a matchup; pick a deck that wants the splash.
+
+### Older handoff (superseded for EV work but still valid for minor fixes)
+
+`docs/handoff/2026-04-19_next-session-brief.md` — original bug queue. Bugs 1-6 have landed (Phlage targeting, Orim's Chant kicker, token_maker projection, Discharge artifact targeting, cycle logging, artifact-land ordering). Some bugs 7+ are absorbed into the EV overhaul doc. Read for historical context only if starting fresh.
+
+### Protocol
+
+All engine fixes follow Option C: **failing test first, then fix, then green suite, commit test + fix together.** Zero magic numbers — derive from existing clock/BHI/oracle primitives. No hardcoded card names. Reference the falsified-experiment docs before retrying anything that looks similar — we've already tested many obvious hypotheses.
+
+### Known-good baseline
+
+- 177/181 tests passing as of `4209e15` (1 pre-existing unrelated failure: `test_pinnacle_emissary_cast_trigger_accrues_persistent`).
+- Boros vs Affinity N=20 @ seed 50000 = 30% WR (prototype Plating EV active).
+- Rarakkyo Boros list (Apr-18 2026) is the current Boros Energy decklist in `decks/modern_meta.py`.
