@@ -1554,34 +1554,47 @@ class GameState:
             # AI chooses optimal X based on oracle text:
             oracle = (template.oracle_text or '').lower()
             if 'charge counter' in oracle and 'whenever' in oracle:
-                # Hate permanent (Chalice-style): pick X to maximize disruption.
-                # INCLUDE X=0 as a valid candidate — Affinity runs ~8 zero-cost
-                # artifacts (Memnite, Ornithopter, Mox Opal, Springleaf Drum).
-                # Previously filtered out by `if cm > 0`, so Chalice defaulted
-                # to X=1 and never locked Affinity's engine (audit F-R3-1).
+                # Hate permanent (Chalice-style): pick X to maximize NET
+                # disruption = opp_count(X) − my_count(X). Counting only
+                # opp's CMCs (audit F-R3-1's first pass) picks the CMC
+                # with the most opp spells, even when that CMC is also
+                # where our own deck lives. Azorius vs Boros at X=2
+                # locks 12 Boros spells but also all 13 of Azorius's
+                # own counters — net −1. The symmetric formulation
+                # charges both sides and picks the CMC that costs them
+                # more than it costs us.
+                #
+                # Our side: library + hand (what we still might cast).
+                # Opp side: library only (we don't see their hand).
                 opp = self.players[1 - player_idx]
-                cmc_counts = {}
+                opp_cmcs = {}
                 for c in opp.library:
                     if not c.template.is_land:
                         cm = c.template.cmc or 0
-                        cmc_counts[cm] = cmc_counts.get(cm, 0) + 1
-                # Pick the CMC with the most spells, capped at available mana.
-                # X=0 is always castable (available mana >= 0); accept it
-                # when x_value >= 0 (which is always true after the cast).
-                if cmc_counts:
-                    # Bug guard: cmc_counts non-empty doesn't guarantee any
-                    # CMC fits under x_value — the filter can still produce an
-                    # empty sequence. Materialize the candidate list and fall
-                    # back to X=1 when nothing fits.
-                    candidates = [(cnt, cmc) for cmc, cnt in cmc_counts.items()
-                                  if cmc <= x_value]
-                    if candidates:
-                        best_x = max(candidates)
-                        x_value = best_x[1]
-                    else:
-                        x_value = 1
+                        opp_cmcs[cm] = opp_cmcs.get(cm, 0) + 1
+                my_cmcs = {}
+                for zone in (player.library, player.hand):
+                    for c in zone:
+                        if c.instance_id == card.instance_id:
+                            continue
+                        if not c.template.is_land:
+                            cm = c.template.cmc or 0
+                            my_cmcs[cm] = my_cmcs.get(cm, 0) + 1
+                # Candidate X values: union of both sides' CMCs, capped
+                # at available mana. X=0 is always castable.
+                candidate_cmcs = (set(opp_cmcs) | set(my_cmcs))
+                candidates = [
+                    (opp_cmcs.get(cm, 0) - my_cmcs.get(cm, 0), cm)
+                    for cm in candidate_cmcs if cm <= x_value
+                ]
+                if candidates:
+                    # max net; tiebreak by lower CMC (cheaper for us to
+                    # float mana around a low-X lock).
+                    best_net, best_cmc = max(candidates,
+                                              key=lambda nc: (nc[0], -nc[1]))
+                    x_value = best_cmc
                 elif x_value >= 1:
-                    x_value = 1  # fallback to X=1 if no data
+                    x_value = 1  # fallback when no data
             # +1/+1 counter creatures: use max mana (Ballista-style)
             # (default x_value is already max)
             # Pay the actual X cost
