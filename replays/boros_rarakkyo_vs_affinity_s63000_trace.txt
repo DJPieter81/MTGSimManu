@@ -1,0 +1,560 @@
+Loaded 21759 cards (0 errors)
+=== Boros Energy vs Affinity (seed 63000) ===
+Result: Boros Energy wins T7 via damage
+Life: P1=23 P2=-8
+
+  [MAIN1]
+
+T1 Affinity | life=20 mana=0 hand=4+3L gy=0
+  Hand: ['Signal Pest', 'Engineered Explosives', "Sojourner's Companion", 'Ornithopter']
+  Opp board: [] (life=20)
+  EV scores:
+     +19.0  play_land: Darksteel Citadel <--
+      +4.0  play_land: Tanglepool Bridge
+      +4.0  play_land: Silverbluff Bridge
+      -0.0  cast_spell: Ornithopter  [h=-0.0 la=-0.0]
+  >>> PLAY_LAND: Darksteel Citadel
+  [MAIN1]
+
+T1 Affinity | life=20 mana=1 hand=4+2L gy=0
+  Hand: ['Signal Pest', 'Engineered Explosives', "Sojourner's Companion", 'Ornithopter']
+  Opp board: [] (life=20)
+  EV scores:
+      -0.0  cast_spell: Ornithopter <--  [h=-0.0 la=-0.0]
+      -0.1  cast_spell: Signal Pest  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Ornithopter
+  [MAIN1]
+
+T1 Affinity | life=20 mana=1 hand=3+2L gy=0
+  Hand: ['Signal Pest', 'Engineered Explosives', "Sojourner's Companion"]
+  Board: ['Ornithopter (0/2)']
+  Opp board: [] (life=20)
+  EV scores:
+      -0.0  cast_spell: Signal Pest <--  [h=-0.0 la=-0.0]
+  >>> CAST_SPELL: Signal Pest
+  [MAIN1]
+
+T1 Affinity | life=20 mana=0 hand=2+2L gy=0
+  Hand: ['Engineered Explosives', "Sojourner's Companion"]
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)']
+  Opp board: [] (life=20)
+  EV scores:
+      -0.0  cast_spell: Signal Pest <--  [h=-0.0 la=-0.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T1 Affinity | life=20 mana=0 hand=2+2L gy=0
+  Hand: ['Engineered Explosives', "Sojourner's Companion"]
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)']
+  Opp board: [] (life=20)
+  EV scores:
+      -0.0  cast_spell: Signal Pest <--  [h=-0.0 la=-0.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T2 Boros Energy | life=20 mana=0 hand=5+3L gy=0
+  Hand: ['Seasoned Pyromancer', "Phlage, Titan of Fire's Fury", 'Seasoned Pyromancer', 'Ocelot Pride', 'Goblin Bombardment']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=20)
+  EV scores:
+     +32.0  play_land: Marsh Flats <--
+     +32.0  play_land: Marsh Flats
+     +32.0  play_land: Windswept Heath
+  >>> PLAY_LAND: Marsh Flats
+  [MAIN1]
+
+T2 Boros Energy | life=17 mana=1 hand=5+2L gy=1
+  Hand: ['Seasoned Pyromancer', "Phlage, Titan of Fire's Fury", 'Seasoned Pyromancer', 'Ocelot Pride', 'Goblin Bombardment']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=20)
+  EV scores:
+      +1.9  cast_spell: Ocelot Pride <--  [h=+1.9 la=+1.9]
+  >>> CAST_SPELL: Ocelot Pride
+  [MAIN1]
+
+T2 Boros Energy | life=17 mana=0 hand=4+2L gy=1
+  Hand: ['Seasoned Pyromancer', "Phlage, Titan of Fire's Fury", 'Seasoned Pyromancer', 'Goblin Bombardment']
+  Board: ['Ocelot Pride (1/1)']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=20)
+  EV scores:
+      +1.9  cast_spell: Ocelot Pride <--  [h=+1.9 la=+1.9]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T2 Boros Energy | life=17 mana=0 hand=4+2L gy=1
+  Hand: ['Seasoned Pyromancer', "Phlage, Titan of Fire's Fury", 'Seasoned Pyromancer', 'Goblin Bombardment']
+  Board: ['Ocelot Pride (1/1)']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=20)
+  EV scores:
+      +1.9  cast_spell: Ocelot Pride <--  [h=+1.9 la=+1.9]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T3 Affinity | life=20 mana=1 hand=2+3L gy=0
+  Hand: ['Engineered Explosives', "Sojourner's Companion"]
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)']
+  Opp board: ['Ocelot Pride (1/1)'] (life=17)
+  EV scores:
+     +19.0  play_land: Treasure Vault <--
+     +11.0  play_land: Tanglepool Bridge
+     +11.0  play_land: Silverbluff Bridge
+     -20.0  cast_spell: Engineered Explosives  [h=-20.0 la=-20.0]
+  >>> PLAY_LAND: Treasure Vault
+  [MAIN1]
+
+T3 Affinity | life=20 mana=2 hand=2+2L gy=0
+  Hand: ['Engineered Explosives', "Sojourner's Companion"]
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)']
+  Opp board: ['Ocelot Pride (1/1)'] (life=17)
+  EV scores:
+      +8.0  cycle: Sojourner's Companion <--
+     -20.0  cast_spell: Engineered Explosives  [h=-20.0 la=-20.0]
+  >>> CYCLE: Sojourner's Companion
+  [MAIN1]
+
+T3 Affinity | life=20 mana=0 hand=2+2L gy=1
+  Hand: ['Engineered Explosives', 'Ornithopter']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)']
+  Opp board: ['Ocelot Pride (1/1)'] (life=17)
+  EV scores:
+      -0.0  cast_spell: Ornithopter <--  [h=-0.0 la=-0.0]
+  >>> CAST_SPELL: Ornithopter
+  [MAIN1]
+
+T3 Affinity | life=20 mana=0 hand=1+2L gy=1
+  Hand: ['Engineered Explosives']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)']
+  Opp board: ['Ocelot Pride (1/1)'] (life=17)
+  EV scores:
+      -0.0  cast_spell: Ornithopter <--  [h=-0.0 la=-0.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T3 Affinity | life=20 mana=0 hand=1+2L gy=1
+  Hand: ['Engineered Explosives']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)']
+  Opp board: ['Ocelot Pride (1/1)'] (life=17)
+  EV scores:
+      -0.0  cast_spell: Ornithopter <--  [h=-0.0 la=-0.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T4 Boros Energy | life=17 mana=1 hand=5+2L gy=1
+  Hand: ['Seasoned Pyromancer', "Phlage, Titan of Fire's Fury", 'Seasoned Pyromancer', 'Goblin Bombardment', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+  Board: ['Ocelot Pride (1/1)']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)'] (life=20)
+  EV scores:
+     +22.0  play_land: Marsh Flats <--
+     +22.0  play_land: Windswept Heath
+  >>> PLAY_LAND: Marsh Flats
+  [MAIN1]
+
+T4 Boros Energy | life=14 mana=2 hand=5+1L gy=2
+  Hand: ['Seasoned Pyromancer', "Phlage, Titan of Fire's Fury", 'Seasoned Pyromancer', 'Goblin Bombardment', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+  Board: ['Ocelot Pride (1/1)']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)'] (life=20)
+  EV scores:
+      +6.9  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <--  [h=+6.9 la=+6.9]
+      +0.2  cast_spell: Goblin Bombardment  [h=+0.2 la=+0.2]
+  >>> CAST_SPELL: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [MAIN1]
+
+T4 Boros Energy | life=14 mana=0 hand=4+1L gy=2
+  Hand: ['Seasoned Pyromancer', "Phlage, Titan of Fire's Fury", 'Seasoned Pyromancer', 'Goblin Bombardment']
+  Board: ['Ocelot Pride (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)'] (life=20)
+  EV scores:
+      +6.9  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <--  [h=+6.9 la=+6.9]
+      +0.2  cast_spell: Goblin Bombardment  [h=+0.2 la=+0.2]
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ocelot Pride']
+  [MAIN2]
+
+T4 Boros Energy | life=15 mana=0 hand=4+1L gy=2
+  Hand: ['Seasoned Pyromancer', "Phlage, Titan of Fire's Fury", 'Seasoned Pyromancer', 'Goblin Bombardment']
+  Board: ['Ocelot Pride (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)'] (life=19)
+  EV scores:
+      +6.9  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <--  [h=+6.9 la=+6.9]
+      +0.2  cast_spell: Goblin Bombardment  [h=+0.2 la=+0.2]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T5 Affinity | life=19 mana=2 hand=2+2L gy=1
+  Hand: ['Engineered Explosives', 'Signal Pest']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)']
+  Opp board: ['Ocelot Pride (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=15)
+  EV scores:
+     +13.6  cast_spell: Engineered Explosives <--  [h=+13.6 la=+13.6]
+      +7.0  play_land: Tanglepool Bridge
+      +7.0  play_land: Silverbluff Bridge
+      -1.1  cast_spell: Signal Pest  [h=-1.1 la=-1.1]
+  >>> CAST_SPELL: Engineered Explosives
+  [MAIN1]
+
+T5 Affinity | life=19 mana=0 hand=1+2L gy=1
+  Hand: ['Signal Pest']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)']
+  Permanents: ['Engineered Explosives']
+  Opp board: ['Ocelot Pride (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=15)
+  EV scores:
+      +0.0  play_land: Tanglepool Bridge <--
+      +0.0  play_land: Silverbluff Bridge
+  >>> PLAY_LAND: Tanglepool Bridge
+  [MAIN1]
+
+T5 Affinity | life=19 mana=0 hand=1+1L gy=1
+  Hand: ['Signal Pest']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)']
+  Permanents: ['Engineered Explosives']
+  Opp board: ['Ocelot Pride (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=15)
+  EV scores:
+      +0.0  play_land: Tanglepool Bridge <--
+      +0.0  play_land: Silverbluff Bridge
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T5 Affinity | life=19 mana=0 hand=1+1L gy=2
+  Hand: ['Signal Pest']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)']
+  Opp board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=15)
+  EV scores:
+      +0.0  play_land: Tanglepool Bridge <--
+      +0.0  play_land: Silverbluff Bridge
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T6 Boros Energy | life=15 mana=2 hand=5+1L gy=3
+  Hand: ['Seasoned Pyromancer', "Phlage, Titan of Fire's Fury", 'Seasoned Pyromancer', 'Goblin Bombardment', 'Blood Moon']
+  Board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)'] (life=19)
+  EV scores:
+     +22.0  play_land: Windswept Heath <--
+      +0.2  cast_spell: Goblin Bombardment  [h=+0.2 la=+0.2]
+  >>> PLAY_LAND: Windswept Heath
+  [MAIN1]
+
+T6 Boros Energy | life=12 mana=3 hand=5+0L gy=4
+  Hand: ['Seasoned Pyromancer', "Phlage, Titan of Fire's Fury", 'Seasoned Pyromancer', 'Goblin Bombardment', 'Blood Moon']
+  Board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)'] (life=19)
+  EV scores:
+     +10.9  cast_spell: Phlage, Titan of Fire's Fury <--  [h=+10.9 la=+10.9]
+      +6.8  cast_spell: Seasoned Pyromancer  [h=+6.8 la=+6.8]
+      +6.8  cast_spell: Seasoned Pyromancer  [h=+6.8 la=+6.8]
+      +0.1  cast_spell: Goblin Bombardment  [h=+0.1 la=+0.1]
+      -0.5  cast_spell: Blood Moon  [h=-0.5 la=-0.5]
+  >>> CAST_SPELL: Phlage, Titan of Fire's Fury
+  [MAIN1]
+
+T6 Boros Energy | life=15 mana=0 hand=4+0L gy=5
+  Hand: ['Seasoned Pyromancer', 'Seasoned Pyromancer', 'Goblin Bombardment', 'Blood Moon']
+  Board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)'] (life=16)
+  EV scores:
+      +6.8  cast_spell: Seasoned Pyromancer <--  [h=+6.8 la=+6.8]
+      +6.8  cast_spell: Seasoned Pyromancer  [h=+6.8 la=+6.8]
+      +0.1  cast_spell: Goblin Bombardment  [h=+0.1 la=+0.1]
+      -0.5  cast_spell: Blood Moon  [h=-0.5 la=-0.5]
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Cat Token']
+  [MAIN2]
+
+T6 Boros Energy | life=15 mana=0 hand=4+0L gy=5
+  Hand: ['Seasoned Pyromancer', 'Seasoned Pyromancer', 'Goblin Bombardment', 'Blood Moon']
+  Board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)'] (life=13)
+  EV scores:
+      +6.8  cast_spell: Seasoned Pyromancer <--  [h=+6.8 la=+6.8]
+      +6.8  cast_spell: Seasoned Pyromancer  [h=+6.8 la=+6.8]
+      +0.1  cast_spell: Goblin Bombardment  [h=+0.1 la=+0.1]
+      -0.5  cast_spell: Blood Moon  [h=-0.5 la=-0.5]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T7 Affinity | life=13 mana=3 hand=2+1L gy=2
+  Hand: ['Signal Pest', 'Ornithopter']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)']
+  Opp board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=15)
+  EV scores:
+      +7.0  play_land: Silverbluff Bridge <--
+      -3.1  cast_spell: Signal Pest  [h=-3.1 la=-3.1]
+     -10.2  cast_spell: Ornithopter  [h=-10.2 la=-10.2]
+  >>> PLAY_LAND: Silverbluff Bridge
+  [MAIN1]
+
+T7 Affinity | life=13 mana=3 hand=2+0L gy=2
+  Hand: ['Signal Pest', 'Ornithopter']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)']
+  Opp board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=15)
+  EV scores:
+      -3.1  cast_spell: Signal Pest <--  [h=-3.1 la=-3.1]
+     -10.2  cast_spell: Ornithopter  [h=-10.2 la=-10.2]
+  >>> CAST_SPELL: Signal Pest
+  [MAIN1]
+
+T7 Affinity | life=13 mana=2 hand=1+0L gy=2
+  Hand: ['Ornithopter']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)']
+  Opp board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=15)
+  EV scores:
+     -26.1  cast_spell: Ornithopter <--  [h=-26.1 la=-26.1]
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Signal Pest']
+  [MAIN2]
+
+T7 Affinity | life=13 mana=2 hand=1+0L gy=2
+  Hand: ['Ornithopter']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)']
+  Opp board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=15)
+  EV scores:
+     -26.1  cast_spell: Ornithopter <--  [h=-26.1 la=-26.1]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T8 Boros Energy | life=15 mana=3 hand=4+1L gy=5
+  Hand: ['Seasoned Pyromancer', 'Seasoned Pyromancer', 'Goblin Bombardment', 'Blood Moon']
+  Board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=13)
+  EV scores:
+      +7.0  play_land: Elegant Parlor <--
+      +6.9  cast_spell: Seasoned Pyromancer  [h=+6.9 la=+6.9]
+      +6.9  cast_spell: Seasoned Pyromancer  [h=+6.9 la=+6.9]
+      +0.4  cast_spell: Goblin Bombardment  [h=+0.4 la=+0.4]
+      -0.7  cast_spell: Blood Moon  [h=-0.7 la=-0.7]
+  >>> PLAY_LAND: Elegant Parlor
+  [MAIN1]
+
+T8 Boros Energy | life=15 mana=3 hand=4+0L gy=5
+  Hand: ['Seasoned Pyromancer', 'Seasoned Pyromancer', 'Goblin Bombardment', 'Blood Moon']
+  Board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=13)
+  EV scores:
+      +7.0  cast_spell: Seasoned Pyromancer <--  [h=+7.0 la=+7.0]
+      +7.0  cast_spell: Seasoned Pyromancer  [h=+7.0 la=+7.0]
+      +0.5  cast_spell: Goblin Bombardment  [h=+0.5 la=+0.5]
+      -0.6  cast_spell: Blood Moon  [h=-0.6 la=-0.6]
+  >>> CAST_SPELL: Seasoned Pyromancer
+  [MAIN1]
+
+T8 Boros Energy | life=15 mana=0 hand=2+1L gy=7
+  Hand: ['Blood Moon', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+  Board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=13)
+  EV scores:
+      +7.0  cast_spell: Seasoned Pyromancer <--  [h=+7.0 la=+7.0]
+      -0.6  cast_spell: Blood Moon  [h=-0.6 la=-0.6]
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Cat Token']
+  [MAIN2]
+
+T8 Boros Energy | life=15 mana=0 hand=2+1L gy=7
+  Hand: ['Blood Moon', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+  Board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=10)
+  EV scores:
+      +7.0  cast_spell: Seasoned Pyromancer <--  [h=+7.0 la=+7.0]
+      -0.6  cast_spell: Blood Moon  [h=-0.6 la=-0.6]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T9 Affinity | life=10 mana=4 hand=2+0L gy=2
+  Hand: ['Ornithopter', 'Frogmite']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)']
+  Opp board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)'] (life=15)
+  EV scores:
+      -1.2  cast_spell: Ornithopter <--  [h=-1.2 la=-1.2]
+      -1.2  cast_spell: Frogmite  [h=-1.2 la=-1.2]
+  >>> CAST_SPELL: Ornithopter
+  [MAIN1]
+
+T9 Affinity | life=10 mana=4 hand=1+0L gy=2
+  Hand: ['Frogmite']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)']
+  Opp board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)'] (life=15)
+  EV scores:
+      -0.0  cast_spell: Frogmite <--  [h=-0.0 la=-0.0]
+  >>> CAST_SPELL: Frogmite
+  [MAIN1]
+
+T9 Affinity | life=10 mana=4 hand=0+0L gy=2
+  Hand: []
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Frogmite (2/2)']
+  Opp board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)'] (life=15)
+  EV scores:
+      -0.0  cast_spell: Frogmite <--  [h=-0.0 la=-0.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T9 Affinity | life=10 mana=4 hand=0+0L gy=2
+  Hand: []
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Frogmite (2/2)']
+  Opp board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)'] (life=15)
+  EV scores:
+      -0.0  cast_spell: Frogmite <--  [h=-0.0 la=-0.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T10 Boros Energy | life=15 mana=4 hand=3+1L gy=7
+  Hand: ['Blood Moon', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+  Board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)']
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Frogmite (2/2)'] (life=10)
+  EV scores:
+      +7.0  play_land: Dalkovan Encampment <--
+      -0.8  cast_spell: Blood Moon  [h=-0.8 la=-0.8]
+  >>> CAST_SPELL: Phlage, Titan of Fire's Fury
+  [MAIN1]
+
+T10 Boros Energy | life=18 mana=0 hand=3+1L gy=1
+  Hand: ['Blood Moon', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+  Board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)', "Phlage, Titan of Fire's Fury (6/6)"]
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Frogmite (2/2)'] (life=7)
+  EV scores:
+     +10.0  play_land: Dalkovan Encampment <--
+  >>> PLAY_LAND: Dalkovan Encampment
+  [MAIN1]
+
+T10 Boros Energy | life=18 mana=0 hand=3+0L gy=1
+  Hand: ['Blood Moon', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+  Board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)', "Phlage, Titan of Fire's Fury (6/6)"]
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Frogmite (2/2)'] (life=7)
+  EV scores:
+     +10.0  play_land: Dalkovan Encampment <--
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Cat Token', 'Seasoned Pyromancer', 'Elemental Token', 'Elemental Token']
+  [MAIN2]
+
+T10 Boros Energy | life=18 mana=0 hand=3+0L gy=2
+  Hand: ['Blood Moon', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+  Board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', "Phlage, Titan of Fire's Fury (6/6)"]
+  Opp board: ['Signal Pest (0/1)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Frogmite (2/2)'] (life=6)
+  EV scores:
+     +10.0  play_land: Dalkovan Encampment <--
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T11 Affinity | life=6 mana=4 hand=1+0L gy=4
+  Hand: ['Thought Monitor']
+  Board: ['Signal Pest (0/1)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Frogmite (2/2)']
+  Opp board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', "Phlage, Titan of Fire's Fury (6/6)"] (life=18)
+  EV scores:
+      -2.5  cast_spell: Thought Monitor <--  [h=-2.5 la=-2.5]
+  >>> CAST_SPELL: Thought Monitor
+  [MAIN1]
+
+T11 Affinity | life=6 mana=3 hand=0+2L gy=4
+  Hand: []
+  Board: ['Signal Pest (0/1)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Frogmite (2/2)', 'Thought Monitor (2/2)']
+  Opp board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', "Phlage, Titan of Fire's Fury (6/6)"] (life=18)
+  EV scores:
+     +18.0  play_land: Tanglepool Bridge <--
+     +18.0  play_land: Mistvault Bridge
+  >>> PLAY_LAND: Tanglepool Bridge
+  [MAIN1]
+
+T11 Affinity | life=6 mana=3 hand=0+1L gy=4
+  Hand: []
+  Board: ['Signal Pest (0/1)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Frogmite (2/2)', 'Thought Monitor (2/2)']
+  Opp board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', "Phlage, Titan of Fire's Fury (6/6)"] (life=18)
+  EV scores:
+     +18.0  play_land: Tanglepool Bridge <--
+     +18.0  play_land: Mistvault Bridge
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T11 Affinity | life=6 mana=3 hand=0+1L gy=4
+  Hand: []
+  Board: ['Signal Pest (0/1)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Frogmite (2/2)', 'Thought Monitor (2/2)']
+  Opp board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', "Phlage, Titan of Fire's Fury (6/6)"] (life=18)
+  EV scores:
+     +18.0  play_land: Tanglepool Bridge <--
+     +18.0  play_land: Mistvault Bridge
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T12 Boros Energy | life=18 mana=5 hand=3+1L gy=2
+  Hand: ['Blood Moon', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+  Board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', "Phlage, Titan of Fire's Fury (6/6)"]
+  Opp board: ['Signal Pest (0/1)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Frogmite (2/2)', 'Thought Monitor (2/2)'] (life=6)
+  EV scores:
+     +22.0  play_land: Windswept Heath <--
+      -1.0  cast_spell: Blood Moon  [h=-1.0 la=-1.0]
+  >>> PLAY_LAND: Windswept Heath
+  [MAIN1]
+
+T12 Boros Energy | life=17 mana=6 hand=3+0L gy=3
+  Hand: ['Blood Moon', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+  Board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', "Phlage, Titan of Fire's Fury (6/6)"]
+  Opp board: ['Signal Pest (0/1)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Frogmite (2/2)', 'Thought Monitor (2/2)'] (life=6)
+  EV scores:
+      -0.9  cast_spell: Blood Moon <--  [h=-0.9 la=-0.9]
+  >>> CAST_SPELL: Blood Moon
+  [MAIN1]
+
+T12 Boros Energy | life=17 mana=4 hand=2+0L gy=3
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+  Board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', "Phlage, Titan of Fire's Fury (6/6)"]
+  Permanents: ['Blood Moon']
+  Opp board: ['Signal Pest (0/1)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Frogmite (2/2)', 'Thought Monitor (2/2)'] (life=6)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Cat Token', 'Seasoned Pyromancer', 'Elemental Token', "Phlage, Titan of Fire's Fury"]
+  [MAIN2]
+
+T12 Boros Energy | life=20 mana=4 hand=2+0L gy=4
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+  Board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', "Phlage, Titan of Fire's Fury (6/6)"]
+  Permanents: ['Blood Moon']
+  Opp board: [] (life=5)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T13 Affinity | life=5 mana=5 hand=1+1L gy=9
+  Hand: ['Frogmite']
+  Opp board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', "Phlage, Titan of Fire's Fury (6/6)"] (life=20)
+  EV scores:
+     +11.0  play_land: Mistvault Bridge <--
+      -0.1  cast_spell: Frogmite  [h=-0.1 la=-0.1 rmv=37%]
+  >>> PLAY_LAND: Mistvault Bridge
+  [MAIN1]
+
+T13 Affinity | life=5 mana=5 hand=1+0L gy=9
+  Hand: ['Frogmite']
+  Opp board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', "Phlage, Titan of Fire's Fury (6/6)"] (life=20)
+  EV scores:
+      +0.0  cast_spell: Frogmite <--  [h=+0.0 la=+0.0 rmv=37%]
+  >>> CAST_SPELL: Frogmite
+  [MAIN1]
+
+T13 Affinity | life=5 mana=5 hand=0+0L gy=9
+  Hand: []
+  Board: ['Frogmite (2/2)']
+  Opp board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', "Phlage, Titan of Fire's Fury (6/6)"] (life=20)
+  EV scores:
+      +0.0  cast_spell: Frogmite <--  [h=+0.0 la=+0.0 rmv=37%]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T13 Affinity | life=5 mana=5 hand=0+0L gy=9
+  Hand: []
+  Board: ['Frogmite (2/2)']
+  Opp board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', "Phlage, Titan of Fire's Fury (6/6)"] (life=20)
+  EV scores:
+      +0.0  cast_spell: Frogmite <--  [h=+0.0 la=+0.0 rmv=37%]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T14 Boros Energy | life=20 mana=6 hand=3+0L gy=4
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Galvanic Discharge']
+  Board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', "Phlage, Titan of Fire's Fury (6/6)"]
+  Permanents: ['Blood Moon']
+  Opp board: ['Frogmite (2/2)'] (life=5)
+  EV scores:
+      +8.1  cast_spell: Galvanic Discharge <--  [h=+8.1 la=+8.1]
+  >>> CAST_SPELL: Galvanic Discharge
+  [MAIN1]
+
+T14 Boros Energy | life=20 mana=5 hand=2+0L gy=5
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+  Board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', "Phlage, Titan of Fire's Fury (6/6)"]
+  Permanents: ['Blood Moon']
+  Opp board: ['Frogmite (2/2)'] (life=2)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Seasoned Pyromancer', 'Elemental Token', "Phlage, Titan of Fire's Fury"]
