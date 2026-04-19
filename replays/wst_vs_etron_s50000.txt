@@ -1,0 +1,957 @@
+Loaded 21759 cards (0 errors)
+======================================================================
+  GAME 1: Azorius Control (WST) (P1) vs Eldrazi Tron (P2)  —  seed 50000
+  Series: Azorius Control (WST) 0 - 0 Eldrazi Tron
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Azorius Control (WST) wins → chooses to play first
+║ P1 (on play): Azorius Control (WST)
+║ P2 (on draw): Eldrazi Tron
+╚═══════════════════════════════════════════════════════
+
+P1 (Azorius Control (WST)) opening hand (3 lands, 4 spells):
+  • Supreme Verdict [Spell, CMC 4]
+  • Flooded Strand [Land, CMC 0]
+  • Wan Shi Tong, Librarian [Creature, CMC 2]
+  • Plains [Land, CMC 0]
+  • Hallowed Fountain [Land, CMC 0]
+  • Wan Shi Tong, Librarian [Creature, CMC 2]
+  • Teferi, Time Raveler [Spell, CMC 3]
+→ P1 KEEPS 7 — has key card(s): Teferi, Time Raveler, 3 cheap spells
+
+P2 (Eldrazi Tron) opening hand (4 lands, 3 spells):
+  • Thought-Knot Seer [Creature, CMC 4]
+  • Urza's Power Plant [Land, CMC 0]
+  • Wastes [Land, CMC 0]
+  • Ghost Quarter [Land, CMC 0]
+  • Reality Smasher [Creature, CMC 5]
+  • Chalice of the Void [Spell, CMC 0]
+  • Cavern of Souls [Land, CMC 0]
+→ P2 KEEPS 7 — 4 lands, 1 castable spells
+
+
+╔══ TURN 1 — Azorius Control (WST) (P1) ══════════════════════════
+║ Life: Azorius Control (WST) 20  |  Eldrazi Tron 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Flooded Strand
+T1 P1: Crack Flooded Strand (pay 1 life) -> Hallowed Fountain (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Azorius Control (WST) 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Warping Wail
+  [Main 1]
+T1 P2: Play Urza's Power Plant
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Azorius Control (WST) (P1) ══════════════════════════
+║ Life: Azorius Control (WST) 19  |  Eldrazi Tron 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Power Plant
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Prismatic Ending
+  [Main 1]
+T2 P1: Play Plains
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Azorius Control (WST) 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Power Plant
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wastes
+  [Main 1]
+T2 P2: Play Wastes
+    → Goal: ramp [enablers]
+T2 P2: Cast Chalice of the Void (2) (X=1)
+    [Priority] P1 passes (no response)
+T2: Resolve Chalice of the Void
+T2 P2: Chalice of the Void enters with 1 charge counter(s)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Azorius Control (WST) (P1) ══════════════════════════
+║ Life: Azorius Control (WST) 19  |  Eldrazi Tron 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Plains
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant [T], Wastes [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Sanctifier en-Vec
+  [Main 1]
+T3 P1: Play Hallowed Fountain (pay 2 life, untapped, life: 17)
+    → Goal: grind_value [payoffs]
+    [Mana] Tap Hallowed Fountain→U, Plains→W, Hallowed Fountain→U (paying for Teferi, Time Raveler, 3 mana remaining)
+T3 P1: Cast Teferi, Time Raveler (1WU)
+    [Priority] P2 passes (no response)
+T3: Resolve Teferi, Time Raveler
+T3 P1: Teferi bounces Chalice of the Void
+T3 P1: Teferi draws March of Otherworldly Light
+T3 P1: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Azorius Control (WST) 17
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Power Plant, Wastes
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain [T], Plains [T], Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Endbringer
+  [Main 1]
+T3 P2: Play Ghost Quarter
+    → Goal: ramp [enablers]
+T3 P2: Cast Chalice of the Void (2) (X=1)
+    [Priority] P1 passes (no response)
+T3: Resolve Chalice of the Void
+T3 P2: Chalice of the Void enters with 1 charge counter(s)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Azorius Control (WST) (P1) ══════════════════════════
+║ Life: Azorius Control (WST) 17  |  Eldrazi Tron 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 1
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Plains, Hallowed Fountain
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant [T], Wastes [T], Ghost Quarter
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Sanctifier en-Vec
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W (paying for Prismatic Ending, 3 mana remaining)
+T4 P2: Chalice of the Void (X=1) counters Prismatic Ending
+T4 P1: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Azorius Control (WST) 17
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant, Wastes, Ghost Quarter
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain [T], Plains [T], Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Blast Zone
+  [Main 1]
+T4 P2: Play Cavern of Souls
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Wastes→C, Ghost Quarter→C, Cavern of Souls→B (paying for Thought-Knot Seer, 4 mana remaining)
+T4 P2: Cast Thought-Knot Seer (3)
+    [Priority] P1 passes (no response)
+T4: Resolve Thought-Knot Seer
+T4 P2: Thought-Knot Seer exiles Supreme Verdict from opponent's hand
+T4 P2: Thought-Knot Seer ETB: draw 1 (Expedition Map)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Azorius Control (WST) (P1) ══════════════════════════
+║ Life: Azorius Control (WST) 17  |  Eldrazi Tron 20
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 2
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Plains, Hallowed Fountain
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant [T], Wastes [T], Ghost Quarter [T], Cavern of Souls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Prismatic Ending
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W (paying for Prismatic Ending, 3 mana remaining)
+T5 P2: Chalice of the Void (X=1) counters Prismatic Ending
+T5 P1: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Azorius Control (WST) 17
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant, Wastes, Ghost Quarter, Cavern of Souls
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain [T], Plains [T], Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Mine
+  [Main 1]
+T5 P2: Play Urza's Mine
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Wastes→C, Ghost Quarter→C, Urza's Mine→C, Cavern of Souls→B (paying for Reality Smasher, 5 mana remaining)
+T5 P2: Cast Reality Smasher (4)
+    [Priority] P1 passes (no response)
+T5: Resolve Reality Smasher
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Thought-Knot Seer, Reality Smasher
+T5 P2: Attack with Thought-Knot Seer, Reality Smasher
+  [Declare Blockers] P1 does not block
+T5 P2:   Thought-Knot Seer (4/4) → 4 dmg to player
+T5 P2:   Reality Smasher (5/5) → 5 dmg to player
+  [Combat Damage] 9 damage dealt → P1 life: 17 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Azorius Control (WST) (P1) ══════════════════════════
+║ Life: Azorius Control (WST) 8  |  Eldrazi Tron 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 3
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Plains, Hallowed Fountain
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4) [tapped], Reality Smasher (5/5) [tapped]
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant [T], Wastes [T], Ghost Quarter [T], Cavern of Souls [T], Urza's Mine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Prismatic Ending
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W (paying for Prismatic Ending, 3 mana remaining)
+T6 P2: Chalice of the Void (X=1) counters Prismatic Ending
+T6 P1: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+T6: Teferi, Time Raveler moved battlefield -> graveyard (SBA 704.5p: zero loyalty)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Azorius Control (WST) 8
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4), Reality Smasher (5/5)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant, Wastes, Ghost Quarter, Cavern of Souls, Urza's Mine
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T], Plains [T], Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Walking Ballista
+  [Main 1]
+T6 P2: Play Wastes
+    → Goal: ramp [engines]
+    [Mana] Tap Urza's Power Plant→C (paying for Expedition Map, 6 mana remaining)
+T6 P2: Cast Expedition Map (1)
+    [Priority] P1 passes (no response)
+T6: Resolve Expedition Map
+    → Goal: ramp
+T6 P2: Cast Walking Ballista (4) (X=2)
+    [Priority] P1 passes (no response)
+T6: Resolve Walking Ballista
+T6 P2: Walking Ballista enters with 2 +1/+1 counter(s)
+T6 P2: Walking Ballista deals 2 to opponent (life: 6)
+T6: Walking Ballista dies
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Thought-Knot Seer, Reality Smasher
+T6 P2: Attack with Thought-Knot Seer, Reality Smasher
+  [Declare Blockers] P1 does not block
+T6 P2:   Thought-Knot Seer (4/4) → 4 dmg to player
+T6 P2:   Reality Smasher (5/5) → 5 dmg to player
+P1 loses: life total -3
+  [Combat Damage] 9 damage dealt → P1 life: 6 → -3
+
+>>> Eldrazi Tron wins Game 1 on turn 6 via damage
+    Final life: Azorius Control (WST)=-3  Eldrazi Tron=20
+
+======================================================================
+  GAME 2: Azorius Control (WST) (P1) vs Eldrazi Tron (P2)  —  seed 50001
+  Series: Azorius Control (WST) 0 - 1 Eldrazi Tron
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Eldrazi Tron wins → chooses to play first
+║ P1 (on play): Eldrazi Tron
+║ P2 (on draw): Azorius Control (WST)
+╚═══════════════════════════════════════════════════════
+
+P1 (Azorius Control (WST)) opening hand (2 lands, 5 spells):
+  • Sanctifier en-Vec [Creature, CMC 2]
+  • Prismatic Ending [Spell, CMC 1]
+  • Hallowed Fountain [Land, CMC 0]
+  • Island [Land, CMC 0]
+  • Counterspell [Spell, CMC 2]
+  • Counterspell [Spell, CMC 2]
+  • Teferi, Time Raveler [Spell, CMC 3]
+→ P1 KEEPS 7 — has key card(s): Counterspell, Prismatic Ending, Teferi, Time Raveler, 5 cheap spells
+
+P2 (Eldrazi Tron) opening hand (2 lands, 5 spells):
+  • Cavern of Souls [Land, CMC 0]
+  • Eldrazi Mimic [Creature, CMC 2]
+  • Thought-Knot Seer [Creature, CMC 4]
+  • Eldrazi Mimic [Creature, CMC 2]
+  • Thought-Knot Seer [Creature, CMC 4]
+  • Walking Ballista [Creature, CMC 0]
+  • Urza's Power Plant [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Thought-Knot Seer, 3 cheap spells
+
+
+╔══ TURN 1 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Azorius Control (WST) 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Urza's Power Plant
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Azorius Control (WST) (P1) ══════════════════════════
+║ Life: Azorius Control (WST) 20  |  Eldrazi Tron 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Power Plant
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: March of Otherworldly Light
+  [Main 1]
+T1 P1: Play Hallowed Fountain (pay 2 life, untapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Azorius Control (WST) 18
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Power Plant
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ghost Quarter
+  [Main 1]
+T2 P2: Play Cavern of Souls
+    → Goal: ramp [enablers]
+    [Mana] Tap Urza's Power Plant→C, Cavern of Souls→B (paying for Eldrazi Mimic, 2 mana remaining)
+T2 P2: Cast Eldrazi Mimic (2)
+    [Priority] P1 passes (no response)
+T2: Resolve Eldrazi Mimic
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Azorius Control (WST) (P1) ══════════════════════════
+║ Life: Azorius Control (WST) 18  |  Eldrazi Tron 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+║ Eldrazi Tron board:
+║   Creatures: Eldrazi Mimic (2/1)
+║   Lands: Urza's Power Plant [T], Cavern of Souls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Plains
+  [Main 1]
+T2 P1: Play Island
+    → Goal: grind_value
+    [Mana] Tap Hallowed Fountain→W (paying for March of Otherworldly Light, 2 mana remaining)
+T2 P1: Cast March of Otherworldly Light (1W) (X=1)
+    [Priority] P2 passes (no response)
+T2: Resolve March of Otherworldly Light
+T2: Eldrazi Mimic moved battlefield -> exile (exiled)
+T2 P1: March of Otherworldly Light exiles Eldrazi Mimic
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Azorius Control (WST) 18
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Power Plant, Cavern of Souls
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ugin, the Spirit Dragon
+  [Main 1]
+T3 P2: Play Ghost Quarter
+    → Goal: ramp [enablers]
+    [Mana] Tap Urza's Power Plant→C, Ghost Quarter→C (paying for Eldrazi Mimic, 3 mana remaining)
+T3 P2: Cast Eldrazi Mimic (2)
+    [Priority] P1 passes (no response)
+T3: Resolve Eldrazi Mimic
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Azorius Control (WST) (P1) ══════════════════════════
+║ Life: Azorius Control (WST) 18  |  Eldrazi Tron 20
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 1
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Island
+║ Eldrazi Tron board:
+║   Creatures: Eldrazi Mimic (2/1)
+║   Lands: Urza's Power Plant [T], Cavern of Souls, Ghost Quarter [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: March of Otherworldly Light
+  [Main 1]
+T3 P1: Play Plains
+    → Goal: grind_value [payoffs]
+    [Mana] Tap Plains→W, Island→U, Hallowed Fountain→U (paying for Teferi, Time Raveler, 3 mana remaining)
+T3 P1: Cast Teferi, Time Raveler (1WU)
+    [Priority] P2 passes (no response)
+T3: Resolve Teferi, Time Raveler
+T3 P1: Teferi bounces Eldrazi Mimic
+T3 P1: Teferi draws Flooded Strand
+T3 P1: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Azorius Control (WST) 18
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Power Plant, Cavern of Souls, Ghost Quarter
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain [T], Island [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Tower
+  [Main 1]
+T4 P2: Play Urza's Tower
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Ghost Quarter→C, Urza's Tower→C, Cavern of Souls→B (paying for Thought-Knot Seer, 4 mana remaining)
+T4 P2: Cast Thought-Knot Seer (3)
+    [Priority] P1 passes (no response)
+T4: Resolve Thought-Knot Seer
+T4 P2: Thought-Knot Seer exiles Sanctifier en-Vec from opponent's hand
+T4 P2: Thought-Knot Seer ETB: draw 1 (Walking Ballista)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Azorius Control (WST) (P1) ══════════════════════════
+║ Life: Azorius Control (WST) 18  |  Eldrazi Tron 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 1
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Island, Plains
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4)
+║   Lands: Urza's Power Plant [T], Cavern of Souls [T], Ghost Quarter [T], Urza's Tower [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wrath of the Skies
+  [Main 1]
+T4 P1: Play Flooded Strand
+T4 P1: Crack Flooded Strand (pay 1 life) -> Hallowed Fountain (tapped, life: 17)
+    → Goal: close_game
+    [Mana] Tap Plains→W (paying for Prismatic Ending, 3 mana remaining)
+T4 P1: Cast Prismatic Ending (2W) (X=2)
+T4: Resolve Prismatic Ending
+T4 P1: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Azorius Control (WST) 17
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4)
+║   Lands: Urza's Power Plant, Cavern of Souls, Ghost Quarter, Urza's Tower
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain [T], Island [T], Plains [T], Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Expedition Map
+  [Main 1]
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Ghost Quarter→C, Urza's Tower→C, Cavern of Souls→B (paying for Thought-Knot Seer, 4 mana remaining)
+T5 P2: Cast Thought-Knot Seer (3)
+    [Priority] P1 passes (no response)
+T5: Resolve Thought-Knot Seer
+T5 P2: Thought-Knot Seer exiles Counterspell from opponent's hand
+T5 P2: Thought-Knot Seer ETB: draw 1 (Endbringer)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Thought-Knot Seer
+T5 P2: Attack with Thought-Knot Seer
+  [Declare Blockers] P1 does not block
+T5 P2:   Thought-Knot Seer (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 17 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Azorius Control (WST) (P1) ══════════════════════════
+║ Life: Azorius Control (WST) 13  |  Eldrazi Tron 20
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 3
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Island, Plains, Hallowed Fountain
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4) [tapped], Thought-Knot Seer (4/4)
+║   Lands: Urza's Power Plant [T], Cavern of Souls [T], Ghost Quarter [T], Urza's Tower [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Teferi, Time Raveler
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W (paying for March of Otherworldly Light, 4 mana remaining)
+T5 P1: Cast March of Otherworldly Light (3W) (X=3)
+T5: Resolve March of Otherworldly Light
+T5: Thought-Knot Seer moved battlefield -> exile (exiled)
+T5 P1: March of Otherworldly Light exiles Thought-Knot Seer
+T5 P1: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Azorius Control (WST) 13
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4)
+║   Lands: Urza's Power Plant, Cavern of Souls, Ghost Quarter, Urza's Tower
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain [T], Island [T], Plains [T], Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Matter Reshaper
+  [Main 1]
+    → Goal: ramp [enablers]
+    [Mana] Tap Urza's Power Plant→C, Ghost Quarter→C, Urza's Tower→C (paying for Matter Reshaper, 4 mana remaining)
+T6 P2: Cast Matter Reshaper (2)
+    [Priority] P1 passes (no response)
+T6: Resolve Matter Reshaper
+    → Goal: ramp [engines]
+    [Mana] Tap Cavern of Souls→B (paying for Expedition Map, 1 mana remaining)
+T6 P2: Cast Expedition Map (1)
+    [Priority] P1 passes (no response)
+T6: Resolve Expedition Map
+T6 P2: Activate Expedition Map (sacrifice)
+T6 P2:   finds Urza's Mine
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Thought-Knot Seer
+T6 P2: Attack with Thought-Knot Seer
+  [Declare Blockers] P1 does not block
+T6 P2:   Thought-Knot Seer (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 13 → 9
+  [End Combat]
+  [Main 2]
+T6 P2: Play Urza's Mine
+    → Goal: ramp
+T6 P2: Cast Walking Ballista (2) (X=1)
+    [Priority] P1 passes (no response)
+T6: Resolve Walking Ballista
+T6 P2: Walking Ballista enters with 1 +1/+1 counter(s)
+T6 P2: Walking Ballista deals 1 to opponent (life: 8)
+T6: Walking Ballista dies
+  [End Step]
+
+╔══ TURN 6 — Azorius Control (WST) (P1) ══════════════════════════
+║ Life: Azorius Control (WST) 8  |  Eldrazi Tron 20
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 4
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Island, Plains, Hallowed Fountain
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4) [tapped], Matter Reshaper (3/2)
+║   Lands: Urza's Power Plant [T], Cavern of Souls [T], Ghost Quarter [T], Urza's Tower [T], Urza's Mine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Island
+  [Main 1]
+T6 P1: Play Island
+    → Goal: close_game
+    [Mana] Tap Plains→W, Hallowed Fountain→W (paying for Wrath of the Skies, 5 mana remaining)
+T6 P1: Cast Wrath of the Skies (3WW) (X=3)
+T6: Resolve Wrath of the Skies
+T6: Teferi, Time Raveler moved battlefield -> graveyard (destroyed)
+T6: Matter Reshaper dies
+T6 P1: Wrath of the Skies (X=3) sweeps the board
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Azorius Control (WST) 8
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 3
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4)
+║   Lands: Urza's Power Plant, Cavern of Souls, Ghost Quarter, Urza's Tower, Urza's Mine
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T], Island [T], Plains [T], Hallowed Fountain [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Kozilek's Command
+  [Main 1]
+    → Goal: ramp [enablers]
+    [Mana] Tap Urza's Power Plant→C (paying for Eldrazi Mimic, 6 mana remaining)
+T7 P2: Cast Eldrazi Mimic (2)
+    [Priority] P1 passes (no response)
+T7: Resolve Eldrazi Mimic
+    → Goal: ramp
+T7 P2: Cast Walking Ballista (6) (X=3)
+    [Priority] P1 passes (no response)
+T7: Resolve Walking Ballista
+T7 P2: Walking Ballista enters with 3 +1/+1 counter(s)
+T7 P2: Walking Ballista deals 3 to opponent (life: 5)
+T7: Walking Ballista dies
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Thought-Knot Seer
+T7 P2: Attack with Thought-Knot Seer
+  [Declare Blockers] P1 does not block
+T7 P2:   Thought-Knot Seer (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 5 → 1
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Azorius Control (WST) (P1) ══════════════════════════
+║ Life: Azorius Control (WST) 1  |  Eldrazi Tron 20
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 6
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Island, Plains, Hallowed Fountain, Island
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4) [tapped], Eldrazi Mimic (2/1)
+║   Lands: Urza's Power Plant [T], Cavern of Souls [T], Ghost Quarter [T], Urza's Tower [T], Urza's Mine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Island
+  [Main 1]
+T7 P1: Play Island
+    → Goal: close_game
+    [Mana] Tap Plains→W, Island→U, Island→U (paying for Teferi, Time Raveler, 6 mana remaining)
+T7 P1: Cast Teferi, Time Raveler (1WU)
+    [Priority] P2 passes (no response)
+T7: Resolve Teferi, Time Raveler
+T7 P1: Teferi bounces Thought-Knot Seer
+T7 P1: Teferi draws March of Otherworldly Light
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→W (paying for March of Otherworldly Light, 3 mana remaining)
+T7 P1: Cast March of Otherworldly Light (2W) (X=2)
+T7: Resolve March of Otherworldly Light
+T7: Eldrazi Mimic moved battlefield -> exile (exiled)
+T7 P1: March of Otherworldly Light exiles Eldrazi Mimic
+T7 P1: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Azorius Control (WST) 1
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 44  |  Graveyard: 4
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Power Plant, Cavern of Souls, Ghost Quarter, Urza's Tower, Urza's Mine
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain [T], Island [T], Plains [T], Hallowed Fountain [T], Island [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Warping Wail
+  [Main 1]
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Ghost Quarter→C, Urza's Tower→C (paying for Thought-Knot Seer, 8 mana remaining)
+T8 P2: Cast Thought-Knot Seer (3)
+    [Priority] P1 passes (no response)
+T8: Resolve Thought-Knot Seer
+T8 P2: Thought-Knot Seer exiles Counterspell from opponent's hand
+T8 P2: Thought-Knot Seer ETB: draw 1 (Chalice of the Void)
+    → Goal: ramp [enablers]
+T8 P2: Cast Chalice of the Void (4) (X=2)
+    [Priority] P1 passes (no response)
+T8: Resolve Chalice of the Void
+T8 P2: Chalice of the Void enters with 2 charge counter(s)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Azorius Control (WST) (P1) ══════════════════════════
+║ Life: Azorius Control (WST) 1  |  Eldrazi Tron 20
+║ Hand: 0 cards  |  Opp hand: 4 cards
+║ Lands: 6  |  Opp lands: 5
+║ Library: 43  |  Graveyard: 7
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Island, Plains, Hallowed Fountain, Island, Island
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4) [tapped]
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant [T], Cavern of Souls [T], Ghost Quarter [T], Urza's Tower [T], Urza's Mine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Polluted Delta
+  [Main 1]
+T8 P1: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Azorius Control (WST) 1
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 42  |  Graveyard: 4
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant, Cavern of Souls, Ghost Quarter, Urza's Tower, Urza's Mine
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Island, Plains, Hallowed Fountain, Island, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Mine
+  [Main 1]
+T9 P2: Play Urza's Mine
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Ghost Quarter→C, Urza's Tower→C, Urza's Mine→C (paying for Endbringer, 10 mana remaining)
+T9 P2: Cast Endbringer (5)
+    [Priority] P1 passes (no response)
+T9: Resolve Endbringer
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Thought-Knot Seer
+T9 P2: Attack with Thought-Knot Seer
+  [Declare Blockers] P1 does not block
+T9 P2:   Thought-Knot Seer (4/4) → 4 dmg to player
+P1 loses: life total -3
+  [Combat Damage] 4 damage dealt → P1 life: 1 → -3
+
+>>> Eldrazi Tron wins Game 2 on turn 9 via damage
+    Final life: Azorius Control (WST)=-3  Eldrazi Tron=20
+
+======================================================================
+  MATCH RESULT: Eldrazi Tron wins 2-0
+======================================================================
