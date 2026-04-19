@@ -363,6 +363,28 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
                 game.players[controller].life -= int(m.group(1))
                 handled = True
 
+    # ── "Return target nonland permanent to its owner's hand" — Sink
+    #     into Stupor-class bounce. Picks the highest-threat nonland
+    #     permanent opponent controls; lands are never valid targets
+    #     (prior handler did not enforce the filter).
+    if ('return target' in oracle
+            and 'nonland permanent' in oracle
+            and "owner's hand" in oracle):
+        opp = game.players[opponent]
+        from engine.card_effects import _nonland_permanent_threat
+        candidates = [c for c in opp.battlefield if not c.template.is_land]
+        if candidates:
+            best = max(candidates,
+                       key=lambda c: _nonland_permanent_threat(c, opp.battlefield))
+            opp.battlefield.remove(best)
+            best.zone = 'hand'
+            best.tapped = False
+            opp.hand.append(best)
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: "
+                f"{card.name} bounces {best.name}")
+            handled = True
+
     # ── "Return target (nonlegendary )?creature card from your graveyard
     #     to the battlefield" — Persist (nonlegendary), Unburial Rites (any).
     #     Goryo's Vengeance is legendary-only with haste + exile-at-EOT and

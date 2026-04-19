@@ -2183,26 +2183,6 @@ def emry_etb(game, card, controller, targets=None, item=None):
 
 
 # ═══════════════════════════════════════════════════════════════════
-# Sink into Stupor — bounce spell
-# ═══════════════════════════════════════════════════════════════════
-@EFFECT_REGISTRY.register("Sink into Stupor // Soporific Springs", EffectTiming.SPELL_RESOLVE,
-                           description="Return target nonland permanent to hand")
-def sink_into_stupor_resolve(game, card, controller, targets=None, item=None):
-    """Bounce best opposing creature."""
-    opp_idx = 1 - controller
-    opp = game.players[opp_idx]
-    if opp.battlefield:
-        # Bounce highest-CMC creature
-        best = max(opp.battlefield, key=lambda c: (c.template.cmc or 0))
-        opp.battlefield.remove(best)
-        best.zone = "hand"
-        opp.hand.append(best)
-        game.log.append(
-            f"T{game.display_turn} P{controller+1}: "
-            f"Sink into Stupor bounces {best.name}")
-
-
-# ═══════════════════════════════════════════════════════════════════
 # Mana rituals — add mana on resolve (critical for Ruby Storm)
 # ═══════════════════════════════════════════════════════════════════
 @EFFECT_REGISTRY.register("Pyretic Ritual", EffectTiming.SPELL_RESOLVE,
