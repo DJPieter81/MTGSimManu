@@ -276,23 +276,6 @@ def murktike_etb(game, card, controller, targets=None, item=None):
                     f" ({delved_spells} +1/+1 counters from delved instants/sorceries)")
 
 
-@EFFECT_REGISTRY.register("Eternal Witness", EffectTiming.ETB,
-                           description="Return card from graveyard to hand")
-def eternal_witness_etb(game, card, controller, targets=None, item=None):
-    player = game.players[controller]
-    if player.graveyard:
-        nonlands = [c for c in player.graveyard if not c.template.is_land]
-        if nonlands:
-            best = max(nonlands, key=_threat_score)
-        else:
-            best = player.graveyard[0]
-        player.graveyard.remove(best)
-        best.zone = "hand"
-        player.hand.append(best)
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Eternal Witness returns {best.name} from GY")
-
-
 @EFFECT_REGISTRY.register("Quantum Riddler", EffectTiming.ETB,
                            description="Draw a card")
 def quantum_riddler_etb(game, card, controller, targets=None, item=None):

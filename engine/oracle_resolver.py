@@ -174,6 +174,36 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
                 f"T{game.display_turn} P{controller+1}: "
                 f"{card.name} ETB destroys {target.name}")
 
+    # ── "When this creature enters, return target card from your
+    #     graveyard to your hand" (Eternal Witness, Archaeomancer-style).
+    #     Prefer non-lands (lands recoverable via fetches/ramp), then the
+    #     highest-CMC card (biggest recouped investment).
+    if ('enters' in oracle
+            and 'return target' in oracle
+            and 'from your graveyard' in oracle
+            and 'to your hand' in oracle):
+        player = game.players[controller]
+        if player.graveyard:
+            # Apply type filter from oracle ("instant or sorcery card",
+            # "creature card"); otherwise any non-land.
+            pool = player.graveyard
+            if 'instant or sorcery card' in oracle:
+                pool = [c for c in pool
+                        if c.template.is_instant or c.template.is_sorcery]
+            elif 'creature card' in oracle:
+                pool = [c for c in pool if c.template.is_creature]
+            else:
+                nonlands = [c for c in pool if not c.template.is_land]
+                pool = nonlands if nonlands else pool
+            if pool:
+                best = max(pool, key=lambda c: c.template.cmc or 0)
+                player.graveyard.remove(best)
+                best.zone = "hand"
+                player.hand.append(best)
+                game.log.append(
+                    f"T{game.display_turn} P{controller+1}: "
+                    f"{card.name} returns {best.name} from GY to hand")
+
     # ── "When this creature enters, draw a card" ──
     if 'enters' in oracle and 'draw' in oracle and 'card' in oracle:
         amount = 1
