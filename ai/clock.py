@@ -278,7 +278,12 @@ def position_value(snap: "EVSnapshot", archetype: str = "midrange") -> float:
     if snap.opp_life <= 0:
         return 100.0
 
-    # Combat clocks
+    # Combat clocks — use on-board power only. Persistent (recurring-
+    # trigger) tokens are credited further below as an additive
+    # position-value term, NOT through combat_clock. Clock is
+    # nonlinear in power (opp_life / power), so stuffing expected-
+    # future tokens into it compounds the bonus — see
+    # docs/proposals/recurring_token_ev.md §5 risk note.
     my_clock = combat_clock(
         snap.my_power, snap.opp_life,
         snap.my_evasion_power, snap.opp_toughness
@@ -325,4 +330,13 @@ def position_value(snap: "EVSnapshot", archetype: str = "midrange") -> float:
         lifelink_turns = snap.my_lifelink_power / max(1, snap.opp_power)
         life_advantage += lifelink_turns * 0.3
 
-    return clock_diff + card_value + mana_value + life_advantage
+    # Persistent (recurring-trigger token) power contribution.
+    # Expected damage = persistent_power × urgency_factor (fraction of
+    # residency we actually survive). Converted to life-point units via
+    # mana_clock_impact × 20 — same scale the clock_diff / card_value /
+    # mana_value terms use. No clock non-linearity; linear additive.
+    persistent_value = (snap.persistent_power * snap.urgency_factor
+                        * mana_clock_impact(snap) * 20.0)
+
+    return (clock_diff + card_value + mana_value + life_advantage
+            + persistent_value)
