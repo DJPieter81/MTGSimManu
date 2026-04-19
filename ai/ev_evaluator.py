@@ -352,6 +352,76 @@ def _has_immediate_effect(card: "CardInstance") -> bool:
     return True  # default: assume some immediate value
 
 
+def _project_token_bonus(oracle_l: str,
+                          opp_creature_count: int) -> Tuple[int, int]:
+    """Classify a `token_maker` oracle clause and return
+    (projected_power_bonus, projected_creature_count_bonus).
+
+    Three oracle-driven classes (no card names):
+
+      1. ETB creature token   — "when <this> enters ... create ... creature"
+                                 Immediate, guaranteed. Parse the P/T in
+                                 the oracle. Fallback to 1/1 when the P/T
+                                 isn't printed.
+      2. Attack trigger token — "whenever <this> attacks ... create ..."
+                                 Conditional on a profitable attack. Credit
+                                 only when opp has no creatures (an
+                                 unopposed attack is expected to connect).
+      3. Combat-damage         — "whenever <this> deals combat damage ...
+         treasure token          create a Treasure token"
+                                 Zero power bonus (treasures are mana
+                                 tokens, not creatures). Also doubly
+                                 conditional: need to deal combat damage
+                                 first.
+
+    Any other create-token pattern (cast-trigger card-advantage tokens,
+    end-of-turn triggers, etc.) is left out of the power projection —
+    it's not the class of effect this bonus models.
+    """
+    # Class 1 — ETB creature token.
+    etb_match = re.search(
+        r'when[s]? (?:[a-z\'\-\s]+ )?enters'
+        r'.*?create(?: a| an| \w+)? (\d+)/(\d+) [a-z\-\s,]*?creature token',
+        oracle_l, re.DOTALL,
+    )
+    if etb_match:
+        p = int(etb_match.group(1))
+        return (max(0, p), 1)
+    if re.search(
+        r'when[s]? (?:[a-z\'\-\s]+ )?enters'
+        r'.*?create .*?creature token',
+        oracle_l, re.DOTALL,
+    ):
+        # Creature token clause present but P/T not parsed — assume 1/1.
+        return (1, 1)
+
+    # Class 3 — combat-damage treasure token. Check BEFORE the generic
+    # attack-trigger branch so Ragavan-style treasure makers don't slip
+    # through as attack-trigger power.
+    if re.search(
+        r'whenever [a-z\'\-\s]+ deals combat damage'
+        r'.*?create .*?treasure token',
+        oracle_l, re.DOTALL,
+    ):
+        return (0, 0)
+
+    # Class 2 — attack-trigger creature token. Unopposed attack gets credit.
+    if re.search(
+        r'whenever [a-z\'\-\s]+ attacks'
+        r'.*?create .*?creature token',
+        oracle_l, re.DOTALL,
+    ):
+        if opp_creature_count == 0:
+            return (1, 1)
+        return (0, 0)
+
+    # Unknown clause class — be conservative and award nothing. The
+    # surrounding creature-deployment branch already covers the card's
+    # printed body; tokens outside these three classes need dedicated
+    # modelling (e.g. recurring card-draw tokens).
+    return (0, 0)
+
+
 def _project_spell(card: "CardInstance", snap: EVSnapshot,
                    dk: Optional[DeckKnowledge] = None,
                    game: "GameState" = None, player_idx: int = 0) -> EVSnapshot:
@@ -409,12 +479,25 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         if 'lifelink' in kws:
             projected.my_lifelink_power += max(0, p)
 
-        # Token makers: project future token value as bonus power.
-        # A token maker that attacks every turn generates ~1 token/turn.
-        # Model as +2 projected power (conservative: tokens arrive next turn onwards).
+        # Token makers: bonus depends on what the token IS and when it
+        # shows up. The `token_maker` tag groups three very different
+        # classes of effect under one label — we have to disambiguate from
+        # oracle text (no hardcoded card names).
+        #
+        #   ETB creature token              → immediate power (parse size).
+        #   attack-trigger creature token   → conditional; credit only if a
+        #                                     profitable attack seems likely.
+        #   combat-damage Treasure token    → zero power (treasures are mana,
+        #                                     not creatures, and the trigger
+        #                                     is itself conditional on dealing
+        #                                     combat damage).
         if 'token_maker' in tags:
-            projected.my_power += 2
-            projected.my_creature_count += 1
+            oracle_l = (t.oracle_text or '').lower()
+            p_bonus, count_bonus = _project_token_bonus(
+                oracle_l, snap.opp_creature_count
+            )
+            projected.my_power += p_bonus
+            projected.my_creature_count += count_bonus
 
     # Reanimation — bring back best creature from graveyard
     if 'reanimate' in tags and game:

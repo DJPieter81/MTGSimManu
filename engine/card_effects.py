@@ -411,12 +411,23 @@ def phlage_etb(game, card, controller, targets=None, item=None):
     # Oracle: "When Phlage enters, sacrifice it unless it was cast from
     # a graveyard." "Whenever Phlage enters or attacks, it deals 3 damage
     # to any target and you gain 3 life."
-    # Damage uses the generic _pick_damage_target so high-threat creatures
-    # (Ragavan, Murktide, scaling threats) are hit instead of face; small
-    # aggro bodies still go face thanks to the overkill-waste deduction.
+    # Target-fidelity: honour the declared target first. Only fall back
+    # to the oracle-driven picker when nothing was declared (e.g. an
+    # attack-trigger re-fire that re-enters this handler without a stack
+    # item, or a reanimator path with no chosen target).
     from engine.oracle_resolver import _pick_damage_target
     opponent = 1 - controller
-    target = _pick_damage_target(game, controller, 3)
+    target = None
+    if targets:
+        for tid in targets:
+            if tid is None or tid < 0:
+                continue  # sentinel "face"
+            cand = game.get_card_by_id(tid)
+            if cand is not None and cand.zone == "battlefield":
+                target = cand
+                break
+    if target is None and not targets:
+        target = _pick_damage_target(game, controller, 3)
     if target is not None:
         target.damage_marked = getattr(target, 'damage_marked', 0) + 3
         game.log.append(f"T{game.display_turn} P{controller+1}: "
@@ -994,21 +1005,19 @@ def stock_up_resolve(game, card, controller, targets=None, item=None):
 
 
 @EFFECT_REGISTRY.register("Orim's Chant", EffectTiming.SPELL_RESOLVE,
-                           description="Opponent can't cast spells this turn")
+                           description="Target player can't cast spells this turn")
 def orims_chant_resolve(game, card, controller, targets=None, item=None):
+    # Oracle: "Kicker {W}. Target player can't cast spells this turn. If this
+    # spell was kicked, creatures can't attack this turn." The sim does not
+    # model kicker payments, so every cast resolves as the base (unkicked)
+    # variant — scope is "this turn", never a carryover to the opponent's
+    # next turn. Cast on own main phase → opp is silenced for the remainder
+    # of the current turn (narrow: blocks end-of-turn instants). Cast during
+    # opp's turn (flash/Scepter) → silences their ongoing turn.
     opponent = 1 - controller
-    # If we resolve during our own turn (normal via Scepter), the "this turn"
-    # clause has no bite against the opponent — queue a silence for their
-    # NEXT upkeep instead. If the opponent is active (flash-ins on their
-    # turn), silence now.
-    if game.active_player == controller:
-        game.players[opponent].silenced_next_turn = True
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Orim's Chant queues silence for P{opponent+1}'s next turn")
-    else:
-        game.players[opponent].silenced_this_turn = True
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Orim's Chant silences opponent")
+    game.players[opponent].silenced_this_turn = True
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
+                    f"Orim's Chant silences P{opponent+1} this turn")
 
 
 @EFFECT_REGISTRY.register("Mutagenic Growth", EffectTiming.SPELL_RESOLVE,

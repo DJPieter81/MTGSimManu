@@ -1815,7 +1815,7 @@ class GameState:
                         self.log.append(
                             f"T{self.display_turn} P{item.controller+1}: "
                             f"{card.name} enters with {item.x_value} +1/+1 counter(s)")
-                self._handle_permanent_etb(card, item.controller)
+                self._handle_permanent_etb(card, item.controller, item=item)
                 # Cascade on permanents too
                 if Keyword.CASCADE in template.keywords:
                     self._handle_cascade(item)
@@ -1845,8 +1845,16 @@ class GameState:
             elif item.effect:
                 item.effect(self, item.source, item.controller, item.targets)
 
-    def _handle_permanent_etb(self, card: CardInstance, controller: int):
-        """Handle all enter-the-battlefield effects for a permanent."""
+    def _handle_permanent_etb(self, card: CardInstance, controller: int,
+                               item: "StackItem" = None):
+        """Handle all enter-the-battlefield effects for a permanent.
+
+        `item` — the resolving StackItem whose `targets` (list of
+        instance_ids declared at cast time) must be threaded through to
+        card-specific ETB handlers. Passing None (reanimation, blink,
+        Living End) means no declared target; handlers fall back to
+        oracle-driven pickers.
+        """
         template = card.template
 
         # Planeswalker: set loyalty counters from template (oracle-derived)
@@ -1895,7 +1903,9 @@ class GameState:
             # Dispatch to card effect registry for card-specific ETB logic
             has_specific_handler = template.name in EFFECT_REGISTRY._handlers
             EFFECT_REGISTRY.execute(
-                template.name, EffectTiming.ETB, self, card, controller
+                template.name, EffectTiming.ETB, self, card, controller,
+                targets=(item.targets if item else None),
+                item=item,
             )
 
             # Generic oracle-text-based ETB resolution for cards WITHOUT specific handlers
