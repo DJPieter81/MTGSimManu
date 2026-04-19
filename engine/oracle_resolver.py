@@ -174,6 +174,36 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
                 f"T{game.display_turn} P{controller+1}: "
                 f"{card.name} ETB destroys {target.name}")
 
+    # ── "When this creature enters, return target card from your
+    #     graveyard to your hand" (Eternal Witness, Archaeomancer-style).
+    #     Prefer non-lands (lands recoverable via fetches/ramp), then the
+    #     highest-CMC card (biggest recouped investment).
+    if ('enters' in oracle
+            and 'return target' in oracle
+            and 'from your graveyard' in oracle
+            and 'to your hand' in oracle):
+        player = game.players[controller]
+        if player.graveyard:
+            # Apply type filter from oracle ("instant or sorcery card",
+            # "creature card"); otherwise any non-land.
+            pool = player.graveyard
+            if 'instant or sorcery card' in oracle:
+                pool = [c for c in pool
+                        if c.template.is_instant or c.template.is_sorcery]
+            elif 'creature card' in oracle:
+                pool = [c for c in pool if c.template.is_creature]
+            else:
+                nonlands = [c for c in pool if not c.template.is_land]
+                pool = nonlands if nonlands else pool
+            if pool:
+                best = max(pool, key=lambda c: c.template.cmc or 0)
+                player.graveyard.remove(best)
+                best.zone = "hand"
+                player.hand.append(best)
+                game.log.append(
+                    f"T{game.display_turn} P{controller+1}: "
+                    f"{card.name} returns {best.name} from GY to hand")
+
     # ── "When this creature enters, draw a card" ──
     if 'enters' in oracle and 'draw' in oracle and 'card' in oracle:
         amount = 1
@@ -332,6 +362,55 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
             if m:
                 game.players[controller].life -= int(m.group(1))
                 handled = True
+
+    # ── "Return target nonland permanent to its owner's hand" — Sink
+    #     into Stupor-class bounce. Picks the highest-threat nonland
+    #     permanent opponent controls; lands are never valid targets
+    #     (prior handler did not enforce the filter).
+    if ('return target' in oracle
+            and 'nonland permanent' in oracle
+            and "owner's hand" in oracle):
+        opp = game.players[opponent]
+        from engine.card_effects import _nonland_permanent_threat
+        candidates = [c for c in opp.battlefield if not c.template.is_land]
+        if candidates:
+            best = max(candidates,
+                       key=lambda c: _nonland_permanent_threat(c, opp.battlefield))
+            opp.battlefield.remove(best)
+            best.zone = 'hand'
+            best.tapped = False
+            opp.hand.append(best)
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: "
+                f"{card.name} bounces {best.name}")
+            handled = True
+
+    # ── "Return target (nonlegendary )?creature card from your graveyard
+    #     to the battlefield" — Persist (nonlegendary), Unburial Rites (any).
+    #     Goryo's Vengeance is legendary-only with haste + exile-at-EOT and
+    #     keeps its dedicated handler.
+    if (re.search(r'return target\s+(\w+\s+)?creature card', oracle)
+            and 'graveyard' in oracle
+            and 'battlefield' in oracle
+            and not re.search(r'return target legendary creature', oracle)):
+        gy = game.players[controller].graveyard
+        creatures = [c for c in gy if c.template.is_creature]
+        if 'nonlegendary' in oracle:
+            from engine.cards import Supertype
+            creatures = [c for c in creatures
+                         if Supertype.LEGENDARY not in
+                         getattr(c.template, 'supertypes', [])]
+        if creatures:
+            # Pick the biggest body — reanimation's value is in the
+            # largest recouped investment.
+            best = max(creatures,
+                       key=lambda c: (c.template.power or 0)
+                       + (c.template.toughness or 0))
+            game.reanimate(controller, best)
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: "
+                f"{card.name} reanimates {best.name}")
+            handled = True
 
     # ── Card draw on spell resolution ──
     # Covers "draw a card" / "draw N cards" + the look-and-keep variant

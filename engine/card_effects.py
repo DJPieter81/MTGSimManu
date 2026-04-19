@@ -276,23 +276,6 @@ def murktike_etb(game, card, controller, targets=None, item=None):
                     f" ({delved_spells} +1/+1 counters from delved instants/sorceries)")
 
 
-@EFFECT_REGISTRY.register("Eternal Witness", EffectTiming.ETB,
-                           description="Return card from graveyard to hand")
-def eternal_witness_etb(game, card, controller, targets=None, item=None):
-    player = game.players[controller]
-    if player.graveyard:
-        nonlands = [c for c in player.graveyard if not c.template.is_land]
-        if nonlands:
-            best = max(nonlands, key=_threat_score)
-        else:
-            best = player.graveyard[0]
-        player.graveyard.remove(best)
-        best.zone = "hand"
-        player.hand.append(best)
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Eternal Witness returns {best.name} from GY")
-
-
 @EFFECT_REGISTRY.register("Quantum Riddler", EffectTiming.ETB,
                            description="Draw a card")
 def quantum_riddler_etb(game, card, controller, targets=None, item=None):
@@ -485,17 +468,6 @@ def goryos_vengeance_resolve(game, card, controller, targets=None, item=None):
         best = max(legendary_creatures,
                    key=lambda c: (c.template.power or 0) + (c.template.toughness or 0))
         game.reanimate(controller, best, exile_at_eot=True, give_haste=True)
-
-
-@EFFECT_REGISTRY.register("Persist", EffectTiming.SPELL_RESOLVE,
-                           description="Reanimate creature from graveyard")
-def persist_resolve(game, card, controller, targets=None, item=None):
-    gy = game.players[controller].graveyard
-    creatures = [c for c in gy if c.template.is_creature]
-    if creatures:
-        best = max(creatures,
-                   key=lambda c: (c.template.power or 0) + (c.template.toughness or 0))
-        game.reanimate(controller, best)
 
 
 @EFFECT_REGISTRY.register("Unmarked Grave", EffectTiming.SPELL_RESOLVE,
@@ -2208,26 +2180,6 @@ def emry_etb(game, card, controller, targets=None, item=None):
         game.log.append(
             f"T{game.display_turn} P{controller+1}: "
             f"Emry mills {len(milled)}: {', '.join(milled)}")
-
-
-# ═══════════════════════════════════════════════════════════════════
-# Sink into Stupor — bounce spell
-# ═══════════════════════════════════════════════════════════════════
-@EFFECT_REGISTRY.register("Sink into Stupor // Soporific Springs", EffectTiming.SPELL_RESOLVE,
-                           description="Return target nonland permanent to hand")
-def sink_into_stupor_resolve(game, card, controller, targets=None, item=None):
-    """Bounce best opposing creature."""
-    opp_idx = 1 - controller
-    opp = game.players[opp_idx]
-    if opp.battlefield:
-        # Bounce highest-CMC creature
-        best = max(opp.battlefield, key=lambda c: (c.template.cmc or 0))
-        opp.battlefield.remove(best)
-        best.zone = "hand"
-        opp.hand.append(best)
-        game.log.append(
-            f"T{game.display_turn} P{controller+1}: "
-            f"Sink into Stupor bounces {best.name}")
 
 
 # ═══════════════════════════════════════════════════════════════════
