@@ -1,0 +1,398 @@
+Loaded 21759 cards (0 errors)
+=== Dimir Midrange vs Affinity (seed 60700) ===
+Result: Affinity wins T5 via damage
+Life: P1=-14 P2=20
+
+  [MAIN1]
+
+T1 Dimir Midrange | life=20 mana=0 hand=4+3L gy=0
+  Hand: ['Counterspell', 'Psychic Frog', 'Fatal Push', 'Consider']
+  Opp board: [] (life=20)
+  EV scores:
+     +35.0  play_land: Watery Grave <--
+     +28.0  play_land: Island
+     +20.0  play_land: Darkslick Shores
+  >>> PLAY_LAND: Watery Grave
+  [MAIN1]
+
+T1 Dimir Midrange | life=18 mana=1 hand=4+2L gy=0
+  Hand: ['Counterspell', 'Psychic Frog', 'Fatal Push', 'Consider']
+  Opp board: [] (life=20)
+  EV scores:
+      -0.0  cast_spell: Consider <--  [h=-0.0 la=-0.0]
+  >>> CAST_SPELL: Consider
+  [MAIN1]
+
+T1 Dimir Midrange | life=18 mana=0 hand=4+2L gy=1
+  Hand: ['Counterspell', 'Psychic Frog', 'Fatal Push', 'Counterspell']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-3.0)
+  [MAIN2]
+
+T1 Dimir Midrange | life=18 mana=0 hand=4+2L gy=1
+  Hand: ['Counterspell', 'Psychic Frog', 'Fatal Push', 'Counterspell']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-3.0)
+  [MAIN1]
+
+T2 Affinity | life=20 mana=0 hand=6+2L gy=0
+  Hand: ['Signal Pest', 'Ornithopter', 'Ornithopter', 'Thought Monitor', 'Memnite', 'Memnite']
+  Opp board: [] (life=18)
+  EV scores:
+     +40.8  play_land: Urza's Saga <--
+     +19.0  play_land: Silverbluff Bridge
+      +1.1  cast_spell: Memnite  [h=+1.1 la=+1.1]
+      +1.1  cast_spell: Memnite  [h=+1.1 la=+1.1]
+      -0.0  cast_spell: Ornithopter  [h=-0.0 la=-0.0]
+      -0.0  cast_spell: Ornithopter  [h=-0.0 la=-0.0]
+  >>> PLAY_LAND: Urza's Saga
+  [MAIN1]
+
+T2 Affinity | life=20 mana=1 hand=6+1L gy=0
+  Hand: ['Signal Pest', 'Ornithopter', 'Ornithopter', 'Thought Monitor', 'Memnite', 'Memnite']
+  Opp board: [] (life=18)
+  EV scores:
+      +1.1  cast_spell: Memnite <--  [h=+1.1 la=+1.1]
+      +1.1  cast_spell: Memnite  [h=+1.1 la=+1.1]
+      -0.0  cast_spell: Ornithopter  [h=-0.0 la=-0.0]
+      -0.0  cast_spell: Ornithopter  [h=-0.0 la=-0.0]
+      -0.1  cast_spell: Signal Pest  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Memnite
+  [MAIN1]
+
+T2 Affinity | life=20 mana=1 hand=5+1L gy=0
+  Hand: ['Signal Pest', 'Ornithopter', 'Ornithopter', 'Thought Monitor', 'Memnite']
+  Board: ['Memnite (1/1)']
+  Opp board: [] (life=18)
+  EV scores:
+      +1.1  cast_spell: Memnite <--  [h=+1.1 la=+1.1]
+      -0.0  cast_spell: Ornithopter  [h=-0.0 la=-0.0]
+      -0.0  cast_spell: Ornithopter  [h=-0.0 la=-0.0]
+      -0.1  cast_spell: Signal Pest  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Memnite
+  [MAIN1]
+
+T2 Affinity | life=20 mana=1 hand=4+1L gy=0
+  Hand: ['Signal Pest', 'Ornithopter', 'Ornithopter', 'Thought Monitor']
+  Board: ['Memnite (1/1)', 'Memnite (1/1)']
+  Opp board: [] (life=18)
+  EV scores:
+      -0.0  cast_spell: Ornithopter <--  [h=-0.0 la=-0.0]
+      -0.0  cast_spell: Ornithopter  [h=-0.0 la=-0.0]
+      -0.1  cast_spell: Signal Pest  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Ornithopter
+  [MAIN1]
+
+T2 Affinity | life=20 mana=1 hand=3+1L gy=0
+  Hand: ['Signal Pest', 'Ornithopter', 'Thought Monitor']
+  Board: ['Memnite (1/1)', 'Memnite (1/1)', 'Ornithopter (0/2)']
+  Opp board: [] (life=18)
+  EV scores:
+      -0.0  cast_spell: Signal Pest <--  [h=-0.0 la=-0.0]
+      -0.0  cast_spell: Ornithopter  [h=-0.0 la=-0.0]
+  >>> CAST_SPELL: Signal Pest
+  [MAIN1]
+
+T2 Affinity | life=20 mana=1 hand=2+1L gy=0
+  Hand: ['Ornithopter', 'Thought Monitor']
+  Board: ['Memnite (1/1)', 'Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)']
+  Opp board: [] (life=18)
+  EV scores:
+      -0.0  cast_spell: Ornithopter <--  [h=-0.0 la=-0.0]
+  >>> CAST_SPELL: Ornithopter
+  [MAIN1]
+
+T2 Affinity | life=20 mana=1 hand=1+1L gy=0
+  Hand: ['Thought Monitor']
+  Board: ['Memnite (1/1)', 'Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)']
+  Opp board: [] (life=18)
+  EV scores:
+      -0.0  cast_spell: Ornithopter <--  [h=-0.0 la=-0.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T2 Affinity | life=20 mana=1 hand=1+1L gy=0
+  Hand: ['Thought Monitor']
+  Board: ['Memnite (1/1)', 'Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)']
+  Opp board: [] (life=18)
+  EV scores:
+      -0.0  cast_spell: Ornithopter <--  [h=-0.0 la=-0.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T3 Dimir Midrange | life=18 mana=1 hand=5+2L gy=1
+  Hand: ['Counterspell', 'Psychic Frog', 'Fatal Push', 'Counterspell', "Archmage's Charm"]
+  Opp board: ['Memnite (1/1)', 'Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)'] (life=20)
+  EV scores:
+     +15.0  play_land: Island <--
+     +10.5  cast_spell: Fatal Push  [h=+10.5 la=+10.5]
+      +7.0  play_land: Darkslick Shores
+  >>> PLAY_LAND: Island
+  [MAIN1]
+
+T3 Dimir Midrange | life=18 mana=2 hand=5+1L gy=1
+  Hand: ['Counterspell', 'Psychic Frog', 'Fatal Push', 'Counterspell', "Archmage's Charm"]
+  Opp board: ['Memnite (1/1)', 'Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)'] (life=20)
+  EV scores:
+     +10.3  cast_spell: Fatal Push <--  [h=+10.3 la=+10.3]
+      -4.0  cast_spell: Psychic Frog  [h=-4.0 la=-4.0]
+  >>> CAST_SPELL: Fatal Push
+  [MAIN1]
+
+T3 Dimir Midrange | life=18 mana=1 hand=4+1L gy=2
+  Hand: ['Counterspell', 'Psychic Frog', 'Counterspell', "Archmage's Charm"]
+  Opp board: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)'] (life=20)
+  EV scores:
+      -4.0  cast_spell: Psychic Frog <--  [h=-4.0 la=-4.0]
+  >>> PASS (threshold=-3.0)
+  [MAIN2]
+
+T3 Dimir Midrange | life=18 mana=1 hand=4+1L gy=2
+  Hand: ['Counterspell', 'Psychic Frog', 'Counterspell', "Archmage's Charm"]
+  Opp board: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)'] (life=20)
+  EV scores:
+      -4.0  cast_spell: Psychic Frog <--  [h=-4.0 la=-4.0]
+  >>> PASS (threshold=-3.0)
+  [MAIN1]
+
+T4 Affinity | life=20 mana=1 hand=2+1L gy=1
+  Hand: ['Thought Monitor', 'Mox Opal']
+  Board: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)']
+  Opp board: [] (life=18)
+  EV scores:
+     +30.0  play_land: Silverbluff Bridge <--
+      -0.0  cast_spell: Mox Opal  [h=-0.0 la=-0.0]
+  >>> PLAY_LAND: Silverbluff Bridge
+  [MAIN1]
+
+T4 Affinity | life=20 mana=1 hand=2+0L gy=1
+  Hand: ['Thought Monitor', 'Mox Opal']
+  Board: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)']
+  Opp board: [] (life=18)
+  EV scores:
+      -0.0  cast_spell: Mox Opal <--  [h=-0.0 la=-0.0]
+  >>> CAST_SPELL: Mox Opal
+  [MAIN1]
+
+T4 Affinity | life=20 mana=1 hand=1+0L gy=1
+  Hand: ['Thought Monitor']
+  Board: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)']
+  Permanents: ['Mox Opal']
+  Opp board: [] (life=18)
+  EV scores:
+      -0.0  cast_spell: Mox Opal <--  [h=-0.0 la=-0.0]
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Memnite', 'Signal Pest']
+  [MAIN2]
+
+T4 Affinity | life=20 mana=1 hand=1+0L gy=1
+  Hand: ['Thought Monitor']
+  Board: ['Memnite (2/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)']
+  Permanents: ['Mox Opal']
+  Opp board: [] (life=16)
+  EV scores:
+      -0.0  cast_spell: Mox Opal <--  [h=-0.0 la=-0.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T5 Dimir Midrange | life=16 mana=2 hand=5+1L gy=2
+  Hand: ['Counterspell', 'Psychic Frog', 'Counterspell', "Archmage's Charm", 'Psychic Frog']
+  Opp board: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)'] (life=20)
+  EV scores:
+      +7.0  play_land: Darkslick Shores <--
+      -4.0  cast_spell: Psychic Frog  [h=-4.0 la=-4.0]
+      -4.0  cast_spell: Psychic Frog  [h=-4.0 la=-4.0]
+  >>> PLAY_LAND: Darkslick Shores
+  [MAIN1]
+
+T5 Dimir Midrange | life=16 mana=3 hand=5+0L gy=2
+  Hand: ['Counterspell', 'Psychic Frog', 'Counterspell', "Archmage's Charm", 'Psychic Frog']
+  Opp board: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)'] (life=20)
+  EV scores:
+      -4.0  cast_spell: Psychic Frog <--  [h=-4.0 la=-4.0]
+      -4.0  cast_spell: Psychic Frog  [h=-4.0 la=-4.0]
+  >>> PASS (threshold=-3.0)
+  [MAIN2]
+
+T5 Dimir Midrange | life=16 mana=3 hand=5+0L gy=2
+  Hand: ['Counterspell', 'Psychic Frog', 'Counterspell', "Archmage's Charm", 'Psychic Frog']
+  Opp board: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)'] (life=20)
+  EV scores:
+      -4.0  cast_spell: Psychic Frog <--  [h=-4.0 la=-4.0]
+      -4.0  cast_spell: Psychic Frog  [h=-4.0 la=-4.0]
+  >>> PASS (threshold=-3.0)
+  [MAIN1]
+
+T6 Affinity | life=20 mana=2 hand=2+0L gy=1
+  Hand: ['Thought Monitor', 'Memnite']
+  Board: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Construct Token (7/7)']
+  Permanents: ['Mox Opal']
+  Opp board: [] (life=16)
+  EV scores:
+      +0.2  cast_spell: Thought Monitor <--  [h=+0.2 la=+0.2 ctr=60% rmv=60%]
+      +0.1  cast_spell: Memnite  [h=+0.1 la=+0.1 ctr=60% rmv=9%]
+  >>> CAST_SPELL: Thought Monitor
+  [MAIN1]
+
+T6 Affinity | life=20 mana=1 hand=1+0L gy=2
+  Hand: ['Memnite']
+  Board: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Construct Token (7/7)']
+  Permanents: ['Mox Opal']
+  Opp board: [] (life=16)
+  EV scores:
+      +0.1  cast_spell: Memnite <--  [h=+0.1 la=+0.1 rmv=8%]
+  >>> CAST_SPELL: Memnite
+  [MAIN1]
+
+T6 Affinity | life=20 mana=1 hand=0+0L gy=2
+  Hand: []
+  Board: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Construct Token (8/8)', 'Memnite (1/1)']
+  Permanents: ['Mox Opal']
+  Opp board: [] (life=16)
+  EV scores:
+      +0.1  cast_spell: Memnite <--  [h=+0.1 la=+0.1 rmv=8%]
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Memnite', 'Signal Pest']
+  [MAIN2]
+
+T6 Affinity | life=20 mana=1 hand=0+0L gy=2
+  Hand: []
+  Board: ['Memnite (2/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Construct Token (8/8)', 'Memnite (1/1)']
+  Permanents: ['Mox Opal']
+  Opp board: [] (life=14)
+  EV scores:
+      +0.1  cast_spell: Memnite <--  [h=+0.1 la=+0.1 rmv=8%]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T7 Dimir Midrange | life=14 mana=3 hand=4+1L gy=3
+  Hand: ['Psychic Frog', 'Counterspell', "Archmage's Charm", 'Psychic Frog']
+  Opp board: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Construct Token (8/8)', 'Memnite (1/1)'] (life=20)
+  EV scores:
+     +15.0  play_land: Takenuma, Abandoned Mire <--
+      -0.6  cast_spell: Archmage's Charm  [h=-0.6 la=-0.6]
+      -2.5  cast_spell: Psychic Frog  [h=-2.5 la=-2.5]
+      -2.5  cast_spell: Psychic Frog  [h=-2.5 la=-2.5]
+  >>> PLAY_LAND: Takenuma, Abandoned Mire
+  [MAIN1]
+
+T7 Dimir Midrange | life=14 mana=4 hand=4+0L gy=3
+  Hand: ['Psychic Frog', 'Counterspell', "Archmage's Charm", 'Psychic Frog']
+  Opp board: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Construct Token (8/8)', 'Memnite (1/1)'] (life=20)
+  EV scores:
+      -0.3  cast_spell: Psychic Frog <--  [h=-0.3 la=-0.3]
+      -0.3  cast_spell: Psychic Frog  [h=-0.3 la=-0.3]
+      -0.5  cast_spell: Archmage's Charm  [h=-0.5 la=-0.5]
+  >>> CAST_SPELL: Psychic Frog
+  [MAIN1]
+
+T7 Dimir Midrange | life=14 mana=2 hand=3+0L gy=3
+  Hand: ['Counterspell', "Archmage's Charm", 'Psychic Frog']
+  Board: ['Psychic Frog (1/2)']
+  Opp board: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Construct Token (8/8)', 'Memnite (1/1)'] (life=20)
+  EV scores:
+      -2.2  cast_spell: Psychic Frog <--  [h=-2.2 la=-2.2]
+  >>> CAST_SPELL: Psychic Frog
+  [MAIN1]
+
+T7 Dimir Midrange | life=14 mana=0 hand=2+0L gy=3
+  Hand: ['Counterspell', "Archmage's Charm"]
+  Board: ['Psychic Frog (1/2)', 'Psychic Frog (1/2)']
+  Opp board: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Construct Token (8/8)', 'Memnite (1/1)'] (life=20)
+  EV scores:
+      -2.2  cast_spell: Psychic Frog <--  [h=-2.2 la=-2.2]
+  >>> PASS (threshold=-3.0)
+  [MAIN2]
+
+T7 Dimir Midrange | life=14 mana=0 hand=2+0L gy=3
+  Hand: ['Counterspell', "Archmage's Charm"]
+  Board: ['Psychic Frog (1/2)', 'Psychic Frog (1/2)']
+  Opp board: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Construct Token (8/8)', 'Memnite (1/1)'] (life=20)
+  EV scores:
+      -2.2  cast_spell: Psychic Frog <--  [h=-2.2 la=-2.2]
+  >>> PASS (threshold=-3.0)
+  [MAIN1]
+
+T8 Affinity | life=20 mana=1 hand=0+1L gy=3
+  Hand: []
+  Board: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Construct Token (10/10)', 'Memnite (1/1)', 'Construct Token (10/10)']
+  Permanents: ['Mox Opal', 'Springleaf Drum']
+  Opp board: ['Psychic Frog (1/2)', 'Psychic Frog (1/2)'] (life=14)
+  EV scores:
+     +13.8  play_land: Urza's Saga <--
+  >>> PLAY_LAND: Urza's Saga
+  [MAIN1]
+
+T8 Affinity | life=20 mana=2 hand=0+0L gy=3
+  Hand: []
+  Board: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Construct Token (10/10)', 'Memnite (1/1)', 'Construct Token (10/10)']
+  Permanents: ['Mox Opal', 'Springleaf Drum']
+  Opp board: ['Psychic Frog (1/2)', 'Psychic Frog (1/2)'] (life=14)
+  EV scores:
+     +13.8  play_land: Urza's Saga <--
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Memnite', 'Construct Token', 'Memnite']
+  [MAIN2]
+
+T8 Affinity | life=20 mana=2 hand=0+0L gy=3
+  Hand: []
+  Board: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Construct Token (10/10)', 'Memnite (1/1)', 'Construct Token (10/10)']
+  Permanents: ['Mox Opal', 'Springleaf Drum']
+  Opp board: ['Psychic Frog (1/2)'] (life=12)
+  EV scores:
+     +13.8  play_land: Urza's Saga <--
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T9 Dimir Midrange | life=12 mana=4 hand=2+1L gy=4
+  Hand: ['Counterspell', "Archmage's Charm"]
+  Board: ['Psychic Frog (1/2)']
+  Opp board: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Construct Token (10/10)', 'Memnite (1/1)', 'Construct Token (10/10)'] (life=20)
+  EV scores:
+      +7.0  play_land: Shelldock Isle <--
+      -0.4  cast_spell: Archmage's Charm  [h=-0.4 la=-0.4]
+  >>> PLAY_LAND: Shelldock Isle
+  [MAIN1]
+
+T9 Dimir Midrange | life=12 mana=4 hand=2+0L gy=4
+  Hand: ['Counterspell', "Archmage's Charm"]
+  Board: ['Psychic Frog (1/2)']
+  Opp board: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Construct Token (10/10)', 'Memnite (1/1)', 'Construct Token (10/10)'] (life=20)
+  EV scores:
+      -0.3  cast_spell: Archmage's Charm <--  [h=-0.3 la=-0.3]
+  >>> CAST_SPELL: Archmage's Charm
+  [MAIN1]
+
+T9 Dimir Midrange | life=12 mana=1 hand=1+0L gy=5
+  Hand: ['Counterspell']
+  Board: ['Psychic Frog (1/2)']
+  Opp board: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Construct Token (10/10)', 'Memnite (1/1)', 'Construct Token (10/10)'] (life=20)
+  >>> PASS (threshold=-3.0)
+  >>> ATTACK: ['Psychic Frog']
+  [MAIN2]
+
+T9 Dimir Midrange | life=12 mana=1 hand=1+0L gy=6
+  Hand: ['Counterspell']
+  Opp board: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Construct Token (10/10)', 'Memnite (1/1)', 'Construct Token (10/10)'] (life=20)
+  >>> PASS (threshold=-3.0)
+  [MAIN1]
+
+T10 Affinity | life=20 mana=2 hand=0+1L gy=3
+  Hand: []
+  Board: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Construct Token (10/10)', 'Memnite (1/1)', 'Construct Token (10/10)']
+  Permanents: ['Mox Opal', 'Springleaf Drum']
+  Opp board: [] (life=12)
+  EV scores:
+     +12.0  play_land: Spire of Industry <--
+  >>> PLAY_LAND: Spire of Industry
+  [MAIN1]
+
+T10 Affinity | life=20 mana=3 hand=0+0L gy=3
+  Hand: []
+  Board: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Construct Token (10/10)', 'Memnite (1/1)', 'Construct Token (10/10)']
+  Permanents: ['Mox Opal', 'Springleaf Drum']
+  Opp board: [] (life=12)
+  EV scores:
+     +12.0  play_land: Spire of Industry <--
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Memnite', 'Signal Pest', 'Construct Token', 'Memnite', 'Construct Token']

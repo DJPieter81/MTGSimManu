@@ -1,0 +1,356 @@
+Loaded 21759 cards (0 errors)
+=== Boros Energy vs Affinity (seed 60500) ===
+Result: Affinity wins T4 via damage
+Life: P1=-16 P2=13
+
+  [MAIN1]
+
+T1 Affinity | life=20 mana=0 hand=4+3L gy=0
+  Hand: ['Mox Opal', "Sojourner's Companion", 'Ornithopter', 'Cranial Plating']
+  Opp board: [] (life=20)
+  EV scores:
+     +29.7  play_land: Urza's Saga <--
+     +29.7  play_land: Urza's Saga
+     +15.0  play_land: Spire of Industry
+      -0.0  cast_spell: Mox Opal  [h=-0.0 la=-0.0]
+      -0.0  cast_spell: Ornithopter  [h=-0.0 la=-0.0]
+  >>> PLAY_LAND: Urza's Saga
+  [MAIN1]
+
+T1 Affinity | life=20 mana=1 hand=4+2L gy=0
+  Hand: ['Mox Opal', "Sojourner's Companion", 'Ornithopter', 'Cranial Plating']
+  Opp board: [] (life=20)
+  EV scores:
+      -0.0  cast_spell: Mox Opal <--  [h=-0.0 la=-0.0]
+      -0.0  cast_spell: Ornithopter  [h=-0.0 la=-0.0]
+      -0.1  cast_spell: Cranial Plating  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Mox Opal
+  [MAIN1]
+
+T1 Affinity | life=20 mana=1 hand=3+2L gy=0
+  Hand: ["Sojourner's Companion", 'Ornithopter', 'Cranial Plating']
+  Permanents: ['Mox Opal']
+  Opp board: [] (life=20)
+  EV scores:
+      -0.0  cast_spell: Ornithopter <--  [h=-0.0 la=-0.0]
+      -0.0  cast_spell: Cranial Plating  [h=-0.0 la=-0.0]
+  >>> CAST_SPELL: Ornithopter
+  [MAIN1]
+
+T1 Affinity | life=20 mana=1 hand=2+2L gy=0
+  Hand: ["Sojourner's Companion", 'Cranial Plating']
+  Board: ['Ornithopter (0/2)']
+  Permanents: ['Mox Opal']
+  Opp board: [] (life=20)
+  EV scores:
+      -0.0  cast_spell: Cranial Plating <--  [h=-0.0 la=-0.0]
+  >>> CAST_SPELL: Cranial Plating
+  [MAIN1]
+
+T1 Affinity | life=20 mana=0 hand=1+2L gy=0
+  Hand: ["Sojourner's Companion"]
+  Board: ['Ornithopter (0/2)']
+  Permanents: ['Mox Opal', 'Cranial Plating']
+  Opp board: [] (life=20)
+  EV scores:
+      -0.0  cast_spell: Cranial Plating <--  [h=-0.0 la=-0.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T1 Affinity | life=20 mana=0 hand=1+2L gy=0
+  Hand: ["Sojourner's Companion"]
+  Board: ['Ornithopter (0/2)']
+  Permanents: ['Mox Opal', 'Cranial Plating']
+  Opp board: [] (life=20)
+  EV scores:
+      -0.0  cast_spell: Cranial Plating <--  [h=-0.0 la=-0.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T2 Boros Energy | life=20 mana=0 hand=6+2L gy=0
+  Hand: ['Thraben Charm', 'Ragavan, Nimble Pilferer', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Goblin Bombardment', 'Voice of Victory', "Orim's Chant"]
+  Opp board: ['Ornithopter (0/2)'] (life=20)
+  EV scores:
+     +44.0  play_land: Arid Mesa <--
+     +38.0  play_land: Flooded Strand
+  >>> PLAY_LAND: Arid Mesa
+  [MAIN1]
+
+T2 Boros Energy | life=17 mana=1 hand=6+1L gy=1
+  Hand: ['Thraben Charm', 'Ragavan, Nimble Pilferer', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Goblin Bombardment', 'Voice of Victory', "Orim's Chant"]
+  Opp board: ['Ornithopter (0/2)'] (life=20)
+  EV scores:
+      +1.2  cast_spell: Ragavan, Nimble Pilferer <--  [h=+1.2 la=+1.2]
+      -0.1  cast_spell: Orim's Chant  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Ragavan, Nimble Pilferer
+  [MAIN1]
+
+T2 Boros Energy | life=17 mana=0 hand=5+1L gy=1
+  Hand: ['Thraben Charm', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Goblin Bombardment', 'Voice of Victory', "Orim's Chant"]
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Opp board: ['Ornithopter (0/2)'] (life=20)
+  EV scores:
+      +1.2  cast_spell: Ragavan, Nimble Pilferer <--  [h=+1.2 la=+1.2]
+      -0.1  cast_spell: Orim's Chant  [h=-0.1 la=-0.1]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T2 Boros Energy | life=17 mana=0 hand=5+1L gy=1
+  Hand: ['Thraben Charm', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Goblin Bombardment', 'Voice of Victory', "Orim's Chant"]
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Opp board: ['Ornithopter (0/2)'] (life=20)
+  EV scores:
+      +1.2  cast_spell: Ragavan, Nimble Pilferer <--  [h=+1.2 la=+1.2]
+      -0.1  cast_spell: Orim's Chant  [h=-0.1 la=-0.1]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T3 Affinity | life=20 mana=1 hand=2+2L gy=0
+  Hand: ["Sojourner's Companion", 'Springleaf Drum']
+  Board: ['Ornithopter (0/2)']
+  Permanents: ['Mox Opal', 'Cranial Plating']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  EV scores:
+     +15.0  play_land: Spire of Industry <--
+     +15.0  play_land: Urza's Saga
+      +4.5  equip: Cranial Plating
+      -0.0  cast_spell: Springleaf Drum  [h=-0.0 la=-0.0]
+  >>> PLAY_LAND: Spire of Industry
+  [MAIN1]
+
+T3 Affinity | life=20 mana=2 hand=2+1L gy=0
+  Hand: ["Sojourner's Companion", 'Springleaf Drum']
+  Board: ['Ornithopter (0/2)']
+  Permanents: ['Mox Opal', 'Cranial Plating']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  EV scores:
+      +8.0  cycle: Sojourner's Companion <--
+      +4.5  equip: Cranial Plating
+      +0.0  cast_spell: Springleaf Drum  [h=+0.0 la=+0.0]
+  >>> CYCLE: Sojourner's Companion
+  [MAIN1]
+
+T3 Affinity | life=20 mana=0 hand=2+1L gy=1
+  Hand: ['Springleaf Drum', "Sojourner's Companion"]
+  Board: ['Ornithopter (0/2)']
+  Permanents: ['Mox Opal', 'Cranial Plating']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  EV scores:
+      -0.0  cast_spell: Springleaf Drum <--  [h=-0.0 la=-0.0]
+  >>> CAST_SPELL: Springleaf Drum
+  [MAIN1]
+
+T3 Affinity | life=20 mana=0 hand=1+1L gy=1
+  Hand: ["Sojourner's Companion"]
+  Board: ['Ornithopter (0/2)']
+  Permanents: ['Mox Opal', 'Cranial Plating', 'Springleaf Drum']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  EV scores:
+      -0.0  cast_spell: Springleaf Drum <--  [h=-0.0 la=-0.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T3 Affinity | life=20 mana=0 hand=1+1L gy=1
+  Hand: ["Sojourner's Companion"]
+  Board: ['Ornithopter (0/2)']
+  Permanents: ['Mox Opal', 'Cranial Plating', 'Springleaf Drum']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  EV scores:
+      -0.0  cast_spell: Springleaf Drum <--  [h=-0.0 la=-0.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T4 Boros Energy | life=17 mana=1 hand=6+1L gy=1
+  Hand: ['Thraben Charm', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Goblin Bombardment', 'Voice of Victory', "Orim's Chant", "Orim's Chant"]
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Opp board: ['Ornithopter (0/2)'] (life=20)
+  EV scores:
+     +22.0  play_land: Flooded Strand <--
+      -0.2  cast_spell: Orim's Chant  [h=-0.2 la=-0.2]
+      -0.2  cast_spell: Orim's Chant  [h=-0.2 la=-0.2]
+  >>> PLAY_LAND: Flooded Strand
+  [MAIN1]
+
+T4 Boros Energy | life=14 mana=2 hand=6+0L gy=2
+  Hand: ['Thraben Charm', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Goblin Bombardment', 'Voice of Victory', "Orim's Chant", "Orim's Chant"]
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Opp board: ['Ornithopter (0/2)'] (life=20)
+  EV scores:
+      +8.3  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <--  [h=+8.3 la=+8.3]
+      +5.9  cast_spell: Voice of Victory  [h=+5.9 la=+5.9]
+      +2.6  cast_spell: Thraben Charm  [h=+2.6 la=+2.6]
+      -0.3  cast_spell: Orim's Chant  [h=-0.3 la=-0.3]
+      -0.3  cast_spell: Orim's Chant  [h=-0.3 la=-0.3]
+      -0.4  cast_spell: Goblin Bombardment  [h=-0.4 la=-0.4]
+  >>> CAST_SPELL: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [MAIN1]
+
+T4 Boros Energy | life=14 mana=0 hand=5+0L gy=2
+  Hand: ['Thraben Charm', 'Goblin Bombardment', 'Voice of Victory', "Orim's Chant", "Orim's Chant"]
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
+  Opp board: ['Ornithopter (0/2)'] (life=20)
+  EV scores:
+      +8.3  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <--  [h=+8.3 la=+8.3]
+      +5.9  cast_spell: Voice of Victory  [h=+5.9 la=+5.9]
+      +2.6  cast_spell: Thraben Charm  [h=+2.6 la=+2.6]
+      -0.3  cast_spell: Orim's Chant  [h=-0.3 la=-0.3]
+      -0.3  cast_spell: Orim's Chant  [h=-0.3 la=-0.3]
+      -0.4  cast_spell: Goblin Bombardment  [h=-0.4 la=-0.4]
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ragavan, Nimble Pilferer']
+  [MAIN2]
+
+T4 Boros Energy | life=14 mana=0 hand=5+1L gy=2
+  Hand: ['Thraben Charm', 'Goblin Bombardment', 'Voice of Victory', "Orim's Chant", "Orim's Chant"]
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
+  Permanents: ['Treasure Token']
+  Opp board: ['Ornithopter (0/2)'] (life=18)
+  EV scores:
+      +8.3  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <--  [h=+8.3 la=+8.3]
+      +5.9  cast_spell: Voice of Victory  [h=+5.9 la=+5.9]
+      +2.6  cast_spell: Thraben Charm  [h=+2.6 la=+2.6]
+      -0.3  cast_spell: Orim's Chant  [h=-0.3 la=-0.3]
+      -0.3  cast_spell: Orim's Chant  [h=-0.3 la=-0.3]
+      -0.4  cast_spell: Goblin Bombardment  [h=-0.4 la=-0.4]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T5 Affinity | life=18 mana=2 hand=2+1L gy=1
+  Hand: ["Sojourner's Companion", 'Thought Monitor']
+  Board: ['Ornithopter (0/2)', 'Construct Token (5/5)']
+  Permanents: ['Mox Opal', 'Cranial Plating', 'Springleaf Drum']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=14)
+  EV scores:
+     +12.0  play_land: Urza's Saga <--
+     +10.3  cast_spell: Sojourner's Companion  [h=+10.3 la=+10.3]
+      +8.4  cycle: Sojourner's Companion
+      +7.5  equip: Cranial Plating
+      +3.8  cast_spell: Thought Monitor  [h=+3.8 la=+3.8]
+  >>> PLAY_LAND: Urza's Saga
+  [MAIN1]
+
+T5 Affinity | life=18 mana=3 hand=2+0L gy=1
+  Hand: ["Sojourner's Companion", 'Thought Monitor']
+  Board: ['Ornithopter (0/2)', 'Construct Token (5/5)']
+  Permanents: ['Mox Opal', 'Cranial Plating', 'Springleaf Drum']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=14)
+  EV scores:
+     +10.5  cast_spell: Sojourner's Companion <--  [h=+10.5 la=+10.5]
+      +9.6  cycle: Sojourner's Companion
+      +7.5  equip: Cranial Plating
+      +4.0  cast_spell: Thought Monitor  [h=+4.0 la=+4.0]
+  >>> CAST_SPELL: Sojourner's Companion
+  [MAIN1]
+
+T5 Affinity | life=18 mana=3 hand=1+0L gy=1
+  Hand: ['Thought Monitor']
+  Board: ['Ornithopter (0/2)', 'Construct Token (6/6)', "Sojourner's Companion (4/4)"]
+  Permanents: ['Mox Opal', 'Cranial Plating', 'Springleaf Drum']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=14)
+  EV scores:
+     +37.6  cast_spell: Thought Monitor <--  [h=+37.6 la=+37.6]
+      +9.0  equip: Cranial Plating
+  >>> CAST_SPELL: Thought Monitor
+  [MAIN1]
+
+T5 Affinity | life=18 mana=2 hand=1+1L gy=1
+  Hand: ['Mox Opal']
+  Board: ['Ornithopter (0/2)', 'Construct Token (7/7)', "Sojourner's Companion (4/4)", 'Thought Monitor (2/2)']
+  Permanents: ['Mox Opal', 'Cranial Plating', 'Springleaf Drum']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=14)
+  EV scores:
+     +10.5  equip: Cranial Plating <--
+  >>> EQUIP: Cranial Plating
+  [MAIN1]
+
+T5 Affinity | life=18 mana=1 hand=1+1L gy=1
+  Hand: ['Mox Opal']
+  Board: ['Ornithopter (7/2)', 'Construct Token (7/7)', "Sojourner's Companion (4/4)", 'Thought Monitor (2/2)']
+  Permanents: ['Mox Opal', 'Cranial Plating', 'Springleaf Drum']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=14)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ornithopter']
+  [MAIN2]
+
+T5 Affinity | life=18 mana=1 hand=1+1L gy=1
+  Hand: ['Mox Opal']
+  Board: ['Ornithopter (7/2)', 'Construct Token (7/7)', "Sojourner's Companion (4/4)", 'Thought Monitor (2/2)']
+  Permanents: ['Mox Opal', 'Cranial Plating', 'Springleaf Drum']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=7)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T6 Boros Energy | life=7 mana=2 hand=5+1L gy=2
+  Hand: ['Thraben Charm', 'Goblin Bombardment', 'Voice of Victory', "Orim's Chant", "Orim's Chant"]
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
+  Permanents: ['Treasure Token']
+  Opp board: ['Ornithopter (7/2)', 'Construct Token (7/7)', "Sojourner's Companion (4/4)", 'Thought Monitor (2/2)'] (life=18)
+  EV scores:
+     +18.0  play_land: Arid Mesa <--
+      +7.0  cast_spell: Thraben Charm  [h=+7.0 la=+7.0]
+      +1.5  cast_spell: Goblin Bombardment  [h=+1.5 la=+1.5]
+      -0.3  cast_spell: Orim's Chant  [h=-0.3 la=-0.3]
+      -0.3  cast_spell: Orim's Chant  [h=-0.3 la=-0.3]
+     -15.7  cast_spell: Voice of Victory  [h=-15.7 la=-15.7]
+  >>> PLAY_LAND: Arid Mesa
+  [MAIN1]
+
+T6 Boros Energy | life=6 mana=2 hand=5+0L gy=3
+  Hand: ['Thraben Charm', 'Goblin Bombardment', 'Voice of Victory', "Orim's Chant", "Orim's Chant"]
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
+  Permanents: ['Treasure Token']
+  Opp board: ['Ornithopter (7/2)', 'Construct Token (7/7)', "Sojourner's Companion (4/4)", 'Thought Monitor (2/2)'] (life=18)
+  EV scores:
+      +7.2  cast_spell: Thraben Charm <--  [h=+7.2 la=+7.2]
+      +1.6  cast_spell: Goblin Bombardment  [h=+1.6 la=+1.6]
+      -0.2  cast_spell: Orim's Chant  [h=-0.2 la=-0.2]
+      -0.2  cast_spell: Orim's Chant  [h=-0.2 la=-0.2]
+     -15.7  cast_spell: Voice of Victory  [h=-15.7 la=-15.7]
+  >>> CAST_SPELL: Thraben Charm
+  [MAIN1]
+
+T6 Boros Energy | life=6 mana=0 hand=4+0L gy=4
+  Hand: ['Goblin Bombardment', 'Voice of Victory', "Orim's Chant", "Orim's Chant"]
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
+  Permanents: ['Treasure Token']
+  Opp board: ['Ornithopter (7/2)', 'Construct Token (7/7)', "Sojourner's Companion (4/4)", 'Thought Monitor (2/2)'] (life=18)
+  EV scores:
+      +1.6  cast_spell: Goblin Bombardment <--  [h=+1.6 la=+1.6]
+      -0.2  cast_spell: Orim's Chant  [h=-0.2 la=-0.2]
+      -0.2  cast_spell: Orim's Chant  [h=-0.2 la=-0.2]
+     -15.7  cast_spell: Voice of Victory  [h=-15.7 la=-15.7]
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ragavan, Nimble Pilferer', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Cat Token']
+  [MAIN2]
+
+T6 Boros Energy | life=6 mana=0 hand=5+0L gy=4
+  Hand: ['Goblin Bombardment', 'Voice of Victory', "Orim's Chant", "Orim's Chant", 'Thought Monitor']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
+  Permanents: ['Treasure Token', 'Treasure Token']
+  Opp board: ['Ornithopter (7/2)', 'Construct Token (7/7)', "Sojourner's Companion (4/4)", 'Thought Monitor (2/2)'] (life=13)
+  EV scores:
+      +1.6  cast_spell: Goblin Bombardment <--  [h=+1.6 la=+1.6]
+      -0.2  cast_spell: Orim's Chant  [h=-0.2 la=-0.2]
+      -0.2  cast_spell: Orim's Chant  [h=-0.2 la=-0.2]
+     -15.7  cast_spell: Voice of Victory  [h=-15.7 la=-15.7]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T7 Affinity | life=13 mana=2 hand=1+2L gy=2
+  Hand: ['Mox Opal']
+  Board: ['Ornithopter (7/2)', 'Construct Token (7/7)', "Sojourner's Companion (4/4)", 'Thought Monitor (2/2)']
+  Permanents: ['Mox Opal', 'Cranial Plating', 'Springleaf Drum']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=6)
+  EV scores:
+     +43.0  play_land: Darksteel Citadel <--
+     +15.0  play_land: Island
+  >>> PLAY_LAND: Darksteel Citadel
+  [MAIN1]
+
+T7 Affinity | life=13 mana=3 hand=1+1L gy=2
+  Hand: ['Mox Opal']
+  Board: ['Ornithopter (8/2)', 'Construct Token (8/8)', "Sojourner's Companion (4/4)", 'Thought Monitor (2/2)']
+  Permanents: ['Mox Opal', 'Cranial Plating', 'Springleaf Drum']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=6)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ornithopter', 'Construct Token', "Sojourner's Companion", 'Thought Monitor']

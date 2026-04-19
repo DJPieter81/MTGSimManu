@@ -1,0 +1,656 @@
+Loaded 21759 cards (0 errors)
+=== Jeskai Blink vs Affinity (seed 60600) ===
+Result: Affinity wins T7 via damage
+Life: P1=-1 P2=25
+
+  [MAIN1]
+
+T1 Jeskai Blink | life=20 mana=0 hand=4+3L gy=0
+  Hand: ['Quantum Riddler', 'Phelia, Exuberant Shepherd', 'Consign to Memory', 'Quantum Riddler']
+  Opp board: [] (life=20)
+  EV scores:
+     +38.0  play_land: Flooded Strand <--
+     +32.0  play_land: Steam Vents
+      +4.0  play_land: Arena of Glory
+  >>> PLAY_LAND: Flooded Strand
+  [MAIN1]
+
+T1 Jeskai Blink | life=17 mana=1 hand=4+2L gy=1
+  Hand: ['Quantum Riddler', 'Phelia, Exuberant Shepherd', 'Consign to Memory', 'Quantum Riddler']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T1 Jeskai Blink | life=17 mana=1 hand=4+2L gy=1
+  Hand: ['Quantum Riddler', 'Phelia, Exuberant Shepherd', 'Consign to Memory', 'Quantum Riddler']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T2 Affinity | life=20 mana=0 hand=4+4L gy=0
+  Hand: ['Springleaf Drum', 'Signal Pest', 'Thought Monitor', 'Thought Monitor']
+  Opp board: [] (life=17)
+  EV scores:
+     +27.0  play_land: Treasure Vault <--
+     +27.0  play_land: Darksteel Citadel
+     +22.0  play_land: Razortide Bridge
+     +22.0  play_land: Razortide Bridge
+  >>> PLAY_LAND: Treasure Vault
+  [MAIN1]
+
+T2 Affinity | life=20 mana=1 hand=4+3L gy=0
+  Hand: ['Springleaf Drum', 'Signal Pest', 'Thought Monitor', 'Thought Monitor']
+  Opp board: [] (life=17)
+  EV scores:
+      -0.0  cast_spell: Signal Pest <--  [h=-0.0 la=-0.0 rmv=17%]
+      -0.0  cast_spell: Springleaf Drum  [h=-0.0 la=-0.0]
+  >>> CAST_SPELL: Signal Pest
+  [MAIN1]
+
+T2 Affinity | life=20 mana=0 hand=3+3L gy=0
+  Hand: ['Springleaf Drum', 'Thought Monitor', 'Thought Monitor']
+  Board: ['Signal Pest (0/1)']
+  Opp board: [] (life=17)
+  EV scores:
+      -0.0  cast_spell: Signal Pest <--  [h=-0.0 la=-0.0 rmv=17%]
+      -0.0  cast_spell: Springleaf Drum  [h=-0.0 la=-0.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T2 Affinity | life=20 mana=0 hand=3+3L gy=0
+  Hand: ['Springleaf Drum', 'Thought Monitor', 'Thought Monitor']
+  Board: ['Signal Pest (0/1)']
+  Opp board: [] (life=17)
+  EV scores:
+      -0.0  cast_spell: Signal Pest <--  [h=-0.0 la=-0.0 rmv=17%]
+      -0.0  cast_spell: Springleaf Drum  [h=-0.0 la=-0.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T3 Jeskai Blink | life=17 mana=1 hand=4+3L gy=1
+  Hand: ['Quantum Riddler', 'Phelia, Exuberant Shepherd', 'Consign to Memory', 'Quantum Riddler']
+  Opp board: ['Signal Pest (0/1)'] (life=20)
+  EV scores:
+     +19.0  play_land: Steam Vents <--
+     +15.0  play_land: Plains
+     +11.0  play_land: Arena of Glory
+  >>> PLAY_LAND: Steam Vents
+  [MAIN1]
+
+T3 Jeskai Blink | life=15 mana=2 hand=4+2L gy=1
+  Hand: ['Quantum Riddler', 'Phelia, Exuberant Shepherd', 'Consign to Memory', 'Quantum Riddler']
+  Opp board: ['Signal Pest (0/1)'] (life=20)
+  EV scores:
+      +1.5  cast_spell: Phelia, Exuberant Shepherd <--  [h=+1.5 la=+1.5]
+  >>> CAST_SPELL: Phelia, Exuberant Shepherd
+  [MAIN1]
+
+T3 Jeskai Blink | life=15 mana=0 hand=3+2L gy=1
+  Hand: ['Quantum Riddler', 'Consign to Memory', 'Quantum Riddler']
+  Board: ['Phelia, Exuberant Shepherd (2/2)']
+  Opp board: ['Signal Pest (0/1)'] (life=20)
+  EV scores:
+      +1.5  cast_spell: Phelia, Exuberant Shepherd <--  [h=+1.5 la=+1.5]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T3 Jeskai Blink | life=15 mana=0 hand=3+2L gy=1
+  Hand: ['Quantum Riddler', 'Consign to Memory', 'Quantum Riddler']
+  Board: ['Phelia, Exuberant Shepherd (2/2)']
+  Opp board: ['Signal Pest (0/1)'] (life=20)
+  EV scores:
+      +1.5  cast_spell: Phelia, Exuberant Shepherd <--  [h=+1.5 la=+1.5]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T4 Affinity | life=20 mana=1 hand=4+3L gy=0
+  Hand: ['Springleaf Drum', 'Thought Monitor', 'Thought Monitor', "Sojourner's Companion"]
+  Board: ['Signal Pest (0/1)']
+  Opp board: ['Phelia, Exuberant Shepherd (2/2)'] (life=15)
+  EV scores:
+     +33.0  play_land: Razortide Bridge <--
+     +33.0  play_land: Razortide Bridge
+     +27.0  play_land: Darksteel Citadel
+      -0.1  cast_spell: Springleaf Drum  [h=-0.1 la=-0.1]
+  >>> PLAY_LAND: Razortide Bridge
+  [MAIN1]
+
+T4 Affinity | life=20 mana=1 hand=4+2L gy=0
+  Hand: ['Springleaf Drum', 'Thought Monitor', 'Thought Monitor', "Sojourner's Companion"]
+  Board: ['Signal Pest (0/1)']
+  Opp board: ['Phelia, Exuberant Shepherd (2/2)'] (life=15)
+  EV scores:
+      -0.1  cast_spell: Springleaf Drum <--  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Springleaf Drum
+  [MAIN1]
+
+T4 Affinity | life=20 mana=0 hand=3+2L gy=0
+  Hand: ['Thought Monitor', 'Thought Monitor', "Sojourner's Companion"]
+  Board: ['Signal Pest (0/1)']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Phelia, Exuberant Shepherd (2/2)'] (life=15)
+  EV scores:
+      -0.1  cast_spell: Springleaf Drum <--  [h=-0.1 la=-0.1]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T4 Affinity | life=20 mana=0 hand=3+2L gy=0
+  Hand: ['Thought Monitor', 'Thought Monitor', "Sojourner's Companion"]
+  Board: ['Signal Pest (0/1)']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Phelia, Exuberant Shepherd (2/2)'] (life=15)
+  EV scores:
+      -0.1  cast_spell: Springleaf Drum <--  [h=-0.1 la=-0.1]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T5 Jeskai Blink | life=15 mana=2 hand=4+2L gy=1
+  Hand: ['Quantum Riddler', 'Consign to Memory', 'Quantum Riddler', 'Solitude']
+  Board: ['Phelia, Exuberant Shepherd (2/2)']
+  Opp board: ['Signal Pest (0/1)'] (life=20)
+  EV scores:
+     +15.0  play_land: Plains <--
+      +7.0  play_land: Arena of Glory
+  >>> PLAY_LAND: Plains
+  [MAIN1]
+
+T5 Jeskai Blink | life=15 mana=3 hand=4+1L gy=1
+  Hand: ['Quantum Riddler', 'Consign to Memory', 'Quantum Riddler', 'Solitude']
+  Board: ['Phelia, Exuberant Shepherd (2/2)']
+  Opp board: ['Signal Pest (0/1)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Phelia, Exuberant Shepherd']
+  [MAIN2]
+
+T5 Jeskai Blink | life=15 mana=3 hand=4+1L gy=1
+  Hand: ['Quantum Riddler', 'Consign to Memory', 'Quantum Riddler', 'Solitude']
+  Board: ['Phelia, Exuberant Shepherd (2/2)']
+  Opp board: [] (life=18)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T6 Affinity | life=18 mana=2 hand=4+2L gy=0
+  Hand: ['Thought Monitor', 'Thought Monitor', "Sojourner's Companion", 'Springleaf Drum']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Phelia, Exuberant Shepherd (2/2)'] (life=15)
+  EV scores:
+     +27.0  play_land: Darksteel Citadel <--
+     +19.0  play_land: Razortide Bridge
+      +8.2  cycle: Sojourner's Companion
+      -0.1  cast_spell: Springleaf Drum  [h=-0.1 la=-0.1 ctr=29%]
+  >>> PLAY_LAND: Darksteel Citadel
+  [MAIN1]
+
+T6 Affinity | life=18 mana=3 hand=4+1L gy=0
+  Hand: ['Thought Monitor', 'Thought Monitor', "Sojourner's Companion", 'Springleaf Drum']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Phelia, Exuberant Shepherd (2/2)'] (life=15)
+  EV scores:
+      +9.3  cycle: Sojourner's Companion <--
+      +5.0  cast_spell: Thought Monitor  [h=+5.0 la=+5.0 ctr=29% rmv=74%]
+      +5.0  cast_spell: Thought Monitor  [h=+5.0 la=+5.0 ctr=29% rmv=74%]
+      +0.5  cast_spell: Springleaf Drum  [h=+0.5 la=+0.5 ctr=29%]
+     -25.0  cast_spell: Sojourner's Companion  [h=-25.0 la=-25.0 ctr=29% rmv=64%]
+  >>> CYCLE: Sojourner's Companion
+  [MAIN1]
+
+T6 Affinity | life=18 mana=1 hand=4+1L gy=1
+  Hand: ['Thought Monitor', 'Thought Monitor', 'Springleaf Drum', 'Thought Monitor']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Phelia, Exuberant Shepherd (2/2)'] (life=15)
+  EV scores:
+      +0.0  cast_spell: Springleaf Drum <--
+  >>> CAST_SPELL: Springleaf Drum
+  [MAIN1]
+
+T6 Affinity | life=18 mana=0 hand=3+1L gy=1
+  Hand: ['Thought Monitor', 'Thought Monitor', 'Thought Monitor']
+  Permanents: ['Springleaf Drum', 'Springleaf Drum']
+  Opp board: ['Phelia, Exuberant Shepherd (2/2)'] (life=15)
+  EV scores:
+      +0.0  cast_spell: Springleaf Drum <--
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T6 Affinity | life=18 mana=0 hand=3+1L gy=1
+  Hand: ['Thought Monitor', 'Thought Monitor', 'Thought Monitor']
+  Permanents: ['Springleaf Drum', 'Springleaf Drum']
+  Opp board: ['Phelia, Exuberant Shepherd (2/2)'] (life=15)
+  EV scores:
+      +0.0  cast_spell: Springleaf Drum <--
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T7 Jeskai Blink | life=15 mana=3 hand=5+1L gy=1
+  Hand: ['Quantum Riddler', 'Consign to Memory', 'Quantum Riddler', 'Solitude', 'Ragavan, Nimble Pilferer']
+  Board: ['Phelia, Exuberant Shepherd (2/2)']
+  Opp board: [] (life=18)
+  EV scores:
+      +7.0  play_land: Arena of Glory <--
+      +6.1  cast_spell: Ragavan, Nimble Pilferer  [h=+6.1 la=+6.1]
+  >>> PLAY_LAND: Arena of Glory
+  [MAIN1]
+
+T7 Jeskai Blink | life=15 mana=3 hand=5+0L gy=1
+  Hand: ['Quantum Riddler', 'Consign to Memory', 'Quantum Riddler', 'Solitude', 'Ragavan, Nimble Pilferer']
+  Board: ['Phelia, Exuberant Shepherd (2/2)']
+  Opp board: [] (life=18)
+  EV scores:
+      +6.2  cast_spell: Ragavan, Nimble Pilferer <--  [h=+6.2 la=+6.2]
+  >>> CAST_SPELL: Ragavan, Nimble Pilferer
+  [MAIN1]
+
+T7 Jeskai Blink | life=15 mana=1 hand=4+0L gy=1
+  Hand: ['Quantum Riddler', 'Consign to Memory', 'Quantum Riddler', 'Solitude']
+  Board: ['Phelia, Exuberant Shepherd (2/2)', 'Ragavan, Nimble Pilferer (2/1)']
+  Opp board: [] (life=18)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Phelia, Exuberant Shepherd', 'Ragavan, Nimble Pilferer']
+  [MAIN2]
+
+T7 Jeskai Blink | life=15 mana=1 hand=5+0L gy=1
+  Hand: ['Quantum Riddler', 'Consign to Memory', 'Quantum Riddler', 'Solitude', 'Cranial Plating']
+  Board: ['Phelia, Exuberant Shepherd (2/2)', 'Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Treasure Token']
+  Opp board: [] (life=14)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T8 Affinity | life=14 mana=3 hand=4+1L gy=1
+  Hand: ['Thought Monitor', 'Thought Monitor', 'Thought Monitor', 'Ornithopter']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Phelia, Exuberant Shepherd (2/2)'] (life=15)
+  EV scores:
+     +19.0  play_land: Razortide Bridge <--
+      +0.9  cast_spell: Thought Monitor  [h=+0.9 la=+0.9 rmv=74%]
+      +0.9  cast_spell: Thought Monitor  [h=+0.9 la=+0.9 rmv=74%]
+      +0.9  cast_spell: Thought Monitor  [h=+0.9 la=+0.9 rmv=74%]
+      -1.9  cast_spell: Ornithopter  [h=-1.9 la=-1.9 rmv=11%]
+  >>> PLAY_LAND: Razortide Bridge
+  [MAIN1]
+
+T8 Affinity | life=14 mana=3 hand=4+0L gy=1
+  Hand: ['Thought Monitor', 'Thought Monitor', 'Thought Monitor', 'Ornithopter']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Phelia, Exuberant Shepherd (2/2)'] (life=15)
+  EV scores:
+      +1.0  cast_spell: Thought Monitor <--  [h=+1.0 la=+1.0 rmv=74%]
+      +1.0  cast_spell: Thought Monitor  [h=+1.0 la=+1.0 rmv=74%]
+      +1.0  cast_spell: Thought Monitor  [h=+1.0 la=+1.0 rmv=74%]
+      -1.9  cast_spell: Ornithopter  [h=-1.9 la=-1.9 rmv=11%]
+  >>> CAST_SPELL: Thought Monitor
+  [MAIN1]
+
+T8 Affinity | life=14 mana=1 hand=3+2L gy=1
+  Hand: ['Thought Monitor', 'Thought Monitor', 'Ornithopter']
+  Board: ['Thought Monitor (2/2)']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Phelia, Exuberant Shepherd (2/2)'] (life=15)
+  EV scores:
+      +9.9  cast_spell: Ornithopter <--  [h=+9.9 la=+9.9]
+  >>> CAST_SPELL: Ornithopter
+  [MAIN1]
+
+T8 Affinity | life=14 mana=1 hand=2+2L gy=1
+  Hand: ['Thought Monitor', 'Thought Monitor']
+  Board: ['Thought Monitor (2/2)', 'Ornithopter (0/2)']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Phelia, Exuberant Shepherd (2/2)'] (life=15)
+  EV scores:
+      +9.9  cast_spell: Ornithopter <--  [h=+9.9 la=+9.9]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T8 Affinity | life=14 mana=1 hand=2+2L gy=1
+  Hand: ['Thought Monitor', 'Thought Monitor']
+  Board: ['Thought Monitor (2/2)', 'Ornithopter (0/2)']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Phelia, Exuberant Shepherd (2/2)'] (life=15)
+  EV scores:
+      +9.9  cast_spell: Ornithopter <--  [h=+9.9 la=+9.9]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T9 Jeskai Blink | life=15 mana=4 hand=4+1L gy=2
+  Hand: ['Quantum Riddler', 'Quantum Riddler', 'Solitude', 'Ragavan, Nimble Pilferer']
+  Board: ['Phelia, Exuberant Shepherd (2/2)']
+  Permanents: ['Treasure Token']
+  Opp board: ['Thought Monitor (2/2)', 'Ornithopter (0/2)'] (life=14)
+  EV scores:
+     +18.4  cast_spell: Ragavan, Nimble Pilferer <--  [h=+18.4 la=+18.4]
+     +15.0  play_land: Mountain
+  >>> CAST_SPELL: Ragavan, Nimble Pilferer
+  [MAIN1]
+
+T9 Jeskai Blink | life=15 mana=2 hand=3+1L gy=2
+  Hand: ['Quantum Riddler', 'Quantum Riddler', 'Solitude']
+  Board: ['Phelia, Exuberant Shepherd (2/2)', 'Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Treasure Token']
+  Opp board: ['Thought Monitor (2/2)', 'Ornithopter (0/2)'] (life=14)
+  EV scores:
+     +12.0  play_land: Mountain <--
+  >>> PLAY_LAND: Mountain
+  [MAIN1]
+
+T9 Jeskai Blink | life=15 mana=3 hand=3+0L gy=2
+  Hand: ['Quantum Riddler', 'Quantum Riddler', 'Solitude']
+  Board: ['Phelia, Exuberant Shepherd (2/2)', 'Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Treasure Token']
+  Opp board: ['Thought Monitor (2/2)', 'Ornithopter (0/2)'] (life=14)
+  EV scores:
+     +12.0  play_land: Mountain <--
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ragavan, Nimble Pilferer']
+  [MAIN2]
+
+T9 Jeskai Blink | life=15 mana=3 hand=4+0L gy=2
+  Hand: ['Quantum Riddler', 'Quantum Riddler', 'Solitude', 'Signal Pest']
+  Board: ['Phelia, Exuberant Shepherd (2/2)', 'Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Treasure Token', 'Treasure Token']
+  Opp board: ['Thought Monitor (2/2)', 'Ornithopter (0/2)'] (life=12)
+  EV scores:
+      +1.5  cast_spell: Signal Pest <--  [h=+1.5 la=+1.5]
+  >>> CAST_SPELL: Signal Pest
+  [MAIN2]
+
+T9 Jeskai Blink | life=15 mana=2 hand=3+0L gy=2
+  Hand: ['Quantum Riddler', 'Quantum Riddler', 'Solitude']
+  Board: ['Phelia, Exuberant Shepherd (2/2)', 'Ragavan, Nimble Pilferer (2/1)', 'Signal Pest (0/1)']
+  Permanents: ['Treasure Token', 'Treasure Token']
+  Opp board: ['Thought Monitor (2/2)', 'Ornithopter (0/2)'] (life=12)
+  EV scores:
+      +1.5  cast_spell: Signal Pest <--  [h=+1.5 la=+1.5]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T10 Affinity | life=12 mana=4 hand=3+2L gy=1
+  Hand: ['Thought Monitor', 'Thought Monitor', "Sojourner's Companion"]
+  Board: ['Thought Monitor (2/2)', 'Ornithopter (0/2)']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Phelia, Exuberant Shepherd (2/2)', 'Signal Pest (0/1)'] (life=15)
+  EV scores:
+     +32.0  play_land: Darksteel Citadel <--
+     +32.0  play_land: Darksteel Citadel
+     +24.2  cast_spell: Thought Monitor  [h=+24.2 la=+24.2 ctr=24% rmv=66%]
+     +24.2  cast_spell: Thought Monitor  [h=+24.2 la=+24.2 ctr=24% rmv=66%]
+     +21.2  cast_spell: Sojourner's Companion  [h=+21.2 la=+21.2 ctr=24% rmv=56%]
+      +9.3  cycle: Sojourner's Companion
+  >>> PLAY_LAND: Darksteel Citadel
+  [MAIN1]
+
+T10 Affinity | life=12 mana=5 hand=3+1L gy=1
+  Hand: ['Thought Monitor', 'Thought Monitor', "Sojourner's Companion"]
+  Board: ['Thought Monitor (2/2)', 'Ornithopter (0/2)']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Phelia, Exuberant Shepherd (2/2)', 'Signal Pest (0/1)'] (life=15)
+  EV scores:
+     +24.3  cast_spell: Thought Monitor <--  [h=+24.3 la=+24.3 ctr=24% rmv=66%]
+     +24.3  cast_spell: Thought Monitor  [h=+24.3 la=+24.3 ctr=24% rmv=66%]
+     +21.3  cast_spell: Sojourner's Companion  [h=+21.3 la=+21.3 ctr=24% rmv=56%]
+      +9.3  cycle: Sojourner's Companion
+  >>> CAST_SPELL: Thought Monitor
+  [MAIN1]
+
+T10 Affinity | life=12 mana=4 hand=4+1L gy=1
+  Hand: ['Thought Monitor', "Sojourner's Companion", 'Memnite', 'Nettlecyst']
+  Board: ['Thought Monitor (2/2)', 'Ornithopter (0/2)', 'Thought Monitor (2/2)']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Phelia, Exuberant Shepherd (2/2)', 'Signal Pest (0/1)'] (life=15)
+  EV scores:
+      +9.3  cycle: Sojourner's Companion <--
+      +3.0  cast_spell: Sojourner's Companion  [h=+3.0 la=+3.0 ctr=24% rmv=56%]
+      +1.6  cast_spell: Thought Monitor  [h=+1.6 la=+1.6 ctr=24% rmv=66%]
+      +0.1  cast_spell: Memnite  [h=+0.1 la=+0.1 ctr=24% rmv=10%]
+      +0.0  cast_spell: Nettlecyst  [h=+0.0 la=+0.0 ctr=24%]
+  >>> CYCLE: Sojourner's Companion
+  [MAIN1]
+
+T10 Affinity | life=12 mana=2 hand=3+2L gy=2
+  Hand: ['Thought Monitor', 'Memnite', 'Nettlecyst']
+  Board: ['Thought Monitor (2/2)', 'Ornithopter (0/2)', 'Thought Monitor (2/2)']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Phelia, Exuberant Shepherd (2/2)', 'Signal Pest (0/1)'] (life=15)
+  EV scores:
+      +1.8  cast_spell: Thought Monitor <--  [h=+1.8 la=+1.8 ctr=24% rmv=66%]
+      -0.1  cast_spell: Nettlecyst  [h=-0.1 la=-0.1 ctr=24%]
+      -0.4  cast_spell: Memnite  [h=-0.4 la=-0.4 ctr=24% rmv=10%]
+  >>> CAST_SPELL: Thought Monitor
+  [MAIN1]
+
+T10 Affinity | life=12 mana=1 hand=3+3L gy=2
+  Hand: ['Memnite', 'Nettlecyst', 'Springleaf Drum']
+  Board: ['Thought Monitor (2/2)', 'Ornithopter (0/2)', 'Thought Monitor (2/2)', 'Thought Monitor (2/2)']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Phelia, Exuberant Shepherd (2/2)', 'Signal Pest (0/1)'] (life=15)
+  EV scores:
+      +0.0  cast_spell: Memnite <--
+      -1.0  cast_spell: Nettlecyst  [h=-1.0 la=-1.0 ctr=24%]
+      -1.0  cast_spell: Springleaf Drum  [h=-1.0 la=-1.0 ctr=24%]
+  >>> CAST_SPELL: Memnite
+  [MAIN1]
+
+T10 Affinity | life=12 mana=1 hand=2+3L gy=2
+  Hand: ['Nettlecyst', 'Springleaf Drum']
+  Board: ['Thought Monitor (2/2)', 'Ornithopter (0/2)', 'Thought Monitor (2/2)', 'Thought Monitor (2/2)', 'Memnite (1/1)']
+  Permanents: ['Springleaf Drum']
+  Opp board: ['Phelia, Exuberant Shepherd (2/2)', 'Signal Pest (0/1)'] (life=15)
+  EV scores:
+      -0.0  cast_spell: Nettlecyst <--  [h=-0.0 la=-0.0 ctr=24%]
+      -0.0  cast_spell: Springleaf Drum  [h=-0.0 la=-0.0 ctr=24%]
+  >>> CAST_SPELL: Nettlecyst
+  [MAIN1]
+
+T10 Affinity | life=12 mana=1 hand=1+3L gy=2
+  Hand: ['Springleaf Drum']
+  Board: ['Thought Monitor (2/2)', 'Ornithopter (0/2)', 'Thought Monitor (2/2)', 'Thought Monitor (2/2)', 'Memnite (1/1)', 'Germ Token (12/12)']
+  Permanents: ['Springleaf Drum', 'Nettlecyst']
+  Opp board: ['Phelia, Exuberant Shepherd (2/2)', 'Signal Pest (0/1)'] (life=15)
+  EV scores:
+      -0.0  cast_spell: Springleaf Drum <--  [h=-0.0 la=-0.0 ctr=24%]
+  >>> CAST_SPELL: Springleaf Drum
+  [MAIN1]
+
+T10 Affinity | life=12 mana=1 hand=0+3L gy=2
+  Hand: []
+  Board: ['Thought Monitor (2/2)', 'Ornithopter (0/2)', 'Thought Monitor (2/2)', 'Thought Monitor (2/2)', 'Memnite (1/1)', 'Germ Token (13/13)']
+  Permanents: ['Springleaf Drum', 'Nettlecyst', 'Springleaf Drum']
+  Opp board: ['Phelia, Exuberant Shepherd (2/2)', 'Signal Pest (0/1)'] (life=15)
+  EV scores:
+      -0.0  cast_spell: Springleaf Drum <--  [h=-0.0 la=-0.0 ctr=24%]
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Thought Monitor']
+  [MAIN2]
+
+T10 Affinity | life=12 mana=1 hand=0+3L gy=2
+  Hand: []
+  Board: ['Thought Monitor (2/2)', 'Ornithopter (0/2)', 'Thought Monitor (2/2)', 'Thought Monitor (2/2)', 'Memnite (1/1)', 'Germ Token (13/13)']
+  Permanents: ['Springleaf Drum', 'Nettlecyst', 'Springleaf Drum']
+  Opp board: ['Phelia, Exuberant Shepherd (2/2)', 'Signal Pest (0/1)'] (life=13)
+  EV scores:
+      -0.0  cast_spell: Springleaf Drum <--  [h=-0.0 la=-0.0 ctr=24%]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T11 Jeskai Blink | life=13 mana=5 hand=4+1L gy=2
+  Hand: ['Quantum Riddler', 'Quantum Riddler', 'Solitude', 'Ragavan, Nimble Pilferer']
+  Board: ['Phelia, Exuberant Shepherd (2/2)', 'Signal Pest (0/1)']
+  Permanents: ['Treasure Token', 'Treasure Token']
+  Opp board: ['Thought Monitor (2/2)', 'Ornithopter (0/2)', 'Thought Monitor (2/2)', 'Thought Monitor (2/2)', 'Memnite (1/1)', 'Germ Token (13/13)'] (life=12)
+  EV scores:
+     +18.0  play_land: Arid Mesa <--
+      +2.9  cast_spell: Ragavan, Nimble Pilferer  [h=+2.9 la=+2.9]
+      +2.7  cast_spell: Solitude  [h=+2.7 la=+2.7]
+      +2.3  cast_spell: Quantum Riddler  [h=+2.3 la=+2.3]
+      +2.3  cast_spell: Quantum Riddler  [h=+2.3 la=+2.3]
+  >>> PLAY_LAND: Arid Mesa
+  [MAIN1]
+
+T11 Jeskai Blink | life=12 mana=5 hand=4+0L gy=3
+  Hand: ['Quantum Riddler', 'Quantum Riddler', 'Solitude', 'Ragavan, Nimble Pilferer']
+  Board: ['Phelia, Exuberant Shepherd (2/2)', 'Signal Pest (0/1)']
+  Permanents: ['Treasure Token', 'Treasure Token']
+  Opp board: ['Thought Monitor (2/2)', 'Ornithopter (0/2)', 'Thought Monitor (2/2)', 'Thought Monitor (2/2)', 'Memnite (1/1)', 'Germ Token (13/13)'] (life=12)
+  EV scores:
+      +2.9  cast_spell: Ragavan, Nimble Pilferer <--  [h=+2.9 la=+2.9]
+      +2.7  cast_spell: Solitude  [h=+2.7 la=+2.7]
+      +2.5  cast_spell: Quantum Riddler  [h=+2.5 la=+2.5]
+      +2.5  cast_spell: Quantum Riddler  [h=+2.5 la=+2.5]
+  >>> CAST_SPELL: Ragavan, Nimble Pilferer
+  [MAIN1]
+
+T11 Jeskai Blink | life=12 mana=3 hand=3+0L gy=3
+  Hand: ['Quantum Riddler', 'Quantum Riddler', 'Solitude']
+  Board: ['Phelia, Exuberant Shepherd (2/2)', 'Signal Pest (0/1)', 'Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Treasure Token', 'Treasure Token']
+  Opp board: ['Thought Monitor (2/2)', 'Ornithopter (0/2)', 'Thought Monitor (2/2)', 'Thought Monitor (2/2)', 'Memnite (1/1)', 'Germ Token (13/13)'] (life=12)
+  EV scores:
+      +2.9  cast_spell: Ragavan, Nimble Pilferer <--  [h=+2.9 la=+2.9]
+      +2.7  cast_spell: Solitude  [h=+2.7 la=+2.7]
+      +2.5  cast_spell: Quantum Riddler  [h=+2.5 la=+2.5]
+      +2.5  cast_spell: Quantum Riddler  [h=+2.5 la=+2.5]
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ragavan, Nimble Pilferer']
+  [MAIN2]
+
+T11 Jeskai Blink | life=12 mana=3 hand=4+0L gy=3
+  Hand: ['Quantum Riddler', 'Quantum Riddler', 'Solitude', 'Signal Pest']
+  Board: ['Phelia, Exuberant Shepherd (2/2)', 'Signal Pest (0/1)', 'Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Treasure Token', 'Treasure Token', 'Treasure Token']
+  Opp board: ['Thought Monitor (2/2)', 'Ornithopter (0/2)', 'Thought Monitor (2/2)', 'Thought Monitor (2/2)', 'Memnite (1/1)', 'Germ Token (13/13)'] (life=10)
+  EV scores:
+      +1.5  cast_spell: Signal Pest <--  [h=+1.5 la=+1.5]
+  >>> CAST_SPELL: Signal Pest
+  [MAIN2]
+
+T11 Jeskai Blink | life=12 mana=2 hand=3+0L gy=3
+  Hand: ['Quantum Riddler', 'Quantum Riddler', 'Solitude']
+  Board: ['Phelia, Exuberant Shepherd (2/2)', 'Signal Pest (0/1)', 'Ragavan, Nimble Pilferer (2/1)', 'Signal Pest (0/1)']
+  Permanents: ['Treasure Token', 'Treasure Token', 'Treasure Token']
+  Opp board: ['Thought Monitor (2/2)', 'Ornithopter (0/2)', 'Thought Monitor (2/2)', 'Thought Monitor (2/2)', 'Memnite (1/1)', 'Germ Token (13/13)'] (life=10)
+  EV scores:
+      +1.5  cast_spell: Signal Pest <--  [h=+1.5 la=+1.5]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T12 Affinity | life=10 mana=5 hand=1+3L gy=2
+  Hand: ['Frogmite']
+  Board: ['Thought Monitor (2/2)', 'Ornithopter (0/2)', 'Thought Monitor (2/2)', 'Thought Monitor (2/2)', 'Memnite (1/1)', 'Germ Token (13/13)']
+  Permanents: ['Springleaf Drum', 'Nettlecyst', 'Springleaf Drum']
+  Opp board: ['Phelia, Exuberant Shepherd (2/2)', 'Signal Pest (0/1)', 'Signal Pest (0/1)'] (life=12)
+  EV scores:
+     +35.0  play_land: Darksteel Citadel <--
+     +15.0  play_land: Spire of Industry
+     +15.0  play_land: Spire of Industry
+      -0.2  cast_spell: Frogmite  [h=-0.2 la=-0.2 ctr=24% rmv=66%]
+  >>> PLAY_LAND: Darksteel Citadel
+  [MAIN1]
+
+T12 Affinity | life=10 mana=6 hand=1+2L gy=2
+  Hand: ['Frogmite']
+  Board: ['Thought Monitor (2/2)', 'Ornithopter (0/2)', 'Thought Monitor (2/2)', 'Thought Monitor (2/2)', 'Memnite (1/1)', 'Germ Token (14/14)']
+  Permanents: ['Springleaf Drum', 'Nettlecyst', 'Springleaf Drum']
+  Opp board: ['Phelia, Exuberant Shepherd (2/2)', 'Signal Pest (0/1)', 'Signal Pest (0/1)'] (life=12)
+  EV scores:
+      -0.2  cast_spell: Frogmite <--  [h=-0.2 la=-0.2 ctr=24% rmv=66%]
+  >>> CAST_SPELL: Frogmite
+  [MAIN1]
+
+T12 Affinity | life=10 mana=6 hand=0+2L gy=2
+  Hand: []
+  Board: ['Thought Monitor (2/2)', 'Ornithopter (0/2)', 'Thought Monitor (2/2)', 'Thought Monitor (2/2)', 'Memnite (1/1)', 'Germ Token (15/15)', 'Frogmite (2/2)']
+  Permanents: ['Springleaf Drum', 'Nettlecyst', 'Springleaf Drum']
+  Opp board: ['Phelia, Exuberant Shepherd (2/2)', 'Signal Pest (0/1)', 'Signal Pest (0/1)'] (life=12)
+  EV scores:
+      -0.2  cast_spell: Frogmite <--  [h=-0.2 la=-0.2 ctr=24% rmv=66%]
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Thought Monitor', 'Thought Monitor', 'Thought Monitor', 'Memnite', 'Germ Token']
+  [MAIN2]
+
+T12 Affinity | life=10 mana=6 hand=0+2L gy=3
+  Hand: []
+  Board: ['Thought Monitor (2/2)', 'Ornithopter (0/2)', 'Thought Monitor (2/2)', 'Thought Monitor (2/2)', 'Memnite (1/1)', 'Germ Token (15/15)', 'Frogmite (2/2)']
+  Permanents: ['Springleaf Drum', 'Nettlecyst', 'Springleaf Drum']
+  Opp board: ['Signal Pest (0/1)'] (life=6)
+  EV scores:
+      -0.2  cast_spell: Frogmite <--  [h=-0.2 la=-0.2 ctr=24% rmv=66%]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T13 Jeskai Blink | life=6 mana=6 hand=4+1L gy=4
+  Hand: ['Quantum Riddler', 'Quantum Riddler', 'Solitude', 'Ragavan, Nimble Pilferer']
+  Board: ['Signal Pest (0/1)']
+  Permanents: ['Treasure Token', 'Treasure Token', 'Treasure Token']
+  Opp board: ['Thought Monitor (2/2)', 'Ornithopter (0/2)', 'Thought Monitor (2/2)', 'Thought Monitor (2/2)', 'Memnite (1/1)', 'Germ Token (15/15)', 'Frogmite (2/2)'] (life=10)
+  EV scores:
+     +18.0  play_land: Arid Mesa <--
+      +1.0  cast_spell: Quantum Riddler  [h=+1.0 la=+1.0]
+      +1.0  cast_spell: Quantum Riddler  [h=+1.0 la=+1.0]
+      +0.9  cast_spell: Solitude  [h=+0.9 la=+0.9]
+      +0.0  cast_spell: Ragavan, Nimble Pilferer
+  >>> PLAY_LAND: Arid Mesa
+  [MAIN1]
+
+T13 Jeskai Blink | life=5 mana=6 hand=4+0L gy=5
+  Hand: ['Quantum Riddler', 'Quantum Riddler', 'Solitude', 'Ragavan, Nimble Pilferer']
+  Board: ['Signal Pest (0/1)']
+  Permanents: ['Treasure Token', 'Treasure Token', 'Treasure Token']
+  Opp board: ['Thought Monitor (2/2)', 'Ornithopter (0/2)', 'Thought Monitor (2/2)', 'Thought Monitor (2/2)', 'Memnite (1/1)', 'Germ Token (15/15)', 'Frogmite (2/2)'] (life=10)
+  EV scores:
+      +2.0  cast_spell: Solitude <--  [h=+2.0 la=+2.0]
+      +1.2  cast_spell: Quantum Riddler  [h=+1.2 la=+1.2]
+      +1.2  cast_spell: Quantum Riddler  [h=+1.2 la=+1.2]
+      +0.0  cast_spell: Ragavan, Nimble Pilferer
+  >>> CAST_SPELL: Solitude
+  [MAIN1]
+
+T13 Jeskai Blink | life=5 mana=1 hand=3+0L gy=5
+  Hand: ['Quantum Riddler', 'Quantum Riddler', 'Ragavan, Nimble Pilferer']
+  Board: ['Signal Pest (0/1)', 'Solitude (3/2)']
+  Permanents: ['Treasure Token', 'Treasure Token', 'Treasure Token']
+  Opp board: ['Thought Monitor (2/2)', 'Ornithopter (0/2)', 'Thought Monitor (2/2)', 'Thought Monitor (2/2)', 'Memnite (1/1)', 'Frogmite (2/2)'] (life=25)
+  EV scores:
+     -13.7  cast_spell: Ragavan, Nimble Pilferer <--  [h=-13.7 la=-13.7]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T13 Jeskai Blink | life=5 mana=1 hand=3+0L gy=5
+  Hand: ['Quantum Riddler', 'Quantum Riddler', 'Ragavan, Nimble Pilferer']
+  Board: ['Signal Pest (0/1)', 'Solitude (3/2)']
+  Permanents: ['Treasure Token', 'Treasure Token', 'Treasure Token']
+  Opp board: ['Thought Monitor (2/2)', 'Ornithopter (0/2)', 'Thought Monitor (2/2)', 'Thought Monitor (2/2)', 'Memnite (1/1)', 'Frogmite (2/2)'] (life=25)
+  EV scores:
+     -13.7  cast_spell: Ragavan, Nimble Pilferer <--  [h=-13.7 la=-13.7]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T14 Affinity | life=25 mana=6 hand=1+2L gy=3
+  Hand: ['Mox Opal']
+  Board: ['Thought Monitor (2/2)', 'Ornithopter (0/2)', 'Thought Monitor (2/2)', 'Thought Monitor (2/2)', 'Memnite (1/1)', 'Frogmite (2/2)']
+  Permanents: ['Springleaf Drum', 'Nettlecyst', 'Springleaf Drum']
+  Opp board: ['Signal Pest (0/1)', 'Solitude (3/2)'] (life=5)
+  EV scores:
+     +15.0  play_land: Spire of Industry <--
+     +15.0  play_land: Spire of Industry
+      -0.5  cast_spell: Mox Opal  [h=-0.5 la=-0.5]
+  >>> PLAY_LAND: Spire of Industry
+  [MAIN1]
+
+T14 Affinity | life=25 mana=7 hand=1+1L gy=3
+  Hand: ['Mox Opal']
+  Board: ['Thought Monitor (2/2)', 'Ornithopter (0/2)', 'Thought Monitor (2/2)', 'Thought Monitor (2/2)', 'Memnite (1/1)', 'Frogmite (2/2)']
+  Permanents: ['Springleaf Drum', 'Nettlecyst', 'Springleaf Drum']
+  Opp board: ['Signal Pest (0/1)', 'Solitude (3/2)'] (life=5)
+  EV scores:
+      -0.5  cast_spell: Mox Opal <--  [h=-0.5 la=-0.5]
+  >>> CAST_SPELL: Mox Opal
+  [MAIN1]
+
+T14 Affinity | life=25 mana=7 hand=0+1L gy=3
+  Hand: []
+  Board: ['Thought Monitor (2/2)', 'Ornithopter (0/2)', 'Thought Monitor (2/2)', 'Thought Monitor (2/2)', 'Memnite (1/1)', 'Frogmite (2/2)']
+  Permanents: ['Springleaf Drum', 'Nettlecyst', 'Springleaf Drum', 'Mox Opal']
+  Opp board: ['Signal Pest (0/1)', 'Solitude (3/2)'] (life=5)
+  EV scores:
+      -0.5  cast_spell: Mox Opal <--  [h=-0.5 la=-0.5]
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Thought Monitor', 'Thought Monitor', 'Thought Monitor', 'Memnite', 'Frogmite']
