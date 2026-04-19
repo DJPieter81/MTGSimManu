@@ -1,8 +1,46 @@
 # MTGSimManu — Project Status & Planning Reference
 
-> **Last updated:** 2026-04-13 (session 3 — full re-run post blocking+attack+mulligan fixes)
+> **Last updated:** 2026-04-19 (claude.ai session — EV correctness investigation + design doc)
 > **Purpose:** Single-source-of-truth for Claude Code planning mode. Read this before any session.
 > **Sister project:** MTGSimClaude (Legacy format, 38 decks, see LEGACY_MODERNISATION_PROPOSAL.md)
+
+---
+
+## 2026-04-19 session — summary (read first)
+
+Deep session investigating why Boros vs Affinity sits at ~20-30% sim WR vs real-world ~45-50%. Outcomes:
+
+**Engine bugs shipped (via Claude Code, earlier in session — not this writer):**
+- Bug 1: Phlage honours declared target on ETB (`719eed6`)
+- Bug 2: Orim's Chant unkicked no longer queues next-turn silence (`6aec18f`)
+- Bug 3: `token_maker` projection branches by oracle class (`22ba31a`)
+- Bug 4: Discharge targets opp artifact creatures on synergy board (`bf6b396`)
+- Bug 5: Cycle log names the drawn card (`2b9aed2`)
+- Bug 6: Artifact-land ordering for artifact-synergy decks (`5f3d639`)
+
+**Validated prototype (claude.ai, this writer):**
+- `4147fe4` — artifact-scaling equipment EV overlay (Plating hypothesis). Oracle-driven, no hardcoded names. Moves Boros vs Affinity 20% → 30% at N=20 seed 50000. Tagged `TODO(prototype/card_ev_overrides)` for retirement once proper infra lands.
+
+**Falsified hypotheses (do not re-run):**
+- Mardu Energy brew: −4pp avg WR, lost ET/Affinity critical matchups (`docs/experiments/2026-04-19_mardu_energy_failed.md`)
+- Blood Moon SB retention vs Affinity: dropped Boros 30% → 10-15% (`docs/experiments/2026-04-19_blood_moon_sb_hypothesis_failed.md`)
+
+**New diagnostic (separate track, ~30 min fix):**
+- Bo3 play/draw rule not implemented — random die every game instead of loser-chooses (`docs/diagnostics/2026-04-19_bo3_play_draw_rule.md`)
+
+**Primary design deliverable:**
+- `docs/design/ev_correctness_overhaul.md` — six bugs (A-F), single root cause, six-phase execution plan, six failing tests specified. Covers Ornithopter-T1-no-enabler, Plating-no-carrier, Wrath-X-wrong, permanent_threat-blind-to-artifact-count, Sojourner cycling + landcycling missing, rigid mulligan heuristic. Zero magic numbers. Retires the Plating prototype.
+
+**Decklist update:** Boros Energy swapped to rarakkyo Apr-18 2026 list (identical 75 to Rashek Apr-16). Consensus current tuning.
+
+**CLAUDE.md indexed:** all session docs now linked from CLAUDE.md "Current Priorities & Outstanding Work" section. Single entry point for next Claude Code session.
+
+**Known-good baseline (origin/main @ `bbef780`):**
+- 177/181 tests passing (1 pre-existing unrelated: `test_pinnacle_emissary_cast_trigger_accrues_persistent`)
+- Boros vs Affinity N=20 @ seed 50000 = 30% WR
+- Rarakkyo Boros list active
+
+**Next action:** Claude Code executes `docs/design/ev_correctness_overhaul.md` Phase 1 (six failing tests first, no implementation until each test reproduces its bug at HEAD). See that doc's §10 for opening move.
 
 ---
 
