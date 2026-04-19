@@ -1059,7 +1059,20 @@ class EVPlayer:
         land_produces = set(FETCH_LAND_COLORS[land.name]) if is_fetch else set(land.template.produces_mana)
 
         new_colors = land_produces - existing_colors
-        ev += len(new_colors) * 4.0
+        # Gate the anticipatory color-diversity bonus by whether the hand
+        # actually contains colored-cost spells. A pure-colorless hand
+        # (classic Affinity: Mox Opal, Ornithopter, Cranial Plating) gets
+        # no value from colored mana access — otherwise a rainbow land
+        # like Spire of Industry out-scores the strictly better artifact
+        # land purely on "might be useful later" potential.
+        hand_needs_colors = any(
+            (s.template.mana_cost.white + s.template.mana_cost.blue
+             + s.template.mana_cost.black + s.template.mana_cost.red
+             + s.template.mana_cost.green) > 0
+            for s in me.hand if not s.template.is_land
+        )
+        if hand_needs_colors:
+            ev += len(new_colors) * 4.0
 
         # Specific spell enablement: this land's colors unlock a spell in hand
         # Check me.hand (not just legal spells) so color-gated 1-drops count
@@ -1075,6 +1088,34 @@ class EVPlayer:
 
         if is_fetch:
             ev += 3.0  # fetch flexibility
+
+        # Artifact-land synergy bonus. When the player's visible cards
+        # carry artifact-scaling text, an artifact-typed land contributes
+        # beyond its mana: it bumps Mox Opal's metalcraft count, adds a
+        # point to Cranial Plating / Nettlecyst scaling, and lowers the
+        # cost of Thought Monitor / Frogmite affinity discounts.
+        #
+        # Per-signal bonus is derived from "+1 power (or +1 mana) per
+        # artifact × residency × mana_clock_impact × 20":
+        #   1 power × ~4 residency turns × ~0.05 impact × 20 = ~4.0.
+        # Using a single rules constant (SYNERGY_ARTIFACT_BONUS) keeps
+        # the derivation traceable without per-card magic.
+        from engine.cards import CardType
+        if CardType.ARTIFACT in land.template.card_types:
+            synergy_signals = 0
+            for c in list(me.hand) + list(me.battlefield):
+                if c is land:
+                    continue
+                c_oracle = (c.template.oracle_text or '').lower()
+                if ('for each artifact' in c_oracle
+                        or 'metalcraft' in c_oracle
+                        or 'affinity for artifacts' in c_oracle):
+                    synergy_signals += 1
+            if synergy_signals > 0:
+                # Rules constant: 1 power (or 1 mana) gained per synergy
+                # card × residency × mana_clock_impact × 20 ≈ 4.
+                SYNERGY_ARTIFACT_BONUS = 4.0
+                ev += synergy_signals * SYNERGY_ARTIFACT_BONUS
 
         # Landfall: each trigger ≈ ETB effect value (life, damage, ramp)
         landfall_count = sum(1 for c in me.battlefield
