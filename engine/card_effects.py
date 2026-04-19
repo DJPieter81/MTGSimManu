@@ -411,12 +411,23 @@ def phlage_etb(game, card, controller, targets=None, item=None):
     # Oracle: "When Phlage enters, sacrifice it unless it was cast from
     # a graveyard." "Whenever Phlage enters or attacks, it deals 3 damage
     # to any target and you gain 3 life."
-    # Damage uses the generic _pick_damage_target so high-threat creatures
-    # (Ragavan, Murktide, scaling threats) are hit instead of face; small
-    # aggro bodies still go face thanks to the overkill-waste deduction.
+    # Target-fidelity: honour the declared target first. Only fall back
+    # to the oracle-driven picker when nothing was declared (e.g. an
+    # attack-trigger re-fire that re-enters this handler without a stack
+    # item, or a reanimator path with no chosen target).
     from engine.oracle_resolver import _pick_damage_target
     opponent = 1 - controller
-    target = _pick_damage_target(game, controller, 3)
+    target = None
+    if targets:
+        for tid in targets:
+            if tid is None or tid < 0:
+                continue  # sentinel "face"
+            cand = game.get_card_by_id(tid)
+            if cand is not None and cand.zone == "battlefield":
+                target = cand
+                break
+    if target is None and not targets:
+        target = _pick_damage_target(game, controller, 3)
     if target is not None:
         target.damage_marked = getattr(target, 'damage_marked', 0) + 3
         game.log.append(f"T{game.display_turn} P{controller+1}: "
