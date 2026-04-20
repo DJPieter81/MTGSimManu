@@ -1595,6 +1595,47 @@ class GameState:
                     x_value = best_cmc
                 elif x_value >= 1:
                     x_value = 1  # fallback when no data
+            elif ('destroy each' in oracle
+                  and 'mana value less than or equal to' in oracle):
+                # Scaling board-wipe-by-X (Wrath of the Skies pattern):
+                # "Destroy each artifact, creature, and enchantment with
+                # mana value less than or equal to the amount of {E} paid
+                # this way." Pick X to maximize (opp_kills − my_kills)
+                # over opp permanents at CMC ≤ X. Without this, X
+                # defaulted to max available mana — firing X=0 on T2
+                # with zero available_for_x wipes only tokens and wastes
+                # the card (audit F-Wrath-X).
+                opp = self.players[1 - player_idx]
+                me_bf = self.players[player_idx].battlefield
+                def _is_wipe_target(c):
+                    return (CardType.CREATURE in c.template.card_types
+                            or CardType.ARTIFACT in c.template.card_types
+                            or CardType.ENCHANTMENT in c.template.card_types)
+                opp_kills_by_x = {}
+                my_kills_by_x = {}
+                for c in opp.battlefield:
+                    if _is_wipe_target(c):
+                        cm = c.template.cmc or 0
+                        opp_kills_by_x[cm] = opp_kills_by_x.get(cm, 0) + 1
+                for c in me_bf:
+                    if _is_wipe_target(c):
+                        cm = c.template.cmc or 0
+                        my_kills_by_x[cm] = my_kills_by_x.get(cm, 0) + 1
+                # For each candidate X ≤ available, compute cumulative kills.
+                best_score = -1
+                best_x = 0
+                for X in range(0, int(x_value) + 1):
+                    opp_hit = sum(n for cm, n in opp_kills_by_x.items()
+                                   if cm <= X)
+                    my_hit = sum(n for cm, n in my_kills_by_x.items()
+                                  if cm <= X)
+                    score = opp_hit - my_hit
+                    # Strict improvement: only prefer larger X if it
+                    # adds net kills.
+                    if score > best_score:
+                        best_score = score
+                        best_x = X
+                x_value = best_x
             # +1/+1 counter creatures: use max mana (Ballista-style)
             # (default x_value is already max)
             # Pay the actual X cost
