@@ -386,6 +386,21 @@ def plan_sideboard(
         except Exception:
             opp_gameplan = None
 
+    # Compute my deck's own avg CMC across non-land cards. Serves as the
+    # tempo-cost floor: a swap that stays at-or-below my avg CMC doesn't
+    # disrupt my curve (fast decks have low avg CMC → any high-CMC swap
+    # hurts; control decks already have high avg CMC → high-CMC swaps are
+    # part of the plan).
+    my_nonland_cmc_total = 0
+    my_nonland_count = 0
+    for name, count in my_main.items():
+        tmpl = card_db.get_card(name)
+        if tmpl is None or tmpl.is_land:
+            continue
+        my_nonland_cmc_total += (tmpl.cmc or 0) * count
+        my_nonland_count += count
+    my_avg_cmc = (my_nonland_cmc_total / my_nonland_count) if my_nonland_count else 2.5
+
     # Score every card in main + sb against this opponent.
     def _score(name: str) -> float:
         tmpl = card_db.get_card(name)
@@ -442,17 +457,20 @@ def plan_sideboard(
             main_idx += 1
             continue
 
-        # Tempo-cost term: swapping a low-CMC main card for a high-CMC SB card
-        # costs tempo (we cast slower; opp gets extra turns). Derived as
-        #   (sb_cmc − main_cmc) × mana_clock_impact × 20 × residency
-        # Same units as sb_value (mana_clock_impact × 20 ≈ 1.0 at default
-        # snap). Positive for higher-CMC SB cards, negative for downshifts.
+        # Archetype-scaled tempo cost: swapping in a high-CMC SB card is a
+        # tempo loss only to the extent it overshoots our deck's own curve.
+        # Floor = max(main_cmc, my_avg_cmc). Against fast decks (Boros avg
+        # ≈1.8) a 3-CMC SB card costs 1.2 mana-units × residency; against
+        # control (Azorius avg ≈3.0) a 3-CMC SB card is free tempo-wise.
+        # Replaces Phase 2.5's uniform (sb_cmc − main_cmc), which
+        # over-penalized control-deck curve-upgrades (Sheoldred, finishers).
         from ai.clock import mana_clock_impact
         from ai.ev_evaluator import _DEFAULT_SNAP
         mana_unit = mana_clock_impact(_DEFAULT_SNAP) * 20.0  # ~1.0
         sb_cmc = sb_tmpl.cmc or 0
         main_cmc = main_tmpl.cmc or 0
-        tempo_cost = (sb_cmc - main_cmc) * mana_unit * PERMANENT_VALUE_WINDOW
+        cmc_floor = max(main_cmc, my_avg_cmc)
+        tempo_cost = max(0.0, sb_cmc - cmc_floor) * mana_unit * PERMANENT_VALUE_WINDOW
 
         # ε-threshold gate: only commit swaps where net gain exceeds half a
         # mana-unit. Prevents churn from marginal-delta swaps that won't
