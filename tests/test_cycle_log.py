@@ -104,14 +104,19 @@ class TestCycleLogNamesDrawnCard:
         )
 
     def test_cycle_log_includes_drawn_card_when_mana_cost(self, card_db):
-        """Cycle with a mana cost — same invariant, different cost path."""
+        """Cycle with a mana cost — same invariant, different cost
+        path.  Uses Neutralize (plain cycling {2}) because plain
+        cycling actually draws from the top of library; landcycling /
+        typecycling variants tutor a specific card type instead
+        (see test_landcycling_searches_library.py)."""
         game = GameState(rng=random.Random(0))
-        # Give controller a land so the mana cost is payable.
+        # Give controller lands so the mana cost is payable.
         _put_land_on_battlefield(game, card_db, "Island", 0)
-        companion = _put_in_hand(game, card_db, "Lórien Revealed", 0)
+        _put_land_on_battlefield(game, card_db, "Island", 0)
+        neutralize = _put_in_hand(game, card_db, "Neutralize", 0)
         top_card = _put_in_library(game, card_db, "Counterspell", 0)
 
-        ok = game.activate_cycling(0, companion)
+        ok = game.activate_cycling(0, neutralize)
         assert ok, "activate_cycling returned False on a legal cycle"
 
         cycle_lines = [l for l in game.log if "Cycle" in l]

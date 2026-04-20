@@ -18,6 +18,7 @@ v2 additions:
 """
 from __future__ import annotations
 import random
+import re
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple, Set, Any, Callable
 from enum import Enum
@@ -324,6 +325,73 @@ TOKEN_DEFS = {
     "food": ("Food", [CardType.ARTIFACT], 0, 0, set()),
     "clue": ("Clue", [CardType.ARTIFACT], 0, 0, set()),
 }
+
+
+# Cycling variants (design: docs/design/ev_correctness_overhaul.md §5).
+# Landcycling / typecycling tutor a matching card from the library
+# instead of drawing a random card.
+_CYCLING_VARIANT_PATTERN = re.compile(
+    r'\b(?P<type>[\w/ ]+?)cycling\b\s*[\{(—\-]',
+    re.IGNORECASE,
+)
+
+
+def _cycling_tutor_predicate(oracle: str):
+    """Inspect a cyclable card's oracle text and return a predicate
+    over `CardTemplate` matching the cards a tutor variant of cycling
+    would search for.  Returns None when the card is plain cycling
+    (no type prefix), meaning the standard draw-a-card path applies.
+
+    Handles: `landcycling`, `artifact landcycling`, `basic landcycling`,
+    `plainscycling` / `islandcycling` / `swampcycling` / `mountaincycling` /
+    `forestcycling`, and generic `<creature-type>cycling`.  Unknown
+    variants fall back to the plain path.
+    """
+    if not oracle:
+        return None
+    # Don't match "plain" cycling — it has no type prefix right before
+    # 'cycling'.  The regex requires at least one non-space char before
+    # 'cycling' as the 'type' group, so plain 'cycling {X}' never matches.
+    for match in _CYCLING_VARIANT_PATTERN.finditer(oracle):
+        raw_type = match.group('type').strip().lower()
+        if not raw_type:
+            continue
+        # Guard: the match must be inside a cycling cost sentence, not
+        # e.g. mid-word usage. The preceding char should be a space or
+        # the start of a paragraph.
+        start_idx = match.start('type')
+        prev_char = oracle[start_idx - 1] if start_idx > 0 else ' '
+        if not (prev_char.isspace() or prev_char in '\n.'):
+            continue
+        # Basic landcycling.
+        if raw_type == 'basic land':
+            return lambda tmpl: (
+                tmpl.is_land and Supertype.BASIC in tmpl.supertypes)
+        # Artifact landcycling.
+        if raw_type == 'artifact land':
+            return lambda tmpl: (
+                tmpl.is_land and CardType.ARTIFACT in tmpl.card_types)
+        # Plain landcycling.
+        if raw_type == 'land':
+            return lambda tmpl: tmpl.is_land
+        # Basic-land-type cycling: plains, island, swamp, mountain,
+        # forest — searches a basic land of that subtype.
+        basic_subtypes = {
+            'plains': 'Plains', 'island': 'Island', 'swamp': 'Swamp',
+            'mountain': 'Mountain', 'forest': 'Forest',
+        }
+        if raw_type in basic_subtypes:
+            st = basic_subtypes[raw_type]
+            return lambda tmpl, _st=st: (
+                tmpl.is_land and _st in (tmpl.subtypes or []))
+        # Creature-type cycling (e.g., "wizardcycling"): any creature
+        # whose subtypes include the type word (case-insensitive).
+        type_word = raw_type.capitalize()
+        return lambda tmpl, _tw=type_word: (
+            CardType.CREATURE in tmpl.card_types
+            and any(s == _tw for s in (tmpl.subtypes or []))
+        )
+    return None
 
 
 class GameState:
@@ -3638,9 +3706,39 @@ class GameState:
             player.hand.remove(card)
         card.zone = "graveyard"
         player.graveyard.append(card)
-        # Draw a card; include the drawn card's name in the log so that
-        # any card "appearing from nowhere" on a later turn can be traced
-        # back to the cycle that produced it (conservation-invariant).
+
+        # Cycling variant — plain cycling draws a card, but landcycling /
+        # typecycling tutors a matching card from the library.
+        # Design: docs/design/ev_correctness_overhaul.md §5.
+        oracle = (card.template.oracle_text or '').lower()
+        tutor_predicate = _cycling_tutor_predicate(oracle)
+        if tutor_predicate is not None:
+            # Typecycling path: search library for a matching card, put
+            # it into hand, then shuffle.  If no match, the search still
+            # resolves (reveal nothing); library is shuffled regardless.
+            found = None
+            for c in player.library:
+                if tutor_predicate(c.template):
+                    found = c
+                    break
+            drawn_name = "—"
+            if found is not None:
+                player.library.remove(found)
+                found.zone = "hand"
+                player.hand.append(found)
+                drawn_name = found.name
+            # Shuffle the library (same as standard tutor effects).
+            self.rng.shuffle(player.library)
+            cost_desc = (f"pay {cost['life']} life" if cost['life'] > 0
+                         else f"pay {cost['mana']} mana")
+            self.log.append(
+                f"T{self.display_turn} P{player_idx+1}: "
+                f"Cycle {card.name} ({cost_desc}, tutor: {drawn_name})")
+            return True
+
+        # Plain cycling: draw a card.  Include the drawn card's name in
+        # the log so any card "appearing from nowhere" on a later turn
+        # can be traced back (conservation-invariant).
         drawn = self.draw_cards(player_idx, 1)
         drawn_name = drawn[0].name if drawn else "—"
         cost_desc = f"pay {cost['life']} life" if cost["life"] > 0 else f"pay {cost['mana']} mana"
