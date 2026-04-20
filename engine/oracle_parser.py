@@ -100,6 +100,85 @@ def parse_cycling_cost(oracle: str) -> Optional[Dict]:
     return {'mana': mana, 'life': life, 'colors': colors}
 
 
+# Basic land subtypes that appear as typecycling prefixes
+# (e.g. "Swampcycling" → search for a Swamp card).  Case-sensitive
+# values match the subtype strings stored on CardTemplate.subtypes.
+_BASIC_LAND_SUBTYPES = {
+    'plains': 'Plains', 'island': 'Island', 'swamp': 'Swamp',
+    'mountain': 'Mountain', 'forest': 'Forest',
+    # Non-basic but valid land subtypes that appear as typecycling prefixes
+    # in the wider multiverse (e.g. Desertcycling in Amonkhet).
+    'desert': 'Desert',
+}
+
+
+def parse_cycling_variant(oracle: str) -> Optional[Dict]:
+    """Classify a cycling variant and return the library-search predicate.
+
+    Plain cycling (``Cycling {cost}``) and no-cycling cards return ``None``:
+    the resolver should just draw a card.
+    Landcycling / typecycling returns a predicate dict whose fields a
+    library card must satisfy to be a legal tutor target::
+        {
+            'require_types':     set[str],  # lowercase CardType values
+            'require_supertypes': set[str], # lowercase Supertype values
+            'require_subtypes':   set[str], # case-sensitive subtype names
+        }
+    All three sets are ANDed; empty set = no constraint.  Examples::
+        "Artifact landcycling"  → types={land, artifact}
+        "Basic landcycling"     → types={land}, supertypes={basic}
+        "Landcycling"           → types={land}
+        "Swampcycling"          → types={land}, subtypes={Swamp}
+        "Slivercycling"         → subtypes={Sliver}   (creature type)
+    The parser deliberately ignores "When you cycle this card, you may
+    search your library..." triggered abilities (e.g. Krosan Tusker):
+    those resolve after a plain-cycling draw, not in place of it.
+    """
+    oracle_lower = oracle.lower()
+    if 'cycling' not in oracle_lower:
+        return None
+
+    # Landcycling comes in three forms; check most specific first.
+    if re.search(r'\bartifact\s+landcycling\b', oracle_lower):
+        return {'require_types': {'land', 'artifact'},
+                'require_supertypes': set(),
+                'require_subtypes': set()}
+    if re.search(r'\bbasic\s+landcycling\b', oracle_lower):
+        return {'require_types': {'land'},
+                'require_supertypes': {'basic'},
+                'require_subtypes': set()}
+    if re.search(r'\blandcycling\b', oracle_lower):
+        return {'require_types': {'land'},
+                'require_supertypes': set(),
+                'require_subtypes': set()}
+
+    # Typecycling: "<prefix>cycling {cost}" where <prefix> is not
+    # "land"/"artifact"/"basic".  Bound to followed-by "{" so we do not
+    # capture the word "cycling" itself or an in-prose triggered clause.
+    m = re.search(r'\b(\w+)cycling\b\s*\{', oracle_lower)
+    if not m:
+        return None
+    prefix = m.group(1)
+    if prefix in _BASIC_LAND_SUBTYPES:
+        return {'require_types': {'land'},
+                'require_supertypes': set(),
+                'require_subtypes': {_BASIC_LAND_SUBTYPES[prefix]}}
+    # Creature-type cycling (Slivercycling, Wizardcycling, ...) —
+    # derive the subtype from the in-reminder-text search phrase to
+    # preserve canonical capitalisation.
+    m2 = re.search(
+        r'search your library for a[n]?\s+([a-z]+)\s+card',
+        oracle_lower,
+    )
+    if m2:
+        return {'require_types': set(),
+                'require_supertypes': set(),
+                'require_subtypes': {m2.group(1).capitalize()}}
+    # Unrecognised typecycling variant — fall back to plain cycling so
+    # the engine does not silently drop the draw.
+    return None
+
+
 def parse_energy_production(oracle: str) -> int:
     """Count energy production from oracle text.
 
