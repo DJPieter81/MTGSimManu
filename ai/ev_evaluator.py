@@ -66,6 +66,20 @@ class EVSnapshot:
     # it via `snap.my_power + persistent_power × urgency_factor` so the
     # credit shrinks as the opponent's clock tightens.
     persistent_power: float = 0.0
+    # Count-based resources.  Populated unconditionally; position_value
+    # reads them only when the corresponding `_scaling_active` flag is
+    # True so non-synergy decks don't accrue blanket bonuses.
+    my_artifact_count: int = 0
+    opp_artifact_count: int = 0
+    my_enchantment_count: int = 0
+    opp_enchantment_count: int = 0
+    # Conditional activation flags — set True during snapshot_from_game
+    # when an oracle-visible card on my / opp's visible zones references
+    # the relevant count threshold (metalcraft, affinity for artifacts,
+    # "for each artifact you control", etc.).  Prevents artifact count
+    # from becoming a blanket value bonus for decks that don't use it.
+    my_artifact_scaling_active: bool = False
+    opp_artifact_scaling_active: bool = False
 
     @property
     def my_clock(self) -> float:
@@ -171,7 +185,64 @@ def snapshot_from_game(game: "GameState", player_idx: int) -> EVSnapshot:
         if kws & {'flying', 'menace', 'trample'}:
             snap.opp_evasion_power += max(0, p)
 
+    # Count-based resources (design: docs/design/ev_correctness_overhaul.md §4).
+    # Populate artifact/enchantment counts unconditionally; gate the
+    # activation flags on oracle-visible scaling cards in the respective
+    # player's visible zones.
+    from engine.cards import CardType
+    for c in me.battlefield:
+        types = c.template.card_types
+        if CardType.ARTIFACT in types:
+            snap.my_artifact_count += 1
+        if CardType.ENCHANTMENT in types:
+            snap.my_enchantment_count += 1
+    for c in opp.battlefield:
+        types = c.template.card_types
+        if CardType.ARTIFACT in types:
+            snap.opp_artifact_count += 1
+        if CardType.ENCHANTMENT in types:
+            snap.opp_enchantment_count += 1
+
+    # Scaling-active detection — only accept count-based resource bonuses
+    # when a card in the relevant player's visible zones has oracle text
+    # referencing that count.  Own side sees hand + battlefield; opp side
+    # sees battlefield only (we don't peek at opp's hand).
+    snap.my_artifact_scaling_active = _has_artifact_scaling_card(
+        me.hand, me.battlefield)
+    snap.opp_artifact_scaling_active = _has_artifact_scaling_card(
+        (), opp.battlefield)
+
     return snap
+
+
+_ARTIFACT_SCALING_PHRASES = (
+    'metalcraft',
+    'affinity for artifacts',
+    'for each artifact',
+    'for every artifact',
+    'artifact you control',
+)
+
+
+def _has_artifact_scaling_card(hand, battlefield) -> bool:
+    """True if any card in the supplied zones has oracle text
+    referencing an artifact-count threshold (metalcraft, affinity for
+    artifacts, "+N/+N for each artifact", etc.).
+
+    Land oracle text ("{T}: Add {C}") never triggers this — only
+    non-land permanents or spells that explicitly scale with artifact
+    count count.
+    """
+    for zone in (hand, battlefield):
+        for c in zone:
+            if c.template.is_land:
+                continue
+            o = (c.template.oracle_text or '').lower()
+            if not o:
+                continue
+            if any(p in o for p in _ARTIFACT_SCALING_PHRASES):
+                return True
+    return False
 
 
 # Life valuation is now in ai/clock.py: life_as_resource()
@@ -829,7 +900,28 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         my_lifelink_power=snap.my_lifelink_power,
         opp_evasion_power=snap.opp_evasion_power,
         cards_drawn_this_turn=snap.cards_drawn_this_turn,
+        # Count-based resources carry through (design §4) and get
+        # incremented below if the cast adds an artifact / enchantment
+        # permanent.  Scaling-active flags are snapshot-scoped signals,
+        # so they carry through unchanged — casting another artifact
+        # doesn't flip the flag, and if the spell itself is the scaling
+        # activator the flag was already true on the source snap.
+        my_artifact_count=snap.my_artifact_count,
+        opp_artifact_count=snap.opp_artifact_count,
+        my_enchantment_count=snap.my_enchantment_count,
+        opp_enchantment_count=snap.opp_enchantment_count,
+        my_artifact_scaling_active=snap.my_artifact_scaling_active,
+        opp_artifact_scaling_active=snap.opp_artifact_scaling_active,
     )
+
+    # Increment count fields when the cast puts an artifact or
+    # enchantment onto the battlefield (non-land permanent only).
+    from engine.cards import CardType
+    if not t.is_land:
+        if CardType.ARTIFACT in t.card_types:
+            projected.my_artifact_count += 1
+        if CardType.ENCHANTMENT in t.card_types:
+            projected.my_enchantment_count += 1
 
     # Creature deployment
     if t.is_creature:
