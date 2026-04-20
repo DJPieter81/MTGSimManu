@@ -6,13 +6,13 @@
       "goal_type": "INTERACT",
       "description": "Counter threats, remove early creatures, deploy Chalice to lock 1-drops, Solitude to exile threats",
       "card_priorities": {
-        "Chalice of the Void": 24.0,
         "Solitude": 22.0,
         "Prismatic Ending": 22.0,
         "March of Otherworldly Light": 20.0,
         "Counterspell": 18.0,
         "Dovin's Veto": 16.0,
-        "Teferi, Time Raveler": 15.0
+        "Teferi, Time Raveler": 15.0,
+        "Chalice of the Void": 14.0
       },
       "card_roles": {
         "interaction": [
@@ -74,9 +74,7 @@
   ],
   "mulligan_min_lands": 2,
   "mulligan_max_lands": 5,
-  "always_early": [
-    "Chalice of the Void"
-  ],
+  "always_early": [],
   "reactive_only": [
     "Counterspell",
     "Dovin's Veto",
