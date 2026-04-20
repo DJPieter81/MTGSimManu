@@ -424,3 +424,71 @@ winner-deltas too, net effect negative.
 
 Solver stays opt-in via `SB_SOLVER=new`. Phase 3 gated on one of the
 three refinements above.
+
+## Appendix C — Phase 2.6 (archetype-scaled tempo) results
+
+Replaced Phase 2.5's uniform `(sb_cmc − main_cmc) × ...` with an
+archetype-scaled cost anchored to the deck's own avg CMC:
+
+    cmc_floor = max(main_cmc, my_avg_cmc)
+    tempo_cost = max(0, sb_cmc − cmc_floor) × mana_unit × residency
+
+For Boros (avg CMC ≈1.8), a 3-CMC SB swap costs 1.2 mana-units ×
+residency. For Azorius (avg CMC ≈3.0), the same swap costs 0 — the
+curve already hosts 3-CMC cards.
+
+**Per-deck deltas vs legacy (Phase 2.6 absolute):**
+
+| Deck | Legacy | P2.6 | Δpp | P2.5 Δpp | P2 Δpp |
+|---|---|---|---|---|---|
+| Eldrazi Tron | 67.7% | 73.7% | **+6.0** | +4.3 | +5.3 |
+| Ruby Storm | 42.0% | 46.3% | +4.3 | +1.7 | −3.0 |
+| Azorius Control | 9.7% | 13.0% | +3.3 | +5.7 | +7.0 |
+| Amulet Titan | 42.3% | 45.7% | +3.3 | 0.0 | +4.3 |
+| Izzet Prowess | 46.3% | 48.7% | +2.3 | −1.0 | +1.7 |
+| Dimir Midrange | 61.0% | 63.0% | **+2.0** | **−3.0** | +4.0 |
+| Pinnacle Affinity | 62.3% | 63.7% | +1.3 | −1.7 | −1.3 |
+| Boros Energy | 71.3% | 71.3% | 0.0 | 0.0 | −3.3 |
+| Living End | 24.7% | 24.7% | 0.0 | +3.3 | −2.3 |
+| Domain Zoo | 68.0% | 67.3% | −0.7 | −0.3 | −1.0 |
+| 4/5c Control | 33.0% | 32.3% | −0.7 | +2.0 | −0.3 |
+| Jeskai Blink | 60.3% | 58.0% | **−2.3** | **−5.3** | +1.3 |
+| Azorius (WST) | 35.7% | 32.7% | −3.0 | −4.3 | −2.7 |
+| Affinity | 89.7% | 85.3% | −4.3 | −0.7 | −3.0 |
+| 4c Omnath | 51.0% | 46.3% | −4.7 | +2.3 | −2.3 |
+| Goryo's Vengeance | 35.0% | 28.0% | **−7.0** | −3.0 | −4.3 |
+
+**Aggregate: −0.2pp** (marginal loss vs legacy).
+
+**Progression summary:**
+- Phase 2 (no tempo): **+0.1pp** aggregate
+- Phase 2.5 (uniform tempo + ε): **0.0pp**
+- Phase 2.6 (archetype-scaled tempo + ε): **−0.2pp**
+
+Adding tempo cost at either granularity didn't yield a net
+improvement. Each refinement trades one deck's regression for
+another's. Positive signal remains on specific outlier decks:
+Azorius Control reliably gains +3 to +7pp across all variants, and
+Eldrazi Tron +5 to +6pp.
+
+**Working hypotheses (unvalidated):**
+1. **Too few clause types.** Only 5 clauses cover ~20% of SB-relevant
+   oracle patterns. Missing: cost reducers, ramp, life-gain wide,
+   creature-type-specific effects, symmetric hate (Blood Moon),
+   planeswalkers, aura removal.
+2. **Volatility from N=20.** ±25–35pp matchup swings persist through
+   all phases; an N=50 or N=100 baseline would show whether these
+   are statistical noise or real structural effects.
+3. **Deck coherence missing.** The solver doesn't know that Dimir's
+   deck wants ≥4 counterspells and ≥6 removal cards; it may swap
+   them out if the marginal value favours hate pieces.
+
+**Decision: session-end hold.** Solver remains opt-in via
+`SB_SOLVER=new`. Further refinement requires either a richer clause
+catalogue (fundamentally more work) or a different valuation
+framework (e.g. simulate-delta A/B on a per-card basis, which is
+expensive but more accurate).
+
+The proposal's value is not negated — the architecture is sound and
+the Azorius/Tron gains are repeatable. It's just not yet complete
+enough to displace the legacy heuristics across the full meta.
