@@ -113,6 +113,48 @@ class TestPersistentPowerAccrual:
         )
 
 
+class TestLifeAndEnergyPersistentValuation:
+    """Recurring per-permanent triggers that grant life or energy
+    instead of creature tokens must still accrue persistent_power.
+    Otherwise decks like Boros (Guide of Souls) lose to opponents
+    who run similar triggers, since opp's evaluation correctly
+    credits THEIR Guide-class engines while our own scores 0.
+
+    Design: docs/experiments/2026-04-20_phase7_pinnacle_emissary_fix.md
+    follow-up note — `_clause_token_power` only credits creature
+    tokens / amass, leaving life-gain and energy-gain at 0.
+    """
+
+    def test_guide_of_souls_creature_enters_accrues_persistent(
+            self, card_db):
+        """Guide of Souls: 'Whenever another creature you control
+        enters, you gain 1 life and get {E}.'  Recurring trigger,
+        but produces no creature token — current code returns 0
+        persistent_power for the clause.  After the fix, life + energy
+        gain credited as a non-zero positive value."""
+        guide = _instance(card_db, "Guide of Souls")
+        snap = _baseline_snap()
+        projected = _project_spell(guide, snap)
+
+        body_power = guide.template.power or 0
+        immediate_delta = projected.my_power - snap.my_power - body_power
+        # Guide's body is the only immediate power; the trigger fires
+        # only when ANOTHER creature enters, so the cast itself doesn't
+        # generate a token same-turn.
+        assert immediate_delta == 0, (
+            f"Guide's clause is recurring (other_enters), not a self-"
+            f"ETB token. Immediate column must be 0. "
+            f"Got {immediate_delta}."
+        )
+        assert projected.persistent_power > 0.0, (
+            f"Guide of Souls' 'gain 1 life and get {{E}}' clause is "
+            f"a recurring per-other-creature trigger that strengthens "
+            f"the deck over time. Persistent_power must be > 0; got "
+            f"{projected.persistent_power:.3f}. Without this, Boros "
+            f"opponents value Guide higher than Boros itself."
+        )
+
+
 class TestRagavanRegressionAnchor:
     """Ragavan's Treasure (combat-damage, non-creature) must still
     produce 0 across both immediate and persistent columns."""
