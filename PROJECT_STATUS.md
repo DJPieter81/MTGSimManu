@@ -421,6 +421,11 @@ Two remaining smoke failures are accepted trade-offs — Thraben Charm T4 (multi
 | 2 | Living End ~12% vs Boros — AI doesn't attack aggressively after Living End resolves; Force of Negation not held for protection | `ai/ev_player.py`, `ai/response.py` |
 | 3 | Psychic Frog early EV still negative when Orcish Bowmasters is better option (correct priority, but EV magnitude off) | `ai/ev_evaluator.py` |
 | 4 | Chalice of the Void (and other stax permanents) undervalued by `_score_spell` — treated as generic 2-mana artifact. First attempt with `ai/stax_ev.py` built but not wired; see "Failed attempt" below. Next try needs threat-gating. | `ai/ev_player.py`, `ai/stax_ev.py` |
+| 5 | Removal target selection inverted vs Affinity-style boards — `_threat_score` rates mana rocks (Springleaf Drum) above 1/1 attackers (Memnite). Affects all removal (March/PE/Solitude/Verdict). Repro state drift — hand-built state scores correctly (Δ=4.3× favoring Memnite), live sim inverts. See session 2 writeup bug A. | `engine/card_effects.py:683`, `ai/permanent_threat.py` |
+| 6 | `March of Otherworldly Light` `x_val` computed as `len(lands)` instead of X actually paid — makes March at X=1 resolve as X=total-lands. See session 2 bug B. | `engine/card_effects.py:675` |
+| 7 | Wrath of the Skies cast on T3 with 0 mana for X, kills own Chalice and leaves CMC-2 threats alive. AI doesn't weigh "cast now" vs "hold mana for Counterspell next turn." See session 2 bug C. | `ai/ev_player.py` (sweeper-timing EV) |
+| 8 | T2 Chalice-over-pass misplay — AI jams Chalice @ X=1 on T2 with Counterspell in hand and no opp threat on stack. Cast-vs-pass EV threshold is wrong; gameplan priority tweak didn't fix it. See session 2 bug D. | `ai/ev_player.py` (pass EV) |
+| 9 | Mulligan heuristic doesn't deduplicate legendaries — keeps 3×Wan Shi Tong + 2 land as a valid 7. See session 2 bug E. | `decks/gameplan_loader.py` / mulligan scorer |
 
 #### P2
 | # | Bug | Location |
@@ -480,6 +485,71 @@ the turn. Effectively: "stax is downtime insurance, not on-curve tempo."
 **What was NOT shipped:**
   - Wiring in `_score_spell`. Reverted.
   - Any change to v1 WST.
+
+---
+
+### Deep audit — WST v2 play-by-play bugs (session, 2026-04-20 #2)
+
+Read 6 Bo3 replays: seeds 60100/60200/60400 vs Boros Energy and vs Affinity. Five
+distinct misplay patterns found, documented below so they don't get lost.
+
+**Bug A — March of Otherworldly Light picks wrong target.** Seed 60200 G2 T2: P1
+March @ X=1 exiles Springleaf Drum instead of Memnite (the 1/1 attacker). Live-sim
+instrumentation of `_threat_score` confirms scoring inversion:
+  - Drum: 1.333  (picked)
+  - Mox Opal: 1.333 (tied)
+  - Memnite: **1.150** (not picked)
+
+Isolated reproduction of the same battlefield state — without the turn-by-turn game
+history — scores Memnite at 1.15 and Drum at 1.00, the *correct* order. So there
+is state drift between reproduction and live sim: something cumulative inflates
+non-creature artifact threat. The `position_value` delta for actually removing
+Memnite is 5.12 vs Drum's 1.18 — the marginal-contribution formula is correct in
+isolation. Upstream state in the live sim is distorting the snapshot.
+
+**Next step:** dump the full EVSnapshot at live-sim decision point, compare field-
+by-field to the isolated reproduction, identify the inflation source. Caller:
+`engine/card_effects.py:683`. Likely affects all removal spells (PE, Solitude,
+Supreme Verdict), not just March.
+
+**Bug B — March `x_val` computed from lands, not mana paid.** `engine/card_effects.py:675`:
+```python
+x_val = len(game.players[controller].lands)
+```
+This treats X as `total lands controlled` regardless of X actually paid. A T5 March
+cast with 5 lands at X=1 (pay 1W + W) resolves as if X=5, widening the candidate
+pool to CMC ≤ 5. Orthogonal to Bug A but also wrong; may benefit Boros/Affinity
+sims by making March look stronger than it is.
+
+**Bug C — Wrath fires on T3 on a low-value board, kills own Chalice.** Seed 60200
+G1 T3: P1 has Chalice + 2 Fountains. Opp board: Voice of Victory (CMC 2, 1/3),
+2 Warrior tokens. P1 casts Wrath of the Skies (WW) with 0 mana for X → picks X=0
+which destroys 2 tokens + own Chalice but leaves Voice of Victory alive. Net: −1
+card (Chalice), traded for 2 tokens, and Voice continues attacking.
+
+The X-choice logic at `engine/game_state.py:1601` is correct given available mana
+(X=0 is the best X possible with 0 mana left); the misplay is casting Wrath at
+all. Pattern: AI treats "opp has creatures + I have Wrath" as sufficient trigger
+to sweep, without weighing tempo cost vs holding mana for Counterspell next turn
+(which would have caught Ranger-Captain of Eos on T4).
+
+**Bug D — T2 Chalice-over-Counterspell still fires in 4/5 seeds.** Seed 60100 G1
+T2 and analogous seeds (60200, 60400): AI jams Chalice @ X=1 on T2 with Counterspell
+in hand and no opp threat on stack. Demoting Chalice priority (this session's
+gameplan tweak from 24 → 14 with `always_early` cleared) fixed *some* hands (seed
+60100 G2 now correctly PE's Ragavan) but not the fundamental cast-vs-pass decision.
+The AI's "pass and hold mana" EV is lower than Chalice's projection. Gameplan
+priorities only affect relative ranking between cast choices, not the cast-vs-hold
+threshold.
+
+**Bug E — Mulligan keeps redundant-legendary hands.** Seed 60400 G1: P1 keeps
+7-card hand with 3× Wan Shi Tong + 2 lands. Legend rule means 2 of 3 WSTs are
+dead. Effectively a 5-card keep. The mulligan heuristic at
+`decks/gameplan_loader.py` doesn't deduplicate legendaries.
+
+**Session 2 outcome:** Gameplan patch landed in a separate commit (Chalice
+priority 24 → 14, `always_early` cleared). v2 field WR improved from ~42% →
+~45% at n=30+ pooled across two seed ranges. Bugs A–E remain open.
 
 ---
 
