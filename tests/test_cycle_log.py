@@ -104,14 +104,17 @@ class TestCycleLogNamesDrawnCard:
         )
 
     def test_cycle_log_includes_drawn_card_when_mana_cost(self, card_db):
-        """Cycle with a mana cost — same invariant, different cost path."""
+        """Cycle with a mana cost — same invariant, different cost
+        path.  Uses Censor (plain ``Cycling {U}``) to exercise the
+        mana-cost branch; Lórien Revealed's Islandcycling now tutors
+        instead of drawing, so it is not a fit for this invariant."""
         game = GameState(rng=random.Random(0))
-        # Give controller a land so the mana cost is payable.
+        # Give controller a blue source to pay {U}.
         _put_land_on_battlefield(game, card_db, "Island", 0)
-        companion = _put_in_hand(game, card_db, "Lórien Revealed", 0)
+        censor = _put_in_hand(game, card_db, "Censor", 0)
         top_card = _put_in_library(game, card_db, "Counterspell", 0)
 
-        ok = game.activate_cycling(0, companion)
+        ok = game.activate_cycling(0, censor)
         assert ok, "activate_cycling returned False on a legal cycle"
 
         cycle_lines = [l for l in game.log if "Cycle" in l]
