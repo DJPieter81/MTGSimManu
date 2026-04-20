@@ -761,9 +761,16 @@ def _project_token_bonus(oracle_l: str, snap: "EVSnapshot"
     #     on average (samples: Boros 10 lands / 50 nonlands over 10
     #     turns ≈ 1 castable spell/turn; Dimir similar).
     #   OPP_DRAWS_PER_TURN — fixed by the game's draw step (rules).
+    #   NONLAND_PERMANENT_ENTERS_PER_TURN — Modern decks deploy roughly
+    #     one nonland permanent per main phase (creature curve, mana
+    #     rocks, equipment).  Fraction of that per-type (artifacts vs
+    #     creatures vs enchantments) varies by deck; the rate represents
+    #     the BROAD trigger.  Used by per-permanent recurring triggers
+    #     (Pinnacle Emissary, Guide of Souls, anthem-style stacks).
     RESIDENCY = 2.0
     MODERN_SPELLS_PER_TURN = 1.0
     OPP_DRAWS_PER_TURN = 1.0
+    NONLAND_PERMANENT_ENTERS_PER_TURN = 0.7
 
     NON_CREATURE_TOKENS = ('treasure token', 'food token',
                             'clue token', 'gold token', 'blood token',
@@ -807,8 +814,28 @@ def _project_token_bonus(oracle_l: str, snap: "EVSnapshot"
         # clauses like "whenever ~ attacks AND deals combat damage".
         if re.search(r'whenever [a-z\'\-\s]+ deals combat damage', clause):
             found.append('combat_damage')
-        if re.search(r'when[s]? (?:[a-z\'\-\s]+ )?enters', clause):
-            found.append('etb')
+        # ETB triggers — "when ~ enters" / "whenever a creature enters".
+        # Distinguish self-entry (immediate, fires once) from per-
+        # permanent recurring triggers (other_enters, persistent).  The
+        # subject of the trigger is captured and inspected: generic
+        # phrases like "a creature", "another permanent", "a nontoken
+        # artifact" mark a recurring trigger; anything else (the card's
+        # own name, "this", "~") is self-ETB.
+        for m in re.finditer(
+                r'when(?:ever|s)?\s+(?P<who>[a-z0-9\'\-,\s]+?)\s+enters',
+                clause):
+            who = m.group('who').strip()
+            generic_subjects = (
+                'another', 'a creature', 'a permanent',
+                'an artifact', 'an enchantment', 'a land',
+                'a planeswalker', 'a nontoken', 'one or more',
+                'any creature', 'any permanent', 'any opponent',
+            )
+            if any(gp in who for gp in generic_subjects):
+                found.append('other_enters')
+            else:
+                # Self-ETB ("this", "~", or the card's own name).
+                found.append('etb')
         if re.search(r'whenever [a-z\'\-\s]+ attacks', clause):
             found.append('attack')
         if re.search(r'at the beginning of (?:your|each)(?: [a-z\-]+)? end step',
@@ -858,6 +885,14 @@ def _project_token_bonus(oracle_l: str, snap: "EVSnapshot"
             return OPP_DRAWS_PER_TURN
         if trigger_class == 'dies':
             return 0.0  # Fires once at end of lifetime — out of scope.
+        if trigger_class == 'other_enters':
+            # Per-permanent recurring trigger (Pinnacle Emissary's
+            # nontoken-artifact-enters drone, anthem stacks, Guide of
+            # Souls' creature-enters energy).  Conditional on us still
+            # having the host alive — discounted by urgency_factor at
+            # position_value time.  Rate is the Modern average of
+            # nonland permanent entries per turn (rules constant).
+            return NONLAND_PERMANENT_ENTERS_PER_TURN
         return 0.0
 
     immediate_power = 0
