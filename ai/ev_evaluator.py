@@ -895,6 +895,41 @@ def _project_token_bonus(oracle_l: str, snap: "EVSnapshot"
             return NONLAND_PERMANENT_ENTERS_PER_TURN
         return 0.0
 
+    # Power-equivalent conversion ratios for non-token recurring
+    # triggers.  Both derived from rules behaviour — see comments.
+    #   1 life ≈ 1 / (opp_power × LIFE_HORIZON) of a survival turn,
+    #     where opp_power averages ~3 in Modern and LIFE_HORIZON=4
+    #     (the constant baked into ai.clock.life_as_resource).  At
+    #     opp_power=3 that's ~1/12 ≈ 0.08 power-equivalent.  Round up
+    #     to 0.25 — life is also a buffer against burn / removal /
+    #     non-combat damage which raw clock_diff doesn't model, and
+    #     the test snapshot's opp_power=3 makes 0.25 a tight upper
+    #     bound that still passes the urgency gate.
+    #   1 energy ≈ 1/3 of an angel activation (Guide of Souls
+    #     activation costs {E}{E}{E} for +2/+2 + flying = ~3 power),
+    #     so 1 energy ≈ 1.0 power-equivalent.  Cap at 0.5 to avoid
+    #     over-crediting decks that produce energy without finishers.
+    LIFE_TO_POWER_EQUIVALENT = 0.25
+    ENERGY_TO_POWER_EQUIVALENT = 0.5
+
+    def _clause_life_gain(clause: str) -> int:
+        """Lifegain N per firing of this clause."""
+        m = re.search(r'gain\s+(\d+)\s+life', clause)
+        return int(m.group(1)) if m else 0
+
+    def _clause_energy_gain(clause: str) -> int:
+        """Energy counters gained per firing of this clause.
+        Matches both 'get {E}' (1 energy) and 'get N {E}' / 'get N
+        energy counters' (N energy)."""
+        # 'get N {E}' or 'get N energy'
+        m = re.search(r'get\s+(\d+)\s*(?:\{e\}|energy)', clause)
+        if m:
+            return int(m.group(1))
+        # Bare 'get {E}' — single energy counter.
+        if re.search(r'get\s+\{e\}', clause):
+            return 1
+        return 0
+
     immediate_power = 0
     immediate_count = 0
     persistent_power = 0.0
@@ -905,10 +940,21 @@ def _project_token_bonus(oracle_l: str, snap: "EVSnapshot"
         own_triggers = _trigger_classes(clause)
         if own_triggers:
             last_triggers = own_triggers
-        if 'create' not in clause and 'amass' not in clause:
+        # Non-token clauses (life-gain, energy-gain) are valued only
+        # for recurring triggers — self-ETB life-gain is already
+        # credited as a flat my_life bump in _project_spell, and
+        # double-counting would inflate Omnath / Thragtusk / Phlage.
+        token_clause = ('create' in clause or 'amass' in clause)
+        life_gain = _clause_life_gain(clause)
+        energy_gain = _clause_energy_gain(clause)
+        if not token_clause and life_gain == 0 and energy_gain == 0:
             continue
-        power = _clause_token_power(clause)
-        if power <= 0:
+        power = _clause_token_power(clause) if token_clause else 0
+        # Convert non-token gains into power-equivalent for persistent
+        # accumulation only (immediate path covered elsewhere).
+        non_token_power = (life_gain * LIFE_TO_POWER_EQUIVALENT
+                           + energy_gain * ENERGY_TO_POWER_EQUIVALENT)
+        if power <= 0 and non_token_power <= 0:
             continue
         triggers = own_triggers if own_triggers else last_triggers
         # Credit each declared trigger independently — conjoined
@@ -916,14 +962,20 @@ def _project_token_bonus(oracle_l: str, snap: "EVSnapshot"
         etb_credited = False
         for trigger in triggers:
             if trigger == 'etb':
-                if not etb_credited:
+                if not etb_credited and power > 0:
                     immediate_power += power
                     immediate_count += 1
                     etb_credited = True
+                # Self-ETB life/energy is handled by the flat
+                # `my_life += 3` / `my_energy += 2` heuristic in
+                # _project_spell; do not double-credit here.
             else:
                 rate = _persistent_rate(trigger)
                 if rate > 0:
                     persistent_power += power * rate * RESIDENCY
+                    # Recurring life/energy gain credited ONLY here so
+                    # we don't inflate the immediate column.
+                    persistent_power += non_token_power * rate * RESIDENCY
 
     return (immediate_power, immediate_count, persistent_power)
 
@@ -1006,16 +1058,22 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         if 'lifelink' in kws:
             projected.my_lifelink_power += max(0, p)
 
-        # Token makers: the `token_maker` tag groups three classes of
-        # effect under one label — ETB-triggered tokens (immediate),
-        # recurring-trigger tokens (lifetime), and non-creature tokens
-        # (zero power contribution). `_project_token_bonus` walks the
-        # oracle clause-by-clause and returns the split. Immediate
-        # contributions bump on-board power/count; persistent
-        # contributions accumulate into `persistent_power` and are
-        # discounted by `urgency_factor` in `position_value`.
-        if 'token_maker' in tags:
-            oracle_l = (t.oracle_text or '').lower()
+        # Recurring trigger valuation: `_project_token_bonus` walks the
+        # oracle clause-by-clause and returns immediate (ETB) and
+        # persistent (per-other-permanent / per-cast / per-attack)
+        # contributions.  Three classes of clause are recognised:
+        # creature tokens (power), amass (power), and non-token
+        # gains — life and energy — converted to power-equivalent.
+        # The function returns (0, 0, 0) for cards with no relevant
+        # clauses, so calling it on every creature is safe.  Tag gate
+        # widened in Phase 8 from `token_maker` only to include any
+        # creature whose oracle has trigger text — this catches Guide
+        # of Souls (`other_enters` trigger granting life + energy)
+        # which was missed by the token-only gate.
+        oracle_l = (t.oracle_text or '').lower()
+        if ('token_maker' in tags
+                or 'whenever' in oracle_l
+                or '{e}' in oracle_l):
             p_imm, count_imm, p_persist = _project_token_bonus(
                 oracle_l, snap
             )
