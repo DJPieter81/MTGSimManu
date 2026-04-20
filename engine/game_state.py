@@ -1553,7 +1553,62 @@ class GameState:
             x_value = available_for_x // x_info["multiplier"]
             # AI chooses optimal X based on oracle text:
             oracle = (template.oracle_text or '').lower()
-            if 'charge counter' in oracle and 'whenever' in oracle:
+            # Destroy-by-CMC sweeper (Wrath of the Skies-class X-costed
+            # board wipes).  Oracle pattern: "destroy each ... mana value
+            # less than or equal to ... paid".  The engine currently has
+            # no per-card branch for these, so max-X was the fallthrough
+            # default — which wastes mana whenever extra X destroys zero
+            # additional permanents.
+            # Design: docs/design/ev_correctness_overhaul.md §2.C.
+            # Optimizer: pick the smallest X that maximises
+            #   opp_destroyed(X) − my_destroyed(X)
+            # where the destruction sets are non-land permanents with
+            # CMC ≤ X on each player's battlefield.  Smallest-X tiebreak
+            # preserves mana; anything beyond the needed X is strict loss.
+            is_destroy_by_cmc_sweeper = (
+                'destroy each' in oracle
+                and 'mana value' in oracle
+                and ('less than or equal' in oracle or 'or less' in oracle)
+                and 'paid' in oracle
+            )
+            if is_destroy_by_cmc_sweeper:
+                opp_p = self.players[1 - player_idx]
+                # Collect candidate X values — every CMC at or below the
+                # max affordable X, plus 0 itself (free sweep).
+                candidate_xs = {0}
+                for p in (player, opp_p):
+                    for perm in p.battlefield:
+                        if perm is card:
+                            continue
+                        if perm.template.is_land:
+                            continue
+                        cm = perm.template.cmc or 0
+                        if cm <= x_value:
+                            candidate_xs.add(cm)
+                best_net = None
+                best_x = 0
+                for candidate_x in sorted(candidate_xs):
+                    my_hit = sum(
+                        1 for perm in player.battlefield
+                        if perm is not card
+                        and not perm.template.is_land
+                        and (perm.template.cmc or 0) <= candidate_x
+                        and Keyword.INDESTRUCTIBLE not in perm.keywords
+                    )
+                    opp_hit = sum(
+                        1 for perm in opp_p.battlefield
+                        if not perm.template.is_land
+                        and (perm.template.cmc or 0) <= candidate_x
+                        and Keyword.INDESTRUCTIBLE not in perm.keywords
+                    )
+                    net = opp_hit - my_hit
+                    # Prefer higher net; break ties toward smaller X so
+                    # we do not burn mana for no incremental value.
+                    if best_net is None or net > best_net:
+                        best_net = net
+                        best_x = candidate_x
+                x_value = best_x
+            elif 'charge counter' in oracle and 'whenever' in oracle:
                 # Hate permanent (Chalice-style): pick X to maximize NET
                 # disruption = opp_count(X) − my_count(X). Counting only
                 # opp's CMCs (audit F-R3-1's first pass) picks the CMC
