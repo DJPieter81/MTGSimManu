@@ -66,6 +66,18 @@ class EVSnapshot:
     # it via `snap.my_power + persistent_power × urgency_factor` so the
     # credit shrinks as the opponent's clock tightens.
     persistent_power: float = 0.0
+    # Artifact-scaling snapshot terms (Bug D). Each side's battlefield
+    # artifact count is always populated; the matching `has_artifact_
+    # scaling` flag is true only when that side's visible cards (battle-
+    # field, hand, library) contain oracle text that scales on artifact
+    # count — "for each artifact", "metalcraft", "affinity for
+    # artifacts". `position_value` reads the count × mana-clock impact
+    # only when the flag is set, so decks without visible scalers never
+    # receive a blanket artifact-count bonus.
+    my_artifact_count: int = 0
+    opp_artifact_count: int = 0
+    my_has_artifact_scaling: bool = False
+    opp_has_artifact_scaling: bool = False
 
     @property
     def my_clock(self) -> float:
@@ -171,7 +183,50 @@ def snapshot_from_game(game: "GameState", player_idx: int) -> EVSnapshot:
         if kws & {'flying', 'menace', 'trample'}:
             snap.opp_evasion_power += max(0, p)
 
+    # Artifact-scaling terms (Bug D). Count artifacts on each
+    # battlefield; set the `has_artifact_scaling` flag when any
+    # visible card (battlefield, hand, library) references
+    # artifact-count scaling in its oracle text.
+    from engine.cards import CardType
+    snap.my_artifact_count = sum(
+        1 for c in me.battlefield
+        if CardType.ARTIFACT in c.template.card_types
+    )
+    snap.opp_artifact_count = sum(
+        1 for c in opp.battlefield
+        if CardType.ARTIFACT in c.template.card_types
+    )
+    snap.my_has_artifact_scaling = _has_artifact_scaling_signal(me)
+    snap.opp_has_artifact_scaling = _has_artifact_scaling_signal(opp)
+
     return snap
+
+
+_ARTIFACT_SCALING_PATTERNS = (
+    "for each artifact",
+    "metalcraft",
+    "affinity for artifacts",
+)
+
+
+def _has_artifact_scaling_signal(player: "PlayerState") -> bool:
+    """True when any visible card in ``player``'s zones has oracle
+    text that scales with artifact count.
+
+    Scans battlefield + hand + library. "Visible" matches the full-
+    information assumption already used elsewhere in the sim
+    (see the Chalice X-chooser at ``engine/game_state.py:1557`` and
+    the stax-EV library scan in ``ai/stax_ev.py``). A single oracle
+    hit activates the signal so an Affinity deck with Cranial Plating
+    anywhere in deck/hand/board earns the artifact-count term — while
+    a Zoo deck with no artifact scalers never does.
+    """
+    for zone in (player.battlefield, player.hand, player.library):
+        for c in zone:
+            ot = (c.template.oracle_text or "").lower()
+            if any(p in ot for p in _ARTIFACT_SCALING_PATTERNS):
+                return True
+    return False
 
 
 # Life valuation is now in ai/clock.py: life_as_resource()
@@ -806,6 +861,8 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
     """Project the board state after casting a spell (without mutating game state)."""
     t = card.template
     tags = getattr(t, 'tags', set())
+    from engine.cards import CardType
+    cast_is_artifact = CardType.ARTIFACT in t.card_types
     projected = EVSnapshot(
         my_life=snap.my_life,
         opp_life=snap.opp_life,
@@ -829,6 +886,14 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         my_lifelink_power=snap.my_lifelink_power,
         opp_evasion_power=snap.opp_evasion_power,
         cards_drawn_this_turn=snap.cards_drawn_this_turn,
+        # Bug D: carry artifact-scaling fields through the projection.
+        # Without this the post-cast snapshot sees 0 artifacts while the
+        # pre-cast snapshot sees N, and the delta falsely penalises
+        # every artifact-deck cast by N × mana_clock × 20 life-points.
+        my_artifact_count=snap.my_artifact_count + (1 if cast_is_artifact else 0),
+        opp_artifact_count=snap.opp_artifact_count,
+        my_has_artifact_scaling=snap.my_has_artifact_scaling,
+        opp_has_artifact_scaling=snap.opp_has_artifact_scaling,
     )
 
     # Creature deployment
@@ -1045,6 +1110,8 @@ def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
 
     t = card.template
     tags = getattr(t, 'tags', set())
+    from engine.cards import CardType
+    cast_is_artifact = CardType.ARTIFACT in t.card_types
 
     # If opponent has no mana open, they can't respond
     if projected.opp_mana < 1:
@@ -1182,6 +1249,11 @@ def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
         my_lifelink_power=snap.my_lifelink_power,
         opp_evasion_power=snap.opp_evasion_power,
         cards_drawn_this_turn=snap.cards_drawn_this_turn,
+        # Bug D: counter reverts artifact-count to pre-cast state.
+        my_artifact_count=snap.my_artifact_count,
+        opp_artifact_count=snap.opp_artifact_count,
+        my_has_artifact_scaling=snap.my_has_artifact_scaling,
+        opp_has_artifact_scaling=snap.opp_has_artifact_scaling,
     )
 
     # Build the "removed" state: creature resolves (ETB fires, tokens created),
@@ -1222,6 +1294,14 @@ def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
         my_lifelink_power=projected.my_lifelink_power - lifelink_sub,
         opp_evasion_power=projected.opp_evasion_power,
         cards_drawn_this_turn=projected.cards_drawn_this_turn,
+        # Bug D: if the resolved-then-removed spell was an artifact,
+        # it briefly entered and then left — net delta vs `projected`
+        # is −1 artifact.
+        my_artifact_count=max(0, projected.my_artifact_count
+                              - (1 if cast_is_artifact else 0)),
+        opp_artifact_count=projected.opp_artifact_count,
+        my_has_artifact_scaling=projected.my_has_artifact_scaling,
+        opp_has_artifact_scaling=projected.opp_has_artifact_scaling,
     )
 
     # Weighted expected snapshot
@@ -1260,6 +1340,13 @@ def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
         my_lifelink_power=int(blend('my_lifelink_power')),
         opp_evasion_power=int(blend('opp_evasion_power')),
         cards_drawn_this_turn=int(blend('cards_drawn_this_turn')),
+        my_artifact_count=int(blend('my_artifact_count')),
+        opp_artifact_count=int(blend('opp_artifact_count')),
+        # Signal flags are stable across counter/remove/pass branches
+        # (they describe the deck's scaling capability, not a per-card
+        # transition), so use the projected values directly.
+        my_has_artifact_scaling=projected.my_has_artifact_scaling,
+        opp_has_artifact_scaling=projected.opp_has_artifact_scaling,
     )
 
 
@@ -1610,6 +1697,10 @@ def estimate_future_value(snap: EVSnapshot, archetype: str,
         my_evasion_power=snap.my_evasion_power,
         my_lifelink_power=snap.my_lifelink_power,
         opp_evasion_power=snap.opp_evasion_power,
+        my_artifact_count=snap.my_artifact_count,
+        opp_artifact_count=snap.opp_artifact_count,
+        my_has_artifact_scaling=snap.my_has_artifact_scaling,
+        opp_has_artifact_scaling=snap.opp_has_artifact_scaling,
     )
 
     # Combat damage over turns

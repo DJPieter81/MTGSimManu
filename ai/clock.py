@@ -338,5 +338,23 @@ def position_value(snap: "EVSnapshot", archetype: str = "midrange") -> float:
     persistent_value = (snap.persistent_power * snap.urgency_factor
                         * mana_clock_impact(snap) * 20.0)
 
+    # Artifact-scaling term (Bug D). Each marginal artifact is worth
+    # one mana-clock unit of future value — rationale: a card that says
+    # "+1/+0 for each artifact" converts each artifact into roughly one
+    # point of power, and a card that says "affinity for artifacts" /
+    # "costs {1} less for each artifact" converts each artifact into
+    # one point of mana. Both route through mana_clock_impact × 20 to
+    # reach life-point units, consistent with card_value / mana_value.
+    # The term is gated on `has_artifact_scaling` so non-artifact decks
+    # never receive a blanket bonus — removing an Ornithopter from a
+    # Zoo player does not change position_value.
+    artifact_scaling_value = 0.0
+    if snap.my_has_artifact_scaling:
+        artifact_scaling_value += (snap.my_artifact_count
+                                   * mana_clock_impact(snap) * 20.0)
+    if snap.opp_has_artifact_scaling:
+        artifact_scaling_value -= (snap.opp_artifact_count
+                                   * mana_clock_impact(snap) * 20.0)
+
     return (clock_diff + card_value + mana_value + life_advantage
-            + persistent_value)
+            + persistent_value + artifact_scaling_value)
