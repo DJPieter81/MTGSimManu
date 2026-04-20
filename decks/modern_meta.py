@@ -33,6 +33,7 @@ METAGAME_SHARES = {
     "Pinnacle Affinity": 5.7,
     "Azorius Control": 2.5,
     "Azorius Control (WST)": 0.0,
+    "Azorius Control (WST v2)": 0.0,
 }
 
 # Full decklists: mainboard + sideboard
@@ -601,6 +602,42 @@ MODERN_DECKS: Dict[str, Dict[str, Dict[str, int]]] = {
             "Dovin's Veto": 1,
             "Force of Negation": 1,
             "Celestial Purge": 1,
+        },
+    },
+
+    "Azorius Control (WST v2)": {
+        # v2 — Chalice + Solitude build. Structural aggro-defense upgrade
+        # over v1 (which had zero MB blockers, 31% weighted WR).
+        # Delta from v1: +4 Solitude MB, -3 Sanctifier (→SB), -1 Supreme
+        # Verdict (redundant with Wrath of the Skies). SB: +3 Sanctifier,
+        # -1 Subtlety, -1 Damping Sphere.
+        "mainboard": {
+            "Wan Shi Tong, Librarian": 4,
+            "Solitude": 4,
+            "March of Otherworldly Light": 4,
+            "Chalice of the Void": 4,
+            "Wrath of the Skies": 4,
+            "Counterspell": 4,
+            "Prismatic Ending": 4,
+            "Supreme Verdict": 2,
+            "Teferi, Time Raveler": 3,
+            "Dovin's Veto": 2,
+            "Flooded Strand": 4,
+            "Polluted Delta": 4,
+            "Hallowed Fountain": 4,
+            "Meticulous Archive": 1,
+            "Island": 7,
+            "Plains": 5,
+        },
+        "sideboard": {
+            "Sanctifier en-Vec": 3,
+            "Subtlety": 2,
+            "Damping Sphere": 2,
+            "Rest in Peace": 2,
+            "Engineered Explosives": 2,
+            "Consign to Memory": 2,
+            "Dovin's Veto": 1,
+            "Force of Negation": 1,
         },
     },
 

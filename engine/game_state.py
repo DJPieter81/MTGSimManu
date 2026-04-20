@@ -327,73 +327,6 @@ TOKEN_DEFS = {
 }
 
 
-# Cycling variants (design: docs/design/ev_correctness_overhaul.md §5).
-# Landcycling / typecycling tutor a matching card from the library
-# instead of drawing a random card.
-_CYCLING_VARIANT_PATTERN = re.compile(
-    r'\b(?P<type>[\w/ ]+?)cycling\b\s*[\{(—\-]',
-    re.IGNORECASE,
-)
-
-
-def _cycling_tutor_predicate(oracle: str):
-    """Inspect a cyclable card's oracle text and return a predicate
-    over `CardTemplate` matching the cards a tutor variant of cycling
-    would search for.  Returns None when the card is plain cycling
-    (no type prefix), meaning the standard draw-a-card path applies.
-
-    Handles: `landcycling`, `artifact landcycling`, `basic landcycling`,
-    `plainscycling` / `islandcycling` / `swampcycling` / `mountaincycling` /
-    `forestcycling`, and generic `<creature-type>cycling`.  Unknown
-    variants fall back to the plain path.
-    """
-    if not oracle:
-        return None
-    # Don't match "plain" cycling — it has no type prefix right before
-    # 'cycling'.  The regex requires at least one non-space char before
-    # 'cycling' as the 'type' group, so plain 'cycling {X}' never matches.
-    for match in _CYCLING_VARIANT_PATTERN.finditer(oracle):
-        raw_type = match.group('type').strip().lower()
-        if not raw_type:
-            continue
-        # Guard: the match must be inside a cycling cost sentence, not
-        # e.g. mid-word usage. The preceding char should be a space or
-        # the start of a paragraph.
-        start_idx = match.start('type')
-        prev_char = oracle[start_idx - 1] if start_idx > 0 else ' '
-        if not (prev_char.isspace() or prev_char in '\n.'):
-            continue
-        # Basic landcycling.
-        if raw_type == 'basic land':
-            return lambda tmpl: (
-                tmpl.is_land and Supertype.BASIC in tmpl.supertypes)
-        # Artifact landcycling.
-        if raw_type == 'artifact land':
-            return lambda tmpl: (
-                tmpl.is_land and CardType.ARTIFACT in tmpl.card_types)
-        # Plain landcycling.
-        if raw_type == 'land':
-            return lambda tmpl: tmpl.is_land
-        # Basic-land-type cycling: plains, island, swamp, mountain,
-        # forest — searches a basic land of that subtype.
-        basic_subtypes = {
-            'plains': 'Plains', 'island': 'Island', 'swamp': 'Swamp',
-            'mountain': 'Mountain', 'forest': 'Forest',
-        }
-        if raw_type in basic_subtypes:
-            st = basic_subtypes[raw_type]
-            return lambda tmpl, _st=st: (
-                tmpl.is_land and _st in (tmpl.subtypes or []))
-        # Creature-type cycling (e.g., "wizardcycling"): any creature
-        # whose subtypes include the type word (case-insensitive).
-        type_word = raw_type.capitalize()
-        return lambda tmpl, _tw=type_word: (
-            CardType.CREATURE in tmpl.card_types
-            and any(s == _tw for s in (tmpl.subtypes or []))
-        )
-    return None
-
-
 class GameState:
     """Complete state of an MTG game between two players."""
 
@@ -1621,62 +1554,7 @@ class GameState:
             x_value = available_for_x // x_info["multiplier"]
             # AI chooses optimal X based on oracle text:
             oracle = (template.oracle_text or '').lower()
-            # Destroy-by-CMC sweeper (Wrath of the Skies-class X-costed
-            # board wipes).  Oracle pattern: "destroy each ... mana value
-            # less than or equal to ... paid".  The engine currently has
-            # no per-card branch for these, so max-X was the fallthrough
-            # default — which wastes mana whenever extra X destroys zero
-            # additional permanents.
-            # Design: docs/design/ev_correctness_overhaul.md §2.C.
-            # Optimizer: pick the smallest X that maximises
-            #   opp_destroyed(X) − my_destroyed(X)
-            # where the destruction sets are non-land permanents with
-            # CMC ≤ X on each player's battlefield.  Smallest-X tiebreak
-            # preserves mana; anything beyond the needed X is strict loss.
-            is_destroy_by_cmc_sweeper = (
-                'destroy each' in oracle
-                and 'mana value' in oracle
-                and ('less than or equal' in oracle or 'or less' in oracle)
-                and 'paid' in oracle
-            )
-            if is_destroy_by_cmc_sweeper:
-                opp_p = self.players[1 - player_idx]
-                # Collect candidate X values — every CMC at or below the
-                # max affordable X, plus 0 itself (free sweep).
-                candidate_xs = {0}
-                for p in (player, opp_p):
-                    for perm in p.battlefield:
-                        if perm is card:
-                            continue
-                        if perm.template.is_land:
-                            continue
-                        cm = perm.template.cmc or 0
-                        if cm <= x_value:
-                            candidate_xs.add(cm)
-                best_net = None
-                best_x = 0
-                for candidate_x in sorted(candidate_xs):
-                    my_hit = sum(
-                        1 for perm in player.battlefield
-                        if perm is not card
-                        and not perm.template.is_land
-                        and (perm.template.cmc or 0) <= candidate_x
-                        and Keyword.INDESTRUCTIBLE not in perm.keywords
-                    )
-                    opp_hit = sum(
-                        1 for perm in opp_p.battlefield
-                        if not perm.template.is_land
-                        and (perm.template.cmc or 0) <= candidate_x
-                        and Keyword.INDESTRUCTIBLE not in perm.keywords
-                    )
-                    net = opp_hit - my_hit
-                    # Prefer higher net; break ties toward smaller X so
-                    # we do not burn mana for no incremental value.
-                    if best_net is None or net > best_net:
-                        best_net = net
-                        best_x = candidate_x
-                x_value = best_x
-            elif 'charge counter' in oracle and 'whenever' in oracle:
+            if 'charge counter' in oracle and 'whenever' in oracle:
                 # Hate permanent (Chalice-style): pick X to maximize NET
                 # disruption = opp_count(X) − my_count(X). Counting only
                 # opp's CMCs (audit F-R3-1's first pass) picks the CMC
@@ -1718,6 +1596,47 @@ class GameState:
                     x_value = best_cmc
                 elif x_value >= 1:
                     x_value = 1  # fallback when no data
+            elif ('destroy each' in oracle
+                  and 'mana value less than or equal to' in oracle):
+                # Scaling board-wipe-by-X (Wrath of the Skies pattern):
+                # "Destroy each artifact, creature, and enchantment with
+                # mana value less than or equal to the amount of {E} paid
+                # this way." Pick X to maximize (opp_kills − my_kills)
+                # over opp permanents at CMC ≤ X. Without this, X
+                # defaulted to max available mana — firing X=0 on T2
+                # with zero available_for_x wipes only tokens and wastes
+                # the card (audit F-Wrath-X).
+                opp = self.players[1 - player_idx]
+                me_bf = self.players[player_idx].battlefield
+                def _is_wipe_target(c):
+                    return (CardType.CREATURE in c.template.card_types
+                            or CardType.ARTIFACT in c.template.card_types
+                            or CardType.ENCHANTMENT in c.template.card_types)
+                opp_kills_by_x = {}
+                my_kills_by_x = {}
+                for c in opp.battlefield:
+                    if _is_wipe_target(c):
+                        cm = c.template.cmc or 0
+                        opp_kills_by_x[cm] = opp_kills_by_x.get(cm, 0) + 1
+                for c in me_bf:
+                    if _is_wipe_target(c):
+                        cm = c.template.cmc or 0
+                        my_kills_by_x[cm] = my_kills_by_x.get(cm, 0) + 1
+                # For each candidate X ≤ available, compute cumulative kills.
+                best_score = -1
+                best_x = 0
+                for X in range(0, int(x_value) + 1):
+                    opp_hit = sum(n for cm, n in opp_kills_by_x.items()
+                                   if cm <= X)
+                    my_hit = sum(n for cm, n in my_kills_by_x.items()
+                                  if cm <= X)
+                    score = opp_hit - my_hit
+                    # Strict improvement: only prefer larger X if it
+                    # adds net kills.
+                    if score > best_score:
+                        best_score = score
+                        best_x = X
+                x_value = best_x
             # +1/+1 counter creatures: use max mana (Ballista-style)
             # (default x_value is already max)
             # Pay the actual X cost
@@ -3706,45 +3625,69 @@ class GameState:
             player.hand.remove(card)
         card.zone = "graveyard"
         player.graveyard.append(card)
-
-        # Cycling variant — plain cycling draws a card, but landcycling /
-        # typecycling tutors a matching card from the library.
-        # Design: docs/design/ev_correctness_overhaul.md §5.
-        oracle = (card.template.oracle_text or '').lower()
-        tutor_predicate = _cycling_tutor_predicate(oracle)
-        if tutor_predicate is not None:
-            # Typecycling path: search library for a matching card, put
-            # it into hand, then shuffle.  If no match, the search still
-            # resolves (reveal nothing); library is shuffled regardless.
-            found = None
-            for c in player.library:
-                if tutor_predicate(c.template):
-                    found = c
-                    break
-            drawn_name = "—"
-            if found is not None:
-                player.library.remove(found)
-                found.zone = "hand"
-                player.hand.append(found)
-                drawn_name = found.name
-            # Shuffle the library (same as standard tutor effects).
+        # Landcycling / typecycling tutors; plain cycling draws.
+        variant = card.template.cycling_variant_data
+        cost_desc = f"pay {cost['life']} life" if cost["life"] > 0 else f"pay {cost['mana']} mana"
+        if variant is not None:
+            found = self._cycling_tutor_search(player_idx, variant)
+            # CR 701.18d — shuffle after the search, whether or not a
+            # matching card was found.
             self.rng.shuffle(player.library)
-            cost_desc = (f"pay {cost['life']} life" if cost['life'] > 0
-                         else f"pay {cost['mana']} mana")
-            self.log.append(
-                f"T{self.display_turn} P{player_idx+1}: "
-                f"Cycle {card.name} ({cost_desc}, tutor: {drawn_name})")
+            player.library_searches_this_game += 1
+            self._trigger_library_search(player_idx)
+            if found is not None:
+                self.log.append(f"T{self.display_turn} P{player_idx+1}: "
+                               f"Cycle {card.name} ({cost_desc}, "
+                               f"tutor: {found.name})")
+            else:
+                self.log.append(f"T{self.display_turn} P{player_idx+1}: "
+                               f"Cycle {card.name} ({cost_desc}, "
+                               f"tutor: none found)")
             return True
-
-        # Plain cycling: draw a card.  Include the drawn card's name in
-        # the log so any card "appearing from nowhere" on a later turn
-        # can be traced back (conservation-invariant).
+        # Plain cycling — draw a card; include the drawn card's name in
+        # the log so that any card "appearing from nowhere" on a later
+        # turn can be traced back to the cycle that produced it
+        # (conservation-invariant).
         drawn = self.draw_cards(player_idx, 1)
         drawn_name = drawn[0].name if drawn else "—"
-        cost_desc = f"pay {cost['life']} life" if cost["life"] > 0 else f"pay {cost['mana']} mana"
         self.log.append(f"T{self.display_turn} P{player_idx+1}: "
                        f"Cycle {card.name} ({cost_desc}, draw: {drawn_name})")
         return True
+
+    def _cycling_tutor_search(self, player_idx: int,
+                              variant: Dict) -> Optional["CardInstance"]:
+        """Search ``player_idx``'s library for a card that satisfies the
+        landcycling / typecycling predicate.  Moves the card to hand and
+        returns it, or returns None if no legal target exists.  Caller
+        is responsible for shuffling the library and firing search
+        triggers.
+
+        ``variant`` is a dict produced by
+        :func:`engine.oracle_parser.parse_cycling_variant` with keys
+        ``require_types``, ``require_supertypes``, ``require_subtypes``.
+        All three sets are ANDed; empty set = no constraint.
+        """
+        req_types = variant.get('require_types') or set()
+        req_supers = variant.get('require_supertypes') or set()
+        req_subs = variant.get('require_subtypes') or set()
+        player = self.players[player_idx]
+        for lib_card in player.library:
+            tmpl = lib_card.template
+            card_types = {ct.value for ct in tmpl.card_types}
+            supertypes = {st.value for st in tmpl.supertypes}
+            subtypes = set(tmpl.subtypes)
+            if req_types and not req_types.issubset(card_types):
+                continue
+            if req_supers and not req_supers.issubset(supertypes):
+                continue
+            if req_subs and not req_subs.issubset(subtypes):
+                continue
+            # Match — tutor it to hand.
+            player.library.remove(lib_card)
+            lib_card.zone = "hand"
+            player.hand.append(lib_card)
+            return lib_card
+        return None
 
     ALL_COLORS = ["W", "U", "B", "R", "G"]
 

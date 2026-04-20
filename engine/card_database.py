@@ -1181,13 +1181,14 @@ class CardDatabase:
 
         # ── Populate oracle-derived properties ──
         from .oracle_parser import (
-            parse_ritual_mana, parse_cycling_cost, parse_energy_production,
-            has_cascade, parse_x_cost, parse_domain_reduction, detect_power_scaling,
-            parse_splice_cost,
+            parse_ritual_mana, parse_cycling_cost, parse_cycling_variant,
+            parse_energy_production, has_cascade, parse_x_cost,
+            parse_domain_reduction, detect_power_scaling, parse_splice_cost,
         )
         oracle = template.oracle_text or ''
         template.ritual_mana = parse_ritual_mana(oracle)
         template.cycling_cost_data = parse_cycling_cost(oracle)
+        template.cycling_variant_data = parse_cycling_variant(oracle)
         template.energy_production = parse_energy_production(oracle)
         template.is_cascade = has_cascade(oracle)
         template.x_cost_data = parse_x_cost(oracle, name, data.get("manaCost", ""))

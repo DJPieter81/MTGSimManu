@@ -420,6 +420,7 @@ Two remaining smoke failures are accepted trade-offs — Thraben Charm T4 (multi
 | 1 | Amulet Titan WR still low (~23% vs expected ~45%) — Arboreal Grazer not prioritising bounce lands; AI doesn't model Amulet mana loop value | `ai/ev_player.py`, `_score_land()` |
 | 2 | Living End ~12% vs Boros — AI doesn't attack aggressively after Living End resolves; Force of Negation not held for protection | `ai/ev_player.py`, `ai/response.py` |
 | 3 | Psychic Frog early EV still negative when Orcish Bowmasters is better option (correct priority, but EV magnitude off) | `ai/ev_evaluator.py` |
+| 4 | Chalice of the Void (and other stax permanents) undervalued by `_score_spell` — treated as generic 2-mana artifact. First attempt with `ai/stax_ev.py` built but not wired; see "Failed attempt" below. Next try needs threat-gating. | `ai/ev_player.py`, `ai/stax_ev.py` |
 
 #### P2
 | # | Bug | Location |
@@ -428,6 +429,57 @@ Two remaining smoke failures are accepted trade-offs — Thraben Charm T4 (multi
 | 5 | Spelunking "Lands you control enter untapped" not applied to normal `play_land` path consistently | `engine/game_state.py` |
 | 6 | Elesh Norn trigger doubling not implemented | `engine/game_state.py` |
 | 7 | Phelia blink-on-attack not fully implemented | `engine/card_effects.py` |
+
+---
+
+### Failed attempt — Chalice/Stax EV overlay (session, 2026-04-20)
+
+**What was tried:** Oracle-driven stax EV module (`ai/stax_ev.py`) covering Chalice of the
+Void, Blood Moon, Ethersworn Canonist/Rule of Law, Torpor Orb. Family detection by oracle
+pattern (no hardcoded names). Chalice valuator picks best X by `opp_cmcs[X] - my_cmcs[X]`,
+mirroring `engine/game_state.py:1557`. Turn decay zeroes the bonus by T5. Capped at 6 net
+locked spells. 13 unit tests, all passing. Module wired into `_score_spell` via one-line
+call alongside the existing duplicate-Chalice penalty.
+
+**Why it failed:** At n=30 field sweep, WST v1 regressed from ~36% → 32% field WR after
+the overlay was added in isolation. Direct cause identified in Bo3 replay
+`v2_vs_boros_60100.txt` and `v1_vs_boros_60100.txt`:
+  - **Same seed, same opening hand, same opp T2 Ajani cast.**
+  - v1 (no overlay): holds mana T2, Counterspells Ajani on cast → opp enters T3 with
+    empty board.
+  - v2 (with overlay): taps out for Chalice @ X=1 on T2 → Ajani resolves, creates Cat
+    token → opp enters T3 with Ajani + 2/1 Cat.
+
+G2 T2 is even clearer: v2 has Prismatic Ending in hand, Ragavan already in play stealing
+cards, and casts Chalice instead of PE on the Ragavan. The concrete answer on the actual
+threat is always beaten by the projected lock value on future draws.
+
+**Root cause of the miscalibration:** Stax EV is computed from opponent's library
+composition in a vacuum, without reference to the current-turn threat picture. On T2 vs
+Boros, when Counterspell/PE has a concrete target, the overlay makes Chalice EV compete
+with and often beat Counterspell's heuristic score — so the AI swaps the concrete answer
+for a probabilistic lock. In Storm (where there's no board threat and Chalice really does
+lock the whole game), the same overlay is correct and v2 gains +7pp.
+
+**Next attempt must be threat-gated:** stax EV should only fire when
+(a) no active opp threat requires this turn's mana, or (b) the AI would otherwise idle
+the turn. Effectively: "stax is downtime insurance, not on-curve tempo."
+
+**What was shipped (this session):**
+  - `ai/stax_ev.py` — module present but **not** imported by any caller. Kept as
+    reference for the oracle patterns + 13 unit tests that verify sign/magnitude. Anyone
+    picking up the Chalice problem edits this file rather than starting fresh.
+  - `tests/test_stax_ev.py` — passes standalone.
+  - `Azorius Control (WST v2)` — new deck entry with `METAGAME_SHARES = 0.0`. +4 Solitude
+    MD, −3 Sanctifier (→SB), −1 Supreme Verdict vs v1 WST. At n=30 post-overlay: 34.6%
+    field WR. Pre-overlay comparison unavailable because the WST v2 deck was introduced
+    in the same session as the overlay; the 34.6% number is NOT directly comparable to
+    v1's ~36% baseline.
+  - This writeup.
+
+**What was NOT shipped:**
+  - Wiring in `_score_spell`. Reverted.
+  - Any change to v1 WST.
 
 ---
 

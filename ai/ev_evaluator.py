@@ -610,11 +610,18 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
     if _is_immediate_interaction(oracle, tags):
         signals.append('immediate_interaction')
 
-    # 5. Card draw this turn.
+    # 5. Card draw this turn — includes true draw AND impulse-draw
+    #    (exile top N, may play).  Impulse-draw gives card advantage
+    #    this turn even though it isn't technically "draw".
     if 'draw' in oracle and (
             'draw a card' in oracle or 'draw two' in oracle
             or 'draw three' in oracle or 'draw four' in oracle
             or 'cantrip' in tags or 'card_advantage' in tags):
+        signals.append('card_draw')
+    elif ('exile' in oracle and 'may play' in oracle
+          and ('cantrip' in tags or 'card_advantage' in tags)):
+        # Impulse draw: Reckless Impulse, Wrenn's Resolve, Light Up the
+        # Stage — exile top N cards and may play them this turn.
         signals.append('card_draw')
 
     # 6. Tutor — library search.
@@ -635,8 +642,18 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
             card, snap, game, player_idx):
         signals.append('threshold_enabler')
 
-    # 10. Storm / combo chain continuation.
-    if (archetype in ('storm', 'combo') and snap.storm_count > 0
+    # 10. Storm / combo chain continuation — fires mid-chain (storm>0)
+    #     OR when the deck is ready to start chaining (storm=0 but a
+    #     cost_reducer is on the battlefield, meaning we have engine pieces
+    #     deployed and should start firing spells).
+    has_reducer_on_board = (
+        game is not None
+        and any('cost_reducer' in getattr(p.template, 'tags', set())
+                for p in game.players[player_idx].battlefield
+                if not p.template.is_land)
+    ) if game is not None else False
+    if (archetype in ('storm', 'combo')
+            and (snap.storm_count > 0 or has_reducer_on_board)
             and ('ritual' in tags or 'cantrip' in tags
                  or 'cost_reducer' in tags)):
         signals.append('combo_continuation')
@@ -656,8 +673,13 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
         signals.append('planeswalker_loyalty')
 
     # 14. Mana source — permanent tapping for mana now enables later plays.
+    #     Also covers ritual instants/sorceries that add mana on resolution
+    #     (Pyretic Ritual "Add RRR", Desperate Ritual "Add RRR", etc.) —
+    #     they're tagged 'ritual' and their oracle says "add {color}".
     produces = getattr(t, 'produces_mana', None) or []
     if produces or ('{t}:' in oracle and 'add' in oracle):
+        signals.append('mana_source')
+    elif 'ritual' in tags and 'add' in oracle:
         signals.append('mana_source')
 
     # 15. X-cost hate permanent (Chalice-style "cost X, get X charge
