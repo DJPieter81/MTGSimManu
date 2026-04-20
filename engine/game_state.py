@@ -18,6 +18,7 @@ v2 additions:
 """
 from __future__ import annotations
 import random
+import re
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple, Set, Any, Callable
 from enum import Enum

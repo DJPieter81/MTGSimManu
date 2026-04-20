@@ -106,8 +106,10 @@ class TestCycleLogNamesDrawnCard:
     def test_cycle_log_includes_drawn_card_when_mana_cost(self, card_db):
         """Cycle with a mana cost — same invariant, different cost
         path.  Uses Censor (plain ``Cycling {U}``) to exercise the
-        mana-cost branch; Lórien Revealed's Islandcycling now tutors
-        instead of drawing, so it is not a fit for this invariant."""
+        mana-cost branch; landcycling / typecycling variants tutor a
+        specific card type instead (see
+        test_landcycling_searches_library.py), so they are not a fit
+        for the drawn-card invariant."""
         game = GameState(rng=random.Random(0))
         # Give controller a blue source to pay {U}.
         _put_land_on_battlefield(game, card_db, "Island", 0)

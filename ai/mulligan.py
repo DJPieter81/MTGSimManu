@@ -140,15 +140,52 @@ class MulliganDecider:
                         self.last_reason = "no cost reducer and no ritual+cantrip+finisher backup"
                         return False
 
-            # Require creature on curve
+            # Require creature on curve, with signal-based escape
+            # (design: docs/design/ev_correctness_overhaul.md §2.F).
+            # The rigid "must have a ≤N-CMC creature" gate ships hands
+            # that are anti-matchup-strong (removal + on-curve finishers
+            # + artifact hate) back to mulligan.  Relax it: if the hand
+            # lacks a curve creature but has enough actionable spells
+            # in the N+2 CMC band (interaction, threats, efficient
+            # bodies), treat the substitute development as sufficient.
             if gp.mulligan_require_creature_cmc > 0:
                 has_creature = any(
                     c.template.is_creature and (c.template.cmc or 0) <= gp.mulligan_require_creature_cmc
                     for c in spells
                 )
                 if not has_creature and cards_in_hand >= 6:
-                    self.last_reason = f"no creature with CMC ≤ {gp.mulligan_require_creature_cmc}"
-                    return False
+                    # Actionable spells across the first ~4 turns:
+                    # oracle/tag-driven, no card names.
+                    max_actionable_cmc = gp.mulligan_require_creature_cmc + 2
+                    actionable_spells = [
+                        s for s in spells
+                        if (s.template.cmc or 0) <= max_actionable_cmc
+                        and (
+                            s.template.is_creature
+                            or bool(getattr(s.template, 'tags', set())
+                                    & {'removal', 'counterspell',
+                                       'board_wipe', 'threat',
+                                       'efficient_threat',
+                                       'card_advantage', 'cantrip'})
+                        )
+                    ]
+                    # Rules-constant floor: three actionable spells
+                    # cover T1-T3 plays (or T2-T4 if we miss land 1),
+                    # matching the "curve-out" expectation the original
+                    # rule was enforcing.  A hand with fewer than three
+                    # has nothing to substitute for the missing creature.
+                    MIN_ACTIONABLE_FOR_CURVE_SUBSTITUTE = 3
+                    if len(actionable_spells) < MIN_ACTIONABLE_FOR_CURVE_SUBSTITUTE:
+                        self.last_reason = f"no creature with CMC ≤ {gp.mulligan_require_creature_cmc}"
+                        return False
+                    # Keep path: note the substitute in the reason so
+                    # replay logs remain legible.
+                    self.last_reason = (
+                        f"no creature with CMC ≤ "
+                        f"{gp.mulligan_require_creature_cmc} but "
+                        f"{len(actionable_spells)} actionable spells "
+                        f"≤ CMC {max_actionable_cmc}"
+                    )
 
             # Has key card?
             # C1 fix: key card alone is not enough — also require castable

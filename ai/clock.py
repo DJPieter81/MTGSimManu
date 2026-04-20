@@ -338,5 +338,21 @@ def position_value(snap: "EVSnapshot", archetype: str = "midrange") -> float:
     persistent_value = (snap.persistent_power * snap.urgency_factor
                         * mana_clock_impact(snap) * 20.0)
 
+    # Artifact-count resource (design: docs/design/ev_correctness_overhaul.md §4).
+    # Each artifact is worth roughly +1 virtual power to decks that
+    # actually scale with artifact count: "+1/+0 per artifact" equipment,
+    # affinity cost reduction, metalcraft activation.  Gated on the
+    # scaling_active flag so Zoo / Burn / generic decks never accrue
+    # this bonus.  Differential formulation (my − opp) mirrors clock_diff.
+    artifact_diff = 0
+    if snap.my_artifact_scaling_active:
+        artifact_diff += snap.my_artifact_count
+    if snap.opp_artifact_scaling_active:
+        artifact_diff -= snap.opp_artifact_count
+    # Convert each marginal artifact into life-point units via the same
+    # mana_clock_impact × 20 scaling used by card_value / mana_value — a
+    # rules-derived "value per power point" rather than a tuning constant.
+    artifact_value = artifact_diff * mana_clock_impact(snap) * 20.0
+
     return (clock_diff + card_value + mana_value + life_advantage
-            + persistent_value)
+            + persistent_value + artifact_value)
