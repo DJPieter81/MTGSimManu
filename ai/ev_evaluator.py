@@ -360,6 +360,276 @@ def _has_immediate_effect(card: "CardInstance") -> bool:
     return True  # default: assume some immediate value
 
 
+# ─────────────────────────────────────────────────────────────────────
+# This-turn-value signals — deferral baseline (design: docs/design/
+# ev_correctness_overhaul.md §3).  A cast with no same-turn signal
+# has its EV baseline shifted from "do nothing" to "cast next turn at
+# equivalent cost": such casts score the (small) exposure cost and
+# get filtered out by the pass-preference tiebreaker in ev_player.py.
+# ─────────────────────────────────────────────────────────────────────
+
+_ETB_EFFECT_KEYWORDS = (
+    'deal', 'draw', 'discard', 'destroy', 'exile', 'counter', 'return',
+    'gain', 'lose', 'create', 'search', 'put', 'add', 'scry', 'surveil',
+    'mill', 'amass', 'investigate', 'clue', 'sacrifice', 'choose',
+)
+
+
+def _has_self_etb_effect(oracle: str) -> bool:
+    """True if the card has a self-ETB trigger whose effect is material
+    (draws cards, deals damage, makes tokens, etc.) rather than vanilla.
+
+    Self-ETB matches "when ~ enters", "when this creature enters",
+    "when CARDNAME enters" — not "whenever a creature enters", which is
+    a board trigger that requires another entry to fire.
+    """
+    if 'enters' not in oracle:
+        return False
+    # Reject pure "whenever another creature enters" / "whenever a
+    # creature enters the battlefield" patterns — those wait for a
+    # separate entry event, not this cast.
+    self_patterns = (
+        'when this creature enters', 'when this artifact enters',
+        'when this enchantment enters', 'when this planeswalker enters',
+        'when this land enters', 'when this permanent enters',
+        'when ~ enters', 'when this token enters',
+    )
+    has_self_trigger = any(p in oracle for p in self_patterns)
+    # Fallback: "When <name> enters" — the name is the card's own, so
+    # match "^when " followed by "enters" with nothing in between
+    # identifying another creature/permanent qualifier.  Cheap check:
+    # "when" appears and "enters" follows, without "another" / "a
+    # creature" / "a permanent" between them.
+    if not has_self_trigger:
+        import re as _re
+        # Look for the first "when ... enters" within a sentence
+        m = _re.search(r'when\s+([^.]{0,50}?)\s+enters', oracle)
+        if m:
+            preamble = m.group(1)
+            generic_phrases = ('another', 'a creature', 'a permanent',
+                               'an artifact', 'an enchantment', 'a land',
+                               'a nontoken', 'one or more', 'any creature',
+                               'any opponent', 'you cast', 'you attack')
+            if not any(gp in preamble for gp in generic_phrases):
+                has_self_trigger = True
+    if not has_self_trigger:
+        return False
+    # Must have a material effect verb in the oracle (trigger text is
+    # in the same sentence usually; this is an over-approximation but
+    # keeps false-negatives low).
+    return any(kw in oracle for kw in _ETB_EFFECT_KEYWORDS)
+
+
+def _is_immediate_interaction(oracle: str, tags) -> bool:
+    """True if the spell directly affects stack / board on resolution:
+    damage to a target, destroy/exile/counter a target permanent or
+    spell, or force a discard."""
+    if 'removal' in tags or 'board_wipe' in tags or 'counterspell' in tags:
+        return True
+    # Oracle-driven fallbacks.
+    if 'target' in oracle and (
+            'deals' in oracle and 'damage' in oracle):
+        return True
+    if 'destroy target' in oracle or 'exile target' in oracle:
+        return True
+    if 'counter target' in oracle:
+        return True
+    if 'target opponent' in oracle and 'discard' in oracle:
+        return True
+    return False
+
+
+def _cast_enables_threshold(card: "CardInstance", snap: EVSnapshot,
+                             game: "GameState", player_idx: int) -> bool:
+    """True if casting this artifact/creature advances an oracle-
+    visible threshold on a card in my hand or battlefield.
+
+    Scans my hand + battlefield for oracle text containing threshold
+    phrases ("metalcraft", "affinity for", "for each artifact", etc.).
+    When found, casting `card` meaningfully changes the relevant count
+    (currently checks artifact count), which in turn changes the
+    future value of the scaling card.  Used by Affinity and artifact-
+    synergy decks.
+    """
+    t = card.template
+    from engine.cards import CardType
+    card_is_artifact = CardType.ARTIFACT in t.card_types
+    if not card_is_artifact:
+        return False  # other counts (enchantment, creature) not modelled
+    me = game.players[player_idx]
+    # Are there cards on my side whose oracle references artifact count?
+    threshold_phrases = (
+        'metalcraft', 'affinity for artifacts', 'for each artifact',
+        'for every artifact', 'artifact you control',
+    )
+    for zone in (me.hand, me.battlefield):
+        for c in zone:
+            if c is card:
+                continue
+            zo = (c.template.oracle_text or '').lower()
+            if any(p in zo for p in threshold_phrases):
+                return True
+    return False
+
+
+def _has_equipment_carrier_and_mana(card: "CardInstance",
+                                     snap: EVSnapshot,
+                                     game: "GameState",
+                                     player_idx: int) -> bool:
+    """True if casting this equipment card has a same-turn equip
+    payoff: at least one creature on my battlefield AND affordable
+    equip cost after paying the cast cost."""
+    t = card.template
+    tags = getattr(t, 'tags', set())
+    if 'equipment' not in tags:
+        return False
+    equip_cost = getattr(t, 'equip_cost', None)
+    if equip_cost is None:
+        return False
+    me = game.players[player_idx]
+    has_carrier = any(c.template.is_creature for c in me.battlefield)
+    if not has_carrier:
+        return False
+    # Post-cast mana = current mana minus the equipment's CMC. Must
+    # cover equip cost for the same-turn equip to fire.
+    post_cast_mana = snap.my_mana - (t.cmc or 0)
+    return post_cast_mana >= equip_cost
+
+
+def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
+                                  game: "GameState" = None,
+                                  player_idx: int = 0,
+                                  archetype: str = "midrange") -> list:
+    """Return a list of signals explaining why casting `card` this
+    turn delivers same-turn value.
+
+    Empty list ⇒ deferrable: casting next turn at identical cost would
+    deliver the same board state, so cast-now is waste relative to
+    cast-later.  Each signal name is oracle- or state-derived; no
+    card names hardcoded.
+
+    Design: docs/design/ev_correctness_overhaul.md §3.
+    """
+    t = card.template
+    if t is None:
+        return ['unknown_template']  # never defer on unknown
+
+    oracle = (t.oracle_text or '').lower()
+    # Normalise keyword set to lower-case strings for membership checks.
+    keywords = set()
+    for kw in getattr(t, 'keywords', set()):
+        k = kw.value if hasattr(kw, 'value') else str(kw).lower()
+        keywords.add(k)
+    tags = getattr(t, 'tags', set())
+    signals = []
+
+    # 1. Self-ETB trigger with a material effect.
+    if _has_self_etb_effect(oracle):
+        signals.append('etb_trigger')
+
+    # 2. Cast trigger or storm keyword (spell counts its chain).
+    if 'storm' in keywords or 'when you cast' in oracle:
+        signals.append('cast_trigger')
+
+    # 3. Haste / dash path / flash (immediate board impact).
+    if 'haste' in keywords or t.dash_cost is not None or 'flash' in keywords:
+        signals.append('haste_dash_flash')
+
+    # 4. Immediate interaction — damage, removal, counter, forced discard.
+    if _is_immediate_interaction(oracle, tags):
+        signals.append('immediate_interaction')
+
+    # 5. Card draw this turn.
+    if 'draw' in oracle and (
+            'draw a card' in oracle or 'draw two' in oracle
+            or 'draw three' in oracle or 'draw four' in oracle
+            or 'cantrip' in tags or 'card_advantage' in tags):
+        signals.append('card_draw')
+
+    # 6. Tutor — library search.
+    if 'search your library' in oracle:
+        signals.append('tutor')
+
+    # 7. Creature body with power > 0 (future combat clock contribution).
+    if t.is_creature and (t.power or 0) > 0:
+        signals.append('creature_body_with_power')
+
+    # 8. Equipment with a valid carrier + equip mana this turn.
+    if game is not None and _has_equipment_carrier_and_mana(
+            card, snap, game, player_idx):
+        signals.append('equipment_carrier_and_mana')
+
+    # 9. Artifact/permanent that advances a visible threshold.
+    if game is not None and _cast_enables_threshold(
+            card, snap, game, player_idx):
+        signals.append('threshold_enabler')
+
+    # 10. Storm / combo chain continuation.
+    if (archetype in ('storm', 'combo') and snap.storm_count > 0
+            and ('ritual' in tags or 'cantrip' in tags
+                 or 'cost_reducer' in tags)):
+        signals.append('combo_continuation')
+
+    # 11. Counterspell with a counterable stack target.
+    if (('counter target' in oracle or 'counterspell' in tags)
+            and game is not None and not game.stack.is_empty):
+        signals.append('counterspell_with_target')
+
+    # 12. Dying soon — any action better than no action.
+    if snap.opp_clock_discrete <= 1:
+        signals.append('last_turn_before_death')
+
+    # 13. Planeswalker — loyalty ability on entry.
+    from engine.cards import CardType
+    if CardType.PLANESWALKER in t.card_types:
+        signals.append('planeswalker_loyalty')
+
+    # 14. Mana source — permanent tapping for mana now enables later plays.
+    produces = getattr(t, 'produces_mana', None) or []
+    if produces or ('{t}:' in oracle and 'add' in oracle):
+        signals.append('mana_source')
+
+    # 15. X-cost hate permanent (Chalice-style "cost X, get X charge
+    #     counters") — cast-now locks opp spells at the chosen CMC.
+    if t.x_cost_data and 'charge counter' in oracle:
+        signals.append('x_cost_hate_permanent')
+
+    return signals
+
+
+def _compute_exposure_cost(card: "CardInstance", snap: EVSnapshot,
+                            game: "GameState" = None,
+                            player_idx: int = 0) -> float:
+    """Exposure cost for a cast with no this-turn signal.
+
+    Returns a non-negative number.  The cast's EV becomes
+    `-exposure_cost`, which lands at or below zero.  The pass-
+    preference tiebreaker in ev_player.py then routes no-signal casts
+    to pass (preserving hand optionality).
+
+    Two terms, both derived from existing clock primitives:
+    1. Mana commitment: mana spent produces no this-turn value.
+       Scaled by `mana_clock_impact(snap)` so mana-starved positions
+       treat the waste more severely than mana-flooded ones.
+    2. Removal exposure: for creatures, factor in opponent's removal
+       density — a card committed to the battlefield can eat a kill
+       spell before it ever fires a signal.
+    """
+    from ai.clock import mana_clock_impact
+    t = card.template
+    mana_cost = t.cmc or 0
+    # Rule: each point of wasted mana costs `mana_clock_impact(snap)`
+    # because that is the existing function's "value per point of mana".
+    waste = mana_cost * mana_clock_impact(snap)
+    # Creature removal risk: opp's removal_density × card mana value
+    # gives expected refund-to-hand loss.  No magic-number multipliers.
+    if game is not None and t.is_creature:
+        opp = game.players[1 - player_idx]
+        removal_density = getattr(opp, 'removal_density', 0.0) or 0.0
+        waste += removal_density * mana_cost * mana_clock_impact(snap)
+    return waste
+
+
 def _project_token_bonus(oracle_l: str, snap: "EVSnapshot"
                           ) -> Tuple[int, int, float]:
     """Classify every token-making clause in a card's oracle text and
@@ -1099,6 +1369,32 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
     If detailed=True, returns (ev, info_dict) with projection breakdown.
     Otherwise returns ev as a float.
     """
+    # Deferral check (design: docs/design/ev_correctness_overhaul.md §3).
+    # Before running the projection, ask: does casting this turn deliver
+    # any same-turn value that casting next turn at equivalent cost would
+    # not?  If no signal fires, the cast is deferrable and scored at the
+    # small exposure cost (negative).  The pass-preference tiebreaker in
+    # ev_player.py then routes no-signal casts to pass.
+    signals = _enumerate_this_turn_signals(
+        card, snap, game, player_idx, archetype)
+    if not signals:
+        exposure = _compute_exposure_cost(card, snap, game, player_idx)
+        ev_deferred = -exposure
+        if not detailed:
+            return ev_deferred
+        return ev_deferred, {
+            'current_value': evaluate_board(snap, archetype, dk),
+            'projected_value': evaluate_board(snap, archetype, dk),
+            'raw_delta': 0.0,
+            'after_response_value': evaluate_board(snap, archetype, dk),
+            'response_discount': 0.0,
+            'counter_pct': 0.0,
+            'removal_pct': 0.0,
+            'this_turn_signals': [],
+            'deferral': True,
+            'exposure_cost': exposure,
+        }
+
     current_value = evaluate_board(snap, archetype, dk)
 
     # Project state after casting
@@ -1228,6 +1524,8 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
         'response_discount': (projected_value - current_value) - ev,
         'counter_pct': counter_pct,
         'removal_pct': removal_pct,
+        'this_turn_signals': signals,
+        'deferral': False,
     }
 
 

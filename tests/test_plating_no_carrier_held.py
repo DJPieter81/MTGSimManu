@@ -104,10 +104,15 @@ class TestPlatingNoCarrierHeld:
         )
 
     def test_plating_ev_negative_without_carrier(self, card_db):
-        """Tight spec: Plating's compute_play_ev with no carrier on
-        the battlefield must score below the most permissive archetype
-        pass_threshold (MIDRANGE at -3.0).  Current behaviour returns
-        EV ≈ -2.0 which exceeds this bound, so the cast fires."""
+        """Spec per design §3: compute_play_ev takes the deferral
+        branch when no this-turn signal fires, returning
+        `-exposure_cost` (≤ 0).  The pass-preference tiebreaker in
+        ev_player.py converts this into a pass decision (see
+        `test_plating_not_cast_on_empty_board`).
+
+        Current behaviour returned EV ≈ -2.0 from the standard
+        projection (above pass_threshold = -5), so the cast fired.
+        Post-fix EV must be ≤ 0 AND the deferral flag must be set."""
         game = GameState(rng=random.Random(0))
         _add_to_battlefield(game, card_db, "Darksteel Citadel", controller=0)
         _add_to_battlefield(game, card_db, "Darksteel Citadel", controller=0)
@@ -117,17 +122,20 @@ class TestPlatingNoCarrierHeld:
         _setup_affinity_main(game, turn=3)
 
         snap = snapshot_from_game(game, 0)
-        ev = compute_play_ev(plating, snap, archetype="combo",
-                             game=game, player_idx=0)
+        ev, info = compute_play_ev(plating, snap, archetype="combo",
+                                    game=game, player_idx=0,
+                                    detailed=True)
 
-        PASS_THRESHOLD_UPPER_BOUND = -3.0
-        assert ev < PASS_THRESHOLD_UPPER_BOUND, (
+        assert ev <= 0.0, (
             f"Cranial Plating with no creature on battlefield scored "
-            f"EV={ev:.3f}, above the most permissive pass_threshold "
-            f"({PASS_THRESHOLD_UPPER_BOUND}).  Under the EV-baseline "
-            f"fix, a cast with no this-turn signal (no equip target, "
-            f"no sacrifice outlet) must score below every archetype's "
-            f"pass_threshold so it defers until a carrier exists."
+            f"EV={ev:.3f}.  Under the EV-baseline fix, a deferrable "
+            f"cast returns `-exposure_cost` which is ≤ 0.  Signals "
+            f"fired: {info.get('this_turn_signals', [])}."
+        )
+        assert info.get('deferral') is True, (
+            f"Plating on an empty board should have taken the deferral "
+            f"branch (no equipment_carrier_and_mana signal), "
+            f"info={info!r}."
         )
 
     def test_plating_cast_when_creature_and_equip_mana_present(
