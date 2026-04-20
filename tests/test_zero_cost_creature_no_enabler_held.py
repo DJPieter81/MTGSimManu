@@ -113,13 +113,15 @@ class TestZeroCostCreatureNoEnablerHeld:
 
     def test_ornithopter_ev_at_or_below_zero_without_enabler(
             self, card_db):
-        """Tighter spec: the cast's EV itself must be ≤ 0 under the
-        fix — there is no this-turn value to earn, so the exposure-
-        cost baseline dominates.  Current implementation returns
-        EV ≈ -0.04 (just above the pass threshold), which still gets
-        cast.  Post-fix EV should be strictly below the highest-
-        archetype pass_threshold of -3.0 (MIDRANGE), ensuring no
-        archetype keeps this cast when no signal fires."""
+        """Spec per design §3: when no this-turn signal fires,
+        compute_play_ev takes the deferral branch and returns
+        `-exposure_cost`, a non-positive value.  The pass-preference
+        tiebreaker in ev_player.py converts this into a pass decision.
+
+        Current implementation returned EV ≈ -0.04 from the standard
+        projection, which is > 0 noise but still above pass_threshold
+        (-5.0), so Ornithopter was cast.  Post-fix EV must be ≤ 0 AND
+        the deferral path must be signalled so the tiebreaker fires."""
         game = GameState(rng=random.Random(0))
         _add_to_battlefield(game, card_db, "Darksteel Citadel", controller=0)
         ornithopter = _add_to_hand(game, card_db, "Ornithopter",
@@ -128,18 +130,20 @@ class TestZeroCostCreatureNoEnablerHeld:
         _setup_affinity_t1_main(game)
 
         snap = snapshot_from_game(game, 0)
-        ev = compute_play_ev(ornithopter, snap, archetype="combo",
-                             game=game, player_idx=0)
+        ev, info = compute_play_ev(ornithopter, snap, archetype="combo",
+                                    game=game, player_idx=0,
+                                    detailed=True)
 
-        # COMBO pass_threshold is -5.0.  MIDRANGE is -3.0.  A deferrable
-        # no-signal cast must score strictly below the most permissive
-        # threshold so no archetype casts it.  Current EV ≈ -0.04 fails.
-        PASS_THRESHOLD_UPPER_BOUND = -3.0
-        assert ev < PASS_THRESHOLD_UPPER_BOUND, (
-            f"Ornithopter with no same-turn signal scored EV={ev:.3f}, "
-            f"which exceeds the most permissive archetype pass_threshold "
-            f"({PASS_THRESHOLD_UPPER_BOUND}).  Under the EV-baseline "
-            f"fix, a deferrable cast with no this-turn signal should "
-            f"score below every archetype's pass_threshold so the cast "
-            f"is deferred regardless of deck."
+        # EV ≤ 0: exposure_cost is non-negative, so ev = -exposure is ≤ 0.
+        assert ev <= 0.0, (
+            f"Ornithopter with no same-turn signal scored EV={ev:.3f}.  "
+            f"Under the EV-baseline fix, a deferrable cast returns "
+            f"`-exposure_cost` which is ≤ 0.  Signals fired: "
+            f"{info.get('this_turn_signals', [])}."
+        )
+        # Deferral flag must be set so the pass-preference tiebreaker
+        # in ev_player.py sees no signal fired.
+        assert info.get('deferral') is True, (
+            f"Ornithopter should have taken the deferral branch "
+            f"(no this-turn signal), but info={info!r}."
         )

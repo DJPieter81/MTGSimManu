@@ -41,7 +41,8 @@ def _get_archetype(deck_name: str) -> str:
 class Play:
     """A candidate play with its EV score and lookahead reasoning."""
     __slots__ = ('action', 'card', 'targets', 'ev', 'reason',
-                 'heuristic_ev', 'lookahead_ev', 'counter_pct', 'removal_pct', 'target_reason')
+                 'heuristic_ev', 'lookahead_ev', 'counter_pct', 'removal_pct', 'target_reason',
+                 'no_signal')
 
     def __init__(self, action: str, card, targets: list, ev: float, reason: str, target_reason: str = ''):
         self.action = action  # "play_land", "cast_spell", "cycle"
@@ -53,6 +54,7 @@ class Play:
         self.heuristic_ev = ev      # original heuristic score (before blend)
         self.lookahead_ev = 0.0     # raw lookahead delta
         self.counter_pct = 0.0      # opponent counter probability
+        self.no_signal = False      # deferral flag: no this-turn signal fired
         self.removal_pct = 0.0      # opponent removal probability
 
 
@@ -358,11 +360,28 @@ class EVPlayer:
                 play.lookahead_ev = play.ev
                 play.counter_pct = info['counter_pct']
                 play.removal_pct = info['removal_pct']
+                play.no_signal = bool(info.get('deferral', False))
 
         # Sort by EV, pick the best
         candidates.sort(key=lambda p: p.ev, reverse=True)
         self._last_candidates = candidates
-        best = candidates[0]
+
+        # Pass-preference tiebreaker (design: docs/design/
+        # ev_correctness_overhaul.md §3, §4).  A cast with no same-turn
+        # signal delivers no value casting-now vs casting-later — the
+        # state after cast is reachable next turn at identical cost.
+        # Preserve hand optionality: skip no-signal casts regardless of
+        # whatever the overlay-adjusted EV happens to be, and fall
+        # through to the next-best candidate (which might be a land, an
+        # equip activation, or a different cast).  Lands and equip
+        # activations are never deferred.
+        non_deferred = [
+            p for p in candidates
+            if not (p.action == "cast_spell" and p.no_signal)
+        ]
+        if not non_deferred:
+            return None
+        best = non_deferred[0]
 
         if best.ev < self.profile.pass_threshold:
             return None
@@ -1275,6 +1294,69 @@ class EVPlayer:
 
         return ev
 
+    def _has_reanimation_path(self, game, me) -> bool:
+        """True if the deck has an oracle-visible way to return
+        creatures from graveyard to battlefield — required for the
+        `cycle creature into GY = future reanimate target` bonus to
+        fire (design §2.E).
+
+        Scans the gameplan's cascade/reanimator declarations and the
+        visible library/hand/battlefield for oracle text that returns
+        creatures from graveyard.  No hardcoded card names.
+        """
+        # Cached per-turn result (recomputed each turn as hand/graveyard
+        # changes).  Cheap enough to compute on demand if cache absent.
+        if game is not None:
+            turn_cache = getattr(self, '_reanimation_cache_turn', -1)
+            cached_val = getattr(self, '_reanimation_cache_val', None)
+            if turn_cache == game.turn_number and cached_val is not None:
+                return cached_val
+
+        # Gameplan-driven: cascade + prefer_cycling is the Living End
+        # signature.  We accept this as authoritative when present.
+        if self.goal_engine and self.goal_engine.gameplan:
+            gp = self.goal_engine.gameplan
+            if getattr(gp, 'prefer_cycling', False):
+                self._reanimation_cache_turn = (
+                    game.turn_number if game else -1)
+                self._reanimation_cache_val = True
+                return True
+
+        # Oracle-driven: scan visible cards for "return ... from
+        # graveyard ... to the battlefield" patterns.  Cards like
+        # Living End, Unburial Rites, Persist, Goryo's Vengeance, and
+        # creatures like Ephemerate-via-Persist all match.
+        def _is_reanimate(oracle: str) -> bool:
+            o = (oracle or '').lower()
+            if 'from' not in o or 'graveyard' not in o:
+                return False
+            if ('return' in o and 'battlefield' in o) or (
+                    'put' in o and 'battlefield' in o):
+                # Exclude "from your hand ... to the battlefield"
+                # (e.g., Reanimate vs Knight Errant): require
+                # 'graveyard' to precede 'battlefield'.
+                gy_idx = o.find('graveyard')
+                bf_idx = o.find('battlefield', gy_idx)
+                return gy_idx >= 0 and bf_idx >= 0
+            return False
+
+        zones = [me.hand, me.battlefield]
+        # Library visibility is a simplification — in real play we
+        # know our deck.  DeckKnowledge provides it when initialised.
+        if self._dk is not None:
+            zones.append(me.library)
+        for zone in zones:
+            for c in zone:
+                if _is_reanimate(c.template.oracle_text):
+                    self._reanimation_cache_turn = (
+                        game.turn_number if game else -1)
+                    self._reanimation_cache_val = True
+                    return True
+
+        self._reanimation_cache_turn = game.turn_number if game else -1
+        self._reanimation_cache_val = False
+        return False
+
     def _score_cycling(self, card, snap, game, me, opp) -> float:
         """Score cycling using clock-derived values.
 
@@ -1294,8 +1376,12 @@ class EVPlayer:
         # Drawing a card: future clock change
         ev = card_clock_impact(snap) * 20.0  # scale to match spell scores
 
-        # Cycling creatures into GY: Living End gameplan
-        if card.template.is_creature:
+        # Cycling creatures into GY: Living End-style reanimation gameplan.
+        # Design: docs/design/ev_correctness_overhaul.md §2.E — the
+        # "creature in graveyard = future reanimation target" bonus fires
+        # ONLY when the deck has a visible reanimation path.  A dead
+        # creature in Boros Energy's graveyard is not equity.
+        if card.template.is_creature and self._has_reanimation_path(game, me):
             power = card.template.power or 0
             # Creature in GY = future reanimation target
             ev += (4.0 + power * 0.5)
