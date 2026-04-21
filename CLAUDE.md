@@ -1,5 +1,14 @@
 # CLAUDE.md — MTG Game Simulator
 
+## Workflow rules (standing)
+
+- **Open a PR after pushing a feature-branch commit.** The default
+  Claude Code rule is "no PR unless asked"; on this project the user
+  has standing approval to open a PR whenever work is pushed to a
+  `claude/*` branch. Title the PR from the top-level commit and use
+  the standard `## Summary` / `## Test plan` body template. Don't wait
+  to be asked each session.
+
 ## Project Overview
 
 Magic: The Gathering Modern-format game simulator with EV-based AI decision-making. Simulates full games between 16 competitive decks with strategic AI (mulligans, spell casting, combat, targeting, counterspells, evoke, storm chains, reanimation, cascade, blink).
