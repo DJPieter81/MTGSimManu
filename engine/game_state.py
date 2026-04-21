@@ -379,8 +379,16 @@ class GameState:
                 return item.source
         return None
 
-    def setup_game(self, deck1: List[CardTemplate], deck2: List[CardTemplate]):
-        """Initialize the game with two decks."""
+    def setup_game(self, deck1: List[CardTemplate], deck2: List[CardTemplate],
+                    forced_first_player: Optional[int] = None):
+        """Initialize the game with two decks.
+
+        forced_first_player: if given (0 or 1) sets that player as the
+        active/priority player, bypassing the opening die roll. Used by
+        Bo3 match orchestration so the loser of game N chooses who plays
+        game N+1 (CR 103.2). None preserves legacy random-die behaviour
+        for single-game runs.
+        """
         for template in deck1:
             card = CardInstance(
                 template=template, owner=0, controller=0,
@@ -408,7 +416,10 @@ class GameState:
         for p_idx in range(2):
             self.draw_cards(p_idx, 7)
 
-        self.active_player = self.rng.randint(0, 1)
+        if forced_first_player is not None:
+            self.active_player = forced_first_player
+        else:
+            self.active_player = self.rng.randint(0, 1)
         self.priority_player = self.active_player
 
     def draw_cards(self, player_idx: int, count: int) -> List[CardInstance]:

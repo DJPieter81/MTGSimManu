@@ -1,15 +1,22 @@
 ---
 title: Bo3 play/draw rule not implemented
-status: active
-priority: secondary
+status: archived
+priority: historical
 session: 2026-04-19
+resolved: 2026-04-21
 tags:
   - bo3
   - rules
   - engine
   - quick-fix
-summary: "engine/game_state.py:410 rolls fresh random die every Bo3 game. Loser-chooses-play not implemented. ~30 min fix. Parallel to primary EV work."
+summary: "RESOLVED 2026-04-21: engine/game_state.py:setup_game accepts forced_first_player; engine/game_runner.py:run_match forwards prev-game loser into G2/G3. Tests in tests/test_bo3_play_draw.py."
 ---
+
+> **Status: resolved (2026-04-21).** `GameState.setup_game` now accepts
+> `forced_first_player`, and `GameRunner.run_match` passes the prior
+> game's loser into games 2 and 3 (CR 103.2, default loser-plays). See
+> `tests/test_bo3_play_draw.py` and Phase 11a commit.
+
 # Diagnostic: Bo3 play/draw rule not implemented
 
 **Date:** 2026-04-19

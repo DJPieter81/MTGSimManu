@@ -251,12 +251,19 @@ class GameRunner:
         d2_side = dict(deck2_data.get("sideboard", {}))
 
         for game_num in range(1, 4):
+            # CR 103.2: after game 1 the loser of the previous game chooses
+            # who plays first. Default = loser plays (on-play is ~54% WR).
+            forced = None
+            if game_num > 1 and games[-1].winner is not None:
+                forced = 1 - games[-1].winner
+
             result = self.run_game(
                 deck1_name, d1_main,
                 deck2_name, d2_main,
                 deck1_sideboard=d1_side,
                 deck2_sideboard=d2_side,
                 verbose=verbose,
+                forced_first_player=forced,
             )
             result.game_number = game_num
             games.append(result)
@@ -300,14 +307,19 @@ class GameRunner:
                   deck2_name: str, deck2_list: Dict[str, int],
                   verbose: bool = False,
                   deck1_sideboard: Dict[str, int] = None,
-                  deck2_sideboard: Dict[str, int] = None) -> GameResult:
-        """Run a complete game and return the result."""
+                  deck2_sideboard: Dict[str, int] = None,
+                  forced_first_player: Optional[int] = None) -> GameResult:
+        """Run a complete game and return the result.
+
+        forced_first_player: see GameState.setup_game. Bo3 match orchestration
+        passes this for games 2-3 so the loser of the previous game plays first.
+        """
         deck1 = self.build_deck(deck1_list)
         deck2 = self.build_deck(deck2_list)
 
         game = GameState(rng=self.rng, callbacks=AICallbacks())
         game.verbose = verbose
-        game.setup_game(deck1, deck2)
+        game.setup_game(deck1, deck2, forced_first_player=forced_first_player)
         game.players[0].deck_name = deck1_name
         game.players[1].deck_name = deck2_name
 
