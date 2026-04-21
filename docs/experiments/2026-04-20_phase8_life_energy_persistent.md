@@ -1,7 +1,7 @@
 ---
 title: Phase 8 — life / energy persistent_power for recurring triggers
-status: active
-priority: diagnostic
+status: archived
+priority: historical
 session: 2026-04-20
 depends_on:
   - docs/experiments/2026-04-20_phase7_pinnacle_emissary_fix.md
@@ -10,7 +10,8 @@ tags:
   - persistent-power
   - phase-8
   - matrix
-summary: "Closes the Phase 7 follow-up: Guide of Souls' life/energy clause now accrues persistent_power. Boros regression (-4.9pp wtd in Phase 7) resolved (+5.0pp wtd in Phase 8). Suite 227/227 (8 recurring-token tests, all pass)."
+  - completed
+summary: "Closed the Phase 7 follow-up: Guide of Souls' life/energy clause now accrues persistent_power. Boros regression (-4.9pp wtd in Phase 7) resolved (+5.0pp wtd in Phase 8). Suite 227/227."
 ---
 # Phase 8 — Life / energy gain persistent valuation
 
