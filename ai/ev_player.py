@@ -1654,6 +1654,17 @@ class EVPlayer:
 
         return safe if safe else []
 
+    def _two_turn_lethal(self, game, me, opp, attackers) -> bool:
+        # incoming this turn + opp's uninvolved creatures that can swing next turn
+        incoming = sum(a.power or 0 for a in attackers)
+        attacking_ids = {a.instance_id for a in attackers}
+        opp_next = sum(
+            (c.power or 0) for c in opp.creatures
+            if c.instance_id not in attacking_ids
+            and not getattr(c, 'summoning_sick', False)
+        )
+        return incoming + opp_next >= me.life
+
     def decide_blockers(self, game, attackers) -> Dict[int, List[int]]:
         """Decide blocking assignments."""
         from ai.board_eval import evaluate_action, Action, ActionType
@@ -1666,7 +1677,6 @@ class EVPlayer:
         me = game.players[self.player_idx]
         opp = game.players[1 - self.player_idx]
         total_incoming = sum(a.power or 0 for a in attackers)
-        biggest_attacker_power = max((a.power or 0 for a in attackers), default=0)
 
         # Winning-state: if our untapped power >= opponent life next turn, don't block.
         # Spending blockers is wasteful when we have lethal on board already.
@@ -1677,10 +1687,12 @@ class EVPlayer:
             return {}
 
         # EMERGENCY: block when incoming damage is dangerous
-        # Triggers: lethal, would drop below 5 life, or single attacker > half our life
+        # Triggers: lethal this turn, drop-below-5, or projected lethal across 2 turns
+        # (the old single-attacker heuristic treated a 10/10 at life=20 as an emergency;
+        #  replaced with a lookahead that only fires when next-turn math is lethal too).
         emergency = (total_incoming >= me.life
                      or (me.life - total_incoming <= 5 and total_incoming >= 3)
-                     or biggest_attacker_power >= me.life // 2)
+                     or self._two_turn_lethal(game, me, opp, attackers))
         if emergency:
             emergency_blocks: Dict[int, List[int]] = {}
             e_used: Set[int] = set()
@@ -1703,6 +1715,7 @@ class EVPlayer:
                 bo = (b.template.oracle_text or '').lower()
                 return 'whenever this creature attacks' in bo
 
+            sacrificed_value = 0.0
             for attacker in sorted(attackers, key=lambda a: a.power or 0, reverse=True):
                 best_chump = None
                 best_chump_val = 999
@@ -1718,11 +1731,19 @@ class EVPlayer:
                 if best_chump:
                     emergency_blocks[attacker.instance_id] = [best_chump.instance_id]
                     e_used.add(best_chump.instance_id)
+                    sacrificed_value += creature_value(best_chump)
                     # Check if we've blocked enough to survive/stabilize
                     blocked_damage = sum(
                         a.power or 0 for a in attackers if a.instance_id in emergency_blocks
                     )
                     remaining = total_incoming - blocked_damage
+                    # Portfolio cap: stop if we've sacrificed more creature_value than
+                    # the damage we'd otherwise take. (Unless still lethal — that's
+                    # handled by the stabilized check below which requires remaining<life.)
+                    still_lethal = remaining >= me.life
+                    if (not still_lethal
+                            and sacrificed_value > max(remaining, 1.0)):
+                        break
                     if remaining < me.life and (me.life - remaining > 5 or remaining == 0):
                         break  # stabilized
             if emergency_blocks:
