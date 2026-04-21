@@ -20,6 +20,13 @@ from ai.ev_evaluator import (
     creature_threat_value,
 )
 
+# RC-2 — parse "equipped/enchanted creature gets +X/+Y" bonuses from
+# oracle text. Detects Cranial Plating, Embercleave, Colossus Hammer,
+# Ethereal Armor auras, etc., without naming any card.
+_EQUIP_BONUS_RE = re.compile(
+    r'(equipped|enchanted) creature gets \+(\d+)/\+(\d+)'
+)
+
 # ─────────────────────────────────────────────────────────────
 # Archetype detection
 # ─────────────────────────────────────────────────────────────
@@ -1665,6 +1672,78 @@ class EVPlayer:
         )
         return incoming + opp_next >= me.life
 
+    def _attacker_equipment_bonus(self, game, opp, attacker) -> int:
+        """Sum of +power granted to `attacker` by currently-attached equipment
+        or auras on the opponent's battlefield. Returns 0 if none.
+
+        Handles scaling clauses like "+1/+0 for each artifact you control"
+        by counting opp's qualifying permanents.
+        """
+        attached_ids = set()
+        for tag in attacker.instance_tags:
+            if not tag.startswith('equipped_'):
+                continue
+            tail = tag.split('_', 1)[1]
+            if tail.isdigit():
+                attached_ids.add(int(tail))
+        if not attached_ids:
+            return 0
+
+        bonus = 0
+        for perm in opp.battlefield:
+            if perm.instance_id not in attached_ids:
+                continue
+            oracle = (perm.template.oracle_text or '').lower()
+            m = _EQUIP_BONUS_RE.search(oracle)
+            if not m:
+                continue
+            base_power = int(m.group(2))
+            # Handle 'for each <thing> you control' scaling
+            scale_match = re.search(
+                r'for each (artifact|creature|land|card)', oracle
+            )
+            if scale_match:
+                kind = scale_match.group(1)
+                if kind == 'artifact':
+                    count = sum(
+                        1 for c in opp.battlefield
+                        if 'artifact' in str(c.template.card_types).lower()
+                    )
+                elif kind == 'creature':
+                    count = len(opp.creatures)
+                elif kind == 'land':
+                    count = len(
+                        [c for c in opp.battlefield if c.template.is_land]
+                    )
+                else:  # 'card' — count nonland permanents as a proxy
+                    count = len(opp.battlefield)
+                bonus += base_power * count
+            else:
+                bonus += base_power
+        return bonus
+
+    def _equipment_breakable(self, game, me) -> bool:
+        """True iff we can plausibly remove or reset the equipment next turn.
+
+        Checks `me.hand` for:
+          - mass removal (tag 'wrath' / 'board_wipe')
+          - artifact/enchantment destruction (tag 'removal' AND oracle
+            destroys target artifact / enchantment / nonland permanent)
+        """
+        for card in me.hand:
+            tags = getattr(card.template, 'tags', None) or set()
+            if 'wrath' in tags or 'board_wipe' in tags:
+                return True
+            oracle = (card.template.oracle_text or '').lower()
+            if 'removal' in tags and (
+                'destroy target artifact' in oracle
+                or 'destroy target enchantment' in oracle
+                or 'destroy target nonland permanent' in oracle
+                or 'destroy all artifacts' in oracle
+            ):
+                return True
+        return False
+
     def decide_blockers(self, game, attackers) -> Dict[int, List[int]]:
         """Decide blocking assignments."""
         from ai.board_eval import evaluate_action, Action, ActionType
@@ -1717,6 +1796,21 @@ class EVPlayer:
 
             sacrificed_value = 0.0
             for attacker in sorted(attackers, key=lambda a: a.power or 0, reverse=True):
+                # RC-2: if this attacker's power is dominated by equipment/aura
+                # bonuses AND we can't remove those next turn, chumping is
+                # futile — the plating rebinds. Skip unless skipping is lethal.
+                equip_bonus = self._attacker_equipment_bonus(game, opp, attacker)
+                damage_so_far = sum(
+                    (a.power or 0) for a in attackers
+                    if a.instance_id in emergency_blocks
+                )
+                damage_if_skipped = total_incoming - damage_so_far
+                still_lethal_if_skipped = damage_if_skipped >= me.life
+                if (equip_bonus >= 3
+                        and not self._equipment_breakable(game, me)
+                        and not still_lethal_if_skipped):
+                    continue
+
                 best_chump = None
                 best_chump_val = 999
                 cands = _blocker_candidates(attacker, e_used)
@@ -1777,6 +1871,16 @@ class EVPlayer:
 
         sorted_attackers = sorted(attackers, key=lambda a: a.power or 0, reverse=True)
 
+        # RC-2: precompute which attackers have dominant equipment/aura bonuses
+        # and no plausible answer in hand. Chumping these is futile — the
+        # plating rebinds next turn. Skip them unless a block would kill them.
+        equip_breakable = self._equipment_breakable(game, me)
+        plating_futile_ids: Set[int] = set()
+        if not equip_breakable:
+            for atk in attackers:
+                if self._attacker_equipment_bonus(game, opp, atk) >= 3:
+                    plating_futile_ids.add(atk.instance_id)
+
         for attacker in sorted_attackers:
             best_blocker = None
             best_val = 0.0
@@ -1794,9 +1898,14 @@ class EVPlayer:
                 #     but costs a permanent with 0 combat equity.
                 # (2) Battle-cry source — its ongoing attack value exceeds the damage saved
                 #     unless the block is a clean kill.
+                # (3) Plated attacker with no answer in hand — chumping is futile
+                #     (the +N/+Y rebinds next turn), unless we can outright kill.
                 b_pow = blocker.power or 0
                 a_tou = attacker.toughness or 0
                 can_kill_attacker = b_pow >= a_tou or Keyword.DEATHTOUCH in blocker.keywords
+                if (attacker.instance_id in plating_futile_ids
+                        and not can_kill_attacker):
+                    continue
                 b_oracle = (blocker.template.oracle_text or '').lower()
                 b_cname = (blocker.template.name or '').lower().split(' //')[0].strip()
                 is_battle_cry = ('whenever this creature attacks' in b_oracle or
