@@ -889,6 +889,19 @@ class EVPlayer:
                 # Lethal = game over. Value = position swing from losing to winning.
                 mod += 100.0
             else:
+                # Fuel = chain-extending cards we have access to (hand
+                # + flashback-eligible GY).  Drop the `game.can_cast`
+                # filter (Phase 9a fix): the right horizon is NEXT TURN
+                # after untap + draw, not the current 0-1-mana floor
+                # left after this turn's chain.  At firing-decision
+                # time the storm pilot has spent most lands on rituals
+                # and `can_cast` would under-count obvious hand fuel
+                # (Past in Flames, ritual sorceries) that's playable
+                # the very next turn.  The
+                # `storm_chain_continuation_p` discount already models
+                # chain-resolution risk, so unrestricted counting is
+                # not over-credit.  GY flashback retains the cast
+                # filter — flashback exile constrains replay window.
                 gy_flashback = [g for g in me.graveyard
                                 if getattr(g, 'has_flashback', False)
                                 and game.can_cast(self.player_idx, g)]
@@ -896,9 +909,28 @@ class EVPlayer:
                     1 for c in list(me.hand) + gy_flashback
                     if c.instance_id != card.instance_id
                     and not c.template.is_land
-                    and game.can_cast(self.player_idx, c)
                     and Kw.STORM not in getattr(c.template, 'keywords', set())
                 )
+                # Past in Flames in hand/GY is a chain MULTIPLIER —
+                # one PiF unlocks every flashback-tagged spell already
+                # in GY.  Count GY ritual / cantrip cards as multi-
+                # turn fuel when a PiF (or other flashback grantor)
+                # is reachable: those GY spells will replay next turn.
+                pif_reachable = any(
+                    'flashback' in getattr(c.template, 'tags', set())
+                    and 'combo' in getattr(c.template, 'tags', set())
+                    for c in list(me.hand) + me.graveyard
+                    if c.instance_id != card.instance_id
+                )
+                if pif_reachable:
+                    gy_chain_fuel = sum(
+                        1 for c in me.graveyard
+                        if (c.template.is_instant or c.template.is_sorcery)
+                        and any(ft in getattr(c.template, 'tags', set())
+                                for ft in ('ritual', 'cantrip'))
+                        and Kw.STORM not in getattr(c.template, 'keywords', set())
+                    )
+                    fuel_available += gy_chain_fuel
                 if fuel_available > 0:
                     # Principled derivation: firing Grapeshot now at storm=K
                     # deals K damage = K/opp_life fraction of a kill. Holding
