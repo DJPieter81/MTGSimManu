@@ -1747,6 +1747,37 @@ class EVPlayer:
             return True
         return False
 
+    def _racing_to_win(self, game, me, opp, attackers) -> bool:
+        """RC-5: True iff racing strictly beats blocking.
+
+        All three conditions must hold:
+          (a) we survive this combat unblocked (incoming < my life),
+          (b) we have offensive power on-board,
+          (c) my clock-to-kill (opp.life / my on-board power) is no worse
+              than opp's clock-to-kill AFTER this combat (my post-combat
+              life / opp's total next-turn power).
+
+        Conservative: we use raw power and ignore burn/pump in hand. If
+        the clocks are equal or we are faster, racing is preferred.
+        """
+        incoming = sum(a.power or 0 for a in attackers)
+        if incoming >= me.life:
+            return False  # cannot race through lethal
+        my_on_board_power = sum((c.power or 0) for c in me.creatures)
+        if my_on_board_power <= 0:
+            return False
+        attacking_ids = {a.instance_id for a in attackers}
+        opp_on_board_power_after = sum(
+            (c.power or 0) for c in opp.creatures
+            if c.instance_id not in attacking_ids
+        ) + sum((a.power or 0) for a in attackers)
+        if opp_on_board_power_after <= 0:
+            return True  # opp has no follow-up threat — freely race
+        my_clock = opp.life / max(my_on_board_power, 1)
+        my_life_after = me.life - incoming
+        opp_clock = my_life_after / max(opp_on_board_power_after, 1)
+        return my_clock <= opp_clock
+
     def _equipment_breakable(self, game, me) -> bool:
         """True iff we can plausibly remove or reset the equipment next turn.
 
@@ -1788,6 +1819,12 @@ class EVPlayer:
             (c.power or 0) for c in me.creatures if not c.tapped
         )
         if my_untapped_power >= opp.life and total_incoming < me.life:
+            return {}
+
+        # RC-5: Race if clock math favours us (broader than the lethal-on-board
+        # check above). Only fires when we survive this combat AND our
+        # clock-to-kill is at least as fast as opp's post-combat clock.
+        if self._racing_to_win(game, me, opp, attackers):
             return {}
 
         # EMERGENCY: block when incoming damage is dangerous
