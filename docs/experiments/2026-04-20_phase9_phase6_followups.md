@@ -1,7 +1,7 @@
 ---
 title: Phase 9 — Phase 6 follow-ups (Storm finisher patience, Amulet recurring engine, Pinnacle Affinity diagnosis)
 status: active
-priority: diagnostic
+priority: historical
 session: 2026-04-20
 depends_on:
   - docs/experiments/2026-04-20_phase6_matrix_validation.md
@@ -12,7 +12,8 @@ tags:
   - amulet-titan
   - pinnacle-affinity
   - phase-9
-summary: "Closes the three Phase 6 follow-ups. Phase 9a — Storm finisher patience: counts hand+GY chain fuel without can_cast filter, gives PiF reachability bonus. Phase 9b — Amulet of Vigor recurring-engine signal added (Amulet Titan +6.5 wtd). Phase 9c — Pinnacle Affinity hypothesis 'Wrath collateral' falsified by matchup data; no fix needed."
+  - completed
+summary: "Closed the three Phase 6 follow-ups. 9a — Storm finisher patience (counts hand+GY chain fuel without can_cast filter, PiF reachability bonus). 9b — Amulet of Vigor recurring-engine signal added (Amulet Titan +6.5 wtd). 9c — Pinnacle Affinity 'Wrath collateral' hypothesis falsified by matchup data. Tip-of-EV-overhaul record; no outstanding follow-ups."
 ---
 # Phase 9 — Closing the Phase 6 follow-ups
 

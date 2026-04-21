@@ -1,8 +1,10 @@
 ---
 title: Phase 6 — EV overhaul N=20 matrix validation
-status: active
-priority: diagnostic
+status: archived
+priority: historical
 session: 2026-04-20
+superseded_by:
+  - docs/experiments/2026-04-20_phase9_phase6_followups.md
 depends_on:
   - docs/design/ev_correctness_overhaul.md
 tags:
@@ -10,7 +12,8 @@ tags:
   - matrix
   - validation
   - phase-6
-summary: "N=20 matrix post phases 1-5. Flat WRs generally decreased (AI now defers junk casts across the board). Weighted WRs generally increased — healthier, less top-heavy meta. Flagging Pinnacle Affinity (-16.1pp flat), Amulet Titan (-14.9pp flat), Ruby Storm (flat 12.2%) for follow-up."
+  - completed
+summary: "N=20 matrix post phases 1-5. Flat WRs generally decreased (AI now defers junk casts across the board). Weighted WRs generally increased — healthier, less top-heavy meta. Flagged Storm sequencing, Amulet Titan, Pinnacle Affinity — ALL THREE CLOSED by Phase 9 (see superseded_by)."
 ---
 # Phase 6 — Matrix validation after EV overhaul phases 1-5
 

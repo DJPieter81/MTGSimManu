@@ -1,8 +1,10 @@
 ---
 title: Phase 7 — Pinnacle Emissary recurring trigger + persistent_power
-status: active
-priority: diagnostic
+status: archived
+priority: historical
 session: 2026-04-20
+superseded_by:
+  - docs/experiments/2026-04-20_phase8_life_energy_persistent.md
 depends_on:
   - docs/design/ev_correctness_overhaul.md
   - docs/experiments/2026-04-20_phase6_matrix_validation.md
@@ -11,7 +13,8 @@ tags:
   - persistent-power
   - phase-7
   - matrix
-summary: "Fixed the long-standing test_pinnacle_emissary_cast_trigger_accrues_persistent failure. Root cause: _trigger_classes regex didn't recognize 'whenever' prefix, and there was no other_enters trigger class for recurring per-permanent triggers. Suite now 226/226 (zero failures for first time). N=20 matrix shows weighted WRs broadly up (more balanced meta)."
+  - completed
+summary: "Fixed the long-standing test_pinnacle_emissary_cast_trigger_accrues_persistent failure — zero failures for first time. Left a Boros regression (-4.9pp wtd, Guide of Souls life/energy clause not credited) which was closed by Phase 8 (see superseded_by)."
 ---
 # Phase 7 — Pinnacle Emissary fix and recurring per-permanent triggers
 

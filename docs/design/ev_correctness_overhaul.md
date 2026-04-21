@@ -1,8 +1,13 @@
 ---
 title: EV Correctness Overhaul
-status: active
-priority: primary
+status: superseded
+priority: historical
 session: 2026-04-19
+superseded_by:
+  - docs/experiments/2026-04-20_phase6_matrix_validation.md
+  - docs/experiments/2026-04-20_phase7_pinnacle_emissary_fix.md
+  - docs/experiments/2026-04-20_phase8_life_energy_persistent.md
+  - docs/experiments/2026-04-20_phase9_phase6_followups.md
 supersedes_fields:
   - docs/handoff/2026-04-19_next-session-brief.md
 depends_on:
@@ -15,9 +20,19 @@ tags:
   - option-c
   - mulligan
   - targeting
-summary: "Six bugs traceable to one root: EV baseline is 'do nothing this turn' when it should be 'best alternative, incl. cast-later.' Six-phase execution with failing-tests-first protocol."
+  - completed
+summary: "COMPLETED 2026-04-20 via phases 1-9. All six bugs (A-F) green; suite 232/232; Phase 6 follow-ups (Storm sequencing, Amulet Titan, Pinnacle Affinity) all closed. See superseded_by experiment logs."
 ---
 # EV Correctness Overhaul — Design Doc
+
+> **STATUS:** Completed 2026-04-20.  All six bugs (A-F) fixed in phases 1-5
+> (PRs #122, #128), Phase 6 N=20 matrix validation ran, Phase 7 closed the
+> lone pre-existing test failure (Pinnacle Emissary — PR #130), Phase 8
+> extended persistent valuation to life/energy (PR #132), and Phase 9
+> closed the three Phase 6 follow-ups (PR #133).  Full suite 232/232.
+>
+> See the chain of experiment logs listed in `superseded_by` for
+> implementation details and matrix deltas per phase.
 
 **Created:** 2026-04-19 (end of claude.ai session)
 **Target executor:** Claude Code
@@ -27,6 +42,7 @@ summary: "Six bugs traceable to one root: EV baseline is 'do nothing this turn' 
 ---
 
 ## Executive summary
+
 
 The AI's EV scoring system has a **foundational baseline problem** that produces multiple downstream bugs. Investigation over the session identified six related problems, all traceable to the same underlying issue: **the EV system compares "cast this spell" against "do nothing this turn," when the correct comparison is "cast this spell" against "the best alternative action, including doing the same thing later."** The principle extends to mulligan decisions (is this 7 better than the expected 6?) — same math, same signals.
 
