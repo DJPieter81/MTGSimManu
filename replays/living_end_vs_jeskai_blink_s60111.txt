@@ -1,0 +1,827 @@
+Loaded 21759 cards (0 errors)
+  Sideboard (Jeskai Blink vs Living End): +1 Surgical Extraction, +2 Mystical Dispute, -1 Prismatic Ending, -2 Galvanic Discharge
+======================================================================
+  GAME 1: Living End (P1) vs Jeskai Blink (P2)  —  seed 60111
+  Series: Living End 0 - 0 Jeskai Blink
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Living End wins → chooses to play first
+║ P1 (on play): Living End
+║ P2 (on draw): Jeskai Blink
+╚═══════════════════════════════════════════════════════
+
+P1 (Living End) opening hand (2 lands, 5 spells):
+  • Indatha Triome [Land, CMC 0]
+  • Verdant Catacombs [Land, CMC 0]
+  • Striped Riverwinder [Creature, CMC 7]
+  • Living End [Spell, CMC 0]
+  • Striped Riverwinder [Creature, CMC 7]
+  • Waker of Waves [Creature, CMC 7]
+  • Street Wraith [Creature, CMC 5]
+→ P1 MULLIGANS (missing combo piece from {'Demonic Dread', 'Shardless Agent'})
+  New hand (2 lands, 5 spells): ['Verdant Catacombs', 'Street Wraith', 'Living End', 'Misty Rainforest', 'Striped Riverwinder', 'Demonic Dread', 'Street Wraith']
+→ P1 mulligans to 6, bottoms: ['Street Wraith']
+  Keeps: ['Verdant Catacombs', 'Living End', 'Misty Rainforest', 'Striped Riverwinder', 'Demonic Dread', 'Street Wraith']
+
+P2 (Jeskai Blink) opening hand (3 lands, 4 spells):
+  • Consign to Memory [Spell, CMC 1]
+  • Galvanic Discharge [Spell, CMC 1]
+  • Flooded Strand [Land, CMC 0]
+  • Ephemerate [Spell, CMC 1]
+  • Arid Mesa [Land, CMC 0]
+  • Galvanic Discharge [Spell, CMC 1]
+  • Scalding Tarn [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Ephemerate, Galvanic Discharge, 4 cheap spells
+
+
+╔══ TURN 1 — Living End (P1) ══════════════════════════
+║ Life: Living End 20  |  Jeskai Blink 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 54  |  Graveyard: 0
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Cycle Street Wraith (pay 2 life, draw: Zagoth Triome)
+T1 P1: Play Verdant Catacombs
+T1 P1: Crack Verdant Catacombs (pay 1 life) -> Watery Grave (pay 2 life, untapped, life: 15)
+T1 P1: Cycle Striped Riverwinder (pay 1 mana, draw: Demonic Dread)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 20  |  Living End 15
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Solitude
+  [Main 1]
+T1 P2: Play Arid Mesa
+T1 P2: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (pay 2 life, untapped, life: 17)
+    → Goal: interact [interaction]
+    [Target] → face (3 dmg, life 15 → 12): no clock yet — build pressure
+    [Mana] Tap Sacred Foundry→R (paying for Galvanic Discharge, 1 mana remaining)
+T1 P2: Cast Galvanic Discharge (R)
+    [Priority] P1 passes (no response)
+T1: Resolve Galvanic Discharge
+T1 P2: Galvanic Discharge deals 3 to opponent
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Living End (P1) ══════════════════════════
+║ Life: Living End 12  |  Jeskai Blink 17
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 51  |  Graveyard: 3
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Living End
+  [Main 1]
+T2 P1: Play Misty Rainforest
+T2 P1: Crack Misty Rainforest (pay 1 life) -> Overgrown Tomb (pay 2 life, untapped, life: 9)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 17  |  Living End 9
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 2
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Overgrown Tomb
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Solitude
+  [Main 1]
+T2 P2: Play Flooded Strand
+T2 P2: Crack Flooded Strand (pay 1 life) -> Hallowed Fountain (tapped, life: 16)
+    → Goal: grind_value
+    [Target] → face (3 dmg, life 9 → 6): opponent low life
+    [Mana] Tap Sacred Foundry→R (paying for Galvanic Discharge, 1 mana remaining)
+T2 P2: Cast Galvanic Discharge (R)
+    [Priority] P1 passes (no response)
+T2: Resolve Galvanic Discharge
+T2 P2: Galvanic Discharge deals 3 to opponent
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Living End (P1) ══════════════════════════
+║ Life: Living End 6  |  Jeskai Blink 16
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 4
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Overgrown Tomb
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Misty Rainforest
+  [Main 1]
+T3 P1: Play Misty Rainforest
+T3 P1: Crack Misty Rainforest -> Raugrin Triome (tapped)
+T3 P1: Raugrin Triome ETB: draw 1 (Botanical Sanctum)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 16  |  Living End 5
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 4
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Hallowed Fountain
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Overgrown Tomb, Raugrin Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+T3 P2: Play Scalding Tarn
+T3 P2: Crack Scalding Tarn (pay 1 life) -> Steam Vents (tapped, life: 15)
+    → Goal: grind_value
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 2 mana remaining)
+T3 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T3: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Living End (P1) ══════════════════════════
+║ Life: Living End 5  |  Jeskai Blink 15
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 5
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Overgrown Tomb, Raugrin Triome
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry [T], Hallowed Fountain, Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Blooming Marsh
+  [Main 1]
+T4 P1: Cycle Zagoth Triome (pay 3 mana, draw: Forest)
+T4 P1: Play Forest
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 15  |  Living End 5
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 5
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry, Hallowed Fountain, Steam Vents
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Overgrown Tomb [T], Raugrin Triome [T], Forest
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T4 P2: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T4 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T4 P2: Create 1x Treasure token(s)
+T4 P2: Ragavan, Nimble Pilferer exiles Misty Rainforest from top of P1's library
+T4 P2: Ragavan, Nimble Pilferer — may cast Misty Rainforest this turn
+  [Combat Damage] 2 damage dealt → P1 life: 5 → 3
+  [End Combat]
+  [Main 2]
+T4 P2: Play Misty Rainforest
+T4 P2: Crack Misty Rainforest -> Island (untapped)
+  [End Step]
+
+╔══ TURN 5 — Living End (P1) ══════════════════════════
+║ Life: Living End 3  |  Jeskai Blink 14
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 43  |  Graveyard: 6
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Overgrown Tomb, Raugrin Triome, Forest
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped]
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Hallowed Fountain, Steam Vents, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Subtlety
+  [Main 1]
+T5 P1: Play Botanical Sanctum (tapped, 4 other lands)
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Raugrin Triome→R, Watery Grave→B, Forest→G (paying for Demonic Dread, 4 mana remaining)
+T5 P1: Cast Demonic Dread (1BR)
+    [Priority] P2 passes (no response)
+T5: Resolve Demonic Dread
+T5: Cascade (CMC < 3)
+T5: Cascade hits Living End
+T5: Living End resolves!
+T5: Living End returns Street Wraith for P1
+T5: Living End returns Striped Riverwinder for P1
+  [Begin Combat]
+T5 P2: Evoke Solitude (exile Solitude)
+T5 P2: Cast Solitude (3WW)
+T5: Resolve Solitude
+T5: Striped Riverwinder moved battlefield -> exile (exiled)
+T5 P2: Solitude exiles Striped Riverwinder (opponent gains 5 life, now 8)
+T5 P2: Solitude sacrificed (evoke)
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 14  |  Living End 8
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 7
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Hallowed Fountain, Steam Vents, Island
+║ Living End board:
+║   Creatures: Street Wraith (3/4)
+║   Lands: Watery Grave [T], Overgrown Tomb, Raugrin Triome [T], Forest [T], Botanical Sanctum [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Scalding Tarn
+  [Main 1]
+T5 P2: Play Scalding Tarn
+T5 P2: Crack Scalding Tarn -> Mountain (untapped)
+    → Goal: close_game
+    [Mana] Tap Mountain→R, Island→U (paying for Ragavan, Nimble Pilferer, 5 mana remaining)
+T5 P2: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P1 passes (no response)
+T5: Resolve Ragavan, Nimble Pilferer
+    → Goal: close_game
+    [Mana] Tap Sacred Foundry→W (paying for Ephemerate, 3 mana remaining)
+T5 P2: Cast Ephemerate (W)
+    [Priority] P1 passes (no response)
+T5: Resolve Ephemerate
+T5: Blink Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T5 P2: Attack with Ragavan, Nimble Pilferer
+T5 P1:   [BLOCK] Street Wraith (3/4) blocks Ragavan, Nimble Pilferer (2/1) — favorable trade
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T5: Ragavan, Nimble Pilferer dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Living End (P1) ══════════════════════════
+║ Life: Living End 8  |  Jeskai Blink 13
+║ Hand: 5 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 41  |  Graveyard: 6
+║ Living End board:
+║   Creatures: Street Wraith (3/4)
+║   Lands: Watery Grave, Overgrown Tomb, Raugrin Triome, Forest, Botanical Sanctum
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Hallowed Fountain, Steam Vents, Island [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Verdant Catacombs
+  [Main 1]
+T6 P1: Play Verdant Catacombs
+T6 P1: Crack Verdant Catacombs (pay 1 life) -> Blood Crypt (tapped, life: 7)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Street Wraith
+T6 P1: Attack with Street Wraith
+  [Declare Blockers] P2 does not block
+T6 P1:   Street Wraith (3/4) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 13 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 10  |  Living End 7
+║ Hand: 1 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 43  |  Graveyard: 9
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Hallowed Fountain, Steam Vents, Island, Mountain
+║ Living End board:
+║   Creatures: Street Wraith (3/4) [tapped]
+║   Lands: Watery Grave, Overgrown Tomb, Raugrin Triome, Forest, Botanical Sanctum, Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T6 P2: Rebound Ephemerate skipped (no valid target)
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T6 P2: Play Flooded Strand
+T6 P2: Crack Flooded Strand -> Plains (untapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+    [Mana] Tap Watery Grave→U, Botanical Sanctum→U, Forest→G, Overgrown Tomb→B (paying for Subtlety, 5 mana remaining)
+T6 P1: Cast Subtlety (2UU)
+T6: Resolve Subtlety
+T6 P1: Subtlety enters (no creature/PW spell on stack to target)
+
+╔══ TURN 7 — Living End (P1) ══════════════════════════
+║ Life: Living End 7  |  Jeskai Blink 9
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 6  |  Opp lands: 6
+║ Library: 39  |  Graveyard: 7
+║ Living End board:
+║   Creatures: Street Wraith (3/4), Subtlety (3/3)
+║   Lands: Watery Grave, Overgrown Tomb, Raugrin Triome, Forest, Botanical Sanctum, Blood Crypt
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Hallowed Fountain, Steam Vents, Island, Mountain, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Verdant Catacombs
+  [Main 1]
+T7 P1: Play Verdant Catacombs
+T7 P1: Crack Verdant Catacombs (pay 1 life) -> Breeding Pool (tapped, life: 6)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Street Wraith, Subtlety
+T7 P1: Attack with Street Wraith, Subtlety
+  [Declare Blockers] P2 does not block
+T7 P1:   Street Wraith (3/4) → 3 dmg to player
+T7 P1:   Subtlety (3/3) → 3 dmg to player
+  [Combat Damage] 6 damage dealt → P2 life: 9 → 3
+  [End Combat]
+  [Main 2]
+    → Goal: push_damage
+    [Mana] Tap Blood Crypt→R, Watery Grave→B, Forest→G (paying for Demonic Dread, 6 mana remaining)
+T7 P1: Cast Demonic Dread (1BR)
+    [Priority] P2 passes (no response)
+T7: Resolve Demonic Dread
+T7: Cascade (CMC < 3)
+T7: Cascade hits Living End
+T7: Living End resolves!
+T7: Living End returns Solitude for P2
+T7: Living End returns Ragavan, Nimble Pilferer for P2
+  [End Step]
+
+╔══ TURN 7 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 3  |  Living End 6
+║ Hand: 1 cards  |  Opp hand: 3 cards
+║ Lands: 6  |  Opp lands: 7
+║ Library: 41  |  Graveyard: 8
+║ Jeskai Blink board:
+║   Creatures: Solitude (3/2), Ragavan, Nimble Pilferer (2/1)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Hallowed Fountain, Steam Vents, Island, Mountain, Plains
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Overgrown Tomb, Raugrin Triome, Forest [T], Botanical Sanctum, Blood Crypt [T], Breeding Pool [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Meticulous Archive
+  [Main 1]
+T7 P2: Play Meticulous Archive (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Solitude, Ragavan, Nimble Pilferer
+T7 P2: Attack with Solitude, Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T7 P2:   Solitude (3/2) → 3 dmg to player
+T7 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T7 P2: Create 1x Treasure token(s)
+T7 P2: Ragavan, Nimble Pilferer exiles Verdant Catacombs from top of P1's library
+T7 P2: Ragavan, Nimble Pilferer — may cast Verdant Catacombs this turn
+  [Combat Damage] 5 damage dealt → P1 life: 6 → 1
+  [End Combat]
+  [Main 2]
+  [End Step]
+T7: Verdant Catacombs returned to exile (uncast)
+
+╔══ TURN 8 — Living End (P1) ══════════════════════════
+║ Life: Living End 1  |  Jeskai Blink 6
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 7  |  Opp lands: 7
+║ Library: 35  |  Graveyard: 10
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Overgrown Tomb, Raugrin Triome, Forest, Botanical Sanctum, Blood Crypt, Breeding Pool
+║ Jeskai Blink board:
+║   Creatures: Solitude (3/2) [tapped], Ragavan, Nimble Pilferer (2/1) [tapped]
+║   Other: Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Hallowed Fountain, Steam Vents, Island, Mountain, Plains, Meticulous Archive [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Shardless Agent
+  [Main 1]
+T8 P1: Play Blooming Marsh (tapped, 7 other lands)
+    → Goal: push_damage
+    [Mana] Tap Watery Grave→U, Forest→G, Overgrown Tomb→B (paying for Shardless Agent, 7 mana remaining)
+T8 P1: Cast Shardless Agent (1UG)
+    [Priority] P2 passes (no response)
+T8: Resolve Shardless Agent
+T8: Cascade (CMC < 3)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 6  |  Living End 1
+║ Hand: 1 cards  |  Opp hand: 2 cards
+║ Lands: 7  |  Opp lands: 8
+║ Library: 40  |  Graveyard: 8
+║ Jeskai Blink board:
+║   Creatures: Solitude (3/2), Ragavan, Nimble Pilferer (2/1)
+║   Other: Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Hallowed Fountain, Steam Vents, Island, Mountain, Plains, Meticulous Archive
+║ Living End board:
+║   Creatures: Shardless Agent (2/2)
+║   Lands: Watery Grave [T], Overgrown Tomb [T], Raugrin Triome, Forest [T], Botanical Sanctum, Blood Crypt, Breeding Pool, Blooming Marsh [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Scalding Tarn
+  [Main 1]
+T8 P2: Play Scalding Tarn
+T8 P2: Crack Scalding Tarn -> Thundering Falls (tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Solitude, Ragavan, Nimble Pilferer
+T8 P2: Attack with Solitude, Ragavan, Nimble Pilferer
+T8 P1:   [BLOCK-EMERGENCY] Shardless Agent (2/2) blocks Solitude (3/2) — trade (chump)
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T8 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T8 P2: Create 1x Treasure token(s)
+T8 P2: Ragavan, Nimble Pilferer exiles Island from top of P1's library
+T8 P2: Ragavan, Nimble Pilferer — may cast Island this turn
+P1 loses: life total -1
+  [Combat Damage] 2 damage dealt → P1 life: 1 → -1
+
+>>> Jeskai Blink wins Game 1 on turn 8 via damage
+    Final life: Living End=-1  Jeskai Blink=7
+
+======================================================================
+  GAME 2: Living End (P1) vs Jeskai Blink (P2)  —  seed 60112
+  Series: Living End 0 - 1 Jeskai Blink
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Living End wins → chooses to play first
+║ P1 (on play): Living End
+║ P2 (on draw): Jeskai Blink
+╚═══════════════════════════════════════════════════════
+
+P1 (Living End) opening hand (4 lands, 3 spells):
+  • Ketria Triome [Land, CMC 0]
+  • Breeding Pool [Land, CMC 0]
+  • Subtlety [Creature, CMC 4]
+  • Verdant Catacombs [Land, CMC 0]
+  • Curator of Mysteries [Creature, CMC 4]
+  • Curator of Mysteries [Creature, CMC 4]
+  • Indatha Triome [Land, CMC 0]
+→ P1 MULLIGANS (missing combo piece from {'Demonic Dread', 'Shardless Agent'})
+  New hand (2 lands, 5 spells): ['Living End', 'Island', 'Street Wraith', 'Subtlety', 'Overgrown Tomb', 'Demonic Dread', 'Force of Negation']
+→ P1 mulligans to 6, bottoms: ['Force of Negation']
+  Keeps: ['Living End', 'Island', 'Street Wraith', 'Subtlety', 'Overgrown Tomb', 'Demonic Dread']
+
+P2 (Jeskai Blink) opening hand (5 lands, 2 spells):
+  • Flooded Strand [Land, CMC 0]
+  • Arena of Glory [Land, CMC 0]
+  • Phelia, Exuberant Shepherd [Creature, CMC 2]
+  • Scalding Tarn [Land, CMC 0]
+  • Flooded Strand [Land, CMC 0]
+  • Elegant Parlor [Land, CMC 0]
+  • Phlage, Titan of Fire's Fury [Creature, CMC 3]
+→ P2 MULLIGANS (too many lands (5 > 4))
+  New hand (2 lands, 5 spells): ['Galvanic Discharge', 'Plains', 'Arid Mesa', 'Phelia, Exuberant Shepherd', 'Consign to Memory', 'Phelia, Exuberant Shepherd', 'Ragavan, Nimble Pilferer']
+→ P2 mulligans to 6, bottoms: ['Consign to Memory']
+  Keeps: ['Galvanic Discharge', 'Plains', 'Arid Mesa', 'Phelia, Exuberant Shepherd', 'Phelia, Exuberant Shepherd', 'Ragavan, Nimble Pilferer']
+
+
+╔══ TURN 1 — Living End (P1) ══════════════════════════
+║ Life: Living End 20  |  Jeskai Blink 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 54  |  Graveyard: 0
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Cycle Street Wraith (pay 2 life, draw: Indatha Triome)
+T1 P1: Play Overgrown Tomb (pay 2 life, untapped, life: 16)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 20  |  Living End 16
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 0
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Quantum Riddler
+  [Main 1]
+T1 P2: Play Arid Mesa
+T1 P2: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (pay 2 life, untapped, life: 17)
+    → Goal: interact [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T1 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T1: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Living End (P1) ══════════════════════════
+║ Life: Living End 16  |  Jeskai Blink 17
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 1
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Waker of Waves
+  [Main 1]
+T2 P1: Play Island
+    → Goal: execute_payoff
+    → Goal: execute_payoff
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+    → Goal: execute_payoff
+    → Goal: execute_payoff
+  [End Step]
+
+╔══ TURN 2 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 17  |  Living End 16
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 1
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Consign to Memory
+  [Main 1]
+T2 P2: Play Plains
+    → Goal: grind_value [enablers]
+    [Mana] Tap Plains→W, Sacred Foundry→R (paying for Phelia, Exuberant Shepherd, 2 mana remaining)
+T2 P2: Cast Phelia, Exuberant Shepherd (1W)
+    [Priority] P1 passes (no response)
+T2: Resolve Phelia, Exuberant Shepherd
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T2 P2: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T2 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T2 P2: Create 1x Treasure token(s)
+T2 P2: Ragavan, Nimble Pilferer exiles Demonic Dread from top of P1's library
+T2 P2: Ragavan, Nimble Pilferer — may cast Demonic Dread this turn
+  [Combat Damage] 2 damage dealt → P1 life: 16 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+T2: Demonic Dread returned to exile (uncast)
+
+╔══ TURN 3 — Living End (P1) ══════════════════════════
+║ Life: Living End 14  |  Jeskai Blink 17
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb, Island
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Phelia, Exuberant Shepherd (2/2)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Striped Riverwinder
+  [Main 1]
+T3 P1: Cycle Striped Riverwinder (pay 1 mana, draw: Zagoth Triome)
+T3 P1: Play Indatha Triome (enters tapped)
+    → Goal: execute_payoff
+    → Goal: execute_payoff
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+    → Goal: execute_payoff
+    → Goal: execute_payoff
+  [End Step]
+
+╔══ TURN 3 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 17  |  Living End 14
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 1
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Phelia, Exuberant Shepherd (2/2)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Plains
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb, Island [T], Indatha Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T3 P2: Play Arid Mesa
+T3 P2: Crack Arid Mesa (pay 1 life) -> Hallowed Fountain (tapped, life: 16)
+    → Goal: grind_value
+    [Target] → face (3 dmg, life 14 → 11): no killable target
+    [Mana] Tap Sacred Foundry→R (paying for Galvanic Discharge, 2 mana remaining)
+T3 P2: Cast Galvanic Discharge (R)
+    [Priority] P1 passes (no response)
+T3: Resolve Galvanic Discharge
+T3 P2: Galvanic Discharge deals 3 to opponent
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer, Phelia, Exuberant Shepherd
+T3 P2: Attack with Ragavan, Nimble Pilferer, Phelia, Exuberant Shepherd
+  [Declare Blockers] P1 does not block
+T3 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T3 P2: Create 1x Treasure token(s)
+T3 P2: Ragavan, Nimble Pilferer exiles Misty Rainforest from top of P1's library
+T3 P2: Ragavan, Nimble Pilferer — may cast Misty Rainforest this turn
+T3 P2:   Phelia, Exuberant Shepherd (2/2) → 2 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 11 → 7
+  [End Combat]
+  [Main 2]
+  [End Step]
+T3: Misty Rainforest returned to exile (uncast)
+
+╔══ TURN 4 — Living End (P1) ══════════════════════════
+║ Life: Living End 7  |  Jeskai Blink 16
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 2
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb, Island, Indatha Triome
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Phelia, Exuberant Shepherd (2/2) [tapped]
+║   Other: Treasure Token, Treasure Token
+║   Lands: Sacred Foundry [T], Plains, Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Curator of Mysteries
+  [Main 1]
+T4 P1: Cycle Curator of Mysteries (pay 1 mana, draw: Striped Riverwinder)
+T4 P1: Play Zagoth Triome (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 16  |  Living End 7
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 3
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Phelia, Exuberant Shepherd (2/2)
+║   Other: Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Plains, Hallowed Fountain
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb, Island [T], Indatha Triome, Zagoth Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Solitude
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer, Phelia, Exuberant Shepherd
+T4 P2: Attack with Ragavan, Nimble Pilferer, Phelia, Exuberant Shepherd
+  [Declare Blockers] P1 does not block
+T4 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T4 P2: Create 1x Treasure token(s)
+T4 P2: Ragavan, Nimble Pilferer exiles Architects of Will from top of P1's library
+T4 P2: Ragavan, Nimble Pilferer — may cast Architects of Will this turn
+T4 P2:   Phelia, Exuberant Shepherd (2/2) → 2 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 7 → 3
+  [End Combat]
+  [Main 2]
+T4 P2: Cycle Architects of Will (pay 0 mana, draw: Galvanic Discharge)
+    → Goal: close_game
+    [Mana] Tap Sacred Foundry→R (paying for Galvanic Discharge, 3 mana remaining)
+T4 P2: Cast Galvanic Discharge (R)
+    [Priority] P1 passes (no response)
+T4: Resolve Galvanic Discharge
+T4 P2: Galvanic Discharge deals 3 to opponent
+P1 loses: life total 0
+
+>>> Jeskai Blink wins Game 2 on turn 4 via damage
+    Final life: Living End=0  Jeskai Blink=16
+
+======================================================================
+  MATCH RESULT: Jeskai Blink wins 2-0
+======================================================================
