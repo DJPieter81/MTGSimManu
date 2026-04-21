@@ -1722,6 +1722,31 @@ class EVPlayer:
                 bonus += base_power
         return bonus
 
+    def _is_protected_piece(self, card) -> bool:
+        """RC-4: card should not be thrown away as a chump unless it also
+        kills the attacker or survival requires it.
+
+        Categories (all oracle/tag-driven — no card-name lookups):
+          - Planeswalkers — losing them surrenders loyalty abilities.
+          - Creatures with the escape mechanic ('escape—' em-dash) —
+            expensive to recur; represent long-term value.
+          - Attack-trigger sources ('whenever this creature attacks',
+            or 'whenever <name> attacks') — offensive value > defence.
+        """
+        from engine.cards import CardType
+        t = card.template
+        if CardType.PLANESWALKER in t.card_types:
+            return True
+        oracle = (t.oracle_text or '').lower()
+        if 'escape—' in oracle:  # em-dash U+2014
+            return True
+        if 'whenever this creature attacks' in oracle:
+            return True
+        name = (t.name or '').lower().split(' //')[0].strip()
+        if name and f'whenever {name} attacks' in oracle:
+            return True
+        return False
+
     def _equipment_breakable(self, game, me) -> bool:
         """True iff we can plausibly remove or reset the equipment next turn.
 
@@ -1776,8 +1801,9 @@ class EVPlayer:
             emergency_blocks: Dict[int, List[int]] = {}
             e_used: Set[int] = set()
             # Block biggest attackers with smallest blockers.
-            # Two-pass: first try non-battle-cry blockers; fall back to battle cry
-            # only if they are the only option. Preserves attack amplification.
+            # Two-pass: first try non-battle-cry, non-protected blockers;
+            # fall back only if they are the only option. Preserves attack
+            # amplification AND shields planeswalkers / escape creatures.
             def _blocker_candidates(attacker, excl):
                 cands = []
                 for b in valid_blockers:
@@ -1788,7 +1814,9 @@ class EVPlayer:
                                 Keyword.REACH not in b.keywords):
                             continue
                     cands.append(b)
-                return cands
+                unprotected = [b for b in cands
+                               if not self._is_protected_piece(b)]
+                return unprotected if unprotected else cands
 
             def _is_battle_cry(b):
                 bo = (b.template.oracle_text or '').lower()
@@ -1915,6 +1943,11 @@ class EVPlayer:
                         continue  # 0-power non-kill = pure waste
                     if is_battle_cry:
                         continue  # battle cry source worth more attacking than chump-blocking
+                    # (4) Protected pieces (planeswalkers, escape creatures)
+                    #     — their persistent value exceeds single-turn damage
+                    #     saved by chumping.
+                    if self._is_protected_piece(blocker):
+                        continue
 
                 val = evaluate_action(
                     game, self.player_idx,
