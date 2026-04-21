@@ -197,6 +197,14 @@ class EVPlayer:
 
         Returns: ("play_land", card, []) or ("cast_spell", card, targets) or None
         """
+        # Invalidate last-call's candidate snapshot up-front so every return
+        # path (including early-returns when `legal` is empty) leaves
+        # `_last_candidates` consistent with the *current* decision — not the
+        # previous one. Prior bug: re-entry with nothing castable returned
+        # without clearing, so trace/debug consumers read stale candidates
+        # (e.g. `cast_spell: Ajani` after Ajani had already resolved).
+        self._last_candidates = []
+
         self._init_deck_knowledge(game)
         me = game.players[self.player_idx]
         opp = game.players[1 - self.player_idx]
