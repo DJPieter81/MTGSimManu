@@ -671,8 +671,11 @@ def march_otherworldly_light_resolve(game, card, controller, targets=None, item=
     from .cards import CardType
     opponent = 1 - controller
     opp = game.players[opponent]
-    # X = mana spent beyond the base W cost (total lands available as proxy)
-    x_val = len(game.players[controller].lands)
+    # X = mana actually paid for {X} (stored on the stack item at cast
+    # time). Mirrors Wrath of the Skies' pattern at line 615; reading
+    # from len(lands) would ignore the cast-time commitment and let
+    # March target permanents above the paid CMC.
+    x_val = item.x_value if item and hasattr(item, 'x_value') else 0
     exile_targets = [c for c in opp.battlefield
                      if not c.template.is_land
                      and (CardType.ARTIFACT in c.template.card_types
