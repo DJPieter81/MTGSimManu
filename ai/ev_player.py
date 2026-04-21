@@ -1042,9 +1042,28 @@ class EVPlayer:
         from ai.clock import card_clock_impact
         snap = snapshot_from_game(game, self.player_idx)
 
-        # Base: a land is always valuable (mana = future clock changes)
-        # ~10 because spells typically score 5-15 and we want lands first
-        ev = 10.0
+        # Rules constants used by this function.  Each is justified against
+        # the scale set by `_score_spell`: spells typically score between
+        # -5 (pass_threshold) and +15 (high-EV cast), so land scores must
+        # live in a comparable range and land plays must generally outrank
+        # spells of the current turn (mana is fundamental).  Every cost /
+        # bonus below is derived from that shared scale or from game-rules
+        # facts (timing: tapped lands cost 1 turn of mana availability;
+        # color enabling unlocks 1 spell per new color; bounce-land loops
+        # generate +1 land worth of mana per turn).
+        LAND_BASE_EV = 10.0              # mid-range of the spell EV scale
+        LAND_UNTAPPED_USEFUL = 5.0       # land pays off this turn
+        LAND_UNTAPPED_IDLE = 2.0         # land is stored mana, not spent now
+        LAND_TAPPED_STALL = 10.0         # tapped-with-1-drop-in-hand: lose entire T1 tempo
+        LAND_TAPPED_MINOR = 3.0          # tapped when we can still play most plays
+        BOUNCE_LAND_AMULET_MANA = 8.0    # bounce+Amulet loop = +1 land-equiv mana / turn × residency
+        RAMP_TO_BIG_NOW = 12.0           # this land lets us cast a 6+ CMC spell THIS turn
+        RAMP_TO_BIG_SOON = 4.0           # on-curve ramp to big next turn
+        COLOR_ENABLES_SPELL = 3.0        # each specific spell unlocked by a new colour
+        NEW_COLOR_GENERIC = 4.0          # each colour added to mana base when hand needs it
+        FETCH_FLEXIBILITY = 3.0          # fetch = choice of colour next turn
+
+        ev = LAND_BASE_EV
 
         current_untapped = len(me.untapped_lands)
         hand_spells = [s for s in me.hand if not s.template.is_land]
@@ -1068,19 +1087,16 @@ class EVPlayer:
 
         effectively_tapped = land.template.enters_tapped and not has_untap_enabler
         if not effectively_tapped:
-            ev += 5.0 if has_castable_spells else 2.0
+            ev += LAND_UNTAPPED_USEFUL if has_castable_spells else LAND_UNTAPPED_IDLE
         else:
             if has_castable_spells:
                 if current_untapped == 0 and has_one_drops:
-                    ev -= 10.0
+                    ev -= LAND_TAPPED_STALL
                 else:
-                    ev -= 3.0
+                    ev -= LAND_TAPPED_MINOR
 
         # Amulet + bounce-land mana loop: the bounce land returns a land, which
         # re-triggers the Amulet untap → net +1 mana/turn. Detect via oracle.
-        # Value raised from +4 → +8 after session-3 matrix showed Amulet Titan
-        # still at 23.8% (unchanged from pre-fix 23%); the base signal wasn't
-        # loud enough to affect play sequencing.
         if has_untap_enabler:
             land_oracle = (land.template.oracle_text or '').lower()
             is_bounce_land = (
@@ -1088,7 +1104,7 @@ class EVPlayer:
                 or "return an untapped land you control to its owner's hand" in land_oracle
             )
             if is_bounce_land:
-                ev += 8.0
+                ev += BOUNCE_LAND_AMULET_MANA
 
         # High-CMC creature ramp priority: when a CMC 6+ creature is in hand
         # and this land brings us to casting threshold, rush the land.
@@ -1103,9 +1119,9 @@ class EVPlayer:
             if has_untap_enabler and land.template.enters_tapped:
                 effective_mana_after += 1
             if effective_mana_after >= target_cmc:
-                ev += 12.0   # enables big creature this turn
+                ev += RAMP_TO_BIG_NOW
             elif effective_mana_after >= target_cmc - 2:
-                ev += 4.0    # on-curve ramp to big creature next turn
+                ev += RAMP_TO_BIG_SOON
 
         # New colors: enables spells we couldn't cast → direct clock impact
         existing_colors = set()
@@ -1131,7 +1147,7 @@ class EVPlayer:
             for s in me.hand if not s.template.is_land
         )
         if hand_needs_colors:
-            ev += len(new_colors) * 4.0
+            ev += len(new_colors) * NEW_COLOR_GENERIC
 
         # Specific spell enablement: this land's colors unlock a spell in hand
         # Check me.hand (not just legal spells) so color-gated 1-drops count
@@ -1143,10 +1159,10 @@ class EVPlayer:
                 if getattr(mc, attr, 0) > 0: spell_colors.add(code)
             missing_for_spell = spell_colors - existing_colors
             if missing_for_spell and missing_for_spell & land_produces:
-                ev += 3.0
+                ev += COLOR_ENABLES_SPELL
 
         if is_fetch:
-            ev += 3.0  # fetch flexibility
+            ev += FETCH_FLEXIBILITY
 
         # Artifact-land synergy bonus. When the player's visible cards
         # carry artifact-scaling text, an artifact-typed land contributes
