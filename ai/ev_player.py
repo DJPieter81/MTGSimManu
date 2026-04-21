@@ -20,6 +20,13 @@ from ai.ev_evaluator import (
     creature_threat_value,
 )
 
+# RC-2 — parse "equipped/enchanted creature gets +X/+Y" bonuses from
+# oracle text. Detects Cranial Plating, Embercleave, Colossus Hammer,
+# Ethereal Armor auras, etc., without naming any card.
+_EQUIP_BONUS_RE = re.compile(
+    r'(equipped|enchanted) creature gets \+(\d+)/\+(\d+)'
+)
+
 # ─────────────────────────────────────────────────────────────
 # Archetype detection
 # ─────────────────────────────────────────────────────────────
@@ -1681,6 +1688,149 @@ class EVPlayer:
         )
         return incoming + opp_next >= me.life
 
+    def _attacker_equipment_bonus(self, game, opp, attacker) -> int:
+        """Sum of +power on `attacker` that would persist after a chump —
+        the plating rebinds, the Construct respawns with the same clause.
+
+        Covers two sources:
+          (1) Equipment / aura bonuses attached to the attacker
+              ('equipped/enchanted creature gets +X/+Y' on the attached
+              permanent). Handles 'for each <qualifier>' scaling.
+          (2) Intrinsic scaling on the attacker's own oracle
+              ('+X/+Y for each artifact/creature/land you control') — the
+              Urza's Saga Construct Token pattern and similar.
+        """
+        bonus = 0
+
+        def _scaled(base_power: int, oracle: str) -> int:
+            scale_match = re.search(
+                r'for each (artifact|creature|land|card)', oracle
+            )
+            if not scale_match:
+                return base_power
+            kind = scale_match.group(1)
+            if kind == 'artifact':
+                count = sum(
+                    1 for c in opp.battlefield
+                    if 'artifact' in str(c.template.card_types).lower()
+                )
+            elif kind == 'creature':
+                count = len(opp.creatures)
+            elif kind == 'land':
+                count = len(
+                    [c for c in opp.battlefield if c.template.is_land]
+                )
+            else:  # 'card' — count nonland permanents as a proxy
+                count = len(opp.battlefield)
+            return base_power * count
+
+        # (1) Equipment / aura attached bonuses
+        attached_ids = set()
+        for tag in attacker.instance_tags:
+            if not tag.startswith('equipped_'):
+                continue
+            tail = tag.split('_', 1)[1]
+            if tail.isdigit():
+                attached_ids.add(int(tail))
+        for perm in opp.battlefield:
+            if perm.instance_id not in attached_ids:
+                continue
+            oracle = (perm.template.oracle_text or '').lower()
+            m = _EQUIP_BONUS_RE.search(oracle)
+            if not m:
+                continue
+            bonus += _scaled(int(m.group(2)), oracle)
+
+        # (2) Intrinsic scaling on the attacker's own oracle. Mirrors the
+        # engine's detection in cards.py::_dynamic_base_power.
+        a_oracle = (attacker.template.oracle_text or '').lower()
+        m2 = re.search(
+            r'\+(\d+)/\+\d+\s+for\s+each\s+(artifact|creature|land|card)\s+you\s+control',
+            a_oracle,
+        )
+        if m2:
+            bonus += _scaled(int(m2.group(1)), a_oracle)
+
+        return bonus
+
+    def _is_protected_piece(self, card) -> bool:
+        """RC-4: card should not be thrown away as a chump unless it also
+        kills the attacker or survival requires it.
+
+        Categories (all oracle/tag-driven — no card-name lookups):
+          - Planeswalkers — losing them surrenders loyalty abilities.
+          - Creatures with the escape mechanic ('escape—' em-dash) —
+            expensive to recur; represent long-term value.
+          - Attack-trigger sources ('whenever this creature attacks',
+            or 'whenever <name> attacks') — offensive value > defence.
+        """
+        from engine.cards import CardType
+        t = card.template
+        if CardType.PLANESWALKER in t.card_types:
+            return True
+        oracle = (t.oracle_text or '').lower()
+        if 'escape—' in oracle:  # em-dash U+2014
+            return True
+        if 'whenever this creature attacks' in oracle:
+            return True
+        name = (t.name or '').lower().split(' //')[0].strip()
+        if name and f'whenever {name} attacks' in oracle:
+            return True
+        return False
+
+    def _racing_to_win(self, game, me, opp, attackers) -> bool:
+        """RC-5: True iff racing strictly beats blocking.
+
+        All three conditions must hold:
+          (a) we survive this combat unblocked (incoming < my life),
+          (b) we have offensive power on-board,
+          (c) my clock-to-kill (opp.life / my on-board power) is no worse
+              than opp's clock-to-kill AFTER this combat (my post-combat
+              life / opp's total next-turn power).
+
+        Conservative: we use raw power and ignore burn/pump in hand. If
+        the clocks are equal or we are faster, racing is preferred.
+        """
+        incoming = sum(a.power or 0 for a in attackers)
+        if incoming >= me.life:
+            return False  # cannot race through lethal
+        my_on_board_power = sum((c.power or 0) for c in me.creatures)
+        if my_on_board_power <= 0:
+            return False
+        attacking_ids = {a.instance_id for a in attackers}
+        opp_on_board_power_after = sum(
+            (c.power or 0) for c in opp.creatures
+            if c.instance_id not in attacking_ids
+        ) + sum((a.power or 0) for a in attackers)
+        if opp_on_board_power_after <= 0:
+            return True  # opp has no follow-up threat — freely race
+        my_clock = opp.life / max(my_on_board_power, 1)
+        my_life_after = me.life - incoming
+        opp_clock = my_life_after / max(opp_on_board_power_after, 1)
+        return my_clock <= opp_clock
+
+    def _equipment_breakable(self, game, me) -> bool:
+        """True iff we can plausibly remove or reset the equipment next turn.
+
+        Checks `me.hand` for:
+          - mass removal (tag 'wrath' / 'board_wipe')
+          - artifact/enchantment destruction (tag 'removal' AND oracle
+            destroys target artifact / enchantment / nonland permanent)
+        """
+        for card in me.hand:
+            tags = getattr(card.template, 'tags', None) or set()
+            if 'wrath' in tags or 'board_wipe' in tags:
+                return True
+            oracle = (card.template.oracle_text or '').lower()
+            if 'removal' in tags and (
+                'destroy target artifact' in oracle
+                or 'destroy target enchantment' in oracle
+                or 'destroy target nonland permanent' in oracle
+                or 'destroy all artifacts' in oracle
+            ):
+                return True
+        return False
+
     def decide_blockers(self, game, attackers) -> Dict[int, List[int]]:
         """Decide blocking assignments."""
         from ai.board_eval import evaluate_action, Action, ActionType
@@ -1702,6 +1852,12 @@ class EVPlayer:
         if my_untapped_power >= opp.life and total_incoming < me.life:
             return {}
 
+        # RC-5: Race if clock math favours us (broader than the lethal-on-board
+        # check above). Only fires when we survive this combat AND our
+        # clock-to-kill is at least as fast as opp's post-combat clock.
+        if self._racing_to_win(game, me, opp, attackers):
+            return {}
+
         # EMERGENCY: block when incoming damage is dangerous
         # Triggers: lethal this turn, drop-below-5, or projected lethal across 2 turns
         # (the old single-attacker heuristic treated a 10/10 at life=20 as an emergency;
@@ -1713,8 +1869,9 @@ class EVPlayer:
             emergency_blocks: Dict[int, List[int]] = {}
             e_used: Set[int] = set()
             # Block biggest attackers with smallest blockers.
-            # Two-pass: first try non-battle-cry blockers; fall back to battle cry
-            # only if they are the only option. Preserves attack amplification.
+            # Two-pass: first try non-battle-cry, non-protected blockers;
+            # fall back only if they are the only option. Preserves attack
+            # amplification AND shields planeswalkers / escape creatures.
             def _blocker_candidates(attacker, excl):
                 cands = []
                 for b in valid_blockers:
@@ -1725,14 +1882,33 @@ class EVPlayer:
                                 Keyword.REACH not in b.keywords):
                             continue
                     cands.append(b)
-                return cands
+                unprotected = [b for b in cands
+                               if not self._is_protected_piece(b)]
+                return unprotected if unprotected else cands
 
             def _is_battle_cry(b):
                 bo = (b.template.oracle_text or '').lower()
                 return 'whenever this creature attacks' in bo
 
             sacrificed_value = 0.0
+            plating_skipped_any = False
             for attacker in sorted(attackers, key=lambda a: a.power or 0, reverse=True):
+                # RC-2: if this attacker's power is dominated by equipment/aura
+                # bonuses AND we can't remove those next turn, chumping is
+                # futile — the plating rebinds. Skip unless skipping is lethal.
+                equip_bonus = self._attacker_equipment_bonus(game, opp, attacker)
+                damage_so_far = sum(
+                    (a.power or 0) for a in attackers
+                    if a.instance_id in emergency_blocks
+                )
+                damage_if_skipped = total_incoming - damage_so_far
+                still_lethal_if_skipped = damage_if_skipped >= me.life
+                if (equip_bonus >= 3
+                        and not self._equipment_breakable(game, me)
+                        and not still_lethal_if_skipped):
+                    plating_skipped_any = True
+                    continue
+
                 best_chump = None
                 best_chump_val = 999
                 cands = _blocker_candidates(attacker, e_used)
@@ -1762,6 +1938,13 @@ class EVPlayer:
                         break
                     if remaining < me.life and (me.life - remaining > 5 or remaining == 0):
                         break  # stabilized
+            # RC-2: if the emergency path skipped every attacker via the
+            # plating-futile gate and assigned no blocks, accept the damage
+            # rather than letting the non-emergency path re-block the same
+            # plated attackers. Only triggers when skipping is not lethal.
+            if emergency and not emergency_blocks and plating_skipped_any:
+                return {}
+
             if emergency_blocks:
                 # Log emergency blocking assignments with reasoning
                 id_to_attacker = {a.instance_id: a for a in attackers}
@@ -1822,6 +2005,11 @@ class EVPlayer:
                         continue  # 0-power non-kill = pure waste
                     if is_battle_cry:
                         continue  # battle cry source worth more attacking than chump-blocking
+                    # (4) Protected pieces (planeswalkers, escape creatures)
+                    #     — their persistent value exceeds single-turn damage
+                    #     saved by chumping.
+                    if self._is_protected_piece(blocker):
+                        continue
 
                 val = evaluate_action(
                     game, self.player_idx,

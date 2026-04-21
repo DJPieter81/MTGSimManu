@@ -78,10 +78,6 @@ T1: Resolve Ocelot Pride
     hand: ['Galvanic Discharge', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ocelot Pride']
     board: ['Ocelot Pride (1/1)']
     opp: [] (life=20)
-    EV candidates:
-        +3.0  cast_spell: Ocelot Pride <--  [h=+3.0 la=+3.0]
-        +3.0  cast_spell: Ocelot Pride  [h=+3.0 la=+3.0]
-        +0.1  cast_spell: Galvanic Discharge  [h=+0.1 la=+0.1]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T1 Boros Energy: no attack
@@ -93,10 +89,6 @@ T1: Resolve Ocelot Pride
     hand: ['Galvanic Discharge', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ocelot Pride']
     board: ['Ocelot Pride (1/1)']
     opp: [] (life=20)
-    EV candidates:
-        +3.0  cast_spell: Ocelot Pride <--  [h=+3.0 la=+3.0]
-        +3.0  cast_spell: Ocelot Pride  [h=+3.0 la=+3.0]
-        +0.1  cast_spell: Galvanic Discharge  [h=+0.1 la=+0.1]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -327,8 +319,6 @@ T2: Resolve Memnite
     hand: ["Sojourner's Companion", 'Cranial Plating']
     board: ['Ornithopter (0/2)', 'Memnite (1/1)']
     opp: [] (life=17)
-    EV candidates:
-        +2.3  cast_spell: Memnite <--  [h=+2.3 la=+2.3]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -369,9 +359,6 @@ T3 P1: Ajani creates 2/1 Cat Warrior token
     hand: ['Voice of Victory', 'Blood Moon']
     board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
     opp: ['Ornithopter (0/2)', 'Memnite (1/1)'] (life=20)
-    EV candidates:
-       +61.2  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <--  [h=+61.2 la=+61.2]
-       +16.9  cast_spell: Voice of Victory  [h=+16.9 la=+16.9]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T5 Boros Energy: no attack
@@ -383,9 +370,6 @@ T3 P1: Ajani creates 2/1 Cat Warrior token
     hand: ['Voice of Victory', 'Blood Moon']
     board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
     opp: ['Ornithopter (0/2)', 'Memnite (1/1)'] (life=20)
-    EV candidates:
-       +61.2  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <--  [h=+61.2 la=+61.2]
-       +16.9  cast_spell: Voice of Victory  [h=+16.9 la=+16.9]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -437,10 +421,6 @@ T3: Resolve Sojourner's Companion
     hand: ['Cranial Plating']
     board: ['Ornithopter (0/2)', 'Memnite (1/1)', "Sojourner's Companion (4/4)"]
     opp: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=17)
-    EV candidates:
-       +42.0  cast_spell: Sojourner's Companion <--  [h=+42.0 la=+42.0]
-        +2.9  cycle: Sojourner's Companion
-        +0.9  cast_spell: Cranial Plating  [h=+0.9 la=+0.9]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T6 Affinity: no attack
@@ -452,10 +432,6 @@ T3: Resolve Sojourner's Companion
     hand: ['Cranial Plating']
     board: ['Ornithopter (0/2)', 'Memnite (1/1)', "Sojourner's Companion (4/4)"]
     opp: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=17)
-    EV candidates:
-       +42.0  cast_spell: Sojourner's Companion <--  [h=+42.0 la=+42.0]
-        +2.9  cycle: Sojourner's Companion
-        +0.9  cast_spell: Cranial Plating  [h=+0.9 la=+0.9]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -566,9 +542,6 @@ T4 P2: Cranial Plating enters the battlefield (unattached)
     board: ['Ornithopter (0/2)', 'Memnite (1/1)', "Sojourner's Companion (4/4)"]
     perms: ['Cranial Plating']
     opp: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Voice of Victory (1/3)'] (life=16)
-    EV candidates:
-        +1.0  cast_spell: Cranial Plating <--  [h=+1.0 la=+1.0]
-        +1.0  cast_spell: Cranial Plating  [h=+1.0 la=+1.0]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T8 Affinity: ["Sojourner's Companion"]
@@ -585,9 +558,6 @@ T4: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger dies
     board: ['Ornithopter (0/2)', 'Memnite (1/1)', "Sojourner's Companion (4/4)"]
     perms: ['Cranial Plating']
     opp: ['Cat Token (2/1)', 'Voice of Victory (1/3)'] (life=16)
-    EV candidates:
-        +1.0  cast_spell: Cranial Plating <--  [h=+1.0 la=+1.0]
-        +1.0  cast_spell: Cranial Plating  [h=+1.0 la=+1.0]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -629,9 +599,6 @@ T5 P1: Goblin Bombardment enters — sacrifice creatures for 1 damage each
     board: ['Cat Token (2/1)', 'Voice of Victory (1/3)']
     perms: ['Goblin Bombardment']
     opp: ['Ornithopter (0/2)', 'Memnite (1/1)', "Sojourner's Companion (4/4)"] (life=20)
-    EV candidates:
-       +31.2  cast_spell: Goblin Bombardment <--  [h=+31.2 la=+31.2]
-        -0.2  cast_spell: Blood Moon  [h=-0.2 la=-0.2]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T9 Boros Energy: ['Voice of Victory']
@@ -650,9 +617,6 @@ T5 P1:   Voice of Victory (1/3) → 1 dmg to player
     board: ['Cat Token (2/1)', 'Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)']
     perms: ['Goblin Bombardment']
     opp: ['Ornithopter (0/2)', 'Memnite (1/1)', "Sojourner's Companion (4/4)"] (life=19)
-    EV candidates:
-       +31.2  cast_spell: Goblin Bombardment <--  [h=+31.2 la=+31.2]
-        -0.2  cast_spell: Blood Moon  [h=-0.2 la=-0.2]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -721,33 +685,30 @@ T5 P2: Cranial Plating enters the battlefield (unattached)
     board: ['Ornithopter (0/2)', 'Memnite (1/1)', "Sojourner's Companion (14/4)"]
     perms: ['Cranial Plating', 'Mox Opal', 'Cranial Plating']
     opp: ['Cat Token (2/1)', 'Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)'] (life=16)
-    EV candidates:
-        +1.1  cast_spell: Cranial Plating <--  [h=+1.1 la=+1.1]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T10 Affinity: ['Memnite', "Sojourner's Companion"]
   [Declare Attackers] P2 attacks with: Memnite, Sojourner's Companion
 T5 P2: Attack with Memnite, Sojourner's Companion
-T5 P1:   [BLOCK-EMERGENCY] Warrior Token (1/1) blocks Sojourner's Companion (14/4) — chump block
+T5 P1:   [BLOCK-EMERGENCY] Warrior Token (1/1) blocks Memnite (1/1) — trade (chump)
   [Declare Blockers] P1 blocks: (see BLOCK lines below)
-T5 P2:   Memnite (1/1) → 1 dmg to player
+T5 P2:   Sojourner's Companion (14/4) → 14 dmg to player
 T5: Warrior Token dies
-  [Combat Damage] 1 damage dealt → P1 life: 16 → 15
+T5: Memnite dies
+  [Combat Damage] 14 damage dealt → P1 life: 16 → 2
   [End Combat]
   [Main 2]
   [AI-TRACE MAIN2] T10 Affinity
-    state: life=19 mana=1 hand=0+0L gy=2
+    state: life=19 mana=1 hand=0+0L gy=3
     hand: []
-    board: ['Ornithopter (0/2)', 'Memnite (1/1)', "Sojourner's Companion (14/4)"]
+    board: ['Ornithopter (0/2)', "Sojourner's Companion (13/4)"]
     perms: ['Cranial Plating', 'Mox Opal', 'Cranial Plating']
-    opp: ['Cat Token (2/1)', 'Voice of Victory (1/3)', 'Warrior Token (1/1)'] (life=15)
-    EV candidates:
-        +1.1  cast_spell: Cranial Plating <--  [h=+1.1 la=+1.1]
+    opp: ['Cat Token (2/1)', 'Voice of Victory (1/3)', 'Warrior Token (1/1)'] (life=2)
     >>> PASS (threshold=-5.0)
   [End Step]
 
 ╔══ TURN 6 — Boros Energy (P1) ══════════════════════════
-║ Life: Boros Energy 15  |  Affinity 19
+║ Life: Boros Energy 2  |  Affinity 19
 ║ Hand: 1 cards  |  Opp hand: 0 cards
 ║ Lands: 3  |  Opp lands: 4
 ║ Library: 48  |  Graveyard: 7
@@ -756,7 +717,7 @@ T5: Warrior Token dies
 ║   Other: Goblin Bombardment
 ║   Lands: Sacred Foundry, Mountain, Sacred Foundry
 ║ Affinity board:
-║   Creatures: Ornithopter (0/2), Memnite (1/1) [tapped], Sojourner's Companion (14/4) [tapped]
+║   Creatures: Ornithopter (0/2), Sojourner's Companion (13/4) [tapped]
 ║   Other: Cranial Plating, Mox Opal, Cranial Plating
 ║   Lands: Darksteel Citadel [T], Mistvault Bridge [T], Darksteel Citadel [T], Mistvault Bridge
 ╚═══════════════════════════════════════════════════════
@@ -765,22 +726,22 @@ T5: Warrior Token dies
   [Draw] P1 draws: Arena of Glory
   [Main 1]
   [AI-TRACE MAIN1] T11 Boros Energy
-    state: life=15 mana=3 hand=1+1L gy=7
+    state: life=2 mana=3 hand=1+1L gy=7
     hand: ['Blood Moon']
     board: ['Cat Token (2/1)', 'Voice of Victory (1/3)', 'Warrior Token (1/1)']
     perms: ['Goblin Bombardment']
-    opp: ['Ornithopter (0/2)', 'Memnite (1/1)', "Sojourner's Companion (14/4)"] (life=19)
+    opp: ['Ornithopter (0/2)', "Sojourner's Companion (13/4)"] (life=19)
     EV candidates:
         +7.0  play_land: Arena of Glory <--
         -0.3  cast_spell: Blood Moon  [h=-0.3 la=-0.3]
     >>> PLAY_LAND: Arena of Glory
 T6 P1: Play Arena of Glory (enters tapped)
   [AI-TRACE MAIN1] T11 Boros Energy
-    state: life=15 mana=3 hand=1+0L gy=7
+    state: life=2 mana=3 hand=1+0L gy=7
     hand: ['Blood Moon']
     board: ['Cat Token (2/1)', 'Voice of Victory (1/3)', 'Warrior Token (1/1)']
     perms: ['Goblin Bombardment']
-    opp: ['Ornithopter (0/2)', 'Memnite (1/1)', "Sojourner's Companion (14/4)"] (life=19)
+    opp: ['Ornithopter (0/2)', "Sojourner's Companion (13/4)"] (life=19)
     EV candidates:
         -0.2  cast_spell: Blood Moon <--  [h=-0.2 la=-0.2]
     >>> CAST_SPELL: Blood Moon
@@ -791,13 +752,11 @@ T6 P1: Cast Blood Moon (2R)
 T6: Resolve Blood Moon
 T6 P1: Blood Moon: 4 opponent nonbasic lands become Mountains
   [AI-TRACE MAIN1] T11 Boros Energy
-    state: life=15 mana=0 hand=0+0L gy=7
+    state: life=2 mana=0 hand=0+0L gy=7
     hand: []
     board: ['Cat Token (2/1)', 'Voice of Victory (1/3)', 'Warrior Token (1/1)']
     perms: ['Goblin Bombardment', 'Blood Moon']
-    opp: ['Ornithopter (0/2)', 'Memnite (1/1)', "Sojourner's Companion (14/4)"] (life=19)
-    EV candidates:
-        -0.2  cast_spell: Blood Moon <--  [h=-0.2 la=-0.2]
+    opp: ['Ornithopter (0/2)', "Sojourner's Companion (13/4)"] (life=19)
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T11 Boros Energy: ['Cat Token', 'Voice of Victory', 'Warrior Token']
@@ -813,23 +772,21 @@ T6 P1:   Warrior Token (1/1) → 1 dmg to player
   [End Combat]
   [Main 2]
   [AI-TRACE MAIN2] T11 Boros Energy
-    state: life=15 mana=0 hand=0+0L gy=7
+    state: life=2 mana=0 hand=0+0L gy=7
     hand: []
     board: ['Cat Token (2/1)', 'Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)']
     perms: ['Goblin Bombardment', 'Blood Moon']
-    opp: ['Ornithopter (0/2)', 'Memnite (1/1)', "Sojourner's Companion (14/4)"] (life=15)
-    EV candidates:
-        -0.2  cast_spell: Blood Moon <--  [h=-0.2 la=-0.2]
+    opp: ['Ornithopter (0/2)', "Sojourner's Companion (13/4)"] (life=15)
     >>> PASS (threshold=-5.0)
   [End Step]
 
 ╔══ TURN 6 — Affinity (P2) ══════════════════════════
-║ Life: Affinity 15  |  Boros Energy 15
+║ Life: Affinity 15  |  Boros Energy 2
 ║ Hand: 0 cards  |  Opp hand: 0 cards
 ║ Lands: 4  |  Opp lands: 4
-║ Library: 48  |  Graveyard: 2
+║ Library: 48  |  Graveyard: 3
 ║ Affinity board:
-║   Creatures: Ornithopter (0/2), Memnite (1/1), Sojourner's Companion (14/4)
+║   Creatures: Ornithopter (0/2), Sojourner's Companion (13/4)
 ║   Other: Cranial Plating, Mox Opal, Cranial Plating
 ║   Lands: Darksteel Citadel, Mistvault Bridge, Darksteel Citadel, Mistvault Bridge
 ║ Boros Energy board:
@@ -842,62 +799,56 @@ T6 P1:   Warrior Token (1/1) → 1 dmg to player
   [Draw] P2 draws: Memnite
   [Main 1]
   [AI-TRACE MAIN1] T12 Affinity
-    state: life=15 mana=4 hand=1+0L gy=2
+    state: life=15 mana=4 hand=1+0L gy=3
     hand: ['Memnite']
-    board: ['Ornithopter (0/2)', 'Memnite (1/1)', "Sojourner's Companion (14/4)"]
+    board: ['Ornithopter (0/2)', "Sojourner's Companion (13/4)"]
     perms: ['Cranial Plating', 'Mox Opal', 'Cranial Plating']
-    opp: ['Cat Token (2/1)', 'Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)'] (life=15)
+    opp: ['Cat Token (2/1)', 'Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)'] (life=2)
     EV candidates:
-       +15.0  equip: Cranial Plating <--
-        +1.2  cast_spell: Memnite  [h=+1.2 la=+1.2]
+       +13.5  equip: Cranial Plating <--
+        +9.8  cast_spell: Memnite  [h=+9.8 la=+9.8]
     >>> EQUIP: Cranial Plating
 T6 P2: Equip Cranial Plating to Sojourner's Companion (cost 1)
   [AI-TRACE MAIN1] T12 Affinity
-    state: life=15 mana=3 hand=1+0L gy=2
+    state: life=15 mana=3 hand=1+0L gy=3
     hand: ['Memnite']
-    board: ['Ornithopter (0/2)', 'Memnite (1/1)', "Sojourner's Companion (24/4)"]
+    board: ['Ornithopter (0/2)', "Sojourner's Companion (22/4)"]
     perms: ['Cranial Plating', 'Mox Opal', 'Cranial Plating']
-    opp: ['Cat Token (2/1)', 'Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)'] (life=15)
+    opp: ['Cat Token (2/1)', 'Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)'] (life=2)
     EV candidates:
-        +1.2  cast_spell: Memnite <--  [h=+1.2 la=+1.2]
+        +9.8  cast_spell: Memnite <--  [h=+9.8 la=+9.8]
     >>> CAST_SPELL: Memnite
     → Goal: curve_out
 T6 P2: Cast Memnite (0)
     [Priority] P1 passes (no response)
 T6: Resolve Memnite
   [AI-TRACE MAIN1] T12 Affinity
-    state: life=15 mana=3 hand=0+0L gy=2
+    state: life=15 mana=3 hand=0+0L gy=3
     hand: []
-    board: ['Ornithopter (0/2)', 'Memnite (1/1)', "Sojourner's Companion (26/4)", 'Memnite (1/1)']
+    board: ['Ornithopter (0/2)', "Sojourner's Companion (24/4)", 'Memnite (1/1)']
     perms: ['Cranial Plating', 'Mox Opal', 'Cranial Plating']
-    opp: ['Cat Token (2/1)', 'Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)'] (life=15)
-    EV candidates:
-        +1.2  cast_spell: Memnite <--  [h=+1.2 la=+1.2]
+    opp: ['Cat Token (2/1)', 'Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)'] (life=2)
     >>> PASS (threshold=-5.0)
   [Begin Combat]
-  [AI-TRACE ATTACK] T12 Affinity: ['Memnite', "Sojourner's Companion"]
-  [Declare Attackers] P2 attacks with: Memnite, Sojourner's Companion
-T6 P2: Attack with Memnite, Sojourner's Companion
-T6 P1:   [BLOCK-EMERGENCY] Warrior Token (1/1) blocks Sojourner's Companion (26/4) — chump block
+  [AI-TRACE ATTACK] T12 Affinity: ["Sojourner's Companion"]
+  [Declare Attackers] P2 attacks with: Sojourner's Companion
+T6 P2: Attack with Sojourner's Companion
+T6 P1:   [BLOCK-EMERGENCY] Warrior Token (1/1) blocks Sojourner's Companion (24/4) — chump block
   [Declare Blockers] P1 blocks: (see BLOCK lines below)
-T6 P2:   Memnite (1/1) → 1 dmg to player
 T6: Warrior Token dies
-  [Combat Damage] 1 damage dealt → P1 life: 15 → 14
   [End Combat]
   [Main 2]
   [AI-TRACE MAIN2] T12 Affinity
-    state: life=15 mana=3 hand=0+0L gy=2
+    state: life=15 mana=3 hand=0+0L gy=3
     hand: []
-    board: ['Ornithopter (0/2)', 'Memnite (1/1)', "Sojourner's Companion (26/4)", 'Memnite (1/1)']
+    board: ['Ornithopter (0/2)', "Sojourner's Companion (24/4)", 'Memnite (1/1)']
     perms: ['Cranial Plating', 'Mox Opal', 'Cranial Plating']
-    opp: ['Cat Token (2/1)', 'Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)'] (life=14)
-    EV candidates:
-        +1.2  cast_spell: Memnite <--  [h=+1.2 la=+1.2]
+    opp: ['Cat Token (2/1)', 'Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)'] (life=2)
     >>> PASS (threshold=-5.0)
   [End Step]
 
 ╔══ TURN 7 — Boros Energy (P1) ══════════════════════════
-║ Life: Boros Energy 14  |  Affinity 15
+║ Life: Boros Energy 2  |  Affinity 15
 ║ Hand: 0 cards  |  Opp hand: 0 cards
 ║ Lands: 4  |  Opp lands: 4
 ║ Library: 47  |  Graveyard: 8
@@ -906,7 +857,7 @@ T6: Warrior Token dies
 ║   Other: Goblin Bombardment, Blood Moon
 ║   Lands: Sacred Foundry, Mountain, Sacred Foundry, Arena of Glory
 ║ Affinity board:
-║   Creatures: Ornithopter (0/2), Memnite (1/1) [tapped], Sojourner's Companion (26/4) [tapped], Memnite (1/1)
+║   Creatures: Ornithopter (0/2), Sojourner's Companion (24/4) [tapped], Memnite (1/1)
 ║   Other: Cranial Plating, Mox Opal, Cranial Plating
 ║   Lands: Darksteel Citadel [T], Mistvault Bridge, Darksteel Citadel, Mistvault Bridge
 ╚═══════════════════════════════════════════════════════
@@ -915,22 +866,22 @@ T6: Warrior Token dies
   [Draw] P1 draws: Arid Mesa
   [Main 1]
   [AI-TRACE MAIN1] T13 Boros Energy
-    state: life=14 mana=4 hand=0+1L gy=8
+    state: life=2 mana=4 hand=0+1L gy=8
     hand: []
     board: ['Cat Token (2/1)', 'Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)']
     perms: ['Goblin Bombardment', 'Blood Moon']
-    opp: ['Ornithopter (0/2)', 'Memnite (1/1)', "Sojourner's Companion (26/4)", 'Memnite (1/1)'] (life=15)
+    opp: ['Ornithopter (0/2)', "Sojourner's Companion (24/4)", 'Memnite (1/1)'] (life=15)
     EV candidates:
        +15.0  play_land: Arid Mesa <--
     >>> PLAY_LAND: Arid Mesa
 T7 P1: Play Arid Mesa
-T7 P1: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 13)
+T7 P1: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 1)
   [AI-TRACE MAIN1] T13 Boros Energy
-    state: life=13 mana=4 hand=0+0L gy=9
+    state: life=1 mana=4 hand=0+0L gy=9
     hand: []
     board: ['Cat Token (2/1)', 'Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)']
     perms: ['Goblin Bombardment', 'Blood Moon']
-    opp: ['Ornithopter (0/2)', 'Memnite (1/1)', "Sojourner's Companion (26/4)", 'Memnite (1/1)'] (life=15)
+    opp: ['Ornithopter (0/2)', "Sojourner's Companion (24/4)", 'Memnite (1/1)'] (life=15)
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T13 Boros Energy: ['Cat Token', 'Voice of Victory', 'Warrior Token', 'Warrior Token']
@@ -938,36 +889,34 @@ T7 P1: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 13)
 T7 P1: Create 2x Warrior token(s)
 T7 P1: Voice of Victory mobilize 2 — create 2 1/1 tokens
 T7 P1: Attack with Cat Token, Voice of Victory, Warrior Token, Warrior Token
-T7 P2:   [BLOCK] Memnite (1/1) blocks Cat Token (2/1) — trade (chump)
-  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+  [Declare Blockers] P2 does not block
+T7 P1:   Cat Token (2/1) → 2 dmg to player
 T7 P1:   Voice of Victory (1/3) → 1 dmg to player
 T7 P1:   Warrior Token (1/1) → 1 dmg to player
 T7 P1:   Warrior Token (1/1) → 1 dmg to player
-T7: Cat Token dies
-T7: Memnite dies
-  [Combat Damage] 3 damage dealt → P2 life: 15 → 12
+  [Combat Damage] 5 damage dealt → P2 life: 15 → 10
   [End Combat]
   [Main 2]
   [AI-TRACE MAIN2] T13 Boros Energy
-    state: life=13 mana=4 hand=0+0L gy=10
+    state: life=1 mana=4 hand=0+0L gy=9
     hand: []
-    board: ['Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)']
+    board: ['Cat Token (2/1)', 'Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)']
     perms: ['Goblin Bombardment', 'Blood Moon']
-    opp: ['Ornithopter (0/2)', 'Memnite (1/1)', "Sojourner's Companion (24/4)"] (life=12)
+    opp: ['Ornithopter (0/2)', "Sojourner's Companion (24/4)", 'Memnite (1/1)'] (life=10)
     >>> PASS (threshold=-5.0)
   [End Step]
 
 ╔══ TURN 7 — Affinity (P2) ══════════════════════════
-║ Life: Affinity 12  |  Boros Energy 13
+║ Life: Affinity 10  |  Boros Energy 1
 ║ Hand: 0 cards  |  Opp hand: 0 cards
 ║ Lands: 4  |  Opp lands: 5
 ║ Library: 47  |  Graveyard: 3
 ║ Affinity board:
-║   Creatures: Ornithopter (0/2), Memnite (1/1), Sojourner's Companion (24/4)
+║   Creatures: Ornithopter (0/2), Sojourner's Companion (24/4), Memnite (1/1)
 ║   Other: Cranial Plating, Mox Opal, Cranial Plating
 ║   Lands: Darksteel Citadel, Mistvault Bridge, Darksteel Citadel, Mistvault Bridge
 ║ Boros Energy board:
-║   Creatures: Voice of Victory (1/3) [tapped], Warrior Token (1/1) [tapped], Warrior Token (1/1) [tapped], Warrior Token (1/1), Warrior Token (1/1)
+║   Creatures: Cat Token (2/1) [tapped], Voice of Victory (1/3) [tapped], Warrior Token (1/1) [tapped], Warrior Token (1/1) [tapped], Warrior Token (1/1), Warrior Token (1/1)
 ║   Other: Goblin Bombardment, Blood Moon
 ║   Lands: Sacred Foundry, Mountain, Sacred Foundry, Arena of Glory, Sacred Foundry [T]
 ╚═══════════════════════════════════════════════════════
@@ -976,47 +925,48 @@ T7: Memnite dies
   [Draw] P2 draws: Signal Pest
   [Main 1]
   [AI-TRACE MAIN1] T14 Affinity
-    state: life=12 mana=4 hand=1+0L gy=3
+    state: life=10 mana=4 hand=1+0L gy=3
     hand: ['Signal Pest']
-    board: ['Ornithopter (0/2)', 'Memnite (1/1)', "Sojourner's Companion (24/4)"]
+    board: ['Ornithopter (0/2)', "Sojourner's Companion (24/4)", 'Memnite (1/1)']
     perms: ['Cranial Plating', 'Mox Opal', 'Cranial Plating']
-    opp: ['Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)'] (life=13)
+    opp: ['Cat Token (2/1)', 'Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)'] (life=1)
     EV candidates:
-       -15.6  cast_spell: Signal Pest <--  [h=-15.6 la=-15.6 rmv=12%]
+      -202.5  cast_spell: Signal Pest <--  [h=-202.5 la=-202.5 rmv=12%]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
-  [AI-TRACE ATTACK] T14 Affinity: ['Memnite', "Sojourner's Companion"]
-  [Declare Attackers] P2 attacks with: Memnite, Sojourner's Companion
-T7 P2: Attack with Memnite, Sojourner's Companion
+  [AI-TRACE ATTACK] T14 Affinity: ["Sojourner's Companion", 'Memnite']
+  [Declare Attackers] P2 attacks with: Sojourner's Companion, Memnite
+T7 P2: Attack with Sojourner's Companion, Memnite
 T7 P1:   [BLOCK-EMERGENCY] Warrior Token (1/1) blocks Sojourner's Companion (24/4) — chump block
+T7 P1:   [BLOCK-EMERGENCY] Warrior Token (1/1) blocks Memnite (1/1) — trade (chump)
   [Declare Blockers] P1 blocks: (see BLOCK lines below)
-T7 P2:   Memnite (1/1) → 1 dmg to player
 T7: Warrior Token dies
-  [Combat Damage] 1 damage dealt → P1 life: 13 → 12
+T7: Warrior Token dies
+T7: Memnite dies
   [End Combat]
   [Main 2]
   [AI-TRACE MAIN2] T14 Affinity
-    state: life=12 mana=4 hand=1+0L gy=3
+    state: life=10 mana=4 hand=1+0L gy=4
     hand: ['Signal Pest']
-    board: ['Ornithopter (0/2)', 'Memnite (1/1)', "Sojourner's Companion (24/4)"]
+    board: ['Ornithopter (0/2)', "Sojourner's Companion (22/4)"]
     perms: ['Cranial Plating', 'Mox Opal', 'Cranial Plating']
-    opp: ['Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)'] (life=12)
+    opp: ['Cat Token (2/1)', 'Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)'] (life=1)
     EV candidates:
-       -16.9  cast_spell: Signal Pest <--  [h=-16.9 la=-16.9 rmv=12%]
+      -182.5  cast_spell: Signal Pest <--  [h=-182.5 la=-182.5 rmv=12%]
     >>> PASS (threshold=-5.0)
   [End Step]
 
 ╔══ TURN 8 — Boros Energy (P1) ══════════════════════════
-║ Life: Boros Energy 12  |  Affinity 12
+║ Life: Boros Energy 1  |  Affinity 10
 ║ Hand: 0 cards  |  Opp hand: 1 cards
 ║ Lands: 5  |  Opp lands: 4
 ║ Library: 45  |  Graveyard: 11
 ║ Boros Energy board:
-║   Creatures: Voice of Victory (1/3), Warrior Token (1/1), Warrior Token (1/1), Warrior Token (1/1)
+║   Creatures: Cat Token (2/1), Voice of Victory (1/3), Warrior Token (1/1), Warrior Token (1/1)
 ║   Other: Goblin Bombardment, Blood Moon
 ║   Lands: Sacred Foundry, Mountain, Sacred Foundry, Arena of Glory, Sacred Foundry
 ║ Affinity board:
-║   Creatures: Ornithopter (0/2), Memnite (1/1) [tapped], Sojourner's Companion (24/4) [tapped]
+║   Creatures: Ornithopter (0/2), Sojourner's Companion (22/4) [tapped]
 ║   Other: Cranial Plating, Mox Opal, Cranial Plating
 ║   Lands: Darksteel Citadel, Mistvault Bridge, Darksteel Citadel, Mistvault Bridge
 ╚═══════════════════════════════════════════════════════
@@ -1025,13 +975,13 @@ T7: Warrior Token dies
   [Draw] P1 draws: Guide of Souls
   [Main 1]
   [AI-TRACE MAIN1] T15 Boros Energy
-    state: life=12 mana=5 hand=1+0L gy=11
+    state: life=1 mana=5 hand=1+0L gy=11
     hand: ['Guide of Souls']
-    board: ['Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)']
+    board: ['Cat Token (2/1)', 'Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)']
     perms: ['Goblin Bombardment', 'Blood Moon']
-    opp: ['Ornithopter (0/2)', 'Memnite (1/1)', "Sojourner's Companion (24/4)"] (life=12)
+    opp: ['Ornithopter (0/2)', "Sojourner's Companion (22/4)"] (life=10)
     EV candidates:
-        +3.4  cast_spell: Guide of Souls <--  [h=+3.4 la=+3.4]
+        +1.1  cast_spell: Guide of Souls <--  [h=+1.1 la=+1.1]
     >>> CAST_SPELL: Guide of Souls
     → Goal: curve_out [enablers]
     [Mana] Tap Sacred Foundry→W (paying for Guide of Souls, 5 mana remaining)
@@ -1039,168 +989,42 @@ T8 P1: Cast Guide of Souls (W)
     [Priority] P2 passes (no response)
 T8: Resolve Guide of Souls
   [AI-TRACE MAIN1] T15 Boros Energy
-    state: life=12 mana=4 hand=0+0L gy=11
+    state: life=1 mana=4 hand=0+0L gy=11
     hand: []
-    board: ['Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Guide of Souls (1/2)']
+    board: ['Cat Token (2/1)', 'Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Guide of Souls (1/2)']
     perms: ['Goblin Bombardment', 'Blood Moon']
-    opp: ['Ornithopter (0/2)', 'Memnite (1/1)', "Sojourner's Companion (24/4)"] (life=12)
-    EV candidates:
-        +3.4  cast_spell: Guide of Souls <--  [h=+3.4 la=+3.4]
+    opp: ['Ornithopter (0/2)', "Sojourner's Companion (22/4)"] (life=10)
     >>> PASS (threshold=-5.0)
   [Begin Combat]
-  [AI-TRACE ATTACK] T15 Boros Energy: ['Voice of Victory', 'Warrior Token', 'Warrior Token', 'Warrior Token']
-  [Declare Attackers] P1 attacks with: Voice of Victory, Warrior Token, Warrior Token, Warrior Token
+  [AI-TRACE ATTACK] T15 Boros Energy: ['Cat Token', 'Voice of Victory', 'Warrior Token', 'Warrior Token']
+  [Declare Attackers] P1 attacks with: Cat Token, Voice of Victory, Warrior Token, Warrior Token
 T8 P1: Create 2x Warrior token(s)
 T8 P1: Voice of Victory mobilize 2 — create 2 1/1 tokens
-T8 P1: Attack with Voice of Victory, Warrior Token, Warrior Token, Warrior Token
+T8 P1: Attack with Cat Token, Voice of Victory, Warrior Token, Warrior Token
   [Declare Blockers] P2 does not block
+T8 P1:   Cat Token (2/1) → 2 dmg to player
 T8 P1:   Voice of Victory (1/3) → 1 dmg to player
 T8 P1:   Warrior Token (1/1) → 1 dmg to player
 T8 P1:   Warrior Token (1/1) → 1 dmg to player
-T8 P1:   Warrior Token (1/1) → 1 dmg to player
-  [Combat Damage] 4 damage dealt → P2 life: 12 → 8
+  [Combat Damage] 5 damage dealt → P2 life: 10 → 5
   [End Combat]
   [Main 2]
   [AI-TRACE MAIN2] T15 Boros Energy
-    state: life=12 mana=4 hand=0+0L gy=11
+    state: life=1 mana=4 hand=0+0L gy=11
     hand: []
-    board: ['Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Guide of Souls (1/2)', 'Warrior Token (1/1)', 'Warrior Token (1/1)']
+    board: ['Cat Token (2/1)', 'Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Guide of Souls (1/2)', 'Warrior Token (1/1)', 'Warrior Token (1/1)']
     perms: ['Goblin Bombardment', 'Blood Moon']
-    opp: ['Ornithopter (0/2)', 'Memnite (1/1)', "Sojourner's Companion (24/4)"] (life=8)
-    EV candidates:
-        +3.4  cast_spell: Guide of Souls <--  [h=+3.4 la=+3.4]
+    opp: ['Ornithopter (0/2)', "Sojourner's Companion (22/4)"] (life=5)
     >>> PASS (threshold=-5.0)
   [End Step]
+T8 P1: Goblin Bombardment sacrifice Cat Token -> 1 damage to P2 (life: 4)
+T8 P1: Goblin Bombardment sacrifice Warrior Token -> 1 damage to P2 (life: 3)
+T8 P1: Goblin Bombardment sacrifice Warrior Token -> 1 damage to P2 (life: 2)
+T8 P1: Goblin Bombardment sacrifice Warrior Token -> 1 damage to P2 (life: 1)
+T8 P1: Goblin Bombardment sacrifice Warrior Token -> 1 damage to P2 (life: 0)
 
-╔══ TURN 8 — Affinity (P2) ══════════════════════════
-║ Life: Affinity 8  |  Boros Energy 12
-║ Hand: 1 cards  |  Opp hand: 0 cards
-║ Lands: 4  |  Opp lands: 5
-║ Library: 46  |  Graveyard: 3
-║ Affinity board:
-║   Creatures: Ornithopter (0/2), Memnite (1/1), Sojourner's Companion (24/4)
-║   Other: Cranial Plating, Mox Opal, Cranial Plating
-║   Lands: Darksteel Citadel, Mistvault Bridge, Darksteel Citadel, Mistvault Bridge
-║ Boros Energy board:
-║   Creatures: Voice of Victory (1/3) [tapped], Warrior Token (1/1) [tapped], Warrior Token (1/1) [tapped], Warrior Token (1/1) [tapped], Guide of Souls (1/2), Warrior Token (1/1), Warrior Token (1/1)
-║   Other: Goblin Bombardment, Blood Moon
-║   Lands: Sacred Foundry [T], Mountain, Sacred Foundry, Arena of Glory, Sacred Foundry
-╚═══════════════════════════════════════════════════════
-  [Untap] P2 untaps all permanents
-  [Upkeep]
-  [Draw] P2 draws: Treasure Vault
-  [Main 1]
-  [AI-TRACE MAIN1] T16 Affinity
-    state: life=8 mana=4 hand=1+1L gy=3
-    hand: ['Signal Pest']
-    board: ['Ornithopter (0/2)', 'Memnite (1/1)', "Sojourner's Companion (24/4)"]
-    perms: ['Cranial Plating', 'Mox Opal', 'Cranial Plating']
-    opp: ['Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Guide of Souls (1/2)', 'Warrior Token (1/1)', 'Warrior Token (1/1)'] (life=12)
-    EV candidates:
-       +27.0  play_land: Treasure Vault <--
-       -16.9  cast_spell: Signal Pest  [h=-16.9 la=-16.9 rmv=12%]
-    >>> PLAY_LAND: Treasure Vault
-T8 P2: Play Treasure Vault
-  [AI-TRACE MAIN1] T16 Affinity
-    state: life=8 mana=5 hand=1+0L gy=3
-    hand: ['Signal Pest']
-    board: ['Ornithopter (0/2)', 'Memnite (1/1)', "Sojourner's Companion (26/4)"]
-    perms: ['Cranial Plating', 'Mox Opal', 'Cranial Plating']
-    opp: ['Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Guide of Souls (1/2)', 'Warrior Token (1/1)', 'Warrior Token (1/1)'] (life=12)
-    EV candidates:
-       -18.5  cast_spell: Signal Pest <--  [h=-18.5 la=-18.5 rmv=12%]
-    >>> PASS (threshold=-5.0)
-  [Begin Combat]
-  [AI-TRACE ATTACK] T16 Affinity: ['Memnite', "Sojourner's Companion"]
-  [Declare Attackers] P2 attacks with: Memnite, Sojourner's Companion
-T8 P2: Attack with Memnite, Sojourner's Companion
-T8 P1:   [BLOCK-EMERGENCY] Warrior Token (1/1) blocks Sojourner's Companion (26/4) — chump block
-  [Declare Blockers] P1 blocks: (see BLOCK lines below)
-T8 P2:   Memnite (1/1) → 1 dmg to player
-T8: Warrior Token dies
-  [Combat Damage] 1 damage dealt → P1 life: 12 → 11
-  [End Combat]
-  [Main 2]
-  [AI-TRACE MAIN2] T16 Affinity
-    state: life=8 mana=5 hand=1+0L gy=3
-    hand: ['Signal Pest']
-    board: ['Ornithopter (0/2)', 'Memnite (1/1)', "Sojourner's Companion (26/4)"]
-    perms: ['Cranial Plating', 'Mox Opal', 'Cranial Plating']
-    opp: ['Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Guide of Souls (1/2)', 'Warrior Token (1/1)'] (life=11)
-    EV candidates:
-       -20.2  cast_spell: Signal Pest <--  [h=-20.2 la=-20.2 rmv=12%]
-    >>> PASS (threshold=-5.0)
-  [End Step]
-
-╔══ TURN 9 — Boros Energy (P1) ══════════════════════════
-║ Life: Boros Energy 11  |  Affinity 8
-║ Hand: 0 cards  |  Opp hand: 1 cards
-║ Lands: 5  |  Opp lands: 5
-║ Library: 44  |  Graveyard: 12
-║ Boros Energy board:
-║   Creatures: Voice of Victory (1/3), Warrior Token (1/1), Warrior Token (1/1), Warrior Token (1/1), Guide of Souls (1/2), Warrior Token (1/1)
-║   Other: Goblin Bombardment, Blood Moon
-║   Lands: Sacred Foundry, Mountain, Sacred Foundry, Arena of Glory, Sacred Foundry
-║ Affinity board:
-║   Creatures: Ornithopter (0/2), Memnite (1/1) [tapped], Sojourner's Companion (26/4) [tapped]
-║   Other: Cranial Plating, Mox Opal, Cranial Plating
-║   Lands: Darksteel Citadel, Mistvault Bridge, Darksteel Citadel, Mistvault Bridge, Treasure Vault
-╚═══════════════════════════════════════════════════════
-  [Untap] P1 untaps all permanents
-  [Upkeep]
-  [Draw] P1 draws: Plains
-  [Main 1]
-  [AI-TRACE MAIN1] T17 Boros Energy
-    state: life=11 mana=5 hand=0+1L gy=12
-    hand: []
-    board: ['Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Guide of Souls (1/2)', 'Warrior Token (1/1)']
-    perms: ['Goblin Bombardment', 'Blood Moon']
-    opp: ['Ornithopter (0/2)', 'Memnite (1/1)', "Sojourner's Companion (26/4)"] (life=8)
-    EV candidates:
-       +12.0  play_land: Plains <--
-    >>> PLAY_LAND: Plains
-T9 P1: Play Plains
-  [AI-TRACE MAIN1] T17 Boros Energy
-    state: life=11 mana=6 hand=0+0L gy=12
-    hand: []
-    board: ['Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Guide of Souls (1/2)', 'Warrior Token (1/1)']
-    perms: ['Goblin Bombardment', 'Blood Moon']
-    opp: ['Ornithopter (0/2)', 'Memnite (1/1)', "Sojourner's Companion (26/4)"] (life=8)
-    EV candidates:
-       +12.0  play_land: Plains <--
-    >>> PASS (threshold=-5.0)
-  [Begin Combat]
-  [AI-TRACE ATTACK] T17 Boros Energy: ['Voice of Victory', 'Warrior Token', 'Warrior Token', 'Warrior Token', 'Guide of Souls', 'Warrior Token']
-  [Declare Attackers] P1 attacks with: Voice of Victory, Warrior Token, Warrior Token, Warrior Token, Guide of Souls, Warrior Token
-T9 P1: Create 2x Warrior token(s)
-T9 P1: Voice of Victory mobilize 2 — create 2 1/1 tokens
-T9 P1: Attack with Voice of Victory, Warrior Token, Warrior Token, Warrior Token, Guide of Souls, Warrior Token
-T9 P2:   [BLOCK-EMERGENCY] Ornithopter (0/2) blocks Voice of Victory (1/3) — chump block
-  [Declare Blockers] P2 blocks: (see BLOCK lines below)
-T9 P1:   Warrior Token (1/1) → 1 dmg to player
-T9 P1:   Warrior Token (1/1) → 1 dmg to player
-T9 P1:   Warrior Token (1/1) → 1 dmg to player
-T9 P1:   Guide of Souls (1/2) → 1 dmg to player
-T9 P1:   Warrior Token (1/1) → 1 dmg to player
-  [Combat Damage] 5 damage dealt → P2 life: 8 → 3
-  [End Combat]
-  [Main 2]
-  [AI-TRACE MAIN2] T17 Boros Energy
-    state: life=11 mana=6 hand=0+0L gy=12
-    hand: []
-    board: ['Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Guide of Souls (1/2)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)']
-    perms: ['Goblin Bombardment', 'Blood Moon']
-    opp: ['Ornithopter (0/2)', 'Memnite (1/1)', "Sojourner's Companion (26/4)"] (life=3)
-    EV candidates:
-       +12.0  play_land: Plains <--
-    >>> PASS (threshold=-5.0)
-  [End Step]
-T9 P1: Goblin Bombardment sacrifice Warrior Token -> 1 damage to P2 (life: 2)
-T9 P1: Goblin Bombardment sacrifice Warrior Token -> 1 damage to P2 (life: 1)
-T9 P1: Goblin Bombardment sacrifice Warrior Token -> 1 damage to P2 (life: 0)
-
->>> Boros Energy wins Game 1 on turn 9 via damage
-    Final life: Boros Energy=11  Affinity=0
+>>> Boros Energy wins Game 1 on turn 8 via damage
+    Final life: Boros Energy=1  Affinity=0
 
 ======================================================================
   GAME 2: Affinity (P1) vs Boros Energy (P2)  —  seed 63501
@@ -1279,8 +1103,6 @@ T1: Resolve Springleaf Drum
     hand: ['Frogmite']
     perms: ['Springleaf Drum']
     opp: [] (life=20)
-    EV candidates:
-        +0.9  cast_spell: Springleaf Drum <--  [h=+0.9 la=+0.9]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T1 Affinity: no attack
@@ -1292,8 +1114,6 @@ T1: Resolve Springleaf Drum
     hand: ['Frogmite']
     perms: ['Springleaf Drum']
     opp: [] (life=20)
-    EV candidates:
-        +0.9  cast_spell: Springleaf Drum <--  [h=+0.9 la=+0.9]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -1344,9 +1164,6 @@ T1: Resolve Guide of Souls
     hand: ['Wrath of the Skies', 'Wear // Tear', 'Guide of Souls']
     board: ['Guide of Souls (1/2)']
     opp: [] (life=20)
-    EV candidates:
-        +3.4  cast_spell: Guide of Souls <--  [h=+3.4 la=+3.4]
-        +3.4  cast_spell: Guide of Souls  [h=+3.4 la=+3.4]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T2 Boros Energy: no attack
@@ -1358,9 +1175,6 @@ T1: Resolve Guide of Souls
     hand: ['Wrath of the Skies', 'Wear // Tear', 'Guide of Souls']
     board: ['Guide of Souls (1/2)']
     opp: [] (life=20)
-    EV candidates:
-        +3.4  cast_spell: Guide of Souls <--  [h=+3.4 la=+3.4]
-        +3.4  cast_spell: Guide of Souls  [h=+3.4 la=+3.4]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -1413,8 +1227,6 @@ T2: Resolve Frogmite
     board: ['Frogmite (2/2)']
     perms: ['Springleaf Drum']
     opp: ['Guide of Souls (1/2)'] (life=17)
-    EV candidates:
-       +68.1  cast_spell: Frogmite <--  [h=+68.1 la=+68.1]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T3 Affinity: no attack
@@ -1427,8 +1239,6 @@ T2: Resolve Frogmite
     board: ['Frogmite (2/2)']
     perms: ['Springleaf Drum']
     opp: ['Guide of Souls (1/2)'] (life=17)
-    EV candidates:
-       +68.1  cast_spell: Frogmite <--  [h=+68.1 la=+68.1]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -1485,11 +1295,6 @@ T2 P2: Play Sacred Foundry (tapped, no spells need mana)
     hand: ['Wrath of the Skies', 'Wear // Tear']
     board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)']
     opp: ['Frogmite (2/2)'] (life=20)
-    EV candidates:
-       +12.0  play_land: Sacred Foundry <--
-       +12.0  play_land: Sacred Foundry
-       +12.0  play_land: Plains
-       +10.0  play_land: Elegant Parlor
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T4 Boros Energy: no attack
@@ -1501,11 +1306,6 @@ T2 P2: Play Sacred Foundry (tapped, no spells need mana)
     hand: ['Wrath of the Skies', 'Wear // Tear']
     board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)']
     opp: ['Frogmite (2/2)'] (life=20)
-    EV candidates:
-       +12.0  play_land: Sacred Foundry <--
-       +12.0  play_land: Sacred Foundry
-       +12.0  play_land: Plains
-       +10.0  play_land: Elegant Parlor
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -1546,12 +1346,6 @@ T3 P1: Play Treasure Vault
     board: ['Frogmite (2/2)']
     perms: ['Springleaf Drum']
     opp: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)'] (life=18)
-    EV candidates:
-       +16.0  play_land: Treasure Vault <--
-       +16.0  play_land: Darksteel Citadel
-       +14.0  play_land: Silverbluff Bridge
-       +14.0  play_land: Tanglepool Bridge
-       +14.0  play_land: Mistvault Bridge
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T5 Affinity: ['Frogmite']
@@ -1569,12 +1363,6 @@ T3: Guide of Souls dies
     board: ['Frogmite (2/2)']
     perms: ['Springleaf Drum']
     opp: ['Guide of Souls (1/2)'] (life=18)
-    EV candidates:
-       +16.0  play_land: Treasure Vault <--
-       +16.0  play_land: Darksteel Citadel
-       +14.0  play_land: Silverbluff Bridge
-       +14.0  play_land: Tanglepool Bridge
-       +14.0  play_land: Mistvault Bridge
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -1648,8 +1436,6 @@ T3 P2: Wear // Tear destroys Darksteel Citadel
     hand: ['Wrath of the Skies']
     board: ['Guide of Souls (1/2)']
     opp: [] (life=20)
-    EV candidates:
-       -50.0  cast_spell: Wrath of the Skies <--  [h=-50.0 la=-50.0]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T6 Boros Energy: ['Guide of Souls']
@@ -1665,8 +1451,6 @@ T3 P2:   Guide of Souls (1/2) → 1 dmg to player
     hand: ['Wrath of the Skies']
     board: ['Guide of Souls (1/2)']
     opp: [] (life=19)
-    EV candidates:
-       -50.0  cast_spell: Wrath of the Skies <--  [h=-50.0 la=-50.0]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -1723,11 +1507,6 @@ T4 P1: Play Darksteel Citadel
     board: ['Frogmite (2/2)']
     perms: ['Springleaf Drum']
     opp: ['Guide of Souls (1/2)'] (life=16)
-    EV candidates:
-       +16.0  play_land: Darksteel Citadel <--
-       +14.0  play_land: Silverbluff Bridge
-       +14.0  play_land: Tanglepool Bridge
-       +14.0  play_land: Mistvault Bridge
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T7 Affinity: no attack
@@ -1740,11 +1519,6 @@ T4 P1: Play Darksteel Citadel
     board: ['Frogmite (2/2)']
     perms: ['Springleaf Drum']
     opp: ['Guide of Souls (1/2)'] (life=16)
-    EV candidates:
-       +16.0  play_land: Darksteel Citadel <--
-       +14.0  play_land: Silverbluff Bridge
-       +14.0  play_land: Tanglepool Bridge
-       +14.0  play_land: Mistvault Bridge
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -1926,9 +1700,6 @@ T5 P2: Ajani creates 2/1 Cat Warrior token
     hand: ['Wrath of the Skies']
     board: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
     opp: ['Frogmite (2/2)'] (life=19)
-    EV candidates:
-       +39.2  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <--  [h=+39.2 la=+39.2]
-       -50.0  cast_spell: Wrath of the Skies  [h=-50.0 la=-50.0]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T10 Boros Energy: no attack
@@ -1940,9 +1711,6 @@ T5 P2: Ajani creates 2/1 Cat Warrior token
     hand: ['Wrath of the Skies']
     board: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
     opp: ['Frogmite (2/2)'] (life=19)
-    EV candidates:
-       +39.2  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <--  [h=+39.2 la=+39.2]
-       -50.0  cast_spell: Wrath of the Skies  [h=-50.0 la=-50.0]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -2009,40 +1777,35 @@ T6: Resolve Memnite
     board: ['Frogmite (2/2)', 'Memnite (1/1)']
     perms: ['Springleaf Drum', 'Springleaf Drum']
     opp: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=15)
-    EV candidates:
-        -3.3  cast_spell: Memnite <--  [h=-3.3 la=-3.3]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T11 Affinity: ['Frogmite']
   [Declare Attackers] P1 attacks with: Frogmite
 T6 P1: Attack with Frogmite
-T6 P2:   [BLOCK] Cat Token (2/1) blocks Frogmite (2/2) — trade (chump)
-  [Declare Blockers] P2 blocks: (see BLOCK lines below)
-T6: Frogmite dies
-T6: Cat Token dies
+  [Declare Blockers] P2 does not block
+T6 P1:   Frogmite (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 15 → 13
   [End Combat]
   [Main 2]
   [AI-TRACE MAIN2] T11 Affinity
-    state: life=19 mana=4 hand=0+1L gy=3
+    state: life=19 mana=4 hand=0+1L gy=2
     hand: []
-    board: ['Memnite (1/1)']
+    board: ['Frogmite (2/2)', 'Memnite (1/1)']
     perms: ['Springleaf Drum', 'Springleaf Drum']
-    opp: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)'] (life=15)
-    EV candidates:
-        -3.3  cast_spell: Memnite <--  [h=-3.3 la=-3.3]
+    opp: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=13)
     >>> PASS (threshold=-5.0)
   [End Step]
 
 ╔══ TURN 6 — Boros Energy (P2) ══════════════════════════
-║ Life: Boros Energy 15  |  Affinity 19
+║ Life: Boros Energy 13  |  Affinity 19
 ║ Hand: 1 cards  |  Opp hand: 1 cards
 ║ Lands: 5  |  Opp lands: 5
-║ Library: 44  |  Graveyard: 9
+║ Library: 44  |  Graveyard: 8
 ║ Boros Energy board:
-║   Creatures: Seasoned Pyromancer (2/2), Elemental Token (1/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)
+║   Creatures: Seasoned Pyromancer (2/2), Elemental Token (1/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
 ║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains, Plains
 ║ Affinity board:
-║   Creatures: Memnite (1/1)
+║   Creatures: Frogmite (2/2) [tapped], Memnite (1/1)
 ║   Other: Springleaf Drum, Springleaf Drum
 ║   Lands: Darksteel Citadel, Treasure Vault, Darksteel Citadel, Silverbluff Bridge, Tanglepool Bridge [T]
 ╚═══════════════════════════════════════════════════════
@@ -2051,20 +1814,20 @@ T6: Cat Token dies
   [Draw] P2 draws: Dalkovan Encampment
   [Main 1]
   [AI-TRACE MAIN1] T12 Boros Energy
-    state: life=15 mana=5 hand=1+1L gy=9
+    state: life=13 mana=5 hand=1+1L gy=8
     hand: ['Wrath of the Skies']
-    board: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)']
-    opp: ['Memnite (1/1)'] (life=19)
+    board: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
+    opp: ['Frogmite (2/2)', 'Memnite (1/1)'] (life=19)
     EV candidates:
         +7.0  play_land: Dalkovan Encampment <--
        -50.0  cast_spell: Wrath of the Skies  [h=-50.0 la=-50.0]
     >>> PLAY_LAND: Dalkovan Encampment
 T6 P2: Play Dalkovan Encampment (enters tapped)
   [AI-TRACE MAIN1] T12 Boros Energy
-    state: life=15 mana=5 hand=1+0L gy=9
+    state: life=13 mana=5 hand=1+0L gy=8
     hand: ['Wrath of the Skies']
-    board: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)']
-    opp: ['Memnite (1/1)'] (life=19)
+    board: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
+    opp: ['Frogmite (2/2)', 'Memnite (1/1)'] (life=19)
     EV candidates:
        -50.0  cast_spell: Wrath of the Skies <--  [h=-50.0 la=-50.0]
     >>> PASS (threshold=-5.0)
@@ -2080,26 +1843,26 @@ T6: Memnite dies
   [End Combat]
   [Main 2]
   [AI-TRACE MAIN2] T12 Boros Energy
-    state: life=15 mana=5 hand=1+0L gy=9
+    state: life=13 mana=5 hand=1+0L gy=8
     hand: ['Wrath of the Skies']
-    board: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)']
-    opp: [] (life=18)
+    board: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
+    opp: ['Frogmite (2/2)'] (life=18)
     EV candidates:
        -50.0  cast_spell: Wrath of the Skies <--  [h=-50.0 la=-50.0]
     >>> PASS (threshold=-5.0)
   [End Step]
 
 ╔══ TURN 7 — Affinity (P1) ══════════════════════════
-║ Life: Affinity 18  |  Boros Energy 15
+║ Life: Affinity 18  |  Boros Energy 13
 ║ Hand: 1 cards  |  Opp hand: 1 cards
 ║ Lands: 5  |  Opp lands: 6
-║ Library: 48  |  Graveyard: 4
+║ Library: 48  |  Graveyard: 3
 ║ Affinity board:
-║   Creatures: (empty)
+║   Creatures: Frogmite (2/2)
 ║   Other: Springleaf Drum, Springleaf Drum
 ║   Lands: Darksteel Citadel, Treasure Vault, Darksteel Citadel, Silverbluff Bridge, Tanglepool Bridge
 ║ Boros Energy board:
-║   Creatures: Seasoned Pyromancer (2/2) [tapped], Elemental Token (1/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped]
+║   Creatures: Seasoned Pyromancer (2/2) [tapped], Elemental Token (1/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Cat Token (2/1)
 ║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains, Plains, Dalkovan Encampment [T]
 ╚═══════════════════════════════════════════════════════
   [Untap] P1 untaps all permanents
@@ -2107,22 +1870,24 @@ T6: Memnite dies
   [Draw] P1 draws: Ornithopter
   [Main 1]
   [AI-TRACE MAIN1] T13 Affinity
-    state: life=18 mana=5 hand=1+1L gy=4
+    state: life=18 mana=5 hand=1+1L gy=3
     hand: ['Ornithopter']
+    board: ['Frogmite (2/2)']
     perms: ['Springleaf Drum', 'Springleaf Drum']
-    opp: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)'] (life=15)
+    opp: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=13)
     EV candidates:
-        +7.0  play_land: Mistvault Bridge <--
-        +0.0  cast_spell: Ornithopter
+       +11.0  play_land: Mistvault Bridge <--
+       -12.2  cast_spell: Ornithopter  [h=-12.2 la=-12.2 rmv=3%]
     >>> PLAY_LAND: Mistvault Bridge
 T7 P1: Play Mistvault Bridge (enters tapped)
   [AI-TRACE MAIN1] T13 Affinity
-    state: life=18 mana=5 hand=1+0L gy=4
+    state: life=18 mana=5 hand=1+0L gy=3
     hand: ['Ornithopter']
+    board: ['Frogmite (2/2)']
     perms: ['Springleaf Drum', 'Springleaf Drum']
-    opp: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)'] (life=15)
+    opp: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=13)
     EV candidates:
-        +0.0  cast_spell: Ornithopter <--
+       -13.8  cast_spell: Ornithopter <--  [h=-13.8 la=-13.8 rmv=3%]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T13 Affinity: no attack
@@ -2130,25 +1895,26 @@ T7 P1: Play Mistvault Bridge (enters tapped)
   [End Combat]
   [Main 2]
   [AI-TRACE MAIN2] T13 Affinity
-    state: life=18 mana=5 hand=1+0L gy=4
+    state: life=18 mana=5 hand=1+0L gy=3
     hand: ['Ornithopter']
+    board: ['Frogmite (2/2)']
     perms: ['Springleaf Drum', 'Springleaf Drum']
-    opp: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)'] (life=15)
+    opp: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=13)
     EV candidates:
-        +0.0  cast_spell: Ornithopter <--
+       -13.8  cast_spell: Ornithopter <--  [h=-13.8 la=-13.8 rmv=3%]
     >>> PASS (threshold=-5.0)
   [End Step]
 
 ╔══ TURN 7 — Boros Energy (P2) ══════════════════════════
-║ Life: Boros Energy 15  |  Affinity 18
+║ Life: Boros Energy 13  |  Affinity 18
 ║ Hand: 1 cards  |  Opp hand: 1 cards
 ║ Lands: 6  |  Opp lands: 6
-║ Library: 43  |  Graveyard: 9
+║ Library: 43  |  Graveyard: 8
 ║ Boros Energy board:
-║   Creatures: Seasoned Pyromancer (2/2), Elemental Token (1/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)
+║   Creatures: Seasoned Pyromancer (2/2), Elemental Token (1/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
 ║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains, Plains, Dalkovan Encampment
 ║ Affinity board:
-║   Creatures: (empty)
+║   Creatures: Frogmite (2/2)
 ║   Other: Springleaf Drum, Springleaf Drum
 ║   Lands: Darksteel Citadel, Treasure Vault, Darksteel Citadel, Silverbluff Bridge, Tanglepool Bridge, Mistvault Bridge [T]
 ╚═══════════════════════════════════════════════════════
@@ -2157,12 +1923,12 @@ T7 P1: Play Mistvault Bridge (enters tapped)
   [Draw] P2 draws: Wear // Tear
   [Main 1]
   [AI-TRACE MAIN1] T14 Boros Energy
-    state: life=15 mana=6 hand=2+0L gy=9
+    state: life=13 mana=6 hand=2+0L gy=8
     hand: ['Wrath of the Skies', 'Wear // Tear']
-    board: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)']
-    opp: [] (life=18)
+    board: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
+    opp: ['Frogmite (2/2)'] (life=18)
     EV candidates:
-        -0.2  cast_spell: Wear // Tear <--  [h=-0.2 la=-0.2]
+        +3.0  cast_spell: Wear // Tear <--  [h=+3.0 la=+3.0]
        -50.0  cast_spell: Wrath of the Skies  [h=-50.0 la=-50.0]
     >>> CAST_SPELL: Wear // Tear
     → Goal: curve_out
@@ -2170,48 +1936,49 @@ T7 P1: Play Mistvault Bridge (enters tapped)
 T7 P2: Cast Wear // Tear (1R)
     [Priority] P1 passes (no response)
 T7: Resolve Wear // Tear
-T7: Darksteel Citadel moved battlefield -> graveyard (destroyed)
-T7 P2: Wear // Tear destroys Darksteel Citadel
+T7: Frogmite dies
+T7 P2: Wear // Tear destroys Frogmite
   [AI-TRACE MAIN1] T14 Boros Energy
-    state: life=15 mana=4 hand=1+0L gy=10
+    state: life=13 mana=4 hand=1+0L gy=9
     hand: ['Wrath of the Skies']
-    board: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)']
+    board: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
     opp: [] (life=18)
     EV candidates:
        -50.0  cast_spell: Wrath of the Skies <--  [h=-50.0 la=-50.0]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
-  [AI-TRACE ATTACK] T14 Boros Energy: ['Seasoned Pyromancer', 'Elemental Token', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
-  [Declare Attackers] P2 attacks with: Seasoned Pyromancer, Elemental Token, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
-T7 P2: Attack with Seasoned Pyromancer, Elemental Token, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [AI-TRACE ATTACK] T14 Boros Energy: ['Seasoned Pyromancer', 'Elemental Token', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Cat Token']
+  [Declare Attackers] P2 attacks with: Seasoned Pyromancer, Elemental Token, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+T7 P2: Attack with Seasoned Pyromancer, Elemental Token, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
   [Declare Blockers] P1 does not block
 T7 P2:   Seasoned Pyromancer (2/2) → 2 dmg to player
 T7 P2:   Elemental Token (1/1) → 1 dmg to player
 T7 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
-  [Combat Damage] 4 damage dealt → P1 life: 18 → 14
+T7 P2:   Cat Token (2/1) → 2 dmg to player
+  [Combat Damage] 6 damage dealt → P1 life: 18 → 12
   [End Combat]
   [Main 2]
   [AI-TRACE MAIN2] T14 Boros Energy
-    state: life=15 mana=4 hand=1+0L gy=10
+    state: life=13 mana=4 hand=1+0L gy=9
     hand: ['Wrath of the Skies']
-    board: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)']
-    opp: [] (life=14)
+    board: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
+    opp: [] (life=12)
     EV candidates:
        -50.0  cast_spell: Wrath of the Skies <--  [h=-50.0 la=-50.0]
     >>> PASS (threshold=-5.0)
   [End Step]
 
 ╔══ TURN 8 — Affinity (P1) ══════════════════════════
-║ Life: Affinity 14  |  Boros Energy 15
+║ Life: Affinity 12  |  Boros Energy 13
 ║ Hand: 1 cards  |  Opp hand: 1 cards
-║ Lands: 5  |  Opp lands: 6
-║ Library: 47  |  Graveyard: 5
+║ Lands: 6  |  Opp lands: 6
+║ Library: 47  |  Graveyard: 4
 ║ Affinity board:
 ║   Creatures: (empty)
 ║   Other: Springleaf Drum, Springleaf Drum
-║   Lands: Treasure Vault, Darksteel Citadel, Silverbluff Bridge, Tanglepool Bridge, Mistvault Bridge
+║   Lands: Darksteel Citadel, Treasure Vault, Darksteel Citadel, Silverbluff Bridge, Tanglepool Bridge, Mistvault Bridge
 ║ Boros Energy board:
-║   Creatures: Seasoned Pyromancer (2/2) [tapped], Elemental Token (1/1) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped]
+║   Creatures: Seasoned Pyromancer (2/2) [tapped], Elemental Token (1/1) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Cat Token (2/1) [tapped]
 ║   Lands: Sacred Foundry [T], Sacred Foundry, Sacred Foundry, Plains [T], Plains, Dalkovan Encampment
 ╚═══════════════════════════════════════════════════════
   [Untap] P1 untaps all permanents
@@ -2219,10 +1986,10 @@ T7 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
   [Draw] P1 draws: Signal Pest
   [Main 1]
   [AI-TRACE MAIN1] T15 Affinity
-    state: life=14 mana=5 hand=2+0L gy=5
+    state: life=12 mana=6 hand=2+0L gy=4
     hand: ['Ornithopter', 'Signal Pest']
     perms: ['Springleaf Drum', 'Springleaf Drum']
-    opp: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)'] (life=15)
+    opp: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=13)
     EV candidates:
         +0.0  cast_spell: Ornithopter <--
         -0.1  cast_spell: Signal Pest  [h=-0.1 la=-0.1]
@@ -2233,10 +2000,10 @@ T7 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
   [End Combat]
   [Main 2]
   [AI-TRACE MAIN2] T15 Affinity
-    state: life=14 mana=5 hand=2+0L gy=5
+    state: life=12 mana=6 hand=2+0L gy=4
     hand: ['Ornithopter', 'Signal Pest']
     perms: ['Springleaf Drum', 'Springleaf Drum']
-    opp: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)'] (life=15)
+    opp: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=13)
     EV candidates:
         +0.0  cast_spell: Ornithopter <--
         -0.1  cast_spell: Signal Pest  [h=-0.1 la=-0.1]
@@ -2244,62 +2011,63 @@ T7 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
   [End Step]
 
 ╔══ TURN 8 — Boros Energy (P2) ══════════════════════════
-║ Life: Boros Energy 15  |  Affinity 14
+║ Life: Boros Energy 13  |  Affinity 12
 ║ Hand: 1 cards  |  Opp hand: 2 cards
-║ Lands: 6  |  Opp lands: 5
-║ Library: 42  |  Graveyard: 10
+║ Lands: 6  |  Opp lands: 6
+║ Library: 42  |  Graveyard: 9
 ║ Boros Energy board:
-║   Creatures: Seasoned Pyromancer (2/2), Elemental Token (1/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)
+║   Creatures: Seasoned Pyromancer (2/2), Elemental Token (1/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
 ║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains, Plains, Dalkovan Encampment
 ║ Affinity board:
 ║   Creatures: (empty)
 ║   Other: Springleaf Drum, Springleaf Drum
-║   Lands: Treasure Vault, Darksteel Citadel, Silverbluff Bridge, Tanglepool Bridge, Mistvault Bridge
+║   Lands: Darksteel Citadel, Treasure Vault, Darksteel Citadel, Silverbluff Bridge, Tanglepool Bridge, Mistvault Bridge
 ╚═══════════════════════════════════════════════════════
   [Untap] P2 untaps all permanents
   [Upkeep]
   [Draw] P2 draws: Goblin Bombardment
   [Main 1]
   [AI-TRACE MAIN1] T16 Boros Energy
-    state: life=15 mana=6 hand=2+0L gy=10
+    state: life=13 mana=6 hand=2+0L gy=9
     hand: ['Wrath of the Skies', 'Goblin Bombardment']
-    board: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)']
-    opp: [] (life=14)
+    board: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
+    opp: [] (life=12)
     EV candidates:
        -50.0  cast_spell: Wrath of the Skies <--  [h=-50.0 la=-50.0]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
-  [AI-TRACE ATTACK] T16 Boros Energy: ['Seasoned Pyromancer', 'Elemental Token', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
-  [Declare Attackers] P2 attacks with: Seasoned Pyromancer, Elemental Token, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
-T8 P2: Attack with Seasoned Pyromancer, Elemental Token, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [AI-TRACE ATTACK] T16 Boros Energy: ['Seasoned Pyromancer', 'Elemental Token', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Cat Token']
+  [Declare Attackers] P2 attacks with: Seasoned Pyromancer, Elemental Token, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+T8 P2: Attack with Seasoned Pyromancer, Elemental Token, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
   [Declare Blockers] P1 does not block
 T8 P2:   Seasoned Pyromancer (2/2) → 2 dmg to player
 T8 P2:   Elemental Token (1/1) → 1 dmg to player
 T8 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
-  [Combat Damage] 4 damage dealt → P1 life: 14 → 10
+T8 P2:   Cat Token (2/1) → 2 dmg to player
+  [Combat Damage] 6 damage dealt → P1 life: 12 → 6
   [End Combat]
   [Main 2]
   [AI-TRACE MAIN2] T16 Boros Energy
-    state: life=15 mana=6 hand=2+0L gy=10
+    state: life=13 mana=6 hand=2+0L gy=9
     hand: ['Wrath of the Skies', 'Goblin Bombardment']
-    board: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)']
-    opp: [] (life=10)
+    board: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
+    opp: [] (life=6)
     EV candidates:
        -50.0  cast_spell: Wrath of the Skies <--  [h=-50.0 la=-50.0]
     >>> PASS (threshold=-5.0)
   [End Step]
 
 ╔══ TURN 9 — Affinity (P1) ══════════════════════════
-║ Life: Affinity 10  |  Boros Energy 15
+║ Life: Affinity 6  |  Boros Energy 13
 ║ Hand: 2 cards  |  Opp hand: 2 cards
-║ Lands: 5  |  Opp lands: 6
-║ Library: 46  |  Graveyard: 5
+║ Lands: 6  |  Opp lands: 6
+║ Library: 46  |  Graveyard: 4
 ║ Affinity board:
 ║   Creatures: (empty)
 ║   Other: Springleaf Drum, Springleaf Drum
-║   Lands: Treasure Vault, Darksteel Citadel, Silverbluff Bridge, Tanglepool Bridge, Mistvault Bridge
+║   Lands: Darksteel Citadel, Treasure Vault, Darksteel Citadel, Silverbluff Bridge, Tanglepool Bridge, Mistvault Bridge
 ║ Boros Energy board:
-║   Creatures: Seasoned Pyromancer (2/2) [tapped], Elemental Token (1/1) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped]
+║   Creatures: Seasoned Pyromancer (2/2) [tapped], Elemental Token (1/1) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Cat Token (2/1) [tapped]
 ║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains, Plains, Dalkovan Encampment
 ╚═══════════════════════════════════════════════════════
   [Untap] P1 untaps all permanents
@@ -2307,24 +2075,49 @@ T8 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
   [Draw] P1 draws: Treasure Vault
   [Main 1]
   [AI-TRACE MAIN1] T17 Affinity
-    state: life=10 mana=5 hand=2+1L gy=5
+    state: life=6 mana=6 hand=2+1L gy=4
     hand: ['Ornithopter', 'Signal Pest']
     perms: ['Springleaf Drum', 'Springleaf Drum']
-    opp: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)'] (life=15)
+    opp: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=13)
     EV candidates:
        +15.0  play_land: Treasure Vault <--
-        +0.0  cast_spell: Ornithopter
-        -0.1  cast_spell: Signal Pest  [h=-0.1 la=-0.1]
+        +0.0  cast_spell: Signal Pest
+        -0.9  cast_spell: Ornithopter  [h=-0.9 la=-0.9 rmv=6%]
     >>> PLAY_LAND: Treasure Vault
 T9 P1: Play Treasure Vault
   [AI-TRACE MAIN1] T17 Affinity
-    state: life=10 mana=6 hand=2+0L gy=5
+    state: life=6 mana=7 hand=2+0L gy=4
     hand: ['Ornithopter', 'Signal Pest']
     perms: ['Springleaf Drum', 'Springleaf Drum']
-    opp: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)'] (life=15)
+    opp: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=13)
     EV candidates:
-        +0.0  cast_spell: Ornithopter <--
-        -0.1  cast_spell: Signal Pest  [h=-0.1 la=-0.1]
+        +0.0  cast_spell: Signal Pest <--
+        -0.9  cast_spell: Ornithopter  [h=-0.9 la=-0.9 rmv=6%]
+    >>> CAST_SPELL: Signal Pest
+    → Goal: curve_out
+    [Mana] Tap Darksteel Citadel→C (paying for Signal Pest, 7 mana remaining)
+T9 P1: Cast Signal Pest (1)
+    [Priority] P2 passes (no response)
+T9: Resolve Signal Pest
+  [AI-TRACE MAIN1] T17 Affinity
+    state: life=6 mana=6 hand=1+0L gy=4
+    hand: ['Ornithopter']
+    board: ['Signal Pest (0/1)']
+    perms: ['Springleaf Drum', 'Springleaf Drum']
+    opp: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=13)
+    EV candidates:
+        +0.1  cast_spell: Ornithopter <--  [h=+0.1 la=+0.1 rmv=6%]
+    >>> CAST_SPELL: Ornithopter
+    → Goal: curve_out
+T9 P1: Cast Ornithopter (0)
+    [Priority] P2 passes (no response)
+T9: Resolve Ornithopter
+  [AI-TRACE MAIN1] T17 Affinity
+    state: life=6 mana=6 hand=0+0L gy=4
+    hand: []
+    board: ['Signal Pest (0/1)', 'Ornithopter (0/2)']
+    perms: ['Springleaf Drum', 'Springleaf Drum']
+    opp: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=13)
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T17 Affinity: no attack
@@ -2332,88 +2125,116 @@ T9 P1: Play Treasure Vault
   [End Combat]
   [Main 2]
   [AI-TRACE MAIN2] T17 Affinity
-    state: life=10 mana=6 hand=2+0L gy=5
-    hand: ['Ornithopter', 'Signal Pest']
+    state: life=6 mana=6 hand=0+0L gy=4
+    hand: []
+    board: ['Signal Pest (0/1)', 'Ornithopter (0/2)']
     perms: ['Springleaf Drum', 'Springleaf Drum']
-    opp: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)'] (life=15)
-    EV candidates:
-        +0.0  cast_spell: Ornithopter <--
-        -0.1  cast_spell: Signal Pest  [h=-0.1 la=-0.1]
+    opp: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=13)
     >>> PASS (threshold=-5.0)
   [End Step]
 
 ╔══ TURN 9 — Boros Energy (P2) ══════════════════════════
-║ Life: Boros Energy 15  |  Affinity 10
-║ Hand: 2 cards  |  Opp hand: 2 cards
-║ Lands: 6  |  Opp lands: 6
-║ Library: 41  |  Graveyard: 10
+║ Life: Boros Energy 13  |  Affinity 6
+║ Hand: 2 cards  |  Opp hand: 0 cards
+║ Lands: 6  |  Opp lands: 7
+║ Library: 41  |  Graveyard: 9
 ║ Boros Energy board:
-║   Creatures: Seasoned Pyromancer (2/2), Elemental Token (1/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)
+║   Creatures: Seasoned Pyromancer (2/2), Elemental Token (1/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
 ║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains, Plains, Dalkovan Encampment
 ║ Affinity board:
-║   Creatures: (empty)
+║   Creatures: Signal Pest (0/1), Ornithopter (0/2)
 ║   Other: Springleaf Drum, Springleaf Drum
-║   Lands: Treasure Vault, Darksteel Citadel, Silverbluff Bridge, Tanglepool Bridge, Mistvault Bridge, Treasure Vault
+║   Lands: Darksteel Citadel [T], Treasure Vault, Darksteel Citadel, Silverbluff Bridge, Tanglepool Bridge, Mistvault Bridge, Treasure Vault
 ╚═══════════════════════════════════════════════════════
   [Untap] P2 untaps all permanents
   [Upkeep]
   [Draw] P2 draws: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
   [Main 1]
   [AI-TRACE MAIN1] T18 Boros Energy
-    state: life=15 mana=6 hand=3+0L gy=10
+    state: life=13 mana=6 hand=3+0L gy=9
     hand: ['Wrath of the Skies', 'Goblin Bombardment', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
-    board: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)']
-    opp: [] (life=10)
+    board: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
+    opp: ['Signal Pest (0/1)', 'Ornithopter (0/2)'] (life=6)
+    EV candidates:
+        +2.4  cast_spell: Goblin Bombardment <--  [h=+2.4 la=+2.4]
+       -50.0  cast_spell: Wrath of the Skies  [h=-50.0 la=-50.0]
+    >>> CAST_SPELL: Goblin Bombardment
+    → Goal: curve_out
+    [Mana] Tap Sacred Foundry→R, Plains→W (paying for Goblin Bombardment, 6 mana remaining)
+T9 P2: Cast Goblin Bombardment (1R)
+    [Priority] P1 passes (no response)
+T9: Resolve Goblin Bombardment
+T9 P2: Goblin Bombardment enters — sacrifice creatures for 1 damage each
+  [AI-TRACE MAIN1] T18 Boros Energy
+    state: life=13 mana=4 hand=2+0L gy=9
+    hand: ['Wrath of the Skies', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+    board: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
+    perms: ['Goblin Bombardment']
+    opp: ['Signal Pest (0/1)', 'Ornithopter (0/2)'] (life=6)
     EV candidates:
        -50.0  cast_spell: Wrath of the Skies <--  [h=-50.0 la=-50.0]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
-  [AI-TRACE ATTACK] T18 Boros Energy: ['Seasoned Pyromancer', 'Elemental Token', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
-  [Declare Attackers] P2 attacks with: Seasoned Pyromancer, Elemental Token, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
-T9 P2: Attack with Seasoned Pyromancer, Elemental Token, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
-  [Declare Blockers] P1 does not block
-T9 P2:   Seasoned Pyromancer (2/2) → 2 dmg to player
+  [AI-TRACE ATTACK] T18 Boros Energy: ['Seasoned Pyromancer', 'Elemental Token', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Cat Token']
+  [Declare Attackers] P2 attacks with: Seasoned Pyromancer, Elemental Token, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+T9 P2: Attack with Seasoned Pyromancer, Elemental Token, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+T9 P1:   [BLOCK-EMERGENCY] Ornithopter (0/2) blocks Seasoned Pyromancer (2/2) — chump block
+T9 P1:   [BLOCK-EMERGENCY] Signal Pest (0/1) blocks Cat Token (2/1) — chump block
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
 T9 P2:   Elemental Token (1/1) → 1 dmg to player
 T9 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
-  [Combat Damage] 4 damage dealt → P1 life: 10 → 6
+T9: Signal Pest dies
+T9: Ornithopter dies
+  [Combat Damage] 2 damage dealt → P1 life: 6 → 4
   [End Combat]
   [Main 2]
   [AI-TRACE MAIN2] T18 Boros Energy
-    state: life=15 mana=6 hand=3+0L gy=10
-    hand: ['Wrath of the Skies', 'Goblin Bombardment', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
-    board: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)']
-    opp: [] (life=6)
+    state: life=13 mana=4 hand=2+0L gy=9
+    hand: ['Wrath of the Skies', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+    board: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
+    perms: ['Goblin Bombardment']
+    opp: [] (life=4)
     EV candidates:
        -50.0  cast_spell: Wrath of the Skies <--  [h=-50.0 la=-50.0]
     >>> PASS (threshold=-5.0)
   [End Step]
 
 ╔══ TURN 10 — Affinity (P1) ══════════════════════════
-║ Life: Affinity 6  |  Boros Energy 15
-║ Hand: 2 cards  |  Opp hand: 3 cards
-║ Lands: 6  |  Opp lands: 6
-║ Library: 45  |  Graveyard: 5
+║ Life: Affinity 4  |  Boros Energy 13
+║ Hand: 0 cards  |  Opp hand: 2 cards
+║ Lands: 7  |  Opp lands: 6
+║ Library: 45  |  Graveyard: 6
 ║ Affinity board:
 ║   Creatures: (empty)
 ║   Other: Springleaf Drum, Springleaf Drum
-║   Lands: Treasure Vault, Darksteel Citadel, Silverbluff Bridge, Tanglepool Bridge, Mistvault Bridge, Treasure Vault
+║   Lands: Darksteel Citadel, Treasure Vault, Darksteel Citadel, Silverbluff Bridge, Tanglepool Bridge, Mistvault Bridge, Treasure Vault
 ║ Boros Energy board:
-║   Creatures: Seasoned Pyromancer (2/2) [tapped], Elemental Token (1/1) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped]
-║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains, Plains, Dalkovan Encampment
+║   Creatures: Seasoned Pyromancer (2/2) [tapped], Elemental Token (1/1) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Cat Token (2/1) [tapped]
+║   Other: Goblin Bombardment
+║   Lands: Sacred Foundry [T], Sacred Foundry, Sacred Foundry, Plains [T], Plains, Dalkovan Encampment
 ╚═══════════════════════════════════════════════════════
   [Untap] P1 untaps all permanents
   [Upkeep]
   [Draw] P1 draws: Springleaf Drum
   [Main 1]
   [AI-TRACE MAIN1] T19 Affinity
-    state: life=6 mana=6 hand=3+0L gy=5
-    hand: ['Ornithopter', 'Signal Pest', 'Springleaf Drum']
+    state: life=4 mana=7 hand=1+0L gy=6
+    hand: ['Springleaf Drum']
     perms: ['Springleaf Drum', 'Springleaf Drum']
-    opp: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)'] (life=15)
+    opp: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=13)
     EV candidates:
-        +0.0  cast_spell: Ornithopter <--
-        -0.1  cast_spell: Springleaf Drum  [h=-0.1 la=-0.1]
-        -0.1  cast_spell: Signal Pest  [h=-0.1 la=-0.1]
+        -0.3  cast_spell: Springleaf Drum <--  [h=-0.3 la=-0.3]
+    >>> CAST_SPELL: Springleaf Drum
+    → Goal: curve_out
+    [Mana] Tap Darksteel Citadel→C (paying for Springleaf Drum, 7 mana remaining)
+T10 P1: Cast Springleaf Drum (1)
+    [Priority] P2 passes (no response)
+T10: Resolve Springleaf Drum
+  [AI-TRACE MAIN1] T19 Affinity
+    state: life=4 mana=6 hand=0+0L gy=6
+    hand: []
+    perms: ['Springleaf Drum', 'Springleaf Drum', 'Springleaf Drum']
+    opp: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=13)
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T19 Affinity: no attack
@@ -2421,41 +2242,39 @@ T9 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
   [End Combat]
   [Main 2]
   [AI-TRACE MAIN2] T19 Affinity
-    state: life=6 mana=6 hand=3+0L gy=5
-    hand: ['Ornithopter', 'Signal Pest', 'Springleaf Drum']
-    perms: ['Springleaf Drum', 'Springleaf Drum']
-    opp: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)'] (life=15)
-    EV candidates:
-        +0.0  cast_spell: Ornithopter <--
-        -0.1  cast_spell: Springleaf Drum  [h=-0.1 la=-0.1]
-        -0.1  cast_spell: Signal Pest  [h=-0.1 la=-0.1]
+    state: life=4 mana=6 hand=0+0L gy=6
+    hand: []
+    perms: ['Springleaf Drum', 'Springleaf Drum', 'Springleaf Drum']
+    opp: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=13)
     >>> PASS (threshold=-5.0)
   [End Step]
 
 ╔══ TURN 10 — Boros Energy (P2) ══════════════════════════
-║ Life: Boros Energy 15  |  Affinity 6
-║ Hand: 3 cards  |  Opp hand: 3 cards
-║ Lands: 6  |  Opp lands: 6
-║ Library: 40  |  Graveyard: 10
+║ Life: Boros Energy 13  |  Affinity 4
+║ Hand: 2 cards  |  Opp hand: 0 cards
+║ Lands: 6  |  Opp lands: 7
+║ Library: 40  |  Graveyard: 9
 ║ Boros Energy board:
-║   Creatures: Seasoned Pyromancer (2/2), Elemental Token (1/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)
+║   Creatures: Seasoned Pyromancer (2/2), Elemental Token (1/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Other: Goblin Bombardment
 ║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains, Plains, Dalkovan Encampment
 ║ Affinity board:
 ║   Creatures: (empty)
-║   Other: Springleaf Drum, Springleaf Drum
-║   Lands: Treasure Vault, Darksteel Citadel, Silverbluff Bridge, Tanglepool Bridge, Mistvault Bridge, Treasure Vault
+║   Other: Springleaf Drum, Springleaf Drum, Springleaf Drum
+║   Lands: Darksteel Citadel [T], Treasure Vault, Darksteel Citadel, Silverbluff Bridge, Tanglepool Bridge, Mistvault Bridge, Treasure Vault
 ╚═══════════════════════════════════════════════════════
   [Untap] P2 untaps all permanents
   [Upkeep]
   [Draw] P2 draws: Seasoned Pyromancer
   [Main 1]
   [AI-TRACE MAIN1] T20 Boros Energy
-    state: life=15 mana=6 hand=4+0L gy=10
-    hand: ['Wrath of the Skies', 'Goblin Bombardment', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Seasoned Pyromancer']
-    board: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)']
-    opp: [] (life=6)
+    state: life=13 mana=6 hand=3+0L gy=9
+    hand: ['Wrath of the Skies', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Seasoned Pyromancer']
+    board: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
+    perms: ['Goblin Bombardment']
+    opp: [] (life=4)
     EV candidates:
-       +10.3  cast_spell: Seasoned Pyromancer <--  [h=+10.3 la=+10.3]
+        -0.4  cast_spell: Seasoned Pyromancer <--  [h=-0.4 la=-0.4]
        -50.0  cast_spell: Wrath of the Skies  [h=-50.0 la=-50.0]
     >>> CAST_SPELL: Seasoned Pyromancer
     → Goal: curve_out [payoffs]
@@ -2466,23 +2285,25 @@ T10: Resolve Seasoned Pyromancer
 T10 P2: Create 2x Elemental token(s)
 T10 P2: Seasoned Pyromancer: discard 2, draw 2 (Ragavan, Nimble Pilferer, Windswept Heath), create 2 Elemental(s)
   [AI-TRACE MAIN1] T20 Boros Energy
-    state: life=15 mana=3 hand=2+1L gy=12
-    hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ragavan, Nimble Pilferer']
-    board: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)']
-    opp: [] (life=6)
+    state: life=13 mana=3 hand=1+1L gy=11
+    hand: ['Ragavan, Nimble Pilferer']
+    board: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)']
+    perms: ['Goblin Bombardment']
+    opp: [] (life=4)
     EV candidates:
        +22.0  play_land: Windswept Heath <--
-        +0.1  cast_spell: Ragavan, Nimble Pilferer  [h=+0.1 la=+0.1]
+        -0.4  cast_spell: Ragavan, Nimble Pilferer  [h=-0.4 la=-0.4]
     >>> PLAY_LAND: Windswept Heath
 T10 P2: Play Windswept Heath
 T10 P2: Crack Windswept Heath -> Elegant Parlor (tapped)
   [AI-TRACE MAIN1] T20 Boros Energy
-    state: life=14 mana=3 hand=2+0L gy=13
-    hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ragavan, Nimble Pilferer']
-    board: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)']
-    opp: [] (life=6)
+    state: life=12 mana=3 hand=1+0L gy=12
+    hand: ['Ragavan, Nimble Pilferer']
+    board: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)']
+    perms: ['Goblin Bombardment']
+    opp: [] (life=4)
     EV candidates:
-        +0.3  cast_spell: Ragavan, Nimble Pilferer <--  [h=+0.3 la=+0.3]
+        -0.1  cast_spell: Ragavan, Nimble Pilferer <--  [h=-0.1 la=-0.1]
     >>> CAST_SPELL: Ragavan, Nimble Pilferer
     → Goal: curve_out [enablers]
     [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 3 mana remaining)
@@ -2490,162 +2311,26 @@ T10 P2: Cast Ragavan, Nimble Pilferer (R)
     [Priority] P1 passes (no response)
 T10: Resolve Ragavan, Nimble Pilferer
   [AI-TRACE MAIN1] T20 Boros Energy
-    state: life=14 mana=2 hand=1+0L gy=13
-    hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
-    board: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)', 'Ragavan, Nimble Pilferer (2/1)']
-    opp: [] (life=6)
+    state: life=12 mana=2 hand=0+0L gy=12
+    hand: []
+    board: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)', 'Ragavan, Nimble Pilferer (2/1)']
+    perms: ['Goblin Bombardment']
+    opp: [] (life=4)
     >>> PASS (threshold=-5.0)
   [Begin Combat]
-  [AI-TRACE ATTACK] T20 Boros Energy: ['Seasoned Pyromancer', 'Elemental Token', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
-  [Declare Attackers] P2 attacks with: Seasoned Pyromancer, Elemental Token, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
-T10 P2: Attack with Seasoned Pyromancer, Elemental Token, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [AI-TRACE ATTACK] T20 Boros Energy: ['Seasoned Pyromancer', 'Elemental Token', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Cat Token']
+  [Declare Attackers] P2 attacks with: Seasoned Pyromancer, Elemental Token, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+T10 P2: Attack with Seasoned Pyromancer, Elemental Token, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
   [Declare Blockers] P1 does not block
 T10 P2:   Seasoned Pyromancer (2/2) → 2 dmg to player
 T10 P2:   Elemental Token (1/1) → 1 dmg to player
 T10 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
-  [Combat Damage] 4 damage dealt → P1 life: 6 → 2
-  [End Combat]
-  [Main 2]
-  [AI-TRACE MAIN2] T20 Boros Energy
-    state: life=14 mana=2 hand=1+0L gy=13
-    hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
-    board: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)', 'Ragavan, Nimble Pilferer (2/1)']
-    opp: [] (life=2)
-    >>> PASS (threshold=-5.0)
-  [End Step]
+T10 P2:   Cat Token (2/1) → 2 dmg to player
+P1 loses: life total -2
+  [Combat Damage] 6 damage dealt → P1 life: 4 → -2
 
-╔══ TURN 11 — Affinity (P1) ══════════════════════════
-║ Life: Affinity 2  |  Boros Energy 14
-║ Hand: 3 cards  |  Opp hand: 1 cards
-║ Lands: 6  |  Opp lands: 7
-║ Library: 44  |  Graveyard: 5
-║ Affinity board:
-║   Creatures: (empty)
-║   Other: Springleaf Drum, Springleaf Drum
-║   Lands: Treasure Vault, Darksteel Citadel, Silverbluff Bridge, Tanglepool Bridge, Mistvault Bridge, Treasure Vault
-║ Boros Energy board:
-║   Creatures: Seasoned Pyromancer (2/2) [tapped], Elemental Token (1/1) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Seasoned Pyromancer (2/2), Elemental Token (1/1), Elemental Token (1/1), Ragavan, Nimble Pilferer (2/1)
-║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Plains [T], Plains, Dalkovan Encampment, Elegant Parlor [T]
-╚═══════════════════════════════════════════════════════
-  [Untap] P1 untaps all permanents
-  [Upkeep]
-  [Draw] P1 draws: Silverbluff Bridge
-  [Main 1]
-  [AI-TRACE MAIN1] T21 Affinity
-    state: life=2 mana=6 hand=3+1L gy=5
-    hand: ['Ornithopter', 'Signal Pest', 'Springleaf Drum']
-    perms: ['Springleaf Drum', 'Springleaf Drum']
-    opp: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)', 'Ragavan, Nimble Pilferer (2/1)'] (life=14)
-    EV candidates:
-        +7.0  play_land: Silverbluff Bridge <--
-        +0.1  cast_spell: Ornithopter  [h=+0.1 la=+0.1 rmv=3%]
-        +0.0  cast_spell: Signal Pest
-        -0.2  cast_spell: Springleaf Drum  [h=-0.2 la=-0.2]
-    >>> PLAY_LAND: Silverbluff Bridge
-T11 P1: Play Silverbluff Bridge (enters tapped)
-  [AI-TRACE MAIN1] T21 Affinity
-    state: life=2 mana=6 hand=3+0L gy=5
-    hand: ['Ornithopter', 'Signal Pest', 'Springleaf Drum']
-    perms: ['Springleaf Drum', 'Springleaf Drum']
-    opp: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)', 'Ragavan, Nimble Pilferer (2/1)'] (life=14)
-    EV candidates:
-        +0.1  cast_spell: Ornithopter <--  [h=+0.1 la=+0.1 rmv=3%]
-        +0.0  cast_spell: Signal Pest
-        -0.2  cast_spell: Springleaf Drum  [h=-0.2 la=-0.2]
-    >>> CAST_SPELL: Ornithopter
-    → Goal: curve_out
-T11 P1: Cast Ornithopter (0)
-    [Priority] P2 passes (no response)
-T11: Resolve Ornithopter
-  [AI-TRACE MAIN1] T21 Affinity
-    state: life=2 mana=6 hand=2+0L gy=5
-    hand: ['Signal Pest', 'Springleaf Drum']
-    board: ['Ornithopter (0/2)']
-    perms: ['Springleaf Drum', 'Springleaf Drum']
-    opp: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)', 'Ragavan, Nimble Pilferer (2/1)'] (life=14)
-    EV candidates:
-        +0.0  cast_spell: Signal Pest <--
-        -0.2  cast_spell: Springleaf Drum  [h=-0.2 la=-0.2]
-    >>> CAST_SPELL: Signal Pest
-    → Goal: curve_out
-    [Mana] Tap Treasure Vault→C (paying for Signal Pest, 6 mana remaining)
-T11 P1: Cast Signal Pest (1)
-    [Priority] P2 passes (no response)
-T11: Resolve Signal Pest
-  [AI-TRACE MAIN1] T21 Affinity
-    state: life=2 mana=5 hand=1+0L gy=5
-    hand: ['Springleaf Drum']
-    board: ['Ornithopter (0/2)', 'Signal Pest (0/1)']
-    perms: ['Springleaf Drum', 'Springleaf Drum']
-    opp: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)', 'Ragavan, Nimble Pilferer (2/1)'] (life=14)
-    EV candidates:
-        -0.2  cast_spell: Springleaf Drum <--  [h=-0.2 la=-0.2]
-    >>> CAST_SPELL: Springleaf Drum
-    → Goal: curve_out
-    [Mana] Tap Darksteel Citadel→C (paying for Springleaf Drum, 5 mana remaining)
-T11 P1: Cast Springleaf Drum (1)
-    [Priority] P2 passes (no response)
-T11: Resolve Springleaf Drum
-  [AI-TRACE MAIN1] T21 Affinity
-    state: life=2 mana=4 hand=0+0L gy=5
-    hand: []
-    board: ['Ornithopter (0/2)', 'Signal Pest (0/1)']
-    perms: ['Springleaf Drum', 'Springleaf Drum', 'Springleaf Drum']
-    opp: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)', 'Ragavan, Nimble Pilferer (2/1)'] (life=14)
-    EV candidates:
-        -0.2  cast_spell: Springleaf Drum <--  [h=-0.2 la=-0.2]
-    >>> PASS (threshold=-5.0)
-  [Begin Combat]
-  [AI-TRACE ATTACK] T21 Affinity: no attack
-  [Declare Attackers] P1 does not attack
-  [End Combat]
-  [Main 2]
-  [AI-TRACE MAIN2] T21 Affinity
-    state: life=2 mana=4 hand=0+0L gy=5
-    hand: []
-    board: ['Ornithopter (0/2)', 'Signal Pest (0/1)']
-    perms: ['Springleaf Drum', 'Springleaf Drum', 'Springleaf Drum']
-    opp: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)', 'Ragavan, Nimble Pilferer (2/1)'] (life=14)
-    EV candidates:
-        -0.2  cast_spell: Springleaf Drum <--  [h=-0.2 la=-0.2]
-    >>> PASS (threshold=-5.0)
-  [End Step]
-
-╔══ TURN 11 — Boros Energy (P2) ══════════════════════════
-║ Life: Boros Energy 14  |  Affinity 2
-║ Hand: 1 cards  |  Opp hand: 0 cards
-║ Lands: 7  |  Opp lands: 7
-║ Library: 36  |  Graveyard: 13
-║ Boros Energy board:
-║   Creatures: Seasoned Pyromancer (2/2), Elemental Token (1/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Seasoned Pyromancer (2/2), Elemental Token (1/1), Elemental Token (1/1), Ragavan, Nimble Pilferer (2/1)
-║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains, Plains, Dalkovan Encampment, Elegant Parlor
-║ Affinity board:
-║   Creatures: Ornithopter (0/2), Signal Pest (0/1)
-║   Other: Springleaf Drum, Springleaf Drum, Springleaf Drum
-║   Lands: Treasure Vault [T], Darksteel Citadel [T], Silverbluff Bridge, Tanglepool Bridge, Mistvault Bridge, Treasure Vault, Silverbluff Bridge [T]
-╚═══════════════════════════════════════════════════════
-  [Untap] P2 untaps all permanents
-  [Upkeep]
-  [Draw] P2 draws: Galvanic Discharge
-  [Main 1]
-  [AI-TRACE MAIN1] T22 Boros Energy
-    state: life=14 mana=7 hand=2+0L gy=13
-    hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Galvanic Discharge']
-    board: ['Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)', 'Ragavan, Nimble Pilferer (2/1)']
-    opp: ['Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=2)
-    EV candidates:
-       +79.7  cast_spell: Galvanic Discharge <--  [h=+79.7 la=+79.7]
-    >>> CAST_SPELL: Galvanic Discharge
-    → Goal: curve_out [interaction]
-    [Mana] Tap Sacred Foundry→R (paying for Galvanic Discharge, 7 mana remaining)
-T11 P2: Cast Galvanic Discharge (R)
-    [Priority] P1 passes (no response)
-T11: Resolve Galvanic Discharge
-T11 P2: Galvanic Discharge deals 3 to opponent
-P1 loses: life total -1
-
->>> Boros Energy wins Game 2 on turn 11 via damage
-    Final life: Affinity=-1  Boros Energy=14
+>>> Boros Energy wins Game 2 on turn 10 via damage
+    Final life: Affinity=-2  Boros Energy=12
 
 ======================================================================
   MATCH RESULT: Boros Energy wins 2-0

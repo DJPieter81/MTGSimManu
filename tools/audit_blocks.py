@@ -58,14 +58,27 @@ def parse_file(seed: int) -> list[BlockEvent]:
     lines = path.read_text().splitlines()
     events = []
 
-    # Track last-seen life totals by side
+    # Track last-seen life totals by side. The ║ Life: banner prints the
+    # ACTIVE player first, so we must consult the preceding TURN header to
+    # decide whether "first name" in the banner is P1 or P2.
     p1_life, p2_life = 20, 20
+    active_side = 1  # flipped by TURN_HEADER_RE
 
     for idx, line in enumerate(lines):
+        th = TURN_HEADER_RE.search(line)
+        if th:
+            active_side = int(th.group("side"))
+
         m = LIFE_LINE_RE.search(line)
         if m:
-            p1_life = int(m.group("p1life"))
-            p2_life = int(m.group("p2life"))
+            # Banner order is [active_side life, other_side life]. Map to
+            # P1/P2 accordingly.
+            first_life = int(m.group("p1life"))
+            second_life = int(m.group("p2life"))
+            if active_side == 1:
+                p1_life, p2_life = first_life, second_life
+            else:
+                p1_life, p2_life = second_life, first_life
             continue
 
         bm = BLOCK_RE.search(line)

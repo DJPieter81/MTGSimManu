@@ -158,10 +158,6 @@ T1 P1: Play Elegant Parlor (enters tapped)
     state: life=20 mana=0 hand=3+2L gy=0
     hand: ['Voice of Victory', 'Seasoned Pyromancer', 'Goblin Bombardment']
     opp: ['Memnite (1/1)'] (life=20)
-    EV candidates:
-       +27.0  play_land: Elegant Parlor <--
-       +26.0  play_land: Windswept Heath
-       +19.0  play_land: Plains
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T2 Boros Energy: no attack
@@ -172,10 +168,6 @@ T1 P1: Play Elegant Parlor (enters tapped)
     state: life=20 mana=0 hand=3+2L gy=0
     hand: ['Voice of Victory', 'Seasoned Pyromancer', 'Goblin Bombardment']
     opp: ['Memnite (1/1)'] (life=20)
-    EV candidates:
-       +27.0  play_land: Elegant Parlor <--
-       +26.0  play_land: Windswept Heath
-       +19.0  play_land: Plains
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -280,8 +272,6 @@ T2 P1: Crack Windswept Heath (pay 1 life) -> Sacred Foundry (tapped, life: 18)
     hand: ['Voice of Victory', 'Seasoned Pyromancer', 'Goblin Bombardment']
     board: ['Guide of Souls (1/2)']
     opp: ['Memnite (1/1)'] (life=20)
-    EV candidates:
-       +12.0  play_land: Plains <--
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T4 Boros Energy: no attack
@@ -293,8 +283,6 @@ T2 P1: Crack Windswept Heath (pay 1 life) -> Sacred Foundry (tapped, life: 18)
     hand: ['Voice of Victory', 'Seasoned Pyromancer', 'Goblin Bombardment']
     board: ['Guide of Souls (1/2)']
     opp: ['Memnite (1/1)'] (life=20)
-    EV candidates:
-       +12.0  play_land: Plains <--
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -518,9 +506,6 @@ T4 P1: +1 energy from Guide of Souls (total: 1)
     hand: ['Goblin Bombardment', 'Galvanic Discharge']
     board: ['Guide of Souls (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)']
     opp: ['Memnite (1/1)'] (life=19)
-    EV candidates:
-        -0.4  cast_spell: Seasoned Pyromancer <--  [h=-0.4 la=-0.4]
-        -9.4  cast_spell: Goblin Bombardment  [h=-9.4 la=-9.4]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T8 Boros Energy: ['Guide of Souls']
@@ -536,9 +521,6 @@ T4 P1:   Guide of Souls (1/2) → 1 dmg to player
     hand: ['Goblin Bombardment', 'Galvanic Discharge']
     board: ['Guide of Souls (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)']
     opp: ['Memnite (1/1)'] (life=18)
-    EV candidates:
-        -0.4  cast_spell: Seasoned Pyromancer <--  [h=-0.4 la=-0.4]
-        -9.4  cast_spell: Goblin Bombardment  [h=-9.4 la=-9.4]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -674,8 +656,6 @@ T5 P1: Goblin Bombardment enters — sacrifice creatures for 1 damage each
     board: ['Guide of Souls (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ocelot Pride (1/1)']
     perms: ['Goblin Bombardment']
     opp: ['Memnite (1/1)'] (life=13)
-    EV candidates:
-        -0.1  cast_spell: Goblin Bombardment <--  [h=-0.1 la=-0.1]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T10 Boros Energy: ['Guide of Souls', 'Seasoned Pyromancer', 'Elemental Token']
@@ -695,8 +675,6 @@ T5: Memnite dies
     board: ['Guide of Souls (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ocelot Pride (1/1)']
     perms: ['Goblin Bombardment']
     opp: [] (life=11)
-    EV candidates:
-        -0.1  cast_spell: Goblin Bombardment <--  [h=-0.1 la=-0.1]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -806,8 +784,6 @@ T6 P1: +1 energy from Guide of Souls (total: 1)
     board: ['Guide of Souls (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ocelot Pride (1/1)', 'Ocelot Pride (1/1)']
     perms: ['Goblin Bombardment']
     opp: ['Construct Token (7/7)'] (life=11)
-    EV candidates:
-        +4.8  cast_spell: Ocelot Pride <--  [h=+4.8 la=+4.8]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T12 Boros Energy: ['Elemental Token', 'Ocelot Pride']
@@ -826,8 +802,6 @@ T6: Elemental Token dies
     board: ['Guide of Souls (1/2)', 'Seasoned Pyromancer (2/2)', 'Ocelot Pride (1/1)', 'Ocelot Pride (1/1)']
     perms: ['Goblin Bombardment']
     opp: ['Construct Token (7/7)'] (life=10)
-    EV candidates:
-        +4.8  cast_spell: Ocelot Pride <--  [h=+4.8 la=+4.8]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -874,9 +848,9 @@ T7 P2: Play Silverbluff Bridge (enters tapped)
   [AI-TRACE ATTACK] T13 Affinity: ['Construct Token']
   [Declare Attackers] P2 attacks with: Construct Token
 T7 P2: Attack with Construct Token
-T7 P1:   [BLOCK-EMERGENCY] Guide of Souls (1/2) blocks Construct Token (10/10) — chump block
+T7 P1:   [BLOCK] Ocelot Pride (1/1) blocks Construct Token (10/10) — chump block
   [Declare Blockers] P1 blocks: (see BLOCK lines below)
-T7: Guide of Souls dies
+T7: Ocelot Pride dies
   [End Combat]
   [Main 2]
   [AI-TRACE MAIN2] T13 Affinity
@@ -884,7 +858,7 @@ T7: Guide of Souls dies
     hand: ['Mox Opal', 'Mox Opal']
     board: ['Construct Token (10/10)', 'Construct Token (10/10)']
     perms: ['Mox Opal', 'Springleaf Drum', 'Springleaf Drum', 'Springleaf Drum']
-    opp: ['Seasoned Pyromancer (2/2)', 'Ocelot Pride (1/1)', 'Ocelot Pride (1/1)'] (life=17)
+    opp: ['Guide of Souls (1/2)', 'Seasoned Pyromancer (2/2)', 'Ocelot Pride (1/1)'] (life=17)
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -894,7 +868,7 @@ T7: Guide of Souls dies
 ║ Lands: 5  |  Opp lands: 6
 ║ Library: 44  |  Graveyard: 8
 ║ Boros Energy board:
-║   Creatures: Seasoned Pyromancer (2/2), Ocelot Pride (1/1), Ocelot Pride (1/1)
+║   Creatures: Guide of Souls (1/2), Seasoned Pyromancer (2/2), Ocelot Pride (1/1)
 ║   Other: Goblin Bombardment
 ║   Lands: Elegant Parlor, Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains
 ║ Affinity board:
@@ -909,11 +883,11 @@ T7: Guide of Souls dies
   [AI-TRACE MAIN1] T14 Boros Energy
     state: life=17 mana=5 hand=1+0L gy=8
     hand: ['Galvanic Discharge']
-    board: ['Seasoned Pyromancer (2/2)', 'Ocelot Pride (1/1)', 'Ocelot Pride (1/1)']
+    board: ['Guide of Souls (1/2)', 'Seasoned Pyromancer (2/2)', 'Ocelot Pride (1/1)']
     perms: ['Goblin Bombardment']
     opp: ['Construct Token (10/10)', 'Construct Token (10/10)'] (life=10)
     EV candidates:
-        -8.4  cast_spell: Galvanic Discharge <--  [h=-8.4 la=-8.4]
+        -9.4  cast_spell: Galvanic Discharge <--  [h=-9.4 la=-9.4]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T14 Boros Energy: no attack
@@ -923,11 +897,11 @@ T7: Guide of Souls dies
   [AI-TRACE MAIN2] T14 Boros Energy
     state: life=17 mana=5 hand=1+0L gy=8
     hand: ['Galvanic Discharge']
-    board: ['Seasoned Pyromancer (2/2)', 'Ocelot Pride (1/1)', 'Ocelot Pride (1/1)']
+    board: ['Guide of Souls (1/2)', 'Seasoned Pyromancer (2/2)', 'Ocelot Pride (1/1)']
     perms: ['Goblin Bombardment']
     opp: ['Construct Token (10/10)', 'Construct Token (10/10)'] (life=10)
     EV candidates:
-        -8.4  cast_spell: Galvanic Discharge <--  [h=-8.4 la=-8.4]
+        -9.4  cast_spell: Galvanic Discharge <--  [h=-9.4 la=-9.4]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -941,7 +915,7 @@ T7: Guide of Souls dies
 ║   Other: Mox Opal, Springleaf Drum, Springleaf Drum, Springleaf Drum
 ║   Lands: Treasure Vault, Spire of Industry, Island, Razortide Bridge, Tanglepool Bridge, Silverbluff Bridge
 ║ Boros Energy board:
-║   Creatures: Seasoned Pyromancer (2/2), Ocelot Pride (1/1), Ocelot Pride (1/1)
+║   Creatures: Guide of Souls (1/2), Seasoned Pyromancer (2/2), Ocelot Pride (1/1)
 ║   Other: Goblin Bombardment
 ║   Lands: Elegant Parlor, Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains
 ╚═══════════════════════════════════════════════════════
@@ -954,7 +928,7 @@ T7: Guide of Souls dies
     hand: ['Mox Opal', 'Mox Opal', 'Thought Monitor']
     board: ['Construct Token (10/10)', 'Construct Token (10/10)']
     perms: ['Mox Opal', 'Springleaf Drum', 'Springleaf Drum', 'Springleaf Drum']
-    opp: ['Seasoned Pyromancer (2/2)', 'Ocelot Pride (1/1)', 'Ocelot Pride (1/1)'] (life=17)
+    opp: ['Guide of Souls (1/2)', 'Seasoned Pyromancer (2/2)', 'Ocelot Pride (1/1)'] (life=17)
     EV candidates:
        -12.0  cast_spell: Thought Monitor <--  [h=-12.0 la=-12.0 rmv=20%]
     >>> PASS (threshold=-5.0)
@@ -966,10 +940,10 @@ T8 P1: Galvanic Discharge deals 4 to opponent
   [AI-TRACE ATTACK] T15 Affinity: ['Construct Token', 'Construct Token']
   [Declare Attackers] P2 attacks with: Construct Token, Construct Token
 T8 P2: Attack with Construct Token, Construct Token
-T8 P1:   [BLOCK-EMERGENCY] Seasoned Pyromancer (2/2) blocks Construct Token (10/10) — chump block
+T8 P1:   [BLOCK-EMERGENCY] Guide of Souls (1/2) blocks Construct Token (10/10) — chump block
   [Declare Blockers] P1 blocks: (see BLOCK lines below)
 T8 P2:   Construct Token (10/10) → 10 dmg to player
-T8: Seasoned Pyromancer dies
+T8: Guide of Souls dies
   [Combat Damage] 10 damage dealt → P1 life: 17 → 7
   [End Combat]
   [Main 2]
@@ -978,7 +952,7 @@ T8: Seasoned Pyromancer dies
     hand: ['Mox Opal', 'Mox Opal', 'Thought Monitor']
     board: ['Construct Token (10/10)', 'Construct Token (10/10)']
     perms: ['Mox Opal', 'Springleaf Drum', 'Springleaf Drum', 'Springleaf Drum']
-    opp: ['Ocelot Pride (1/1)', 'Ocelot Pride (1/1)'] (life=7)
+    opp: ['Seasoned Pyromancer (2/2)', 'Ocelot Pride (1/1)'] (life=7)
     EV candidates:
        -29.8  cast_spell: Thought Monitor <--  [h=-29.8 la=-29.8 rmv=68%]
     >>> PASS (threshold=-5.0)
@@ -990,7 +964,7 @@ T8: Seasoned Pyromancer dies
 ║ Lands: 5  |  Opp lands: 6
 ║ Library: 43  |  Graveyard: 10
 ║ Boros Energy board:
-║   Creatures: Ocelot Pride (1/1), Ocelot Pride (1/1)
+║   Creatures: Seasoned Pyromancer (2/2), Ocelot Pride (1/1)
 ║   Other: Goblin Bombardment
 ║   Lands: Elegant Parlor, Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains
 ║ Affinity board:
@@ -1005,11 +979,11 @@ T8: Seasoned Pyromancer dies
   [AI-TRACE MAIN1] T16 Boros Energy
     state: life=7 mana=5 hand=1+0L gy=10
     hand: ['Guide of Souls']
-    board: ['Ocelot Pride (1/1)', 'Ocelot Pride (1/1)']
+    board: ['Seasoned Pyromancer (2/2)', 'Ocelot Pride (1/1)']
     perms: ['Goblin Bombardment']
     opp: ['Construct Token (10/10)', 'Construct Token (10/10)'] (life=6)
     EV candidates:
-        +0.7  cast_spell: Guide of Souls <--  [h=+0.7 la=+0.7]
+        +0.2  cast_spell: Guide of Souls <--  [h=+0.2 la=+0.2]
     >>> CAST_SPELL: Guide of Souls
     → Goal: curve_out [enablers]
     [Target] → face (3 dmg, life 10 → 7): opponent low life
@@ -1020,35 +994,31 @@ T8: Resolve Guide of Souls
   [AI-TRACE MAIN1] T16 Boros Energy
     state: life=7 mana=4 hand=0+0L gy=10
     hand: []
-    board: ['Ocelot Pride (1/1)', 'Ocelot Pride (1/1)', 'Guide of Souls (1/2)']
+    board: ['Seasoned Pyromancer (2/2)', 'Ocelot Pride (1/1)', 'Guide of Souls (1/2)']
     perms: ['Goblin Bombardment']
     opp: ['Construct Token (10/10)', 'Construct Token (10/10)'] (life=6)
-    EV candidates:
-        +0.7  cast_spell: Guide of Souls <--  [h=+0.7 la=+0.7]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
-  [AI-TRACE ATTACK] T16 Boros Energy: ['Ocelot Pride', 'Ocelot Pride']
-  [Declare Attackers] P1 attacks with: Ocelot Pride, Ocelot Pride
-T8 P1: Attack with Ocelot Pride, Ocelot Pride
+  [AI-TRACE ATTACK] T16 Boros Energy: ['Seasoned Pyromancer', 'Ocelot Pride']
+  [Declare Attackers] P1 attacks with: Seasoned Pyromancer, Ocelot Pride
+T8 P1: Attack with Seasoned Pyromancer, Ocelot Pride
   [Declare Blockers] P2 does not block
 T8 P1:   Ocelot Pride (1/1) → 1 dmg to player
-T8 P1:   Ocelot Pride (1/1) → 1 dmg to player
-  [Combat Damage] 2 damage dealt → P2 life: 6 → 4
+T8 P1:   Seasoned Pyromancer (2/2) → 2 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 6 → 3
   [End Combat]
   [Main 2]
   [AI-TRACE MAIN2] T16 Boros Energy
-    state: life=9 mana=4 hand=0+0L gy=10
+    state: life=8 mana=4 hand=0+0L gy=10
     hand: []
-    board: ['Ocelot Pride (1/1)', 'Ocelot Pride (1/1)', 'Guide of Souls (1/2)']
+    board: ['Seasoned Pyromancer (2/2)', 'Ocelot Pride (1/1)', 'Guide of Souls (1/2)']
     perms: ['Goblin Bombardment']
-    opp: ['Construct Token (10/10)', 'Construct Token (10/10)'] (life=4)
-    EV candidates:
-        +0.7  cast_spell: Guide of Souls <--  [h=+0.7 la=+0.7]
+    opp: ['Construct Token (10/10)', 'Construct Token (10/10)'] (life=3)
     >>> PASS (threshold=-5.0)
   [End Step]
 
 ╔══ TURN 9 — Affinity (P2) ══════════════════════════
-║ Life: Affinity 4  |  Boros Energy 9
+║ Life: Affinity 3  |  Boros Energy 8
 ║ Hand: 3 cards  |  Opp hand: 0 cards
 ║ Lands: 6  |  Opp lands: 5
 ║ Library: 45  |  Graveyard: 2
@@ -1057,7 +1027,7 @@ T8 P1:   Ocelot Pride (1/1) → 1 dmg to player
 ║   Other: Mox Opal, Springleaf Drum, Springleaf Drum, Springleaf Drum
 ║   Lands: Treasure Vault, Spire of Industry, Island, Razortide Bridge, Tanglepool Bridge, Silverbluff Bridge
 ║ Boros Energy board:
-║   Creatures: Ocelot Pride (1/1) [tapped], Ocelot Pride (1/1) [tapped], Guide of Souls (1/2)
+║   Creatures: Seasoned Pyromancer (2/2) [tapped], Ocelot Pride (1/1) [tapped], Guide of Souls (1/2)
 ║   Other: Goblin Bombardment
 ║   Lands: Elegant Parlor, Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains [T]
 ╚═══════════════════════════════════════════════════════
@@ -1066,24 +1036,24 @@ T8 P1:   Ocelot Pride (1/1) → 1 dmg to player
   [Draw] P2 draws: Tanglepool Bridge
   [Main 1]
   [AI-TRACE MAIN1] T17 Affinity
-    state: life=4 mana=6 hand=3+1L gy=2
+    state: life=3 mana=6 hand=3+1L gy=2
     hand: ['Mox Opal', 'Mox Opal', 'Thought Monitor']
     board: ['Construct Token (10/10)', 'Construct Token (10/10)']
     perms: ['Mox Opal', 'Springleaf Drum', 'Springleaf Drum', 'Springleaf Drum']
-    opp: ['Ocelot Pride (1/1)', 'Ocelot Pride (1/1)', 'Guide of Souls (1/2)'] (life=9)
+    opp: ['Seasoned Pyromancer (2/2)', 'Ocelot Pride (1/1)', 'Guide of Souls (1/2)'] (life=8)
     EV candidates:
        +31.0  play_land: Tanglepool Bridge <--
-       -23.4  cast_spell: Thought Monitor  [h=-23.4 la=-23.4 rmv=68%]
+       -26.3  cast_spell: Thought Monitor  [h=-26.3 la=-26.3 rmv=68%]
     >>> PLAY_LAND: Tanglepool Bridge
 T9 P2: Play Tanglepool Bridge (enters tapped)
   [AI-TRACE MAIN1] T17 Affinity
-    state: life=4 mana=6 hand=3+0L gy=2
+    state: life=3 mana=6 hand=3+0L gy=2
     hand: ['Mox Opal', 'Mox Opal', 'Thought Monitor']
     board: ['Construct Token (11/11)', 'Construct Token (11/11)']
     perms: ['Mox Opal', 'Springleaf Drum', 'Springleaf Drum', 'Springleaf Drum']
-    opp: ['Ocelot Pride (1/1)', 'Ocelot Pride (1/1)', 'Guide of Souls (1/2)'] (life=9)
+    opp: ['Seasoned Pyromancer (2/2)', 'Ocelot Pride (1/1)', 'Guide of Souls (1/2)'] (life=8)
     EV candidates:
-       -25.4  cast_spell: Thought Monitor <--  [h=-25.4 la=-25.4 rmv=68%]
+       -28.5  cast_spell: Thought Monitor <--  [h=-28.5 la=-28.5 rmv=68%]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T17 Affinity: ['Construct Token', 'Construct Token']
@@ -1092,11 +1062,11 @@ T9 P2: Attack with Construct Token, Construct Token
 T9 P1:   [BLOCK-EMERGENCY] Guide of Souls (1/2) blocks Construct Token (11/11) — chump block
   [Declare Blockers] P1 blocks: (see BLOCK lines below)
 T9 P2:   Construct Token (11/11) → 11 dmg to player
-P1 loses: life total -2
-  [Combat Damage] 11 damage dealt → P1 life: 9 → -2
+P1 loses: life total -3
+  [Combat Damage] 11 damage dealt → P1 life: 8 → -3
 
 >>> Affinity wins Game 1 on turn 9 via damage
-    Final life: Boros Energy=-2  Affinity=4
+    Final life: Boros Energy=-3  Affinity=3
 
 ======================================================================
   GAME 2: Boros Energy (P1) vs Affinity (P2)  —  seed 64501
@@ -1177,11 +1147,6 @@ T1: Resolve Guide of Souls
     hand: ['Galvanic Discharge', 'Ragavan, Nimble Pilferer', 'Ocelot Pride']
     board: ['Guide of Souls (1/2)']
     opp: [] (life=20)
-    EV candidates:
-        +3.5  cast_spell: Guide of Souls <--  [h=+3.5 la=+3.5]
-        +2.9  cast_spell: Ocelot Pride  [h=+2.9 la=+2.9]
-        +2.0  cast_spell: Ragavan, Nimble Pilferer  [h=+2.0 la=+2.0]
-        +0.1  cast_spell: Galvanic Discharge  [h=+0.1 la=+0.1]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T1 Boros Energy: no attack
@@ -1193,11 +1158,6 @@ T1: Resolve Guide of Souls
     hand: ['Galvanic Discharge', 'Ragavan, Nimble Pilferer', 'Ocelot Pride']
     board: ['Guide of Souls (1/2)']
     opp: [] (life=20)
-    EV candidates:
-        +3.5  cast_spell: Guide of Souls <--  [h=+3.5 la=+3.5]
-        +2.9  cast_spell: Ocelot Pride  [h=+2.9 la=+2.9]
-        +2.0  cast_spell: Ragavan, Nimble Pilferer  [h=+2.0 la=+2.0]
-        +0.1  cast_spell: Galvanic Discharge  [h=+0.1 la=+0.1]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -1257,8 +1217,6 @@ T1: Resolve Signal Pest
     hand: ['Nettlecyst', 'Cranial Plating', "Sojourner's Companion", 'Thought Monitor']
     board: ['Memnite (1/1)', 'Signal Pest (0/1)']
     opp: ['Guide of Souls (1/2)'] (life=17)
-    EV candidates:
-       +31.1  cast_spell: Signal Pest <--  [h=+31.1 la=+31.1]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T2 Affinity: no attack
@@ -1270,8 +1228,6 @@ T1: Resolve Signal Pest
     hand: ['Nettlecyst', 'Cranial Plating', "Sojourner's Companion", 'Thought Monitor']
     board: ['Memnite (1/1)', 'Signal Pest (0/1)']
     opp: ['Guide of Souls (1/2)'] (life=17)
-    EV candidates:
-       +31.1  cast_spell: Signal Pest <--  [h=+31.1 la=+31.1]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -1328,10 +1284,6 @@ T2 P1: +1 energy from Guide of Souls (total: 1)
     hand: ['Galvanic Discharge', 'Ocelot Pride']
     board: ['Guide of Souls (1/2)', 'Ragavan, Nimble Pilferer (2/1)']
     opp: ['Memnite (1/1)', 'Signal Pest (0/1)'] (life=20)
-    EV candidates:
-       +17.5  cast_spell: Ragavan, Nimble Pilferer <--  [h=+17.5 la=+17.5]
-       +15.6  cast_spell: Ocelot Pride  [h=+15.6 la=+15.6]
-       +15.4  cast_spell: Galvanic Discharge  [h=+15.4 la=+15.4]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T3 Boros Energy: ['Guide of Souls']
@@ -1347,10 +1299,6 @@ T2 P1:   Guide of Souls (1/2) → 1 dmg to player
     hand: ['Galvanic Discharge', 'Ocelot Pride']
     board: ['Guide of Souls (1/2)', 'Ragavan, Nimble Pilferer (2/1)']
     opp: ['Memnite (1/1)', 'Signal Pest (0/1)'] (life=19)
-    EV candidates:
-       +17.5  cast_spell: Ragavan, Nimble Pilferer <--  [h=+17.5 la=+17.5]
-       +15.6  cast_spell: Ocelot Pride  [h=+15.6 la=+15.6]
-       +15.4  cast_spell: Galvanic Discharge  [h=+15.4 la=+15.4]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -1399,8 +1347,6 @@ T2 P2: Engineered Explosives enters with 3 charge counters
     board: ['Memnite (1/1)', 'Signal Pest (0/1)']
     perms: ['Engineered Explosives']
     opp: ['Guide of Souls (1/2)', 'Ragavan, Nimble Pilferer (2/1)'] (life=17)
-    EV candidates:
-       +13.3  cast_spell: Engineered Explosives <--  [h=+13.3 la=+13.3]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T4 Affinity: no attack
@@ -1413,8 +1359,6 @@ T2 P2: Engineered Explosives enters with 3 charge counters
     board: ['Memnite (1/1)', 'Signal Pest (0/1)']
     perms: ['Engineered Explosives']
     opp: ['Guide of Souls (1/2)', 'Ragavan, Nimble Pilferer (2/1)'] (life=17)
-    EV candidates:
-       +13.3  cast_spell: Engineered Explosives <--  [h=+13.3 la=+13.3]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -1553,9 +1497,6 @@ T3 P2: Cycle Sojourner's Companion (pay 2 mana, tutor: Darksteel Citadel)
     board: ['Signal Pest (0/1)']
     perms: ['Engineered Explosives']
     opp: ['Guide of Souls (1/2)', 'Ocelot Pride (1/1)'] (life=18)
-    EV candidates:
-        +0.9  cast_spell: Cranial Plating <--  [h=+0.9 la=+0.9]
-        -5.7  cast_spell: Thought Monitor  [h=-5.7 la=-5.7 rmv=39%]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T6 Affinity: no attack
@@ -1568,9 +1509,6 @@ T3 P2: Cycle Sojourner's Companion (pay 2 mana, tutor: Darksteel Citadel)
     board: ['Signal Pest (0/1)']
     perms: ['Engineered Explosives']
     opp: ['Guide of Souls (1/2)', 'Ocelot Pride (1/1)'] (life=18)
-    EV candidates:
-        +0.9  cast_spell: Cranial Plating <--  [h=+0.9 la=+0.9]
-        -5.7  cast_spell: Thought Monitor  [h=-5.7 la=-5.7 rmv=39%]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -1614,8 +1552,6 @@ T4 P1: +1 energy from Guide of Souls (total: 1)
     hand: ['Galvanic Discharge', 'Ocelot Pride']
     board: ['Guide of Souls (1/2)', 'Ocelot Pride (1/1)', 'Seasoned Pyromancer (2/2)']
     opp: ['Signal Pest (0/1)'] (life=13)
-    EV candidates:
-        +8.4  cast_spell: Seasoned Pyromancer <--  [h=+8.4 la=+8.4]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T7 Boros Energy: ['Guide of Souls', 'Ocelot Pride']
@@ -1632,8 +1568,6 @@ T4 P1:   Guide of Souls (1/2) → 1 dmg to player
     hand: ['Galvanic Discharge', 'Ocelot Pride']
     board: ['Guide of Souls (1/2)', 'Ocelot Pride (1/1)', 'Seasoned Pyromancer (2/2)']
     opp: ['Signal Pest (0/1)'] (life=11)
-    EV candidates:
-        +8.4  cast_spell: Seasoned Pyromancer <--  [h=+8.4 la=+8.4]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -1730,8 +1664,6 @@ T4: Resolve Sojourner's Companion
     board: ['Signal Pest (9/1)', 'Thought Monitor (2/2)', "Sojourner's Companion (4/4)"]
     perms: ['Engineered Explosives', 'Cranial Plating']
     opp: ['Guide of Souls (1/2)', 'Ocelot Pride (1/1)', 'Seasoned Pyromancer (2/2)'] (life=20)
-    EV candidates:
-        +5.6  cast_spell: Sojourner's Companion <--  [h=+5.6 la=+5.6]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T8 Affinity: no attack
@@ -1744,8 +1676,6 @@ T4: Resolve Sojourner's Companion
     board: ['Signal Pest (9/1)', 'Thought Monitor (2/2)', "Sojourner's Companion (4/4)"]
     perms: ['Engineered Explosives', 'Cranial Plating']
     opp: ['Guide of Souls (1/2)', 'Ocelot Pride (1/1)', 'Seasoned Pyromancer (2/2)'] (life=20)
-    EV candidates:
-        +5.6  cast_spell: Sojourner's Companion <--  [h=+5.6 la=+5.6]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -1805,8 +1735,6 @@ T5 P1: +1 energy from Guide of Souls (total: 1)
     hand: ['Seasoned Pyromancer']
     board: ['Guide of Souls (1/2)', 'Ocelot Pride (1/1)', 'Seasoned Pyromancer (2/2)', 'Ocelot Pride (1/1)']
     opp: ['Thought Monitor (2/2)', "Sojourner's Companion (4/4)"] (life=11)
-    EV candidates:
-        +5.0  cast_spell: Ocelot Pride <--  [h=+5.0 la=+5.0]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T9 Boros Energy: no attack
@@ -1818,8 +1746,6 @@ T5 P1: +1 energy from Guide of Souls (total: 1)
     hand: ['Seasoned Pyromancer']
     board: ['Guide of Souls (1/2)', 'Ocelot Pride (1/1)', 'Seasoned Pyromancer (2/2)', 'Ocelot Pride (1/1)']
     opp: ['Thought Monitor (2/2)', "Sojourner's Companion (4/4)"] (life=11)
-    EV candidates:
-        +5.0  cast_spell: Ocelot Pride <--  [h=+5.0 la=+5.0]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -1917,8 +1843,6 @@ T5 P2: Cranial Plating enters the battlefield (unattached)
     board: ['Thought Monitor (24/2)', "Sojourner's Companion (4/4)"]
     perms: ['Engineered Explosives', 'Cranial Plating', 'Cranial Plating', 'Cranial Plating']
     opp: ['Guide of Souls (1/2)', 'Ocelot Pride (1/1)', 'Seasoned Pyromancer (2/2)', 'Ocelot Pride (1/1)'] (life=21)
-    EV candidates:
-        +0.9  cast_spell: Cranial Plating <--  [h=+0.9 la=+0.9]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T10 Affinity: ['Thought Monitor', "Sojourner's Companion"]

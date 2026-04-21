@@ -74,9 +74,6 @@ T1: Resolve Guide of Souls
     hand: ['Voice of Victory', 'The Legend of Roku // Avatar Roku', 'Ragavan, Nimble Pilferer', "Phlage, Titan of Fire's Fury"]
     board: ['Guide of Souls (1/2)']
     opp: [] (life=20)
-    EV candidates:
-        +3.5  cast_spell: Guide of Souls <--  [h=+3.5 la=+3.5]
-        +2.0  cast_spell: Ragavan, Nimble Pilferer  [h=+2.0 la=+2.0]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T1 Boros Energy: no attack
@@ -88,9 +85,6 @@ T1: Resolve Guide of Souls
     hand: ['Voice of Victory', 'The Legend of Roku // Avatar Roku', 'Ragavan, Nimble Pilferer', "Phlage, Titan of Fire's Fury"]
     board: ['Guide of Souls (1/2)']
     opp: [] (life=20)
-    EV candidates:
-        +3.5  cast_spell: Guide of Souls <--  [h=+3.5 la=+3.5]
-        +2.0  cast_spell: Ragavan, Nimble Pilferer  [h=+2.0 la=+2.0]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -139,10 +133,6 @@ T1: Resolve Springleaf Drum
     hand: ['Cranial Plating', 'Signal Pest', 'Springleaf Drum', "Sojourner's Companion"]
     perms: ['Springleaf Drum']
     opp: ['Guide of Souls (1/2)'] (life=17)
-    EV candidates:
-        +1.0  cast_spell: Springleaf Drum <--  [h=+1.0 la=+1.0]
-        +1.0  cast_spell: Springleaf Drum  [h=+1.0 la=+1.0]
-        -9.0  cast_spell: Signal Pest  [h=-9.0 la=-9.0]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T2 Affinity: no attack
@@ -154,10 +144,6 @@ T1: Resolve Springleaf Drum
     hand: ['Cranial Plating', 'Signal Pest', 'Springleaf Drum', "Sojourner's Companion"]
     perms: ['Springleaf Drum']
     opp: ['Guide of Souls (1/2)'] (life=17)
-    EV candidates:
-        +1.0  cast_spell: Springleaf Drum <--  [h=+1.0 la=+1.0]
-        +1.0  cast_spell: Springleaf Drum  [h=+1.0 la=+1.0]
-        -9.0  cast_spell: Signal Pest  [h=-9.0 la=-9.0]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -208,8 +194,6 @@ T2 P1: +1 energy from Guide of Souls (total: 1)
     hand: ['Voice of Victory', 'The Legend of Roku // Avatar Roku', "Phlage, Titan of Fire's Fury", 'Seasoned Pyromancer']
     board: ['Guide of Souls (1/2)', 'Ragavan, Nimble Pilferer (2/1)']
     opp: [] (life=20)
-    EV candidates:
-        +5.2  cast_spell: Ragavan, Nimble Pilferer <--  [h=+5.2 la=+5.2]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T3 Boros Energy: ['Guide of Souls']
@@ -225,8 +209,6 @@ T2 P1:   Guide of Souls (1/2) → 1 dmg to player
     hand: ['Voice of Victory', 'The Legend of Roku // Avatar Roku', "Phlage, Titan of Fire's Fury", 'Seasoned Pyromancer']
     board: ['Guide of Souls (1/2)', 'Ragavan, Nimble Pilferer (2/1)']
     opp: [] (life=19)
-    EV candidates:
-        +5.2  cast_spell: Ragavan, Nimble Pilferer <--  [h=+5.2 la=+5.2]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -293,9 +275,6 @@ T2: Resolve Springleaf Drum
     hand: ['Cranial Plating', 'Signal Pest', "Sojourner's Companion"]
     perms: ['Springleaf Drum', 'Mox Opal', 'Springleaf Drum']
     opp: ['Guide of Souls (1/2)', 'Ragavan, Nimble Pilferer (2/1)'] (life=18)
-    EV candidates:
-        +1.0  cast_spell: Springleaf Drum <--  [h=+1.0 la=+1.0]
-        +0.0  cast_spell: Signal Pest  [h=+0.0 la=+0.0]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T4 Affinity: no attack
@@ -307,9 +286,6 @@ T2: Resolve Springleaf Drum
     hand: ['Cranial Plating', 'Signal Pest', "Sojourner's Companion"]
     perms: ['Springleaf Drum', 'Mox Opal', 'Springleaf Drum']
     opp: ['Guide of Souls (1/2)', 'Ragavan, Nimble Pilferer (2/1)'] (life=18)
-    EV candidates:
-        +1.0  cast_spell: Springleaf Drum <--  [h=+1.0 la=+1.0]
-        +0.0  cast_spell: Signal Pest  [h=+0.0 la=+0.0]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -360,8 +336,6 @@ T3 P1: +1 energy from Guide of Souls (total: 2)
     hand: ['The Legend of Roku // Avatar Roku', "Phlage, Titan of Fire's Fury", 'Seasoned Pyromancer']
     board: ['Guide of Souls (1/2)', 'Ragavan, Nimble Pilferer (2/1)', 'Voice of Victory (1/3)']
     opp: [] (life=19)
-    EV candidates:
-        +4.7  cast_spell: Voice of Victory <--  [h=+4.7 la=+4.7]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T5 Boros Energy: ['Guide of Souls', 'Ragavan, Nimble Pilferer']
@@ -382,8 +356,6 @@ T3 P1: Ragavan, Nimble Pilferer — may cast Mistvault Bridge this turn
     board: ['Guide of Souls (1/2)', 'Ragavan, Nimble Pilferer (2/1)', 'Voice of Victory (1/3)']
     perms: ['Treasure Token']
     opp: [] (life=16)
-    EV candidates:
-        +4.7  cast_spell: Voice of Victory <--  [h=+4.7 la=+4.7]
     >>> PASS (threshold=-5.0)
   [End Step]
 T3: Mistvault Bridge returned to exile (uncast)
@@ -458,9 +430,6 @@ T3: Resolve Signal Pest
     board: ["Sojourner's Companion (4/4)", 'Signal Pest (0/1)']
     perms: ['Springleaf Drum', 'Mox Opal', 'Springleaf Drum']
     opp: ['Guide of Souls (1/2)', 'Ragavan, Nimble Pilferer (2/1)', 'Voice of Victory (1/3)'] (life=19)
-    EV candidates:
-        +2.0  cast_spell: Signal Pest <--  [h=+2.0 la=+2.0]
-        +2.0  cast_spell: Signal Pest  [h=+2.0 la=+2.0]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T6 Affinity: no attack
@@ -473,9 +442,6 @@ T3: Resolve Signal Pest
     board: ["Sojourner's Companion (4/4)", 'Signal Pest (0/1)']
     perms: ['Springleaf Drum', 'Mox Opal', 'Springleaf Drum']
     opp: ['Guide of Souls (1/2)', 'Ragavan, Nimble Pilferer (2/1)', 'Voice of Victory (1/3)'] (life=19)
-    EV candidates:
-        +2.0  cast_spell: Signal Pest <--  [h=+2.0 la=+2.0]
-        +2.0  cast_spell: Signal Pest  [h=+2.0 la=+2.0]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -524,9 +490,6 @@ T4 P1: +1 energy from Guide of Souls (total: 3)
     board: ['Guide of Souls (1/2)', 'Ragavan, Nimble Pilferer (2/1)', 'Voice of Victory (1/3)']
     perms: ['Treasure Token']
     opp: ["Sojourner's Companion (4/4)", 'Signal Pest (0/1)'] (life=13)
-    EV candidates:
-       +10.5  cast_spell: Seasoned Pyromancer <--  [h=+10.5 la=+10.5]
-        +5.4  cast_spell: Galvanic Discharge  [h=+5.4 la=+5.4]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T7 Boros Energy: ['Ragavan, Nimble Pilferer']
@@ -543,9 +506,6 @@ T4: Ragavan, Nimble Pilferer dies
     board: ['Guide of Souls (1/2)', 'Voice of Victory (1/3)']
     perms: ['Treasure Token']
     opp: ["Sojourner's Companion (4/4)", 'Signal Pest (0/1)'] (life=13)
-    EV candidates:
-       +10.5  cast_spell: Seasoned Pyromancer <--  [h=+10.5 la=+10.5]
-        +5.4  cast_spell: Galvanic Discharge  [h=+5.4 la=+5.4]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -601,15 +561,13 @@ T4 P2: Equip Cranial Plating to Sojourner's Companion (cost 1)
     board: ["Sojourner's Companion (12/4)", 'Signal Pest (0/1)']
     perms: ['Springleaf Drum', 'Mox Opal', 'Springleaf Drum', 'Cranial Plating']
     opp: ['Guide of Souls (1/2)', 'Voice of Victory (1/3)'] (life=23)
-    EV candidates:
-       +12.0  equip: Cranial Plating <--
-       -27.2  cast_spell: Signal Pest  [h=-27.2 la=-27.2]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T8 Affinity: ["Sojourner's Companion", 'Signal Pest']
   [Declare Attackers] P2 attacks with: Sojourner's Companion, Signal Pest
 T4 P2: Attack with Sojourner's Companion, Signal Pest
-T4 P1:   [BLOCK-EMERGENCY] Guide of Souls (1/2) blocks Sojourner's Companion (13/4) — chump block
+T4 P1:   [BLOCK] Guide of Souls (1/2) blocks Sojourner's Companion (13/4) — chump block
+T4 P1:   [BLOCK] Voice of Victory (1/3) blocks Signal Pest (0/1) — favorable trade
   [Declare Blockers] P1 blocks: (see BLOCK lines below)
 T4: Guide of Souls dies
   [End Combat]
@@ -620,9 +578,6 @@ T4: Guide of Souls dies
     board: ["Sojourner's Companion (13/4)", 'Signal Pest (0/1)']
     perms: ['Springleaf Drum', 'Mox Opal', 'Springleaf Drum', 'Cranial Plating']
     opp: ['Voice of Victory (1/3)'] (life=23)
-    EV candidates:
-       +12.0  equip: Cranial Plating <--
-       -27.2  cast_spell: Signal Pest  [h=-27.2 la=-27.2]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -683,8 +638,6 @@ T5 P1: Goblin Bombardment enters — sacrifice creatures for 1 damage each
     board: ['Voice of Victory (1/3)']
     perms: ['Treasure Token', 'Goblin Bombardment']
     opp: ["Sojourner's Companion (12/4)", 'Signal Pest (0/1)'] (life=8)
-    EV candidates:
-       +10.6  cast_spell: Goblin Bombardment <--  [h=+10.6 la=+10.6]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T9 Boros Energy: ['Voice of Victory']
@@ -703,8 +656,6 @@ T5 P1:   Voice of Victory (1/3) → 1 dmg to player
     board: ['Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)']
     perms: ['Treasure Token', 'Goblin Bombardment']
     opp: ["Sojourner's Companion (12/4)", 'Signal Pest (0/1)'] (life=7)
-    EV candidates:
-       +10.6  cast_spell: Goblin Bombardment <--  [h=+10.6 la=+10.6]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -776,14 +727,12 @@ T5 P2: Cranial Plating enters the battlefield (unattached)
     board: ["Sojourner's Companion (15/4)", 'Signal Pest (0/1)', 'Frogmite (2/2)', 'Signal Pest (0/1)']
     perms: ['Springleaf Drum', 'Mox Opal', 'Springleaf Drum', 'Cranial Plating', 'Cranial Plating']
     opp: ['Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)'] (life=23)
-    EV candidates:
-        +0.8  cast_spell: Cranial Plating <--  [h=+0.8 la=+0.8]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T10 Affinity: ["Sojourner's Companion"]
   [Declare Attackers] P2 attacks with: Sojourner's Companion
 T5 P2: Attack with Sojourner's Companion
-T5 P1:   [BLOCK-EMERGENCY] Warrior Token (1/1) blocks Sojourner's Companion (15/4) — chump block
+T5 P1:   [BLOCK] Warrior Token (1/1) blocks Sojourner's Companion (15/4) — chump block
   [Declare Blockers] P1 blocks: (see BLOCK lines below)
 T5: Warrior Token dies
   [End Combat]
@@ -794,8 +743,6 @@ T5: Warrior Token dies
     board: ["Sojourner's Companion (15/4)", 'Signal Pest (0/1)', 'Frogmite (2/2)', 'Signal Pest (0/1)']
     perms: ['Springleaf Drum', 'Mox Opal', 'Springleaf Drum', 'Cranial Plating', 'Cranial Plating']
     opp: ['Voice of Victory (1/3)', 'Warrior Token (1/1)'] (life=23)
-    EV candidates:
-        +0.8  cast_spell: Cranial Plating <--  [h=+0.8 la=+0.8]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -850,8 +797,6 @@ T6 P1: Play Arena of Glory (enters tapped)
     board: ['Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)']
     perms: ['Treasure Token', 'Goblin Bombardment']
     opp: ["Sojourner's Companion (15/4)", 'Signal Pest (0/1)', 'Frogmite (2/2)', 'Signal Pest (0/1)'] (life=7)
-    EV candidates:
-       +10.0  play_land: Arena of Glory <--
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T11 Boros Energy: ['Voice of Victory']
@@ -869,8 +814,6 @@ T6 P2:   [BLOCK] Frogmite (2/2) blocks Voice of Victory (1/3) — chump block
     board: ['Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)']
     perms: ['Treasure Token', 'Goblin Bombardment']
     opp: ["Sojourner's Companion (15/4)", 'Signal Pest (0/1)', 'Frogmite (2/2)', 'Signal Pest (0/1)'] (life=7)
-    EV candidates:
-       +10.0  play_land: Arena of Glory <--
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -919,8 +862,6 @@ T6 P2: Play Spire of Industry
     board: ["Sojourner's Companion (26/4)", 'Signal Pest (0/1)', 'Frogmite (2/2)', 'Signal Pest (0/1)']
     perms: ['Springleaf Drum', 'Mox Opal', 'Springleaf Drum', 'Cranial Plating', 'Cranial Plating']
     opp: ['Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)'] (life=23)
-    EV candidates:
-       +12.0  play_land: Spire of Industry <--
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T12 Affinity: ["Sojourner's Companion", 'Signal Pest', 'Frogmite', 'Signal Pest']
@@ -941,8 +882,6 @@ T6: Warrior Token dies
     board: ["Sojourner's Companion (28/4)", 'Signal Pest (1/1)', 'Frogmite (4/2)', 'Signal Pest (1/1)']
     perms: ['Springleaf Drum', 'Mox Opal', 'Springleaf Drum', 'Cranial Plating', 'Cranial Plating']
     opp: ['Voice of Victory (1/3)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)'] (life=17)
-    EV candidates:
-       +12.0  play_land: Spire of Industry <--
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -998,9 +937,6 @@ T7: Resolve Ocelot Pride
     board: ['Voice of Victory (1/3)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Ocelot Pride (1/1)']
     perms: ['Treasure Token', 'Goblin Bombardment']
     opp: ["Sojourner's Companion (26/4)", 'Signal Pest (0/1)', 'Frogmite (2/2)', 'Signal Pest (0/1)'] (life=7)
-    EV candidates:
-        -0.4  cast_spell: Ocelot Pride <--  [h=-0.4 la=-0.4]
-        -0.5  cast_spell: Voice of Victory  [h=-0.5 la=-0.5]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T13 Boros Energy: ['Voice of Victory', 'Seasoned Pyromancer', 'Elemental Token', 'Elemental Token', 'Warrior Token', 'Warrior Token']
@@ -1139,8 +1075,6 @@ T1: Resolve Ornithopter
     hand: ['Cranial Plating', 'Thought Monitor']
     board: ['Memnite (1/1)', 'Memnite (1/1)', 'Memnite (1/1)', 'Ornithopter (0/2)']
     opp: [] (life=20)
-    EV candidates:
-        +1.0  cast_spell: Ornithopter <--  [h=+1.0 la=+1.0]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T1 Affinity: no attack
@@ -1152,8 +1086,6 @@ T1: Resolve Ornithopter
     hand: ['Cranial Plating', 'Thought Monitor']
     board: ['Memnite (1/1)', 'Memnite (1/1)', 'Memnite (1/1)', 'Ornithopter (0/2)']
     opp: [] (life=20)
-    EV candidates:
-        +1.0  cast_spell: Ornithopter <--  [h=+1.0 la=+1.0]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -1200,8 +1132,6 @@ T1: Resolve Guide of Souls
     hand: ["Phlage, Titan of Fire's Fury", 'Galvanic Discharge', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Thraben Charm']
     board: ['Guide of Souls (1/2)']
     opp: ['Memnite (1/1)', 'Memnite (1/1)', 'Memnite (1/1)', 'Ornithopter (0/2)'] (life=20)
-    EV candidates:
-        -1.1  cast_spell: Guide of Souls <--  [h=-1.1 la=-1.1]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T2 Boros Energy: no attack
@@ -1213,8 +1143,6 @@ T1: Resolve Guide of Souls
     hand: ["Phlage, Titan of Fire's Fury", 'Galvanic Discharge', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Thraben Charm']
     board: ['Guide of Souls (1/2)']
     opp: ['Memnite (1/1)', 'Memnite (1/1)', 'Memnite (1/1)', 'Ornithopter (0/2)'] (life=20)
-    EV candidates:
-        -1.1  cast_spell: Guide of Souls <--  [h=-1.1 la=-1.1]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -1252,8 +1180,6 @@ T2: Resolve Signal Pest
     hand: ['Cranial Plating', 'Thought Monitor']
     board: ['Memnite (1/1)', 'Memnite (1/1)', 'Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)']
     opp: ['Guide of Souls (1/2)'] (life=20)
-    EV candidates:
-        +1.0  cast_spell: Signal Pest <--  [h=+1.0 la=+1.0]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T3 Affinity: no attack
@@ -1265,8 +1191,6 @@ T2: Resolve Signal Pest
     hand: ['Cranial Plating', 'Thought Monitor']
     board: ['Memnite (1/1)', 'Memnite (1/1)', 'Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)']
     opp: ['Guide of Souls (1/2)'] (life=20)
-    EV candidates:
-        +1.0  cast_spell: Signal Pest <--  [h=+1.0 la=+1.0]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -1301,9 +1225,6 @@ T2 P2: Play Arena of Glory (enters tapped)
     hand: ["Phlage, Titan of Fire's Fury", 'Galvanic Discharge', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Thraben Charm', 'Seasoned Pyromancer']
     board: ['Guide of Souls (1/2)']
     opp: ['Memnite (1/1)', 'Memnite (1/1)', 'Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=20)
-    EV candidates:
-       +20.0  play_land: Arena of Glory <--
-       +20.0  play_land: Elegant Parlor
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T4 Boros Energy: ['Guide of Souls']
@@ -1319,9 +1240,6 @@ T2 P2:   Guide of Souls (1/2) → 1 dmg to player
     hand: ["Phlage, Titan of Fire's Fury", 'Galvanic Discharge', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Thraben Charm', 'Seasoned Pyromancer']
     board: ['Guide of Souls (1/2)']
     opp: ['Memnite (1/1)', 'Memnite (1/1)', 'Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=19)
-    EV candidates:
-       +20.0  play_land: Arena of Glory <--
-       +20.0  play_land: Elegant Parlor
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -1359,8 +1277,6 @@ T3: Resolve Sojourner's Companion
     hand: ['Cranial Plating', 'Thought Monitor']
     board: ['Memnite (1/1)', 'Memnite (1/1)', 'Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', "Sojourner's Companion (4/4)"]
     opp: ['Guide of Souls (1/2)'] (life=20)
-    EV candidates:
-        -3.1  cast_spell: Sojourner's Companion <--  [h=-3.1 la=-3.1 rmv=56%]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T5 Affinity: ['Memnite', 'Memnite', 'Memnite', 'Signal Pest']
@@ -1378,8 +1294,6 @@ T3 P1:   Memnite (2/1) → 2 dmg to player
     hand: ['Cranial Plating', 'Thought Monitor']
     board: ['Memnite (2/1)', 'Memnite (2/1)', 'Memnite (2/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', "Sojourner's Companion (4/4)"]
     opp: ['Guide of Souls (1/2)'] (life=14)
-    EV candidates:
-        -3.1  cast_spell: Sojourner's Companion <--  [h=-3.1 la=-3.1 rmv=56%]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -1438,10 +1352,6 @@ T3 P2: Thraben Charm -1/-1 kills 4 tokens
     hand: ["Phlage, Titan of Fire's Fury", 'Galvanic Discharge', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Seasoned Pyromancer', 'Thraben Charm']
     board: ['Guide of Souls (1/2)']
     opp: ['Ornithopter (0/2)', "Sojourner's Companion (4/4)"] (life=19)
-    EV candidates:
-        +6.7  cast_spell: Thraben Charm <--  [h=+6.7 la=+6.7]
-        +1.2  cast_spell: Galvanic Discharge  [h=+1.2 la=+1.2]
-        -2.0  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger  [h=-2.0 la=-2.0]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T6 Boros Energy: no attack
@@ -1453,10 +1363,6 @@ T3 P2: Thraben Charm -1/-1 kills 4 tokens
     hand: ["Phlage, Titan of Fire's Fury", 'Galvanic Discharge', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Seasoned Pyromancer', 'Thraben Charm']
     board: ['Guide of Souls (1/2)']
     opp: ['Ornithopter (0/2)', "Sojourner's Companion (4/4)"] (life=19)
-    EV candidates:
-        +6.7  cast_spell: Thraben Charm <--  [h=+6.7 la=+6.7]
-        +1.2  cast_spell: Galvanic Discharge  [h=+1.2 la=+1.2]
-        -2.0  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger  [h=-2.0 la=-2.0]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -1505,8 +1411,6 @@ T4 P1: Cranial Plating enters the battlefield (unattached)
     board: ['Ornithopter (0/2)', "Sojourner's Companion (4/4)"]
     perms: ['Cranial Plating']
     opp: ['Guide of Souls (1/2)'] (life=14)
-    EV candidates:
-        +1.5  cast_spell: Cranial Plating <--  [h=+1.5 la=+1.5]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T7 Affinity: ["Sojourner's Companion"]
@@ -1523,8 +1427,6 @@ T4: Guide of Souls dies
     board: ['Ornithopter (0/2)', "Sojourner's Companion (4/4)"]
     perms: ['Cranial Plating']
     opp: [] (life=14)
-    EV candidates:
-        +1.5  cast_spell: Cranial Plating <--  [h=+1.5 la=+1.5]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -1570,12 +1472,6 @@ T4 P2: Phlage sacrificed (not escaped)
     state: life=17 mana=0 hand=5+0L gy=3
     hand: ['Galvanic Discharge', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Seasoned Pyromancer', 'Thraben Charm', 'Seasoned Pyromancer']
     opp: ["Sojourner's Companion (4/4)"] (life=19)
-    EV candidates:
-       +16.8  cast_spell: Thraben Charm <--  [h=+16.8 la=+16.8]
-        +7.2  cast_spell: Galvanic Discharge  [h=+7.2 la=+7.2]
-        +3.0  cast_spell: Seasoned Pyromancer  [h=+3.0 la=+3.0]
-        +3.0  cast_spell: Seasoned Pyromancer  [h=+3.0 la=+3.0]
-        -2.0  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger  [h=-2.0 la=-2.0]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T8 Boros Energy: no attack
@@ -1586,12 +1482,6 @@ T4 P2: Phlage sacrificed (not escaped)
     state: life=17 mana=0 hand=5+0L gy=3
     hand: ['Galvanic Discharge', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Seasoned Pyromancer', 'Thraben Charm', 'Seasoned Pyromancer']
     opp: ["Sojourner's Companion (4/4)"] (life=19)
-    EV candidates:
-       +16.8  cast_spell: Thraben Charm <--  [h=+16.8 la=+16.8]
-        +7.2  cast_spell: Galvanic Discharge  [h=+7.2 la=+7.2]
-        +3.0  cast_spell: Seasoned Pyromancer  [h=+3.0 la=+3.0]
-        +3.0  cast_spell: Seasoned Pyromancer  [h=+3.0 la=+3.0]
-        -2.0  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger  [h=-2.0 la=-2.0]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -1642,8 +1532,6 @@ T5: Resolve Ornithopter
     board: ["Sojourner's Companion (8/4)", 'Ornithopter (0/2)']
     perms: ['Cranial Plating']
     opp: [] (life=17)
-    EV candidates:
-        +1.1  cast_spell: Ornithopter <--  [h=+1.1 la=+1.1]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T9 Affinity: ["Sojourner's Companion"]
@@ -1660,8 +1548,6 @@ T5 P1:   Sojourner's Companion (8/4) → 8 dmg to player
     board: ["Sojourner's Companion (8/4)", 'Ornithopter (0/2)']
     perms: ['Cranial Plating']
     opp: [] (life=9)
-    EV candidates:
-        +1.1  cast_spell: Ornithopter <--  [h=+1.1 la=+1.1]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -1769,8 +1655,6 @@ T6: Resolve Springleaf Drum
     board: ["Sojourner's Companion (8/4)"]
     perms: ['Cranial Plating', 'Springleaf Drum']
     opp: [] (life=9)
-    EV candidates:
-        +2.2  cast_spell: Springleaf Drum <--  [h=+2.2 la=+2.2]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T11 Affinity: ["Sojourner's Companion"]
@@ -1787,8 +1671,6 @@ T6 P1:   Sojourner's Companion (8/4) → 8 dmg to player
     board: ["Sojourner's Companion (8/4)"]
     perms: ['Cranial Plating', 'Springleaf Drum']
     opp: [] (life=1)
-    EV candidates:
-        +2.2  cast_spell: Springleaf Drum <--  [h=+2.2 la=+2.2]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -1858,8 +1740,6 @@ T6 P2: Ajani creates 2/1 Cat Warrior token
     board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
     perms: ['Goblin Bombardment']
     opp: ["Sojourner's Companion (8/4)"] (life=19)
-    EV candidates:
-        -2.0  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <--  [h=-2.0 la=-2.0]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T12 Boros Energy: no attack
@@ -1872,8 +1752,6 @@ T6 P2: Ajani creates 2/1 Cat Warrior token
     board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
     perms: ['Goblin Bombardment']
     opp: ["Sojourner's Companion (8/4)"] (life=19)
-    EV candidates:
-        -2.0  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <--  [h=-2.0 la=-2.0]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -1921,8 +1799,6 @@ T7 P1: Play Darksteel Citadel
     board: ["Sojourner's Companion (9/4)"]
     perms: ['Cranial Plating', 'Springleaf Drum']
     opp: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=1)
-    EV candidates:
-       +24.0  play_land: Darksteel Citadel <--
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T13 Affinity: ["Sojourner's Companion"]
@@ -1939,8 +1815,6 @@ T7: Cat Token dies
     board: ["Sojourner's Companion (9/4)"]
     perms: ['Cranial Plating', 'Springleaf Drum']
     opp: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)'] (life=1)
-    EV candidates:
-       +24.0  play_land: Darksteel Citadel <--
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -1987,11 +1861,6 @@ T7 P2: Phlage: 3 damage to opponent, gain 3 life
     board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', "Phlage, Titan of Fire's Fury (6/6)"]
     perms: ['Goblin Bombardment']
     opp: ["Sojourner's Companion (9/4)"] (life=16)
-    EV candidates:
-       +15.4  cast_spell: Phlage, Titan of Fire's Fury <--  [h=+15.4 la=+15.4]
-        +1.3  cast_spell: Seasoned Pyromancer  [h=+1.3 la=+1.3]
-        +1.3  cast_spell: Seasoned Pyromancer  [h=+1.3 la=+1.3]
-       -27.2  cast_spell: Ocelot Pride  [h=-27.2 la=-27.2]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T14 Boros Energy: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
@@ -2008,11 +1877,6 @@ T7 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
     board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', "Phlage, Titan of Fire's Fury (6/6)"]
     perms: ['Goblin Bombardment']
     opp: ["Sojourner's Companion (9/4)"] (life=15)
-    EV candidates:
-       +15.4  cast_spell: Phlage, Titan of Fire's Fury <--  [h=+15.4 la=+15.4]
-        +1.3  cast_spell: Seasoned Pyromancer  [h=+1.3 la=+1.3]
-        +1.3  cast_spell: Seasoned Pyromancer  [h=+1.3 la=+1.3]
-       -27.2  cast_spell: Ocelot Pride  [h=-27.2 la=-27.2]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -2094,8 +1958,6 @@ T8: Resolve Signal Pest
     board: ["Sojourner's Companion (12/4)", 'Thought Monitor (2/2)', 'Thought Monitor (2/2)', 'Signal Pest (0/1)']
     perms: ['Cranial Plating', 'Springleaf Drum']
     opp: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', "Phlage, Titan of Fire's Fury (6/6)"] (life=4)
-    EV candidates:
-        +4.6  cast_spell: Signal Pest <--  [h=+4.6 la=+4.6]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T15 Affinity: ["Sojourner's Companion"]
@@ -2114,8 +1976,6 @@ T8: Phlage, Titan of Fire's Fury dies
     board: ['Thought Monitor (2/2)', 'Thought Monitor (2/2)', 'Signal Pest (0/1)']
     perms: ['Cranial Plating', 'Springleaf Drum']
     opp: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)'] (life=4)
-    EV candidates:
-        +4.6  cast_spell: Signal Pest <--  [h=+4.6 la=+4.6]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -2175,8 +2035,6 @@ T8 P2: Seasoned Pyromancer: discard 2, draw 2 (Ajani, Nacatl Pariah // Ajani, Na
     board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)']
     perms: ['Goblin Bombardment']
     opp: ['Thought Monitor (2/2)', 'Thought Monitor (2/2)', 'Signal Pest (0/1)'] (life=15)
-    EV candidates:
-        +1.1  cast_spell: Seasoned Pyromancer <--  [h=+1.1 la=+1.1]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T16 Boros Energy: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
@@ -2193,8 +2051,6 @@ T8 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
     board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)']
     perms: ['Goblin Bombardment']
     opp: ['Thought Monitor (2/2)', 'Thought Monitor (2/2)', 'Signal Pest (0/1)'] (life=14)
-    EV candidates:
-        +1.1  cast_spell: Seasoned Pyromancer <--  [h=+1.1 la=+1.1]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -2235,11 +2091,6 @@ T9 P1: Play Darksteel Citadel
     board: ['Thought Monitor (2/2)', 'Thought Monitor (2/2)', 'Signal Pest (0/1)']
     perms: ['Cranial Plating', 'Springleaf Drum']
     opp: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)'] (life=3)
-    EV candidates:
-       +24.0  play_land: Darksteel Citadel <--
-       +22.0  play_land: Mistvault Bridge
-       +22.0  play_land: Tanglepool Bridge
-       +10.5  equip: Cranial Plating
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T17 Affinity: ['Thought Monitor', 'Thought Monitor', 'Signal Pest']
@@ -2407,9 +2258,6 @@ T1: Resolve Ragavan, Nimble Pilferer
     hand: ["Phlage, Titan of Fire's Fury", 'Wear // Tear', 'Galvanic Discharge']
     board: ['Ragavan, Nimble Pilferer (2/1)']
     opp: ['Memnite (1/1)'] (life=20)
-    EV candidates:
-       +30.9  cast_spell: Ragavan, Nimble Pilferer <--  [h=+30.9 la=+30.9]
-       +17.1  cast_spell: Galvanic Discharge  [h=+17.1 la=+17.1]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T2 Boros Energy: no attack
@@ -2421,9 +2269,6 @@ T1: Resolve Ragavan, Nimble Pilferer
     hand: ["Phlage, Titan of Fire's Fury", 'Wear // Tear', 'Galvanic Discharge']
     board: ['Ragavan, Nimble Pilferer (2/1)']
     opp: ['Memnite (1/1)'] (life=20)
-    EV candidates:
-       +30.9  cast_spell: Ragavan, Nimble Pilferer <--  [h=+30.9 la=+30.9]
-       +17.1  cast_spell: Galvanic Discharge  [h=+17.1 la=+17.1]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -2492,8 +2337,6 @@ T2: Resolve Ornithopter
     board: ['Memnite (1/1)', 'Ornithopter (0/2)']
     perms: ['Mox Opal', 'Engineered Explosives']
     opp: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
-    EV candidates:
-        +9.1  cast_spell: Ornithopter <--  [h=+9.1 la=+9.1]
     >>> PASS (threshold=-5.0)
 T2 P2: Activate Engineered Explosives (sacrifice)
 T2: Ragavan, Nimble Pilferer dies
@@ -2513,8 +2356,6 @@ T2 P2:   Memnite (1/1) → 1 dmg to player
     board: ['Memnite (1/1)', 'Ornithopter (0/2)']
     perms: ['Mox Opal']
     opp: [] (life=16)
-    EV candidates:
-        +9.1  cast_spell: Ornithopter <--  [h=+9.1 la=+9.1]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -2567,9 +2408,6 @@ T2 P1: Wear // Tear destroys Darksteel Citadel
     state: life=13 mana=0 hand=3+2L gy=4
     hand: ["Phlage, Titan of Fire's Fury", 'Galvanic Discharge', 'Wear // Tear']
     opp: ['Memnite (1/1)', 'Ornithopter (0/2)'] (life=20)
-    EV candidates:
-       +14.2  cast_spell: Wear // Tear <--  [h=+14.2 la=+14.2]
-       +12.9  cast_spell: Galvanic Discharge  [h=+12.9 la=+12.9]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T4 Boros Energy: no attack
@@ -2580,9 +2418,6 @@ T2 P1: Wear // Tear destroys Darksteel Citadel
     state: life=13 mana=0 hand=3+2L gy=4
     hand: ["Phlage, Titan of Fire's Fury", 'Galvanic Discharge', 'Wear // Tear']
     opp: ['Memnite (1/1)', 'Ornithopter (0/2)'] (life=20)
-    EV candidates:
-       +14.2  cast_spell: Wear // Tear <--  [h=+14.2 la=+14.2]
-       +12.9  cast_spell: Galvanic Discharge  [h=+12.9 la=+12.9]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -2619,8 +2454,6 @@ T3 P2: Play Silverbluff Bridge (enters tapped)
     board: ['Memnite (1/1)', 'Ornithopter (0/2)']
     perms: ['Mox Opal']
     opp: [] (life=13)
-    EV candidates:
-       +18.0  play_land: Silverbluff Bridge <--
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T5 Affinity: ['Memnite']
@@ -2637,8 +2470,6 @@ T3 P2:   Memnite (1/1) → 1 dmg to player
     board: ['Memnite (1/1)', 'Ornithopter (0/2)']
     perms: ['Mox Opal']
     opp: [] (life=12)
-    EV candidates:
-       +18.0  play_land: Silverbluff Bridge <--
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -2694,10 +2525,6 @@ T3 P1: Phlage sacrificed (not escaped)
     state: life=13 mana=0 hand=3+1L gy=5
     hand: ['Galvanic Discharge', 'Wear // Tear', 'Guide of Souls']
     opp: ['Ornithopter (0/2)'] (life=20)
-    EV candidates:
-       +11.6  cast_spell: Wear // Tear <--  [h=+11.6 la=+11.6]
-        +9.9  cast_spell: Galvanic Discharge  [h=+9.9 la=+9.9]
-        -2.0  cast_spell: Guide of Souls  [h=-2.0 la=-2.0]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T6 Boros Energy: no attack
@@ -2708,10 +2535,6 @@ T3 P1: Phlage sacrificed (not escaped)
     state: life=13 mana=0 hand=3+1L gy=5
     hand: ['Galvanic Discharge', 'Wear // Tear', 'Guide of Souls']
     opp: ['Ornithopter (0/2)'] (life=20)
-    EV candidates:
-       +11.6  cast_spell: Wear // Tear <--  [h=+11.6 la=+11.6]
-        +9.9  cast_spell: Galvanic Discharge  [h=+9.9 la=+9.9]
-        -2.0  cast_spell: Guide of Souls  [h=-2.0 la=-2.0]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -2773,8 +2596,6 @@ T4: Resolve Springleaf Drum
     board: ['Ornithopter (0/2)']
     perms: ['Mox Opal', 'Springleaf Drum']
     opp: [] (life=13)
-    EV candidates:
-        +1.5  cast_spell: Springleaf Drum <--  [h=+1.5 la=+1.5]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T7 Affinity: no attack
@@ -2787,8 +2608,6 @@ T4: Resolve Springleaf Drum
     board: ['Ornithopter (0/2)']
     perms: ['Mox Opal', 'Springleaf Drum']
     opp: [] (life=13)
-    EV candidates:
-        +1.5  cast_spell: Springleaf Drum <--  [h=+1.5 la=+1.5]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -2924,10 +2743,6 @@ T5: Resolve Sojourner's Companion
     board: ['Ornithopter (0/2)', "Sojourner's Companion (4/4)"]
     perms: ['Springleaf Drum']
     opp: ['Guide of Souls (1/2)'] (life=13)
-    EV candidates:
-       +60.4  cast_spell: Sojourner's Companion <--  [h=+60.4 la=+60.4]
-        +3.8  cycle: Sojourner's Companion
-        +1.1  cast_spell: Nettlecyst  [h=+1.1 la=+1.1]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T9 Affinity: no attack
@@ -2940,10 +2755,6 @@ T5: Resolve Sojourner's Companion
     board: ['Ornithopter (0/2)', "Sojourner's Companion (4/4)"]
     perms: ['Springleaf Drum']
     opp: ['Guide of Souls (1/2)'] (life=13)
-    EV candidates:
-       +60.4  cast_spell: Sojourner's Companion <--  [h=+60.4 la=+60.4]
-        +3.8  cycle: Sojourner's Companion
-        +1.1  cast_spell: Nettlecyst  [h=+1.1 la=+1.1]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -2984,8 +2795,6 @@ T5 P1: Thraben Charm: no high-value mode available
     hand: ['The Legend of Roku // Avatar Roku']
     board: ['Guide of Souls (1/2)']
     opp: ['Ornithopter (0/2)', "Sojourner's Companion (4/4)"] (life=17)
-    EV candidates:
-        -0.3  cast_spell: The Legend of Roku // Avatar Roku <--  [h=-0.3 la=-0.3]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T10 Boros Energy: no attack
@@ -2997,8 +2806,6 @@ T5 P1: Thraben Charm: no high-value mode available
     hand: ['The Legend of Roku // Avatar Roku']
     board: ['Guide of Souls (1/2)']
     opp: ['Ornithopter (0/2)', "Sojourner's Companion (4/4)"] (life=17)
-    EV candidates:
-        -0.3  cast_spell: The Legend of Roku // Avatar Roku <--  [h=-0.3 la=-0.3]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -3051,8 +2858,6 @@ T6 P2: Create 1x Germ token(s)
     board: ['Ornithopter (0/2)', "Sojourner's Companion (4/4)", 'Germ Token (7/7)']
     perms: ['Springleaf Drum', 'Nettlecyst']
     opp: ['Guide of Souls (1/2)'] (life=13)
-    EV candidates:
-        +1.3  cast_spell: Nettlecyst <--  [h=+1.3 la=+1.3]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T11 Affinity: ["Sojourner's Companion"]
@@ -3069,8 +2874,6 @@ T6: Guide of Souls dies
     board: ['Ornithopter (0/2)', "Sojourner's Companion (4/4)", 'Germ Token (7/7)']
     perms: ['Springleaf Drum', 'Nettlecyst']
     opp: [] (life=13)
-    EV candidates:
-        +1.3  cast_spell: Nettlecyst <--  [h=+1.3 la=+1.3]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -3121,9 +2924,6 @@ T6: Ornithopter dies
     hand: ['The Legend of Roku // Avatar Roku']
     board: ["Phlage, Titan of Fire's Fury (6/6)"]
     opp: ["Sojourner's Companion (4/4)", 'Germ Token (6/6)'] (life=17)
-    EV candidates:
-        +8.0  cast_spell: Phlage, Titan of Fire's Fury <--  [h=+8.0 la=+8.0]
-        -0.3  cast_spell: The Legend of Roku // Avatar Roku  [h=-0.3 la=-0.3]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T12 Boros Energy: no attack
@@ -3135,9 +2935,6 @@ T6: Ornithopter dies
     hand: ['The Legend of Roku // Avatar Roku']
     board: ["Phlage, Titan of Fire's Fury (6/6)"]
     opp: ["Sojourner's Companion (4/4)", 'Germ Token (6/6)'] (life=17)
-    EV candidates:
-        +8.0  cast_spell: Phlage, Titan of Fire's Fury <--  [h=+8.0 la=+8.0]
-        -0.3  cast_spell: The Legend of Roku // Avatar Roku  [h=-0.3 la=-0.3]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -3237,9 +3034,6 @@ T7: Resolve Ragavan, Nimble Pilferer
     hand: ['The Legend of Roku // Avatar Roku']
     board: ['Ragavan, Nimble Pilferer (2/1)']
     opp: ["Sojourner's Companion (10/10)"] (life=17)
-    EV candidates:
-        -0.1  cast_spell: Ragavan, Nimble Pilferer <--  [h=-0.1 la=-0.1]
-        -0.3  cast_spell: The Legend of Roku // Avatar Roku  [h=-0.3 la=-0.3]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T14 Boros Energy: ['Ragavan, Nimble Pilferer']
@@ -3269,8 +3063,6 @@ T7 P1: Play Tanglepool Bridge (enters tapped)
     board: ['Ragavan, Nimble Pilferer (2/1)']
     perms: ['Treasure Token']
     opp: ["Sojourner's Companion (10/10)"] (life=15)
-    EV candidates:
-       +15.0  play_land: Tanglepool Bridge <--
     >>> PASS (threshold=-5.0)
   [End Step]
 T7: Ragavan, Nimble Pilferer moved battlefield -> hand (Dash return)
@@ -3378,9 +3170,6 @@ T8 P1: Wrath of the Skies (X=3) sweeps the board
     state: life=1 mana=1 hand=2+0L gy=6
     hand: ['The Legend of Roku // Avatar Roku', 'Ragavan, Nimble Pilferer']
     opp: ["Sojourner's Companion (8/8)"] (life=15)
-    EV candidates:
-        -0.1  cast_spell: Ragavan, Nimble Pilferer <--  [h=-0.1 la=-0.1]
-        -0.2  cast_spell: The Legend of Roku // Avatar Roku  [h=-0.2 la=-0.2]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T16 Boros Energy: no attack
@@ -3391,9 +3180,6 @@ T8 P1: Wrath of the Skies (X=3) sweeps the board
     state: life=1 mana=1 hand=2+0L gy=6
     hand: ['The Legend of Roku // Avatar Roku', 'Ragavan, Nimble Pilferer']
     opp: ["Sojourner's Companion (8/8)"] (life=15)
-    EV candidates:
-        -0.1  cast_spell: Ragavan, Nimble Pilferer <--  [h=-0.1 la=-0.1]
-        -0.2  cast_spell: The Legend of Roku // Avatar Roku  [h=-0.2 la=-0.2]
     >>> PASS (threshold=-5.0)
   [End Step]
 

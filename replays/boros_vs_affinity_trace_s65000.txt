@@ -122,8 +122,6 @@ T1: Resolve Mox Opal
     board: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Frogmite (2/2)']
     perms: ['Mox Opal']
     opp: [] (life=20)
-    EV candidates:
-        +1.0  cast_spell: Mox Opal <--  [h=+1.0 la=+1.0]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T1 Affinity: no attack
@@ -136,8 +134,6 @@ T1: Resolve Mox Opal
     board: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Frogmite (2/2)']
     perms: ['Mox Opal']
     opp: [] (life=20)
-    EV candidates:
-        +1.0  cast_spell: Mox Opal <--  [h=+1.0 la=+1.0]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -186,9 +182,6 @@ T1: Resolve Ocelot Pride
     hand: ["Phlage, Titan of Fire's Fury", 'Ocelot Pride']
     board: ['Ocelot Pride (1/1)']
     opp: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Frogmite (2/2)'] (life=20)
-    EV candidates:
-        +0.8  cast_spell: Ocelot Pride <--  [h=+0.8 la=+0.8]
-        +0.8  cast_spell: Ocelot Pride  [h=+0.8 la=+0.8]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T2 Boros Energy: no attack
@@ -200,9 +193,6 @@ T1: Resolve Ocelot Pride
     hand: ["Phlage, Titan of Fire's Fury", 'Ocelot Pride']
     board: ['Ocelot Pride (1/1)']
     opp: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Frogmite (2/2)'] (life=20)
-    EV candidates:
-        +0.8  cast_spell: Ocelot Pride <--  [h=+0.8 la=+0.8]
-        +0.8  cast_spell: Ocelot Pride  [h=+0.8 la=+0.8]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -254,8 +244,6 @@ T2: Resolve Signal Pest
     board: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Frogmite (2/2)', 'Signal Pest (0/1)']
     perms: ['Mox Opal']
     opp: ['Ocelot Pride (1/1)'] (life=18)
-    EV candidates:
-        +1.1  cast_spell: Signal Pest <--  [h=+1.1 la=+1.1]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T3 Affinity: ['Memnite', 'Frogmite']
@@ -274,8 +262,6 @@ T2: Ocelot Pride dies
     board: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Frogmite (2/2)', 'Signal Pest (0/1)']
     perms: ['Mox Opal']
     opp: [] (life=17)
-    EV candidates:
-        +1.1  cast_spell: Signal Pest <--  [h=+1.1 la=+1.1]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -325,9 +311,6 @@ T2: Resolve Ocelot Pride
     hand: ["Phlage, Titan of Fire's Fury", 'Ragavan, Nimble Pilferer']
     board: ['Ocelot Pride (1/1)']
     opp: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Frogmite (2/2)', 'Signal Pest (0/1)'] (life=20)
-    EV candidates:
-        +0.8  cast_spell: Ocelot Pride <--  [h=+0.8 la=+0.8]
-        -1.1  cast_spell: Ragavan, Nimble Pilferer  [h=-1.1 la=-1.1]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T4 Boros Energy: no attack
@@ -339,9 +322,6 @@ T2: Resolve Ocelot Pride
     hand: ["Phlage, Titan of Fire's Fury", 'Ragavan, Nimble Pilferer']
     board: ['Ocelot Pride (1/1)']
     opp: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Frogmite (2/2)', 'Signal Pest (0/1)'] (life=20)
-    EV candidates:
-        +0.8  cast_spell: Ocelot Pride <--  [h=+0.8 la=+0.8]
-        -1.1  cast_spell: Ragavan, Nimble Pilferer  [h=-1.1 la=-1.1]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -448,8 +428,6 @@ T3 P1: Phlage sacrificed (not escaped)
     state: life=17 mana=0 hand=1+1L gy=4
     hand: ['Ragavan, Nimble Pilferer']
     opp: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Construct Token (6/6)'] (life=20)
-    EV candidates:
-        -0.1  cast_spell: Ragavan, Nimble Pilferer <--  [h=-0.1 la=-0.1]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T6 Boros Energy: no attack
@@ -460,8 +438,6 @@ T3 P1: Phlage sacrificed (not escaped)
     state: life=17 mana=0 hand=1+1L gy=4
     hand: ['Ragavan, Nimble Pilferer']
     opp: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Construct Token (6/6)'] (life=20)
-    EV candidates:
-        -0.1  cast_spell: Ragavan, Nimble Pilferer <--  [h=-0.1 la=-0.1]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -585,8 +561,6 @@ T4: Resolve Ragavan, Nimble Pilferer
     hand: []
     board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Ragavan, Nimble Pilferer (2/1)']
     opp: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Construct Token (9/9)', 'Construct Token (9/9)', 'Memnite (1/1)'] (life=20)
-    EV candidates:
-        +2.7  cast_spell: Ragavan, Nimble Pilferer <--  [h=+2.7 la=+2.7]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T8 Boros Energy: no attack
@@ -598,8 +572,6 @@ T4: Resolve Ragavan, Nimble Pilferer
     hand: []
     board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Ragavan, Nimble Pilferer (2/1)']
     opp: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Construct Token (9/9)', 'Construct Token (9/9)', 'Memnite (1/1)'] (life=20)
-    EV candidates:
-        +2.7  cast_spell: Ragavan, Nimble Pilferer <--  [h=+2.7 la=+2.7]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -633,35 +605,33 @@ T4: Resolve Ragavan, Nimble Pilferer
 T5 P2: Attack with Memnite, Signal Pest, Construct Token, Construct Token, Memnite
 T5 P1:   [BLOCK-EMERGENCY] Cat Token (2/1) blocks Construct Token (10/9) — chump block
 T5 P1:   [BLOCK-EMERGENCY] Ragavan, Nimble Pilferer (2/1) blocks Construct Token (10/9) — chump block
-T5 P1:   [BLOCK-EMERGENCY] Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) blocks Memnite (2/1) — trade (chump)
   [Declare Blockers] P1 blocks: (see BLOCK lines below)
 T5 P2:   Memnite (2/1) → 2 dmg to player
-T5: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger dies
+T5 P2:   Memnite (2/1) → 2 dmg to player
 T5: Cat Token dies
 T5: Ragavan, Nimble Pilferer dies
-T5: Memnite dies
-  [Combat Damage] 2 damage dealt → P1 life: 5 → 3
+  [Combat Damage] 4 damage dealt → P1 life: 5 → 1
   [End Combat]
   [Main 2]
   [AI-TRACE MAIN2] T9 Affinity
-    state: life=20 mana=2 hand=2+0L gy=3
+    state: life=20 mana=2 hand=2+0L gy=2
     hand: ['Mox Opal', 'Nettlecyst']
-    board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Construct Token (9/8)', 'Construct Token (9/8)', 'Memnite (2/1)']
+    board: ['Memnite (2/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Construct Token (10/9)', 'Construct Token (10/9)', 'Memnite (2/1)']
     perms: ['Mox Opal', 'Springleaf Drum']
-    opp: [] (life=3)
+    opp: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)'] (life=1)
     >>> PASS (threshold=-5.0)
   [End Step]
 
 ╔══ TURN 5 — Boros Energy (P1) ══════════════════════════
-║ Life: Boros Energy 3  |  Affinity 20
+║ Life: Boros Energy 1  |  Affinity 20
 ║ Hand: 0 cards  |  Opp hand: 2 cards
 ║ Lands: 4  |  Opp lands: 2
-║ Library: 50  |  Graveyard: 7
+║ Library: 50  |  Graveyard: 6
 ║ Boros Energy board:
-║   Creatures: (empty)
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)
 ║   Lands: Sacred Foundry, Arena of Glory, Sacred Foundry, Arena of Glory
 ║ Affinity board:
-║   Creatures: Ornithopter (0/2), Signal Pest (0/1) [tapped], Construct Token (8/8) [tapped], Construct Token (8/8) [tapped], Memnite (1/1) [tapped]
+║   Creatures: Memnite (1/1) [tapped], Ornithopter (0/2), Signal Pest (0/1) [tapped], Construct Token (9/9) [tapped], Construct Token (9/9) [tapped], Memnite (1/1) [tapped]
 ║   Other: Mox Opal, Springleaf Drum
 ║   Lands: Island, Silverbluff Bridge
 ╚═══════════════════════════════════════════════════════
@@ -670,21 +640,13 @@ T5: Memnite dies
   [Draw] P1 draws: Arid Mesa
   [Main 1]
   [AI-TRACE MAIN1] T10 Boros Energy
-    state: life=3 mana=4 hand=0+1L gy=7
+    state: life=1 mana=4 hand=0+1L gy=6
     hand: []
-    opp: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Construct Token (8/8)', 'Construct Token (8/8)', 'Memnite (1/1)'] (life=20)
-    EV candidates:
-       +15.0  play_land: Arid Mesa <--
-    >>> PLAY_LAND: Arid Mesa
-T5 P1: Play Arid Mesa
-T5 P1: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 2)
-  [AI-TRACE MAIN1] T10 Boros Energy
-    state: life=2 mana=4 hand=0+0L gy=8
-    hand: []
-    opp: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Construct Token (8/8)', 'Construct Token (8/8)', 'Memnite (1/1)'] (life=20)
+    board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)']
+    opp: ['Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', 'Construct Token (9/9)', 'Construct Token (9/9)', 'Memnite (1/1)'] (life=20)
     >>> CAST_SPELL: Phlage, Titan of Fire's Fury
     → Goal: curve_out
-    [Target] → Memnite: marginal threat 10.0 (1/1 body) — better than 3 face dmg
+    [Target] → Memnite: marginal threat 20.0 (1/1 body) — better than 3 face dmg
 T5 P1: Escape Phlage, Titan of Fire's Fury (exile 5 cards)
     [Mana] Tap Sacred Foundry→W, Sacred Foundry→W, Arena of Glory→R, Arena of Glory→R (paying for Phlage, Titan of Fire's Fury, 4 mana remaining)
 T5 P1: Cast Phlage, Titan of Fire's Fury (1WR)
@@ -693,39 +655,49 @@ T5: Resolve Phlage, Titan of Fire's Fury
 T5 P1: Phlage: 3 damage to Memnite, gain 3 life
 T5: Memnite dies
   [AI-TRACE MAIN1] T10 Boros Energy
-    state: life=5 mana=0 hand=0+0L gy=2
+    state: life=4 mana=0 hand=0+1L gy=0
     hand: []
-    board: ["Phlage, Titan of Fire's Fury (6/6)"]
-    opp: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Construct Token (7/7)', 'Construct Token (7/7)'] (life=20)
+    board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', "Phlage, Titan of Fire's Fury (6/6)"]
+    opp: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Construct Token (8/8)', 'Construct Token (8/8)', 'Memnite (1/1)'] (life=20)
     EV candidates:
-        +7.1  cast_spell: Phlage, Titan of Fire's Fury <--  [h=+7.1 la=+7.1]
+       +15.0  play_land: Arid Mesa <--
+    >>> PLAY_LAND: Arid Mesa
+T5 P1: Play Arid Mesa
+T5 P1: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 3)
+  [AI-TRACE MAIN1] T10 Boros Energy
+    state: life=3 mana=0 hand=0+0L gy=1
+    hand: []
+    board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', "Phlage, Titan of Fire's Fury (6/6)"]
+    opp: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Construct Token (8/8)', 'Construct Token (8/8)', 'Memnite (1/1)'] (life=20)
     >>> PASS (threshold=-5.0)
   [Begin Combat]
-  [AI-TRACE ATTACK] T10 Boros Energy: no attack
-  [Declare Attackers] P1 does not attack
+  [AI-TRACE ATTACK] T10 Boros Energy: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+  [Declare Attackers] P1 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T5 P1: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Declare Blockers] P2 does not block
+T5 P1:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P2 life: 20 → 19
   [End Combat]
   [Main 2]
   [AI-TRACE MAIN2] T10 Boros Energy
-    state: life=5 mana=0 hand=0+0L gy=2
+    state: life=3 mana=0 hand=0+0L gy=1
     hand: []
-    board: ["Phlage, Titan of Fire's Fury (6/6)"]
-    opp: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Construct Token (7/7)', 'Construct Token (7/7)'] (life=20)
-    EV candidates:
-        +7.1  cast_spell: Phlage, Titan of Fire's Fury <--  [h=+7.1 la=+7.1]
+    board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', "Phlage, Titan of Fire's Fury (6/6)"]
+    opp: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Construct Token (8/8)', 'Construct Token (8/8)', 'Memnite (1/1)'] (life=19)
     >>> PASS (threshold=-5.0)
   [End Step]
 
 ╔══ TURN 6 — Affinity (P2) ══════════════════════════
-║ Life: Affinity 20  |  Boros Energy 5
+║ Life: Affinity 19  |  Boros Energy 3
 ║ Hand: 2 cards  |  Opp hand: 0 cards
 ║ Lands: 2  |  Opp lands: 5
-║ Library: 48  |  Graveyard: 4
+║ Library: 48  |  Graveyard: 3
 ║ Affinity board:
-║   Creatures: Ornithopter (0/2), Signal Pest (0/1), Construct Token (7/7), Construct Token (7/7)
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1), Construct Token (8/8), Construct Token (8/8), Memnite (1/1)
 ║   Other: Mox Opal, Springleaf Drum
 ║   Lands: Island, Silverbluff Bridge
 ║ Boros Energy board:
-║   Creatures: Phlage, Titan of Fire's Fury (6/6)
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Phlage, Titan of Fire's Fury (6/6)
 ║   Lands: Sacred Foundry [T], Arena of Glory [T], Sacred Foundry [T], Arena of Glory [T], Sacred Foundry [T]
 ╚═══════════════════════════════════════════════════════
   [Untap] P2 untaps all permanents
@@ -733,24 +705,25 @@ T5: Memnite dies
   [Draw] P2 draws: Mox Opal
   [Main 1]
   [AI-TRACE MAIN1] T11 Affinity
-    state: life=20 mana=2 hand=3+0L gy=4
+    state: life=19 mana=2 hand=3+0L gy=3
     hand: ['Mox Opal', 'Nettlecyst', 'Mox Opal']
-    board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Construct Token (7/7)', 'Construct Token (7/7)']
+    board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Construct Token (8/8)', 'Construct Token (8/8)', 'Memnite (1/1)']
     perms: ['Mox Opal', 'Springleaf Drum']
-    opp: ["Phlage, Titan of Fire's Fury (6/6)"] (life=5)
+    opp: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', "Phlage, Titan of Fire's Fury (6/6)"] (life=3)
     >>> PASS (threshold=-5.0)
   [Begin Combat]
-  [AI-TRACE ATTACK] T11 Affinity: ['Signal Pest', 'Construct Token', 'Construct Token']
-  [Declare Attackers] P2 attacks with: Signal Pest, Construct Token, Construct Token
-T6 P2: Attack with Signal Pest, Construct Token, Construct Token
-T6 P1:   [BLOCK-EMERGENCY] Phlage, Titan of Fire's Fury (6/6) blocks Construct Token (8/7) — chump block
+  [AI-TRACE ATTACK] T11 Affinity: ['Signal Pest', 'Construct Token', 'Construct Token', 'Memnite']
+  [Declare Attackers] P2 attacks with: Signal Pest, Construct Token, Construct Token, Memnite
+T6 P2: Attack with Signal Pest, Construct Token, Construct Token, Memnite
+T6 P1:   [BLOCK-EMERGENCY] Phlage, Titan of Fire's Fury (6/6) blocks Construct Token (9/8) — chump block
   [Declare Blockers] P1 blocks: (see BLOCK lines below)
-T6 P2:   Construct Token (8/7) → 8 dmg to player
-P1 loses: life total -3
-  [Combat Damage] 8 damage dealt → P1 life: 5 → -3
+T6 P2:   Construct Token (9/8) → 9 dmg to player
+T6 P2:   Memnite (2/1) → 2 dmg to player
+P1 loses: life total -8
+  [Combat Damage] 11 damage dealt → P1 life: 3 → -8
 
 >>> Affinity wins Game 1 on turn 6 via damage
-    Final life: Boros Energy=-3  Affinity=20
+    Final life: Boros Energy=-8  Affinity=19
 
 ======================================================================
   GAME 2: Boros Energy (P1) vs Affinity (P2)  —  seed 65001
@@ -828,8 +801,6 @@ T1: Resolve Ocelot Pride
     hand: ['Wrath of the Skies', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Thraben Charm']
     board: ['Ocelot Pride (1/1)']
     opp: [] (life=20)
-    EV candidates:
-        +2.9  cast_spell: Ocelot Pride <--  [h=+2.9 la=+2.9]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T1 Boros Energy: no attack
@@ -841,8 +812,6 @@ T1: Resolve Ocelot Pride
     hand: ['Wrath of the Skies', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Thraben Charm']
     board: ['Ocelot Pride (1/1)']
     opp: [] (life=20)
-    EV candidates:
-        +2.9  cast_spell: Ocelot Pride <--  [h=+2.9 la=+2.9]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -958,9 +927,6 @@ T2 P1: Ajani creates 2/1 Cat Warrior token
     hand: ['Wrath of the Skies', 'Thraben Charm']
     board: ['Ocelot Pride (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
     opp: [] (life=20)
-    EV candidates:
-        +7.9  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <--  [h=+7.9 la=+7.9]
-       -50.0  cast_spell: Wrath of the Skies  [h=-50.0 la=-50.0]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T3 Boros Energy: ['Ocelot Pride']
@@ -976,9 +942,6 @@ T2 P1:   Ocelot Pride (1/1) → 1 dmg to player
     hand: ['Wrath of the Skies', 'Thraben Charm']
     board: ['Ocelot Pride (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
     opp: [] (life=19)
-    EV candidates:
-        +7.9  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <--  [h=+7.9 la=+7.9]
-       -50.0  cast_spell: Wrath of the Skies  [h=-50.0 la=-50.0]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -1044,8 +1007,6 @@ T2: Resolve Ornithopter
     board: ['Ornithopter (0/2)']
     perms: ['Mox Opal', 'Springleaf Drum']
     opp: ['Ocelot Pride (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=15)
-    EV candidates:
-        +0.3  cast_spell: Ornithopter <--  [h=+0.3 la=+0.3]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T4 Affinity: no attack
@@ -1058,8 +1019,6 @@ T2: Resolve Ornithopter
     board: ['Ornithopter (0/2)']
     perms: ['Mox Opal', 'Springleaf Drum']
     opp: ['Ocelot Pride (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=15)
-    EV candidates:
-        +0.3  cast_spell: Ornithopter <--  [h=+0.3 la=+0.3]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -1114,9 +1073,6 @@ T3 P1: Thraben Charm: no high-value mode available
     hand: ['Wrath of the Skies', 'Galvanic Discharge']
     board: ['Ocelot Pride (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
     opp: ['Ornithopter (0/2)'] (life=19)
-    EV candidates:
-        +0.3  cast_spell: Galvanic Discharge <--  [h=+0.3 la=+0.3]
-       -50.0  cast_spell: Wrath of the Skies  [h=-50.0 la=-50.0]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T5 Boros Energy: ['Ocelot Pride', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Cat Token']
@@ -1134,9 +1090,6 @@ T3 P1:   Cat Token (2/1) → 2 dmg to player
     hand: ['Wrath of the Skies', 'Galvanic Discharge']
     board: ['Ocelot Pride (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
     opp: ['Ornithopter (0/2)'] (life=15)
-    EV candidates:
-        +0.3  cast_spell: Galvanic Discharge <--  [h=+0.3 la=+0.3]
-       -50.0  cast_spell: Wrath of the Skies  [h=-50.0 la=-50.0]
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -1500,8 +1453,6 @@ T5 P1: Play Elegant Parlor (enters tapped)
     hand: []
     board: ['Ocelot Pride (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)']
     opp: ['Signal Pest (0/1)'] (life=14)
-    EV candidates:
-       +10.0  play_land: Elegant Parlor <--
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T9 Boros Energy: ['Ocelot Pride', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
@@ -1518,8 +1469,6 @@ T5 P1:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
     hand: []
     board: ['Ocelot Pride (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)']
     opp: ['Signal Pest (0/1)'] (life=12)
-    EV candidates:
-       +10.0  play_land: Elegant Parlor <--
     >>> PASS (threshold=-5.0)
   [End Step]
 
@@ -1626,8 +1575,6 @@ T5: Resolve Mox Opal
     board: ['Signal Pest (20/1)', 'Thought Monitor (2/2)', 'Ornithopter (0/2)']
     perms: ['Springleaf Drum', 'Cranial Plating', 'Cranial Plating', 'Mox Opal']
     opp: ['Ocelot Pride (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)'] (life=16)
-    EV candidates:
-        +1.2  cast_spell: Mox Opal <--  [h=+1.2 la=+1.2]
     >>> PASS (threshold=-5.0)
   [Begin Combat]
   [AI-TRACE ATTACK] T10 Affinity: ['Signal Pest']
