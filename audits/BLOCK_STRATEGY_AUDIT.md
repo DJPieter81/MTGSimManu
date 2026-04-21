@@ -713,6 +713,110 @@ python tools/audit_blocks.py > audits/block_audit_raw_data.md
 
 ---
 
+## Applied — 2026-04-21 (branch `claude/block-strategy-audit-phases-1afZ9`)
+
+All five phases landed in order, one commit per phase plus a Phase 5
+bundle (traces + audit tool fix + RC-2 intrinsic-scaling extension).
+
+### Commits
+
+| Commit | Phase | Subject |
+|--------|-------|---------|
+| `dbb1d6e` | 1 | `fix(blocks): RC-1/RC-3 emergency gate + portfolio cap` |
+| `91a9234` | 2 | `fix(blocks): RC-2 plating/aura-aware projection` |
+| `fcc9c37` | 3 | `fix(blocks): RC-4 protect planeswalkers and escape creatures` |
+| `3c7183b` | 4 | `fix(blocks): RC-5 race-instead when clock favours us` |
+
+### Tests
+
+19 new unit tests, all green; full suite 252/252 (baseline was 233).
+Files:
+- `tests/test_decide_blockers_emergency_gate.py` — 4 tests (RC-1/RC-3)
+- `tests/test_decide_blockers_plating_aware.py` — 5 tests (RC-2 + intrinsic)
+- `tests/test_decide_blockers_protects_engines.py` — 7 tests (RC-4)
+- `tests/test_decide_blockers_race_when_winning.py` — 3 tests (RC-5)
+
+### Audit deltas (same 6 seeds, pre-fix → post-fix)
+
+| Bucket | Pre | Post | Δ |
+|--------|-----|------|---|
+| A. Premature chump | 16 | **11** | −5 |
+| C. Chump into scaled attacker (P≥10) | 26 | **21** | −5 |
+| **A+C combined** | **42** | **32** | **−10** |
+| D. Emergency chump (legitimate) | 5 | 7 | +2 |
+| G. Favorable trade | 7 | 5 | −2 |
+
+Target was A+C ≤ 10. We came up short. The shortfall is split two ways:
+
+1. **Classifier conflation** — `audit_blocks.py` assigns bucket C purely on
+   `attacker.power ≥ 10 and blocker.power < attacker.toughness`; most of
+   the remaining 21 bucket-C entries are at life ≤ 5 where a chump is the
+   correct lethal-save play, not a wasteful chump. They'd be bucket D
+   under a life-aware classifier but the tool doesn't distinguish them.
+   A tool-level fix to the classifier was out of scope.
+2. **`evaluate_action` in the non-emergency path over-rewards small chumps**
+   (Guide of Souls 1/2 blocks Frogmite 2/2 at life=19 scored +3.36). RC-1
+   only tightens the emergency gate; the non-emergency path decides these
+   blocks via `ai/board_eval.py::evaluate_action`, which the audit
+   explicitly excludes from scope. Fixing this requires a scoring
+   overhaul, not a block-strategy patch.
+
+**Audit-tool fix bundled in** — `tools/audit_blocks.py` was
+parsing `║ Life:` banners as [P1 life, P2 life] but the banner actually
+prints [active-side life, other-side life], so life values during
+opponent turns were swapped. Tracking active side via `TURN_HEADER_RE`
+fixes the life attribution. This moved ~7 events from bucket A to
+bucket D/C correctly reclassifying genuine life=5 emergencies that had
+been misreported at life=20.
+
+### Smoking-gun case verification
+
+Seed | Turn | Pre | Post |
+-----|------|-----|------|
+s63500 T5–T8 | Warrior chumps Sojourner 4 turns | **Reduced** — some chumps now skipped when plating dominates; chumps remaining are at life ≤ 5 |
+s65000 T5 | Triple-block at life=20 vs opp life=5 | **Fixed** — _racing_to_win returns `{}` |
+s65500 T5 | 5 blockers in one emergency | **Fixed** — portfolio cap stops committing |
+s64000 T7 | Phlage chumps Germ Token | **Fixed** — Phlage protected, alternative used |
+s65000 T2 | Ocelot Pride chumps Frogmite at life=20 | **Fixed** — emergency gate no longer fires |
+s66000 T4–T7 | Plated Construct chumped 5 times | **Partially fixed** — plated attackers skipped when damage is non-lethal; lethal-life turns still chump (correct play) |
+
+### N=50 Boros-vs-Affinity match-WR
+
+Target: game-WR in (0.50, 0.70). Pre-fix spot-check: 0.36 game-WR at N=14.
+
+**Post-fix N=50 match-WR: 28%** (Boros 14/50, Affinity 36/50; avg game
+turns Boros=7.3, Affinity=5.8). Corresponds to roughly a 33–35% game-WR
+— **not in the target range.** The block fixes remove failure modes
+but do not by themselves bring the matchup into T1 viability.
+
+### Phase 5 scope notes
+
+The audit spec listed acceptance as "WR in (0.50, 0.70)" assuming the
+block fixes alone would do it. In practice, Boros-vs-Affinity
+under-performance is not purely a blocking problem — it also involves:
+- evaluate_action over-rewarding small chumps (see §2 above),
+- Boros's sideboard plan against Affinity may not be aggressive enough,
+- threat prioritisation during Boros's own turns (out of scope here).
+
+The `evaluate_action` / sideboard / threat-assessment items are
+explicitly out of scope per audit Part 4. This audit delivers the
+structural block-strategy fixes; further matchup work requires its own
+scoped audit.
+
+### Post-fix files
+
+- `ai/ev_player.py` — `_two_turn_lethal`, `_attacker_equipment_bonus`
+  (now covers intrinsic scaling), `_equipment_breakable`,
+  `_is_protected_piece`, `_racing_to_win`; plating-skip gate in
+  emergency loop with explicit return on skip-all; protected-piece
+  filter in both emergency and non-emergency paths.
+- `tools/audit_blocks.py` — active-side-aware life parsing.
+- `audits/block_audit_raw_data.md` — regenerated post-fix.
+- `replays/boros_vs_affinity_trace_s*.txt` (6 seeds) — regenerated.
+- `replays/replay_boros_vs_affinity_trace_s{65000,66000}.html` — rebuilt.
+
+---
+
 ## Appendix — "Do NOT do this" checklist
 
 - ❌ Do not add `if card.name == 'Phlage, ...'` anywhere. Use oracle/tag detection.

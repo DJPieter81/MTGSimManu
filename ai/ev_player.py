@@ -1673,12 +1673,42 @@ class EVPlayer:
         return incoming + opp_next >= me.life
 
     def _attacker_equipment_bonus(self, game, opp, attacker) -> int:
-        """Sum of +power granted to `attacker` by currently-attached equipment
-        or auras on the opponent's battlefield. Returns 0 if none.
+        """Sum of +power on `attacker` that would persist after a chump —
+        the plating rebinds, the Construct respawns with the same clause.
 
-        Handles scaling clauses like "+1/+0 for each artifact you control"
-        by counting opp's qualifying permanents.
+        Covers two sources:
+          (1) Equipment / aura bonuses attached to the attacker
+              ('equipped/enchanted creature gets +X/+Y' on the attached
+              permanent). Handles 'for each <qualifier>' scaling.
+          (2) Intrinsic scaling on the attacker's own oracle
+              ('+X/+Y for each artifact/creature/land you control') — the
+              Urza's Saga Construct Token pattern and similar.
         """
+        bonus = 0
+
+        def _scaled(base_power: int, oracle: str) -> int:
+            scale_match = re.search(
+                r'for each (artifact|creature|land|card)', oracle
+            )
+            if not scale_match:
+                return base_power
+            kind = scale_match.group(1)
+            if kind == 'artifact':
+                count = sum(
+                    1 for c in opp.battlefield
+                    if 'artifact' in str(c.template.card_types).lower()
+                )
+            elif kind == 'creature':
+                count = len(opp.creatures)
+            elif kind == 'land':
+                count = len(
+                    [c for c in opp.battlefield if c.template.is_land]
+                )
+            else:  # 'card' — count nonland permanents as a proxy
+                count = len(opp.battlefield)
+            return base_power * count
+
+        # (1) Equipment / aura attached bonuses
         attached_ids = set()
         for tag in attacker.instance_tags:
             if not tag.startswith('equipped_'):
@@ -1686,10 +1716,6 @@ class EVPlayer:
             tail = tag.split('_', 1)[1]
             if tail.isdigit():
                 attached_ids.add(int(tail))
-        if not attached_ids:
-            return 0
-
-        bonus = 0
         for perm in opp.battlefield:
             if perm.instance_id not in attached_ids:
                 continue
@@ -1697,29 +1723,18 @@ class EVPlayer:
             m = _EQUIP_BONUS_RE.search(oracle)
             if not m:
                 continue
-            base_power = int(m.group(2))
-            # Handle 'for each <thing> you control' scaling
-            scale_match = re.search(
-                r'for each (artifact|creature|land|card)', oracle
-            )
-            if scale_match:
-                kind = scale_match.group(1)
-                if kind == 'artifact':
-                    count = sum(
-                        1 for c in opp.battlefield
-                        if 'artifact' in str(c.template.card_types).lower()
-                    )
-                elif kind == 'creature':
-                    count = len(opp.creatures)
-                elif kind == 'land':
-                    count = len(
-                        [c for c in opp.battlefield if c.template.is_land]
-                    )
-                else:  # 'card' — count nonland permanents as a proxy
-                    count = len(opp.battlefield)
-                bonus += base_power * count
-            else:
-                bonus += base_power
+            bonus += _scaled(int(m.group(2)), oracle)
+
+        # (2) Intrinsic scaling on the attacker's own oracle. Mirrors the
+        # engine's detection in cards.py::_dynamic_base_power.
+        a_oracle = (attacker.template.oracle_text or '').lower()
+        m2 = re.search(
+            r'\+(\d+)/\+\d+\s+for\s+each\s+(artifact|creature|land|card)\s+you\s+control',
+            a_oracle,
+        )
+        if m2:
+            bonus += _scaled(int(m2.group(1)), a_oracle)
+
         return bonus
 
     def _is_protected_piece(self, card) -> bool:
@@ -1860,6 +1875,7 @@ class EVPlayer:
                 return 'whenever this creature attacks' in bo
 
             sacrificed_value = 0.0
+            plating_skipped_any = False
             for attacker in sorted(attackers, key=lambda a: a.power or 0, reverse=True):
                 # RC-2: if this attacker's power is dominated by equipment/aura
                 # bonuses AND we can't remove those next turn, chumping is
@@ -1874,6 +1890,7 @@ class EVPlayer:
                 if (equip_bonus >= 3
                         and not self._equipment_breakable(game, me)
                         and not still_lethal_if_skipped):
+                    plating_skipped_any = True
                     continue
 
                 best_chump = None
@@ -1905,6 +1922,13 @@ class EVPlayer:
                         break
                     if remaining < me.life and (me.life - remaining > 5 or remaining == 0):
                         break  # stabilized
+            # RC-2: if the emergency path skipped every attacker via the
+            # plating-futile gate and assigned no blocks, accept the damage
+            # rather than letting the non-emergency path re-block the same
+            # plated attackers. Only triggers when skipping is not lethal.
+            if emergency and not emergency_blocks and plating_skipped_any:
+                return {}
+
             if emergency_blocks:
                 # Log emergency blocking assignments with reasoning
                 id_to_attacker = {a.instance_id: a for a in attackers}
@@ -1936,16 +1960,6 @@ class EVPlayer:
 
         sorted_attackers = sorted(attackers, key=lambda a: a.power or 0, reverse=True)
 
-        # RC-2: precompute which attackers have dominant equipment/aura bonuses
-        # and no plausible answer in hand. Chumping these is futile — the
-        # plating rebinds next turn. Skip them unless a block would kill them.
-        equip_breakable = self._equipment_breakable(game, me)
-        plating_futile_ids: Set[int] = set()
-        if not equip_breakable:
-            for atk in attackers:
-                if self._attacker_equipment_bonus(game, opp, atk) >= 3:
-                    plating_futile_ids.add(atk.instance_id)
-
         for attacker in sorted_attackers:
             best_blocker = None
             best_val = 0.0
@@ -1963,14 +1977,9 @@ class EVPlayer:
                 #     but costs a permanent with 0 combat equity.
                 # (2) Battle-cry source — its ongoing attack value exceeds the damage saved
                 #     unless the block is a clean kill.
-                # (3) Plated attacker with no answer in hand — chumping is futile
-                #     (the +N/+Y rebinds next turn), unless we can outright kill.
                 b_pow = blocker.power or 0
                 a_tou = attacker.toughness or 0
                 can_kill_attacker = b_pow >= a_tou or Keyword.DEATHTOUCH in blocker.keywords
-                if (attacker.instance_id in plating_futile_ids
-                        and not can_kill_attacker):
-                    continue
                 b_oracle = (blocker.template.oracle_text or '').lower()
                 b_cname = (blocker.template.name or '').lower().split(' //')[0].strip()
                 is_battle_cry = ('whenever this creature attacks' in b_oracle or

@@ -225,3 +225,62 @@ class TestEquipmentBonusDetectionOracleDriven:
         )
         assert m is not None
         assert m.group(2) == "2" and m.group(3) == "2"
+
+
+class TestIntrinsicScalingDetection:
+    """Construct Tokens from Urza's Saga scale via their OWN oracle text
+    ('this creature gets +1/+1 for each artifact you control'), not via
+    equipment. The projection must include these — chumping one still
+    means the saga keeps spawning more with the same scaling."""
+
+    def test_intrinsic_artifact_scaling_detected_via_oracle(self, card_db):
+        """Regression: extend _attacker_equipment_bonus to pick up
+        intrinsic '+X/+Y for each artifact you control' on the attacker's
+        own template. Uses a real card with this pattern."""
+        # Urza's Saga doesn't exist as a battlefield card in our mini test
+        # context and Construct Token is a dynamically-created template.
+        # Use Steel Overseer-adjacent? No — pick a card whose oracle has the
+        # intrinsic pattern. Shambling Suit matches:
+        #   "Shambling Suit's power is equal to the number of other
+        #    artifacts and/or creatures you control."
+        # Not the exact pattern. Try Tempered Steel or Etched Champion.
+        # Simplest: directly construct a CardInstance with a synthetic
+        # template using an oracle snippet containing the pattern.
+        from engine.cards import CardTemplate, CardType
+
+        tmpl = CardTemplate(
+            name="Synthetic Construct",
+            card_types=[CardType.ARTIFACT, CardType.CREATURE],
+            mana_cost=None,
+            supertypes=[], subtypes=["Construct"],
+            power=0, toughness=0, loyalty=None,
+            keywords=set(), abilities=[],
+            color_identity=set(), produces_mana=[],
+            enters_tapped=False,
+            oracle_text=(
+                "This creature gets +1/+1 for each artifact you control."
+            ),
+            tags=set(),
+        )
+        game = GameState(rng=random.Random(0))
+        from engine.cards import CardInstance
+        attacker = CardInstance(
+            template=tmpl, owner=1, controller=1,
+            instance_id=game.next_instance_id(),
+            zone="battlefield",
+        )
+        attacker._game_state = game
+        game.players[1].battlefield.append(attacker)
+        # Add four artifacts on opp's board
+        for _ in range(4):
+            _add_to_battlefield(game, card_db, "Memnite", controller=1)
+
+        player = EVPlayer(player_idx=0, deck_name="Boros Energy",
+                          rng=random.Random(0))
+        opp = game.players[1]
+        bonus = player._attacker_equipment_bonus(game, opp, attacker)
+        # 4 artifacts (Memnite x4) + the synthetic construct itself = 5
+        assert bonus >= 4, (
+            f"intrinsic '+1/+1 for each artifact you control' scaling must "
+            f"be detected on attacker's own oracle. Got {bonus}, expected ≥4."
+        )
