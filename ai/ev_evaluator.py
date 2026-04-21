@@ -687,6 +687,39 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
     if t.x_cost_data and 'charge counter' in oracle:
         signals.append('x_cost_hate_permanent')
 
+    # 16. Recurring-engine triggered ability — permanents whose oracle
+    #     declares a recurring trigger ("whenever ... enters tapped",
+    #     "whenever you cast", "at the beginning of your upkeep", etc.)
+    #     producing a beneficial effect.  Casting NOW starts the engine
+    #     ONE TURN sooner, so deferring loses tangible value.
+    #     Examples: Amulet of Vigor (untap-on-enter-tapped), Anthem
+    #     stacks, Smuggler's Copter-class draw engines.
+    #     Filter: must be a `whenever` / `at the beginning of` trigger,
+    #     not an activated ability (`{cost}:` form).  Activated
+    #     abilities require external setup (carrier, sac fodder, etc.)
+    #     handled by other signals.
+    is_triggered_engine = (
+        re.search(r'whenever (?:a |an |another |[a-z\'\-]+ )', oracle)
+        is not None
+        or 'at the beginning of' in oracle
+    )
+    is_activated_only = (
+        ':' in oracle
+        and not is_triggered_engine
+        and 'whenever' not in oracle
+    )
+    if is_triggered_engine and not is_activated_only:
+        # Reject pure self-ETB matches that already fire signal #1
+        # (etb_trigger) — avoid double-counting when both signals
+        # would target the same trigger.
+        if 'etb_trigger' not in signals and 'cast_trigger' not in signals:
+            # Reject pure-attack triggers: "whenever ~ attacks" requires
+            # we attack first; not same-turn unless we have haste.
+            if not re.search(
+                    r'whenever (?:this |~ |[a-z\'\-]+ )+attacks(?:[,.]| and)',
+                    oracle):
+                signals.append('recurring_engine_trigger')
+
     return signals
 
 
