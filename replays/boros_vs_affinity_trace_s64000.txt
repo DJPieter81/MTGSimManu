@@ -1,0 +1,3457 @@
+======================================================================
+  GAME 1: Boros Energy (P1) vs Affinity (P2)  —  seed 64000
+  Series: Boros Energy 0 - 0 Affinity
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Boros Energy wins → chooses to play first
+║ P1 (on play): Boros Energy
+║ P2 (on draw): Affinity
+╚═══════════════════════════════════════════════════════
+
+P1 (Boros Energy) opening hand (2 lands, 5 spells):
+  • Voice of Victory [Creature, CMC 2]
+  • The Legend of Roku // Avatar Roku [Spell, CMC 4]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Arid Mesa [Land, CMC 0]
+  • Guide of Souls [Creature, CMC 1]
+  • Phlage, Titan of Fire's Fury [Creature, CMC 3]
+  • Arena of Glory [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Guide of Souls, Ragavan, Nimble Pilferer, 4 cheap spells
+
+P2 (Affinity) opening hand (3 lands, 4 spells):
+  • Cranial Plating [Spell, CMC 2]
+  • Signal Pest [Creature, CMC 1]
+  • Island [Land, CMC 0]
+  • Razortide Bridge [Land, CMC 0]
+  • Darksteel Citadel [Land, CMC 0]
+  • Springleaf Drum [Spell, CMC 1]
+  • Springleaf Drum [Spell, CMC 1]
+→ P2 KEEPS 7 — has key card(s): Cranial Plating, Springleaf Drum, 4 cheap spells
+
+
+╔══ TURN 1 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+  [AI-TRACE MAIN1] T1 Boros Energy
+    state: life=20 mana=0 hand=5+2L gy=0
+    hand: ['Voice of Victory', 'The Legend of Roku // Avatar Roku', 'Ragavan, Nimble Pilferer', 'Guide of Souls', "Phlage, Titan of Fire's Fury"]
+    opp: [] (life=20)
+    EV candidates:
+       +41.0  play_land: Arid Mesa <--
+       +13.0  play_land: Arena of Glory
+    >>> PLAY_LAND: Arid Mesa
+T1 P1: Play Arid Mesa
+T1 P1: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (pay 2 life, untapped, life: 17)
+  [AI-TRACE MAIN1] T1 Boros Energy
+    state: life=17 mana=1 hand=5+1L gy=1
+    hand: ['Voice of Victory', 'The Legend of Roku // Avatar Roku', 'Ragavan, Nimble Pilferer', 'Guide of Souls', "Phlage, Titan of Fire's Fury"]
+    opp: [] (life=20)
+    EV candidates:
+        +3.5  cast_spell: Guide of Souls <--  [h=+3.5 la=+3.5]
+        +2.0  cast_spell: Ragavan, Nimble Pilferer  [h=+2.0 la=+2.0]
+    >>> CAST_SPELL: Guide of Souls
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Guide of Souls, 1 mana remaining)
+T1 P1: Cast Guide of Souls (W)
+    [Priority] P2 passes (no response)
+T1: Resolve Guide of Souls
+  [AI-TRACE MAIN1] T1 Boros Energy
+    state: life=17 mana=0 hand=4+1L gy=1
+    hand: ['Voice of Victory', 'The Legend of Roku // Avatar Roku', 'Ragavan, Nimble Pilferer', "Phlage, Titan of Fire's Fury"]
+    board: ['Guide of Souls (1/2)']
+    opp: [] (life=20)
+    EV candidates:
+        +3.5  cast_spell: Guide of Souls <--  [h=+3.5 la=+3.5]
+        +2.0  cast_spell: Ragavan, Nimble Pilferer  [h=+2.0 la=+2.0]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T1 Boros Energy: no attack
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T1 Boros Energy
+    state: life=17 mana=0 hand=4+1L gy=1
+    hand: ['Voice of Victory', 'The Legend of Roku // Avatar Roku', 'Ragavan, Nimble Pilferer', "Phlage, Titan of Fire's Fury"]
+    board: ['Guide of Souls (1/2)']
+    opp: [] (life=20)
+    EV candidates:
+        +3.5  cast_spell: Guide of Souls <--  [h=+3.5 la=+3.5]
+        +2.0  cast_spell: Ragavan, Nimble Pilferer  [h=+2.0 la=+2.0]
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 1 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Boros Energy 17
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Sojourner's Companion
+  [Main 1]
+  [AI-TRACE MAIN1] T2 Affinity
+    state: life=20 mana=0 hand=5+3L gy=0
+    hand: ['Cranial Plating', 'Signal Pest', 'Springleaf Drum', 'Springleaf Drum', "Sojourner's Companion"]
+    opp: ['Guide of Souls (1/2)'] (life=17)
+    EV candidates:
+       +23.0  play_land: Darksteel Citadel <--
+       +15.0  play_land: Island
+        +8.0  play_land: Razortide Bridge
+    >>> PLAY_LAND: Darksteel Citadel
+T1 P2: Play Darksteel Citadel
+  [AI-TRACE MAIN1] T2 Affinity
+    state: life=20 mana=1 hand=5+2L gy=0
+    hand: ['Cranial Plating', 'Signal Pest', 'Springleaf Drum', 'Springleaf Drum', "Sojourner's Companion"]
+    opp: ['Guide of Souls (1/2)'] (life=17)
+    EV candidates:
+        +1.0  cast_spell: Springleaf Drum <--  [h=+1.0 la=+1.0]
+        +1.0  cast_spell: Springleaf Drum  [h=+1.0 la=+1.0]
+        -9.0  cast_spell: Signal Pest  [h=-9.0 la=-9.0]
+    >>> CAST_SPELL: Springleaf Drum
+    → Goal: deploy_engine [engines]
+    [Mana] Tap Darksteel Citadel→C (paying for Springleaf Drum, 1 mana remaining)
+T1 P2: Cast Springleaf Drum (1)
+    [Priority] P1 passes (no response)
+T1: Resolve Springleaf Drum
+  [AI-TRACE MAIN1] T2 Affinity
+    state: life=20 mana=0 hand=4+2L gy=0
+    hand: ['Cranial Plating', 'Signal Pest', 'Springleaf Drum', "Sojourner's Companion"]
+    perms: ['Springleaf Drum']
+    opp: ['Guide of Souls (1/2)'] (life=17)
+    EV candidates:
+        +1.0  cast_spell: Springleaf Drum <--  [h=+1.0 la=+1.0]
+        +1.0  cast_spell: Springleaf Drum  [h=+1.0 la=+1.0]
+        -9.0  cast_spell: Signal Pest  [h=-9.0 la=-9.0]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T2 Affinity: no attack
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T2 Affinity
+    state: life=20 mana=0 hand=4+2L gy=0
+    hand: ['Cranial Plating', 'Signal Pest', 'Springleaf Drum', "Sojourner's Companion"]
+    perms: ['Springleaf Drum']
+    opp: ['Guide of Souls (1/2)'] (life=17)
+    EV candidates:
+        +1.0  cast_spell: Springleaf Drum <--  [h=+1.0 la=+1.0]
+        +1.0  cast_spell: Springleaf Drum  [h=+1.0 la=+1.0]
+        -9.0  cast_spell: Signal Pest  [h=-9.0 la=-9.0]
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 17  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2)
+║   Lands: Sacred Foundry
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Springleaf Drum
+║   Lands: Darksteel Citadel [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Seasoned Pyromancer
+  [Main 1]
+  [AI-TRACE MAIN1] T3 Boros Energy
+    state: life=17 mana=1 hand=5+1L gy=1
+    hand: ['Voice of Victory', 'The Legend of Roku // Avatar Roku', 'Ragavan, Nimble Pilferer', "Phlage, Titan of Fire's Fury", 'Seasoned Pyromancer']
+    board: ['Guide of Souls (1/2)']
+    opp: [] (life=20)
+    EV candidates:
+        +7.0  play_land: Arena of Glory <--
+        +5.1  cast_spell: Ragavan, Nimble Pilferer  [h=+5.1 la=+5.1]
+    >>> PLAY_LAND: Arena of Glory
+T2 P1: Play Arena of Glory (enters tapped)
+  [AI-TRACE MAIN1] T3 Boros Energy
+    state: life=17 mana=1 hand=5+0L gy=1
+    hand: ['Voice of Victory', 'The Legend of Roku // Avatar Roku', 'Ragavan, Nimble Pilferer', "Phlage, Titan of Fire's Fury", 'Seasoned Pyromancer']
+    board: ['Guide of Souls (1/2)']
+    opp: [] (life=20)
+    EV candidates:
+        +5.2  cast_spell: Ragavan, Nimble Pilferer <--  [h=+5.2 la=+5.2]
+    >>> CAST_SPELL: Ragavan, Nimble Pilferer
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T2 P1: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P2 passes (no response)
+T2: Resolve Ragavan, Nimble Pilferer
+T2 P1: Gain 1 life from Guide of Souls (life: 18)
+T2 P1: +1 energy from Guide of Souls (total: 1)
+  [AI-TRACE MAIN1] T3 Boros Energy
+    state: life=18 mana=0 hand=4+0L gy=1
+    hand: ['Voice of Victory', 'The Legend of Roku // Avatar Roku', "Phlage, Titan of Fire's Fury", 'Seasoned Pyromancer']
+    board: ['Guide of Souls (1/2)', 'Ragavan, Nimble Pilferer (2/1)']
+    opp: [] (life=20)
+    EV candidates:
+        +5.2  cast_spell: Ragavan, Nimble Pilferer <--  [h=+5.2 la=+5.2]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T3 Boros Energy: ['Guide of Souls']
+  [Declare Attackers] P1 attacks with: Guide of Souls
+T2 P1: Attack with Guide of Souls
+  [Declare Blockers] P2 does not block
+T2 P1:   Guide of Souls (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P2 life: 20 → 19
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T3 Boros Energy
+    state: life=18 mana=0 hand=4+0L gy=1
+    hand: ['Voice of Victory', 'The Legend of Roku // Avatar Roku', "Phlage, Titan of Fire's Fury", 'Seasoned Pyromancer']
+    board: ['Guide of Souls (1/2)', 'Ragavan, Nimble Pilferer (2/1)']
+    opp: [] (life=19)
+    EV candidates:
+        +5.2  cast_spell: Ragavan, Nimble Pilferer <--  [h=+5.2 la=+5.2]
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 2 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 19  |  Boros Energy 18
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Springleaf Drum
+║   Lands: Darksteel Citadel
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2) [tapped], Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mox Opal
+  [Main 1]
+  [AI-TRACE MAIN1] T4 Affinity
+    state: life=19 mana=1 hand=5+2L gy=0
+    hand: ['Cranial Plating', 'Signal Pest', 'Springleaf Drum', "Sojourner's Companion", 'Mox Opal']
+    perms: ['Springleaf Drum']
+    opp: ['Guide of Souls (1/2)', 'Ragavan, Nimble Pilferer (2/1)'] (life=18)
+    EV candidates:
+       +19.0  play_land: Razortide Bridge <--
+       +15.0  play_land: Island
+        +1.1  cast_spell: Mox Opal  [h=+1.1 la=+1.1]
+        +1.0  cast_spell: Springleaf Drum  [h=+1.0 la=+1.0]
+        -0.0  cast_spell: Signal Pest  [h=-0.0 la=-0.0]
+    >>> PLAY_LAND: Razortide Bridge
+T2 P2: Play Razortide Bridge (enters tapped)
+  [AI-TRACE MAIN1] T4 Affinity
+    state: life=19 mana=1 hand=5+1L gy=0
+    hand: ['Cranial Plating', 'Signal Pest', 'Springleaf Drum', "Sojourner's Companion", 'Mox Opal']
+    perms: ['Springleaf Drum']
+    opp: ['Guide of Souls (1/2)', 'Ragavan, Nimble Pilferer (2/1)'] (life=18)
+    EV candidates:
+        +1.1  cast_spell: Mox Opal <--  [h=+1.1 la=+1.1]
+        +1.0  cast_spell: Springleaf Drum  [h=+1.0 la=+1.0]
+        -0.0  cast_spell: Signal Pest  [h=-0.0 la=-0.0]
+    >>> CAST_SPELL: Mox Opal
+    → Goal: curve_out
+T2 P2: Cast Mox Opal (0)
+    [Priority] P1 passes (no response)
+T2: Resolve Mox Opal
+  [AI-TRACE MAIN1] T4 Affinity
+    state: life=19 mana=1 hand=4+1L gy=0
+    hand: ['Cranial Plating', 'Signal Pest', 'Springleaf Drum', "Sojourner's Companion"]
+    perms: ['Springleaf Drum', 'Mox Opal']
+    opp: ['Guide of Souls (1/2)', 'Ragavan, Nimble Pilferer (2/1)'] (life=18)
+    EV candidates:
+        +1.0  cast_spell: Springleaf Drum <--  [h=+1.0 la=+1.0]
+        +0.0  cast_spell: Signal Pest  [h=+0.0 la=+0.0]
+    >>> CAST_SPELL: Springleaf Drum
+    → Goal: curve_out
+    [Mana] Tap Darksteel Citadel→C (paying for Springleaf Drum, 1 mana remaining)
+T2 P2: Cast Springleaf Drum (1)
+    [Priority] P1 passes (no response)
+T2: Resolve Springleaf Drum
+  [AI-TRACE MAIN1] T4 Affinity
+    state: life=19 mana=0 hand=3+1L gy=0
+    hand: ['Cranial Plating', 'Signal Pest', "Sojourner's Companion"]
+    perms: ['Springleaf Drum', 'Mox Opal', 'Springleaf Drum']
+    opp: ['Guide of Souls (1/2)', 'Ragavan, Nimble Pilferer (2/1)'] (life=18)
+    EV candidates:
+        +1.0  cast_spell: Springleaf Drum <--  [h=+1.0 la=+1.0]
+        +0.0  cast_spell: Signal Pest  [h=+0.0 la=+0.0]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T4 Affinity: no attack
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T4 Affinity
+    state: life=19 mana=0 hand=3+1L gy=0
+    hand: ['Cranial Plating', 'Signal Pest', "Sojourner's Companion"]
+    perms: ['Springleaf Drum', 'Mox Opal', 'Springleaf Drum']
+    opp: ['Guide of Souls (1/2)', 'Ragavan, Nimble Pilferer (2/1)'] (life=18)
+    EV candidates:
+        +1.0  cast_spell: Springleaf Drum <--  [h=+1.0 la=+1.0]
+        +0.0  cast_spell: Signal Pest  [h=+0.0 la=+0.0]
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 18  |  Affinity 19
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2), Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry, Arena of Glory
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Springleaf Drum, Mox Opal, Springleaf Drum
+║   Lands: Darksteel Citadel [T], Razortide Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arena of Glory
+  [Main 1]
+  [AI-TRACE MAIN1] T5 Boros Energy
+    state: life=18 mana=2 hand=4+1L gy=1
+    hand: ['Voice of Victory', 'The Legend of Roku // Avatar Roku', "Phlage, Titan of Fire's Fury", 'Seasoned Pyromancer']
+    board: ['Guide of Souls (1/2)', 'Ragavan, Nimble Pilferer (2/1)']
+    opp: [] (life=19)
+    EV candidates:
+        +7.0  play_land: Arena of Glory <--
+        +4.6  cast_spell: Voice of Victory  [h=+4.6 la=+4.6]
+    >>> PLAY_LAND: Arena of Glory
+T3 P1: Play Arena of Glory (enters tapped)
+  [AI-TRACE MAIN1] T5 Boros Energy
+    state: life=18 mana=2 hand=4+0L gy=1
+    hand: ['Voice of Victory', 'The Legend of Roku // Avatar Roku', "Phlage, Titan of Fire's Fury", 'Seasoned Pyromancer']
+    board: ['Guide of Souls (1/2)', 'Ragavan, Nimble Pilferer (2/1)']
+    opp: [] (life=19)
+    EV candidates:
+        +4.7  cast_spell: Voice of Victory <--  [h=+4.7 la=+4.7]
+    >>> CAST_SPELL: Voice of Victory
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→W, Arena of Glory→R (paying for Voice of Victory, 2 mana remaining)
+T3 P1: Cast Voice of Victory (1W)
+    [Priority] P2 passes (no response)
+T3: Resolve Voice of Victory
+T3 P1: Gain 1 life from Guide of Souls (life: 19)
+T3 P1: +1 energy from Guide of Souls (total: 2)
+  [AI-TRACE MAIN1] T5 Boros Energy
+    state: life=19 mana=0 hand=3+0L gy=1
+    hand: ['The Legend of Roku // Avatar Roku', "Phlage, Titan of Fire's Fury", 'Seasoned Pyromancer']
+    board: ['Guide of Souls (1/2)', 'Ragavan, Nimble Pilferer (2/1)', 'Voice of Victory (1/3)']
+    opp: [] (life=19)
+    EV candidates:
+        +4.7  cast_spell: Voice of Victory <--  [h=+4.7 la=+4.7]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T5 Boros Energy: ['Guide of Souls', 'Ragavan, Nimble Pilferer']
+  [Declare Attackers] P1 attacks with: Guide of Souls, Ragavan, Nimble Pilferer
+T3 P1: Attack with Guide of Souls, Ragavan, Nimble Pilferer
+  [Declare Blockers] P2 does not block
+T3 P1:   Guide of Souls (1/2) → 1 dmg to player
+T3 P1:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T3 P1: Create 1x Treasure token(s)
+T3 P1: Ragavan, Nimble Pilferer exiles Mistvault Bridge from top of P2's library
+T3 P1: Ragavan, Nimble Pilferer — may cast Mistvault Bridge this turn
+  [Combat Damage] 3 damage dealt → P2 life: 19 → 16
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T5 Boros Energy
+    state: life=19 mana=0 hand=3+1L gy=1
+    hand: ['The Legend of Roku // Avatar Roku', "Phlage, Titan of Fire's Fury", 'Seasoned Pyromancer']
+    board: ['Guide of Souls (1/2)', 'Ragavan, Nimble Pilferer (2/1)', 'Voice of Victory (1/3)']
+    perms: ['Treasure Token']
+    opp: [] (life=16)
+    EV candidates:
+        +4.7  cast_spell: Voice of Victory <--  [h=+4.7 la=+4.7]
+    >>> PASS (threshold=-5.0)
+  [End Step]
+T3: Mistvault Bridge returned to exile (uncast)
+
+╔══ TURN 3 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 16  |  Boros Energy 19
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Springleaf Drum, Mox Opal, Springleaf Drum
+║   Lands: Darksteel Citadel, Razortide Bridge
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2) [tapped], Ragavan, Nimble Pilferer (2/1) [tapped], Voice of Victory (1/3)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Arena of Glory [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Signal Pest
+  [Main 1]
+  [AI-TRACE MAIN1] T6 Affinity
+    state: life=16 mana=2 hand=4+1L gy=0
+    hand: ['Cranial Plating', 'Signal Pest', "Sojourner's Companion", 'Signal Pest']
+    perms: ['Springleaf Drum', 'Mox Opal', 'Springleaf Drum']
+    opp: ['Guide of Souls (1/2)', 'Ragavan, Nimble Pilferer (2/1)', 'Voice of Victory (1/3)'] (life=19)
+    EV candidates:
+       +15.0  play_land: Island <--
+        +5.6  cast_spell: Sojourner's Companion  [h=+5.6 la=+5.6]
+        +1.8  cycle: Sojourner's Companion
+        +0.8  cast_spell: Cranial Plating  [h=+0.8 la=+0.8]
+        -0.1  cast_spell: Signal Pest  [h=-0.1 la=-0.1]
+        -0.1  cast_spell: Signal Pest  [h=-0.1 la=-0.1]
+    >>> PLAY_LAND: Island
+T3 P2: Play Island
+  [AI-TRACE MAIN1] T6 Affinity
+    state: life=16 mana=3 hand=4+0L gy=0
+    hand: ['Cranial Plating', 'Signal Pest', "Sojourner's Companion", 'Signal Pest']
+    perms: ['Springleaf Drum', 'Mox Opal', 'Springleaf Drum']
+    opp: ['Guide of Souls (1/2)', 'Ragavan, Nimble Pilferer (2/1)', 'Voice of Victory (1/3)'] (life=19)
+    EV candidates:
+        +5.5  cast_spell: Sojourner's Companion <--  [h=+5.5 la=+5.5]
+        +2.6  cycle: Sojourner's Companion
+        +0.8  cast_spell: Cranial Plating  [h=+0.8 la=+0.8]
+        -0.1  cast_spell: Signal Pest  [h=-0.1 la=-0.1]
+        -0.1  cast_spell: Signal Pest  [h=-0.1 la=-0.1]
+    >>> CAST_SPELL: Sojourner's Companion
+    → Goal: curve_out [enablers]
+    [Mana] Tap Darksteel Citadel→C, Island→U (paying for Sojourner's Companion, 3 mana remaining)
+T3 P2: Cast Sojourner's Companion (7)
+    [Priority] P1 passes (no response)
+T3: Resolve Sojourner's Companion
+  [AI-TRACE MAIN1] T6 Affinity
+    state: life=16 mana=1 hand=3+0L gy=0
+    hand: ['Cranial Plating', 'Signal Pest', 'Signal Pest']
+    board: ["Sojourner's Companion (4/4)"]
+    perms: ['Springleaf Drum', 'Mox Opal', 'Springleaf Drum']
+    opp: ['Guide of Souls (1/2)', 'Ragavan, Nimble Pilferer (2/1)', 'Voice of Victory (1/3)'] (life=19)
+    EV candidates:
+        +2.0  cast_spell: Signal Pest <--  [h=+2.0 la=+2.0]
+        +2.0  cast_spell: Signal Pest  [h=+2.0 la=+2.0]
+    >>> CAST_SPELL: Signal Pest
+    → Goal: curve_out
+    [Mana] Tap Razortide Bridge→U (paying for Signal Pest, 1 mana remaining)
+T3 P2: Cast Signal Pest (1)
+    [Priority] P1 passes (no response)
+T3: Resolve Signal Pest
+  [AI-TRACE MAIN1] T6 Affinity
+    state: life=16 mana=0 hand=2+0L gy=0
+    hand: ['Cranial Plating', 'Signal Pest']
+    board: ["Sojourner's Companion (4/4)", 'Signal Pest (0/1)']
+    perms: ['Springleaf Drum', 'Mox Opal', 'Springleaf Drum']
+    opp: ['Guide of Souls (1/2)', 'Ragavan, Nimble Pilferer (2/1)', 'Voice of Victory (1/3)'] (life=19)
+    EV candidates:
+        +2.0  cast_spell: Signal Pest <--  [h=+2.0 la=+2.0]
+        +2.0  cast_spell: Signal Pest  [h=+2.0 la=+2.0]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T6 Affinity: no attack
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T6 Affinity
+    state: life=16 mana=0 hand=2+0L gy=0
+    hand: ['Cranial Plating', 'Signal Pest']
+    board: ["Sojourner's Companion (4/4)", 'Signal Pest (0/1)']
+    perms: ['Springleaf Drum', 'Mox Opal', 'Springleaf Drum']
+    opp: ['Guide of Souls (1/2)', 'Ragavan, Nimble Pilferer (2/1)', 'Voice of Victory (1/3)'] (life=19)
+    EV candidates:
+        +2.0  cast_spell: Signal Pest <--  [h=+2.0 la=+2.0]
+        +2.0  cast_spell: Signal Pest  [h=+2.0 la=+2.0]
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 19  |  Affinity 16
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2), Ragavan, Nimble Pilferer (2/1), Voice of Victory (1/3)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Arena of Glory, Arena of Glory
+║ Affinity board:
+║   Creatures: Sojourner's Companion (4/4), Signal Pest (0/1)
+║   Other: Springleaf Drum, Mox Opal, Springleaf Drum
+║   Lands: Darksteel Citadel [T], Razortide Bridge [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Galvanic Discharge
+  [Main 1]
+  [AI-TRACE MAIN1] T7 Boros Energy
+    state: life=19 mana=3 hand=4+0L gy=1
+    hand: ['The Legend of Roku // Avatar Roku', "Phlage, Titan of Fire's Fury", 'Seasoned Pyromancer', 'Galvanic Discharge']
+    board: ['Guide of Souls (1/2)', 'Ragavan, Nimble Pilferer (2/1)', 'Voice of Victory (1/3)']
+    perms: ['Treasure Token']
+    opp: ["Sojourner's Companion (4/4)", 'Signal Pest (0/1)'] (life=16)
+    EV candidates:
+       +14.8  cast_spell: Phlage, Titan of Fire's Fury <--  [h=+14.8 la=+14.8]
+       +10.5  cast_spell: Seasoned Pyromancer  [h=+10.5 la=+10.5]
+        +5.4  cast_spell: Galvanic Discharge  [h=+5.4 la=+5.4]
+    >>> CAST_SPELL: Phlage, Titan of Fire's Fury
+    → Goal: curve_out
+    [Target] → face (3 dmg, life 16 → 13): face damage worth more
+    [Mana] Tap Sacred Foundry→W, Arena of Glory→R, Arena of Glory→R (paying for Phlage, Titan of Fire's Fury, 3 mana remaining)
+T4 P1: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P2 passes (no response)
+T4: Resolve Phlage, Titan of Fire's Fury
+T4 P1: Phlage: 3 damage to opponent, gain 3 life
+T4 P1: Phlage sacrificed (not escaped)
+T4 P1: Gain 1 life from Guide of Souls (life: 23)
+T4 P1: +1 energy from Guide of Souls (total: 3)
+  [AI-TRACE MAIN1] T7 Boros Energy
+    state: life=23 mana=0 hand=3+0L gy=2
+    hand: ['The Legend of Roku // Avatar Roku', 'Seasoned Pyromancer', 'Galvanic Discharge']
+    board: ['Guide of Souls (1/2)', 'Ragavan, Nimble Pilferer (2/1)', 'Voice of Victory (1/3)']
+    perms: ['Treasure Token']
+    opp: ["Sojourner's Companion (4/4)", 'Signal Pest (0/1)'] (life=13)
+    EV candidates:
+       +10.5  cast_spell: Seasoned Pyromancer <--  [h=+10.5 la=+10.5]
+        +5.4  cast_spell: Galvanic Discharge  [h=+5.4 la=+5.4]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T7 Boros Energy: ['Ragavan, Nimble Pilferer']
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer
+T4 P1: Attack with Ragavan, Nimble Pilferer
+T4 P2:   [BLOCK] Sojourner's Companion (4/4) blocks Ragavan, Nimble Pilferer (2/1) — favorable trade
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T4: Ragavan, Nimble Pilferer dies
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T7 Boros Energy
+    state: life=23 mana=0 hand=3+0L gy=3
+    hand: ['The Legend of Roku // Avatar Roku', 'Seasoned Pyromancer', 'Galvanic Discharge']
+    board: ['Guide of Souls (1/2)', 'Voice of Victory (1/3)']
+    perms: ['Treasure Token']
+    opp: ["Sojourner's Companion (4/4)", 'Signal Pest (0/1)'] (life=13)
+    EV candidates:
+       +10.5  cast_spell: Seasoned Pyromancer <--  [h=+10.5 la=+10.5]
+        +5.4  cast_spell: Galvanic Discharge  [h=+5.4 la=+5.4]
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 4 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 13  |  Boros Energy 23
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Sojourner's Companion (4/4), Signal Pest (0/1)
+║   Other: Springleaf Drum, Mox Opal, Springleaf Drum
+║   Lands: Darksteel Citadel, Razortide Bridge, Island
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2), Voice of Victory (1/3)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Arena of Glory [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Cranial Plating
+  [Main 1]
+  [AI-TRACE MAIN1] T8 Affinity
+    state: life=13 mana=3 hand=3+0L gy=0
+    hand: ['Cranial Plating', 'Signal Pest', 'Cranial Plating']
+    board: ["Sojourner's Companion (4/4)", 'Signal Pest (0/1)']
+    perms: ['Springleaf Drum', 'Mox Opal', 'Springleaf Drum']
+    opp: ['Guide of Souls (1/2)', 'Voice of Victory (1/3)'] (life=23)
+    EV candidates:
+        +0.7  cast_spell: Cranial Plating <--  [h=+0.7 la=+0.7]
+        +0.7  cast_spell: Cranial Plating  [h=+0.7 la=+0.7]
+       -27.2  cast_spell: Signal Pest  [h=-27.2 la=-27.2]
+    >>> CAST_SPELL: Cranial Plating
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Darksteel Citadel→C, Island→U (paying for Cranial Plating, 3 mana remaining)
+T4 P2: Cast Cranial Plating (2)
+    [Priority] P1 passes (no response)
+T4: Resolve Cranial Plating
+T4 P2: Cranial Plating enters the battlefield (unattached)
+  [AI-TRACE MAIN1] T8 Affinity
+    state: life=13 mana=1 hand=2+0L gy=0
+    hand: ['Signal Pest', 'Cranial Plating']
+    board: ["Sojourner's Companion (4/4)", 'Signal Pest (0/1)']
+    perms: ['Springleaf Drum', 'Mox Opal', 'Springleaf Drum', 'Cranial Plating']
+    opp: ['Guide of Souls (1/2)', 'Voice of Victory (1/3)'] (life=23)
+    EV candidates:
+       +12.0  equip: Cranial Plating <--
+       -27.2  cast_spell: Signal Pest  [h=-27.2 la=-27.2]
+    >>> EQUIP: Cranial Plating
+T4 P2: Equip Cranial Plating to Sojourner's Companion (cost 1)
+  [AI-TRACE MAIN1] T8 Affinity
+    state: life=13 mana=0 hand=2+0L gy=0
+    hand: ['Signal Pest', 'Cranial Plating']
+    board: ["Sojourner's Companion (12/4)", 'Signal Pest (0/1)']
+    perms: ['Springleaf Drum', 'Mox Opal', 'Springleaf Drum', 'Cranial Plating']
+    opp: ['Guide of Souls (1/2)', 'Voice of Victory (1/3)'] (life=23)
+    EV candidates:
+       +12.0  equip: Cranial Plating <--
+       -27.2  cast_spell: Signal Pest  [h=-27.2 la=-27.2]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T8 Affinity: ["Sojourner's Companion", 'Signal Pest']
+  [Declare Attackers] P2 attacks with: Sojourner's Companion, Signal Pest
+T4 P2: Attack with Sojourner's Companion, Signal Pest
+T4 P1:   [BLOCK-EMERGENCY] Guide of Souls (1/2) blocks Sojourner's Companion (13/4) — chump block
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T4: Guide of Souls dies
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T8 Affinity
+    state: life=13 mana=0 hand=2+0L gy=0
+    hand: ['Signal Pest', 'Cranial Plating']
+    board: ["Sojourner's Companion (13/4)", 'Signal Pest (0/1)']
+    perms: ['Springleaf Drum', 'Mox Opal', 'Springleaf Drum', 'Cranial Plating']
+    opp: ['Voice of Victory (1/3)'] (life=23)
+    EV candidates:
+       +12.0  equip: Cranial Plating <--
+       -27.2  cast_spell: Signal Pest  [h=-27.2 la=-27.2]
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 23  |  Affinity 13
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 4
+║ Boros Energy board:
+║   Creatures: Voice of Victory (1/3)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Arena of Glory, Arena of Glory
+║ Affinity board:
+║   Creatures: Sojourner's Companion (12/4) [tapped], Signal Pest (0/1) [tapped]
+║   Other: Springleaf Drum, Mox Opal, Springleaf Drum, Cranial Plating
+║   Lands: Darksteel Citadel [T], Razortide Bridge [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Goblin Bombardment
+  [Main 1]
+  [AI-TRACE MAIN1] T9 Boros Energy
+    state: life=23 mana=3 hand=4+0L gy=4
+    hand: ['The Legend of Roku // Avatar Roku', 'Seasoned Pyromancer', 'Galvanic Discharge', 'Goblin Bombardment']
+    board: ['Voice of Victory (1/3)']
+    perms: ['Treasure Token']
+    opp: ["Sojourner's Companion (12/4)", 'Signal Pest (0/1)'] (life=13)
+    EV candidates:
+       +10.7  cast_spell: Galvanic Discharge <--  [h=+10.7 la=+10.7]
+       +10.6  cast_spell: Goblin Bombardment  [h=+10.6 la=+10.6]
+        +5.3  cast_spell: Seasoned Pyromancer  [h=+5.3 la=+5.3]
+    >>> CAST_SPELL: Galvanic Discharge
+    → Goal: curve_out [interaction]
+    [Target] → face (3 dmg, life 13 → 10): face damage worth more
+    [Mana] Tap Arena of Glory→R (paying for Galvanic Discharge, 3 mana remaining)
+T5 P1: Cast Galvanic Discharge (R)
+    [Priority] P2 passes (no response)
+T5: Resolve Galvanic Discharge
+T5 P1: Galvanic Discharge deals 5 to opponent
+  [AI-TRACE MAIN1] T9 Boros Energy
+    state: life=23 mana=2 hand=3+0L gy=5
+    hand: ['The Legend of Roku // Avatar Roku', 'Seasoned Pyromancer', 'Goblin Bombardment']
+    board: ['Voice of Victory (1/3)']
+    perms: ['Treasure Token']
+    opp: ["Sojourner's Companion (12/4)", 'Signal Pest (0/1)'] (life=8)
+    EV candidates:
+       +10.6  cast_spell: Goblin Bombardment <--  [h=+10.6 la=+10.6]
+    >>> CAST_SPELL: Goblin Bombardment
+    → Goal: curve_out
+    [Mana] Tap Arena of Glory→R, Sacred Foundry→R (paying for Goblin Bombardment, 2 mana remaining)
+T5 P1: Cast Goblin Bombardment (1R)
+    [Priority] P2 passes (no response)
+T5: Resolve Goblin Bombardment
+T5 P1: Goblin Bombardment enters — sacrifice creatures for 1 damage each
+  [AI-TRACE MAIN1] T9 Boros Energy
+    state: life=23 mana=0 hand=2+0L gy=5
+    hand: ['The Legend of Roku // Avatar Roku', 'Seasoned Pyromancer']
+    board: ['Voice of Victory (1/3)']
+    perms: ['Treasure Token', 'Goblin Bombardment']
+    opp: ["Sojourner's Companion (12/4)", 'Signal Pest (0/1)'] (life=8)
+    EV candidates:
+       +10.6  cast_spell: Goblin Bombardment <--  [h=+10.6 la=+10.6]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T9 Boros Energy: ['Voice of Victory']
+  [Declare Attackers] P1 attacks with: Voice of Victory
+T5 P1: Create 2x Warrior token(s)
+T5 P1: Voice of Victory mobilize 2 — create 2 1/1 tokens
+T5 P1: Attack with Voice of Victory
+  [Declare Blockers] P2 does not block
+T5 P1:   Voice of Victory (1/3) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P2 life: 8 → 7
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T9 Boros Energy
+    state: life=23 mana=0 hand=2+0L gy=5
+    hand: ['The Legend of Roku // Avatar Roku', 'Seasoned Pyromancer']
+    board: ['Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)']
+    perms: ['Treasure Token', 'Goblin Bombardment']
+    opp: ["Sojourner's Companion (12/4)", 'Signal Pest (0/1)'] (life=7)
+    EV candidates:
+       +10.6  cast_spell: Goblin Bombardment <--  [h=+10.6 la=+10.6]
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 5 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 7  |  Boros Energy 23
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Sojourner's Companion (12/4), Signal Pest (0/1)
+║   Other: Springleaf Drum, Mox Opal, Springleaf Drum, Cranial Plating
+║   Lands: Darksteel Citadel, Razortide Bridge, Island
+║ Boros Energy board:
+║   Creatures: Voice of Victory (1/3) [tapped], Warrior Token (1/1), Warrior Token (1/1)
+║   Other: Treasure Token, Goblin Bombardment
+║   Lands: Sacred Foundry [T], Arena of Glory [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Frogmite
+  [Main 1]
+  [AI-TRACE MAIN1] T10 Affinity
+    state: life=7 mana=3 hand=3+0L gy=0
+    hand: ['Signal Pest', 'Cranial Plating', 'Frogmite']
+    board: ["Sojourner's Companion (12/4)", 'Signal Pest (0/1)']
+    perms: ['Springleaf Drum', 'Mox Opal', 'Springleaf Drum', 'Cranial Plating']
+    opp: ['Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)'] (life=23)
+    EV candidates:
+        +6.9  cast_spell: Frogmite <--  [h=+6.9 la=+6.9]
+        +1.7  cast_spell: Signal Pest  [h=+1.7 la=+1.7]
+        +0.7  cast_spell: Cranial Plating  [h=+0.7 la=+0.7]
+    >>> CAST_SPELL: Frogmite
+    → Goal: curve_out [enablers]
+T5 P2: Cast Frogmite (4)
+    [Priority] P1 passes (no response)
+T5: Resolve Frogmite
+  [AI-TRACE MAIN1] T10 Affinity
+    state: life=7 mana=3 hand=2+0L gy=0
+    hand: ['Signal Pest', 'Cranial Plating']
+    board: ["Sojourner's Companion (13/4)", 'Signal Pest (0/1)', 'Frogmite (2/2)']
+    perms: ['Springleaf Drum', 'Mox Opal', 'Springleaf Drum', 'Cranial Plating']
+    opp: ['Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)'] (life=23)
+    EV candidates:
+       +10.8  cast_spell: Signal Pest <--  [h=+10.8 la=+10.8]
+        +0.7  cast_spell: Cranial Plating  [h=+0.7 la=+0.7]
+    >>> CAST_SPELL: Signal Pest
+    → Goal: curve_out
+T5 P2: Cast Signal Pest (1)
+    [Priority] P1 passes (no response)
+T5: Resolve Signal Pest
+  [AI-TRACE MAIN1] T10 Affinity
+    state: life=7 mana=3 hand=1+0L gy=0
+    hand: ['Cranial Plating']
+    board: ["Sojourner's Companion (14/4)", 'Signal Pest (0/1)', 'Frogmite (2/2)', 'Signal Pest (0/1)']
+    perms: ['Springleaf Drum', 'Mox Opal', 'Springleaf Drum', 'Cranial Plating']
+    opp: ['Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)'] (life=23)
+    EV candidates:
+        +0.8  cast_spell: Cranial Plating <--  [h=+0.8 la=+0.8]
+    >>> CAST_SPELL: Cranial Plating
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Darksteel Citadel→C (paying for Cranial Plating, 3 mana remaining)
+T5 P2: Cast Cranial Plating (2)
+    [Priority] P1 passes (no response)
+T5: Resolve Cranial Plating
+T5 P2: Cranial Plating enters the battlefield (unattached)
+  [AI-TRACE MAIN1] T10 Affinity
+    state: life=7 mana=2 hand=0+0L gy=0
+    hand: []
+    board: ["Sojourner's Companion (15/4)", 'Signal Pest (0/1)', 'Frogmite (2/2)', 'Signal Pest (0/1)']
+    perms: ['Springleaf Drum', 'Mox Opal', 'Springleaf Drum', 'Cranial Plating', 'Cranial Plating']
+    opp: ['Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Warrior Token (1/1)'] (life=23)
+    EV candidates:
+        +0.8  cast_spell: Cranial Plating <--  [h=+0.8 la=+0.8]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T10 Affinity: ["Sojourner's Companion"]
+  [Declare Attackers] P2 attacks with: Sojourner's Companion
+T5 P2: Attack with Sojourner's Companion
+T5 P1:   [BLOCK-EMERGENCY] Warrior Token (1/1) blocks Sojourner's Companion (15/4) — chump block
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T5: Warrior Token dies
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T10 Affinity
+    state: life=7 mana=2 hand=0+0L gy=0
+    hand: []
+    board: ["Sojourner's Companion (15/4)", 'Signal Pest (0/1)', 'Frogmite (2/2)', 'Signal Pest (0/1)']
+    perms: ['Springleaf Drum', 'Mox Opal', 'Springleaf Drum', 'Cranial Plating', 'Cranial Plating']
+    opp: ['Voice of Victory (1/3)', 'Warrior Token (1/1)'] (life=23)
+    EV candidates:
+        +0.8  cast_spell: Cranial Plating <--  [h=+0.8 la=+0.8]
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 6 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 23  |  Affinity 7
+║ Hand: 2 cards  |  Opp hand: 0 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 6
+║ Boros Energy board:
+║   Creatures: Voice of Victory (1/3), Warrior Token (1/1)
+║   Other: Treasure Token, Goblin Bombardment
+║   Lands: Sacred Foundry, Arena of Glory, Arena of Glory
+║ Affinity board:
+║   Creatures: Sojourner's Companion (15/4) [tapped], Signal Pest (0/1), Frogmite (2/2), Signal Pest (0/1)
+║   Other: Springleaf Drum, Mox Opal, Springleaf Drum, Cranial Plating, Cranial Plating
+║   Lands: Darksteel Citadel [T], Razortide Bridge, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Blood Moon
+  [Main 1]
+  [AI-TRACE MAIN1] T11 Boros Energy
+    state: life=23 mana=3 hand=3+0L gy=6
+    hand: ['The Legend of Roku // Avatar Roku', 'Seasoned Pyromancer', 'Blood Moon']
+    board: ['Voice of Victory (1/3)', 'Warrior Token (1/1)']
+    perms: ['Treasure Token', 'Goblin Bombardment']
+    opp: ["Sojourner's Companion (15/4)", 'Signal Pest (0/1)', 'Frogmite (2/2)', 'Signal Pest (0/1)'] (life=7)
+    EV candidates:
+        +2.3  cast_spell: Seasoned Pyromancer <--  [h=+2.3 la=+2.3]
+        -0.4  cast_spell: Blood Moon  [h=-0.4 la=-0.4]
+    >>> CAST_SPELL: Seasoned Pyromancer
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Arena of Glory→R, Arena of Glory→R, Sacred Foundry→R (paying for Seasoned Pyromancer, 3 mana remaining)
+T6 P1: Cast Seasoned Pyromancer (1RR)
+    [Priority] P2 passes (no response)
+T6: Resolve Seasoned Pyromancer
+T6 P1: Create 2x Elemental token(s)
+T6 P1: Seasoned Pyromancer: discard 2, draw 2 (Arena of Glory, Voice of Victory), create 2 Elemental(s)
+  [AI-TRACE MAIN1] T11 Boros Energy
+    state: life=23 mana=0 hand=1+1L gy=8
+    hand: ['Voice of Victory']
+    board: ['Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)']
+    perms: ['Treasure Token', 'Goblin Bombardment']
+    opp: ["Sojourner's Companion (15/4)", 'Signal Pest (0/1)', 'Frogmite (2/2)', 'Signal Pest (0/1)'] (life=7)
+    EV candidates:
+       +10.0  play_land: Arena of Glory <--
+    >>> PLAY_LAND: Arena of Glory
+T6 P1: Play Arena of Glory (enters tapped)
+  [AI-TRACE MAIN1] T11 Boros Energy
+    state: life=23 mana=0 hand=1+0L gy=8
+    hand: ['Voice of Victory']
+    board: ['Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)']
+    perms: ['Treasure Token', 'Goblin Bombardment']
+    opp: ["Sojourner's Companion (15/4)", 'Signal Pest (0/1)', 'Frogmite (2/2)', 'Signal Pest (0/1)'] (life=7)
+    EV candidates:
+       +10.0  play_land: Arena of Glory <--
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T11 Boros Energy: ['Voice of Victory']
+  [Declare Attackers] P1 attacks with: Voice of Victory
+T6 P1: Create 2x Warrior token(s)
+T6 P1: Voice of Victory mobilize 2 — create 2 1/1 tokens
+T6 P1: Attack with Voice of Victory
+T6 P2:   [BLOCK] Frogmite (2/2) blocks Voice of Victory (1/3) — chump block
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T11 Boros Energy
+    state: life=23 mana=0 hand=1+0L gy=8
+    hand: ['Voice of Victory']
+    board: ['Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)']
+    perms: ['Treasure Token', 'Goblin Bombardment']
+    opp: ["Sojourner's Companion (15/4)", 'Signal Pest (0/1)', 'Frogmite (2/2)', 'Signal Pest (0/1)'] (life=7)
+    EV candidates:
+       +10.0  play_land: Arena of Glory <--
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 6 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 7  |  Boros Energy 23
+║ Hand: 0 cards  |  Opp hand: 1 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Sojourner's Companion (15/4), Signal Pest (0/1), Frogmite (2/2), Signal Pest (0/1)
+║   Other: Springleaf Drum, Mox Opal, Springleaf Drum, Cranial Plating, Cranial Plating
+║   Lands: Darksteel Citadel, Razortide Bridge, Island
+║ Boros Energy board:
+║   Creatures: Voice of Victory (1/3) [tapped], Warrior Token (1/1), Seasoned Pyromancer (2/2), Elemental Token (1/1), Elemental Token (1/1), Warrior Token (1/1), Warrior Token (1/1)
+║   Other: Treasure Token, Goblin Bombardment
+║   Lands: Sacred Foundry [T], Arena of Glory [T], Arena of Glory [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Spire of Industry
+  [Main 1]
+  [AI-TRACE MAIN1] T12 Affinity
+    state: life=7 mana=3 hand=0+1L gy=0
+    hand: []
+    board: ["Sojourner's Companion (15/4)", 'Signal Pest (0/1)', 'Frogmite (2/2)', 'Signal Pest (0/1)']
+    perms: ['Springleaf Drum', 'Mox Opal', 'Springleaf Drum', 'Cranial Plating', 'Cranial Plating']
+    opp: ['Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)'] (life=23)
+    EV candidates:
+       +16.5  equip: Cranial Plating <--
+       +12.0  play_land: Spire of Industry
+    >>> EQUIP: Cranial Plating
+T6 P2: Equip Cranial Plating to Sojourner's Companion (cost 1)
+  [AI-TRACE MAIN1] T12 Affinity
+    state: life=7 mana=2 hand=0+1L gy=0
+    hand: []
+    board: ["Sojourner's Companion (26/4)", 'Signal Pest (0/1)', 'Frogmite (2/2)', 'Signal Pest (0/1)']
+    perms: ['Springleaf Drum', 'Mox Opal', 'Springleaf Drum', 'Cranial Plating', 'Cranial Plating']
+    opp: ['Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)'] (life=23)
+    EV candidates:
+       +12.0  play_land: Spire of Industry <--
+    >>> PLAY_LAND: Spire of Industry
+T6 P2: Play Spire of Industry
+  [AI-TRACE MAIN1] T12 Affinity
+    state: life=7 mana=3 hand=0+0L gy=0
+    hand: []
+    board: ["Sojourner's Companion (26/4)", 'Signal Pest (0/1)', 'Frogmite (2/2)', 'Signal Pest (0/1)']
+    perms: ['Springleaf Drum', 'Mox Opal', 'Springleaf Drum', 'Cranial Plating', 'Cranial Plating']
+    opp: ['Voice of Victory (1/3)', 'Warrior Token (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)'] (life=23)
+    EV candidates:
+       +12.0  play_land: Spire of Industry <--
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T12 Affinity: ["Sojourner's Companion", 'Signal Pest', 'Frogmite', 'Signal Pest']
+  [Declare Attackers] P2 attacks with: Sojourner's Companion, Signal Pest, Frogmite, Signal Pest
+T6 P2: Attack with Sojourner's Companion, Signal Pest, Frogmite, Signal Pest
+T6 P1:   [BLOCK-EMERGENCY] Warrior Token (1/1) blocks Sojourner's Companion (28/4) — chump block
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T6 P2:   Signal Pest (1/1) → 1 dmg to player
+T6 P2:   Frogmite (4/2) → 4 dmg to player
+T6 P2:   Signal Pest (1/1) → 1 dmg to player
+T6: Warrior Token dies
+  [Combat Damage] 6 damage dealt → P1 life: 23 → 17
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T12 Affinity
+    state: life=7 mana=3 hand=0+0L gy=0
+    hand: []
+    board: ["Sojourner's Companion (28/4)", 'Signal Pest (1/1)', 'Frogmite (4/2)', 'Signal Pest (1/1)']
+    perms: ['Springleaf Drum', 'Mox Opal', 'Springleaf Drum', 'Cranial Plating', 'Cranial Plating']
+    opp: ['Voice of Victory (1/3)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)'] (life=17)
+    EV candidates:
+       +12.0  play_land: Spire of Industry <--
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 7 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 17  |  Affinity 7
+║ Hand: 1 cards  |  Opp hand: 0 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 9
+║ Boros Energy board:
+║   Creatures: Voice of Victory (1/3), Seasoned Pyromancer (2/2), Elemental Token (1/1), Elemental Token (1/1), Warrior Token (1/1), Warrior Token (1/1)
+║   Other: Treasure Token, Goblin Bombardment
+║   Lands: Sacred Foundry, Arena of Glory, Arena of Glory, Arena of Glory
+║ Affinity board:
+║   Creatures: Sojourner's Companion (26/4) [tapped], Signal Pest (0/1) [tapped], Frogmite (2/2) [tapped], Signal Pest (0/1) [tapped]
+║   Other: Springleaf Drum, Mox Opal, Springleaf Drum, Cranial Plating, Cranial Plating
+║   Lands: Darksteel Citadel [T], Razortide Bridge, Island, Spire of Industry
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ocelot Pride
+  [Main 1]
+  [AI-TRACE MAIN1] T13 Boros Energy
+    state: life=17 mana=4 hand=2+0L gy=9
+    hand: ['Voice of Victory', 'Ocelot Pride']
+    board: ['Voice of Victory (1/3)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)']
+    perms: ['Treasure Token', 'Goblin Bombardment']
+    opp: ["Sojourner's Companion (26/4)", 'Signal Pest (0/1)', 'Frogmite (2/2)', 'Signal Pest (0/1)'] (life=7)
+    EV candidates:
+        -0.4  cast_spell: Ocelot Pride <--  [h=-0.4 la=-0.4]
+        -0.5  cast_spell: Voice of Victory  [h=-0.5 la=-0.5]
+    >>> CAST_SPELL: Phlage, Titan of Fire's Fury
+    → Goal: curve_out
+    [Target] → face (3 dmg, life 7 → 4): opponent low life
+T7 P1: Escape Phlage, Titan of Fire's Fury (exile 5 cards)
+  [AI-TRACE MAIN1] T13 Boros Energy
+    state: life=17 mana=4 hand=2+0L gy=4
+    hand: ['Voice of Victory', 'Ocelot Pride']
+    board: ['Voice of Victory (1/3)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)']
+    perms: ['Treasure Token', 'Goblin Bombardment']
+    opp: ["Sojourner's Companion (26/4)", 'Signal Pest (0/1)', 'Frogmite (2/2)', 'Signal Pest (0/1)'] (life=7)
+    EV candidates:
+        -0.4  cast_spell: Ocelot Pride <--  [h=-0.4 la=-0.4]
+        -0.5  cast_spell: Voice of Victory  [h=-0.5 la=-0.5]
+    >>> CAST_SPELL: Ocelot Pride
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Ocelot Pride, 4 mana remaining)
+T7 P1: Cast Ocelot Pride (W)
+    [Priority] P2 passes (no response)
+T7: Resolve Ocelot Pride
+  [AI-TRACE MAIN1] T13 Boros Energy
+    state: life=17 mana=3 hand=1+0L gy=4
+    hand: ['Voice of Victory']
+    board: ['Voice of Victory (1/3)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Ocelot Pride (1/1)']
+    perms: ['Treasure Token', 'Goblin Bombardment']
+    opp: ["Sojourner's Companion (26/4)", 'Signal Pest (0/1)', 'Frogmite (2/2)', 'Signal Pest (0/1)'] (life=7)
+    EV candidates:
+        -0.4  cast_spell: Ocelot Pride <--  [h=-0.4 la=-0.4]
+        -0.5  cast_spell: Voice of Victory  [h=-0.5 la=-0.5]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T13 Boros Energy: ['Voice of Victory', 'Seasoned Pyromancer', 'Elemental Token', 'Elemental Token', 'Warrior Token', 'Warrior Token']
+  [Declare Attackers] P1 attacks with: Voice of Victory, Seasoned Pyromancer, Elemental Token, Elemental Token, Warrior Token, Warrior Token
+T7 P1: Create 2x Warrior token(s)
+T7 P1: Voice of Victory mobilize 2 — create 2 1/1 tokens
+T7 P1: Attack with Voice of Victory, Seasoned Pyromancer, Elemental Token, Elemental Token, Warrior Token, Warrior Token
+  [Declare Blockers] P2 does not block
+T7 P1:   Voice of Victory (1/3) → 1 dmg to player
+T7 P1:   Seasoned Pyromancer (2/2) → 2 dmg to player
+T7 P1:   Elemental Token (1/1) → 1 dmg to player
+T7 P1:   Elemental Token (1/1) → 1 dmg to player
+T7 P1:   Warrior Token (1/1) → 1 dmg to player
+T7 P1:   Warrior Token (1/1) → 1 dmg to player
+P2 loses: life total 0
+  [Combat Damage] 7 damage dealt → P2 life: 7 → 0
+
+>>> Boros Energy wins Game 1 on turn 7 via damage
+    Final life: Boros Energy=17  Affinity=0
+
+======================================================================
+  GAME 2: Affinity (P1) vs Boros Energy (P2)  —  seed 64001
+  Series: Boros Energy 1 - 0 Affinity
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Affinity wins → chooses to play first
+║ P1 (on play): Affinity
+║ P2 (on draw): Boros Energy
+╚═══════════════════════════════════════════════════════
+
+P1 (Affinity) opening hand (1 lands, 6 spells):
+  • Cranial Plating [Spell, CMC 2]
+  • Thought Monitor [Creature, CMC 7]
+  • Memnite [Creature, CMC 0]
+  • Ornithopter [Creature, CMC 0]
+  • Memnite [Creature, CMC 0]
+  • Darksteel Citadel [Land, CMC 0]
+  • Memnite [Creature, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Cranial Plating, Memnite, Ornithopter, 5 cheap spells
+
+P2 (Boros Energy) opening hand (2 lands, 5 spells):
+  • Plains [Land, CMC 0]
+  • Arena of Glory [Land, CMC 0]
+  • Phlage, Titan of Fire's Fury [Creature, CMC 3]
+  • Galvanic Discharge [Spell, CMC 1]
+  • Guide of Souls [Creature, CMC 1]
+  • Ajani, Nacatl Pariah // Ajani, Nacatl Avenger [Creature, CMC 2]
+  • Thraben Charm [Spell, CMC 2]
+→ P2 KEEPS 7 — has key card(s): Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Galvanic Discharge, Guide of Souls, 5 cheap spells
+
+
+╔══ TURN 1 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Boros Energy 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+  [AI-TRACE MAIN1] T1 Affinity
+    state: life=20 mana=0 hand=6+1L gy=0
+    hand: ['Cranial Plating', 'Thought Monitor', 'Memnite', 'Ornithopter', 'Memnite', 'Memnite']
+    opp: [] (life=20)
+    EV candidates:
+       +27.0  play_land: Darksteel Citadel <--
+        +2.0  cast_spell: Memnite  [h=+2.0 la=+2.0]
+        +2.0  cast_spell: Memnite  [h=+2.0 la=+2.0]
+        +2.0  cast_spell: Memnite  [h=+2.0 la=+2.0]
+        +1.0  cast_spell: Ornithopter  [h=+1.0 la=+1.0]
+    >>> PLAY_LAND: Darksteel Citadel
+T1 P1: Play Darksteel Citadel
+  [AI-TRACE MAIN1] T1 Affinity
+    state: life=20 mana=1 hand=6+0L gy=0
+    hand: ['Cranial Plating', 'Thought Monitor', 'Memnite', 'Ornithopter', 'Memnite', 'Memnite']
+    opp: [] (life=20)
+    EV candidates:
+        +2.0  cast_spell: Memnite <--  [h=+2.0 la=+2.0]
+        +2.0  cast_spell: Memnite  [h=+2.0 la=+2.0]
+        +2.0  cast_spell: Memnite  [h=+2.0 la=+2.0]
+        +1.0  cast_spell: Ornithopter  [h=+1.0 la=+1.0]
+    >>> CAST_SPELL: Memnite
+    → Goal: deploy_engine [enablers]
+T1 P1: Cast Memnite (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Memnite
+  [AI-TRACE MAIN1] T1 Affinity
+    state: life=20 mana=1 hand=5+0L gy=0
+    hand: ['Cranial Plating', 'Thought Monitor', 'Ornithopter', 'Memnite', 'Memnite']
+    board: ['Memnite (1/1)']
+    opp: [] (life=20)
+    EV candidates:
+        +2.0  cast_spell: Memnite <--  [h=+2.0 la=+2.0]
+        +2.0  cast_spell: Memnite  [h=+2.0 la=+2.0]
+        +1.0  cast_spell: Ornithopter  [h=+1.0 la=+1.0]
+    >>> CAST_SPELL: Memnite
+    → Goal: deploy_engine [enablers]
+T1 P1: Cast Memnite (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Memnite
+  [AI-TRACE MAIN1] T1 Affinity
+    state: life=20 mana=1 hand=4+0L gy=0
+    hand: ['Cranial Plating', 'Thought Monitor', 'Ornithopter', 'Memnite']
+    board: ['Memnite (1/1)', 'Memnite (1/1)']
+    opp: [] (life=20)
+    EV candidates:
+        +5.1  cast_spell: Memnite <--  [h=+5.1 la=+5.1]
+        +1.0  cast_spell: Ornithopter  [h=+1.0 la=+1.0]
+    >>> CAST_SPELL: Memnite
+    → Goal: deploy_engine [enablers]
+T1 P1: Cast Memnite (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Memnite
+  [AI-TRACE MAIN1] T1 Affinity
+    state: life=20 mana=1 hand=3+0L gy=0
+    hand: ['Cranial Plating', 'Thought Monitor', 'Ornithopter']
+    board: ['Memnite (1/1)', 'Memnite (1/1)', 'Memnite (1/1)']
+    opp: [] (life=20)
+    EV candidates:
+        +1.0  cast_spell: Ornithopter <--  [h=+1.0 la=+1.0]
+    >>> CAST_SPELL: Ornithopter
+    → Goal: deploy_engine [enablers]
+T1 P1: Cast Ornithopter (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Ornithopter
+  [AI-TRACE MAIN1] T1 Affinity
+    state: life=20 mana=1 hand=2+0L gy=0
+    hand: ['Cranial Plating', 'Thought Monitor']
+    board: ['Memnite (1/1)', 'Memnite (1/1)', 'Memnite (1/1)', 'Ornithopter (0/2)']
+    opp: [] (life=20)
+    EV candidates:
+        +1.0  cast_spell: Ornithopter <--  [h=+1.0 la=+1.0]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T1 Affinity: no attack
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T1 Affinity
+    state: life=20 mana=1 hand=2+0L gy=0
+    hand: ['Cranial Plating', 'Thought Monitor']
+    board: ['Memnite (1/1)', 'Memnite (1/1)', 'Memnite (1/1)', 'Ornithopter (0/2)']
+    opp: [] (life=20)
+    EV candidates:
+        +1.0  cast_spell: Ornithopter <--  [h=+1.0 la=+1.0]
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 1 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 2 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: Memnite (1/1), Memnite (1/1), Memnite (1/1), Ornithopter (0/2)
+║   Lands: Darksteel Citadel
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Elegant Parlor
+  [Main 1]
+  [AI-TRACE MAIN1] T2 Boros Energy
+    state: life=20 mana=0 hand=5+3L gy=0
+    hand: ["Phlage, Titan of Fire's Fury", 'Galvanic Discharge', 'Guide of Souls', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Thraben Charm']
+    opp: ['Memnite (1/1)', 'Memnite (1/1)', 'Memnite (1/1)', 'Ornithopter (0/2)'] (life=20)
+    EV candidates:
+       +31.0  play_land: Plains <--
+       +23.0  play_land: Elegant Parlor
+       +10.0  play_land: Arena of Glory
+    >>> PLAY_LAND: Plains
+T1 P2: Play Plains
+  [AI-TRACE MAIN1] T2 Boros Energy
+    state: life=20 mana=1 hand=5+2L gy=0
+    hand: ["Phlage, Titan of Fire's Fury", 'Galvanic Discharge', 'Guide of Souls', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Thraben Charm']
+    opp: ['Memnite (1/1)', 'Memnite (1/1)', 'Memnite (1/1)', 'Ornithopter (0/2)'] (life=20)
+    EV candidates:
+        -1.1  cast_spell: Guide of Souls <--  [h=-1.1 la=-1.1]
+    >>> CAST_SPELL: Guide of Souls
+    → Goal: curve_out [enablers]
+    [Mana] Tap Plains→W (paying for Guide of Souls, 1 mana remaining)
+T1 P2: Cast Guide of Souls (W)
+    [Priority] P1 passes (no response)
+T1: Resolve Guide of Souls
+  [AI-TRACE MAIN1] T2 Boros Energy
+    state: life=20 mana=0 hand=4+2L gy=0
+    hand: ["Phlage, Titan of Fire's Fury", 'Galvanic Discharge', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Thraben Charm']
+    board: ['Guide of Souls (1/2)']
+    opp: ['Memnite (1/1)', 'Memnite (1/1)', 'Memnite (1/1)', 'Ornithopter (0/2)'] (life=20)
+    EV candidates:
+        -1.1  cast_spell: Guide of Souls <--  [h=-1.1 la=-1.1]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T2 Boros Energy: no attack
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T2 Boros Energy
+    state: life=20 mana=0 hand=4+2L gy=0
+    hand: ["Phlage, Titan of Fire's Fury", 'Galvanic Discharge', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Thraben Charm']
+    board: ['Guide of Souls (1/2)']
+    opp: ['Memnite (1/1)', 'Memnite (1/1)', 'Memnite (1/1)', 'Ornithopter (0/2)'] (life=20)
+    EV candidates:
+        -1.1  cast_spell: Guide of Souls <--  [h=-1.1 la=-1.1]
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 2 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Boros Energy 20
+║ Hand: 2 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Memnite (1/1), Memnite (1/1), Memnite (1/1), Ornithopter (0/2)
+║   Lands: Darksteel Citadel
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2)
+║   Lands: Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Signal Pest
+  [Main 1]
+  [AI-TRACE MAIN1] T3 Affinity
+    state: life=20 mana=1 hand=3+0L gy=0
+    hand: ['Cranial Plating', 'Thought Monitor', 'Signal Pest']
+    board: ['Memnite (1/1)', 'Memnite (1/1)', 'Memnite (1/1)', 'Ornithopter (0/2)']
+    opp: ['Guide of Souls (1/2)'] (life=20)
+    EV candidates:
+        +1.0  cast_spell: Signal Pest <--  [h=+1.0 la=+1.0]
+    >>> CAST_SPELL: Signal Pest
+    → Goal: deploy_engine
+    [Mana] Tap Darksteel Citadel→C (paying for Signal Pest, 1 mana remaining)
+T2 P1: Cast Signal Pest (1)
+    [Priority] P2 passes (no response)
+T2: Resolve Signal Pest
+  [AI-TRACE MAIN1] T3 Affinity
+    state: life=20 mana=0 hand=2+0L gy=0
+    hand: ['Cranial Plating', 'Thought Monitor']
+    board: ['Memnite (1/1)', 'Memnite (1/1)', 'Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)']
+    opp: ['Guide of Souls (1/2)'] (life=20)
+    EV candidates:
+        +1.0  cast_spell: Signal Pest <--  [h=+1.0 la=+1.0]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T3 Affinity: no attack
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T3 Affinity
+    state: life=20 mana=0 hand=2+0L gy=0
+    hand: ['Cranial Plating', 'Thought Monitor']
+    board: ['Memnite (1/1)', 'Memnite (1/1)', 'Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)']
+    opp: ['Guide of Souls (1/2)'] (life=20)
+    EV candidates:
+        +1.0  cast_spell: Signal Pest <--  [h=+1.0 la=+1.0]
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 2 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2)
+║   Lands: Plains
+║ Affinity board:
+║   Creatures: Memnite (1/1), Memnite (1/1), Memnite (1/1), Ornithopter (0/2), Signal Pest (0/1)
+║   Lands: Darksteel Citadel [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Seasoned Pyromancer
+  [Main 1]
+  [AI-TRACE MAIN1] T4 Boros Energy
+    state: life=20 mana=1 hand=5+2L gy=0
+    hand: ["Phlage, Titan of Fire's Fury", 'Galvanic Discharge', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Thraben Charm', 'Seasoned Pyromancer']
+    board: ['Guide of Souls (1/2)']
+    opp: ['Memnite (1/1)', 'Memnite (1/1)', 'Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=20)
+    EV candidates:
+       +20.0  play_land: Arena of Glory <--
+       +20.0  play_land: Elegant Parlor
+    >>> PLAY_LAND: Arena of Glory
+T2 P2: Play Arena of Glory (enters tapped)
+  [AI-TRACE MAIN1] T4 Boros Energy
+    state: life=20 mana=1 hand=5+1L gy=0
+    hand: ["Phlage, Titan of Fire's Fury", 'Galvanic Discharge', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Thraben Charm', 'Seasoned Pyromancer']
+    board: ['Guide of Souls (1/2)']
+    opp: ['Memnite (1/1)', 'Memnite (1/1)', 'Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=20)
+    EV candidates:
+       +20.0  play_land: Arena of Glory <--
+       +20.0  play_land: Elegant Parlor
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T4 Boros Energy: ['Guide of Souls']
+  [Declare Attackers] P2 attacks with: Guide of Souls
+T2 P2: Attack with Guide of Souls
+  [Declare Blockers] P1 does not block
+T2 P2:   Guide of Souls (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 20 → 19
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T4 Boros Energy
+    state: life=20 mana=1 hand=5+1L gy=0
+    hand: ["Phlage, Titan of Fire's Fury", 'Galvanic Discharge', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Thraben Charm', 'Seasoned Pyromancer']
+    board: ['Guide of Souls (1/2)']
+    opp: ['Memnite (1/1)', 'Memnite (1/1)', 'Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=19)
+    EV candidates:
+       +20.0  play_land: Arena of Glory <--
+       +20.0  play_land: Elegant Parlor
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 3 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 19  |  Boros Energy 20
+║ Hand: 2 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Memnite (1/1), Memnite (1/1), Memnite (1/1), Ornithopter (0/2), Signal Pest (0/1)
+║   Lands: Darksteel Citadel
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2) [tapped]
+║   Lands: Plains, Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Sojourner's Companion
+  [Main 1]
+  [AI-TRACE MAIN1] T5 Affinity
+    state: life=19 mana=1 hand=3+0L gy=0
+    hand: ['Cranial Plating', 'Thought Monitor', "Sojourner's Companion"]
+    board: ['Memnite (1/1)', 'Memnite (1/1)', 'Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)']
+    opp: ['Guide of Souls (1/2)'] (life=20)
+    EV candidates:
+        -3.1  cast_spell: Sojourner's Companion <--  [h=-3.1 la=-3.1 rmv=56%]
+    >>> CAST_SPELL: Sojourner's Companion
+    → Goal: curve_out [enablers]
+    [Mana] Tap Darksteel Citadel→C (paying for Sojourner's Companion, 1 mana remaining)
+T3 P1: Cast Sojourner's Companion (7)
+    [Priority] P2 passes (no response)
+T3: Resolve Sojourner's Companion
+  [AI-TRACE MAIN1] T5 Affinity
+    state: life=19 mana=0 hand=2+0L gy=0
+    hand: ['Cranial Plating', 'Thought Monitor']
+    board: ['Memnite (1/1)', 'Memnite (1/1)', 'Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', "Sojourner's Companion (4/4)"]
+    opp: ['Guide of Souls (1/2)'] (life=20)
+    EV candidates:
+        -3.1  cast_spell: Sojourner's Companion <--  [h=-3.1 la=-3.1 rmv=56%]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T5 Affinity: ['Memnite', 'Memnite', 'Memnite', 'Signal Pest']
+  [Declare Attackers] P1 attacks with: Memnite, Memnite, Memnite, Signal Pest
+T3 P1: Attack with Memnite, Memnite, Memnite, Signal Pest
+  [Declare Blockers] P2 does not block
+T3 P1:   Memnite (2/1) → 2 dmg to player
+T3 P1:   Memnite (2/1) → 2 dmg to player
+T3 P1:   Memnite (2/1) → 2 dmg to player
+  [Combat Damage] 6 damage dealt → P2 life: 20 → 14
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T5 Affinity
+    state: life=19 mana=0 hand=2+0L gy=0
+    hand: ['Cranial Plating', 'Thought Monitor']
+    board: ['Memnite (2/1)', 'Memnite (2/1)', 'Memnite (2/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', "Sojourner's Companion (4/4)"]
+    opp: ['Guide of Souls (1/2)'] (life=14)
+    EV candidates:
+        -3.1  cast_spell: Sojourner's Companion <--  [h=-3.1 la=-3.1 rmv=56%]
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 14  |  Affinity 19
+║ Hand: 6 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 1
+║ Library: 51  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2)
+║   Lands: Plains, Arena of Glory
+║ Affinity board:
+║   Creatures: Memnite (1/1) [tapped], Memnite (1/1) [tapped], Memnite (1/1) [tapped], Ornithopter (0/2), Signal Pest (0/1) [tapped], Sojourner's Companion (4/4)
+║   Lands: Darksteel Citadel [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thraben Charm
+  [Main 1]
+  [AI-TRACE MAIN1] T6 Boros Energy
+    state: life=14 mana=2 hand=6+1L gy=0
+    hand: ["Phlage, Titan of Fire's Fury", 'Galvanic Discharge', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Thraben Charm', 'Seasoned Pyromancer', 'Thraben Charm']
+    board: ['Guide of Souls (1/2)']
+    opp: ['Memnite (1/1)', 'Memnite (1/1)', 'Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', "Sojourner's Companion (4/4)"] (life=19)
+    EV candidates:
+        +7.0  play_land: Elegant Parlor <--
+        +6.7  cast_spell: Thraben Charm  [h=+6.7 la=+6.7]
+        +6.7  cast_spell: Thraben Charm  [h=+6.7 la=+6.7]
+        +1.2  cast_spell: Galvanic Discharge  [h=+1.2 la=+1.2]
+        -2.0  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger  [h=-2.0 la=-2.0]
+    >>> PLAY_LAND: Elegant Parlor
+T3 P2: Play Elegant Parlor (enters tapped)
+  [AI-TRACE MAIN1] T6 Boros Energy
+    state: life=14 mana=2 hand=6+0L gy=0
+    hand: ["Phlage, Titan of Fire's Fury", 'Galvanic Discharge', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Thraben Charm', 'Seasoned Pyromancer', 'Thraben Charm']
+    board: ['Guide of Souls (1/2)']
+    opp: ['Memnite (1/1)', 'Memnite (1/1)', 'Memnite (1/1)', 'Ornithopter (0/2)', 'Signal Pest (0/1)', "Sojourner's Companion (4/4)"] (life=19)
+    EV candidates:
+        +6.7  cast_spell: Thraben Charm <--  [h=+6.7 la=+6.7]
+        +6.7  cast_spell: Thraben Charm  [h=+6.7 la=+6.7]
+        +1.2  cast_spell: Galvanic Discharge  [h=+1.2 la=+1.2]
+        -2.0  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger  [h=-2.0 la=-2.0]
+    >>> CAST_SPELL: Thraben Charm
+    → Goal: curve_out [interaction]
+    [Mana] Tap Plains→W, Arena of Glory→R (paying for Thraben Charm, 2 mana remaining)
+T3 P2: Cast Thraben Charm (1W)
+    [Priority] P1 passes (no response)
+T3: Resolve Thraben Charm
+T3: Memnite dies
+T3: Memnite dies
+T3: Memnite dies
+T3: Signal Pest dies
+T3 P2: Thraben Charm -1/-1 kills 4 tokens
+  [AI-TRACE MAIN1] T6 Boros Energy
+    state: life=14 mana=0 hand=5+0L gy=1
+    hand: ["Phlage, Titan of Fire's Fury", 'Galvanic Discharge', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Seasoned Pyromancer', 'Thraben Charm']
+    board: ['Guide of Souls (1/2)']
+    opp: ['Ornithopter (0/2)', "Sojourner's Companion (4/4)"] (life=19)
+    EV candidates:
+        +6.7  cast_spell: Thraben Charm <--  [h=+6.7 la=+6.7]
+        +1.2  cast_spell: Galvanic Discharge  [h=+1.2 la=+1.2]
+        -2.0  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger  [h=-2.0 la=-2.0]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T6 Boros Energy: no attack
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T6 Boros Energy
+    state: life=14 mana=0 hand=5+0L gy=1
+    hand: ["Phlage, Titan of Fire's Fury", 'Galvanic Discharge', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Seasoned Pyromancer', 'Thraben Charm']
+    board: ['Guide of Souls (1/2)']
+    opp: ['Ornithopter (0/2)', "Sojourner's Companion (4/4)"] (life=19)
+    EV candidates:
+        +6.7  cast_spell: Thraben Charm <--  [h=+6.7 la=+6.7]
+        +1.2  cast_spell: Galvanic Discharge  [h=+1.2 la=+1.2]
+        -2.0  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger  [h=-2.0 la=-2.0]
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 4 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 19  |  Boros Energy 14
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 4
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Sojourner's Companion (4/4)
+║   Lands: Darksteel Citadel
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2)
+║   Lands: Plains [T], Arena of Glory [T], Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Island
+  [Main 1]
+  [AI-TRACE MAIN1] T7 Affinity
+    state: life=19 mana=1 hand=2+1L gy=4
+    hand: ['Cranial Plating', 'Thought Monitor']
+    board: ['Ornithopter (0/2)', "Sojourner's Companion (4/4)"]
+    opp: ['Guide of Souls (1/2)'] (life=14)
+    EV candidates:
+       +22.0  play_land: Island <--
+    >>> PLAY_LAND: Island
+T4 P1: Play Island
+  [AI-TRACE MAIN1] T7 Affinity
+    state: life=19 mana=2 hand=2+0L gy=4
+    hand: ['Cranial Plating', 'Thought Monitor']
+    board: ['Ornithopter (0/2)', "Sojourner's Companion (4/4)"]
+    opp: ['Guide of Souls (1/2)'] (life=14)
+    EV candidates:
+        +1.5  cast_spell: Cranial Plating <--  [h=+1.5 la=+1.5]
+    >>> CAST_SPELL: Cranial Plating
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Darksteel Citadel→C, Island→U (paying for Cranial Plating, 2 mana remaining)
+T4 P1: Cast Cranial Plating (2)
+    [Priority] P2 passes (no response)
+T4: Resolve Cranial Plating
+T4 P1: Cranial Plating enters the battlefield (unattached)
+  [AI-TRACE MAIN1] T7 Affinity
+    state: life=19 mana=0 hand=1+0L gy=4
+    hand: ['Thought Monitor']
+    board: ['Ornithopter (0/2)', "Sojourner's Companion (4/4)"]
+    perms: ['Cranial Plating']
+    opp: ['Guide of Souls (1/2)'] (life=14)
+    EV candidates:
+        +1.5  cast_spell: Cranial Plating <--  [h=+1.5 la=+1.5]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T7 Affinity: ["Sojourner's Companion"]
+  [Declare Attackers] P1 attacks with: Sojourner's Companion
+T4 P1: Attack with Sojourner's Companion
+T4 P2:   [BLOCK] Guide of Souls (1/2) blocks Sojourner's Companion (4/4) — chump block
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T4: Guide of Souls dies
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T7 Affinity
+    state: life=19 mana=0 hand=1+0L gy=4
+    hand: ['Thought Monitor']
+    board: ['Ornithopter (0/2)', "Sojourner's Companion (4/4)"]
+    perms: ['Cranial Plating']
+    opp: [] (life=14)
+    EV candidates:
+        +1.5  cast_spell: Cranial Plating <--  [h=+1.5 la=+1.5]
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 14  |  Affinity 19
+║ Hand: 5 cards  |  Opp hand: 1 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Plains, Arena of Glory, Elegant Parlor
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Sojourner's Companion (4/4) [tapped]
+║   Other: Cranial Plating
+║   Lands: Darksteel Citadel [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Seasoned Pyromancer
+  [Main 1]
+  [AI-TRACE MAIN1] T8 Boros Energy
+    state: life=14 mana=3 hand=6+0L gy=2
+    hand: ["Phlage, Titan of Fire's Fury", 'Galvanic Discharge', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Seasoned Pyromancer', 'Thraben Charm', 'Seasoned Pyromancer']
+    opp: ['Ornithopter (0/2)', "Sojourner's Companion (4/4)"] (life=19)
+    EV candidates:
+       +18.6  cast_spell: Phlage, Titan of Fire's Fury <--  [h=+18.6 la=+18.6]
+       +16.8  cast_spell: Thraben Charm  [h=+16.8 la=+16.8]
+        +7.2  cast_spell: Galvanic Discharge  [h=+7.2 la=+7.2]
+        +3.0  cast_spell: Seasoned Pyromancer  [h=+3.0 la=+3.0]
+        +3.0  cast_spell: Seasoned Pyromancer  [h=+3.0 la=+3.0]
+        -2.0  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger  [h=-2.0 la=-2.0]
+    >>> CAST_SPELL: Phlage, Titan of Fire's Fury
+    → Goal: curve_out
+    [Target] → Ornithopter: marginal threat 1.4 (0/2 body) — better than 3 face dmg
+    [Mana] Tap Plains→W, Arena of Glory→R, Elegant Parlor→R (paying for Phlage, Titan of Fire's Fury, 3 mana remaining)
+T4 P2: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P1 passes (no response)
+T4: Resolve Phlage, Titan of Fire's Fury
+T4 P2: Phlage: 3 damage to Ornithopter, gain 3 life
+T4: Ornithopter dies
+T4 P2: Phlage sacrificed (not escaped)
+  [AI-TRACE MAIN1] T8 Boros Energy
+    state: life=17 mana=0 hand=5+0L gy=3
+    hand: ['Galvanic Discharge', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Seasoned Pyromancer', 'Thraben Charm', 'Seasoned Pyromancer']
+    opp: ["Sojourner's Companion (4/4)"] (life=19)
+    EV candidates:
+       +16.8  cast_spell: Thraben Charm <--  [h=+16.8 la=+16.8]
+        +7.2  cast_spell: Galvanic Discharge  [h=+7.2 la=+7.2]
+        +3.0  cast_spell: Seasoned Pyromancer  [h=+3.0 la=+3.0]
+        +3.0  cast_spell: Seasoned Pyromancer  [h=+3.0 la=+3.0]
+        -2.0  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger  [h=-2.0 la=-2.0]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T8 Boros Energy: no attack
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T8 Boros Energy
+    state: life=17 mana=0 hand=5+0L gy=3
+    hand: ['Galvanic Discharge', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Seasoned Pyromancer', 'Thraben Charm', 'Seasoned Pyromancer']
+    opp: ["Sojourner's Companion (4/4)"] (life=19)
+    EV candidates:
+       +16.8  cast_spell: Thraben Charm <--  [h=+16.8 la=+16.8]
+        +7.2  cast_spell: Galvanic Discharge  [h=+7.2 la=+7.2]
+        +3.0  cast_spell: Seasoned Pyromancer  [h=+3.0 la=+3.0]
+        +3.0  cast_spell: Seasoned Pyromancer  [h=+3.0 la=+3.0]
+        -2.0  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger  [h=-2.0 la=-2.0]
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 5 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 19  |  Boros Energy 17
+║ Hand: 1 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 5
+║ Affinity board:
+║   Creatures: Sojourner's Companion (4/4)
+║   Other: Cranial Plating
+║   Lands: Darksteel Citadel, Island
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Plains [T], Arena of Glory [T], Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ornithopter
+  [Main 1]
+  [AI-TRACE MAIN1] T9 Affinity
+    state: life=19 mana=2 hand=2+0L gy=5
+    hand: ['Thought Monitor', 'Ornithopter']
+    board: ["Sojourner's Companion (4/4)"]
+    perms: ['Cranial Plating']
+    opp: [] (life=17)
+    EV candidates:
+        +4.5  equip: Cranial Plating <--
+        +1.1  cast_spell: Ornithopter  [h=+1.1 la=+1.1]
+    >>> EQUIP: Cranial Plating
+T5 P1: Equip Cranial Plating to Sojourner's Companion (cost 1)
+  [AI-TRACE MAIN1] T9 Affinity
+    state: life=19 mana=1 hand=2+0L gy=5
+    hand: ['Thought Monitor', 'Ornithopter']
+    board: ["Sojourner's Companion (7/4)"]
+    perms: ['Cranial Plating']
+    opp: [] (life=17)
+    EV candidates:
+        +1.1  cast_spell: Ornithopter <--  [h=+1.1 la=+1.1]
+    >>> CAST_SPELL: Ornithopter
+    → Goal: curve_out
+T5 P1: Cast Ornithopter (0)
+    [Priority] P2 passes (no response)
+T5: Resolve Ornithopter
+  [AI-TRACE MAIN1] T9 Affinity
+    state: life=19 mana=1 hand=1+0L gy=5
+    hand: ['Thought Monitor']
+    board: ["Sojourner's Companion (8/4)", 'Ornithopter (0/2)']
+    perms: ['Cranial Plating']
+    opp: [] (life=17)
+    EV candidates:
+        +1.1  cast_spell: Ornithopter <--  [h=+1.1 la=+1.1]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T9 Affinity: ["Sojourner's Companion"]
+  [Declare Attackers] P1 attacks with: Sojourner's Companion
+T5 P1: Attack with Sojourner's Companion
+  [Declare Blockers] P2 does not block
+T5 P1:   Sojourner's Companion (8/4) → 8 dmg to player
+  [Combat Damage] 8 damage dealt → P2 life: 17 → 9
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T9 Affinity
+    state: life=19 mana=1 hand=1+0L gy=5
+    hand: ['Thought Monitor']
+    board: ["Sojourner's Companion (8/4)", 'Ornithopter (0/2)']
+    perms: ['Cranial Plating']
+    opp: [] (life=9)
+    EV candidates:
+        +1.1  cast_spell: Ornithopter <--  [h=+1.1 la=+1.1]
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 9  |  Affinity 19
+║ Hand: 5 cards  |  Opp hand: 1 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 3
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Plains, Arena of Glory, Elegant Parlor
+║ Affinity board:
+║   Creatures: Sojourner's Companion (8/4) [tapped], Ornithopter (0/2)
+║   Other: Cranial Plating
+║   Lands: Darksteel Citadel [T], Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Goblin Bombardment
+  [Main 1]
+  [AI-TRACE MAIN1] T10 Boros Energy
+    state: life=9 mana=3 hand=6+0L gy=3
+    hand: ['Galvanic Discharge', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Seasoned Pyromancer', 'Thraben Charm', 'Seasoned Pyromancer', 'Goblin Bombardment']
+    opp: ["Sojourner's Companion (8/4)", 'Ornithopter (0/2)'] (life=19)
+    EV candidates:
+       +20.4  cast_spell: Thraben Charm <--  [h=+20.4 la=+20.4]
+        +5.1  cast_spell: Galvanic Discharge  [h=+5.1 la=+5.1]
+        +4.8  cast_spell: Goblin Bombardment  [h=+4.8 la=+4.8]
+        -1.9  cast_spell: Seasoned Pyromancer  [h=-1.9 la=-1.9]
+        -1.9  cast_spell: Seasoned Pyromancer  [h=-1.9 la=-1.9]
+        -2.0  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger  [h=-2.0 la=-2.0]
+    >>> CAST_SPELL: Thraben Charm
+    → Goal: curve_out [interaction]
+    [Mana] Tap Plains→W, Arena of Glory→R (paying for Thraben Charm, 3 mana remaining)
+T5 P2: Cast Thraben Charm (1W)
+    [Priority] P1 passes (no response)
+T5: Resolve Thraben Charm
+T5 P2: Thraben Charm: no high-value mode available
+  [AI-TRACE MAIN1] T10 Boros Energy
+    state: life=9 mana=1 hand=5+0L gy=4
+    hand: ['Galvanic Discharge', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Seasoned Pyromancer', 'Seasoned Pyromancer', 'Goblin Bombardment']
+    opp: ["Sojourner's Companion (8/4)", 'Ornithopter (0/2)'] (life=19)
+    EV candidates:
+        +5.4  cast_spell: Galvanic Discharge <--  [h=+5.4 la=+5.4]
+    >>> CAST_SPELL: Galvanic Discharge
+    → Goal: curve_out [interaction]
+    [Target] → Ornithopter: marginal threat 2.4 (0/2 body) — better than 3 face dmg
+    [Mana] Tap Elegant Parlor→R (paying for Galvanic Discharge, 1 mana remaining)
+T5 P2: Cast Galvanic Discharge (R)
+    [Priority] P1 passes (no response)
+T5: Resolve Galvanic Discharge
+T5 P2: Galvanic Discharge deals 3 to Ornithopter
+T5: Ornithopter dies
+  [AI-TRACE MAIN1] T10 Boros Energy
+    state: life=9 mana=0 hand=4+0L gy=5
+    hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Seasoned Pyromancer', 'Seasoned Pyromancer', 'Goblin Bombardment']
+    opp: ["Sojourner's Companion (7/4)"] (life=19)
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T10 Boros Energy: no attack
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T10 Boros Energy
+    state: life=9 mana=0 hand=4+0L gy=5
+    hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Seasoned Pyromancer', 'Seasoned Pyromancer', 'Goblin Bombardment']
+    opp: ["Sojourner's Companion (7/4)"] (life=19)
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 6 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 19  |  Boros Energy 9
+║ Hand: 1 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 6
+║ Affinity board:
+║   Creatures: Sojourner's Companion (7/4)
+║   Other: Cranial Plating
+║   Lands: Darksteel Citadel, Island
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Plains [T], Arena of Glory [T], Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Springleaf Drum
+  [Main 1]
+  [AI-TRACE MAIN1] T11 Affinity
+    state: life=19 mana=2 hand=2+0L gy=6
+    hand: ['Thought Monitor', 'Springleaf Drum']
+    board: ["Sojourner's Companion (7/4)"]
+    perms: ['Cranial Plating']
+    opp: [] (life=9)
+    EV candidates:
+        +2.2  cast_spell: Springleaf Drum <--  [h=+2.2 la=+2.2]
+    >>> CAST_SPELL: Springleaf Drum
+    → Goal: curve_out
+    [Mana] Tap Darksteel Citadel→C (paying for Springleaf Drum, 2 mana remaining)
+T6 P1: Cast Springleaf Drum (1)
+    [Priority] P2 passes (no response)
+T6: Resolve Springleaf Drum
+  [AI-TRACE MAIN1] T11 Affinity
+    state: life=19 mana=1 hand=1+0L gy=6
+    hand: ['Thought Monitor']
+    board: ["Sojourner's Companion (8/4)"]
+    perms: ['Cranial Plating', 'Springleaf Drum']
+    opp: [] (life=9)
+    EV candidates:
+        +2.2  cast_spell: Springleaf Drum <--  [h=+2.2 la=+2.2]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T11 Affinity: ["Sojourner's Companion"]
+  [Declare Attackers] P1 attacks with: Sojourner's Companion
+T6 P1: Attack with Sojourner's Companion
+  [Declare Blockers] P2 does not block
+T6 P1:   Sojourner's Companion (8/4) → 8 dmg to player
+  [Combat Damage] 8 damage dealt → P2 life: 9 → 1
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T11 Affinity
+    state: life=19 mana=1 hand=1+0L gy=6
+    hand: ['Thought Monitor']
+    board: ["Sojourner's Companion (8/4)"]
+    perms: ['Cranial Plating', 'Springleaf Drum']
+    opp: [] (life=1)
+    EV candidates:
+        +2.2  cast_spell: Springleaf Drum <--  [h=+2.2 la=+2.2]
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 6 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 1  |  Affinity 19
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 5
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Plains, Arena of Glory, Elegant Parlor
+║ Affinity board:
+║   Creatures: Sojourner's Companion (8/4) [tapped]
+║   Other: Cranial Plating, Springleaf Drum
+║   Lands: Darksteel Citadel [T], Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mountain
+  [Main 1]
+  [AI-TRACE MAIN1] T12 Boros Energy
+    state: life=1 mana=3 hand=4+1L gy=5
+    hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Seasoned Pyromancer', 'Seasoned Pyromancer', 'Goblin Bombardment']
+    opp: ["Sojourner's Companion (8/4)"] (life=19)
+    EV candidates:
+       +15.0  play_land: Mountain <--
+        +0.9  cast_spell: Goblin Bombardment  [h=+0.9 la=+0.9]
+        -1.8  cast_spell: Seasoned Pyromancer  [h=-1.8 la=-1.8]
+        -1.8  cast_spell: Seasoned Pyromancer  [h=-1.8 la=-1.8]
+        -2.0  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger  [h=-2.0 la=-2.0]
+    >>> PLAY_LAND: Mountain
+T6 P2: Play Mountain
+  [AI-TRACE MAIN1] T12 Boros Energy
+    state: life=1 mana=4 hand=4+0L gy=5
+    hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Seasoned Pyromancer', 'Seasoned Pyromancer', 'Goblin Bombardment']
+    opp: ["Sojourner's Companion (8/4)"] (life=19)
+    EV candidates:
+        +1.1  cast_spell: Goblin Bombardment <--  [h=+1.1 la=+1.1]
+        -1.7  cast_spell: Seasoned Pyromancer  [h=-1.7 la=-1.7]
+        -1.7  cast_spell: Seasoned Pyromancer  [h=-1.7 la=-1.7]
+        -2.0  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger  [h=-2.0 la=-2.0]
+    >>> CAST_SPELL: Goblin Bombardment
+    → Goal: curve_out
+    [Mana] Tap Arena of Glory→R, Plains→W (paying for Goblin Bombardment, 4 mana remaining)
+T6 P2: Cast Goblin Bombardment (1R)
+    [Priority] P1 passes (no response)
+T6: Resolve Goblin Bombardment
+T6 P2: Goblin Bombardment enters — sacrifice creatures for 1 damage each
+  [AI-TRACE MAIN1] T12 Boros Energy
+    state: life=1 mana=2 hand=3+0L gy=5
+    hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Seasoned Pyromancer', 'Seasoned Pyromancer']
+    perms: ['Goblin Bombardment']
+    opp: ["Sojourner's Companion (8/4)"] (life=19)
+    EV candidates:
+        -2.0  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <--  [h=-2.0 la=-2.0]
+    >>> CAST_SPELL: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Elegant Parlor→W, Mountain→R (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 2 mana remaining)
+T6 P2: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P1 passes (no response)
+T6: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T6 P2: Create 1x Cat token(s)
+T6 P2: Ajani creates 2/1 Cat Warrior token
+  [AI-TRACE MAIN1] T12 Boros Energy
+    state: life=1 mana=0 hand=2+0L gy=5
+    hand: ['Seasoned Pyromancer', 'Seasoned Pyromancer']
+    board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
+    perms: ['Goblin Bombardment']
+    opp: ["Sojourner's Companion (8/4)"] (life=19)
+    EV candidates:
+        -2.0  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <--  [h=-2.0 la=-2.0]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T12 Boros Energy: no attack
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T12 Boros Energy
+    state: life=1 mana=0 hand=2+0L gy=5
+    hand: ['Seasoned Pyromancer', 'Seasoned Pyromancer']
+    board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
+    perms: ['Goblin Bombardment']
+    opp: ["Sojourner's Companion (8/4)"] (life=19)
+    EV candidates:
+        -2.0  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <--  [h=-2.0 la=-2.0]
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 7 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 19  |  Boros Energy 1
+║ Hand: 1 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 6
+║ Affinity board:
+║   Creatures: Sojourner's Companion (8/4)
+║   Other: Cranial Plating, Springleaf Drum
+║   Lands: Darksteel Citadel, Island
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Other: Goblin Bombardment
+║   Lands: Plains [T], Arena of Glory [T], Elegant Parlor [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Sojourner's Companion
+  [Main 1]
+  [AI-TRACE MAIN1] T13 Affinity
+    state: life=19 mana=2 hand=2+0L gy=6
+    hand: ['Thought Monitor', "Sojourner's Companion"]
+    board: ["Sojourner's Companion (8/4)"]
+    perms: ['Cranial Plating', 'Springleaf Drum']
+    opp: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=1)
+    EV candidates:
+       +33.3  cycle: Sojourner's Companion <--
+    >>> CYCLE: Sojourner's Companion
+T7 P1: Cycle Sojourner's Companion (pay 2 mana, tutor: Darksteel Citadel)
+  [AI-TRACE MAIN1] T13 Affinity
+    state: life=19 mana=0 hand=1+1L gy=7
+    hand: ['Thought Monitor']
+    board: ["Sojourner's Companion (8/4)"]
+    perms: ['Cranial Plating', 'Springleaf Drum']
+    opp: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=1)
+    EV candidates:
+       +24.0  play_land: Darksteel Citadel <--
+    >>> PLAY_LAND: Darksteel Citadel
+T7 P1: Play Darksteel Citadel
+  [AI-TRACE MAIN1] T13 Affinity
+    state: life=19 mana=1 hand=1+0L gy=7
+    hand: ['Thought Monitor']
+    board: ["Sojourner's Companion (9/4)"]
+    perms: ['Cranial Plating', 'Springleaf Drum']
+    opp: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=1)
+    EV candidates:
+       +24.0  play_land: Darksteel Citadel <--
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T13 Affinity: ["Sojourner's Companion"]
+  [Declare Attackers] P1 attacks with: Sojourner's Companion
+T7 P1: Attack with Sojourner's Companion
+T7 P2:   [BLOCK-EMERGENCY] Cat Token (2/1) blocks Sojourner's Companion (9/4) — chump block
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T7: Cat Token dies
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T13 Affinity
+    state: life=19 mana=1 hand=1+0L gy=7
+    hand: ['Thought Monitor']
+    board: ["Sojourner's Companion (9/4)"]
+    perms: ['Cranial Plating', 'Springleaf Drum']
+    opp: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)'] (life=1)
+    EV candidates:
+       +24.0  play_land: Darksteel Citadel <--
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 7 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 1  |  Affinity 19
+║ Hand: 2 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 6
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)
+║   Other: Goblin Bombardment
+║   Lands: Plains, Arena of Glory, Elegant Parlor, Mountain
+║ Affinity board:
+║   Creatures: Sojourner's Companion (9/4) [tapped]
+║   Other: Cranial Plating, Springleaf Drum
+║   Lands: Darksteel Citadel [T], Island [T], Darksteel Citadel
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ocelot Pride
+  [Main 1]
+  [AI-TRACE MAIN1] T14 Boros Energy
+    state: life=1 mana=4 hand=3+0L gy=6
+    hand: ['Seasoned Pyromancer', 'Seasoned Pyromancer', 'Ocelot Pride']
+    board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)']
+    perms: ['Goblin Bombardment']
+    opp: ["Sojourner's Companion (9/4)"] (life=19)
+    EV candidates:
+        +1.3  cast_spell: Seasoned Pyromancer <--  [h=+1.3 la=+1.3]
+        +1.3  cast_spell: Seasoned Pyromancer  [h=+1.3 la=+1.3]
+       -27.2  cast_spell: Ocelot Pride  [h=-27.2 la=-27.2]
+    >>> CAST_SPELL: Phlage, Titan of Fire's Fury
+    → Goal: curve_out
+    [Target] → face (3 dmg, life 19 → 16): no killable target
+T7 P2: Escape Phlage, Titan of Fire's Fury (exile 5 cards)
+    [Mana] Tap Plains→W, Elegant Parlor→W, Arena of Glory→R, Mountain→R (paying for Phlage, Titan of Fire's Fury, 4 mana remaining)
+T7 P2: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P1 passes (no response)
+T7: Resolve Phlage, Titan of Fire's Fury
+T7 P2: Phlage: 3 damage to opponent, gain 3 life
+  [AI-TRACE MAIN1] T14 Boros Energy
+    state: life=4 mana=0 hand=3+0L gy=0
+    hand: ['Seasoned Pyromancer', 'Seasoned Pyromancer', 'Ocelot Pride']
+    board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', "Phlage, Titan of Fire's Fury (6/6)"]
+    perms: ['Goblin Bombardment']
+    opp: ["Sojourner's Companion (9/4)"] (life=16)
+    EV candidates:
+       +15.4  cast_spell: Phlage, Titan of Fire's Fury <--  [h=+15.4 la=+15.4]
+        +1.3  cast_spell: Seasoned Pyromancer  [h=+1.3 la=+1.3]
+        +1.3  cast_spell: Seasoned Pyromancer  [h=+1.3 la=+1.3]
+       -27.2  cast_spell: Ocelot Pride  [h=-27.2 la=-27.2]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T14 Boros Energy: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+  [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T7 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Declare Blockers] P1 does not block
+T7 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 16 → 15
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T14 Boros Energy
+    state: life=4 mana=0 hand=3+0L gy=0
+    hand: ['Seasoned Pyromancer', 'Seasoned Pyromancer', 'Ocelot Pride']
+    board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', "Phlage, Titan of Fire's Fury (6/6)"]
+    perms: ['Goblin Bombardment']
+    opp: ["Sojourner's Companion (9/4)"] (life=15)
+    EV candidates:
+       +15.4  cast_spell: Phlage, Titan of Fire's Fury <--  [h=+15.4 la=+15.4]
+        +1.3  cast_spell: Seasoned Pyromancer  [h=+1.3 la=+1.3]
+        +1.3  cast_spell: Seasoned Pyromancer  [h=+1.3 la=+1.3]
+       -27.2  cast_spell: Ocelot Pride  [h=-27.2 la=-27.2]
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 8 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 15  |  Boros Energy 4
+║ Hand: 1 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 7
+║ Affinity board:
+║   Creatures: Sojourner's Companion (9/4)
+║   Other: Cranial Plating, Springleaf Drum
+║   Lands: Darksteel Citadel, Island, Darksteel Citadel
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Phlage, Titan of Fire's Fury (6/6)
+║   Other: Goblin Bombardment
+║   Lands: Plains [T], Arena of Glory [T], Elegant Parlor [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Spire of Industry
+  [Main 1]
+  [AI-TRACE MAIN1] T15 Affinity
+    state: life=15 mana=3 hand=1+1L gy=7
+    hand: ['Thought Monitor']
+    board: ["Sojourner's Companion (9/4)"]
+    perms: ['Cranial Plating', 'Springleaf Drum']
+    opp: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', "Phlage, Titan of Fire's Fury (6/6)"] (life=4)
+    EV candidates:
+       +28.0  play_land: Spire of Industry <--
+        +4.7  cast_spell: Thought Monitor  [h=+4.7 la=+4.7]
+    >>> PLAY_LAND: Spire of Industry
+T8 P1: Play Spire of Industry
+  [AI-TRACE MAIN1] T15 Affinity
+    state: life=15 mana=4 hand=1+0L gy=7
+    hand: ['Thought Monitor']
+    board: ["Sojourner's Companion (9/4)"]
+    perms: ['Cranial Plating', 'Springleaf Drum']
+    opp: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', "Phlage, Titan of Fire's Fury (6/6)"] (life=4)
+    EV candidates:
+        +5.0  cast_spell: Thought Monitor <--  [h=+5.0 la=+5.0]
+    >>> CAST_SPELL: Thought Monitor
+    → Goal: curve_out [enablers]
+    [Mana] Tap Island→U, Darksteel Citadel→C (paying for Thought Monitor, 4 mana remaining)
+T8 P1: Cast Thought Monitor (6U)
+    [Priority] P2 passes (no response)
+T8: Resolve Thought Monitor
+T8 P1: Thought Monitor ETB: draw 2 (Thought Monitor, Darksteel Citadel)
+  [AI-TRACE MAIN1] T15 Affinity
+    state: life=15 mana=2 hand=1+1L gy=7
+    hand: ['Thought Monitor']
+    board: ["Sojourner's Companion (10/4)", 'Thought Monitor (2/2)']
+    perms: ['Cranial Plating', 'Springleaf Drum']
+    opp: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', "Phlage, Titan of Fire's Fury (6/6)"] (life=4)
+    EV candidates:
+        +5.7  cast_spell: Thought Monitor <--  [h=+5.7 la=+5.7]
+    >>> CAST_SPELL: Thought Monitor
+    → Goal: curve_out [enablers]
+    [Mana] Tap Spire of Industry→U (paying for Thought Monitor, 2 mana remaining)
+T8 P1: Cast Thought Monitor (6U)
+    [Priority] P2 passes (no response)
+T8: Resolve Thought Monitor
+T8 P1: Thought Monitor ETB: draw 2 (Mistvault Bridge, Signal Pest)
+  [AI-TRACE MAIN1] T15 Affinity
+    state: life=15 mana=1 hand=1+2L gy=7
+    hand: ['Signal Pest']
+    board: ["Sojourner's Companion (11/4)", 'Thought Monitor (2/2)', 'Thought Monitor (2/2)']
+    perms: ['Cranial Plating', 'Springleaf Drum']
+    opp: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', "Phlage, Titan of Fire's Fury (6/6)"] (life=4)
+    EV candidates:
+        +4.6  cast_spell: Signal Pest <--  [h=+4.6 la=+4.6]
+    >>> CAST_SPELL: Signal Pest
+    → Goal: curve_out
+T8 P1: Cast Signal Pest (1)
+    [Priority] P2 passes (no response)
+T8: Resolve Signal Pest
+  [AI-TRACE MAIN1] T15 Affinity
+    state: life=15 mana=1 hand=0+2L gy=7
+    hand: []
+    board: ["Sojourner's Companion (12/4)", 'Thought Monitor (2/2)', 'Thought Monitor (2/2)', 'Signal Pest (0/1)']
+    perms: ['Cranial Plating', 'Springleaf Drum']
+    opp: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', "Phlage, Titan of Fire's Fury (6/6)"] (life=4)
+    EV candidates:
+        +4.6  cast_spell: Signal Pest <--  [h=+4.6 la=+4.6]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T15 Affinity: ["Sojourner's Companion"]
+  [Declare Attackers] P1 attacks with: Sojourner's Companion
+T8 P1: Attack with Sojourner's Companion
+T8 P2:   [BLOCK-EMERGENCY] Phlage, Titan of Fire's Fury (6/6) blocks Sojourner's Companion (12/4) — trade (chump)
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T8: Cranial Plating falls off Sojourner's Companion (unattached)
+T8: Sojourner's Companion dies
+T8: Phlage, Titan of Fire's Fury dies
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T15 Affinity
+    state: life=15 mana=1 hand=0+2L gy=8
+    hand: []
+    board: ['Thought Monitor (2/2)', 'Thought Monitor (2/2)', 'Signal Pest (0/1)']
+    perms: ['Cranial Plating', 'Springleaf Drum']
+    opp: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)'] (life=4)
+    EV candidates:
+        +4.6  cast_spell: Signal Pest <--  [h=+4.6 la=+4.6]
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 8 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 4  |  Affinity 15
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)
+║   Other: Goblin Bombardment
+║   Lands: Plains, Arena of Glory, Elegant Parlor, Mountain
+║ Affinity board:
+║   Creatures: Thought Monitor (2/2), Thought Monitor (2/2), Signal Pest (0/1)
+║   Other: Cranial Plating, Springleaf Drum
+║   Lands: Darksteel Citadel [T], Island [T], Darksteel Citadel, Spire of Industry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+  [AI-TRACE MAIN1] T16 Boros Energy
+    state: life=4 mana=4 hand=3+1L gy=1
+    hand: ['Seasoned Pyromancer', 'Seasoned Pyromancer', 'Ocelot Pride']
+    board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)']
+    perms: ['Goblin Bombardment']
+    opp: ['Thought Monitor (2/2)', 'Thought Monitor (2/2)', 'Signal Pest (0/1)'] (life=15)
+    EV candidates:
+       +18.0  play_land: Arid Mesa <--
+        +1.0  cast_spell: Seasoned Pyromancer  [h=+1.0 la=+1.0]
+        +1.0  cast_spell: Seasoned Pyromancer  [h=+1.0 la=+1.0]
+       -44.2  cast_spell: Ocelot Pride  [h=-44.2 la=-44.2]
+    >>> PLAY_LAND: Arid Mesa
+T8 P2: Play Arid Mesa
+T8 P2: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 3)
+  [AI-TRACE MAIN1] T16 Boros Energy
+    state: life=3 mana=4 hand=3+0L gy=2
+    hand: ['Seasoned Pyromancer', 'Seasoned Pyromancer', 'Ocelot Pride']
+    board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)']
+    perms: ['Goblin Bombardment']
+    opp: ['Thought Monitor (2/2)', 'Thought Monitor (2/2)', 'Signal Pest (0/1)'] (life=15)
+    EV candidates:
+        +1.1  cast_spell: Seasoned Pyromancer <--  [h=+1.1 la=+1.1]
+        +1.1  cast_spell: Seasoned Pyromancer  [h=+1.1 la=+1.1]
+       -44.2  cast_spell: Ocelot Pride  [h=-44.2 la=-44.2]
+    >>> CAST_SPELL: Seasoned Pyromancer
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Arena of Glory→R, Mountain→R, Plains→W (paying for Seasoned Pyromancer, 4 mana remaining)
+T8 P2: Cast Seasoned Pyromancer (1RR)
+    [Priority] P1 passes (no response)
+T8: Resolve Seasoned Pyromancer
+T8 P2: Create 2x Elemental token(s)
+T8 P2: Seasoned Pyromancer: discard 2, draw 2 (Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Phlage, Titan of Fire's Fury), create 2 Elemental(s)
+  [AI-TRACE MAIN1] T16 Boros Energy
+    state: life=3 mana=1 hand=2+0L gy=4
+    hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', "Phlage, Titan of Fire's Fury"]
+    board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)']
+    perms: ['Goblin Bombardment']
+    opp: ['Thought Monitor (2/2)', 'Thought Monitor (2/2)', 'Signal Pest (0/1)'] (life=15)
+    EV candidates:
+        +1.1  cast_spell: Seasoned Pyromancer <--  [h=+1.1 la=+1.1]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T16 Boros Energy: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+  [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T8 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Declare Blockers] P1 does not block
+T8 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 15 → 14
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T16 Boros Energy
+    state: life=3 mana=1 hand=2+0L gy=4
+    hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', "Phlage, Titan of Fire's Fury"]
+    board: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)']
+    perms: ['Goblin Bombardment']
+    opp: ['Thought Monitor (2/2)', 'Thought Monitor (2/2)', 'Signal Pest (0/1)'] (life=14)
+    EV candidates:
+        +1.1  cast_spell: Seasoned Pyromancer <--  [h=+1.1 la=+1.1]
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 9 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 14  |  Boros Energy 3
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 41  |  Graveyard: 8
+║ Affinity board:
+║   Creatures: Thought Monitor (2/2), Thought Monitor (2/2), Signal Pest (0/1)
+║   Other: Cranial Plating, Springleaf Drum
+║   Lands: Darksteel Citadel, Island, Darksteel Citadel, Spire of Industry
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Seasoned Pyromancer (2/2), Elemental Token (1/1), Elemental Token (1/1)
+║   Other: Goblin Bombardment
+║   Lands: Plains [T], Arena of Glory [T], Elegant Parlor, Mountain [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Tanglepool Bridge
+  [Main 1]
+  [AI-TRACE MAIN1] T17 Affinity
+    state: life=14 mana=4 hand=0+3L gy=8
+    hand: []
+    board: ['Thought Monitor (2/2)', 'Thought Monitor (2/2)', 'Signal Pest (0/1)']
+    perms: ['Cranial Plating', 'Springleaf Drum']
+    opp: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)'] (life=3)
+    EV candidates:
+       +24.0  play_land: Darksteel Citadel <--
+       +22.0  play_land: Mistvault Bridge
+       +22.0  play_land: Tanglepool Bridge
+       +10.5  equip: Cranial Plating
+    >>> PLAY_LAND: Darksteel Citadel
+T9 P1: Play Darksteel Citadel
+  [AI-TRACE MAIN1] T17 Affinity
+    state: life=14 mana=5 hand=0+2L gy=8
+    hand: []
+    board: ['Thought Monitor (2/2)', 'Thought Monitor (2/2)', 'Signal Pest (0/1)']
+    perms: ['Cranial Plating', 'Springleaf Drum']
+    opp: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)'] (life=3)
+    EV candidates:
+       +24.0  play_land: Darksteel Citadel <--
+       +22.0  play_land: Mistvault Bridge
+       +22.0  play_land: Tanglepool Bridge
+       +10.5  equip: Cranial Plating
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T17 Affinity: ['Thought Monitor', 'Thought Monitor', 'Signal Pest']
+  [Declare Attackers] P1 attacks with: Thought Monitor, Thought Monitor, Signal Pest
+T9 P1: Attack with Thought Monitor, Thought Monitor, Signal Pest
+T9 P2:   [BLOCK-EMERGENCY] Elemental Token (1/1) blocks Signal Pest (0/1) — favorable trade
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T9 P1:   Thought Monitor (3/2) → 3 dmg to player
+T9 P1:   Thought Monitor (3/2) → 3 dmg to player
+P2 loses: life total -3
+  [Combat Damage] 6 damage dealt → P2 life: 3 → -3
+
+>>> Affinity wins Game 2 on turn 9 via damage
+    Final life: Affinity=14  Boros Energy=-3
+
+======================================================================
+  GAME 3: Boros Energy (P1) vs Affinity (P2)  —  seed 64002
+  Series: Boros Energy 1 - 1 Affinity
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Affinity wins → chooses to play first
+║ P1 (on play): Affinity
+║ P2 (on draw): Boros Energy
+╚═══════════════════════════════════════════════════════
+
+P1 (Boros Energy) opening hand (3 lands, 4 spells):
+  • Phlage, Titan of Fire's Fury [Creature, CMC 3]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Wear // Tear [Spell, CMC 2]
+  • Windswept Heath [Land, CMC 0]
+  • Sacred Foundry [Land, CMC 0]
+  • Plains [Land, CMC 0]
+  • Galvanic Discharge [Spell, CMC 1]
+→ P1 KEEPS 7 — has key card(s): Galvanic Discharge, Ragavan, Nimble Pilferer, 4 cheap spells
+
+P2 (Affinity) opening hand (3 lands, 4 spells):
+  • Engineered Explosives [Spell, CMC 0]
+  • Memnite [Creature, CMC 0]
+  • Silverbluff Bridge [Land, CMC 0]
+  • Mox Opal [Spell, CMC 0]
+  • Sojourner's Companion [Creature, CMC 7]
+  • Darksteel Citadel [Land, CMC 0]
+  • Darksteel Citadel [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Memnite, Mox Opal, 3 cheap spells
+
+
+╔══ TURN 1 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Boros Energy 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+  [AI-TRACE MAIN1] T1 Affinity
+    state: life=20 mana=0 hand=4+3L gy=0
+    hand: ['Engineered Explosives', 'Memnite', 'Mox Opal', "Sojourner's Companion"]
+    opp: [] (life=20)
+    EV candidates:
+       +23.0  play_land: Darksteel Citadel <--
+       +23.0  play_land: Darksteel Citadel
+        +8.0  play_land: Silverbluff Bridge
+        +2.0  cast_spell: Memnite  [h=+2.0 la=+2.0]
+        +1.0  cast_spell: Mox Opal  [h=+1.0 la=+1.0]
+    >>> PLAY_LAND: Darksteel Citadel
+T1 P2: Play Darksteel Citadel
+  [AI-TRACE MAIN1] T1 Affinity
+    state: life=20 mana=1 hand=4+2L gy=0
+    hand: ['Engineered Explosives', 'Memnite', 'Mox Opal', "Sojourner's Companion"]
+    opp: [] (life=20)
+    EV candidates:
+        +2.0  cast_spell: Memnite <--  [h=+2.0 la=+2.0]
+        +1.0  cast_spell: Mox Opal  [h=+1.0 la=+1.0]
+    >>> CAST_SPELL: Memnite
+    → Goal: deploy_engine [enablers]
+T1 P2: Cast Memnite (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Memnite
+  [AI-TRACE MAIN1] T1 Affinity
+    state: life=20 mana=1 hand=3+2L gy=0
+    hand: ['Engineered Explosives', 'Mox Opal', "Sojourner's Companion"]
+    board: ['Memnite (1/1)']
+    opp: [] (life=20)
+    EV candidates:
+        +1.0  cast_spell: Mox Opal <--  [h=+1.0 la=+1.0]
+    >>> CAST_SPELL: Mox Opal
+    → Goal: deploy_engine [engines]
+T1 P2: Cast Mox Opal (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Mox Opal
+  [AI-TRACE MAIN1] T1 Affinity
+    state: life=20 mana=1 hand=2+2L gy=0
+    hand: ['Engineered Explosives', "Sojourner's Companion"]
+    board: ['Memnite (1/1)']
+    perms: ['Mox Opal']
+    opp: [] (life=20)
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T1 Affinity: no attack
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T1 Affinity
+    state: life=20 mana=1 hand=2+2L gy=0
+    hand: ['Engineered Explosives', "Sojourner's Companion"]
+    board: ['Memnite (1/1)']
+    perms: ['Mox Opal']
+    opp: [] (life=20)
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 1 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: Memnite (1/1)
+║   Other: Mox Opal
+║   Lands: Darksteel Citadel
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arid Mesa
+  [Main 1]
+  [AI-TRACE MAIN1] T2 Boros Energy
+    state: life=20 mana=0 hand=4+4L gy=0
+    hand: ["Phlage, Titan of Fire's Fury", 'Ragavan, Nimble Pilferer', 'Wear // Tear', 'Galvanic Discharge']
+    opp: ['Memnite (1/1)'] (life=20)
+    EV candidates:
+       +38.0  play_land: Arid Mesa <--
+       +35.0  play_land: Sacred Foundry
+       +29.0  play_land: Windswept Heath
+       +22.0  play_land: Plains
+    >>> PLAY_LAND: Arid Mesa
+T1 P1: Play Arid Mesa
+T1 P1: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (pay 2 life, untapped, life: 17)
+  [AI-TRACE MAIN1] T2 Boros Energy
+    state: life=17 mana=1 hand=4+3L gy=1
+    hand: ["Phlage, Titan of Fire's Fury", 'Ragavan, Nimble Pilferer', 'Wear // Tear', 'Galvanic Discharge']
+    opp: ['Memnite (1/1)'] (life=20)
+    EV candidates:
+       +30.9  cast_spell: Ragavan, Nimble Pilferer <--  [h=+30.9 la=+30.9]
+       +17.1  cast_spell: Galvanic Discharge  [h=+17.1 la=+17.1]
+    >>> CAST_SPELL: Ragavan, Nimble Pilferer
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T1 P1: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P2 passes (no response)
+T1: Resolve Ragavan, Nimble Pilferer
+  [AI-TRACE MAIN1] T2 Boros Energy
+    state: life=17 mana=0 hand=3+3L gy=1
+    hand: ["Phlage, Titan of Fire's Fury", 'Wear // Tear', 'Galvanic Discharge']
+    board: ['Ragavan, Nimble Pilferer (2/1)']
+    opp: ['Memnite (1/1)'] (life=20)
+    EV candidates:
+       +30.9  cast_spell: Ragavan, Nimble Pilferer <--  [h=+30.9 la=+30.9]
+       +17.1  cast_spell: Galvanic Discharge  [h=+17.1 la=+17.1]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T2 Boros Energy: no attack
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T2 Boros Energy
+    state: life=17 mana=0 hand=3+3L gy=1
+    hand: ["Phlage, Titan of Fire's Fury", 'Wear // Tear', 'Galvanic Discharge']
+    board: ['Ragavan, Nimble Pilferer (2/1)']
+    opp: ['Memnite (1/1)'] (life=20)
+    EV candidates:
+       +30.9  cast_spell: Ragavan, Nimble Pilferer <--  [h=+30.9 la=+30.9]
+       +17.1  cast_spell: Galvanic Discharge  [h=+17.1 la=+17.1]
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 2 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Boros Energy 17
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Memnite (1/1)
+║   Other: Mox Opal
+║   Lands: Darksteel Citadel
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ornithopter
+  [Main 1]
+  [AI-TRACE MAIN1] T3 Affinity
+    state: life=20 mana=1 hand=3+2L gy=0
+    hand: ['Engineered Explosives', "Sojourner's Companion", 'Ornithopter']
+    board: ['Memnite (1/1)']
+    perms: ['Mox Opal']
+    opp: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+    EV candidates:
+       +19.0  play_land: Darksteel Citadel <--
+       +15.1  cast_spell: Engineered Explosives  [h=+15.1 la=+15.1]
+       +11.0  play_land: Silverbluff Bridge
+        +9.1  cast_spell: Ornithopter  [h=+9.1 la=+9.1]
+    >>> PLAY_LAND: Darksteel Citadel
+T2 P2: Play Darksteel Citadel
+  [AI-TRACE MAIN1] T3 Affinity
+    state: life=20 mana=2 hand=3+1L gy=0
+    hand: ['Engineered Explosives', "Sojourner's Companion", 'Ornithopter']
+    board: ['Memnite (1/1)']
+    perms: ['Mox Opal']
+    opp: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+    EV candidates:
+       +15.1  cast_spell: Engineered Explosives <--  [h=+15.1 la=+15.1]
+        +9.1  cast_spell: Ornithopter  [h=+9.1 la=+9.1]
+        +2.0  cycle: Sojourner's Companion
+    >>> CAST_SPELL: Engineered Explosives
+    → Goal: curve_out
+T2 P2: Cast Engineered Explosives (2) (X=2)
+    [Priority] P1 passes (no response)
+T2: Resolve Engineered Explosives
+T2 P2: Engineered Explosives enters with 1 charge counters
+  [AI-TRACE MAIN1] T3 Affinity
+    state: life=20 mana=0 hand=2+1L gy=0
+    hand: ["Sojourner's Companion", 'Ornithopter']
+    board: ['Memnite (1/1)']
+    perms: ['Mox Opal', 'Engineered Explosives']
+    opp: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+    EV candidates:
+        +9.1  cast_spell: Ornithopter <--  [h=+9.1 la=+9.1]
+    >>> CAST_SPELL: Ornithopter
+    → Goal: curve_out
+T2 P2: Cast Ornithopter (0)
+    [Priority] P1 passes (no response)
+T2: Resolve Ornithopter
+  [AI-TRACE MAIN1] T3 Affinity
+    state: life=20 mana=0 hand=1+1L gy=0
+    hand: ["Sojourner's Companion"]
+    board: ['Memnite (1/1)', 'Ornithopter (0/2)']
+    perms: ['Mox Opal', 'Engineered Explosives']
+    opp: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+    EV candidates:
+        +9.1  cast_spell: Ornithopter <--  [h=+9.1 la=+9.1]
+    >>> PASS (threshold=-5.0)
+T2 P2: Activate Engineered Explosives (sacrifice)
+T2: Ragavan, Nimble Pilferer dies
+T2 P2:   destroys Ragavan, Nimble Pilferer (MV=1)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T3 Affinity: ['Memnite']
+  [Declare Attackers] P2 attacks with: Memnite
+T2 P2: Attack with Memnite
+  [Declare Blockers] P1 does not block
+T2 P2:   Memnite (1/1) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 17 → 16
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T3 Affinity
+    state: life=20 mana=0 hand=1+1L gy=1
+    hand: ["Sojourner's Companion"]
+    board: ['Memnite (1/1)', 'Ornithopter (0/2)']
+    perms: ['Mox Opal']
+    opp: [] (life=16)
+    EV candidates:
+        +9.1  cast_spell: Ornithopter <--  [h=+9.1 la=+9.1]
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 16  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 2 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Affinity board:
+║   Creatures: Memnite (1/1) [tapped], Ornithopter (0/2)
+║   Other: Mox Opal
+║   Lands: Darksteel Citadel [T], Darksteel Citadel [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wear // Tear
+  [Main 1]
+  [AI-TRACE MAIN1] T4 Boros Energy
+    state: life=16 mana=1 hand=4+3L gy=2
+    hand: ["Phlage, Titan of Fire's Fury", 'Wear // Tear', 'Galvanic Discharge', 'Wear // Tear']
+    opp: ['Memnite (1/1)', 'Ornithopter (0/2)'] (life=20)
+    EV candidates:
+       +22.0  play_land: Windswept Heath <--
+       +16.0  cast_spell: Galvanic Discharge  [h=+16.0 la=+16.0]
+       +15.0  play_land: Sacred Foundry
+       +15.0  play_land: Plains
+    >>> PLAY_LAND: Windswept Heath
+T2 P1: Play Windswept Heath
+T2 P1: Crack Windswept Heath (pay 1 life) -> Sacred Foundry (pay 2 life, untapped, life: 13)
+  [AI-TRACE MAIN1] T4 Boros Energy
+    state: life=13 mana=2 hand=4+2L gy=3
+    hand: ["Phlage, Titan of Fire's Fury", 'Wear // Tear', 'Galvanic Discharge', 'Wear // Tear']
+    opp: ['Memnite (1/1)', 'Ornithopter (0/2)'] (life=20)
+    EV candidates:
+       +14.2  cast_spell: Wear // Tear <--  [h=+14.2 la=+14.2]
+       +14.2  cast_spell: Wear // Tear  [h=+14.2 la=+14.2]
+       +12.9  cast_spell: Galvanic Discharge  [h=+12.9 la=+12.9]
+    >>> CAST_SPELL: Wear // Tear
+    → Goal: curve_out
+    [Mana] Tap Sacred Foundry→R, Sacred Foundry→R (paying for Wear // Tear, 2 mana remaining)
+T2 P1: Cast Wear // Tear (1R)
+    [Priority] P2 passes (no response)
+T2: Resolve Wear // Tear
+T2: Darksteel Citadel moved battlefield -> graveyard (destroyed)
+T2 P1: Wear // Tear destroys Darksteel Citadel
+  [AI-TRACE MAIN1] T4 Boros Energy
+    state: life=13 mana=0 hand=3+2L gy=4
+    hand: ["Phlage, Titan of Fire's Fury", 'Galvanic Discharge', 'Wear // Tear']
+    opp: ['Memnite (1/1)', 'Ornithopter (0/2)'] (life=20)
+    EV candidates:
+       +14.2  cast_spell: Wear // Tear <--  [h=+14.2 la=+14.2]
+       +12.9  cast_spell: Galvanic Discharge  [h=+12.9 la=+12.9]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T4 Boros Energy: no attack
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T4 Boros Energy
+    state: life=13 mana=0 hand=3+2L gy=4
+    hand: ["Phlage, Titan of Fire's Fury", 'Galvanic Discharge', 'Wear // Tear']
+    opp: ['Memnite (1/1)', 'Ornithopter (0/2)'] (life=20)
+    EV candidates:
+       +14.2  cast_spell: Wear // Tear <--  [h=+14.2 la=+14.2]
+       +12.9  cast_spell: Galvanic Discharge  [h=+12.9 la=+12.9]
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 3 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Boros Energy 13
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 2
+║ Affinity board:
+║   Creatures: Memnite (1/1), Ornithopter (0/2)
+║   Other: Mox Opal
+║   Lands: Darksteel Citadel
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Nettlecyst
+  [Main 1]
+  [AI-TRACE MAIN1] T5 Affinity
+    state: life=20 mana=1 hand=2+1L gy=2
+    hand: ["Sojourner's Companion", 'Nettlecyst']
+    board: ['Memnite (1/1)', 'Ornithopter (0/2)']
+    perms: ['Mox Opal']
+    opp: [] (life=13)
+    EV candidates:
+       +18.0  play_land: Silverbluff Bridge <--
+    >>> PLAY_LAND: Silverbluff Bridge
+T3 P2: Play Silverbluff Bridge (enters tapped)
+  [AI-TRACE MAIN1] T5 Affinity
+    state: life=20 mana=1 hand=2+0L gy=2
+    hand: ["Sojourner's Companion", 'Nettlecyst']
+    board: ['Memnite (1/1)', 'Ornithopter (0/2)']
+    perms: ['Mox Opal']
+    opp: [] (life=13)
+    EV candidates:
+       +18.0  play_land: Silverbluff Bridge <--
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T5 Affinity: ['Memnite']
+  [Declare Attackers] P2 attacks with: Memnite
+T3 P2: Attack with Memnite
+  [Declare Blockers] P1 does not block
+T3 P2:   Memnite (1/1) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 13 → 12
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T5 Affinity
+    state: life=20 mana=1 hand=2+0L gy=2
+    hand: ["Sojourner's Companion", 'Nettlecyst']
+    board: ['Memnite (1/1)', 'Ornithopter (0/2)']
+    perms: ['Mox Opal']
+    opp: [] (life=12)
+    EV candidates:
+       +18.0  play_land: Silverbluff Bridge <--
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 12  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 4
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ Affinity board:
+║   Creatures: Memnite (1/1) [tapped], Ornithopter (0/2)
+║   Other: Mox Opal
+║   Lands: Darksteel Citadel, Silverbluff Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Guide of Souls
+  [Main 1]
+  [AI-TRACE MAIN1] T6 Boros Energy
+    state: life=12 mana=2 hand=4+2L gy=4
+    hand: ["Phlage, Titan of Fire's Fury", 'Galvanic Discharge', 'Wear // Tear', 'Guide of Souls']
+    opp: ['Memnite (1/1)', 'Ornithopter (0/2)'] (life=20)
+    EV candidates:
+       +15.0  play_land: Sacred Foundry <--
+       +15.0  play_land: Plains
+       +13.4  cast_spell: Wear // Tear  [h=+13.4 la=+13.4]
+       +11.9  cast_spell: Galvanic Discharge  [h=+11.9 la=+11.9]
+        -2.0  cast_spell: Guide of Souls  [h=-2.0 la=-2.0]
+    >>> PLAY_LAND: Sacred Foundry
+T3 P1: Play Sacred Foundry (pay 2 life, untapped, life: 10)
+  [AI-TRACE MAIN1] T6 Boros Energy
+    state: life=10 mana=3 hand=4+1L gy=4
+    hand: ["Phlage, Titan of Fire's Fury", 'Galvanic Discharge', 'Wear // Tear', 'Guide of Souls']
+    opp: ['Memnite (1/1)', 'Ornithopter (0/2)'] (life=20)
+    EV candidates:
+       +22.8  cast_spell: Phlage, Titan of Fire's Fury <--  [h=+22.8 la=+22.8]
+       +11.6  cast_spell: Wear // Tear  [h=+11.6 la=+11.6]
+        +9.9  cast_spell: Galvanic Discharge  [h=+9.9 la=+9.9]
+        -2.0  cast_spell: Guide of Souls  [h=-2.0 la=-2.0]
+    >>> CAST_SPELL: Phlage, Titan of Fire's Fury
+    → Goal: curve_out
+    [Target] → Memnite: marginal threat 4.0 (1/1 body) — better than 3 face dmg
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R, Sacred Foundry→R (paying for Phlage, Titan of Fire's Fury, 3 mana remaining)
+T3 P1: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P2 passes (no response)
+T3: Resolve Phlage, Titan of Fire's Fury
+T3 P1: Phlage: 3 damage to Memnite, gain 3 life
+T3: Memnite dies
+T3 P1: Phlage sacrificed (not escaped)
+  [AI-TRACE MAIN1] T6 Boros Energy
+    state: life=13 mana=0 hand=3+1L gy=5
+    hand: ['Galvanic Discharge', 'Wear // Tear', 'Guide of Souls']
+    opp: ['Ornithopter (0/2)'] (life=20)
+    EV candidates:
+       +11.6  cast_spell: Wear // Tear <--  [h=+11.6 la=+11.6]
+        +9.9  cast_spell: Galvanic Discharge  [h=+9.9 la=+9.9]
+        -2.0  cast_spell: Guide of Souls  [h=-2.0 la=-2.0]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T6 Boros Energy: no attack
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T6 Boros Energy
+    state: life=13 mana=0 hand=3+1L gy=5
+    hand: ['Galvanic Discharge', 'Wear // Tear', 'Guide of Souls']
+    opp: ['Ornithopter (0/2)'] (life=20)
+    EV candidates:
+       +11.6  cast_spell: Wear // Tear <--  [h=+11.6 la=+11.6]
+        +9.9  cast_spell: Galvanic Discharge  [h=+9.9 la=+9.9]
+        -2.0  cast_spell: Guide of Souls  [h=-2.0 la=-2.0]
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 4 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Boros Energy 13
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 3
+║ Affinity board:
+║   Creatures: Ornithopter (0/2)
+║   Other: Mox Opal
+║   Lands: Darksteel Citadel, Silverbluff Bridge
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Springleaf Drum
+  [Main 1]
+  [AI-TRACE MAIN1] T7 Affinity
+    state: life=20 mana=2 hand=3+0L gy=3
+    hand: ["Sojourner's Companion", 'Nettlecyst', 'Springleaf Drum']
+    board: ['Ornithopter (0/2)']
+    perms: ['Mox Opal']
+    opp: [] (life=13)
+    EV candidates:
+        +2.6  cycle: Sojourner's Companion <--
+        +1.5  cast_spell: Springleaf Drum  [h=+1.5 la=+1.5]
+    >>> CYCLE: Sojourner's Companion
+T4 P2: Cycle Sojourner's Companion (pay 2 mana, tutor: Darksteel Citadel)
+  [AI-TRACE MAIN1] T7 Affinity
+    state: life=20 mana=0 hand=2+1L gy=4
+    hand: ['Nettlecyst', 'Springleaf Drum']
+    board: ['Ornithopter (0/2)']
+    perms: ['Mox Opal']
+    opp: [] (life=13)
+    EV candidates:
+       +19.0  play_land: Darksteel Citadel <--
+    >>> PLAY_LAND: Darksteel Citadel
+T4 P2: Play Darksteel Citadel
+  [AI-TRACE MAIN1] T7 Affinity
+    state: life=20 mana=1 hand=2+0L gy=4
+    hand: ['Nettlecyst', 'Springleaf Drum']
+    board: ['Ornithopter (0/2)']
+    perms: ['Mox Opal']
+    opp: [] (life=13)
+    EV candidates:
+        +1.5  cast_spell: Springleaf Drum <--  [h=+1.5 la=+1.5]
+    >>> CAST_SPELL: Springleaf Drum
+    → Goal: curve_out
+    [Mana] Tap Darksteel Citadel→C (paying for Springleaf Drum, 1 mana remaining)
+T4 P2: Cast Springleaf Drum (1)
+    [Priority] P1 passes (no response)
+T4: Resolve Springleaf Drum
+  [AI-TRACE MAIN1] T7 Affinity
+    state: life=20 mana=0 hand=1+0L gy=4
+    hand: ['Nettlecyst']
+    board: ['Ornithopter (0/2)']
+    perms: ['Mox Opal', 'Springleaf Drum']
+    opp: [] (life=13)
+    EV candidates:
+        +1.5  cast_spell: Springleaf Drum <--  [h=+1.5 la=+1.5]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T7 Affinity: no attack
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T7 Affinity
+    state: life=20 mana=0 hand=1+0L gy=4
+    hand: ['Nettlecyst']
+    board: ['Ornithopter (0/2)']
+    perms: ['Mox Opal', 'Springleaf Drum']
+    opp: [] (life=13)
+    EV candidates:
+        +1.5  cast_spell: Springleaf Drum <--  [h=+1.5 la=+1.5]
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 13  |  Affinity 20
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 5
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry
+║ Affinity board:
+║   Creatures: Ornithopter (0/2)
+║   Other: Mox Opal, Springleaf Drum
+║   Lands: Darksteel Citadel [T], Silverbluff Bridge [T], Darksteel Citadel [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: The Legend of Roku // Avatar Roku
+  [Main 1]
+  [AI-TRACE MAIN1] T8 Boros Energy
+    state: life=13 mana=3 hand=4+1L gy=5
+    hand: ['Galvanic Discharge', 'Wear // Tear', 'Guide of Souls', 'The Legend of Roku // Avatar Roku']
+    opp: ['Ornithopter (0/2)'] (life=20)
+    EV candidates:
+       +15.0  play_land: Plains <--
+        +2.6  cast_spell: Guide of Souls  [h=+2.6 la=+2.6]
+        +1.1  cast_spell: Wear // Tear  [h=+1.1 la=+1.1]
+        -0.1  cast_spell: Galvanic Discharge  [h=-0.1 la=-0.1]
+    >>> PLAY_LAND: Plains
+T4 P1: Play Plains
+  [AI-TRACE MAIN1] T8 Boros Energy
+    state: life=13 mana=4 hand=4+0L gy=5
+    hand: ['Galvanic Discharge', 'Wear // Tear', 'Guide of Souls', 'The Legend of Roku // Avatar Roku']
+    opp: ['Ornithopter (0/2)'] (life=20)
+    EV candidates:
+        +2.7  cast_spell: Guide of Souls <--  [h=+2.7 la=+2.7]
+        +1.2  cast_spell: Wear // Tear  [h=+1.2 la=+1.2]
+        -0.0  cast_spell: Galvanic Discharge  [h=-0.0 la=-0.0]
+        -0.5  cast_spell: The Legend of Roku // Avatar Roku  [h=-0.5 la=-0.5]
+    >>> CAST_SPELL: Guide of Souls
+    → Goal: curve_out [enablers]
+    [Mana] Tap Plains→W (paying for Guide of Souls, 4 mana remaining)
+T4 P1: Cast Guide of Souls (W)
+    [Priority] P2 passes (no response)
+T4: Resolve Guide of Souls
+  [AI-TRACE MAIN1] T8 Boros Energy
+    state: life=13 mana=3 hand=3+0L gy=5
+    hand: ['Galvanic Discharge', 'Wear // Tear', 'The Legend of Roku // Avatar Roku']
+    board: ['Guide of Souls (1/2)']
+    opp: ['Ornithopter (0/2)'] (life=20)
+    EV candidates:
+        +1.4  cast_spell: Galvanic Discharge <--  [h=+1.4 la=+1.4]
+        +1.2  cast_spell: Wear // Tear  [h=+1.2 la=+1.2]
+    >>> CAST_SPELL: Galvanic Discharge
+    → Goal: curve_out [interaction]
+    [Target] → face (3 dmg, life 20 → 17): no killable target
+    [Mana] Tap Sacred Foundry→R (paying for Galvanic Discharge, 3 mana remaining)
+T4 P1: Cast Galvanic Discharge (R)
+    [Priority] P2 passes (no response)
+T4: Resolve Galvanic Discharge
+T4 P1: Galvanic Discharge deals 3 to opponent
+  [AI-TRACE MAIN1] T8 Boros Energy
+    state: life=13 mana=2 hand=2+0L gy=6
+    hand: ['Wear // Tear', 'The Legend of Roku // Avatar Roku']
+    board: ['Guide of Souls (1/2)']
+    opp: ['Ornithopter (0/2)'] (life=17)
+    EV candidates:
+        +1.3  cast_spell: Wear // Tear <--  [h=+1.3 la=+1.3]
+    >>> CAST_SPELL: Wear // Tear
+    → Goal: curve_out
+    [Mana] Tap Sacred Foundry→R, Sacred Foundry→R (paying for Wear // Tear, 2 mana remaining)
+T4 P1: Cast Wear // Tear (1R)
+    [Priority] P2 passes (no response)
+T4: Resolve Wear // Tear
+T4: Mox Opal moved battlefield -> graveyard (destroyed)
+T4 P1: Wear // Tear destroys Mox Opal
+  [AI-TRACE MAIN1] T8 Boros Energy
+    state: life=13 mana=0 hand=1+0L gy=7
+    hand: ['The Legend of Roku // Avatar Roku']
+    board: ['Guide of Souls (1/2)']
+    opp: ['Ornithopter (0/2)'] (life=17)
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T8 Boros Energy: no attack
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T8 Boros Energy
+    state: life=13 mana=0 hand=1+0L gy=7
+    hand: ['The Legend of Roku // Avatar Roku']
+    board: ['Guide of Souls (1/2)']
+    opp: ['Ornithopter (0/2)'] (life=17)
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 5 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 17  |  Boros Energy 13
+║ Hand: 1 cards  |  Opp hand: 1 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 5
+║ Affinity board:
+║   Creatures: Ornithopter (0/2)
+║   Other: Springleaf Drum
+║   Lands: Darksteel Citadel, Silverbluff Bridge, Darksteel Citadel
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Sojourner's Companion
+  [Main 1]
+  [AI-TRACE MAIN1] T9 Affinity
+    state: life=17 mana=3 hand=2+0L gy=5
+    hand: ['Nettlecyst', "Sojourner's Companion"]
+    board: ['Ornithopter (0/2)']
+    perms: ['Springleaf Drum']
+    opp: ['Guide of Souls (1/2)'] (life=13)
+    EV candidates:
+       +60.4  cast_spell: Sojourner's Companion <--  [h=+60.4 la=+60.4]
+        +3.8  cycle: Sojourner's Companion
+        +1.1  cast_spell: Nettlecyst  [h=+1.1 la=+1.1]
+    >>> CAST_SPELL: Sojourner's Companion
+    → Goal: curve_out [enablers]
+    [Mana] Tap Darksteel Citadel→C, Darksteel Citadel→C (paying for Sojourner's Companion, 3 mana remaining)
+T5 P2: Cast Sojourner's Companion (7)
+    [Priority] P1 passes (no response)
+T5: Resolve Sojourner's Companion
+  [AI-TRACE MAIN1] T9 Affinity
+    state: life=17 mana=1 hand=1+0L gy=5
+    hand: ['Nettlecyst']
+    board: ['Ornithopter (0/2)', "Sojourner's Companion (4/4)"]
+    perms: ['Springleaf Drum']
+    opp: ['Guide of Souls (1/2)'] (life=13)
+    EV candidates:
+       +60.4  cast_spell: Sojourner's Companion <--  [h=+60.4 la=+60.4]
+        +3.8  cycle: Sojourner's Companion
+        +1.1  cast_spell: Nettlecyst  [h=+1.1 la=+1.1]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T9 Affinity: no attack
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T9 Affinity
+    state: life=17 mana=1 hand=1+0L gy=5
+    hand: ['Nettlecyst']
+    board: ['Ornithopter (0/2)', "Sojourner's Companion (4/4)"]
+    perms: ['Springleaf Drum']
+    opp: ['Guide of Souls (1/2)'] (life=13)
+    EV candidates:
+       +60.4  cast_spell: Sojourner's Companion <--  [h=+60.4 la=+60.4]
+        +3.8  cycle: Sojourner's Companion
+        +1.1  cast_spell: Nettlecyst  [h=+1.1 la=+1.1]
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 13  |  Affinity 17
+║ Hand: 1 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 7
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Sojourner's Companion (4/4)
+║   Other: Springleaf Drum
+║   Lands: Darksteel Citadel [T], Silverbluff Bridge, Darksteel Citadel [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Thraben Charm
+  [Main 1]
+  [AI-TRACE MAIN1] T10 Boros Energy
+    state: life=13 mana=4 hand=2+0L gy=7
+    hand: ['The Legend of Roku // Avatar Roku', 'Thraben Charm']
+    board: ['Guide of Souls (1/2)']
+    opp: ['Ornithopter (0/2)', "Sojourner's Companion (4/4)"] (life=17)
+    EV candidates:
+       +67.8  cast_spell: Thraben Charm <--  [h=+67.8 la=+67.8]
+        -0.3  cast_spell: The Legend of Roku // Avatar Roku  [h=-0.3 la=-0.3]
+    >>> CAST_SPELL: Thraben Charm
+    → Goal: curve_out [interaction]
+    [Mana] Tap Plains→W, Sacred Foundry→R (paying for Thraben Charm, 4 mana remaining)
+T5 P1: Cast Thraben Charm (1W)
+    [Priority] P2 passes (no response)
+T5: Resolve Thraben Charm
+T5 P1: Thraben Charm: no high-value mode available
+  [AI-TRACE MAIN1] T10 Boros Energy
+    state: life=13 mana=2 hand=1+0L gy=8
+    hand: ['The Legend of Roku // Avatar Roku']
+    board: ['Guide of Souls (1/2)']
+    opp: ['Ornithopter (0/2)', "Sojourner's Companion (4/4)"] (life=17)
+    EV candidates:
+        -0.3  cast_spell: The Legend of Roku // Avatar Roku <--  [h=-0.3 la=-0.3]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T10 Boros Energy: no attack
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T10 Boros Energy
+    state: life=13 mana=2 hand=1+0L gy=8
+    hand: ['The Legend of Roku // Avatar Roku']
+    board: ['Guide of Souls (1/2)']
+    opp: ['Ornithopter (0/2)', "Sojourner's Companion (4/4)"] (life=17)
+    EV candidates:
+        -0.3  cast_spell: The Legend of Roku // Avatar Roku <--  [h=-0.3 la=-0.3]
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 6 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 17  |  Boros Energy 13
+║ Hand: 1 cards  |  Opp hand: 1 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 5
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Sojourner's Companion (4/4)
+║   Other: Springleaf Drum
+║   Lands: Darksteel Citadel, Silverbluff Bridge, Darksteel Citadel
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2)
+║   Lands: Sacred Foundry [T], Sacred Foundry, Sacred Foundry, Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Saga
+  [Main 1]
+  [AI-TRACE MAIN1] T11 Affinity
+    state: life=17 mana=3 hand=1+1L gy=5
+    hand: ['Nettlecyst']
+    board: ['Ornithopter (0/2)', "Sojourner's Companion (4/4)"]
+    perms: ['Springleaf Drum']
+    opp: ['Guide of Souls (1/2)'] (life=13)
+    EV candidates:
+       +25.1  play_land: Urza's Saga <--
+        +1.3  cast_spell: Nettlecyst  [h=+1.3 la=+1.3]
+    >>> PLAY_LAND: Urza's Saga
+T6 P2: Play Urza's Saga
+  [AI-TRACE MAIN1] T11 Affinity
+    state: life=17 mana=4 hand=1+0L gy=5
+    hand: ['Nettlecyst']
+    board: ['Ornithopter (0/2)', "Sojourner's Companion (4/4)"]
+    perms: ['Springleaf Drum']
+    opp: ['Guide of Souls (1/2)'] (life=13)
+    EV candidates:
+        +1.3  cast_spell: Nettlecyst <--  [h=+1.3 la=+1.3]
+    >>> CAST_SPELL: Nettlecyst
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Darksteel Citadel→C, Darksteel Citadel→C (paying for Nettlecyst, 4 mana remaining)
+T6 P2: Cast Nettlecyst (3)
+    [Priority] P1 passes (no response)
+T6: Resolve Nettlecyst
+T6 P2: Create 1x Germ token(s)
+  [AI-TRACE MAIN1] T11 Affinity
+    state: life=17 mana=2 hand=0+0L gy=5
+    hand: []
+    board: ['Ornithopter (0/2)', "Sojourner's Companion (4/4)", 'Germ Token (7/7)']
+    perms: ['Springleaf Drum', 'Nettlecyst']
+    opp: ['Guide of Souls (1/2)'] (life=13)
+    EV candidates:
+        +1.3  cast_spell: Nettlecyst <--  [h=+1.3 la=+1.3]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T11 Affinity: ["Sojourner's Companion"]
+  [Declare Attackers] P2 attacks with: Sojourner's Companion
+T6 P2: Attack with Sojourner's Companion
+T6 P1:   [BLOCK] Guide of Souls (1/2) blocks Sojourner's Companion (4/4) — chump block
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T6: Guide of Souls dies
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T11 Affinity
+    state: life=17 mana=2 hand=0+0L gy=5
+    hand: []
+    board: ['Ornithopter (0/2)', "Sojourner's Companion (4/4)", 'Germ Token (7/7)']
+    perms: ['Springleaf Drum', 'Nettlecyst']
+    opp: [] (life=13)
+    EV candidates:
+        +1.3  cast_spell: Nettlecyst <--  [h=+1.3 la=+1.3]
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 6 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 13  |  Affinity 17
+║ Hand: 1 cards  |  Opp hand: 0 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 9
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Sojourner's Companion (4/4) [tapped], Germ Token (7/7)
+║   Other: Springleaf Drum, Nettlecyst
+║   Lands: Darksteel Citadel [T], Silverbluff Bridge, Darksteel Citadel [T], Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mountain
+  [Main 1]
+  [AI-TRACE MAIN1] T12 Boros Energy
+    state: life=13 mana=4 hand=1+1L gy=9
+    hand: ['The Legend of Roku // Avatar Roku']
+    opp: ['Ornithopter (0/2)', "Sojourner's Companion (4/4)", 'Germ Token (7/7)'] (life=17)
+    EV candidates:
+       +15.0  play_land: Mountain <--
+        -0.4  cast_spell: The Legend of Roku // Avatar Roku  [h=-0.4 la=-0.4]
+    >>> PLAY_LAND: Mountain
+T6 P1: Play Mountain
+  [AI-TRACE MAIN1] T12 Boros Energy
+    state: life=13 mana=5 hand=1+0L gy=9
+    hand: ['The Legend of Roku // Avatar Roku']
+    opp: ['Ornithopter (0/2)', "Sojourner's Companion (4/4)", 'Germ Token (7/7)'] (life=17)
+    EV candidates:
+        -0.3  cast_spell: The Legend of Roku // Avatar Roku <--  [h=-0.3 la=-0.3]
+    >>> CAST_SPELL: Phlage, Titan of Fire's Fury
+    → Goal: curve_out
+    [Target] → Ornithopter: marginal threat 1.7 (0/2 body) — better than 3 face dmg
+T6 P1: Escape Phlage, Titan of Fire's Fury (exile 5 cards)
+    [Mana] Tap Plains→W, Sacred Foundry→W, Mountain→R, Sacred Foundry→R (paying for Phlage, Titan of Fire's Fury, 5 mana remaining)
+T6 P1: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P2 passes (no response)
+T6: Resolve Phlage, Titan of Fire's Fury
+T6 P1: Phlage: 3 damage to Ornithopter, gain 3 life
+T6: Ornithopter dies
+  [AI-TRACE MAIN1] T12 Boros Energy
+    state: life=16 mana=1 hand=1+0L gy=3
+    hand: ['The Legend of Roku // Avatar Roku']
+    board: ["Phlage, Titan of Fire's Fury (6/6)"]
+    opp: ["Sojourner's Companion (4/4)", 'Germ Token (6/6)'] (life=17)
+    EV candidates:
+        +8.0  cast_spell: Phlage, Titan of Fire's Fury <--  [h=+8.0 la=+8.0]
+        -0.3  cast_spell: The Legend of Roku // Avatar Roku  [h=-0.3 la=-0.3]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T12 Boros Energy: no attack
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T12 Boros Energy
+    state: life=16 mana=1 hand=1+0L gy=3
+    hand: ['The Legend of Roku // Avatar Roku']
+    board: ["Phlage, Titan of Fire's Fury (6/6)"]
+    opp: ["Sojourner's Companion (4/4)", 'Germ Token (6/6)'] (life=17)
+    EV candidates:
+        +8.0  cast_spell: Phlage, Titan of Fire's Fury <--  [h=+8.0 la=+8.0]
+        -0.3  cast_spell: The Legend of Roku // Avatar Roku  [h=-0.3 la=-0.3]
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 7 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 17  |  Boros Energy 16
+║ Hand: 0 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 6
+║ Affinity board:
+║   Creatures: Sojourner's Companion (4/4), Germ Token (6/6)
+║   Other: Springleaf Drum, Nettlecyst
+║   Lands: Darksteel Citadel, Silverbluff Bridge, Darksteel Citadel, Urza's Saga
+║ Boros Energy board:
+║   Creatures: Phlage, Titan of Fire's Fury (6/6)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry, Plains [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ornithopter
+  [Main 1]
+  [AI-TRACE MAIN1] T13 Affinity
+    state: life=17 mana=4 hand=1+0L gy=6
+    hand: ['Ornithopter']
+    board: ["Sojourner's Companion (4/4)", 'Germ Token (6/6)']
+    perms: ['Springleaf Drum', 'Nettlecyst']
+    opp: ["Phlage, Titan of Fire's Fury (6/6)"] (life=16)
+    EV candidates:
+        -6.4  cast_spell: Ornithopter <--  [h=-6.4 la=-6.4 rmv=3%]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T13 Affinity: ["Sojourner's Companion", 'Germ Token']
+  [Declare Attackers] P2 attacks with: Sojourner's Companion, Germ Token
+T7 P2: Attack with Sojourner's Companion, Germ Token
+T7 P1:   [BLOCK] Phlage, Titan of Fire's Fury (6/6) blocks Germ Token (6/6) — trade (chump)
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T7 P2:   Sojourner's Companion (4/4) → 4 dmg to player
+T7: Phlage, Titan of Fire's Fury dies
+T7: Nettlecyst falls off Germ Token (unattached)
+T7: Germ Token dies
+  [Combat Damage] 4 damage dealt → P1 life: 16 → 12
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T13 Affinity
+    state: life=17 mana=4 hand=1+0L gy=7
+    hand: ['Ornithopter']
+    board: ["Sojourner's Companion (4/4)"]
+    perms: ['Springleaf Drum', 'Nettlecyst']
+    opp: [] (life=12)
+    EV candidates:
+       +10.5  equip: Nettlecyst <--
+        -9.9  cast_spell: Ornithopter  [h=-9.9 la=-9.9 rmv=3%]
+    >>> EQUIP: Nettlecyst
+T7 P2: Equip Nettlecyst to Sojourner's Companion (cost 2)
+  [AI-TRACE MAIN2] T13 Affinity
+    state: life=17 mana=2 hand=1+0L gy=7
+    hand: ['Ornithopter']
+    board: ["Sojourner's Companion (10/10)"]
+    perms: ['Springleaf Drum', 'Nettlecyst']
+    opp: [] (life=12)
+    EV candidates:
+        -9.9  cast_spell: Ornithopter <--  [h=-9.9 la=-9.9 rmv=3%]
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 7 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 12  |  Affinity 17
+║ Hand: 1 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 4
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains, Mountain
+║ Affinity board:
+║   Creatures: Sojourner's Companion (10/10) [tapped]
+║   Other: Springleaf Drum, Nettlecyst
+║   Lands: Darksteel Citadel [T], Silverbluff Bridge [T], Darksteel Citadel, Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+  [AI-TRACE MAIN1] T14 Boros Energy
+    state: life=12 mana=5 hand=2+0L gy=4
+    hand: ['The Legend of Roku // Avatar Roku', 'Ragavan, Nimble Pilferer']
+    opp: ["Sojourner's Companion (10/10)"] (life=17)
+    EV candidates:
+        -0.1  cast_spell: Ragavan, Nimble Pilferer <--  [h=-0.1 la=-0.1]
+        -0.3  cast_spell: The Legend of Roku // Avatar Roku  [h=-0.3 la=-0.3]
+    >>> CAST_SPELL: Ragavan, Nimble Pilferer
+    → Goal: curve_out [enablers]
+    [Mana] Tap Mountain→R, Plains→W (paying for Ragavan, Nimble Pilferer, 5 mana remaining)
+T7 P1: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P2 passes (no response)
+T7: Resolve Ragavan, Nimble Pilferer
+  [AI-TRACE MAIN1] T14 Boros Energy
+    state: life=12 mana=3 hand=1+0L gy=4
+    hand: ['The Legend of Roku // Avatar Roku']
+    board: ['Ragavan, Nimble Pilferer (2/1)']
+    opp: ["Sojourner's Companion (10/10)"] (life=17)
+    EV candidates:
+        -0.1  cast_spell: Ragavan, Nimble Pilferer <--  [h=-0.1 la=-0.1]
+        -0.3  cast_spell: The Legend of Roku // Avatar Roku  [h=-0.3 la=-0.3]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T14 Boros Energy: ['Ragavan, Nimble Pilferer']
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer
+T7 P1: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P2 does not block
+T7 P1:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T7 P1: Create 1x Treasure token(s)
+T7 P1: Ragavan, Nimble Pilferer exiles Tanglepool Bridge from top of P2's library
+T7 P1: Ragavan, Nimble Pilferer — may cast Tanglepool Bridge this turn
+  [Combat Damage] 2 damage dealt → P2 life: 17 → 15
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T14 Boros Energy
+    state: life=12 mana=3 hand=1+1L gy=4
+    hand: ['The Legend of Roku // Avatar Roku']
+    board: ['Ragavan, Nimble Pilferer (2/1)']
+    perms: ['Treasure Token']
+    opp: ["Sojourner's Companion (10/10)"] (life=15)
+    EV candidates:
+       +15.0  play_land: Tanglepool Bridge <--
+    >>> PLAY_LAND: Tanglepool Bridge
+T7 P1: Play Tanglepool Bridge (enters tapped)
+  [AI-TRACE MAIN2] T14 Boros Energy
+    state: life=12 mana=3 hand=1+0L gy=4
+    hand: ['The Legend of Roku // Avatar Roku']
+    board: ['Ragavan, Nimble Pilferer (2/1)']
+    perms: ['Treasure Token']
+    opp: ["Sojourner's Companion (10/10)"] (life=15)
+    EV candidates:
+       +15.0  play_land: Tanglepool Bridge <--
+    >>> PASS (threshold=-5.0)
+  [End Step]
+T7: Ragavan, Nimble Pilferer moved battlefield -> hand (Dash return)
+T7: Ragavan, Nimble Pilferer returned to hand (Dash)
+
+╔══ TURN 8 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 15  |  Boros Energy 12
+║ Hand: 1 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 45  |  Graveyard: 7
+║ Affinity board:
+║   Creatures: Sojourner's Companion (10/10)
+║   Other: Springleaf Drum, Nettlecyst
+║   Lands: Darksteel Citadel, Silverbluff Bridge, Darksteel Citadel, Urza's Saga
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains [T], Mountain [T], Tanglepool Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T8 P2: Create 1x Construct token(s)
+T8 P2: Urza's Saga Ch.II: Create Construct Token
+  [Draw] P2 draws: Urza's Saga
+  [Main 1]
+  [AI-TRACE MAIN1] T15 Affinity
+    state: life=15 mana=4 hand=1+1L gy=7
+    hand: ['Ornithopter']
+    board: ["Sojourner's Companion (11/11)", 'Construct Token (7/7)']
+    perms: ['Springleaf Drum', 'Nettlecyst']
+    opp: [] (life=12)
+    EV candidates:
+       +15.0  play_land: Urza's Saga <--
+       -12.1  cast_spell: Ornithopter  [h=-12.1 la=-12.1 rmv=6%]
+    >>> PLAY_LAND: Urza's Saga
+T8 P2: Play Urza's Saga
+  [AI-TRACE MAIN1] T15 Affinity
+    state: life=15 mana=5 hand=1+0L gy=7
+    hand: ['Ornithopter']
+    board: ["Sojourner's Companion (11/11)", 'Construct Token (7/7)']
+    perms: ['Springleaf Drum', 'Nettlecyst']
+    opp: [] (life=12)
+    EV candidates:
+       -12.1  cast_spell: Ornithopter <--  [h=-12.1 la=-12.1 rmv=6%]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T15 Affinity: ["Sojourner's Companion"]
+  [Declare Attackers] P2 attacks with: Sojourner's Companion
+T8 P2: Attack with Sojourner's Companion
+  [Declare Blockers] P1 does not block
+T8 P2:   Sojourner's Companion (11/11) → 11 dmg to player
+  [Combat Damage] 11 damage dealt → P1 life: 12 → 1
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T15 Affinity
+    state: life=15 mana=5 hand=1+0L gy=7
+    hand: ['Ornithopter']
+    board: ["Sojourner's Companion (11/11)", 'Construct Token (7/7)']
+    perms: ['Springleaf Drum', 'Nettlecyst']
+    opp: [] (life=1)
+    EV candidates:
+      -139.5  cast_spell: Ornithopter <--  [h=-139.5 la=-139.5 rmv=6%]
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 8 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 1  |  Affinity 15
+║ Hand: 2 cards  |  Opp hand: 1 cards
+║ Lands: 6  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 4
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains, Mountain, Tanglepool Bridge
+║ Affinity board:
+║   Creatures: Sojourner's Companion (11/11) [tapped], Construct Token (7/7)
+║   Other: Springleaf Drum, Nettlecyst
+║   Lands: Darksteel Citadel, Silverbluff Bridge, Darksteel Citadel, Urza's Saga, Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wrath of the Skies
+  [Main 1]
+  [AI-TRACE MAIN1] T16 Boros Energy
+    state: life=1 mana=6 hand=3+0L gy=4
+    hand: ['The Legend of Roku // Avatar Roku', 'Ragavan, Nimble Pilferer', 'Wrath of the Skies']
+    perms: ['Treasure Token']
+    opp: ["Sojourner's Companion (11/11)", 'Construct Token (7/7)'] (life=15)
+    EV candidates:
+        +1.2  cast_spell: Wrath of the Skies <--  [h=+1.2 la=+1.2]
+        -0.1  cast_spell: Ragavan, Nimble Pilferer  [h=-0.1 la=-0.1]
+        -0.2  cast_spell: The Legend of Roku // Avatar Roku  [h=-0.2 la=-0.2]
+    >>> CAST_SPELL: Wrath of the Skies
+    → Goal: curve_out
+    [Mana] Tap Plains→W, Sacred Foundry→W (paying for Wrath of the Skies, 6 mana remaining)
+T8 P1: Cast Wrath of the Skies (3WW) (X=3)
+    [Priority] P2 passes (no response)
+T8: Resolve Wrath of the Skies
+T8: Treasure Token moved battlefield -> graveyard (destroyed)
+T8: Springleaf Drum moved battlefield -> graveyard (destroyed)
+T8: Nettlecyst moved battlefield -> graveyard (destroyed)
+T8: Construct Token dies
+T8 P1: Wrath of the Skies (X=3) sweeps the board
+  [AI-TRACE MAIN1] T16 Boros Energy
+    state: life=1 mana=1 hand=2+0L gy=6
+    hand: ['The Legend of Roku // Avatar Roku', 'Ragavan, Nimble Pilferer']
+    opp: ["Sojourner's Companion (8/8)"] (life=15)
+    EV candidates:
+        -0.1  cast_spell: Ragavan, Nimble Pilferer <--  [h=-0.1 la=-0.1]
+        -0.2  cast_spell: The Legend of Roku // Avatar Roku  [h=-0.2 la=-0.2]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T16 Boros Energy: no attack
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [AI-TRACE MAIN2] T16 Boros Energy
+    state: life=1 mana=1 hand=2+0L gy=6
+    hand: ['The Legend of Roku // Avatar Roku', 'Ragavan, Nimble Pilferer']
+    opp: ["Sojourner's Companion (8/8)"] (life=15)
+    EV candidates:
+        -0.1  cast_spell: Ragavan, Nimble Pilferer <--  [h=-0.1 la=-0.1]
+        -0.2  cast_spell: The Legend of Roku // Avatar Roku  [h=-0.2 la=-0.2]
+    >>> PASS (threshold=-5.0)
+  [End Step]
+
+╔══ TURN 9 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 15  |  Boros Energy 1
+║ Hand: 1 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 44  |  Graveyard: 10
+║ Affinity board:
+║   Creatures: Sojourner's Companion (8/8)
+║   Lands: Darksteel Citadel, Silverbluff Bridge, Darksteel Citadel, Urza's Saga, Urza's Saga
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Plains [T], Mountain [T], Tanglepool Bridge
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T9 P2: Create 1x Construct token(s)
+T9 P2: Urza's Saga Ch.III: Create Construct Token
+T9 P2: Urza's Saga tutors Mox Opal
+T9 P2: Sacrifice Urza's Saga (final chapter)
+  [Draw] P2 draws: Springleaf Drum
+  [Main 1]
+  [AI-TRACE MAIN1] T17 Affinity
+    state: life=15 mana=4 hand=2+0L gy=11
+    hand: ['Ornithopter', 'Springleaf Drum']
+    board: ["Sojourner's Companion (10/10)", 'Construct Token (6/6)']
+    perms: ['Mox Opal']
+    opp: [] (life=1)
+    EV candidates:
+       +16.5  cast_spell: Springleaf Drum <--  [h=+16.5 la=+16.5]
+      -119.5  cast_spell: Ornithopter  [h=-119.5 la=-119.5 rmv=6%]
+    >>> CAST_SPELL: Springleaf Drum
+    → Goal: curve_out
+T9 P2: Cast Springleaf Drum (1)
+    [Priority] P1 passes (no response)
+T9: Resolve Springleaf Drum
+  [AI-TRACE MAIN1] T17 Affinity
+    state: life=15 mana=4 hand=1+0L gy=11
+    hand: ['Ornithopter']
+    board: ["Sojourner's Companion (11/11)", 'Construct Token (7/7)']
+    perms: ['Mox Opal', 'Springleaf Drum']
+    opp: [] (life=1)
+    EV candidates:
+      -139.5  cast_spell: Ornithopter <--  [h=-139.5 la=-139.5 rmv=6%]
+    >>> PASS (threshold=-5.0)
+  [Begin Combat]
+  [AI-TRACE ATTACK] T17 Affinity: ["Sojourner's Companion"]
+  [Declare Attackers] P2 attacks with: Sojourner's Companion
+T9 P2: Attack with Sojourner's Companion
+  [Declare Blockers] P1 does not block
+T9 P2:   Sojourner's Companion (11/11) → 11 dmg to player
+P1 loses: life total -10
+  [Combat Damage] 11 damage dealt → P1 life: 1 → -10
+
+>>> Affinity wins Game 3 on turn 9 via damage
+    Final life: Boros Energy=-10  Affinity=15
+
+======================================================================
+  MATCH RESULT: Affinity wins 2-1
+======================================================================
