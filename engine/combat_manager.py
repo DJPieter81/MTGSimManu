@@ -368,3 +368,17 @@ class CombatManager:
         """Get the blocking assignments as a dict."""
         return {a.attacker.instance_id: a.blocker_ids
                 for a in self._assignments}
+
+    @staticmethod
+    def valid_attackers(game: "GameState",
+                        player_idx: int) -> List["CardInstance"]:
+        """Creatures controlled by player_idx that are currently legal
+        attackers (not summoning-sick, untapped, not already attacking)."""
+        return [c for c in game.players[player_idx].creatures if c.can_attack]
+
+    @staticmethod
+    def valid_blockers(game: "GameState",
+                       player_idx: int) -> List["CardInstance"]:
+        """Creatures controlled by player_idx that can legally block
+        this combat (untapped, not under a "cannot block" effect)."""
+        return [c for c in game.players[player_idx].creatures if c.can_block]

@@ -632,7 +632,9 @@ class GameRunner:
                     pass  # Future: priority window after blockers
 
                 elif step == TurnStep.FIRST_STRIKE_DAMAGE:
-                    pass  # Handled inside game.combat_damage()
+                    pass  # First-strike and regular damage are both
+                          # handled inside combat_mgr.resolve_combat_damage()
+                          # at the COMBAT_DAMAGE step below.
 
                 elif step == TurnStep.COMBAT_DAMAGE:
                     if combat_mgr.attackers:
