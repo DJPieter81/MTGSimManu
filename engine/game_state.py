@@ -44,6 +44,7 @@ from .constants import (
 # the late `from .game_state import _parse_planeswalker_abilities` in
 # game_runner.py continue to resolve without edits.
 from .player_state import PlayerState, TOKEN_DEFS, _parse_planeswalker_abilities
+from .mana_payment import ManaPayment
 
 
 class Phase(Enum):
@@ -222,197 +223,9 @@ class GameState:
 
     def tap_lands_for_mana(self, player_idx: int, cost: ManaCost,
                            card_name: str = None) -> bool:
-        """Tap lands to pay a mana cost. Returns True if successful.
-
-        Side effect: sets self._last_colors_spent to the set of colors of
-        mana spent to pay this cost (for Converge mechanic). Colors come
-        from the lands tapped in this call PLUS colors drained from the
-        pre-existing mana pool. Empty if cost was 0 or payment failed.
-        """
-        player = self.players[player_idx]
-        # Snapshot mana pool BEFORE payment so we can detect which colors
-        # were drained from pre-existing ritual/pool mana (Converge rule).
-        _pre_pool = {c: player.mana_pool.get(c) for c in ["W", "U", "B", "R", "G", "C"]}
-        # Reset the colors-spent tracker. Populated at the end of this call.
-        self._last_colors_spent = set()
-
-        # Cost reductions
-        reduction = 0
-        # Domain cost reduction (from oracle-derived template property)
-        # Replaces hardcoded "Scion of Draco" / "Leyline Binding" checks
-        if card_name:
-            for c in list(self.players[player_idx].hand) + list(self.players[player_idx].graveyard):
-                if c.template.name == card_name and c.template.domain_reduction > 0:
-                    domain = self._count_domain(player_idx)
-                    reduction += c.template.domain_reduction * domain
-                    break
-        # Ruby Medallion and Affinity cost reductions
-        player = self.players[player_idx]
-        if card_name:
-            # Check hand, graveyard, and stack for the card (flashback casts are from GY)
-            all_cards = list(player.hand) + list(player.graveyard)
-            for c in all_cards:
-                if c.template.name == card_name:
-                    # Generic cost reduction from permanents
-                    from .oracle_resolver import count_cost_reducers
-                    reduction += count_cost_reducers(self, player_idx, c.template)
-                    # Temporary cost reduction (Ral PW +1 "until your next turn")
-                    if c.template.is_instant or c.template.is_sorcery:
-                        reduction += player.temp_cost_reduction
-                    # Affinity for artifacts
-                    if Keyword.AFFINITY in c.template.keywords:
-                        artifact_count = sum(
-                            1 for b in player.battlefield
-                            if CardType.ARTIFACT in b.template.card_types
-                        )
-                        reduction += artifact_count
-                    break
-        if reduction > 0:
-            from .mana import ManaCost as MC
-            new_generic = max(0, cost.generic - reduction)
-            cost = MC(
-                white=cost.white, blue=cost.blue, black=cost.black,
-                red=cost.red, green=cost.green, colorless=cost.colorless,
-                generic=new_generic
-            )
-        untapped = [l for l in player.lands if not l.tapped]
-
-        if not untapped and player.mana_pool.total() == 0:
-            return cost.cmc == 0
-
-        # Check if mana pool already has enough (from rituals)
-        if player.mana_pool.can_pay(cost):
-            return player.mana_pool.pay(cost)
-
-        # Leyline of the Guildpact: all lands produce WUBRG
-        has_leyline = self._has_leyline_of_guildpact(player_idx)
-        def _produces(land):
-            return self.ALL_COLORS if has_leyline else land.template.produces_mana
-
-        # Sort lands: most restrictive first (fewest colors produced)
-        untapped.sort(key=lambda l: len(_produces(l)))
-
-        needed = cost.to_dict()
-        lands_to_tap = []
-
-        # Pay colored costs using MRV (Most Constrained Variable) heuristic:
-        # Process colors with the FEWEST available land sources first.
-        # This prevents greedy misassignment where a dual land is used for
-        # a color that has many sources, leaving a color with few sources
-        # unable to be paid.
-        #
-        # Example: Faithful Mending costs WU.
-        #   Lands: Hallowed Fountain (W/U), Godless Shrine (W/B), Godless Shrine (W/B)
-        #   Fixed order (W first): Fountain→W, then no U source → FAIL
-        #   MRV order (U first, only 1 source): Fountain→U, then Shrine→W → SUCCESS
-
-        # First, use mana pool for colored costs
-        pool_used = {}
-        for color in ["W", "U", "B", "R", "G", "C"]:
-            remaining = needed.get(color, 0)
-            if remaining > 0:
-                pool_avail = player.mana_pool.get(color)
-                use_pool = min(pool_avail, remaining)
-                pool_used[color] = use_pool
-                needed[color] = remaining - use_pool
-
-        # Collect colors that still need land sources
-        colors_needed_list = []
-        for color in ["W", "U", "B", "R", "G", "C"]:
-            for _ in range(needed.get(color, 0)):
-                colors_needed_list.append(color)
-
-        # Assign with re-sorting: most constrained color first each step
-        used_lands = set()
-
-        while colors_needed_list:
-            # Re-sort by scarcity each step (fixes 4-color dual land issues)
-            colors_needed_list.sort(
-                key=lambda c: sum(1 for l in untapped if l not in used_lands and c in _produces(l))
-            )
-            color = colors_needed_list.pop(0)
-            # Find least-flexible unused land for this color
-            best_land = None
-            best_flex = 999
-            for land in untapped:
-                if land in used_lands:
-                    continue
-                lp = _produces(land)
-                if color in lp:
-                    flex = len(lp)
-                    if flex < best_flex:
-                        best_flex = flex
-                        best_land = land
-            if best_land is None:
-                return False
-            lands_to_tap.append((best_land, color))
-            used_lands.add(best_land)
-
-        # Pay generic
-        generic_remaining = needed.get("generic", 0)
-        # Use pool first
-        pool_total = player.mana_pool.total()
-        # Subtract what we already committed from pool for colored
-        for color in ["W", "U", "B", "R", "G", "C"]:
-            pool_avail = player.mana_pool.get(color)
-            use_pool = min(pool_avail, needed.get(color, 0))
-            pool_total -= use_pool
-
-        use_pool_generic = min(pool_total, generic_remaining)
-        generic_remaining -= use_pool_generic
-
-        # Pre-compute conditional mana bonus for each land
-        # (uses the data-driven conditional_mana field parsed from oracle text)
-        cond_bonus_cache = player._compute_conditional_bonus_per_land()
-
-        for land in untapped:
-            if generic_remaining <= 0:
-                break
-            if land not in used_lands:
-                lp = _produces(land)
-                if lp:
-                    lands_to_tap.append((land, lp[0]))
-                    used_lands.add(land)
-                    # Base 1 + any conditional bonus from oracle text
-                    mana_from_land = 1 + cond_bonus_cache.get(id(land), 0)
-                    generic_remaining -= mana_from_land
-
-        if generic_remaining > 0:
-            return False
-
-        # Tap lands and add mana
-        tapped_names = []
-        for land, color in lands_to_tap:
-            land.tap()
-            player.mana_pool.add(color)
-            tapped_names.append(f'{land.name}→{color}')
-            bonus = cond_bonus_cache.get(id(land), 0)
-            if bonus > 0:
-                player.mana_pool.add("C", bonus)
-            # Pain land: self-damage when tapping for colored mana
-            if land.template.tap_damage > 0 and color != "C":
-                player.life -= land.template.tap_damage
-
-        # Verbose: log which lands were tapped for mana
-        if getattr(self, 'verbose', False) and tapped_names and card_name:
-            remaining_mana = len(player.untapped_lands) + player.mana_pool.total()
-            self.log.append(f'    [Mana] Tap {", ".join(tapped_names)} '
-                            f'(paying for {card_name}, {remaining_mana} mana remaining)')
-
-        ok = player.mana_pool.pay(cost)
-        if ok:
-            # Record colors-of-mana-spent for Converge and similar mechanics.
-            # Includes colors tapped from lands in this call + any colors
-            # that existed in the pre-call mana pool and were drained below
-            # pre-levels (i.e. spent on this cost rather than carried over).
-            # Note: _pre_pool doesn't account for any mana the lands_to_tap
-            # loop ADDED to the pool before .pay() drained it — that's OK
-            # because those colors are captured in the lands_to_tap side.
-            self._last_colors_spent = {color for land, color in lands_to_tap}
-            for c in ["W", "U", "B", "R", "G"]:
-                if _pre_pool[c] > 0 and player.mana_pool.get(c) < _pre_pool[c]:
-                    self._last_colors_spent.add(c)
-        return ok
+        return ManaPayment.tap_lands_for_mana(
+            self, player_idx, cost, card_name=card_name
+        )
 
     def can_cast(self, player_idx: int, card: CardInstance) -> bool:
         """Check if a player can cast a card."""
@@ -3196,35 +3009,13 @@ class GameState:
     ALL_COLORS = ["W", "U", "B", "R", "G"]
 
     def _has_leyline_of_guildpact(self, player_idx: int) -> bool:
-        """Check if player controls a permanent that makes lands all basic types."""
-        # Detects "lands you control are every basic land type" from oracle text
-        return any('lands you control are every basic land type' in
-                    (c.template.oracle_text or '').lower()
-                   for c in self.players[player_idx].battlefield)
+        return ManaPayment.has_leyline_of_guildpact(self, player_idx)
 
     def _effective_produces_mana(self, player_idx: int, land) -> list:
-        """Return effective mana colors a land produces, considering Leyline of the Guildpact."""
-        if self._has_leyline_of_guildpact(player_idx):
-            return self.ALL_COLORS
-        return land.template.produces_mana
+        return ManaPayment.effective_produces_mana(self, player_idx, land)
 
     def _count_domain(self, player_idx: int) -> int:
-        """Count basic land types among lands controlled by a player."""
-        # Check for effects that make lands every basic land type
-        for c in self.players[player_idx].battlefield:
-            if 'lands you control are every basic land type' in (c.template.oracle_text or '').lower():
-                # As long as we control at least one land, domain = 5
-                if any(l.template.is_land
-                       for l in self.players[player_idx].battlefield):
-                    return 5
-        BASIC_TYPES = {"Plains", "Island", "Swamp", "Mountain", "Forest"}
-        found = set()
-        for land in self.players[player_idx].battlefield:
-            if land.template.is_land:
-                for st in land.template.subtypes:
-                    if st in BASIC_TYPES:
-                        found.add(st)
-        return len(found)
+        return ManaPayment.count_domain(self, player_idx)
 
     def get_valid_attackers(self, player_idx: int) -> List[CardInstance]:
         from .combat_manager import CombatManager
