@@ -25,7 +25,7 @@ from typing import TYPE_CHECKING
 
 from .cards import CardType, Keyword
 from .mana_payment import ALL_COLORS
-from .stack import StackItem
+from .stack import StackItem, StackItemType
 
 if TYPE_CHECKING:
     from .cards import CardInstance
@@ -451,7 +451,7 @@ class CastManager:
                 if not can_dash and not can_normal:
                     return False
 
-                dashed = game.callbacks.should_dash(self, player_idx, card, can_normal, can_dash)
+                dashed = game.callbacks.should_dash(game, player_idx, card, can_normal, can_dash)
 
             # Check if we should cast via Escape (from graveyard)
             escaped = False
@@ -478,7 +478,7 @@ class CastManager:
                 not dashed and not escaped
                 and template.evoke_cost is not None
                 and untapped < template.mana_cost.cmc
-                and game.callbacks.should_evoke(self, player_idx, card)
+                and game.callbacks.should_evoke(game, player_idx, card)
             )
             # Target validation: don't evoke if the card needs a target and none exists
             if should_evoke:
@@ -833,7 +833,7 @@ class CastManager:
             # NEW color first, maximising distinct colors paid → maximising X.
             # For non-Converge X-spells this reduces to arbitrary selection
             # (same as the old behavior because set-difference is 0-or-more).
-            xpay_colors = set(getattr(self, '_last_colors_spent', set()))
+            xpay_colors = set(getattr(game, '_last_colors_spent', set()))
             oracle = (template.oracle_text or '').lower()
             is_converge = 'converge' in oracle or 'colors of mana spent' in oracle
             lands_pool = list(player.untapped_lands)
@@ -867,7 +867,7 @@ class CastManager:
             # Snapshot the colors actually spent for Converge ("number of
             # colors of mana spent to cast this spell"). Populated by the
             # most recent tap_lands_for_mana() call; empty for free casts.
-            colors_spent=set(getattr(self, '_last_colors_spent', set())),
+            colors_spent=set(getattr(game, '_last_colors_spent', set())),
         )
 
         # ── Splice onto Arcane: when casting an Arcane spell, splice cards
@@ -882,7 +882,7 @@ class CastManager:
                 if not splice:
                     continue
                 # splice is total CMC (int) — apply cost reduction
-                reduction = count_cost_reducers(self, player_idx, sc.template)
+                reduction = count_cost_reducers(game, player_idx, sc.template)
                 reduction += player.temp_cost_reduction
                 effective_splice = max(0, splice - reduction)
                 available_mana = player.mana_pool.total() + len(player.untapped_lands)
@@ -978,7 +978,7 @@ class CastManager:
 
         # Generic oracle-text-based spell-cast triggers
         from .oracle_resolver import resolve_spell_cast_trigger
-        resolve_spell_cast_trigger(self, player_idx, card)
+        resolve_spell_cast_trigger(game, player_idx, card)
 
         return True
 
