@@ -223,18 +223,21 @@ class TurnManager:
         """CR 514: Cleanup step — cleanup continuous effects, discard to
         max hand size, remove combat damage, empty mana pools.
 
-        Discard is delegated via callback (`choose_discard`) in a later
-        refactor commit; for now it uses the engine's _choose_self_discard.
+        Discard is delegated via the GameCallbacks.choose_discard
+        protocol; the AI callbacks install ai.discard_advisor, the
+        default callback picks highest-CMC.
         """
         active = game.players[game.active_player]
 
         # Clean up end-of-turn continuous effects
         game.continuous_effects.cleanup_end_of_turn()
 
-        # Discard to hand size (7) - player chooses, so use smart discard
+        # Discard to hand size via the callback
         from .constants import MAX_HAND_SIZE
         while len(active.hand) > MAX_HAND_SIZE:
-            card = game._choose_self_discard(active)
+            card = game.callbacks.choose_discard(
+                game, game.active_player, list(active.hand),
+                self_discard=True)
             game.zone_mgr.move_card(
                 game, card, "hand", "graveyard",
                 cause="discard to hand size"

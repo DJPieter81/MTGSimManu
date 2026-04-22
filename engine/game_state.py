@@ -51,6 +51,7 @@ from .spell_resolution import ResolutionManager
 from .permanent_effects import PermanentEffects
 from .triggers import TriggerManager
 from .planeswalker_manager import PlaneswalkerManager
+from .cycling import CyclingManager
 
 
 class Phase(Enum):
@@ -385,79 +386,25 @@ class GameState:
         PermanentEffects._bounce_permanent(self, permanent)
 
     def _force_discard(self, player_idx: int, count: int, self_discard: bool = False):
-        """Discard cards from hand.
+        """Discard cards from hand. The per-card choice is delegated
+        to self.callbacks.choose_discard — the AI wire-up installs
+        ai.discard_advisor.choose_discard, the default picks the
+        highest-CMC card.
 
-        self_discard=True means the player chose to discard (Faithful Mending, etc.)
-        self_discard=False means opponent forced the discard (Thoughtseize, etc.)
+        self_discard=True means the player chose to discard (Faithful
+        Mending, etc.). self_discard=False means an opponent forced
+        the discard (Thoughtseize, etc.).
         """
         player = self.players[player_idx]
         for _ in range(min(count, len(player.hand))):
             if not player.hand:
                 break
-            if self_discard:
-                card = self._choose_self_discard(player)
-            else:
-                player.hand.sort(key=lambda c: c.template.cmc, reverse=True)
-                card = player.hand[0]
+            card = self.callbacks.choose_discard(
+                self, player_idx, list(player.hand), self_discard)
             self.zone_mgr.move_card(
                 self, card, "hand", "graveyard",
                 cause="forced discard" if not self_discard else "discard"
             )
-
-    def _choose_self_discard(self, player):
-        """Choose the best card to discard for self-discard effects.
-        
-        Priority (discard first):
-        1. Cards that WANT to be in the graveyard (flashback, escape, reanimation targets)
-        2. Excess lands (more than 4 in hand)
-        3. Redundant copies of cards already on battlefield
-        4. Lowest-priority spells
-        """
-        hand = player.hand
-        if len(hand) == 1:
-            return hand[0]
-        
-        def discard_score(card):
-            """Higher score = discard first."""
-            t = card.template
-            score = 0
-            
-            # Cards with flashback/escape WANT to be in the graveyard
-            if t.escape_cost is not None:
-                score += 100  # Escape cards (Phlage, etc.) - great to discard
-            if 'flashback' in t.tags:
-                score += 90  # Flashback cards (Unburial Rites, etc.)
-            
-            # High-CMC creatures are reanimation targets - great to discard
-            if t.is_creature and t.cmc >= 5:
-                score += 80 + t.cmc  # Higher CMC = better reanimate target
-            
-            # Excess lands (if we have 4+ lands in hand, discard extras)
-            if t.is_land:
-                lands_in_hand = sum(1 for c in hand if c.template.is_land)
-                lands_on_field = len(player.lands)
-                if lands_in_hand > 1 and lands_on_field >= 3:
-                    score += 50  # Excess land
-                elif lands_in_hand > 2:
-                    score += 40
-            
-            # Protection/reactive spells are lower priority to keep
-            if 'counterspell' in t.tags and not t.is_creature:
-                score += 20  # Counterspells less important in hand
-            
-            # Combo pieces and key spells should be kept (low discard score)
-            # Exception: high-CMC creatures are reanimation targets — they WANT the GY
-            if any(tag in t.tags for tag in ('combo', 'tutor')):
-                if not (t.is_creature and t.cmc >= 5):
-                    score -= 30
-            
-            # Removal is moderately important
-            if 'removal' in t.tags:
-                score += 10
-            
-            return score
-        
-        return max(hand, key=discard_score)
 
     # ─── TRIGGERS ────────────────────────────────────────────────
 
@@ -598,147 +545,13 @@ class GameState:
         return legal
 
     def can_cycle(self, player_idx: int, card: "CardInstance") -> bool:
-        """Check if a player can cycle a card from hand."""
-        if card.zone != "hand":
-            return False
-        # Use oracle-derived cycling data from template
-        cost = card.template.cycling_cost_data
-        if cost is None:
-            return False
-        player = self.players[player_idx]
-        # Life cost check
-        if cost["life"] > 0 and player.life <= cost["life"]:
-            return False
-        # Mana cost check
-        if cost["mana"] > 0:
-            untapped = len(player.untapped_lands) + player.mana_pool.total() + player._tron_mana_bonus()
-            if untapped < cost["mana"]:
-                return False
-            # Color check for colored cycling costs
-            if cost["colors"]:
-                has_color = False
-                for land in player.untapped_lands:
-                    if cost["colors"] & set(land.template.produces_mana):
-                        has_color = True
-                        break
-                if not has_color:
-                    for color in cost["colors"]:
-                        if player.mana_pool.get(color) > 0:
-                            has_color = True
-                            break
-                if not has_color:
-                    return False
-        return True
+        return CyclingManager.can_cycle(self, player_idx, card)
 
     def activate_cycling(self, player_idx: int, card: "CardInstance") -> bool:
-        """Activate cycling: pay cost, discard card, draw a card.
-        
-        Cycling is a special action (not casting a spell). The card goes
-        to the graveyard and the player draws a card. This does NOT count
-        as casting a spell (no storm count, no prowess triggers).
-        """
-        if not self.can_cycle(player_idx, card):
-            return False
-        cost = card.template.cycling_cost_data or {"mana": 0, "life": 0, "colors": set()}
-        player = self.players[player_idx]
-        # Pay life cost
-        if cost["life"] > 0:
-            player.life -= cost["life"]
-        # Pay mana cost
-        if cost["mana"] > 0:
-            if cost["colors"]:
-                # Tap a land that produces the required color
-                for color in cost["colors"]:
-                    for land in player.untapped_lands:
-                        if color in land.template.produces_mana:
-                            land.tapped = True
-                            break
-                    break
-                # Pay remaining generic mana
-                remaining = cost["mana"] - 1  # 1 colored already paid
-                for land in player.untapped_lands:
-                    if remaining <= 0:
-                        break
-                    land.tapped = True
-                    remaining -= 1
-            else:
-                # All generic mana
-                remaining = cost["mana"]
-                for land in player.untapped_lands:
-                    if remaining <= 0:
-                        break
-                    land.tapped = True
-                    remaining -= 1
-        # Move card from hand to graveyard
-        if card in player.hand:
-            player.hand.remove(card)
-        card.zone = "graveyard"
-        player.graveyard.append(card)
-        # Landcycling / typecycling tutors; plain cycling draws.
-        variant = card.template.cycling_variant_data
-        cost_desc = f"pay {cost['life']} life" if cost["life"] > 0 else f"pay {cost['mana']} mana"
-        if variant is not None:
-            found = self._cycling_tutor_search(player_idx, variant)
-            # CR 701.18d — shuffle after the search, whether or not a
-            # matching card was found.
-            self.rng.shuffle(player.library)
-            player.library_searches_this_game += 1
-            self._trigger_library_search(player_idx)
-            if found is not None:
-                self.log.append(f"T{self.display_turn} P{player_idx+1}: "
-                               f"Cycle {card.name} ({cost_desc}, "
-                               f"tutor: {found.name})")
-            else:
-                self.log.append(f"T{self.display_turn} P{player_idx+1}: "
-                               f"Cycle {card.name} ({cost_desc}, "
-                               f"tutor: none found)")
-            return True
-        # Plain cycling — draw a card; include the drawn card's name in
-        # the log so that any card "appearing from nowhere" on a later
-        # turn can be traced back to the cycle that produced it
-        # (conservation-invariant).
-        drawn = self.draw_cards(player_idx, 1)
-        drawn_name = drawn[0].name if drawn else "—"
-        self.log.append(f"T{self.display_turn} P{player_idx+1}: "
-                       f"Cycle {card.name} ({cost_desc}, draw: {drawn_name})")
-        return True
+        return CyclingManager.activate_cycling(self, player_idx, card)
 
-    def _cycling_tutor_search(self, player_idx: int,
-                              variant: Dict) -> Optional["CardInstance"]:
-        """Search ``player_idx``'s library for a card that satisfies the
-        landcycling / typecycling predicate.  Moves the card to hand and
-        returns it, or returns None if no legal target exists.  Caller
-        is responsible for shuffling the library and firing search
-        triggers.
-
-        ``variant`` is a dict produced by
-        :func:`engine.oracle_parser.parse_cycling_variant` with keys
-        ``require_types``, ``require_supertypes``, ``require_subtypes``.
-        All three sets are ANDed; empty set = no constraint.
-        """
-        req_types = variant.get('require_types') or set()
-        req_supers = variant.get('require_supertypes') or set()
-        req_subs = variant.get('require_subtypes') or set()
-        player = self.players[player_idx]
-        for lib_card in player.library:
-            tmpl = lib_card.template
-            card_types = {ct.value for ct in tmpl.card_types}
-            supertypes = {st.value for st in tmpl.supertypes}
-            subtypes = set(tmpl.subtypes)
-            if req_types and not req_types.issubset(card_types):
-                continue
-            if req_supers and not req_supers.issubset(supertypes):
-                continue
-            if req_subs and not req_subs.issubset(subtypes):
-                continue
-            # Match — tutor it to hand.
-            player.library.remove(lib_card)
-            lib_card.zone = "hand"
-            player.hand.append(lib_card)
-            return lib_card
-        return None
-
-    ALL_COLORS = ["W", "U", "B", "R", "G"]
+    def _cycling_tutor_search(self, player_idx, variant):
+        return CyclingManager._cycling_tutor_search(self, player_idx, variant)
 
     def _has_leyline_of_guildpact(self, player_idx: int) -> bool:
         return ManaPayment.has_leyline_of_guildpact(self, player_idx)
@@ -757,13 +570,3 @@ class GameState:
         from .combat_manager import CombatManager
         return CombatManager.valid_blockers(self, player_idx)
 
-    # ─── GRISELBRAND ACTIVATED ABILITY ───────────────────────────
-
-    def activate_griselbrand(self, controller: int, card: CardInstance):
-        """Pay 7 life, draw 7 cards."""
-        player = self.players[controller]
-        if player.life >= 8:  # Keep at least 1 life
-            player.life -= 7
-            self.draw_cards(controller, 7)
-            self.log.append(f"T{self.display_turn} P{controller+1}: "
-                            f"Griselbrand: pay 7 life, draw 7")

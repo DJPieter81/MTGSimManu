@@ -43,6 +43,17 @@ class GameCallbacks(Protocol):
         """Should this creature be dashed instead of hardcast?"""
         ...
 
+    def choose_discard(
+        self, game: GameState, player_idx: int,
+        hand: List[CardInstance], self_discard: bool
+    ) -> CardInstance:
+        """Pick the best card to discard.
+
+        self_discard=True: player chose to discard (Faithful Mending).
+        self_discard=False: opponent forced discard (Thoughtseize).
+        """
+        ...
+
 
 class DefaultCallbacks:
     """Safe defaults: always tapped, first legal target, no evoke, no dash."""
@@ -69,3 +80,14 @@ class DefaultCallbacks:
         can_normal: bool, can_dash: bool
     ) -> bool:
         return can_dash and not can_normal
+
+    def choose_discard(
+        self, game: GameState, player_idx: int,
+        hand: List[CardInstance], self_discard: bool
+    ) -> CardInstance:
+        """Default: discard highest-CMC card (least-mana-efficient to
+        re-cast). This matches the legacy non-AI forced-discard
+        behaviour at the pre-refactor GameState._force_discard (sort
+        by CMC desc, take head). AI callback implementations should
+        override this with a proper discard-scoring strategy."""
+        return max(hand, key=lambda c: c.template.cmc or 0)

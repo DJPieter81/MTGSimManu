@@ -275,9 +275,12 @@ class CardInstance:
         if self._game_state is None:
             return 0
         player = self._game_state.players[self.controller]
-        # Leyline of the Guildpact makes all lands every basic land type
+        # Oracle-driven detection of "lands you control are every basic
+        # land type" (Leyline of the Guildpact pattern). Same predicate
+        # as engine/mana_payment.py::ManaPayment.has_leyline_of_guildpact.
         for c in player.battlefield:
-            if c.name == "Leyline of the Guildpact":
+            oracle = (c.template.oracle_text or '').lower()
+            if 'lands you control are every basic land type' in oracle:
                 if any(l.template.is_land for l in player.battlefield):
                     return 5
         found_types: set = set()
