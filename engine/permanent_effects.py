@@ -23,7 +23,12 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, List
 
-from .cards import CardInstance, CardType, Keyword, Supertype
+from .cards import (
+    CardInstance, CardTemplate, CardType, Keyword, Supertype, Color,
+)
+from .card_effects import EFFECT_REGISTRY, EffectTiming
+from .mana import ManaCost
+from .player_state import TOKEN_DEFS
 
 if TYPE_CHECKING:
     from .game_state import GameState
