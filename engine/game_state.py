@@ -48,6 +48,7 @@ from .mana_payment import ManaPayment
 from .land_manager import LandManager
 from .cast_manager import CastManager
 from .spell_resolution import ResolutionManager
+from .permanent_effects import PermanentEffects
 
 
 class Phase(Enum):
@@ -336,90 +337,11 @@ class GameState:
     def _resolve_living_end(self, controller: int):
         ResolutionManager._resolve_living_end(self, controller)
 
-    def reanimate(self, controller: int, target_card: CardInstance,
-                  exile_at_eot: bool = False, give_haste: bool = False):
-        """Put a creature from graveyard onto the battlefield."""
-        player = self.players[controller]
-        if target_card not in player.graveyard:
-            return
+    def reanimate(self, *args, **kwargs):
+        return PermanentEffects.reanimate(self, *args, **kwargs)
 
-        player.graveyard.remove(target_card)
-        target_card.controller = controller
-        target_card.enter_battlefield()
-        if give_haste:
-            target_card.temp_keywords.add(Keyword.HASTE)
-        player.battlefield.append(target_card)
-
-        self.log.append(f"T{self.display_turn} P{controller+1}: "
-                        f"Reanimate {target_card.name}")
-
-        if exile_at_eot:
-            self._end_of_turn_exiles.append((target_card, controller))
-
-        # Trigger ETB
-        self._handle_permanent_etb(target_card, controller)
-
-    # ─── TOKEN GENERATION ────────────────────────────────────────
-
-    def create_token(self, controller: int, token_type: str,
-                     count: int = 1, power: int = None, toughness: int = None,
-                     extra_keywords: Set[Keyword] = None) -> List[CardInstance]:
-        """Create token creatures on the battlefield."""
-        tokens = []
-        token_def = TOKEN_DEFS.get(token_type)
-        if not token_def:
-            # Generic token
-            token_def = (token_type.title(), [CardType.CREATURE], power or 1, toughness or 1, set())
-
-        t_name, t_types, t_power, t_toughness, t_keywords = token_def
-        if power is not None:
-            t_power = power
-        if toughness is not None:
-            t_toughness = toughness
-        kw_set = set(t_keywords)
-        if extra_keywords:
-            kw_set |= extra_keywords
-
-        # Oracle text on the generated template so _dynamic_base_power's
-        # regex can find the scaling pattern. Without this, Construct tokens
-        # from Urza's Saga Ch II have no oracle_text, the regex
-        # `\+\d+/\+\d+ for each artifact you control` doesn't fire, and they
-        # stay 0/0 → die immediately to state-based actions. Root-caused from
-        # verbose vs Affinity: "T4: Construct Token dies" on Ch II resolution.
-        TOKEN_ORACLES = {
-            "construct": "This creature gets +1/+1 for each artifact you control.",
-        }
-        token_oracle = TOKEN_ORACLES.get(token_type, "")
-
-        for _ in range(count):
-            template = CardTemplate(
-                name=f"{t_name} Token",
-                card_types=list(t_types),
-                mana_cost=ManaCost(),
-                power=t_power,
-                toughness=t_toughness,
-                keywords=kw_set,
-                tags={"token", "creature"},
-                oracle_text=token_oracle,
-            )
-            instance = CardInstance(
-                template=template,
-                owner=controller,
-                controller=controller,
-                instance_id=self.next_instance_id(),
-                zone="battlefield",
-            )
-            instance._game_state = self
-            instance.enter_battlefield()
-            self.players[controller].battlefield.append(instance)
-            tokens.append(instance)
-
-        if count > 0:
-            self.log.append(f"T{self.display_turn} P{controller+1}: "
-                            f"Create {count}x {t_name} token(s)")
-        return tokens
-
-    # ─── PLANESWALKER ABILITIES ──────────────────────────────────
+    def create_token(self, *args, **kwargs):
+        return PermanentEffects.create_token(self, *args, **kwargs)
 
     def activate_planeswalker(self, controller: int, pw_card: CardInstance,
                                ability_type: str = "plus"):
@@ -669,42 +591,14 @@ class GameState:
 
     # ─── ENERGY SYSTEM ───────────────────────────────────────────
 
-    def produce_energy(self, player_idx: int, amount: int, source_name: str = ""):
-        """Add energy counters to a player."""
-        self.players[player_idx].add_energy(amount)
-        self.log.append(f"T{self.display_turn} P{player_idx+1}: "
-                        f"+{amount} energy from {source_name} "
-                        f"(total: {self.players[player_idx].energy_counters})")
+    def produce_energy(self, *args, **kwargs):
+        return PermanentEffects.produce_energy(self, *args, **kwargs)
 
-    def spend_energy_for_effect(self, player_idx: int, amount: int,
-                                 effect_type: str = "") -> bool:
-        """Spend energy for an effect. Returns True if successful."""
-        if self.players[player_idx].spend_energy(amount):
-            self.log.append(f"T{self.display_turn} P{player_idx+1}: "
-                            f"Spend {amount} energy for {effect_type}")
-            return True
-        return False
+    def spend_energy_for_effect(self, *args, **kwargs):
+        return PermanentEffects.spend_energy_for_effect(self, *args, **kwargs)
 
-    def gain_life(self, player_idx: int, amount: int, source: str = ""):
-        """Centralized lifegain with triggers (Ocelot Pride, etc.)."""
-        if amount <= 0:
-            return
-        player = self.players[player_idx]
-        player.life += amount
-        player.life_gained_this_turn += amount
-        self.log.append(f"T{self.display_turn} P{player_idx+1}: "
-                        f"Gain {amount} life from {source} (life: {player.life})")
-        # Generic "whenever you gain life" triggers from oracle
-        for creature in list(player.creatures):
-            oracle = (creature.template.oracle_text or '').lower()
-            if 'whenever you gain life' in oracle and 'create' in oracle and 'token' in oracle:
-                # Parse token type from oracle if possible
-                token_type = "cat" if "cat" in oracle else "creature"
-                self.create_token(player_idx, token_type, count=1)
-                break  # once per lifegain event
-
-    # ─── SPELL EFFECTS ───────────────────────────────────────────
-
+    def gain_life(self, *args, **kwargs):
+        return PermanentEffects.gain_life(self, *args, **kwargs)
     def _execute_spell_effects(self, item: StackItem):
         ResolutionManager._execute_spell_effects(self, item)
 
@@ -712,94 +606,16 @@ class GameState:
         ResolutionManager._blink_permanent(self, card, controller)
 
     def _creature_dies(self, creature: CardInstance):
-        """Handle a creature dying."""
-        owner = creature.owner
-        controller = creature.controller
-
-        if creature in self.players[controller].battlefield:
-            self.players[controller].battlefield.remove(creature)
-
-        # Undying: return with +1/+1 counter
-        if Keyword.UNDYING in creature.keywords and creature.plus_counters == 0:
-            creature.zone = "graveyard"
-            creature.reset_combat()
-            creature.cleanup_damage()
-            # Return to battlefield with +1/+1 counter
-            creature.controller = controller
-            creature.enter_battlefield()
-            creature.plus_counters += 1
-            self.players[controller].battlefield.append(creature)
-            self.log.append(f"T{self.display_turn}: {creature.name} returns (undying)")
-            return
-
-        # Persist: return with -1/-1 counter
-        if Keyword.PERSIST in creature.keywords and creature.minus_counters == 0:
-            creature.zone = "graveyard"
-            creature.reset_combat()
-            creature.cleanup_damage()
-            creature.controller = controller
-            creature.enter_battlefield()
-            creature.minus_counters += 1
-            self.players[controller].battlefield.append(creature)
-            self.log.append(f"T{self.display_turn}: {creature.name} returns (persist)")
-            return
-
-        # Equipment falls off: when equipped creature dies, mark equipment
-        # as unattached so the AI must pay to re-equip
-        equip_tags_on_creature = [
-            t for t in creature.instance_tags
-            if t.startswith("equipped_")
-        ]
-        if equip_tags_on_creature:
-            for tag in equip_tags_on_creature:
-                # Parse the equipment instance_id from the tag
-                try:
-                    equip_iid = int(tag[len("equipped_"):])
-                    equip_perm = self.get_card_by_id(equip_iid)
-                    if equip_perm:
-                        equip_perm.instance_tags.discard("equipment_attached")
-                        equip_perm.instance_tags.add("equipment_unattached")
-                        self.log.append(
-                            f"T{self.display_turn}: {equip_perm.template.name} falls off "
-                            f"{creature.name} (unattached)")
-                except (ValueError, AttributeError):
-                    pass
-
-        creature.zone = "graveyard"
-        creature.reset_combat()
-        creature.cleanup_damage()
-        creature._dashed = False  # Clear Dash flag on death
-        creature._evoked = False  # Clear Evoke flag on death
-        self.players[owner].graveyard.append(creature)
-        self.players[controller].creatures_died_this_turn += 1
-
-        # Generic oracle-text-based dies triggers
-        if creature.template.name not in EFFECT_REGISTRY._handlers:
-            from .oracle_resolver import resolve_dies_trigger
-            resolve_dies_trigger(self, creature, controller)
-
-        self.log.append(f"T{self.display_turn}: {creature.name} dies")
+        PermanentEffects._creature_dies(self, creature)
 
     def _permanent_destroyed(self, permanent: CardInstance):
-        if permanent.template.is_creature:
-            self._creature_dies(permanent)
-        else:
-            self.zone_mgr.move_card(
-                self, permanent, "battlefield", "graveyard",
-                cause="destroyed"
-            )
+        PermanentEffects._permanent_destroyed(self, permanent)
 
     def _exile_permanent(self, permanent: CardInstance):
-        self.zone_mgr.move_card(
-            self, permanent, "battlefield", "exile",
-            cause="exiled"
-        )
+        PermanentEffects._exile_permanent(self, permanent)
 
     def _bounce_permanent(self, permanent: CardInstance):
-        self.zone_mgr.move_card(
-            self, permanent, "battlefield", "hand",
-            cause="bounced"
-        )
+        PermanentEffects._bounce_permanent(self, permanent)
 
     def _force_discard(self, player_idx: int, count: int, self_discard: bool = False):
         """Discard cards from hand.
