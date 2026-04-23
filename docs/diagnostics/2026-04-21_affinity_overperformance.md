@@ -1,8 +1,9 @@
 ---
 title: Affinity 87% overperformance — EV divergence diagnostic
-status: active
-priority: primary
+status: falsified
+priority: historical
 session: 2026-04-21
+falsified_on: 2026-04-23
 depends_on:
   - docs/experiments/2026-04-20_phase11_n50_matrix_validation.md
 tags:
@@ -11,8 +12,19 @@ tags:
   - affinity
   - diagnostic
   - phase-12
-summary: "Across three Bo3 replays (vs Boros, Dimir, Azorius Control at seeds 60100/60101/60102), Affinity posts 6-1 in games. The EV divergence is on the defender side: opponents with active counterspells and removal do not cast them against Affinity's Plating carriers or the CMC-7-reduced Sojourner's Companion. Decisions in ai/response.py treat Affinity threats as below the response threshold even when counter + mana are both available. This is the Affinity counter-side of the Azorius Control 15% diagnostic."
+  - hypothesis-falsified
+summary: "FALSIFIED 2026-04-23. Original hypothesis: ai/response.py evaluate_stack_threat() understates incoming creature threat when opp's equipment carrier pool is already deployed. Direct unit test on the s60102 board state (2 Cranial Platings + 4 artifacts on caster side, Sojourner's Companion incoming) showed evaluate_stack_threat returns threat=11.0 — well above the Counterspell gate (>=3.0). decide_response() correctly fires Counterspell when reproduced in isolation. The actual root cause of Affinity overperformance is therefore something else (likely: Counterspell not in defender's hand at the critical priority window due to mulligans / cycling / earlier play). Needs per-game instrumentation, not a speculative fix."
 ---
+
+> **STATUS — FALSIFIED 2026-04-23.** The hypothesis below was directly tested
+> by reproducing the s60102 T3 board in a unit test against
+> `ai/response.py::evaluate_stack_threat()` and `decide_response()`. The
+> existing code already scores carrier-pool synergy correctly (threat=11.0
+> for Sojourner's onto a 2-Plating board) and `decide_response` correctly
+> picks Counterspell when conditions are met. The Affinity overperformance
+> bug is real, but the root cause is *not* the response-gate scoring. The
+> rest of this document is preserved for historical context only.
+
 
 # P0 WR outlier diagnostic — Affinity 87% flat
 
