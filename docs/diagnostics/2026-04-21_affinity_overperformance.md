@@ -1,9 +1,11 @@
 ---
-title: Affinity 87% overperformance — EV divergence diagnostic
-status: falsified
+title: Affinity 87% overperformance — EV divergence diagnostic (ORIGINAL, superseded)
+status: superseded
 priority: historical
 session: 2026-04-21
 falsified_on: 2026-04-23
+superseded_by:
+  - docs/diagnostics/2026-04-23_affinity_mana_holdback_bug.md
 depends_on:
   - docs/experiments/2026-04-20_phase11_n50_matrix_validation.md
 tags:
@@ -13,17 +15,16 @@ tags:
   - diagnostic
   - phase-12
   - hypothesis-falsified
-summary: "FALSIFIED 2026-04-23. Original hypothesis: ai/response.py evaluate_stack_threat() understates incoming creature threat when opp's equipment carrier pool is already deployed. Direct unit test on the s60102 board state (2 Cranial Platings + 4 artifacts on caster side, Sojourner's Companion incoming) showed evaluate_stack_threat returns threat=11.0 — well above the Counterspell gate (>=3.0). decide_response() correctly fires Counterspell when reproduced in isolation. The actual root cause of Affinity overperformance is therefore something else (likely: Counterspell not in defender's hand at the critical priority window due to mulligans / cycling / earlier play). Needs per-game instrumentation, not a speculative fix."
+summary: "FALSIFIED + ROOT-CAUSED 2026-04-23. Original hypothesis (response-gate undervalues creature-with-carrier-pool synergy) was falsified by unit test. True root cause found via decide_response instrumentation: AzCon has only 1 untapped land at opp's priority window because it taps out on its own turn (cycling Lórien Revealed at T2, casting Isochron Scepter at T3). Counterspell requires UU — uncastable, filtered by can_cast. Bug is mana holdback for control decks with counter in hand, not response-gate scoring. See 2026-04-23_affinity_mana_holdback_bug.md."
 ---
 
-> **STATUS — FALSIFIED 2026-04-23.** The hypothesis below was directly tested
-> by reproducing the s60102 T3 board in a unit test against
-> `ai/response.py::evaluate_stack_threat()` and `decide_response()`. The
-> existing code already scores carrier-pool synergy correctly (threat=11.0
-> for Sojourner's onto a 2-Plating board) and `decide_response` correctly
-> picks Counterspell when conditions are met. The Affinity overperformance
-> bug is real, but the root cause is *not* the response-gate scoring. The
-> rest of this document is preserved for historical context only.
+> **STATUS — SUPERSEDED 2026-04-23.** Initial hypothesis (response-gate
+> scoring) was falsified. The real bug IS mana-management — AzCon taps
+> out on its own turn and has no mana open for opponent's priority
+> window, even though the opponent's threat is scored correctly.
+> See `2026-04-23_affinity_mana_holdback_bug.md` for the corrected
+> diagnostic. The rest of this document is preserved for historical
+> context only.
 
 
 # P0 WR outlier diagnostic — Affinity 87% flat
