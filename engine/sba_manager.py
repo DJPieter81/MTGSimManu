@@ -20,6 +20,8 @@ Key SBAs implemented:
 from __future__ import annotations
 from typing import List, Optional, TYPE_CHECKING
 
+from .constants import SBA_MAX_ITERATIONS
+
 if TYPE_CHECKING:
     from .cards import CardInstance, CardType, Keyword, Supertype
     from .game_state import GameState
@@ -39,7 +41,7 @@ class SBAManager:
         """
         any_performed = False
         iteration = 0
-        max_iterations = 20  # Safety valve
+        max_iterations = SBA_MAX_ITERATIONS  # Safety valve (CR 704.3)
 
         while iteration < max_iterations:
             performed = self._check_and_perform_once(game)

@@ -1,0 +1,542 @@
+Loaded 21759 cards (0 errors)
+  Sideboard (Azorius Control vs Affinity): +1 Mystical Dispute, +1 Wrath of the Skies, -2 Orim's Chant
+======================================================================
+  GAME 1: Affinity (P1) vs Azorius Control (P2)  —  seed 60102
+  Series: Affinity 0 - 0 Azorius Control
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Affinity wins → chooses to play first
+║ P1 (on play): Affinity
+║ P2 (on draw): Azorius Control
+╚═══════════════════════════════════════════════════════
+
+P1 (Affinity) opening hand (2 lands, 5 spells):
+  • Ornithopter [Creature, CMC 0]
+  • Darksteel Citadel [Land, CMC 0]
+  • Cranial Plating [Spell, CMC 2]
+  • Cranial Plating [Spell, CMC 2]
+  • Sojourner's Companion [Creature, CMC 7]
+  • Frogmite [Creature, CMC 4]
+  • Mistvault Bridge [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Cranial Plating, Ornithopter, 3 cheap spells
+
+P2 (Azorius Control) opening hand (3 lands, 4 spells):
+  • Consult the Star Charts [Spell, CMC 2]
+  • Teferi, Hero of Dominaria [Spell, CMC 5]
+  • Lórien Revealed [Spell, CMC 5]
+  • Arid Mesa [Land, CMC 0]
+  • Counterspell [Spell, CMC 2]
+  • Meticulous Archive [Land, CMC 0]
+  • Steam Vents [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Counterspell, 2 cheap spells
+
+
+╔══ TURN 1 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Azorius Control 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Darksteel Citadel
+    → Goal: deploy_engine [enablers]
+T1 P1: Cast Ornithopter (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Ornithopter
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: Ornithopter (0/2)
+║   Lands: Darksteel Citadel
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Plains
+  [Main 1]
+T1 P2: Play Steam Vents (tapped, no spells need mana)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Azorius Control 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Ornithopter (0/2)
+║   Lands: Darksteel Citadel
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Island
+  [Main 1]
+T2 P1: Play Mistvault Bridge (enters tapped)
+    → Goal: deploy_engine
+    [Mana] Tap Darksteel Citadel→C (paying for Frogmite, 1 mana remaining)
+T2 P1: Cast Frogmite (4)
+    [Priority] P2 passes (no response)
+T2: Resolve Frogmite
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Steam Vents
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Frogmite (2/2)
+║   Lands: Darksteel Citadel [T], Mistvault Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T2 P2: Play Arid Mesa
+T2 P2: Crack Arid Mesa (pay 1 life) -> Hallowed Fountain (pay 2 life, untapped, life: 17)
+T2 P2: Cycle Lórien Revealed (pay 1 mana, tutor: Hallowed Fountain)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Azorius Control 17
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Frogmite (2/2)
+║   Lands: Darksteel Citadel, Mistvault Bridge
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Steam Vents [T], Hallowed Fountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Tanglepool Bridge
+  [Main 1]
+T3 P1: Play Tanglepool Bridge (enters tapped)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Darksteel Citadel→C (paying for Sojourner's Companion, 2 mana remaining)
+T3 P1: Cast Sojourner's Companion (7)
+    [Priority] P2 passes (no response)
+T3: Resolve Sojourner's Companion
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Mistvault Bridge→B (paying for Cranial Plating, 1 mana remaining)
+T3 P1: Cast Cranial Plating (2)
+    [Priority] P2 passes (no response)
+T3: Resolve Cranial Plating
+T3 P1: Cranial Plating enters the battlefield (unattached)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Frogmite
+T3 P1: Attack with Frogmite
+  [Declare Blockers] P2 does not block
+T3 P1:   Frogmite (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 17 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 15  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Hallowed Fountain
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Frogmite (2/2) [tapped], Sojourner's Companion (4/4)
+║   Other: Cranial Plating
+║   Lands: Darksteel Citadel [T], Mistvault Bridge [T], Tanglepool Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Isochron Scepter
+  [Main 1]
+T3 P2: Play Flooded Strand
+T3 P2: Crack Flooded Strand -> Island (untapped)
+    → Goal: grind_value [payoffs]
+    [Mana] Tap Island→U, Steam Vents→R (paying for Isochron Scepter, 3 mana remaining)
+T3 P2: Cast Isochron Scepter (2)
+    [Priority] P1 passes (no response)
+T3: Resolve Isochron Scepter
+T3 P2: Isochron Scepter imprints Consult the Star Charts
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Azorius Control 14
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Frogmite (2/2), Sojourner's Companion (4/4)
+║   Other: Cranial Plating
+║   Lands: Darksteel Citadel, Mistvault Bridge, Tanglepool Bridge
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Isochron Scepter
+║   Lands: Steam Vents [T], Hallowed Fountain, Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Springleaf Drum
+  [Main 1]
+T4 P1: Play Island
+T4 P1: Equip Cranial Plating to Sojourner's Companion (cost 1)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Island→U (paying for Cranial Plating, 3 mana remaining)
+T4 P1: Cast Cranial Plating (2)
+    [Priority] P2 passes (no response)
+T4: Resolve Cranial Plating
+T4 P1: Cranial Plating enters the battlefield (unattached)
+T4 P1: Equip Cranial Plating to Sojourner's Companion (cost 1)
+    → Goal: curve_out
+T4 P1: Cast Springleaf Drum (1)
+    [Priority] P2 passes (no response)
+T4: Resolve Springleaf Drum
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Frogmite, Sojourner's Companion
+T4 P1: Attack with Frogmite, Sojourner's Companion
+  [Declare Blockers] P2 does not block
+T4 P1:   Frogmite (2/2) → 2 dmg to player
+T4 P1:   Sojourner's Companion (22/4) → 22 dmg to player
+P2 loses: life total -10
+  [Combat Damage] 24 damage dealt → P2 life: 14 → -10
+
+>>> Affinity wins Game 1 on turn 4 via damage
+    Final life: Affinity=20  Azorius Control=-10
+
+======================================================================
+  GAME 2: Azorius Control (P1) vs Affinity (P2)  —  seed 60103
+  Series: Affinity 1 - 0 Azorius Control
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Affinity wins → chooses to play first
+║ P1 (on play): Affinity
+║ P2 (on draw): Azorius Control
+╚═══════════════════════════════════════════════════════
+
+P1 (Azorius Control) opening hand (2 lands, 5 spells):
+  • Orim's Chant [Spell, CMC 1]
+  • Wrath of the Skies [Spell, CMC 2]
+  • Wrath of the Skies [Spell, CMC 2]
+  • Hall of Storm Giants [Land, CMC 0]
+  • Island [Land, CMC 0]
+  • Prismatic Ending [Spell, CMC 1]
+  • Solitude [Creature, CMC 5]
+→ P1 KEEPS 7 — has key card(s): Orim's Chant, Prismatic Ending, Solitude, 4 cheap spells
+
+P2 (Affinity) opening hand (4 lands, 3 spells):
+  • Razortide Bridge [Land, CMC 0]
+  • Darksteel Citadel [Land, CMC 0]
+  • Mistvault Bridge [Land, CMC 0]
+  • Thought Monitor [Creature, CMC 7]
+  • Urza's Saga [Land, CMC 0]
+  • Signal Pest [Creature, CMC 1]
+  • Mox Opal [Spell, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Mox Opal, 2 cheap spells
+
+
+╔══ TURN 1 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Azorius Control 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Urza's Saga
+    → Goal: deploy_engine [engines]
+T1 P2: Cast Mox Opal (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Mox Opal
+    → Goal: curve_out
+T1 P2: Cast Signal Pest (1)
+    [Priority] P1 passes (no response)
+T1: Resolve Signal Pest
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: Signal Pest (0/1)
+║   Other: Mox Opal
+║   Lands: Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Teferi, Hero of Dominaria
+  [Main 1]
+T1 P1: Play Island
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Azorius Control 20
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Signal Pest (0/1)
+║   Other: Mox Opal
+║   Lands: Urza's Saga
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Cranial Plating
+  [Main 1]
+T2 P2: Play Razortide Bridge (enters tapped)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Urza's Saga→C (paying for Cranial Plating, 1 mana remaining)
+T2 P2: Cast Cranial Plating (2)
+    [Priority] P1 passes (no response)
+T2: Resolve Cranial Plating
+T2 P2: Cranial Plating enters the battlefield (unattached)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Signal Pest
+T2 P2: Attack with Signal Pest
+  [Declare Blockers] P1 does not block
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 3 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Island
+║ Affinity board:
+║   Creatures: Signal Pest (0/1) [tapped]
+║   Other: Mox Opal, Cranial Plating
+║   Lands: Urza's Saga [T], Razortide Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Island
+  [Main 1]
+T2 P1: Play Island
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Azorius Control 20
+║ Hand: 3 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Signal Pest (0/1)
+║   Other: Mox Opal, Cranial Plating
+║   Lands: Urza's Saga, Razortide Bridge
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Island, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T3 P2: Create 1x Construct token(s)
+T3 P2: Urza's Saga Ch.II: Create Construct Token
+  [Draw] P2 draws: Memnite
+  [Main 1]
+T3 P2: Play Darksteel Citadel
+T3 P2: Equip Cranial Plating to Signal Pest (cost 1)
+  [Begin Combat]
+T3 P1: Evoke Solitude (exile Wrath of the Skies)
+T3 P1: Cast Solitude (3WW)
+T3: Resolve Solitude
+T3: Construct Token moved battlefield -> exile (exiled)
+T3 P1: Solitude exiles Construct Token (opponent gains 6 life, now 26)
+T3 P1: Solitude sacrificed (evoke)
+  [Declare Attackers] P2 attacks with: Signal Pest
+T3 P2: Attack with Signal Pest
+  [Declare Blockers] P1 does not block
+T3 P2:   Signal Pest (5/1) → 5 dmg to player
+  [Combat Damage] 5 damage dealt → P1 life: 20 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 15  |  Affinity 26
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 1
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Island, Island
+║ Affinity board:
+║   Creatures: Signal Pest (5/1) [tapped]
+║   Other: Mox Opal, Cranial Plating
+║   Lands: Urza's Saga [T], Razortide Bridge, Darksteel Citadel
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Sanctifier en-Vec
+  [Main 1]
+T3 P1: Play Hall of Storm Giants (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 26  |  Azorius Control 15
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Signal Pest (5/1)
+║   Other: Mox Opal, Cranial Plating
+║   Lands: Urza's Saga, Razortide Bridge, Darksteel Citadel
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Island, Island, Hall of Storm Giants [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T4 P2: Create 1x Construct token(s)
+T4 P2: Urza's Saga Ch.III: Create Construct Token
+T4 P2: Urza's Saga tutors Springleaf Drum
+T4 P2: Sacrifice Urza's Saga (final chapter)
+  [Draw] P2 draws: Urza's Saga
+  [Main 1]
+T4 P2: Play Mistvault Bridge (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Signal Pest
+T4 P2: Attack with Signal Pest
+  [Declare Blockers] P1 does not block
+T4 P2:   Signal Pest (8/1) → 8 dmg to player
+  [Combat Damage] 8 damage dealt → P1 life: 15 → 7
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 7  |  Affinity 26
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Island, Island, Hall of Storm Giants
+║ Affinity board:
+║   Creatures: Signal Pest (8/1) [tapped], Construct Token (8/8)
+║   Other: Mox Opal, Cranial Plating, Springleaf Drum
+║   Lands: Razortide Bridge, Darksteel Citadel, Mistvault Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Otawara, Soaring City
+  [Main 1]
+T4 P1: Play Otawara, Soaring City
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 26  |  Azorius Control 7
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Signal Pest (8/1), Construct Token (8/8)
+║   Other: Mox Opal, Cranial Plating, Springleaf Drum
+║   Lands: Razortide Bridge, Darksteel Citadel, Mistvault Bridge
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Island, Island, Hall of Storm Giants, Otawara, Soaring City
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ornithopter
+  [Main 1]
+T5 P2: Play Urza's Saga
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Signal Pest, Construct Token
+T5 P2: Attack with Signal Pest, Construct Token
+  [Declare Blockers] P1 does not block
+T5 P2:   Signal Pest (8/1) → 8 dmg to player
+T5 P2:   Construct Token (9/8) → 9 dmg to player
+P1 loses: life total -10
+  [Combat Damage] 17 damage dealt → P1 life: 7 → -10
+
+>>> Affinity wins Game 2 on turn 5 via damage
+    Final life: Azorius Control=-10  Affinity=26
+
+======================================================================
+  MATCH RESULT: Affinity wins 2-0
+======================================================================

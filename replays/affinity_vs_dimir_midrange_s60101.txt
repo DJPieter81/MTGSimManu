@@ -1,0 +1,1486 @@
+Loaded 21759 cards (0 errors)
+  Sideboard (Dimir Midrange vs Affinity): +1 Damnation, +1 Engineered Explosives, +2 Flusterstorm, +2 Sheoldred, the Apocalypse, -2 Archmage's Charm, -2 Consider, -2 Drown in the Loch
+  Sideboard (Dimir Midrange vs Affinity): +1 Damnation, +1 Engineered Explosives, +2 Flusterstorm, +2 Sheoldred, the Apocalypse, -2 Archmage's Charm, -2 Consider, -2 Drown in the Loch
+======================================================================
+  GAME 1: Affinity (P1) vs Dimir Midrange (P2)  —  seed 60101
+  Series: Affinity 0 - 0 Dimir Midrange
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Affinity wins → chooses to play first
+║ P1 (on play): Affinity
+║ P2 (on draw): Dimir Midrange
+╚═══════════════════════════════════════════════════════
+
+P1 (Affinity) opening hand (2 lands, 5 spells):
+  • Mox Opal [Spell, CMC 0]
+  • Memnite [Creature, CMC 0]
+  • Sojourner's Companion [Creature, CMC 7]
+  • Cranial Plating [Spell, CMC 2]
+  • Treasure Vault [Land, CMC 0]
+  • Darksteel Citadel [Land, CMC 0]
+  • Signal Pest [Creature, CMC 1]
+→ P1 KEEPS 7 — has key card(s): Cranial Plating, Memnite, Mox Opal, 4 cheap spells
+
+P2 (Dimir Midrange) opening hand (1 lands, 6 spells):
+  • Darkslick Shores [Land, CMC 0]
+  • Thoughtseize [Spell, CMC 1]
+  • Counterspell [Spell, CMC 2]
+  • Psychic Frog [Creature, CMC 2]
+  • Psychic Frog [Creature, CMC 2]
+  • Archmage's Charm [Spell, CMC 3]
+  • Fatal Push [Spell, CMC 1]
+→ P2 MULLIGANS (too few lands (1 < 2))
+  New hand (5 lands, 2 spells): ['Takenuma, Abandoned Mire', 'Murktide Regent', 'Watery Grave', 'Island', 'Polluted Delta', 'Counterspell', 'Otawara, Soaring City']
+→ P2 MULLIGANS (too many lands (5 > 4))
+  New hand (2 lands, 5 spells): ['Thoughtseize', 'Orcish Bowmasters', 'Drown in the Loch', 'Murktide Regent', 'Drown in the Loch', 'Darkslick Shores', 'Takenuma, Abandoned Mire']
+→ P2 mulligans to 5, bottoms: ['Drown in the Loch', 'Drown in the Loch']
+  Keeps: ['Thoughtseize', 'Orcish Bowmasters', 'Murktide Regent', 'Darkslick Shores', 'Takenuma, Abandoned Mire']
+
+
+╔══ TURN 1 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Dimir Midrange 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Treasure Vault
+    → Goal: deploy_engine [enablers]
+T1 P1: Cast Memnite (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Memnite
+    → Goal: deploy_engine [engines]
+T1 P1: Cast Mox Opal (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Mox Opal
+    → Goal: curve_out
+    [Mana] Tap Treasure Vault→C (paying for Signal Pest, 1 mana remaining)
+T1 P1: Cast Signal Pest (1)
+    [Priority] P2 passes (no response)
+T1: Resolve Signal Pest
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 55  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: Memnite (1/1), Signal Pest (0/1)
+║   Other: Mox Opal
+║   Lands: Treasure Vault [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Fatal Push
+  [Main 1]
+T1 P2: Play Takenuma, Abandoned Mire
+    → Goal: disrupt [enablers]
+    [Mana] Tap Takenuma, Abandoned Mire→B (paying for Orcish Bowmasters, 1 mana remaining)
+T1 P2: Cast Orcish Bowmasters (1B)
+    [Priority] P1 passes (no response)
+T1: Resolve Orcish Bowmasters
+T1 P2: Bowmasters deals 1 damage to Memnite
+T1 P2: Bowmasters creates 1/1 Orc Army token
+T1: Memnite dies
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Dimir Midrange 20
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Signal Pest (0/1)
+║   Other: Mox Opal
+║   Lands: Treasure Vault
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Takenuma, Abandoned Mire [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Darksteel Citadel
+  [Main 1]
+T2 P1: Play Darksteel Citadel
+T2 P1: Cycle Sojourner's Companion (pay 2 mana, tutor: Silverbluff Bridge)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Affinity 20
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 54  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Takenuma, Abandoned Mire
+║ Affinity board:
+║   Creatures: Signal Pest (0/1)
+║   Other: Mox Opal
+║   Lands: Treasure Vault [T], Darksteel Citadel [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Polluted Delta
+  [Main 1]
+T2 P2: Play Polluted Delta
+T2 P2: Crack Polluted Delta (pay 1 life) -> Watery Grave (tapped, life: 19)
+    → Goal: grind_value
+    [Mana] Tap Takenuma, Abandoned Mire→B (paying for Fatal Push, 1 mana remaining)
+T2 P2: Cast Fatal Push (B)
+    [Priority] P1 passes (no response)
+T2: Resolve Fatal Push
+T2: Signal Pest dies
+T2 P2: Fatal Push destroys Signal Pest
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army
+T2 P2: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+T2 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T2 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 20 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 18  |  Dimir Midrange 19
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 3
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal
+║   Lands: Treasure Vault, Darksteel Citadel
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped]
+║   Lands: Takenuma, Abandoned Mire [T], Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Signal Pest
+  [Main 1]
+T3 P1: Play Darksteel Citadel
+    → Goal: curve_out
+    [Mana] Tap Treasure Vault→C (paying for Signal Pest, 3 mana remaining)
+T3 P1: Cast Signal Pest (1)
+    [Priority] P2 passes (no response)
+T3: Resolve Signal Pest
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Affinity 18
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 52  |  Graveyard: 2
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Takenuma, Abandoned Mire, Watery Grave
+║ Affinity board:
+║   Creatures: Signal Pest (0/1)
+║   Other: Mox Opal
+║   Lands: Treasure Vault [T], Darksteel Citadel, Darksteel Citadel
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Spell Pierce
+  [Main 1]
+T3 P2: Play Darkslick Shores (untapped, 2 other lands)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army
+T3 P2: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+T3 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T3 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 18 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 16  |  Dimir Midrange 19
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 3
+║ Affinity board:
+║   Creatures: Signal Pest (0/1)
+║   Other: Mox Opal
+║   Lands: Treasure Vault, Darksteel Citadel, Darksteel Citadel
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped]
+║   Lands: Takenuma, Abandoned Mire, Watery Grave, Darkslick Shores
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Spire of Industry
+  [Main 1]
+T4 P1: Play Spire of Industry
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Signal Pest
+T4 P1: Attack with Signal Pest
+  [Declare Blockers] P2 does not block
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Affinity 16
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 51  |  Graveyard: 2
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Takenuma, Abandoned Mire, Watery Grave, Darkslick Shores
+║ Affinity board:
+║   Creatures: Signal Pest (0/1) [tapped]
+║   Other: Mox Opal
+║   Lands: Treasure Vault, Darksteel Citadel, Darksteel Citadel, Spire of Industry
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Swamp
+  [Main 1]
+T4 P2: Play Swamp
+    → Goal: close_game
+T4 P2: Delve 2 cards for Murktide Regent
+    [Mana] Tap Watery Grave→U, Darkslick Shores→U, Takenuma, Abandoned Mire→B, Swamp→B (paying for Murktide Regent, 4 mana remaining)
+T4 P2: Cast Murktide Regent (5UU)
+    [Priority] P1 passes (no response)
+T4: Resolve Murktide Regent
+T4 P2: Murktide Regent enters as 4/4 (1 +1/+1 counters from delved instants/sorceries)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army
+T4 P2: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+T4 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T4 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 16 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 14  |  Dimir Midrange 19
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 3
+║ Affinity board:
+║   Creatures: Signal Pest (0/1)
+║   Other: Mox Opal
+║   Lands: Treasure Vault, Darksteel Citadel, Darksteel Citadel, Spire of Industry
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped], Murktide Regent (4/4)
+║   Lands: Takenuma, Abandoned Mire [T], Watery Grave [T], Darkslick Shores [T], Swamp [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Memnite
+  [Main 1]
+T5 P1: Play Silverbluff Bridge (enters tapped)
+    → Goal: curve_out
+T5 P1: Cast Memnite (0)
+    [Priority] P2 passes (no response)
+T5: Resolve Memnite
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Treasure Vault→C, Darksteel Citadel→C (paying for Cranial Plating, 4 mana remaining)
+T5 P1: Cast Cranial Plating (2)
+    [Priority] P2 passes (no response)
+T5: Resolve Cranial Plating
+T5 P1: Cranial Plating enters the battlefield (unattached)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Affinity 14
+║ Hand: 2 cards  |  Opp hand: 0 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 50  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Murktide Regent (4/4)
+║   Lands: Takenuma, Abandoned Mire, Watery Grave, Darkslick Shores, Swamp
+║ Affinity board:
+║   Creatures: Signal Pest (0/1), Memnite (1/1)
+║   Other: Mox Opal, Cranial Plating
+║   Lands: Treasure Vault [T], Darksteel Citadel [T], Darksteel Citadel, Spire of Industry, Silverbluff Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Drown in the Loch
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Murktide Regent
+T5 P2: Attack with Murktide Regent
+  [Declare Blockers] P1 does not block
+T5 P2:   Murktide Regent (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 14 → 10
+  [End Combat]
+  [Main 2]
+    → Goal: close_game
+    [Mana] Tap Watery Grave→U, Takenuma, Abandoned Mire→B (paying for Drown in the Loch, 4 mana remaining)
+T5 P2: Cast Drown in the Loch (UB)
+    [Priority] P1 passes (no response)
+T5: Resolve Drown in the Loch
+T5: Memnite dies
+  [End Step]
+
+╔══ TURN 6 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 10  |  Dimir Midrange 19
+║ Hand: 0 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 4
+║ Affinity board:
+║   Creatures: Signal Pest (0/1)
+║   Other: Mox Opal, Cranial Plating
+║   Lands: Treasure Vault, Darksteel Citadel, Darksteel Citadel, Spire of Industry, Silverbluff Bridge
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Murktide Regent (5/5) [tapped]
+║   Lands: Takenuma, Abandoned Mire [T], Watery Grave [T], Darkslick Shores, Swamp
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Cranial Plating
+  [Main 1]
+T6 P1: Equip Cranial Plating to Signal Pest (cost 1)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Affinity 10
+║ Hand: 2 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 49  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Murktide Regent (5/5)
+║   Lands: Takenuma, Abandoned Mire, Watery Grave, Darkslick Shores, Swamp
+║ Affinity board:
+║   Creatures: Signal Pest (7/1)
+║   Other: Mox Opal, Cranial Plating
+║   Lands: Treasure Vault [T], Darksteel Citadel, Darksteel Citadel, Spire of Industry, Silverbluff Bridge
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Creeping Tar Pit
+  [Main 1]
+T6 P2: Play Creeping Tar Pit (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army, Murktide Regent
+T6 P2: Attack with Orcish Bowmasters, Orc Army, Murktide Regent
+T6 P1:   [BLOCK-EMERGENCY] Signal Pest (7/1) blocks Orcish Bowmasters (1/1) — trade (chump)
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T6 P2:   Orc Army (1/1) → 1 dmg to player
+T6 P2:   Murktide Regent (5/5) → 5 dmg to player
+T6: Cranial Plating falls off Signal Pest (unattached)
+T6: Signal Pest dies
+T6: Orcish Bowmasters dies
+  [Combat Damage] 6 damage dealt → P1 life: 10 → 4
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 4  |  Dimir Midrange 19
+║ Hand: 1 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 5
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Cranial Plating
+║   Lands: Treasure Vault, Darksteel Citadel, Darksteel Citadel, Spire of Industry, Silverbluff Bridge
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1) [tapped], Murktide Regent (5/5) [tapped]
+║   Lands: Takenuma, Abandoned Mire, Watery Grave, Darkslick Shores, Swamp, Creeping Tar Pit [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Saga
+  [Main 1]
+T7 P1: Play Urza's Saga
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Affinity 4
+║ Hand: 2 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 48  |  Graveyard: 2
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1), Murktide Regent (5/5)
+║   Lands: Takenuma, Abandoned Mire, Watery Grave, Darkslick Shores, Swamp, Creeping Tar Pit
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Cranial Plating
+║   Lands: Treasure Vault, Darksteel Citadel, Darksteel Citadel, Spire of Industry, Silverbluff Bridge, Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Fatal Push
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Takenuma, Abandoned Mire→B (paying for Fatal Push, 5 mana remaining)
+T7 P2: Cast Fatal Push (B)
+    [Priority] P1 passes (no response)
+T7: Resolve Fatal Push
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orc Army, Murktide Regent
+T7 P2: Attack with Orc Army, Murktide Regent
+  [Declare Blockers] P1 does not block
+T7 P2:   Orc Army (1/1) → 1 dmg to player
+T7 P2:   Murktide Regent (6/6) → 6 dmg to player
+P1 loses: life total -3
+  [Combat Damage] 7 damage dealt → P1 life: 4 → -3
+
+>>> Dimir Midrange wins Game 1 on turn 7 via damage
+    Final life: Affinity=-3  Dimir Midrange=19
+
+======================================================================
+  GAME 2: Affinity (P1) vs Dimir Midrange (P2)  —  seed 60102
+  Series: Affinity 0 - 1 Dimir Midrange
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Affinity wins → chooses to play first
+║ P1 (on play): Affinity
+║ P2 (on draw): Dimir Midrange
+╚═══════════════════════════════════════════════════════
+
+P1 (Affinity) opening hand (2 lands, 5 spells):
+  • Ornithopter [Creature, CMC 0]
+  • Darksteel Citadel [Land, CMC 0]
+  • Cranial Plating [Spell, CMC 2]
+  • Cranial Plating [Spell, CMC 2]
+  • Sojourner's Companion [Creature, CMC 7]
+  • Frogmite [Creature, CMC 4]
+  • Mistvault Bridge [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Cranial Plating, Ornithopter, 3 cheap spells
+
+P2 (Dimir Midrange) opening hand (3 lands, 4 spells):
+  • Psychic Frog [Creature, CMC 2]
+  • Polluted Delta [Land, CMC 0]
+  • Thoughtseize [Spell, CMC 1]
+  • Watery Grave [Land, CMC 0]
+  • Murktide Regent [Creature, CMC 7]
+  • Creeping Tar Pit [Land, CMC 0]
+  • Flusterstorm [Spell, CMC 1]
+→ P2 KEEPS 7 — has key card(s): Psychic Frog, Thoughtseize, 3 cheap spells
+
+
+╔══ TURN 1 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Dimir Midrange 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Darksteel Citadel
+    → Goal: deploy_engine [enablers]
+T1 P1: Cast Ornithopter (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Ornithopter
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: Ornithopter (0/2)
+║   Lands: Darksteel Citadel
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Sheoldred, the Apocalypse
+  [Main 1]
+T1 P2: Play Polluted Delta
+T1 P2: Crack Polluted Delta (pay 1 life) -> Watery Grave (pay 2 life, untapped, life: 17)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Dimir Midrange 17
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Ornithopter (0/2)
+║   Lands: Darksteel Citadel
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Island
+  [Main 1]
+T2 P1: Play Mistvault Bridge (enters tapped)
+    → Goal: deploy_engine
+    [Mana] Tap Darksteel Citadel→C (paying for Frogmite, 1 mana remaining)
+T2 P1: Cast Frogmite (4)
+    [Priority] P2 passes (no response)
+T2: Resolve Frogmite
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 17  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Frogmite (2/2)
+║   Lands: Darksteel Citadel [T], Mistvault Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Counterspell
+  [Main 1]
+T2 P2: Play Watery Grave (pay 2 life, untapped, life: 15)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Dimir Midrange 15
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Frogmite (2/2)
+║   Lands: Darksteel Citadel, Mistvault Bridge
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Watery Grave
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Tanglepool Bridge
+  [Main 1]
+T3 P1: Play Tanglepool Bridge (enters tapped)
+T3 P1: Cycle Sojourner's Companion (pay 2 mana, tutor: Treasure Vault)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Frogmite
+T3 P1: Attack with Frogmite
+  [Declare Blockers] P2 does not block
+T3 P1:   Frogmite (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 15 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 13  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Watery Grave
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Frogmite (2/2) [tapped]
+║   Lands: Darksteel Citadel [T], Mistvault Bridge [T], Tanglepool Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flusterstorm
+  [Main 1]
+T3 P2: Play Creeping Tar Pit (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Dimir Midrange 13
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Frogmite (2/2)
+║   Lands: Darksteel Citadel, Mistvault Bridge, Tanglepool Bridge
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Watery Grave, Creeping Tar Pit [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Saga
+  [Main 1]
+T4 P1: Play Urza's Saga
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Frogmite
+T4 P1: Attack with Frogmite
+  [Declare Blockers] P2 does not block
+T4 P1:   Frogmite (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 13 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 11  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Watery Grave, Creeping Tar Pit
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Frogmite (2/2) [tapped]
+║   Lands: Darksteel Citadel, Mistvault Bridge, Tanglepool Bridge, Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Consider
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Watery Grave→U (paying for Consider, 3 mana remaining)
+T4 P2: Cast Consider (U)
+    [Priority] P1 passes (no response)
+T4: Resolve Consider
+T4 P2: Consider → draw 1 (Polluted Delta)
+T4 P2: Play Polluted Delta
+T4 P2: Crack Polluted Delta -> Island (untapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Dimir Midrange 10
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Frogmite (2/2)
+║   Lands: Darksteel Citadel, Mistvault Bridge, Tanglepool Bridge, Urza's Saga
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Watery Grave, Creeping Tar Pit, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Sojourner's Companion
+  [Main 1]
+T5 P1: Play Treasure Vault
+T5 P1: Cycle Sojourner's Companion (pay 2 mana, tutor: Mistvault Bridge)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Frogmite
+T5 P1: Attack with Frogmite
+  [Declare Blockers] P2 does not block
+T5 P1:   Frogmite (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 10 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 8  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Watery Grave, Creeping Tar Pit, Island
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Frogmite (2/2) [tapped]
+║   Lands: Darksteel Citadel [T], Mistvault Bridge [T], Tanglepool Bridge, Urza's Saga, Treasure Vault
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Sheoldred, the Apocalypse
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Watery Grave→B, Watery Grave→B, Island→U, Creeping Tar Pit→B (paying for Sheoldred, the Apocalypse, 4 mana remaining)
+T5 P2: Cast Sheoldred, the Apocalypse (2BB)
+    [Priority] P1 passes (no response)
+T5: Resolve Sheoldred, the Apocalypse
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Dimir Midrange 8
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 2
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Frogmite (2/2)
+║   Lands: Darksteel Citadel, Mistvault Bridge, Tanglepool Bridge, Urza's Saga, Treasure Vault
+║ Dimir Midrange board:
+║   Creatures: Sheoldred, the Apocalypse (4/5)
+║   Lands: Watery Grave [T], Watery Grave [T], Creeping Tar Pit [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T6 P1: Create 1x Construct token(s)
+T6 P1: Urza's Saga Ch.II: Create Construct Token
+  [Draw] P1 draws: Mox Opal
+  [Main 1]
+T6 P1: Play Mistvault Bridge (enters tapped)
+    → Goal: curve_out
+T6 P1: Cast Mox Opal (0)
+    [Priority] P2 passes (no response)
+T6: Resolve Mox Opal
+    → Goal: curve_out [payoffs]
+T6 P1: Cast Cranial Plating (2)
+    [Priority] P2 passes (no response)
+T6: Resolve Cranial Plating
+T6 P1: Cranial Plating enters the battlefield (unattached)
+T6 P1: Equip Cranial Plating to Frogmite (cost 1)
+    → Goal: curve_out [payoffs]
+T6 P1: Cast Cranial Plating (2)
+    [Priority] P2 passes (no response)
+T6: Resolve Cranial Plating
+T6 P1: Cranial Plating enters the battlefield (unattached)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Frogmite
+T6 P1: Attack with Frogmite
+T6 P2:   [BLOCK-EMERGENCY] Sheoldred, the Apocalypse (4/5) blocks Frogmite (13/2) — trade (chump)
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T6: Cranial Plating falls off Frogmite (unattached)
+T6: Frogmite dies
+T6: Sheoldred, the Apocalypse dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 8  |  Affinity 18
+║ Hand: 7 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 45  |  Graveyard: 4
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Watery Grave, Creeping Tar Pit, Island
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Construct Token (10/10)
+║   Other: Mox Opal, Cranial Plating, Cranial Plating
+║   Lands: Darksteel Citadel [T], Mistvault Bridge, Tanglepool Bridge, Urza's Saga, Treasure Vault, Mistvault Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Counterspell
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Watery Grave→B, Watery Grave→B, Island→U, Creeping Tar Pit→B (paying for Sheoldred, the Apocalypse, 4 mana remaining)
+T6 P2: Cast Sheoldred, the Apocalypse (2BB)
+    [Priority] P1 passes (no response)
+T6: Resolve Sheoldred, the Apocalypse
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 18  |  Dimir Midrange 8
+║ Hand: 1 cards  |  Opp hand: 7 cards
+║ Lands: 6  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 3
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Construct Token (10/10)
+║   Other: Mox Opal, Cranial Plating, Cranial Plating
+║   Lands: Darksteel Citadel, Mistvault Bridge, Tanglepool Bridge, Urza's Saga, Treasure Vault, Mistvault Bridge
+║ Dimir Midrange board:
+║   Creatures: Sheoldred, the Apocalypse (4/5)
+║   Lands: Watery Grave [T], Watery Grave [T], Creeping Tar Pit [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T7 P1: Create 1x Construct token(s)
+T7 P1: Urza's Saga Ch.III: Create Construct Token
+T7 P1: Urza's Saga tutors Springleaf Drum
+T7 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Memnite
+  [Main 1]
+T7 P1: Equip Cranial Plating to Construct Token (cost 1)
+T7 P1: Equip Cranial Plating to Construct Token (cost 1)
+T7 P1: Play Island
+    → Goal: curve_out
+T7 P1: Cast Memnite (0)
+    [Priority] P2 passes (no response)
+T7: Resolve Memnite
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Construct Token
+T7 P1: Attack with Construct Token
+T7 P2:   [BLOCK-EMERGENCY] Sheoldred, the Apocalypse (4/5) blocks Construct Token (39/13) — chump block
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T7: Cranial Plating falls off Construct Token (unattached)
+T7: Cranial Plating falls off Construct Token (unattached)
+T7: Construct Token dies
+T7: Sheoldred, the Apocalypse dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 8  |  Affinity 16
+║ Hand: 7 cards  |  Opp hand: 0 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 44  |  Graveyard: 5
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Watery Grave, Creeping Tar Pit, Island
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Construct Token (12/12), Memnite (1/1)
+║   Other: Mox Opal, Cranial Plating, Cranial Plating, Springleaf Drum
+║   Lands: Darksteel Citadel [T], Mistvault Bridge [T], Tanglepool Bridge, Treasure Vault, Mistvault Bridge, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Consider
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Island→U (paying for Consider, 4 mana remaining)
+T7 P2: Cast Consider (U)
+    [Priority] P1 passes (no response)
+T7: Resolve Consider
+T7 P2: Consider → draw 1 (Fatal Push)
+    → Goal: close_game
+    [Mana] Tap Watery Grave→B (paying for Thoughtseize, 3 mana remaining)
+T7 P2: Cast Thoughtseize (B)
+    [Priority] P1 passes (no response)
+T7: Resolve Thoughtseize
+    → Goal: close_game
+    [Mana] Tap Watery Grave→B (paying for Fatal Push, 2 mana remaining)
+T7 P2: Cast Fatal Push (B)
+    [Priority] P1 passes (no response)
+T7: Resolve Fatal Push
+T7: Construct Token dies
+T7 P2: Fatal Push destroys Construct Token
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 16  |  Dimir Midrange 6
+║ Hand: 0 cards  |  Opp hand: 6 cards
+║ Lands: 6  |  Opp lands: 4
+║ Library: 44  |  Graveyard: 6
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Memnite (1/1)
+║   Other: Mox Opal, Cranial Plating, Cranial Plating, Springleaf Drum
+║   Lands: Darksteel Citadel, Mistvault Bridge, Tanglepool Bridge, Treasure Vault, Mistvault Bridge, Island
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Watery Grave [T], Creeping Tar Pit, Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Darksteel Citadel
+  [Main 1]
+T8 P1: Play Darksteel Citadel
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Memnite
+T8 P1: Attack with Memnite
+  [Declare Blockers] P2 does not block
+T8 P1:   Memnite (1/1) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P2 life: 6 → 5
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 5  |  Affinity 16
+║ Hand: 6 cards  |  Opp hand: 0 cards
+║ Lands: 4  |  Opp lands: 7
+║ Library: 42  |  Graveyard: 8
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Watery Grave, Creeping Tar Pit, Island
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Memnite (1/1) [tapped]
+║   Other: Mox Opal, Cranial Plating, Cranial Plating, Springleaf Drum
+║   Lands: Darksteel Citadel, Mistvault Bridge, Tanglepool Bridge, Treasure Vault, Mistvault Bridge, Island, Darksteel Citadel
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Psychic Frog
+  [Main 1]
+    → Goal: close_game
+T8 P2: Delve 5 cards for Murktide Regent
+    [Mana] Tap Island→U, Watery Grave→U (paying for Murktide Regent, 4 mana remaining)
+T8 P2: Cast Murktide Regent (5UU)
+    [Priority] P1 passes (no response)
+T8: Resolve Murktide Regent
+T8 P2: Murktide Regent enters as 7/7 (3 +1/+1 counters from delved instants/sorceries)
+    → Goal: close_game
+    [Mana] Tap Watery Grave→U, Creeping Tar Pit→B (paying for Psychic Frog, 2 mana remaining)
+T8 P2: Cast Psychic Frog (UB)
+    [Priority] P1 passes (no response)
+T8: Resolve Psychic Frog
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 16  |  Dimir Midrange 5
+║ Hand: 0 cards  |  Opp hand: 5 cards
+║ Lands: 7  |  Opp lands: 4
+║ Library: 43  |  Graveyard: 6
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Memnite (1/1)
+║   Other: Mox Opal, Cranial Plating, Cranial Plating, Springleaf Drum
+║   Lands: Darksteel Citadel, Mistvault Bridge, Tanglepool Bridge, Treasure Vault, Mistvault Bridge, Island, Darksteel Citadel
+║ Dimir Midrange board:
+║   Creatures: Murktide Regent (7/7), Psychic Frog (1/2)
+║   Lands: Watery Grave [T], Watery Grave [T], Creeping Tar Pit [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Signal Pest
+  [Main 1]
+T9 P1: Equip Cranial Plating to Memnite (cost 1)
+T9 P1: Equip Cranial Plating to Memnite (cost 1)
+    → Goal: curve_out
+    [Mana] Tap Treasure Vault→C (paying for Signal Pest, 5 mana remaining)
+T9 P1: Cast Signal Pest (1)
+    [Priority] P2 passes (no response)
+T9: Resolve Signal Pest
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Memnite
+T9 P1: Attack with Memnite
+T9 P2:   [BLOCK-EMERGENCY] Psychic Frog (1/2) blocks Memnite (27/1) — trade (chump)
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T9: Cranial Plating falls off Memnite (unattached)
+T9: Cranial Plating falls off Memnite (unattached)
+T9: Memnite dies
+T9: Psychic Frog dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 5  |  Affinity 16
+║ Hand: 5 cards  |  Opp hand: 0 cards
+║ Lands: 4  |  Opp lands: 7
+║ Library: 41  |  Graveyard: 4
+║ Dimir Midrange board:
+║   Creatures: Murktide Regent (7/7)
+║   Lands: Watery Grave, Watery Grave, Creeping Tar Pit, Island
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1)
+║   Other: Mox Opal, Cranial Plating, Cranial Plating, Springleaf Drum
+║   Lands: Darksteel Citadel [T], Mistvault Bridge [T], Tanglepool Bridge, Treasure Vault [T], Mistvault Bridge, Island, Darksteel Citadel
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Damnation
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Watery Grave→B, Island→U (paying for Psychic Frog, 4 mana remaining)
+T9 P2: Cast Psychic Frog (UB)
+    [Priority] P1 passes (no response)
+T9: Resolve Psychic Frog
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Murktide Regent
+T9 P2: Attack with Murktide Regent
+  [Declare Blockers] P1 does not block
+T9 P2:   Murktide Regent (7/7) → 7 dmg to player
+  [Combat Damage] 7 damage dealt → P1 life: 16 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 9  |  Dimir Midrange 5
+║ Hand: 0 cards  |  Opp hand: 5 cards
+║ Lands: 7  |  Opp lands: 4
+║ Library: 42  |  Graveyard: 7
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1)
+║   Other: Mox Opal, Cranial Plating, Cranial Plating, Springleaf Drum
+║   Lands: Darksteel Citadel, Mistvault Bridge, Tanglepool Bridge, Treasure Vault, Mistvault Bridge, Island, Darksteel Citadel
+║ Dimir Midrange board:
+║   Creatures: Murktide Regent (7/7) [tapped], Psychic Frog (1/2)
+║   Lands: Watery Grave [T], Watery Grave, Creeping Tar Pit, Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Nettlecyst
+  [Main 1]
+T10 P1: Equip Cranial Plating to Ornithopter (cost 1)
+T10 P1: Equip Cranial Plating to Ornithopter (cost 1)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ornithopter, Signal Pest
+T10 P1: Attack with Ornithopter, Signal Pest
+T10 P2:   [BLOCK-EMERGENCY] Psychic Frog (1/2) blocks Signal Pest (0/1) — favorable trade
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T10 P1:   Ornithopter (25/2) → 25 dmg to player
+P2 loses: life total -20
+  [Combat Damage] 25 damage dealt → P2 life: 5 → -20
+
+>>> Affinity wins Game 2 on turn 10 via damage
+    Final life: Affinity=9  Dimir Midrange=-20
+
+======================================================================
+  GAME 3: Dimir Midrange (P1) vs Affinity (P2)  —  seed 60103
+  Series: Affinity 1 - 1 Dimir Midrange
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Affinity wins → chooses to play first
+║ P1 (on play): Affinity
+║ P2 (on draw): Dimir Midrange
+╚═══════════════════════════════════════════════════════
+
+P1 (Dimir Midrange) opening hand (2 lands, 5 spells):
+  • Thoughtseize [Spell, CMC 1]
+  • Counterspell [Spell, CMC 2]
+  • Consider [Spell, CMC 1]
+  • Island [Land, CMC 0]
+  • Underground River [Land, CMC 0]
+  • Fatal Push [Spell, CMC 1]
+  • Orcish Bowmasters [Creature, CMC 2]
+→ P1 KEEPS 7 — has key card(s): Consider, Fatal Push, Orcish Bowmasters, Thoughtseize, 5 cheap spells
+
+P2 (Affinity) opening hand (4 lands, 3 spells):
+  • Razortide Bridge [Land, CMC 0]
+  • Darksteel Citadel [Land, CMC 0]
+  • Mistvault Bridge [Land, CMC 0]
+  • Thought Monitor [Creature, CMC 7]
+  • Urza's Saga [Land, CMC 0]
+  • Signal Pest [Creature, CMC 1]
+  • Mox Opal [Spell, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Mox Opal, 2 cheap spells
+
+
+╔══ TURN 1 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Dimir Midrange 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Urza's Saga
+    → Goal: deploy_engine [engines]
+T1 P2: Cast Mox Opal (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Mox Opal
+    → Goal: curve_out
+T1 P2: Cast Signal Pest (1)
+    [Priority] P1 passes (no response)
+T1: Resolve Signal Pest
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: Signal Pest (0/1)
+║   Other: Mox Opal
+║   Lands: Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Polluted Delta
+  [Main 1]
+T1 P1: Play Underground River
+    → Goal: disrupt [interaction]
+    [Mana] Tap Underground River→B (paying for Fatal Push, 1 mana remaining)
+T1 P1: Cast Fatal Push (B)
+    [Priority] P2 passes (no response)
+T1: Resolve Fatal Push
+T1: Signal Pest dies
+T1 P1: Fatal Push destroys Signal Pest
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Dimir Midrange 19
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal
+║   Lands: Urza's Saga
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Cranial Plating
+  [Main 1]
+T2 P2: Play Razortide Bridge (enters tapped)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Urza's Saga→C (paying for Cranial Plating, 1 mana remaining)
+T2 P2: Cast Cranial Plating (2)
+    [Priority] P1 passes (no response)
+T2: Resolve Cranial Plating
+T2 P2: Cranial Plating enters the battlefield (unattached)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Cranial Plating
+║   Lands: Urza's Saga [T], Razortide Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Underground River
+  [Main 1]
+T2 P1: Play Polluted Delta
+T2 P1: Crack Polluted Delta (pay 1 life) -> Watery Grave (pay 2 life, untapped, life: 16)
+    → Goal: grind_value
+    [Mana] Tap Watery Grave→B, Underground River→B (paying for Orcish Bowmasters, 2 mana remaining)
+T2 P1: Cast Orcish Bowmasters (1B)
+    [Priority] P2 passes (no response)
+T2: Resolve Orcish Bowmasters
+T2 P1: Bowmasters deals 1 damage to opponent (life: 19)
+T2 P1: Bowmasters creates 1/1 Orc Army token
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 19  |  Dimir Midrange 15
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Cranial Plating
+║   Lands: Urza's Saga, Razortide Bridge
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Underground River [T], Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T3 P2: Create 1x Construct token(s)
+T3 P2: Urza's Saga Ch.II: Create Construct Token
+  [Draw] P2 draws: Memnite
+  [Main 1]
+T3 P2: Play Darksteel Citadel
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 15  |  Affinity 19
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 2
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Underground River, Watery Grave
+║ Affinity board:
+║   Creatures: Construct Token (5/5)
+║   Other: Mox Opal, Cranial Plating
+║   Lands: Urza's Saga, Razortide Bridge, Darksteel Citadel
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Damnation
+  [Main 1]
+T3 P1: Play Island
+    → Goal: grind_value [enablers]
+    [Mana] Tap Island→U (paying for Consider, 3 mana remaining)
+T3 P1: Cast Consider (U)
+    [Priority] P2 passes (no response)
+T3: Resolve Consider
+T3 P1: Consider → draw 1 (Subtlety)
+    → Goal: grind_value [enablers]
+T3 P1: Evoke Subtlety (exile Counterspell)
+T3 P1: Cast Subtlety (2UU)
+    [Priority] P2 passes (no response)
+T3: Resolve Subtlety
+T3 P1: Subtlety enters (no creature/PW spell on stack to target)
+T3 P1: Subtlety sacrificed (evoke)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 19  |  Dimir Midrange 15
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Construct Token (5/5)
+║   Other: Mox Opal, Cranial Plating
+║   Lands: Urza's Saga, Razortide Bridge, Darksteel Citadel
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Underground River, Watery Grave, Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T4 P2: Create 1x Construct token(s)
+T4 P2: Urza's Saga Ch.III: Create Construct Token
+T4 P2: Urza's Saga tutors Springleaf Drum
+T4 P2: Sacrifice Urza's Saga (final chapter)
+  [Draw] P2 draws: Urza's Saga
+  [Main 1]
+T4 P2: Play Mistvault Bridge (enters tapped)
+T4 P2: Equip Cranial Plating to Construct Token (cost 1)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Construct Token
+T4 P2: Attack with Construct Token
+T4 P1:   [BLOCK-EMERGENCY] Orc Army (1/1) blocks Construct Token (16/8) — chump block
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T4: Orc Army dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 15  |  Affinity 19
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 5
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1)
+║   Lands: Underground River, Watery Grave, Island
+║ Affinity board:
+║   Creatures: Construct Token (16/8) [tapped], Construct Token (8/8)
+║   Other: Mox Opal, Cranial Plating, Springleaf Drum
+║   Lands: Razortide Bridge [T], Darksteel Citadel, Mistvault Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Creeping Tar Pit
+  [Main 1]
+T4 P1: Play Underground River
+    → Goal: close_game
+    [Mana] Tap Watery Grave→B, Underground River→B, Island→U, Underground River→B (paying for Damnation, 4 mana remaining)
+T4 P1: Cast Damnation (2BB)
+    [Priority] P2 passes (no response)
+T4: Resolve Damnation
+T4: Orcish Bowmasters dies
+T4: Cranial Plating falls off Construct Token (unattached)
+T4: Construct Token dies
+T4: Construct Token dies
+T4 P1: Damnation destroys 3 creatures
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 19  |  Dimir Midrange 13
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 4
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Cranial Plating, Springleaf Drum
+║   Lands: Razortide Bridge, Darksteel Citadel, Mistvault Bridge
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River [T], Watery Grave [T], Island [T], Underground River [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ornithopter
+  [Main 1]
+T5 P2: Play Urza's Saga
+    → Goal: curve_out [enablers]
+    [Mana] Tap Razortide Bridge→U (paying for Thought Monitor, 4 mana remaining)
+T5 P2: Cast Thought Monitor (6U)
+    [Priority] P1 passes (no response)
+T5: Resolve Thought Monitor
+T5 P2: Thought Monitor ETB: draw 2 (Memnite, Nettlecyst)
+    → Goal: curve_out
+T5 P2: Cast Memnite (0)
+    [Priority] P1 passes (no response)
+T5: Resolve Memnite
+    → Goal: curve_out
+T5 P2: Cast Memnite (0)
+    [Priority] P1 passes (no response)
+T5: Resolve Memnite
+    → Goal: curve_out
+T5 P2: Cast Ornithopter (0)
+    [Priority] P1 passes (no response)
+T5: Resolve Ornithopter
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Darksteel Citadel→C (paying for Nettlecyst, 3 mana remaining)
+T5 P2: Cast Nettlecyst (3)
+    [Priority] P1 passes (no response)
+T5: Resolve Nettlecyst
+T5 P2: Create 1x Germ token(s)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 13  |  Affinity 19
+║ Hand: 2 cards  |  Opp hand: 0 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 7
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River, Watery Grave, Island, Underground River
+║ Affinity board:
+║   Creatures: Thought Monitor (2/2), Memnite (1/1), Memnite (1/1), Ornithopter (0/2), Germ Token (11/11)
+║   Other: Mox Opal, Cranial Plating, Springleaf Drum, Nettlecyst
+║   Lands: Razortide Bridge [T], Darksteel Citadel [T], Mistvault Bridge, Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Shelldock Isle
+  [Main 1]
+T5 P1: Play Creeping Tar Pit (enters tapped)
+    → Goal: close_game
+    [Mana] Tap Watery Grave→B (paying for Thoughtseize, 4 mana remaining)
+T5 P1: Cast Thoughtseize (B)
+    [Priority] P2 passes (no response)
+T5: Resolve Thoughtseize
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 19  |  Dimir Midrange 11
+║ Hand: 0 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 4
+║ Affinity board:
+║   Creatures: Thought Monitor (2/2), Memnite (1/1), Memnite (1/1), Ornithopter (0/2), Germ Token (11/11)
+║   Other: Mox Opal, Cranial Plating, Springleaf Drum, Nettlecyst
+║   Lands: Razortide Bridge, Darksteel Citadel, Mistvault Bridge, Urza's Saga
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River, Watery Grave [T], Island, Underground River, Creeping Tar Pit [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Cranial Plating
+  [Main 1]
+T6 P2: Equip Cranial Plating to Germ Token (cost 1)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Thought Monitor, Memnite, Memnite, Germ Token
+T6 P2: Attack with Thought Monitor, Memnite, Memnite, Germ Token
+  [Declare Blockers] P1 does not block
+T6 P2:   Thought Monitor (2/2) → 2 dmg to player
+T6 P2:   Memnite (1/1) → 1 dmg to player
+T6 P2:   Memnite (1/1) → 1 dmg to player
+T6 P2:   Germ Token (22/11) → 22 dmg to player
+P1 loses: life total -15
+  [Combat Damage] 26 damage dealt → P1 life: 11 → -15
+
+>>> Affinity wins Game 3 on turn 6 via damage
+    Final life: Dimir Midrange=-15  Affinity=19
+
+======================================================================
+  MATCH RESULT: Affinity wins 2-1
+======================================================================
