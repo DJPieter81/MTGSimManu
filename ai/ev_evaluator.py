@@ -1880,3 +1880,130 @@ def estimate_future_value(snap: EVSnapshot, archetype: str,
     per_turn = max(MIN_CONTINUATION, min(MAX_CONTINUATION, per_turn))
     discount = per_turn ** turns_ahead
     return discount * evaluate_board(projected, archetype, dk)
+
+
+# ─────────────────────────────────────────────────────────────
+# Opponent-forced discard scoring (Thoughtseize / Duress / IoK)
+# ─────────────────────────────────────────────────────────────
+
+# Rules constants: gameplan-role weights for "how much does the
+# CASTER want to strip this card?". critical_pieces are the deck's
+# stated finishers/keystones — losing one is hardest to recover from
+# and so scores highest. always_early are usually engines/enablers
+# that snowball (Mox Opal, Ruby Medallion). mulligan_keys is the
+# largest "must-have" set and so scores lowest of the three so the
+# rarer signals dominate when present. Values are ordinal — only the
+# ordering matters; the magnitudes are tuned so a critical_piece
+# always outranks a tagged-but-unlisted card and so a non-creature
+# engine outranks a vanilla 1-drop creature, both of which fall out
+# of `creature_threat_value()` for a typical Modern card.
+_DISCARD_SCORE_CRITICAL_PIECE = 100.0
+_DISCARD_SCORE_ALWAYS_EARLY = 60.0
+_DISCARD_SCORE_MULLIGAN_KEY = 40.0
+
+# Tag-based fallback weights for non-creatures with no gameplan
+# signal. `combo` (e.g. Grapeshot, Living End enablers) and
+# `cost_reducer` (Medallions, Ragavan-likes) snowball. Tutors win
+# games on resolution. Mana sources are valuable but easily replaced.
+# These are again ordinal rules constants — a tagged engine should
+# beat a vanilla cantrip that scored 0.
+_DISCARD_TAG_WEIGHTS = {
+    "combo": 25.0,
+    "cost_reducer": 20.0,
+    "tutor": 22.0,
+    "mana_source": 8.0,
+    "ramp": 8.0,
+    "removal": 6.0,
+    "counterspell": 6.0,
+    "engine": 18.0,
+    "payoff": 22.0,
+}
+
+
+def score_card_for_opponent_strip(card: "CardInstance",
+                                  opp_gameplan=None) -> float:
+    """Score how badly the CASTER of a discard spell wants this card
+    out of the victim's hand. Higher = strip first.
+
+    Inputs:
+      * `card` — a CardInstance in the victim's hand. The caller has
+        already filtered out lands (caller responsibility — that is a
+        rules concern: Thoughtseize text reads "nonland card").
+      * `opp_gameplan` — the victim's `DeckGameplan` if available, used
+        to consult `critical_pieces` / `always_early` / `mulligan_keys`.
+        These sets are the deck author's declared keystones; using them
+        keeps the scorer free of any per-card hardcoding here. Pass
+        `None` if the gameplan can't be resolved — tag-based fallback
+        still applies.
+
+    For creatures the threat is delegated to `creature_threat_value`,
+    which is the same oracle-driven scorer used everywhere else for
+    "how scary is this creature?". For non-creatures we combine
+    gameplan-role membership (highest signal) with tag-based weights.
+
+    Returns 0.0 for an unrecognised non-creature with no tags / no
+    gameplan listing — the caller's fallback (highest-CMC non-land)
+    then applies. Engine layer never owns this scoring; it must call
+    in here.
+    """
+    t = card.template
+    name = getattr(t, 'name', '') or ''
+
+    # Creatures: route through the existing oracle-driven threat
+    # function. Returns ~1-15 for typical Modern bodies; large
+    # threats can score higher. We do NOT add a creature-only bonus
+    # here — `creature_threat_value` already credits ETB / scaling.
+    if getattr(t, 'is_creature', False):
+        return float(creature_threat_value(card))
+
+    # Non-creatures: gameplan signal first (data-driven, no card
+    # names in this file), then tag-based weighting.
+    score = 0.0
+    if opp_gameplan is not None:
+        critical = getattr(opp_gameplan, 'critical_pieces', None) or set()
+        early = getattr(opp_gameplan, 'always_early', None) or set()
+        keys = getattr(opp_gameplan, 'mulligan_keys', None) or set()
+        if name in critical:
+            score += _DISCARD_SCORE_CRITICAL_PIECE
+        if name in early:
+            score += _DISCARD_SCORE_ALWAYS_EARLY
+        if name in keys:
+            score += _DISCARD_SCORE_MULLIGAN_KEY
+
+    tags = getattr(t, 'tags', set()) or set()
+    for tag, weight in _DISCARD_TAG_WEIGHTS.items():
+        if tag in tags:
+            score += weight
+
+    return score
+
+
+def choose_card_to_strip(hand: List["CardInstance"],
+                          opp_gameplan=None) -> Optional["CardInstance"]:
+    """Pick the card a Thoughtseize-style discard spell should take
+    from the victim's hand. Lands are excluded (Thoughtseize reads
+    "nonland card"). Returns None if the hand is empty or contains
+    only lands (caller falls back to whatever the rules require —
+    typically "reveal hand, take nothing", but engines that ignore
+    the nonland clause may still pass any card back through here).
+
+    Tie-break order:
+      1. Highest threat score from `score_card_for_opponent_strip`.
+      2. Highest printed CMC (legacy fallback — preserves the old
+         behaviour when nothing carries a meaningful score).
+      3. Stable order in the hand (first-seen wins).
+
+    Pure function. No side effects on the hand or game state.
+    """
+    nonland = [c for c in hand if not getattr(c.template, 'is_land', False)]
+    if not nonland:
+        return None
+    scored = [
+        (score_card_for_opponent_strip(c, opp_gameplan),
+         getattr(c.template, 'cmc', 0) or 0,
+         idx, c)
+        for idx, c in enumerate(nonland)
+    ]
+    # Highest score, then highest CMC, then earliest index.
+    scored.sort(key=lambda x: (-x[0], -x[1], x[2]))
+    return scored[0][3]
