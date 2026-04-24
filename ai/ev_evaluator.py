@@ -1240,16 +1240,36 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
             best = max(gy_creatures, key=lambda c: (c.template.power or 0) + (c.template.toughness or 0))
             p = best.template.power or 0
             tough = best.template.toughness or 0
-            projected.my_power += p
+            # Temporary-creature discount (GV-2): when the reanimation
+            # spell exiles the returned creature at the next end step
+            # (Goryo's Vengeance, Footsteps of the Goryo pattern), the
+            # creature attacks once (spells of this family grant haste)
+            # and is then removed. A persistent reanimation (Reanimate,
+            # Persist) lets the body attack every turn thereafter. We
+            # approximate the temporary/persistent contribution ratio at
+            # 0.5 — one guaranteed combat vs an unbounded future stream.
+            # Oracle-driven, no card-name checks. The clause-free case
+            # (Persist) keeps the full power contribution unchanged.
+            EOT_EXILE_POWER_FACTOR = 0.5  # rules: 1 attack before exile
+            # Normalise curly/fancy apostrophes so 'end’s' variants match.
+            reanim_oracle = (t.oracle_text or '').lower().replace(
+                '’', "'")
+            exiles_at_eot = (
+                'exile' in reanim_oracle
+                and 'beginning of the next end step' in reanim_oracle
+            )
+            power_factor = (EOT_EXILE_POWER_FACTOR if exiles_at_eot
+                             else 1.0)
+            projected.my_power += p * power_factor
             projected.my_toughness += tough
             projected.my_creature_count += 1
             projected.my_gy_creatures = max(0, projected.my_gy_creatures - 1)
             kws = {kw.value if hasattr(kw, 'value') else str(kw).lower()
                    for kw in getattr(best.template, 'keywords', set())}
             if kws & {'flying', 'menace', 'trample'}:
-                projected.my_evasion_power += p
+                projected.my_evasion_power += p * power_factor
             if 'lifelink' in kws:
-                projected.my_lifelink_power += p
+                projected.my_lifelink_power += p * power_factor
 
     # Removal — kills best opponent creature
     if 'removal' in tags and not 'board_wipe' in tags:
