@@ -306,13 +306,13 @@ class CastManager:
             for _ in range(needed):
                 color_needs.append(color)
 
-        has_leyline = game._has_leyline_of_guildpact(player_idx)
-        all_colors_set = set(ALL_COLORS)
+        # Routes through `_effective_produces_mana` so Leyline of the
+        # Guildpact and dynamic mana abilities (E1: Mox Opal metalcraft,
+        # CR 702.98) contribute the right colour set for the feasibility
+        # solver.
         sources = []
         for land in untapped_lands:
-            sources.append(
-                all_colors_set if has_leyline
-                else set(land.template.produces_mana))
+            sources.append(set(game._effective_produces_mana(player_idx, land)))
         # Mana pool as fixed-color sources
         for color in ["W", "U", "B", "R", "G", "C"]:
             pool_amount = player.mana_pool.get(color)
@@ -860,14 +860,19 @@ class CastManager:
             lands_pool = list(player.untapped_lands)
             while remaining > 0 and lands_pool:
                 if is_converge:
-                    # MRV-style: prefer lands that produce a color we haven't spent yet
+                    # MRV-style: prefer lands that produce a color we haven't
+                    # spent yet.  Routes through `_effective_produces_mana` so
+                    # Leyline / dynamic mana abilities (E1: Mox Opal
+                    # metalcraft) feed Converge correctly.
                     lands_pool.sort(
-                        key=lambda l: -len(set(l.template.produces_mana or []) - xpay_colors)
+                        key=lambda l: -len(
+                            set(game._effective_produces_mana(player_idx, l) or []) - xpay_colors
+                        )
                     )
                 land = lands_pool.pop(0)
                 land.tapped = True
                 remaining -= 1
-                produced = list(land.template.produces_mana or [])
+                produced = list(game._effective_produces_mana(player_idx, land) or [])
                 if is_converge:
                     # Pick a new color if possible, else any produced color
                     new_cols = [c for c in produced if c not in xpay_colors]
