@@ -55,6 +55,12 @@ class ManaNeeds:
     # Colors needed by high-CMC multi-color payoffs (e.g., Omnath WURG)
     # These get extra weight in fetch/shock decisions
     payoff_missing_colors: Set[str] = field(default_factory=set)
+    # Colors of instants / flash permanents currently in the player's hand
+    # (Bundle 3 A5). Fetch targeting and tap-order decisions must prefer
+    # sources that PRESERVE these colors so the held interaction remains
+    # castable on the opponent's turn. Set is empty when no instants are
+    # held — the preference never biases a deck that has nothing to hold.
+    held_instant_colors: Set[str] = field(default_factory=set)
 
 
 def analyze_mana_needs(game: "GameState", player_idx: int,
@@ -66,6 +72,25 @@ def analyze_mana_needs(game: "GameState", player_idx: int,
     """
     player = game.players[player_idx]
     needs = ManaNeeds()
+
+    # ── Held instant-speed interaction colors (Bundle 3 A5) ──
+    # Populated from every instant or flash-permanent in hand: for each
+    # colored pip in its mana cost, that color is "held" — we need to
+    # preserve the ability to produce it on the opponent's turn.
+    # Oracle-driven (checks template.is_instant + keyword "flash"); no
+    # hardcoded card names.
+    from engine.cards import Keyword as _Kw
+    for card in player.hand:
+        tmpl = card.template
+        if tmpl.is_land:
+            continue
+        is_flash = _Kw.FLASH in getattr(tmpl, 'keywords', set())
+        if not (tmpl.is_instant or is_flash):
+            continue
+        mc = tmpl.mana_cost
+        for code, attr in COLOR_MAP.items():
+            if getattr(mc, attr, 0) > 0:
+                needs.held_instant_colors.add(code)
 
     # ── What colors does the hand need? ──
     from engine.cards import DOMAIN_POWER_CREATURES
@@ -260,6 +285,17 @@ def score_land(land, needs: ManaNeeds, is_fetchable: bool = False,
 
     # ── (H) Gameplan priority from deck config ──
     score += gameplan_priority
+
+    # ── (I) Preserve held instant-speed interaction (Bundle 3 A5) ──
+    # When the player holds instants / flash permanents, prefer lands
+    # that PROVIDE one of the held colors over lands that don't.
+    # HELD_COLOR_PRESERVATION_BONUS matches the per-demand weight in
+    # block (A) above (8.0 per enabled spell) — held interaction is
+    # worth the same as the spell it protects being castable.
+    if needs.held_instant_colors:
+        HELD_COLOR_PRESERVATION_BONUS = 8.0
+        if any(c in needs.held_instant_colors for c in produces):
+            score += HELD_COLOR_PRESERVATION_BONUS
 
     return score
 

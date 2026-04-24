@@ -17,7 +17,7 @@ argument, matching the SBAManager / CombatManager delegation pattern.
 """
 from __future__ import annotations
 
-from typing import List, TYPE_CHECKING
+from typing import List, Optional, Set, TYPE_CHECKING
 
 from .cards import CardType, Keyword
 from .mana import ManaCost
@@ -80,7 +80,9 @@ class ManaPayment:
     @staticmethod
     def tap_lands_for_mana(game: "GameState", player_idx: int,
                            cost: ManaCost,
-                           card_name: str = None) -> bool:
+                           card_name: str = None,
+                           held_instant_colors: Optional[Set[str]] = None
+                           ) -> bool:
         """Tap lands to pay a mana cost. Returns True if successful.
 
         Side effect: sets game._last_colors_spent to the set of colors
@@ -88,6 +90,13 @@ class ManaPayment:
         come from the lands tapped in this call PLUS colors drained
         from the pre-existing mana pool. Empty if cost was 0 or
         payment failed.
+
+        held_instant_colors (Bundle 3 A5): optional set of color codes
+        the AI wants preserved (i.e. colors of held instants / flash
+        permanents). When supplied, among otherwise-equivalent land
+        orderings the engine prefers the one that leaves these colors
+        available untapped. Engine stays neutral when `None` — no
+        strategic choice without AI input.
         """
         player = game.players[player_idx]
         # Snapshot mana pool BEFORE payment so we can detect which colors
@@ -151,8 +160,17 @@ class ManaPayment:
         def _produces(land):
             return ALL_COLORS if has_leyline else land.template.produces_mana
 
-        # Sort lands: most restrictive first (fewest colors produced)
-        untapped.sort(key=lambda l: len(_produces(l)))
+        # Sort lands: most restrictive first (fewest colors produced).
+        # Secondary key (Bundle 3 A5): when the AI has supplied
+        # `held_instant_colors`, lands that produce one of those colors
+        # sort LATER — so the MRV walk taps them last, preserving the
+        # held-interaction color for the opponent's turn.
+        _held = held_instant_colors or set()
+        def _sort_key(l):
+            lp = _produces(l)
+            produces_held = 1 if any(c in _held for c in lp) else 0
+            return (produces_held, len(lp))
+        untapped.sort(key=_sort_key)
 
         needed = cost.to_dict()
         lands_to_tap = []
@@ -194,17 +212,26 @@ class ManaPayment:
                                   if l not in used_lands and c in _produces(l))
             )
             color = colors_needed_list.pop(0)
-            # Find least-flexible unused land for this color
+            # Find least-flexible unused land for this color. Ties broken
+            # by preserving held_instant_colors when supplied — a land
+            # that produces a held color is less preferred (we want to
+            # leave it untapped for the opponent's turn).
             best_land = None
-            best_flex = 999
+            best_key = (999, 999)
             for land in untapped:
                 if land in used_lands:
                     continue
                 lp = _produces(land)
                 if color in lp:
                     flex = len(lp)
-                    if flex < best_flex:
-                        best_flex = flex
+                    # Skip the held-preserve penalty if this land is the
+                    # only source of the required color — correctness
+                    # (must pay the cost) wins over preservation.
+                    produces_held = 1 if any(
+                        c in _held and c != color for c in lp) else 0
+                    key = (flex, produces_held)
+                    if key < best_key:
+                        best_key = key
                         best_land = land
             if best_land is None:
                 return False

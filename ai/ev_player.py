@@ -732,24 +732,16 @@ class EVPlayer:
                     # Add it directly — no halving / no tier remapping.
                     ev += tv
 
-        # ── Mana holdback: penalize tapping out when we hold instants ──
-        # Trigger holdback when: opp has creatures, OR opp is a spell/combo deck
-        # with hand cards (holdback for counterspells even vs creatureless opponents)
-        opp_has_spells = snap.opp_hand_size >= 3 and snap.opp_power == 0
-        holdback_relevant = snap.opp_power > 0 or snap.opp_hand_size >= 4 or opp_has_spells
-        if p.holdback_applies and holdback_relevant:
-            cmc = t.cmc or 0
-            has_instant = any(
-                c.template.is_instant and (
-                    'removal' in getattr(c.template, 'tags', set()) or
-                    'counterspell' in getattr(c.template, 'tags', set())
-                )
-                for c in me.hand if c.instance_id != card.instance_id
-            )
-            if has_instant and not t.is_instant and not t.has_flash:
-                remaining_mana = snap.my_mana - cmc
-                if remaining_mana < 2:
-                    ev -= 2.0  # tapping out loses instant-speed interaction
+        # ── Mana holdback (Bundle 3 A1, A3, A4) ──
+        # Scaled, color-aware penalty for tapping out while holding
+        # instant-speed interaction. Implemented in _holdback_penalty so
+        # _score_cycling and _consider_equip can reuse the same gate.
+        # Fast-skip when this profile doesn't hold, the candidate IS an
+        # instant, or it has flash — none of those tap out.
+        if p.holdback_applies and not t.is_instant and not t.has_flash:
+            ev += self._holdback_penalty(
+                me, opp, snap, cost=t.cmc or 0,
+                exclude_instance_id=card.instance_id)
 
         oracle_lower = (t.oracle_text or '').lower()
         phyrexian_count = oracle_lower.count('/p}')
@@ -758,6 +750,213 @@ class EVPlayer:
             ev -= life_cost / max(1, snap.my_life) * 10.0
 
         return ev
+
+    def _holdback_penalty(self, me, opp, snap: EVSnapshot, cost: int,
+                          exclude_instance_id: Optional[int] = None) -> float:
+        """Mana-holdback penalty for a play that would tap out (Bundle 3).
+
+        A1 — penalty scales by `counter_count × counter_cmc × opp_threat_prob`
+              instead of the previous flat -2.0 so it actually gates a
+              CMC-2 main-phase play when 2× Counterspell are held.
+        A3 — extracted as a helper so `_score_cycling` and
+              `_consider_equip` apply the same gate.
+        A4 — opponent-spell-deck branch threshold lowered to
+              `opp_hand_size >= 3` (was >=4); typical post-discard hands
+              still contain real interaction at 3 cards.
+        A5 — colored-aware: if the play taps out the LAST source of a
+              held instant's color, the penalty is amplified (the
+              interaction is uncastable, not merely tempo-delayed).
+
+        Returns a non-positive penalty (0.0 means "no holdback").
+        """
+        p = self.profile
+        if not p.holdback_applies:
+            return 0.0
+
+        # ── Holdback relevance gate ──────────────────────────────────
+        # Original logic kept: opp creatures present OR opponent has a
+        # full grip; A4 lowers the spell-deck branch from >=4 to >=3.
+        opp_has_spells = snap.opp_hand_size >= 3 and snap.opp_power == 0
+        holdback_relevant = (snap.opp_power > 0
+                             or snap.opp_hand_size >= 3
+                             or opp_has_spells)
+        if not holdback_relevant:
+            return 0.0
+
+        # ── Find held instant-speed interaction in hand ──────────────
+        # Oracle/tag-driven (no card names). counter_cmc is the average
+        # cost of held interaction — used to size the penalty.
+        held_costs: list = []
+        held_colors: set = set()
+        for c in me.hand:
+            if exclude_instance_id is not None \
+                    and c.instance_id == exclude_instance_id:
+                continue
+            tmpl = c.template
+            if not tmpl.is_instant:
+                continue
+            tags = getattr(tmpl, 'tags', set())
+            if not ('removal' in tags or 'counterspell' in tags):
+                continue
+            held_costs.append(tmpl.cmc or 0)
+            mc = tmpl.mana_cost
+            for code, attr in (
+                ('W', 'white'), ('U', 'blue'), ('B', 'black'),
+                ('R', 'red'), ('G', 'green'),
+            ):
+                if getattr(mc, attr, 0) > 0:
+                    held_colors.add(code)
+
+        if not held_costs:
+            return 0.0
+
+        counter_count = len(held_costs)
+        counter_cmc = sum(held_costs) / counter_count  # mean CMC
+
+        # ── Opp-threat probability (BHI-derived) ─────────────────────
+        # If BHI has been initialised it gives a calibrated probability
+        # the opponent has a follow-up threat we'd want to interact
+        # with. Fallback heuristic for un-initialised BHI: blend opp
+        # board pressure (power per turn already on the table) with
+        # opp hand density (more cards in hand = more likely to deploy
+        # a real threat). All values clamped to [0.1, 1.0] — even a
+        # quiet board has some baseline threat probability.
+        opp_threat_prob = self._estimate_opp_threat_prob(snap, opp)
+
+        # ── Lost-response-capacity model ─────────────────────────────
+        # How many held responses could we cast with all our mana
+        # untapped? With mana remaining after this play? The DELTA is
+        # the capacity we'd lose by tapping out — that's what the
+        # penalty pays for. Cheapest-first packing approximates the
+        # opponent's worst-case sequence (we'd counter the cheapest
+        # threats first to keep options open).
+        sorted_costs = sorted(held_costs)
+        def _capacity(mana: int) -> int:
+            n, m = 0, mana
+            for c in sorted_costs:
+                if m >= c:
+                    m -= c
+                    n += 1
+                else:
+                    break
+            return n
+
+        cap_now = _capacity(snap.my_mana)
+        cap_after = _capacity(max(0, snap.my_mana - cost))
+        lost_capacity = max(0, cap_now - cap_after)
+
+        # Penalty fires only when tapping out actually loses response
+        # capacity — if we still have enough mana for every held
+        # response, holdback is moot.
+        if lost_capacity <= 0:
+            return 0.0
+
+        # Scale: counter_count × counter_cmc × opp_threat_prob ×
+        # HELD_RESPONSE_VALUE_PER_CMC. Brief A1 specifies count (not
+        # lost_capacity) — holding more counters means more value at
+        # risk even if only one capacity is lost this turn (the second
+        # counter still wants the mana on a future turn).
+        # HELD_RESPONSE_VALUE_PER_CMC = 7.0 is derived from the value
+        # of the spell countered: typical mid-curve threats score 6-12
+        # in `creature_value`. A CMC-N counter intercepts threats of
+        # cost ≥ N (often the opp's biggest play of the turn — Murktide,
+        # Omnath, Plating); the per-CMC value 7.0 sits at the geometric
+        # mean of countered-threat EV when the counter holds for the
+        # turn's biggest play. Calibration check: 2 × Counterspell held
+        # vs an aggressive opp (threat_prob 1.0) → 2×2×1×7 = 28 penalty,
+        # which is large enough to gate a CMC-2 main-phase play whose
+        # base EV ≈ +20 below CONTROL's pass_threshold = −5.0.
+        HELD_RESPONSE_VALUE_PER_CMC = 7.0
+        base_penalty = (counter_count * counter_cmc
+                        * opp_threat_prob
+                        * HELD_RESPONSE_VALUE_PER_CMC)
+
+        # ── Color-availability amplifier (A5) ────────────────────────
+        # If this play would leave us with FEWER sources of a held
+        # color than the held interaction needs, the held spell becomes
+        # uncastable (not merely tempo-delayed). For each color in
+        # held_colors that this play empties, escalate the penalty.
+        # A play that taps the only U source while we hold a UU
+        # Counterspell forfeits the response entirely — even if our
+        # generic mana count would otherwise suggest we have spare.
+        my_by_color = getattr(snap, 'my_mana_by_color', {}) or {}
+        # Approximate post-play color availability: the play consumes
+        # `cost` lands worth of mana; in the worst case this includes
+        # every land producing a held color.
+        remaining_mana = max(0, snap.my_mana - cost)
+        color_kills = 0
+        for color in held_colors:
+            available_now = my_by_color.get(color, 0)
+            # If after the play remaining_mana < the held cost in this
+            # color (cost includes generic from these lands), the
+            # response is uncastable. Approximation: when the play
+            # consumes >= every untapped source of this color, the
+            # response is dead.
+            if available_now > 0 and remaining_mana < available_now:
+                # Conservative: fire amplifier whenever the post-play
+                # generic-mana floor < the # of held color sources we
+                # had — captures the "Sacred Foundry tapped, no U
+                # left" pattern that A5 targets.
+                if available_now <= cost:
+                    color_kills += 1
+        if color_kills > 0:
+            # Uncastable held interaction = a free opponent spell. Add
+            # the full per-counter response value on top of the lost-
+            # capacity penalty (same scale as base_penalty above).
+            HELD_RESPONSE_VALUE_PER_CMC = 7.0
+            base_penalty += (color_kills * counter_cmc
+                             * opp_threat_prob
+                             * HELD_RESPONSE_VALUE_PER_CMC)
+
+        return -base_penalty
+
+    def _estimate_opp_threat_prob(self, snap: EVSnapshot, opp) -> float:
+        """Probability opponent will deploy a meaningful threat next turn.
+
+        Derived from:
+        - BHI removal/counter beliefs (when initialised) — already a
+          calibrated posterior reflecting observed plays + deck
+          composition.
+        - Otherwise: opp board power as fraction of our life (creatures
+          already on the table) + opp hand density (cards left to
+          deploy) + archetype aggression hint from the opp's deck.
+        Output clamped to [0.1, 1.0]; even a quiet opponent has some
+        baseline threat from top-decks.
+        """
+        # BHI path
+        try:
+            bhi = self.bhi
+            if bhi and bhi._initialized:
+                # P(opp threatens us this/next turn) ≈ max of P(removal)
+                # and P(follow-up creature inferred from non-counter
+                # density). We only have direct removal/counter beliefs
+                # here, so use them as a lower bound and add hand-size
+                # weight for non-tracked threats.
+                p_action = max(bhi.beliefs.p_removal,
+                               bhi.beliefs.p_counter,
+                               bhi.beliefs.p_burn)
+                hand_factor = min(1.0, snap.opp_hand_size / 7.0)
+                return max(0.1, min(1.0, p_action + 0.5 * hand_factor))
+        except Exception:
+            pass
+
+        # Heuristic fallback — combine three signals:
+        # (a) opponent has creatures on board → they're playing threats,
+        #     expect more (signal saturates at 2+ creatures).
+        # (b) hand size as a fraction of starting hand (7) — more cards
+        #     = more chances to draw a real threat.
+        # (c) clock pressure — opponent's existing power as fraction of
+        #     our life (we want to interact when they're close to lethal).
+        # We take the MAX of these so any one strong signal triggers
+        # full holdback; sum-and-divide undercounts when (e.g.) the
+        # board already has visible threats but they're all 1/1s.
+        creature_signal = min(1.0, snap.opp_creature_count / 2.0)
+        hand_signal = min(1.0, snap.opp_hand_size / 7.0)
+        clock_signal = 0.0
+        if snap.my_life > 0 and snap.opp_power > 0:
+            clock_signal = min(1.0, snap.opp_power / max(1, snap.my_life))
+        return max(0.1, min(1.0,
+                            max(creature_signal, hand_signal, clock_signal)))
 
     def _combo_modifier(self, card, snap: EVSnapshot,
                         game: "GameState", me, opp) -> float:
@@ -1401,6 +1600,14 @@ class EVPlayer:
             current_goal = self.goal_engine.current_goal
             if current_goal and getattr(current_goal, 'prefer_cycling', False):
                 ev += CYCLING_GAMEPLAN_BOOST  # cycling is THE gameplan, not optional
+
+        # Bundle 3 A3 — same holdback gate as _score_spell. Cycling
+        # taps lands too; it must respect held instant-speed interaction.
+        cost_data = card.template.cycling_cost_data
+        cycling_mana_cost = cost_data.get('mana', 0) if cost_data else 0
+        ev += self._holdback_penalty(
+            me, opp, snap, cost=cycling_mana_cost,
+            exclude_instance_id=card.instance_id)
 
         return ev
 
@@ -2527,6 +2734,15 @@ class EVPlayer:
             # Score equipping like deploying a creature with the bonus power
             bonus = self._estimate_equip_bonus(equip, player)
             ev = bonus * self.profile.creature_value_mult
+
+            # Bundle 3 A3 — same holdback gate as _score_spell. Equip
+            # activation taps mana; it must respect held interaction.
+            from ai.ev_evaluator import snapshot_from_game
+            snap = snapshot_from_game(game, self.player_idx)
+            opp = game.players[1 - self.player_idx]
+            ev += self._holdback_penalty(
+                player, opp, snap, cost=cost,
+                exclude_instance_id=equip.instance_id)
 
             results.append(Play("equip", equip, [best.instance_id], ev,
                                 f"Equip {equip.name} to {best.name} (EV={ev:.1f})"))

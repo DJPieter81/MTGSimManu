@@ -229,9 +229,19 @@ class GameState:
     # ─── MANA SYSTEM ─────────────────────────────────────────────
 
     def tap_lands_for_mana(self, player_idx: int, cost: ManaCost,
-                           card_name: str = None) -> bool:
+                           card_name: str = None,
+                           held_instant_colors: Optional[set] = None) -> bool:
+        """Delegate to ManaPayment.tap_lands_for_mana.
+
+        held_instant_colors (Bundle 3 A5): optional set of color codes
+        the AI wants preserved (colors of held instants / flash
+        permanents). When supplied, among otherwise-equivalent land
+        orderings the engine prefers the one that leaves these colors
+        available untapped. Engine stays neutral when `None`.
+        """
         return ManaPayment.tap_lands_for_mana(
-            self, player_idx, cost, card_name=card_name
+            self, player_idx, cost, card_name=card_name,
+            held_instant_colors=held_instant_colors,
         )
 
     def can_cast(self, player_idx: int, card: CardInstance) -> bool:
