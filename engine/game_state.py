@@ -247,6 +247,19 @@ class GameState:
     def can_cast(self, player_idx: int, card: CardInstance) -> bool:
         return CastManager.can_cast(self, player_idx, card)
 
+    def can_suspend(self, player_idx: int, card: CardInstance) -> bool:
+        """LE-E2: is this card suspend-castable by player_idx?"""
+        return CastManager.can_suspend(self, player_idx, card)
+
+    def suspend_card(self, player_idx: int, card: CardInstance) -> bool:
+        """LE-E2: pay the suspend cost and exile the card with time counters."""
+        return CastManager.suspend_card(self, player_idx, card)
+
+    def tick_suspend_upkeep(self, player_idx: int) -> None:
+        """LE-E2: upkeep hook — decrement one counter on each suspended
+        card the player controls; when the last is removed, cast for free."""
+        CastManager.tick_suspend_upkeep(self, player_idx)
+
     def play_land(self, player_idx: int, card: CardInstance):
         LandManager.play_land(self, player_idx, card)
 

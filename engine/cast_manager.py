@@ -360,6 +360,182 @@ class CastManager:
 
         return True
 
+    # ─── Suspend (LE-E2) ─────────────────────────────────────────────
+    # Parse "Suspend N—{cost}" from oracle text. Returns (N, ManaCost) or
+    # None if the card has no suspend clause. Kept local to the cast path
+    # because no other subsystem needs these primitives.
+    @staticmethod
+    def _parse_suspend_clause(template) -> "tuple | None":
+        """Parse 'Suspend N—{cost}' from oracle text.
+
+        Returns (counter_count, ManaCost) on match, else None. Uses the
+        oracle text as the single source of truth; no card-name tables.
+        """
+        import re as _re_s
+        from .mana import ManaCost
+        oracle = (template.oracle_text or "")
+        # Accept em-dash, en-dash, or hyphen after the N.
+        m = _re_s.search(r"Suspend\s+(\d+)\s*[—\-–]\s*([^\n(.,]+)", oracle)
+        if not m:
+            return None
+        n = int(m.group(1))
+        cost_str = m.group(2).strip()
+        # Parse the mana portion using the existing MTGJSON parser.
+        from .card_database import parse_mana_cost_mtgjson
+        try:
+            cost = parse_mana_cost_mtgjson(cost_str)
+        except Exception:
+            return None
+        return n, cost
+
+    @staticmethod
+    def can_suspend(game: "GameState", player_idx: int,
+                    card: "CardInstance") -> bool:
+        """Legality check for paying a card's suspend cost from hand.
+
+        Requirements: card is in hand, has SUSPEND keyword, has a parseable
+        Suspend clause, and the controller can pay the suspend mana cost
+        from untapped lands + mana pool.
+        """
+        if card.zone != "hand":
+            return False
+        template = card.template
+        if Keyword.SUSPEND not in template.keywords:
+            return False
+        parsed = CastManager._parse_suspend_clause(template)
+        if parsed is None:
+            return False
+        _, cost = parsed
+
+        player = game.players[player_idx]
+        untapped_lands = player.untapped_lands
+        total_mana = (len(untapped_lands) + player.mana_pool.total()
+                      + player._tron_mana_bonus())
+        if total_mana < cost.cmc:
+            return False
+
+        # Colored-mana feasibility via the same MRV solver the normal
+        # cast path uses. Keeps the suspend gate honest for cards like
+        # Ancestral Vision ({U}).
+        color_needs = []
+        for color, needed in [("W", cost.white), ("U", cost.blue),
+                              ("B", cost.black), ("R", cost.red),
+                              ("G", cost.green), ("C", cost.colorless)]:
+            for _ in range(needed):
+                color_needs.append(color)
+
+        sources = []
+        for land in untapped_lands:
+            sources.append(set(game._effective_produces_mana(player_idx, land)))
+        for color in ["W", "U", "B", "R", "G", "C"]:
+            pool_amount = player.mana_pool.get(color)
+            for _ in range(pool_amount):
+                sources.append({color})
+
+        if len(sources) < cost.cmc:
+            return False
+
+        used = [False] * len(sources)
+        remaining_needs = list(color_needs)
+        while remaining_needs:
+            remaining_needs.sort(
+                key=lambda c: sum(
+                    1 for i, s in enumerate(sources)
+                    if c in s and not used[i])
+            )
+            c = remaining_needs.pop(0)
+            best_idx = -1
+            best_flex = 999
+            for i, s in enumerate(sources):
+                if not used[i] and c in s:
+                    flex = len(s)
+                    if flex < best_flex:
+                        best_flex = flex
+                        best_idx = i
+            if best_idx == -1:
+                return False
+            used[best_idx] = True
+
+        remaining_sources = sum(1 for u in used if not u)
+        generic_needed = cost.cmc - len(color_needs)
+        return remaining_sources >= generic_needed
+
+    @staticmethod
+    def suspend_card(game: "GameState", player_idx: int,
+                     card: "CardInstance") -> bool:
+        """Pay the suspend cost, exile the card with time counters.
+
+        Returns True on success. On failure (costs un-payable, bad state,
+        no suspend clause) returns False without mutating state.
+        """
+        if not CastManager.can_suspend(game, player_idx, card):
+            return False
+        parsed = CastManager._parse_suspend_clause(card.template)
+        n, cost = parsed  # parsed is guaranteed non-None by can_suspend
+
+        player = game.players[player_idx]
+        # Pay the suspend mana cost by tapping lands / draining pool.
+        if not game.tap_lands_for_mana(player_idx, cost,
+                                        card_name=card.template.name):
+            return False
+
+        # Move from hand to exile; mark as suspended with N counters.
+        if card in player.hand:
+            player.hand.remove(card)
+        card.zone = "exile"
+        card.suspended = True
+        card.suspend_counters = n
+        player.exile.append(card)
+        game.log.append(
+            f"T{game.display_turn} P{player_idx+1}: Suspend {card.template.name} "
+            f"({n} time counter{'s' if n != 1 else ''})")
+        return True
+
+    @staticmethod
+    def tick_suspend_upkeep(game: "GameState", player_idx: int) -> None:
+        """Remove one time counter from each suspended card controlled by
+        player_idx. When the last counter is removed, cast the spell for
+        free via the standard cast_spell free-cast path so existing
+        cascade / trigger wiring applies uniformly.
+        """
+        player = game.players[player_idx]
+        # Copy the list — suspend resolution mutates exile.
+        to_tick = [c for c in list(player.exile)
+                   if getattr(c, "suspended", False)
+                   and c.controller == player_idx]
+        for card in to_tick:
+            card.suspend_counters = max(0, card.suspend_counters - 1)
+            if card.suspend_counters > 0:
+                continue
+            # Last counter removed: cast for free.
+            card.suspended = False
+            if card in player.exile:
+                player.exile.remove(card)
+            # Route through the standard free-cast path so cascade /
+            # storm / ETB triggers fire via the normal resolver.
+            card.zone = "hand"
+            player.hand.append(card)
+            card._free_cast_opportunity = True
+            ok = game.cast_spell(player_idx, card, free_cast=True)
+            if not ok:
+                # Graceful fallback: if the free cast can't proceed (no
+                # legal targets, etc.), leave the card in graveyard.
+                if card in player.hand:
+                    player.hand.remove(card)
+                card.zone = "graveyard"
+                player.graveyard.append(card)
+                game.log.append(
+                    f"T{game.display_turn} P{player_idx+1}: "
+                    f"Suspend {card.template.name} fizzles (no cast)")
+                continue
+            # Resolve the stack immediately so the suspend cast fully
+            # completes before the rest of the upkeep processes.
+            while not game.stack.is_empty:
+                game.resolve_stack()
+                game.check_state_based_actions()
+                if game.game_over:
+                    return
+
     @staticmethod
     def _handle_storm(game: "GameState", item: StackItem) -> None:
         """Create storm copies. Storm count = spells cast this turn - 1."""
