@@ -404,6 +404,12 @@ class GameState:
         self_discard=True means the player chose to discard (Faithful
         Mending, etc.). self_discard=False means an opponent forced
         the discard (Thoughtseize, etc.).
+
+        Bug E2 fix: opponent-forced discard (self_discard=False) routes
+        through ai.discard_advisor, which delegates scoring to
+        ai.ev_evaluator.choose_card_to_strip. The caster picks by THREAT
+        to itself rather than raw printed CMC. Engine layer stays
+        scoring-free; all heuristics live in ai/.
         """
         player = self.players[player_idx]
         for _ in range(min(count, len(player.hand))):
@@ -411,6 +417,11 @@ class GameState:
                 break
             card = self.callbacks.choose_discard(
                 self, player_idx, list(player.hand), self_discard)
+            if card is None:
+                # Opponent-forced discard on an all-lands hand: the
+                # Thoughtseize-text "nonland card" clause means nothing
+                # else can be discarded. Stop the loop.
+                break
             self.zone_mgr.move_card(
                 self, card, "hand", "graveyard",
                 cause="forced discard" if not self_discard else "discard"
