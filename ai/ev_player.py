@@ -1180,9 +1180,39 @@ class EVPlayer:
                                for ft in ('ritual', 'cantrip', 'draw')))
 
         def _has_finisher():
-            return any(Kw.STORM in getattr(c.template, 'keywords', set())
-                       or 'tutor' in getattr(c.template, 'tags', set())
-                       for c in me.hand if c.instance_id != card.instance_id)
+            # S-1b retry: a tutor in hand is only a finisher path when
+            # the sideboard / library actually contains a real finisher
+            # for the tutor to fetch.  After Wish has been cast and the
+            # lone SB Grapeshot is gone, a second Wish in hand still
+            # registered as "has finisher" — leading the AI to commit
+            # ritual chains that closed into a non-lethal utility spell.
+            # Oracle-driven token-finisher detection ("create N tokens
+            # … for each spell") covers Empty-the-Warrens-pattern
+            # finishers without the STORM keyword. ZERO card names.
+            has_direct = any(
+                Kw.STORM in getattr(c.template, 'keywords', set())
+                for c in me.hand if c.instance_id != card.instance_id
+            )
+            if has_direct:
+                return True
+            has_tutor = any(
+                'tutor' in getattr(c.template, 'tags', set())
+                for c in me.hand if c.instance_id != card.instance_id
+            )
+            if not has_tutor:
+                return False
+            # Tutor in hand — validate SB ∪ library has a real finisher.
+            for c in list(me.sideboard) + list(me.library):
+                if Kw.STORM in getattr(c.template, 'keywords', set()):
+                    return True
+                oracle = (c.template.oracle_text or '').lower()
+                # Token-spawning storm finisher (e.g. Empty the Warrens,
+                # Galvanic Relay variants printed without STORM keyword):
+                # "create N tokens" + "for each".
+                if ('create' in oracle and 'tokens' in oracle
+                        and 'for each' in oracle):
+                    return True
+            return False
 
         def _has_flashback_combo():
             return any('flashback' in getattr(c.template, 'tags', set())
