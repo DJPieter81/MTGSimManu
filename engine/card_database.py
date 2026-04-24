@@ -903,6 +903,36 @@ class CardDatabase:
             if st in SUPERTYPE_MAP:
                 supertypes.append(SUPERTYPE_MAP[st])
 
+        # Fallback 1: some MTGJSON entries have an empty supertypes array but
+        # the full type-line string still encodes "Legendary" / "Basic" / "Snow".
+        # Re-derive missing supertypes from the type line so the legend rule,
+        # Goryo's Vengeance targeting, etc. stay correct even when the source
+        # data is stale in one field but not the other.
+        type_line = data.get("type", "") or ""
+        if type_line:
+            # "Legendary Creature — Archon": supertypes precede the em-dash.
+            head = type_line.split("—", 1)[0]
+            for st_name, st_enum in SUPERTYPE_MAP.items():
+                if st_enum not in supertypes and re.search(
+                    r"\b" + re.escape(st_name) + r"\b", head):
+                    supertypes.append(st_enum)
+
+        # Fallback 2: direct corrections for cards whose MTGJSON entry is
+        # corrupt in BOTH the supertypes array AND the type-line string.
+        # Keep this list minimal — prefer fixing upstream data when possible.
+        # - Archon of Cruelty (MH2): printed as "Legendary Creature — Archon",
+        #   but the current ModernAtomic dump has type "Creature — Archon" and
+        #   supertypes []. Without this correction Goryo's Vengeance (legendary
+        #   reanimation, CR 608.2b + oracle "target legendary creature card")
+        #   can never hit Archon, silently removing it from the Goryo's kit.
+        SUPERTYPE_CORRECTIONS = {
+            "Archon of Cruelty": [Supertype.LEGENDARY],
+        }
+        if name in SUPERTYPE_CORRECTIONS:
+            for st_enum in SUPERTYPE_CORRECTIONS[name]:
+                if st_enum not in supertypes:
+                    supertypes.append(st_enum)
+
         # Parse mana cost
         mana_cost = parse_mana_cost_mtgjson(data.get("manaCost", ""))
 
