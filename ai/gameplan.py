@@ -78,6 +78,12 @@ class Goal:
     # Minimum turns to stay in this goal before allowing transition
     min_turns: int = 0
 
+    # Minimum open mana required before the payoff in this goal may fire.
+    # Used by EXECUTE_PAYOFF goals whose payoff spell has a known mana cost
+    # (e.g. Goryo's Vengeance = {B}{B} -> 2). Zero = no mana gate.
+    # Read by `is_ready_for_payoff()` below.
+    min_mana_for_payoff: int = 0
+
     # Whether to cycle creatures (Living End style) or cast them normally
     prefer_cycling: bool = False
 
@@ -95,6 +101,28 @@ class Goal:
     # New combo decks only need to set these if they differ from defaults.
     dig_roles: Optional[Set[str]] = None   # None = {"draw", "tutor"}
     hold_roles: Optional[Set[str]] = None  # None = {"fuel", "finisher", "rebuy"}
+
+
+def is_ready_for_payoff(goal: "Goal", turns_in_goal: int,
+                        mana_available: int) -> bool:
+    """Generic EXECUTE_PAYOFF gate predicate.
+
+    Returns True only when both goal gates pass:
+      - turns_in_goal >= goal.min_turns  (pacing gate: don't fire on entry turn)
+      - mana_available >= goal.min_mana_for_payoff  (resource gate: enough
+        mana to actually cast the payoff spell)
+
+    Goals that don't declare these gates (default 0) always pass — this
+    preserves backward-compatibility with goals that don't need pacing.
+
+    Used by the EV player to decide whether to trigger reanimate / payoff
+    overrides on the current main phase.
+    """
+    if turns_in_goal < goal.min_turns:
+        return False
+    if mana_available < goal.min_mana_for_payoff:
+        return False
+    return True
 
 
 # ═══════════════════════════════════════════════════════════════════

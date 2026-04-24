@@ -35,6 +35,7 @@ def _parse_goal(data: Dict[str, Any]) -> Goal:
         card_roles=card_roles,
         transition_check=data.get("transition_check"),
         min_turns=data.get("min_turns", 0),
+        min_mana_for_payoff=data.get("min_mana_for_payoff", 0),
         prefer_cycling=data.get("prefer_cycling", False),
         hold_mana=data.get("hold_mana", False),
         resource_target=data.get("resource_target", 0),

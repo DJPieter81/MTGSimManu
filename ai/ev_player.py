@@ -291,12 +291,26 @@ class EVPlayer:
 
         # REANIMATE PRIORITY OVERRIDE: if hand has reanimate spell AND
         # graveyard has a creature with power >= 5, force-cast it immediately
+        # — UNLESS the deck's EXECUTE_PAYOFF goal declares pacing/mana gates
+        # (min_turns / min_mana_for_payoff) that say "not ready yet". GV-4:
+        # Goryo's at 24.9% flat fires T3 when mana-light; gates let the
+        # gameplan defer the override until it's actually safe.
         reanimate_override = None
         from engine.cards import CardType
         gy_big = [c for c in me.graveyard
                   if CardType.CREATURE in c.template.card_types
                   and (c.template.power or 0) >= 5]
-        if gy_big:
+        payoff_gates_ready = True
+        if self.goal_engine:
+            from ai.gameplan import GoalType, is_ready_for_payoff
+            cur_goal = self.goal_engine.current_goal
+            if cur_goal.goal_type == GoalType.EXECUTE_PAYOFF:
+                payoff_gates_ready = is_ready_for_payoff(
+                    cur_goal,
+                    turns_in_goal=self.goal_engine.turns_in_goal,
+                    mana_available=me.available_mana_estimate,
+                )
+        if gy_big and payoff_gates_ready:
             for spell in spells:
                 if 'reanimate' in getattr(spell.template, 'tags', set()) and game.can_cast(self.player_idx, spell):
                     reanimate_override = spell
