@@ -33,6 +33,12 @@ ALL_COLORS: List[str] = ["W", "U", "B", "R", "G"]
 # Basic land types used by domain counting.
 BASIC_TYPES = {"Plains", "Island", "Swamp", "Mountain", "Forest"}
 
+# Metalcraft threshold per CR 702.98: "You have metalcraft as long as
+# you control three or more artifacts."  Checked at activation time, so
+# Mox Opal's colour production must be evaluated whenever its tap
+# ability is invoked, not snapshotted at ETB.
+METALCRAFT_THRESHOLD = 3
+
 
 class ManaPayment:
     """Mana cost payment manager. Stateless — the methods operate on a
@@ -51,12 +57,40 @@ class ManaPayment:
 
     @staticmethod
     def effective_produces_mana(game: "GameState", player_idx: int,
-                                 land: "CardInstance") -> list:
-        """Return the colors a land effectively produces for this
-        player, accounting for Leyline of the Guildpact."""
-        if ManaPayment.has_leyline_of_guildpact(game, player_idx):
+                                 card: "CardInstance") -> list:
+        """Return the colors a permanent effectively produces for this
+        player right now.
+
+        Accounts for:
+          - Leyline of the Guildpact (all lands produce WUBRG)
+          - Mox Opal metalcraft (CR 702.98): dynamic artifact-count
+            re-evaluation at activation time, not at ETB.  The prior
+            implementation mutated ``card.template`` on ETB, which kept
+            Mox producing 5 colours after artifact count fell below 3
+            and left it dead if metalcraft was gained later.
+
+        ``card`` may be a land or a mana-producing artifact (e.g. Mox
+        Opal).  Non-lands only use the metalcraft branch; the Leyline
+        branch is gated to lands.
+        """
+        # Leyline of the Guildpact: only applies to lands.
+        if card.template.is_land and ManaPayment.has_leyline_of_guildpact(game, player_idx):
             return ALL_COLORS
-        return land.template.produces_mana
+        # Mox Opal: metalcraft is checked every time the ability is
+        # activated.  We gate by the exact card name because the generic
+        # "metalcraft" keyword is shared by other cards that do not
+        # produce mana (e.g. Galvanic Blast).  A future generic
+        # refactor would parse "{T}: Add one mana of any color" plus
+        # "Metalcraft —" from oracle text directly.
+        if card.template.name == "Mox Opal":
+            artifact_count = sum(
+                1 for c in game.players[player_idx].battlefield
+                if CardType.ARTIFACT in c.template.card_types
+            )
+            if artifact_count >= METALCRAFT_THRESHOLD:
+                return list(ALL_COLORS)
+            return []
+        return card.template.produces_mana
 
     @staticmethod
     def count_domain(game: "GameState", player_idx: int) -> int:
@@ -145,11 +179,11 @@ class ManaPayment:
         if player.mana_pool.can_pay(cost):
             return player.mana_pool.pay(cost)
 
-        # Leyline of the Guildpact: all lands produce WUBRG
-        has_leyline = ManaPayment.has_leyline_of_guildpact(game, player_idx)
-
+        # Routes through `effective_produces_mana` so Leyline of the
+        # Guildpact and dynamic mana abilities (E1: Mox Opal metalcraft,
+        # CR 702.98) are honoured whenever a source's colours are read.
         def _produces(land):
-            return ALL_COLORS if has_leyline else land.template.produces_mana
+            return ManaPayment.effective_produces_mana(game, player_idx, land)
 
         # Sort lands: most restrictive first (fewest colors produced)
         untapped.sort(key=lambda l: len(_produces(l)))

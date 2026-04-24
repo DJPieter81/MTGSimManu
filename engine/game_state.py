@@ -556,8 +556,8 @@ class GameState:
     def _has_leyline_of_guildpact(self, player_idx: int) -> bool:
         return ManaPayment.has_leyline_of_guildpact(self, player_idx)
 
-    def _effective_produces_mana(self, player_idx: int, land) -> list:
-        return ManaPayment.effective_produces_mana(self, player_idx, land)
+    def _effective_produces_mana(self, player_idx: int, card) -> list:
+        return ManaPayment.effective_produces_mana(self, player_idx, card)
 
     def _count_domain(self, player_idx: int) -> int:
         return ManaPayment.count_domain(self, player_idx)
