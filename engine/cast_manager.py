@@ -48,6 +48,14 @@ class CastManager:
         if card.zone != "hand" and card.zone != "graveyard":
             return False
 
+        # Grafdigger's Cage (and functional reprints): "Players can't
+        # cast spells from graveyards or libraries." Oracle-driven gate;
+        # applies to flashback/escape and any future graveyard-cast
+        # route. Hand-cast is untouched.
+        if card.zone in ("graveyard", "library"):
+            if game._gy_library_cast_hate_source() is not None:
+                return False
+
         # Graveyard casting: Flashback or Escape
         if card.zone == "graveyard":
             # Escape: can cast from graveyard if we have enough mana AND

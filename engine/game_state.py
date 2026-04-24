@@ -131,6 +131,48 @@ class GameState:
                 return item.source
         return None
 
+    # ─── ORACLE-DRIVEN CONTINUOUS HATE EFFECTS ─────────────────────
+    # Grafdigger's Cage (and any functional reprint) exposes two
+    # continuous effects while on the battlefield. We detect them via
+    # oracle-text patterns rather than card names so future hate cards
+    # with the same clause text are gated automatically.
+    #
+    # Clause 1: "Creature cards in graveyards and libraries can't enter
+    # the battlefield." → blocks reanimation and cast-to-play of
+    # creatures sourced from graveyard or library.
+    #
+    # Clause 2: "Players can't cast spells from graveyards or
+    # libraries." → blocks flashback, escape, and similar non-hand
+    # cast routes for any spell (creature or not).
+
+    def _gy_reanimation_hate_source(self) -> Optional[CardInstance]:
+        """Return the first permanent on any battlefield whose oracle
+        text bans creature cards from entering from graveyards/libraries.
+        None if no such permanent is in play."""
+        for player in self.players:
+            for card in player.battlefield:
+                oracle = (card.template.oracle_text or "").lower()
+                # Match the Cage clause shape without binding to a
+                # specific card name. The phrase "creature cards in
+                # graveyards" + "can't enter the battlefield" is the
+                # distinguishing form.
+                if ("creature cards in graveyards" in oracle
+                        and "can't enter the battlefield" in oracle):
+                    return card
+        return None
+
+    def _gy_library_cast_hate_source(self) -> Optional[CardInstance]:
+        """Return the first permanent on any battlefield whose oracle
+        text bans casting spells from graveyards or libraries. None if
+        no such permanent is in play."""
+        for player in self.players:
+            for card in player.battlefield:
+                oracle = (card.template.oracle_text or "").lower()
+                if ("can't cast spells from graveyards" in oracle
+                        or "can't cast cards in graveyards" in oracle):
+                    return card
+        return None
+
     def setup_game(self, deck1: List[CardTemplate], deck2: List[CardTemplate],
                     forced_first_player: Optional[int] = None):
         """Initialize the game with two decks.
