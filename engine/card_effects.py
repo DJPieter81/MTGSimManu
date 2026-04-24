@@ -464,8 +464,9 @@ def goryos_vengeance_resolve(game, card, controller, targets=None, item=None):
                            any(str(st) == "Supertype.LEGENDARY"
                                or st.name == "LEGENDARY"
                                for st in c.template.supertypes)]
-    if not legendary_creatures:
-        legendary_creatures = [c for c in gy if c.template.is_creature]
+    # CR 608.2b: Goryo's Vengeance oracle requires "target legendary
+    # creature card". If no legal target is available, the spell
+    # fizzles — do NOT fall back to any creature.
     if legendary_creatures:
         best = max(legendary_creatures,
                    key=lambda c: (c.template.power or 0) + (c.template.toughness or 0))
