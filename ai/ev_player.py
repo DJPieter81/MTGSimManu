@@ -575,6 +575,65 @@ class EVPlayer:
                 # is a soft nudge, not a force-cast.
                 ev += snap.opp_life / 2.0
 
+        # ── S-2: EXECUTE_PAYOFF finisher mana-sequencing gate ──
+        # Observed in Storm vs Affinity T3 (game 1): Storm in
+        # EXECUTE_PAYOFF holds Grapeshot in hand AND has enough mana
+        # to fire it RIGHT NOW. The AI nonetheless prefers a non-
+        # finisher cantrip (March of Reckless Joy) because the
+        # gameplan card-priority weights are similar across
+        # cantrips and finishers. Casting the cantrip drops
+        # available mana below the finisher cost, the finisher
+        # never fires, and Storm wastes its storm-count window.
+        #
+        # Gate: when ALL of
+        #   1. The current goal is EXECUTE_PAYOFF (the deck has
+        #      decided it's combo-time — gameplan-driven signal).
+        #   2. The player holds at least one finisher in hand —
+        #      detected by the STORM keyword (Kw.STORM is the
+        #      oracle-parsed marker on Grapeshot, Empty the
+        #      Warrens, Tendrils, etc.). Keyword-driven, not
+        #      card-name driven.
+        #   3. The candidate spell is NOT itself a finisher.
+        #   4. Casting the candidate would leave less mana than
+        #      the cheapest finisher's cmc — i.e. the candidate
+        #      mana-sequences the finisher OUT of this turn.
+        # then penalize the candidate by `opp_life / 2.0` — same
+        # magnitude shape as the reanimation-readiness boost above
+        # (line 576): the reanimator GAINS opp_life/2 when its
+        # set-up is complete; here we LOSE opp_life/2 when our
+        # candidate would tear our set-up down. Symmetric
+        # derivation, no magic numbers.
+        if self.goal_engine is not None:
+            from ai.gameplan import GoalType
+            cur_goal_s2 = self.goal_engine.current_goal
+            if cur_goal_s2.goal_type == GoalType.EXECUTE_PAYOFF:
+                from engine.cards import Keyword as Kw
+                finishers_in_hand = [
+                    c for c in me.hand
+                    if Kw.STORM in getattr(c.template, 'keywords', set())
+                    and c.instance_id != card.instance_id
+                ]
+                is_self_finisher = (
+                    Kw.STORM in getattr(t, 'keywords', set())
+                )
+                if finishers_in_hand and not is_self_finisher:
+                    cheapest_finisher_cmc = min(
+                        (f.template.cmc or 0)
+                        for f in finishers_in_hand
+                    )
+                    candidate_cmc = t.cmc or 0
+                    post_cast_mana = snap.my_mana - candidate_cmc
+                    if post_cast_mana < cheapest_finisher_cmc:
+                        # Finisher_unlock_chance: 1.0 when the
+                        # finisher IS castable right now (mana >=
+                        # cmc); else 0.0. Oracle-derived from
+                        # current snapshot, no magic numbers.
+                        finisher_unlock_chance = (
+                            1.0 if snap.my_mana >= cheapest_finisher_cmc
+                            else 0.0
+                        )
+                        ev -= finisher_unlock_chance * snap.opp_life / 2.0
+
         # ── Amulet + Titan ramp combo ──
         # Generic detection: if we hold Primeval Titan (or any 6-mana "when
         # this creature enters, search for two lands" creature) AND this card
