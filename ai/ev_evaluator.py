@@ -46,6 +46,14 @@ class EVSnapshot:
     opp_hand_size: int = 0
     my_mana: int = 0           # untapped mana sources
     opp_mana: int = 0
+    # Per-color untapped mana availability. A multi-colored land (Steam
+    # Vents U/R) contributes +1 to EACH color it can produce — tapping
+    # the land pays for one color at a time, so "can I still make U?"
+    # is answered by whether ANY untapped land currently produces U.
+    # Populated in `snapshot_from_game` by iterating untapped lands and
+    # calling `_effective_produces_mana` (Leyline of the Guildpact aware).
+    # Keys: "W","U","B","R","G","C".
+    my_mana_by_color: Dict[str, int] = field(default_factory=dict)
     my_total_lands: int = 0
     opp_total_lands: int = 0
     turn_number: int = 1
@@ -160,6 +168,22 @@ def snapshot_from_game(game: "GameState", player_idx: int) -> EVSnapshot:
         my_energy=me.energy_counters,
         cards_drawn_this_turn=me.cards_drawn_this_turn,
     )
+
+    # Per-color untapped mana (Bundle 3 A2). Each untapped land contributes
+    # +1 to every color it can produce. Leyline of the Guildpact turns all
+    # lands into every basic type, so `_effective_produces_mana` returns
+    # WUBRG for every land; using it here keeps the snapshot in sync.
+    _colors = {"W": 0, "U": 0, "B": 0, "R": 0, "G": 0, "C": 0}
+    for land in me.untapped_lands:
+        produced = game._effective_produces_mana(player_idx, land)
+        for c in produced:
+            if c in _colors:
+                _colors[c] += 1
+    # Add mana pool contents — they represent immediately-available mana
+    # of a specific color (e.g. from rituals floated into the pool).
+    for c in _colors:
+        _colors[c] += me.mana_pool.get(c)
+    snap.my_mana_by_color = _colors
 
     for c in me.creatures:
         p = c.power if c.power else 0
