@@ -1,10 +1,12 @@
 ---
-title: Affinity overperformance — mana holdback gap on control side
-status: active
-priority: primary
+title: Affinity overperformance — mana holdback gap on control side (narrow, superseded)
+status: superseded
+priority: historical
 session: 2026-04-23
 supersedes:
   - docs/diagnostics/2026-04-21_affinity_overperformance.md
+superseded_by:
+  - docs/diagnostics/2026-04-23_affinity_consolidated_findings.md
 depends_on:
   - docs/experiments/2026-04-20_phase11_n50_matrix_validation.md
 tags:
