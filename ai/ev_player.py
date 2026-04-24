@@ -1188,7 +1188,33 @@ class EVPlayer:
                 # drawn off the ritual might hit a finisher. Same "hail
                 # Mary" shape as the chain-credit dual-gate in ev_evaluator.
                 if not snap.am_dead_next and snap.opp_clock_discrete > 2:
-                    # Wasting rituals without finisher access (reduced from 20 to match PiF fix)
+                    # Count cantrips / draws remaining in hand — these are
+                    # the mechanism for "digging to Grapeshot / Wish" when
+                    # no finisher is yet in hand. If there's at least one
+                    # draw left, continuing the chain can still find the
+                    # finisher. Only clamp when draws are exhausted AND
+                    # no finisher has been found.
+                    has_draw = any(
+                        any(dt in getattr(c.template, 'tags', set())
+                            for dt in ('cantrip', 'card_advantage', 'draw'))
+                        for c in me.hand
+                        if c.instance_id != card.instance_id
+                        and not c.template.is_land
+                    )
+                    if not has_draw:
+                        # No finisher, no flashback-combo, no draws
+                        # remaining — this ritual contributes only mana
+                        # that empties at phase end (CR 500.4). Clamp
+                        # score below pass_threshold (mirrors the
+                        # Scapeshift sub-4-lands gate pattern at
+                        # ai/ev_player.py:478). Observed in
+                        # replays/ruby_storm_vs_boros_energy_s60130.txt
+                        # T4: 6 rituals burned for 0 damage.
+                        mod = min(mod, p.pass_threshold - 10.0)
+                        return mod
+                    # Draws remain — keep the original soft penalty
+                    # so the ritual is slightly discouraged but still
+                    # preferred over pure passing when digging may pay.
                     mod -= (storm + 2) / opp_life * 5.0
             else:
                 # Finisher IS accessible mid-chain. This ritual's net mana
