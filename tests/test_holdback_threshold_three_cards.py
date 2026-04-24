@@ -1,16 +1,15 @@
-"""Bundle 3 — A4: holdback threshold for spell-deck opponents must
-trigger at hand-size >= 3, not >= 4.
+"""Bundle 3 — A4 (REVERTED by Iteration-2 B3-Tune): holdback threshold
+for spell-deck opponents triggers at hand-size >= 4, NOT >= 3.
 
-Diagnosis (Affinity-session consolidated findings, A4):
-`ai/ev_player.py:738-739` only fires the spell-deck holdback branch
-when `opp_hand_size >= 4 and opp_power == 0`. Real games rarely
-end up there: by the time the AI is evaluating big main-phase
-plays, opp has often discarded into a 3-card grip via Thoughtseize
-or a Bowmaster trigger, but those 3 cards still contain real
-threats / counterspells. Lowering the threshold to >= 3 closes the
-gap without introducing magic numbers — gameplan data shows that
-typical post-discard hands at 3 cards still contain 0.6+ threats
-on average.
+Bundle-3 A4 briefly lowered the threshold to >=3, but the defender-
+collapse investigation (post-Affinity session, N=50 matrix) showed
+the lowered threshold over-fired: 3-card post-discard hands are
+typically mostly lands, not threats, and the broad gate caused
+defender decks to stall out against discard-heavy opponents
+(Jeskai -5pp, Dimir -6pp, AzCon WST -8pp).
+
+This test now pins the REVERT: a 3-card spell-deck grip with 0 power
+must NOT trigger holdback. The stricter >=4 threshold is restored.
 """
 from __future__ import annotations
 
@@ -49,11 +48,12 @@ def _add(game, card_db, name, controller, zone):
 
 
 class TestHoldbackThresholdThreeCardsA4:
-    """When the opponent has 0 power on board AND a 3-card hand,
-    the holdback branch must STILL gate a tap-out main-phase play
-    if the player is holding instant-speed interaction."""
+    """Iteration-2 B3-Tune reverts Bundle-3 A4. The spell-deck branch
+    requires opp_hand_size >= 4. A 3-card hand (post-discard, mostly
+    lands) must NOT trigger holdback — defenders need to deploy
+    answers against discard-heavy opponents."""
 
-    def test_three_card_opp_hand_triggers_holdback(self, card_db):
+    def test_three_card_spelldeck_opp_does_not_trigger_holdback(self, card_db):
         game = GameState(rng=random.Random(0))
 
         # Player 0 (Azorius Control) — UU available, holds Counterspell
@@ -66,7 +66,7 @@ class TestHoldbackThresholdThreeCardsA4:
         _add(game, card_db, "Counterspell", controller=0, zone="hand")
 
         # Opp: spell-deck profile (Ruby Storm), opp_power = 0,
-        # hand_size = exactly 3 (lower bound that must trigger).
+        # hand_size = exactly 3 — below the restored >= 4 threshold.
         for _ in range(3):
             _add(game, card_db, "Mountain", controller=1, zone="battlefield")
         for _ in range(3):
@@ -93,13 +93,13 @@ class TestHoldbackThresholdThreeCardsA4:
 
         me = game.players[0]
         opp = game.players[1]
-        ev = player._score_spell(augur, snap, game, me, opp)
+        penalty = player._holdback_penalty(
+            me, opp, snap, cost=augur.template.cmc or 0,
+            exclude_instance_id=augur.instance_id,
+        )
 
-        PASS_THRESHOLD = -5.0
-        assert ev < PASS_THRESHOLD, (
-            f"Augur of Bolas EV={ev:.2f} above pass_threshold "
-            f"({PASS_THRESHOLD}) when opp_hand_size=3 and counters "
-            f"are held. The holdback threshold for spell-deck "
-            f"opponents must be lowered from >=4 to >=3 to catch "
-            f"post-discard threat density."
+        assert penalty == 0.0, (
+            f"3-card spell-deck opp with 0 power triggered holdback "
+            f"penalty {penalty:.2f}; expected 0.0 after A4 revert. "
+            f"Threshold must be restored to opp_hand_size >= 4."
         )
