@@ -75,10 +75,19 @@ class ResponseDecider:
 
             v_responses = []
             for inst in instants:
+                # Use *effective* cost: pitch counters on opp turn cost 1 card,
+                # not their printed CMC. Without this, TurnPlanner would
+                # prefer the printed-cheaper counter (Counterspell at 2)
+                # over a free pitch counter (Force of Negation at printed 3).
+                effective_cmc = (
+                    self._effective_counter_cost(game, inst)
+                    if "counterspell" in inst.template.tags
+                    else (inst.template.cmc or 0)
+                )
                 v_resp = VirtualSpell(
                     instance_id=inst.instance_id,
                     name=inst.name,
-                    cmc=inst.template.cmc or 0,
+                    cmc=effective_cmc,
                     tags=set(inst.template.tags),
                     is_instant=True,
                     is_creature=False,
@@ -111,46 +120,45 @@ class ResponseDecider:
             logging.debug(f"TurnPlanner response failed: {e}")
             # Fall through to legacy path
 
-        # Legacy fallback
+        # Legacy fallback.
+        # Counterspells: collect ALL eligible candidates first, then pick the
+        # one with the lowest *effective* cost. Without this, a hand-order
+        # iteration would fire the first castable counter even when a strictly
+        # cheaper alternative (e.g. a pitch counter on opp's turn) is available
+        # — burning real mana / a real card when a free counter exists.
+        # Bug R2 (docs/diagnostics consolidated affinity findings).
+        response_value = threat
+        counter_candidates: List[Tuple[int, "CardInstance"]] = []
+        for instant in instants:
+            if "counterspell" not in instant.template.tags:
+                continue
+            if not stack_item.source.template.is_spell:
+                continue
+            # Targeting restrictions from oracle text
+            oracle = (instant.template.oracle_text or '').lower()
+            target_spell = stack_item.source.template
+            if 'noncreature' in oracle and target_spell.is_creature:
+                continue
+            if ('instant or sorcery' in oracle
+                and not (target_spell.is_instant or target_spell.is_sorcery)):
+                continue
+            cost = self._effective_counter_cost(game, instant)
+            counter_candidates.append((cost, instant))
+
+        if counter_candidates:
+            counter_candidates.sort(key=lambda pair: pair[0])
+            cost, chosen = counter_candidates[0]
+            if response_value >= 3.0 or (response_value >= 1.5 and cost <= 2):
+                if self.strategic_logger:
+                    self.strategic_logger.log_response(
+                        self.player_idx, chosen.name,
+                        stack_item.source.name, game,
+                        f"Counter: threat value {response_value:.1f} vs effective cost {cost}. "
+                        f"Worth countering (chose cheapest of {len(counter_candidates)} candidates).")
+                return (chosen, [stack_item.source.instance_id])
+
         for instant in instants:
             tags = instant.template.tags
-
-            # Counterspell — check targeting restrictions
-            if "counterspell" in tags and stack_item.source.template.is_spell:
-                # Noncreature-only counters (Spell Pierce, Negate, Stubborn Denial,
-                # Mystical Dispute, Flusterstorm) can't target creature spells
-                oracle = (instant.template.oracle_text or '').lower()
-                target_spell = stack_item.source.template
-                if 'noncreature' in oracle and target_spell.is_creature:
-                    continue  # Can't counter a creature spell with this
-                # "Counter target instant or sorcery" also can't hit creatures
-                if ('instant or sorcery' in oracle
-                    and not (target_spell.is_instant or target_spell.is_sorcery)):
-                    continue
-                response_value = threat
-                cost = instant.template.cmc
-                # Pitch-cost counters (Force of Negation, Force of Will,
-                # Pact of Negation): on opponent's turn, can be cast for
-                # free by exiling a same-color card from hand. Effective
-                # cost drops to 1 card (the pitched card), so treat them
-                # as cost=1 for the threshold gate — matching the engine's
-                # can_cast alternative-cost path at game_state.py:868-891.
-                # Without this, FoN at CMC 4 fails the `cost <= 2` check and
-                # never fires at moderate threat (<3.0) despite being free.
-                inst_oracle = (instant.template.oracle_text or '').lower()
-                is_pitch_counter = (
-                    'exile a' in inst_oracle and 'rather than pay' in inst_oracle
-                    and getattr(game, 'active_player', None) != self.player_idx
-                )
-                if is_pitch_counter:
-                    cost = 1  # one exiled card, no mana
-                if response_value >= 3.0 or (response_value >= 1.5 and cost <= 2):
-                    if self.strategic_logger:
-                        self.strategic_logger.log_response(
-                            self.player_idx, instant.name,
-                            stack_item.source.name, game,
-                            f"Counter: threat value {response_value:.1f} vs cost {cost}. Worth countering.")
-                    return (instant, [stack_item.source.instance_id])
 
             # Blink response
             if "blink" in tags:
@@ -232,6 +240,27 @@ class ResponseDecider:
             return []
         return []
 
+    def _effective_counter_cost(self, game: "GameState", instant: "CardInstance") -> int:
+        """Cost paid to actually fire this counter, after alternative-cost paths.
+
+        Mirrors the engine's `can_cast` alternative-cost path for "exile a
+        {color} card from your hand rather than pay this spell's mana cost"
+        (game_state.py:880-903): on the opponent's turn, the counter is free
+        in mana — its cost is a single exiled card, which we represent as 1
+        for ranking purposes. Otherwise the cost is the printed CMC.
+
+        Used to pick the cheapest castable counter when several are available;
+        without this the legacy hand-order iteration would burn the wrong one.
+        """
+        oracle = (instant.template.oracle_text or '').lower()
+        is_pitch_counter = (
+            'exile a' in oracle and 'rather than pay' in oracle
+            and getattr(game, 'active_player', None) != self.player_idx
+        )
+        if is_pitch_counter:
+            return 1  # one exiled card, no mana
+        return instant.template.cmc
+
     def evaluate_stack_threat(self, game: "GameState", stack_item: "StackItem") -> float:
         """Evaluate how threatening a stack item is using clock impact.
 
@@ -308,11 +337,14 @@ class ResponseDecider:
         # Equipment: ongoing damage amplifier. Value = damage added to
         # the creature it equips × expected turns the equipment sticks.
         # Derive from oracle: flat +P/+T bonuses and "for each" scalers.
+        import re
+        # Rules constant: 3 combat turns is the typical equipment
+        # residency window in Modern (equipment is rarely removed).
+        EQUIP_RESIDENCY_TURNS = 3
         if ('Equipment' in subtypes
                 or 'equipment' in getattr(template, 'tags', set())):
             # Base equipment: approximate +2 power on a creature over
             # ~3 combat turns. Uses mana_clock_impact × effective power.
-            import re
             power_bonus = 2  # default equipment P/T bonus
             m = re.search(r'\+(\d+)/\+\d+', oracle)
             if m:
@@ -324,10 +356,96 @@ class ResponseDecider:
                 from engine.cards import CardType as _CT
                 power_bonus += sum(1 for c in opp_player.battlefield
                                     if _CT.ARTIFACT in c.template.card_types)
-            # Rules constant: 3 combat turns is the typical equipment
-            # residency window in Modern (equipment is rarely removed).
-            EQUIP_RESIDENCY_TURNS = 3
             threat += power_bonus * EQUIP_RESIDENCY_TURNS * mana_clock_impact(snap_for_clock) * 20.0
+
+        # Carrier-pool synergy (R1). When the incoming spell is a creature,
+        # check opp's battlefield for equipment whose pump rebinds onto
+        # any creature each turn. Adding a NEW carrier to the pool means
+        # the pump can land on a fresh attacker — the equipment's damage
+        # over EQUIP_RESIDENCY_TURNS multiplies across more bodies before
+        # any single blocker can trade them all away.
+        #
+        # Marginal value per equipment = pump / (current_carriers + 1):
+        # going from 2 carriers to 3 means the equipment now has a 1/3
+        # chance of swinging on this new body each turn. Sum over all
+        # eligible equipment on opp's board. Oracle-driven — detects any
+        # 'equipped creature gets +X' clause via the existing regex.
+        if template.is_creature:
+            from engine.cards import CardType as _CT
+            opp_creatures = [
+                c for c in opp_player.battlefield
+                if _CT.CREATURE in c.template.card_types
+            ]
+            current_carriers = max(1, len(opp_creatures))
+            for perm in opp_player.battlefield:
+                p_oracle = (perm.template.oracle_text or '').lower()
+                if 'equip' not in p_oracle:
+                    continue
+                m = re.search(
+                    r'equipped creature gets \+(\d+)/\+\d+', p_oracle
+                )
+                if not m:
+                    continue
+                pump = int(m.group(1))
+                # 'for each artifact' scaler — read opp's artifact board.
+                if 'for each artifact' in p_oracle:
+                    pump += sum(
+                        1 for c in opp_player.battlefield
+                        if _CT.ARTIFACT in c.template.card_types
+                    )
+                marginal = pump / (current_carriers + 1)
+                threat += (marginal * EQUIP_RESIDENCY_TURNS
+                           * mana_clock_impact(snap_for_clock) * 20.0)
+
+        # X-cost / 'for each' creatures (R1). Walking Ballista enters with
+        # X +1/+1 counters where X is the mana paid; its printed P/T is
+        # 0/0. Project an expected X from opp's available mana so the
+        # threat reflects what the spell will actually be. Detect either
+        # the explicit `{X}` mana symbol or the 'X +1/+1 counter' / 'for
+        # each' patterns embedded in oracle text.
+        x_scaler = ('{x}' in oracle
+                    or 'x +1/+1 counter' in oracle
+                    or 'x +1/+1 counters' in oracle
+                    or 'for each' in oracle)
+        if template.is_creature and x_scaler:
+            # Expected X = opp's available mana minus the fixed portion of
+            # the cost. cmc==0 for {X}-only cards (Ballista); for cards
+            # like Hangarback Walker (cmc=2 + {X}) this still leaves a
+            # reasonable surplus estimate. Note: `snap` was taken from
+            # opp_idx's perspective, so `snap.my_mana` == opp's mana.
+            fixed_cost = template.cmc or 0
+            expected_x = max(0, snap_for_clock.my_mana - fixed_cost)
+            if 'x +1/+1 counter' in oracle or 'x +1/+1 counters' in oracle:
+                # Each counter = +1 power on the body. Treat the projected
+                # body as a creature attacking over EQUIP_RESIDENCY_TURNS
+                # (same residency primitive used elsewhere in this fn).
+                threat += (expected_x * EQUIP_RESIDENCY_TURNS
+                           * mana_clock_impact(snap_for_clock) * 20.0)
+            elif 'for each' in oracle:
+                # Generic 'for each X' creature scaler — count opp's
+                # matching permanents and credit one power per match.
+                fe = re.search(
+                    r'for each (artifact|creature|land|card)', oracle
+                )
+                if fe:
+                    kind = fe.group(1)
+                    from engine.cards import CardType as _CT2
+                    if kind == 'artifact':
+                        n = sum(
+                            1 for c in opp_player.battlefield
+                            if _CT2.ARTIFACT in c.template.card_types
+                        )
+                    elif kind == 'creature':
+                        n = len(opp_player.creatures)
+                    elif kind == 'land':
+                        n = sum(
+                            1 for c in opp_player.battlefield
+                            if c.template.is_land
+                        )
+                    else:
+                        n = len(opp_player.battlefield)
+                    threat += (n * EQUIP_RESIDENCY_TURNS
+                               * mana_clock_impact(snap_for_clock) * 20.0)
 
         # Cost reducers: enable combos. Value = mana saved per spell ×
         # spells_per_turn × turns_remaining. Use card_clock_impact as a

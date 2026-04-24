@@ -291,12 +291,26 @@ class EVPlayer:
 
         # REANIMATE PRIORITY OVERRIDE: if hand has reanimate spell AND
         # graveyard has a creature with power >= 5, force-cast it immediately
+        # — UNLESS the deck's EXECUTE_PAYOFF goal declares pacing/mana gates
+        # (min_turns / min_mana_for_payoff) that say "not ready yet". GV-4:
+        # Goryo's at 24.9% flat fires T3 when mana-light; gates let the
+        # gameplan defer the override until it's actually safe.
         reanimate_override = None
         from engine.cards import CardType
         gy_big = [c for c in me.graveyard
                   if CardType.CREATURE in c.template.card_types
                   and (c.template.power or 0) >= 5]
-        if gy_big:
+        payoff_gates_ready = True
+        if self.goal_engine:
+            from ai.gameplan import GoalType, is_ready_for_payoff
+            cur_goal = self.goal_engine.current_goal
+            if cur_goal.goal_type == GoalType.EXECUTE_PAYOFF:
+                payoff_gates_ready = is_ready_for_payoff(
+                    cur_goal,
+                    turns_in_goal=self.goal_engine.turns_in_goal,
+                    mana_available=me.available_mana_estimate,
+                )
+        if gy_big and payoff_gates_ready:
             for spell in spells:
                 if 'reanimate' in getattr(spell.template, 'tags', set()) and game.can_cast(self.player_idx, spell):
                     reanimate_override = spell
@@ -476,6 +490,90 @@ class EVPlayer:
                 # spell until critical mass is available. Derivation: profile-
                 # driven, no magic numbers — uses the existing gate constant.
                 ev = min(ev, p.pass_threshold - 1.0)
+
+        # ── Cascade patience gate (LE-A3) ──
+        # Mirror of the Storm ritual patience gate (_combo_modifier above):
+        # cascade spells in a reanimator shell get an unconditional +1.5
+        # free-cast bonus (lines 440-442), but if the graveyard is too
+        # thin the cascaded reanimate spell (Living End / Cascade Zenith
+        # pattern) returns an empty or insufficient board. The cascade
+        # enabler is then burned for no payoff.
+        #
+        # Gate fires when ALL of:
+        #   1. Spell has the cascade keyword (oracle-parsed `is_cascade`).
+        #   2. The deck is a graveyard-reanimator shell — i.e. its
+        #      gameplan declares a FILL_RESOURCE goal with
+        #      `resource_zone == "graveyard"`. Gameplan-declared signal,
+        #      gathered by `_cascade_graveyard_target()`. Non-reanimator
+        #      cascade decks (e.g. a hypothetical Cascade Zenith burn
+        #      list with no FILL_RESOURCE/graveyard goal) return 0 and
+        #      the gate does NOT fire — their cascade hit isn't gated
+        #      on graveyard contents.
+        #   3. Graveyard creature count < the gameplan's declared
+        #      `resource_target`. No magic numbers — the number is the
+        #      same threshold the gameplan uses to transition out of
+        #      FILL_RESOURCE.
+        #
+        # When the gate fires, clamp EV below pass_threshold — a HARD
+        # reduction in line with the Scapeshift fizzle gate above and the
+        # Storm ritual patience gate in _combo_modifier. The AI will hold
+        # the cascade enabler until the graveyard has critical mass.
+        if getattr(t, 'is_cascade', False):
+            fill_target = self._cascade_graveyard_target()
+            if fill_target > 0 and snap.my_gy_creatures < fill_target:
+                # Clamp matches the Scapeshift fizzle gate treatment
+                # (line 478): profile.pass_threshold - 1.0. No extra
+                # magic: the clamp is "just below pass_threshold" so
+                # the spell is rejected by decide_main_phase but any
+                # other legal play can still fire.
+                ev = min(ev, p.pass_threshold - 1.0)
+
+        # ── Reanimation readiness gate (GV-2) ──
+        # Mirror shape of the cascade patience gate above, but in the
+        # OPPOSITE direction: cascade is clamped when the GY is thin
+        # (cascade hits into an empty board); reanimation is BOOSTED
+        # when the GY has a target (the whole point of reanimation is
+        # to set up a big body we couldn't hardcast, so once the
+        # set-up is complete we should be eager to fire).
+        #
+        # Gate fires when ALL of:
+        #   1. Spell is a reanimation — either tagged `reanimate` (see
+        #      engine/card_database.py:655 for tag assignment) OR the
+        #      oracle contains the canonical reanimate phrasing "return
+        #      target creature card from your graveyard to the
+        #      battlefield". Oracle-driven fallback catches cards the
+        #      tagger may miss.
+        #   2. The deck is a graveyard-reanimator shell — its gameplan
+        #      declares a FILL_RESOURCE goal with
+        #      `resource_zone == "graveyard"`. Reuses the helper that
+        #      powers the cascade gate. Non-reanimator decks return 0
+        #      and the gate does not fire.
+        #   3. Graveyard creature count >= the gameplan's declared
+        #      `resource_target`. Same threshold the FILL_RESOURCE goal
+        #      uses to transition into EXECUTE_PAYOFF — gameplan-driven.
+        #
+        # When all three hold, boost EV by `snap.opp_life / 2.0`. The
+        # magnitude scales with how much damage the reanimated body
+        # still has to deal: at 20 life the boost is +10 (a decisive
+        # shove past pass_threshold even if the projection discount
+        # ate most of the base EV); at 5 life it drops to +2.5
+        # (reanimation already wins soon anyway so the nudge is
+        # smaller). No magic number — derived from the snapshot.
+        is_reanimate_tagged = 'reanimate' in tags
+        is_reanimate_oracle = (
+            'return target creature card from your graveyard to the battlefield'
+            in t_oracle
+        )
+        if is_reanimate_tagged or is_reanimate_oracle:
+            fill_target = self._cascade_graveyard_target()
+            if fill_target > 0 and snap.my_gy_creatures >= fill_target:
+                # Boost: opp life still to burn through, halved to
+                # reflect that reanimation covers ~half the damage
+                # gap in expectation (the rest comes from follow-up
+                # turns / burn / bonus triggers). Stays well below
+                # the +40 hard override in decide_main_phase — this
+                # is a soft nudge, not a force-cast.
+                ev += snap.opp_life / 2.0
 
         # ── Amulet + Titan ramp combo ──
         # Generic detection: if we hold Primeval Titan (or any 6-mana "when
@@ -732,24 +830,16 @@ class EVPlayer:
                     # Add it directly — no halving / no tier remapping.
                     ev += tv
 
-        # ── Mana holdback: penalize tapping out when we hold instants ──
-        # Trigger holdback when: opp has creatures, OR opp is a spell/combo deck
-        # with hand cards (holdback for counterspells even vs creatureless opponents)
-        opp_has_spells = snap.opp_hand_size >= 3 and snap.opp_power == 0
-        holdback_relevant = snap.opp_power > 0 or snap.opp_hand_size >= 4 or opp_has_spells
-        if p.holdback_applies and holdback_relevant:
-            cmc = t.cmc or 0
-            has_instant = any(
-                c.template.is_instant and (
-                    'removal' in getattr(c.template, 'tags', set()) or
-                    'counterspell' in getattr(c.template, 'tags', set())
-                )
-                for c in me.hand if c.instance_id != card.instance_id
-            )
-            if has_instant and not t.is_instant and not t.has_flash:
-                remaining_mana = snap.my_mana - cmc
-                if remaining_mana < 2:
-                    ev -= 2.0  # tapping out loses instant-speed interaction
+        # ── Mana holdback (Bundle 3 A1, A3, A4) ──
+        # Scaled, color-aware penalty for tapping out while holding
+        # instant-speed interaction. Implemented in _holdback_penalty so
+        # _score_cycling and _consider_equip can reuse the same gate.
+        # Fast-skip when this profile doesn't hold, the candidate IS an
+        # instant, or it has flash — none of those tap out.
+        if p.holdback_applies and not t.is_instant and not t.has_flash:
+            ev += self._holdback_penalty(
+                me, opp, snap, cost=t.cmc or 0,
+                exclude_instance_id=card.instance_id)
 
         oracle_lower = (t.oracle_text or '').lower()
         phyrexian_count = oracle_lower.count('/p}')
@@ -758,6 +848,248 @@ class EVPlayer:
             ev -= life_cost / max(1, snap.my_life) * 10.0
 
         return ev
+
+    def _holdback_penalty(self, me, opp, snap: EVSnapshot, cost: int,
+                          exclude_instance_id: Optional[int] = None) -> float:
+        """Mana-holdback penalty for a play that would tap out (Bundle 3).
+
+        A1 — penalty scales by `counter_count × counter_cmc × opp_threat_prob`
+              instead of the previous flat -2.0 so it actually gates a
+              CMC-2 main-phase play when 2× Counterspell are held.
+        A3 — extracted as a helper so `_score_cycling` and
+              `_consider_equip` apply the same gate.
+        A4 — opponent-spell-deck branch threshold kept at
+              `opp_hand_size >= 4`. Iteration-2 revert: the Bundle 3
+              lowered threshold (>=3) over-fired because 3-card post-
+              discard hands are typically mostly lands, not threats.
+              The stricter >=4 threshold matches pre-Bundle-3 behaviour
+              and restores defender deployment.
+        A5 — colored-aware: if the play taps out the LAST source of a
+              held instant's color, the penalty is amplified (the
+              interaction is uncastable, not merely tempo-delayed).
+
+        Returns a non-positive penalty (0.0 means "no holdback").
+        """
+        p = self.profile
+        if not p.holdback_applies:
+            return 0.0
+
+        # ── Holdback relevance gate ──────────────────────────────────
+        # Original logic kept: opp creatures present OR opponent has a
+        # full grip. Iteration-2 B3-Tune reverts A4's >=3 lowering back
+        # to >=4: 3-card post-discard hands are typically mostly lands
+        # (no real threat density) and the broader gate caused defender
+        # decks to stall out against discard-heavy opponents.
+        opp_has_spells = snap.opp_hand_size >= 4 and snap.opp_power == 0
+        holdback_relevant = (snap.opp_power > 0
+                             or snap.opp_hand_size >= 4
+                             or opp_has_spells)
+        if not holdback_relevant:
+            return 0.0
+
+        # ── Find held instant-speed interaction in hand ──────────────
+        # Oracle/tag-driven (no card names). counter_cmc is the average
+        # cost of held interaction — used to size the penalty.
+        held_costs: list = []
+        held_colors: set = set()
+        for c in me.hand:
+            if exclude_instance_id is not None \
+                    and c.instance_id == exclude_instance_id:
+                continue
+            tmpl = c.template
+            if not tmpl.is_instant:
+                continue
+            tags = getattr(tmpl, 'tags', set())
+            if not ('removal' in tags or 'counterspell' in tags):
+                continue
+            held_costs.append(tmpl.cmc or 0)
+            mc = tmpl.mana_cost
+            for code, attr in (
+                ('W', 'white'), ('U', 'blue'), ('B', 'black'),
+                ('R', 'red'), ('G', 'green'),
+            ):
+                if getattr(mc, attr, 0) > 0:
+                    held_colors.add(code)
+
+        if not held_costs:
+            return 0.0
+
+        counter_count = len(held_costs)
+        counter_cmc = sum(held_costs) / counter_count  # mean CMC
+
+        # ── Color-capacity early-exit (Iteration-2 B3-Tune) ──────────
+        # If every held counter can still be paid AFTER this cast —
+        # i.e. remaining sources of every held color are still >= the
+        # max held counter CMC — the held interaction is not at risk
+        # and there's no capacity to penalise. We pay the cast's
+        # generic cost from off-color mana FIRST (rational optimum),
+        # and only dip into held-color sources when off-color runs out.
+        # Post-cast floor for color c:
+        #   remaining_c = max(0, my_by_color[c] - max(0, cost - off_c))
+        # where off_c = my_mana - my_by_color[c]. This captures the
+        # common case of a control deck with enough off-color mana
+        # (Mountains, Plains, colorless) to cover the cast while
+        # leaving U / B untouched for a held Counterspell.
+        my_by_color = getattr(snap, 'my_mana_by_color', {}) or {}
+        if held_colors:
+            max_counter_cmc = max(held_costs)
+            color_capacity_preserved = True
+            for color in held_colors:
+                available_now = my_by_color.get(color, 0)
+                off_color_mana = max(0, snap.my_mana - available_now)
+                must_tap_from_color = max(0, cost - off_color_mana)
+                remaining_after = max(0, available_now - must_tap_from_color)
+                if remaining_after < max_counter_cmc:
+                    color_capacity_preserved = False
+                    break
+            if color_capacity_preserved:
+                return 0.0
+
+        # ── Opp-threat probability (BHI-derived) ─────────────────────
+        # If BHI has been initialised it gives a calibrated probability
+        # the opponent has a follow-up threat we'd want to interact
+        # with. Fallback heuristic for un-initialised BHI: blend opp
+        # board pressure (power per turn already on the table) with
+        # opp hand density (more cards in hand = more likely to deploy
+        # a real threat). All values clamped to [0.1, 1.0] — even a
+        # quiet board has some baseline threat probability.
+        opp_threat_prob = self._estimate_opp_threat_prob(snap, opp)
+
+        # ── Lost-response-capacity model ─────────────────────────────
+        # How many held responses could we cast with all our mana
+        # untapped? With mana remaining after this play? The DELTA is
+        # the capacity we'd lose by tapping out — that's what the
+        # penalty pays for. Cheapest-first packing approximates the
+        # opponent's worst-case sequence (we'd counter the cheapest
+        # threats first to keep options open).
+        sorted_costs = sorted(held_costs)
+        def _capacity(mana: int) -> int:
+            n, m = 0, mana
+            for c in sorted_costs:
+                if m >= c:
+                    m -= c
+                    n += 1
+                else:
+                    break
+            return n
+
+        cap_now = _capacity(snap.my_mana)
+        cap_after = _capacity(max(0, snap.my_mana - cost))
+        lost_capacity = max(0, cap_now - cap_after)
+
+        # Penalty fires only when tapping out actually loses response
+        # capacity — if we still have enough mana for every held
+        # response, holdback is moot.
+        if lost_capacity <= 0:
+            return 0.0
+
+        # Scale: counter_count × counter_cmc × opp_threat_prob ×
+        # HELD_RESPONSE_VALUE_PER_CMC. Brief A1 specifies count (not
+        # lost_capacity) — holding more counters means more value at
+        # risk even if only one capacity is lost this turn (the second
+        # counter still wants the mana on a future turn).
+        # Iteration-2 B3-Tune: coefficient lowered 7.0 → 4.0. The
+        # Bundle-3 value of 7.0 was calibrated against 2× Counterspell
+        # held (2×2×1×7 = 28, gates a +20 EV play), but the single-
+        # counter case (1×2×1×7 = 14) floored ordinary main-phase
+        # plays, triggering a measurable defender-collapse in N=50
+        # matrix (Jeskai -5pp, Dimir -6pp, AzCon WST -8pp after the
+        # surrounding Affinity session fixes shipped). 4.0 is derived
+        # from CONTROL's pass_threshold = -5.0: with 1 counter × 2
+        # CMC × threat_prob 1.0 × 4.0 = -8 the gate still blocks a +5
+        # main-phase play, but a +10 draw engine (EV 10 − 8 = +2 >
+        # -5.0) remains castable. 2× Counterspell still scales to
+        # 2×2×1×4 = -16 which keeps the Bundle-3 intent intact.
+        HELD_RESPONSE_VALUE_PER_CMC = 4.0
+        base_penalty = (counter_count * counter_cmc
+                        * opp_threat_prob
+                        * HELD_RESPONSE_VALUE_PER_CMC)
+
+        # ── Color-availability amplifier (A5) ────────────────────────
+        # If this play would leave us with FEWER sources of a held
+        # color than the held interaction needs, the held spell becomes
+        # uncastable (not merely tempo-delayed). For each color in
+        # held_colors that this play empties, escalate the penalty.
+        # A play that taps the only U source while we hold a UU
+        # Counterspell forfeits the response entirely — even if our
+        # generic mana count would otherwise suggest we have spare.
+        # Approximate post-play color availability: the play consumes
+        # `cost` lands worth of mana; in the worst case this includes
+        # every land producing a held color.
+        remaining_mana = max(0, snap.my_mana - cost)
+        color_kills = 0
+        for color in held_colors:
+            available_now = my_by_color.get(color, 0)
+            # If after the play remaining_mana < the held cost in this
+            # color (cost includes generic from these lands), the
+            # response is uncastable. Approximation: when the play
+            # consumes >= every untapped source of this color, the
+            # response is dead.
+            if available_now > 0 and remaining_mana < available_now:
+                # Conservative: fire amplifier whenever the post-play
+                # generic-mana floor < the # of held color sources we
+                # had — captures the "Sacred Foundry tapped, no U
+                # left" pattern that A5 targets.
+                if available_now <= cost:
+                    color_kills += 1
+        if color_kills > 0:
+            # Uncastable held interaction = a free opponent spell. Add
+            # the full per-counter response value on top of the lost-
+            # capacity penalty (same scale as base_penalty above —
+            # uses the same Iteration-2 tuned coefficient of 4.0).
+            base_penalty += (color_kills * counter_cmc
+                             * opp_threat_prob
+                             * HELD_RESPONSE_VALUE_PER_CMC)
+
+        return -base_penalty
+
+    def _estimate_opp_threat_prob(self, snap: EVSnapshot, opp) -> float:
+        """Probability opponent will deploy a meaningful threat next turn.
+
+        Derived from:
+        - BHI removal/counter beliefs (when initialised) — already a
+          calibrated posterior reflecting observed plays + deck
+          composition.
+        - Otherwise: opp board power as fraction of our life (creatures
+          already on the table) + opp hand density (cards left to
+          deploy) + archetype aggression hint from the opp's deck.
+        Output clamped to [0.1, 1.0]; even a quiet opponent has some
+        baseline threat from top-decks.
+        """
+        # BHI path
+        try:
+            bhi = self.bhi
+            if bhi and bhi._initialized:
+                # P(opp threatens us this/next turn) ≈ max of P(removal)
+                # and P(follow-up creature inferred from non-counter
+                # density). We only have direct removal/counter beliefs
+                # here, so use them as a lower bound and add hand-size
+                # weight for non-tracked threats.
+                p_action = max(bhi.beliefs.p_removal,
+                               bhi.beliefs.p_counter,
+                               bhi.beliefs.p_burn)
+                hand_factor = min(1.0, snap.opp_hand_size / 7.0)
+                return max(0.1, min(1.0, p_action + 0.5 * hand_factor))
+        except Exception:
+            pass
+
+        # Heuristic fallback — combine three signals:
+        # (a) opponent has creatures on board → they're playing threats,
+        #     expect more (signal saturates at 2+ creatures).
+        # (b) hand size as a fraction of starting hand (7) — more cards
+        #     = more chances to draw a real threat.
+        # (c) clock pressure — opponent's existing power as fraction of
+        #     our life (we want to interact when they're close to lethal).
+        # We take the MAX of these so any one strong signal triggers
+        # full holdback; sum-and-divide undercounts when (e.g.) the
+        # board already has visible threats but they're all 1/1s.
+        creature_signal = min(1.0, snap.opp_creature_count / 2.0)
+        hand_signal = min(1.0, snap.opp_hand_size / 7.0)
+        clock_signal = 0.0
+        if snap.my_life > 0 and snap.opp_power > 0:
+            clock_signal = min(1.0, snap.opp_power / max(1, snap.my_life))
+        return max(0.1, min(1.0,
+                            max(creature_signal, hand_signal, clock_signal)))
 
     def _combo_modifier(self, card, snap: EVSnapshot,
                         game: "GameState", me, opp) -> float:
@@ -1312,6 +1644,26 @@ class EVPlayer:
 
         return ev
 
+    def _cascade_graveyard_target(self) -> int:
+        """Return the FILL_RESOURCE goal's `resource_target` for GY creatures.
+
+        Used by the LE-A3 cascade patience gate to determine how many
+        creatures must be in the graveyard before a cascade enabler is
+        allowed to fire. Gameplan-declared — no magic numbers.
+
+        Returns 0 when the deck has no FILL_RESOURCE goal targeting the
+        graveyard, which disables the gate (non-reanimator cascade decks,
+        or decks that use cascade for a non-graveyard payoff).
+        """
+        if not (self.goal_engine and self.goal_engine.gameplan):
+            return 0
+        from ai.gameplan import GoalType
+        for goal in self.goal_engine.gameplan.goals:
+            if (goal.goal_type == GoalType.FILL_RESOURCE
+                    and goal.resource_zone == "graveyard"):
+                return int(goal.resource_target or 0)
+        return 0
+
     def _has_reanimation_path(self, game, me) -> bool:
         """True if the deck has an oracle-visible way to return
         creatures from graveyard to battlefield — required for the
@@ -1427,6 +1779,14 @@ class EVPlayer:
             current_goal = self.goal_engine.current_goal
             if current_goal and getattr(current_goal, 'prefer_cycling', False):
                 ev += CYCLING_GAMEPLAN_BOOST  # cycling is THE gameplan, not optional
+
+        # Bundle 3 A3 — same holdback gate as _score_spell. Cycling
+        # taps lands too; it must respect held instant-speed interaction.
+        cost_data = card.template.cycling_cost_data
+        cycling_mana_cost = cost_data.get('mana', 0) if cost_data else 0
+        ev += self._holdback_penalty(
+            me, opp, snap, cost=cycling_mana_cost,
+            exclude_instance_id=card.instance_id)
 
         return ev
 
@@ -1650,8 +2010,9 @@ class EVPlayer:
                 threshold -= self.profile.aggro_closing_threshold_reduction
 
             # Post-board-refill aggression: Living End just resolved, opponent's
-            # board was wiped, our creatures came back with summoning sickness
-            # gone. Swing with everything to cash in the tempo swing.
+            # board was wiped, and our creatures came back (still summoning
+            # sick this turn — they must wait until next turn to attack). On
+            # that next turn, swing with everything to cash in the tempo swing.
             if getattr(me, 'aggression_boost_turns', 0) > 0:
                 threshold -= 2.0
 
@@ -2255,6 +2616,13 @@ class EVPlayer:
 
         Uses oracle-driven threat value so battle-cry / scaling creatures
         outrank raw P/T bodies. Burn removal filters targets it cannot kill.
+
+        R3: Equipment carriers receive a tempo bonus on top of raw threat
+        — killing the carrier strands the equipment unattached and forces
+        opp to spend a re-equip activation (sorcery-speed mana payment +
+        another turn of waiting). Without this, a removal spell may pick
+        a higher-raw-power naked creature while leaving the Plating-
+        wearing engine alive. Bonus is oracle-derived (no card names).
         """
         if not creatures:
             return None
@@ -2272,7 +2640,126 @@ class EVPlayer:
             # may still want to fire for triggered-damage purposes).
             if killable:
                 candidates = killable
-        return max(candidates, key=lambda c: creature_threat_value(c, snap))
+
+        # Removal that ALSO destroys the equipment artifact (Abrupt Decay,
+        # Prismatic Ending at X≥2, Nature's Claim, etc.) doubles the value
+        # of hitting a carrier — the artifact is gone, not just dropped.
+        oracle = ((card.template.oracle_text if card.template else '') or '').lower()
+        also_destroys_artifact = (
+            'destroy target artifact' in oracle
+            or 'destroy target nonland permanent' in oracle
+            or 'destroy target permanent' in oracle
+        )
+
+        def _rank(c) -> float:
+            base = creature_threat_value(c, snap)
+            return base + self._carrier_disrupt_bonus(
+                game, player, c, snap,
+                removal_destroys_artifact=also_destroys_artifact)
+
+        return max(candidates, key=_rank)
+
+    def _carrier_disrupt_bonus(self, game, opp, carrier, snap,
+                                removal_destroys_artifact: bool = False) -> float:
+        """Tempo bonus for removing a creature wearing equipment.
+
+        Killing a carrier strips every attached equipment off (CR 702.6e
+        — equipment falls off when its equipped creature leaves play).
+        Opp must then re-pay the equip cost AND wait to activate the
+        sorcery-speed equip ability, denying at least one combat turn
+        of the equipment's pump contribution.
+
+        The bonus is composed from two oracle-derived terms:
+          * Pump-denial value: sum of '+X/+Y' contributions on attached
+            equipment (with 'for each <qualifier>' scaling expanded
+            against opp's current board), converted to threat units via
+            the same `creature_clock_impact * 20.0` pipeline that
+            `creature_threat_value` uses for virtual power.
+          * Re-equip mana tempo: sum of `equip_cost` across attached
+            equipment, converted via `mana_clock_impact * 20.0`. Re-
+            attaching costs that mana on a future turn.
+
+        If the removal spell also destroys the equipment artifact
+        outright, the pump-denial term is doubled (the equipment is
+        permanently gone, not just unattached).
+
+        All detection is oracle-regex-driven; no card names. No
+        magic-number weights — values fall out of `clock.py`.
+        """
+        attached_ids = set()
+        for tag in carrier.instance_tags:
+            if not tag.startswith('equipped_'):
+                continue
+            tail = tag.split('_', 1)[1]
+            if tail.isdigit():
+                attached_ids.add(int(tail))
+        if not attached_ids:
+            return 0.0
+
+        from ai.clock import creature_clock_impact, mana_clock_impact
+
+        pump_total = 0
+        equip_cost_total = 0
+
+        for perm in opp.battlefield:
+            if perm.instance_id not in attached_ids:
+                continue
+            eq_oracle = (perm.template.oracle_text or '').lower()
+            m = _EQUIP_BONUS_RE.search(eq_oracle)
+            if m:
+                base_pump = int(m.group(2))
+                # Apply 'for each <qualifier>' scaling on opp's board.
+                scale_match = re.search(
+                    r'for each (artifact|creature|land|card)', eq_oracle
+                )
+                if scale_match:
+                    kind = scale_match.group(1)
+                    if kind == 'artifact':
+                        count = sum(
+                            1 for c in opp.battlefield
+                            if 'artifact' in str(c.template.card_types).lower()
+                        )
+                    elif kind == 'creature':
+                        count = len(opp.creatures)
+                    elif kind == 'land':
+                        count = len(
+                            [c for c in opp.battlefield if c.template.is_land]
+                        )
+                    else:  # 'card' proxy
+                        count = len(opp.battlefield)
+                    pump_total += base_pump * count
+                else:
+                    pump_total += base_pump
+            cost = getattr(perm.template, 'equip_cost', None)
+            if cost is not None:
+                equip_cost_total += cost
+
+        if pump_total == 0 and equip_cost_total == 0:
+            return 0.0
+
+        # Convert virtual-power denial to threat units. Use carrier's
+        # toughness so the impact reflects what an attack with that pump
+        # would actually do (matches the formula used in
+        # `creature_threat_value` for amplifier virtual power).
+        kws = {kw.value if hasattr(kw, 'value') else str(kw).lower()
+               for kw in getattr(carrier.template, 'keywords', set())}
+        tough = carrier.toughness or 0
+        # Marginal clock impact of denying `pump_total` virtual power
+        # for at least one combat turn.
+        pump_impact = (
+            creature_clock_impact(pump_total, tough, kws, snap)
+            - creature_clock_impact(0, tough, kws, snap)
+        ) * 20.0
+        # If removal also destroys the equipment, pump is permanently
+        # denied — double-count to reflect the multi-turn loss.
+        if removal_destroys_artifact:
+            pump_impact *= 2.0
+
+        # Re-equip tempo: mana spent on a sorcery-speed ability is
+        # mana not available for a spell that turn.
+        mana_tempo = equip_cost_total * mana_clock_impact(snap) * 20.0
+
+        return pump_impact + mana_tempo
 
     def _has_high_threat_target(self, game, spell, snap=None) -> bool:
         """True if a removal spell has a target worth proactively casting for.
@@ -2427,6 +2914,15 @@ class EVPlayer:
             # Score equipping like deploying a creature with the bonus power
             bonus = self._estimate_equip_bonus(equip, player)
             ev = bonus * self.profile.creature_value_mult
+
+            # Bundle 3 A3 — same holdback gate as _score_spell. Equip
+            # activation taps mana; it must respect held interaction.
+            from ai.ev_evaluator import snapshot_from_game
+            snap = snapshot_from_game(game, self.player_idx)
+            opp = game.players[1 - self.player_idx]
+            ev += self._holdback_penalty(
+                player, opp, snap, cost=cost,
+                exclude_instance_id=equip.instance_id)
 
             results.append(Play("equip", equip, [best.instance_id], ev,
                                 f"Equip {equip.name} to {best.name} (EV={ev:.1f})"))

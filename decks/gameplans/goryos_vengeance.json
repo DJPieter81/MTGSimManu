@@ -58,7 +58,9 @@
         ]
       },
       "resource_zone": "graveyard",
-      "resource_min_cmc": 5
+      "resource_min_cmc": 5,
+      "min_turns": 2,
+      "min_mana_for_payoff": 2
     },
     {
       "goal_type": "PUSH_DAMAGE",

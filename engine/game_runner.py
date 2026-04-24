@@ -157,6 +157,10 @@ class AICallbacks(GameCallbacks):
             Action(ActionType.DASH, {'card': card, 'can_normal': can_normal, 'can_dash': can_dash})
         ) > 0
 
+    def choose_discard(self, game, player_idx, hand, self_discard):
+        from ai.discard_advisor import choose_discard as _choose
+        return _choose(game, player_idx, hand, self_discard)
+
 
 @dataclass
 class GameResult:
@@ -562,6 +566,13 @@ class GameRunner:
                     self._process_saga_chapters(game, active)
                     # Activated abilities fired on our upkeep (Isochron Scepter, etc.)
                     self._process_upkeep_activations(game, active)
+                    # LE-E2: decrement suspend time counters on active
+                    # player's suspended cards; cast free when the last
+                    # counter is removed. See
+                    # docs/diagnostics/2026-04-24_living_end_consolidated_findings.md.
+                    game.tick_suspend_upkeep(active)
+                    if game.game_over:
+                        break
                     game.process_triggers()
                     self._resolve_stack_loop(game)
 
@@ -632,7 +643,9 @@ class GameRunner:
                     pass  # Future: priority window after blockers
 
                 elif step == TurnStep.FIRST_STRIKE_DAMAGE:
-                    pass  # Handled inside game.combat_damage()
+                    pass  # First-strike and regular damage are both
+                          # handled inside combat_mgr.resolve_combat_damage()
+                          # at the COMBAT_DAMAGE step below.
 
                 elif step == TurnStep.COMBAT_DAMAGE:
                     if combat_mgr.attackers:
@@ -1433,7 +1446,12 @@ class GameRunner:
         """
         player = game.players[active]
         for card in list(player.battlefield):
-            if card.template.name != "Isochron Scepter":
+            # Oracle-driven detection of "imprint + you may copy" artifacts
+            # (Isochron Scepter pattern). Replaces the hardcoded name check
+            # so any future imprint-copy artifact works through the same
+            # code path.
+            oracle = (card.template.oracle_text or '').lower()
+            if 'imprint' not in oracle or 'you may copy' not in oracle:
                 continue
             if getattr(card, 'tapped', False):
                 continue

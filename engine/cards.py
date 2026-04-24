@@ -255,6 +255,13 @@ class CardInstance:
     _evoked: bool = False
     _dashed: bool = False  # Cast via Dash: has haste, returns to hand at end of turn
     _escaped: bool = False  # Cast via Escape from graveyard
+    # Suspend tracking (LE-E2): when a suspend card is paid-and-exiled,
+    # suspended=True and suspend_counters holds the number of time counters
+    # remaining. Each of the controller's upkeeps removes one; when the last
+    # is removed the card is cast for free. See
+    # docs/diagnostics/2026-04-24_living_end_consolidated_findings.md (LE-E2).
+    suspend_counters: int = 0
+    suspended: bool = False
 
     @property
     def name(self) -> str:
@@ -275,9 +282,12 @@ class CardInstance:
         if self._game_state is None:
             return 0
         player = self._game_state.players[self.controller]
-        # Leyline of the Guildpact makes all lands every basic land type
+        # Oracle-driven detection of "lands you control are every basic
+        # land type" (Leyline of the Guildpact pattern). Same predicate
+        # as engine/mana_payment.py::ManaPayment.has_leyline_of_guildpact.
         for c in player.battlefield:
-            if c.name == "Leyline of the Guildpact":
+            oracle = (c.template.oracle_text or '').lower()
+            if 'lands you control are every basic land type' in oracle:
                 if any(l.template.is_land for l in player.battlefield):
                     return 5
         found_types: set = set()

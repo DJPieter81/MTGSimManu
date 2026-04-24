@@ -46,11 +46,26 @@ class EVSnapshot:
     opp_hand_size: int = 0
     my_mana: int = 0           # untapped mana sources
     opp_mana: int = 0
+    # Per-color untapped mana availability. A multi-colored land (Steam
+    # Vents U/R) contributes +1 to EACH color it can produce — tapping
+    # the land pays for one color at a time, so "can I still make U?"
+    # is answered by whether ANY untapped land currently produces U.
+    # Populated in `snapshot_from_game` by iterating untapped lands and
+    # calling `_effective_produces_mana` (Leyline of the Guildpact aware).
+    # Keys: "W","U","B","R","G","C".
+    my_mana_by_color: Dict[str, int] = field(default_factory=dict)
     my_total_lands: int = 0
     opp_total_lands: int = 0
     turn_number: int = 1
     storm_count: int = 0
     my_gy_creatures: int = 0   # creatures in graveyard (for Living End, etc.)
+    # Opp graveyard creatures — used for SYMMETRIC reanimation projection
+    # (Living End pattern: "each player returns all creature cards from
+    # their graveyard").  Without this field the projection only credits
+    # my side and misvalues symmetric mass-reanimation by the full opp
+    # board swing.  Populated in `snapshot_from_game` by counting
+    # creature-type cards in opp's graveyard.  LE-A2.
+    opp_gy_creatures: int = 0
     my_energy: int = 0
     # Keyword counts on my board
     my_evasion_power: int = 0  # power of creatures with flying/menace/trample
@@ -80,6 +95,13 @@ class EVSnapshot:
     # from becoming a blanket value bonus for decks that don't use it.
     my_artifact_scaling_active: bool = False
     opp_artifact_scaling_active: bool = False
+    # Archetype sub-type hint (e.g., "cascade_reanimator", "storm").
+    # Loaded from the controlling deck's gameplan JSON in
+    # `snapshot_from_game` and consumed by `ai.clock.combo_clock` to
+    # pick a resource-assembly target appropriate to the deck's win
+    # condition.  `None` falls back to the default (Storm / Amulet
+    # Titan / generic combo) 8-resource assembly model.
+    archetype_subtype: Optional[str] = None
 
     @property
     def my_clock(self) -> float:
@@ -145,6 +167,22 @@ def snapshot_from_game(game: "GameState", player_idx: int) -> EVSnapshot:
     me = game.players[player_idx]
     opp = game.players[1 - player_idx]
 
+    # Archetype subtype hint (LE-G2): loaded from the controlling
+    # deck's gameplan JSON and used by `ai.clock.combo_clock` to pick
+    # the correct resource-assembly target (e.g. 6 points for
+    # cascade-reanimator combos vs 8 for Storm-style chains).  Cached
+    # via `load_gameplan` in decks.gameplan_loader; no per-snapshot I/O.
+    archetype_subtype = None
+    me_deck = getattr(me, "deck_name", None)
+    if me_deck:
+        try:
+            from decks.gameplan_loader import load_gameplan
+            _gp = load_gameplan(me_deck)
+            if _gp is not None:
+                archetype_subtype = getattr(_gp, "archetype_subtype", None)
+        except Exception:
+            archetype_subtype = None
+
     snap = EVSnapshot(
         my_life=me.life,
         opp_life=opp.life,
@@ -157,9 +195,27 @@ def snapshot_from_game(game: "GameState", player_idx: int) -> EVSnapshot:
         turn_number=game.turn_number,
         storm_count=me.spells_cast_this_turn,
         my_gy_creatures=sum(1 for c in me.graveyard if c.template.is_creature),
+        opp_gy_creatures=sum(1 for c in opp.graveyard if c.template.is_creature),
         my_energy=me.energy_counters,
         cards_drawn_this_turn=me.cards_drawn_this_turn,
+        archetype_subtype=archetype_subtype,
     )
+
+    # Per-color untapped mana (Bundle 3 A2). Each untapped land contributes
+    # +1 to every color it can produce. Leyline of the Guildpact turns all
+    # lands into every basic type, so `_effective_produces_mana` returns
+    # WUBRG for every land; using it here keeps the snapshot in sync.
+    _colors = {"W": 0, "U": 0, "B": 0, "R": 0, "G": 0, "C": 0}
+    for land in me.untapped_lands:
+        produced = game._effective_produces_mana(player_idx, land)
+        for c in produced:
+            if c in _colors:
+                _colors[c] += 1
+    # Add mana pool contents — they represent immediately-available mana
+    # of a specific color (e.g. from rituals floated into the pool).
+    for c in _colors:
+        _colors[c] += me.mana_pool.get(c)
+    snap.my_mana_by_color = _colors
 
     for c in me.creatures:
         p = c.power if c.power else 0
@@ -1037,6 +1093,7 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         turn_number=snap.turn_number,
         storm_count=snap.storm_count + 1,
         my_gy_creatures=snap.my_gy_creatures,
+        opp_gy_creatures=snap.opp_gy_creatures,
         my_energy=snap.my_energy,
         my_evasion_power=snap.my_evasion_power,
         my_lifelink_power=snap.my_lifelink_power,
@@ -1114,8 +1171,67 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
             projected.my_creature_count += count_imm
             projected.persistent_power += p_persist
 
-    # Reanimation — bring back best creature from graveyard
-    if 'reanimate' in tags and game:
+    # Reanimation — bring back creatures from graveyard.
+    #
+    # Two classes:
+    #  1. One-sided reanimation (Reanimate, Goryo's Vengeance, Persist):
+    #     a single creature returns to MY side only.  Detected via the
+    #     `reanimate` tag.
+    #  2. Symmetric mass reanimation (Living End, Vengeful Dead):
+    #     EACH player returns all creature cards from their graveyard.
+    #     Detected via oracle text — "each player" + graveyard-return
+    #     phrasing.  Crediting my GY without subtracting opp's GY
+    #     overvalues the spell when opp has a bigger graveyard.  LE-A2.
+    oracle_lower = (t.oracle_text or '').lower()
+    is_symmetric_reanimation = (
+        ('each player' in oracle_lower or 'all graveyards' in oracle_lower)
+        and 'graveyard' in oracle_lower
+        and ('return' in oracle_lower or 'battlefield' in oracle_lower)
+        and 'creature' in oracle_lower
+    )
+
+    if is_symmetric_reanimation and game:
+        # Credit my side using actual GY contents, same as the one-sided
+        # path — but ALSO credit opp's side using their GY contents.
+        # Both sides return ALL their creatures (not just the biggest).
+        from engine.cards import CardType
+        me = game.players[player_idx]
+        opp = game.players[1 - player_idx]
+        my_gy_creatures = [c for c in me.graveyard
+                           if CardType.CREATURE in c.template.card_types]
+        opp_gy_creatures = [c for c in opp.graveyard
+                            if CardType.CREATURE in c.template.card_types]
+        for returned in my_gy_creatures:
+            p = returned.template.power or 0
+            tough = returned.template.toughness or 0
+            projected.my_power += max(0, p)
+            projected.my_toughness += max(0, tough)
+            projected.my_creature_count += 1
+            kws = {kw.value if hasattr(kw, 'value') else str(kw).lower()
+                   for kw in getattr(returned.template, 'keywords', set())}
+            if kws & {'flying', 'menace', 'trample'}:
+                projected.my_evasion_power += max(0, p)
+            if 'lifelink' in kws:
+                projected.my_lifelink_power += max(0, p)
+        projected.my_gy_creatures = max(
+            0, projected.my_gy_creatures - len(my_gy_creatures))
+        for returned in opp_gy_creatures:
+            p = returned.template.power or 0
+            tough = returned.template.toughness or 0
+            projected.opp_power += max(0, p)
+            projected.opp_toughness += max(0, tough)
+            projected.opp_creature_count += 1
+            kws = {kw.value if hasattr(kw, 'value') else str(kw).lower()
+                   for kw in getattr(returned.template, 'keywords', set())}
+            if kws & {'flying', 'menace', 'trample'}:
+                projected.opp_evasion_power += max(0, p)
+        projected.opp_gy_creatures = max(
+            0, projected.opp_gy_creatures - len(opp_gy_creatures))
+
+    elif 'reanimate' in tags and game:
+        # One-sided reanimation — bring back best creature from MY GY only.
+        # opp_gy_creatures intentionally NOT read here: Reanimate, Goryo's,
+        # Persist etc. target my graveyard, not opp's.
         me = game.players[player_idx]
         from engine.cards import CardType
         gy_creatures = [c for c in me.graveyard
@@ -1124,16 +1240,36 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
             best = max(gy_creatures, key=lambda c: (c.template.power or 0) + (c.template.toughness or 0))
             p = best.template.power or 0
             tough = best.template.toughness or 0
-            projected.my_power += p
+            # Temporary-creature discount (GV-2): when the reanimation
+            # spell exiles the returned creature at the next end step
+            # (Goryo's Vengeance, Footsteps of the Goryo pattern), the
+            # creature attacks once (spells of this family grant haste)
+            # and is then removed. A persistent reanimation (Reanimate,
+            # Persist) lets the body attack every turn thereafter. We
+            # approximate the temporary/persistent contribution ratio at
+            # 0.5 — one guaranteed combat vs an unbounded future stream.
+            # Oracle-driven, no card-name checks. The clause-free case
+            # (Persist) keeps the full power contribution unchanged.
+            EOT_EXILE_POWER_FACTOR = 0.5  # rules: 1 attack before exile
+            # Normalise curly/fancy apostrophes so 'end’s' variants match.
+            reanim_oracle = (t.oracle_text or '').lower().replace(
+                '’', "'")
+            exiles_at_eot = (
+                'exile' in reanim_oracle
+                and 'beginning of the next end step' in reanim_oracle
+            )
+            power_factor = (EOT_EXILE_POWER_FACTOR if exiles_at_eot
+                             else 1.0)
+            projected.my_power += p * power_factor
             projected.my_toughness += tough
             projected.my_creature_count += 1
             projected.my_gy_creatures = max(0, projected.my_gy_creatures - 1)
             kws = {kw.value if hasattr(kw, 'value') else str(kw).lower()
                    for kw in getattr(best.template, 'keywords', set())}
             if kws & {'flying', 'menace', 'trample'}:
-                projected.my_evasion_power += p
+                projected.my_evasion_power += p * power_factor
             if 'lifelink' in kws:
-                projected.my_lifelink_power += p
+                projected.my_lifelink_power += p * power_factor
 
     # Removal — kills best opponent creature
     if 'removal' in tags and not 'board_wipe' in tags:
@@ -1258,6 +1394,62 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
             projected.my_power += prowess_bonus
             # Prowess creatures are typically evasive (flying, haste)
             projected.my_evasion_power += prowess_bonus
+
+    # Cascade projection (LE-A1).
+    #
+    # When a cascade spell is cast, the engine exiles library cards
+    # until a non-land spell with lower CMC is found, then casts it for
+    # free.  `_free_cast_opportunity` is set by `engine/cast_manager.py`
+    # only AFTER resolution, so the candidate-scoring pass sees nothing.
+    # The spell ends up valued as a vanilla N-mana creature, which is
+    # catastrophic for cascade-into-finisher decks (Living End: the
+    # cascaded finisher is the whole point of the card).
+    #
+    # Model: weighted expectation over cascadable library cards.
+    # P(hit name X) = copies(X) / total_cascadable.  Expected delta =
+    # Σ P(name) × projected_value(name).  Value is obtained by
+    # recursively calling `_project_spell` on a representative copy,
+    # so the credit composes naturally with the symmetric-reanimation
+    # path above (Living End cascaded through Shardless Agent will
+    # surface the big graveyard swing).  Compact proxy: net power +
+    # net creature count.  No per-card tables, no magic numbers.
+    is_cascade = getattr(t, 'is_cascade', False) or 'cascade' in oracle_lower
+    if is_cascade and game:
+        cascade_cmc = t.cmc or 0
+        me = game.players[player_idx]
+        # Cards cascade can legally hit: non-land spells with lower CMC.
+        cascadable = [c for c in me.library
+                      if c.template.is_spell
+                      and not c.template.is_land
+                      and (c.template.cmc or 0) < cascade_cmc]
+        if cascadable:
+            # Aggregate by distinct card name (cascade stops on the
+            # FIRST legal hit; probability of landing on name X is the
+            # share of cascadable cards that have that name).
+            name_groups: Dict[str, List["CardInstance"]] = {}
+            for c in cascadable:
+                name_groups.setdefault(c.template.name, []).append(c)
+            n_cascadable = len(cascadable)
+            expected_my_power = 0.0
+            expected_my_count = 0.0
+            expected_opp_power = 0.0
+            expected_opp_count = 0.0
+            for name, copies in name_groups.items():
+                p = len(copies) / n_cascadable
+                sample = copies[0]
+                hit_proj = _project_spell(
+                    sample, snap, dk=dk, game=game, player_idx=player_idx)
+                expected_my_power += p * (hit_proj.my_power - snap.my_power)
+                expected_my_count += p * (
+                    hit_proj.my_creature_count - snap.my_creature_count)
+                expected_opp_power += p * (
+                    hit_proj.opp_power - snap.opp_power)
+                expected_opp_count += p * (
+                    hit_proj.opp_creature_count - snap.opp_creature_count)
+            projected.my_power += expected_my_power
+            projected.my_creature_count += expected_my_count
+            projected.opp_power += expected_opp_power
+            projected.opp_creature_count += expected_opp_count
 
     return projected
 
@@ -1417,6 +1609,7 @@ def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
         turn_number=snap.turn_number,
         storm_count=snap.storm_count + 1,
         my_gy_creatures=snap.my_gy_creatures,
+        opp_gy_creatures=snap.opp_gy_creatures,
         my_energy=snap.my_energy,
         my_evasion_power=snap.my_evasion_power,
         my_lifelink_power=snap.my_lifelink_power,
@@ -1846,6 +2039,7 @@ def estimate_future_value(snap: EVSnapshot, archetype: str,
         turn_number=snap.turn_number + turns_ahead,
         storm_count=0,
         my_gy_creatures=snap.my_gy_creatures,
+        opp_gy_creatures=snap.opp_gy_creatures,
         my_energy=snap.my_energy,
         my_evasion_power=snap.my_evasion_power,
         my_lifelink_power=snap.my_lifelink_power,
@@ -1880,3 +2074,130 @@ def estimate_future_value(snap: EVSnapshot, archetype: str,
     per_turn = max(MIN_CONTINUATION, min(MAX_CONTINUATION, per_turn))
     discount = per_turn ** turns_ahead
     return discount * evaluate_board(projected, archetype, dk)
+
+
+# ─────────────────────────────────────────────────────────────
+# Opponent-forced discard scoring (Thoughtseize / Duress / IoK)
+# ─────────────────────────────────────────────────────────────
+
+# Rules constants: gameplan-role weights for "how much does the
+# CASTER want to strip this card?". critical_pieces are the deck's
+# stated finishers/keystones — losing one is hardest to recover from
+# and so scores highest. always_early are usually engines/enablers
+# that snowball (Mox Opal, Ruby Medallion). mulligan_keys is the
+# largest "must-have" set and so scores lowest of the three so the
+# rarer signals dominate when present. Values are ordinal — only the
+# ordering matters; the magnitudes are tuned so a critical_piece
+# always outranks a tagged-but-unlisted card and so a non-creature
+# engine outranks a vanilla 1-drop creature, both of which fall out
+# of `creature_threat_value()` for a typical Modern card.
+_DISCARD_SCORE_CRITICAL_PIECE = 100.0
+_DISCARD_SCORE_ALWAYS_EARLY = 60.0
+_DISCARD_SCORE_MULLIGAN_KEY = 40.0
+
+# Tag-based fallback weights for non-creatures with no gameplan
+# signal. `combo` (e.g. Grapeshot, Living End enablers) and
+# `cost_reducer` (Medallions, Ragavan-likes) snowball. Tutors win
+# games on resolution. Mana sources are valuable but easily replaced.
+# These are again ordinal rules constants — a tagged engine should
+# beat a vanilla cantrip that scored 0.
+_DISCARD_TAG_WEIGHTS = {
+    "combo": 25.0,
+    "cost_reducer": 20.0,
+    "tutor": 22.0,
+    "mana_source": 8.0,
+    "ramp": 8.0,
+    "removal": 6.0,
+    "counterspell": 6.0,
+    "engine": 18.0,
+    "payoff": 22.0,
+}
+
+
+def score_card_for_opponent_strip(card: "CardInstance",
+                                  opp_gameplan=None) -> float:
+    """Score how badly the CASTER of a discard spell wants this card
+    out of the victim's hand. Higher = strip first.
+
+    Inputs:
+      * `card` — a CardInstance in the victim's hand. The caller has
+        already filtered out lands (caller responsibility — that is a
+        rules concern: Thoughtseize text reads "nonland card").
+      * `opp_gameplan` — the victim's `DeckGameplan` if available, used
+        to consult `critical_pieces` / `always_early` / `mulligan_keys`.
+        These sets are the deck author's declared keystones; using them
+        keeps the scorer free of any per-card hardcoding here. Pass
+        `None` if the gameplan can't be resolved — tag-based fallback
+        still applies.
+
+    For creatures the threat is delegated to `creature_threat_value`,
+    which is the same oracle-driven scorer used everywhere else for
+    "how scary is this creature?". For non-creatures we combine
+    gameplan-role membership (highest signal) with tag-based weights.
+
+    Returns 0.0 for an unrecognised non-creature with no tags / no
+    gameplan listing — the caller's fallback (highest-CMC non-land)
+    then applies. Engine layer never owns this scoring; it must call
+    in here.
+    """
+    t = card.template
+    name = getattr(t, 'name', '') or ''
+
+    # Creatures: route through the existing oracle-driven threat
+    # function. Returns ~1-15 for typical Modern bodies; large
+    # threats can score higher. We do NOT add a creature-only bonus
+    # here — `creature_threat_value` already credits ETB / scaling.
+    if getattr(t, 'is_creature', False):
+        return float(creature_threat_value(card))
+
+    # Non-creatures: gameplan signal first (data-driven, no card
+    # names in this file), then tag-based weighting.
+    score = 0.0
+    if opp_gameplan is not None:
+        critical = getattr(opp_gameplan, 'critical_pieces', None) or set()
+        early = getattr(opp_gameplan, 'always_early', None) or set()
+        keys = getattr(opp_gameplan, 'mulligan_keys', None) or set()
+        if name in critical:
+            score += _DISCARD_SCORE_CRITICAL_PIECE
+        if name in early:
+            score += _DISCARD_SCORE_ALWAYS_EARLY
+        if name in keys:
+            score += _DISCARD_SCORE_MULLIGAN_KEY
+
+    tags = getattr(t, 'tags', set()) or set()
+    for tag, weight in _DISCARD_TAG_WEIGHTS.items():
+        if tag in tags:
+            score += weight
+
+    return score
+
+
+def choose_card_to_strip(hand: List["CardInstance"],
+                          opp_gameplan=None) -> Optional["CardInstance"]:
+    """Pick the card a Thoughtseize-style discard spell should take
+    from the victim's hand. Lands are excluded (Thoughtseize reads
+    "nonland card"). Returns None if the hand is empty or contains
+    only lands (caller falls back to whatever the rules require —
+    typically "reveal hand, take nothing", but engines that ignore
+    the nonland clause may still pass any card back through here).
+
+    Tie-break order:
+      1. Highest threat score from `score_card_for_opponent_strip`.
+      2. Highest printed CMC (legacy fallback — preserves the old
+         behaviour when nothing carries a meaningful score).
+      3. Stable order in the hand (first-seen wins).
+
+    Pure function. No side effects on the hand or game state.
+    """
+    nonland = [c for c in hand if not getattr(c.template, 'is_land', False)]
+    if not nonland:
+        return None
+    scored = [
+        (score_card_for_opponent_strip(c, opp_gameplan),
+         getattr(c.template, 'cmc', 0) or 0,
+         idx, c)
+        for idx, c in enumerate(nonland)
+    ]
+    # Highest score, then highest CMC, then earliest index.
+    scored.sort(key=lambda x: (-x[0], -x[1], x[2]))
+    return scored[0][3]

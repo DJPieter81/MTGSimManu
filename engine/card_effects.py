@@ -289,22 +289,24 @@ def quantum_riddler_etb(game, card, controller, targets=None, item=None):
 
 
 @EFFECT_REGISTRY.register("Mox Opal", EffectTiming.ETB,
-                           description="Metalcraft: produces any color mana")
+                           description="Metalcraft is evaluated dynamically at tap time")
 def mox_opal_etb(game, card, controller, targets=None, item=None):
-    from .cards import CardType, CardTemplate
-    template = card.template
-    artifact_count = sum(1 for c in game.players[controller].battlefield
-                         if CardType.ARTIFACT in c.template.card_types)
-    if artifact_count >= 3:  # metalcraft
-        card.template = CardTemplate(
-            name=template.name,
-            card_types=template.card_types,
-            mana_cost=template.mana_cost,
-            supertypes=template.supertypes,
-            subtypes=template.subtypes,
-            produces_mana=["W", "U", "B", "R", "G"],
-            tags=template.tags | {"mana_source"},
-        )
+    """No-op ETB.
+
+    E1 fix: metalcraft (CR 702.98) is checked at activation time, not at
+    ETB time.  The previous handler mutated `card.template` to
+    permanently grant `produces_mana=WUBRG` whenever metalcraft happened
+    to be live on entry, which violated the rules in two directions:
+    (1) Mox kept producing 5 colours after artifact count fell below 3,
+    (2) Mox stayed dead even after artifact count later reached 3.
+
+    The dynamic check now lives in
+    `GameState._effective_produces_mana()` and is consulted by every
+    mana-source iteration site.  This handler is intentionally empty
+    so that no template-mutation side effect can re-introduce the
+    snapshot bug.
+    """
+    return
 
 
 @EFFECT_REGISTRY.register("Cranial Plating", EffectTiming.ETB,
@@ -671,8 +673,11 @@ def march_otherworldly_light_resolve(game, card, controller, targets=None, item=
     from .cards import CardType
     opponent = 1 - controller
     opp = game.players[opponent]
-    # X = mana spent beyond the base W cost (total lands available as proxy)
-    x_val = len(game.players[controller].lands)
+    # X = mana actually paid for {X} (stored on the stack item at cast
+    # time). Mirrors Wrath of the Skies' pattern at line 615; reading
+    # from len(lands) would ignore the cast-time commitment and let
+    # March target permanents above the paid CMC.
+    x_val = item.x_value if item and hasattr(item, 'x_value') else 0
     exile_targets = [c for c in opp.battlefield
                      if not c.template.is_land
                      and (CardType.ARTIFACT in c.template.card_types

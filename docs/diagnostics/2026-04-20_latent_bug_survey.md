@@ -11,7 +11,7 @@ tags:
   - audit
   - backlog
   - phase-11
-summary: "Read-only survey of engine/*.py for latent bugs with weak/no test coverage. 10 prioritized items; top-3 unvalidated hypotheses are counterspell targeting post-bounce, SBA iteration bound as magic number, and escape/cascade target-loss during resolution. 62 EFFECT_REGISTRY handlers with no test references — top 10 most-frequent listed. Next session should repro before acting; none of these are confirmed bugs yet."
+summary: "Read-only survey of engine/*.py for latent bugs with weak/no test coverage. 10 prioritized items; S-2 (SBA constant) and S-8 (March x_val) resolved 2026-04-21 with Option-C test-first fixes. Remaining open: S-1 (counterspell post-bounce), S-3/S-10 (rebound cleanup), S-4/S-5 (escape/cascade target-loss), S-6 (Living End ETB SBA batching), S-7 (62 handlers with no tests), S-9 (counterspell during sorcery-speed lock)."
 ---
 # Phase 11c — Latent-bug engine survey
 
@@ -45,7 +45,7 @@ Out of scope for the survey (kept untouched):
 - **Lines:** `engine/game_state.py:754-762`, `2703-2714`.
 - **Fix cost:** M. No dedicated test; recommend repro test first.
 
-### [S-2] SBA iteration bound hardcoded (20), not `SBA_MAX_ITERATIONS`
+### [S-2] SBA iteration bound hardcoded (20), not `SBA_MAX_ITERATIONS` — **RESOLVED (2026-04-21)**
 - **Symptom:** `engine/sba_manager.py:42` hardcodes `max_iterations =
   20` instead of consuming the declared `SBA_MAX_ITERATIONS` constant
   from `engine/constants.py`. Maintenance gap: bumping the constant
@@ -53,6 +53,10 @@ Out of scope for the survey (kept untouched):
 - **Fix cost:** S. One import + one replacement.
 - **Note:** Probably should land with a regression test that exercises
   an SBA loop of length > 1 and asserts termination.
+- **Resolution:** Import added, loop now binds `max_iterations =
+  SBA_MAX_ITERATIONS`. Tests:
+  `tests/test_sba_uses_max_iterations_constant.py` (3 cases: source
+  import check, literal-20 absence, monkeypatch propagation).
 
 ### [S-3] Rebound cards accumulate — no end-of-turn cleanup path
 - **Symptom:** `_rebound_cards` list grows at
@@ -117,11 +121,16 @@ top-3 from this table, fix any reproducing bug."
 
 ## Lower priority — future-proofing
 
-### [S-8] March of Otherworldly Light X from land count, not mana paid
+### [S-8] March of Otherworldly Light X from land count, not mana paid — **RESOLVED (2026-04-21)**
 - **Symptom:** `engine/card_effects.py:675` uses `x_val =
   len(players[controller].lands)`. March cast for X=1 at 5 lands
   exiles permanents with CMC ≤ 5 instead of ≤ 1. Audit P1 bug B.
 - **Fix cost:** S. Listed here (not in P0) because it's already tracked.
+- **Resolution:** Resolver now reads `x_val = item.x_value if item
+  and hasattr(item, 'x_value') else 0`, mirroring the Wrath of the
+  Skies pattern. Tests:
+  `tests/test_march_x_from_item_not_lands.py` (2 cases: X=0 preserves
+  Ragavan CMC 1, X=1 exiles highest-threat target).
 
 ### [S-9] Counterspell not gated during opponent-controlled
 "sorcery-speed-only" effect
