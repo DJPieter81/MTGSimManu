@@ -44,11 +44,14 @@ class CyclingManager:
             untapped = len(player.untapped_lands) + player.mana_pool.total() + player._tron_mana_bonus()
             if untapped < cost["mana"]:
                 return False
-            # Color check for colored cycling costs
+            # Color check for colored cycling costs.  Routes through
+            # `_effective_produces_mana` so Leyline / dynamic mana
+            # abilities (E1: Mox Opal metalcraft, CR 702.98) count as
+            # valid sources for cycling colours.
             if cost["colors"]:
                 has_color = False
                 for land in player.untapped_lands:
-                    if cost["colors"] & set(land.template.produces_mana):
+                    if cost["colors"] & set(game._effective_produces_mana(player_idx, land)):
                         has_color = True
                         break
                 if not has_color:
@@ -79,10 +82,13 @@ class CyclingManager:
         # Pay mana cost
         if cost["mana"] > 0:
             if cost["colors"]:
-                # Tap a land that produces the required color
+                # Tap a land that produces the required color.  Routes
+                # through `_effective_produces_mana` for Leyline /
+                # dynamic mana abilities (E1: Mox Opal metalcraft,
+                # CR 702.98).
                 for color in cost["colors"]:
                     for land in player.untapped_lands:
-                        if color in land.template.produces_mana:
+                        if color in game._effective_produces_mana(player_idx, land):
                             land.tapped = True
                             break
                     break
