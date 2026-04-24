@@ -566,6 +566,13 @@ class GameRunner:
                     self._process_saga_chapters(game, active)
                     # Activated abilities fired on our upkeep (Isochron Scepter, etc.)
                     self._process_upkeep_activations(game, active)
+                    # LE-E2: decrement suspend time counters on active
+                    # player's suspended cards; cast free when the last
+                    # counter is removed. See
+                    # docs/diagnostics/2026-04-24_living_end_consolidated_findings.md.
+                    game.tick_suspend_upkeep(active)
+                    if game.game_over:
+                        break
                     game.process_triggers()
                     self._resolve_stack_loop(game)
 
