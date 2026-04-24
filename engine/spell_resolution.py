@@ -209,6 +209,14 @@ class ResolutionManager:
         """Living End: exile all creatures from battlefield, return all from graveyard."""
         game.log.append(f"T{game.display_turn}: Living End resolves!")
 
+        # Grafdigger's Cage and functional reprints: creatures can't
+        # enter the battlefield from graveyards. We still perform the
+        # battlefield exile (Cage gates entry-from-GY only, not
+        # leaves-battlefield), but skip the graveyard-return portion
+        # entirely. Oracle-driven detection so any hate card with the
+        # same clause is handled without a name check.
+        hate_card = game._gy_reanimation_hate_source()
+
         # For each player: exile battlefield creatures, return graveyard creatures
         for p_idx in range(2):
             player = game.players[p_idx]
@@ -226,7 +234,17 @@ class ResolutionManager:
                 creature.cleanup_damage()
                 player.exile.append(creature)
 
-            # Return graveyard creatures to battlefield
+            # Return graveyard creatures to battlefield (gated by Cage)
+            if hate_card is not None:
+                if gy_creatures:
+                    game.log.append(
+                        f"T{game.display_turn}: {hate_card.name} prevents "
+                        f"{len(gy_creatures)} creature(s) from returning "
+                        f"to the battlefield for P{p_idx+1} "
+                        f"(cards stay in graveyard)."
+                    )
+                continue
+
             for creature in gy_creatures:
                 player.graveyard.remove(creature)
                 creature.controller = p_idx

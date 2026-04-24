@@ -255,6 +255,13 @@ class CardInstance:
     _evoked: bool = False
     _dashed: bool = False  # Cast via Dash: has haste, returns to hand at end of turn
     _escaped: bool = False  # Cast via Escape from graveyard
+    # Suspend tracking (LE-E2): when a suspend card is paid-and-exiled,
+    # suspended=True and suspend_counters holds the number of time counters
+    # remaining. Each of the controller's upkeeps removes one; when the last
+    # is removed the card is cast for free. See
+    # docs/diagnostics/2026-04-24_living_end_consolidated_findings.md (LE-E2).
+    suspend_counters: int = 0
+    suspended: bool = False
 
     @property
     def name(self) -> str:
