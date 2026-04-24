@@ -528,6 +528,53 @@ class EVPlayer:
                 # other legal play can still fire.
                 ev = min(ev, p.pass_threshold - 1.0)
 
+        # ── Reanimation readiness gate (GV-2) ──
+        # Mirror shape of the cascade patience gate above, but in the
+        # OPPOSITE direction: cascade is clamped when the GY is thin
+        # (cascade hits into an empty board); reanimation is BOOSTED
+        # when the GY has a target (the whole point of reanimation is
+        # to set up a big body we couldn't hardcast, so once the
+        # set-up is complete we should be eager to fire).
+        #
+        # Gate fires when ALL of:
+        #   1. Spell is a reanimation — either tagged `reanimate` (see
+        #      engine/card_database.py:655 for tag assignment) OR the
+        #      oracle contains the canonical reanimate phrasing "return
+        #      target creature card from your graveyard to the
+        #      battlefield". Oracle-driven fallback catches cards the
+        #      tagger may miss.
+        #   2. The deck is a graveyard-reanimator shell — its gameplan
+        #      declares a FILL_RESOURCE goal with
+        #      `resource_zone == "graveyard"`. Reuses the helper that
+        #      powers the cascade gate. Non-reanimator decks return 0
+        #      and the gate does not fire.
+        #   3. Graveyard creature count >= the gameplan's declared
+        #      `resource_target`. Same threshold the FILL_RESOURCE goal
+        #      uses to transition into EXECUTE_PAYOFF — gameplan-driven.
+        #
+        # When all three hold, boost EV by `snap.opp_life / 2.0`. The
+        # magnitude scales with how much damage the reanimated body
+        # still has to deal: at 20 life the boost is +10 (a decisive
+        # shove past pass_threshold even if the projection discount
+        # ate most of the base EV); at 5 life it drops to +2.5
+        # (reanimation already wins soon anyway so the nudge is
+        # smaller). No magic number — derived from the snapshot.
+        is_reanimate_tagged = 'reanimate' in tags
+        is_reanimate_oracle = (
+            'return target creature card from your graveyard to the battlefield'
+            in t_oracle
+        )
+        if is_reanimate_tagged or is_reanimate_oracle:
+            fill_target = self._cascade_graveyard_target()
+            if fill_target > 0 and snap.my_gy_creatures >= fill_target:
+                # Boost: opp life still to burn through, halved to
+                # reflect that reanimation covers ~half the damage
+                # gap in expectation (the rest comes from follow-up
+                # turns / burn / bonus triggers). Stays well below
+                # the +40 hard override in decide_main_phase — this
+                # is a soft nudge, not a force-cast.
+                ev += snap.opp_life / 2.0
+
         # ── Amulet + Titan ramp combo ──
         # Generic detection: if we hold Primeval Titan (or any 6-mana "when
         # this creature enters, search for two lands" creature) AND this card
