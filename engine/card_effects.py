@@ -458,6 +458,16 @@ def unholy_heat_resolve(game, card, controller, targets=None, item=None):
 @EFFECT_REGISTRY.register("Goryo's Vengeance", EffectTiming.SPELL_RESOLVE,
                            description="Reanimate legendary creature with haste, exile at EOT")
 def goryos_vengeance_resolve(game, card, controller, targets=None, item=None):
+    # GV2-3: honour continuous GY→battlefield hate (Grafdigger's Cage
+    # and any functional reprint). Matches the LE-E1 gate in
+    # _resolve_living_end; the check is oracle-driven, not name-bound.
+    hate_source = game._gy_reanimation_hate_source()
+    if hate_source is not None:
+        game.log.append(
+            f"T{game.display_turn}: Goryo's Vengeance fizzles — "
+            f"{hate_source.template.name} prevents graveyard reanimation"
+        )
+        return
     gy = game.players[controller].graveyard
     legendary_creatures = [c for c in gy
                            if c.template.is_creature and
