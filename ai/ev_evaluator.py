@@ -95,6 +95,13 @@ class EVSnapshot:
     # from becoming a blanket value bonus for decks that don't use it.
     my_artifact_scaling_active: bool = False
     opp_artifact_scaling_active: bool = False
+    # Archetype sub-type hint (e.g., "cascade_reanimator", "storm").
+    # Loaded from the controlling deck's gameplan JSON in
+    # `snapshot_from_game` and consumed by `ai.clock.combo_clock` to
+    # pick a resource-assembly target appropriate to the deck's win
+    # condition.  `None` falls back to the default (Storm / Amulet
+    # Titan / generic combo) 8-resource assembly model.
+    archetype_subtype: Optional[str] = None
 
     @property
     def my_clock(self) -> float:
@@ -160,6 +167,22 @@ def snapshot_from_game(game: "GameState", player_idx: int) -> EVSnapshot:
     me = game.players[player_idx]
     opp = game.players[1 - player_idx]
 
+    # Archetype subtype hint (LE-G2): loaded from the controlling
+    # deck's gameplan JSON and used by `ai.clock.combo_clock` to pick
+    # the correct resource-assembly target (e.g. 6 points for
+    # cascade-reanimator combos vs 8 for Storm-style chains).  Cached
+    # via `load_gameplan` in decks.gameplan_loader; no per-snapshot I/O.
+    archetype_subtype = None
+    me_deck = getattr(me, "deck_name", None)
+    if me_deck:
+        try:
+            from decks.gameplan_loader import load_gameplan
+            _gp = load_gameplan(me_deck)
+            if _gp is not None:
+                archetype_subtype = getattr(_gp, "archetype_subtype", None)
+        except Exception:
+            archetype_subtype = None
+
     snap = EVSnapshot(
         my_life=me.life,
         opp_life=opp.life,
@@ -175,6 +198,7 @@ def snapshot_from_game(game: "GameState", player_idx: int) -> EVSnapshot:
         opp_gy_creatures=sum(1 for c in opp.graveyard if c.template.is_creature),
         my_energy=me.energy_counters,
         cards_drawn_this_turn=me.cards_drawn_this_turn,
+        archetype_subtype=archetype_subtype,
     )
 
     # Per-color untapped mana (Bundle 3 A2). Each untapped land contributes

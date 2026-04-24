@@ -114,11 +114,35 @@ def mana_clock_impact(snap: "EVSnapshot") -> float:
 # Combo clock — turns until combo fires
 # ─────────────────────────────────────────────────────────────
 
+# Per-archetype-subtype resource-assembly target.  The default (Storm /
+# Amulet Titan / generic combo) needs ~8 "resource points" — 2-3 cards
+# of fuel, 2-3 mana, and engine setup — before it can fire.  Cascade-
+# reanimator decks (Living End et al.) have a cheaper win condition: a
+# single 3-mana cascade spell + ~3 graveyard creatures resolves the
+# combo in one shot.  That is ~6 resource points, not 8.
+#
+# Subtype strings are loaded from the gameplan JSON
+# (`archetype_subtype` field) and plumbed through via
+# `EVSnapshot.archetype_subtype`.  New subtypes register in this table;
+# we do NOT branch on card or deck names.
+_COMBO_ASSEMBLY_TARGET = {
+    "storm": 8,                 # Ruby Storm — 8 resource points (default)
+    "cascade_reanimator": 6,    # Living End style — cascade + GY fuel
+}
+_COMBO_ASSEMBLY_DEFAULT = 8     # fallback when archetype_subtype is missing
+                                # (Amulet Titan, Goryo's Vengeance, etc.)
+
+
 def combo_clock(snap: "EVSnapshot") -> float:
     """Turns until a combo deck can win.
 
     Based on storm count, hand size (fuel), mana, and graveyard
     (for reanimation combos).
+
+    The resource-assembly target varies by archetype sub-type so that
+    cheaper combos (cascade-reanimator: 3 mana + ~3 GY creatures +
+    cascade spell) are not under-estimated as slow 8-resource Storm
+    plans.  See `_COMBO_ASSEMBLY_TARGET`.
     """
     # Mid-chain: storm count directly measures proximity to kill
     if snap.storm_count >= 10:
@@ -134,10 +158,15 @@ def combo_clock(snap: "EVSnapshot") -> float:
     # Reanimation combos: creature in GY is a key resource
     reanimate_ready = min(snap.my_gy_creatures, 2)
 
+    # Resource-assembly target, archetype-routed.  Unknown / missing
+    # subtype → default 8-resource model (Storm-parity, regression-safe
+    # for Amulet Titan / Goryo's Vengeance).
+    subtype = getattr(snap, "archetype_subtype", None)
+    needed = _COMBO_ASSEMBLY_TARGET.get(subtype, _COMBO_ASSEMBLY_DEFAULT)
+
     # Rough estimate: turns = (resources needed - resources available)
-    # A combo needs ~8 "resource points" (cards + mana + setup)
     resources = fuel_ready + mana_ready + reanimate_ready + snap.storm_count
-    deficit = max(0, 8 - resources)
+    deficit = max(0, needed - resources)
 
     if deficit == 0:
         return 1.0  # ready to go off
