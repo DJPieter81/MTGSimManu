@@ -1,4 +1,5 @@
 ModernAtomic.json
+.pytest_atomic_fallback.json
 __pycache__/
 *.pyc
 .pytest_cache/
