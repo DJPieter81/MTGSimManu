@@ -120,16 +120,44 @@ def _compute_combo_value(snap, archetype="combo"):
 
 
 def _compute_risk_discount(bhi, opp):
-    """Discount factor from BHI counter probability."""
+    """Discount factor from BHI disruption probabilities.
+
+    Combines the existing counter-spell prior with a discard prior
+    sourced from the opp's published gameplan (see
+    `BayesianHandTracker._compute_discard_prior`). The discard term
+    is multiplied by `_DISCARD_HIT_RATE` - the documented
+    expectation that a discard spell, when cast, removes one of our
+    critical pieces ~50% of the time (the opp picks rationally from
+    our revealed hand). Effective risk = max(P(counter), P(discard)
+    * _DISCARD_HIT_RATE), so whichever disruption vector is more
+    likely dominates.
+
+    Returns a value in [0, 1] - higher means safer.
+    """
     if not bhi or not bhi._initialized:
         return 1.0
     p_counter = bhi.get_counter_probability()
+    p_discard = (bhi.get_discard_probability()
+                 if hasattr(bhi, 'get_discard_probability') else 0.0)
+    effective_discard = p_discard * _DISCARD_HIT_RATE
     opp_mana = len(getattr(opp, 'untapped_lands', [])) + getattr(
         opp, 'mana_pool', _NullPool()).total()
     if opp_mana == 0:
         p_free = getattr(bhi.beliefs, 'p_free_counter', 0.0) if bhi.beliefs else 0.0
-        return 1.0 - p_free
-    return 1.0 - p_counter
+        # Discard is sorcery-speed, but the opp casts it on their
+        # own turn before we go off - it still threatens our chain
+        # even when they're tapped out for instant-speed answers.
+        return 1.0 - max(p_free, effective_discard)
+    return 1.0 - max(p_counter, effective_discard)
+
+
+# Documented hit-rate prior. Given the opp casts a discard spell
+# (Thoughtseize / Inquisition / etc.), how often does it actually
+# strip one of our critical_pieces? Empirically ~50% - the opp sees
+# our hand and picks rationally, but is constrained by what's
+# revealed. This is the "given they have it, given they cast it"
+# conditional probability that the chain actually loses a key piece.
+_DISCARD_HIT_RATE = 0.5
 
 
 class _NullPool:
