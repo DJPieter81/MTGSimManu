@@ -308,11 +308,14 @@ class ResponseDecider:
         # Equipment: ongoing damage amplifier. Value = damage added to
         # the creature it equips × expected turns the equipment sticks.
         # Derive from oracle: flat +P/+T bonuses and "for each" scalers.
+        import re
+        # Rules constant: 3 combat turns is the typical equipment
+        # residency window in Modern (equipment is rarely removed).
+        EQUIP_RESIDENCY_TURNS = 3
         if ('Equipment' in subtypes
                 or 'equipment' in getattr(template, 'tags', set())):
             # Base equipment: approximate +2 power on a creature over
             # ~3 combat turns. Uses mana_clock_impact × effective power.
-            import re
             power_bonus = 2  # default equipment P/T bonus
             m = re.search(r'\+(\d+)/\+\d+', oracle)
             if m:
@@ -324,10 +327,96 @@ class ResponseDecider:
                 from engine.cards import CardType as _CT
                 power_bonus += sum(1 for c in opp_player.battlefield
                                     if _CT.ARTIFACT in c.template.card_types)
-            # Rules constant: 3 combat turns is the typical equipment
-            # residency window in Modern (equipment is rarely removed).
-            EQUIP_RESIDENCY_TURNS = 3
             threat += power_bonus * EQUIP_RESIDENCY_TURNS * mana_clock_impact(snap_for_clock) * 20.0
+
+        # Carrier-pool synergy (R1). When the incoming spell is a creature,
+        # check opp's battlefield for equipment whose pump rebinds onto
+        # any creature each turn. Adding a NEW carrier to the pool means
+        # the pump can land on a fresh attacker — the equipment's damage
+        # over EQUIP_RESIDENCY_TURNS multiplies across more bodies before
+        # any single blocker can trade them all away.
+        #
+        # Marginal value per equipment = pump / (current_carriers + 1):
+        # going from 2 carriers to 3 means the equipment now has a 1/3
+        # chance of swinging on this new body each turn. Sum over all
+        # eligible equipment on opp's board. Oracle-driven — detects any
+        # 'equipped creature gets +X' clause via the existing regex.
+        if template.is_creature:
+            from engine.cards import CardType as _CT
+            opp_creatures = [
+                c for c in opp_player.battlefield
+                if _CT.CREATURE in c.template.card_types
+            ]
+            current_carriers = max(1, len(opp_creatures))
+            for perm in opp_player.battlefield:
+                p_oracle = (perm.template.oracle_text or '').lower()
+                if 'equip' not in p_oracle:
+                    continue
+                m = re.search(
+                    r'equipped creature gets \+(\d+)/\+\d+', p_oracle
+                )
+                if not m:
+                    continue
+                pump = int(m.group(1))
+                # 'for each artifact' scaler — read opp's artifact board.
+                if 'for each artifact' in p_oracle:
+                    pump += sum(
+                        1 for c in opp_player.battlefield
+                        if _CT.ARTIFACT in c.template.card_types
+                    )
+                marginal = pump / (current_carriers + 1)
+                threat += (marginal * EQUIP_RESIDENCY_TURNS
+                           * mana_clock_impact(snap_for_clock) * 20.0)
+
+        # X-cost / 'for each' creatures (R1). Walking Ballista enters with
+        # X +1/+1 counters where X is the mana paid; its printed P/T is
+        # 0/0. Project an expected X from opp's available mana so the
+        # threat reflects what the spell will actually be. Detect either
+        # the explicit `{X}` mana symbol or the 'X +1/+1 counter' / 'for
+        # each' patterns embedded in oracle text.
+        x_scaler = ('{x}' in oracle
+                    or 'x +1/+1 counter' in oracle
+                    or 'x +1/+1 counters' in oracle
+                    or 'for each' in oracle)
+        if template.is_creature and x_scaler:
+            # Expected X = opp's available mana minus the fixed portion of
+            # the cost. cmc==0 for {X}-only cards (Ballista); for cards
+            # like Hangarback Walker (cmc=2 + {X}) this still leaves a
+            # reasonable surplus estimate. Note: `snap` was taken from
+            # opp_idx's perspective, so `snap.my_mana` == opp's mana.
+            fixed_cost = template.cmc or 0
+            expected_x = max(0, snap_for_clock.my_mana - fixed_cost)
+            if 'x +1/+1 counter' in oracle or 'x +1/+1 counters' in oracle:
+                # Each counter = +1 power on the body. Treat the projected
+                # body as a creature attacking over EQUIP_RESIDENCY_TURNS
+                # (same residency primitive used elsewhere in this fn).
+                threat += (expected_x * EQUIP_RESIDENCY_TURNS
+                           * mana_clock_impact(snap_for_clock) * 20.0)
+            elif 'for each' in oracle:
+                # Generic 'for each X' creature scaler — count opp's
+                # matching permanents and credit one power per match.
+                fe = re.search(
+                    r'for each (artifact|creature|land|card)', oracle
+                )
+                if fe:
+                    kind = fe.group(1)
+                    from engine.cards import CardType as _CT2
+                    if kind == 'artifact':
+                        n = sum(
+                            1 for c in opp_player.battlefield
+                            if _CT2.ARTIFACT in c.template.card_types
+                        )
+                    elif kind == 'creature':
+                        n = len(opp_player.creatures)
+                    elif kind == 'land':
+                        n = sum(
+                            1 for c in opp_player.battlefield
+                            if c.template.is_land
+                        )
+                    else:
+                        n = len(opp_player.battlefield)
+                    threat += (n * EQUIP_RESIDENCY_TURNS
+                               * mana_clock_impact(snap_for_clock) * 20.0)
 
         # Cost reducers: enable combos. Value = mana saved per spell ×
         # spells_per_turn × turns_remaining. Use card_clock_impact as a
