@@ -1082,7 +1082,7 @@ def extract_virtual_board(game: "GameState", player_idx: int) -> VirtualBoard:
             power=card.power or 0,
             toughness=card.toughness or 0,
             keywords=kw_set,
-            is_tapped=card.tapped,
+            is_tapped=card.tapped or card.summoning_sick,
             controller=controller_idx,
             value=_permanent_value(card, controller, game, controller_idx),
             cmc=card.template.cmc or 0,
