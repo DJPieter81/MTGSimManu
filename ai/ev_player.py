@@ -797,9 +797,12 @@ class EVPlayer:
               CMC-2 main-phase play when 2× Counterspell are held.
         A3 — extracted as a helper so `_score_cycling` and
               `_consider_equip` apply the same gate.
-        A4 — opponent-spell-deck branch threshold lowered to
-              `opp_hand_size >= 3` (was >=4); typical post-discard hands
-              still contain real interaction at 3 cards.
+        A4 — opponent-spell-deck branch threshold kept at
+              `opp_hand_size >= 4`. Iteration-2 revert: the Bundle 3
+              lowered threshold (>=3) over-fired because 3-card post-
+              discard hands are typically mostly lands, not threats.
+              The stricter >=4 threshold matches pre-Bundle-3 behaviour
+              and restores defender deployment.
         A5 — colored-aware: if the play taps out the LAST source of a
               held instant's color, the penalty is amplified (the
               interaction is uncastable, not merely tempo-delayed).
@@ -812,10 +815,13 @@ class EVPlayer:
 
         # ── Holdback relevance gate ──────────────────────────────────
         # Original logic kept: opp creatures present OR opponent has a
-        # full grip; A4 lowers the spell-deck branch from >=4 to >=3.
-        opp_has_spells = snap.opp_hand_size >= 3 and snap.opp_power == 0
+        # full grip. Iteration-2 B3-Tune reverts A4's >=3 lowering back
+        # to >=4: 3-card post-discard hands are typically mostly lands
+        # (no real threat density) and the broader gate caused defender
+        # decks to stall out against discard-heavy opponents.
+        opp_has_spells = snap.opp_hand_size >= 4 and snap.opp_power == 0
         holdback_relevant = (snap.opp_power > 0
-                             or snap.opp_hand_size >= 3
+                             or snap.opp_hand_size >= 4
                              or opp_has_spells)
         if not holdback_relevant:
             return 0.0
@@ -849,6 +855,34 @@ class EVPlayer:
 
         counter_count = len(held_costs)
         counter_cmc = sum(held_costs) / counter_count  # mean CMC
+
+        # ── Color-capacity early-exit (Iteration-2 B3-Tune) ──────────
+        # If every held counter can still be paid AFTER this cast —
+        # i.e. remaining sources of every held color are still >= the
+        # max held counter CMC — the held interaction is not at risk
+        # and there's no capacity to penalise. We pay the cast's
+        # generic cost from off-color mana FIRST (rational optimum),
+        # and only dip into held-color sources when off-color runs out.
+        # Post-cast floor for color c:
+        #   remaining_c = max(0, my_by_color[c] - max(0, cost - off_c))
+        # where off_c = my_mana - my_by_color[c]. This captures the
+        # common case of a control deck with enough off-color mana
+        # (Mountains, Plains, colorless) to cover the cast while
+        # leaving U / B untouched for a held Counterspell.
+        my_by_color = getattr(snap, 'my_mana_by_color', {}) or {}
+        if held_colors:
+            max_counter_cmc = max(held_costs)
+            color_capacity_preserved = True
+            for color in held_colors:
+                available_now = my_by_color.get(color, 0)
+                off_color_mana = max(0, snap.my_mana - available_now)
+                must_tap_from_color = max(0, cost - off_color_mana)
+                remaining_after = max(0, available_now - must_tap_from_color)
+                if remaining_after < max_counter_cmc:
+                    color_capacity_preserved = False
+                    break
+            if color_capacity_preserved:
+                return 0.0
 
         # ── Opp-threat probability (BHI-derived) ─────────────────────
         # If BHI has been initialised it gives a calibrated probability
@@ -893,17 +927,19 @@ class EVPlayer:
         # lost_capacity) — holding more counters means more value at
         # risk even if only one capacity is lost this turn (the second
         # counter still wants the mana on a future turn).
-        # HELD_RESPONSE_VALUE_PER_CMC = 7.0 is derived from the value
-        # of the spell countered: typical mid-curve threats score 6-12
-        # in `creature_value`. A CMC-N counter intercepts threats of
-        # cost ≥ N (often the opp's biggest play of the turn — Murktide,
-        # Omnath, Plating); the per-CMC value 7.0 sits at the geometric
-        # mean of countered-threat EV when the counter holds for the
-        # turn's biggest play. Calibration check: 2 × Counterspell held
-        # vs an aggressive opp (threat_prob 1.0) → 2×2×1×7 = 28 penalty,
-        # which is large enough to gate a CMC-2 main-phase play whose
-        # base EV ≈ +20 below CONTROL's pass_threshold = −5.0.
-        HELD_RESPONSE_VALUE_PER_CMC = 7.0
+        # Iteration-2 B3-Tune: coefficient lowered 7.0 → 4.0. The
+        # Bundle-3 value of 7.0 was calibrated against 2× Counterspell
+        # held (2×2×1×7 = 28, gates a +20 EV play), but the single-
+        # counter case (1×2×1×7 = 14) floored ordinary main-phase
+        # plays, triggering a measurable defender-collapse in N=50
+        # matrix (Jeskai -5pp, Dimir -6pp, AzCon WST -8pp after the
+        # surrounding Affinity session fixes shipped). 4.0 is derived
+        # from CONTROL's pass_threshold = -5.0: with 1 counter × 2
+        # CMC × threat_prob 1.0 × 4.0 = -8 the gate still blocks a +5
+        # main-phase play, but a +10 draw engine (EV 10 − 8 = +2 >
+        # -5.0) remains castable. 2× Counterspell still scales to
+        # 2×2×1×4 = -16 which keeps the Bundle-3 intent intact.
+        HELD_RESPONSE_VALUE_PER_CMC = 4.0
         base_penalty = (counter_count * counter_cmc
                         * opp_threat_prob
                         * HELD_RESPONSE_VALUE_PER_CMC)
@@ -916,7 +952,6 @@ class EVPlayer:
         # A play that taps the only U source while we hold a UU
         # Counterspell forfeits the response entirely — even if our
         # generic mana count would otherwise suggest we have spare.
-        my_by_color = getattr(snap, 'my_mana_by_color', {}) or {}
         # Approximate post-play color availability: the play consumes
         # `cost` lands worth of mana; in the worst case this includes
         # every land producing a held color.
@@ -939,8 +974,8 @@ class EVPlayer:
         if color_kills > 0:
             # Uncastable held interaction = a free opponent spell. Add
             # the full per-counter response value on top of the lost-
-            # capacity penalty (same scale as base_penalty above).
-            HELD_RESPONSE_VALUE_PER_CMC = 7.0
+            # capacity penalty (same scale as base_penalty above —
+            # uses the same Iteration-2 tuned coefficient of 4.0).
             base_penalty += (color_kills * counter_cmc
                              * opp_threat_prob
                              * HELD_RESPONSE_VALUE_PER_CMC)
