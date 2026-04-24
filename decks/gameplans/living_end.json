@@ -1,6 +1,7 @@
 {
   "deck_name": "Living End",
   "archetype": "combo",
+  "archetype_subtype": "cascade_reanimator",
   "goals": [
     {
       "goal_type": "FILL_RESOURCE",
