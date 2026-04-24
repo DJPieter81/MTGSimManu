@@ -266,6 +266,14 @@ class DeckGameplan:
     # Archetype tag for role-driven scoring: "aggro", "control", "combo", "midrange"
     archetype: str = "midrange"
 
+    # Optional finer-grained archetype sub-type hint.  Used by
+    # `ai.clock.combo_clock` to pick the resource-assembly target for
+    # combo decks whose win condition is structurally different from
+    # Storm's 8-resource chain (e.g. "cascade_reanimator" for Living
+    # End: 3 mana + cascade spell + ~3 GY creatures fires the combo).
+    # `None` falls back to the default assembly model.
+    archetype_subtype: Optional[str] = None
+
     # Abstract combo readiness check: (game, player_idx, engine) -> (ready, confidence, reason)
     combo_readiness_check: Optional[Callable] = None
 

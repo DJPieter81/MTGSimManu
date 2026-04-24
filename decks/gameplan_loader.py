@@ -70,6 +70,7 @@ def _parse_gameplan(data: Dict[str, Any]) -> DeckGameplan:
         reactive_only=set(data.get("reactive_only", [])),
         always_early=set(data.get("always_early", [])),
         archetype=data.get("archetype", "midrange"),
+        archetype_subtype=data.get("archetype_subtype"),
         combo_readiness_check=combo_readiness_check,
         fallback_goals=fallback_goals,
         critical_pieces=set(data.get("critical_pieces", [])),
