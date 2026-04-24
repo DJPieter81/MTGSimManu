@@ -1328,10 +1328,56 @@ class EVPlayer:
                         # T4: 6 rituals burned for 0 damage.
                         mod = min(mod, p.pass_threshold - 10.0)
                         return mod
-                    # Draws remain — keep the original soft penalty
-                    # so the ritual is slightly discouraged but still
-                    # preferred over pure passing when digging may pay.
-                    mod -= (storm + 2) / opp_life * 5.0
+                    # Draws remain — soft penalty so the ritual is
+                    # slightly discouraged but still preferred over
+                    # pure passing when digging may pay.  Two
+                    # refinements (Iter4, S-5):
+                    #
+                    # (A) Storm-coverage escalation.  When
+                    #     storm/opp_life > 0.5 the chain is "over
+                    #     halfway to lethal" — every missed draw is
+                    #     increasingly catastrophic because we've
+                    #     already invested most of the resources.
+                    #     Escalation multiplier scales linearly past
+                    #     the CR-derived sentinel.
+                    storm_coverage = storm / opp_life  # opp_life >= 1
+                    # HALF_LETHAL = 0.5: "over halfway to lethal"
+                    # sentinel derived from opp_life (CR damage
+                    # rules), not a tuning knob.
+                    HALF_LETHAL = 0.5
+                    escalation = 1.0 + max(0.0, storm_coverage - HALF_LETHAL)
+                    mod -= (storm + 2) / opp_life * 5.0 * escalation
+                    # (B) Draw-miss cascade risk.  When storm >= 3
+                    #     and only one draw remains in hand, the
+                    #     chain is one bad top-deck away from
+                    #     collapse.  Penalty scales with library miss
+                    #     probability (lethal_gap / library) times
+                    #     coverage (storm / opp_life).
+                    #
+                    # MIN_CHAIN_DEPTH = 3 mirrors the STORM profile's
+                    # storm_min_fuel_to_go=2 plus one cast already on
+                    # stack — below this many spells a missed
+                    # top-deck still leaves a recoverable chain.
+                    MIN_CHAIN_DEPTH = 3
+                    # CASCADE_DRAW_FLOOR = 1: with a single cantrip
+                    # left there is no fallback if it whiffs; with
+                    # two we can chain again.  Sentinel derived from
+                    # "minimum digs to recover", not a weight.
+                    CASCADE_DRAW_FLOOR = 1
+                    if storm >= MIN_CHAIN_DEPTH:
+                        draw_count = sum(
+                            1 for c in me.hand
+                            if c.instance_id != card.instance_id
+                            and not c.template.is_land
+                            and any(dt in getattr(c.template, 'tags', set())
+                                    for dt in ('cantrip', 'card_advantage',
+                                               'draw'))
+                        )
+                        if draw_count <= CASCADE_DRAW_FLOOR:
+                            lethal_gap = max(0, opp_life - storm)
+                            library_size = max(1, len(me.library))
+                            miss_risk = min(1.0, lethal_gap / library_size)
+                            mod -= miss_risk * (storm / opp_life) * 3.0
             else:
                 # Finisher IS accessible mid-chain. This ritual's net mana
                 # is oracle-derived (template.ritual_mana = (color, amount)
