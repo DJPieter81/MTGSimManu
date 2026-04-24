@@ -1831,8 +1831,9 @@ class EVPlayer:
                 threshold -= self.profile.aggro_closing_threshold_reduction
 
             # Post-board-refill aggression: Living End just resolved, opponent's
-            # board was wiped, our creatures came back with summoning sickness
-            # gone. Swing with everything to cash in the tempo swing.
+            # board was wiped, and our creatures came back (still summoning
+            # sick this turn — they must wait until next turn to attack). On
+            # that next turn, swing with everything to cash in the tempo swing.
             if getattr(me, 'aggression_boost_turns', 0) > 0:
                 threshold -= 2.0
 
