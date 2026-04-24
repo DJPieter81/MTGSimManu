@@ -2229,6 +2229,13 @@ class EVPlayer:
 
         Uses oracle-driven threat value so battle-cry / scaling creatures
         outrank raw P/T bodies. Burn removal filters targets it cannot kill.
+
+        R3: Equipment carriers receive a tempo bonus on top of raw threat
+        — killing the carrier strands the equipment unattached and forces
+        opp to spend a re-equip activation (sorcery-speed mana payment +
+        another turn of waiting). Without this, a removal spell may pick
+        a higher-raw-power naked creature while leaving the Plating-
+        wearing engine alive. Bonus is oracle-derived (no card names).
         """
         if not creatures:
             return None
@@ -2246,7 +2253,126 @@ class EVPlayer:
             # may still want to fire for triggered-damage purposes).
             if killable:
                 candidates = killable
-        return max(candidates, key=lambda c: creature_threat_value(c, snap))
+
+        # Removal that ALSO destroys the equipment artifact (Abrupt Decay,
+        # Prismatic Ending at X≥2, Nature's Claim, etc.) doubles the value
+        # of hitting a carrier — the artifact is gone, not just dropped.
+        oracle = ((card.template.oracle_text if card.template else '') or '').lower()
+        also_destroys_artifact = (
+            'destroy target artifact' in oracle
+            or 'destroy target nonland permanent' in oracle
+            or 'destroy target permanent' in oracle
+        )
+
+        def _rank(c) -> float:
+            base = creature_threat_value(c, snap)
+            return base + self._carrier_disrupt_bonus(
+                game, player, c, snap,
+                removal_destroys_artifact=also_destroys_artifact)
+
+        return max(candidates, key=_rank)
+
+    def _carrier_disrupt_bonus(self, game, opp, carrier, snap,
+                                removal_destroys_artifact: bool = False) -> float:
+        """Tempo bonus for removing a creature wearing equipment.
+
+        Killing a carrier strips every attached equipment off (CR 702.6e
+        — equipment falls off when its equipped creature leaves play).
+        Opp must then re-pay the equip cost AND wait to activate the
+        sorcery-speed equip ability, denying at least one combat turn
+        of the equipment's pump contribution.
+
+        The bonus is composed from two oracle-derived terms:
+          * Pump-denial value: sum of '+X/+Y' contributions on attached
+            equipment (with 'for each <qualifier>' scaling expanded
+            against opp's current board), converted to threat units via
+            the same `creature_clock_impact * 20.0` pipeline that
+            `creature_threat_value` uses for virtual power.
+          * Re-equip mana tempo: sum of `equip_cost` across attached
+            equipment, converted via `mana_clock_impact * 20.0`. Re-
+            attaching costs that mana on a future turn.
+
+        If the removal spell also destroys the equipment artifact
+        outright, the pump-denial term is doubled (the equipment is
+        permanently gone, not just unattached).
+
+        All detection is oracle-regex-driven; no card names. No
+        magic-number weights — values fall out of `clock.py`.
+        """
+        attached_ids = set()
+        for tag in carrier.instance_tags:
+            if not tag.startswith('equipped_'):
+                continue
+            tail = tag.split('_', 1)[1]
+            if tail.isdigit():
+                attached_ids.add(int(tail))
+        if not attached_ids:
+            return 0.0
+
+        from ai.clock import creature_clock_impact, mana_clock_impact
+
+        pump_total = 0
+        equip_cost_total = 0
+
+        for perm in opp.battlefield:
+            if perm.instance_id not in attached_ids:
+                continue
+            eq_oracle = (perm.template.oracle_text or '').lower()
+            m = _EQUIP_BONUS_RE.search(eq_oracle)
+            if m:
+                base_pump = int(m.group(2))
+                # Apply 'for each <qualifier>' scaling on opp's board.
+                scale_match = re.search(
+                    r'for each (artifact|creature|land|card)', eq_oracle
+                )
+                if scale_match:
+                    kind = scale_match.group(1)
+                    if kind == 'artifact':
+                        count = sum(
+                            1 for c in opp.battlefield
+                            if 'artifact' in str(c.template.card_types).lower()
+                        )
+                    elif kind == 'creature':
+                        count = len(opp.creatures)
+                    elif kind == 'land':
+                        count = len(
+                            [c for c in opp.battlefield if c.template.is_land]
+                        )
+                    else:  # 'card' proxy
+                        count = len(opp.battlefield)
+                    pump_total += base_pump * count
+                else:
+                    pump_total += base_pump
+            cost = getattr(perm.template, 'equip_cost', None)
+            if cost is not None:
+                equip_cost_total += cost
+
+        if pump_total == 0 and equip_cost_total == 0:
+            return 0.0
+
+        # Convert virtual-power denial to threat units. Use carrier's
+        # toughness so the impact reflects what an attack with that pump
+        # would actually do (matches the formula used in
+        # `creature_threat_value` for amplifier virtual power).
+        kws = {kw.value if hasattr(kw, 'value') else str(kw).lower()
+               for kw in getattr(carrier.template, 'keywords', set())}
+        tough = carrier.toughness or 0
+        # Marginal clock impact of denying `pump_total` virtual power
+        # for at least one combat turn.
+        pump_impact = (
+            creature_clock_impact(pump_total, tough, kws, snap)
+            - creature_clock_impact(0, tough, kws, snap)
+        ) * 20.0
+        # If removal also destroys the equipment, pump is permanently
+        # denied — double-count to reflect the multi-turn loss.
+        if removal_destroys_artifact:
+            pump_impact *= 2.0
+
+        # Re-equip tempo: mana spent on a sorcery-speed ability is
+        # mana not available for a spell that turn.
+        mana_tempo = equip_cost_total * mana_clock_impact(snap) * 20.0
+
+        return pump_impact + mana_tempo
 
     def _has_high_threat_target(self, game, spell, snap=None) -> bool:
         """True if a removal spell has a target worth proactively casting for.
