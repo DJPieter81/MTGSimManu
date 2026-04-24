@@ -185,34 +185,55 @@ class CastManager:
                 effective_cmc = max(0, effective_cmc - phyrexian_count)
 
         # Evoke as alternative cost (Solitude, Endurance, Grief, etc.)
+        # Evoke is independent of the hardcast path: it is a *choice*
+        # the caster makes, not a fallback for when mana is short. The
+        # evoke branch is available whenever the evoke cost is payable
+        # (mana portion of evoke_cost + exile fodder + valid target).
+        # `can_cast` returns True if EITHER mode is payable; the AI
+        # layer decides which mode to use at resolution time.
+        #
+        # Bug E3 (pre-fix gate `total_mana < effective_cmc`): with
+        # five untapped Mountains and a white card in hand, Solitude
+        # reported uncastable — total_mana met the CMC, so the evoke
+        # branch was skipped, and the colour check then failed because
+        # no white source was on the battlefield. Jeskai Blink relied
+        # on Solitude as a free evoke removal response in opponent
+        # windows; the gate masked it.
         can_evoke = False
-        if (template.evoke_cost is not None
-                and total_mana < effective_cmc):
-            exile_candidates = [
-                c for c in player.hand
-                if c != card
-                and not c.template.is_land
-                and c.template.color_identity & template.color_identity
-            ]
-            if exile_candidates:
-                can_evoke = True
-                # Target validation: don't allow evoke if the card needs
-                # a target and no valid target exists
-                from decks.card_knowledge_loader import requires_target as _req_target
-                oracle_lower = (template.oracle_text or "").lower()
-                needs_target = (
-                    _req_target(template.name)
-                    or ('target creature' in oracle_lower)
-                    or ('creature spell' in oracle_lower
-                        and 'removal' not in (template.tags or set()))
-                )
-                if needs_target:
-                    opp_idx = 1 - player_idx
-                    if not game.players[opp_idx].creatures:
-                        can_evoke = False  # No targets for evoke
-                if can_evoke:
-                    can_evoke = game.callbacks.should_evoke(
-                        game, player_idx, card)
+        if template.evoke_cost is not None:
+            # Evoke cost may itself include a mana component (most
+            # evoke creatures do not, but the engine permits it).
+            # Verify the caster has enough total mana to cover the
+            # evoke cost; the colour check for the evoke cost itself
+            # is handled at resolution. No magic number: falls back
+            # to zero for the common pitch-evoke pattern.
+            evoke_mana_needed = template.evoke_cost.cmc
+            if total_mana >= evoke_mana_needed:
+                exile_candidates = [
+                    c for c in player.hand
+                    if c != card
+                    and not c.template.is_land
+                    and c.template.color_identity & template.color_identity
+                ]
+                if exile_candidates:
+                    can_evoke = True
+                    # Target validation: don't allow evoke if the card
+                    # needs a target and no valid target exists
+                    from decks.card_knowledge_loader import requires_target as _req_target
+                    oracle_lower = (template.oracle_text or "").lower()
+                    needs_target = (
+                        _req_target(template.name)
+                        or ('target creature' in oracle_lower)
+                        or ('creature spell' in oracle_lower
+                            and 'removal' not in (template.tags or set()))
+                    )
+                    if needs_target:
+                        opp_idx = 1 - player_idx
+                        if not game.players[opp_idx].creatures:
+                            can_evoke = False  # No targets for evoke
+                    if can_evoke:
+                        can_evoke = game.callbacks.should_evoke(
+                            game, player_idx, card)
 
         if can_evoke:
             return True  # Can cast via evoke
