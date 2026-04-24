@@ -477,6 +477,43 @@ class EVPlayer:
                 # driven, no magic numbers — uses the existing gate constant.
                 ev = min(ev, p.pass_threshold - 1.0)
 
+        # ── Cascade patience gate (LE-A3) ──
+        # Mirror of the Storm ritual patience gate (_combo_modifier above):
+        # cascade spells in a reanimator shell get an unconditional +1.5
+        # free-cast bonus (lines 440-442), but if the graveyard is too
+        # thin the cascaded reanimate spell (Living End / Cascade Zenith
+        # pattern) returns an empty or insufficient board. The cascade
+        # enabler is then burned for no payoff.
+        #
+        # Gate fires when ALL of:
+        #   1. Spell has the cascade keyword (oracle-parsed `is_cascade`).
+        #   2. The deck is a graveyard-reanimator shell — i.e. its
+        #      gameplan declares a FILL_RESOURCE goal with
+        #      `resource_zone == "graveyard"`. Gameplan-declared signal,
+        #      gathered by `_cascade_graveyard_target()`. Non-reanimator
+        #      cascade decks (e.g. a hypothetical Cascade Zenith burn
+        #      list with no FILL_RESOURCE/graveyard goal) return 0 and
+        #      the gate does NOT fire — their cascade hit isn't gated
+        #      on graveyard contents.
+        #   3. Graveyard creature count < the gameplan's declared
+        #      `resource_target`. No magic numbers — the number is the
+        #      same threshold the gameplan uses to transition out of
+        #      FILL_RESOURCE.
+        #
+        # When the gate fires, clamp EV below pass_threshold — a HARD
+        # reduction in line with the Scapeshift fizzle gate above and the
+        # Storm ritual patience gate in _combo_modifier. The AI will hold
+        # the cascade enabler until the graveyard has critical mass.
+        if getattr(t, 'is_cascade', False):
+            fill_target = self._cascade_graveyard_target()
+            if fill_target > 0 and snap.my_gy_creatures < fill_target:
+                # Clamp matches the Scapeshift fizzle gate treatment
+                # (line 478): profile.pass_threshold - 1.0. No extra
+                # magic: the clamp is "just below pass_threshold" so
+                # the spell is rejected by decide_main_phase but any
+                # other legal play can still fire.
+                ev = min(ev, p.pass_threshold - 1.0)
+
         # ── Amulet + Titan ramp combo ──
         # Generic detection: if we hold Primeval Titan (or any 6-mana "when
         # this creature enters, search for two lands" creature) AND this card
@@ -1484,6 +1521,26 @@ class EVPlayer:
                 break
 
         return ev
+
+    def _cascade_graveyard_target(self) -> int:
+        """Return the FILL_RESOURCE goal's `resource_target` for GY creatures.
+
+        Used by the LE-A3 cascade patience gate to determine how many
+        creatures must be in the graveyard before a cascade enabler is
+        allowed to fire. Gameplan-declared — no magic numbers.
+
+        Returns 0 when the deck has no FILL_RESOURCE goal targeting the
+        graveyard, which disables the gate (non-reanimator cascade decks,
+        or decks that use cascade for a non-graveyard payoff).
+        """
+        if not (self.goal_engine and self.goal_engine.gameplan):
+            return 0
+        from ai.gameplan import GoalType
+        for goal in self.goal_engine.gameplan.goals:
+            if (goal.goal_type == GoalType.FILL_RESOURCE
+                    and goal.resource_zone == "graveyard"):
+                return int(goal.resource_target or 0)
+        return 0
 
     def _has_reanimation_path(self, game, me) -> bool:
         """True if the deck has an oracle-visible way to return
