@@ -1135,12 +1135,54 @@ class EVPlayer:
             fuel = _count_fuel()
             reducers = sum(1 for c in me.battlefield
                            if 'cost_reducer' in getattr(c.template, 'tags', set()))
-            has_pif = _has_flashback_combo()
+            # has_pif checks whether a flashback-combo card (Past in
+            # Flames pattern) is in hand. By itself this does NOT make
+            # PiF a finisher path: PiF only functions if there are
+            # rituals/cantrips already in the graveyard to replay AND
+            # we have enough mana to cast PiF this turn AND a real
+            # finisher (Grapeshot via storm keyword, or a tutor) is
+            # accessible to close the chain. Without all three, firing
+            # rituals "because PiF is in hand" burns mana on a chain
+            # that fizzles. S-1a fix (2026-04-24): tighten has_pif to
+            # require concrete viability.
+            has_pif_card = _has_flashback_combo()
             gy_fuel = 0
-            if has_pif:
+            pif_castable = False
+            pif_unlocks_finisher = False
+            if has_pif_card:
                 gy_fuel = sum(1 for c in me.graveyard
                               if (c.template.is_instant or c.template.is_sorcery)
                               and 'ritual' in getattr(c.template, 'tags', set()))
+                # Find the PiF-pattern card itself to read its real cmc
+                # (no hardcoded cost). PiF cost is reduced by on-board
+                # cost reducers (Ruby Medallion etc.).
+                pif_card = next(
+                    (c for c in me.hand
+                     if c.instance_id != card.instance_id
+                     and 'flashback' in getattr(c.template, 'tags', set())
+                     and 'combo' in getattr(c.template, 'tags', set())),
+                    None,
+                )
+                if pif_card is not None:
+                    pif_cost = max(0, (pif_card.template.cmc or 0) - reducers)
+                    # After casting THIS ritual we still need pif_cost
+                    # mana to cast PiF on the same turn. Rituals net
+                    # mana (ritual_mana[1] - cmc) — derived from oracle.
+                    rdata = getattr(t, 'ritual_mana', None)
+                    ritual_net = max(0, (rdata[1] - (t.cmc or 0))) if rdata else 0
+                    mana_after_ritual = mana - (t.cmc or 0) + ritual_net
+                    pif_castable = mana_after_ritual >= pif_cost
+                # PiF only unlocks a kill if a real finisher (storm
+                # keyword spell or tutor) is also accessible — checked
+                # via the same predicate as has_finisher.
+                pif_unlocks_finisher = _has_finisher()
+            # Effective PiF-as-finisher path requires all three: card
+            # in hand, GY fuel to flashback, mana to cast PiF, and a
+            # finisher to actually close after the replay.
+            has_pif = (has_pif_card and gy_fuel >= 1
+                       and pif_castable and pif_unlocks_finisher)
+            if not has_pif:
+                gy_fuel = 0  # don't credit GY toward total_fuel
             total_fuel = fuel + gy_fuel + 1
             has_finisher = _has_finisher()
             min_fuel = p.storm_min_fuel_to_go if reducers > 0 else p.storm_min_fuel_to_go + 2
@@ -1175,6 +1217,21 @@ class EVPlayer:
             if can_go:
                 mod += max(go_value, 10.0)
             else:
+                # S-1a clamp: at storm=0 with no real finisher path
+                # (neither has_finisher nor a viable has_pif via the
+                # tightened predicate above) AND not under lethal
+                # pressure, this ritual's mana empties at phase end
+                # (CR 500.4) for zero damage. The soft -go_value
+                # penalty (~-1.0 at total_fuel=1, opp_life=20) is
+                # easily dwarfed by other modifiers, leading to
+                # speculative chain-firing observed in the s60130
+                # T3-T4 traces. Clamp below pass_threshold to convert
+                # the soft deterrent into a hard hold — mirrors the
+                # storm>=1 pattern at line 1255 and the Scapeshift
+                # sub-4-lands gate at ai/ev_player.py:478.
+                if not has_finisher and not has_pif and not snap.am_dead_next:
+                    mod = min(mod - go_value, p.pass_threshold - 10.0)
+                    return mod
                 mod -= go_value
                 return mod
 
