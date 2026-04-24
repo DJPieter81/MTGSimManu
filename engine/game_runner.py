@@ -1277,6 +1277,30 @@ class GameRunner:
             # But if we have very few cards, be more aggressive (need to find answers)
             if len(player.hand) <= 2:
                 safe_life = max(life_cost + 1, opp_power)  # more aggressive when desperate
+            # GV2-6: Lifelink on the source creature offsets the pay-life cost
+            # when the creature will attack this turn. Detect lifelink from the
+            # canonical keyword set (template|temp — respects Humility etc).
+            # If the creature will attack (untapped AND no summoning sickness),
+            # the lifelink combat damage will restore `creature_power` life.
+            # Drop the safety threshold by `creature_power`, but only if the
+            # controller has enough life to survive the payment itself
+            # (life > life_cost) — the creature must actually connect.
+            from engine.cards import Keyword as _Keyword
+            creature_power = creature.power or 0
+            has_lifelink = _Keyword.LIFELINK in creature.keywords
+            will_attack = (
+                (not creature.tapped)
+                and (not creature.has_summoning_sickness)
+            )
+            if (has_lifelink and will_attack
+                    and creature_power > 0
+                    and player.life > life_cost):
+                # Lifelink restores `creature_power` life post-combat. The
+                # projected post-combat life is `life - life_cost + power`.
+                # Equivalently, lower the threshold by `creature_power` so
+                # the `player.life >= safe_life` guard clears when that
+                # projection is safe.
+                safe_life = max(1, safe_life - creature_power)
             min_life = safe_life
             max_activations = 3  # Griselbrand typically activates 1-2 times
             activations = 0
