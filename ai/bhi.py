@@ -38,6 +38,13 @@ class HandBeliefs:
     p_burn: float = 0.0         # P(has burn spell)
     p_combat_trick: float = 0.0 # P(has pump/protection instant)
     p_free_counter: float = 0.0 # P(has pitch/free counterspell)
+    # Hand-disruption prior - populated from opp's published gameplan.
+    # When the opponent's gameplan declares a discard spell in
+    # mulligan_keys / critical_pieces / always_early (oracle text
+    # contains "target player ... discards"), we set p_discard to a
+    # documented prior reflecting "the opp is planning to deploy
+    # hand disruption". No Bayesian update yet - flat prior only.
+    p_discard: float = 0.0      # P(opp plans hand disruption)
 
     # Tracking
     observations: int = 0       # number of Bayesian updates applied
@@ -107,8 +114,86 @@ class BayesianHandTracker:
         self.beliefs.p_exile_removal = prior(exile)
         self.beliefs.p_burn = prior(burn)
         self.beliefs.p_combat_trick = prior(tricks)
+        # -- Discard prior from opponent's gameplan --
+        # Look up the opp's published gameplan and check whether any
+        # card in its mulligan_keys / critical_pieces / always_early
+        # has oracle text matching the canonical discard pattern
+        # ("target player ... discards"). If yes, plant a flat prior;
+        # otherwise leave at 0.0. No card names hardcoded - the
+        # detection is gameplan + oracle driven.
+        self.beliefs.p_discard = self._compute_discard_prior(opp, all_cards)
         self.beliefs.last_hand_size = hand_size
         self._initialized = True
+
+    # Documented Bayesian prior. When the opponent's published
+    # gameplan declares a discard spell as a mulligan key /
+    # critical piece / always-early card, we estimate a 50%
+    # chance they are planning to deploy it before our combo turn.
+    # No observational evidence has been incorporated yet - this is
+    # the flat prior used at game start. Sourced from the standard
+    # "noninformative for present-or-absent" 0.5 prior.
+    _DISCARD_PRIOR = 0.5
+
+    def _compute_discard_prior(self, opp, all_cards) -> float:
+        """Return the discard prior for the opponent.
+
+        Detection rule (no card names):
+          1. Look up `get_gameplan(opp.deck_name)`.
+          2. Build the union of `mulligan_keys`, `critical_pieces`,
+             and `always_early` - these are the cards the opp's own
+             gameplan says it leans on.
+          3. For each name, find the matching template in opp's
+             current pool (library or hand) and check whether its
+             oracle text matches the discard pattern
+             "target player ... discards".
+          4. If any match, return _DISCARD_PRIOR; else 0.0.
+        """
+        deck_name = getattr(opp, 'deck_name', '') or ''
+        if not deck_name:
+            return 0.0
+        try:
+            from ai.gameplan import get_gameplan
+            plan = get_gameplan(deck_name)
+        except Exception:
+            return 0.0
+        if plan is None:
+            return 0.0
+
+        signal_names = (set(getattr(plan, 'mulligan_keys', set()))
+                        | set(getattr(plan, 'critical_pieces', set()))
+                        | set(getattr(plan, 'always_early', set())))
+        if not signal_names:
+            return 0.0
+
+        # Build a name -> template lookup from the opp's pool. Using
+        # the live pool (library or hand) keeps this consistent with
+        # the rest of initialize_from_game; no extra DB lookups.
+        templates_by_name = {}
+        for c in all_cards:
+            t = getattr(c, 'template', None)
+            if t is None:
+                continue
+            n = getattr(t, 'name', None) or getattr(c, 'name', None)
+            if n and n not in templates_by_name:
+                templates_by_name[n] = t
+
+        for name in signal_names:
+            t = templates_by_name.get(name)
+            if t is None:
+                continue
+            oracle = (getattr(t, 'oracle_text', '') or '').lower()
+            # Canonical discard pattern: "target player ... discards"
+            # (covers Thoughtseize, Inquisition of Kozilek, and any
+            # similar effect added later - purely oracle-driven).
+            if 'target player' in oracle and 'discards' in oracle:
+                return self._DISCARD_PRIOR
+
+        return 0.0
+
+    def get_discard_probability(self) -> float:
+        """Current belief: P(opponent is planning to deploy
+        hand-disruption). Flat prior only (no Bayesian update yet)."""
+        return self.beliefs.p_discard
 
     def observe_priority_pass(self, game: "GameState",
                                spell_on_stack: bool = False,
