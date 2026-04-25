@@ -264,6 +264,30 @@ python build_replay.py replays/log.txt replay.html 55555
 
   When in doubt: the formula should still make sense if applied to a card the deck has never seen before.
 
+- **Generalization-first fixes.** When fixing a deck-specific
+  underperformance, the fix must be principled enough to lift
+  every other deck that shares the same archetype mechanism.
+  Workflow:
+  1. Diagnose in deck-specific terms ("Storm doesn't cast Wish to
+     access SB Grapeshot").
+  2. Lift the diagnosis to a generic mechanism ("tutor-tagged card
+     scores as a finisher-access path when SB ∪ library contains a
+     payoff").
+  3. Implement on the generic mechanism — never hardcode card names,
+     deck names, or sideboard contents in scoring code.
+  4. Before merging, name at least one OTHER deck that should
+     benefit from the same fix and verify the matrix delta on it
+     (or explain in the PR why it doesn't apply).
+  5. Always pair the principled fix with at least one Storm-side
+     test case — Storm exposes the most edge cases for combo
+     scoring, so a fix that holds for Storm is a strong robustness
+     signal for other combo decks.
+
+  A fix that only helps one deck is a smell — most likely you're
+  treating the symptom, not the cause.  Per-card overrides in
+  scoring code are the hardcoding anti-pattern flagged above; this
+  rule extends it to deck-name and SB-contents overrides too.
+
 ## Known Issues — LLM-Judge Strategy Audit
 
 See **`docs/history/audits/2026-04-11_LLM_judge.md`** for the full 6-expert panel report (~168 games). Overall grade: **D+**. Superseded by `PROJECT_STATUS.md` (see Grade in §6).
