@@ -680,8 +680,17 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
         # Stage — exile top N cards and may play them this turn.
         signals.append('card_draw')
 
-    # 6. Tutor — library search.
-    if 'search your library' in oracle:
+    # 6. Tutor — library search OR Wish-style play-from-outside.
+    # All three patterns deliver a card into hand/play this turn
+    # from a tutorable zone: library, sideboard, or outside-the-game
+    # (Wish, Burning Wish, Living Wish, Glittering Wish).  The
+    # signal fires unconditionally; gating on "is there a target?"
+    # belongs to the EV layer, not the deferral predicate (the
+    # existing `search your library` branch is the same — it does
+    # not check whether the library contains a hit).
+    if ('search your library' in oracle
+            or 'from outside the game' in oracle
+            or 'from your sideboard' in oracle):
         signals.append('tutor')
 
     # 7. Creature body with power > 0 (future combat clock contribution).

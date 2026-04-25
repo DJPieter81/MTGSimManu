@@ -502,6 +502,41 @@ def _has_storm_finisher(card, me) -> bool:
     return False
 
 
+def _tutor_has_payoff_access(card, me) -> bool:
+    """True when `card` is a tutor whose target deck (SB ∪ library)
+    contains a STORM-keyword card or a token-spawning finisher.
+
+    Differs from `_has_storm_finisher`: that predicate asks "does my
+    hand have a finisher path, EXCLUDING `card`?" and is used by the
+    ritual gate.  This predicate asks "does THIS tutor card have a
+    real target?" and is used to score the tutor itself as a
+    finisher-access cast.
+
+    Generic by construction — no card names hardcoded.  The
+    finisher detection mirrors `_has_storm_finisher`'s SB scan:
+    STORM keyword OR `create … tokens` + `for each` (the printed
+    Empty-the-Warrens template).
+    """
+    from engine.cards import Keyword as Kw
+    if 'tutor' not in getattr(card.template, 'tags', set()):
+        return False
+    sb = getattr(me, 'sideboard', None) or []
+    for c in list(sb) + list(me.library):
+        # Defensive: in test scaffolds (and real scenarios such as a
+        # transformed face-down library), an entry may be missing its
+        # template — skip those rather than crash.
+        tmpl = getattr(c, 'template', None)
+        if tmpl is None:
+            continue
+        if Kw.STORM in getattr(tmpl, 'keywords', set()):
+            return True
+        oracle = (tmpl.oracle_text or '').lower()
+        if ('create' in oracle and 'tokens' in oracle
+                and 'for each' in oracle):
+            return True
+    return False
+
+
 def _has_viable_pif(card, me, snap, after_cast_card_cmc=0,
                     after_cast_ritual_net=0) -> bool:
     """Past-in-Flames-pattern viable as a finisher path THIS turn.
@@ -600,6 +635,40 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
             return -total_fuel / opp_life * a.combo_value
         # Truly no fuel left — fire now
         return (storm + 1) / opp_life * a.combo_value
+
+    # ═══ TUTOR-AS-FINISHER-ACCESS ═══
+    # A tutor card whose target deck (SB ∪ library) contains a real
+    # payoff IS the finisher, one cast away.  Score it symmetrically
+    # to the STORM-keyword branch above: hold while non-tutor fuel
+    # remains in hand to grow the chain, fire when the tutor is the
+    # closer.  After resolving, the fetched payoff will deal
+    # (storm + 2) damage when chained — matches the STORM branch
+    # arithmetic with one extra spell in the chain (the tutor itself).
+    #
+    # Without this branch, a tutor scores at the projection's vanilla
+    # baseline (~−0.2 EV) and ties with cantrips, so the tiebreaker
+    # picks the cantrip and the chain never reaches the finisher
+    # (Storm vs Boros s50500 loss path).
+    #
+    # Generic by construction: detection is `'tutor' in tags` AND
+    # `_tutor_has_payoff_access` (oracle/tag-driven, no card names).
+    # Same mechanism credits Wish, Burning Wish, Living Wish,
+    # Demonic Tutor, Summoner's Pact — any tutor with a real target.
+    if 'tutor' in tags and _tutor_has_payoff_access(card, me):
+        if storm + 1 >= opp_life:
+            return a.combo_value  # tutor reach is lethal — fire
+        non_tutor_fuel = sum(
+            1 for c in me.hand
+            if c.instance_id != card.instance_id
+            and not c.template.is_land
+            and Kw.STORM not in getattr(c.template, 'keywords', set())
+            and 'tutor' not in getattr(c.template, 'tags', set())
+        )
+        if non_tutor_fuel > 0:
+            return -non_tutor_fuel / opp_life * a.combo_value
+        # No more non-tutor fuel — fire the tutor now to close.
+        # +2 spells: the tutor + the fetched payoff.
+        return (storm + 2) / opp_life * a.combo_value
 
     # ═══ NON-STORM PAYOFF: hold until resources ready ═══
     if role == 'payoff' and Kw.CASCADE not in getattr(card.template, 'keywords', set()):
