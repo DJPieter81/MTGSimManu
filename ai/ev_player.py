@@ -485,6 +485,19 @@ class EVPlayer:
         # ── Combo sequencing overlay ──
         ev += self._combo_modifier(card, snap, game, me, opp)
 
+        # ── Phase 2c.2: assessment-driven combo modifier (additive, belt-and-braces) ──
+        # `card_combo_modifier` is the principled successor to `_combo_modifier`:
+        # zone-aware (storm / graveyard / mana), role-aware (payoff / fuel /
+        # engine), and arithmetic-derived (no per-card scoring tables).  It
+        # runs alongside the legacy modifier in Phase 2c.2 so behaviour is
+        # validated by parallel matrix gate; PR-E (Phase 2c.3) deletes the
+        # legacy modifier once this passes.  Caching of `assess_combo` is
+        # deferred per the Phase 2c plan — single-turn correctness first.
+        if self.profile.has_combo_chain and self.goal_engine is not None:
+            from ai.combo_calc import assess_combo, card_combo_modifier
+            assessment = assess_combo(game, self.player_idx, self.goal_engine, snap)
+            ev += card_combo_modifier(card, assessment, snap, me, game, self.player_idx)
+
         # ── Fizzle detection: land-sacrifice spells without critical mass ──
         # Spells like Scapeshift ("Sacrifice any number of lands. Search
         # your library for up to that many land cards...") do nothing if
