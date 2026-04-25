@@ -81,7 +81,12 @@ def _run_game(runner, d1_name, d2_name, seed):
     """
     d1 = MODERN_DECKS[d1_name]
     d2 = MODERN_DECKS[d2_name]
+    # Seed BOTH the global module (legacy callers) and runner.rng (the
+    # engine's actual RNG). random.seed() alone leaves runner.rng on
+    # whatever state it accumulated, so identical seeds produce
+    # different outcomes on shuffle-sensitive matchups.
     random.seed(seed)
+    runner.rng.seed(seed)
     return runner.run_game(
         d1_name, d1['mainboard'], d2_name, d2['mainboard'],
         deck1_sideboard=d1.get('sideboard', {}),
@@ -99,6 +104,7 @@ def _run_match(runner, d1_name, d2_name, seed, verbose=False):
     d1 = MODERN_DECKS[d1_name]
     d2 = MODERN_DECKS[d2_name]
     random.seed(seed)
+    runner.rng.seed(seed)
     return runner.run_match(d1_name, d1, d2_name, d2, verbose=verbose)
 
 
@@ -552,6 +558,7 @@ def audit_deck(deck_name: str, n_games: int = 30, opponents: List[str] = None,
         for i in range(games_vs):
             seed = seed_start + total_games * 500
             random.seed(seed)
+            runner.rng.seed(seed)
             r = runner.run_game(
                 deck_name, deck_data['mainboard'], opp_name, opp_data['mainboard'],
                 deck1_sideboard=deck_data.get('sideboard', {}),
@@ -884,6 +891,7 @@ def run_trace_game(deck1: str, deck2: str, seed: int = 42000) -> str:
         d1 = MODERN_DECKS[deck1]
         d2 = MODERN_DECKS[deck2]
         random.seed(seed)
+        runner.rng.seed(seed)
         r = runner.run_game(
             deck1, d1['mainboard'], deck2, d2['mainboard'],
             deck1_sideboard=d1.get('sideboard', {}),
