@@ -1,15 +1,9 @@
-"""Phase-2 commit-1: dispatcher OFF must not change behavior.
+"""Phase-2b: dispatcher ON, OutcomeDistribution is the source of truth.
 
-The dispatcher is added to `_score_spell` BEFORE the legacy projection.
-When `OUTCOME_DIST_COMBO == False`, the dispatcher branch is dead and
-spell scoring must be byte-equal to the pre-Phase-2 behavior.
-
-We assert this in two ways:
-
-1. The flag is `False` at module-load time.
-2. `score_spell_via_outcome` (the existing stub) returns `None` so
-   the legacy projection runs, which is the same path covered by the
-   411-test baseline.
+After Phase-2b the flag is True — combo spells (ritual / cascade /
+reanimate / finisher / combo-tutor) are routed through
+`build_combo_distribution`.  The flag is now pinned ON; Phase 3 will
+expand the dispatcher to creatures / removal / cantrips.
 """
 from __future__ import annotations
 
@@ -18,12 +12,13 @@ import pytest
 import ai.outcome_ev as outcome_ev
 
 
-def test_outcome_dist_combo_flag_default_off():
-    """Commit 1 must ship with the flag OFF. Commit 2 flips it ON."""
-    assert outcome_ev.OUTCOME_DIST_COMBO is False, (
-        "Phase-2 commit-1 ships flag OFF for zero behaviour change. "
-        "If you flipped this to True, you are on the commit-2 step — "
-        "delete this assertion or move to the live behaviour test."
+def test_outcome_dist_combo_flag_on_phase2b():
+    """Phase-2b ships with the flag ON. Combo spells go through the
+    distribution dispatcher; legacy patience clamps are deleted."""
+    assert outcome_ev.OUTCOME_DIST_COMBO is True, (
+        "Phase-2b ships flag ON. If you flipped it OFF you have "
+        "regressed past the Phase-2b switch — restore True or move "
+        "the regression behind a separate feature flag."
     )
 
 

@@ -439,18 +439,26 @@ class EVPlayer:
         tags = getattr(t, 'tags', set())
         p = self.profile
 
-        # ── Phase 2 dispatcher — combo categories ──
+        # ── Phase 2b dispatcher — combo categories ──
         # Builds a 5-outcome distribution for ritual / cascade /
-        # reanimate / finisher / combo-tutor spells and returns its
-        # expected-value (Δ(P_win) units).  Flag is OFF in Phase 2a so
-        # this branch is dead at runtime; flipping the flag in Phase 2b
-        # is a one-line change and exercised by the dispatcher tests.
+        # reanimate / finisher / combo-tutor spells.  The distribution's
+        # expected_value() is in Δ(P_win) units (range ≈ [-1, 1]); the
+        # rest of the scoring system speaks "EV points" where lethal is
+        # ~100 (cf. Kw.STORM lethal +100.0 in _combo_modifier; +40
+        # reanimate-override at decide_main_phase).  Convert at the
+        # dispatcher boundary by multiplying by LETHAL_VALUE so the
+        # dispatcher output is comparable to the legacy projection
+        # scores.
         from ai.outcome_ev import OUTCOME_DIST_COMBO, build_combo_distribution
         if OUTCOME_DIST_COMBO:
             dist = build_combo_distribution(card, snap, game, me, opp,
                                             self.bhi, self.archetype, p)
             if dist is not None:
-                return dist.expected_value()
+                # LETHAL_VALUE: rules constant — winning the game is
+                # +100 EV points throughout the scorer (matches
+                # Kw.STORM lethal block and reanimate-override scale).
+                LETHAL_VALUE = 100.0
+                return dist.expected_value() * LETHAL_VALUE
 
         # ── Base: projection-based EV ──
         # Projects board after cast + opponent response, returns clock delta
@@ -504,89 +512,19 @@ class EVPlayer:
                 # driven, no magic numbers — uses the existing gate constant.
                 ev = min(ev, p.pass_threshold - 1.0)
 
-        # ── Cascade patience gate (LE-A3) ──
-        # Mirror of the Storm ritual patience gate (_combo_modifier above):
-        # cascade spells in a reanimator shell get an unconditional +1.5
-        # free-cast bonus (lines 440-442), but if the graveyard is too
-        # thin the cascaded reanimate spell (Living End / Cascade Zenith
-        # pattern) returns an empty or insufficient board. The cascade
-        # enabler is then burned for no payoff.
-        #
-        # Gate fires when ALL of:
-        #   1. Spell has the cascade keyword (oracle-parsed `is_cascade`).
-        #   2. The deck is a graveyard-reanimator shell — i.e. its
-        #      gameplan declares a FILL_RESOURCE goal with
-        #      `resource_zone == "graveyard"`. Gameplan-declared signal,
-        #      gathered by `_cascade_graveyard_target()`. Non-reanimator
-        #      cascade decks (e.g. a hypothetical Cascade Zenith burn
-        #      list with no FILL_RESOURCE/graveyard goal) return 0 and
-        #      the gate does NOT fire — their cascade hit isn't gated
-        #      on graveyard contents.
-        #   3. Graveyard creature count < the gameplan's declared
-        #      `resource_target`. No magic numbers — the number is the
-        #      same threshold the gameplan uses to transition out of
-        #      FILL_RESOURCE.
-        #
-        # When the gate fires, clamp EV below pass_threshold — a HARD
-        # reduction in line with the Scapeshift fizzle gate above and the
-        # Storm ritual patience gate in _combo_modifier. The AI will hold
-        # the cascade enabler until the graveyard has critical mass.
-        if getattr(t, 'is_cascade', False):
-            fill_target = self._cascade_graveyard_target()
-            if fill_target > 0 and snap.my_gy_creatures < fill_target:
-                # Clamp matches the Scapeshift fizzle gate treatment
-                # (line 478): profile.pass_threshold - 1.0. No extra
-                # magic: the clamp is "just below pass_threshold" so
-                # the spell is rejected by decide_main_phase but any
-                # other legal play can still fire.
-                ev = min(ev, p.pass_threshold - 1.0)
+        # Phase 2b — deleted: PR #154 cascade patience clamp.
+        # OutcomeDistribution.build_combo_distribution() routes cascade
+        # spells through P(COMPLETE_COMBO)/P(PARTIAL_ADVANCE)/P(FIZZLE)
+        # priors derived from chain-fuel + finisher reachability; thin
+        # graveyards now naturally land FIZZLE mass instead of a clamp.
 
-        # ── Reanimation readiness gate (GV-2) ──
-        # Mirror shape of the cascade patience gate above, but in the
-        # OPPOSITE direction: cascade is clamped when the GY is thin
-        # (cascade hits into an empty board); reanimation is BOOSTED
-        # when the GY has a target (the whole point of reanimation is
-        # to set up a big body we couldn't hardcast, so once the
-        # set-up is complete we should be eager to fire).
-        #
-        # Gate fires when ALL of:
-        #   1. Spell is a reanimation — either tagged `reanimate` (see
-        #      engine/card_database.py:655 for tag assignment) OR the
-        #      oracle contains the canonical reanimate phrasing "return
-        #      target creature card from your graveyard to the
-        #      battlefield". Oracle-driven fallback catches cards the
-        #      tagger may miss.
-        #   2. The deck is a graveyard-reanimator shell — its gameplan
-        #      declares a FILL_RESOURCE goal with
-        #      `resource_zone == "graveyard"`. Reuses the helper that
-        #      powers the cascade gate. Non-reanimator decks return 0
-        #      and the gate does not fire.
-        #   3. Graveyard creature count >= the gameplan's declared
-        #      `resource_target`. Same threshold the FILL_RESOURCE goal
-        #      uses to transition into EXECUTE_PAYOFF — gameplan-driven.
-        #
-        # When all three hold, boost EV by `snap.opp_life / 2.0`. The
-        # magnitude scales with how much damage the reanimated body
-        # still has to deal: at 20 life the boost is +10 (a decisive
-        # shove past pass_threshold even if the projection discount
-        # ate most of the base EV); at 5 life it drops to +2.5
-        # (reanimation already wins soon anyway so the nudge is
-        # smaller). No magic number — derived from the snapshot.
-        is_reanimate_tagged = 'reanimate' in tags
-        is_reanimate_oracle = (
-            'return target creature card from your graveyard to the battlefield'
-            in t_oracle
-        )
-        if is_reanimate_tagged or is_reanimate_oracle:
-            fill_target = self._cascade_graveyard_target()
-            if fill_target > 0 and snap.my_gy_creatures >= fill_target:
-                # Boost: opp life still to burn through, halved to
-                # reflect that reanimation covers ~half the damage
-                # gap in expectation (the rest comes from follow-up
-                # turns / burn / bonus triggers). Stays well below
-                # the +40 hard override in decide_main_phase — this
-                # is a soft nudge, not a force-cast.
-                ev += snap.opp_life / 2.0
+        # Phase 2b — deleted: PR #160 reanimation readiness boost.
+        # OutcomeDistribution.build_combo_distribution()'s reanimate
+        # branch returns P(COMPLETE_COMBO) ≈ 1.0 when a legal target
+        # sits in the graveyard and the spell is castable, with the
+        # "after" snapshot already reflecting the reanimated body —
+        # the readiness gate's opp_life/2 boost is now part of the
+        # principled p_win_delta computation.
 
         # ── S-2: EXECUTE_PAYOFF finisher mana-sequencing gate ──
         # Observed in Storm vs Affinity T3 (game 1): Storm in
@@ -1232,196 +1170,24 @@ class EVPlayer:
                        and 'combo' in getattr(c.template, 'tags', set())
                        for c in me.hand if c.instance_id != card.instance_id)
 
-        # ── Storm patience: hold rituals at storm=0 until ready ──
-        if p.storm_patience and storm == 0 and 'ritual' in tags:
-            fuel = _count_fuel()
-            reducers = sum(1 for c in me.battlefield
-                           if 'cost_reducer' in getattr(c.template, 'tags', set()))
-            # has_pif checks whether a flashback-combo card (Past in
-            # Flames pattern) is in hand. By itself this does NOT make
-            # PiF a finisher path: PiF only functions if there are
-            # rituals/cantrips already in the graveyard to replay AND
-            # we have enough mana to cast PiF this turn AND a real
-            # finisher (Grapeshot via storm keyword, or a tutor) is
-            # accessible to close the chain. Without all three, firing
-            # rituals "because PiF is in hand" burns mana on a chain
-            # that fizzles. S-1a fix (2026-04-24): tighten has_pif to
-            # require concrete viability.
-            has_pif_card = _has_flashback_combo()
-            gy_fuel = 0
-            pif_castable = False
-            pif_unlocks_finisher = False
-            if has_pif_card:
-                gy_fuel = sum(1 for c in me.graveyard
-                              if (c.template.is_instant or c.template.is_sorcery)
-                              and 'ritual' in getattr(c.template, 'tags', set()))
-                # Find the PiF-pattern card itself to read its real cmc
-                # (no hardcoded cost). PiF cost is reduced by on-board
-                # cost reducers (Ruby Medallion etc.).
-                pif_card = next(
-                    (c for c in me.hand
-                     if c.instance_id != card.instance_id
-                     and 'flashback' in getattr(c.template, 'tags', set())
-                     and 'combo' in getattr(c.template, 'tags', set())),
-                    None,
-                )
-                if pif_card is not None:
-                    pif_cost = max(0, (pif_card.template.cmc or 0) - reducers)
-                    # After casting THIS ritual we still need pif_cost
-                    # mana to cast PiF on the same turn. Rituals net
-                    # mana (ritual_mana[1] - cmc) — derived from oracle.
-                    rdata = getattr(t, 'ritual_mana', None)
-                    ritual_net = max(0, (rdata[1] - (t.cmc or 0))) if rdata else 0
-                    mana_after_ritual = mana - (t.cmc or 0) + ritual_net
-                    pif_castable = mana_after_ritual >= pif_cost
-                # PiF only unlocks a kill if a real finisher (storm
-                # keyword spell or tutor) is also accessible — checked
-                # via the same predicate as has_finisher.
-                pif_unlocks_finisher = _has_finisher()
-            # Effective PiF-as-finisher path requires all three: card
-            # in hand, GY fuel to flashback, mana to cast PiF, and a
-            # finisher to actually close after the replay.
-            has_pif = (has_pif_card and gy_fuel >= 1
-                       and pif_castable and pif_unlocks_finisher)
-            if not has_pif:
-                gy_fuel = 0  # don't credit GY toward total_fuel
-            total_fuel = fuel + gy_fuel + 1
-            has_finisher = _has_finisher()
-            min_fuel = p.storm_min_fuel_to_go if reducers > 0 else p.storm_min_fuel_to_go + 2
+        # Phase 2b — deleted: PR #142 storm=0 ritual hard-clamp +
+        # PR #165 PiF gate predicate.  Ritual cards are routed through
+        # `build_combo_distribution` at the dispatcher (line ~451) and
+        # never reach `_combo_modifier`; their FIZZLE / DISRUPTED mass
+        # captures the "no finisher path, mana empties at phase end"
+        # qualitative behaviour.
 
-            # Draw spells (Reckless Impulse, Wrenn's Resolve) — note they
-            # alone are NOT a substitute for finisher access. The previous
-            # draw-proxy gate ("has_draw + reducer + 3+ fuel → go") was
-            # overly optimistic: at storm=0 with no finisher or PiF in
-            # hand, committing 3+ rituals speculatively hoping to draw
-            # Grapeshot averages ~25% hit rate in a 50-card deck with
-            # 4 finishers. Audit seed storm_vs_boros Game 1 showed this
-            # burning 10 spells for 0 damage on T3, then losing T6.
-            # The principled gates below (finisher-in-hand, am_dead_next,
-            # opp_life ≤ fuel with finisher) are the only safe greenlights.
-            has_draw = any(
-                any(dt in getattr(c.template, 'tags', set())
-                    for dt in ('cantrip', 'card_advantage'))
-                for c in me.hand if c.instance_id != card.instance_id
-                and not c.template.is_land
-            )
-
-            can_go = ((has_finisher or has_pif) and total_fuel >= min_fuel
-                      and mana >= (1 if reducers > 0 else 2))
-            if snap.am_dead_next and fuel >= 1:
-                can_go = True
-            if (has_finisher or has_pif) and opp_life <= total_fuel and total_fuel >= 2:
-                can_go = True
-
-            # Value of going off = expected storm / opp_life (fraction of kill)
-            # Scaled to match spell scoring range (~10-20 for good plays)
-            go_value = total_fuel / opp_life * 20.0
-            if can_go:
-                mod += max(go_value, 10.0)
-            else:
-                # S-1a clamp: at storm=0 with no real finisher path
-                # (neither has_finisher nor a viable has_pif via the
-                # tightened predicate above) AND not under lethal
-                # pressure, this ritual's mana empties at phase end
-                # (CR 500.4) for zero damage. The soft -go_value
-                # penalty (~-1.0 at total_fuel=1, opp_life=20) is
-                # easily dwarfed by other modifiers, leading to
-                # speculative chain-firing observed in the s60130
-                # T3-T4 traces. Clamp below pass_threshold to convert
-                # the soft deterrent into a hard hold — mirrors the
-                # storm>=1 pattern at line 1255 and the Scapeshift
-                # sub-4-lands gate at ai/ev_player.py:478.
-                if not has_finisher and not has_pif and not snap.am_dead_next:
-                    mod = min(mod - go_value, p.pass_threshold - 10.0)
-                    return mod
-                mod -= go_value
-                return mod
-
-        # ── Finisher-access gate for mid-chain ──
+        # Phase 2b — deleted: PR #166 mid-chain refinements
+        # (storm_coverage / HALF_LETHAL / CASCADE_DRAW_FLOOR /
+        # MIN_CHAIN_DEPTH escalations + final hard-clamp).  Replaced
+        # by OutcomeDistribution: the chain-resolution prior already
+        # accounts for chain depth, library miss risk (via
+        # `p_draw_in_n_turns`), and finisher reachability.  The
+        # surviving "finisher accessible mid-chain" net-mana credit
+        # below is harmless reinforcement for cards that don't
+        # classify as combo (e.g. storm-keyword payoffs at storm=0).
         if p.storm_patience and storm >= 1 and 'ritual' in tags:
-            if not _has_finisher() and not _has_flashback_combo():
-                # Waive the penalty when we're about to die: am_dead_next
-                # catches "dies to combat this turn" but misses "dies next
-                # turn to scheduled damage" (opp_clock ≤ 2). Under time
-                # pressure, building fuel is still valuable — a cantrip
-                # drawn off the ritual might hit a finisher. Same "hail
-                # Mary" shape as the chain-credit dual-gate in ev_evaluator.
-                if not snap.am_dead_next and snap.opp_clock_discrete > 2:
-                    # Count cantrips / draws remaining in hand — these are
-                    # the mechanism for "digging to Grapeshot / Wish" when
-                    # no finisher is yet in hand. If there's at least one
-                    # draw left, continuing the chain can still find the
-                    # finisher. Only clamp when draws are exhausted AND
-                    # no finisher has been found.
-                    has_draw = any(
-                        any(dt in getattr(c.template, 'tags', set())
-                            for dt in ('cantrip', 'card_advantage', 'draw'))
-                        for c in me.hand
-                        if c.instance_id != card.instance_id
-                        and not c.template.is_land
-                    )
-                    if not has_draw:
-                        # No finisher, no flashback-combo, no draws
-                        # remaining — this ritual contributes only mana
-                        # that empties at phase end (CR 500.4). Clamp
-                        # score below pass_threshold (mirrors the
-                        # Scapeshift sub-4-lands gate pattern at
-                        # ai/ev_player.py:478). Observed in
-                        # replays/ruby_storm_vs_boros_energy_s60130.txt
-                        # T4: 6 rituals burned for 0 damage.
-                        mod = min(mod, p.pass_threshold - 10.0)
-                        return mod
-                    # Draws remain — soft penalty so the ritual is
-                    # slightly discouraged but still preferred over
-                    # pure passing when digging may pay.  Two
-                    # refinements (Iter4, S-5):
-                    #
-                    # (A) Storm-coverage escalation.  When
-                    #     storm/opp_life > 0.5 the chain is "over
-                    #     halfway to lethal" — every missed draw is
-                    #     increasingly catastrophic because we've
-                    #     already invested most of the resources.
-                    #     Escalation multiplier scales linearly past
-                    #     the CR-derived sentinel.
-                    storm_coverage = storm / opp_life  # opp_life >= 1
-                    # HALF_LETHAL = 0.5: "over halfway to lethal"
-                    # sentinel derived from opp_life (CR damage
-                    # rules), not a tuning knob.
-                    HALF_LETHAL = 0.5
-                    escalation = 1.0 + max(0.0, storm_coverage - HALF_LETHAL)
-                    mod -= (storm + 2) / opp_life * 5.0 * escalation
-                    # (B) Draw-miss cascade risk.  When storm >= 3
-                    #     and only one draw remains in hand, the
-                    #     chain is one bad top-deck away from
-                    #     collapse.  Penalty scales with library miss
-                    #     probability (lethal_gap / library) times
-                    #     coverage (storm / opp_life).
-                    #
-                    # MIN_CHAIN_DEPTH = 3 mirrors the STORM profile's
-                    # storm_min_fuel_to_go=2 plus one cast already on
-                    # stack — below this many spells a missed
-                    # top-deck still leaves a recoverable chain.
-                    MIN_CHAIN_DEPTH = 3
-                    # CASCADE_DRAW_FLOOR = 1: with a single cantrip
-                    # left there is no fallback if it whiffs; with
-                    # two we can chain again.  Sentinel derived from
-                    # "minimum digs to recover", not a weight.
-                    CASCADE_DRAW_FLOOR = 1
-                    if storm >= MIN_CHAIN_DEPTH:
-                        draw_count = sum(
-                            1 for c in me.hand
-                            if c.instance_id != card.instance_id
-                            and not c.template.is_land
-                            and any(dt in getattr(c.template, 'tags', set())
-                                    for dt in ('cantrip', 'card_advantage',
-                                               'draw'))
-                        )
-                        if draw_count <= CASCADE_DRAW_FLOOR:
-                            lethal_gap = max(0, opp_life - storm)
-                            library_size = max(1, len(me.library))
-                            miss_risk = min(1.0, lethal_gap / library_size)
-                            mod -= miss_risk * (storm / opp_life) * 3.0
-            else:
+            if _has_finisher() or _has_flashback_combo():
                 # Finisher IS accessible mid-chain. This ritual's net mana
                 # is oracle-derived (template.ritual_mana = (color, amount)
                 # parsed from "Add {R}{R}{R}"): net = amount - cmc. Each +1
