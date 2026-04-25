@@ -1,8 +1,11 @@
 ---
 title: Ruby Storm 25% underperformance — EV divergence diagnostic
-status: active
-priority: primary
+status: superseded
+priority: historical
 session: 2026-04-21
+superseded_by:
+  - PR142 (claude/fix-ruby-storm-finisher-reachability)
+  - tests/test_storm_ritual_held_without_finisher.py
 depends_on:
   - docs/experiments/2026-04-20_phase11_n50_matrix_validation.md
 tags:
@@ -12,7 +15,8 @@ tags:
   - diagnostic
   - storm
   - phase-12
-summary: "Ruby Storm posts 24.9% flat / 21.9% weighted at N=50. Replay seed 60130 (Ruby Storm vs Boros) shows the divergence: on T4 with Ruby Medallion ×2 + Past in Flames resolved, Storm casts a 6-ritual chain flooring at ~12 floating mana and then PASSES TURN without a finisher. Mana empties between turns (CR 500.4) — the entire chain is wasted. The AI fires rituals greedily even when Grapeshot/Wish are not in hand or graveyard. Storm patience gate fires at storm=0, not at each ritual step."
+  - resolved
+summary: "RESOLVED 2026-04-23 in PR #142. Diagnosis confirmed: ai/ev_player.py _combo_modifier mid-chain gate at storm>=1 had a soft penalty of (storm+2)/opp_life*5.0 (~0.75) when no finisher was accessible — too small to offset the ritual's combo-continuation base EV. Fix clamps ritual score below pass_threshold when storm>=1 AND no finisher/PiF AND no draws remaining. The has_draw refinement is critical: draws-remaining means the chain can still find a finisher via cantrips; no draws means stop burning mana that empties at phase end (CR 500.4). Mirrors the Scapeshift sub-4-lands gate pattern. Test-first via tests/test_storm_ritual_held_without_finisher.py — 2 cases (no-finisher hold, regression anchor with Grapeshot)."
 ---
 
 # P0 WR outlier diagnostic — Ruby Storm 25% flat / 21.9% weighted
