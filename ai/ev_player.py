@@ -102,6 +102,16 @@ class EVPlayer:
         from ai.turn_planner import CombatPlanner
         self.combat_planner = CombatPlanner()
 
+        # Phase 2c.3 cache: `assess_combo` is O(chains) expensive
+        # (worst case ~10K simulations per call) and `_score_spell`
+        # invokes it for every legal play.  All spells scored within
+        # one `decide_main_phase` call share the same EVSnapshot, so
+        # identity-based caching is sufficient and correct: the snap
+        # changes when the game state changes, and a new snap means
+        # a new id().
+        self._assess_snap_id: int = 0
+        self._assess_value = None
+
         # Mulligan decider — reuse existing.
         # archetype is a string from DECK_ARCHETYPE_OVERRIDES; some decks
         # (Ruby Storm) use "storm" which isn't an ArchetypeStrategy enum
@@ -491,8 +501,13 @@ class EVPlayer:
         # `assess_combo` is deferred — single-turn correctness first.
         if self.profile.has_combo_chain and self.goal_engine is not None:
             from ai.combo_calc import assess_combo, card_combo_modifier
-            assessment = assess_combo(game, self.player_idx, self.goal_engine, snap)
-            ev += card_combo_modifier(card, assessment, snap, me, game, self.player_idx)
+            snap_id = id(snap)
+            if snap_id != self._assess_snap_id:
+                self._assess_snap_id = snap_id
+                self._assess_value = assess_combo(
+                    game, self.player_idx, self.goal_engine, snap)
+            ev += card_combo_modifier(card, self._assess_value, snap, me, game,
+                                       self.player_idx)
 
         # ── Fizzle detection: land-sacrifice spells without critical mass ──
         # Spells like Scapeshift ("Sacrifice any number of lands. Search

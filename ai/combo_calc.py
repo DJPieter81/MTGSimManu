@@ -443,6 +443,122 @@ def card_combo_role(card, assessment):
     return 'other'
 
 
+# ═══════════════════════════════════════════════════════════════
+# Storm finisher-access predicates
+# ═══════════════════════════════════════════════════════════════
+# Ported from the deleted `_combo_modifier` in `ai/ev_player.py`
+# (Phase 2c.3 hard refactor).  These predicates determine whether a
+# Storm chain has a viable finisher path: either a direct
+# STORM-keyword spell in hand, a tutor whose target deck (SB ∪
+# library) actually contains a finisher, or a flashback-combo card
+# (Past in Flames pattern) backed by graveyard fuel + mana to cast it
+# + a finisher to close after the replay.
+#
+# Without these predicates, Storm AI fires speculative ritual chains
+# that fizzle when no finisher is reachable — burning mana at phase
+# end (CR 500.4).  Observed in the storm patience suite of tests
+# (test_storm_pif_requires_gy_and_mana, test_storm_wish_validates_sideboard,
+# test_storm_ritual_held_without_finisher).
+
+# Sentinel below any reasonable pass_threshold.  Returning this from
+# `card_combo_modifier` forces the caller to discard the play even
+# without explicit knowledge of `profile.pass_threshold`.  Rules
+# constant: a play that wastes the ritual's mana on phase-end empty
+# is strictly worse than passing the turn.
+STORM_HARD_HOLD = -1000.0
+
+
+def _has_storm_finisher(card, me) -> bool:
+    """Direct STORM-keyword finisher in hand, OR tutor with valid target.
+
+    A tutor (`Wish`, `Burning Wish`) is only a finisher path when the
+    sideboard ∪ library actually contains a STORM-keyword card or a
+    token-spawning finisher (Empty-the-Warrens pattern: oracle text
+    contains "create … tokens" + "for each").  After Wish has been
+    cast and the lone SB Grapeshot is gone, a second Wish in hand
+    must NOT register as "has finisher".  Zero hardcoded card names.
+    """
+    from engine.cards import Keyword as Kw
+    has_direct = any(
+        Kw.STORM in getattr(c.template, 'keywords', set())
+        for c in me.hand if c.instance_id != card.instance_id
+    )
+    if has_direct:
+        return True
+    has_tutor = any(
+        'tutor' in getattr(c.template, 'tags', set())
+        for c in me.hand if c.instance_id != card.instance_id
+    )
+    if not has_tutor:
+        return False
+    sb = getattr(me, 'sideboard', None) or []
+    for c in list(sb) + list(me.library):
+        if Kw.STORM in getattr(c.template, 'keywords', set()):
+            return True
+        oracle = (c.template.oracle_text or '').lower()
+        if ('create' in oracle and 'tokens' in oracle
+                and 'for each' in oracle):
+            return True
+    return False
+
+
+def _has_viable_pif(card, me, snap, after_cast_card_cmc=0,
+                    after_cast_ritual_net=0) -> bool:
+    """Past-in-Flames-pattern viable as a finisher path THIS turn.
+
+    PiF only functions when (a) the card is in hand, (b) the graveyard
+    contains ≥1 ritual to flashback into, (c) we have enough mana to
+    cast PiF after this turn's chain, and (d) a real finisher is
+    accessible to close the chain (storm keyword in hand or tutor with
+    valid target).  Without all four, the AI burns rituals "because
+    PiF is in hand" on a chain that fizzles.
+    """
+    has_pif_card = any(
+        'flashback' in getattr(c.template, 'tags', set())
+        and 'combo' in getattr(c.template, 'tags', set())
+        for c in me.hand if c.instance_id != card.instance_id
+    )
+    if not has_pif_card:
+        return False
+    gy_fuel = sum(
+        1 for c in me.graveyard
+        if (c.template.is_instant or c.template.is_sorcery)
+        and 'ritual' in getattr(c.template, 'tags', set())
+    )
+    if gy_fuel < 1:
+        return False
+    pif_card = next(
+        (c for c in me.hand
+         if c.instance_id != card.instance_id
+         and 'flashback' in getattr(c.template, 'tags', set())
+         and 'combo' in getattr(c.template, 'tags', set())),
+        None,
+    )
+    if pif_card is None:
+        return False
+    reducers = sum(
+        1 for c in me.battlefield
+        if 'cost_reducer' in getattr(c.template, 'tags', set())
+    )
+    pif_cost = max(0, (pif_card.template.cmc or 0) - reducers)
+    mana_after_ritual = (snap.my_mana - after_cast_card_cmc
+                         + after_cast_ritual_net)
+    if mana_after_ritual < pif_cost:
+        return False
+    return _has_storm_finisher(card, me)
+
+
+def _has_draw_in_hand(card, me) -> bool:
+    """Any cantrip / card-advantage / draw spell in hand (excluding `card`)."""
+    return any(
+        any(dt in getattr(c.template, 'tags', set())
+            for dt in ('cantrip', 'card_advantage', 'draw'))
+        for c in me.hand
+        if c.instance_id != card.instance_id
+        and not c.template.is_land
+    )
+
+
 def card_combo_modifier(card, assessment, snap, me, game, player_idx):
     """Minimal combo modifier — only handles what projection CAN'T model.
 
@@ -524,15 +640,22 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
             improvement = dmg_with / opp_life * a.combo_value
         return improvement
 
-    # ═══ RITUAL CHAIN GATE: block at storm=0 without payoff access ═══
-    if role == 'fuel' and storm == 0:
-        # "Payoff access" includes tutors (Wish can find Grapeshot)
-        has_access = a.has_payoff or any(
-            'tutor' in getattr(c.template, 'tags', set())
-            for c in me.hand if c.instance_id != card.instance_id)
-        if not has_access:
-            # No payoff or tutor → wasting ritual
-            return -a.combo_value / opp_life
+    # ═══ RITUAL CHAIN GATE: storm=0 — block speculative chains ═══
+    # Tightened predicate (Phase 2c.3 port): a tutor-tagged card alone
+    # is not a finisher path; the SB ∪ library must contain a real
+    # finisher.  PiF is only a finisher path when GY has fuel + we
+    # have mana to cast it + a finisher exists to close the chain.
+    if role == 'fuel' and storm == 0 and 'ritual' in tags:
+        rdata = getattr(card.template, 'ritual_mana', None)
+        ritual_net = max(0, (rdata[1] - (card.template.cmc or 0))) if rdata else 0
+        has_finisher = _has_storm_finisher(card, me)
+        has_pif = _has_viable_pif(card, me, snap,
+                                   after_cast_card_cmc=(card.template.cmc or 0),
+                                   after_cast_ritual_net=ritual_net)
+        if not has_finisher and not has_pif and not snap.am_dead_next:
+            # No finisher path and not under lethal pressure — this
+            # ritual's mana empties at phase end (CR 500.4).  Hard hold.
+            return STORM_HARD_HOLD
 
         # ── Reducer-first heuristic: rituals are worth more AFTER a reducer ──
         # If no reducer deployed yet but one exists in hand and is castable,
@@ -590,6 +713,57 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
 
         # Has access — let projection's mana-production arithmetic handle it
         return 0.0
+
+    # ═══ MID-CHAIN RITUAL GATE (storm >= 1) ═══
+    # Phase 2c.3 port: when we're already mid-chain but no finisher
+    # path is reachable, the rituals' mana empties at phase end.
+    # Hard-clamp when no draws remain (no way to dig); soft-penalize
+    # with storm-coverage escalation + draw-miss cascade risk when
+    # draws still exist.  Sentinel constants (HALF_LETHAL,
+    # MIN_CHAIN_DEPTH, CASCADE_DRAW_FLOOR) are derived from CR damage
+    # rules and STORM-profile fuel thresholds, not tuning weights.
+    if role == 'fuel' and storm >= 1 and 'ritual' in tags:
+        rdata = getattr(card.template, 'ritual_mana', None)
+        ritual_net = max(0, (rdata[1] - (card.template.cmc or 0))) if rdata else 0
+        has_finisher = _has_storm_finisher(card, me)
+        has_pif = _has_viable_pif(card, me, snap,
+                                   after_cast_card_cmc=(card.template.cmc or 0),
+                                   after_cast_ritual_net=ritual_net)
+        if not has_finisher and not has_pif:
+            opp_clock = getattr(snap, 'opp_clock_discrete', 99)
+            if not snap.am_dead_next and opp_clock > 2:
+                if not _has_draw_in_hand(card, me):
+                    # No finisher, no flashback, no draws → hard hold.
+                    return STORM_HARD_HOLD
+                # Draws remain — soft penalty with two refinements.
+                # (A) Storm-coverage escalation: when storm/opp_life
+                #     > HALF_LETHAL we've already invested most of the
+                #     resources in this chain; missing the closer is
+                #     increasingly catastrophic.
+                storm_coverage = storm / opp_life
+                HALF_LETHAL = 0.5
+                escalation = 1.0 + max(0.0, storm_coverage - HALF_LETHAL)
+                penalty = (storm + 2) / opp_life * 5.0 * escalation
+                # (B) Draw-miss cascade risk: at storm >= 3 and only
+                #     one draw left, the chain is one bad top-deck
+                #     from collapse.  Penalty scales with library
+                #     miss probability times coverage.
+                MIN_CHAIN_DEPTH = 3
+                CASCADE_DRAW_FLOOR = 1
+                if storm >= MIN_CHAIN_DEPTH:
+                    draw_count = sum(
+                        1 for c in me.hand
+                        if c.instance_id != card.instance_id
+                        and not c.template.is_land
+                        and any(dt in getattr(c.template, 'tags', set())
+                                for dt in ('cantrip', 'card_advantage', 'draw'))
+                    )
+                    if draw_count <= CASCADE_DRAW_FLOOR:
+                        lethal_gap = max(0, opp_life - storm)
+                        library_size = max(1, len(me.library))
+                        miss_risk = min(1.0, lethal_gap / library_size)
+                        penalty += miss_risk * (storm / opp_life) * 3.0
+                return -penalty
 
     # ═══ FLIP-TRANSFORM STACK BATCHING ═══
     # When a creature with a "flip a coin" on-cast trigger is on the
