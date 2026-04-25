@@ -439,18 +439,51 @@ class EVPlayer:
         tags = getattr(t, 'tags', set())
         p = self.profile
 
-        # ── Phase 2 dispatcher — combo categories ──
-        # Builds a 5-outcome distribution for ritual / cascade /
-        # reanimate / finisher / combo-tutor spells and returns its
-        # expected-value (Δ(P_win) units).  Flag is OFF in Phase 2a so
-        # this branch is dead at runtime; flipping the flag in Phase 2b
-        # is a one-line change and exercised by the dispatcher tests.
-        from ai.outcome_ev import OUTCOME_DIST_COMBO, build_combo_distribution
-        if OUTCOME_DIST_COMBO:
-            dist = build_combo_distribution(card, snap, game, me, opp,
-                                            self.bhi, self.archetype, p)
-            if dist is not None:
-                return dist.expected_value()
+        # ── Phase 2c.1 dispatcher — state-query lethal-now routing ──
+        # Phase 2b (route ALL combo categories) regressed Storm
+        # 24%->3.8% and Goryo's 24%->11% because the OutcomeDistribution
+        # is a SINGLE-TURN model; combo decks need multi-turn evaluation
+        # for "ritual at storm=0 with no finisher accessible" cases.
+        #
+        # Phase 2c.1 narrows routing to LETHAL-THIS-TURN chains only:
+        # we consult `find_all_chains` for the live hand/mana/medallions/
+        # storm and route through `build_combo_distribution` iff a chain
+        # exists with `payoff_deals_damage=True` AND
+        # `storm_damage >= opp_life`.  Otherwise the legacy path
+        # (`compute_play_ev` + `_combo_modifier` below) runs unchanged.
+        from ai.outcome_ev import (OUTCOME_DIST_COMBO,
+                                    build_combo_distribution,
+                                    _classify_combo_category)
+        if OUTCOME_DIST_COMBO and _classify_combo_category(card) is not None:
+            if self.goal_engine is not None:
+                from ai.combo_chain import find_all_chains
+                from ai.combo_calc import _collect_payoff_names
+                payoff_names = _collect_payoff_names(self.goal_engine)
+                medallions = sum(
+                    1 for c in me.battlefield
+                    if 'cost_reducer' in getattr(c.template, 'tags', set())
+                )
+                chains = find_all_chains(
+                    me.hand, snap.my_mana, medallions,
+                    payoff_names, me.spells_cast_this_turn,
+                )
+                has_lethal_now = any(
+                    c.payoff_deals_damage and c.storm_damage >= snap.opp_life
+                    for c in chains
+                )
+                if has_lethal_now:
+                    dist = build_combo_distribution(
+                        card, snap, game, me, opp,
+                        self.bhi, self.archetype, p,
+                    )
+                    if dist is not None:
+                        # `dist.expected_value()` is in Δ(P_win) units
+                        # (~[0,1]); legacy lethal awards score +100.0
+                        # at line 1460. Bridge the units so the lethal
+                        # dispatcher path matches the legacy lethal
+                        # award scale used elsewhere in scoring.
+                        LETHAL_VALUE = 100.0  # rules constant, winning-the-game
+                        return dist.expected_value() * LETHAL_VALUE
 
         # ── Base: projection-based EV ──
         # Projects board after cast + opponent response, returns clock delta

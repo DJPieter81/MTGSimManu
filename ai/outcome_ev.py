@@ -10,12 +10,17 @@ from typing import Dict, Optional
 import math
 
 
-# Phase-2a master flag.  When False, the dispatcher in
-# `ev_player._score_spell` does NOT call `build_combo_distribution`,
-# so the legacy projection path is exercised verbatim and the existing
-# baseline test suite stays green by construction.  Phase 2b flips this
-# to True after parity work has landed.
-OUTCOME_DIST_COMBO = False
+# Phase-2c.1 dispatcher flag.  When True, `ev_player._score_spell`
+# routes lethal-this-turn combo chains through `build_combo_distribution`
+# (state-query gate via `combo_chain.find_all_chains`).  Non-lethal-now
+# combo cards fall through to the legacy `compute_play_ev` +
+# `_combo_modifier` path unchanged, preserving Storm/Goryo's multi-turn
+# evaluation that the single-turn distribution model can't capture.
+#
+# Phase-2a shipped with this OFF (parity).  Phase-2b flipped it ON
+# without the gate and regressed Storm 24%->3.8%.  Phase-2c.1 ships
+# with the gate AND the flag ON.
+OUTCOME_DIST_COMBO = True  # Phase 2c.1 — state-query routing
 
 
 class Outcome(Enum):
