@@ -1,8 +1,11 @@
 ---
-title: Affinity 87% overperformance — EV divergence diagnostic
-status: active
-priority: primary
+title: Affinity 87% overperformance — EV divergence diagnostic (ORIGINAL, superseded)
+status: superseded
+priority: historical
 session: 2026-04-21
+falsified_on: 2026-04-23
+superseded_by:
+  - docs/diagnostics/2026-04-23_affinity_mana_holdback_bug.md
 depends_on:
   - docs/experiments/2026-04-20_phase11_n50_matrix_validation.md
 tags:
@@ -11,8 +14,18 @@ tags:
   - affinity
   - diagnostic
   - phase-12
-summary: "Across three Bo3 replays (vs Boros, Dimir, Azorius Control at seeds 60100/60101/60102), Affinity posts 6-1 in games. The EV divergence is on the defender side: opponents with active counterspells and removal do not cast them against Affinity's Plating carriers or the CMC-7-reduced Sojourner's Companion. Decisions in ai/response.py treat Affinity threats as below the response threshold even when counter + mana are both available. This is the Affinity counter-side of the Azorius Control 15% diagnostic."
+  - hypothesis-falsified
+summary: "FALSIFIED + ROOT-CAUSED 2026-04-23. Original hypothesis (response-gate undervalues creature-with-carrier-pool synergy) was falsified by unit test. True root cause found via decide_response instrumentation: AzCon has only 1 untapped land at opp's priority window because it taps out on its own turn (cycling Lórien Revealed at T2, casting Isochron Scepter at T3). Counterspell requires UU — uncastable, filtered by can_cast. Bug is mana holdback for control decks with counter in hand, not response-gate scoring. See 2026-04-23_affinity_mana_holdback_bug.md."
 ---
+
+> **STATUS — SUPERSEDED 2026-04-23.** Initial hypothesis (response-gate
+> scoring) was falsified. The real bug IS mana-management — AzCon taps
+> out on its own turn and has no mana open for opponent's priority
+> window, even though the opponent's threat is scored correctly.
+> See `2026-04-23_affinity_mana_holdback_bug.md` for the corrected
+> diagnostic. The rest of this document is preserved for historical
+> context only.
+
 
 # P0 WR outlier diagnostic — Affinity 87% flat
 
