@@ -1063,6 +1063,11 @@ if __name__ == '__main__':
                         help='Parallel workers for matrix runs '
                              '(default: cpu_count()-1; each worker holds a '
                              '~400MB card DB in memory)')
+    parser.add_argument('--parallel', action='store_true',
+                        help='Use tools.parallel_matrix.run_matrix_parallel '
+                             'for --matrix runs (default off; backward '
+                             'compatible with the in-tree multiprocessing '
+                             'path). Pair with --workers to size the pool.')
     args = parser.parse_args()
 
     # Apply --workers override before any parallel run. Rebinds the
@@ -1125,8 +1130,66 @@ if __name__ == '__main__':
             save_results(result)
     else:
         # Default: run matrix
-        result = run_meta_matrix(top_tier=args.decks, n_games=args.games, bo1=args.bo1)
+        if args.parallel:
+            # Phase 2.5: tools.parallel_matrix wrapper. Builds the
+            # off-diagonal pair list and dispatches via multiprocessing.
+            # We then assemble the same `result` shape as
+            # run_meta_matrix so downstream code (print_matrix,
+            # save_results, dashboard merge) is unchanged.
+            from tools.parallel_matrix import run_matrix_parallel
+            names = get_all_deck_names()
+            if args.decks and args.decks < len(names):
+                names = sorted(names,
+                               key=lambda n: METAGAME_SHARES.get(n, 0),
+                               reverse=True)[:args.decks]
+            workers = args.workers if args.workers is not None else _DEFAULT_WORKERS
+            print(f'Parallel matrix: {len(names)} decks, n={args.games}, '
+                  f'workers={workers}', file=sys.stderr)
+            wr_dict = run_matrix_parallel(names, n_games=args.games,
+                                          workers=workers)
+            # Convert (d1, d2) -> pct1 into the matrix shape used elsewhere.
+            matrix = {pair: wr for pair, wr in wr_dict.items()}
+            # Compute simple flat rankings (no meta-weighted/T1+T2 here —
+            # the parallel path is for fast iteration; for full audit
+            # output, run without --parallel).
+            rankings = []
+            for d in names:
+                rates = [matrix.get((d, opp), 50)
+                         for opp in names if opp != d]
+                avg = sum(rates) / len(rates) if rates else 0.0
+                rankings.append((round(avg, 1), d, round(avg, 1)))
+            rankings.sort(key=lambda x: x[0], reverse=True)
+            result = {'matrix': matrix, 'rankings': rankings,
+                      'names': names, 'n_games': args.games,
+                      'format': 'bo1' if args.bo1 else 'bo3'}
+        else:
+            result = run_meta_matrix(top_tier=args.decks, n_games=args.games, bo1=args.bo1)
         print_matrix(result)
+
+        # Phase 2.5: always run symmetry invariant check after matrix
+        # completes; print the worst 5 violations to stderr. Uses the
+        # same tolerance constant as the standalone CLI.
+        try:
+            from tools.symmetry_check import (
+                check_symmetry, SYMMETRY_TOLERANCE,
+            )
+            # Convert {(d1, d2): pct} -> {"d1|d2": fraction} for the tool.
+            matrix_for_check = {f'{d1}|{d2}': v / 100.0
+                                for (d1, d2), v in result['matrix'].items()}
+            issues = check_symmetry(matrix_for_check)
+            if issues:
+                print(f'Symmetry violations > {SYMMETRY_TOLERANCE:.0%}: '
+                      f'{len(issues)} pair(s). Worst 5:', file=sys.stderr)
+                for d1, d2, wr1, wr2, total in issues[:5]:
+                    print(f'  {d1} vs {d2}: {wr1:.1%} + {wr2:.1%} '
+                          f'= {total:.1%} (off by {abs(total-1.0):.1%})',
+                          file=sys.stderr)
+            else:
+                print(f'Symmetry: OK (no violations > '
+                      f'{SYMMETRY_TOLERANCE:.0%})', file=sys.stderr)
+        except Exception as e:
+            print(f'Symmetry check skipped: {e}', file=sys.stderr)
+
         if args.save:
             save_results(result)
             # Auto-rebuild dashboard from saved results
