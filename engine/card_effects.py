@@ -213,14 +213,14 @@ def subtlety_etb(game, card, controller, targets=None, item=None):
     if not game.stack.is_empty:
         # Check stack for creature or planeswalker spells from opponent
         from engine.cards import CardType
-        for i in range(len(game.stack._items) - 1, -1, -1):
-            item_on_stack = game.stack._items[i]
+        for i in range(len(game.stack.items) - 1, -1, -1):
+            item_on_stack = game.stack.items[i]
             if item_on_stack.controller != opponent:
                 continue
             t = item_on_stack.source.template
             if CardType.CREATURE in t.card_types or CardType.PLANESWALKER in t.card_types:
                 # Remove from stack, put on top of library
-                removed = game.stack._items.pop(i)
+                removed = game.stack.items.pop(i)
                 removed.source.zone = "library"
                 game.players[opponent].library.insert(0, removed.source)
                 game.log.append(f"T{game.display_turn} P{controller+1}: "
