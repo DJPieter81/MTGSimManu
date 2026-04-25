@@ -245,8 +245,14 @@ class ResolutionManager:
                     )
                 continue
 
+            # CR 614 simultaneous return: bulk-remove from GY before
+            # firing any ETB. An ETB that mutates this same GY (e.g.,
+            # Endurance's clear) would otherwise desync the snapshot
+            # from the live list and raise on .remove().
+            to_return = set(map(id, gy_creatures))
+            player.graveyard[:] = [c for c in player.graveyard
+                                   if id(c) not in to_return]
             for creature in gy_creatures:
-                player.graveyard.remove(creature)
                 creature.controller = p_idx
                 creature.enter_battlefield()
                 player.battlefield.append(creature)
