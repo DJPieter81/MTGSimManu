@@ -439,6 +439,19 @@ class EVPlayer:
         tags = getattr(t, 'tags', set())
         p = self.profile
 
+        # ── Phase 2 dispatcher — combo categories ──
+        # Builds a 5-outcome distribution for ritual / cascade /
+        # reanimate / finisher / combo-tutor spells and returns its
+        # expected-value (Δ(P_win) units).  Flag is OFF in Phase 2a so
+        # this branch is dead at runtime; flipping the flag in Phase 2b
+        # is a one-line change and exercised by the dispatcher tests.
+        from ai.outcome_ev import OUTCOME_DIST_COMBO, build_combo_distribution
+        if OUTCOME_DIST_COMBO:
+            dist = build_combo_distribution(card, snap, game, me, opp,
+                                            self.bhi, self.archetype, p)
+            if dist is not None:
+                return dist.expected_value()
+
         # ── Base: projection-based EV ──
         # Projects board after cast + opponent response, returns clock delta
         # Pass BHI for Bayesian-updated opponent response probabilities
