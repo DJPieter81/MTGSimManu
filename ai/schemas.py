@@ -13,7 +13,7 @@ evaluator the kernel calls.
 from __future__ import annotations
 from typing import Any, Callable, Literal, Optional
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 # Discriminated kinds — extend as new mechanics are added.  The
@@ -31,6 +31,19 @@ EffectKind = Literal[
 ChoiceSource = Literal[
     "cast", "target", "optional_cost",
     "block", "attack", "activate", "mulligan",
+]
+
+# Finisher pattern — derived from oracle/keyword/tag detection.  Each
+# pattern corresponds to a different "how does this deck close out a
+# game" mechanism and dictates which fields of `FinisherProjection`
+# are meaningful.  Adding a new pattern is purely additive: extend
+# this Literal and teach `simulate_finisher_chain` to recognize it.
+FinisherPattern = Literal[
+    "storm",         # ritual + cantrip → STORM-keyword closer (Grapeshot)
+    "cascade",       # cascade trigger casts free spell from library
+    "reanimation",   # discard outlet + reanimator → big creature
+    "cycling",       # cycle to fill GY → cycling-payoff closer
+    "none",          # no chain reachable from current state
 ]
 
 
@@ -84,3 +97,49 @@ class Choice(BaseModel):
     source: ChoiceSource
 
     model_config = ConfigDict(arbitrary_types_allowed=True, frozen=True)
+
+
+class FinisherProjection(BaseModel):
+    """Projected EV-impact of attempting a finisher chain.
+
+    Produced by `ai.finisher_simulator.simulate_finisher_chain`.  A
+    *projection* — a pure-function summary of what the chain would
+    look like if cast from the current snapshot.  No game-state
+    mutation happens to compute it.
+
+    Field semantics by pattern:
+
+    * `pattern` — the detected closing mechanism, or "none" when no
+      chain is reachable from the current state.
+    * `expected_damage` — projected damage dealt to the opponent if
+      the chain fires.  Storm: storm count of the closer.
+      Reanimation: combat power of the reanimated creature.  Cascade
+      / cycling: 0 unless the hit deals direct damage (typical
+      payoffs are board swings, not burn finishers).
+    * `success_probability` — P(chain finds a finisher).  1.0 when
+      the closer is in hand; lower when the chain depends on a
+      tutor / cascade / draw to reach the closer.
+    * `mana_floor` — minimum mana required to make the chain viable.
+      Storm: cmc of the cheapest closer (or tutor cmc when only a
+      tutor is available).  Reanimation: cmc of the reanimator
+      spell.  Cycling: cycling cost of the cheapest cycler.
+      Cascade: cmc of the cheapest cascade enabler.
+    * `chain_length` — projected number of spells cast (including
+      the closer).  Storm uses the chain finder's `storm_count`;
+      other patterns use a simple step count (cycle + payoff = 2,
+      enabler + cascade-cast = 2, outlet + reanimator = 2).
+    * `closer_name` — name of the finisher card the simulator
+      expects to close on, or None if no closer is reachable.
+
+    All numeric values come from `combo_chain.find_all_chains`
+    arithmetic, oracle text, or rules constants documented inline
+    in `ai/finisher_simulator.py`.  No tuning weights live here.
+    """
+    pattern: FinisherPattern = "none"
+    expected_damage: float = Field(default=0.0, ge=0.0)
+    success_probability: float = Field(default=0.0, ge=0.0, le=1.0)
+    mana_floor: int = Field(default=0, ge=0)
+    chain_length: int = Field(default=0, ge=0)
+    closer_name: Optional[str] = None
+
+    model_config = ConfigDict(frozen=True)
