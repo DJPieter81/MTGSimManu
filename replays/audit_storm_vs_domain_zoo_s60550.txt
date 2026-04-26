@@ -1,0 +1,590 @@
+Loaded 21759 cards (0 errors)
+=== Ruby Storm vs Domain Zoo (seed 60550) ===
+Result: Ruby Storm wins T6 via damage
+Life: P1=7 P2=0
+
+  [MAIN1]
+
+T1 Ruby Storm | life=20 mana=0 hand=5+2L gy=0
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve"]
+  Opp board: [] (life=20)
+  EV scores:
+     +24.0  play_land: Elegant Parlor <--
+     +24.0  play_land: Elegant Parlor
+  >>> PLAY_LAND: Elegant Parlor
+  [MAIN1]
+
+T1 Ruby Storm | life=20 mana=0 hand=5+1L gy=0
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve"]
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T1 Ruby Storm | life=20 mana=0 hand=5+1L gy=0
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve"]
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T2 Domain Zoo | life=20 mana=0 hand=6+2L gy=0
+  Hand: ["Phlage, Titan of Fire's Fury", 'Leyline Binding', 'Leyline Binding', 'Stubborn Denial', 'Doorkeeper Thrull', 'Lightning Bolt']
+  Opp board: [] (life=20)
+  EV scores:
+     +41.0  play_land: Flooded Strand <--
+     +10.0  play_land: Arena of Glory
+  >>> PLAY_LAND: Flooded Strand
+  [MAIN1]
+
+T2 Domain Zoo | life=17 mana=1 hand=6+1L gy=1
+  Hand: ["Phlage, Titan of Fire's Fury", 'Leyline Binding', 'Leyline Binding', 'Stubborn Denial', 'Doorkeeper Thrull', 'Lightning Bolt']
+  Opp board: [] (life=20)
+  EV scores:
+      +0.1  cast_spell: Lightning Bolt <--  [h=+0.1 la=+0.1]
+  >>> CAST_SPELL: Lightning Bolt
+  [MAIN1]
+
+T2 Domain Zoo | life=17 mana=0 hand=5+1L gy=2
+  Hand: ["Phlage, Titan of Fire's Fury", 'Leyline Binding', 'Leyline Binding', 'Stubborn Denial', 'Doorkeeper Thrull']
+  Opp board: [] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T2 Domain Zoo | life=17 mana=0 hand=5+1L gy=2
+  Hand: ["Phlage, Titan of Fire's Fury", 'Leyline Binding', 'Leyline Binding', 'Stubborn Denial', 'Doorkeeper Thrull']
+  Opp board: [] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T3 Ruby Storm | life=17 mana=1 hand=6+1L gy=0
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", "Wrenn's Resolve"]
+  Opp board: [] (life=17)
+  EV scores:
+      +7.0  play_land: Elegant Parlor <--
+  >>> PLAY_LAND: Elegant Parlor
+  [MAIN1]
+
+T3 Ruby Storm | life=17 mana=1 hand=6+0L gy=0
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", "Wrenn's Resolve"]
+  Opp board: [] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T3 Ruby Storm | life=17 mana=1 hand=6+0L gy=0
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", "Wrenn's Resolve"]
+  Opp board: [] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T4 Domain Zoo | life=17 mana=1 hand=5+2L gy=2
+  Hand: ["Phlage, Titan of Fire's Fury", 'Leyline Binding', 'Leyline Binding', 'Stubborn Denial', 'Doorkeeper Thrull']
+  Opp board: [] (life=17)
+  EV scores:
+     +34.0  play_land: Flooded Strand <--
+      +7.0  play_land: Arena of Glory
+  >>> PLAY_LAND: Flooded Strand
+  [MAIN1]
+
+T4 Domain Zoo | life=14 mana=2 hand=5+1L gy=3
+  Hand: ["Phlage, Titan of Fire's Fury", 'Leyline Binding', 'Leyline Binding', 'Stubborn Denial', 'Doorkeeper Thrull']
+  Opp board: [] (life=17)
+  EV scores:
+      +1.1  cast_spell: Doorkeeper Thrull <--  [h=+1.1 la=+1.1 rmv=4%]
+  >>> CAST_SPELL: Doorkeeper Thrull
+  [MAIN1]
+
+T4 Domain Zoo | life=14 mana=0 hand=4+1L gy=3
+  Hand: ["Phlage, Titan of Fire's Fury", 'Leyline Binding', 'Leyline Binding', 'Stubborn Denial']
+  Board: ['Doorkeeper Thrull (1/2)']
+  Opp board: [] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T4 Domain Zoo | life=14 mana=0 hand=4+1L gy=3
+  Hand: ["Phlage, Titan of Fire's Fury", 'Leyline Binding', 'Leyline Binding', 'Stubborn Denial']
+  Board: ['Doorkeeper Thrull (1/2)']
+  Opp board: [] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T5 Ruby Storm | life=17 mana=2 hand=6+1L gy=0
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", "Wrenn's Resolve"]
+  Opp board: ['Doorkeeper Thrull (1/2)'] (life=14)
+  EV scores:
+     +18.9  cast_spell: Ruby Medallion <--  [h=+18.9 la=+18.9]
+     +18.9  cast_spell: Ruby Medallion  [h=+18.9 la=+18.9]
+     +18.0  play_land: Arid Mesa
+      -1.3  cast_spell: Wrenn's Resolve  [h=-1.3 la=-1.3]
+      -1.3  cast_spell: Wrenn's Resolve  [h=-1.3 la=-1.3]
+    -999.0  cast_spell: Manamorphose  [h=-999.0 la=-999.0]
+  >>> PLAY_LAND: Arid Mesa
+  [MAIN1]
+
+T5 Ruby Storm | life=14 mana=3 hand=6+0L gy=1
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", "Wrenn's Resolve"]
+  Opp board: ['Doorkeeper Thrull (1/2)'] (life=14)
+  EV scores:
+     +28.4  cast_spell: Ruby Medallion <--  [h=+28.4 la=+28.4]
+     +28.4  cast_spell: Ruby Medallion  [h=+28.4 la=+28.4]
+      -1.3  cast_spell: Wrenn's Resolve  [h=-1.3 la=-1.3]
+      -1.3  cast_spell: Wrenn's Resolve  [h=-1.3 la=-1.3]
+      -2.4  cast_spell: Glimpse the Impossible  [h=-2.4 la=-2.4]
+    -1000.0  cast_spell: Manamorphose  [h=-1000.0 la=-1000.0]
+  >>> CAST_SPELL: Wrenn's Resolve
+  [MAIN1]
+
+T5 Ruby Storm | life=14 mana=1 hand=6+1L gy=2
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", 'Grapeshot']
+  Opp board: ['Doorkeeper Thrull (1/2)'] (life=14)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T5 Ruby Storm | life=14 mana=1 hand=6+1L gy=2
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", 'Grapeshot']
+  Opp board: ['Doorkeeper Thrull (1/2)'] (life=14)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T6 Domain Zoo | life=14 mana=2 hand=5+1L gy=3
+  Hand: ["Phlage, Titan of Fire's Fury", 'Leyline Binding', 'Leyline Binding', 'Stubborn Denial', 'Ragavan, Nimble Pilferer']
+  Board: ['Doorkeeper Thrull (1/2)']
+  Opp board: [] (life=14)
+  EV scores:
+      +7.0  play_land: Arena of Glory <--
+      +4.9  cast_spell: Ragavan, Nimble Pilferer  [h=+4.9 la=+4.9 rmv=3%]
+  >>> PLAY_LAND: Arena of Glory
+  [MAIN1]
+
+T6 Domain Zoo | life=14 mana=2 hand=5+0L gy=3
+  Hand: ["Phlage, Titan of Fire's Fury", 'Leyline Binding', 'Leyline Binding', 'Stubborn Denial', 'Ragavan, Nimble Pilferer']
+  Board: ['Doorkeeper Thrull (1/2)']
+  Opp board: [] (life=14)
+  EV scores:
+      +5.0  cast_spell: Ragavan, Nimble Pilferer <--  [h=+5.0 la=+5.0 rmv=3%]
+  >>> CAST_SPELL: Ragavan, Nimble Pilferer
+  [MAIN1]
+
+T6 Domain Zoo | life=14 mana=1 hand=4+0L gy=3
+  Hand: ["Phlage, Titan of Fire's Fury", 'Leyline Binding', 'Leyline Binding', 'Stubborn Denial']
+  Board: ['Doorkeeper Thrull (1/2)', 'Ragavan, Nimble Pilferer (2/1)']
+  Opp board: [] (life=14)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Doorkeeper Thrull']
+  [MAIN2]
+
+T6 Domain Zoo | life=14 mana=1 hand=4+0L gy=3
+  Hand: ["Phlage, Titan of Fire's Fury", 'Leyline Binding', 'Leyline Binding', 'Stubborn Denial']
+  Board: ['Doorkeeper Thrull (1/2)', 'Ragavan, Nimble Pilferer (2/1)']
+  Opp board: [] (life=13)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T7 Ruby Storm | life=13 mana=3 hand=6+2L gy=2
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", 'Grapeshot']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Ragavan, Nimble Pilferer (2/1)'] (life=14)
+  EV scores:
+     +52.6  cast_spell: Ruby Medallion <--  [h=+52.6 la=+52.6]
+     +52.6  cast_spell: Ruby Medallion  [h=+52.6 la=+52.6]
+     +15.0  play_land: Mountain
+     +15.0  play_land: Mountain
+      -8.6  cast_spell: Wrenn's Resolve  [h=-8.6 la=-8.6]
+      -9.7  cast_spell: Glimpse the Impossible  [h=-9.7 la=-9.7]
+    ... +2 more
+  >>> PLAY_LAND: Mountain
+  [MAIN1]
+
+T7 Ruby Storm | life=13 mana=4 hand=6+1L gy=2
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", 'Grapeshot']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Ragavan, Nimble Pilferer (2/1)'] (life=14)
+  EV scores:
+     +38.7  cast_spell: Ruby Medallion <--  [h=+38.7 la=+38.7]
+     +38.7  cast_spell: Ruby Medallion  [h=+38.7 la=+38.7]
+      -0.3  cast_spell: Wrenn's Resolve  [h=-0.3 la=-0.3]
+      -8.6  cast_spell: Glimpse the Impossible  [h=-8.6 la=-8.6]
+     -21.0  cast_spell: Manamorphose  [h=-21.0 la=-21.0]
+     -25.2  cast_spell: Grapeshot  [h=-25.2 la=-25.2]
+  >>> CAST_SPELL: Wrenn's Resolve
+  [MAIN1]
+
+T7 Ruby Storm | life=13 mana=2 hand=7+1L gy=3
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', 'Grapeshot', 'Pyretic Ritual', 'Glimpse the Impossible']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Ragavan, Nimble Pilferer (2/1)'] (life=14)
+  EV scores:
+      +3.5  cast_spell: Ruby Medallion <--  [h=+3.5 la=+3.5]
+      +3.5  cast_spell: Ruby Medallion  [h=+3.5 la=+3.5]
+      -6.9  cast_spell: Pyretic Ritual  [h=-6.9 la=-6.9]
+      -7.0  cast_spell: Manamorphose  [h=-7.0 la=-7.0]
+     -33.3  cast_spell: Grapeshot  [h=-33.3 la=-33.3]
+  >>> CAST_SPELL: Ruby Medallion
+  [MAIN1]
+
+T7 Ruby Storm | life=13 mana=0 hand=6+1L gy=3
+  Hand: ['Glimpse the Impossible', 'Manamorphose', 'Ruby Medallion', 'Grapeshot', 'Pyretic Ritual', 'Glimpse the Impossible']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Ragavan, Nimble Pilferer (2/1)'] (life=14)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T7 Ruby Storm | life=13 mana=0 hand=6+1L gy=3
+  Hand: ['Glimpse the Impossible', 'Manamorphose', 'Ruby Medallion', 'Grapeshot', 'Pyretic Ritual', 'Glimpse the Impossible']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Ragavan, Nimble Pilferer (2/1)'] (life=14)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T8 Domain Zoo | life=14 mana=3 hand=5+0L gy=3
+  Hand: ["Phlage, Titan of Fire's Fury", 'Leyline Binding', 'Leyline Binding', 'Stubborn Denial', 'Leyline Binding']
+  Board: ['Doorkeeper Thrull (1/2)', 'Ragavan, Nimble Pilferer (2/1)']
+  Opp board: [] (life=13)
+  EV scores:
+     +13.7  cast_spell: Phlage, Titan of Fire's Fury <--  [h=+13.7 la=+13.7]
+  >>> CAST_SPELL: Phlage, Titan of Fire's Fury
+  [MAIN1]
+
+T8 Domain Zoo | life=14 mana=0 hand=4+0L gy=4
+  Hand: ['Leyline Binding', 'Leyline Binding', 'Stubborn Denial', 'Leyline Binding']
+  Board: ['Doorkeeper Thrull (1/2)', 'Ragavan, Nimble Pilferer (2/1)']
+  Opp board: [] (life=13)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Doorkeeper Thrull', 'Ragavan, Nimble Pilferer']
+  [MAIN2]
+
+T8 Domain Zoo | life=14 mana=0 hand=4+1L gy=4
+  Hand: ['Leyline Binding', 'Leyline Binding', 'Stubborn Denial', 'Leyline Binding']
+  Board: ['Doorkeeper Thrull (1/2)', 'Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Treasure Token']
+  Opp board: [] (life=10)
+  EV scores:
+     +18.0  play_land: Arid Mesa <--
+  >>> PLAY_LAND: Arid Mesa
+  [MAIN2]
+
+T8 Domain Zoo | life=11 mana=1 hand=4+0L gy=5
+  Hand: ['Leyline Binding', 'Leyline Binding', 'Stubborn Denial', 'Leyline Binding']
+  Board: ['Doorkeeper Thrull (1/2)', 'Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Treasure Token']
+  Opp board: [] (life=10)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T9 Ruby Storm | life=10 mana=4 hand=7+1L gy=3
+  Hand: ['Glimpse the Impossible', 'Manamorphose', 'Ruby Medallion', 'Grapeshot', 'Pyretic Ritual', 'Glimpse the Impossible', "Wrenn's Resolve"]
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Ragavan, Nimble Pilferer (2/1)'] (life=11)
+  EV scores:
+     +46.9  cast_spell: Manamorphose <--  [h=+46.9 la=+46.9]
+     +46.7  cast_spell: Pyretic Ritual  [h=+46.7 la=+46.7]
+     +46.4  cast_spell: Wrenn's Resolve  [h=+46.4 la=+46.4]
+     +39.5  cast_spell: Glimpse the Impossible  [h=+39.5 la=+39.5]
+     +39.5  cast_spell: Glimpse the Impossible  [h=+39.5 la=+39.5]
+     +26.5  cast_spell: Ruby Medallion  [h=+26.5 la=+26.5]
+    ... +2 more
+  >>> CAST_SPELL: Manamorphose
+  [MAIN1]
+
+T9 Ruby Storm | life=10 mana=3 hand=6+1L gy=4
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Grapeshot', 'Pyretic Ritual', 'Glimpse the Impossible', "Wrenn's Resolve"]
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Ragavan, Nimble Pilferer (2/1)'] (life=11)
+  EV scores:
+     +39.8  cast_spell: Pyretic Ritual <--  [h=+39.8 la=+39.8]
+     +39.2  cast_spell: Wrenn's Resolve  [h=+39.2 la=+39.2]
+     +38.0  cast_spell: Glimpse the Impossible  [h=+38.0 la=+38.0]
+     +38.0  cast_spell: Glimpse the Impossible  [h=+38.0 la=+38.0]
+     +29.6  cast_spell: Ruby Medallion  [h=+29.6 la=+29.6]
+     +15.0  play_land: Mountain
+    ... +1 more
+  >>> CAST_SPELL: Pyretic Ritual
+  [MAIN1]
+
+T9 Ruby Storm | life=10 mana=5 hand=5+1L gy=5
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Grapeshot', 'Glimpse the Impossible', "Wrenn's Resolve"]
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Ragavan, Nimble Pilferer (2/1)'] (life=11)
+  EV scores:
+     +37.7  cast_spell: Wrenn's Resolve <--  [h=+37.7 la=+37.7]
+     +37.4  cast_spell: Glimpse the Impossible  [h=+37.4 la=+37.4]
+     +37.4  cast_spell: Glimpse the Impossible  [h=+37.4 la=+37.4]
+     +35.6  cast_spell: Ruby Medallion  [h=+35.6 la=+35.6]
+     +15.0  play_land: Mountain
+      +9.5  cast_spell: Grapeshot  [h=+9.5 la=+9.5]
+  >>> CAST_SPELL: Wrenn's Resolve
+  [MAIN1]
+
+T9 Ruby Storm | life=10 mana=4 hand=5+2L gy=6
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Grapeshot', 'Glimpse the Impossible', 'Pyretic Ritual']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Ragavan, Nimble Pilferer (2/1)'] (life=11)
+  EV scores:
+     +37.7  cast_spell: Pyretic Ritual <--  [h=+37.7 la=+37.7]
+     +31.5  cast_spell: Glimpse the Impossible  [h=+31.5 la=+31.5]
+     +31.5  cast_spell: Glimpse the Impossible  [h=+31.5 la=+31.5]
+     +26.4  cast_spell: Ruby Medallion  [h=+26.4 la=+26.4]
+     +15.0  play_land: Mountain
+     +15.0  play_land: Mountain
+    ... +1 more
+  >>> CAST_SPELL: Pyretic Ritual
+  [MAIN1]
+
+T9 Ruby Storm | life=10 mana=6 hand=4+2L gy=7
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Grapeshot', 'Glimpse the Impossible']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Ragavan, Nimble Pilferer (2/1)'] (life=11)
+  EV scores:
+     +26.7  cast_spell: Ruby Medallion <--  [h=+26.7 la=+26.7]
+     +15.0  play_land: Mountain
+     +15.0  play_land: Mountain
+      -0.3  cast_spell: Glimpse the Impossible  [h=-0.3 la=-0.3]
+      -0.3  cast_spell: Glimpse the Impossible  [h=-0.3 la=-0.3]
+     -19.5  cast_spell: Grapeshot  [h=-19.5 la=-19.5]
+  >>> CAST_SPELL: Ruby Medallion
+  [MAIN1]
+
+T9 Ruby Storm | life=10 mana=4 hand=3+2L gy=7
+  Hand: ['Glimpse the Impossible', 'Grapeshot', 'Glimpse the Impossible']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Ragavan, Nimble Pilferer (2/1)'] (life=11)
+  EV scores:
+     +15.0  play_land: Mountain <--
+     +15.0  play_land: Mountain
+      -6.1  cast_spell: Glimpse the Impossible  [h=-6.1 la=-6.1]
+      -6.1  cast_spell: Glimpse the Impossible  [h=-6.1 la=-6.1]
+     -10.7  cast_spell: Grapeshot  [h=-10.7 la=-10.7]
+  >>> PLAY_LAND: Mountain
+  [MAIN1]
+
+T9 Ruby Storm | life=10 mana=5 hand=3+1L gy=7
+  Hand: ['Glimpse the Impossible', 'Grapeshot', 'Glimpse the Impossible']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Ragavan, Nimble Pilferer (2/1)'] (life=11)
+  EV scores:
+      -0.3  cast_spell: Glimpse the Impossible <--  [h=-0.3 la=-0.3]
+      -0.3  cast_spell: Glimpse the Impossible  [h=-0.3 la=-0.3]
+     -10.6  cast_spell: Grapeshot  [h=-10.6 la=-10.6]
+  >>> CAST_SPELL: Glimpse the Impossible
+  [MAIN1]
+
+T9 Ruby Storm | life=10 mana=4 hand=4+2L gy=8
+  Hand: ['Grapeshot', 'Glimpse the Impossible', 'Ruby Medallion', 'Pyretic Ritual']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Ragavan, Nimble Pilferer (2/1)'] (life=11)
+  EV scores:
+    +115.7  cast_spell: Ruby Medallion <--  [h=+115.7 la=+115.7]
+      -0.1  cast_spell: Pyretic Ritual  [h=-0.1 la=-0.1]
+      -6.2  cast_spell: Glimpse the Impossible  [h=-6.2 la=-6.2]
+     -19.7  cast_spell: Grapeshot  [h=-19.7 la=-19.7]
+  >>> CAST_SPELL: Ruby Medallion
+  [MAIN1]
+
+T9 Ruby Storm | life=10 mana=2 hand=3+2L gy=8
+  Hand: ['Grapeshot', 'Glimpse the Impossible', 'Pyretic Ritual']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Ragavan, Nimble Pilferer (2/1)'] (life=11)
+  EV scores:
+      -5.5  cast_spell: Pyretic Ritual <--  [h=-5.5 la=-5.5]
+      -5.9  cast_spell: Glimpse the Impossible  [h=-5.9 la=-5.9]
+     -10.7  cast_spell: Grapeshot  [h=-10.7 la=-10.7]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T9 Ruby Storm | life=10 mana=2 hand=3+2L gy=8
+  Hand: ['Grapeshot', 'Glimpse the Impossible', 'Pyretic Ritual']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Ragavan, Nimble Pilferer (2/1)'] (life=11)
+  EV scores:
+      -5.5  cast_spell: Pyretic Ritual <--  [h=-5.5 la=-5.5]
+      -5.9  cast_spell: Glimpse the Impossible  [h=-5.9 la=-5.9]
+     -10.7  cast_spell: Grapeshot  [h=-10.7 la=-10.7]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T10 Domain Zoo | life=11 mana=4 hand=4+0L gy=6
+  Hand: ['Leyline Binding', 'Leyline Binding', 'Leyline Binding', 'Ragavan, Nimble Pilferer']
+  Board: ['Doorkeeper Thrull (1/2)', 'Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Treasure Token']
+  Opp board: [] (life=10)
+  >>> CAST_SPELL: Phlage, Titan of Fire's Fury
+  [MAIN1]
+
+T10 Domain Zoo | life=11 mana=4 hand=4+0L gy=1
+  Hand: ['Leyline Binding', 'Leyline Binding', 'Leyline Binding', 'Ragavan, Nimble Pilferer']
+  Board: ['Doorkeeper Thrull (1/2)', 'Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Treasure Token']
+  Opp board: [] (life=10)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Doorkeeper Thrull', 'Ragavan, Nimble Pilferer']
+  [MAIN2]
+
+T10 Domain Zoo | life=11 mana=4 hand=5+0L gy=1
+  Hand: ['Leyline Binding', 'Leyline Binding', 'Leyline Binding', 'Ragavan, Nimble Pilferer', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Board: ['Doorkeeper Thrull (1/2)', 'Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Treasure Token', 'Treasure Token']
+  Opp board: [] (life=7)
+  EV scores:
+      +4.9  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy <--  [h=+4.9 la=+4.9 rmv=3%]
+  >>> CAST_SPELL: Ral, Monsoon Mage // Ral, Leyline Prodigy
+  [MAIN2]
+
+T10 Domain Zoo | life=11 mana=2 hand=4+0L gy=1
+  Hand: ['Leyline Binding', 'Leyline Binding', 'Leyline Binding', 'Ragavan, Nimble Pilferer']
+  Board: ['Doorkeeper Thrull (1/2)', 'Ragavan, Nimble Pilferer (2/1)', 'Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Treasure Token', 'Treasure Token']
+  Opp board: [] (life=7)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T11 Ruby Storm | life=7 mana=5 hand=4+2L gy=8
+  Hand: ['Grapeshot', 'Glimpse the Impossible', 'Pyretic Ritual', 'Manamorphose']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Ragavan, Nimble Pilferer (2/1)', 'Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)'] (life=11)
+  EV scores:
+     +31.6  cast_spell: Pyretic Ritual <--  [h=+31.6 la=+31.6 ctr=19%]
+     +31.5  cast_spell: Manamorphose  [h=+31.5 la=+31.5 ctr=19%]
+     +31.2  cast_spell: Glimpse the Impossible  [h=+31.2 la=+31.2 ctr=19%]
+     +22.0  play_land: Scalding Tarn
+     +15.0  play_land: Mountain
+      +7.4  cast_spell: Grapeshot  [h=+7.4 la=+7.4 ctr=19%]
+  >>> CAST_SPELL: Pyretic Ritual
+  [MAIN1]
+
+T11 Ruby Storm | life=7 mana=7 hand=3+2L gy=9
+  Hand: ['Grapeshot', 'Glimpse the Impossible', 'Manamorphose']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Ragavan, Nimble Pilferer (2/1)', 'Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)'] (life=11)
+  EV scores:
+     +26.4  cast_spell: Manamorphose <--  [h=+26.4 la=+26.4 ctr=19%]
+     +26.3  cast_spell: Glimpse the Impossible  [h=+26.3 la=+26.3 ctr=19%]
+     +22.0  play_land: Scalding Tarn
+     +15.0  play_land: Mountain
+     +11.5  cast_spell: Grapeshot  [h=+11.5 la=+11.5 ctr=19%]
+  >>> CAST_SPELL: Manamorphose
+  [MAIN1]
+
+T11 Ruby Storm | life=7 mana=9 hand=3+2L gy=10
+  Hand: ['Grapeshot', 'Glimpse the Impossible', 'Reckless Impulse']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Ragavan, Nimble Pilferer (2/1)', 'Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)'] (life=11)
+  EV scores:
+     +27.3  cast_spell: Reckless Impulse <--  [h=+27.3 la=+27.3 ctr=19%]
+     +26.9  cast_spell: Glimpse the Impossible  [h=+26.9 la=+26.9 ctr=19%]
+     +22.0  play_land: Scalding Tarn
+     +15.0  play_land: Mountain
+     +12.5  cast_spell: Grapeshot  [h=+12.5 la=+12.5 ctr=19%]
+  >>> CAST_SPELL: Reckless Impulse
+  [MAIN1]
+
+T11 Ruby Storm | life=7 mana=8 hand=4+2L gy=11
+  Hand: ['Grapeshot', 'Glimpse the Impossible', 'Manamorphose', 'Wish']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Ragavan, Nimble Pilferer (2/1)', 'Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)'] (life=11)
+  EV scores:
+     +36.8  cast_spell: Manamorphose <--  [h=+36.8 la=+36.8 ctr=19%]
+     +36.6  cast_spell: Glimpse the Impossible  [h=+36.6 la=+36.6 ctr=19%]
+     +22.0  play_land: Scalding Tarn
+     +15.0  play_land: Mountain
+     +12.7  cast_spell: Grapeshot  [h=+12.7 la=+12.7 ctr=19%]
+     -18.7  cast_spell: Wish  [h=-18.7 la=-18.7 ctr=19%]
+  >>> CAST_SPELL: Manamorphose
+  [MAIN1]
+
+T11 Ruby Storm | life=7 mana=10 hand=3+3L gy=12
+  Hand: ['Grapeshot', 'Glimpse the Impossible', 'Wish']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Ragavan, Nimble Pilferer (2/1)', 'Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)'] (life=11)
+  EV scores:
+     +27.5  cast_spell: Glimpse the Impossible <--  [h=+27.5 la=+27.5 ctr=19%]
+     +22.0  play_land: Scalding Tarn
+     +22.0  play_land: Bloodstained Mire
+     +15.0  play_land: Mountain
+     +12.6  cast_spell: Grapeshot  [h=+12.6 la=+12.6 ctr=19%]
+      -9.4  cast_spell: Wish  [h=-9.4 la=-9.4 ctr=19%]
+  >>> CAST_SPELL: Glimpse the Impossible
+  [MAIN1]
+
+T11 Ruby Storm | life=7 mana=9 hand=5+3L gy=13
+  Hand: ['Grapeshot', 'Wish', 'Reckless Impulse', 'Reckless Impulse', 'Desperate Ritual']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Ragavan, Nimble Pilferer (2/1)', 'Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)'] (life=11)
+  EV scores:
+     +45.9  cast_spell: Reckless Impulse <--  [h=+45.9 la=+45.9 ctr=19%]
+     +45.9  cast_spell: Reckless Impulse  [h=+45.9 la=+45.9 ctr=19%]
+     +45.6  cast_spell: Desperate Ritual  [h=+45.6 la=+45.6 ctr=19%]
+     +22.0  play_land: Scalding Tarn
+     +22.0  play_land: Bloodstained Mire
+     +15.0  play_land: Mountain
+    ... +2 more
+  >>> CAST_SPELL: Reckless Impulse
+  [MAIN1]
+
+T11 Ruby Storm | life=7 mana=8 hand=5+4L gy=14
+  Hand: ['Grapeshot', 'Wish', 'Reckless Impulse', 'Desperate Ritual', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Ragavan, Nimble Pilferer (2/1)', 'Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)'] (life=11)
+  EV scores:
+     +36.8  cast_spell: Desperate Ritual <--  [h=+36.8 la=+36.8 ctr=19%]
+     +36.7  cast_spell: Reckless Impulse  [h=+36.7 la=+36.7 ctr=19%]
+     +25.0  play_land: Scalding Tarn
+     +22.0  play_land: Bloodstained Mire
+     +15.0  play_land: Mountain
+     +15.0  play_land: Sunbaked Canyon
+    ... +2 more
+  >>> CAST_SPELL: Desperate Ritual
+  [MAIN1]
+
+T11 Ruby Storm | life=7 mana=10 hand=4+4L gy=15
+  Hand: ['Grapeshot', 'Wish', 'Reckless Impulse', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Ragavan, Nimble Pilferer (2/1)', 'Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)'] (life=11)
+  EV scores:
+     +27.2  cast_spell: Reckless Impulse <--  [h=+27.2 la=+27.2 ctr=19%]
+     +25.0  play_land: Scalding Tarn
+     +22.0  play_land: Bloodstained Mire
+     +15.0  play_land: Mountain
+     +15.0  play_land: Sunbaked Canyon
+      +3.7  cast_spell: Grapeshot  [h=+3.7 la=+3.7 ctr=19%]
+    ... +1 more
+  >>> CAST_SPELL: Reckless Impulse
+  [MAIN1]
+
+T11 Ruby Storm | life=7 mana=9 hand=4+5L gy=16
+  Hand: ['Grapeshot', 'Wish', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Valakut Awakening // Valakut Stoneforge']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Ragavan, Nimble Pilferer (2/1)', 'Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)'] (life=11)
+  EV scores:
+     +27.4  cast_spell: Valakut Awakening // Valakut Stoneforge <--  [h=+27.4 la=+27.4 ctr=19%]
+     +25.0  play_land: Scalding Tarn
+     +25.0  play_land: Scalding Tarn
+     +22.0  play_land: Bloodstained Mire
+     +15.0  play_land: Mountain
+     +15.0  play_land: Sunbaked Canyon
+    ... +2 more
+  >>> CAST_SPELL: Valakut Awakening // Valakut Stoneforge
+  [MAIN1]
+
+T11 Ruby Storm | life=7 mana=8 hand=4+6L gy=17
+  Hand: ['Grapeshot', 'Wish', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Ragavan, Nimble Pilferer (2/1)', 'Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)'] (life=11)
+  EV scores:
+     +27.2  cast_spell: Glimpse the Impossible <--  [h=+27.2 la=+27.2 ctr=19%]
+     +25.0  play_land: Scalding Tarn
+     +25.0  play_land: Scalding Tarn
+     +22.0  play_land: Bloodstained Mire
+     +22.0  play_land: Wooded Foothills
+     +15.0  play_land: Mountain
+    ... +3 more
+  >>> CAST_SPELL: Glimpse the Impossible
+  [MAIN1]
+
+T11 Ruby Storm | life=7 mana=7 hand=5+7L gy=18
+  Hand: ['Grapeshot', 'Wish', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Past in Flames', "Wrenn's Resolve"]
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Ragavan, Nimble Pilferer (2/1)', 'Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)'] (life=11)
+  EV scores:
+    +140.7  cast_spell: Grapeshot <--  [h=+140.7 la=+140.7 ctr=19%]
+    +100.3  cast_spell: Wish  [h=+100.3 la=+100.3 ctr=19%]
+     +36.3  cast_spell: Past in Flames  [h=+36.3 la=+36.3 ctr=19%]
+     +36.2  cast_spell: Wrenn's Resolve  [h=+36.2 la=+36.2 ctr=19%]
+     +25.0  play_land: Scalding Tarn
+     +25.0  play_land: Scalding Tarn
+    ... +5 more
+  >>> CAST_SPELL: Grapeshot

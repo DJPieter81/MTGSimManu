@@ -1,0 +1,456 @@
+Loaded 21759 cards (0 errors)
+=== Ruby Storm vs Eldrazi Tron (seed 60550) ===
+Result: Eldrazi Tron wins T6 via damage
+Life: P1=-5 P2=20
+
+  [MAIN1]
+
+T1 Ruby Storm | life=20 mana=0 hand=5+2L gy=0
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve"]
+  Opp board: [] (life=20)
+  EV scores:
+     +24.0  play_land: Elegant Parlor <--
+     +24.0  play_land: Elegant Parlor
+  >>> PLAY_LAND: Elegant Parlor
+  [MAIN1]
+
+T1 Ruby Storm | life=20 mana=0 hand=5+1L gy=0
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve"]
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T1 Ruby Storm | life=20 mana=0 hand=5+1L gy=0
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve"]
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T2 Eldrazi Tron | life=20 mana=0 hand=6+2L gy=0
+  Hand: ['Matter Reshaper', 'All Is Dust', 'Warping Wail', 'Expedition Map', 'Reality Smasher', 'Chalice of the Void']
+  Opp board: [] (life=20)
+  EV scores:
+     +46.8  play_land: Urza's Power Plant <--
+     +15.0  play_land: Eldrazi Temple
+  >>> PLAY_LAND: Urza's Power Plant
+  [MAIN1]
+
+T2 Eldrazi Tron | life=20 mana=1 hand=6+1L gy=0
+  Hand: ['Matter Reshaper', 'All Is Dust', 'Warping Wail', 'Expedition Map', 'Reality Smasher', 'Chalice of the Void']
+  Opp board: [] (life=20)
+  EV scores:
+      -0.1  cast_spell: Expedition Map <--  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Expedition Map
+  [MAIN1]
+
+T2 Eldrazi Tron | life=20 mana=0 hand=5+1L gy=0
+  Hand: ['Matter Reshaper', 'All Is Dust', 'Warping Wail', 'Reality Smasher', 'Chalice of the Void']
+  Permanents: ['Expedition Map']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T2 Eldrazi Tron | life=20 mana=0 hand=5+1L gy=0
+  Hand: ['Matter Reshaper', 'All Is Dust', 'Warping Wail', 'Reality Smasher', 'Chalice of the Void']
+  Permanents: ['Expedition Map']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T3 Ruby Storm | life=20 mana=1 hand=6+1L gy=0
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", "Wrenn's Resolve"]
+  Opp board: [] (life=20)
+  EV scores:
+      +7.0  play_land: Elegant Parlor <--
+  >>> PLAY_LAND: Elegant Parlor
+  [MAIN1]
+
+T3 Ruby Storm | life=20 mana=1 hand=6+0L gy=0
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", "Wrenn's Resolve"]
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T3 Ruby Storm | life=20 mana=1 hand=6+0L gy=0
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", "Wrenn's Resolve"]
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T4 Eldrazi Tron | life=20 mana=1 hand=5+2L gy=0
+  Hand: ['Matter Reshaper', 'All Is Dust', 'Warping Wail', 'Reality Smasher', 'Chalice of the Void']
+  Permanents: ['Expedition Map']
+  Opp board: [] (life=20)
+  EV scores:
+     +44.0  play_land: Urza's Tower <--
+     +15.0  play_land: Eldrazi Temple
+  >>> PLAY_LAND: Urza's Tower
+  [MAIN1]
+
+T4 Eldrazi Tron | life=20 mana=2 hand=5+1L gy=0
+  Hand: ['Matter Reshaper', 'All Is Dust', 'Warping Wail', 'Reality Smasher', 'Chalice of the Void']
+  Permanents: ['Expedition Map']
+  Opp board: [] (life=20)
+  EV scores:
+      -0.1  cast_spell: Chalice of the Void <--  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Chalice of the Void
+  [MAIN1]
+
+T4 Eldrazi Tron | life=20 mana=0 hand=4+1L gy=0
+  Hand: ['Matter Reshaper', 'All Is Dust', 'Warping Wail', 'Reality Smasher']
+  Permanents: ['Expedition Map', 'Chalice of the Void']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T4 Eldrazi Tron | life=20 mana=0 hand=4+2L gy=1
+  Hand: ['Matter Reshaper', 'All Is Dust', 'Warping Wail', 'Reality Smasher']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T5 Ruby Storm | life=20 mana=2 hand=6+1L gy=0
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", "Wrenn's Resolve"]
+  Opp board: [] (life=20)
+  EV scores:
+     +18.0  play_land: Arid Mesa <--
+      +9.9  cast_spell: Ruby Medallion  [h=+9.9 la=+9.9]
+      +9.9  cast_spell: Ruby Medallion  [h=+9.9 la=+9.9]
+      -3.5  cast_spell: Wrenn's Resolve  [h=-3.5 la=-3.5]
+      -3.5  cast_spell: Wrenn's Resolve  [h=-3.5 la=-3.5]
+    -990.0  cast_spell: Manamorphose  [h=-990.0 la=-990.0]
+  >>> PLAY_LAND: Arid Mesa
+  [MAIN1]
+
+T5 Ruby Storm | life=17 mana=3 hand=6+0L gy=1
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", "Wrenn's Resolve"]
+  Opp board: [] (life=20)
+  EV scores:
+     +14.9  cast_spell: Ruby Medallion <--  [h=+14.9 la=+14.9]
+     +14.9  cast_spell: Ruby Medallion  [h=+14.9 la=+14.9]
+     -10.1  cast_spell: Wrenn's Resolve  [h=-10.1 la=-10.1]
+     -10.1  cast_spell: Wrenn's Resolve  [h=-10.1 la=-10.1]
+     -13.5  cast_spell: Glimpse the Impossible  [h=-13.5 la=-13.5]
+    -1000.0  cast_spell: Manamorphose  [h=-1000.0 la=-1000.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T5 Ruby Storm | life=17 mana=3 hand=6+0L gy=1
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", "Wrenn's Resolve"]
+  Opp board: [] (life=20)
+  EV scores:
+     +14.9  cast_spell: Ruby Medallion <--  [h=+14.9 la=+14.9]
+     +14.9  cast_spell: Ruby Medallion  [h=+14.9 la=+14.9]
+     -10.1  cast_spell: Wrenn's Resolve  [h=-10.1 la=-10.1]
+     -10.1  cast_spell: Wrenn's Resolve  [h=-10.1 la=-10.1]
+     -13.5  cast_spell: Glimpse the Impossible  [h=-13.5 la=-13.5]
+    -1000.0  cast_spell: Manamorphose  [h=-1000.0 la=-1000.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T6 Eldrazi Tron | life=20 mana=2 hand=5+2L gy=1
+  Hand: ['Matter Reshaper', 'All Is Dust', 'Warping Wail', 'Reality Smasher', 'Walking Ballista']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=17)
+  EV scores:
+     +52.6  play_land: Urza's Mine <--
+     +15.0  play_land: Eldrazi Temple
+      -0.1  cast_spell: Walking Ballista  [h=-0.1 la=-0.1 rmv=1%]
+  >>> PLAY_LAND: Urza's Mine
+  [MAIN1]
+
+T6 Eldrazi Tron | life=20 mana=7 hand=5+1L gy=1
+  Hand: ['Matter Reshaper', 'All Is Dust', 'Warping Wail', 'Reality Smasher', 'Walking Ballista']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=17)
+  EV scores:
+      +6.0  cast_spell: Matter Reshaper <--  [h=+6.0 la=+6.0 rmv=10%]
+      -0.1  cast_spell: Walking Ballista  [h=-0.1 la=-0.1 rmv=1%]
+  >>> CAST_SPELL: Matter Reshaper
+  [MAIN1]
+
+T6 Eldrazi Tron | life=20 mana=4 hand=4+1L gy=1
+  Hand: ['All Is Dust', 'Warping Wail', 'Reality Smasher', 'Walking Ballista']
+  Board: ['Matter Reshaper (3/2)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=17)
+  EV scores:
+      -0.1  cast_spell: Walking Ballista <--  [h=-0.1 la=-0.1 rmv=1%]
+  >>> CAST_SPELL: Walking Ballista
+  [MAIN1]
+
+T6 Eldrazi Tron | life=20 mana=0 hand=3+1L gy=2
+  Hand: ['All Is Dust', 'Warping Wail', 'Reality Smasher']
+  Board: ['Matter Reshaper (3/2)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=15)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T6 Eldrazi Tron | life=20 mana=0 hand=3+1L gy=2
+  Hand: ['All Is Dust', 'Warping Wail', 'Reality Smasher']
+  Board: ['Matter Reshaper (3/2)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=15)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T7 Ruby Storm | life=15 mana=3 hand=7+0L gy=1
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", "Wrenn's Resolve", 'Glimpse the Impossible']
+  Opp board: ['Matter Reshaper (3/2)'] (life=20)
+  EV scores:
+     +12.4  cast_spell: Ruby Medallion <--  [h=+12.4 la=+12.4]
+     +12.4  cast_spell: Ruby Medallion  [h=+12.4 la=+12.4]
+      -1.4  cast_spell: Wrenn's Resolve  [h=-1.4 la=-1.4]
+      -1.4  cast_spell: Wrenn's Resolve  [h=-1.4 la=-1.4]
+      -2.5  cast_spell: Glimpse the Impossible  [h=-2.5 la=-2.5]
+      -2.5  cast_spell: Glimpse the Impossible  [h=-2.5 la=-2.5]
+    ... +1 more
+  >>> CAST_SPELL: Wrenn's Resolve
+  [MAIN1]
+
+T7 Ruby Storm | life=15 mana=1 hand=7+1L gy=2
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", 'Glimpse the Impossible', 'Past in Flames']
+  Opp board: ['Matter Reshaper (3/2)'] (life=20)
+  EV scores:
+     +11.0  play_land: Thundering Falls <--
+  >>> PLAY_LAND: Thundering Falls
+  [MAIN1]
+
+T7 Ruby Storm | life=15 mana=1 hand=7+0L gy=2
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", 'Glimpse the Impossible', 'Past in Flames']
+  Opp board: ['Matter Reshaper (3/2)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T7 Ruby Storm | life=15 mana=1 hand=7+0L gy=2
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", 'Glimpse the Impossible', 'Past in Flames']
+  Opp board: ['Matter Reshaper (3/2)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T8 Eldrazi Tron | life=20 mana=7 hand=3+2L gy=2
+  Hand: ['All Is Dust', 'Warping Wail', 'Reality Smasher']
+  Board: ['Matter Reshaper (3/2)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=15)
+  EV scores:
+     +15.0  play_land: Eldrazi Temple <--
+     +15.0  play_land: Urza's Power Plant
+  >>> PLAY_LAND: Eldrazi Temple
+  [MAIN1]
+
+T8 Eldrazi Tron | life=20 mana=8 hand=3+1L gy=2
+  Hand: ['All Is Dust', 'Warping Wail', 'Reality Smasher']
+  Board: ['Matter Reshaper (3/2)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=15)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Matter Reshaper']
+  [MAIN2]
+
+T8 Eldrazi Tron | life=20 mana=8 hand=3+1L gy=2
+  Hand: ['All Is Dust', 'Warping Wail', 'Reality Smasher']
+  Board: ['Matter Reshaper (3/2)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=12)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T9 Ruby Storm | life=12 mana=4 hand=8+0L gy=2
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", 'Glimpse the Impossible', 'Past in Flames', 'Past in Flames']
+  Opp board: ['Matter Reshaper (3/2)'] (life=20)
+  EV scores:
+      +9.9  cast_spell: Ruby Medallion <--  [h=+9.9 la=+9.9]
+      +9.9  cast_spell: Ruby Medallion  [h=+9.9 la=+9.9]
+      -0.2  cast_spell: Wrenn's Resolve  [h=-0.2 la=-0.2]
+      -0.2  cast_spell: Past in Flames  [h=-0.2 la=-0.2]
+      -0.2  cast_spell: Past in Flames  [h=-0.2 la=-0.2]
+      -1.3  cast_spell: Glimpse the Impossible  [h=-1.3 la=-1.3]
+    ... +2 more
+  >>> CAST_SPELL: Wrenn's Resolve
+  [MAIN1]
+
+T9 Ruby Storm | life=12 mana=2 hand=8+1L gy=3
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible', 'Past in Flames', 'Past in Flames', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Opp board: ['Matter Reshaper (3/2)'] (life=20)
+  EV scores:
+     +15.0  play_land: Sunbaked Canyon <--
+      +5.3  cast_spell: Ruby Medallion  [h=+5.3 la=+5.3]
+      +5.3  cast_spell: Ruby Medallion  [h=+5.3 la=+5.3]
+      -0.3  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy  [h=-0.3 la=-0.3 rmv=20%]
+      -0.8  cast_spell: Manamorphose  [h=-0.8 la=-0.8]
+  >>> PLAY_LAND: Sunbaked Canyon
+  [MAIN1]
+
+T9 Ruby Storm | life=12 mana=3 hand=8+0L gy=3
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible', 'Past in Flames', 'Past in Flames', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Opp board: ['Matter Reshaper (3/2)'] (life=20)
+  EV scores:
+      +9.6  cast_spell: Ruby Medallion <--  [h=+9.6 la=+9.6]
+      +9.6  cast_spell: Ruby Medallion  [h=+9.6 la=+9.6]
+      +0.7  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy  [h=+0.7 la=+0.7 rmv=20%]
+      -0.8  cast_spell: Manamorphose  [h=-0.8 la=-0.8]
+      -1.4  cast_spell: Glimpse the Impossible  [h=-1.4 la=-1.4]
+      -1.4  cast_spell: Glimpse the Impossible  [h=-1.4 la=-1.4]
+  >>> CAST_SPELL: Ruby Medallion
+  [MAIN1]
+
+T9 Ruby Storm | life=12 mana=1 hand=7+0L gy=3
+  Hand: ['Glimpse the Impossible', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible', 'Past in Flames', 'Past in Flames', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Matter Reshaper (3/2)'] (life=20)
+  EV scores:
+      -0.9  cast_spell: Manamorphose <--  [h=-0.9 la=-0.9]
+  >>> CAST_SPELL: Manamorphose
+  [MAIN1]
+
+T9 Ruby Storm | life=12 mana=2 hand=6+1L gy=4
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Glimpse the Impossible', 'Past in Flames', 'Past in Flames', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Matter Reshaper (3/2)'] (life=20)
+  EV scores:
+      +6.5  cast_spell: Ruby Medallion <--  [h=+6.5 la=+6.5]
+      -0.2  cast_spell: Glimpse the Impossible  [h=-0.2 la=-0.2]
+      -0.2  cast_spell: Glimpse the Impossible  [h=-0.2 la=-0.2]
+  >>> CAST_SPELL: Ruby Medallion
+  [MAIN1]
+
+T9 Ruby Storm | life=12 mana=0 hand=5+1L gy=4
+  Hand: ['Glimpse the Impossible', 'Glimpse the Impossible', 'Past in Flames', 'Past in Flames', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Matter Reshaper (3/2)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T9 Ruby Storm | life=12 mana=0 hand=5+2L gy=5
+  Hand: ['Glimpse the Impossible', 'Glimpse the Impossible', 'Past in Flames', 'Past in Flames', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Matter Reshaper (3/2)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T10 Eldrazi Tron | life=20 mana=8 hand=4+1L gy=2
+  Hand: ['All Is Dust', 'Warping Wail', 'Reality Smasher', "Kozilek's Command"]
+  Board: ['Matter Reshaper (3/2)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=12)
+  EV scores:
+     +15.0  play_land: Urza's Power Plant <--
+  >>> PLAY_LAND: Urza's Power Plant
+  [MAIN1]
+
+T10 Eldrazi Tron | life=20 mana=10 hand=4+0L gy=2
+  Hand: ['All Is Dust', 'Warping Wail', 'Reality Smasher', "Kozilek's Command"]
+  Board: ['Matter Reshaper (3/2)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=12)
+  EV scores:
+      +6.9  cast_spell: Reality Smasher <--  [h=+6.9 la=+6.9]
+  >>> CAST_SPELL: Reality Smasher
+  [MAIN1]
+
+T10 Eldrazi Tron | life=20 mana=5 hand=3+0L gy=2
+  Hand: ['All Is Dust', 'Warping Wail', "Kozilek's Command"]
+  Board: ['Matter Reshaper (3/2)', 'Reality Smasher (5/5)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=12)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Matter Reshaper', 'Reality Smasher']
+  [MAIN2]
+
+T10 Eldrazi Tron | life=20 mana=3 hand=3+0L gy=2
+  Hand: ['All Is Dust', 'Warping Wail', "Kozilek's Command"]
+  Board: ['Matter Reshaper (3/2)', 'Reality Smasher (5/5)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=4)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T11 Ruby Storm | life=4 mana=4 hand=6+2L gy=5
+  Hand: ['Glimpse the Impossible', 'Glimpse the Impossible', 'Past in Flames', 'Past in Flames', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Ruby Medallion']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Matter Reshaper (3/2)', 'Reality Smasher (5/5)'] (life=20)
+  EV scores:
+     +22.0  play_land: Wooded Foothills <--
+     +18.0  play_land: Arid Mesa
+      +4.7  cast_spell: Ruby Medallion  [h=+4.7 la=+4.7]
+      -0.3  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy  [h=-0.3 la=-0.3 rmv=16%]
+      -1.5  cast_spell: Glimpse the Impossible  [h=-1.5 la=-1.5]
+      -1.5  cast_spell: Glimpse the Impossible  [h=-1.5 la=-1.5]
+    ... +2 more
+  >>> PLAY_LAND: Wooded Foothills
+  [MAIN1]
+
+T11 Ruby Storm | life=3 mana=5 hand=6+1L gy=6
+  Hand: ['Glimpse the Impossible', 'Glimpse the Impossible', 'Past in Flames', 'Past in Flames', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Ruby Medallion']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Matter Reshaper (3/2)', 'Reality Smasher (5/5)'] (life=20)
+  EV scores:
+      +4.8  cast_spell: Ruby Medallion <--  [h=+4.8 la=+4.8]
+      -0.0  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy  [h=-0.0 la=-0.0 rmv=16%]
+      -0.3  cast_spell: Glimpse the Impossible  [h=-0.3 la=-0.3]
+      -0.3  cast_spell: Glimpse the Impossible  [h=-0.3 la=-0.3]
+      -1.4  cast_spell: Past in Flames  [h=-1.4 la=-1.4]
+      -1.4  cast_spell: Past in Flames  [h=-1.4 la=-1.4]
+  >>> CAST_SPELL: Ruby Medallion
+  [MAIN1]
+
+T11 Ruby Storm | life=3 mana=3 hand=5+1L gy=6
+  Hand: ['Glimpse the Impossible', 'Glimpse the Impossible', 'Past in Flames', 'Past in Flames', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Matter Reshaper (3/2)', 'Reality Smasher (5/5)'] (life=20)
+  EV scores:
+      -0.2  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy <--  [h=-0.2 la=-0.2 rmv=16%]
+      -1.3  cast_spell: Glimpse the Impossible  [h=-1.3 la=-1.3]
+      -1.3  cast_spell: Glimpse the Impossible  [h=-1.3 la=-1.3]
+      -1.3  cast_spell: Past in Flames  [h=-1.3 la=-1.3]
+      -1.3  cast_spell: Past in Flames  [h=-1.3 la=-1.3]
+  >>> CAST_SPELL: Ral, Monsoon Mage // Ral, Leyline Prodigy
+  [MAIN1]
+
+T11 Ruby Storm | life=3 mana=1 hand=4+1L gy=6
+  Hand: ['Glimpse the Impossible', 'Glimpse the Impossible', 'Past in Flames', 'Past in Flames']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Matter Reshaper (3/2)', 'Reality Smasher (5/5)'] (life=20)
+  EV scores:
+      -0.0  cast_spell: Glimpse the Impossible <--  [h=-0.0 la=-0.0]
+      -0.0  cast_spell: Glimpse the Impossible  [h=-0.0 la=-0.0]
+      -0.0  cast_spell: Past in Flames  [h=-0.0 la=-0.0]
+      -0.0  cast_spell: Past in Flames  [h=-0.0 la=-0.0]
+  >>> CAST_SPELL: Glimpse the Impossible
+  [MAIN1]
+
+T11 Ruby Storm | life=3 mana=0 hand=5+2L gy=7
+  Hand: ['Glimpse the Impossible', 'Past in Flames', 'Past in Flames', 'Reckless Impulse', 'Reckless Impulse']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Matter Reshaper (3/2)', 'Reality Smasher (5/5)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T11 Ruby Storm | life=3 mana=0 hand=5+2L gy=7
+  Hand: ['Glimpse the Impossible', 'Past in Flames', 'Past in Flames', 'Reckless Impulse', 'Reckless Impulse']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Matter Reshaper (3/2)', 'Reality Smasher (5/5)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T12 Eldrazi Tron | life=20 mana=10 hand=3+0L gy=3
+  Hand: ['All Is Dust', "Kozilek's Command", 'Eldrazi Mimic']
+  Board: ['Matter Reshaper (3/2)', 'Reality Smasher (5/5)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=3)
+  EV scores:
+      -1.4  cast_spell: Eldrazi Mimic <--  [h=-1.4 la=-1.4]
+  >>> CAST_SPELL: Eldrazi Mimic
+  [MAIN1]
+
+T12 Eldrazi Tron | life=20 mana=8 hand=2+0L gy=3
+  Hand: ['All Is Dust', "Kozilek's Command"]
+  Board: ['Matter Reshaper (3/2)', 'Reality Smasher (5/5)', 'Eldrazi Mimic (2/1)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=3)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Matter Reshaper', 'Reality Smasher']

@@ -1,0 +1,336 @@
+Loaded 21759 cards (0 errors)
+=== Ruby Storm vs Dimir Midrange (seed 60520) ===
+Result: Dimir Midrange wins T5 via damage
+Life: P1=0 P2=20
+
+  [MAIN1]
+
+T1 Ruby Storm | life=20 mana=0 hand=4+2L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion']
+  Opp board: [] (life=20)
+  EV scores:
+     +42.0  play_land: Gemstone Caverns <--
+     +24.0  play_land: Thundering Falls
+  >>> PLAY_LAND: Gemstone Caverns
+  [MAIN1]
+
+T1 Ruby Storm | life=20 mana=1 hand=4+1L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T1 Ruby Storm | life=20 mana=1 hand=4+1L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T2 Dimir Midrange | life=20 mana=0 hand=6+2L gy=0
+  Hand: ['Murktide Regent', 'Drown in the Loch', 'Fatal Push', 'Fatal Push', 'Murktide Regent', 'Drown in the Loch']
+  Opp board: [] (life=20)
+  EV scores:
+     +26.0  play_land: Darkslick Shores <--
+     +26.0  play_land: Darkslick Shores
+  >>> PLAY_LAND: Darkslick Shores
+  [MAIN1]
+
+T2 Dimir Midrange | life=20 mana=1 hand=6+1L gy=0
+  Hand: ['Murktide Regent', 'Drown in the Loch', 'Fatal Push', 'Fatal Push', 'Murktide Regent', 'Drown in the Loch']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-3.0)
+  [MAIN2]
+
+T2 Dimir Midrange | life=20 mana=1 hand=6+1L gy=0
+  Hand: ['Murktide Regent', 'Drown in the Loch', 'Fatal Push', 'Fatal Push', 'Murktide Regent', 'Drown in the Loch']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-3.0)
+  [MAIN1]
+
+T3 Ruby Storm | life=20 mana=1 hand=5+1L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible']
+  Opp board: [] (life=20)
+  EV scores:
+      +7.0  play_land: Thundering Falls <--
+  >>> PLAY_LAND: Thundering Falls
+  [MAIN1]
+
+T3 Ruby Storm | life=20 mana=1 hand=5+0L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T3 Ruby Storm | life=20 mana=1 hand=5+0L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T4 Dimir Midrange | life=20 mana=1 hand=7+1L gy=0
+  Hand: ['Murktide Regent', 'Drown in the Loch', 'Fatal Push', 'Fatal Push', 'Murktide Regent', 'Drown in the Loch', 'Orcish Bowmasters']
+  Opp board: [] (life=20)
+  EV scores:
+      +7.0  play_land: Darkslick Shores <--
+  >>> PLAY_LAND: Darkslick Shores
+  [MAIN1]
+
+T4 Dimir Midrange | life=20 mana=2 hand=7+0L gy=0
+  Hand: ['Murktide Regent', 'Drown in the Loch', 'Fatal Push', 'Fatal Push', 'Murktide Regent', 'Drown in the Loch', 'Orcish Bowmasters']
+  Opp board: [] (life=20)
+  EV scores:
+      +0.8  cast_spell: Orcish Bowmasters <--  [h=+0.8 la=+0.8 rmv=3%]
+  >>> CAST_SPELL: Orcish Bowmasters
+  [MAIN1]
+
+T4 Dimir Midrange | life=20 mana=0 hand=6+0L gy=0
+  Hand: ['Murktide Regent', 'Drown in the Loch', 'Fatal Push', 'Fatal Push', 'Murktide Regent', 'Drown in the Loch']
+  Board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)']
+  Opp board: [] (life=19)
+  >>> PASS (threshold=-3.0)
+  [MAIN2]
+
+T4 Dimir Midrange | life=20 mana=0 hand=6+0L gy=0
+  Hand: ['Murktide Regent', 'Drown in the Loch', 'Fatal Push', 'Fatal Push', 'Murktide Regent', 'Drown in the Loch']
+  Board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)']
+  Opp board: [] (life=19)
+  >>> PASS (threshold=-3.0)
+  [MAIN1]
+
+T5 Ruby Storm | life=19 mana=2 hand=5+1L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=20)
+  EV scores:
+     +15.0  play_land: Sunbaked Canyon <--
+     +13.2  cast_spell: Ruby Medallion  [h=+13.2 la=+13.2]
+      -1.1  cast_spell: Reckless Impulse  [h=-1.1 la=-1.1]
+      -1.1  cast_spell: Reckless Impulse  [h=-1.1 la=-1.1]
+    -999.0  cast_spell: Manamorphose  [h=-999.0 la=-999.0]
+  >>> PLAY_LAND: Sunbaked Canyon
+  [MAIN1]
+
+T5 Ruby Storm | life=19 mana=3 hand=5+0L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=20)
+  EV scores:
+     +19.9  cast_spell: Ruby Medallion <--  [h=+19.9 la=+19.9]
+      -1.0  cast_spell: Reckless Impulse  [h=-1.0 la=-1.0]
+      -1.0  cast_spell: Reckless Impulse  [h=-1.0 la=-1.0]
+      -2.1  cast_spell: Glimpse the Impossible  [h=-2.1 la=-2.1]
+    -1000.0  cast_spell: Manamorphose  [h=-1000.0 la=-1000.0]
+  >>> CAST_SPELL: Reckless Impulse
+  [MAIN1]
+
+T5 Ruby Storm | life=17 mana=1 hand=6+0L gy=1
+  Hand: ['Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T5 Ruby Storm | life=17 mana=1 hand=6+0L gy=1
+  Hand: ['Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T6 Dimir Midrange | life=20 mana=2 hand=7+0L gy=0
+  Hand: ['Murktide Regent', 'Drown in the Loch', 'Fatal Push', 'Fatal Push', 'Murktide Regent', 'Drown in the Loch', 'Murktide Regent']
+  Board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)']
+  Opp board: [] (life=17)
+  >>> PASS (threshold=-3.0)
+  >>> ATTACK: ['Orcish Bowmasters', 'Orc Army']
+  [MAIN2]
+
+T6 Dimir Midrange | life=20 mana=2 hand=7+0L gy=0
+  Hand: ['Murktide Regent', 'Drown in the Loch', 'Fatal Push', 'Fatal Push', 'Murktide Regent', 'Drown in the Loch', 'Murktide Regent']
+  Board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)']
+  Opp board: [] (life=15)
+  >>> PASS (threshold=-3.0)
+  [MAIN1]
+
+T7 Ruby Storm | life=15 mana=3 hand=7+0L gy=1
+  Hand: ['Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=20)
+  EV scores:
+     +19.9  cast_spell: Ruby Medallion <--  [h=+19.9 la=+19.9]
+      -1.0  cast_spell: Reckless Impulse  [h=-1.0 la=-1.0 ctr=72%]
+      -2.0  cast_spell: Glimpse the Impossible  [h=-2.0 la=-2.0 ctr=72%]
+      -2.0  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-2.0 la=-2.0 ctr=72%]
+    -1000.0  cast_spell: Desperate Ritual  [h=-1000.0 la=-1000.0 ctr=72%]
+    -1001.0  cast_spell: Manamorphose  [h=-1001.0 la=-1001.0 ctr=72%]
+  >>> CAST_SPELL: Reckless Impulse
+  [MAIN1]
+
+T7 Ruby Storm | life=13 mana=1 hand=7+1L gy=2
+  Hand: ['Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=20)
+  EV scores:
+     +18.0  play_land: Scalding Tarn <--
+  >>> PLAY_LAND: Scalding Tarn
+  [MAIN1]
+
+T7 Ruby Storm | life=10 mana=2 hand=7+0L gy=3
+  Hand: ['Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=20)
+  EV scores:
+      +7.3  cast_spell: Ruby Medallion <--  [h=+7.3 la=+7.3 ctr=72%]
+      -0.7  cast_spell: Desperate Ritual  [h=-0.7 la=-0.7 ctr=72%]
+      -0.8  cast_spell: Manamorphose  [h=-0.8 la=-0.8 ctr=72%]
+      -1.0  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy  [h=-1.0 la=-1.0 ctr=72% rmv=29%]
+  >>> CAST_SPELL: Ruby Medallion
+  [MAIN1]
+
+T7 Ruby Storm | life=10 mana=0 hand=6+0L gy=3
+  Hand: ['Manamorphose', 'Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T7 Ruby Storm | life=10 mana=0 hand=6+0L gy=3
+  Hand: ['Manamorphose', 'Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T8 Dimir Midrange | life=20 mana=2 hand=8+0L gy=0
+  Hand: ['Murktide Regent', 'Drown in the Loch', 'Fatal Push', 'Fatal Push', 'Murktide Regent', 'Drown in the Loch', 'Murktide Regent', 'Counterspell']
+  Board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)']
+  Opp board: [] (life=10)
+  EV scores:
+      -0.3  cast_spell: Fatal Push <--  [h=-0.3 la=-0.3]
+      -0.3  cast_spell: Fatal Push  [h=-0.3 la=-0.3]
+  >>> CAST_SPELL: Fatal Push
+  [MAIN1]
+
+T8 Dimir Midrange | life=20 mana=1 hand=7+0L gy=1
+  Hand: ['Murktide Regent', 'Drown in the Loch', 'Fatal Push', 'Murktide Regent', 'Drown in the Loch', 'Murktide Regent', 'Counterspell']
+  Board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)']
+  Opp board: [] (life=10)
+  EV scores:
+      -0.2  cast_spell: Fatal Push <--  [h=-0.2 la=-0.2]
+  >>> CAST_SPELL: Fatal Push
+  [MAIN1]
+
+T8 Dimir Midrange | life=20 mana=0 hand=6+0L gy=2
+  Hand: ['Murktide Regent', 'Drown in the Loch', 'Murktide Regent', 'Drown in the Loch', 'Murktide Regent', 'Counterspell']
+  Board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)']
+  Opp board: [] (life=10)
+  >>> PASS (threshold=-3.0)
+  >>> ATTACK: ['Orcish Bowmasters', 'Orc Army']
+  [MAIN2]
+
+T8 Dimir Midrange | life=20 mana=0 hand=6+0L gy=2
+  Hand: ['Murktide Regent', 'Drown in the Loch', 'Murktide Regent', 'Drown in the Loch', 'Murktide Regent', 'Counterspell']
+  Board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)']
+  Opp board: [] (life=8)
+  >>> PASS (threshold=-3.0)
+  [MAIN1]
+
+T9 Ruby Storm | life=8 mana=4 hand=6+1L gy=3
+  Hand: ['Manamorphose', 'Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=20)
+  EV scores:
+     +18.0  play_land: Arid Mesa <--
+      +1.8  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy  [h=+1.8 la=+1.8]
+      -1.2  cast_spell: Glimpse the Impossible  [h=-1.2 la=-1.2]
+      -1.3  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-1.3 la=-1.3]
+      -2.3  cast_spell: Past in Flames  [h=-2.3 la=-2.3]
+    -1000.0  cast_spell: Manamorphose  [h=-1000.0 la=-1000.0]
+    ... +1 more
+  >>> PLAY_LAND: Arid Mesa
+  [MAIN1]
+
+T9 Ruby Storm | life=7 mana=5 hand=6+0L gy=4
+  Hand: ['Manamorphose', 'Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=20)
+  EV scores:
+      +1.8  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy <--  [h=+1.8 la=+1.8]
+      -0.1  cast_spell: Glimpse the Impossible  [h=-0.1 la=-0.1]
+      -0.2  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.2 la=-0.2]
+      -1.2  cast_spell: Past in Flames  [h=-1.2 la=-1.2]
+    -1000.0  cast_spell: Manamorphose  [h=-1000.0 la=-1000.0]
+    -1000.1  cast_spell: Desperate Ritual  [h=-1000.1 la=-1000.1]
+  >>> CAST_SPELL: Ral, Monsoon Mage // Ral, Leyline Prodigy
+  [MAIN1]
+
+T9 Ruby Storm | life=7 mana=3 hand=5+0L gy=4
+  Hand: ['Manamorphose', 'Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=20)
+  EV scores:
+      -0.8  cast_spell: Manamorphose <--  [h=-0.8 la=-0.8]
+      -0.8  cast_spell: Desperate Ritual  [h=-0.8 la=-0.8]
+      -1.1  cast_spell: Glimpse the Impossible  [h=-1.1 la=-1.1]
+      -1.1  cast_spell: Past in Flames  [h=-1.1 la=-1.1]
+      -2.1  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-2.1 la=-2.1]
+  >>> CAST_SPELL: Manamorphose
+  [MAIN1]
+
+T9 Ruby Storm | life=6 mana=5 hand=4+1L gy=5
+  Hand: ['Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=20)
+  EV scores:
+      -0.1  cast_spell: Glimpse the Impossible <--  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Past in Flames  [h=-0.1 la=-0.1]
+      -0.2  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.2 la=-0.2]
+      -1.1  cast_spell: Desperate Ritual  [h=-1.1 la=-1.1]
+  >>> CAST_SPELL: Glimpse the Impossible
+  [MAIN1]
+
+T9 Ruby Storm | life=3 mana=4 hand=5+2L gy=6
+  Hand: ['Desperate Ritual', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Manamorphose', 'Ruby Medallion']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=20)
+  EV scores:
+      +7.3  cast_spell: Ruby Medallion <--  [h=+7.3 la=+7.3]
+      +0.0  cast_spell: Manamorphose
+      -0.1  cast_spell: Desperate Ritual  [h=-0.1 la=-0.1]
+      -0.3  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.3 la=-0.3]
+      -0.3  cast_spell: Past in Flames  [h=-0.3 la=-0.3]
+  >>> CAST_SPELL: Ruby Medallion
+  [MAIN1]
+
+T9 Ruby Storm | life=3 mana=2 hand=4+2L gy=6
+  Hand: ['Desperate Ritual', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Manamorphose']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=20)
+  EV scores:
+      +0.0  cast_spell: Manamorphose <--
+      -0.1  cast_spell: Desperate Ritual  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Past in Flames  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Manamorphose
+  [MAIN1]
+
+T9 Ruby Storm | life=2 mana=4 hand=4+2L gy=7
+  Hand: ['Desperate Ritual', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', "Wrenn's Resolve"]
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=20)
+  EV scores:
+      -0.1  cast_spell: Desperate Ritual <--  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Wrenn's Resolve  [h=-0.1 la=-0.1]
+      -0.2  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.2 la=-0.2]
+      -0.2  cast_spell: Past in Flames  [h=-0.2 la=-0.2]
+  >>> CAST_SPELL: Desperate Ritual
+  [MAIN1]
+
+T9 Ruby Storm | life=2 mana=6 hand=3+2L gy=8
+  Hand: ['Past in Flames', 'Valakut Awakening // Valakut Stoneforge', "Wrenn's Resolve"]
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=20)
+  EV scores:
+      -0.1  cast_spell: Wrenn's Resolve <--  [h=-0.1 la=-0.1]
+      -0.2  cast_spell: Past in Flames  [h=-0.2 la=-0.2]
+      -0.3  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.3 la=-0.3]
+  >>> CAST_SPELL: Wrenn's Resolve

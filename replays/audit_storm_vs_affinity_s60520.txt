@@ -1,0 +1,305 @@
+Loaded 21759 cards (0 errors)
+=== Ruby Storm vs Affinity (seed 60520) ===
+Result: Affinity wins T3 via damage
+Life: P1=-10 P2=20
+
+  [MAIN1]
+
+T1 Ruby Storm | life=20 mana=0 hand=4+2L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion']
+  Opp board: [] (life=20)
+  EV scores:
+     +42.0  play_land: Gemstone Caverns <--
+     +24.0  play_land: Thundering Falls
+  >>> PLAY_LAND: Gemstone Caverns
+  [MAIN1]
+
+T1 Ruby Storm | life=20 mana=1 hand=4+1L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T1 Ruby Storm | life=20 mana=1 hand=4+1L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T2 Affinity | life=20 mana=0 hand=6+2L gy=0
+  Hand: ['Springleaf Drum', 'Cranial Plating', 'Memnite', 'Thought Monitor', 'Springleaf Drum', 'Cranial Plating']
+  Opp board: [] (life=20)
+  EV scores:
+     +33.9  play_land: Urza's Saga <--
+     +33.9  play_land: Urza's Saga
+      +0.0  cast_spell: Memnite
+  >>> PLAY_LAND: Urza's Saga
+  [MAIN1]
+
+T2 Affinity | life=20 mana=1 hand=6+1L gy=0
+  Hand: ['Springleaf Drum', 'Cranial Plating', 'Memnite', 'Thought Monitor', 'Springleaf Drum', 'Cranial Plating']
+  Opp board: [] (life=20)
+  EV scores:
+      +0.9  cast_spell: Springleaf Drum <--  [h=+0.9 la=+0.9]
+      +0.9  cast_spell: Cranial Plating  [h=+0.9 la=+0.9]
+      +0.9  cast_spell: Springleaf Drum  [h=+0.9 la=+0.9]
+      +0.9  cast_spell: Cranial Plating  [h=+0.9 la=+0.9]
+      +0.1  cast_spell: Memnite  [h=+0.1 la=+0.1 rmv=1%]
+  >>> CAST_SPELL: Springleaf Drum
+  [MAIN1]
+
+T2 Affinity | life=20 mana=1 hand=5+1L gy=0
+  Hand: ['Cranial Plating', 'Memnite', 'Thought Monitor', 'Springleaf Drum', 'Cranial Plating']
+  Permanents: ['Springleaf Drum']
+  Opp board: [] (life=20)
+  EV scores:
+      +2.0  cast_spell: Memnite <--  [h=+2.0 la=+2.0 rmv=1%]
+      +1.0  cast_spell: Cranial Plating  [h=+1.0 la=+1.0]
+      +1.0  cast_spell: Springleaf Drum  [h=+1.0 la=+1.0]
+      +1.0  cast_spell: Cranial Plating  [h=+1.0 la=+1.0]
+  >>> CAST_SPELL: Memnite
+  [MAIN1]
+
+T2 Affinity | life=20 mana=1 hand=4+1L gy=0
+  Hand: ['Cranial Plating', 'Thought Monitor', 'Springleaf Drum', 'Cranial Plating']
+  Board: ['Memnite (1/1)']
+  Permanents: ['Springleaf Drum']
+  Opp board: [] (life=20)
+  EV scores:
+      +1.0  cast_spell: Cranial Plating <--  [h=+1.0 la=+1.0]
+      +1.0  cast_spell: Springleaf Drum  [h=+1.0 la=+1.0]
+      +1.0  cast_spell: Cranial Plating  [h=+1.0 la=+1.0]
+  >>> CAST_SPELL: Cranial Plating
+  [MAIN1]
+
+T2 Affinity | life=20 mana=0 hand=3+1L gy=0
+  Hand: ['Thought Monitor', 'Springleaf Drum', 'Cranial Plating']
+  Board: ['Memnite (1/1)']
+  Permanents: ['Springleaf Drum', 'Cranial Plating']
+  Opp board: [] (life=20)
+  EV scores:
+      +1.0  cast_spell: Springleaf Drum <--  [h=+1.0 la=+1.0]
+  >>> CAST_SPELL: Springleaf Drum
+  [MAIN1]
+
+T2 Affinity | life=20 mana=0 hand=2+1L gy=0
+  Hand: ['Thought Monitor', 'Cranial Plating']
+  Board: ['Memnite (1/1)']
+  Permanents: ['Springleaf Drum', 'Cranial Plating', 'Springleaf Drum']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T2 Affinity | life=20 mana=0 hand=2+1L gy=0
+  Hand: ['Thought Monitor', 'Cranial Plating']
+  Board: ['Memnite (1/1)']
+  Permanents: ['Springleaf Drum', 'Cranial Plating', 'Springleaf Drum']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T3 Ruby Storm | life=20 mana=1 hand=5+1L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible']
+  Opp board: ['Memnite (1/1)'] (life=20)
+  EV scores:
+      +7.0  play_land: Thundering Falls <--
+  >>> PLAY_LAND: Thundering Falls
+  [MAIN1]
+
+T3 Ruby Storm | life=20 mana=1 hand=5+0L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible']
+  Opp board: ['Memnite (1/1)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T3 Ruby Storm | life=20 mana=1 hand=5+0L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible']
+  Opp board: ['Memnite (1/1)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T4 Affinity | life=20 mana=1 hand=3+1L gy=0
+  Hand: ['Thought Monitor', 'Cranial Plating', 'Mox Opal']
+  Board: ['Memnite (1/1)']
+  Permanents: ['Springleaf Drum', 'Cranial Plating', 'Springleaf Drum']
+  Opp board: [] (life=20)
+  EV scores:
+     +15.0  play_land: Urza's Saga <--
+      +6.0  equip: Cranial Plating
+      +1.0  cast_spell: Cranial Plating  [h=+1.0 la=+1.0]
+      +1.0  cast_spell: Mox Opal  [h=+1.0 la=+1.0]
+  >>> PLAY_LAND: Urza's Saga
+  [MAIN1]
+
+T4 Affinity | life=20 mana=2 hand=3+0L gy=0
+  Hand: ['Thought Monitor', 'Cranial Plating', 'Mox Opal']
+  Board: ['Memnite (1/1)']
+  Permanents: ['Springleaf Drum', 'Cranial Plating', 'Springleaf Drum']
+  Opp board: [] (life=20)
+  EV scores:
+      +6.0  equip: Cranial Plating <--
+      +1.0  cast_spell: Cranial Plating  [h=+1.0 la=+1.0]
+      +0.9  cast_spell: Mox Opal  [h=+0.9 la=+0.9]
+  >>> EQUIP: Cranial Plating
+  [MAIN1]
+
+T4 Affinity | life=20 mana=1 hand=3+0L gy=0
+  Hand: ['Thought Monitor', 'Cranial Plating', 'Mox Opal']
+  Board: ['Memnite (5/1)']
+  Permanents: ['Springleaf Drum', 'Cranial Plating', 'Springleaf Drum']
+  Opp board: [] (life=20)
+  EV scores:
+      +1.0  cast_spell: Cranial Plating <--  [h=+1.0 la=+1.0]
+      +1.0  cast_spell: Mox Opal  [h=+1.0 la=+1.0]
+  >>> CAST_SPELL: Cranial Plating
+  [MAIN1]
+
+T4 Affinity | life=20 mana=1 hand=2+0L gy=0
+  Hand: ['Thought Monitor', 'Mox Opal']
+  Board: ['Memnite (6/1)']
+  Permanents: ['Springleaf Drum', 'Cranial Plating', 'Springleaf Drum', 'Cranial Plating']
+  Opp board: [] (life=20)
+  EV scores:
+      +7.5  equip: Cranial Plating <--
+      +1.0  cast_spell: Mox Opal  [h=+1.0 la=+1.0]
+  >>> EQUIP: Cranial Plating
+  [MAIN1]
+
+T4 Affinity | life=20 mana=0 hand=2+0L gy=0
+  Hand: ['Thought Monitor', 'Mox Opal']
+  Board: ['Memnite (11/1)']
+  Permanents: ['Springleaf Drum', 'Cranial Plating', 'Springleaf Drum', 'Cranial Plating']
+  Opp board: [] (life=20)
+  EV scores:
+      +1.0  cast_spell: Mox Opal <--  [h=+1.0 la=+1.0]
+  >>> CAST_SPELL: Mox Opal
+  [MAIN1]
+
+T4 Affinity | life=20 mana=0 hand=1+0L gy=0
+  Hand: ['Thought Monitor']
+  Board: ['Memnite (13/1)']
+  Permanents: ['Springleaf Drum', 'Cranial Plating', 'Springleaf Drum', 'Cranial Plating', 'Mox Opal']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Memnite']
+  [MAIN2]
+
+T4 Affinity | life=20 mana=0 hand=1+0L gy=0
+  Hand: ['Thought Monitor']
+  Board: ['Memnite (13/1)']
+  Permanents: ['Springleaf Drum', 'Cranial Plating', 'Springleaf Drum', 'Cranial Plating', 'Mox Opal']
+  Opp board: [] (life=7)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T5 Ruby Storm | life=7 mana=2 hand=5+1L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible']
+  Opp board: ['Memnite (13/1)'] (life=20)
+  EV scores:
+     +15.0  play_land: Sunbaked Canyon <--
+      +1.9  cast_spell: Ruby Medallion  [h=+1.9 la=+1.9]
+      -1.4  cast_spell: Reckless Impulse  [h=-1.4 la=-1.4]
+      -1.4  cast_spell: Reckless Impulse  [h=-1.4 la=-1.4]
+     -16.4  cast_spell: Manamorphose  [h=-16.4 la=-16.4]
+  >>> PLAY_LAND: Sunbaked Canyon
+  [MAIN1]
+
+T5 Ruby Storm | life=7 mana=3 hand=5+0L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible']
+  Opp board: ['Memnite (13/1)'] (life=20)
+  EV scores:
+      +2.5  cast_spell: Ruby Medallion <--  [h=+2.5 la=+2.5]
+      -1.4  cast_spell: Reckless Impulse  [h=-1.4 la=-1.4]
+      -1.4  cast_spell: Reckless Impulse  [h=-1.4 la=-1.4]
+      -2.6  cast_spell: Glimpse the Impossible  [h=-2.6 la=-2.6]
+     -17.2  cast_spell: Manamorphose  [h=-17.2 la=-17.2]
+  >>> CAST_SPELL: Ruby Medallion
+  [MAIN1]
+
+T5 Ruby Storm | life=7 mana=1 hand=4+0L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Glimpse the Impossible']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Memnite (13/1)'] (life=20)
+  EV scores:
+      +2.2  cast_spell: Manamorphose <--  [h=+2.2 la=+2.2]
+      -0.1  cast_spell: Reckless Impulse  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Reckless Impulse  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Manamorphose
+  [MAIN1]
+
+T5 Ruby Storm | life=7 mana=2 hand=4+0L gy=1
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Glimpse the Impossible', 'Desperate Ritual']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Memnite (13/1)'] (life=20)
+  EV scores:
+      +0.1  cast_spell: Desperate Ritual <--  [h=+0.1 la=+0.1]
+      -1.3  cast_spell: Reckless Impulse  [h=-1.3 la=-1.3]
+      -1.3  cast_spell: Reckless Impulse  [h=-1.3 la=-1.3]
+      -1.3  cast_spell: Glimpse the Impossible  [h=-1.3 la=-1.3]
+  >>> CAST_SPELL: Desperate Ritual
+  [MAIN1]
+
+T5 Ruby Storm | life=7 mana=4 hand=3+0L gy=2
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Glimpse the Impossible']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Memnite (13/1)'] (life=20)
+  EV scores:
+      -0.2  cast_spell: Reckless Impulse <--  [h=-0.2 la=-0.2]
+      -0.2  cast_spell: Reckless Impulse  [h=-0.2 la=-0.2]
+      -0.3  cast_spell: Glimpse the Impossible  [h=-0.3 la=-0.3]
+  >>> CAST_SPELL: Reckless Impulse
+  [MAIN1]
+
+T5 Ruby Storm | life=7 mana=3 hand=4+0L gy=3
+  Hand: ['Reckless Impulse', 'Glimpse the Impossible', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Memnite (13/1)'] (life=20)
+  EV scores:
+      -0.4  cast_spell: Reckless Impulse <--  [h=-0.4 la=-0.4]
+      -0.5  cast_spell: Glimpse the Impossible  [h=-0.5 la=-0.5]
+      -0.5  cast_spell: Past in Flames  [h=-0.5 la=-0.5]
+      -0.5  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.5 la=-0.5]
+  >>> CAST_SPELL: Reckless Impulse
+  [MAIN1]
+
+T5 Ruby Storm | life=7 mana=2 hand=4+1L gy=4
+  Hand: ['Glimpse the Impossible', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Memnite (13/1)'] (life=20)
+  EV scores:
+      -0.3  cast_spell: Glimpse the Impossible <--  [h=-0.3 la=-0.3]
+      -0.4  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.4 la=-0.4]
+  >>> CAST_SPELL: Glimpse the Impossible
+  [MAIN1]
+
+T5 Ruby Storm | life=7 mana=0 hand=5+2L gy=5
+  Hand: ['Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Past in Flames']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Memnite (13/1)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T5 Ruby Storm | life=7 mana=0 hand=5+2L gy=5
+  Hand: ['Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Past in Flames']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Memnite (13/1)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T6 Affinity | life=20 mana=2 hand=2+0L gy=0
+  Hand: ['Thought Monitor', 'Signal Pest']
+  Board: ['Memnite (15/1)', 'Construct Token (7/7)']
+  Permanents: ['Springleaf Drum', 'Cranial Plating', 'Springleaf Drum', 'Cranial Plating', 'Mox Opal']
+  Opp board: [] (life=7)
+  EV scores:
+      +3.2  cast_spell: Signal Pest <--  [h=+3.2 la=+3.2]
+  >>> CAST_SPELL: Signal Pest
+  [MAIN1]
+
+T6 Affinity | life=20 mana=2 hand=1+0L gy=0
+  Hand: ['Thought Monitor']
+  Board: ['Memnite (17/1)', 'Construct Token (8/8)', 'Signal Pest (0/1)']
+  Permanents: ['Springleaf Drum', 'Cranial Plating', 'Springleaf Drum', 'Cranial Plating', 'Mox Opal']
+  Opp board: [] (life=7)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Memnite']

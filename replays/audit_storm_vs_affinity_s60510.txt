@@ -1,0 +1,450 @@
+Loaded 21759 cards (0 errors)
+=== Ruby Storm vs Affinity (seed 60510) ===
+Result: Affinity wins T4 via damage
+Life: P1=-15 P2=20
+
+  [MAIN1]
+
+T1 Ruby Storm | life=20 mana=0 hand=4+3L gy=0
+  Hand: ['Manamorphose', 'Wish', "Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Opp board: [] (life=20)
+  EV scores:
+     +45.0  play_land: Gemstone Caverns <--
+     +32.0  play_land: Bloodstained Mire
+     +29.0  play_land: Sacred Foundry
+  >>> PLAY_LAND: Gemstone Caverns
+  [MAIN1]
+
+T1 Ruby Storm | life=20 mana=1 hand=4+2L gy=0
+  Hand: ['Manamorphose', 'Wish', "Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T1 Ruby Storm | life=20 mana=1 hand=4+2L gy=0
+  Hand: ['Manamorphose', 'Wish', "Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T2 Affinity | life=20 mana=0 hand=6+2L gy=0
+  Hand: ['Thought Monitor', 'Memnite', 'Signal Pest', 'Mox Opal', 'Ornithopter', 'Ornithopter']
+  Opp board: [] (life=20)
+  EV scores:
+     +38.6  play_land: Urza's Saga <--
+     +31.0  play_land: Treasure Vault
+      +1.0  cast_spell: Mox Opal  [h=+1.0 la=+1.0]
+      +0.0  cast_spell: Memnite
+      +0.0  cast_spell: Ornithopter
+      +0.0  cast_spell: Ornithopter
+  >>> PLAY_LAND: Urza's Saga
+  [MAIN1]
+
+T2 Affinity | life=20 mana=1 hand=6+1L gy=0
+  Hand: ['Thought Monitor', 'Memnite', 'Signal Pest', 'Mox Opal', 'Ornithopter', 'Ornithopter']
+  Opp board: [] (life=20)
+  EV scores:
+      +1.0  cast_spell: Mox Opal <--  [h=+1.0 la=+1.0]
+      +0.1  cast_spell: Memnite  [h=+0.1 la=+0.1 rmv=1%]
+      +0.1  cast_spell: Ornithopter  [h=+0.1 la=+0.1 rmv=1%]
+      +0.1  cast_spell: Ornithopter  [h=+0.1 la=+0.1 rmv=1%]
+      -0.0  cast_spell: Signal Pest  [h=-0.0 la=-0.0 rmv=1%]
+  >>> CAST_SPELL: Mox Opal
+  [MAIN1]
+
+T2 Affinity | life=20 mana=1 hand=5+1L gy=0
+  Hand: ['Thought Monitor', 'Memnite', 'Signal Pest', 'Ornithopter', 'Ornithopter']
+  Permanents: ['Mox Opal']
+  Opp board: [] (life=20)
+  EV scores:
+      +2.0  cast_spell: Memnite <--  [h=+2.0 la=+2.0 rmv=1%]
+      +1.0  cast_spell: Signal Pest  [h=+1.0 la=+1.0 rmv=1%]
+      +1.0  cast_spell: Ornithopter  [h=+1.0 la=+1.0 rmv=1%]
+      +1.0  cast_spell: Ornithopter  [h=+1.0 la=+1.0 rmv=1%]
+  >>> CAST_SPELL: Memnite
+  [MAIN1]
+
+T2 Affinity | life=20 mana=1 hand=4+1L gy=0
+  Hand: ['Thought Monitor', 'Signal Pest', 'Ornithopter', 'Ornithopter']
+  Board: ['Memnite (1/1)']
+  Permanents: ['Mox Opal']
+  Opp board: [] (life=20)
+  EV scores:
+      +1.0  cast_spell: Signal Pest <--  [h=+1.0 la=+1.0 rmv=1%]
+      +1.0  cast_spell: Ornithopter  [h=+1.0 la=+1.0 rmv=1%]
+      +1.0  cast_spell: Ornithopter  [h=+1.0 la=+1.0 rmv=1%]
+  >>> CAST_SPELL: Signal Pest
+  [MAIN1]
+
+T2 Affinity | life=20 mana=1 hand=3+1L gy=0
+  Hand: ['Thought Monitor', 'Ornithopter', 'Ornithopter']
+  Board: ['Memnite (1/1)', 'Signal Pest (0/1)']
+  Permanents: ['Mox Opal']
+  Opp board: [] (life=20)
+  EV scores:
+      +1.0  cast_spell: Ornithopter <--  [h=+1.0 la=+1.0 rmv=1%]
+      +1.0  cast_spell: Ornithopter  [h=+1.0 la=+1.0 rmv=1%]
+  >>> CAST_SPELL: Ornithopter
+  [MAIN1]
+
+T2 Affinity | life=20 mana=1 hand=2+1L gy=0
+  Hand: ['Thought Monitor', 'Ornithopter']
+  Board: ['Memnite (1/1)', 'Signal Pest (0/1)', 'Ornithopter (0/2)']
+  Permanents: ['Mox Opal']
+  Opp board: [] (life=20)
+  EV scores:
+      +1.0  cast_spell: Ornithopter <--  [h=+1.0 la=+1.0 rmv=1%]
+  >>> CAST_SPELL: Ornithopter
+  [MAIN1]
+
+T2 Affinity | life=20 mana=1 hand=1+1L gy=0
+  Hand: ['Thought Monitor']
+  Board: ['Memnite (1/1)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Ornithopter (0/2)']
+  Permanents: ['Mox Opal']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T2 Affinity | life=20 mana=1 hand=1+1L gy=0
+  Hand: ['Thought Monitor']
+  Board: ['Memnite (1/1)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Ornithopter (0/2)']
+  Permanents: ['Mox Opal']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T3 Ruby Storm | life=20 mana=1 hand=5+2L gy=0
+  Hand: ['Manamorphose', 'Wish', "Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Ruby Medallion']
+  Opp board: ['Memnite (1/1)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Ornithopter (0/2)'] (life=20)
+  EV scores:
+     +18.0  play_land: Bloodstained Mire <--
+     +15.0  play_land: Sacred Foundry
+  >>> PLAY_LAND: Bloodstained Mire
+  [MAIN1]
+
+T3 Ruby Storm | life=19 mana=2 hand=5+1L gy=1
+  Hand: ['Manamorphose', 'Wish', "Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Ruby Medallion']
+  Opp board: ['Memnite (1/1)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Ornithopter (0/2)'] (life=20)
+  EV scores:
+     +36.7  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy <--  [h=+36.7 la=+36.7]
+     +13.2  cast_spell: Ruby Medallion  [h=+13.2 la=+13.2]
+      -1.3  cast_spell: Wrenn's Resolve  [h=-1.3 la=-1.3]
+      -7.8  cast_spell: Manamorphose  [h=-7.8 la=-7.8]
+  >>> CAST_SPELL: Ral, Monsoon Mage // Ral, Leyline Prodigy
+  [MAIN1]
+
+T3 Ruby Storm | life=19 mana=0 hand=4+1L gy=1
+  Hand: ['Manamorphose', 'Wish', "Wrenn's Resolve", 'Ruby Medallion']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Opp board: ['Memnite (1/1)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Ornithopter (0/2)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T3 Ruby Storm | life=19 mana=0 hand=4+1L gy=1
+  Hand: ['Manamorphose', 'Wish', "Wrenn's Resolve", 'Ruby Medallion']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Opp board: ['Memnite (1/1)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Ornithopter (0/2)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T4 Affinity | life=20 mana=1 hand=2+1L gy=0
+  Hand: ['Thought Monitor', 'Nettlecyst']
+  Board: ['Memnite (1/1)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Ornithopter (0/2)']
+  Permanents: ['Mox Opal']
+  Opp board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)'] (life=19)
+  EV scores:
+     +28.0  play_land: Treasure Vault <--
+  >>> PLAY_LAND: Treasure Vault
+  [MAIN1]
+
+T4 Affinity | life=20 mana=2 hand=2+0L gy=0
+  Hand: ['Thought Monitor', 'Nettlecyst']
+  Board: ['Memnite (1/1)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Ornithopter (0/2)']
+  Permanents: ['Mox Opal']
+  Opp board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)'] (life=19)
+  EV scores:
+      +1.1  cast_spell: Nettlecyst <--  [h=+1.1 la=+1.1]
+  >>> CAST_SPELL: Nettlecyst
+  [MAIN1]
+
+T4 Affinity | life=20 mana=0 hand=1+0L gy=0
+  Hand: ['Thought Monitor']
+  Board: ['Memnite (1/1)', 'Signal Pest (0/1)', 'Ornithopter (0/2)', 'Ornithopter (0/2)', 'Germ Token (7/7)']
+  Permanents: ['Mox Opal', 'Nettlecyst']
+  Opp board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)'] (life=19)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Memnite', 'Signal Pest']
+  [MAIN2]
+
+T4 Affinity | life=20 mana=0 hand=1+0L gy=1
+  Hand: ['Thought Monitor']
+  Board: ['Signal Pest (0/1)', 'Ornithopter (0/2)', 'Ornithopter (0/2)', 'Germ Token (6/6)']
+  Permanents: ['Mox Opal', 'Nettlecyst']
+  Opp board: [] (life=19)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T5 Ruby Storm | life=19 mana=2 hand=5+1L gy=2
+  Hand: ['Manamorphose', 'Wish', "Wrenn's Resolve", 'Ruby Medallion', 'Pyretic Ritual']
+  Opp board: ['Signal Pest (0/1)', 'Ornithopter (0/2)', 'Ornithopter (0/2)', 'Germ Token (6/6)'] (life=20)
+  EV scores:
+     +15.0  play_land: Sacred Foundry <--
+      +6.6  cast_spell: Ruby Medallion  [h=+6.6 la=+6.6]
+      -1.4  cast_spell: Wrenn's Resolve  [h=-1.4 la=-1.4]
+     -16.3  cast_spell: Pyretic Ritual  [h=-16.3 la=-16.3]
+     -16.4  cast_spell: Manamorphose  [h=-16.4 la=-16.4]
+  >>> PLAY_LAND: Sacred Foundry
+  [MAIN1]
+
+T5 Ruby Storm | life=17 mana=3 hand=5+0L gy=2
+  Hand: ['Manamorphose', 'Wish', "Wrenn's Resolve", 'Ruby Medallion', 'Pyretic Ritual']
+  Opp board: ['Signal Pest (0/1)', 'Ornithopter (0/2)', 'Ornithopter (0/2)', 'Germ Token (6/6)'] (life=20)
+  EV scores:
+      +7.4  cast_spell: Ruby Medallion <--  [h=+7.4 la=+7.4]
+      -0.4  cast_spell: Wrenn's Resolve  [h=-0.4 la=-0.4]
+     -16.6  cast_spell: Manamorphose  [h=-16.6 la=-16.6]
+     -16.7  cast_spell: Pyretic Ritual  [h=-16.7 la=-16.7]
+     -24.7  cast_spell: Wish  [h=-24.7 la=-24.7]
+  >>> CAST_SPELL: Wrenn's Resolve
+  [MAIN1]
+
+T5 Ruby Storm | life=17 mana=1 hand=6+0L gy=3
+  Hand: ['Manamorphose', 'Wish', 'Ruby Medallion', 'Pyretic Ritual', 'Grapeshot', 'Reckless Impulse']
+  Opp board: ['Signal Pest (0/1)', 'Ornithopter (0/2)', 'Ornithopter (0/2)', 'Germ Token (6/6)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T5 Ruby Storm | life=17 mana=1 hand=6+0L gy=3
+  Hand: ['Manamorphose', 'Wish', 'Ruby Medallion', 'Pyretic Ritual', 'Grapeshot', 'Reckless Impulse']
+  Opp board: ['Signal Pest (0/1)', 'Ornithopter (0/2)', 'Ornithopter (0/2)', 'Germ Token (6/6)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T6 Affinity | life=20 mana=2 hand=2+0L gy=1
+  Hand: ['Thought Monitor', 'Engineered Explosives']
+  Board: ['Signal Pest (0/1)', 'Ornithopter (0/2)', 'Ornithopter (0/2)', 'Germ Token (7/7)', 'Construct Token (7/7)']
+  Permanents: ['Mox Opal', 'Nettlecyst']
+  Opp board: [] (life=17)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Signal Pest', 'Germ Token']
+  [MAIN2]
+
+T6 Affinity | life=20 mana=2 hand=2+0L gy=1
+  Hand: ['Thought Monitor', 'Engineered Explosives']
+  Board: ['Signal Pest (0/1)', 'Ornithopter (0/2)', 'Ornithopter (0/2)', 'Germ Token (8/7)', 'Construct Token (7/7)']
+  Permanents: ['Mox Opal', 'Nettlecyst']
+  Opp board: [] (life=9)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T7 Ruby Storm | life=9 mana=3 hand=7+0L gy=3
+  Hand: ['Manamorphose', 'Wish', 'Ruby Medallion', 'Pyretic Ritual', 'Grapeshot', 'Reckless Impulse', 'Glimpse the Impossible']
+  Opp board: ['Signal Pest (0/1)', 'Ornithopter (0/2)', 'Ornithopter (0/2)', 'Germ Token (7/7)', 'Construct Token (7/7)'] (life=20)
+  EV scores:
+     +23.4  cast_spell: Ruby Medallion <--  [h=+23.4 la=+23.4]
+     +18.5  cast_spell: Reckless Impulse  [h=+18.5 la=+18.5]
+     +17.4  cast_spell: Glimpse the Impossible  [h=+17.4 la=+17.4]
+      -3.1  cast_spell: Grapeshot  [h=-3.1 la=-3.1]
+     -10.0  cast_spell: Manamorphose  [h=-10.0 la=-10.0]
+     -10.1  cast_spell: Pyretic Ritual  [h=-10.1 la=-10.1]
+    ... +1 more
+  >>> CAST_SPELL: Ruby Medallion
+  [MAIN1]
+
+T7 Ruby Storm | life=9 mana=1 hand=6+0L gy=3
+  Hand: ['Manamorphose', 'Wish', 'Pyretic Ritual', 'Grapeshot', 'Reckless Impulse', 'Glimpse the Impossible']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Signal Pest (0/1)', 'Ornithopter (0/2)', 'Ornithopter (0/2)', 'Germ Token (7/7)', 'Construct Token (7/7)'] (life=20)
+  EV scores:
+     +29.3  cast_spell: Pyretic Ritual <--  [h=+29.3 la=+29.3]
+     +29.2  cast_spell: Manamorphose  [h=+29.2 la=+29.2]
+     +29.0  cast_spell: Reckless Impulse  [h=+29.0 la=+29.0]
+      +3.1  cast_spell: Grapeshot  [h=+3.1 la=+3.1]
+  >>> CAST_SPELL: Pyretic Ritual
+  [MAIN1]
+
+T7 Ruby Storm | life=9 mana=3 hand=5+0L gy=4
+  Hand: ['Manamorphose', 'Wish', 'Grapeshot', 'Reckless Impulse', 'Glimpse the Impossible']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Signal Pest (0/1)', 'Ornithopter (0/2)', 'Ornithopter (0/2)', 'Germ Token (7/7)', 'Construct Token (7/7)'] (life=20)
+  EV scores:
+     +13.2  cast_spell: Manamorphose <--  [h=+13.2 la=+13.2]
+     +12.9  cast_spell: Reckless Impulse  [h=+12.9 la=+12.9]
+     +12.8  cast_spell: Glimpse the Impossible  [h=+12.8 la=+12.8]
+      +2.8  cast_spell: Grapeshot  [h=+2.8 la=+2.8]
+     -27.8  cast_spell: Wish  [h=-27.8 la=-27.8]
+  >>> CAST_SPELL: Manamorphose
+  [MAIN1]
+
+T7 Ruby Storm | life=9 mana=4 hand=5+0L gy=5
+  Hand: ['Wish', 'Grapeshot', 'Reckless Impulse', 'Glimpse the Impossible', 'Reckless Impulse']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Signal Pest (0/1)', 'Ornithopter (0/2)', 'Ornithopter (0/2)', 'Germ Token (7/7)', 'Construct Token (7/7)'] (life=20)
+  EV scores:
+     +23.0  cast_spell: Reckless Impulse <--  [h=+23.0 la=+23.0]
+     +23.0  cast_spell: Reckless Impulse  [h=+23.0 la=+23.0]
+     +12.8  cast_spell: Glimpse the Impossible  [h=+12.8 la=+12.8]
+      +2.8  cast_spell: Grapeshot  [h=+2.8 la=+2.8]
+     -27.8  cast_spell: Wish  [h=-27.8 la=-27.8]
+  >>> CAST_SPELL: Reckless Impulse
+  [MAIN1]
+
+T7 Ruby Storm | life=9 mana=3 hand=6+0L gy=6
+  Hand: ['Wish', 'Grapeshot', 'Glimpse the Impossible', 'Reckless Impulse', 'Valakut Awakening // Valakut Stoneforge', 'Pyretic Ritual']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Signal Pest (0/1)', 'Ornithopter (0/2)', 'Ornithopter (0/2)', 'Germ Token (7/7)', 'Construct Token (7/7)'] (life=20)
+  EV scores:
+     +18.9  cast_spell: Pyretic Ritual <--  [h=+18.9 la=+18.9]
+     +18.6  cast_spell: Reckless Impulse  [h=+18.6 la=+18.6]
+     +18.5  cast_spell: Glimpse the Impossible  [h=+18.5 la=+18.5]
+     +18.5  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=+18.5 la=+18.5]
+      +2.7  cast_spell: Grapeshot  [h=+2.7 la=+2.7]
+     -33.6  cast_spell: Wish  [h=-33.6 la=-33.6]
+  >>> CAST_SPELL: Pyretic Ritual
+  [MAIN1]
+
+T7 Ruby Storm | life=9 mana=5 hand=5+0L gy=7
+  Hand: ['Wish', 'Grapeshot', 'Glimpse the Impossible', 'Reckless Impulse', 'Valakut Awakening // Valakut Stoneforge']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Signal Pest (0/1)', 'Ornithopter (0/2)', 'Ornithopter (0/2)', 'Germ Token (7/7)', 'Construct Token (7/7)'] (life=20)
+  EV scores:
+     +23.1  cast_spell: Reckless Impulse <--  [h=+23.1 la=+23.1]
+     +22.9  cast_spell: Glimpse the Impossible  [h=+22.9 la=+22.9]
+     +22.8  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=+22.8 la=+22.8]
+      +2.9  cast_spell: Grapeshot  [h=+2.9 la=+2.9]
+     -17.7  cast_spell: Wish  [h=-17.7 la=-17.7]
+  >>> CAST_SPELL: Reckless Impulse
+  [MAIN1]
+
+T7 Ruby Storm | life=9 mana=4 hand=4+2L gy=8
+  Hand: ['Wish', 'Grapeshot', 'Glimpse the Impossible', 'Valakut Awakening // Valakut Stoneforge']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Signal Pest (0/1)', 'Ornithopter (0/2)', 'Ornithopter (0/2)', 'Germ Token (7/7)', 'Construct Token (7/7)'] (life=20)
+  EV scores:
+     +12.0  play_land: Sunbaked Canyon <--
+     +12.0  play_land: Mountain
+      +6.9  cast_spell: Glimpse the Impossible  [h=+6.9 la=+6.9]
+      +6.9  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=+6.9 la=+6.9]
+      +2.8  cast_spell: Grapeshot  [h=+2.8 la=+2.8]
+     -22.1  cast_spell: Wish  [h=-22.1 la=-22.1]
+  >>> PLAY_LAND: Sunbaked Canyon
+  [MAIN1]
+
+T7 Ruby Storm | life=9 mana=5 hand=4+1L gy=8
+  Hand: ['Wish', 'Grapeshot', 'Glimpse the Impossible', 'Valakut Awakening // Valakut Stoneforge']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Signal Pest (0/1)', 'Ornithopter (0/2)', 'Ornithopter (0/2)', 'Germ Token (7/7)', 'Construct Token (7/7)'] (life=20)
+  EV scores:
+     +17.1  cast_spell: Glimpse the Impossible <--  [h=+17.1 la=+17.1]
+     +17.0  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=+17.0 la=+17.0]
+      +2.9  cast_spell: Grapeshot  [h=+2.9 la=+2.9]
+     -11.9  cast_spell: Wish  [h=-11.9 la=-11.9]
+  >>> CAST_SPELL: Glimpse the Impossible
+  [MAIN1]
+
+T7 Ruby Storm | life=9 mana=3 hand=6+1L gy=9
+  Hand: ['Wish', 'Grapeshot', 'Valakut Awakening // Valakut Stoneforge', 'Glimpse the Impossible', "Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Signal Pest (0/1)', 'Ornithopter (0/2)', 'Ornithopter (0/2)', 'Germ Token (7/7)', 'Construct Token (7/7)'] (life=20)
+  EV scores:
+     +12.7  cast_spell: Wrenn's Resolve <--  [h=+12.7 la=+12.7]
+     +12.6  cast_spell: Glimpse the Impossible  [h=+12.6 la=+12.6]
+     +12.6  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=+12.6 la=+12.6]
+      -3.1  cast_spell: Grapeshot  [h=-3.1 la=-3.1]
+     -33.7  cast_spell: Wish  [h=-33.7 la=-33.7]
+  >>> CAST_SPELL: Wrenn's Resolve
+  [MAIN1]
+
+T7 Ruby Storm | life=9 mana=2 hand=6+2L gy=10
+  Hand: ['Wish', 'Grapeshot', 'Valakut Awakening // Valakut Stoneforge', 'Glimpse the Impossible', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Desperate Ritual']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Signal Pest (0/1)', 'Ornithopter (0/2)', 'Ornithopter (0/2)', 'Germ Token (7/7)', 'Construct Token (7/7)'] (life=20)
+  EV scores:
+     +13.3  cast_spell: Desperate Ritual <--  [h=+13.3 la=+13.3]
+     +12.8  cast_spell: Glimpse the Impossible  [h=+12.8 la=+12.8]
+     +12.8  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=+12.8 la=+12.8]
+      -3.0  cast_spell: Grapeshot  [h=-3.0 la=-3.0]
+     -33.5  cast_spell: Wish  [h=-33.5 la=-33.5]
+  >>> CAST_SPELL: Desperate Ritual
+  [MAIN1]
+
+T7 Ruby Storm | life=9 mana=4 hand=5+2L gy=11
+  Hand: ['Wish', 'Grapeshot', 'Valakut Awakening // Valakut Stoneforge', 'Glimpse the Impossible', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Signal Pest (0/1)', 'Ornithopter (0/2)', 'Ornithopter (0/2)', 'Germ Token (7/7)', 'Construct Token (7/7)'] (life=20)
+  EV scores:
+      +6.8  cast_spell: Glimpse the Impossible <--  [h=+6.8 la=+6.8]
+      +6.8  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=+6.8 la=+6.8]
+      -3.0  cast_spell: Grapeshot  [h=-3.0 la=-3.0]
+     -27.9  cast_spell: Wish  [h=-27.9 la=-27.9]
+  >>> CAST_SPELL: Glimpse the Impossible
+  [MAIN1]
+
+T7 Ruby Storm | life=9 mana=2 hand=5+4L gy=12
+  Hand: ['Wish', 'Grapeshot', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Past in Flames']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Signal Pest (0/1)', 'Ornithopter (0/2)', 'Ornithopter (0/2)', 'Germ Token (7/7)', 'Construct Token (7/7)'] (life=20)
+  EV scores:
+      +1.1  cast_spell: Valakut Awakening // Valakut Stoneforge <--  [h=+1.1 la=+1.1]
+      -8.9  cast_spell: Grapeshot  [h=-8.9 la=-8.9]
+     -27.8  cast_spell: Wish  [h=-27.8 la=-27.8]
+  >>> CAST_SPELL: Valakut Awakening // Valakut Stoneforge
+  [MAIN1]
+
+T7 Ruby Storm | life=9 mana=2 hand=5+4L gy=12
+  Hand: ['Wish', 'Grapeshot', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Past in Flames']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Signal Pest (0/1)', 'Ornithopter (0/2)', 'Ornithopter (0/2)', 'Germ Token (7/7)', 'Construct Token (7/7)'] (life=20)
+  EV scores:
+      +1.1  cast_spell: Valakut Awakening // Valakut Stoneforge <--  [h=+1.1 la=+1.1]
+      -8.9  cast_spell: Grapeshot  [h=-8.9 la=-8.9]
+     -27.8  cast_spell: Wish  [h=-27.8 la=-27.8]
+  >>> CAST_SPELL: Valakut Awakening // Valakut Stoneforge
+  [MAIN2]
+
+T7 Ruby Storm | life=9 mana=1 hand=5+4L gy=12
+  Hand: ['Wish', 'Grapeshot', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Past in Flames']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Signal Pest (0/1)', 'Ornithopter (0/2)', 'Ornithopter (0/2)', 'Germ Token (7/7)', 'Construct Token (7/7)'] (life=20)
+  EV scores:
+     -14.4  cast_spell: Grapeshot <--  [h=-14.4 la=-14.4]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T8 Affinity | life=20 mana=1 hand=2+1L gy=2
+  Hand: ['Thought Monitor', 'Engineered Explosives']
+  Board: ['Signal Pest (0/1)', 'Ornithopter (0/2)', 'Ornithopter (0/2)', 'Germ Token (9/9)', 'Construct Token (9/9)', 'Construct Token (9/9)']
+  Permanents: ['Mox Opal', 'Nettlecyst', 'Springleaf Drum']
+  Opp board: [] (life=9)
+  EV scores:
+     +38.0  play_land: Spire of Industry <--
+  >>> PLAY_LAND: Spire of Industry
+  [MAIN1]
+
+T8 Affinity | life=20 mana=2 hand=2+0L gy=2
+  Hand: ['Thought Monitor', 'Engineered Explosives']
+  Board: ['Signal Pest (0/1)', 'Ornithopter (0/2)', 'Ornithopter (0/2)', 'Germ Token (9/9)', 'Construct Token (9/9)', 'Construct Token (9/9)']
+  Permanents: ['Mox Opal', 'Nettlecyst', 'Springleaf Drum']
+  Opp board: [] (life=9)
+  EV scores:
+      +2.7  cast_spell: Thought Monitor <--  [h=+2.7 la=+2.7 rmv=11%]
+  >>> CAST_SPELL: Thought Monitor
+  [MAIN1]
+
+T8 Affinity | life=20 mana=1 hand=2+1L gy=2
+  Hand: ['Engineered Explosives', 'Frogmite']
+  Board: ['Signal Pest (0/1)', 'Ornithopter (0/2)', 'Ornithopter (0/2)', 'Germ Token (10/10)', 'Construct Token (10/10)', 'Construct Token (10/10)', 'Thought Monitor (2/2)']
+  Permanents: ['Mox Opal', 'Nettlecyst', 'Springleaf Drum']
+  Opp board: [] (life=9)
+  EV scores:
+      +2.3  cast_spell: Frogmite <--  [h=+2.3 la=+2.3 rmv=11%]
+  >>> CAST_SPELL: Frogmite
+  [MAIN1]
+
+T8 Affinity | life=20 mana=1 hand=1+1L gy=2
+  Hand: ['Engineered Explosives']
+  Board: ['Signal Pest (0/1)', 'Ornithopter (0/2)', 'Ornithopter (0/2)', 'Germ Token (11/11)', 'Construct Token (11/11)', 'Construct Token (11/11)', 'Thought Monitor (2/2)', 'Frogmite (2/2)']
+  Permanents: ['Mox Opal', 'Nettlecyst', 'Springleaf Drum']
+  Opp board: [] (life=9)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Signal Pest', 'Germ Token', 'Construct Token']

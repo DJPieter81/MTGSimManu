@@ -1,0 +1,360 @@
+Loaded 21759 cards (0 errors)
+=== Ruby Storm vs Boros Energy (seed 60510) ===
+Result: Boros Energy wins T5 via damage
+Life: P1=0 P2=26
+
+  [MAIN1]
+
+T1 Ruby Storm | life=20 mana=0 hand=4+3L gy=0
+  Hand: ['Manamorphose', 'Wish', "Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Opp board: [] (life=20)
+  EV scores:
+     +45.0  play_land: Gemstone Caverns <--
+     +32.0  play_land: Bloodstained Mire
+     +29.0  play_land: Sacred Foundry
+  >>> PLAY_LAND: Gemstone Caverns
+  [MAIN1]
+
+T1 Ruby Storm | life=20 mana=1 hand=4+2L gy=0
+  Hand: ['Manamorphose', 'Wish', "Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T1 Ruby Storm | life=20 mana=1 hand=4+2L gy=0
+  Hand: ['Manamorphose', 'Wish', "Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T2 Boros Energy | life=20 mana=0 hand=6+2L gy=0
+  Hand: ['Seasoned Pyromancer', "Phlage, Titan of Fire's Fury", 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ragavan, Nimble Pilferer', 'Ocelot Pride', 'Ocelot Pride']
+  Opp board: [] (life=20)
+  EV scores:
+     +44.0  play_land: Arid Mesa <--
+     +38.0  play_land: Windswept Heath
+  >>> PLAY_LAND: Arid Mesa
+  [MAIN1]
+
+T2 Boros Energy | life=17 mana=1 hand=6+1L gy=1
+  Hand: ['Seasoned Pyromancer', "Phlage, Titan of Fire's Fury", 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ragavan, Nimble Pilferer', 'Ocelot Pride', 'Ocelot Pride']
+  Opp board: [] (life=20)
+  EV scores:
+      +1.0  cast_spell: Ragavan, Nimble Pilferer <--  [h=+1.0 la=+1.0 rmv=2%]
+      -0.0  cast_spell: Ocelot Pride  [h=-0.0 la=-0.0 rmv=2%]
+      -0.0  cast_spell: Ocelot Pride  [h=-0.0 la=-0.0 rmv=2%]
+  >>> CAST_SPELL: Ragavan, Nimble Pilferer
+  [MAIN1]
+
+T2 Boros Energy | life=17 mana=0 hand=5+1L gy=1
+  Hand: ['Seasoned Pyromancer', "Phlage, Titan of Fire's Fury", 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ocelot Pride', 'Ocelot Pride']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T2 Boros Energy | life=17 mana=0 hand=5+1L gy=1
+  Hand: ['Seasoned Pyromancer', "Phlage, Titan of Fire's Fury", 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ocelot Pride', 'Ocelot Pride']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T3 Ruby Storm | life=20 mana=1 hand=5+2L gy=0
+  Hand: ['Manamorphose', 'Wish', "Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Ruby Medallion']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  EV scores:
+     +18.0  play_land: Bloodstained Mire <--
+     +15.0  play_land: Sacred Foundry
+  >>> PLAY_LAND: Bloodstained Mire
+  [MAIN1]
+
+T3 Ruby Storm | life=19 mana=2 hand=5+1L gy=1
+  Hand: ['Manamorphose', 'Wish', "Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Ruby Medallion']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  EV scores:
+     +15.6  cast_spell: Ruby Medallion <--  [h=+15.6 la=+15.6]
+      +3.9  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy  [h=+3.9 la=+3.9]
+      -1.1  cast_spell: Wrenn's Resolve  [h=-1.1 la=-1.1]
+      -9.7  cast_spell: Manamorphose  [h=-9.7 la=-9.7]
+  >>> CAST_SPELL: Ral, Monsoon Mage // Ral, Leyline Prodigy
+  [MAIN1]
+
+T3 Ruby Storm | life=19 mana=0 hand=4+1L gy=1
+  Hand: ['Manamorphose', 'Wish', "Wrenn's Resolve", 'Ruby Medallion']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T3 Ruby Storm | life=19 mana=0 hand=4+1L gy=1
+  Hand: ['Manamorphose', 'Wish', "Wrenn's Resolve", 'Ruby Medallion']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T4 Boros Energy | life=17 mana=1 hand=5+2L gy=1
+  Hand: ['Seasoned Pyromancer', "Phlage, Titan of Fire's Fury", 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ocelot Pride', 'Ocelot Pride']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Opp board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)'] (life=19)
+  EV scores:
+     +36.5  cast_spell: Ocelot Pride <--  [h=+36.5 la=+36.5]
+     +36.5  cast_spell: Ocelot Pride  [h=+36.5 la=+36.5]
+     +22.0  play_land: Windswept Heath
+     +15.0  play_land: Plains
+  >>> CAST_SPELL: Ocelot Pride
+  [MAIN1]
+
+T4 Boros Energy | life=17 mana=0 hand=4+2L gy=1
+  Hand: ['Seasoned Pyromancer', "Phlage, Titan of Fire's Fury", 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ocelot Pride']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Ocelot Pride (1/1)']
+  Opp board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)'] (life=19)
+  EV scores:
+     +22.0  play_land: Windswept Heath <--
+     +15.0  play_land: Plains
+  >>> PLAY_LAND: Windswept Heath
+  [MAIN1]
+
+T4 Boros Energy | life=14 mana=1 hand=4+1L gy=2
+  Hand: ['Seasoned Pyromancer', "Phlage, Titan of Fire's Fury", 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ocelot Pride']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Ocelot Pride (1/1)']
+  Opp board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)'] (life=19)
+  EV scores:
+     -25.8  cast_spell: Ocelot Pride <--  [h=-25.8 la=-25.8]
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ragavan, Nimble Pilferer']
+  [MAIN2]
+
+T4 Boros Energy | life=14 mana=1 hand=4+1L gy=3
+  Hand: ['Seasoned Pyromancer', "Phlage, Titan of Fire's Fury", 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ocelot Pride']
+  Board: ['Ocelot Pride (1/1)']
+  Opp board: [] (life=19)
+  EV scores:
+      +3.0  cast_spell: Ocelot Pride <--  [h=+3.0 la=+3.0]
+  >>> CAST_SPELL: Ocelot Pride
+  [MAIN2]
+
+T4 Boros Energy | life=14 mana=0 hand=3+1L gy=3
+  Hand: ['Seasoned Pyromancer', "Phlage, Titan of Fire's Fury", 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+  Board: ['Ocelot Pride (1/1)', 'Ocelot Pride (1/1)']
+  Opp board: [] (life=19)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T5 Ruby Storm | life=19 mana=2 hand=5+1L gy=2
+  Hand: ['Manamorphose', 'Wish', "Wrenn's Resolve", 'Ruby Medallion', 'Glimpse the Impossible']
+  Opp board: ['Ocelot Pride (1/1)', 'Ocelot Pride (1/1)'] (life=14)
+  EV scores:
+     +18.9  cast_spell: Ruby Medallion <--  [h=+18.9 la=+18.9]
+     +15.0  play_land: Sacred Foundry
+      -1.3  cast_spell: Wrenn's Resolve  [h=-1.3 la=-1.3]
+     -18.9  cast_spell: Manamorphose  [h=-18.9 la=-18.9]
+  >>> PLAY_LAND: Sacred Foundry
+  [MAIN1]
+
+T5 Ruby Storm | life=17 mana=3 hand=5+0L gy=2
+  Hand: ['Manamorphose', 'Wish', "Wrenn's Resolve", 'Ruby Medallion', 'Glimpse the Impossible']
+  Opp board: ['Ocelot Pride (1/1)', 'Ocelot Pride (1/1)'] (life=14)
+  EV scores:
+     +28.4  cast_spell: Ruby Medallion <--  [h=+28.4 la=+28.4]
+      -0.3  cast_spell: Wrenn's Resolve  [h=-0.3 la=-0.3]
+      -1.4  cast_spell: Glimpse the Impossible  [h=-1.4 la=-1.4]
+     -19.3  cast_spell: Manamorphose  [h=-19.3 la=-19.3]
+     -28.1  cast_spell: Wish  [h=-28.1 la=-28.1]
+  >>> CAST_SPELL: Wrenn's Resolve
+  [MAIN1]
+
+T5 Ruby Storm | life=17 mana=1 hand=6+0L gy=3
+  Hand: ['Manamorphose', 'Wish', 'Ruby Medallion', 'Glimpse the Impossible', 'Valakut Awakening // Valakut Stoneforge', 'Wish']
+  Opp board: ['Ocelot Pride (1/1)', 'Ocelot Pride (1/1)'] (life=14)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T5 Ruby Storm | life=17 mana=1 hand=6+0L gy=3
+  Hand: ['Manamorphose', 'Wish', 'Ruby Medallion', 'Glimpse the Impossible', 'Valakut Awakening // Valakut Stoneforge', 'Wish']
+  Opp board: ['Ocelot Pride (1/1)', 'Ocelot Pride (1/1)'] (life=14)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T6 Boros Energy | life=14 mana=2 hand=4+1L gy=3
+  Hand: ['Seasoned Pyromancer', "Phlage, Titan of Fire's Fury", 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+  Board: ['Ocelot Pride (1/1)', 'Ocelot Pride (1/1)']
+  Opp board: [] (life=17)
+  EV scores:
+     +15.0  play_land: Plains <--
+      +7.9  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger  [h=+7.9 la=+7.9 rmv=4%]
+      +7.9  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger  [h=+7.9 la=+7.9 rmv=4%]
+  >>> PLAY_LAND: Plains
+  [MAIN1]
+
+T6 Boros Energy | life=14 mana=3 hand=4+0L gy=3
+  Hand: ['Seasoned Pyromancer', "Phlage, Titan of Fire's Fury", 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+  Board: ['Ocelot Pride (1/1)', 'Ocelot Pride (1/1)']
+  Opp board: [] (life=17)
+  EV scores:
+     +18.2  cast_spell: Phlage, Titan of Fire's Fury <--  [h=+18.2 la=+18.2 rmv=3%]
+     +10.2  cast_spell: Seasoned Pyromancer  [h=+10.2 la=+10.2 rmv=10%]
+      +7.9  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger  [h=+7.9 la=+7.9 rmv=4%]
+      +7.9  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger  [h=+7.9 la=+7.9 rmv=4%]
+  >>> CAST_SPELL: Phlage, Titan of Fire's Fury
+  [MAIN1]
+
+T6 Boros Energy | life=17 mana=0 hand=3+0L gy=4
+  Hand: ['Seasoned Pyromancer', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+  Board: ['Ocelot Pride (1/1)', 'Ocelot Pride (1/1)']
+  Opp board: [] (life=14)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ocelot Pride', 'Ocelot Pride']
+  [MAIN2]
+
+T6 Boros Energy | life=19 mana=0 hand=3+0L gy=4
+  Hand: ['Seasoned Pyromancer', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+  Board: ['Ocelot Pride (1/1)', 'Ocelot Pride (1/1)']
+  Opp board: [] (life=12)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T7 Ruby Storm | life=12 mana=3 hand=6+1L gy=3
+  Hand: ['Manamorphose', 'Wish', 'Ruby Medallion', 'Glimpse the Impossible', 'Valakut Awakening // Valakut Stoneforge', 'Wish']
+  Opp board: ['Ocelot Pride (1/1)', 'Ocelot Pride (1/1)'] (life=19)
+  EV scores:
+     +18.0  play_land: Wooded Foothills <--
+     +15.7  cast_spell: Ruby Medallion  [h=+15.7 la=+15.7]
+      -1.6  cast_spell: Glimpse the Impossible  [h=-1.6 la=-1.6]
+      -1.6  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-1.6 la=-1.6]
+     -20.6  cast_spell: Manamorphose  [h=-20.6 la=-20.6]
+     -22.2  cast_spell: Wish  [h=-22.2 la=-22.2]
+    ... +1 more
+  >>> PLAY_LAND: Wooded Foothills
+  [MAIN1]
+
+T7 Ruby Storm | life=11 mana=4 hand=6+0L gy=4
+  Hand: ['Manamorphose', 'Wish', 'Ruby Medallion', 'Glimpse the Impossible', 'Valakut Awakening // Valakut Stoneforge', 'Wish']
+  Opp board: ['Ocelot Pride (1/1)', 'Ocelot Pride (1/1)'] (life=19)
+  EV scores:
+     +15.7  cast_spell: Ruby Medallion <--  [h=+15.7 la=+15.7]
+      -0.4  cast_spell: Glimpse the Impossible  [h=-0.4 la=-0.4]
+      -0.5  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.5 la=-0.5]
+     -20.7  cast_spell: Manamorphose  [h=-20.7 la=-20.7]
+     -21.2  cast_spell: Wish  [h=-21.2 la=-21.2]
+     -21.2  cast_spell: Wish  [h=-21.2 la=-21.2]
+  >>> CAST_SPELL: Glimpse the Impossible
+  [MAIN1]
+
+T7 Ruby Storm | life=11 mana=1 hand=7+1L gy=5
+  Hand: ['Manamorphose', 'Wish', 'Ruby Medallion', 'Valakut Awakening // Valakut Stoneforge', 'Wish', 'Glimpse the Impossible', 'Manamorphose']
+  Opp board: ['Ocelot Pride (1/1)', 'Ocelot Pride (1/1)'] (life=19)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T7 Ruby Storm | life=11 mana=1 hand=7+1L gy=5
+  Hand: ['Manamorphose', 'Wish', 'Ruby Medallion', 'Valakut Awakening // Valakut Stoneforge', 'Wish', 'Glimpse the Impossible', 'Manamorphose']
+  Opp board: ['Ocelot Pride (1/1)', 'Ocelot Pride (1/1)'] (life=19)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T8 Boros Energy | life=19 mana=3 hand=3+1L gy=4
+  Hand: ['Seasoned Pyromancer', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+  Board: ['Ocelot Pride (1/1)', 'Ocelot Pride (1/1)']
+  Opp board: [] (life=11)
+  EV scores:
+     +15.0  play_land: Plains <--
+     +10.7  cast_spell: Seasoned Pyromancer  [h=+10.7 la=+10.7 rmv=11%]
+      +6.8  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger  [h=+6.8 la=+6.8 rmv=4%]
+      +6.8  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger  [h=+6.8 la=+6.8 rmv=4%]
+  >>> PLAY_LAND: Plains
+  [MAIN1]
+
+T8 Boros Energy | life=19 mana=4 hand=3+0L gy=4
+  Hand: ['Seasoned Pyromancer', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+  Board: ['Ocelot Pride (1/1)', 'Ocelot Pride (1/1)']
+  Opp board: [] (life=11)
+  EV scores:
+     +10.6  cast_spell: Seasoned Pyromancer <--  [h=+10.6 la=+10.6 rmv=11%]
+      +6.6  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger  [h=+6.6 la=+6.6 rmv=4%]
+      +6.6  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger  [h=+6.6 la=+6.6 rmv=4%]
+  >>> CAST_SPELL: Seasoned Pyromancer
+  [MAIN1]
+
+T8 Boros Energy | life=19 mana=1 hand=1+1L gy=6
+  Hand: ['Galvanic Discharge']
+  Board: ['Ocelot Pride (1/1)', 'Ocelot Pride (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)']
+  Opp board: [] (life=11)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ocelot Pride', 'Ocelot Pride']
+  [MAIN2]
+
+T8 Boros Energy | life=21 mana=1 hand=1+1L gy=6
+  Hand: ['Galvanic Discharge']
+  Board: ['Ocelot Pride (1/1)', 'Ocelot Pride (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)']
+  Opp board: [] (life=9)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T9 Ruby Storm | life=9 mana=4 hand=7+1L gy=6
+  Hand: ['Wish', 'Ruby Medallion', 'Valakut Awakening // Valakut Stoneforge', 'Wish', 'Glimpse the Impossible', 'Manamorphose', 'Pyretic Ritual']
+  Opp board: ['Ocelot Pride (1/1)', 'Ocelot Pride (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)'] (life=21)
+  EV scores:
+      +7.0  play_land: Elegant Parlor <--
+      +4.7  cast_spell: Ruby Medallion  [h=+4.7 la=+4.7]
+      -0.6  cast_spell: Glimpse the Impossible  [h=-0.6 la=-0.6]
+      -0.7  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.7 la=-0.7]
+     -25.4  cast_spell: Manamorphose  [h=-25.4 la=-25.4]
+     -25.5  cast_spell: Pyretic Ritual  [h=-25.5 la=-25.5]
+    ... +2 more
+  >>> PLAY_LAND: Elegant Parlor
+  [MAIN1]
+
+T9 Ruby Storm | life=9 mana=4 hand=7+0L gy=6
+  Hand: ['Wish', 'Ruby Medallion', 'Valakut Awakening // Valakut Stoneforge', 'Wish', 'Glimpse the Impossible', 'Manamorphose', 'Pyretic Ritual']
+  Opp board: ['Ocelot Pride (1/1)', 'Ocelot Pride (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)'] (life=21)
+  EV scores:
+      +4.7  cast_spell: Ruby Medallion <--  [h=+4.7 la=+4.7]
+      -0.5  cast_spell: Glimpse the Impossible  [h=-0.5 la=-0.5]
+      -0.6  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.6 la=-0.6]
+     -25.4  cast_spell: Manamorphose  [h=-25.4 la=-25.4]
+     -25.5  cast_spell: Pyretic Ritual  [h=-25.5 la=-25.5]
+     -26.0  cast_spell: Wish  [h=-26.0 la=-26.0]
+    ... +1 more
+  >>> CAST_SPELL: Glimpse the Impossible
+  [MAIN1]
+
+T9 Ruby Storm | life=9 mana=1 hand=8+1L gy=7
+  Hand: ['Wish', 'Ruby Medallion', 'Valakut Awakening // Valakut Stoneforge', 'Wish', 'Manamorphose', 'Pyretic Ritual', 'Manamorphose', 'Pyretic Ritual']
+  Opp board: ['Ocelot Pride (1/1)', 'Ocelot Pride (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)'] (life=21)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T9 Ruby Storm | life=9 mana=1 hand=8+1L gy=7
+  Hand: ['Wish', 'Ruby Medallion', 'Valakut Awakening // Valakut Stoneforge', 'Wish', 'Manamorphose', 'Pyretic Ritual', 'Manamorphose', 'Pyretic Ritual']
+  Opp board: ['Ocelot Pride (1/1)', 'Ocelot Pride (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)'] (life=21)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T10 Boros Energy | life=21 mana=4 hand=2+1L gy=6
+  Hand: ['Galvanic Discharge', 'Seasoned Pyromancer']
+  Board: ['Ocelot Pride (1/1)', 'Ocelot Pride (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)']
+  Opp board: [] (life=9)
+  EV scores:
+     +10.9  cast_spell: Seasoned Pyromancer <--  [h=+10.9 la=+10.9 rmv=11%]
+      +9.5  cast_spell: Galvanic Discharge  [h=+9.5 la=+9.5]
+      +7.0  play_land: Arena of Glory
+  >>> CAST_SPELL: Phlage, Titan of Fire's Fury
+  [MAIN1]
+
+T10 Boros Energy | life=24 mana=0 hand=2+1L gy=0
+  Hand: ['Galvanic Discharge', 'Seasoned Pyromancer']
+  Board: ['Ocelot Pride (1/1)', 'Ocelot Pride (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)', "Phlage, Titan of Fire's Fury (6/6)"]
+  Opp board: [] (life=6)
+  EV scores:
+      +0.0  play_land: Arena of Glory <--
+  >>> PLAY_LAND: Arena of Glory
+  [MAIN1]
+
+T10 Boros Energy | life=24 mana=0 hand=2+0L gy=0
+  Hand: ['Galvanic Discharge', 'Seasoned Pyromancer']
+  Board: ['Ocelot Pride (1/1)', 'Ocelot Pride (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)', "Phlage, Titan of Fire's Fury (6/6)"]
+  Opp board: [] (life=6)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ocelot Pride', 'Ocelot Pride', 'Seasoned Pyromancer', 'Elemental Token', 'Elemental Token']

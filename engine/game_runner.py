@@ -76,7 +76,19 @@ class AICallbacks(GameCallbacks):
         archetype = arch_enum.value if arch_enum else "midrange"
 
         # Combo decks: always pay life in early turns — every mana matters
-        # for assembling the combo, 2 life is irrelevant
+        # for assembling the combo, 2 life is irrelevant.
+        #
+        # KNOWN ISSUE (2026-04-26 Storm pro-player audit, F4.1): for
+        # mono-color combo decks like Ruby Storm, this bypass donates
+        # 3 free life to aggro on T2 (1 fetch + 2 shock untapped) when
+        # the held spells aren't castable at the new mana level.
+        # However, removing the bypass causes a ~11pp regression on
+        # Goryo's Vengeance because the principled `enables_spell`
+        # check below only validates THIS TURN's spell — Goryo's
+        # needs untapped mana ready across multiple turns to assemble
+        # Mending + Vengeance + Reanimate. Refining this gate to
+        # "look-ahead aware" is deferred to next session; for now
+        # accept the Storm life bleed to preserve Goryo's WR.
         if archetype == "combo" and game.turn_number <= 8:
             return True
 
