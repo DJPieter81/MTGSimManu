@@ -197,15 +197,17 @@ class TestCallbacks:
     def test_default_callbacks_safe(self):
         from engine.callbacks import DefaultCallbacks
         cb = DefaultCallbacks()
-        # Default should never pay life for untapped
-        assert cb.should_pay_life_for_untapped(None, 0, None) is False
+        # Default should never pay any optional cost
+        assert cb.decide_optional_cost(None, 0, None) is False
         # Default should never evoke
         assert cb.should_evoke(None, 0, None) is False
 
     def test_ai_callbacks_class_exists(self):
         from engine.game_runner import AICallbacks
         cb = AICallbacks()
-        assert hasattr(cb, 'should_pay_life_for_untapped')
+        # `decide_optional_cost` is the uniform optional-payment seam
+        # — no mechanic-named callbacks like `should_pay_life_for_untapped`.
+        assert hasattr(cb, 'decide_optional_cost')
         assert hasattr(cb, 'choose_fetch_target')
         assert hasattr(cb, 'should_evoke')
         assert hasattr(cb, 'should_dash')

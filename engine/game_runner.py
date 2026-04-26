@@ -43,113 +43,72 @@ def _sorcery_speed_only_active(player: PlayerState) -> bool:
 
 
 class AICallbacks(GameCallbacks):
-    """Wires engine callbacks to AI decision functions."""
+    """Wires engine callbacks to AI decision functions.
 
-    def should_pay_life_for_untapped(self, game, player_idx, land):
-        """Should we pay life to enter this land untapped?
+    Decision channels are uniform per *kind*, not per mechanic.  All
+    "pay X to gain Y" optional payments flow through
+    `decide_optional_cost`, which delegates to the unified
+    `ai.decision_kernel.best_choice` primitive.
+    """
 
-        Only pays if the extra mana enables a spell we couldn't cast
-        otherwise. Raw mana advantage without spell enablement isn't
-        worth life points. Derived from template.untap_life_cost.
-        """
-        from ai.ev_evaluator import snapshot_from_game, evaluate_board
+    def _archetype(self, game, player_idx: int) -> str:
+        """Look up the archetype string for `evaluate_board`."""
         from ai.strategy_profile import DECK_ARCHETYPES
-
-        player = game.players[player_idx]
-        life_cost = land.template.untap_life_cost if hasattr(land, 'template') else 2
-
-        # Hard floor: never pay life to death
-        if player.life <= life_cost:
-            return False
-
-        # Fetch-shock staggering (Task 3) — decision lives in ai/mana_planner
-        deck_name = player.deck_name
+        deck_name = game.players[player_idx].deck_name
         arch_enum = DECK_ARCHETYPES.get(deck_name)
-        archetype = arch_enum.value if arch_enum else "midrange"
+        return arch_enum.value if arch_enum else "midrange"
+
+    def decide_optional_cost(self, game, player_idx, opt) -> bool:
+        """Single AI seam for every optional payment.
+
+        Builds a [pay, skip] Choice list and delegates to
+        `best_choice`.  No mechanic-specific logic lives here — the
+        snapshot deltas come from the OptionalCost descriptor
+        (produced by `engine.optional_costs.parse_optional_costs`),
+        and the EV scoring comes from `evaluate_board`.
+
+        Multi-shock sequencing (the fetch-shock stagger gate) is
+        handled here as an oracle-driven veto: when a second shock-
+        style ETB is being offered in the same window, we skip the
+        payment regardless of EV to avoid stacking shock damage.
+        """
+        from ai.decision_kernel import best_choice
+        from ai.schemas import Choice
         from ai.mana_planner import should_stagger_shock
-        if should_stagger_shock(game, player_idx, land, archetype):
-            return False
 
-        # Determine archetype for evaluation
-        deck_name = player.deck_name
-        arch_enum = DECK_ARCHETYPES.get(deck_name)
-        archetype = arch_enum.value if arch_enum else "midrange"
+        archetype = self._archetype(game, player_idx)
 
-        # Combo decks: always pay life in early turns — every mana matters
-        # for assembling the combo, 2 life is irrelevant.
-        #
-        # KNOWN ISSUE (2026-04-26 Storm pro-player audit, F4.1): for
-        # mono-color combo decks like Ruby Storm, this bypass donates
-        # 3 free life to aggro on T2 (1 fetch + 2 shock untapped) when
-        # the held spells aren't castable at the new mana level.
-        # However, removing the bypass causes a ~11pp regression on
-        # Goryo's Vengeance because the principled `enables_spell`
-        # check below only validates THIS TURN's spell — Goryo's
-        # needs untapped mana ready across multiple turns to assemble
-        # Mending + Vengeance + Reanimate. Refining this gate to
-        # "look-ahead aware" is deferred to next session; for now
-        # accept the Storm life bleed to preserve Goryo's WR.
-        if archetype == "combo" and game.turn_number <= 8:
-            return True
-
-        # Snapshot the current state
-        snap = snapshot_from_game(game, player_idx)
-
-        # Project "paid" state: -life_cost life, +1 untapped mana
-        paid = snap.__class__(
-            **{f.name: getattr(snap, f.name) for f in snap.__dataclass_fields__.values()}
-        )
-        paid.my_life = snap.my_life - life_cost
-        paid.my_mana = snap.my_mana + 1
-        paid.my_total_lands = snap.my_total_lands + 1
-
-        # Project "tapped" state: keep life, land is tapped (no mana this turn)
-        tapped = snap.__class__(
-            **{f.name: getattr(snap, f.name) for f in snap.__dataclass_fields__.values()}
-        )
-        tapped.my_total_lands = snap.my_total_lands + 1
-        # Tapped land: mana available doesn't increase this turn
-
-        # Compare board values
-        paid_value = evaluate_board(paid, archetype)
-        tapped_value = evaluate_board(tapped, archetype)
-
-        # Also factor in spell enablement: if shocking enables a spell
-        # we couldn't cast otherwise, that's a significant bonus
-        existing_colors = set()
-        for l in player.lands:
-            existing_colors.update(l.template.produces_mana)
-        land_colors = set(land.template.produces_mana)
-        combined = existing_colors | land_colors
-
-        enables_spell = False
-        mana_if_paid = len(player.untapped_lands) + 1
-        mana_if_tapped = len(player.untapped_lands)
-        for card in player.hand:
-            if card.template.is_land:
-                continue
-            cmc = card.template.cmc or 0
-            if cmc == 0 or cmc > mana_if_paid:
-                continue
-            if cmc > mana_if_tapped:
-                mc = card.template.mana_cost
-                spell_colors = set()
-                for code, attr in [("W", "white"), ("U", "blue"), ("B", "black"),
-                                   ("R", "red"), ("G", "green")]:
-                    if getattr(mc, attr, 0) > 0:
-                        spell_colors.add(code)
-                if spell_colors <= combined:
-                    enables_spell = True
+        # Oracle-driven veto: identify "ETB-untapped for life" costs
+        # and consult the multi-shock stagger gate.  This is generic
+        # — any future "pay life for ETB-untapped" mechanic
+        # (painlands when they're the second-into-tap) routes through
+        # the same gate without per-mechanic code.
+        if (opt.cost.kind == "life"
+                and opt.effect.kind == "etb_untapped"):
+            # The "card" the OptionalCost was built from isn't part
+            # of the schema, so we resolve it from the controller's
+            # most recent ETB candidate — the staggering helper
+            # operates on game state, not the descriptor.
+            for c in game.players[player_idx].battlefield:
+                if (getattr(c.template, 'untap_life_cost', 0)
+                        == opt.cost.amount and c.tapped):
+                    if should_stagger_shock(game, player_idx, c, archetype):
+                        return False
                     break
 
-        # Only pay life if it enables a spell we couldn't cast otherwise.
-        # Raw mana advantage without spell enablement isn't worth life.
-        if enables_spell:
-            return True
+        pay = Choice(
+            name=opt.name, apply=opt.apply_to_snap,
+            source="optional_cost",
+        )
 
-        # No spell enabled — only pay if board eval strongly favors it
-        # (e.g., we have 0-cost spells that benefit from open mana for instants)
-        return paid_value > tapped_value + life_cost * 0.5
+        def _skip(s):
+            return s
+
+        skip = Choice(
+            name=f"skip:{opt.name}", apply=_skip,
+            source="optional_cost",
+        )
+        return best_choice(game, player_idx, archetype, [pay, skip]) is pay
 
     def choose_fetch_target(self, game, player_idx, fetch_card, library, fetch_colors):
         player = game.players[player_idx]

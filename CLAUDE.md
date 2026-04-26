@@ -13,7 +13,9 @@
 
 Magic: The Gathering Modern-format game simulator with EV-based AI decision-making. Simulates full games between 16 competitive decks with strategic AI (mulligans, spell casting, combat, targeting, counterspells, evoke, storm chains, reanimation, cascade, blink).
 
-**Python 3.11** — no external dependencies beyond the standard library.
+**Python 3.11** — runtime depends on `pydantic>=2.0` (typed
+schemas for the decision kernel, see `ai/schemas.py`).  All other
+dependencies are stdlib.  Sims remain deterministic and offline.
 
 ## Required Data File
 
