@@ -288,7 +288,12 @@ def _clause_artifact_removal(oracle: str,
         or re.search(r'destroy each\s+\w+\s*,?\s*\w*\s*and\s+artifact', oracle))
     is_targeted = bool(
         re.search(r'(destroy|exile) (target )?artifact', oracle)
-        or re.search(r'(destroy|exile)[^.]{0,40}target\s+artifact', oracle))
+        or re.search(r'(destroy|exile)[^.]{0,40}target\s+artifact', oracle)
+        # "destroy/exile target (nonland) permanent" — Prismatic
+        # Ending, Maelstrom Pulse, Beast Within, Generous Gift.
+        # These can target ARTIFACTS so they count as artifact
+        # removal against an artifact-heavy opponent.
+        or re.search(r'(destroy|exile)\s+target\s+(nonland\s+)?permanent', oracle))
     if not (is_mass or is_targeted):
         return 0.0
     artifacts = [t for t in _nonland(opp_templates)
