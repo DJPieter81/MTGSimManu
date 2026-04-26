@@ -4,6 +4,15 @@ Callback protocol for engine -> AI decisions.
 The engine layer must never import from the AI layer directly.
 Instead, GameState calls methods on a GameCallbacks instance,
 which the GameRunner wires to the appropriate AI implementations.
+
+Decision channels are uniform per *kind*, never per mechanic.
+`decide_optional_cost` handles every "pay X to gain Y" decision
+(shock lands, painlands, fetchlands, Phyrexian mana, Sylvan
+Library, hybrid mana, channel, kicker-with-life, ...) by routing
+oracle-derived `OptionalCost` descriptors through a single AI
+seam.  Per-mechanic callbacks like `should_pay_life_for_untapped`
+are legacy shims that delegate to `decide_optional_cost` and will
+be removed once all engine call sites use `offer_optional_costs`.
 """
 from __future__ import annotations
 
@@ -12,15 +21,29 @@ from typing import TYPE_CHECKING, List, Optional, Protocol
 if TYPE_CHECKING:
     from engine.game_state import GameState
     from engine.card_database import CardInstance
+    from ai.schemas import OptionalCost
 
 
 class GameCallbacks(Protocol):
     """Protocol that the engine calls for strategic decisions."""
 
+    def decide_optional_cost(
+        self, game: GameState, player_idx: int, opt: "OptionalCost"
+    ) -> bool:
+        """Should this optional cost be paid?
+
+        Uniform entry point for every "pay X to gain Y" decision the
+        engine may legally offer.  The AI projects the post-payment
+        snapshot via `opt.apply_to_snap` and compares against
+        skipping; True means pay.
+        """
+        ...
+
     def should_pay_life_for_untapped(
         self, game: GameState, player_idx: int, land: CardInstance
     ) -> bool:
-        """Should this land pay life to enter untapped?"""
+        """Legacy shim — delegates to `decide_optional_cost` with an
+        OptionalCost built from the land's `untap_life_cost`."""
         ...
 
     def choose_fetch_target(
@@ -57,6 +80,11 @@ class GameCallbacks(Protocol):
 
 class DefaultCallbacks:
     """Safe defaults: always tapped, first legal target, no evoke, no dash."""
+
+    def decide_optional_cost(
+        self, game: GameState, player_idx: int, opt
+    ) -> bool:
+        return False
 
     def should_pay_life_for_untapped(
         self, game: GameState, player_idx: int, land: CardInstance
