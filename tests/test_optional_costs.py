@@ -111,9 +111,9 @@ def test_decide_optional_cost_delegates_to_kernel():
 
     cb = AICallbacks()
 
-    # Construct a minimal "game" stub — only what _archetype +
-    # the kernel need
-    player = SimpleNamespace(deck_name="midrange-test")
+    # Construct a minimal "game" stub — only what _archetype, the
+    # multi-shock stagger gate, and the kernel need.
+    player = SimpleNamespace(deck_name="midrange-test", battlefield=[])
     game = SimpleNamespace(
         players=[player],
         callbacks=cb,

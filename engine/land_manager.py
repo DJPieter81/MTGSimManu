@@ -56,27 +56,20 @@ class LandManager:
             game.log.append(
                 f"T{game.display_turn} P{player_idx+1}: "
                 f"Play {card.name} (enters tapped)")
-        # ── Lands with optional life payment to enter untapped (shock etc.) ──
+        # ── Lands with discoverable optional ETB costs (shock-pay,
+        # painlands, future "pay X for ETB-untapped" mechanics) ──
         elif card.template.untap_life_cost > 0:
-            life_cost = card.template.untap_life_cost
-            should_pay = game.callbacks.should_pay_life_for_untapped(
-                game, player_idx, card)
-            if should_pay:
-                player.life -= life_cost
-                card.enter_battlefield()
-                card.tapped = False
-                game.log.append(
-                    f"T{game.display_turn} P{player_idx+1}: "
-                    f"Play {card.name} (pay {life_cost} life, untapped, "
-                    f"life: {player.life})")
-            else:
-                card.zone = "battlefield"
-                card.summoning_sick = True
-                card.entered_battlefield_this_turn = True
-                card.tapped = True
-                game.log.append(
-                    f"T{game.display_turn} P{player_idx+1}: "
-                    f"Play {card.name} (tapped, no spells need mana)")
+            from engine.optional_costs import offer_optional_costs
+            # Default: enters tapped.  The router asks the AI to decide
+            # any optional costs; an accepted "pay N life, ETB
+            # untapped" cost flips `tapped` back to False as part of
+            # apply_to_game.  No mechanic-named callback in this path.
+            card.enter_battlefield()
+            card.tapped = True
+            offer_optional_costs(game, player_idx, card, trigger="etb")
+            game.log.append(
+                f"T{game.display_turn} P{player_idx+1}: Play {card.name}"
+                f" ({'untapped, life: ' + str(player.life) if not card.tapped else 'tapped'})")
         # ── Conditional untap: untapped if ≤ N other lands (fast lands) ──
         elif card.template.untap_max_other_lands >= 0:
             other_lands = len([c for c in player.battlefield
@@ -160,28 +153,18 @@ class LandManager:
             player.library.remove(best_land)
             best_land.controller = player_idx
 
-            # Lands with optional life payment to enter untapped
+            # Lands with discoverable optional ETB costs.  Router-driven;
+            # no mechanic-named callback.  See `engine/optional_costs.py`.
             if best_land.template.untap_life_cost > 0:
-                life_cost = best_land.template.untap_life_cost
-                should_pay = game.callbacks.should_pay_life_for_untapped(
-                    game, player_idx, best_land)
-                if should_pay:
-                    player.life -= life_cost
-                    best_land.enter_battlefield()
-                    best_land.tapped = False
-                    game.log.append(
-                        f"T{game.display_turn} P{player_idx+1}: "
-                        f"Crack {fetch_name} (pay 1 life) -> {best_land.name} "
-                        f"(pay {life_cost} life, untapped, life: {player.life})")
-                else:
-                    best_land.zone = "battlefield"
-                    best_land.summoning_sick = True
-                    best_land.entered_battlefield_this_turn = True
-                    best_land.tapped = True
-                    game.log.append(
-                        f"T{game.display_turn} P{player_idx+1}: "
-                        f"Crack {fetch_name} (pay 1 life) -> {best_land.name} "
-                        f"(tapped, life: {player.life})")
+                from engine.optional_costs import offer_optional_costs
+                best_land.enter_battlefield()
+                best_land.tapped = True
+                offer_optional_costs(game, player_idx, best_land, trigger="etb")
+                state = ("untapped" if not best_land.tapped else "tapped")
+                game.log.append(
+                    f"T{game.display_turn} P{player_idx+1}: "
+                    f"Crack {fetch_name} (pay 1 life) -> {best_land.name} "
+                    f"({state}, life: {player.life})")
             else:
                 # Fabled Passage: tapped if < 4 lands; Zendikar fetches:
                 # always untapped.

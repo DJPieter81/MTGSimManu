@@ -10,9 +10,8 @@ Decision channels are uniform per *kind*, never per mechanic.
 (shock lands, painlands, fetchlands, Phyrexian mana, Sylvan
 Library, hybrid mana, channel, kicker-with-life, ...) by routing
 oracle-derived `OptionalCost` descriptors through a single AI
-seam.  Per-mechanic callbacks like `should_pay_life_for_untapped`
-are legacy shims that delegate to `decide_optional_cost` and will
-be removed once all engine call sites use `offer_optional_costs`.
+seam.  Engine call sites use `engine.optional_costs.offer_optional_costs`
+to discover and present these costs — no mechanic-named callbacks.
 """
 from __future__ import annotations
 
@@ -37,13 +36,6 @@ class GameCallbacks(Protocol):
         snapshot via `opt.apply_to_snap` and compares against
         skipping; True means pay.
         """
-        ...
-
-    def should_pay_life_for_untapped(
-        self, game: GameState, player_idx: int, land: CardInstance
-    ) -> bool:
-        """Legacy shim — delegates to `decide_optional_cost` with an
-        OptionalCost built from the land's `untap_life_cost`."""
         ...
 
     def choose_fetch_target(
@@ -83,11 +75,6 @@ class DefaultCallbacks:
 
     def decide_optional_cost(
         self, game: GameState, player_idx: int, opt
-    ) -> bool:
-        return False
-
-    def should_pay_life_for_untapped(
-        self, game: GameState, player_idx: int, land: CardInstance
     ) -> bool:
         return False
 

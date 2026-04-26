@@ -66,11 +66,35 @@ class AICallbacks(GameCallbacks):
         snapshot deltas come from the OptionalCost descriptor
         (produced by `engine.optional_costs.parse_optional_costs`),
         and the EV scoring comes from `evaluate_board`.
+
+        Multi-shock sequencing (the fetch-shock stagger gate) is
+        handled here as an oracle-driven veto: when a second shock-
+        style ETB is being offered in the same window, we skip the
+        payment regardless of EV to avoid stacking shock damage.
         """
         from ai.decision_kernel import best_choice
         from ai.schemas import Choice
+        from ai.mana_planner import should_stagger_shock
 
         archetype = self._archetype(game, player_idx)
+
+        # Oracle-driven veto: identify "ETB-untapped for life" costs
+        # and consult the multi-shock stagger gate.  This is generic
+        # — any future "pay life for ETB-untapped" mechanic
+        # (painlands when they're the second-into-tap) routes through
+        # the same gate without per-mechanic code.
+        if (opt.cost.kind == "life"
+                and opt.effect.kind == "etb_untapped"):
+            # The "card" the OptionalCost was built from isn't part
+            # of the schema, so we resolve it from the controller's
+            # most recent ETB candidate — the staggering helper
+            # operates on game state, not the descriptor.
+            for c in game.players[player_idx].battlefield:
+                if (getattr(c.template, 'untap_life_cost', 0)
+                        == opt.cost.amount and c.tapped):
+                    if should_stagger_shock(game, player_idx, c, archetype):
+                        return False
+                    break
 
         pay = Choice(
             name=opt.name, apply=opt.apply_to_snap,
@@ -85,33 +109,6 @@ class AICallbacks(GameCallbacks):
             source="optional_cost",
         )
         return best_choice(game, player_idx, archetype, [pay, skip]) is pay
-
-    def should_pay_life_for_untapped(self, game, player_idx, land):
-        """Legacy shim — discovers the land's optional ETB cost and
-        routes the decision through `decide_optional_cost`.
-
-        Engine call sites in `engine/land_manager.py` still target
-        this method by name; once they migrate to
-        `offer_optional_costs(card, "etb")` this shim disappears.
-        The fetch-shock staggering check stays here because it
-        models a multi-shock sequencing concern that doesn't fit
-        the single-decision OptionalCost shape.
-        """
-        from engine.optional_costs import parse_optional_costs
-
-        # Fetch-shock staggering (multi-shock sequencing) — independent
-        # of the EV-based pay/skip decision, lives in mana_planner.
-        from ai.mana_planner import should_stagger_shock
-        archetype = self._archetype(game, player_idx)
-        if should_stagger_shock(game, player_idx, land, archetype):
-            return False
-
-        # Discover any optional ETB costs (shock-pay is the current case;
-        # painlands / future mechanics produce their own descriptors).
-        for opt in parse_optional_costs(land, trigger="etb"):
-            if self.decide_optional_cost(game, player_idx, opt):
-                return True
-        return False
 
     def choose_fetch_target(self, game, player_idx, fetch_card, library, fetch_colors):
         player = game.players[player_idx]
