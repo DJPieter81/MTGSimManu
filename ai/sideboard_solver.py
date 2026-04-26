@@ -267,33 +267,32 @@ def _clause_body_value(template: "CardTemplate") -> float:
     return 0.0
 
 
-def _clause_artifact_removal(oracle: str,
+def _clause_artifact_removal(card: "CardTemplate",
                               opp_templates: List["CardTemplate"]) -> float:
     """Value of artifact removal — single-target, X-target, or mass.
 
-    Matches:
-      * "destroy target artifact" / "exile target artifact"
-      * "destroy X target artifacts" / "destroy up to N target artifacts"
-        (Force of Vigor, By Force) — plural via [^.]{0,40} between
-        verb and "artifact"
-      * "destroy all artifacts" / "destroy each artifact" (Shatterstorm,
-        Vandalblast) — scored 2× per artifact (sweeper)
+    Detection uses the parsed effect tags populated by
+    `engine.card_database.OracleParser` at DB-load time.  No regex
+    in the SB scorer — adding a new oracle pattern means extending
+    `DESTROY_PATTERNS` / `EXILE_PATTERNS` in the parser, not
+    editing this consumer.
+
+    Tags consumed (set in `classify_card_role`):
+      * `destroy_target_artifact`   — single-target / X-target
+      * `destroy_target_permanent`  — universal targeted removal
+                                       (Prismatic Ending, Beast Within)
+      * `destroy_all_artifacts`     — mass removal (Shatterstorm)
+      * `destroy_all_nonland`       — mass non-land sweeper
 
     avg_artifact_cost × artifact_density × residency × mass_multiplier.
     Uses CMC as a proxy for artifact strategic value.
     """
     from engine.cards import CardType
-    is_mass = bool(
-        re.search(r'destroy (all|each)\s+artifact', oracle)
-        or re.search(r'destroy each\s+\w+\s*,?\s*\w*\s*and\s+artifact', oracle))
-    is_targeted = bool(
-        re.search(r'(destroy|exile) (target )?artifact', oracle)
-        or re.search(r'(destroy|exile)[^.]{0,40}target\s+artifact', oracle)
-        # "destroy/exile target (nonland) permanent" — Prismatic
-        # Ending, Maelstrom Pulse, Beast Within, Generous Gift.
-        # These can target ARTIFACTS so they count as artifact
-        # removal against an artifact-heavy opponent.
-        or re.search(r'(destroy|exile)\s+target\s+(nonland\s+)?permanent', oracle))
+    tags = getattr(card, 'tags', set()) or set()
+    is_mass = ('destroy_all_artifacts' in tags
+               or 'destroy_all_nonland' in tags)
+    is_targeted = ('destroy_target_artifact' in tags
+                   or 'destroy_target_permanent' in tags)
     if not (is_mass or is_targeted):
         return 0.0
     artifacts = [t for t in _nonland(opp_templates)
@@ -335,7 +334,7 @@ def sb_value(template: "CardTemplate",
     value += _clause_counterspell(oracle, opp_templates)
     value += _clause_protection_color(oracle, opp_templates, body_power)
     value += _clause_gy_hate(oracle, opp_templates, opp_gameplan)
-    value += _clause_artifact_removal(oracle, opp_templates)
+    value += _clause_artifact_removal(template, opp_templates)
 
     return value
 
