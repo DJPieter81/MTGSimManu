@@ -499,6 +499,14 @@ class EVPlayer:
         # graveyard / mana), role-aware (payoff / fuel / engine), and
         # arithmetic-derived (no per-card scoring tables).  Caching of
         # `assess_combo` is deferred — single-turn correctness first.
+        #
+        # Phase D migration (simulator-driven replacement) is held back —
+        # see docs/PHASE_D_DEFERRED.md.  The marginal `(after − before)`
+        # delta from `simulate_finisher_chain` does not capture timing
+        # decisions (hold vs fire, opportunity cost of spent mana, multi-
+        # turn projection).  Storm field N=20 with the simulator wire-up
+        # collapsed from 44.8% → 5.3%.  The simulator needs hold-vs-fire
+        # Choice projection + multi-turn EV before the migration is safe.
         if self.profile.has_combo_chain and self.goal_engine is not None:
             from ai.combo_calc import assess_combo, card_combo_modifier
             snap_id = id(snap)
