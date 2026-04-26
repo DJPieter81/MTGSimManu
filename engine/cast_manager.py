@@ -990,27 +990,35 @@ class CastManager:
                     return (CardType.CREATURE in c.template.card_types
                             or CardType.ARTIFACT in c.template.card_types
                             or CardType.ENCHANTMENT in c.template.card_types)
-                opp_kills_by_x = {}
-                my_kills_by_x = {}
+                # Score by VALUE, not count.  Killing Cranial Plating
+                # (CMC 2) is worth ~10× killing Memnite (CMC 0); the
+                # permanent_threat helper composes oracle threat,
+                # equipment carrier disruption, and scaling-trigger
+                # value — same pipeline the rest of the AI uses.
+                from ai.permanent_threat import permanent_threat
+                opp_value_by_cmc = {}
+                my_value_by_cmc = {}
                 for c in opp.battlefield:
                     if _is_wipe_target(c):
                         cm = c.template.cmc or 0
-                        opp_kills_by_x[cm] = opp_kills_by_x.get(cm, 0) + 1
+                        v = permanent_threat(c, opp, game)
+                        opp_value_by_cmc[cm] = opp_value_by_cmc.get(cm, 0.0) + v
                 for c in me_bf:
                     if _is_wipe_target(c):
                         cm = c.template.cmc or 0
-                        my_kills_by_x[cm] = my_kills_by_x.get(cm, 0) + 1
-                # For each candidate X ≤ available, compute cumulative kills.
-                best_score = -1
+                        v = permanent_threat(c, game.players[player_idx], game)
+                        my_value_by_cmc[cm] = my_value_by_cmc.get(cm, 0.0) + v
+                # For each candidate X ≤ available, compute cumulative
+                # net VALUE.  Strict improvement: only prefer larger X
+                # if it adds net value.
+                best_score = -1.0
                 best_x = 0
                 for X in range(0, int(x_value) + 1):
-                    opp_hit = sum(n for cm, n in opp_kills_by_x.items()
+                    opp_hit = sum(v for cm, v in opp_value_by_cmc.items()
                                    if cm <= X)
-                    my_hit = sum(n for cm, n in my_kills_by_x.items()
+                    my_hit = sum(v for cm, v in my_value_by_cmc.items()
                                   if cm <= X)
                     score = opp_hit - my_hit
-                    # Strict improvement: only prefer larger X if it
-                    # adds net kills.
                     if score > best_score:
                         best_score = score
                         best_x = X
