@@ -2406,36 +2406,43 @@ class EVPlayer:
         Signature matches what ResponseDecider expects:
         (card, creatures_list, opponent_player, game, opponent_idx)
 
-        Uses oracle-driven threat value so battle-cry / scaling creatures
-        outrank raw P/T bodies. Burn removal filters targets it cannot kill.
+        Routes through `ai.decision_kernel.best_choice` over a uniform
+        Choice list:
+            [Choice(kill: c) for c in killable_candidates]
+        Each Choice's `apply` removes the creature from the projected
+        opponent snapshot (power, toughness, count, evasion, scaling
+        flags) so `evaluate_board` reads the post-removal clock.  The
+        kernel returns None when no kill projection scores higher than
+        the do-nothing baseline — that's the "hold removal" signal,
+        replacing the legacy `val >= 3.0` magic threshold.
 
-        R3: Equipment carriers receive a tempo bonus on top of raw threat
-        — killing the carrier strands the equipment unattached and forces
-        opp to spend a re-equip activation (sorcery-speed mana payment +
-        another turn of waiting). Without this, a removal spell may pick
-        a higher-raw-power naked creature while leaving the Plating-
-        wearing engine alive. Bonus is oracle-derived (no card names).
+        Carrier-disrupt bonus (equipment falls off when carrier dies)
+        is folded into the apply as additional `opp_power` reduction
+        so the kernel sees the full tempo gain.
         """
         if not creatures:
             return None
+
+        from ai.decision_kernel import best_choice
         from ai.ev_evaluator import snapshot_from_game
+        from ai.schemas import Choice
+        from ai.strategy_profile import DECK_ARCHETYPES
+        from ai.clock import creature_clock_impact_from_card
+
         snap = snapshot_from_game(game, player_idx)
         candidates = list(creatures)
-        # For burn removal, filter out creatures this spell cannot kill.
+
+        # Burn removal: filter to creatures the spell can actually kill.
         from decks.card_knowledge_loader import get_burn_damage
         dmg = get_burn_damage(card.template.name) if card.template else 0
         if dmg > 0:
             killable = [c for c in candidates
                         if ((c.toughness or 0) - getattr(c, 'damage_marked', 0)) <= dmg]
-            # Fallback: if nothing is killable, keep original list so the
-            # caller still gets something to target (the ResponseDecider
-            # may still want to fire for triggered-damage purposes).
             if killable:
                 candidates = killable
 
-        # Removal that ALSO destroys the equipment artifact (Abrupt Decay,
-        # Prismatic Ending at X≥2, Nature's Claim, etc.) doubles the value
-        # of hitting a carrier — the artifact is gone, not just dropped.
+        # Removal that also destroys the equipment doubles the carrier
+        # tempo gain — equipment is gone, not just unattached.
         oracle = ((card.template.oracle_text if card.template else '') or '').lower()
         also_destroys_artifact = (
             'destroy target artifact' in oracle
@@ -2443,13 +2450,63 @@ class EVPlayer:
             or 'destroy target permanent' in oracle
         )
 
-        def _rank(c) -> float:
-            base = creature_threat_value(c, snap)
-            return base + self._carrier_disrupt_bonus(
+        # Resolve archetype for evaluate_board — `player` is the opponent
+        # in the standard signature; the AI is at `1 - player_idx`.
+        my_idx = 1 - player_idx
+        my_deck = game.players[my_idx].deck_name
+        arch_enum = DECK_ARCHETYPES.get(my_deck)
+        archetype = arch_enum.value if arch_enum else "midrange"
+
+        # Carrier disrupt bonus per candidate, in opp_power-equivalent
+        # units.  Conversion: clock impact ÷ avg-power yields the
+        # virtual-power value of denying that future damage.
+        bonuses: dict[int, float] = {}
+        for c in candidates:
+            raw_bonus = self._carrier_disrupt_bonus(
                 game, player, c, snap,
                 removal_destroys_artifact=also_destroys_artifact)
+            # Convert clock-impact units back into power equivalents.
+            # creature_clock_impact ≈ power / opp_life, so power ≈
+            # clock_impact × opp_life.
+            opp_life = max(1, snap.my_life)  # snap is from MY perspective; my_life = opp's life
+            bonuses[c.instance_id] = raw_bonus * opp_life
 
-        return max(candidates, key=_rank)
+        choices: list[Choice] = []
+        for c in candidates:
+            extra = bonuses.get(c.instance_id, 0.0)
+
+            def _kill(snap, cr=c, ex=extra):
+                snap.opp_power = max(0, snap.opp_power
+                                     - (cr.power or 0) - int(ex))
+                snap.opp_toughness = max(0, snap.opp_toughness - (cr.toughness or 0))
+                snap.opp_creature_count = max(0, snap.opp_creature_count - 1)
+                # Evasion subtraction
+                kws = {kw.value if hasattr(kw, 'value') else str(kw).lower()
+                       for kw in getattr(cr.template, 'keywords', set())}
+                if kws & {"flying", "menace", "trample"}:
+                    snap.opp_evasion_power = max(
+                        0, snap.opp_evasion_power - (cr.power or 0))
+                return snap
+
+            choices.append(Choice(
+                name=f"kill:{c.instance_id}:{c.template.name}",
+                apply=_kill,
+                source="target",
+            ))
+
+        # Note: we DON'T add a "hold" Choice — best_choice returns
+        # None when no Choice beats the baseline, and the caller
+        # (response.py) treats None as "don't fire removal".
+        picked = best_choice(game, my_idx, archetype, choices, snap_now=snap)
+        if picked is None:
+            return None
+        # Recover the underlying CardInstance from the picked Choice
+        # via instance_id (unique per creature).
+        target_id = int(picked.name.split(":")[1])
+        for c in candidates:
+            if c.instance_id == target_id:
+                return c
+        return None
 
     def _carrier_disrupt_bonus(self, game, opp, carrier, snap,
                                 removal_destroys_artifact: bool = False) -> float:
