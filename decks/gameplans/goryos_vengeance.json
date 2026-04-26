@@ -7,30 +7,26 @@
       "description": "Early disruption with Thoughtseize while setting up",
       "card_priorities": {
         "Thoughtseize": 18.0,
-        "Unmarked Grave": 22.0,
         "Faithful Mending": 20.0
       },
       "card_roles": {
         "enablers": [
           "Faithful Mending",
-          "Thoughtseize",
-          "Unmarked Grave"
+          "Thoughtseize"
         ]
       },
       "min_turns": 1
     },
     {
       "goal_type": "FILL_RESOURCE",
-      "description": "Get Griselbrand or Atraxa into the graveyard",
+      "description": "Get Griselbrand or Archon into the graveyard via self-discard",
       "card_priorities": {
-        "Unmarked Grave": 25.0,
-        "Faithful Mending": 22.0,
+        "Faithful Mending": 25.0,
         "Thoughtseize": 8.0
       },
       "card_roles": {
         "enablers": [
-          "Faithful Mending",
-          "Unmarked Grave"
+          "Faithful Mending"
         ]
       },
       "resource_target": 1,
@@ -38,18 +34,17 @@
     },
     {
       "goal_type": "EXECUTE_PAYOFF",
-      "description": "Reanimate with Goryo's Vengeance or Persist",
+      "description": "Reanimate with Goryo's Vengeance (legendary) or Unburial Rites (any creature, with flashback)",
       "card_priorities": {
         "Goryo's Vengeance": 25.0,
-        "Persist": 22.0,
-        "Unburial Rites": 18.0,
+        "Unburial Rites": 22.0,
+        "Persist": 12.0,
         "Undying Evil": 15.0,
         "Ephemerate": 14.0
       },
       "card_roles": {
         "payoffs": [
           "Goryo's Vengeance",
-          "Persist",
           "Unburial Rites"
         ],
         "protection": [
@@ -86,22 +81,29 @@
     "Faithful Mending",
     "Goryo's Vengeance",
     "Griselbrand",
-    "Persist",
-    "Unmarked Grave"
+    "Unburial Rites"
   ],
   "mulligan_min_lands": 1,
   "mulligan_combo_sets": [
     [
+      "Faithful Mending",
       "Goryo's Vengeance",
-      "Persist",
-      "Unburial Rites"
+      "Griselbrand"
     ],
     [
-      "Archon of Cruelty",
       "Faithful Mending",
-      "Griselbrand",
+      "Goryo's Vengeance",
+      "Archon of Cruelty"
+    ],
+    [
       "Faithful Mending",
-      "Unmarked Grave"
+      "Unburial Rites",
+      "Griselbrand"
+    ],
+    [
+      "Faithful Mending",
+      "Unburial Rites",
+      "Archon of Cruelty"
     ]
   ],
   "reactive_only": [
@@ -110,14 +112,12 @@
   ],
   "always_early": [
     "Faithful Mending",
-    "Thoughtseize",
-    "Unmarked Grave"
+    "Thoughtseize"
   ],
   "critical_pieces": [
     "Archon of Cruelty",
     "Goryo's Vengeance",
     "Griselbrand",
-    "Persist",
     "Unburial Rites"
   ]
 }
