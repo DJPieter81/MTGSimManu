@@ -811,12 +811,18 @@ class EVPlayer:
                     ev -= cmc * mana_clock_impact(snap) * 20.0
 
         # ── Board wipe hard gate ──
-        # Empty-board wrath is pure waste (we self-wipe for nothing). Mark
-        # as structurally-rejected via a rules-constant sentinel below the
-        # pass_threshold in any archetype profile.
+        # Empty-board wrath provides no creature-removal benefit.  The
+        # opportunity cost = mana spent + card consumed.  Mana cost via
+        # the standard pipeline (cmc × mana_clock_impact × 20.0); card
+        # loss is one EV unit (the smallest meaningful EV difference,
+        # standing in for "one card of expected value").  No sentinel
+        # — if the wrath has independent positive EV (artifact destroy
+        # mode, scry rider, etc.) it can still pass the threshold.
         if 'board_wipe' in tags and snap.opp_creature_count == 0:
-            WRATH_WASTE_SENTINEL = -50.0  # rules: forces pass under any profile
-            return min(ev, WRATH_WASTE_SENTINEL)
+            from ai.clock import mana_clock_impact
+            waste_penalty = ((t.cmc or 0) * mana_clock_impact(snap) * 20.0
+                             + 1.0)  # +1 = card loss (EV unit)
+            ev -= waste_penalty
 
         # ── Self-wipe gate ──
         # When we're ahead on the board and not dying, wiping destroys our
@@ -825,14 +831,26 @@ class EVPlayer:
         # value engines. If we're winning the board fight and have time
         # (opp_clock_discrete >= 3), board wipes are strictly negative EV.
         if 'board_wipe' in tags and snap.opp_creature_count > 0:
-            WRATH_WASTE_SENTINEL = -50.0
+            from ai.clock import mana_clock_impact
             am_dying = snap.am_dead_next or snap.opp_clock_discrete <= 2
             ahead_on_board = (
                 snap.my_creature_count >= snap.opp_creature_count
                 and snap.my_power > snap.opp_power
             )
             if ahead_on_board and not am_dying:
-                return min(ev, WRATH_WASTE_SENTINEL)
+                # Same opportunity-cost penalty as above + lost-equity
+                # for our own creatures wiped.  Each lost creature
+                # contributes its `permanent_threat` value (already
+                # imported elsewhere in this method).
+                from ai.permanent_threat import permanent_threat
+                me_lost = sum(
+                    permanent_threat(c, me, game)
+                    for c in me.battlefield
+                    if c.template.is_creature
+                )
+                waste_penalty = ((t.cmc or 0) * mana_clock_impact(snap) * 20.0
+                                 + 1.0 + me_lost)
+                ev -= waste_penalty
 
         # ── X-cost board wipe: hold when the X-budget can't meaningfully clear ──
         # Tuned through three passes:
