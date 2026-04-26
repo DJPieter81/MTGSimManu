@@ -1105,9 +1105,64 @@ def wish_resolve(game, card, controller, targets=None, item=None):
     survival = max(0.15, survival)
     empty_expected_damage = empty_power * survival
 
+    # ── Flashback-granting chain extender as a Wish target ──
+    # When the immediate finishers can't close THIS turn but a card
+    # that grants flashback to GY instants/sorceries (Past in Flames,
+    # Yawgmoth's Will pattern) is reachable in SB/library AND the GY
+    # holds enough ritual + cantrip fuel that re-casting them would
+    # push the chain to lethal, fetching the extender first is
+    # correct.  Detection is oracle-driven — no card-name gate.
+    def _is_chain_extender(c):
+        oracle = (c.template.oracle_text or '').lower()
+        return ('flashback' in oracle
+                and 'graveyard' in oracle
+                and ('instant' in oracle or 'sorcery' in oracle))
+    extender = next((c for c in sb if _is_chain_extender(c)), None) \
+        or next((c for c in lib if _is_chain_extender(c)), None)
+    pif_in_reach = extender is not None
+    pif_already_active = any(
+        getattr(c, 'pif_active_until_eot', False)
+        for c in player.graveyard
+    )
+    # GY rituals + cantrips that PiF would re-flashback into the
+    # chain. Same predicate the AI's `is_chain_fuel` uses, inlined
+    # here to keep this engine layer self-contained.
+    gy_chain_fuel = sum(
+        1 for c in player.graveyard
+        if (c.template.is_instant or c.template.is_sorcery)
+        and any(t in getattr(c.template, 'tags', set())
+                for t in ('ritual', 'cantrip', 'card_advantage', 'draw'))
+    )
+    # Mana floor for PiF chain: PiF costs 3R; we need PiF cost + at
+    # least one ritual flashback (1R) to net more storm than a
+    # do-nothing Wish→Grapeshot. Use opp_life as the lethal target.
+    pif_chain_storm = (current_storm + 1   # the Wish itself
+                       + 1                  # PiF cast
+                       + gy_chain_fuel)     # rituals + cantrips re-cast
+    # PiF is preferable when (a) Grapeshot can't kill THIS turn and
+    # (b) the post-PiF chain damage exceeds Grapeshot's current
+    # damage by enough margin to justify spending a turn rebuilding.
+    # Margin: 1.5× (PiF chain must produce at least 50% more damage
+    # than firing Grapeshot now — accounts for the opp's extra
+    # untap/attack window between this turn and the next finisher
+    # cast).  Derived from the same opp_clock geometry the rest of
+    # the storm patience math uses, not a tuning weight.
+    pif_extends_to_lethal = (
+        pif_in_reach
+        and not pif_already_active
+        and gy_chain_fuel >= 3   # at least 3 cards to re-flashback
+        and (pif_chain_storm >= opp_life
+             or pif_chain_storm > grapeshot_damage * 1.5)
+    )
+
     if grapeshot_damage >= opp_life:
         # Grapeshot kills now — always take it.
         finisher_priority = ["Grapeshot", "Empty the Warrens", "Galvanic Relay"]
+    elif pif_extends_to_lethal and grapeshot_damage < opp_life:
+        # Sub-lethal Grapeshot but PiF chain reaches lethal — fetch
+        # PiF first, re-flashback rituals, then Wish/cast Grapeshot
+        # at the proper storm count next.
+        finisher_priority = ["Past in Flames", "Grapeshot", "Empty the Warrens", "Galvanic Relay"]
     elif empty_expected_damage > grapeshot_damage and empty_power >= opp_life:
         # Warrens expected to kill next turn and beats a half-Grapeshot now.
         finisher_priority = ["Empty the Warrens", "Grapeshot", "Galvanic Relay"]
