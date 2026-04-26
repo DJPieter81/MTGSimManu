@@ -785,6 +785,32 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
                     oracle):
                 signals.append('recurring_engine_trigger')
 
+    # 17. Cost-reducer first-deploy in combo/storm archetype.
+    #     Static-ability cost reducers (Ruby Medallion: "Red
+    #     spells you cast cost {1} less to cast.") have no
+    #     `whenever` trigger, no ETB, no card draw, no haste — so
+    #     signals #1-#16 all miss them.  In combo archetypes that
+    #     chain spells around the reducer, casting NOW vs NEXT
+    #     TURN delays the chain by a full turn — that IS a
+    #     same-turn signal.  Without it, a freshly-drawn Medallion
+    #     scores high (e.g. +9.9 in the Storm-vs-Affinity s=60000
+    #     trace) but gets filtered by the deferral gate at
+    #     `ev_player.py::decide_main_phase`, and the AI casts a
+    #     lower-EV cantrip or passes.  Storm field N=150
+    #     diagnostic: 29% of games never deploy Medallion.
+    #
+    #     Sister-fix of the Wish tutor signal in PR #192 — same
+    #     deferral-gate pattern, same shape of fix.
+    #
+    #     Generic by construction: detection is `'cost_reducer'
+    #     in tags` AND `archetype in ('storm', 'combo')`.  No
+    #     card-name hardcoding.  Other archetypes (aggro/midrange/
+    #     control) are correctly excluded — they don't chain
+    #     rituals so the reducer there is deferred-value, not a
+    #     same-turn signal.
+    if archetype in ('storm', 'combo') and 'cost_reducer' in tags:
+        signals.append('cost_reducer_combo_engine')
+
     return signals
 
 
