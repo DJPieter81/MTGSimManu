@@ -1142,17 +1142,33 @@ def wish_resolve(game, card, controller, targets=None, item=None):
     # PiF is preferable when (a) Grapeshot can't kill THIS turn and
     # (b) the post-PiF chain damage exceeds Grapeshot's current
     # damage by enough margin to justify spending a turn rebuilding.
-    # Margin: 1.5× (PiF chain must produce at least 50% more damage
-    # than firing Grapeshot now — accounts for the opp's extra
-    # untap/attack window between this turn and the next finisher
-    # cast).  Derived from the same opp_clock geometry the rest of
-    # the storm patience math uses, not a tuning weight.
+    #
+    # Margin derived from opp's clock — holding for PiF costs +1
+    # opp turn of pressure.  The fractional life loss from that
+    # extra turn equals `1 / opp_clock_discrete` (i.e. one Nth of
+    # our remaining life clock).  Require the PiF chain damage to
+    # exceed grapeshot's current damage by that fraction so the
+    # trade is at-or-better than break-even.
+    #
+    # Examples:
+    #   opp_clock = 2 (we die in 2 turns)  → margin 1.50× (50% cost)
+    #   opp_clock = 4 (we die in 4 turns)  → margin 1.25× (25% cost)
+    #   opp_clock = 8 (slow clock)         → margin 1.125× (12.5%)
+    #   opp_clock = 99 (no clock — sentinel) → margin 1.01× (≈ 0)
+    #
+    # Pure clock arithmetic; no tuning constants.  When `snap` is
+    # not yet built (the Wish picker runs in engine layer), fall
+    # back to opp's life ÷ opp_power as a clock proxy.
+    from ai.ev_evaluator import snapshot_from_game
+    snap = snapshot_from_game(game, controller)
+    opp_clock = max(1, getattr(snap, 'opp_clock_discrete', 99))
+    hold_margin = 1.0 + (1.0 / opp_clock)
     pif_extends_to_lethal = (
         pif_in_reach
         and not pif_already_active
         and gy_chain_fuel >= 3   # at least 3 cards to re-flashback
         and (pif_chain_storm >= opp_life
-             or pif_chain_storm > grapeshot_damage * 1.5)
+             or pif_chain_storm > grapeshot_damage * hold_margin)
     )
 
     if grapeshot_damage >= opp_life:
