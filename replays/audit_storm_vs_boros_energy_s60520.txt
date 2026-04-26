@@ -1,0 +1,562 @@
+Loaded 21759 cards (0 errors)
+=== Ruby Storm vs Boros Energy (seed 60520) ===
+Result: Ruby Storm wins T5 via damage
+Life: P1=9 P2=-1
+
+  [MAIN1]
+
+T1 Ruby Storm | life=20 mana=0 hand=4+2L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion']
+  Opp board: [] (life=20)
+  EV scores:
+     +42.0  play_land: Gemstone Caverns <--
+     +24.0  play_land: Thundering Falls
+  >>> PLAY_LAND: Gemstone Caverns
+  [MAIN1]
+
+T1 Ruby Storm | life=20 mana=1 hand=4+1L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T1 Ruby Storm | life=20 mana=1 hand=4+1L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T2 Boros Energy | life=20 mana=0 hand=6+2L gy=0
+  Hand: ['Guide of Souls', 'Galvanic Discharge', "Phlage, Titan of Fire's Fury", 'Seasoned Pyromancer', 'Guide of Souls', 'Galvanic Discharge']
+  Opp board: [] (life=20)
+  EV scores:
+     +35.0  play_land: Marsh Flats <--
+     +35.0  play_land: Windswept Heath
+  >>> PLAY_LAND: Marsh Flats
+  [MAIN1]
+
+T2 Boros Energy | life=17 mana=1 hand=6+1L gy=1
+  Hand: ['Guide of Souls', 'Galvanic Discharge', "Phlage, Titan of Fire's Fury", 'Seasoned Pyromancer', 'Guide of Souls', 'Galvanic Discharge']
+  Opp board: [] (life=20)
+  EV scores:
+      +1.5  cast_spell: Guide of Souls <--  [h=+1.5 la=+1.5 rmv=1%]
+      +1.5  cast_spell: Guide of Souls  [h=+1.5 la=+1.5 rmv=1%]
+      +0.1  cast_spell: Galvanic Discharge  [h=+0.1 la=+0.1]
+      +0.1  cast_spell: Galvanic Discharge  [h=+0.1 la=+0.1]
+  >>> CAST_SPELL: Guide of Souls
+  [MAIN1]
+
+T2 Boros Energy | life=17 mana=0 hand=5+1L gy=1
+  Hand: ['Galvanic Discharge', "Phlage, Titan of Fire's Fury", 'Seasoned Pyromancer', 'Guide of Souls', 'Galvanic Discharge']
+  Board: ['Guide of Souls (1/2)']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T2 Boros Energy | life=17 mana=0 hand=5+1L gy=1
+  Hand: ['Galvanic Discharge', "Phlage, Titan of Fire's Fury", 'Seasoned Pyromancer', 'Guide of Souls', 'Galvanic Discharge']
+  Board: ['Guide of Souls (1/2)']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T3 Ruby Storm | life=20 mana=1 hand=5+1L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible']
+  Opp board: ['Guide of Souls (1/2)'] (life=17)
+  EV scores:
+      +7.0  play_land: Thundering Falls <--
+  >>> PLAY_LAND: Thundering Falls
+  [MAIN1]
+
+T3 Ruby Storm | life=20 mana=1 hand=5+0L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible']
+  Opp board: ['Guide of Souls (1/2)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T3 Ruby Storm | life=20 mana=1 hand=5+0L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible']
+  Opp board: ['Guide of Souls (1/2)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T4 Boros Energy | life=17 mana=1 hand=5+2L gy=1
+  Hand: ['Galvanic Discharge', "Phlage, Titan of Fire's Fury", 'Seasoned Pyromancer', 'Guide of Souls', 'Galvanic Discharge']
+  Board: ['Guide of Souls (1/2)']
+  Opp board: [] (life=20)
+  EV scores:
+     +22.0  play_land: Windswept Heath <--
+     +22.0  play_land: Windswept Heath
+      +3.5  cast_spell: Guide of Souls  [h=+3.5 la=+3.5 rmv=1%]
+      +1.6  cast_spell: Galvanic Discharge  [h=+1.6 la=+1.6]
+      +1.6  cast_spell: Galvanic Discharge  [h=+1.6 la=+1.6]
+  >>> PLAY_LAND: Windswept Heath
+  [MAIN1]
+
+T4 Boros Energy | life=16 mana=1 hand=5+1L gy=2
+  Hand: ['Galvanic Discharge', "Phlage, Titan of Fire's Fury", 'Seasoned Pyromancer', 'Guide of Souls', 'Galvanic Discharge']
+  Board: ['Guide of Souls (1/2)']
+  Opp board: [] (life=20)
+  EV scores:
+      +3.5  cast_spell: Guide of Souls <--  [h=+3.5 la=+3.5 rmv=1%]
+      +1.6  cast_spell: Galvanic Discharge  [h=+1.6 la=+1.6]
+      +1.6  cast_spell: Galvanic Discharge  [h=+1.6 la=+1.6]
+  >>> CAST_SPELL: Guide of Souls
+  [MAIN1]
+
+T4 Boros Energy | life=17 mana=0 hand=4+1L gy=2
+  Hand: ['Galvanic Discharge', "Phlage, Titan of Fire's Fury", 'Seasoned Pyromancer', 'Galvanic Discharge']
+  Board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Guide of Souls']
+  [MAIN2]
+
+T4 Boros Energy | life=17 mana=0 hand=4+1L gy=2
+  Hand: ['Galvanic Discharge', "Phlage, Titan of Fire's Fury", 'Seasoned Pyromancer', 'Galvanic Discharge']
+  Board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)']
+  Opp board: [] (life=19)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T5 Ruby Storm | life=19 mana=2 hand=5+1L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible']
+  Opp board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)'] (life=17)
+  EV scores:
+     +15.6  cast_spell: Ruby Medallion <--  [h=+15.6 la=+15.6]
+     +15.0  play_land: Sunbaked Canyon
+      -1.2  cast_spell: Reckless Impulse  [h=-1.2 la=-1.2]
+      -1.2  cast_spell: Reckless Impulse  [h=-1.2 la=-1.2]
+    -999.0  cast_spell: Manamorphose  [h=-999.0 la=-999.0]
+  >>> PLAY_LAND: Sunbaked Canyon
+  [MAIN1]
+
+T5 Ruby Storm | life=19 mana=3 hand=5+0L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible']
+  Opp board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)'] (life=17)
+  EV scores:
+     +23.4  cast_spell: Ruby Medallion <--  [h=+23.4 la=+23.4]
+      -1.1  cast_spell: Reckless Impulse  [h=-1.1 la=-1.1]
+      -1.1  cast_spell: Reckless Impulse  [h=-1.1 la=-1.1]
+      -2.2  cast_spell: Glimpse the Impossible  [h=-2.2 la=-2.2]
+    -1000.0  cast_spell: Manamorphose  [h=-1000.0 la=-1000.0]
+  >>> CAST_SPELL: Reckless Impulse
+  [MAIN1]
+
+T5 Ruby Storm | life=19 mana=1 hand=6+0L gy=1
+  Hand: ['Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames']
+  Opp board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T5 Ruby Storm | life=19 mana=1 hand=6+0L gy=1
+  Hand: ['Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames']
+  Opp board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T6 Boros Energy | life=17 mana=2 hand=5+1L gy=2
+  Hand: ['Galvanic Discharge', "Phlage, Titan of Fire's Fury", 'Seasoned Pyromancer', 'Galvanic Discharge', 'Voice of Victory']
+  Board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)']
+  Opp board: [] (life=19)
+  EV scores:
+     +22.0  play_land: Windswept Heath <--
+      +6.1  cast_spell: Voice of Victory  [h=+6.1 la=+6.1 rmv=2%]
+      +1.9  cast_spell: Galvanic Discharge  [h=+1.9 la=+1.9]
+      +1.9  cast_spell: Galvanic Discharge  [h=+1.9 la=+1.9]
+  >>> PLAY_LAND: Windswept Heath
+  [MAIN1]
+
+T6 Boros Energy | life=14 mana=3 hand=5+0L gy=3
+  Hand: ['Galvanic Discharge', "Phlage, Titan of Fire's Fury", 'Seasoned Pyromancer', 'Galvanic Discharge', 'Voice of Victory']
+  Board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)']
+  Opp board: [] (life=19)
+  EV scores:
+     +18.8  cast_spell: Phlage, Titan of Fire's Fury <--  [h=+18.8 la=+18.8 rmv=3%]
+      +9.3  cast_spell: Seasoned Pyromancer  [h=+9.3 la=+9.3 rmv=10%]
+      +6.1  cast_spell: Voice of Victory  [h=+6.1 la=+6.1 rmv=2%]
+      +1.9  cast_spell: Galvanic Discharge  [h=+1.9 la=+1.9]
+      +1.9  cast_spell: Galvanic Discharge  [h=+1.9 la=+1.9]
+  >>> CAST_SPELL: Phlage, Titan of Fire's Fury
+  [MAIN1]
+
+T6 Boros Energy | life=19 mana=0 hand=4+0L gy=4
+  Hand: ['Galvanic Discharge', 'Seasoned Pyromancer', 'Galvanic Discharge', 'Voice of Victory']
+  Board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)']
+  Opp board: [] (life=16)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Guide of Souls', 'Guide of Souls']
+  [MAIN2]
+
+T6 Boros Energy | life=19 mana=0 hand=4+0L gy=4
+  Hand: ['Galvanic Discharge', 'Seasoned Pyromancer', 'Galvanic Discharge', 'Voice of Victory']
+  Board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)']
+  Opp board: [] (life=14)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T7 Ruby Storm | life=14 mana=3 hand=7+0L gy=1
+  Hand: ['Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge']
+  Opp board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)'] (life=19)
+  EV scores:
+     +18.3  cast_spell: Ruby Medallion <--  [h=+18.3 la=+18.3]
+      -1.4  cast_spell: Reckless Impulse  [h=-1.4 la=-1.4]
+      -2.5  cast_spell: Glimpse the Impossible  [h=-2.5 la=-2.5]
+      -2.5  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-2.5 la=-2.5]
+    -1000.0  cast_spell: Manamorphose  [h=-1000.0 la=-1000.0]
+    -1000.1  cast_spell: Desperate Ritual  [h=-1000.1 la=-1000.1]
+  >>> CAST_SPELL: Reckless Impulse
+  [MAIN1]
+
+T7 Ruby Storm | life=14 mana=1 hand=7+1L gy=2
+  Hand: ['Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Opp board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)'] (life=19)
+  EV scores:
+     +18.0  play_land: Scalding Tarn <--
+  >>> PLAY_LAND: Scalding Tarn
+  [MAIN1]
+
+T7 Ruby Storm | life=11 mana=2 hand=7+0L gy=3
+  Hand: ['Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Opp board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)'] (life=19)
+  EV scores:
+      +9.2  cast_spell: Ruby Medallion <--  [h=+9.2 la=+9.2]
+      +1.7  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy  [h=+1.7 la=+1.7]
+      -0.7  cast_spell: Desperate Ritual  [h=-0.7 la=-0.7]
+      -0.8  cast_spell: Manamorphose  [h=-0.8 la=-0.8]
+  >>> CAST_SPELL: Ruby Medallion
+  [MAIN1]
+
+T7 Ruby Storm | life=11 mana=0 hand=6+0L gy=3
+  Hand: ['Manamorphose', 'Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)'] (life=19)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T7 Ruby Storm | life=11 mana=0 hand=6+0L gy=3
+  Hand: ['Manamorphose', 'Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)'] (life=19)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T8 Boros Energy | life=19 mana=3 hand=4+1L gy=4
+  Hand: ['Galvanic Discharge', 'Seasoned Pyromancer', 'Galvanic Discharge', 'Voice of Victory']
+  Board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)']
+  Opp board: [] (life=11)
+  EV scores:
+     +15.0  play_land: Plains <--
+     +10.2  cast_spell: Seasoned Pyromancer  [h=+10.2 la=+10.2]
+      +7.0  cast_spell: Voice of Victory  [h=+7.0 la=+7.0]
+      +3.0  cast_spell: Galvanic Discharge  [h=+3.0 la=+3.0]
+      +3.0  cast_spell: Galvanic Discharge  [h=+3.0 la=+3.0]
+  >>> PLAY_LAND: Plains
+  [MAIN1]
+
+T8 Boros Energy | life=19 mana=4 hand=4+0L gy=4
+  Hand: ['Galvanic Discharge', 'Seasoned Pyromancer', 'Galvanic Discharge', 'Voice of Victory']
+  Board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)']
+  Opp board: [] (life=11)
+  EV scores:
+     +10.3  cast_spell: Seasoned Pyromancer <--  [h=+10.3 la=+10.3]
+      +7.0  cast_spell: Voice of Victory  [h=+7.0 la=+7.0]
+      +2.7  cast_spell: Galvanic Discharge  [h=+2.7 la=+2.7]
+      +2.7  cast_spell: Galvanic Discharge  [h=+2.7 la=+2.7]
+  >>> CAST_SPELL: Seasoned Pyromancer
+  [MAIN1]
+
+T8 Boros Energy | life=21 mana=1 hand=3+0L gy=6
+  Hand: ['Voice of Victory', 'Ranger-Captain of Eos', 'Goblin Bombardment']
+  Board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)']
+  Opp board: [] (life=11)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Guide of Souls', 'Guide of Souls']
+  [MAIN2]
+
+T8 Boros Energy | life=21 mana=1 hand=3+0L gy=6
+  Hand: ['Voice of Victory', 'Ranger-Captain of Eos', 'Goblin Bombardment']
+  Board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)']
+  Opp board: [] (life=9)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T9 Ruby Storm | life=9 mana=4 hand=7+0L gy=3
+  Hand: ['Manamorphose', 'Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', "Wrenn's Resolve"]
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)'] (life=21)
+  EV scores:
+      -0.2  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy <--  [h=-0.2 la=-0.2 rmv=20%]
+      -0.3  cast_spell: Wrenn's Resolve  [h=-0.3 la=-0.3]
+      -1.5  cast_spell: Glimpse the Impossible  [h=-1.5 la=-1.5]
+      -1.5  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-1.5 la=-1.5]
+      -2.5  cast_spell: Past in Flames  [h=-2.5 la=-2.5]
+    -1000.0  cast_spell: Manamorphose  [h=-1000.0 la=-1000.0]
+    ... +1 more
+  >>> CAST_SPELL: Ral, Monsoon Mage // Ral, Leyline Prodigy
+  [MAIN1]
+
+T9 Ruby Storm | life=9 mana=2 hand=6+0L gy=3
+  Hand: ['Manamorphose', 'Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', "Wrenn's Resolve"]
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)'] (life=21)
+  EV scores:
+      +0.0  cast_spell: Desperate Ritual <--  [h=+0.0 la=+0.0]
+      +0.0  cast_spell: Manamorphose
+      -1.2  cast_spell: Glimpse the Impossible  [h=-1.2 la=-1.2]
+      -1.2  cast_spell: Past in Flames  [h=-1.2 la=-1.2]
+      -1.2  cast_spell: Wrenn's Resolve  [h=-1.2 la=-1.2]
+      -1.2  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-1.2 la=-1.2]
+  >>> CAST_SPELL: Desperate Ritual
+  [MAIN1]
+
+T9 Ruby Storm | life=9 mana=4 hand=5+0L gy=4
+  Hand: ['Manamorphose', 'Glimpse the Impossible', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', "Wrenn's Resolve"]
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)'] (life=21)
+  EV scores:
+      +0.0  cast_spell: Manamorphose <--
+      -0.2  cast_spell: Wrenn's Resolve  [h=-0.2 la=-0.2]
+      -0.3  cast_spell: Glimpse the Impossible  [h=-0.3 la=-0.3]
+      -0.3  cast_spell: Past in Flames  [h=-0.3 la=-0.3]
+      -0.3  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.3 la=-0.3]
+  >>> CAST_SPELL: Manamorphose
+  [MAIN1]
+
+T9 Ruby Storm | life=9 mana=6 hand=4+1L gy=5
+  Hand: ['Glimpse the Impossible', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', "Wrenn's Resolve"]
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)'] (life=21)
+  EV scores:
+     +15.0  play_land: Mountain <--
+      -0.1  cast_spell: Wrenn's Resolve  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Glimpse the Impossible  [h=-0.1 la=-0.1]
+      -0.3  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.3 la=-0.3]
+      -0.3  cast_spell: Past in Flames  [h=-0.3 la=-0.3]
+  >>> PLAY_LAND: Mountain
+  [MAIN1]
+
+T9 Ruby Storm | life=9 mana=7 hand=4+0L gy=5
+  Hand: ['Glimpse the Impossible', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', "Wrenn's Resolve"]
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)'] (life=21)
+  EV scores:
+      -0.1  cast_spell: Wrenn's Resolve <--  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Glimpse the Impossible  [h=-0.1 la=-0.1]
+      -0.2  cast_spell: Past in Flames  [h=-0.2 la=-0.2]
+      -0.3  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.3 la=-0.3]
+  >>> CAST_SPELL: Wrenn's Resolve
+  [MAIN1]
+
+T9 Ruby Storm | life=9 mana=6 hand=5+0L gy=6
+  Hand: ['Glimpse the Impossible', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Desperate Ritual', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)'] (life=21)
+  EV scores:
+      -0.1  cast_spell: Desperate Ritual <--  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Glimpse the Impossible  [h=-0.1 la=-0.1]
+      -0.3  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.3 la=-0.3]
+      -0.3  cast_spell: Past in Flames  [h=-0.3 la=-0.3]
+  >>> CAST_SPELL: Desperate Ritual
+  [MAIN1]
+
+T9 Ruby Storm | life=9 mana=8 hand=4+0L gy=7
+  Hand: ['Glimpse the Impossible', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)'] (life=21)
+  EV scores:
+      -0.1  cast_spell: Glimpse the Impossible <--  [h=-0.1 la=-0.1]
+      -0.2  cast_spell: Past in Flames  [h=-0.2 la=-0.2]
+      -0.3  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.3 la=-0.3]
+  >>> CAST_SPELL: Glimpse the Impossible
+  [MAIN1]
+
+T9 Ruby Storm | life=9 mana=7 hand=5+1L gy=8
+  Hand: ['Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Ruby Medallion', 'Ruby Medallion']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)'] (life=21)
+  EV scores:
+      +4.5  cast_spell: Ruby Medallion <--  [h=+4.5 la=+4.5]
+      +4.5  cast_spell: Ruby Medallion  [h=+4.5 la=+4.5]
+      -0.2  cast_spell: Past in Flames  [h=-0.2 la=-0.2]
+      -0.3  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.3 la=-0.3]
+  >>> CAST_SPELL: Ruby Medallion
+  [MAIN1]
+
+T9 Ruby Storm | life=9 mana=5 hand=4+1L gy=8
+  Hand: ['Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Ruby Medallion']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)'] (life=21)
+  EV scores:
+      +4.5  cast_spell: Ruby Medallion <--  [h=+4.5 la=+4.5]
+      -0.3  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.3 la=-0.3]
+      -0.3  cast_spell: Past in Flames  [h=-0.3 la=-0.3]
+  >>> CAST_SPELL: Ruby Medallion
+  [MAIN1]
+
+T9 Ruby Storm | life=9 mana=3 hand=3+1L gy=8
+  Hand: ['Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)'] (life=21)
+  EV scores:
+      -0.2  cast_spell: Past in Flames <--  [h=-0.2 la=-0.2]
+      -0.2  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.2 la=-0.2]
+  >>> CAST_SPELL: Past in Flames
+  [MAIN1]
+
+T9 Ruby Storm | life=9 mana=2 hand=2+1L gy=9
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)'] (life=21)
+  EV scores:
+      -0.1  cast_spell: Valakut Awakening // Valakut Stoneforge <--  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Manamorphose
+  [MAIN1]
+
+T9 Ruby Storm | life=9 mana=4 hand=3+1L gy=8
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', "Wrenn's Resolve"]
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)'] (life=21)
+  EV scores:
+      -0.1  cast_spell: Wrenn's Resolve <--  [h=-0.1 la=-0.1]
+      -0.3  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.3 la=-0.3]
+  >>> CAST_SPELL: Desperate Ritual
+  [MAIN1]
+
+T9 Ruby Storm | life=9 mana=6 hand=3+1L gy=7
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', "Wrenn's Resolve"]
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)'] (life=21)
+  EV scores:
+      -0.1  cast_spell: Wrenn's Resolve <--  [h=-0.1 la=-0.1]
+      -0.3  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.3 la=-0.3]
+  >>> CAST_SPELL: Desperate Ritual
+  [MAIN1]
+
+T9 Ruby Storm | life=9 mana=8 hand=3+1L gy=6
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', "Wrenn's Resolve"]
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)'] (life=21)
+  EV scores:
+      -0.1  cast_spell: Wrenn's Resolve <--  [h=-0.1 la=-0.1]
+      -0.3  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.3 la=-0.3]
+  >>> CAST_SPELL: Wrenn's Resolve
+  [MAIN1]
+
+T9 Ruby Storm | life=9 mana=7 hand=3+2L gy=7
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Reckless Impulse']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)'] (life=21)
+  EV scores:
+      -0.1  cast_spell: Reckless Impulse <--  [h=-0.1 la=-0.1]
+      -0.3  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.3 la=-0.3]
+  >>> CAST_SPELL: Reckless Impulse
+  [MAIN1]
+
+T9 Ruby Storm | life=9 mana=6 hand=3+3L gy=8
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Wish']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)'] (life=21)
+  EV scores:
+      -0.3  cast_spell: Valakut Awakening // Valakut Stoneforge <--  [h=-0.3 la=-0.3]
+     -10.4  cast_spell: Wish  [h=-10.4 la=-10.4]
+  >>> CAST_SPELL: Reckless Impulse
+  [MAIN1]
+
+T9 Ruby Storm | life=9 mana=5 hand=5+3L gy=7
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Wish', 'Manamorphose', 'Manamorphose']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)'] (life=21)
+  EV scores:
+      +0.0  cast_spell: Manamorphose <--
+      +0.0  cast_spell: Manamorphose
+      -0.4  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.4 la=-0.4]
+     -20.7  cast_spell: Wish  [h=-20.7 la=-20.7]
+  >>> CAST_SPELL: Manamorphose
+  [MAIN1]
+
+T9 Ruby Storm | life=9 mana=7 hand=5+3L gy=8
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Wish', 'Manamorphose', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)'] (life=21)
+  EV scores:
+      +0.0  cast_spell: Manamorphose <--
+      -0.3  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.3 la=-0.3]
+     -20.6  cast_spell: Wish  [h=-20.6 la=-20.6]
+  >>> CAST_SPELL: Manamorphose
+  [MAIN1]
+
+T9 Ruby Storm | life=9 mana=9 hand=5+3L gy=9
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Wish', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', "Wrenn's Resolve"]
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)'] (life=21)
+  EV scores:
+      -0.1  cast_spell: Wrenn's Resolve <--  [h=-0.1 la=-0.1]
+      -0.3  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.3 la=-0.3]
+     -20.6  cast_spell: Wish  [h=-20.6 la=-20.6]
+  >>> CAST_SPELL: Wrenn's Resolve
+  [MAIN1]
+
+T9 Ruby Storm | life=9 mana=8 hand=6+3L gy=10
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Wish', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Desperate Ritual', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)'] (life=21)
+  EV scores:
+      -0.1  cast_spell: Desperate Ritual <--  [h=-0.1 la=-0.1]
+      -0.3  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.3 la=-0.3]
+     -25.6  cast_spell: Wish  [h=-25.6 la=-25.6]
+  >>> CAST_SPELL: Desperate Ritual
+  [MAIN1]
+
+T9 Ruby Storm | life=9 mana=10 hand=5+3L gy=11
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Wish', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)'] (life=21)
+  EV scores:
+      -0.3  cast_spell: Valakut Awakening // Valakut Stoneforge <--  [h=-0.3 la=-0.3]
+     -20.5  cast_spell: Wish  [h=-20.5 la=-20.5]
+  >>> CAST_SPELL: Reckless Impulse
+  [MAIN1]
+
+T9 Ruby Storm | life=9 mana=9 hand=6+4L gy=10
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Wish', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Valakut Awakening // Valakut Stoneforge']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)'] (life=21)
+  EV scores:
+    +106.0  cast_spell: Wish <--  [h=+106.0 la=+106.0]
+      -0.3  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.3 la=-0.3]
+      -0.3  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.3 la=-0.3]
+  >>> CAST_SPELL: Wish
+  [MAIN1]
+
+T9 Ruby Storm | life=9 mana=8 hand=6+4L gy=11
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Valakut Awakening // Valakut Stoneforge', 'Grapeshot']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Guide of Souls (1/2)', 'Guide of Souls (1/2)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)'] (life=21)
+  EV scores:
+    +123.1  cast_spell: Grapeshot <--  [h=+123.1 la=+123.1]
+     +14.9  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=+14.9 la=+14.9]
+     +14.9  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=+14.9 la=+14.9]
+  >>> CAST_SPELL: Grapeshot

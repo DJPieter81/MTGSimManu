@@ -723,6 +723,23 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
                  or 'cost_reducer' in tags)):
         signals.append('combo_continuation')
 
+    # 10b. Cost-reducer permanent deployment — fires when a non-instant
+    #      non-sorcery cost_reducer is being cast AND the hand contains
+    #      at least one non-land spell that the reducer would discount.
+    #      Without this signal, deploying the FIRST reducer is filtered
+    #      out by the deferral gate (signal #10's `has_reducer_on_board`
+    #      gate excludes the very deployment it should sanction).
+    #      Generic by construction — generalises to Goblin Electromancer,
+    #      Sapphire Medallion, Baral, any future cost-discount engine.
+    if ('cost_reducer' in tags
+            and not t.is_instant and not t.is_sorcery
+            and game is not None):
+        me_hand = game.players[player_idx].hand
+        if any(c is not card and not c.template.is_land
+               and (c.template.cmc or 0) > 0
+               for c in me_hand):
+            signals.append('cost_reducer_active')
+
     # 11. Counterspell with a counterable stack target.
     if (('counter target' in oracle or 'counterspell' in tags)
             and game is not None and not game.stack.is_empty):

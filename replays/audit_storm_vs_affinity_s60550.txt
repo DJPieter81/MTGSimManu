@@ -1,0 +1,371 @@
+Loaded 21759 cards (0 errors)
+=== Ruby Storm vs Affinity (seed 60550) ===
+Result: Affinity wins T4 via damage
+Life: P1=-38 P2=20
+
+  [MAIN1]
+
+T1 Ruby Storm | life=20 mana=0 hand=5+2L gy=0
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve"]
+  Opp board: [] (life=20)
+  EV scores:
+     +24.0  play_land: Elegant Parlor <--
+     +24.0  play_land: Elegant Parlor
+  >>> PLAY_LAND: Elegant Parlor
+  [MAIN1]
+
+T1 Ruby Storm | life=20 mana=0 hand=5+1L gy=0
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve"]
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T1 Ruby Storm | life=20 mana=0 hand=5+1L gy=0
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve"]
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T2 Affinity | life=20 mana=0 hand=6+2L gy=0
+  Hand: ['Signal Pest', "Sojourner's Companion", "Sojourner's Companion", 'Cranial Plating', 'Ornithopter', 'Thought Monitor']
+  Opp board: [] (life=20)
+  EV scores:
+     +38.6  play_land: Urza's Saga <--
+     +31.0  play_land: Tanglepool Bridge
+      +1.0  cast_spell: Ornithopter  [h=+1.0 la=+1.0]
+  >>> PLAY_LAND: Urza's Saga
+  [MAIN1]
+
+T2 Affinity | life=20 mana=1 hand=6+1L gy=0
+  Hand: ['Signal Pest', "Sojourner's Companion", "Sojourner's Companion", 'Cranial Plating', 'Ornithopter', 'Thought Monitor']
+  Opp board: [] (life=20)
+  EV scores:
+      +1.0  cast_spell: Ornithopter <--  [h=+1.0 la=+1.0]
+      +0.9  cast_spell: Signal Pest  [h=+0.9 la=+0.9]
+      +0.9  cast_spell: Cranial Plating  [h=+0.9 la=+0.9]
+  >>> CAST_SPELL: Ornithopter
+  [MAIN1]
+
+T2 Affinity | life=20 mana=1 hand=5+1L gy=0
+  Hand: ['Signal Pest', "Sojourner's Companion", "Sojourner's Companion", 'Cranial Plating', 'Thought Monitor']
+  Board: ['Ornithopter (0/2)']
+  Opp board: [] (life=20)
+  EV scores:
+      +0.9  cast_spell: Signal Pest <--  [h=+0.9 la=+0.9]
+      +0.9  cast_spell: Cranial Plating  [h=+0.9 la=+0.9]
+  >>> CAST_SPELL: Signal Pest
+  [MAIN1]
+
+T2 Affinity | life=20 mana=1 hand=4+1L gy=0
+  Hand: ["Sojourner's Companion", "Sojourner's Companion", 'Cranial Plating', 'Thought Monitor']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)']
+  Opp board: [] (life=20)
+  EV scores:
+      +0.9  cast_spell: Cranial Plating <--  [h=+0.9 la=+0.9]
+  >>> CAST_SPELL: Cranial Plating
+  [MAIN1]
+
+T2 Affinity | life=20 mana=0 hand=3+1L gy=0
+  Hand: ["Sojourner's Companion", "Sojourner's Companion", 'Thought Monitor']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)']
+  Permanents: ['Cranial Plating']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T2 Affinity | life=20 mana=0 hand=3+1L gy=0
+  Hand: ["Sojourner's Companion", "Sojourner's Companion", 'Thought Monitor']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)']
+  Permanents: ['Cranial Plating']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T3 Ruby Storm | life=20 mana=1 hand=6+1L gy=0
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", "Wrenn's Resolve"]
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=20)
+  EV scores:
+      +7.0  play_land: Elegant Parlor <--
+  >>> PLAY_LAND: Elegant Parlor
+  [MAIN1]
+
+T3 Ruby Storm | life=20 mana=1 hand=6+0L gy=0
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", "Wrenn's Resolve"]
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T3 Ruby Storm | life=20 mana=1 hand=6+0L gy=0
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", "Wrenn's Resolve"]
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T4 Affinity | life=20 mana=1 hand=3+2L gy=0
+  Hand: ["Sojourner's Companion", "Sojourner's Companion", 'Thought Monitor']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)']
+  Permanents: ['Cranial Plating']
+  Opp board: [] (life=20)
+  EV scores:
+     +41.0  play_land: Tanglepool Bridge <--
+     +32.0  play_land: Darksteel Citadel
+      +4.5  equip: Cranial Plating
+  >>> PLAY_LAND: Tanglepool Bridge
+  [MAIN1]
+
+T4 Affinity | life=20 mana=1 hand=3+1L gy=0
+  Hand: ["Sojourner's Companion", "Sojourner's Companion", 'Thought Monitor']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)']
+  Permanents: ['Cranial Plating']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Signal Pest']
+  [MAIN2]
+
+T4 Affinity | life=20 mana=1 hand=3+1L gy=0
+  Hand: ["Sojourner's Companion", "Sojourner's Companion", 'Thought Monitor']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)']
+  Permanents: ['Cranial Plating']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T5 Ruby Storm | life=20 mana=2 hand=6+1L gy=0
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", "Wrenn's Resolve"]
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=20)
+  EV scores:
+     +18.0  play_land: Arid Mesa <--
+      +9.9  cast_spell: Ruby Medallion  [h=+9.9 la=+9.9]
+      +9.9  cast_spell: Ruby Medallion  [h=+9.9 la=+9.9]
+      -3.6  cast_spell: Wrenn's Resolve  [h=-3.6 la=-3.6]
+      -3.6  cast_spell: Wrenn's Resolve  [h=-3.6 la=-3.6]
+    -990.0  cast_spell: Manamorphose  [h=-990.0 la=-990.0]
+  >>> PLAY_LAND: Arid Mesa
+  [MAIN1]
+
+T5 Ruby Storm | life=17 mana=3 hand=6+0L gy=1
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", "Wrenn's Resolve"]
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=20)
+  EV scores:
+     +14.9  cast_spell: Ruby Medallion <--  [h=+14.9 la=+14.9]
+     +14.9  cast_spell: Ruby Medallion  [h=+14.9 la=+14.9]
+     -10.3  cast_spell: Wrenn's Resolve  [h=-10.3 la=-10.3]
+     -10.3  cast_spell: Wrenn's Resolve  [h=-10.3 la=-10.3]
+     -13.6  cast_spell: Glimpse the Impossible  [h=-13.6 la=-13.6]
+    -1000.0  cast_spell: Manamorphose  [h=-1000.0 la=-1000.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T5 Ruby Storm | life=17 mana=3 hand=6+0L gy=1
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", "Wrenn's Resolve"]
+  Opp board: ['Ornithopter (0/2)', 'Signal Pest (0/1)'] (life=20)
+  EV scores:
+     +14.9  cast_spell: Ruby Medallion <--  [h=+14.9 la=+14.9]
+     +14.9  cast_spell: Ruby Medallion  [h=+14.9 la=+14.9]
+     -10.3  cast_spell: Wrenn's Resolve  [h=-10.3 la=-10.3]
+     -10.3  cast_spell: Wrenn's Resolve  [h=-10.3 la=-10.3]
+     -13.6  cast_spell: Glimpse the Impossible  [h=-13.6 la=-13.6]
+    -1000.0  cast_spell: Manamorphose  [h=-1000.0 la=-1000.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T6 Affinity | life=20 mana=2 hand=3+2L gy=0
+  Hand: ["Sojourner's Companion", "Sojourner's Companion", 'Thought Monitor']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Construct Token (5/5)']
+  Permanents: ['Cranial Plating']
+  Opp board: [] (life=17)
+  EV scores:
+     +38.0  play_land: Silverbluff Bridge <--
+     +36.0  play_land: Darksteel Citadel
+      +7.8  cast_spell: Sojourner's Companion  [h=+7.8 la=+7.8 rmv=3%]
+      +7.8  cast_spell: Sojourner's Companion  [h=+7.8 la=+7.8 rmv=3%]
+      +7.5  equip: Cranial Plating
+      +3.9  cast_spell: Thought Monitor  [h=+3.9 la=+3.9 rmv=10%]
+    ... +2 more
+  >>> PLAY_LAND: Silverbluff Bridge
+  [MAIN1]
+
+T6 Affinity | life=20 mana=2 hand=3+1L gy=0
+  Hand: ["Sojourner's Companion", "Sojourner's Companion", 'Thought Monitor']
+  Board: ['Ornithopter (0/2)', 'Signal Pest (0/1)', 'Construct Token (6/6)']
+  Permanents: ['Cranial Plating']
+  Opp board: [] (life=17)
+  EV scores:
+      +9.0  equip: Cranial Plating <--
+      +5.8  cast_spell: Sojourner's Companion  [h=+5.8 la=+5.8 rmv=3%]
+      +5.8  cast_spell: Sojourner's Companion  [h=+5.8 la=+5.8 rmv=3%]
+      +2.0  cast_spell: Thought Monitor  [h=+2.0 la=+2.0 rmv=10%]
+      +2.0  cycle: Sojourner's Companion
+      +2.0  cycle: Sojourner's Companion
+  >>> EQUIP: Cranial Plating
+  [MAIN1]
+
+T6 Affinity | life=20 mana=1 hand=3+1L gy=0
+  Hand: ["Sojourner's Companion", "Sojourner's Companion", 'Thought Monitor']
+  Board: ['Ornithopter (6/2)', 'Signal Pest (0/1)', 'Construct Token (6/6)']
+  Permanents: ['Cranial Plating']
+  Opp board: [] (life=17)
+  EV scores:
+      +1.6  cast_spell: Sojourner's Companion <--  [h=+1.6 la=+1.6 rmv=3%]
+      +1.6  cast_spell: Sojourner's Companion  [h=+1.6 la=+1.6 rmv=3%]
+      +1.4  cast_spell: Thought Monitor  [h=+1.4 la=+1.4 rmv=10%]
+  >>> CAST_SPELL: Sojourner's Companion
+  [MAIN1]
+
+T6 Affinity | life=20 mana=1 hand=2+1L gy=0
+  Hand: ["Sojourner's Companion", 'Thought Monitor']
+  Board: ['Ornithopter (7/2)', 'Signal Pest (0/1)', 'Construct Token (7/7)', "Sojourner's Companion (4/4)"]
+  Permanents: ['Cranial Plating']
+  Opp board: [] (life=17)
+  EV scores:
+      +1.4  cast_spell: Sojourner's Companion <--  [h=+1.4 la=+1.4 rmv=3%]
+      +1.3  cast_spell: Thought Monitor  [h=+1.3 la=+1.3 rmv=10%]
+  >>> CAST_SPELL: Sojourner's Companion
+  [MAIN1]
+
+T6 Affinity | life=20 mana=1 hand=1+1L gy=0
+  Hand: ['Thought Monitor']
+  Board: ['Ornithopter (8/2)', 'Signal Pest (0/1)', 'Construct Token (8/8)', "Sojourner's Companion (4/4)", "Sojourner's Companion (4/4)"]
+  Permanents: ['Cranial Plating']
+  Opp board: [] (life=17)
+  EV scores:
+      +1.3  cast_spell: Thought Monitor <--  [h=+1.3 la=+1.3 rmv=10%]
+  >>> CAST_SPELL: Thought Monitor
+  [MAIN1]
+
+T6 Affinity | life=20 mana=0 hand=1+2L gy=0
+  Hand: ['Memnite']
+  Board: ['Ornithopter (9/2)', 'Signal Pest (0/1)', 'Construct Token (9/9)', "Sojourner's Companion (4/4)", "Sojourner's Companion (4/4)", 'Thought Monitor (2/2)']
+  Permanents: ['Cranial Plating']
+  Opp board: [] (life=17)
+  EV scores:
+      +1.2  cast_spell: Memnite <--  [h=+1.2 la=+1.2 rmv=1%]
+  >>> CAST_SPELL: Memnite
+  [MAIN1]
+
+T6 Affinity | life=20 mana=0 hand=0+2L gy=0
+  Hand: []
+  Board: ['Ornithopter (10/2)', 'Signal Pest (0/1)', 'Construct Token (10/10)', "Sojourner's Companion (4/4)", "Sojourner's Companion (4/4)", 'Thought Monitor (2/2)', 'Memnite (1/1)']
+  Permanents: ['Cranial Plating']
+  Opp board: [] (life=17)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ornithopter', 'Signal Pest']
+  [MAIN2]
+
+T6 Affinity | life=20 mana=0 hand=0+2L gy=0
+  Hand: []
+  Board: ['Ornithopter (11/2)', 'Signal Pest (0/1)', 'Construct Token (10/10)', "Sojourner's Companion (4/4)", "Sojourner's Companion (4/4)", 'Thought Monitor (2/2)', 'Memnite (1/1)']
+  Permanents: ['Cranial Plating']
+  Opp board: [] (life=6)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T7 Ruby Storm | life=6 mana=3 hand=7+0L gy=1
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", "Wrenn's Resolve", 'Valakut Awakening // Valakut Stoneforge']
+  Opp board: ['Ornithopter (10/2)', 'Signal Pest (0/1)', 'Construct Token (10/10)', "Sojourner's Companion (4/4)", "Sojourner's Companion (4/4)", 'Thought Monitor (2/2)', 'Memnite (1/1)'] (life=20)
+  EV scores:
+      +3.4  cast_spell: Ruby Medallion <--  [h=+3.4 la=+3.4]
+      +3.4  cast_spell: Ruby Medallion  [h=+3.4 la=+3.4]
+      -1.5  cast_spell: Wrenn's Resolve  [h=-1.5 la=-1.5]
+      -1.5  cast_spell: Wrenn's Resolve  [h=-1.5 la=-1.5]
+      -2.6  cast_spell: Glimpse the Impossible  [h=-2.6 la=-2.6]
+      -2.7  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-2.7 la=-2.7]
+    ... +1 more
+  >>> CAST_SPELL: Ruby Medallion
+  [MAIN1]
+
+T7 Ruby Storm | life=6 mana=1 hand=6+0L gy=1
+  Hand: ['Glimpse the Impossible', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", "Wrenn's Resolve", 'Valakut Awakening // Valakut Stoneforge']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Ornithopter (10/2)', 'Signal Pest (0/1)', 'Construct Token (10/10)', "Sojourner's Companion (4/4)", "Sojourner's Companion (4/4)", 'Thought Monitor (2/2)', 'Memnite (1/1)'] (life=20)
+  EV scores:
+      +1.2  cast_spell: Manamorphose <--  [h=+1.2 la=+1.2]
+      -0.1  cast_spell: Wrenn's Resolve  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Wrenn's Resolve  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Manamorphose
+  [MAIN1]
+
+T7 Ruby Storm | life=6 mana=2 hand=5+1L gy=2
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', "Wrenn's Resolve", "Wrenn's Resolve", 'Valakut Awakening // Valakut Stoneforge']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Ornithopter (10/2)', 'Signal Pest (0/1)', 'Construct Token (10/10)', "Sojourner's Companion (4/4)", "Sojourner's Companion (4/4)", 'Thought Monitor (2/2)', 'Memnite (1/1)'] (life=20)
+  EV scores:
+     +19.0  play_land: Bloodstained Mire <--
+      +3.0  cast_spell: Ruby Medallion  [h=+3.0 la=+3.0]
+      -0.3  cast_spell: Glimpse the Impossible  [h=-0.3 la=-0.3]
+      -0.3  cast_spell: Wrenn's Resolve  [h=-0.3 la=-0.3]
+      -0.3  cast_spell: Wrenn's Resolve  [h=-0.3 la=-0.3]
+      -0.4  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.4 la=-0.4]
+  >>> PLAY_LAND: Bloodstained Mire
+  [MAIN1]
+
+T7 Ruby Storm | life=5 mana=3 hand=5+0L gy=3
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', "Wrenn's Resolve", "Wrenn's Resolve", 'Valakut Awakening // Valakut Stoneforge']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Ornithopter (10/2)', 'Signal Pest (0/1)', 'Construct Token (10/10)', "Sojourner's Companion (4/4)", "Sojourner's Companion (4/4)", 'Thought Monitor (2/2)', 'Memnite (1/1)'] (life=20)
+  EV scores:
+      +4.6  cast_spell: Ruby Medallion <--  [h=+4.6 la=+4.6]
+      -0.4  cast_spell: Wrenn's Resolve  [h=-0.4 la=-0.4]
+      -0.4  cast_spell: Wrenn's Resolve  [h=-0.4 la=-0.4]
+      -0.5  cast_spell: Glimpse the Impossible  [h=-0.5 la=-0.5]
+      -1.5  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-1.5 la=-1.5]
+  >>> CAST_SPELL: Ruby Medallion
+  [MAIN1]
+
+T7 Ruby Storm | life=5 mana=1 hand=4+0L gy=3
+  Hand: ['Glimpse the Impossible', "Wrenn's Resolve", "Wrenn's Resolve", 'Valakut Awakening // Valakut Stoneforge']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Ornithopter (10/2)', 'Signal Pest (0/1)', 'Construct Token (10/10)', "Sojourner's Companion (4/4)", "Sojourner's Companion (4/4)", 'Thought Monitor (2/2)', 'Memnite (1/1)'] (life=20)
+  EV scores:
+      -0.1  cast_spell: Glimpse the Impossible <--  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Wrenn's Resolve  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Wrenn's Resolve  [h=-0.1 la=-0.1]
+      -1.1  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-1.1 la=-1.1]
+  >>> CAST_SPELL: Glimpse the Impossible
+  [MAIN1]
+
+T7 Ruby Storm | life=5 mana=0 hand=4+2L gy=4
+  Hand: ["Wrenn's Resolve", "Wrenn's Resolve", 'Valakut Awakening // Valakut Stoneforge', 'Wish']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Ornithopter (10/2)', 'Signal Pest (0/1)', 'Construct Token (10/10)', "Sojourner's Companion (4/4)", "Sojourner's Companion (4/4)", 'Thought Monitor (2/2)', 'Memnite (1/1)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T7 Ruby Storm | life=5 mana=0 hand=4+2L gy=4
+  Hand: ["Wrenn's Resolve", "Wrenn's Resolve", 'Valakut Awakening // Valakut Stoneforge', 'Wish']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Ornithopter (10/2)', 'Signal Pest (0/1)', 'Construct Token (10/10)', "Sojourner's Companion (4/4)", "Sojourner's Companion (4/4)", 'Thought Monitor (2/2)', 'Memnite (1/1)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T8 Affinity | life=20 mana=2 hand=1+2L gy=1
+  Hand: ["Sojourner's Companion"]
+  Board: ['Ornithopter (12/2)', 'Signal Pest (0/1)', 'Construct Token (12/12)', "Sojourner's Companion (4/4)", "Sojourner's Companion (4/4)", 'Thought Monitor (2/2)', 'Memnite (1/1)', 'Construct Token (12/12)']
+  Permanents: ['Cranial Plating', 'Mox Opal']
+  Opp board: [] (life=5)
+  EV scores:
+     +48.0  play_land: Darksteel Citadel <--
+     +17.2  play_land: Urza's Saga
+      +6.7  cycle: Sojourner's Companion
+      +4.3  cast_spell: Sojourner's Companion  [h=+4.3 la=+4.3]
+  >>> PLAY_LAND: Darksteel Citadel
+  [MAIN1]
+
+T8 Affinity | life=20 mana=3 hand=1+1L gy=1
+  Hand: ["Sojourner's Companion"]
+  Board: ['Ornithopter (13/2)', 'Signal Pest (0/1)', 'Construct Token (13/13)', "Sojourner's Companion (4/4)", "Sojourner's Companion (4/4)", 'Thought Monitor (2/2)', 'Memnite (1/1)', 'Construct Token (13/13)']
+  Permanents: ['Cranial Plating', 'Mox Opal']
+  Opp board: [] (life=5)
+  EV scores:
+     +10.0  cycle: Sojourner's Companion <--
+      +5.0  cast_spell: Sojourner's Companion  [h=+5.0 la=+5.0]
+  >>> CYCLE: Sojourner's Companion
+  [MAIN1]
+
+T8 Affinity | life=20 mana=1 hand=0+2L gy=2
+  Hand: []
+  Board: ['Ornithopter (13/2)', 'Signal Pest (0/1)', 'Construct Token (13/13)', "Sojourner's Companion (4/4)", "Sojourner's Companion (4/4)", 'Thought Monitor (2/2)', 'Memnite (1/1)', 'Construct Token (13/13)']
+  Permanents: ['Cranial Plating', 'Mox Opal']
+  Opp board: [] (life=5)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ornithopter', 'Signal Pest', 'Construct Token', "Sojourner's Companion", "Sojourner's Companion", 'Thought Monitor', 'Memnite']

@@ -1,0 +1,277 @@
+Loaded 21759 cards (0 errors)
+=== Ruby Storm vs Domain Zoo (seed 60500) ===
+Result: Domain Zoo wins T5 via damage
+Life: P1=0 P2=13
+
+  [MAIN1]
+
+T1 Domain Zoo | life=20 mana=0 hand=4+3L gy=0
+  Hand: ['Ragavan, Nimble Pilferer', 'Leyline Binding', 'Doorkeeper Thrull', 'Stubborn Denial']
+  Opp board: [] (life=20)
+  EV scores:
+     +35.0  play_land: Flooded Strand <--
+     +35.0  play_land: Flooded Strand
+     +14.0  play_land: Thundering Falls
+  >>> PLAY_LAND: Flooded Strand
+  [MAIN1]
+
+T1 Domain Zoo | life=17 mana=1 hand=4+2L gy=1
+  Hand: ['Ragavan, Nimble Pilferer', 'Leyline Binding', 'Doorkeeper Thrull', 'Stubborn Denial']
+  Opp board: [] (life=20)
+  EV scores:
+      +2.0  cast_spell: Ragavan, Nimble Pilferer <--  [h=+2.0 la=+2.0]
+  >>> CAST_SPELL: Ragavan, Nimble Pilferer
+  [MAIN1]
+
+T1 Domain Zoo | life=17 mana=0 hand=3+2L gy=1
+  Hand: ['Leyline Binding', 'Doorkeeper Thrull', 'Stubborn Denial']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T1 Domain Zoo | life=17 mana=0 hand=3+2L gy=1
+  Hand: ['Leyline Binding', 'Doorkeeper Thrull', 'Stubborn Denial']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T2 Ruby Storm | life=20 mana=0 hand=6+2L gy=0
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Desperate Ritual', 'Past in Flames', 'Reckless Impulse', 'Wish']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  EV scores:
+     +41.0  play_land: Bloodstained Mire <--
+     +41.0  play_land: Scalding Tarn
+  >>> PLAY_LAND: Bloodstained Mire
+  [MAIN1]
+
+T2 Ruby Storm | life=17 mana=1 hand=6+1L gy=1
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Desperate Ritual', 'Past in Flames', 'Reckless Impulse', 'Wish']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T2 Ruby Storm | life=17 mana=1 hand=6+1L gy=1
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Desperate Ritual', 'Past in Flames', 'Reckless Impulse', 'Wish']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T3 Domain Zoo | life=17 mana=1 hand=3+3L gy=1
+  Hand: ['Leyline Binding', 'Doorkeeper Thrull', 'Stubborn Denial']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Opp board: [] (life=17)
+  EV scores:
+     +28.0  play_land: Flooded Strand <--
+      +7.0  play_land: Thundering Falls
+      +7.0  play_land: Arena of Glory
+  >>> PLAY_LAND: Flooded Strand
+  [MAIN1]
+
+T3 Domain Zoo | life=14 mana=2 hand=3+2L gy=2
+  Hand: ['Leyline Binding', 'Doorkeeper Thrull', 'Stubborn Denial']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Opp board: [] (life=17)
+  EV scores:
+      +4.0  cast_spell: Doorkeeper Thrull <--  [h=+4.0 la=+4.0 rmv=4%]
+  >>> CAST_SPELL: Doorkeeper Thrull
+  [MAIN1]
+
+T3 Domain Zoo | life=14 mana=0 hand=2+2L gy=2
+  Hand: ['Leyline Binding', 'Stubborn Denial']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)']
+  Opp board: [] (life=17)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ragavan, Nimble Pilferer']
+  [MAIN2]
+
+T3 Domain Zoo | life=14 mana=0 hand=3+2L gy=2
+  Hand: ['Leyline Binding', 'Stubborn Denial', 'Manamorphose']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)']
+  Permanents: ['Treasure Token']
+  Opp board: [] (life=15)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T4 Ruby Storm | life=15 mana=1 hand=7+1L gy=1
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Desperate Ritual', 'Past in Flames', 'Reckless Impulse', 'Wish', 'Glimpse the Impossible']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)'] (life=14)
+  EV scores:
+     +25.0  play_land: Scalding Tarn <--
+  >>> PLAY_LAND: Scalding Tarn
+  [MAIN1]
+
+T4 Ruby Storm | life=14 mana=2 hand=7+0L gy=2
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Desperate Ritual', 'Past in Flames', 'Reckless Impulse', 'Wish', 'Glimpse the Impossible']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)'] (life=14)
+  EV scores:
+      -1.4  cast_spell: Reckless Impulse <--  [h=-1.4 la=-1.4]
+     -34.2  cast_spell: Desperate Ritual  [h=-34.2 la=-34.2]
+  >>> CAST_SPELL: Reckless Impulse
+  [MAIN1]
+
+T4 Ruby Storm | life=14 mana=0 hand=8+0L gy=3
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Desperate Ritual', 'Past in Flames', 'Wish', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)'] (life=14)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T4 Ruby Storm | life=14 mana=0 hand=8+0L gy=3
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Desperate Ritual', 'Past in Flames', 'Wish', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)'] (life=14)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T5 Domain Zoo | life=14 mana=2 hand=2+3L gy=2
+  Hand: ['Leyline Binding', 'Stubborn Denial']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)']
+  Permanents: ['Treasure Token']
+  Opp board: [] (life=14)
+  EV scores:
+     +18.0  play_land: Wooded Foothills <--
+      +7.0  play_land: Thundering Falls
+      +7.0  play_land: Arena of Glory
+  >>> PLAY_LAND: Wooded Foothills
+  [MAIN1]
+
+T5 Domain Zoo | life=13 mana=2 hand=2+2L gy=3
+  Hand: ['Leyline Binding', 'Stubborn Denial']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)']
+  Permanents: ['Treasure Token']
+  Opp board: [] (life=14)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ragavan, Nimble Pilferer', 'Doorkeeper Thrull']
+  [MAIN2]
+
+T5 Domain Zoo | life=13 mana=2 hand=2+3L gy=3
+  Hand: ['Leyline Binding', 'Stubborn Denial']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)']
+  Permanents: ['Treasure Token', 'Treasure Token']
+  Opp board: [] (life=11)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T6 Ruby Storm | life=11 mana=2 hand=8+0L gy=4
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Desperate Ritual', 'Wish', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Desperate Ritual']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)'] (life=13)
+  EV scores:
+     -45.2  cast_spell: Desperate Ritual <--  [h=-45.2 la=-45.2 ctr=19%]
+     -45.2  cast_spell: Pyretic Ritual  [h=-45.2 la=-45.2 ctr=19%]
+     -45.2  cast_spell: Desperate Ritual  [h=-45.2 la=-45.2 ctr=19%]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T6 Ruby Storm | life=11 mana=2 hand=8+0L gy=4
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Desperate Ritual', 'Wish', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Desperate Ritual']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)'] (life=13)
+  EV scores:
+     -45.2  cast_spell: Desperate Ritual <--  [h=-45.2 la=-45.2 ctr=19%]
+     -45.2  cast_spell: Pyretic Ritual  [h=-45.2 la=-45.2 ctr=19%]
+     -45.2  cast_spell: Desperate Ritual  [h=-45.2 la=-45.2 ctr=19%]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T7 Domain Zoo | life=13 mana=3 hand=3+2L gy=3
+  Hand: ['Leyline Binding', 'Stubborn Denial', 'Territorial Kavu']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)']
+  Permanents: ['Treasure Token', 'Treasure Token']
+  Opp board: [] (life=11)
+  EV scores:
+      +7.0  play_land: Thundering Falls <--
+      +7.0  play_land: Arena of Glory
+      +0.2  cast_spell: Territorial Kavu  [h=+0.2 la=+0.2 rmv=4%]
+  >>> PLAY_LAND: Thundering Falls
+  [MAIN1]
+
+T7 Domain Zoo | life=13 mana=3 hand=3+1L gy=3
+  Hand: ['Leyline Binding', 'Stubborn Denial', 'Territorial Kavu']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)']
+  Permanents: ['Treasure Token', 'Treasure Token']
+  Opp board: [] (life=11)
+  EV scores:
+      +0.4  cast_spell: Territorial Kavu <--  [h=+0.4 la=+0.4 rmv=4%]
+  >>> CAST_SPELL: Territorial Kavu
+  [MAIN1]
+
+T7 Domain Zoo | life=13 mana=1 hand=2+1L gy=3
+  Hand: ['Leyline Binding', 'Stubborn Denial']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)', 'Territorial Kavu (4/4)']
+  Permanents: ['Treasure Token', 'Treasure Token']
+  Opp board: [] (life=11)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ragavan, Nimble Pilferer', 'Doorkeeper Thrull']
+  [MAIN2]
+
+T7 Domain Zoo | life=13 mana=1 hand=3+1L gy=3
+  Hand: ['Leyline Binding', 'Stubborn Denial', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)', 'Territorial Kavu (4/4)']
+  Permanents: ['Treasure Token', 'Treasure Token', 'Treasure Token']
+  Opp board: [] (life=8)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T8 Ruby Storm | life=8 mana=2 hand=7+1L gy=5
+  Hand: ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Desperate Ritual', 'Wish', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Desperate Ritual']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)', 'Territorial Kavu (4/4)'] (life=13)
+  EV scores:
+     +18.0  play_land: Arid Mesa <--
+     -39.0  cast_spell: Desperate Ritual  [h=-39.0 la=-39.0]
+     -39.0  cast_spell: Pyretic Ritual  [h=-39.0 la=-39.0]
+     -39.0  cast_spell: Desperate Ritual  [h=-39.0 la=-39.0]
+  >>> PLAY_LAND: Arid Mesa
+  [MAIN1]
+
+T8 Ruby Storm | life=7 mana=3 hand=7+0L gy=6
+  Hand: ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Desperate Ritual', 'Wish', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Desperate Ritual']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)', 'Territorial Kavu (4/4)'] (life=13)
+  EV scores:
+      -2.8  cast_spell: Glimpse the Impossible <--  [h=-2.8 la=-2.8]
+     -40.3  cast_spell: Desperate Ritual  [h=-40.3 la=-40.3]
+     -40.3  cast_spell: Pyretic Ritual  [h=-40.3 la=-40.3]
+     -40.3  cast_spell: Desperate Ritual  [h=-40.3 la=-40.3]
+     -43.0  cast_spell: Wish  [h=-43.0 la=-43.0]
+     -43.0  cast_spell: Wish  [h=-43.0 la=-43.0]
+  >>> CAST_SPELL: Glimpse the Impossible
+  [MAIN1]
+
+T8 Ruby Storm | life=7 mana=0 hand=9+0L gy=7
+  Hand: ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Desperate Ritual', 'Wish', 'Pyretic Ritual', 'Wish', 'Desperate Ritual', 'Ruby Medallion', "Wrenn's Resolve", 'Glimpse the Impossible']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)', 'Territorial Kavu (4/4)'] (life=13)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T8 Ruby Storm | life=7 mana=0 hand=9+0L gy=7
+  Hand: ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Desperate Ritual', 'Wish', 'Pyretic Ritual', 'Wish', 'Desperate Ritual', 'Ruby Medallion', "Wrenn's Resolve", 'Glimpse the Impossible']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)', 'Territorial Kavu (4/4)'] (life=13)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T9 Domain Zoo | life=13 mana=4 hand=3+1L gy=3
+  Hand: ['Leyline Binding', 'Stubborn Denial', "Phlage, Titan of Fire's Fury"]
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)', 'Territorial Kavu (4/4)']
+  Permanents: ['Treasure Token', 'Treasure Token', 'Treasure Token']
+  Opp board: [] (life=7)
+  EV scores:
+      +9.6  cast_spell: Phlage, Titan of Fire's Fury <--  [h=+9.6 la=+9.6]
+      +7.0  play_land: Arena of Glory
+  >>> CAST_SPELL: Phlage, Titan of Fire's Fury
+  [MAIN1]
+
+T9 Domain Zoo | life=13 mana=1 hand=2+1L gy=4
+  Hand: ['Leyline Binding', 'Stubborn Denial']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)', 'Territorial Kavu (4/4)']
+  Permanents: ['Treasure Token', 'Treasure Token', 'Treasure Token']
+  Opp board: [] (life=7)
+  EV scores:
+      +7.0  play_land: Arena of Glory <--
+  >>> PLAY_LAND: Arena of Glory
+  [MAIN1]
+
+T9 Domain Zoo | life=13 mana=1 hand=2+0L gy=4
+  Hand: ['Leyline Binding', 'Stubborn Denial']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)', 'Territorial Kavu (4/4)']
+  Permanents: ['Treasure Token', 'Treasure Token', 'Treasure Token']
+  Opp board: [] (life=7)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ragavan, Nimble Pilferer', 'Doorkeeper Thrull', 'Territorial Kavu']

@@ -1,0 +1,466 @@
+Loaded 21759 cards (0 errors)
+=== Ruby Storm vs Dimir Midrange (seed 60550) ===
+Result: Dimir Midrange wins T6 via damage
+Life: P1=-1 P2=17
+
+  [MAIN1]
+
+T1 Ruby Storm | life=20 mana=0 hand=5+2L gy=0
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve"]
+  Opp board: [] (life=20)
+  EV scores:
+     +24.0  play_land: Elegant Parlor <--
+     +24.0  play_land: Elegant Parlor
+  >>> PLAY_LAND: Elegant Parlor
+  [MAIN1]
+
+T1 Ruby Storm | life=20 mana=0 hand=5+1L gy=0
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve"]
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T1 Ruby Storm | life=20 mana=0 hand=5+1L gy=0
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve"]
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T2 Dimir Midrange | life=20 mana=0 hand=6+2L gy=0
+  Hand: ['Murktide Regent', 'Consider', 'Consider', 'Drown in the Loch', 'Psychic Frog', 'Counterspell']
+  Opp board: [] (life=20)
+  EV scores:
+     +37.0  play_land: Island <--
+     +26.0  play_land: Darkslick Shores
+  >>> PLAY_LAND: Island
+  [MAIN1]
+
+T2 Dimir Midrange | life=20 mana=1 hand=6+1L gy=0
+  Hand: ['Murktide Regent', 'Consider', 'Consider', 'Drown in the Loch', 'Psychic Frog', 'Counterspell']
+  Opp board: [] (life=20)
+  EV scores:
+      -0.1  cast_spell: Consider <--  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Consider  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Consider
+  [MAIN1]
+
+T2 Dimir Midrange | life=20 mana=0 hand=5+2L gy=1
+  Hand: ['Murktide Regent', 'Consider', 'Drown in the Loch', 'Psychic Frog', 'Counterspell']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-3.0)
+  [MAIN2]
+
+T2 Dimir Midrange | life=20 mana=0 hand=5+2L gy=1
+  Hand: ['Murktide Regent', 'Consider', 'Drown in the Loch', 'Psychic Frog', 'Counterspell']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-3.0)
+  [MAIN1]
+
+T3 Ruby Storm | life=20 mana=1 hand=6+1L gy=0
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", "Wrenn's Resolve"]
+  Opp board: [] (life=20)
+  EV scores:
+      +7.0  play_land: Elegant Parlor <--
+  >>> PLAY_LAND: Elegant Parlor
+  [MAIN1]
+
+T3 Ruby Storm | life=20 mana=1 hand=6+0L gy=0
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", "Wrenn's Resolve"]
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T3 Ruby Storm | life=20 mana=1 hand=6+0L gy=0
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", "Wrenn's Resolve"]
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T4 Dimir Midrange | life=20 mana=1 hand=5+3L gy=1
+  Hand: ['Murktide Regent', 'Consider', 'Drown in the Loch', 'Psychic Frog', 'Counterspell']
+  Opp board: [] (life=20)
+  EV scores:
+     +28.0  play_land: Polluted Delta <--
+     +17.0  play_land: Darkslick Shores
+     +17.0  play_land: Darkslick Shores
+      -0.0  cast_spell: Consider  [h=-0.0 la=-0.0]
+  >>> PLAY_LAND: Polluted Delta
+  [MAIN1]
+
+T4 Dimir Midrange | life=17 mana=2 hand=5+2L gy=2
+  Hand: ['Murktide Regent', 'Consider', 'Drown in the Loch', 'Psychic Frog', 'Counterspell']
+  Opp board: [] (life=20)
+  EV scores:
+      -0.1  cast_spell: Consider <--  [h=-0.1 la=-0.1]
+     -12.8  cast_spell: Psychic Frog  [h=-12.8 la=-12.8 rmv=2%]
+  >>> CAST_SPELL: Consider
+  [MAIN1]
+
+T4 Dimir Midrange | life=17 mana=1 hand=5+2L gy=3
+  Hand: ['Murktide Regent', 'Drown in the Loch', 'Psychic Frog', 'Counterspell', 'Orcish Bowmasters']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-3.0)
+  [MAIN2]
+
+T4 Dimir Midrange | life=17 mana=1 hand=5+2L gy=3
+  Hand: ['Murktide Regent', 'Drown in the Loch', 'Psychic Frog', 'Counterspell', 'Orcish Bowmasters']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-3.0)
+  [MAIN1]
+
+T5 Ruby Storm | life=20 mana=2 hand=6+1L gy=0
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", "Wrenn's Resolve"]
+  Opp board: [] (life=17)
+  EV scores:
+     +18.0  play_land: Arid Mesa <--
+     +11.6  cast_spell: Ruby Medallion  [h=+11.6 la=+11.6]
+     +11.6  cast_spell: Ruby Medallion  [h=+11.6 la=+11.6]
+      -3.4  cast_spell: Wrenn's Resolve  [h=-3.4 la=-3.4]
+      -3.4  cast_spell: Wrenn's Resolve  [h=-3.4 la=-3.4]
+    -990.0  cast_spell: Manamorphose  [h=-990.0 la=-990.0]
+  >>> PLAY_LAND: Arid Mesa
+  [MAIN1]
+
+T5 Ruby Storm | life=17 mana=3 hand=6+0L gy=1
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", "Wrenn's Resolve"]
+  Opp board: [] (life=17)
+  EV scores:
+     +17.5  cast_spell: Ruby Medallion <--  [h=+17.5 la=+17.5]
+     +17.5  cast_spell: Ruby Medallion  [h=+17.5 la=+17.5]
+     -10.0  cast_spell: Wrenn's Resolve  [h=-10.0 la=-10.0]
+     -10.0  cast_spell: Wrenn's Resolve  [h=-10.0 la=-10.0]
+     -13.3  cast_spell: Glimpse the Impossible  [h=-13.3 la=-13.3]
+    -1000.0  cast_spell: Manamorphose  [h=-1000.0 la=-1000.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T5 Ruby Storm | life=17 mana=3 hand=6+0L gy=1
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", "Wrenn's Resolve"]
+  Opp board: [] (life=17)
+  EV scores:
+     +17.5  cast_spell: Ruby Medallion <--  [h=+17.5 la=+17.5]
+     +17.5  cast_spell: Ruby Medallion  [h=+17.5 la=+17.5]
+     -10.0  cast_spell: Wrenn's Resolve  [h=-10.0 la=-10.0]
+     -10.0  cast_spell: Wrenn's Resolve  [h=-10.0 la=-10.0]
+     -13.3  cast_spell: Glimpse the Impossible  [h=-13.3 la=-13.3]
+    -1000.0  cast_spell: Manamorphose  [h=-1000.0 la=-1000.0]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T6 Dimir Midrange | life=17 mana=2 hand=6+2L gy=3
+  Hand: ['Murktide Regent', 'Drown in the Loch', 'Psychic Frog', 'Counterspell', 'Orcish Bowmasters', 'Fatal Push']
+  Opp board: [] (life=17)
+  EV scores:
+      +7.0  play_land: Darkslick Shores <--
+      +7.0  play_land: Darkslick Shores
+      +4.4  cast_spell: Orcish Bowmasters  [h=+4.4 la=+4.4 rmv=4%]
+     -13.2  cast_spell: Psychic Frog  [h=-13.2 la=-13.2 rmv=2%]
+  >>> PLAY_LAND: Darkslick Shores
+  [MAIN1]
+
+T6 Dimir Midrange | life=17 mana=3 hand=6+1L gy=3
+  Hand: ['Murktide Regent', 'Drown in the Loch', 'Psychic Frog', 'Counterspell', 'Orcish Bowmasters', 'Fatal Push']
+  Opp board: [] (life=17)
+  EV scores:
+      +4.4  cast_spell: Orcish Bowmasters <--  [h=+4.4 la=+4.4 rmv=4%]
+     -10.4  cast_spell: Psychic Frog  [h=-10.4 la=-10.4 rmv=2%]
+  >>> CAST_SPELL: Orcish Bowmasters
+  [MAIN1]
+
+T6 Dimir Midrange | life=17 mana=1 hand=5+1L gy=3
+  Hand: ['Murktide Regent', 'Drown in the Loch', 'Psychic Frog', 'Counterspell', 'Fatal Push']
+  Board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)']
+  Opp board: [] (life=16)
+  >>> PASS (threshold=-3.0)
+  [MAIN2]
+
+T6 Dimir Midrange | life=17 mana=1 hand=5+1L gy=3
+  Hand: ['Murktide Regent', 'Drown in the Loch', 'Psychic Frog', 'Counterspell', 'Fatal Push']
+  Board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)']
+  Opp board: [] (life=16)
+  >>> PASS (threshold=-3.0)
+  [MAIN1]
+
+T7 Ruby Storm | life=16 mana=3 hand=6+1L gy=1
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", "Wrenn's Resolve"]
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=17)
+  EV scores:
+     +23.4  cast_spell: Ruby Medallion <--  [h=+23.4 la=+23.4]
+     +23.4  cast_spell: Ruby Medallion  [h=+23.4 la=+23.4]
+     +18.0  play_land: Arid Mesa
+      -1.2  cast_spell: Wrenn's Resolve  [h=-1.2 la=-1.2]
+      -1.2  cast_spell: Wrenn's Resolve  [h=-1.2 la=-1.2]
+      -2.2  cast_spell: Glimpse the Impossible  [h=-2.2 la=-2.2]
+    ... +1 more
+  >>> PLAY_LAND: Arid Mesa
+  [MAIN1]
+
+T7 Ruby Storm | life=15 mana=4 hand=6+0L gy=2
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", "Wrenn's Resolve"]
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=17)
+  EV scores:
+     +23.4  cast_spell: Ruby Medallion <--  [h=+23.4 la=+23.4]
+     +23.4  cast_spell: Ruby Medallion  [h=+23.4 la=+23.4]
+      -0.1  cast_spell: Wrenn's Resolve  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Wrenn's Resolve  [h=-0.1 la=-0.1]
+      -1.2  cast_spell: Glimpse the Impossible  [h=-1.2 la=-1.2]
+    -1000.0  cast_spell: Manamorphose  [h=-1000.0 la=-1000.0]
+  >>> CAST_SPELL: Wrenn's Resolve
+  [MAIN1]
+
+T7 Ruby Storm | life=13 mana=2 hand=6+1L gy=3
+  Hand: ['Glimpse the Impossible', 'Ruby Medallion', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", 'Past in Flames']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=17)
+  EV scores:
+     +12.6  cast_spell: Ruby Medallion <--  [h=+12.6 la=+12.6]
+     +12.6  cast_spell: Ruby Medallion  [h=+12.6 la=+12.6]
+      -0.9  cast_spell: Manamorphose  [h=-0.9 la=-0.9]
+      -1.1  cast_spell: Wrenn's Resolve  [h=-1.1 la=-1.1]
+  >>> CAST_SPELL: Ruby Medallion
+  [MAIN1]
+
+T7 Ruby Storm | life=13 mana=0 hand=5+1L gy=3
+  Hand: ['Glimpse the Impossible', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", 'Past in Flames']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T7 Ruby Storm | life=13 mana=0 hand=5+1L gy=3
+  Hand: ['Glimpse the Impossible', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", 'Past in Flames']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T8 Dimir Midrange | life=17 mana=3 hand=6+1L gy=3
+  Hand: ['Murktide Regent', 'Drown in the Loch', 'Psychic Frog', 'Counterspell', 'Fatal Push', 'Subtlety']
+  Board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)']
+  Opp board: [] (life=13)
+  EV scores:
+      +7.0  play_land: Darkslick Shores <--
+      -0.3  cast_spell: Fatal Push  [h=-0.3 la=-0.3]
+      -8.4  cast_spell: Psychic Frog  [h=-8.4 la=-8.4]
+  >>> PLAY_LAND: Darkslick Shores
+  [MAIN1]
+
+T8 Dimir Midrange | life=17 mana=3 hand=6+0L gy=3
+  Hand: ['Murktide Regent', 'Drown in the Loch', 'Psychic Frog', 'Counterspell', 'Fatal Push', 'Subtlety']
+  Board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)']
+  Opp board: [] (life=13)
+  EV scores:
+      -0.2  cast_spell: Fatal Push <--  [h=-0.2 la=-0.2]
+      -8.3  cast_spell: Psychic Frog  [h=-8.3 la=-8.3]
+  >>> CAST_SPELL: Fatal Push
+  [MAIN1]
+
+T8 Dimir Midrange | life=17 mana=2 hand=5+0L gy=4
+  Hand: ['Murktide Regent', 'Drown in the Loch', 'Psychic Frog', 'Counterspell', 'Subtlety']
+  Board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)']
+  Opp board: [] (life=13)
+  EV scores:
+     -10.5  cast_spell: Psychic Frog <--  [h=-10.5 la=-10.5]
+  >>> PASS (threshold=-3.0)
+  >>> ATTACK: ['Orcish Bowmasters', 'Orc Army']
+  [MAIN2]
+
+T8 Dimir Midrange | life=17 mana=2 hand=5+0L gy=4
+  Hand: ['Murktide Regent', 'Drown in the Loch', 'Psychic Frog', 'Counterspell', 'Subtlety']
+  Board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)']
+  Opp board: [] (life=11)
+  EV scores:
+     -10.3  cast_spell: Psychic Frog <--  [h=-10.3 la=-10.3]
+  >>> PASS (threshold=-3.0)
+  [MAIN1]
+
+T9 Ruby Storm | life=11 mana=4 hand=6+1L gy=3
+  Hand: ['Glimpse the Impossible', 'Manamorphose', 'Ruby Medallion', "Wrenn's Resolve", 'Past in Flames', 'Pyretic Ritual']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=17)
+  EV scores:
+     +17.5  cast_spell: Ruby Medallion <--  [h=+17.5 la=+17.5 ctr=60%]
+     +15.0  play_land: Mountain
+      -0.2  cast_spell: Wrenn's Resolve  [h=-0.2 la=-0.2 ctr=60%]
+      -1.3  cast_spell: Glimpse the Impossible  [h=-1.3 la=-1.3 ctr=60%]
+      -2.4  cast_spell: Past in Flames  [h=-2.4 la=-2.4 ctr=60%]
+    -999.9  cast_spell: Pyretic Ritual  [h=-999.9 la=-999.9 ctr=60%]
+    ... +1 more
+  >>> CAST_SPELL: Ruby Medallion
+  [MAIN1]
+
+T9 Ruby Storm | life=11 mana=2 hand=5+1L gy=4
+  Hand: ['Glimpse the Impossible', 'Manamorphose', "Wrenn's Resolve", 'Past in Flames', 'Pyretic Ritual']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=17)
+  EV scores:
+     +15.0  play_land: Mountain <--
+      -0.9  cast_spell: Pyretic Ritual  [h=-0.9 la=-0.9]
+      -0.9  cast_spell: Manamorphose  [h=-0.9 la=-0.9]
+      -1.3  cast_spell: Glimpse the Impossible  [h=-1.3 la=-1.3]
+      -1.3  cast_spell: Wrenn's Resolve  [h=-1.3 la=-1.3]
+  >>> PLAY_LAND: Mountain
+  [MAIN1]
+
+T9 Ruby Storm | life=11 mana=3 hand=5+0L gy=4
+  Hand: ['Glimpse the Impossible', 'Manamorphose', "Wrenn's Resolve", 'Past in Flames', 'Pyretic Ritual']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=17)
+  EV scores:
+      -0.2  cast_spell: Wrenn's Resolve <--  [h=-0.2 la=-0.2]
+      -0.9  cast_spell: Manamorphose  [h=-0.9 la=-0.9]
+      -1.0  cast_spell: Pyretic Ritual  [h=-1.0 la=-1.0]
+      -1.3  cast_spell: Glimpse the Impossible  [h=-1.3 la=-1.3]
+      -1.3  cast_spell: Past in Flames  [h=-1.3 la=-1.3]
+  >>> CAST_SPELL: Wrenn's Resolve
+  [MAIN1]
+
+T9 Ruby Storm | life=9 mana=2 hand=5+1L gy=5
+  Hand: ['Glimpse the Impossible', 'Manamorphose', 'Past in Flames', 'Pyretic Ritual', "Wrenn's Resolve"]
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=17)
+  EV scores:
+      -0.3  cast_spell: Glimpse the Impossible <--  [h=-0.3 la=-0.3]
+      -0.3  cast_spell: Wrenn's Resolve  [h=-0.3 la=-0.3]
+      -1.2  cast_spell: Pyretic Ritual  [h=-1.2 la=-1.2]
+      -1.2  cast_spell: Manamorphose  [h=-1.2 la=-1.2]
+  >>> CAST_SPELL: Glimpse the Impossible
+  [MAIN1]
+
+T9 Ruby Storm | life=6 mana=0 hand=7+1L gy=6
+  Hand: ['Manamorphose', 'Past in Flames', 'Pyretic Ritual', "Wrenn's Resolve", 'Pyretic Ritual', 'Manamorphose', 'Reckless Impulse']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T9 Ruby Storm | life=6 mana=0 hand=7+1L gy=6
+  Hand: ['Manamorphose', 'Past in Flames', 'Pyretic Ritual', "Wrenn's Resolve", 'Pyretic Ritual', 'Manamorphose', 'Reckless Impulse']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T10 Dimir Midrange | life=17 mana=4 hand=4+1L gy=5
+  Hand: ['Murktide Regent', 'Psychic Frog', 'Counterspell', 'Subtlety']
+  Board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)']
+  Opp board: [] (life=6)
+  EV scores:
+     +19.0  play_land: Island <--
+      +5.1  cast_spell: Subtlety  [h=+5.1 la=+5.1]
+      +4.3  cast_spell: Psychic Frog  [h=+4.3 la=+4.3]
+      -2.9  cast_spell: Murktide Regent  [h=-2.9 la=-2.9]
+  >>> PLAY_LAND: Island
+  [MAIN1]
+
+T10 Dimir Midrange | life=17 mana=5 hand=4+0L gy=5
+  Hand: ['Murktide Regent', 'Psychic Frog', 'Counterspell', 'Subtlety']
+  Board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)']
+  Opp board: [] (life=6)
+  EV scores:
+      +5.2  cast_spell: Subtlety <--  [h=+5.2 la=+5.2]
+      +4.0  cast_spell: Psychic Frog  [h=+4.0 la=+4.0]
+      -2.8  cast_spell: Murktide Regent  [h=-2.8 la=-2.8]
+  >>> CAST_SPELL: Subtlety
+  [MAIN1]
+
+T10 Dimir Midrange | life=17 mana=1 hand=3+0L gy=5
+  Hand: ['Murktide Regent', 'Psychic Frog', 'Counterspell']
+  Board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Subtlety (3/3)']
+  Opp board: [] (life=6)
+  >>> PASS (threshold=-3.0)
+  >>> ATTACK: ['Orcish Bowmasters', 'Orc Army']
+  [MAIN2]
+
+T10 Dimir Midrange | life=17 mana=1 hand=3+0L gy=5
+  Hand: ['Murktide Regent', 'Psychic Frog', 'Counterspell']
+  Board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Subtlety (3/3)']
+  Opp board: [] (life=4)
+  >>> PASS (threshold=-3.0)
+  [MAIN1]
+
+T11 Ruby Storm | life=4 mana=5 hand=6+2L gy=7
+  Hand: ['Manamorphose', 'Pyretic Ritual', "Wrenn's Resolve", 'Pyretic Ritual', 'Manamorphose', 'Reckless Impulse']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Subtlety (3/3)'] (life=17)
+  EV scores:
+     +22.0  play_land: Bloodstained Mire <--
+     +22.0  play_land: Wooded Foothills
+      +0.0  cast_spell: Manamorphose
+      +0.0  cast_spell: Manamorphose
+      -0.1  cast_spell: Pyretic Ritual  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Pyretic Ritual  [h=-0.1 la=-0.1]
+    ... +2 more
+  >>> PLAY_LAND: Bloodstained Mire
+  [MAIN1]
+
+T11 Ruby Storm | life=3 mana=6 hand=6+1L gy=8
+  Hand: ['Manamorphose', 'Pyretic Ritual', "Wrenn's Resolve", 'Pyretic Ritual', 'Manamorphose', 'Reckless Impulse']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Subtlety (3/3)'] (life=17)
+  EV scores:
+      +0.0  cast_spell: Manamorphose <--
+      +0.0  cast_spell: Manamorphose
+      -0.1  cast_spell: Pyretic Ritual  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Pyretic Ritual  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Wrenn's Resolve  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Reckless Impulse  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Manamorphose
+  [MAIN1]
+
+T11 Ruby Storm | life=2 mana=7 hand=5+2L gy=9
+  Hand: ['Pyretic Ritual', "Wrenn's Resolve", 'Pyretic Ritual', 'Manamorphose', 'Reckless Impulse']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Subtlety (3/3)'] (life=17)
+  EV scores:
+      +0.0  cast_spell: Manamorphose <--
+      -0.1  cast_spell: Pyretic Ritual  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Pyretic Ritual  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Wrenn's Resolve  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Reckless Impulse  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Manamorphose
+  [MAIN1]
+
+T11 Ruby Storm | life=1 mana=8 hand=5+2L gy=10
+  Hand: ['Pyretic Ritual', "Wrenn's Resolve", 'Pyretic Ritual', 'Reckless Impulse', 'Desperate Ritual']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Subtlety (3/3)'] (life=17)
+  EV scores:
+      -0.1  cast_spell: Pyretic Ritual <--  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Pyretic Ritual  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Desperate Ritual  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Wrenn's Resolve  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Reckless Impulse  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Pyretic Ritual
+  [MAIN1]
+
+T11 Ruby Storm | life=1 mana=10 hand=4+2L gy=11
+  Hand: ["Wrenn's Resolve", 'Pyretic Ritual', 'Reckless Impulse', 'Desperate Ritual']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Subtlety (3/3)'] (life=17)
+  EV scores:
+      -0.1  cast_spell: Pyretic Ritual <--  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Desperate Ritual  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Wrenn's Resolve  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Reckless Impulse  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Pyretic Ritual
+  [MAIN1]
+
+T11 Ruby Storm | life=1 mana=12 hand=3+2L gy=12
+  Hand: ["Wrenn's Resolve", 'Reckless Impulse', 'Desperate Ritual']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Subtlety (3/3)'] (life=17)
+  EV scores:
+      -0.1  cast_spell: Desperate Ritual <--  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Wrenn's Resolve  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Reckless Impulse  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Desperate Ritual
+  [MAIN1]
+
+T11 Ruby Storm | life=1 mana=14 hand=2+2L gy=13
+  Hand: ["Wrenn's Resolve", 'Reckless Impulse']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Orcish Bowmasters (1/1)', 'Orc Army (1/1)', 'Subtlety (3/3)'] (life=17)
+  EV scores:
+      -0.1  cast_spell: Wrenn's Resolve <--  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Reckless Impulse  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Wrenn's Resolve

@@ -1,0 +1,240 @@
+Loaded 21759 cards (0 errors)
+=== Ruby Storm vs Affinity (seed 60530) ===
+Result: Affinity wins T4 via damage
+Life: P1=-13 P2=20
+
+  [MAIN1]
+
+T1 Affinity | life=20 mana=0 hand=6+1L gy=0
+  Hand: ['Frogmite', 'Ornithopter', 'Springleaf Drum', 'Ornithopter', 'Thought Monitor', 'Cranial Plating']
+  Opp board: [] (life=20)
+  EV scores:
+     +23.0  play_land: Mistvault Bridge <--
+      +1.0  cast_spell: Ornithopter  [h=+1.0 la=+1.0]
+      +1.0  cast_spell: Ornithopter  [h=+1.0 la=+1.0]
+  >>> PLAY_LAND: Mistvault Bridge
+  [MAIN1]
+
+T1 Affinity | life=20 mana=0 hand=6+0L gy=0
+  Hand: ['Frogmite', 'Ornithopter', 'Springleaf Drum', 'Ornithopter', 'Thought Monitor', 'Cranial Plating']
+  Opp board: [] (life=20)
+  EV scores:
+      +1.0  cast_spell: Ornithopter <--  [h=+1.0 la=+1.0]
+      +1.0  cast_spell: Ornithopter  [h=+1.0 la=+1.0]
+  >>> CAST_SPELL: Ornithopter
+  [MAIN1]
+
+T1 Affinity | life=20 mana=0 hand=5+0L gy=0
+  Hand: ['Frogmite', 'Springleaf Drum', 'Ornithopter', 'Thought Monitor', 'Cranial Plating']
+  Board: ['Ornithopter (0/2)']
+  Opp board: [] (life=20)
+  EV scores:
+      +1.0  cast_spell: Ornithopter <--  [h=+1.0 la=+1.0]
+  >>> CAST_SPELL: Ornithopter
+  [MAIN1]
+
+T1 Affinity | life=20 mana=0 hand=4+0L gy=0
+  Hand: ['Frogmite', 'Springleaf Drum', 'Thought Monitor', 'Cranial Plating']
+  Board: ['Ornithopter (0/2)', 'Ornithopter (0/2)']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T1 Affinity | life=20 mana=0 hand=4+0L gy=0
+  Hand: ['Frogmite', 'Springleaf Drum', 'Thought Monitor', 'Cranial Plating']
+  Board: ['Ornithopter (0/2)', 'Ornithopter (0/2)']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T2 Ruby Storm | life=20 mana=0 hand=7+1L gy=0
+  Hand: ["Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse']
+  Opp board: ['Ornithopter (0/2)', 'Ornithopter (0/2)'] (life=20)
+  EV scores:
+     +37.0  play_land: Mountain <--
+  >>> PLAY_LAND: Mountain
+  [MAIN1]
+
+T2 Ruby Storm | life=20 mana=1 hand=7+0L gy=0
+  Hand: ["Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse']
+  Opp board: ['Ornithopter (0/2)', 'Ornithopter (0/2)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T2 Ruby Storm | life=20 mana=1 hand=7+0L gy=0
+  Hand: ["Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse']
+  Opp board: ['Ornithopter (0/2)', 'Ornithopter (0/2)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T3 Affinity | life=20 mana=1 hand=4+1L gy=0
+  Hand: ['Frogmite', 'Springleaf Drum', 'Thought Monitor', 'Cranial Plating']
+  Board: ['Ornithopter (0/2)', 'Ornithopter (0/2)']
+  Opp board: [] (life=20)
+  EV scores:
+     +31.0  play_land: Treasure Vault <--
+      +3.0  cast_spell: Frogmite  [h=+3.0 la=+3.0 rmv=11%]
+      +1.0  cast_spell: Springleaf Drum  [h=+1.0 la=+1.0]
+  >>> PLAY_LAND: Treasure Vault
+  [MAIN1]
+
+T3 Affinity | life=20 mana=2 hand=4+0L gy=0
+  Hand: ['Frogmite', 'Springleaf Drum', 'Thought Monitor', 'Cranial Plating']
+  Board: ['Ornithopter (0/2)', 'Ornithopter (0/2)']
+  Opp board: [] (life=20)
+  EV scores:
+      +3.1  cast_spell: Frogmite <--  [h=+3.1 la=+3.1 rmv=11%]
+      +1.1  cast_spell: Cranial Plating  [h=+1.1 la=+1.1]
+      +1.0  cast_spell: Springleaf Drum  [h=+1.0 la=+1.0]
+  >>> CAST_SPELL: Frogmite
+  [MAIN1]
+
+T3 Affinity | life=20 mana=2 hand=3+0L gy=0
+  Hand: ['Springleaf Drum', 'Thought Monitor', 'Cranial Plating']
+  Board: ['Ornithopter (0/2)', 'Ornithopter (0/2)', 'Frogmite (2/2)']
+  Opp board: [] (life=20)
+  EV scores:
+      +8.2  cast_spell: Thought Monitor <--  [h=+8.2 la=+8.2 rmv=11%]
+      +1.2  cast_spell: Cranial Plating  [h=+1.2 la=+1.2]
+      +1.1  cast_spell: Springleaf Drum  [h=+1.1 la=+1.1]
+  >>> CAST_SPELL: Thought Monitor
+  [MAIN1]
+
+T3 Affinity | life=20 mana=1 hand=3+1L gy=0
+  Hand: ['Springleaf Drum', 'Cranial Plating', 'Frogmite']
+  Board: ['Ornithopter (0/2)', 'Ornithopter (0/2)', 'Frogmite (2/2)', 'Thought Monitor (2/2)']
+  Opp board: [] (life=20)
+  EV scores:
+      +3.7  cast_spell: Frogmite <--  [h=+3.7 la=+3.7 rmv=11%]
+      +1.0  cast_spell: Springleaf Drum  [h=+1.0 la=+1.0]
+      +1.0  cast_spell: Cranial Plating  [h=+1.0 la=+1.0]
+  >>> CAST_SPELL: Frogmite
+  [MAIN1]
+
+T3 Affinity | life=20 mana=1 hand=2+1L gy=0
+  Hand: ['Springleaf Drum', 'Cranial Plating']
+  Board: ['Ornithopter (0/2)', 'Ornithopter (0/2)', 'Frogmite (2/2)', 'Thought Monitor (2/2)', 'Frogmite (2/2)']
+  Opp board: [] (life=20)
+  EV scores:
+      +1.0  cast_spell: Springleaf Drum <--  [h=+1.0 la=+1.0]
+      +1.0  cast_spell: Cranial Plating  [h=+1.0 la=+1.0]
+  >>> CAST_SPELL: Springleaf Drum
+  [MAIN1]
+
+T3 Affinity | life=20 mana=1 hand=1+1L gy=0
+  Hand: ['Cranial Plating']
+  Board: ['Ornithopter (0/2)', 'Ornithopter (0/2)', 'Frogmite (2/2)', 'Thought Monitor (2/2)', 'Frogmite (2/2)']
+  Permanents: ['Springleaf Drum']
+  Opp board: [] (life=20)
+  EV scores:
+      +1.1  cast_spell: Cranial Plating <--  [h=+1.1 la=+1.1]
+  >>> CAST_SPELL: Cranial Plating
+  [MAIN1]
+
+T3 Affinity | life=20 mana=1 hand=0+1L gy=0
+  Hand: []
+  Board: ['Ornithopter (0/2)', 'Ornithopter (0/2)', 'Frogmite (2/2)', 'Thought Monitor (2/2)', 'Frogmite (2/2)']
+  Permanents: ['Springleaf Drum', 'Cranial Plating']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T3 Affinity | life=20 mana=1 hand=0+1L gy=0
+  Hand: []
+  Board: ['Ornithopter (0/2)', 'Ornithopter (0/2)', 'Frogmite (2/2)', 'Thought Monitor (2/2)', 'Frogmite (2/2)']
+  Permanents: ['Springleaf Drum', 'Cranial Plating']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T4 Ruby Storm | life=20 mana=1 hand=8+0L gy=0
+  Hand: ["Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse']
+  Opp board: ['Ornithopter (0/2)', 'Ornithopter (0/2)', 'Frogmite (2/2)', 'Thought Monitor (2/2)', 'Frogmite (2/2)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T4 Ruby Storm | life=20 mana=1 hand=8+0L gy=0
+  Hand: ["Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse']
+  Opp board: ['Ornithopter (0/2)', 'Ornithopter (0/2)', 'Frogmite (2/2)', 'Thought Monitor (2/2)', 'Frogmite (2/2)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T5 Affinity | life=20 mana=2 hand=1+1L gy=0
+  Hand: ['Mox Opal']
+  Board: ['Ornithopter (0/2)', 'Ornithopter (0/2)', 'Frogmite (2/2)', 'Thought Monitor (2/2)', 'Frogmite (2/2)']
+  Permanents: ['Springleaf Drum', 'Cranial Plating']
+  Opp board: [] (life=20)
+  EV scores:
+     +21.3  play_land: Urza's Saga <--
+     +13.5  equip: Cranial Plating
+      +0.9  cast_spell: Mox Opal  [h=+0.9 la=+0.9]
+  >>> PLAY_LAND: Urza's Saga
+  [MAIN1]
+
+T5 Affinity | life=20 mana=3 hand=1+0L gy=0
+  Hand: ['Mox Opal']
+  Board: ['Ornithopter (0/2)', 'Ornithopter (0/2)', 'Frogmite (2/2)', 'Thought Monitor (2/2)', 'Frogmite (2/2)']
+  Permanents: ['Springleaf Drum', 'Cranial Plating']
+  Opp board: [] (life=20)
+  EV scores:
+     +13.5  equip: Cranial Plating <--
+      +0.9  cast_spell: Mox Opal  [h=+0.9 la=+0.9]
+  >>> EQUIP: Cranial Plating
+  [MAIN1]
+
+T5 Affinity | life=20 mana=2 hand=1+0L gy=0
+  Hand: ['Mox Opal']
+  Board: ['Ornithopter (0/2)', 'Ornithopter (0/2)', 'Frogmite (2/2)', 'Thought Monitor (11/2)', 'Frogmite (2/2)']
+  Permanents: ['Springleaf Drum', 'Cranial Plating']
+  Opp board: [] (life=20)
+  EV scores:
+      +0.9  cast_spell: Mox Opal <--  [h=+0.9 la=+0.9]
+  >>> CAST_SPELL: Mox Opal
+  [MAIN1]
+
+T5 Affinity | life=20 mana=2 hand=0+0L gy=0
+  Hand: []
+  Board: ['Ornithopter (0/2)', 'Ornithopter (0/2)', 'Frogmite (2/2)', 'Thought Monitor (12/2)', 'Frogmite (2/2)']
+  Permanents: ['Springleaf Drum', 'Cranial Plating', 'Mox Opal']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Frogmite', 'Thought Monitor', 'Frogmite']
+  [MAIN2]
+
+T5 Affinity | life=20 mana=2 hand=0+0L gy=0
+  Hand: []
+  Board: ['Ornithopter (0/2)', 'Ornithopter (0/2)', 'Frogmite (2/2)', 'Thought Monitor (12/2)', 'Frogmite (2/2)']
+  Permanents: ['Springleaf Drum', 'Cranial Plating', 'Mox Opal']
+  Opp board: [] (life=4)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T6 Ruby Storm | life=4 mana=1 hand=8+0L gy=1
+  Hand: ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse', 'Pyretic Ritual']
+  Opp board: ['Ornithopter (0/2)', 'Ornithopter (0/2)', 'Frogmite (2/2)', 'Thought Monitor (12/2)', 'Frogmite (2/2)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T6 Ruby Storm | life=4 mana=1 hand=8+0L gy=1
+  Hand: ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse', 'Pyretic Ritual']
+  Opp board: ['Ornithopter (0/2)', 'Ornithopter (0/2)', 'Frogmite (2/2)', 'Thought Monitor (12/2)', 'Frogmite (2/2)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T7 Affinity | life=20 mana=3 hand=1+0L gy=0
+  Hand: ['Memnite']
+  Board: ['Ornithopter (0/2)', 'Ornithopter (0/2)', 'Frogmite (2/2)', 'Thought Monitor (12/2)', 'Frogmite (2/2)']
+  Permanents: ['Springleaf Drum', 'Cranial Plating', 'Mox Opal']
+  Opp board: [] (life=4)
+  EV scores:
+      +4.4  cast_spell: Memnite <--  [h=+4.4 la=+4.4 rmv=2%]
+  >>> CAST_SPELL: Memnite
+  [MAIN1]
+
+T7 Affinity | life=20 mana=3 hand=0+0L gy=0
+  Hand: []
+  Board: ['Ornithopter (0/2)', 'Ornithopter (0/2)', 'Frogmite (2/2)', 'Thought Monitor (13/2)', 'Frogmite (2/2)', 'Memnite (1/1)']
+  Permanents: ['Springleaf Drum', 'Cranial Plating', 'Mox Opal']
+  Opp board: [] (life=4)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Frogmite', 'Thought Monitor', 'Frogmite']

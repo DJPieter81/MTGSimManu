@@ -1,0 +1,466 @@
+Loaded 21759 cards (0 errors)
+=== Ruby Storm vs Domain Zoo (seed 60520) ===
+Result: Ruby Storm wins T5 via damage
+Life: P1=2 P2=-3
+
+  [MAIN1]
+
+T1 Ruby Storm | life=20 mana=0 hand=4+2L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion']
+  Opp board: [] (life=20)
+  EV scores:
+     +42.0  play_land: Gemstone Caverns <--
+     +24.0  play_land: Thundering Falls
+  >>> PLAY_LAND: Gemstone Caverns
+  [MAIN1]
+
+T1 Ruby Storm | life=20 mana=1 hand=4+1L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T1 Ruby Storm | life=20 mana=1 hand=4+1L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T2 Domain Zoo | life=20 mana=0 hand=6+2L gy=0
+  Hand: ['Territorial Kavu', 'Stubborn Denial', 'Scion of Draco', 'Lightning Bolt', 'Territorial Kavu', 'Stubborn Denial']
+  Opp board: [] (life=20)
+  EV scores:
+     +32.0  play_land: Flooded Strand <--
+     +32.0  play_land: Flooded Strand
+  >>> PLAY_LAND: Flooded Strand
+  [MAIN1]
+
+T2 Domain Zoo | life=17 mana=1 hand=6+1L gy=1
+  Hand: ['Territorial Kavu', 'Stubborn Denial', 'Scion of Draco', 'Lightning Bolt', 'Territorial Kavu', 'Stubborn Denial']
+  Opp board: [] (life=20)
+  EV scores:
+      +0.1  cast_spell: Lightning Bolt <--  [h=+0.1 la=+0.1]
+  >>> CAST_SPELL: Lightning Bolt
+  [MAIN1]
+
+T2 Domain Zoo | life=17 mana=0 hand=5+1L gy=2
+  Hand: ['Territorial Kavu', 'Stubborn Denial', 'Scion of Draco', 'Territorial Kavu', 'Stubborn Denial']
+  Opp board: [] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T2 Domain Zoo | life=17 mana=0 hand=5+1L gy=2
+  Hand: ['Territorial Kavu', 'Stubborn Denial', 'Scion of Draco', 'Territorial Kavu', 'Stubborn Denial']
+  Opp board: [] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T3 Ruby Storm | life=17 mana=1 hand=5+1L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible']
+  Opp board: [] (life=17)
+  EV scores:
+      +7.0  play_land: Thundering Falls <--
+  >>> PLAY_LAND: Thundering Falls
+  [MAIN1]
+
+T3 Ruby Storm | life=17 mana=1 hand=5+0L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible']
+  Opp board: [] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T3 Ruby Storm | life=17 mana=1 hand=5+0L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible']
+  Opp board: [] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T4 Domain Zoo | life=17 mana=1 hand=6+1L gy=2
+  Hand: ['Territorial Kavu', 'Stubborn Denial', 'Scion of Draco', 'Territorial Kavu', 'Stubborn Denial', 'Leyline of the Guildpact']
+  Opp board: [] (life=17)
+  EV scores:
+     +22.0  play_land: Flooded Strand <--
+  >>> PLAY_LAND: Flooded Strand
+  [MAIN1]
+
+T4 Domain Zoo | life=14 mana=2 hand=6+0L gy=3
+  Hand: ['Territorial Kavu', 'Stubborn Denial', 'Scion of Draco', 'Territorial Kavu', 'Stubborn Denial', 'Leyline of the Guildpact']
+  Opp board: [] (life=17)
+  EV scores:
+      -0.1  cast_spell: Territorial Kavu <--  [h=-0.1 la=-0.1 rmv=3%]
+      -0.1  cast_spell: Territorial Kavu  [h=-0.1 la=-0.1 rmv=3%]
+  >>> CAST_SPELL: Territorial Kavu
+  [MAIN1]
+
+T4 Domain Zoo | life=14 mana=0 hand=5+0L gy=3
+  Hand: ['Stubborn Denial', 'Scion of Draco', 'Territorial Kavu', 'Stubborn Denial', 'Leyline of the Guildpact']
+  Board: ['Territorial Kavu (4/4)']
+  Opp board: [] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T4 Domain Zoo | life=14 mana=0 hand=5+0L gy=3
+  Hand: ['Stubborn Denial', 'Scion of Draco', 'Territorial Kavu', 'Stubborn Denial', 'Leyline of the Guildpact']
+  Board: ['Territorial Kavu (4/4)']
+  Opp board: [] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T5 Ruby Storm | life=17 mana=2 hand=5+1L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible']
+  Opp board: ['Territorial Kavu (4/4)'] (life=14)
+  EV scores:
+     +15.0  play_land: Sunbaked Canyon <--
+     +11.8  cast_spell: Ruby Medallion  [h=+11.8 la=+11.8]
+      -1.2  cast_spell: Reckless Impulse  [h=-1.2 la=-1.2]
+      -1.2  cast_spell: Reckless Impulse  [h=-1.2 la=-1.2]
+    -999.0  cast_spell: Manamorphose  [h=-999.0 la=-999.0]
+  >>> PLAY_LAND: Sunbaked Canyon
+  [MAIN1]
+
+T5 Ruby Storm | life=17 mana=3 hand=5+0L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible']
+  Opp board: ['Territorial Kavu (4/4)'] (life=14)
+  EV scores:
+     +17.7  cast_spell: Ruby Medallion <--  [h=+17.7 la=+17.7]
+      -1.1  cast_spell: Reckless Impulse  [h=-1.1 la=-1.1]
+      -1.1  cast_spell: Reckless Impulse  [h=-1.1 la=-1.1]
+      -2.2  cast_spell: Glimpse the Impossible  [h=-2.2 la=-2.2]
+    -1000.0  cast_spell: Manamorphose  [h=-1000.0 la=-1000.0]
+  >>> CAST_SPELL: Reckless Impulse
+  [MAIN1]
+
+T5 Ruby Storm | life=17 mana=1 hand=6+0L gy=1
+  Hand: ['Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames']
+  Opp board: ['Territorial Kavu (4/4)'] (life=14)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T5 Ruby Storm | life=17 mana=1 hand=6+0L gy=1
+  Hand: ['Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames']
+  Opp board: ['Territorial Kavu (4/4)'] (life=14)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T6 Domain Zoo | life=14 mana=2 hand=5+1L gy=3
+  Hand: ['Stubborn Denial', 'Scion of Draco', 'Territorial Kavu', 'Stubborn Denial', 'Leyline of the Guildpact']
+  Board: ['Territorial Kavu (4/4)']
+  Opp board: [] (life=17)
+  EV scores:
+     +18.0  play_land: Arid Mesa <--
+      -0.1  cast_spell: Territorial Kavu  [h=-0.1 la=-0.1 rmv=4%]
+  >>> PLAY_LAND: Arid Mesa
+  [MAIN1]
+
+T6 Domain Zoo | life=13 mana=2 hand=5+0L gy=4
+  Hand: ['Stubborn Denial', 'Scion of Draco', 'Territorial Kavu', 'Stubborn Denial', 'Leyline of the Guildpact']
+  Board: ['Territorial Kavu (4/4)']
+  Opp board: [] (life=17)
+  EV scores:
+      +4.8  cast_spell: Scion of Draco <--  [h=+4.8 la=+4.8 rmv=3%]
+      +0.0  cast_spell: Territorial Kavu  [h=+0.0 la=+0.0 rmv=4%]
+  >>> CAST_SPELL: Scion of Draco
+  [MAIN1]
+
+T6 Domain Zoo | life=13 mana=0 hand=4+0L gy=4
+  Hand: ['Stubborn Denial', 'Territorial Kavu', 'Stubborn Denial', 'Leyline of the Guildpact']
+  Board: ['Territorial Kavu (4/4)', 'Scion of Draco (4/4)']
+  Opp board: [] (life=17)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Territorial Kavu']
+  [MAIN2]
+
+T6 Domain Zoo | life=13 mana=0 hand=4+0L gy=4
+  Hand: ['Stubborn Denial', 'Territorial Kavu', 'Stubborn Denial', 'Leyline of the Guildpact']
+  Board: ['Territorial Kavu (4/4)', 'Scion of Draco (4/4)']
+  Opp board: [] (life=13)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T7 Ruby Storm | life=13 mana=3 hand=7+0L gy=1
+  Hand: ['Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge']
+  Opp board: ['Territorial Kavu (4/4)', 'Scion of Draco (4/4)'] (life=13)
+  EV scores:
+      +7.5  cast_spell: Ruby Medallion <--  [h=+7.5 la=+7.5]
+      -1.5  cast_spell: Reckless Impulse  [h=-1.5 la=-1.5]
+      -2.7  cast_spell: Glimpse the Impossible  [h=-2.7 la=-2.7]
+      -2.7  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-2.7 la=-2.7]
+    -1000.0  cast_spell: Manamorphose  [h=-1000.0 la=-1000.0]
+    -1000.1  cast_spell: Desperate Ritual  [h=-1000.1 la=-1000.1]
+  >>> CAST_SPELL: Reckless Impulse
+  [MAIN1]
+
+T7 Ruby Storm | life=13 mana=1 hand=7+1L gy=2
+  Hand: ['Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Opp board: ['Territorial Kavu (4/4)', 'Scion of Draco (4/4)'] (life=13)
+  EV scores:
+     +18.0  play_land: Scalding Tarn <--
+  >>> PLAY_LAND: Scalding Tarn
+  [MAIN1]
+
+T7 Ruby Storm | life=10 mana=2 hand=7+0L gy=3
+  Hand: ['Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Opp board: ['Territorial Kavu (4/4)', 'Scion of Draco (4/4)'] (life=13)
+  EV scores:
+      +3.7  cast_spell: Ruby Medallion <--  [h=+3.7 la=+3.7]
+      +0.1  cast_spell: Desperate Ritual  [h=+0.1 la=+0.1]
+      +0.0  cast_spell: Manamorphose
+      -1.5  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy  [h=-1.5 la=-1.5]
+  >>> CAST_SPELL: Ruby Medallion
+  [MAIN1]
+
+T7 Ruby Storm | life=10 mana=0 hand=6+0L gy=3
+  Hand: ['Manamorphose', 'Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Territorial Kavu (4/4)', 'Scion of Draco (4/4)'] (life=13)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T7 Ruby Storm | life=10 mana=0 hand=6+0L gy=3
+  Hand: ['Manamorphose', 'Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Territorial Kavu (4/4)', 'Scion of Draco (4/4)'] (life=13)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T8 Domain Zoo | life=13 mana=3 hand=5+0L gy=4
+  Hand: ['Stubborn Denial', 'Territorial Kavu', 'Stubborn Denial', 'Leyline of the Guildpact', 'Ragavan, Nimble Pilferer']
+  Board: ['Territorial Kavu (4/4)', 'Scion of Draco (4/4)']
+  Opp board: [] (life=10)
+  EV scores:
+     +10.2  cast_spell: Ragavan, Nimble Pilferer <--  [h=+10.2 la=+10.2]
+      -0.0  cast_spell: Territorial Kavu  [h=-0.0 la=-0.0]
+      -0.4  cast_spell: Leyline of the Guildpact  [h=-0.4 la=-0.4]
+  >>> CAST_SPELL: Ragavan, Nimble Pilferer
+  [MAIN1]
+
+T8 Domain Zoo | life=13 mana=2 hand=4+0L gy=4
+  Hand: ['Stubborn Denial', 'Territorial Kavu', 'Stubborn Denial', 'Leyline of the Guildpact']
+  Board: ['Territorial Kavu (4/4)', 'Scion of Draco (4/4)', 'Ragavan, Nimble Pilferer (2/1)']
+  Opp board: [] (life=10)
+  EV scores:
+      +0.0  cast_spell: Territorial Kavu <--  [h=+0.0 la=+0.0]
+  >>> CAST_SPELL: Territorial Kavu
+  [MAIN1]
+
+T8 Domain Zoo | life=13 mana=0 hand=3+0L gy=4
+  Hand: ['Stubborn Denial', 'Stubborn Denial', 'Leyline of the Guildpact']
+  Board: ['Territorial Kavu (4/4)', 'Scion of Draco (4/4)', 'Ragavan, Nimble Pilferer (2/1)', 'Territorial Kavu (4/4)']
+  Opp board: [] (life=10)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Territorial Kavu', 'Scion of Draco']
+  [MAIN2]
+
+T8 Domain Zoo | life=13 mana=0 hand=3+0L gy=4
+  Hand: ['Stubborn Denial', 'Stubborn Denial', 'Leyline of the Guildpact']
+  Board: ['Territorial Kavu (4/4)', 'Scion of Draco (4/4)', 'Ragavan, Nimble Pilferer (2/1)', 'Territorial Kavu (4/4)']
+  Opp board: [] (life=2)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T9 Ruby Storm | life=2 mana=4 hand=7+0L gy=3
+  Hand: ['Manamorphose', 'Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', "Wrenn's Resolve"]
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Territorial Kavu (4/4)', 'Scion of Draco (4/4)', 'Ragavan, Nimble Pilferer (2/1)', 'Territorial Kavu (4/4)'] (life=13)
+  EV scores:
+      +0.0  cast_spell: Manamorphose <--
+      -0.1  cast_spell: Desperate Ritual  [h=-0.1 la=-0.1]
+      -0.4  cast_spell: Wrenn's Resolve  [h=-0.4 la=-0.4]
+      -0.5  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy  [h=-0.5 la=-0.5]
+      -1.7  cast_spell: Glimpse the Impossible  [h=-1.7 la=-1.7]
+      -1.8  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-1.8 la=-1.8]
+    ... +1 more
+  >>> CAST_SPELL: Manamorphose
+  [MAIN1]
+
+T9 Ruby Storm | life=2 mana=5 hand=6+1L gy=4
+  Hand: ['Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', "Wrenn's Resolve"]
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Territorial Kavu (4/4)', 'Scion of Draco (4/4)', 'Ragavan, Nimble Pilferer (2/1)', 'Territorial Kavu (4/4)'] (life=13)
+  EV scores:
+     +15.0  play_land: Mountain <--
+      -0.1  cast_spell: Desperate Ritual  [h=-0.1 la=-0.1]
+      -0.2  cast_spell: Wrenn's Resolve  [h=-0.2 la=-0.2]
+      -0.3  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy  [h=-0.3 la=-0.3]
+      -0.5  cast_spell: Glimpse the Impossible  [h=-0.5 la=-0.5]
+      -0.6  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.6 la=-0.6]
+    ... +1 more
+  >>> PLAY_LAND: Mountain
+  [MAIN1]
+
+T9 Ruby Storm | life=2 mana=6 hand=6+0L gy=4
+  Hand: ['Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', "Wrenn's Resolve"]
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Territorial Kavu (4/4)', 'Scion of Draco (4/4)', 'Ragavan, Nimble Pilferer (2/1)', 'Territorial Kavu (4/4)'] (life=13)
+  EV scores:
+      -0.1  cast_spell: Desperate Ritual <--  [h=-0.1 la=-0.1]
+      -0.2  cast_spell: Wrenn's Resolve  [h=-0.2 la=-0.2]
+      -0.2  cast_spell: Glimpse the Impossible  [h=-0.2 la=-0.2]
+      -0.3  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy  [h=-0.3 la=-0.3]
+      -0.4  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.4 la=-0.4]
+      -0.5  cast_spell: Past in Flames  [h=-0.5 la=-0.5]
+  >>> CAST_SPELL: Desperate Ritual
+  [MAIN1]
+
+T9 Ruby Storm | life=2 mana=8 hand=5+0L gy=5
+  Hand: ['Glimpse the Impossible', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', "Wrenn's Resolve"]
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Territorial Kavu (4/4)', 'Scion of Draco (4/4)', 'Ragavan, Nimble Pilferer (2/1)', 'Territorial Kavu (4/4)'] (life=13)
+  EV scores:
+      -0.2  cast_spell: Wrenn's Resolve <--  [h=-0.2 la=-0.2]
+      -0.2  cast_spell: Glimpse the Impossible  [h=-0.2 la=-0.2]
+      -0.3  cast_spell: Past in Flames  [h=-0.3 la=-0.3]
+      -0.3  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy  [h=-0.3 la=-0.3]
+      -0.4  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.4 la=-0.4]
+  >>> CAST_SPELL: Wrenn's Resolve
+  [MAIN1]
+
+T9 Ruby Storm | life=2 mana=7 hand=6+0L gy=6
+  Hand: ['Glimpse the Impossible', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Desperate Ritual', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Territorial Kavu (4/4)', 'Scion of Draco (4/4)', 'Ragavan, Nimble Pilferer (2/1)', 'Territorial Kavu (4/4)'] (life=13)
+  EV scores:
+      -0.1  cast_spell: Desperate Ritual <--  [h=-0.1 la=-0.1]
+      -0.2  cast_spell: Glimpse the Impossible  [h=-0.2 la=-0.2]
+      -0.3  cast_spell: Past in Flames  [h=-0.3 la=-0.3]
+      -0.3  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy  [h=-0.3 la=-0.3]
+      -0.3  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy  [h=-0.3 la=-0.3]
+      -0.4  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.4 la=-0.4]
+  >>> CAST_SPELL: Desperate Ritual
+  [MAIN1]
+
+T9 Ruby Storm | life=2 mana=9 hand=5+0L gy=7
+  Hand: ['Glimpse the Impossible', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Territorial Kavu (4/4)', 'Scion of Draco (4/4)', 'Ragavan, Nimble Pilferer (2/1)', 'Territorial Kavu (4/4)'] (life=13)
+  EV scores:
+      -0.2  cast_spell: Glimpse the Impossible <--  [h=-0.2 la=-0.2]
+      -0.3  cast_spell: Past in Flames  [h=-0.3 la=-0.3]
+      -0.3  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy  [h=-0.3 la=-0.3]
+      -0.3  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy  [h=-0.3 la=-0.3]
+      -0.4  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.4 la=-0.4]
+  >>> CAST_SPELL: Glimpse the Impossible
+  [MAIN1]
+
+T9 Ruby Storm | life=2 mana=7 hand=6+1L gy=8
+  Hand: ['Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Ruby Medallion', 'Ruby Medallion']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Territorial Kavu (4/4)', 'Scion of Draco (4/4)', 'Ragavan, Nimble Pilferer (2/1)', 'Territorial Kavu (4/4)'] (life=13)
+  EV scores:
+      +7.3  cast_spell: Ruby Medallion <--  [h=+7.3 la=+7.3]
+      +7.3  cast_spell: Ruby Medallion  [h=+7.3 la=+7.3]
+      -0.3  cast_spell: Past in Flames  [h=-0.3 la=-0.3]
+      -0.3  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy  [h=-0.3 la=-0.3]
+      -0.3  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy  [h=-0.3 la=-0.3]
+      -0.4  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.4 la=-0.4]
+  >>> CAST_SPELL: Ruby Medallion
+  [MAIN1]
+
+T9 Ruby Storm | life=2 mana=5 hand=5+1L gy=8
+  Hand: ['Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Ruby Medallion']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Territorial Kavu (4/4)', 'Scion of Draco (4/4)', 'Ragavan, Nimble Pilferer (2/1)', 'Territorial Kavu (4/4)'] (life=13)
+  EV scores:
+      +7.3  cast_spell: Ruby Medallion <--  [h=+7.3 la=+7.3]
+      -0.3  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy  [h=-0.3 la=-0.3]
+      -0.3  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy  [h=-0.3 la=-0.3]
+      -0.6  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.6 la=-0.6]
+      -0.7  cast_spell: Past in Flames  [h=-0.7 la=-0.7]
+  >>> CAST_SPELL: Ruby Medallion
+  [MAIN1]
+
+T9 Ruby Storm | life=2 mana=3 hand=4+1L gy=8
+  Hand: ['Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Territorial Kavu (4/4)', 'Scion of Draco (4/4)', 'Ragavan, Nimble Pilferer (2/1)', 'Territorial Kavu (4/4)'] (life=13)
+  EV scores:
+      -0.5  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy <--  [h=-0.5 la=-0.5]
+      -0.5  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy  [h=-0.5 la=-0.5]
+      -0.5  cast_spell: Past in Flames  [h=-0.5 la=-0.5]
+      -0.6  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.6 la=-0.6]
+  >>> CAST_SPELL: Ral, Monsoon Mage // Ral, Leyline Prodigy
+  [MAIN1]
+
+T9 Ruby Storm | life=2 mana=1 hand=3+1L gy=8
+  Hand: ['Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Territorial Kavu (4/4)', 'Scion of Draco (4/4)', 'Ragavan, Nimble Pilferer (2/1)', 'Territorial Kavu (4/4)'] (life=13)
+  EV scores:
+      -0.1  cast_spell: Past in Flames <--  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Past in Flames
+  [MAIN1]
+
+T9 Ruby Storm | life=2 mana=0 hand=2+1L gy=9
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Territorial Kavu (4/4)', 'Scion of Draco (4/4)', 'Ragavan, Nimble Pilferer (2/1)', 'Territorial Kavu (4/4)'] (life=13)
+  >>> CAST_SPELL: Manamorphose
+  [MAIN1]
+
+T9 Ruby Storm | life=2 mana=2 hand=3+1L gy=8
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', "Wrenn's Resolve"]
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Territorial Kavu (4/4)', 'Scion of Draco (4/4)', 'Ragavan, Nimble Pilferer (2/1)', 'Territorial Kavu (4/4)'] (life=13)
+  EV scores:
+      -0.2  cast_spell: Wrenn's Resolve <--  [h=-0.2 la=-0.2]
+      -0.3  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.3 la=-0.3]
+  >>> CAST_SPELL: Desperate Ritual
+  [MAIN1]
+
+T9 Ruby Storm | life=2 mana=4 hand=3+1L gy=7
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', "Wrenn's Resolve"]
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Territorial Kavu (4/4)', 'Scion of Draco (4/4)', 'Ragavan, Nimble Pilferer (2/1)', 'Territorial Kavu (4/4)'] (life=13)
+  EV scores:
+      -0.2  cast_spell: Wrenn's Resolve <--  [h=-0.2 la=-0.2]
+      -0.4  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.4 la=-0.4]
+  >>> CAST_SPELL: Desperate Ritual
+  [MAIN1]
+
+T9 Ruby Storm | life=2 mana=6 hand=3+1L gy=6
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', "Wrenn's Resolve"]
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Territorial Kavu (4/4)', 'Scion of Draco (4/4)', 'Ragavan, Nimble Pilferer (2/1)', 'Territorial Kavu (4/4)'] (life=13)
+  EV scores:
+      -0.2  cast_spell: Wrenn's Resolve <--  [h=-0.2 la=-0.2]
+      -0.4  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.4 la=-0.4]
+  >>> CAST_SPELL: Wrenn's Resolve
+  [MAIN1]
+
+T9 Ruby Storm | life=2 mana=5 hand=3+2L gy=7
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Reckless Impulse']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Territorial Kavu (4/4)', 'Scion of Draco (4/4)', 'Ragavan, Nimble Pilferer (2/1)', 'Territorial Kavu (4/4)'] (life=13)
+  EV scores:
+      -0.2  cast_spell: Reckless Impulse <--  [h=-0.2 la=-0.2]
+      -0.5  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.5 la=-0.5]
+  >>> CAST_SPELL: Reckless Impulse
+  [MAIN1]
+
+T9 Ruby Storm | life=2 mana=4 hand=3+3L gy=8
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Wish']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Territorial Kavu (4/4)', 'Scion of Draco (4/4)', 'Ragavan, Nimble Pilferer (2/1)', 'Territorial Kavu (4/4)'] (life=13)
+  EV scores:
+    +104.8  cast_spell: Wish <--  [h=+104.8 la=+104.8]
+      -0.7  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.7 la=-0.7]
+  >>> CAST_SPELL: Wish
+  [MAIN1]
+
+T9 Ruby Storm | life=2 mana=3 hand=3+3L gy=9
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Territorial Kavu (4/4)', 'Scion of Draco (4/4)', 'Ragavan, Nimble Pilferer (2/1)', 'Territorial Kavu (4/4)'] (life=13)
+  EV scores:
+    +117.2  cast_spell: Grapeshot <--  [h=+117.2 la=+117.2]
+      +5.0  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=+5.0 la=+5.0]
+  >>> CAST_SPELL: Grapeshot

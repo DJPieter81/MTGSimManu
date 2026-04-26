@@ -1,0 +1,476 @@
+Loaded 21759 cards (0 errors)
+=== Ruby Storm vs Eldrazi Tron (seed 60520) ===
+Result: Eldrazi Tron wins T6 via damage
+Life: P1=-8 P2=20
+
+  [MAIN1]
+
+T1 Ruby Storm | life=20 mana=0 hand=4+2L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion']
+  Opp board: [] (life=20)
+  EV scores:
+     +42.0  play_land: Gemstone Caverns <--
+     +24.0  play_land: Thundering Falls
+  >>> PLAY_LAND: Gemstone Caverns
+  [MAIN1]
+
+T1 Ruby Storm | life=20 mana=1 hand=4+1L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T1 Ruby Storm | life=20 mana=1 hand=4+1L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T2 Eldrazi Tron | life=20 mana=0 hand=6+2L gy=0
+  Hand: ['Walking Ballista', 'Expedition Map', 'Eldrazi Mimic', 'Chalice of the Void', 'Walking Ballista', 'Expedition Map']
+  Opp board: [] (life=20)
+  EV scores:
+     +46.5  play_land: Urza's Power Plant <--
+     +46.5  play_land: Urza's Power Plant
+  >>> PLAY_LAND: Urza's Power Plant
+  [MAIN1]
+
+T2 Eldrazi Tron | life=20 mana=1 hand=6+1L gy=0
+  Hand: ['Walking Ballista', 'Expedition Map', 'Eldrazi Mimic', 'Chalice of the Void', 'Walking Ballista', 'Expedition Map']
+  Opp board: [] (life=20)
+  EV scores:
+      -0.0  cast_spell: Expedition Map <--  [h=-0.0 la=-0.0]
+      -0.0  cast_spell: Expedition Map  [h=-0.0 la=-0.0]
+  >>> CAST_SPELL: Expedition Map
+  [MAIN1]
+
+T2 Eldrazi Tron | life=20 mana=0 hand=5+1L gy=0
+  Hand: ['Walking Ballista', 'Eldrazi Mimic', 'Chalice of the Void', 'Walking Ballista', 'Expedition Map']
+  Permanents: ['Expedition Map']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T2 Eldrazi Tron | life=20 mana=0 hand=5+1L gy=0
+  Hand: ['Walking Ballista', 'Eldrazi Mimic', 'Chalice of the Void', 'Walking Ballista', 'Expedition Map']
+  Permanents: ['Expedition Map']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T3 Ruby Storm | life=20 mana=1 hand=5+1L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible']
+  Opp board: [] (life=20)
+  EV scores:
+      +7.0  play_land: Thundering Falls <--
+  >>> PLAY_LAND: Thundering Falls
+  [MAIN1]
+
+T3 Ruby Storm | life=20 mana=1 hand=5+0L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T3 Ruby Storm | life=20 mana=1 hand=5+0L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T4 Eldrazi Tron | life=20 mana=1 hand=6+1L gy=0
+  Hand: ['Walking Ballista', 'Eldrazi Mimic', 'Chalice of the Void', 'Walking Ballista', 'Expedition Map', 'Thought-Knot Seer']
+  Permanents: ['Expedition Map']
+  Opp board: [] (life=20)
+  EV scores:
+     +15.0  play_land: Urza's Power Plant <--
+      -0.0  cast_spell: Expedition Map  [h=-0.0 la=-0.0]
+  >>> PLAY_LAND: Urza's Power Plant
+  [MAIN1]
+
+T4 Eldrazi Tron | life=20 mana=2 hand=6+0L gy=0
+  Hand: ['Walking Ballista', 'Eldrazi Mimic', 'Chalice of the Void', 'Walking Ballista', 'Expedition Map', 'Thought-Knot Seer']
+  Permanents: ['Expedition Map']
+  Opp board: [] (life=20)
+  EV scores:
+      +1.9  cast_spell: Eldrazi Mimic <--  [h=+1.9 la=+1.9 rmv=3%]
+      -0.1  cast_spell: Walking Ballista  [h=-0.1 la=-0.1 rmv=1%]
+      -0.1  cast_spell: Chalice of the Void  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Walking Ballista  [h=-0.1 la=-0.1 rmv=1%]
+      -0.1  cast_spell: Expedition Map  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Eldrazi Mimic
+  [MAIN1]
+
+T4 Eldrazi Tron | life=20 mana=0 hand=5+0L gy=0
+  Hand: ['Walking Ballista', 'Chalice of the Void', 'Walking Ballista', 'Expedition Map', 'Thought-Knot Seer']
+  Board: ['Eldrazi Mimic (2/1)']
+  Permanents: ['Expedition Map']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T4 Eldrazi Tron | life=20 mana=0 hand=5+1L gy=1
+  Hand: ['Walking Ballista', 'Chalice of the Void', 'Walking Ballista', 'Expedition Map', 'Thought-Knot Seer']
+  Board: ['Eldrazi Mimic (2/1)']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T5 Ruby Storm | life=20 mana=2 hand=5+1L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible']
+  Opp board: ['Eldrazi Mimic (2/1)'] (life=20)
+  EV scores:
+     +15.0  play_land: Sunbaked Canyon <--
+     +13.2  cast_spell: Ruby Medallion  [h=+13.2 la=+13.2]
+      -1.1  cast_spell: Reckless Impulse  [h=-1.1 la=-1.1]
+      -1.1  cast_spell: Reckless Impulse  [h=-1.1 la=-1.1]
+    -999.0  cast_spell: Manamorphose  [h=-999.0 la=-999.0]
+  >>> PLAY_LAND: Sunbaked Canyon
+  [MAIN1]
+
+T5 Ruby Storm | life=20 mana=3 hand=5+0L gy=0
+  Hand: ['Reckless Impulse', 'Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible']
+  Opp board: ['Eldrazi Mimic (2/1)'] (life=20)
+  EV scores:
+     +19.9  cast_spell: Ruby Medallion <--  [h=+19.9 la=+19.9]
+      -1.0  cast_spell: Reckless Impulse  [h=-1.0 la=-1.0]
+      -1.0  cast_spell: Reckless Impulse  [h=-1.0 la=-1.0]
+      -2.1  cast_spell: Glimpse the Impossible  [h=-2.1 la=-2.1]
+    -1000.0  cast_spell: Manamorphose  [h=-1000.0 la=-1000.0]
+  >>> CAST_SPELL: Reckless Impulse
+  [MAIN1]
+
+T5 Ruby Storm | life=20 mana=1 hand=6+0L gy=1
+  Hand: ['Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames']
+  Opp board: ['Eldrazi Mimic (2/1)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T5 Ruby Storm | life=20 mana=1 hand=6+0L gy=1
+  Hand: ['Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames']
+  Opp board: ['Eldrazi Mimic (2/1)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T6 Eldrazi Tron | life=20 mana=2 hand=6+1L gy=1
+  Hand: ['Walking Ballista', 'Chalice of the Void', 'Walking Ballista', 'Expedition Map', 'Thought-Knot Seer', 'All Is Dust']
+  Board: ['Eldrazi Mimic (2/1)']
+  Opp board: [] (life=20)
+  EV scores:
+     +51.9  play_land: Urza's Mine <--
+      -0.1  cast_spell: Walking Ballista  [h=-0.1 la=-0.1 rmv=1%]
+      -0.1  cast_spell: Chalice of the Void  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Walking Ballista  [h=-0.1 la=-0.1 rmv=1%]
+      -0.1  cast_spell: Expedition Map  [h=-0.1 la=-0.1]
+  >>> PLAY_LAND: Urza's Mine
+  [MAIN1]
+
+T6 Eldrazi Tron | life=20 mana=3 hand=6+0L gy=1
+  Hand: ['Walking Ballista', 'Chalice of the Void', 'Walking Ballista', 'Expedition Map', 'Thought-Knot Seer', 'All Is Dust']
+  Board: ['Eldrazi Mimic (2/1)']
+  Opp board: [] (life=20)
+  EV scores:
+      -0.1  cast_spell: Expedition Map <--  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Walking Ballista  [h=-0.1 la=-0.1 rmv=1%]
+      -0.1  cast_spell: Chalice of the Void  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Walking Ballista  [h=-0.1 la=-0.1 rmv=1%]
+  >>> CAST_SPELL: Expedition Map
+  [MAIN1]
+
+T6 Eldrazi Tron | life=20 mana=2 hand=5+0L gy=1
+  Hand: ['Walking Ballista', 'Chalice of the Void', 'Walking Ballista', 'Thought-Knot Seer', 'All Is Dust']
+  Board: ['Eldrazi Mimic (2/1)']
+  Permanents: ['Expedition Map']
+  Opp board: [] (life=20)
+  EV scores:
+      -0.1  cast_spell: Walking Ballista <--  [h=-0.1 la=-0.1 rmv=1%]
+      -0.1  cast_spell: Chalice of the Void  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Walking Ballista  [h=-0.1 la=-0.1 rmv=1%]
+  >>> CAST_SPELL: Walking Ballista
+  [MAIN1]
+
+T6 Eldrazi Tron | life=20 mana=0 hand=4+0L gy=2
+  Hand: ['Chalice of the Void', 'Walking Ballista', 'Thought-Knot Seer', 'All Is Dust']
+  Board: ['Eldrazi Mimic (2/1)']
+  Permanents: ['Expedition Map']
+  Opp board: [] (life=19)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Eldrazi Mimic']
+  [MAIN2]
+
+T6 Eldrazi Tron | life=20 mana=0 hand=4+1L gy=3
+  Hand: ['Chalice of the Void', 'Walking Ballista', 'Thought-Knot Seer', 'All Is Dust']
+  Board: ['Eldrazi Mimic (2/1)']
+  Opp board: [] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T7 Ruby Storm | life=17 mana=3 hand=7+0L gy=1
+  Hand: ['Reckless Impulse', 'Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge']
+  Opp board: ['Eldrazi Mimic (2/1)'] (life=20)
+  EV scores:
+     +19.9  cast_spell: Ruby Medallion <--  [h=+19.9 la=+19.9]
+      -1.3  cast_spell: Reckless Impulse  [h=-1.3 la=-1.3]
+      -2.4  cast_spell: Glimpse the Impossible  [h=-2.4 la=-2.4]
+      -2.4  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-2.4 la=-2.4]
+    -1000.0  cast_spell: Manamorphose  [h=-1000.0 la=-1000.0]
+    -1000.1  cast_spell: Desperate Ritual  [h=-1000.1 la=-1000.1]
+  >>> CAST_SPELL: Reckless Impulse
+  [MAIN1]
+
+T7 Ruby Storm | life=17 mana=1 hand=7+1L gy=2
+  Hand: ['Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Opp board: ['Eldrazi Mimic (2/1)'] (life=20)
+  EV scores:
+     +18.0  play_land: Scalding Tarn <--
+  >>> PLAY_LAND: Scalding Tarn
+  [MAIN1]
+
+T7 Ruby Storm | life=14 mana=2 hand=7+0L gy=3
+  Hand: ['Manamorphose', 'Ruby Medallion', 'Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Opp board: ['Eldrazi Mimic (2/1)'] (life=20)
+  EV scores:
+     +10.4  cast_spell: Ruby Medallion <--  [h=+10.4 la=+10.4]
+      +2.8  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy  [h=+2.8 la=+2.8]
+      -0.7  cast_spell: Desperate Ritual  [h=-0.7 la=-0.7]
+      -0.8  cast_spell: Manamorphose  [h=-0.8 la=-0.8]
+  >>> CAST_SPELL: Ruby Medallion
+  [MAIN1]
+
+T7 Ruby Storm | life=14 mana=0 hand=6+0L gy=3
+  Hand: ['Manamorphose', 'Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Eldrazi Mimic (2/1)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T7 Ruby Storm | life=14 mana=0 hand=6+0L gy=3
+  Hand: ['Manamorphose', 'Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Eldrazi Mimic (2/1)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T8 Eldrazi Tron | life=20 mana=3 hand=5+1L gy=3
+  Hand: ['Chalice of the Void', 'Walking Ballista', 'Thought-Knot Seer', 'All Is Dust', 'Warping Wail']
+  Board: ['Eldrazi Mimic (2/1)']
+  Opp board: [] (life=14)
+  EV scores:
+     +55.0  play_land: Urza's Tower <--
+      -0.2  cast_spell: Chalice of the Void  [h=-0.2 la=-0.2]
+      -0.2  cast_spell: Walking Ballista  [h=-0.2 la=-0.2]
+  >>> PLAY_LAND: Urza's Tower
+  [MAIN1]
+
+T8 Eldrazi Tron | life=20 mana=9 hand=5+0L gy=3
+  Hand: ['Chalice of the Void', 'Walking Ballista', 'Thought-Knot Seer', 'All Is Dust', 'Warping Wail']
+  Board: ['Eldrazi Mimic (2/1)']
+  Opp board: [] (life=14)
+  EV scores:
+      +8.0  cast_spell: Thought-Knot Seer <--  [h=+8.0 la=+8.0]
+      -0.2  cast_spell: Chalice of the Void  [h=-0.2 la=-0.2]
+      -0.2  cast_spell: Walking Ballista  [h=-0.2 la=-0.2]
+  >>> CAST_SPELL: Thought-Knot Seer
+  [MAIN1]
+
+T8 Eldrazi Tron | life=20 mana=5 hand=5+0L gy=3
+  Hand: ['Chalice of the Void', 'Walking Ballista', 'All Is Dust', 'Warping Wail', 'Thought-Knot Seer']
+  Board: ['Eldrazi Mimic (2/1)', 'Thought-Knot Seer (4/4)']
+  Opp board: [] (life=14)
+  EV scores:
+      -0.2  cast_spell: Chalice of the Void <--  [h=-0.2 la=-0.2]
+      -0.2  cast_spell: Walking Ballista  [h=-0.2 la=-0.2]
+  >>> CAST_SPELL: Chalice of the Void
+  [MAIN1]
+
+T8 Eldrazi Tron | life=20 mana=0 hand=4+0L gy=3
+  Hand: ['Walking Ballista', 'All Is Dust', 'Warping Wail', 'Thought-Knot Seer']
+  Board: ['Eldrazi Mimic (2/1)', 'Thought-Knot Seer (4/4)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=14)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Eldrazi Mimic']
+  [MAIN2]
+
+T8 Eldrazi Tron | life=20 mana=0 hand=4+0L gy=3
+  Hand: ['Walking Ballista', 'All Is Dust', 'Warping Wail', 'Thought-Knot Seer']
+  Board: ['Eldrazi Mimic (2/1)', 'Thought-Knot Seer (4/4)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=12)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T9 Ruby Storm | life=12 mana=4 hand=6+0L gy=3
+  Hand: ['Manamorphose', 'Glimpse the Impossible', 'Desperate Ritual', 'Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Manamorphose']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Eldrazi Mimic (2/1)', 'Thought-Knot Seer (4/4)'] (life=20)
+  EV scores:
+      +0.7  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy <--  [h=+0.7 la=+0.7]
+      -1.3  cast_spell: Glimpse the Impossible  [h=-1.3 la=-1.3]
+      -1.4  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-1.4 la=-1.4]
+    -1000.0  cast_spell: Manamorphose  [h=-1000.0 la=-1000.0]
+    -1000.0  cast_spell: Manamorphose  [h=-1000.0 la=-1000.0]
+    -1000.1  cast_spell: Desperate Ritual  [h=-1000.1 la=-1000.1]
+  >>> CAST_SPELL: Ral, Monsoon Mage // Ral, Leyline Prodigy
+  [MAIN1]
+
+T9 Ruby Storm | life=12 mana=2 hand=5+0L gy=4
+  Hand: ['Manamorphose', 'Glimpse the Impossible', 'Desperate Ritual', 'Valakut Awakening // Valakut Stoneforge', 'Manamorphose']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Eldrazi Mimic (2/1)', 'Thought-Knot Seer (4/4)'] (life=20)
+  EV scores:
+      +0.0  cast_spell: Manamorphose <--
+      +0.0  cast_spell: Manamorphose
+      -0.0  cast_spell: Desperate Ritual  [h=-0.0 la=-0.0]
+      -0.2  cast_spell: Glimpse the Impossible  [h=-0.2 la=-0.2]
+      -1.2  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-1.2 la=-1.2]
+  >>> CAST_SPELL: Manamorphose
+  [MAIN1]
+
+T9 Ruby Storm | life=12 mana=1 hand=4+0L gy=5
+  Hand: ['Glimpse the Impossible', 'Desperate Ritual', 'Valakut Awakening // Valakut Stoneforge', 'Manamorphose']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Eldrazi Mimic (2/1)', 'Thought-Knot Seer (4/4)'] (life=20)
+  EV scores:
+      +0.0  cast_spell: Manamorphose <--  [h=+0.0 la=+0.0]
+      -0.0  cast_spell: Desperate Ritual  [h=-0.0 la=-0.0]
+  >>> CAST_SPELL: Manamorphose
+  [MAIN1]
+
+T9 Ruby Storm | life=12 mana=0 hand=3+0L gy=6
+  Hand: ['Glimpse the Impossible', 'Desperate Ritual', 'Valakut Awakening // Valakut Stoneforge']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Eldrazi Mimic (2/1)', 'Thought-Knot Seer (4/4)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T9 Ruby Storm | life=12 mana=0 hand=4+0L gy=7
+  Hand: ['Glimpse the Impossible', 'Desperate Ritual', 'Valakut Awakening // Valakut Stoneforge', 'Past in Flames']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Eldrazi Mimic (2/1)', 'Thought-Knot Seer (4/4)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T10 Eldrazi Tron | life=20 mana=9 hand=5+0L gy=3
+  Hand: ['Walking Ballista', 'All Is Dust', 'Warping Wail', 'Thought-Knot Seer', "Kozilek's Command"]
+  Board: ['Eldrazi Mimic (2/1)', 'Thought-Knot Seer (4/4)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=12)
+  EV scores:
+      +0.3  cast_spell: Thought-Knot Seer <--  [h=+0.3 la=+0.3]
+      -0.2  cast_spell: Walking Ballista  [h=-0.2 la=-0.2]
+  >>> CAST_SPELL: Thought-Knot Seer
+  [MAIN1]
+
+T10 Eldrazi Tron | life=20 mana=5 hand=4+1L gy=3
+  Hand: ['Walking Ballista', 'All Is Dust', 'Warping Wail', "Kozilek's Command"]
+  Board: ['Eldrazi Mimic (2/1)', 'Thought-Knot Seer (4/4)', 'Thought-Knot Seer (4/4)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=12)
+  EV scores:
+     +15.0  play_land: Wastes <--
+      -0.2  cast_spell: Walking Ballista  [h=-0.2 la=-0.2]
+  >>> PLAY_LAND: Wastes
+  [MAIN1]
+
+T10 Eldrazi Tron | life=20 mana=6 hand=4+0L gy=3
+  Hand: ['Walking Ballista', 'All Is Dust', 'Warping Wail', "Kozilek's Command"]
+  Board: ['Eldrazi Mimic (2/1)', 'Thought-Knot Seer (4/4)', 'Thought-Knot Seer (4/4)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=12)
+  EV scores:
+      -0.2  cast_spell: Walking Ballista <--  [h=-0.2 la=-0.2]
+  >>> CAST_SPELL: Walking Ballista
+  [MAIN1]
+
+T10 Eldrazi Tron | life=20 mana=0 hand=3+0L gy=4
+  Hand: ['All Is Dust', 'Warping Wail', "Kozilek's Command"]
+  Board: ['Eldrazi Mimic (2/1)', 'Thought-Knot Seer (4/4)', 'Thought-Knot Seer (4/4)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=9)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Eldrazi Mimic', 'Thought-Knot Seer']
+  [MAIN2]
+
+T10 Eldrazi Tron | life=20 mana=0 hand=3+0L gy=4
+  Hand: ['All Is Dust', 'Warping Wail', "Kozilek's Command"]
+  Board: ['Eldrazi Mimic (2/1)', 'Thought-Knot Seer (4/4)', 'Thought-Knot Seer (4/4)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=3)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T11 Ruby Storm | life=3 mana=3 hand=3+1L gy=7
+  Hand: ['Glimpse the Impossible', 'Desperate Ritual', 'Valakut Awakening // Valakut Stoneforge']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Eldrazi Mimic (2/1)', 'Thought-Knot Seer (4/4)', 'Thought-Knot Seer (4/4)'] (life=20)
+  EV scores:
+     +18.0  play_land: Arid Mesa <--
+      -2.2  cast_spell: Glimpse the Impossible  [h=-2.2 la=-2.2]
+      -3.3  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-3.3 la=-3.3]
+      -3.7  cast_spell: Desperate Ritual  [h=-3.7 la=-3.7]
+  >>> PLAY_LAND: Arid Mesa
+  [MAIN1]
+
+T11 Ruby Storm | life=2 mana=4 hand=3+0L gy=8
+  Hand: ['Glimpse the Impossible', 'Desperate Ritual', 'Valakut Awakening // Valakut Stoneforge']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Eldrazi Mimic (2/1)', 'Thought-Knot Seer (4/4)', 'Thought-Knot Seer (4/4)'] (life=20)
+  EV scores:
+      -0.1  cast_spell: Desperate Ritual <--  [h=-0.1 la=-0.1]
+      -2.1  cast_spell: Glimpse the Impossible  [h=-2.1 la=-2.1]
+      -3.2  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-3.2 la=-3.2]
+  >>> CAST_SPELL: Desperate Ritual
+  [MAIN1]
+
+T11 Ruby Storm | life=2 mana=3 hand=2+0L gy=9
+  Hand: ['Glimpse the Impossible', 'Valakut Awakening // Valakut Stoneforge']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Eldrazi Mimic (2/1)', 'Thought-Knot Seer (4/4)', 'Thought-Knot Seer (4/4)'] (life=20)
+  EV scores:
+      -2.1  cast_spell: Glimpse the Impossible <--  [h=-2.1 la=-2.1]
+      -3.1  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-3.1 la=-3.1]
+  >>> CAST_SPELL: Glimpse the Impossible
+  [MAIN1]
+
+T11 Ruby Storm | life=2 mana=1 hand=4+0L gy=10
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Manamorphose', 'Grapeshot']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Eldrazi Mimic (2/1)', 'Thought-Knot Seer (4/4)', 'Thought-Knot Seer (4/4)'] (life=20)
+  EV scores:
+     +16.5  cast_spell: Manamorphose <--  [h=+16.5 la=+16.5]
+      -1.0  cast_spell: Grapeshot  [h=-1.0 la=-1.0]
+  >>> CAST_SPELL: Manamorphose
+  [MAIN1]
+
+T11 Ruby Storm | life=2 mana=0 hand=3+0L gy=11
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Eldrazi Mimic (2/1)', 'Thought-Knot Seer (4/4)', 'Thought-Knot Seer (4/4)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T11 Ruby Storm | life=2 mana=0 hand=3+0L gy=11
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Eldrazi Mimic (2/1)', 'Thought-Knot Seer (4/4)', 'Thought-Knot Seer (4/4)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T12 Eldrazi Tron | life=20 mana=10 hand=3+1L gy=4
+  Hand: ['All Is Dust', 'Warping Wail', "Kozilek's Command"]
+  Board: ['Eldrazi Mimic (2/1)', 'Thought-Knot Seer (4/4)', 'Thought-Knot Seer (4/4)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=2)
+  EV scores:
+     +15.0  play_land: Eldrazi Temple <--
+  >>> PLAY_LAND: Eldrazi Temple
+  [MAIN1]
+
+T12 Eldrazi Tron | life=20 mana=11 hand=3+0L gy=4
+  Hand: ['All Is Dust', 'Warping Wail', "Kozilek's Command"]
+  Board: ['Eldrazi Mimic (2/1)', 'Thought-Knot Seer (4/4)', 'Thought-Knot Seer (4/4)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=2)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Eldrazi Mimic', 'Thought-Knot Seer', 'Thought-Knot Seer']

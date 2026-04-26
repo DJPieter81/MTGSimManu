@@ -1,0 +1,346 @@
+Loaded 21759 cards (0 errors)
+=== Ruby Storm vs Eldrazi Tron (seed 60530) ===
+Result: Eldrazi Tron wins T7 via damage
+Life: P1=-14 P2=20
+
+  [MAIN1]
+
+T1 Eldrazi Tron | life=20 mana=0 hand=5+2L gy=0
+  Hand: ['Reality Smasher', 'Endbringer', 'Reality Smasher', 'Chalice of the Void', 'Expedition Map']
+  Opp board: [] (life=20)
+  EV scores:
+     +15.0  play_land: Ghost Quarter <--
+     +15.0  play_land: Cavern of Souls
+  >>> PLAY_LAND: Ghost Quarter
+  [MAIN1]
+
+T1 Eldrazi Tron | life=20 mana=1 hand=5+1L gy=0
+  Hand: ['Reality Smasher', 'Endbringer', 'Reality Smasher', 'Chalice of the Void', 'Expedition Map']
+  Opp board: [] (life=20)
+  EV scores:
+      -0.0  cast_spell: Expedition Map <--  [h=-0.0 la=-0.0]
+  >>> CAST_SPELL: Expedition Map
+  [MAIN1]
+
+T1 Eldrazi Tron | life=20 mana=0 hand=4+1L gy=0
+  Hand: ['Reality Smasher', 'Endbringer', 'Reality Smasher', 'Chalice of the Void']
+  Permanents: ['Expedition Map']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T1 Eldrazi Tron | life=20 mana=0 hand=4+1L gy=0
+  Hand: ['Reality Smasher', 'Endbringer', 'Reality Smasher', 'Chalice of the Void']
+  Permanents: ['Expedition Map']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T2 Ruby Storm | life=20 mana=0 hand=7+1L gy=0
+  Hand: ["Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse']
+  Opp board: [] (life=20)
+  EV scores:
+     +37.0  play_land: Mountain <--
+  >>> PLAY_LAND: Mountain
+  [MAIN1]
+
+T2 Ruby Storm | life=20 mana=1 hand=7+0L gy=0
+  Hand: ["Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T2 Ruby Storm | life=20 mana=1 hand=7+0L gy=0
+  Hand: ["Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T3 Eldrazi Tron | life=20 mana=1 hand=4+2L gy=0
+  Hand: ['Reality Smasher', 'Endbringer', 'Reality Smasher', 'Chalice of the Void']
+  Permanents: ['Expedition Map']
+  Opp board: [] (life=20)
+  EV scores:
+     +46.8  play_land: Urza's Mine <--
+     +15.0  play_land: Cavern of Souls
+  >>> PLAY_LAND: Urza's Mine
+  [MAIN1]
+
+T3 Eldrazi Tron | life=20 mana=2 hand=4+1L gy=0
+  Hand: ['Reality Smasher', 'Endbringer', 'Reality Smasher', 'Chalice of the Void']
+  Permanents: ['Expedition Map']
+  Opp board: [] (life=20)
+  EV scores:
+      -0.1  cast_spell: Chalice of the Void <--  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Chalice of the Void
+  [MAIN1]
+
+T3 Eldrazi Tron | life=20 mana=0 hand=3+1L gy=0
+  Hand: ['Reality Smasher', 'Endbringer', 'Reality Smasher']
+  Permanents: ['Expedition Map', 'Chalice of the Void']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T3 Eldrazi Tron | life=20 mana=0 hand=3+2L gy=1
+  Hand: ['Reality Smasher', 'Endbringer', 'Reality Smasher']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T4 Ruby Storm | life=20 mana=1 hand=8+0L gy=0
+  Hand: ["Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T4 Ruby Storm | life=20 mana=1 hand=8+0L gy=0
+  Hand: ["Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T5 Eldrazi Tron | life=20 mana=2 hand=4+2L gy=1
+  Hand: ['Reality Smasher', 'Endbringer', 'Reality Smasher', 'Expedition Map']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=20)
+  EV scores:
+     +43.4  play_land: Urza's Power Plant <--
+     +15.0  play_land: Cavern of Souls
+      -0.0  cast_spell: Expedition Map  [h=-0.0 la=-0.0]
+  >>> PLAY_LAND: Urza's Power Plant
+  [MAIN1]
+
+T5 Eldrazi Tron | life=20 mana=3 hand=4+1L gy=1
+  Hand: ['Reality Smasher', 'Endbringer', 'Reality Smasher', 'Expedition Map']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=20)
+  EV scores:
+      +0.0  cast_spell: Expedition Map <--  [h=+0.0 la=+0.0]
+  >>> CAST_SPELL: Expedition Map
+  [MAIN1]
+
+T5 Eldrazi Tron | life=20 mana=2 hand=3+1L gy=1
+  Hand: ['Reality Smasher', 'Endbringer', 'Reality Smasher']
+  Permanents: ['Chalice of the Void', 'Expedition Map']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T5 Eldrazi Tron | life=20 mana=2 hand=3+2L gy=2
+  Hand: ['Reality Smasher', 'Endbringer', 'Reality Smasher']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T6 Ruby Storm | life=20 mana=1 hand=8+0L gy=1
+  Hand: ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse', 'Pyretic Ritual']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T6 Ruby Storm | life=20 mana=1 hand=8+0L gy=1
+  Hand: ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse', 'Pyretic Ritual']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T7 Eldrazi Tron | life=20 mana=3 hand=4+2L gy=2
+  Hand: ['Reality Smasher', 'Endbringer', 'Reality Smasher', 'Matter Reshaper']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=20)
+  EV scores:
+     +51.0  play_land: Urza's Tower <--
+     +19.0  play_land: Cavern of Souls
+      +6.2  cast_spell: Matter Reshaper  [h=+6.2 la=+6.2 rmv=11%]
+  >>> PLAY_LAND: Urza's Tower
+  [MAIN1]
+
+T7 Eldrazi Tron | life=20 mana=8 hand=4+1L gy=2
+  Hand: ['Reality Smasher', 'Endbringer', 'Reality Smasher', 'Matter Reshaper']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=20)
+  EV scores:
+      +6.0  cast_spell: Matter Reshaper <--  [h=+6.0 la=+6.0 rmv=11%]
+  >>> CAST_SPELL: Matter Reshaper
+  [MAIN1]
+
+T7 Eldrazi Tron | life=20 mana=5 hand=3+1L gy=2
+  Hand: ['Reality Smasher', 'Endbringer', 'Reality Smasher']
+  Board: ['Matter Reshaper (3/2)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T7 Eldrazi Tron | life=20 mana=5 hand=3+1L gy=2
+  Hand: ['Reality Smasher', 'Endbringer', 'Reality Smasher']
+  Board: ['Matter Reshaper (3/2)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T8 Ruby Storm | life=20 mana=1 hand=8+0L gy=2
+  Hand: ['Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse', 'Pyretic Ritual', 'Wish']
+  Opp board: ['Matter Reshaper (3/2)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T8 Ruby Storm | life=20 mana=1 hand=8+0L gy=2
+  Hand: ['Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse', 'Pyretic Ritual', 'Wish']
+  Opp board: ['Matter Reshaper (3/2)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T9 Eldrazi Tron | life=20 mana=8 hand=4+1L gy=2
+  Hand: ['Reality Smasher', 'Endbringer', 'Reality Smasher', 'Eldrazi Mimic']
+  Board: ['Matter Reshaper (3/2)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=20)
+  EV scores:
+     +19.0  play_land: Cavern of Souls <--
+      +4.6  cast_spell: Eldrazi Mimic  [h=+4.6 la=+4.6 rmv=4%]
+  >>> PLAY_LAND: Cavern of Souls
+  [MAIN1]
+
+T9 Eldrazi Tron | life=20 mana=9 hand=4+0L gy=2
+  Hand: ['Reality Smasher', 'Endbringer', 'Reality Smasher', 'Eldrazi Mimic']
+  Board: ['Matter Reshaper (3/2)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=20)
+  EV scores:
+      +7.6  cast_spell: Reality Smasher <--  [h=+7.6 la=+7.6 rmv=3%]
+      +7.6  cast_spell: Reality Smasher  [h=+7.6 la=+7.6 rmv=3%]
+      +4.6  cast_spell: Eldrazi Mimic  [h=+4.6 la=+4.6 rmv=4%]
+  >>> CAST_SPELL: Reality Smasher
+  [MAIN1]
+
+T9 Eldrazi Tron | life=20 mana=4 hand=3+0L gy=2
+  Hand: ['Endbringer', 'Reality Smasher', 'Eldrazi Mimic']
+  Board: ['Matter Reshaper (3/2)', 'Reality Smasher (5/5)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=20)
+  EV scores:
+      +3.8  cast_spell: Eldrazi Mimic <--  [h=+3.8 la=+3.8 rmv=4%]
+  >>> CAST_SPELL: Eldrazi Mimic
+  [MAIN1]
+
+T9 Eldrazi Tron | life=20 mana=2 hand=2+0L gy=2
+  Hand: ['Endbringer', 'Reality Smasher']
+  Board: ['Matter Reshaper (3/2)', 'Reality Smasher (5/5)', 'Eldrazi Mimic (2/1)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Matter Reshaper', 'Reality Smasher']
+  [MAIN2]
+
+T9 Eldrazi Tron | life=20 mana=1 hand=2+0L gy=2
+  Hand: ['Endbringer', 'Reality Smasher']
+  Board: ['Matter Reshaper (3/2)', 'Reality Smasher (5/5)', 'Eldrazi Mimic (2/1)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=12)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T10 Ruby Storm | life=12 mana=1 hand=8+0L gy=3
+  Hand: ['Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse', 'Pyretic Ritual', 'Wish', 'Pyretic Ritual']
+  Opp board: ['Matter Reshaper (3/2)', 'Reality Smasher (5/5)', 'Eldrazi Mimic (2/1)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T10 Ruby Storm | life=12 mana=1 hand=8+0L gy=3
+  Hand: ['Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse', 'Pyretic Ritual', 'Wish', 'Pyretic Ritual']
+  Opp board: ['Matter Reshaper (3/2)', 'Reality Smasher (5/5)', 'Eldrazi Mimic (2/1)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T11 Eldrazi Tron | life=20 mana=9 hand=2+1L gy=2
+  Hand: ['Endbringer', 'Reality Smasher']
+  Board: ['Matter Reshaper (3/2)', 'Reality Smasher (5/5)', 'Eldrazi Mimic (2/1)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=12)
+  EV scores:
+     +27.0  play_land: Eldrazi Temple <--
+      +9.8  cast_spell: Reality Smasher  [h=+9.8 la=+9.8 rmv=3%]
+  >>> PLAY_LAND: Eldrazi Temple
+  [MAIN1]
+
+T11 Eldrazi Tron | life=20 mana=10 hand=2+0L gy=2
+  Hand: ['Endbringer', 'Reality Smasher']
+  Board: ['Matter Reshaper (3/2)', 'Reality Smasher (5/5)', 'Eldrazi Mimic (2/1)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=12)
+  EV scores:
+      +9.9  cast_spell: Endbringer <--  [h=+9.9 la=+9.9 rmv=3%]
+      +9.8  cast_spell: Reality Smasher  [h=+9.8 la=+9.8 rmv=3%]
+  >>> CAST_SPELL: Endbringer
+  [MAIN1]
+
+T11 Eldrazi Tron | life=20 mana=4 hand=1+0L gy=2
+  Hand: ['Reality Smasher']
+  Board: ['Matter Reshaper (3/2)', 'Reality Smasher (5/5)', 'Eldrazi Mimic (2/1)', 'Endbringer (5/5)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=12)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Matter Reshaper', 'Reality Smasher', 'Eldrazi Mimic']
+  [MAIN2]
+
+T11 Eldrazi Tron | life=20 mana=2 hand=1+0L gy=2
+  Hand: ['Reality Smasher']
+  Board: ['Matter Reshaper (3/2)', 'Reality Smasher (5/5)', 'Eldrazi Mimic (2/1)', 'Endbringer (5/5)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=2)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T12 Ruby Storm | life=2 mana=1 hand=7+1L gy=4
+  Hand: ['Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse', 'Pyretic Ritual', 'Wish', 'Pyretic Ritual']
+  Opp board: ['Matter Reshaper (3/2)', 'Reality Smasher (5/5)', 'Eldrazi Mimic (2/1)', 'Endbringer (5/5)'] (life=20)
+  EV scores:
+     +19.0  play_land: Sacred Foundry <--
+  >>> PLAY_LAND: Sacred Foundry
+  [MAIN1]
+
+T12 Ruby Storm | life=2 mana=1 hand=7+0L gy=4
+  Hand: ['Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse', 'Pyretic Ritual', 'Wish', 'Pyretic Ritual']
+  Opp board: ['Matter Reshaper (3/2)', 'Reality Smasher (5/5)', 'Eldrazi Mimic (2/1)', 'Endbringer (5/5)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T12 Ruby Storm | life=2 mana=1 hand=7+0L gy=4
+  Hand: ['Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse', 'Pyretic Ritual', 'Wish', 'Pyretic Ritual']
+  Opp board: ['Matter Reshaper (3/2)', 'Reality Smasher (5/5)', 'Eldrazi Mimic (2/1)', 'Endbringer (5/5)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T13 Eldrazi Tron | life=20 mana=10 hand=2+0L gy=2
+  Hand: ['Reality Smasher', 'Eldrazi Mimic']
+  Board: ['Matter Reshaper (3/2)', 'Reality Smasher (5/5)', 'Eldrazi Mimic (2/1)', 'Endbringer (5/5)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=2)
+  EV scores:
+      -2.2  cast_spell: Eldrazi Mimic <--  [h=-2.2 la=-2.2 rmv=4%]
+      -3.7  cast_spell: Reality Smasher  [h=-3.7 la=-3.7 rmv=3%]
+  >>> CAST_SPELL: Eldrazi Mimic
+  [MAIN1]
+
+T13 Eldrazi Tron | life=20 mana=8 hand=1+0L gy=2
+  Hand: ['Reality Smasher']
+  Board: ['Matter Reshaper (3/2)', 'Reality Smasher (5/5)', 'Eldrazi Mimic (2/1)', 'Endbringer (5/5)', 'Eldrazi Mimic (2/1)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=2)
+  EV scores:
+      -3.7  cast_spell: Reality Smasher <--  [h=-3.7 la=-3.7 rmv=3%]
+  >>> CAST_SPELL: Reality Smasher
+  [MAIN1]
+
+T13 Eldrazi Tron | life=20 mana=3 hand=0+0L gy=2
+  Hand: []
+  Board: ['Matter Reshaper (3/2)', 'Reality Smasher (5/5)', 'Eldrazi Mimic (2/1)', 'Endbringer (5/5)', 'Eldrazi Mimic (2/1)', 'Reality Smasher (5/5)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=2)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Matter Reshaper', 'Reality Smasher', 'Eldrazi Mimic', 'Reality Smasher']

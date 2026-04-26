@@ -1,0 +1,771 @@
+Loaded 21759 cards (0 errors)
+=== Ruby Storm vs Domain Zoo (seed 60510) ===
+Result: Domain Zoo wins T8 via damage
+Life: P1=-5 P2=2
+
+  [MAIN1]
+
+T1 Ruby Storm | life=20 mana=0 hand=4+3L gy=0
+  Hand: ['Manamorphose', 'Wish', "Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Opp board: [] (life=20)
+  EV scores:
+     +45.0  play_land: Gemstone Caverns <--
+     +32.0  play_land: Bloodstained Mire
+     +29.0  play_land: Sacred Foundry
+  >>> PLAY_LAND: Gemstone Caverns
+  [MAIN1]
+
+T1 Ruby Storm | life=20 mana=1 hand=4+2L gy=0
+  Hand: ['Manamorphose', 'Wish', "Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T1 Ruby Storm | life=20 mana=1 hand=4+2L gy=0
+  Hand: ['Manamorphose', 'Wish', "Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T2 Domain Zoo | life=20 mana=0 hand=6+2L gy=0
+  Hand: ['Teferi, Time Raveler', 'Scion of Draco', "Phlage, Titan of Fire's Fury", 'Ragavan, Nimble Pilferer', 'Doorkeeper Thrull', 'Doorkeeper Thrull']
+  Opp board: [] (life=20)
+  EV scores:
+     +41.0  play_land: Arid Mesa <--
+     +38.0  play_land: Flooded Strand
+  >>> PLAY_LAND: Arid Mesa
+  [MAIN1]
+
+T2 Domain Zoo | life=17 mana=1 hand=6+1L gy=1
+  Hand: ['Teferi, Time Raveler', 'Scion of Draco', "Phlage, Titan of Fire's Fury", 'Ragavan, Nimble Pilferer', 'Doorkeeper Thrull', 'Doorkeeper Thrull']
+  Opp board: [] (life=20)
+  EV scores:
+      +1.0  cast_spell: Ragavan, Nimble Pilferer <--  [h=+1.0 la=+1.0 rmv=2%]
+  >>> CAST_SPELL: Ragavan, Nimble Pilferer
+  [MAIN1]
+
+T2 Domain Zoo | life=17 mana=0 hand=5+1L gy=1
+  Hand: ['Teferi, Time Raveler', 'Scion of Draco', "Phlage, Titan of Fire's Fury", 'Doorkeeper Thrull', 'Doorkeeper Thrull']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T2 Domain Zoo | life=17 mana=0 hand=5+1L gy=1
+  Hand: ['Teferi, Time Raveler', 'Scion of Draco', "Phlage, Titan of Fire's Fury", 'Doorkeeper Thrull', 'Doorkeeper Thrull']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T3 Ruby Storm | life=20 mana=1 hand=5+2L gy=0
+  Hand: ['Manamorphose', 'Wish', "Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Ruby Medallion']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  EV scores:
+     +18.0  play_land: Bloodstained Mire <--
+     +15.0  play_land: Sacred Foundry
+  >>> PLAY_LAND: Bloodstained Mire
+  [MAIN1]
+
+T3 Ruby Storm | life=19 mana=2 hand=5+1L gy=1
+  Hand: ['Manamorphose', 'Wish', "Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Ruby Medallion']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  EV scores:
+     +15.6  cast_spell: Ruby Medallion <--  [h=+15.6 la=+15.6]
+      +3.9  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy  [h=+3.9 la=+3.9]
+      -1.1  cast_spell: Wrenn's Resolve  [h=-1.1 la=-1.1]
+      -9.7  cast_spell: Manamorphose  [h=-9.7 la=-9.7]
+  >>> CAST_SPELL: Ral, Monsoon Mage // Ral, Leyline Prodigy
+  [MAIN1]
+
+T3 Ruby Storm | life=19 mana=0 hand=4+1L gy=1
+  Hand: ['Manamorphose', 'Wish', "Wrenn's Resolve", 'Ruby Medallion']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T3 Ruby Storm | life=19 mana=0 hand=4+1L gy=1
+  Hand: ['Manamorphose', 'Wish', "Wrenn's Resolve", 'Ruby Medallion']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T4 Domain Zoo | life=17 mana=1 hand=5+2L gy=1
+  Hand: ['Teferi, Time Raveler', 'Scion of Draco', "Phlage, Titan of Fire's Fury", 'Doorkeeper Thrull', 'Doorkeeper Thrull']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Opp board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)'] (life=19)
+  EV scores:
+     +34.0  play_land: Flooded Strand <--
+     +15.0  play_land: Mountain
+  >>> PLAY_LAND: Flooded Strand
+  [MAIN1]
+
+T4 Domain Zoo | life=14 mana=2 hand=5+1L gy=2
+  Hand: ['Teferi, Time Raveler', 'Scion of Draco', "Phlage, Titan of Fire's Fury", 'Doorkeeper Thrull', 'Doorkeeper Thrull']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Opp board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)'] (life=19)
+  EV scores:
+      -0.8  cast_spell: Doorkeeper Thrull <--  [h=-0.8 la=-0.8]
+      -0.8  cast_spell: Doorkeeper Thrull  [h=-0.8 la=-0.8]
+  >>> CAST_SPELL: Doorkeeper Thrull
+  [MAIN1]
+
+T4 Domain Zoo | life=14 mana=0 hand=4+1L gy=2
+  Hand: ['Teferi, Time Raveler', 'Scion of Draco', "Phlage, Titan of Fire's Fury", 'Doorkeeper Thrull']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)']
+  Opp board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)'] (life=19)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ragavan, Nimble Pilferer']
+  [MAIN2]
+
+T4 Domain Zoo | life=14 mana=0 hand=4+1L gy=3
+  Hand: ['Teferi, Time Raveler', 'Scion of Draco', "Phlage, Titan of Fire's Fury", 'Doorkeeper Thrull']
+  Board: ['Doorkeeper Thrull (1/2)']
+  Opp board: [] (life=19)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T5 Ruby Storm | life=19 mana=2 hand=5+1L gy=2
+  Hand: ['Manamorphose', 'Wish', "Wrenn's Resolve", 'Ruby Medallion', 'Glimpse the Impossible']
+  Opp board: ['Doorkeeper Thrull (1/2)'] (life=14)
+  EV scores:
+     +18.9  cast_spell: Ruby Medallion <--  [h=+18.9 la=+18.9]
+     +15.0  play_land: Sacred Foundry
+      -1.2  cast_spell: Wrenn's Resolve  [h=-1.2 la=-1.2]
+     -17.0  cast_spell: Manamorphose  [h=-17.0 la=-17.0]
+  >>> PLAY_LAND: Sacred Foundry
+  [MAIN1]
+
+T5 Ruby Storm | life=17 mana=3 hand=5+0L gy=2
+  Hand: ['Manamorphose', 'Wish', "Wrenn's Resolve", 'Ruby Medallion', 'Glimpse the Impossible']
+  Opp board: ['Doorkeeper Thrull (1/2)'] (life=14)
+  EV scores:
+     +28.4  cast_spell: Ruby Medallion <--  [h=+28.4 la=+28.4]
+      -0.1  cast_spell: Wrenn's Resolve  [h=-0.1 la=-0.1]
+      -1.2  cast_spell: Glimpse the Impossible  [h=-1.2 la=-1.2]
+     -17.6  cast_spell: Manamorphose  [h=-17.6 la=-17.6]
+     -25.8  cast_spell: Wish  [h=-25.8 la=-25.8]
+  >>> CAST_SPELL: Wrenn's Resolve
+  [MAIN1]
+
+T5 Ruby Storm | life=17 mana=1 hand=6+0L gy=3
+  Hand: ['Manamorphose', 'Wish', 'Ruby Medallion', 'Glimpse the Impossible', 'Valakut Awakening // Valakut Stoneforge', 'Wish']
+  Opp board: ['Doorkeeper Thrull (1/2)'] (life=14)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T5 Ruby Storm | life=17 mana=1 hand=6+0L gy=3
+  Hand: ['Manamorphose', 'Wish', 'Ruby Medallion', 'Glimpse the Impossible', 'Valakut Awakening // Valakut Stoneforge', 'Wish']
+  Opp board: ['Doorkeeper Thrull (1/2)'] (life=14)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T6 Domain Zoo | life=14 mana=2 hand=5+1L gy=3
+  Hand: ['Teferi, Time Raveler', 'Scion of Draco', "Phlage, Titan of Fire's Fury", 'Doorkeeper Thrull', "Phlage, Titan of Fire's Fury"]
+  Board: ['Doorkeeper Thrull (1/2)']
+  Opp board: [] (life=17)
+  EV scores:
+     +15.0  play_land: Mountain <--
+      +1.0  cast_spell: Doorkeeper Thrull  [h=+1.0 la=+1.0 rmv=4%]
+  >>> PLAY_LAND: Mountain
+  [MAIN1]
+
+T6 Domain Zoo | life=14 mana=3 hand=5+0L gy=3
+  Hand: ['Teferi, Time Raveler', 'Scion of Draco', "Phlage, Titan of Fire's Fury", 'Doorkeeper Thrull', "Phlage, Titan of Fire's Fury"]
+  Board: ['Doorkeeper Thrull (1/2)']
+  Opp board: [] (life=17)
+  EV scores:
+     +18.9  cast_spell: Phlage, Titan of Fire's Fury <--  [h=+18.9 la=+18.9 rmv=3%]
+     +18.9  cast_spell: Phlage, Titan of Fire's Fury  [h=+18.9 la=+18.9 rmv=3%]
+     +11.8  cast_spell: Teferi, Time Raveler  [h=+11.8 la=+11.8]
+      +1.0  cast_spell: Doorkeeper Thrull  [h=+1.0 la=+1.0 rmv=4%]
+  >>> CAST_SPELL: Phlage, Titan of Fire's Fury
+  [MAIN1]
+
+T6 Domain Zoo | life=14 mana=0 hand=4+0L gy=4
+  Hand: ['Teferi, Time Raveler', 'Scion of Draco', 'Doorkeeper Thrull', "Phlage, Titan of Fire's Fury"]
+  Board: ['Doorkeeper Thrull (1/2)']
+  Opp board: [] (life=17)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Doorkeeper Thrull']
+  [MAIN2]
+
+T6 Domain Zoo | life=14 mana=0 hand=4+0L gy=4
+  Hand: ['Teferi, Time Raveler', 'Scion of Draco', 'Doorkeeper Thrull', "Phlage, Titan of Fire's Fury"]
+  Board: ['Doorkeeper Thrull (1/2)']
+  Opp board: [] (life=16)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T7 Ruby Storm | life=16 mana=3 hand=6+1L gy=3
+  Hand: ['Manamorphose', 'Wish', 'Ruby Medallion', 'Glimpse the Impossible', 'Valakut Awakening // Valakut Stoneforge', 'Wish']
+  Opp board: ['Doorkeeper Thrull (1/2)'] (life=14)
+  EV scores:
+     +28.4  cast_spell: Ruby Medallion <--  [h=+28.4 la=+28.4]
+     +18.0  play_land: Wooded Foothills
+      -1.6  cast_spell: Glimpse the Impossible  [h=-1.6 la=-1.6]
+      -1.7  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-1.7 la=-1.7]
+     -23.5  cast_spell: Manamorphose  [h=-23.5 la=-23.5]
+     -25.2  cast_spell: Wish  [h=-25.2 la=-25.2]
+    ... +1 more
+  >>> PLAY_LAND: Wooded Foothills
+  [MAIN1]
+
+T7 Ruby Storm | life=15 mana=4 hand=6+0L gy=4
+  Hand: ['Manamorphose', 'Wish', 'Ruby Medallion', 'Glimpse the Impossible', 'Valakut Awakening // Valakut Stoneforge', 'Wish']
+  Opp board: ['Doorkeeper Thrull (1/2)'] (life=14)
+  EV scores:
+     +28.4  cast_spell: Ruby Medallion <--  [h=+28.4 la=+28.4]
+      -0.5  cast_spell: Glimpse the Impossible  [h=-0.5 la=-0.5]
+      -0.5  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.5 la=-0.5]
+     -24.2  cast_spell: Manamorphose  [h=-24.2 la=-24.2]
+     -24.8  cast_spell: Wish  [h=-24.8 la=-24.8]
+     -24.8  cast_spell: Wish  [h=-24.8 la=-24.8]
+  >>> CAST_SPELL: Glimpse the Impossible
+  [MAIN1]
+
+T7 Ruby Storm | life=15 mana=1 hand=7+1L gy=5
+  Hand: ['Manamorphose', 'Wish', 'Ruby Medallion', 'Valakut Awakening // Valakut Stoneforge', 'Wish', 'Glimpse the Impossible', 'Manamorphose']
+  Opp board: ['Doorkeeper Thrull (1/2)'] (life=14)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T7 Ruby Storm | life=15 mana=1 hand=7+1L gy=5
+  Hand: ['Manamorphose', 'Wish', 'Ruby Medallion', 'Valakut Awakening // Valakut Stoneforge', 'Wish', 'Glimpse the Impossible', 'Manamorphose']
+  Opp board: ['Doorkeeper Thrull (1/2)'] (life=14)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T8 Domain Zoo | life=14 mana=3 hand=4+1L gy=4
+  Hand: ['Teferi, Time Raveler', 'Scion of Draco', 'Doorkeeper Thrull', "Phlage, Titan of Fire's Fury"]
+  Board: ['Doorkeeper Thrull (1/2)']
+  Opp board: [] (life=15)
+  EV scores:
+     +18.5  cast_spell: Phlage, Titan of Fire's Fury <--  [h=+18.5 la=+18.5 rmv=3%]
+     +13.5  cast_spell: Teferi, Time Raveler  [h=+13.5 la=+13.5]
+      +7.0  play_land: Thundering Falls
+      +1.2  cast_spell: Doorkeeper Thrull  [h=+1.2 la=+1.2 rmv=4%]
+  >>> CAST_SPELL: Phlage, Titan of Fire's Fury
+  [MAIN1]
+
+T8 Domain Zoo | life=14 mana=0 hand=3+1L gy=5
+  Hand: ['Teferi, Time Raveler', 'Scion of Draco', 'Doorkeeper Thrull']
+  Board: ['Doorkeeper Thrull (1/2)']
+  Opp board: [] (life=15)
+  EV scores:
+     +10.0  play_land: Thundering Falls <--
+  >>> PLAY_LAND: Thundering Falls
+  [MAIN1]
+
+T8 Domain Zoo | life=14 mana=0 hand=3+0L gy=5
+  Hand: ['Teferi, Time Raveler', 'Scion of Draco', 'Doorkeeper Thrull']
+  Board: ['Doorkeeper Thrull (1/2)']
+  Opp board: [] (life=15)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Doorkeeper Thrull']
+  [MAIN2]
+
+T8 Domain Zoo | life=14 mana=0 hand=3+0L gy=5
+  Hand: ['Teferi, Time Raveler', 'Scion of Draco', 'Doorkeeper Thrull']
+  Board: ['Doorkeeper Thrull (1/2)']
+  Opp board: [] (life=14)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T9 Ruby Storm | life=14 mana=4 hand=7+1L gy=6
+  Hand: ['Wish', 'Ruby Medallion', 'Valakut Awakening // Valakut Stoneforge', 'Wish', 'Glimpse the Impossible', 'Manamorphose', 'Pyretic Ritual']
+  Opp board: ['Doorkeeper Thrull (1/2)'] (life=14)
+  EV scores:
+     +28.4  cast_spell: Ruby Medallion <--  [h=+28.4 la=+28.4]
+      +7.0  play_land: Elegant Parlor
+      -0.8  cast_spell: Glimpse the Impossible  [h=-0.8 la=-0.8]
+      -0.9  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.9 la=-0.9]
+     -30.7  cast_spell: Manamorphose  [h=-30.7 la=-30.7]
+     -30.8  cast_spell: Pyretic Ritual  [h=-30.8 la=-30.8]
+    ... +2 more
+  >>> PLAY_LAND: Elegant Parlor
+  [MAIN1]
+
+T9 Ruby Storm | life=14 mana=4 hand=7+0L gy=6
+  Hand: ['Wish', 'Ruby Medallion', 'Valakut Awakening // Valakut Stoneforge', 'Wish', 'Glimpse the Impossible', 'Manamorphose', 'Pyretic Ritual']
+  Opp board: ['Doorkeeper Thrull (1/2)'] (life=14)
+  EV scores:
+     +28.4  cast_spell: Ruby Medallion <--  [h=+28.4 la=+28.4]
+      -0.7  cast_spell: Glimpse the Impossible  [h=-0.7 la=-0.7]
+      -0.8  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-0.8 la=-0.8]
+     -30.7  cast_spell: Manamorphose  [h=-30.7 la=-30.7]
+     -30.8  cast_spell: Pyretic Ritual  [h=-30.8 la=-30.8]
+     -31.5  cast_spell: Wish  [h=-31.5 la=-31.5]
+    ... +1 more
+  >>> CAST_SPELL: Glimpse the Impossible
+  [MAIN1]
+
+T9 Ruby Storm | life=14 mana=1 hand=8+1L gy=7
+  Hand: ['Wish', 'Ruby Medallion', 'Valakut Awakening // Valakut Stoneforge', 'Wish', 'Manamorphose', 'Pyretic Ritual', 'Manamorphose', 'Pyretic Ritual']
+  Opp board: ['Doorkeeper Thrull (1/2)'] (life=14)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T9 Ruby Storm | life=14 mana=1 hand=8+1L gy=7
+  Hand: ['Wish', 'Ruby Medallion', 'Valakut Awakening // Valakut Stoneforge', 'Wish', 'Manamorphose', 'Pyretic Ritual', 'Manamorphose', 'Pyretic Ritual']
+  Opp board: ['Doorkeeper Thrull (1/2)'] (life=14)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T10 Domain Zoo | life=14 mana=4 hand=3+1L gy=5
+  Hand: ['Teferi, Time Raveler', 'Scion of Draco', 'Doorkeeper Thrull']
+  Board: ['Doorkeeper Thrull (1/2)']
+  Opp board: [] (life=14)
+  EV scores:
+     +18.0  play_land: Wooded Foothills <--
+     +14.4  cast_spell: Teferi, Time Raveler  [h=+14.4 la=+14.4]
+      +9.6  cast_spell: Scion of Draco  [h=+9.6 la=+9.6 rmv=3%]
+      +1.3  cast_spell: Doorkeeper Thrull  [h=+1.3 la=+1.3 rmv=4%]
+  >>> PLAY_LAND: Wooded Foothills
+  [MAIN1]
+
+T10 Domain Zoo | life=13 mana=4 hand=3+0L gy=6
+  Hand: ['Teferi, Time Raveler', 'Scion of Draco', 'Doorkeeper Thrull']
+  Board: ['Doorkeeper Thrull (1/2)']
+  Opp board: [] (life=14)
+  EV scores:
+     +14.5  cast_spell: Teferi, Time Raveler <--  [h=+14.5 la=+14.5]
+      +9.8  cast_spell: Scion of Draco  [h=+9.8 la=+9.8 rmv=3%]
+      +1.4  cast_spell: Doorkeeper Thrull  [h=+1.4 la=+1.4 rmv=4%]
+  >>> CAST_SPELL: Phlage, Titan of Fire's Fury
+  [MAIN1]
+
+T10 Domain Zoo | life=13 mana=4 hand=3+0L gy=1
+  Hand: ['Teferi, Time Raveler', 'Scion of Draco', 'Doorkeeper Thrull']
+  Board: ['Doorkeeper Thrull (1/2)']
+  Opp board: [] (life=14)
+  EV scores:
+     +14.5  cast_spell: Teferi, Time Raveler <--  [h=+14.5 la=+14.5]
+      +9.8  cast_spell: Scion of Draco  [h=+9.8 la=+9.8 rmv=3%]
+      +1.4  cast_spell: Doorkeeper Thrull  [h=+1.4 la=+1.4 rmv=4%]
+  >>> CAST_SPELL: Teferi, Time Raveler
+  [MAIN1]
+
+T10 Domain Zoo | life=13 mana=1 hand=3+0L gy=1
+  Hand: ['Scion of Draco', 'Doorkeeper Thrull', 'Leyline of the Guildpact']
+  Board: ['Doorkeeper Thrull (1/2)']
+  Permanents: ['Teferi, Time Raveler']
+  Opp board: [] (life=14)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Doorkeeper Thrull']
+  [MAIN2]
+
+T10 Domain Zoo | life=13 mana=1 hand=3+0L gy=1
+  Hand: ['Scion of Draco', 'Doorkeeper Thrull', 'Leyline of the Guildpact']
+  Board: ['Doorkeeper Thrull (1/2)']
+  Permanents: ['Teferi, Time Raveler']
+  Opp board: [] (life=13)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T11 Ruby Storm | life=13 mana=5 hand=6+2L gy=9
+  Hand: ['Wish', 'Ruby Medallion', 'Wish', 'Pyretic Ritual', 'Manamorphose', 'Pyretic Ritual']
+  Opp board: ['Doorkeeper Thrull (1/2)'] (life=13)
+  EV scores:
+     +30.6  cast_spell: Ruby Medallion <--  [h=+30.6 la=+30.6]
+     +18.0  play_land: Bloodstained Mire
+     +15.0  play_land: Sunbaked Canyon
+     -26.7  cast_spell: Manamorphose  [h=-26.7 la=-26.7]
+     -26.8  cast_spell: Pyretic Ritual  [h=-26.8 la=-26.8]
+     -26.8  cast_spell: Pyretic Ritual  [h=-26.8 la=-26.8]
+    ... +2 more
+  >>> PLAY_LAND: Bloodstained Mire
+  [MAIN1]
+
+T11 Ruby Storm | life=12 mana=6 hand=6+1L gy=10
+  Hand: ['Wish', 'Ruby Medallion', 'Wish', 'Pyretic Ritual', 'Manamorphose', 'Pyretic Ritual']
+  Opp board: ['Doorkeeper Thrull (1/2)'] (life=13)
+  EV scores:
+     +30.6  cast_spell: Ruby Medallion <--  [h=+30.6 la=+30.6]
+     -27.2  cast_spell: Manamorphose  [h=-27.2 la=-27.2]
+     -27.3  cast_spell: Pyretic Ritual  [h=-27.3 la=-27.3]
+     -27.3  cast_spell: Pyretic Ritual  [h=-27.3 la=-27.3]
+     -27.6  cast_spell: Wish  [h=-27.6 la=-27.6]
+     -27.6  cast_spell: Wish  [h=-27.6 la=-27.6]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T11 Ruby Storm | life=12 mana=6 hand=6+1L gy=10
+  Hand: ['Wish', 'Ruby Medallion', 'Wish', 'Pyretic Ritual', 'Manamorphose', 'Pyretic Ritual']
+  Opp board: ['Doorkeeper Thrull (1/2)'] (life=13)
+  EV scores:
+     +30.6  cast_spell: Ruby Medallion <--  [h=+30.6 la=+30.6]
+     -27.2  cast_spell: Manamorphose  [h=-27.2 la=-27.2]
+     -27.3  cast_spell: Pyretic Ritual  [h=-27.3 la=-27.3]
+     -27.3  cast_spell: Pyretic Ritual  [h=-27.3 la=-27.3]
+     -27.6  cast_spell: Wish  [h=-27.6 la=-27.6]
+     -27.6  cast_spell: Wish  [h=-27.6 la=-27.6]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T12 Domain Zoo | life=13 mana=5 hand=4+0L gy=1
+  Hand: ['Scion of Draco', 'Doorkeeper Thrull', 'Leyline of the Guildpact', 'Leyline Binding']
+  Board: ['Doorkeeper Thrull (1/2)']
+  Permanents: ['Teferi, Time Raveler']
+  Opp board: [] (life=12)
+  EV scores:
+      +9.1  cast_spell: Scion of Draco <--  [h=+9.1 la=+9.1 rmv=3%]
+      +1.5  cast_spell: Doorkeeper Thrull  [h=+1.5 la=+1.5 rmv=4%]
+      -0.3  cast_spell: Leyline of the Guildpact  [h=-0.3 la=-0.3]
+  >>> CAST_SPELL: Scion of Draco
+  [MAIN1]
+
+T12 Domain Zoo | life=13 mana=3 hand=3+0L gy=1
+  Hand: ['Doorkeeper Thrull', 'Leyline of the Guildpact', 'Leyline Binding']
+  Board: ['Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)']
+  Permanents: ['Teferi, Time Raveler']
+  Opp board: [] (life=12)
+  EV scores:
+      +4.2  cast_spell: Doorkeeper Thrull <--  [h=+4.2 la=+4.2 rmv=4%]
+      -0.3  cast_spell: Leyline of the Guildpact  [h=-0.3 la=-0.3]
+  >>> CAST_SPELL: Doorkeeper Thrull
+  [MAIN1]
+
+T12 Domain Zoo | life=13 mana=1 hand=2+0L gy=1
+  Hand: ['Leyline of the Guildpact', 'Leyline Binding']
+  Board: ['Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)']
+  Permanents: ['Teferi, Time Raveler']
+  Opp board: [] (life=12)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Doorkeeper Thrull']
+  [MAIN2]
+
+T12 Domain Zoo | life=13 mana=1 hand=2+0L gy=1
+  Hand: ['Leyline of the Guildpact', 'Leyline Binding']
+  Board: ['Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)']
+  Permanents: ['Teferi, Time Raveler']
+  Opp board: [] (life=11)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T13 Ruby Storm | life=11 mana=6 hand=7+1L gy=10
+  Hand: ['Wish', 'Ruby Medallion', 'Wish', 'Pyretic Ritual', 'Manamorphose', 'Pyretic Ritual', 'Reckless Impulse']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)'] (life=13)
+  EV scores:
+     +15.0  play_land: Sunbaked Canyon <--
+      +7.5  cast_spell: Ruby Medallion  [h=+7.5 la=+7.5]
+      -0.2  cast_spell: Reckless Impulse  [h=-0.2 la=-0.2]
+     -39.3  cast_spell: Manamorphose  [h=-39.3 la=-39.3]
+     -39.4  cast_spell: Pyretic Ritual  [h=-39.4 la=-39.4]
+     -39.4  cast_spell: Pyretic Ritual  [h=-39.4 la=-39.4]
+    ... +2 more
+  >>> PLAY_LAND: Sunbaked Canyon
+  [MAIN1]
+
+T13 Ruby Storm | life=11 mana=7 hand=7+0L gy=10
+  Hand: ['Wish', 'Ruby Medallion', 'Wish', 'Pyretic Ritual', 'Manamorphose', 'Pyretic Ritual', 'Reckless Impulse']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)'] (life=13)
+  EV scores:
+      +7.5  cast_spell: Ruby Medallion <--  [h=+7.5 la=+7.5]
+      -0.2  cast_spell: Reckless Impulse  [h=-0.2 la=-0.2]
+     -39.3  cast_spell: Manamorphose  [h=-39.3 la=-39.3]
+     -39.4  cast_spell: Pyretic Ritual  [h=-39.4 la=-39.4]
+     -39.4  cast_spell: Pyretic Ritual  [h=-39.4 la=-39.4]
+     -39.7  cast_spell: Wish  [h=-39.7 la=-39.7]
+    ... +1 more
+  >>> CAST_SPELL: Reckless Impulse
+  [MAIN1]
+
+T13 Ruby Storm | life=11 mana=5 hand=8+0L gy=11
+  Hand: ['Wish', 'Ruby Medallion', 'Wish', 'Pyretic Ritual', 'Manamorphose', 'Pyretic Ritual', 'March of Reckless Joy', "Wrenn's Resolve"]
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)'] (life=13)
+  EV scores:
+      +7.3  cast_spell: Ruby Medallion <--  [h=+7.3 la=+7.3]
+      +0.0  cast_spell: Manamorphose
+      -0.1  cast_spell: March of Reckless Joy  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Pyretic Ritual  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Pyretic Ritual  [h=-0.1 la=-0.1]
+      -0.2  cast_spell: Wrenn's Resolve  [h=-0.2 la=-0.2]
+    ... +2 more
+  >>> CAST_SPELL: Ruby Medallion
+  [MAIN1]
+
+T13 Ruby Storm | life=11 mana=3 hand=7+0L gy=11
+  Hand: ['Wish', 'Wish', 'Pyretic Ritual', 'Manamorphose', 'Pyretic Ritual', 'March of Reckless Joy', "Wrenn's Resolve"]
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)'] (life=13)
+  EV scores:
+      +0.0  cast_spell: Manamorphose <--
+      -0.1  cast_spell: Pyretic Ritual  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Pyretic Ritual  [h=-0.1 la=-0.1]
+      -0.4  cast_spell: March of Reckless Joy  [h=-0.4 la=-0.4]
+      -0.8  cast_spell: Wrenn's Resolve  [h=-0.8 la=-0.8]
+     -40.4  cast_spell: Wish  [h=-40.4 la=-40.4]
+    ... +1 more
+  >>> CAST_SPELL: Manamorphose
+  [MAIN1]
+
+T13 Ruby Storm | life=11 mana=4 hand=6+1L gy=12
+  Hand: ['Wish', 'Wish', 'Pyretic Ritual', 'Pyretic Ritual', 'March of Reckless Joy', "Wrenn's Resolve"]
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)'] (life=13)
+  EV scores:
+      -0.1  cast_spell: March of Reckless Joy <--  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Pyretic Ritual  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Pyretic Ritual  [h=-0.1 la=-0.1]
+      -0.5  cast_spell: Wrenn's Resolve  [h=-0.5 la=-0.5]
+     -32.5  cast_spell: Wish  [h=-32.5 la=-32.5]
+     -32.5  cast_spell: Wish  [h=-32.5 la=-32.5]
+  >>> CAST_SPELL: March of Reckless Joy
+  [MAIN1]
+
+T13 Ruby Storm | life=11 mana=0 hand=7+1L gy=13
+  Hand: ['Wish', 'Wish', 'Pyretic Ritual', 'Pyretic Ritual', "Wrenn's Resolve", 'Past in Flames', 'Pyretic Ritual']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)'] (life=13)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T13 Ruby Storm | life=11 mana=0 hand=8+1L gy=14
+  Hand: ['Wish', 'Wish', 'Pyretic Ritual', 'Pyretic Ritual', "Wrenn's Resolve", 'Past in Flames', 'Pyretic Ritual', 'Reckless Impulse']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)'] (life=13)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T14 Domain Zoo | life=13 mana=5 hand=2+1L gy=1
+  Hand: ['Leyline of the Guildpact', 'Leyline Binding']
+  Board: ['Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)']
+  Permanents: ['Teferi, Time Raveler']
+  Opp board: [] (life=11)
+  EV scores:
+      +7.0  play_land: Arena of Glory <--
+      -0.4  cast_spell: Leyline of the Guildpact  [h=-0.4 la=-0.4]
+  >>> PLAY_LAND: Arena of Glory
+  [MAIN1]
+
+T14 Domain Zoo | life=13 mana=5 hand=2+0L gy=1
+  Hand: ['Leyline of the Guildpact', 'Leyline Binding']
+  Board: ['Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)']
+  Permanents: ['Teferi, Time Raveler']
+  Opp board: [] (life=11)
+  EV scores:
+      -0.4  cast_spell: Leyline of the Guildpact <--  [h=-0.4 la=-0.4]
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Doorkeeper Thrull', 'Scion of Draco', 'Doorkeeper Thrull']
+  [MAIN2]
+
+T14 Domain Zoo | life=13 mana=5 hand=2+0L gy=1
+  Hand: ['Leyline of the Guildpact', 'Leyline Binding']
+  Board: ['Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)']
+  Permanents: ['Teferi, Time Raveler']
+  Opp board: [] (life=5)
+  EV scores:
+      -0.8  cast_spell: Leyline of the Guildpact <--  [h=-0.8 la=-0.8]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T15 Ruby Storm | life=5 mana=6 hand=7+1L gy=16
+  Hand: ['Wish', 'Wish', 'Pyretic Ritual', "Wrenn's Resolve", 'Pyretic Ritual', 'Reckless Impulse', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)'] (life=13)
+  EV scores:
+     +18.0  play_land: Scalding Tarn <--
+      +0.1  cast_spell: Pyretic Ritual  [h=+0.1 la=+0.1 ctr=10%]
+      +0.1  cast_spell: Pyretic Ritual  [h=+0.1 la=+0.1 ctr=10%]
+      -0.1  cast_spell: Wrenn's Resolve  [h=-0.1 la=-0.1 ctr=10%]
+      -0.1  cast_spell: Reckless Impulse  [h=-0.1 la=-0.1 ctr=10%]
+      -0.1  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy  [h=-0.1 la=-0.1 ctr=10% rmv=14%]
+    ... +2 more
+  >>> PLAY_LAND: Scalding Tarn
+  [MAIN1]
+
+T15 Ruby Storm | life=4 mana=7 hand=7+0L gy=17
+  Hand: ['Wish', 'Wish', 'Pyretic Ritual', "Wrenn's Resolve", 'Pyretic Ritual', 'Reckless Impulse', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)'] (life=13)
+  EV scores:
+      +0.5  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy <--  [h=+0.5 la=+0.5 ctr=10% rmv=14%]
+      +0.1  cast_spell: Pyretic Ritual  [h=+0.1 la=+0.1 ctr=10%]
+      +0.1  cast_spell: Pyretic Ritual  [h=+0.1 la=+0.1 ctr=10%]
+      -0.1  cast_spell: Wrenn's Resolve  [h=-0.1 la=-0.1 ctr=10%]
+      -0.1  cast_spell: Reckless Impulse  [h=-0.1 la=-0.1 ctr=10%]
+     -40.4  cast_spell: Wish  [h=-40.4 la=-40.4 ctr=10%]
+    ... +1 more
+  >>> CAST_SPELL: Ral, Monsoon Mage // Ral, Leyline Prodigy
+  [MAIN1]
+
+T15 Ruby Storm | life=4 mana=5 hand=6+0L gy=17
+  Hand: ['Wish', 'Wish', 'Pyretic Ritual', "Wrenn's Resolve", 'Pyretic Ritual', 'Reckless Impulse']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)'] (life=13)
+  EV scores:
+      +0.6  cast_spell: Wrenn's Resolve <--  [h=+0.6 la=+0.6 ctr=10%]
+      +0.6  cast_spell: Reckless Impulse  [h=+0.6 la=+0.6 ctr=10%]
+      +0.1  cast_spell: Pyretic Ritual  [h=+0.1 la=+0.1 ctr=10%]
+      +0.1  cast_spell: Pyretic Ritual  [h=+0.1 la=+0.1 ctr=10%]
+     -32.7  cast_spell: Wish  [h=-32.7 la=-32.7 ctr=10%]
+     -32.7  cast_spell: Wish  [h=-32.7 la=-32.7 ctr=10%]
+  >>> CAST_SPELL: Wrenn's Resolve
+  [MAIN1]
+
+T15 Ruby Storm | life=4 mana=4 hand=6+1L gy=18
+  Hand: ['Wish', 'Wish', 'Pyretic Ritual', 'Pyretic Ritual', 'Reckless Impulse', 'Desperate Ritual']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)'] (life=13)
+  EV scores:
+      +0.1  cast_spell: Pyretic Ritual <--  [h=+0.1 la=+0.1 ctr=5%]
+      +0.1  cast_spell: Pyretic Ritual  [h=+0.1 la=+0.1 ctr=5%]
+      +0.1  cast_spell: Desperate Ritual  [h=+0.1 la=+0.1 ctr=5%]
+      -0.4  cast_spell: Reckless Impulse  [h=-0.4 la=-0.4 ctr=5%]
+     -33.0  cast_spell: Wish  [h=-33.0 la=-33.0 ctr=5%]
+     -33.0  cast_spell: Wish  [h=-33.0 la=-33.0 ctr=5%]
+  >>> CAST_SPELL: Pyretic Ritual
+  [MAIN1]
+
+T15 Ruby Storm | life=4 mana=6 hand=5+1L gy=19
+  Hand: ['Wish', 'Wish', 'Pyretic Ritual', 'Reckless Impulse', 'Desperate Ritual']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)'] (life=13)
+  EV scores:
+      -0.1  cast_spell: Reckless Impulse <--  [h=-0.1 la=-0.1 ctr=5%]
+      -0.1  cast_spell: Pyretic Ritual  [h=-0.1 la=-0.1 ctr=5%]
+      -0.1  cast_spell: Desperate Ritual  [h=-0.1 la=-0.1 ctr=5%]
+     -24.3  cast_spell: Wish  [h=-24.3 la=-24.3 ctr=5%]
+     -24.3  cast_spell: Wish  [h=-24.3 la=-24.3 ctr=5%]
+  >>> CAST_SPELL: Reckless Impulse
+  [MAIN1]
+
+T15 Ruby Storm | life=4 mana=5 hand=5+2L gy=20
+  Hand: ['Wish', 'Wish', 'Pyretic Ritual', 'Desperate Ritual', 'Desperate Ritual']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)'] (life=13)
+  EV scores:
+      +0.1  cast_spell: Pyretic Ritual <--  [h=+0.1 la=+0.1 ctr=5%]
+      +0.1  cast_spell: Desperate Ritual  [h=+0.1 la=+0.1 ctr=5%]
+      +0.1  cast_spell: Desperate Ritual  [h=+0.1 la=+0.1 ctr=5%]
+     -24.6  cast_spell: Wish  [h=-24.6 la=-24.6 ctr=5%]
+     -24.6  cast_spell: Wish  [h=-24.6 la=-24.6 ctr=5%]
+  >>> CAST_SPELL: Pyretic Ritual
+  [MAIN1]
+
+T15 Ruby Storm | life=4 mana=7 hand=4+2L gy=21
+  Hand: ['Wish', 'Wish', 'Desperate Ritual', 'Desperate Ritual']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)'] (life=13)
+  EV scores:
+      +0.1  cast_spell: Desperate Ritual <--  [h=+0.1 la=+0.1 ctr=5%]
+      +0.1  cast_spell: Desperate Ritual  [h=+0.1 la=+0.1 ctr=5%]
+     -15.7  cast_spell: Wish  [h=-15.7 la=-15.7 ctr=5%]
+     -15.7  cast_spell: Wish  [h=-15.7 la=-15.7 ctr=5%]
+  >>> CAST_SPELL: Desperate Ritual
+  [MAIN1]
+
+T15 Ruby Storm | life=4 mana=11 hand=3+2L gy=22
+  Hand: ['Wish', 'Wish', 'Desperate Ritual']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)'] (life=13)
+  EV scores:
+      +0.1  cast_spell: Desperate Ritual <--  [h=+0.1 la=+0.1 ctr=5%]
+      -8.2  cast_spell: Wish  [h=-8.2 la=-8.2 ctr=5%]
+      -8.2  cast_spell: Wish  [h=-8.2 la=-8.2 ctr=5%]
+  >>> CAST_SPELL: Desperate Ritual
+  [MAIN1]
+
+T15 Ruby Storm | life=4 mana=13 hand=2+2L gy=23
+  Hand: ['Wish', 'Wish']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)'] (life=13)
+  EV scores:
+     +72.2  cast_spell: Wish <--  [h=+72.2 la=+72.2 ctr=5%]
+     +72.2  cast_spell: Wish  [h=+72.2 la=+72.2 ctr=5%]
+  >>> CAST_SPELL: Wish
+  [MAIN1]
+
+T15 Ruby Storm | life=4 mana=11 hand=2+2L gy=24
+  Hand: ['Wish', 'Grapeshot']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)'] (life=13)
+  EV scores:
+     +80.4  cast_spell: Wish <--  [h=+80.4 la=+80.4 ctr=5%]
+      +1.3  cast_spell: Grapeshot  [h=+1.3 la=+1.3 ctr=5%]
+  >>> CAST_SPELL: Wish
+  [MAIN1]
+
+T15 Ruby Storm | life=4 mana=9 hand=2+2L gy=25
+  Hand: ['Grapeshot', 'Empty the Warrens']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)'] (life=13)
+  EV scores:
+     +90.0  cast_spell: Grapeshot <--  [h=+90.0 la=+90.0 ctr=5%]
+     +88.4  cast_spell: Empty the Warrens  [h=+88.4 la=+88.4 ctr=5%]
+  >>> CAST_SPELL: Grapeshot
+  [MAIN1]
+
+T15 Ruby Storm | life=4 mana=8 hand=1+2L gy=26
+  Hand: ['Empty the Warrens']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)'] (life=2)
+  EV scores:
+    +190.2  cast_spell: Empty the Warrens <--  [h=+190.2 la=+190.2 ctr=5%]
+  >>> CAST_SPELL: Empty the Warrens
+  [MAIN1]
+
+T15 Ruby Storm | life=4 mana=5 hand=0+2L gy=27
+  Hand: []
+  Board: ['Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)'] (life=2)
+  >>> CAST_SPELL: Past in Flames
+  [MAIN1]
+
+T15 Ruby Storm | life=4 mana=5 hand=0+2L gy=27
+  Hand: []
+  Board: ['Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)'] (life=2)
+  >>> CAST_SPELL: Past in Flames
+  [MAIN2]
+
+T15 Ruby Storm | life=4 mana=3 hand=0+2L gy=27
+  Hand: []
+  Board: ['Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)'] (life=2)
+  >>> CAST_SPELL: Past in Flames
+  [MAIN2]
+
+T15 Ruby Storm | life=4 mana=0 hand=0+2L gy=26
+  Hand: []
+  Board: ['Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)'] (life=2)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T16 Domain Zoo | life=2 mana=6 hand=2+0L gy=1
+  Hand: ['Leyline of the Guildpact', 'Lightning Bolt']
+  Board: ['Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)']
+  Permanents: ['Teferi, Time Raveler', 'Leyline Binding']
+  Opp board: ['Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)'] (life=4)
+  EV scores:
+      +1.5  cast_spell: Lightning Bolt <--  [h=+1.5 la=+1.5]
+      -1.4  cast_spell: Leyline of the Guildpact  [h=-1.4 la=-1.4]
+  >>> CAST_SPELL: Lightning Bolt
+  [MAIN1]
+
+T16 Domain Zoo | life=2 mana=5 hand=1+0L gy=2
+  Hand: ['Leyline of the Guildpact']
+  Board: ['Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)']
+  Permanents: ['Teferi, Time Raveler', 'Leyline Binding']
+  Opp board: ['Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)'] (life=1)
+  EV scores:
+      -3.2  cast_spell: Leyline of the Guildpact <--  [h=-3.2 la=-3.2]
+  >>> CAST_SPELL: Leyline of the Guildpact
+  [MAIN1]
+
+T16 Domain Zoo | life=2 mana=3 hand=0+0L gy=2
+  Hand: []
+  Board: ['Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)']
+  Permanents: ['Teferi, Time Raveler', 'Leyline Binding', 'Leyline of the Guildpact']
+  Opp board: ['Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)', 'Goblin Token (1/1)'] (life=1)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Doorkeeper Thrull', 'Scion of Draco', 'Doorkeeper Thrull']

@@ -1,0 +1,346 @@
+Loaded 21759 cards (0 errors)
+=== Ruby Storm vs Domain Zoo (seed 60530) ===
+Result: Domain Zoo wins T7 via damage
+Life: P1=-6 P2=14
+
+  [MAIN1]
+
+T1 Domain Zoo | life=20 mana=0 hand=5+2L gy=0
+  Hand: ['Doorkeeper Thrull', 'Territorial Kavu', 'Doorkeeper Thrull', 'Lightning Bolt', 'Lightning Bolt']
+  Opp board: [] (life=20)
+  EV scores:
+     +32.0  play_land: Blood Crypt <--
+     +28.0  play_land: Mountain
+  >>> PLAY_LAND: Blood Crypt
+  [MAIN1]
+
+T1 Domain Zoo | life=18 mana=1 hand=5+1L gy=0
+  Hand: ['Doorkeeper Thrull', 'Territorial Kavu', 'Doorkeeper Thrull', 'Lightning Bolt', 'Lightning Bolt']
+  Opp board: [] (life=20)
+  EV scores:
+      +0.1  cast_spell: Lightning Bolt <--  [h=+0.1 la=+0.1]
+      +0.1  cast_spell: Lightning Bolt  [h=+0.1 la=+0.1]
+  >>> CAST_SPELL: Lightning Bolt
+  [MAIN1]
+
+T1 Domain Zoo | life=18 mana=0 hand=4+1L gy=1
+  Hand: ['Doorkeeper Thrull', 'Territorial Kavu', 'Doorkeeper Thrull', 'Lightning Bolt']
+  Opp board: [] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T1 Domain Zoo | life=18 mana=0 hand=4+1L gy=1
+  Hand: ['Doorkeeper Thrull', 'Territorial Kavu', 'Doorkeeper Thrull', 'Lightning Bolt']
+  Opp board: [] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T2 Ruby Storm | life=17 mana=0 hand=7+1L gy=0
+  Hand: ["Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse']
+  Opp board: [] (life=18)
+  EV scores:
+     +37.0  play_land: Mountain <--
+  >>> PLAY_LAND: Mountain
+  [MAIN1]
+
+T2 Ruby Storm | life=17 mana=1 hand=7+0L gy=0
+  Hand: ["Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse']
+  Opp board: [] (life=18)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T2 Ruby Storm | life=17 mana=1 hand=7+0L gy=0
+  Hand: ["Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse']
+  Opp board: [] (life=18)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T3 Domain Zoo | life=18 mana=1 hand=4+2L gy=1
+  Hand: ['Doorkeeper Thrull', 'Territorial Kavu', 'Doorkeeper Thrull', 'Lightning Bolt']
+  Opp board: [] (life=17)
+  EV scores:
+     +28.0  play_land: Arid Mesa <--
+     +15.0  play_land: Mountain
+      +0.2  cast_spell: Lightning Bolt  [h=+0.2 la=+0.2]
+  >>> PLAY_LAND: Arid Mesa
+  [MAIN1]
+
+T3 Domain Zoo | life=15 mana=2 hand=4+1L gy=2
+  Hand: ['Doorkeeper Thrull', 'Territorial Kavu', 'Doorkeeper Thrull', 'Lightning Bolt']
+  Opp board: [] (life=17)
+  EV scores:
+      +1.2  cast_spell: Doorkeeper Thrull <--  [h=+1.2 la=+1.2 rmv=4%]
+      +1.2  cast_spell: Doorkeeper Thrull  [h=+1.2 la=+1.2 rmv=4%]
+      +0.2  cast_spell: Lightning Bolt  [h=+0.2 la=+0.2]
+      +0.1  cast_spell: Territorial Kavu  [h=+0.1 la=+0.1 rmv=4%]
+  >>> CAST_SPELL: Doorkeeper Thrull
+  [MAIN1]
+
+T3 Domain Zoo | life=15 mana=0 hand=3+1L gy=2
+  Hand: ['Territorial Kavu', 'Doorkeeper Thrull', 'Lightning Bolt']
+  Board: ['Doorkeeper Thrull (1/2)']
+  Opp board: [] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T3 Domain Zoo | life=15 mana=0 hand=3+1L gy=2
+  Hand: ['Territorial Kavu', 'Doorkeeper Thrull', 'Lightning Bolt']
+  Board: ['Doorkeeper Thrull (1/2)']
+  Opp board: [] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T4 Ruby Storm | life=17 mana=1 hand=8+0L gy=0
+  Hand: ["Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse']
+  Opp board: ['Doorkeeper Thrull (1/2)'] (life=15)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T4 Ruby Storm | life=17 mana=1 hand=8+0L gy=0
+  Hand: ["Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse']
+  Opp board: ['Doorkeeper Thrull (1/2)'] (life=15)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T5 Domain Zoo | life=15 mana=2 hand=4+1L gy=2
+  Hand: ['Territorial Kavu', 'Doorkeeper Thrull', 'Lightning Bolt', "Phlage, Titan of Fire's Fury"]
+  Board: ['Doorkeeper Thrull (1/2)']
+  Opp board: [] (life=17)
+  EV scores:
+     +15.0  play_land: Mountain <--
+      +1.7  cast_spell: Lightning Bolt  [h=+1.7 la=+1.7]
+      +1.1  cast_spell: Doorkeeper Thrull  [h=+1.1 la=+1.1 rmv=4%]
+      +0.1  cast_spell: Territorial Kavu  [h=+0.1 la=+0.1 rmv=4%]
+  >>> PLAY_LAND: Mountain
+  [MAIN1]
+
+T5 Domain Zoo | life=15 mana=3 hand=4+0L gy=2
+  Hand: ['Territorial Kavu', 'Doorkeeper Thrull', 'Lightning Bolt', "Phlage, Titan of Fire's Fury"]
+  Board: ['Doorkeeper Thrull (1/2)']
+  Opp board: [] (life=17)
+  EV scores:
+     +19.1  cast_spell: Phlage, Titan of Fire's Fury <--  [h=+19.1 la=+19.1 rmv=3%]
+      +1.7  cast_spell: Lightning Bolt  [h=+1.7 la=+1.7]
+      +1.2  cast_spell: Doorkeeper Thrull  [h=+1.2 la=+1.2 rmv=4%]
+      +0.2  cast_spell: Territorial Kavu  [h=+0.2 la=+0.2 rmv=4%]
+  >>> CAST_SPELL: Phlage, Titan of Fire's Fury
+  [MAIN1]
+
+T5 Domain Zoo | life=15 mana=0 hand=3+0L gy=3
+  Hand: ['Territorial Kavu', 'Doorkeeper Thrull', 'Lightning Bolt']
+  Board: ['Doorkeeper Thrull (1/2)']
+  Opp board: [] (life=17)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Doorkeeper Thrull']
+  [MAIN2]
+
+T5 Domain Zoo | life=15 mana=0 hand=3+0L gy=3
+  Hand: ['Territorial Kavu', 'Doorkeeper Thrull', 'Lightning Bolt']
+  Board: ['Doorkeeper Thrull (1/2)']
+  Opp board: [] (life=16)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T6 Ruby Storm | life=16 mana=1 hand=8+0L gy=1
+  Hand: ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse', 'Pyretic Ritual']
+  Opp board: ['Doorkeeper Thrull (1/2)'] (life=15)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T6 Ruby Storm | life=16 mana=1 hand=8+0L gy=1
+  Hand: ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse', 'Pyretic Ritual']
+  Opp board: ['Doorkeeper Thrull (1/2)'] (life=15)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T7 Domain Zoo | life=15 mana=3 hand=4+0L gy=3
+  Hand: ['Territorial Kavu', 'Doorkeeper Thrull', 'Lightning Bolt', 'Teferi, Time Raveler']
+  Board: ['Doorkeeper Thrull (1/2)']
+  Opp board: [] (life=16)
+  EV scores:
+      +1.7  cast_spell: Lightning Bolt <--  [h=+1.7 la=+1.7]
+      +1.4  cast_spell: Doorkeeper Thrull  [h=+1.4 la=+1.4 rmv=4%]
+      +0.2  cast_spell: Territorial Kavu  [h=+0.2 la=+0.2 rmv=4%]
+  >>> CAST_SPELL: Lightning Bolt
+  [MAIN1]
+
+T7 Domain Zoo | life=15 mana=2 hand=3+0L gy=4
+  Hand: ['Territorial Kavu', 'Doorkeeper Thrull', 'Teferi, Time Raveler']
+  Board: ['Doorkeeper Thrull (1/2)']
+  Opp board: [] (life=13)
+  EV scores:
+      +1.6  cast_spell: Doorkeeper Thrull <--  [h=+1.6 la=+1.6 rmv=4%]
+      +0.3  cast_spell: Territorial Kavu  [h=+0.3 la=+0.3 rmv=4%]
+  >>> CAST_SPELL: Doorkeeper Thrull
+  [MAIN1]
+
+T7 Domain Zoo | life=15 mana=0 hand=2+0L gy=4
+  Hand: ['Territorial Kavu', 'Teferi, Time Raveler']
+  Board: ['Doorkeeper Thrull (1/2)', 'Doorkeeper Thrull (1/2)']
+  Opp board: [] (life=13)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Doorkeeper Thrull']
+  [MAIN2]
+
+T7 Domain Zoo | life=15 mana=0 hand=2+0L gy=4
+  Hand: ['Territorial Kavu', 'Teferi, Time Raveler']
+  Board: ['Doorkeeper Thrull (1/2)', 'Doorkeeper Thrull (1/2)']
+  Opp board: [] (life=12)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T8 Ruby Storm | life=12 mana=1 hand=8+0L gy=2
+  Hand: ['Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse', 'Pyretic Ritual', 'Wish']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Doorkeeper Thrull (1/2)'] (life=15)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T8 Ruby Storm | life=12 mana=1 hand=8+0L gy=2
+  Hand: ['Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse', 'Pyretic Ritual', 'Wish']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Doorkeeper Thrull (1/2)'] (life=15)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T9 Domain Zoo | life=15 mana=3 hand=2+1L gy=4
+  Hand: ['Territorial Kavu', 'Teferi, Time Raveler']
+  Board: ['Doorkeeper Thrull (1/2)', 'Doorkeeper Thrull (1/2)']
+  Opp board: [] (life=12)
+  EV scores:
+     +22.0  play_land: Steam Vents <--
+      +0.4  cast_spell: Territorial Kavu  [h=+0.4 la=+0.4 rmv=4%]
+  >>> PLAY_LAND: Steam Vents
+  [MAIN1]
+
+T9 Domain Zoo | life=15 mana=3 hand=2+0L gy=4
+  Hand: ['Territorial Kavu', 'Teferi, Time Raveler']
+  Board: ['Doorkeeper Thrull (1/2)', 'Doorkeeper Thrull (1/2)']
+  Opp board: [] (life=12)
+  EV scores:
+      +0.5  cast_spell: Territorial Kavu <--  [h=+0.5 la=+0.5 rmv=4%]
+  >>> CAST_SPELL: Territorial Kavu
+  [MAIN1]
+
+T9 Domain Zoo | life=15 mana=1 hand=1+0L gy=4
+  Hand: ['Teferi, Time Raveler']
+  Board: ['Doorkeeper Thrull (1/2)', 'Doorkeeper Thrull (1/2)', 'Territorial Kavu (4/4)']
+  Opp board: [] (life=12)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Doorkeeper Thrull', 'Doorkeeper Thrull']
+  [MAIN2]
+
+T9 Domain Zoo | life=15 mana=1 hand=1+0L gy=4
+  Hand: ['Teferi, Time Raveler']
+  Board: ['Doorkeeper Thrull (1/2)', 'Doorkeeper Thrull (1/2)', 'Territorial Kavu (4/4)']
+  Opp board: [] (life=10)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T10 Ruby Storm | life=10 mana=1 hand=8+0L gy=3
+  Hand: ['Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse', 'Pyretic Ritual', 'Wish', 'Pyretic Ritual']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Doorkeeper Thrull (1/2)', 'Territorial Kavu (4/4)'] (life=15)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T10 Ruby Storm | life=10 mana=1 hand=8+0L gy=3
+  Hand: ['Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse', 'Pyretic Ritual', 'Wish', 'Pyretic Ritual']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Doorkeeper Thrull (1/2)', 'Territorial Kavu (4/4)'] (life=15)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T11 Domain Zoo | life=15 mana=4 hand=1+1L gy=4
+  Hand: ['Teferi, Time Raveler']
+  Board: ['Doorkeeper Thrull (1/2)', 'Doorkeeper Thrull (1/2)', 'Territorial Kavu (4/4)']
+  Opp board: [] (life=10)
+  EV scores:
+     +20.5  cast_spell: Teferi, Time Raveler <--  [h=+20.5 la=+20.5]
+      +7.0  play_land: Lush Portico
+  >>> CAST_SPELL: Teferi, Time Raveler
+  [MAIN1]
+
+T11 Domain Zoo | life=15 mana=1 hand=0+2L gy=4
+  Hand: []
+  Board: ['Doorkeeper Thrull (1/2)', 'Doorkeeper Thrull (1/2)', 'Territorial Kavu (4/4)']
+  Permanents: ['Teferi, Time Raveler']
+  Opp board: [] (life=10)
+  EV scores:
+     +15.0  play_land: Arid Mesa <--
+     +10.0  play_land: Lush Portico
+  >>> PLAY_LAND: Arid Mesa
+  [MAIN1]
+
+T11 Domain Zoo | life=14 mana=1 hand=0+1L gy=5
+  Hand: []
+  Board: ['Doorkeeper Thrull (1/2)', 'Doorkeeper Thrull (1/2)', 'Territorial Kavu (4/4)']
+  Permanents: ['Teferi, Time Raveler']
+  Opp board: [] (life=10)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Doorkeeper Thrull', 'Doorkeeper Thrull', 'Territorial Kavu']
+  [MAIN2]
+
+T11 Domain Zoo | life=14 mana=1 hand=0+1L gy=5
+  Hand: []
+  Board: ['Doorkeeper Thrull (1/2)', 'Doorkeeper Thrull (1/2)', 'Territorial Kavu (4/4)']
+  Permanents: ['Teferi, Time Raveler']
+  Opp board: [] (life=4)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T12 Ruby Storm | life=4 mana=1 hand=7+1L gy=4
+  Hand: ['Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse', 'Pyretic Ritual', 'Wish', 'Pyretic Ritual']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Doorkeeper Thrull (1/2)', 'Territorial Kavu (4/4)'] (life=14)
+  EV scores:
+     +19.0  play_land: Sacred Foundry <--
+  >>> PLAY_LAND: Sacred Foundry
+  [MAIN1]
+
+T12 Ruby Storm | life=2 mana=2 hand=7+0L gy=4
+  Hand: ['Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse', 'Pyretic Ritual', 'Wish', 'Pyretic Ritual']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Doorkeeper Thrull (1/2)', 'Territorial Kavu (4/4)'] (life=14)
+  EV scores:
+      -1.6  cast_spell: Reckless Impulse <--  [h=-1.6 la=-1.6]
+      -1.6  cast_spell: Reckless Impulse  [h=-1.6 la=-1.6]
+     -42.1  cast_spell: Pyretic Ritual  [h=-42.1 la=-42.1]
+     -42.1  cast_spell: Pyretic Ritual  [h=-42.1 la=-42.1]
+  >>> CAST_SPELL: Reckless Impulse
+  [MAIN1]
+
+T12 Ruby Storm | life=2 mana=0 hand=7+1L gy=5
+  Hand: ['Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Pyretic Ritual', 'Wish', 'Pyretic Ritual', 'Manamorphose']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Doorkeeper Thrull (1/2)', 'Territorial Kavu (4/4)'] (life=14)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T12 Ruby Storm | life=2 mana=0 hand=7+1L gy=5
+  Hand: ['Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Pyretic Ritual', 'Wish', 'Pyretic Ritual', 'Manamorphose']
+  Opp board: ['Doorkeeper Thrull (1/2)', 'Doorkeeper Thrull (1/2)', 'Territorial Kavu (4/4)'] (life=14)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T13 Domain Zoo | life=14 mana=5 hand=1+1L gy=5
+  Hand: ['Fable of the Mirror-Breaker // Reflection of Kiki-Jiki']
+  Board: ['Doorkeeper Thrull (1/2)', 'Doorkeeper Thrull (1/2)', 'Territorial Kavu (4/4)']
+  Permanents: ['Teferi, Time Raveler']
+  Opp board: [] (life=2)
+  EV scores:
+      +7.0  play_land: Lush Portico <--
+      -0.2  cast_spell: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki  [h=-0.2 la=-0.2]
+  >>> PLAY_LAND: Lush Portico
+  [MAIN1]
+
+T13 Domain Zoo | life=14 mana=5 hand=1+0L gy=5
+  Hand: ['Fable of the Mirror-Breaker // Reflection of Kiki-Jiki']
+  Board: ['Doorkeeper Thrull (1/2)', 'Doorkeeper Thrull (1/2)', 'Territorial Kavu (4/4)']
+  Permanents: ['Teferi, Time Raveler']
+  Opp board: [] (life=2)
+  EV scores:
+      +0.2  cast_spell: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki <--  [h=+0.2 la=+0.2]
+  >>> CAST_SPELL: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+  [MAIN1]
+
+T13 Domain Zoo | life=14 mana=2 hand=0+0L gy=5
+  Hand: []
+  Board: ['Doorkeeper Thrull (1/2)', 'Doorkeeper Thrull (1/2)', 'Territorial Kavu (4/4)', 'Goblin Token (2/2)']
+  Permanents: ['Teferi, Time Raveler', 'Fable of the Mirror-Breaker // Reflection of Kiki-Jiki']
+  Opp board: [] (life=2)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Doorkeeper Thrull', 'Doorkeeper Thrull', 'Territorial Kavu', 'Goblin Token']

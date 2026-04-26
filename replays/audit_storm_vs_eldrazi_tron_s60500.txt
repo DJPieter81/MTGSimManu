@@ -1,0 +1,321 @@
+Loaded 21759 cards (0 errors)
+=== Ruby Storm vs Eldrazi Tron (seed 60500) ===
+Result: Eldrazi Tron wins T6 via damage
+Life: P1=-9 P2=20
+
+  [MAIN1]
+
+T1 Eldrazi Tron | life=20 mana=0 hand=4+3L gy=0
+  Hand: ['Thought-Knot Seer', 'All Is Dust', 'Reality Smasher', 'Expedition Map']
+  Opp board: [] (life=20)
+  EV scores:
+     +46.6  play_land: Urza's Power Plant <--
+     +46.6  play_land: Urza's Mine
+     +15.0  play_land: Wastes
+  >>> PLAY_LAND: Urza's Power Plant
+  [MAIN1]
+
+T1 Eldrazi Tron | life=20 mana=1 hand=4+2L gy=0
+  Hand: ['Thought-Knot Seer', 'All Is Dust', 'Reality Smasher', 'Expedition Map']
+  Opp board: [] (life=20)
+  EV scores:
+      -0.0  cast_spell: Expedition Map <--  [h=-0.0 la=-0.0]
+  >>> CAST_SPELL: Expedition Map
+  [MAIN1]
+
+T1 Eldrazi Tron | life=20 mana=0 hand=3+2L gy=0
+  Hand: ['Thought-Knot Seer', 'All Is Dust', 'Reality Smasher']
+  Permanents: ['Expedition Map']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T1 Eldrazi Tron | life=20 mana=0 hand=3+2L gy=0
+  Hand: ['Thought-Knot Seer', 'All Is Dust', 'Reality Smasher']
+  Permanents: ['Expedition Map']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T2 Ruby Storm | life=20 mana=0 hand=6+2L gy=0
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Desperate Ritual', 'Past in Flames', 'Reckless Impulse', 'Wish']
+  Opp board: [] (life=20)
+  EV scores:
+     +41.0  play_land: Bloodstained Mire <--
+     +41.0  play_land: Scalding Tarn
+  >>> PLAY_LAND: Bloodstained Mire
+  [MAIN1]
+
+T2 Ruby Storm | life=17 mana=1 hand=6+1L gy=1
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Desperate Ritual', 'Past in Flames', 'Reckless Impulse', 'Wish']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T2 Ruby Storm | life=17 mana=1 hand=6+1L gy=1
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Desperate Ritual', 'Past in Flames', 'Reckless Impulse', 'Wish']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T3 Eldrazi Tron | life=20 mana=1 hand=4+2L gy=0
+  Hand: ['Thought-Knot Seer', 'All Is Dust', 'Reality Smasher', 'Walking Ballista']
+  Permanents: ['Expedition Map']
+  Opp board: [] (life=17)
+  EV scores:
+     +48.9  play_land: Urza's Mine <--
+     +15.0  play_land: Wastes
+  >>> PLAY_LAND: Urza's Mine
+  [MAIN1]
+
+T3 Eldrazi Tron | life=20 mana=2 hand=4+1L gy=0
+  Hand: ['Thought-Knot Seer', 'All Is Dust', 'Reality Smasher', 'Walking Ballista']
+  Permanents: ['Expedition Map']
+  Opp board: [] (life=17)
+  EV scores:
+      -0.1  cast_spell: Walking Ballista <--  [h=-0.1 la=-0.1 rmv=2%]
+  >>> CAST_SPELL: Walking Ballista
+  [MAIN1]
+
+T3 Eldrazi Tron | life=20 mana=0 hand=3+1L gy=1
+  Hand: ['Thought-Knot Seer', 'All Is Dust', 'Reality Smasher']
+  Permanents: ['Expedition Map']
+  Opp board: [] (life=16)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T3 Eldrazi Tron | life=20 mana=0 hand=3+2L gy=2
+  Hand: ['Thought-Knot Seer', 'All Is Dust', 'Reality Smasher']
+  Opp board: [] (life=16)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T4 Ruby Storm | life=16 mana=1 hand=7+1L gy=1
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Desperate Ritual', 'Past in Flames', 'Reckless Impulse', 'Wish', 'Wish']
+  Opp board: [] (life=20)
+  EV scores:
+     +25.0  play_land: Scalding Tarn <--
+  >>> PLAY_LAND: Scalding Tarn
+  [MAIN1]
+
+T4 Ruby Storm | life=15 mana=2 hand=7+0L gy=2
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Desperate Ritual', 'Past in Flames', 'Reckless Impulse', 'Wish', 'Wish']
+  Opp board: [] (life=20)
+  EV scores:
+      -3.5  cast_spell: Reckless Impulse <--  [h=-3.5 la=-3.5]
+     -13.1  cast_spell: Desperate Ritual  [h=-13.1 la=-13.1]
+  >>> CAST_SPELL: Reckless Impulse
+  [MAIN1]
+
+T4 Ruby Storm | life=15 mana=0 hand=8+0L gy=3
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Desperate Ritual', 'Past in Flames', 'Wish', 'Wish', 'Pyretic Ritual', 'Manamorphose']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T4 Ruby Storm | life=15 mana=0 hand=8+0L gy=3
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Desperate Ritual', 'Past in Flames', 'Wish', 'Wish', 'Pyretic Ritual', 'Manamorphose']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T5 Eldrazi Tron | life=20 mana=2 hand=4+2L gy=2
+  Hand: ['Thought-Knot Seer', 'All Is Dust', 'Reality Smasher', 'Reality Smasher']
+  Opp board: [] (life=15)
+  EV scores:
+     +54.7  play_land: Urza's Tower <--
+     +12.0  play_land: Wastes
+  >>> PLAY_LAND: Urza's Tower
+  [MAIN1]
+
+T5 Eldrazi Tron | life=20 mana=7 hand=4+1L gy=2
+  Hand: ['Thought-Knot Seer', 'All Is Dust', 'Reality Smasher', 'Reality Smasher']
+  Opp board: [] (life=15)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T5 Eldrazi Tron | life=20 mana=7 hand=4+1L gy=2
+  Hand: ['Thought-Knot Seer', 'All Is Dust', 'Reality Smasher', 'Reality Smasher']
+  Opp board: [] (life=15)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T6 Ruby Storm | life=15 mana=2 hand=8+0L gy=4
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Desperate Ritual', 'Wish', 'Wish', 'Pyretic Ritual', 'Manamorphose', 'Reckless Impulse']
+  Opp board: [] (life=20)
+  EV scores:
+      -3.5  cast_spell: Reckless Impulse <--  [h=-3.5 la=-3.5]
+     -17.7  cast_spell: Desperate Ritual  [h=-17.7 la=-17.7]
+     -17.7  cast_spell: Pyretic Ritual  [h=-17.7 la=-17.7]
+     -17.7  cast_spell: Manamorphose  [h=-17.7 la=-17.7]
+  >>> CAST_SPELL: Reckless Impulse
+  [MAIN1]
+
+T6 Ruby Storm | life=15 mana=0 hand=8+1L gy=5
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Desperate Ritual', 'Wish', 'Wish', 'Pyretic Ritual', 'Manamorphose', 'Reckless Impulse']
+  Opp board: [] (life=20)
+  EV scores:
+     +15.0  play_land: Arid Mesa <--
+  >>> PLAY_LAND: Arid Mesa
+  [MAIN1]
+
+T6 Ruby Storm | life=14 mana=0 hand=8+0L gy=6
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Desperate Ritual', 'Wish', 'Wish', 'Pyretic Ritual', 'Manamorphose', 'Reckless Impulse']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T6 Ruby Storm | life=14 mana=0 hand=8+0L gy=6
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Desperate Ritual', 'Wish', 'Wish', 'Pyretic Ritual', 'Manamorphose', 'Reckless Impulse']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T7 Eldrazi Tron | life=20 mana=7 hand=5+1L gy=2
+  Hand: ['Thought-Knot Seer', 'All Is Dust', 'Reality Smasher', 'Reality Smasher', 'Warping Wail']
+  Opp board: [] (life=14)
+  EV scores:
+     +15.0  play_land: Wastes <--
+  >>> PLAY_LAND: Wastes
+  [MAIN1]
+
+T7 Eldrazi Tron | life=20 mana=8 hand=5+0L gy=2
+  Hand: ['Thought-Knot Seer', 'All Is Dust', 'Reality Smasher', 'Reality Smasher', 'Warping Wail']
+  Opp board: [] (life=14)
+  EV scores:
+      +8.0  cast_spell: Thought-Knot Seer <--  [h=+8.0 la=+8.0]
+  >>> CAST_SPELL: Thought-Knot Seer
+  [MAIN1]
+
+T7 Eldrazi Tron | life=20 mana=4 hand=5+0L gy=2
+  Hand: ['All Is Dust', 'Reality Smasher', 'Reality Smasher', 'Warping Wail', 'Chalice of the Void']
+  Board: ['Thought-Knot Seer (4/4)']
+  Opp board: [] (life=14)
+  EV scores:
+      -0.2  cast_spell: Chalice of the Void <--  [h=-0.2 la=-0.2]
+  >>> CAST_SPELL: Chalice of the Void
+  [MAIN1]
+
+T7 Eldrazi Tron | life=20 mana=0 hand=4+0L gy=2
+  Hand: ['All Is Dust', 'Reality Smasher', 'Reality Smasher', 'Warping Wail']
+  Board: ['Thought-Knot Seer (4/4)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=14)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T7 Eldrazi Tron | life=20 mana=0 hand=4+0L gy=2
+  Hand: ['All Is Dust', 'Reality Smasher', 'Reality Smasher', 'Warping Wail']
+  Board: ['Thought-Knot Seer (4/4)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=14)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T8 Ruby Storm | life=14 mana=3 hand=7+0L gy=7
+  Hand: ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Desperate Ritual', 'Wish', 'Pyretic Ritual', 'Manamorphose', 'Reckless Impulse', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Opp board: ['Thought-Knot Seer (4/4)'] (life=20)
+  EV scores:
+      -0.4  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy <--  [h=-0.4 la=-0.4]
+      -0.4  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy  [h=-0.4 la=-0.4]
+      -1.4  cast_spell: Reckless Impulse  [h=-1.4 la=-1.4]
+     -20.6  cast_spell: Manamorphose  [h=-20.6 la=-20.6]
+     -20.7  cast_spell: Desperate Ritual  [h=-20.7 la=-20.7]
+     -20.7  cast_spell: Pyretic Ritual  [h=-20.7 la=-20.7]
+    ... +1 more
+  >>> CAST_SPELL: Ral, Monsoon Mage // Ral, Leyline Prodigy
+  [MAIN1]
+
+T8 Ruby Storm | life=14 mana=1 hand=6+0L gy=8
+  Hand: ['Desperate Ritual', 'Wish', 'Pyretic Ritual', 'Manamorphose', 'Reckless Impulse', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Opp board: ['Thought-Knot Seer (4/4)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T8 Ruby Storm | life=14 mana=1 hand=6+0L gy=8
+  Hand: ['Desperate Ritual', 'Wish', 'Pyretic Ritual', 'Manamorphose', 'Reckless Impulse', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Opp board: ['Thought-Knot Seer (4/4)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T9 Eldrazi Tron | life=20 mana=8 hand=4+1L gy=2
+  Hand: ['All Is Dust', 'Reality Smasher', 'Reality Smasher', 'Warping Wail']
+  Board: ['Thought-Knot Seer (4/4)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=14)
+  EV scores:
+     +15.0  play_land: Urza's Tower <--
+  >>> PLAY_LAND: Urza's Tower
+  [MAIN1]
+
+T9 Eldrazi Tron | life=20 mana=11 hand=4+0L gy=2
+  Hand: ['All Is Dust', 'Reality Smasher', 'Reality Smasher', 'Warping Wail']
+  Board: ['Thought-Knot Seer (4/4)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=14)
+  EV scores:
+      +6.4  cast_spell: Reality Smasher <--  [h=+6.4 la=+6.4 rmv=3%]
+      +6.4  cast_spell: Reality Smasher  [h=+6.4 la=+6.4 rmv=3%]
+  >>> CAST_SPELL: Reality Smasher
+  [MAIN1]
+
+T9 Eldrazi Tron | life=20 mana=6 hand=3+0L gy=2
+  Hand: ['All Is Dust', 'Reality Smasher', 'Warping Wail']
+  Board: ['Thought-Knot Seer (4/4)', 'Reality Smasher (5/5)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=14)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Thought-Knot Seer', 'Reality Smasher']
+  [MAIN2]
+
+T9 Eldrazi Tron | life=20 mana=4 hand=3+0L gy=2
+  Hand: ['All Is Dust', 'Reality Smasher', 'Warping Wail']
+  Board: ['Thought-Knot Seer (4/4)', 'Reality Smasher (5/5)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=5)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T10 Ruby Storm | life=5 mana=3 hand=7+0L gy=8
+  Hand: ['Desperate Ritual', 'Wish', 'Pyretic Ritual', 'Manamorphose', 'Reckless Impulse', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Ruby Medallion']
+  Opp board: ['Thought-Knot Seer (4/4)', 'Reality Smasher (5/5)'] (life=20)
+  EV scores:
+      +4.6  cast_spell: Ruby Medallion <--  [h=+4.6 la=+4.6]
+      -0.3  cast_spell: Reckless Impulse  [h=-0.3 la=-0.3]
+      -0.3  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy  [h=-0.3 la=-0.3 rmv=16%]
+     -21.8  cast_spell: Manamorphose  [h=-21.8 la=-21.8]
+     -21.9  cast_spell: Desperate Ritual  [h=-21.9 la=-21.9]
+     -21.9  cast_spell: Pyretic Ritual  [h=-21.9 la=-21.9]
+    ... +1 more
+  >>> CAST_SPELL: Ruby Medallion
+  [MAIN1]
+
+T10 Ruby Storm | life=5 mana=1 hand=6+0L gy=9
+  Hand: ['Desperate Ritual', 'Wish', 'Pyretic Ritual', 'Manamorphose', 'Reckless Impulse', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Opp board: ['Thought-Knot Seer (4/4)', 'Reality Smasher (5/5)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T10 Ruby Storm | life=5 mana=1 hand=6+0L gy=9
+  Hand: ['Desperate Ritual', 'Wish', 'Pyretic Ritual', 'Manamorphose', 'Reckless Impulse', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Opp board: ['Thought-Knot Seer (4/4)', 'Reality Smasher (5/5)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T11 Eldrazi Tron | life=20 mana=11 hand=4+0L gy=2
+  Hand: ['All Is Dust', 'Reality Smasher', 'Warping Wail', 'Warping Wail']
+  Board: ['Thought-Knot Seer (4/4)', 'Reality Smasher (5/5)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=5)
+  EV scores:
+      -1.3  cast_spell: Reality Smasher <--  [h=-1.3 la=-1.3 rmv=3%]
+  >>> CAST_SPELL: Reality Smasher
+  [MAIN1]
+
+T11 Eldrazi Tron | life=20 mana=6 hand=3+0L gy=2
+  Hand: ['All Is Dust', 'Warping Wail', 'Warping Wail']
+  Board: ['Thought-Knot Seer (4/4)', 'Reality Smasher (5/5)', 'Reality Smasher (5/5)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=5)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Thought-Knot Seer', 'Reality Smasher', 'Reality Smasher']

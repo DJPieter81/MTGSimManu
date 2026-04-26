@@ -1,0 +1,544 @@
+Loaded 21759 cards (0 errors)
+=== Ruby Storm vs Domain Zoo (seed 60540) ===
+Result: Ruby Storm wins T5 via damage
+Life: P1=2 P2=-1
+
+  [MAIN1]
+
+T1 Domain Zoo | life=20 mana=0 hand=3+3L gy=0
+  Hand: ['Ragavan, Nimble Pilferer', 'Lightning Bolt', 'Teferi, Time Raveler']
+  Permanents: ['Leyline of the Guildpact']
+  Opp board: [] (life=20)
+  EV scores:
+     +29.0  play_land: Flooded Strand <--
+     +25.0  play_land: Mountain
+     +11.0  play_land: Lush Portico
+  >>> PLAY_LAND: Flooded Strand
+  [MAIN1]
+
+T1 Domain Zoo | life=17 mana=1 hand=3+2L gy=1
+  Hand: ['Ragavan, Nimble Pilferer', 'Lightning Bolt', 'Teferi, Time Raveler']
+  Permanents: ['Leyline of the Guildpact']
+  Opp board: [] (life=20)
+  EV scores:
+      +2.0  cast_spell: Ragavan, Nimble Pilferer <--  [h=+2.0 la=+2.0]
+      +0.1  cast_spell: Lightning Bolt  [h=+0.1 la=+0.1]
+  >>> CAST_SPELL: Ragavan, Nimble Pilferer
+  [MAIN1]
+
+T1 Domain Zoo | life=17 mana=0 hand=2+2L gy=1
+  Hand: ['Lightning Bolt', 'Teferi, Time Raveler']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Leyline of the Guildpact']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T1 Domain Zoo | life=17 mana=0 hand=2+2L gy=1
+  Hand: ['Lightning Bolt', 'Teferi, Time Raveler']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Leyline of the Guildpact']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T2 Ruby Storm | life=20 mana=0 hand=4+4L gy=0
+  Hand: ["Wrenn's Resolve", 'Pyretic Ritual', 'Ruby Medallion', 'Past in Flames']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  EV scores:
+     +32.0  play_land: Wooded Foothills <--
+     +32.0  play_land: Scalding Tarn
+     +27.0  play_land: Thundering Falls
+     +25.0  play_land: Mountain
+  >>> PLAY_LAND: Wooded Foothills
+  [MAIN1]
+
+T2 Ruby Storm | life=17 mana=1 hand=4+3L gy=1
+  Hand: ["Wrenn's Resolve", 'Pyretic Ritual', 'Ruby Medallion', 'Past in Flames']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T2 Ruby Storm | life=17 mana=1 hand=4+3L gy=1
+  Hand: ["Wrenn's Resolve", 'Pyretic Ritual', 'Ruby Medallion', 'Past in Flames']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T3 Domain Zoo | life=17 mana=1 hand=2+3L gy=1
+  Hand: ['Lightning Bolt', 'Teferi, Time Raveler']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Leyline of the Guildpact']
+  Opp board: [] (life=17)
+  EV scores:
+     +22.0  play_land: Indatha Triome <--
+     +18.0  play_land: Lush Portico
+     +15.0  play_land: Mountain
+      +2.1  cast_spell: Lightning Bolt  [h=+2.1 la=+2.1]
+  >>> PLAY_LAND: Indatha Triome
+  [MAIN1]
+
+T3 Domain Zoo | life=17 mana=1 hand=2+2L gy=1
+  Hand: ['Lightning Bolt', 'Teferi, Time Raveler']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Leyline of the Guildpact']
+  Opp board: [] (life=17)
+  EV scores:
+      +2.1  cast_spell: Lightning Bolt <--  [h=+2.1 la=+2.1]
+  >>> CAST_SPELL: Lightning Bolt
+  [MAIN1]
+
+T3 Domain Zoo | life=17 mana=0 hand=1+2L gy=2
+  Hand: ['Teferi, Time Raveler']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Leyline of the Guildpact']
+  Opp board: [] (life=14)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ragavan, Nimble Pilferer']
+  [MAIN2]
+
+T3 Domain Zoo | life=17 mana=0 hand=1+3L gy=2
+  Hand: ['Teferi, Time Raveler']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Leyline of the Guildpact', 'Treasure Token']
+  Opp board: [] (life=12)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T4 Ruby Storm | life=12 mana=1 hand=5+3L gy=1
+  Hand: ["Wrenn's Resolve", 'Pyretic Ritual', 'Ruby Medallion', 'Past in Flames', 'Manamorphose']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  EV scores:
+     +22.0  play_land: Scalding Tarn <--
+     +15.0  play_land: Mountain
+     +11.0  play_land: Thundering Falls
+  >>> PLAY_LAND: Scalding Tarn
+  [MAIN1]
+
+T4 Ruby Storm | life=11 mana=2 hand=5+2L gy=2
+  Hand: ["Wrenn's Resolve", 'Pyretic Ritual', 'Ruby Medallion', 'Past in Flames', 'Manamorphose']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  EV scores:
+     +11.6  cast_spell: Ruby Medallion <--  [h=+11.6 la=+11.6]
+      -1.4  cast_spell: Wrenn's Resolve  [h=-1.4 la=-1.4]
+    -998.9  cast_spell: Pyretic Ritual  [h=-998.9 la=-998.9]
+    -999.0  cast_spell: Manamorphose  [h=-999.0 la=-999.0]
+  >>> CAST_SPELL: Wrenn's Resolve
+  [MAIN1]
+
+T4 Ruby Storm | life=11 mana=0 hand=6+2L gy=3
+  Hand: ['Pyretic Ritual', 'Ruby Medallion', 'Past in Flames', 'Manamorphose', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Valakut Awakening // Valakut Stoneforge']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T4 Ruby Storm | life=11 mana=0 hand=6+2L gy=3
+  Hand: ['Pyretic Ritual', 'Ruby Medallion', 'Past in Flames', 'Manamorphose', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Valakut Awakening // Valakut Stoneforge']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T5 Domain Zoo | life=17 mana=2 hand=2+2L gy=2
+  Hand: ['Teferi, Time Raveler', 'Territorial Kavu']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Leyline of the Guildpact', 'Treasure Token']
+  Opp board: [] (life=11)
+  EV scores:
+     +15.0  play_land: Mountain <--
+      +7.0  play_land: Lush Portico
+      +0.1  cast_spell: Territorial Kavu  [h=+0.1 la=+0.1]
+  >>> PLAY_LAND: Mountain
+  [MAIN1]
+
+T5 Domain Zoo | life=17 mana=3 hand=2+1L gy=2
+  Hand: ['Teferi, Time Raveler', 'Territorial Kavu']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Leyline of the Guildpact', 'Treasure Token']
+  Opp board: [] (life=11)
+  EV scores:
+     +18.6  cast_spell: Teferi, Time Raveler <--  [h=+18.6 la=+18.6]
+      +0.4  cast_spell: Territorial Kavu  [h=+0.4 la=+0.4]
+  >>> CAST_SPELL: Teferi, Time Raveler
+  [MAIN1]
+
+T5 Domain Zoo | life=17 mana=0 hand=2+1L gy=2
+  Hand: ['Territorial Kavu', 'Doorkeeper Thrull']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Leyline of the Guildpact', 'Treasure Token', 'Teferi, Time Raveler']
+  Opp board: [] (life=11)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ragavan, Nimble Pilferer']
+  [MAIN2]
+
+T5 Domain Zoo | life=17 mana=0 hand=2+2L gy=2
+  Hand: ['Territorial Kavu', 'Doorkeeper Thrull']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Leyline of the Guildpact', 'Treasure Token', 'Teferi, Time Raveler', 'Treasure Token']
+  Opp board: [] (life=9)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T6 Ruby Storm | life=9 mana=2 hand=5+3L gy=4
+  Hand: ['Pyretic Ritual', 'Ruby Medallion', 'Manamorphose', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Valakut Awakening // Valakut Stoneforge']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  EV scores:
+     +15.0  play_land: Mountain <--
+     +14.0  play_land: Thundering Falls
+      +9.7  cast_spell: Ruby Medallion  [h=+9.7 la=+9.7]
+      +7.0  play_land: Elegant Parlor
+    -998.8  cast_spell: Pyretic Ritual  [h=-998.8 la=-998.8]
+    -999.0  cast_spell: Manamorphose  [h=-999.0 la=-999.0]
+  >>> PLAY_LAND: Mountain
+  [MAIN1]
+
+T6 Ruby Storm | life=9 mana=3 hand=5+2L gy=4
+  Hand: ['Pyretic Ritual', 'Ruby Medallion', 'Manamorphose', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Valakut Awakening // Valakut Stoneforge']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  EV scores:
+     +14.6  cast_spell: Ruby Medallion <--  [h=+14.6 la=+14.6]
+      -2.7  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-2.7 la=-2.7]
+    -1000.0  cast_spell: Manamorphose  [h=-1000.0 la=-1000.0]
+    -1000.1  cast_spell: Pyretic Ritual  [h=-1000.1 la=-1000.1]
+  >>> CAST_SPELL: Valakut Awakening // Valakut Stoneforge
+  [MAIN1]
+
+T6 Ruby Storm | life=9 mana=0 hand=5+3L gy=5
+  Hand: ['Pyretic Ritual', 'Ruby Medallion', 'Manamorphose', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T6 Ruby Storm | life=9 mana=0 hand=5+3L gy=5
+  Hand: ['Pyretic Ritual', 'Ruby Medallion', 'Manamorphose', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T7 Domain Zoo | life=17 mana=3 hand=2+2L gy=2
+  Hand: ['Territorial Kavu', 'Doorkeeper Thrull']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Leyline of the Guildpact', 'Treasure Token', 'Teferi, Time Raveler', 'Treasure Token']
+  Opp board: [] (life=9)
+  EV scores:
+     +18.0  play_land: Wooded Foothills <--
+      +7.0  play_land: Lush Portico
+      +4.4  cast_spell: Doorkeeper Thrull  [h=+4.4 la=+4.4]
+      +0.3  cast_spell: Territorial Kavu  [h=+0.3 la=+0.3]
+  >>> PLAY_LAND: Wooded Foothills
+  [MAIN1]
+
+T7 Domain Zoo | life=16 mana=3 hand=2+1L gy=3
+  Hand: ['Territorial Kavu', 'Doorkeeper Thrull']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Leyline of the Guildpact', 'Treasure Token', 'Teferi, Time Raveler', 'Treasure Token']
+  Opp board: [] (life=9)
+  EV scores:
+      +4.6  cast_spell: Doorkeeper Thrull <--  [h=+4.6 la=+4.6]
+      +0.5  cast_spell: Territorial Kavu  [h=+0.5 la=+0.5]
+  >>> CAST_SPELL: Doorkeeper Thrull
+  [MAIN1]
+
+T7 Domain Zoo | life=16 mana=1 hand=1+1L gy=3
+  Hand: ['Territorial Kavu']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)']
+  Permanents: ['Leyline of the Guildpact', 'Treasure Token', 'Teferi, Time Raveler', 'Treasure Token']
+  Opp board: [] (life=9)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ragavan, Nimble Pilferer']
+  [MAIN2]
+
+T7 Domain Zoo | life=16 mana=1 hand=1+2L gy=3
+  Hand: ['Territorial Kavu']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)']
+  Permanents: ['Leyline of the Guildpact', 'Treasure Token', 'Teferi, Time Raveler', 'Treasure Token', 'Treasure Token']
+  Opp board: [] (life=7)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T8 Ruby Storm | life=7 mana=3 hand=6+2L gy=6
+  Hand: ['Pyretic Ritual', 'Ruby Medallion', 'Manamorphose', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot', 'Glimpse the Impossible']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)'] (life=16)
+  EV scores:
+     +46.1  cast_spell: Ruby Medallion <--  [h=+46.1 la=+46.1]
+     +22.0  play_land: Bloodstained Mire
+      +7.0  play_land: Elegant Parlor
+     -10.9  cast_spell: Glimpse the Impossible  [h=-10.9 la=-10.9]
+     -27.2  cast_spell: Manamorphose  [h=-27.2 la=-27.2]
+     -27.3  cast_spell: Pyretic Ritual  [h=-27.3 la=-27.3]
+    ... +1 more
+  >>> PLAY_LAND: Bloodstained Mire
+  [MAIN1]
+
+T8 Ruby Storm | life=6 mana=4 hand=6+1L gy=7
+  Hand: ['Pyretic Ritual', 'Ruby Medallion', 'Manamorphose', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot', 'Glimpse the Impossible']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)'] (life=16)
+  EV scores:
+     +12.6  cast_spell: Ruby Medallion <--  [h=+12.6 la=+12.6]
+     +12.2  cast_spell: Glimpse the Impossible  [h=+12.2 la=+12.2]
+      +2.4  cast_spell: Manamorphose  [h=+2.4 la=+2.4]
+      +2.3  cast_spell: Pyretic Ritual  [h=+2.3 la=+2.3]
+      -6.1  cast_spell: Grapeshot  [h=-6.1 la=-6.1]
+  >>> CAST_SPELL: Glimpse the Impossible
+  [MAIN1]
+
+T8 Ruby Storm | life=6 mana=1 hand=7+2L gy=8
+  Hand: ['Pyretic Ritual', 'Ruby Medallion', 'Manamorphose', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Reckless Impulse']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)'] (life=16)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T8 Ruby Storm | life=6 mana=1 hand=7+2L gy=8
+  Hand: ['Pyretic Ritual', 'Ruby Medallion', 'Manamorphose', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Reckless Impulse']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)'] (life=16)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T9 Domain Zoo | life=16 mana=4 hand=2+1L gy=3
+  Hand: ['Territorial Kavu', 'Scion of Draco']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)']
+  Permanents: ['Leyline of the Guildpact', 'Treasure Token', 'Teferi, Time Raveler', 'Treasure Token', 'Treasure Token']
+  Opp board: [] (life=6)
+  EV scores:
+     +11.9  cast_spell: Scion of Draco <--  [h=+11.9 la=+11.9 rmv=3%]
+      +7.0  play_land: Lush Portico
+      +0.2  cast_spell: Territorial Kavu  [h=+0.2 la=+0.2 rmv=4%]
+  >>> CAST_SPELL: Scion of Draco
+  [MAIN1]
+
+T9 Domain Zoo | life=16 mana=2 hand=1+1L gy=3
+  Hand: ['Territorial Kavu']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)']
+  Permanents: ['Leyline of the Guildpact', 'Treasure Token', 'Teferi, Time Raveler', 'Treasure Token', 'Treasure Token']
+  Opp board: [] (life=6)
+  EV scores:
+      +7.0  play_land: Lush Portico <--
+      +0.8  cast_spell: Territorial Kavu  [h=+0.8 la=+0.8 rmv=4%]
+  >>> PLAY_LAND: Lush Portico
+  [MAIN1]
+
+T9 Domain Zoo | life=16 mana=2 hand=1+0L gy=3
+  Hand: ['Territorial Kavu']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)']
+  Permanents: ['Leyline of the Guildpact', 'Treasure Token', 'Teferi, Time Raveler', 'Treasure Token', 'Treasure Token']
+  Opp board: [] (life=6)
+  EV scores:
+      +1.0  cast_spell: Territorial Kavu <--  [h=+1.0 la=+1.0 rmv=4%]
+  >>> CAST_SPELL: Territorial Kavu
+  [MAIN1]
+
+T9 Domain Zoo | life=16 mana=0 hand=0+0L gy=3
+  Hand: []
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Territorial Kavu (4/4)']
+  Permanents: ['Leyline of the Guildpact', 'Treasure Token', 'Teferi, Time Raveler', 'Treasure Token', 'Treasure Token']
+  Opp board: [] (life=6)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ragavan, Nimble Pilferer', 'Doorkeeper Thrull']
+  [MAIN2]
+
+T9 Domain Zoo | life=16 mana=0 hand=1+0L gy=3
+  Hand: ["Wrenn's Resolve"]
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Territorial Kavu (4/4)']
+  Permanents: ['Leyline of the Guildpact', 'Treasure Token', 'Teferi, Time Raveler', 'Treasure Token', 'Treasure Token', 'Treasure Token']
+  Opp board: [] (life=3)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T10 Ruby Storm | life=3 mana=4 hand=7+1L gy=10
+  Hand: ['Ruby Medallion', 'Manamorphose', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Reckless Impulse', 'Pyretic Ritual']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Territorial Kavu (4/4)'] (life=16)
+  EV scores:
+     +52.1  cast_spell: Ruby Medallion <--  [h=+52.1 la=+52.1]
+     +21.8  cast_spell: Reckless Impulse  [h=+21.8 la=+21.8]
+      +7.0  play_land: Elegant Parlor
+      +2.5  cast_spell: Manamorphose  [h=+2.5 la=+2.5]
+      +2.4  cast_spell: Pyretic Ritual  [h=+2.4 la=+2.4]
+     -18.0  cast_spell: Grapeshot  [h=-18.0 la=-18.0]
+  >>> CAST_SPELL: Ruby Medallion
+  [MAIN1]
+
+T10 Ruby Storm | life=3 mana=2 hand=6+1L gy=10
+  Hand: ['Manamorphose', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Reckless Impulse', 'Pyretic Ritual']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Territorial Kavu (4/4)'] (life=16)
+  EV scores:
+     +14.8  cast_spell: Pyretic Ritual <--  [h=+14.8 la=+14.8]
+     +14.5  cast_spell: Manamorphose  [h=+14.5 la=+14.5]
+     +12.9  cast_spell: Reckless Impulse  [h=+12.9 la=+12.9]
+      +7.0  play_land: Elegant Parlor
+     -12.4  cast_spell: Grapeshot  [h=-12.4 la=-12.4]
+  >>> CAST_SPELL: Pyretic Ritual
+  [MAIN1]
+
+T10 Ruby Storm | life=3 mana=4 hand=5+1L gy=11
+  Hand: ['Manamorphose', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Reckless Impulse']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Territorial Kavu (4/4)'] (life=16)
+  EV scores:
+     +16.8  cast_spell: Manamorphose <--  [h=+16.8 la=+16.8]
+     +16.4  cast_spell: Reckless Impulse  [h=+16.4 la=+16.4]
+      +7.0  play_land: Elegant Parlor
+     -10.2  cast_spell: Grapeshot  [h=-10.2 la=-10.2]
+  >>> CAST_SPELL: Manamorphose
+  [MAIN1]
+
+T10 Ruby Storm | life=3 mana=5 hand=5+1L gy=12
+  Hand: ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Reckless Impulse', 'Desperate Ritual']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Territorial Kavu (4/4)'] (life=16)
+  EV scores:
+     +16.7  cast_spell: Desperate Ritual <--  [h=+16.7 la=+16.7]
+     +16.7  cast_spell: Reckless Impulse  [h=+16.7 la=+16.7]
+      +7.0  play_land: Elegant Parlor
+      -9.9  cast_spell: Grapeshot  [h=-9.9 la=-9.9]
+  >>> CAST_SPELL: Desperate Ritual
+  [MAIN1]
+
+T10 Ruby Storm | life=3 mana=7 hand=4+1L gy=13
+  Hand: ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Reckless Impulse']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Territorial Kavu (4/4)'] (life=16)
+  EV scores:
+     +11.1  cast_spell: Reckless Impulse <--  [h=+11.1 la=+11.1]
+      +7.0  play_land: Elegant Parlor
+      -8.9  cast_spell: Grapeshot  [h=-8.9 la=-8.9]
+  >>> CAST_SPELL: Reckless Impulse
+  [MAIN1]
+
+T10 Ruby Storm | life=3 mana=6 hand=4+2L gy=14
+  Hand: ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Wish']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Territorial Kavu (4/4)'] (life=16)
+  EV scores:
+     +18.0  play_land: Arid Mesa <--
+      +7.0  play_land: Elegant Parlor
+     -13.6  cast_spell: Wish  [h=-13.6 la=-13.6]
+     -14.5  cast_spell: Grapeshot  [h=-14.5 la=-14.5]
+  >>> PLAY_LAND: Arid Mesa
+  [MAIN1]
+
+T10 Ruby Storm | life=2 mana=7 hand=4+1L gy=15
+  Hand: ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Wish']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Territorial Kavu (4/4)'] (life=16)
+  EV scores:
+     -13.7  cast_spell: Wish <--  [h=-13.7 la=-13.7]
+     -14.6  cast_spell: Grapeshot  [h=-14.6 la=-14.6]
+  >>> CAST_SPELL: Past in Flames
+  [MAIN1]
+
+T10 Ruby Storm | life=2 mana=4 hand=4+1L gy=14
+  Hand: ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Wish']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Territorial Kavu (4/4)'] (life=16)
+  EV scores:
+     -14.8  cast_spell: Grapeshot <--  [h=-14.8 la=-14.8]
+     -22.1  cast_spell: Wish  [h=-22.1 la=-22.1]
+  >>> CAST_SPELL: Manamorphose
+  [MAIN1]
+
+T10 Ruby Storm | life=2 mana=5 hand=5+1L gy=13
+  Hand: ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Wish', 'Manamorphose']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Territorial Kavu (4/4)'] (life=16)
+  EV scores:
+     +11.2  cast_spell: Manamorphose <--  [h=+11.2 la=+11.2]
+     -15.6  cast_spell: Grapeshot  [h=-15.6 la=-15.6]
+     -20.6  cast_spell: Wish  [h=-20.6 la=-20.6]
+  >>> CAST_SPELL: Manamorphose
+  [MAIN1]
+
+T10 Ruby Storm | life=2 mana=6 hand=5+1L gy=14
+  Hand: ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Wish', 'Desperate Ritual']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Territorial Kavu (4/4)'] (life=16)
+  EV scores:
+     +11.1  cast_spell: Desperate Ritual <--  [h=+11.1 la=+11.1]
+     -15.6  cast_spell: Grapeshot  [h=-15.6 la=-15.6]
+     -20.3  cast_spell: Wish  [h=-20.3 la=-20.3]
+  >>> CAST_SPELL: Desperate Ritual
+  [MAIN1]
+
+T10 Ruby Storm | life=2 mana=8 hand=4+1L gy=15
+  Hand: ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Wish']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Territorial Kavu (4/4)'] (life=16)
+  EV scores:
+     -13.7  cast_spell: Wish <--  [h=-13.7 la=-13.7]
+     -14.5  cast_spell: Grapeshot  [h=-14.5 la=-14.5]
+  >>> CAST_SPELL: Pyretic Ritual
+  [MAIN1]
+
+T10 Ruby Storm | life=2 mana=10 hand=4+1L gy=14
+  Hand: ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Wish']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Territorial Kavu (4/4)'] (life=16)
+  EV scores:
+     -13.6  cast_spell: Wish <--  [h=-13.6 la=-13.6]
+     -14.5  cast_spell: Grapeshot  [h=-14.5 la=-14.5]
+  >>> CAST_SPELL: Pyretic Ritual
+  [MAIN1]
+
+T10 Ruby Storm | life=2 mana=12 hand=4+1L gy=13
+  Hand: ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Wish']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Territorial Kavu (4/4)'] (life=16)
+  EV scores:
+     -13.6  cast_spell: Wish <--  [h=-13.6 la=-13.6]
+     -14.5  cast_spell: Grapeshot  [h=-14.5 la=-14.5]
+  >>> CAST_SPELL: Desperate Ritual
+  [MAIN1]
+
+T10 Ruby Storm | life=2 mana=14 hand=4+1L gy=12
+  Hand: ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Wish']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Territorial Kavu (4/4)'] (life=16)
+  EV scores:
+     -13.6  cast_spell: Wish <--  [h=-13.6 la=-13.6]
+     -14.5  cast_spell: Grapeshot  [h=-14.5 la=-14.5]
+  >>> CAST_SPELL: Wrenn's Resolve
+  [MAIN1]
+
+T10 Ruby Storm | life=2 mana=13 hand=6+1L gy=11
+  Hand: ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Wish', 'Pyretic Ritual', 'Reckless Impulse']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Territorial Kavu (4/4)'] (life=16)
+  EV scores:
+     +16.6  cast_spell: Pyretic Ritual <--  [h=+16.6 la=+16.6]
+     +16.6  cast_spell: Reckless Impulse  [h=+16.6 la=+16.6]
+     -16.5  cast_spell: Grapeshot  [h=-16.5 la=-16.5]
+     -26.8  cast_spell: Wish  [h=-26.8 la=-26.8]
+  >>> CAST_SPELL: Pyretic Ritual
+  [MAIN1]
+
+T10 Ruby Storm | life=2 mana=15 hand=5+1L gy=12
+  Hand: ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Wish', 'Reckless Impulse']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Territorial Kavu (4/4)'] (life=16)
+  EV scores:
+     +11.0  cast_spell: Reckless Impulse <--  [h=+11.0 la=+11.0]
+     -15.5  cast_spell: Grapeshot  [h=-15.5 la=-15.5]
+     -20.2  cast_spell: Wish  [h=-20.2 la=-20.2]
+  >>> CAST_SPELL: Reckless Impulse
+  [MAIN1]
+
+T10 Ruby Storm | life=2 mana=14 hand=6+1L gy=13
+  Hand: ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Wish', 'Ruby Medallion', 'Valakut Awakening // Valakut Stoneforge']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Territorial Kavu (4/4)'] (life=16)
+  EV scores:
+    +144.9  cast_spell: Ruby Medallion <--  [h=+144.9 la=+144.9]
+    +122.4  cast_spell: Grapeshot  [h=+122.4 la=+122.4]
+    +105.5  cast_spell: Wish  [h=+105.5 la=+105.5]
+     +16.4  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=+16.4 la=+16.4]
+  >>> CAST_SPELL: Ruby Medallion
+  [MAIN1]
+
+T10 Ruby Storm | life=2 mana=12 hand=5+1L gy=13
+  Hand: ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Wish', 'Valakut Awakening // Valakut Stoneforge']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Doorkeeper Thrull (1/2)', 'Scion of Draco (4/4)', 'Territorial Kavu (4/4)'] (life=16)
+  EV scores:
+    +122.7  cast_spell: Grapeshot <--  [h=+122.7 la=+122.7]
+    +105.8  cast_spell: Wish  [h=+105.8 la=+105.8]
+     +16.4  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=+16.4 la=+16.4]
+  >>> CAST_SPELL: Grapeshot

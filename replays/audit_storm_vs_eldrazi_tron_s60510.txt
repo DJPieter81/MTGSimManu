@@ -1,0 +1,595 @@
+Loaded 21759 cards (0 errors)
+=== Ruby Storm vs Eldrazi Tron (seed 60510) ===
+Result: Eldrazi Tron wins T7 via damage
+Life: P1=-8 P2=20
+
+  [MAIN1]
+
+T1 Ruby Storm | life=20 mana=0 hand=4+3L gy=0
+  Hand: ['Manamorphose', 'Wish', "Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Opp board: [] (life=20)
+  EV scores:
+     +45.0  play_land: Gemstone Caverns <--
+     +32.0  play_land: Bloodstained Mire
+     +29.0  play_land: Sacred Foundry
+  >>> PLAY_LAND: Gemstone Caverns
+  [MAIN1]
+
+T1 Ruby Storm | life=20 mana=1 hand=4+2L gy=0
+  Hand: ['Manamorphose', 'Wish', "Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T1 Ruby Storm | life=20 mana=1 hand=4+2L gy=0
+  Hand: ['Manamorphose', 'Wish', "Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T2 Eldrazi Tron | life=20 mana=0 hand=6+2L gy=0
+  Hand: ['Chalice of the Void', 'Eldrazi Mimic', 'Matter Reshaper', 'Thought-Knot Seer', 'Reality Smasher', 'Reality Smasher']
+  Opp board: [] (life=20)
+  EV scores:
+     +46.8  play_land: Urza's Mine <--
+     +46.8  play_land: Urza's Mine
+  >>> PLAY_LAND: Urza's Mine
+  [MAIN1]
+
+T2 Eldrazi Tron | life=20 mana=1 hand=6+1L gy=0
+  Hand: ['Chalice of the Void', 'Eldrazi Mimic', 'Matter Reshaper', 'Thought-Knot Seer', 'Reality Smasher', 'Reality Smasher']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T2 Eldrazi Tron | life=20 mana=1 hand=6+1L gy=0
+  Hand: ['Chalice of the Void', 'Eldrazi Mimic', 'Matter Reshaper', 'Thought-Knot Seer', 'Reality Smasher', 'Reality Smasher']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T3 Ruby Storm | life=20 mana=1 hand=5+2L gy=0
+  Hand: ['Manamorphose', 'Wish', "Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Ruby Medallion']
+  Opp board: [] (life=20)
+  EV scores:
+     +18.0  play_land: Bloodstained Mire <--
+     +15.0  play_land: Sacred Foundry
+  >>> PLAY_LAND: Bloodstained Mire
+  [MAIN1]
+
+T3 Ruby Storm | life=19 mana=2 hand=5+1L gy=1
+  Hand: ['Manamorphose', 'Wish', "Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Ruby Medallion']
+  Opp board: [] (life=20)
+  EV scores:
+      +9.9  cast_spell: Ruby Medallion <--  [h=+9.9 la=+9.9]
+      +0.9  cast_spell: Manamorphose  [h=+0.9 la=+0.9]
+      -3.3  cast_spell: Wrenn's Resolve  [h=-3.3 la=-3.3]
+      -3.3  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy  [h=-3.3 la=-3.3 rmv=28%]
+  >>> CAST_SPELL: Manamorphose
+  [MAIN1]
+
+T3 Ruby Storm | life=19 mana=2 hand=5+1L gy=2
+  Hand: ['Wish', "Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Ruby Medallion', 'Pyretic Ritual']
+  Opp board: [] (life=20)
+  EV scores:
+      -0.0  cast_spell: Ruby Medallion <--  [h=-0.0 la=-0.0]
+      -0.1  cast_spell: Pyretic Ritual  [h=-0.1 la=-0.1]
+     -10.0  cast_spell: Wrenn's Resolve  [h=-10.0 la=-10.0]
+  >>> CAST_SPELL: Ruby Medallion
+  [MAIN1]
+
+T3 Ruby Storm | life=19 mana=0 hand=4+1L gy=2
+  Hand: ['Wish', "Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Pyretic Ritual']
+  Permanents: ['Ruby Medallion']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T3 Ruby Storm | life=19 mana=0 hand=4+1L gy=2
+  Hand: ['Wish', "Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Pyretic Ritual']
+  Permanents: ['Ruby Medallion']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T4 Eldrazi Tron | life=20 mana=1 hand=7+1L gy=0
+  Hand: ['Chalice of the Void', 'Eldrazi Mimic', 'Matter Reshaper', 'Thought-Knot Seer', 'Reality Smasher', 'Reality Smasher', 'Ugin, the Spirit Dragon']
+  Opp board: [] (life=19)
+  EV scores:
+     +15.0  play_land: Urza's Mine <--
+  >>> PLAY_LAND: Urza's Mine
+  [MAIN1]
+
+T4 Eldrazi Tron | life=20 mana=2 hand=7+0L gy=0
+  Hand: ['Chalice of the Void', 'Eldrazi Mimic', 'Matter Reshaper', 'Thought-Knot Seer', 'Reality Smasher', 'Reality Smasher', 'Ugin, the Spirit Dragon']
+  Opp board: [] (life=19)
+  EV scores:
+      +1.7  cast_spell: Eldrazi Mimic <--  [h=+1.7 la=+1.7]
+      -0.1  cast_spell: Chalice of the Void  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Eldrazi Mimic
+  [MAIN1]
+
+T4 Eldrazi Tron | life=20 mana=0 hand=6+0L gy=0
+  Hand: ['Chalice of the Void', 'Matter Reshaper', 'Thought-Knot Seer', 'Reality Smasher', 'Reality Smasher', 'Ugin, the Spirit Dragon']
+  Board: ['Eldrazi Mimic (2/1)']
+  Opp board: [] (life=19)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T4 Eldrazi Tron | life=20 mana=0 hand=6+0L gy=0
+  Hand: ['Chalice of the Void', 'Matter Reshaper', 'Thought-Knot Seer', 'Reality Smasher', 'Reality Smasher', 'Ugin, the Spirit Dragon']
+  Board: ['Eldrazi Mimic (2/1)']
+  Opp board: [] (life=19)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T5 Ruby Storm | life=19 mana=2 hand=5+1L gy=2
+  Hand: ['Wish', "Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Pyretic Ritual', 'Grapeshot']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Eldrazi Mimic (2/1)'] (life=20)
+  EV scores:
+     +17.0  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy <--  [h=+17.0 la=+17.0]
+     +15.0  play_land: Sacred Foundry
+     -11.1  cast_spell: Wrenn's Resolve  [h=-11.1 la=-11.1]
+     -19.9  cast_spell: Grapeshot  [h=-19.9 la=-19.9]
+     -24.5  cast_spell: Pyretic Ritual  [h=-24.5 la=-24.5]
+     -25.0  cast_spell: Wish  [h=-25.0 la=-25.0]
+  >>> CAST_SPELL: Ral, Monsoon Mage // Ral, Leyline Prodigy
+  [MAIN1]
+
+T5 Ruby Storm | life=19 mana=0 hand=4+1L gy=2
+  Hand: ['Wish', "Wrenn's Resolve", 'Pyretic Ritual', 'Grapeshot']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Eldrazi Mimic (2/1)'] (life=20)
+  EV scores:
+     +12.0  play_land: Sacred Foundry <--
+  >>> PLAY_LAND: Sacred Foundry
+  [MAIN1]
+
+T5 Ruby Storm | life=17 mana=1 hand=4+0L gy=2
+  Hand: ['Wish', "Wrenn's Resolve", 'Pyretic Ritual', 'Grapeshot']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Eldrazi Mimic (2/1)'] (life=20)
+  EV scores:
+      +1.8  cast_spell: Pyretic Ritual <--  [h=+1.8 la=+1.8]
+      -0.0  cast_spell: Wrenn's Resolve  [h=-0.0 la=-0.0]
+     -10.2  cast_spell: Wish  [h=-10.2 la=-10.2]
+     -18.8  cast_spell: Grapeshot  [h=-18.8 la=-18.8]
+  >>> CAST_SPELL: Pyretic Ritual
+  [MAIN1]
+
+T5 Ruby Storm | life=17 mana=3 hand=3+0L gy=3
+  Hand: ['Wish', "Wrenn's Resolve", 'Grapeshot']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Eldrazi Mimic (2/1)'] (life=20)
+  EV scores:
+     -10.8  cast_spell: Wrenn's Resolve <--  [h=-10.8 la=-10.8]
+     -14.2  cast_spell: Grapeshot  [h=-14.2 la=-14.2]
+     -17.4  cast_spell: Wish  [h=-17.4 la=-17.4]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T5 Ruby Storm | life=17 mana=0 hand=3+0L gy=3
+  Hand: ['Wish', "Wrenn's Resolve", 'Grapeshot']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Eldrazi Mimic (2/1)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T6 Eldrazi Tron | life=20 mana=2 hand=7+0L gy=0
+  Hand: ['Chalice of the Void', 'Matter Reshaper', 'Thought-Knot Seer', 'Reality Smasher', 'Reality Smasher', 'Ugin, the Spirit Dragon', "Kozilek's Command"]
+  Board: ['Eldrazi Mimic (2/1)']
+  Opp board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)'] (life=17)
+  EV scores:
+      -0.1  cast_spell: Chalice of the Void <--  [h=-0.1 la=-0.1]
+     -15.9  cast_spell: Kozilek's Command  [h=-15.9 la=-15.9]
+  >>> CAST_SPELL: Chalice of the Void
+  [MAIN1]
+
+T6 Eldrazi Tron | life=20 mana=0 hand=6+0L gy=0
+  Hand: ['Matter Reshaper', 'Thought-Knot Seer', 'Reality Smasher', 'Reality Smasher', 'Ugin, the Spirit Dragon', "Kozilek's Command"]
+  Board: ['Eldrazi Mimic (2/1)']
+  Permanents: ['Chalice of the Void']
+  Opp board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Eldrazi Mimic']
+  [MAIN2]
+
+T6 Eldrazi Tron | life=20 mana=0 hand=6+0L gy=1
+  Hand: ['Matter Reshaper', 'Thought-Knot Seer', 'Reality Smasher', 'Reality Smasher', 'Ugin, the Spirit Dragon', "Kozilek's Command"]
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T7 Ruby Storm | life=17 mana=3 hand=4+0L gy=4
+  Hand: ['Wish', "Wrenn's Resolve", 'Grapeshot', 'Reckless Impulse']
+  Permanents: ['Ruby Medallion']
+  Opp board: [] (life=20)
+  EV scores:
+     -19.9  cast_spell: Wrenn's Resolve <--  [h=-19.9 la=-19.9]
+     -19.9  cast_spell: Reckless Impulse  [h=-19.9 la=-19.9]
+     -25.5  cast_spell: Grapeshot  [h=-25.5 la=-25.5]
+     -33.1  cast_spell: Wish  [h=-33.1 la=-33.1]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T7 Ruby Storm | life=17 mana=3 hand=4+0L gy=4
+  Hand: ['Wish', "Wrenn's Resolve", 'Grapeshot', 'Reckless Impulse']
+  Permanents: ['Ruby Medallion']
+  Opp board: [] (life=20)
+  EV scores:
+     -19.9  cast_spell: Wrenn's Resolve <--  [h=-19.9 la=-19.9]
+     -19.9  cast_spell: Reckless Impulse  [h=-19.9 la=-19.9]
+     -25.5  cast_spell: Grapeshot  [h=-25.5 la=-25.5]
+     -33.1  cast_spell: Wish  [h=-33.1 la=-33.1]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T8 Eldrazi Tron | life=20 mana=2 hand=6+1L gy=1
+  Hand: ['Matter Reshaper', 'Thought-Knot Seer', 'Reality Smasher', 'Reality Smasher', 'Ugin, the Spirit Dragon', "Kozilek's Command"]
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=17)
+  EV scores:
+     +15.0  play_land: Wastes <--
+  >>> PLAY_LAND: Wastes
+  [MAIN1]
+
+T8 Eldrazi Tron | life=20 mana=3 hand=6+0L gy=1
+  Hand: ['Matter Reshaper', 'Thought-Knot Seer', 'Reality Smasher', 'Reality Smasher', 'Ugin, the Spirit Dragon', "Kozilek's Command"]
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=17)
+  EV scores:
+      +5.9  cast_spell: Matter Reshaper <--  [h=+5.9 la=+5.9 rmv=7%]
+  >>> CAST_SPELL: Matter Reshaper
+  [MAIN1]
+
+T8 Eldrazi Tron | life=20 mana=0 hand=5+0L gy=1
+  Hand: ['Thought-Knot Seer', 'Reality Smasher', 'Reality Smasher', 'Ugin, the Spirit Dragon', "Kozilek's Command"]
+  Board: ['Matter Reshaper (3/2)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T8 Eldrazi Tron | life=20 mana=0 hand=5+0L gy=1
+  Hand: ['Thought-Knot Seer', 'Reality Smasher', 'Reality Smasher', 'Ugin, the Spirit Dragon', "Kozilek's Command"]
+  Board: ['Matter Reshaper (3/2)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T9 Ruby Storm | life=17 mana=3 hand=5+0L gy=4
+  Hand: ['Wish', "Wrenn's Resolve", 'Grapeshot', 'Reckless Impulse', 'Glimpse the Impossible']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Matter Reshaper (3/2)'] (life=20)
+  EV scores:
+     -10.1  cast_spell: Wrenn's Resolve <--  [h=-10.1 la=-10.1]
+     -10.1  cast_spell: Reckless Impulse  [h=-10.1 la=-10.1]
+     -11.2  cast_spell: Glimpse the Impossible  [h=-11.2 la=-11.2]
+     -12.1  cast_spell: Grapeshot  [h=-12.1 la=-12.1]
+     -27.1  cast_spell: Wish  [h=-27.1 la=-27.1]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T9 Ruby Storm | life=17 mana=3 hand=5+0L gy=4
+  Hand: ['Wish', "Wrenn's Resolve", 'Grapeshot', 'Reckless Impulse', 'Glimpse the Impossible']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Matter Reshaper (3/2)'] (life=20)
+  EV scores:
+     -10.1  cast_spell: Wrenn's Resolve <--  [h=-10.1 la=-10.1]
+     -10.1  cast_spell: Reckless Impulse  [h=-10.1 la=-10.1]
+     -11.2  cast_spell: Glimpse the Impossible  [h=-11.2 la=-11.2]
+     -12.1  cast_spell: Grapeshot  [h=-12.1 la=-12.1]
+     -27.1  cast_spell: Wish  [h=-27.1 la=-27.1]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T10 Eldrazi Tron | life=20 mana=3 hand=5+1L gy=1
+  Hand: ['Thought-Knot Seer', 'Reality Smasher', 'Reality Smasher', 'Ugin, the Spirit Dragon', "Kozilek's Command"]
+  Board: ['Matter Reshaper (3/2)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=17)
+  EV scores:
+     +39.0  play_land: Urza's Tower <--
+  >>> PLAY_LAND: Urza's Tower
+  [MAIN1]
+
+T10 Eldrazi Tron | life=20 mana=4 hand=5+0L gy=1
+  Hand: ['Thought-Knot Seer', 'Reality Smasher', 'Reality Smasher', 'Ugin, the Spirit Dragon', "Kozilek's Command"]
+  Board: ['Matter Reshaper (3/2)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=17)
+  EV scores:
+      +6.5  cast_spell: Thought-Knot Seer <--  [h=+6.5 la=+6.5 rmv=2%]
+  >>> CAST_SPELL: Thought-Knot Seer
+  [MAIN1]
+
+T10 Eldrazi Tron | life=20 mana=0 hand=5+0L gy=1
+  Hand: ['Reality Smasher', 'Reality Smasher', 'Ugin, the Spirit Dragon', "Kozilek's Command", 'Endbringer']
+  Board: ['Matter Reshaper (3/2)', 'Thought-Knot Seer (4/4)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=17)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Matter Reshaper']
+  [MAIN2]
+
+T10 Eldrazi Tron | life=20 mana=0 hand=5+0L gy=1
+  Hand: ['Reality Smasher', 'Reality Smasher', 'Ugin, the Spirit Dragon', "Kozilek's Command", 'Endbringer']
+  Board: ['Matter Reshaper (3/2)', 'Thought-Knot Seer (4/4)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=14)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T11 Ruby Storm | life=14 mana=3 hand=5+0L gy=4
+  Hand: ["Wrenn's Resolve", 'Grapeshot', 'Reckless Impulse', 'Glimpse the Impossible', 'Reckless Impulse']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Matter Reshaper (3/2)', 'Thought-Knot Seer (4/4)'] (life=20)
+  EV scores:
+     +16.6  cast_spell: Wrenn's Resolve <--  [h=+16.6 la=+16.6]
+     +16.6  cast_spell: Reckless Impulse  [h=+16.6 la=+16.6]
+     +16.6  cast_spell: Reckless Impulse  [h=+16.6 la=+16.6]
+     +15.6  cast_spell: Glimpse the Impossible  [h=+15.6 la=+15.6]
+      +9.9  cast_spell: Grapeshot  [h=+9.9 la=+9.9]
+  >>> CAST_SPELL: Wrenn's Resolve
+  [MAIN1]
+
+T11 Ruby Storm | life=14 mana=2 hand=6+0L gy=5
+  Hand: ['Grapeshot', 'Reckless Impulse', 'Glimpse the Impossible', 'Reckless Impulse', 'Valakut Awakening // Valakut Stoneforge', 'Pyretic Ritual']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Matter Reshaper (3/2)', 'Thought-Knot Seer (4/4)'] (life=20)
+  EV scores:
+     +22.0  cast_spell: Pyretic Ritual <--  [h=+22.0 la=+22.0]
+     +21.9  cast_spell: Reckless Impulse  [h=+21.9 la=+21.9]
+     +21.9  cast_spell: Glimpse the Impossible  [h=+21.9 la=+21.9]
+     +21.9  cast_spell: Reckless Impulse  [h=+21.9 la=+21.9]
+     +21.9  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=+21.9 la=+21.9]
+     +10.8  cast_spell: Grapeshot  [h=+10.8 la=+10.8]
+  >>> CAST_SPELL: Pyretic Ritual
+  [MAIN1]
+
+T11 Ruby Storm | life=14 mana=4 hand=5+0L gy=6
+  Hand: ['Grapeshot', 'Reckless Impulse', 'Glimpse the Impossible', 'Reckless Impulse', 'Valakut Awakening // Valakut Stoneforge']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Matter Reshaper (3/2)', 'Thought-Knot Seer (4/4)'] (life=20)
+  EV scores:
+     +26.6  cast_spell: Reckless Impulse <--  [h=+26.6 la=+26.6]
+     +26.6  cast_spell: Reckless Impulse  [h=+26.6 la=+26.6]
+     +16.5  cast_spell: Glimpse the Impossible  [h=+16.5 la=+16.5]
+     +16.5  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=+16.5 la=+16.5]
+     +10.8  cast_spell: Grapeshot  [h=+10.8 la=+10.8]
+  >>> CAST_SPELL: Reckless Impulse
+  [MAIN1]
+
+T11 Ruby Storm | life=14 mana=3 hand=4+2L gy=7
+  Hand: ['Grapeshot', 'Glimpse the Impossible', 'Reckless Impulse', 'Valakut Awakening // Valakut Stoneforge']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Matter Reshaper (3/2)', 'Thought-Knot Seer (4/4)'] (life=20)
+  EV scores:
+     +15.0  play_land: Sunbaked Canyon <--
+     +15.0  play_land: Mountain
+     +11.2  cast_spell: Reckless Impulse  [h=+11.2 la=+11.2]
+     +11.1  cast_spell: Glimpse the Impossible  [h=+11.1 la=+11.1]
+     +11.1  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=+11.1 la=+11.1]
+     +10.8  cast_spell: Grapeshot  [h=+10.8 la=+10.8]
+  >>> PLAY_LAND: Sunbaked Canyon
+  [MAIN1]
+
+T11 Ruby Storm | life=14 mana=4 hand=4+1L gy=7
+  Hand: ['Grapeshot', 'Glimpse the Impossible', 'Reckless Impulse', 'Valakut Awakening // Valakut Stoneforge']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Matter Reshaper (3/2)', 'Thought-Knot Seer (4/4)'] (life=20)
+  EV scores:
+     +21.3  cast_spell: Reckless Impulse <--  [h=+21.3 la=+21.3]
+     +11.2  cast_spell: Glimpse the Impossible  [h=+11.2 la=+11.2]
+     +11.2  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=+11.2 la=+11.2]
+     +10.8  cast_spell: Grapeshot  [h=+10.8 la=+10.8]
+  >>> CAST_SPELL: Reckless Impulse
+  [MAIN1]
+
+T11 Ruby Storm | life=14 mana=3 hand=5+1L gy=8
+  Hand: ['Grapeshot', 'Glimpse the Impossible', 'Valakut Awakening // Valakut Stoneforge', 'Glimpse the Impossible', "Wrenn's Resolve"]
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Matter Reshaper (3/2)', 'Thought-Knot Seer (4/4)'] (life=20)
+  EV scores:
+     +11.2  cast_spell: Wrenn's Resolve <--  [h=+11.2 la=+11.2]
+     +11.1  cast_spell: Glimpse the Impossible  [h=+11.1 la=+11.1]
+     +11.1  cast_spell: Glimpse the Impossible  [h=+11.1 la=+11.1]
+     +11.1  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=+11.1 la=+11.1]
+      +5.4  cast_spell: Grapeshot  [h=+5.4 la=+5.4]
+  >>> CAST_SPELL: Wrenn's Resolve
+  [MAIN1]
+
+T11 Ruby Storm | life=14 mana=2 hand=6+1L gy=9
+  Hand: ['Grapeshot', 'Glimpse the Impossible', 'Valakut Awakening // Valakut Stoneforge', 'Glimpse the Impossible', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Desperate Ritual']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Matter Reshaper (3/2)', 'Thought-Knot Seer (4/4)'] (life=20)
+  EV scores:
+     +49.5  cast_spell: Ral, Monsoon Mage // Ral, Leyline Prodigy <--  [h=+49.5 la=+49.5]
+     +16.7  cast_spell: Desperate Ritual  [h=+16.7 la=+16.7]
+     +16.5  cast_spell: Glimpse the Impossible  [h=+16.5 la=+16.5]
+     +16.5  cast_spell: Glimpse the Impossible  [h=+16.5 la=+16.5]
+     +16.4  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=+16.4 la=+16.4]
+      +5.4  cast_spell: Grapeshot  [h=+5.4 la=+5.4]
+  >>> CAST_SPELL: Ral, Monsoon Mage // Ral, Leyline Prodigy
+  [MAIN1]
+
+T11 Ruby Storm | life=14 mana=0 hand=5+1L gy=9
+  Hand: ['Grapeshot', 'Glimpse the Impossible', 'Valakut Awakening // Valakut Stoneforge', 'Glimpse the Impossible', 'Desperate Ritual']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Matter Reshaper (3/2)', 'Thought-Knot Seer (4/4)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T11 Ruby Storm | life=14 mana=0 hand=5+2L gy=10
+  Hand: ['Grapeshot', 'Glimpse the Impossible', 'Valakut Awakening // Valakut Stoneforge', 'Glimpse the Impossible', 'Desperate Ritual']
+  Board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Matter Reshaper (3/2)', 'Thought-Knot Seer (4/4)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T12 Eldrazi Tron | life=20 mana=4 hand=5+1L gy=1
+  Hand: ['Reality Smasher', 'Reality Smasher', 'Ugin, the Spirit Dragon', "Kozilek's Command", 'Endbringer']
+  Board: ['Matter Reshaper (3/2)', 'Thought-Knot Seer (4/4)']
+  Permanents: ['Chalice of the Void']
+  Opp board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)'] (life=14)
+  EV scores:
+     +19.0  play_land: Ghost Quarter <--
+      -0.2  cast_spell: Kozilek's Command  [h=-0.2 la=-0.2]
+  >>> PLAY_LAND: Ghost Quarter
+  [MAIN1]
+
+T12 Eldrazi Tron | life=20 mana=5 hand=5+0L gy=1
+  Hand: ['Reality Smasher', 'Reality Smasher', 'Ugin, the Spirit Dragon', "Kozilek's Command", 'Endbringer']
+  Board: ['Matter Reshaper (3/2)', 'Thought-Knot Seer (4/4)']
+  Permanents: ['Chalice of the Void']
+  Opp board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)'] (life=14)
+  EV scores:
+      +4.1  cast_spell: Reality Smasher <--  [h=+4.1 la=+4.1]
+      +4.1  cast_spell: Reality Smasher  [h=+4.1 la=+4.1]
+      -0.3  cast_spell: Kozilek's Command  [h=-0.3 la=-0.3]
+  >>> CAST_SPELL: Reality Smasher
+  [MAIN1]
+
+T12 Eldrazi Tron | life=20 mana=0 hand=4+0L gy=1
+  Hand: ['Reality Smasher', 'Ugin, the Spirit Dragon', "Kozilek's Command", 'Endbringer']
+  Board: ['Matter Reshaper (3/2)', 'Thought-Knot Seer (4/4)', 'Reality Smasher (5/5)']
+  Permanents: ['Chalice of the Void']
+  Opp board: ['Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)'] (life=14)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Matter Reshaper', 'Thought-Knot Seer', 'Reality Smasher']
+  [MAIN2]
+
+T12 Eldrazi Tron | life=20 mana=0 hand=4+0L gy=1
+  Hand: ['Reality Smasher', 'Ugin, the Spirit Dragon', "Kozilek's Command", 'Endbringer']
+  Board: ['Matter Reshaper (3/2)', 'Thought-Knot Seer (4/4)', 'Reality Smasher (5/5)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=4)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T13 Ruby Storm | life=4 mana=3 hand=6+2L gy=11
+  Hand: ['Grapeshot', 'Glimpse the Impossible', 'Valakut Awakening // Valakut Stoneforge', 'Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Matter Reshaper (3/2)', 'Thought-Knot Seer (4/4)', 'Reality Smasher (5/5)'] (life=20)
+  EV scores:
+     +16.7  cast_spell: Glimpse the Impossible <--  [h=+16.7 la=+16.7]
+     +16.7  cast_spell: Glimpse the Impossible  [h=+16.7 la=+16.7]
+     +16.7  cast_spell: Past in Flames  [h=+16.7 la=+16.7]
+     +16.7  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=+16.7 la=+16.7]
+     +15.0  play_land: Mountain
+     +15.0  play_land: Mountain
+    ... +2 more
+  >>> CAST_SPELL: Glimpse the Impossible
+  [MAIN1]
+
+T13 Ruby Storm | life=4 mana=1 hand=6+4L gy=12
+  Hand: ['Grapeshot', 'Valakut Awakening // Valakut Stoneforge', 'Glimpse the Impossible', 'Desperate Ritual', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Matter Reshaper (3/2)', 'Thought-Knot Seer (4/4)', 'Reality Smasher (5/5)'] (life=20)
+  EV scores:
+     +22.3  cast_spell: Desperate Ritual <--  [h=+22.3 la=+22.3]
+     +15.0  play_land: Mountain
+     +15.0  play_land: Mountain
+     +15.0  play_land: Mountain
+      +7.0  play_land: Elegant Parlor
+      -5.4  cast_spell: Grapeshot  [h=-5.4 la=-5.4]
+  >>> CAST_SPELL: Desperate Ritual
+  [MAIN1]
+
+T13 Ruby Storm | life=4 mana=3 hand=5+4L gy=13
+  Hand: ['Grapeshot', 'Valakut Awakening // Valakut Stoneforge', 'Glimpse the Impossible', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Matter Reshaper (3/2)', 'Thought-Knot Seer (4/4)', 'Reality Smasher (5/5)'] (life=20)
+  EV scores:
+     +12.0  play_land: Mountain <--
+     +12.0  play_land: Mountain
+     +12.0  play_land: Mountain
+     +10.0  play_land: Elegant Parlor
+      +5.7  cast_spell: Glimpse the Impossible  [h=+5.7 la=+5.7]
+      +5.7  cast_spell: Past in Flames  [h=+5.7 la=+5.7]
+    ... +3 more
+  >>> PLAY_LAND: Mountain
+  [MAIN1]
+
+T13 Ruby Storm | life=4 mana=4 hand=5+3L gy=13
+  Hand: ['Grapeshot', 'Valakut Awakening // Valakut Stoneforge', 'Glimpse the Impossible', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Matter Reshaper (3/2)', 'Thought-Knot Seer (4/4)', 'Reality Smasher (5/5)'] (life=20)
+  EV scores:
+     +11.3  cast_spell: Glimpse the Impossible <--  [h=+11.3 la=+11.3]
+     +11.3  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=+11.3 la=+11.3]
+     +11.3  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=+11.3 la=+11.3]
+     +11.2  cast_spell: Past in Flames  [h=+11.2 la=+11.2]
+      -0.1  cast_spell: Grapeshot  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Glimpse the Impossible
+  [MAIN1]
+
+T13 Ruby Storm | life=4 mana=2 hand=7+3L gy=14
+  Hand: ['Grapeshot', 'Valakut Awakening // Valakut Stoneforge', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', "Wrenn's Resolve", 'Ruby Medallion', 'Wish']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Matter Reshaper (3/2)', 'Thought-Knot Seer (4/4)', 'Reality Smasher (5/5)'] (life=20)
+  EV scores:
+      -7.1  cast_spell: Ruby Medallion <--  [h=-7.1 la=-7.1]
+     -10.4  cast_spell: Wrenn's Resolve  [h=-10.4 la=-10.4]
+     -10.5  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-10.5 la=-10.5]
+     -10.5  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-10.5 la=-10.5]
+     -33.0  cast_spell: Grapeshot  [h=-33.0 la=-33.0]
+     -37.7  cast_spell: Wish  [h=-37.7 la=-37.7]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T13 Ruby Storm | life=4 mana=1 hand=7+3L gy=14
+  Hand: ['Grapeshot', 'Valakut Awakening // Valakut Stoneforge', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', "Wrenn's Resolve", 'Ruby Medallion', 'Wish']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Matter Reshaper (3/2)', 'Thought-Knot Seer (4/4)', 'Reality Smasher (5/5)'] (life=20)
+  EV scores:
+      -0.2  cast_spell: Wrenn's Resolve <--  [h=-0.2 la=-0.2]
+     -32.7  cast_spell: Grapeshot  [h=-32.7 la=-32.7]
+  >>> CAST_SPELL: Wrenn's Resolve
+  [MAIN2]
+
+T13 Ruby Storm | life=4 mana=0 hand=7+4L gy=15
+  Hand: ['Grapeshot', 'Valakut Awakening // Valakut Stoneforge', 'Past in Flames', 'Valakut Awakening // Valakut Stoneforge', 'Ruby Medallion', 'Wish', 'Manamorphose']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Matter Reshaper (3/2)', 'Thought-Knot Seer (4/4)', 'Reality Smasher (5/5)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T14 Eldrazi Tron | life=20 mana=5 hand=4+1L gy=1
+  Hand: ['Reality Smasher', 'Ugin, the Spirit Dragon', "Kozilek's Command", 'Endbringer']
+  Board: ['Matter Reshaper (3/2)', 'Thought-Knot Seer (4/4)', 'Reality Smasher (5/5)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=4)
+  EV scores:
+     +27.0  play_land: Wastes <--
+      -0.3  cast_spell: Reality Smasher  [h=-0.3 la=-0.3]
+  >>> PLAY_LAND: Wastes
+  [MAIN1]
+
+T14 Eldrazi Tron | life=20 mana=6 hand=4+0L gy=1
+  Hand: ['Reality Smasher', 'Ugin, the Spirit Dragon', "Kozilek's Command", 'Endbringer']
+  Board: ['Matter Reshaper (3/2)', 'Thought-Knot Seer (4/4)', 'Reality Smasher (5/5)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=4)
+  EV scores:
+      +0.1  cast_spell: Endbringer <--  [h=+0.1 la=+0.1]
+      -0.1  cast_spell: Reality Smasher  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Endbringer
+  [MAIN1]
+
+T14 Eldrazi Tron | life=20 mana=0 hand=3+0L gy=1
+  Hand: ['Reality Smasher', 'Ugin, the Spirit Dragon', "Kozilek's Command"]
+  Board: ['Matter Reshaper (3/2)', 'Thought-Knot Seer (4/4)', 'Reality Smasher (5/5)', 'Endbringer (5/5)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=4)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Matter Reshaper', 'Thought-Knot Seer', 'Reality Smasher']

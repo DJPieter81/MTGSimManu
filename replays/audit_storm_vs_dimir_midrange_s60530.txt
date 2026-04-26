@@ -1,0 +1,369 @@
+Loaded 21759 cards (0 errors)
+=== Ruby Storm vs Dimir Midrange (seed 60530) ===
+Result: Dimir Midrange wins T8 via damage
+Life: P1=-6 P2=15
+
+  [MAIN1]
+
+T1 Dimir Midrange | life=20 mana=0 hand=5+2L gy=0
+  Hand: ['Psychic Frog', 'Subtlety', 'Psychic Frog', 'Counterspell', 'Counterspell']
+  Opp board: [] (life=20)
+  EV scores:
+     +33.0  play_land: Creeping Tar Pit <--
+     +22.0  play_land: Takenuma, Abandoned Mire
+  >>> PLAY_LAND: Creeping Tar Pit
+  [MAIN1]
+
+T1 Dimir Midrange | life=20 mana=0 hand=5+1L gy=0
+  Hand: ['Psychic Frog', 'Subtlety', 'Psychic Frog', 'Counterspell', 'Counterspell']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-3.0)
+  [MAIN2]
+
+T1 Dimir Midrange | life=20 mana=0 hand=5+1L gy=0
+  Hand: ['Psychic Frog', 'Subtlety', 'Psychic Frog', 'Counterspell', 'Counterspell']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-3.0)
+  [MAIN1]
+
+T2 Ruby Storm | life=20 mana=0 hand=7+1L gy=0
+  Hand: ["Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse']
+  Opp board: [] (life=20)
+  EV scores:
+     +37.0  play_land: Mountain <--
+  >>> PLAY_LAND: Mountain
+  [MAIN1]
+
+T2 Ruby Storm | life=20 mana=1 hand=7+0L gy=0
+  Hand: ["Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T2 Ruby Storm | life=20 mana=1 hand=7+0L gy=0
+  Hand: ["Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T3 Dimir Midrange | life=20 mana=1 hand=5+2L gy=0
+  Hand: ['Psychic Frog', 'Subtlety', 'Psychic Frog', 'Counterspell', 'Counterspell']
+  Opp board: [] (life=20)
+  EV scores:
+     +22.0  play_land: Scalding Tarn <--
+     +15.0  play_land: Takenuma, Abandoned Mire
+  >>> PLAY_LAND: Scalding Tarn
+  [MAIN1]
+
+T3 Dimir Midrange | life=17 mana=2 hand=5+1L gy=1
+  Hand: ['Psychic Frog', 'Subtlety', 'Psychic Frog', 'Counterspell', 'Counterspell']
+  Opp board: [] (life=20)
+  EV scores:
+     -23.5  cast_spell: Psychic Frog <--  [h=-23.5 la=-23.5 rmv=2%]
+     -23.5  cast_spell: Psychic Frog  [h=-23.5 la=-23.5 rmv=2%]
+  >>> PASS (threshold=-3.0)
+  [MAIN2]
+
+T3 Dimir Midrange | life=17 mana=2 hand=5+1L gy=1
+  Hand: ['Psychic Frog', 'Subtlety', 'Psychic Frog', 'Counterspell', 'Counterspell']
+  Opp board: [] (life=20)
+  EV scores:
+     -23.5  cast_spell: Psychic Frog <--  [h=-23.5 la=-23.5 rmv=2%]
+     -23.5  cast_spell: Psychic Frog  [h=-23.5 la=-23.5 rmv=2%]
+  >>> PASS (threshold=-3.0)
+  [MAIN1]
+
+T4 Ruby Storm | life=20 mana=1 hand=8+0L gy=0
+  Hand: ["Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse']
+  Opp board: [] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T4 Ruby Storm | life=20 mana=1 hand=8+0L gy=0
+  Hand: ["Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse']
+  Opp board: [] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T5 Dimir Midrange | life=17 mana=2 hand=6+1L gy=1
+  Hand: ['Psychic Frog', 'Subtlety', 'Psychic Frog', 'Counterspell', 'Counterspell', 'Drown in the Loch']
+  Opp board: [] (life=20)
+  EV scores:
+     +15.0  play_land: Takenuma, Abandoned Mire <--
+     -39.5  cast_spell: Psychic Frog  [h=-39.5 la=-39.5 rmv=2%]
+     -39.5  cast_spell: Psychic Frog  [h=-39.5 la=-39.5 rmv=2%]
+  >>> PLAY_LAND: Takenuma, Abandoned Mire
+  [MAIN1]
+
+T5 Dimir Midrange | life=17 mana=3 hand=6+0L gy=1
+  Hand: ['Psychic Frog', 'Subtlety', 'Psychic Frog', 'Counterspell', 'Counterspell', 'Drown in the Loch']
+  Opp board: [] (life=20)
+  EV scores:
+      +0.1  cast_spell: Subtlety <--  [h=+0.1 la=+0.1 rmv=7%]
+     -31.4  cast_spell: Psychic Frog  [h=-31.4 la=-31.4 rmv=2%]
+     -31.4  cast_spell: Psychic Frog  [h=-31.4 la=-31.4 rmv=2%]
+  >>> CAST_SPELL: Subtlety
+  [MAIN1]
+
+T5 Dimir Midrange | life=17 mana=0 hand=5+0L gy=1
+  Hand: ['Psychic Frog', 'Psychic Frog', 'Counterspell', 'Counterspell', 'Drown in the Loch']
+  Board: ['Subtlety (3/3)']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-3.0)
+  [MAIN2]
+
+T5 Dimir Midrange | life=17 mana=0 hand=5+0L gy=1
+  Hand: ['Psychic Frog', 'Psychic Frog', 'Counterspell', 'Counterspell', 'Drown in the Loch']
+  Board: ['Subtlety (3/3)']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-3.0)
+  [MAIN1]
+
+T6 Ruby Storm | life=20 mana=1 hand=8+0L gy=1
+  Hand: ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse', 'Pyretic Ritual']
+  Opp board: ['Subtlety (3/3)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T6 Ruby Storm | life=20 mana=1 hand=8+0L gy=1
+  Hand: ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse', 'Pyretic Ritual']
+  Opp board: ['Subtlety (3/3)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T7 Dimir Midrange | life=17 mana=3 hand=6+0L gy=1
+  Hand: ['Psychic Frog', 'Psychic Frog', 'Counterspell', 'Counterspell', 'Drown in the Loch', 'Fatal Push']
+  Board: ['Subtlety (3/3)']
+  Opp board: [] (life=20)
+  EV scores:
+     -14.7  cast_spell: Psychic Frog <--  [h=-14.7 la=-14.7 rmv=2%]
+     -14.7  cast_spell: Psychic Frog  [h=-14.7 la=-14.7 rmv=2%]
+  >>> PASS (threshold=-3.0)
+  >>> ATTACK: ['Subtlety']
+  [MAIN2]
+
+T7 Dimir Midrange | life=17 mana=3 hand=6+0L gy=1
+  Hand: ['Psychic Frog', 'Psychic Frog', 'Counterspell', 'Counterspell', 'Drown in the Loch', 'Fatal Push']
+  Board: ['Subtlety (3/3)']
+  Opp board: [] (life=17)
+  EV scores:
+     -15.4  cast_spell: Psychic Frog <--  [h=-15.4 la=-15.4 rmv=2%]
+     -15.4  cast_spell: Psychic Frog  [h=-15.4 la=-15.4 rmv=2%]
+  >>> PASS (threshold=-3.0)
+  [MAIN1]
+
+T8 Ruby Storm | life=17 mana=1 hand=8+0L gy=2
+  Hand: ['Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse', 'Pyretic Ritual', 'Wish']
+  Opp board: ['Subtlety (3/3)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T8 Ruby Storm | life=17 mana=1 hand=8+0L gy=2
+  Hand: ['Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse', 'Pyretic Ritual', 'Wish']
+  Opp board: ['Subtlety (3/3)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T9 Dimir Midrange | life=17 mana=3 hand=6+1L gy=1
+  Hand: ['Psychic Frog', 'Psychic Frog', 'Counterspell', 'Counterspell', 'Drown in the Loch', 'Fatal Push']
+  Board: ['Subtlety (3/3)']
+  Opp board: [] (life=17)
+  EV scores:
+     +15.0  play_land: Otawara, Soaring City <--
+     -15.5  cast_spell: Psychic Frog  [h=-15.5 la=-15.5 rmv=2%]
+     -15.5  cast_spell: Psychic Frog  [h=-15.5 la=-15.5 rmv=2%]
+  >>> PLAY_LAND: Otawara, Soaring City
+  [MAIN1]
+
+T9 Dimir Midrange | life=17 mana=4 hand=6+0L gy=1
+  Hand: ['Psychic Frog', 'Psychic Frog', 'Counterspell', 'Counterspell', 'Drown in the Loch', 'Fatal Push']
+  Board: ['Subtlety (3/3)']
+  Opp board: [] (life=17)
+  EV scores:
+      +2.0  cast_spell: Psychic Frog <--  [h=+2.0 la=+2.0 rmv=2%]
+      +2.0  cast_spell: Psychic Frog  [h=+2.0 la=+2.0 rmv=2%]
+  >>> CAST_SPELL: Psychic Frog
+  [MAIN1]
+
+T9 Dimir Midrange | life=17 mana=2 hand=5+0L gy=1
+  Hand: ['Psychic Frog', 'Counterspell', 'Counterspell', 'Drown in the Loch', 'Fatal Push']
+  Board: ['Subtlety (3/3)', 'Psychic Frog (1/2)']
+  Opp board: [] (life=17)
+  EV scores:
+     -19.1  cast_spell: Psychic Frog <--  [h=-19.1 la=-19.1 rmv=2%]
+  >>> PASS (threshold=-3.0)
+  >>> ATTACK: ['Subtlety']
+  [MAIN2]
+
+T9 Dimir Midrange | life=17 mana=2 hand=5+0L gy=1
+  Hand: ['Psychic Frog', 'Counterspell', 'Counterspell', 'Drown in the Loch', 'Fatal Push']
+  Board: ['Subtlety (3/3)', 'Psychic Frog (1/2)']
+  Opp board: [] (life=14)
+  EV scores:
+     -18.5  cast_spell: Psychic Frog <--  [h=-18.5 la=-18.5 rmv=2%]
+  >>> PASS (threshold=-3.0)
+  [MAIN1]
+
+T10 Ruby Storm | life=14 mana=1 hand=8+0L gy=3
+  Hand: ['Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse', 'Pyretic Ritual', 'Wish', 'Pyretic Ritual']
+  Opp board: ['Subtlety (3/3)', 'Psychic Frog (1/2)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T10 Ruby Storm | life=14 mana=1 hand=8+0L gy=3
+  Hand: ['Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse', 'Pyretic Ritual', 'Wish', 'Pyretic Ritual']
+  Opp board: ['Subtlety (3/3)', 'Psychic Frog (1/2)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T11 Dimir Midrange | life=17 mana=4 hand=6+0L gy=1
+  Hand: ['Psychic Frog', 'Counterspell', 'Counterspell', 'Drown in the Loch', 'Fatal Push', 'Murktide Regent']
+  Board: ['Subtlety (3/3)', 'Psychic Frog (1/2)']
+  Opp board: [] (life=14)
+  EV scores:
+      +2.3  cast_spell: Psychic Frog <--  [h=+2.3 la=+2.3 rmv=2%]
+     -14.6  cast_spell: Murktide Regent  [h=-14.6 la=-14.6 rmv=3%]
+  >>> CAST_SPELL: Psychic Frog
+  [MAIN1]
+
+T11 Dimir Midrange | life=17 mana=2 hand=5+0L gy=1
+  Hand: ['Counterspell', 'Counterspell', 'Drown in the Loch', 'Fatal Push', 'Murktide Regent']
+  Board: ['Subtlety (3/3)', 'Psychic Frog (1/2)', 'Psychic Frog (1/2)']
+  Opp board: [] (life=14)
+  >>> PASS (threshold=-3.0)
+  >>> ATTACK: ['Subtlety', 'Psychic Frog']
+  [MAIN2]
+
+T11 Dimir Midrange | life=17 mana=2 hand=5+0L gy=2
+  Hand: ['Counterspell', 'Counterspell', 'Drown in the Loch', 'Fatal Push', 'Psychic Frog']
+  Board: ['Subtlety (3/3)', 'Psychic Frog (2/3)', 'Psychic Frog (1/2)']
+  Opp board: [] (life=9)
+  EV scores:
+     -20.6  cast_spell: Psychic Frog <--  [h=-20.6 la=-20.6 rmv=2%]
+  >>> PASS (threshold=-3.0)
+  [MAIN1]
+
+T12 Ruby Storm | life=9 mana=1 hand=7+1L gy=4
+  Hand: ['Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse', 'Pyretic Ritual', 'Wish', 'Pyretic Ritual']
+  Opp board: ['Subtlety (3/3)', 'Psychic Frog (2/3)', 'Psychic Frog (1/2)'] (life=17)
+  EV scores:
+     +19.0  play_land: Sacred Foundry <--
+  >>> PLAY_LAND: Sacred Foundry
+  [MAIN1]
+
+T12 Ruby Storm | life=7 mana=2 hand=7+0L gy=4
+  Hand: ['Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse', 'Pyretic Ritual', 'Wish', 'Pyretic Ritual']
+  Opp board: ['Subtlety (3/3)', 'Psychic Frog (2/3)', 'Psychic Frog (1/2)'] (life=17)
+  EV scores:
+      -1.1  cast_spell: Reckless Impulse <--  [h=-1.1 la=-1.1 ctr=60%]
+      -1.1  cast_spell: Reckless Impulse  [h=-1.1 la=-1.1 ctr=60%]
+     -42.4  cast_spell: Pyretic Ritual  [h=-42.4 la=-42.4 ctr=60%]
+     -42.4  cast_spell: Pyretic Ritual  [h=-42.4 la=-42.4 ctr=60%]
+  >>> CAST_SPELL: Reckless Impulse
+  [MAIN1]
+
+T12 Ruby Storm | life=7 mana=0 hand=7+1L gy=5
+  Hand: ['Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Pyretic Ritual', 'Wish', 'Pyretic Ritual', 'Manamorphose']
+  Opp board: ['Subtlety (3/3)', 'Psychic Frog (2/3)', 'Psychic Frog (1/2)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T12 Ruby Storm | life=7 mana=0 hand=7+1L gy=5
+  Hand: ['Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Pyretic Ritual', 'Wish', 'Pyretic Ritual', 'Manamorphose']
+  Opp board: ['Subtlety (3/3)', 'Psychic Frog (2/3)', 'Psychic Frog (1/2)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T13 Dimir Midrange | life=17 mana=4 hand=5+1L gy=2
+  Hand: ['Counterspell', 'Counterspell', 'Drown in the Loch', 'Fatal Push', 'Psychic Frog']
+  Board: ['Subtlety (3/3)', 'Psychic Frog (2/3)', 'Psychic Frog (1/2)']
+  Opp board: [] (life=7)
+  EV scores:
+     +18.0  play_land: Polluted Delta <--
+     +10.0  cast_spell: Psychic Frog  [h=+10.0 la=+10.0]
+  >>> PLAY_LAND: Polluted Delta
+  [MAIN1]
+
+T13 Dimir Midrange | life=16 mana=4 hand=5+0L gy=3
+  Hand: ['Counterspell', 'Counterspell', 'Drown in the Loch', 'Fatal Push', 'Psychic Frog']
+  Board: ['Subtlety (3/3)', 'Psychic Frog (2/3)', 'Psychic Frog (1/2)']
+  Opp board: [] (life=7)
+  EV scores:
+     +10.1  cast_spell: Psychic Frog <--  [h=+10.1 la=+10.1]
+  >>> CAST_SPELL: Psychic Frog
+  [MAIN1]
+
+T13 Dimir Midrange | life=16 mana=2 hand=4+0L gy=3
+  Hand: ['Counterspell', 'Counterspell', 'Drown in the Loch', 'Fatal Push']
+  Board: ['Subtlety (3/3)', 'Psychic Frog (2/3)', 'Psychic Frog (1/2)', 'Psychic Frog (1/2)']
+  Opp board: [] (life=7)
+  >>> PASS (threshold=-3.0)
+  >>> ATTACK: ['Subtlety', 'Psychic Frog', 'Psychic Frog']
+  [MAIN2]
+
+T13 Dimir Midrange | life=16 mana=2 hand=5+1L gy=3
+  Hand: ['Counterspell', 'Counterspell', 'Drown in the Loch', 'Fatal Push', 'Thoughtseize']
+  Board: ['Subtlety (3/3)', 'Psychic Frog (2/3)', 'Psychic Frog (1/2)', 'Psychic Frog (1/2)']
+  Opp board: [] (life=1)
+  EV scores:
+      -1.0  cast_spell: Thoughtseize <--  [h=-1.0 la=-1.0]
+  >>> PASS (threshold=-3.0)
+  [MAIN1]
+
+T14 Ruby Storm | life=1 mana=2 hand=7+1L gy=6
+  Hand: ['Wish', 'Reckless Impulse', 'Pyretic Ritual', 'Wish', 'Pyretic Ritual', 'Manamorphose', 'Desperate Ritual']
+  Opp board: ['Subtlety (3/3)', 'Psychic Frog (2/3)', 'Psychic Frog (1/2)', 'Psychic Frog (1/2)'] (life=16)
+  EV scores:
+     +15.0  play_land: Sunbaked Canyon <--
+      -1.1  cast_spell: Reckless Impulse  [h=-1.1 la=-1.1 ctr=67%]
+     -21.5  cast_spell: Pyretic Ritual  [h=-21.5 la=-21.5 ctr=67%]
+     -21.5  cast_spell: Pyretic Ritual  [h=-21.5 la=-21.5 ctr=67%]
+     -21.5  cast_spell: Desperate Ritual  [h=-21.5 la=-21.5 ctr=67%]
+     -21.6  cast_spell: Manamorphose  [h=-21.6 la=-21.6 ctr=67%]
+  >>> PLAY_LAND: Sunbaked Canyon
+  [MAIN1]
+
+T14 Ruby Storm | life=1 mana=3 hand=7+0L gy=6
+  Hand: ['Wish', 'Reckless Impulse', 'Pyretic Ritual', 'Wish', 'Pyretic Ritual', 'Manamorphose', 'Desperate Ritual']
+  Opp board: ['Subtlety (3/3)', 'Psychic Frog (2/3)', 'Psychic Frog (1/2)', 'Psychic Frog (1/2)'] (life=16)
+  EV scores:
+      -0.2  cast_spell: Reckless Impulse <--  [h=-0.2 la=-0.2 ctr=67%]
+      -8.9  cast_spell: Pyretic Ritual  [h=-8.9 la=-8.9 ctr=67%]
+      -8.9  cast_spell: Pyretic Ritual  [h=-8.9 la=-8.9 ctr=67%]
+      -8.9  cast_spell: Desperate Ritual  [h=-8.9 la=-8.9 ctr=67%]
+      -9.0  cast_spell: Manamorphose  [h=-9.0 la=-9.0 ctr=67%]
+     -34.8  cast_spell: Wish  [h=-34.8 la=-34.8 ctr=67%]
+    ... +1 more
+  >>> CAST_SPELL: Reckless Impulse
+  [MAIN1]
+
+T14 Ruby Storm | life=1 mana=1 hand=8+0L gy=7
+  Hand: ['Wish', 'Pyretic Ritual', 'Wish', 'Pyretic Ritual', 'Manamorphose', 'Desperate Ritual', 'Past in Flames', 'Manamorphose']
+  Opp board: ['Subtlety (3/3)', 'Psychic Frog (2/3)', 'Psychic Frog (1/2)', 'Psychic Frog (1/2)'] (life=16)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T14 Ruby Storm | life=1 mana=0 hand=9+0L gy=8
+  Hand: ['Wish', 'Pyretic Ritual', 'Wish', 'Pyretic Ritual', 'Manamorphose', 'Desperate Ritual', 'Past in Flames', 'Manamorphose', 'Past in Flames']
+  Opp board: ['Subtlety (3/3)', 'Psychic Frog (2/3)', 'Psychic Frog (1/2)', 'Psychic Frog (1/2)'] (life=16)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T15 Dimir Midrange | life=16 mana=5 hand=6+1L gy=3
+  Hand: ['Counterspell', 'Counterspell', 'Drown in the Loch', 'Fatal Push', 'Thoughtseize', 'Counterspell']
+  Board: ['Subtlety (3/3)', 'Psychic Frog (2/3)', 'Psychic Frog (1/2)', 'Psychic Frog (1/2)']
+  Opp board: [] (life=1)
+  EV scores:
+     +18.0  play_land: Polluted Delta <--
+      -1.0  cast_spell: Thoughtseize  [h=-1.0 la=-1.0]
+  >>> PLAY_LAND: Polluted Delta
+  [MAIN1]
+
+T15 Dimir Midrange | life=15 mana=6 hand=6+0L gy=4
+  Hand: ['Counterspell', 'Counterspell', 'Drown in the Loch', 'Fatal Push', 'Thoughtseize', 'Counterspell']
+  Board: ['Subtlety (3/3)', 'Psychic Frog (2/3)', 'Psychic Frog (1/2)', 'Psychic Frog (1/2)']
+  Opp board: [] (life=1)
+  EV scores:
+      -1.0  cast_spell: Thoughtseize <--  [h=-1.0 la=-1.0]
+  >>> PASS (threshold=-3.0)
+  >>> ATTACK: ['Subtlety', 'Psychic Frog', 'Psychic Frog', 'Psychic Frog']

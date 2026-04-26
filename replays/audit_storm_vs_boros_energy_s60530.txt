@@ -1,0 +1,229 @@
+Loaded 21759 cards (0 errors)
+=== Ruby Storm vs Boros Energy (seed 60530) ===
+Result: Boros Energy wins T5 via damage
+Life: P1=-6 P2=25
+
+  [MAIN1]
+
+T1 Boros Energy | life=20 mana=0 hand=5+2L gy=0
+  Hand: ['Ocelot Pride', 'Guide of Souls', 'Ocelot Pride', 'Voice of Victory', 'Voice of Victory']
+  Opp board: [] (life=20)
+  EV scores:
+     +38.0  play_land: Sacred Foundry <--
+     +34.0  play_land: Plains
+  >>> PLAY_LAND: Sacred Foundry
+  [MAIN1]
+
+T1 Boros Energy | life=18 mana=1 hand=5+1L gy=0
+  Hand: ['Ocelot Pride', 'Guide of Souls', 'Ocelot Pride', 'Voice of Victory', 'Voice of Victory']
+  Opp board: [] (life=20)
+  EV scores:
+      +3.0  cast_spell: Guide of Souls <--  [h=+3.0 la=+3.0]
+      +2.9  cast_spell: Ocelot Pride  [h=+2.9 la=+2.9]
+      +2.9  cast_spell: Ocelot Pride  [h=+2.9 la=+2.9]
+  >>> CAST_SPELL: Guide of Souls
+  [MAIN1]
+
+T1 Boros Energy | life=18 mana=0 hand=4+1L gy=0
+  Hand: ['Ocelot Pride', 'Ocelot Pride', 'Voice of Victory', 'Voice of Victory']
+  Board: ['Guide of Souls (1/2)']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T1 Boros Energy | life=18 mana=0 hand=4+1L gy=0
+  Hand: ['Ocelot Pride', 'Ocelot Pride', 'Voice of Victory', 'Voice of Victory']
+  Board: ['Guide of Souls (1/2)']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T2 Ruby Storm | life=20 mana=0 hand=7+1L gy=0
+  Hand: ["Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse']
+  Opp board: ['Guide of Souls (1/2)'] (life=18)
+  EV scores:
+     +37.0  play_land: Mountain <--
+  >>> PLAY_LAND: Mountain
+  [MAIN1]
+
+T2 Ruby Storm | life=20 mana=1 hand=7+0L gy=0
+  Hand: ["Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse']
+  Opp board: ['Guide of Souls (1/2)'] (life=18)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T2 Ruby Storm | life=20 mana=1 hand=7+0L gy=0
+  Hand: ["Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse']
+  Opp board: ['Guide of Souls (1/2)'] (life=18)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T3 Boros Energy | life=18 mana=1 hand=4+2L gy=0
+  Hand: ['Ocelot Pride', 'Ocelot Pride', 'Voice of Victory', 'Voice of Victory']
+  Board: ['Guide of Souls (1/2)']
+  Opp board: [] (life=20)
+  EV scores:
+     +22.0  play_land: Windswept Heath <--
+     +15.0  play_land: Plains
+      +3.0  cast_spell: Ocelot Pride  [h=+3.0 la=+3.0 rmv=3%]
+      +3.0  cast_spell: Ocelot Pride  [h=+3.0 la=+3.0 rmv=3%]
+  >>> PLAY_LAND: Windswept Heath
+  [MAIN1]
+
+T3 Boros Energy | life=15 mana=2 hand=4+1L gy=1
+  Hand: ['Ocelot Pride', 'Ocelot Pride', 'Voice of Victory', 'Voice of Victory']
+  Board: ['Guide of Souls (1/2)']
+  Opp board: [] (life=20)
+  EV scores:
+      +3.0  cast_spell: Voice of Victory <--  [h=+3.0 la=+3.0 rmv=3%]
+      +3.0  cast_spell: Voice of Victory  [h=+3.0 la=+3.0 rmv=3%]
+      +3.0  cast_spell: Ocelot Pride  [h=+3.0 la=+3.0 rmv=3%]
+      +3.0  cast_spell: Ocelot Pride  [h=+3.0 la=+3.0 rmv=3%]
+  >>> CAST_SPELL: Voice of Victory
+  [MAIN1]
+
+T3 Boros Energy | life=16 mana=0 hand=3+1L gy=1
+  Hand: ['Ocelot Pride', 'Ocelot Pride', 'Voice of Victory']
+  Board: ['Guide of Souls (1/2)', 'Voice of Victory (1/3)']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Guide of Souls']
+  [MAIN2]
+
+T3 Boros Energy | life=16 mana=0 hand=3+1L gy=1
+  Hand: ['Ocelot Pride', 'Ocelot Pride', 'Voice of Victory']
+  Board: ['Guide of Souls (1/2)', 'Voice of Victory (1/3)']
+  Opp board: [] (life=19)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T4 Ruby Storm | life=19 mana=1 hand=8+0L gy=0
+  Hand: ["Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse']
+  Opp board: ['Guide of Souls (1/2)', 'Voice of Victory (1/3)'] (life=16)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T4 Ruby Storm | life=19 mana=1 hand=8+0L gy=0
+  Hand: ["Wrenn's Resolve", 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse']
+  Opp board: ['Guide of Souls (1/2)', 'Voice of Victory (1/3)'] (life=16)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T5 Boros Energy | life=16 mana=2 hand=4+1L gy=1
+  Hand: ['Ocelot Pride', 'Ocelot Pride', 'Voice of Victory', 'Galvanic Discharge']
+  Board: ['Guide of Souls (1/2)', 'Voice of Victory (1/3)']
+  Opp board: [] (life=19)
+  EV scores:
+     +15.0  play_land: Plains <--
+      +6.2  cast_spell: Voice of Victory  [h=+6.2 la=+6.2 rmv=3%]
+      +6.1  cast_spell: Ocelot Pride  [h=+6.1 la=+6.1 rmv=3%]
+      +6.1  cast_spell: Ocelot Pride  [h=+6.1 la=+6.1 rmv=3%]
+      +2.0  cast_spell: Galvanic Discharge  [h=+2.0 la=+2.0]
+  >>> PLAY_LAND: Plains
+  [MAIN1]
+
+T5 Boros Energy | life=16 mana=3 hand=4+0L gy=1
+  Hand: ['Ocelot Pride', 'Ocelot Pride', 'Voice of Victory', 'Galvanic Discharge']
+  Board: ['Guide of Souls (1/2)', 'Voice of Victory (1/3)']
+  Opp board: [] (life=19)
+  EV scores:
+      +6.2  cast_spell: Voice of Victory <--  [h=+6.2 la=+6.2 rmv=3%]
+      +6.1  cast_spell: Ocelot Pride  [h=+6.1 la=+6.1 rmv=3%]
+      +6.1  cast_spell: Ocelot Pride  [h=+6.1 la=+6.1 rmv=3%]
+      +1.9  cast_spell: Galvanic Discharge  [h=+1.9 la=+1.9]
+  >>> CAST_SPELL: Voice of Victory
+  [MAIN1]
+
+T5 Boros Energy | life=17 mana=1 hand=3+0L gy=1
+  Hand: ['Ocelot Pride', 'Ocelot Pride', 'Galvanic Discharge']
+  Board: ['Guide of Souls (1/2)', 'Voice of Victory (1/3)', 'Voice of Victory (1/3)']
+  Opp board: [] (life=19)
+  EV scores:
+      +4.9  cast_spell: Ocelot Pride <--  [h=+4.9 la=+4.9 rmv=3%]
+      +4.9  cast_spell: Ocelot Pride  [h=+4.9 la=+4.9 rmv=3%]
+      +1.5  cast_spell: Galvanic Discharge  [h=+1.5 la=+1.5]
+  >>> CAST_SPELL: Ocelot Pride
+  [MAIN1]
+
+T5 Boros Energy | life=18 mana=0 hand=2+0L gy=1
+  Hand: ['Ocelot Pride', 'Galvanic Discharge']
+  Board: ['Guide of Souls (1/2)', 'Voice of Victory (1/3)', 'Voice of Victory (1/3)', 'Ocelot Pride (1/1)']
+  Opp board: [] (life=19)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Guide of Souls', 'Voice of Victory']
+  [MAIN2]
+
+T5 Boros Energy | life=18 mana=0 hand=2+0L gy=1
+  Hand: ['Ocelot Pride', 'Galvanic Discharge']
+  Board: ['Guide of Souls (1/2)', 'Voice of Victory (1/3)', 'Voice of Victory (1/3)', 'Ocelot Pride (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)']
+  Opp board: [] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T6 Ruby Storm | life=17 mana=1 hand=8+0L gy=1
+  Hand: ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse', 'Pyretic Ritual']
+  Opp board: ['Guide of Souls (1/2)', 'Voice of Victory (1/3)', 'Voice of Victory (1/3)', 'Ocelot Pride (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)'] (life=18)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T6 Ruby Storm | life=17 mana=1 hand=8+0L gy=1
+  Hand: ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse', 'Pyretic Ritual']
+  Opp board: ['Guide of Souls (1/2)', 'Voice of Victory (1/3)', 'Voice of Victory (1/3)', 'Ocelot Pride (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)'] (life=18)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T7 Boros Energy | life=18 mana=3 hand=3+0L gy=1
+  Hand: ['Ocelot Pride', 'Galvanic Discharge', 'Seasoned Pyromancer']
+  Board: ['Guide of Souls (1/2)', 'Voice of Victory (1/3)', 'Voice of Victory (1/3)', 'Ocelot Pride (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)']
+  Opp board: [] (life=17)
+  EV scores:
+      +4.8  cast_spell: Seasoned Pyromancer <--  [h=+4.8 la=+4.8 rmv=11%]
+      +2.8  cast_spell: Ocelot Pride  [h=+2.8 la=+2.8 rmv=3%]
+      +0.4  cast_spell: Galvanic Discharge  [h=+0.4 la=+0.4]
+  >>> CAST_SPELL: Seasoned Pyromancer
+  [MAIN1]
+
+T7 Boros Energy | life=19 mana=0 hand=2+0L gy=3
+  Hand: ["Phlage, Titan of Fire's Fury", 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+  Board: ['Guide of Souls (1/2)', 'Voice of Victory (1/3)', 'Voice of Victory (1/3)', 'Ocelot Pride (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)']
+  Opp board: [] (life=17)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Guide of Souls', 'Voice of Victory', 'Voice of Victory', 'Ocelot Pride', 'Warrior Token', 'Warrior Token']
+  [MAIN2]
+
+T7 Boros Energy | life=20 mana=0 hand=2+0L gy=3
+  Hand: ["Phlage, Titan of Fire's Fury", 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+  Board: ['Guide of Souls (1/2)', 'Voice of Victory (1/3)', 'Voice of Victory (1/3)', 'Ocelot Pride (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)']
+  Opp board: [] (life=11)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T8 Ruby Storm | life=11 mana=1 hand=8+0L gy=2
+  Hand: ['Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse', 'Pyretic Ritual', 'Wish']
+  Opp board: ['Guide of Souls (1/2)', 'Voice of Victory (1/3)', 'Voice of Victory (1/3)', 'Ocelot Pride (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T8 Ruby Storm | life=11 mana=1 hand=8+0L gy=2
+  Hand: ['Glimpse the Impossible', 'Pyretic Ritual', 'Wish', 'Valakut Awakening // Valakut Stoneforge', 'Reckless Impulse', 'Reckless Impulse', 'Pyretic Ritual', 'Wish']
+  Opp board: ['Guide of Souls (1/2)', 'Voice of Victory (1/3)', 'Voice of Victory (1/3)', 'Ocelot Pride (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T9 Boros Energy | life=20 mana=3 hand=3+0L gy=3
+  Hand: ["Phlage, Titan of Fire's Fury", 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ocelot Pride']
+  Board: ['Guide of Souls (1/2)', 'Voice of Victory (1/3)', 'Voice of Victory (1/3)', 'Ocelot Pride (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)']
+  Opp board: [] (life=11)
+  EV scores:
+      +4.6  cast_spell: Phlage, Titan of Fire's Fury <--  [h=+4.6 la=+4.6 rmv=3%]
+      +3.7  cast_spell: Ocelot Pride  [h=+3.7 la=+3.7 rmv=3%]
+      +0.5  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger  [h=+0.5 la=+0.5 rmv=4%]
+  >>> CAST_SPELL: Phlage, Titan of Fire's Fury
+  [MAIN1]
+
+T9 Boros Energy | life=24 mana=0 hand=2+0L gy=4
+  Hand: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ocelot Pride']
+  Board: ['Guide of Souls (1/2)', 'Voice of Victory (1/3)', 'Voice of Victory (1/3)', 'Ocelot Pride (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Elemental Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)', 'Warrior Token (1/1)']
+  Opp board: [] (life=8)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Guide of Souls', 'Voice of Victory', 'Voice of Victory', 'Ocelot Pride', 'Warrior Token', 'Warrior Token', 'Seasoned Pyromancer', 'Elemental Token', 'Elemental Token', 'Warrior Token', 'Warrior Token', 'Warrior Token', 'Warrior Token']

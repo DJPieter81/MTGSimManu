@@ -1,0 +1,518 @@
+Loaded 21759 cards (0 errors)
+=== Ruby Storm vs Eldrazi Tron (seed 60540) ===
+Result: Eldrazi Tron wins T7 via damage
+Life: P1=-1 P2=20
+
+  [MAIN1]
+
+T1 Eldrazi Tron | life=20 mana=0 hand=4+3L gy=0
+  Hand: ['Thought-Knot Seer', 'Ugin, the Spirit Dragon', 'Chalice of the Void', 'Chalice of the Void']
+  Opp board: [] (life=20)
+  EV scores:
+     +46.8  play_land: Urza's Power Plant <--
+     +15.0  play_land: Wastes
+     +15.0  play_land: Ghost Quarter
+  >>> PLAY_LAND: Urza's Power Plant
+  [MAIN1]
+
+T1 Eldrazi Tron | life=20 mana=1 hand=4+2L gy=0
+  Hand: ['Thought-Knot Seer', 'Ugin, the Spirit Dragon', 'Chalice of the Void', 'Chalice of the Void']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T1 Eldrazi Tron | life=20 mana=1 hand=4+2L gy=0
+  Hand: ['Thought-Knot Seer', 'Ugin, the Spirit Dragon', 'Chalice of the Void', 'Chalice of the Void']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T2 Ruby Storm | life=20 mana=0 hand=4+4L gy=0
+  Hand: ["Wrenn's Resolve", 'Pyretic Ritual', 'Ruby Medallion', 'Past in Flames']
+  Opp board: [] (life=20)
+  EV scores:
+     +32.0  play_land: Wooded Foothills <--
+     +32.0  play_land: Scalding Tarn
+     +27.0  play_land: Thundering Falls
+     +25.0  play_land: Mountain
+  >>> PLAY_LAND: Wooded Foothills
+  [MAIN1]
+
+T2 Ruby Storm | life=17 mana=1 hand=4+3L gy=1
+  Hand: ["Wrenn's Resolve", 'Pyretic Ritual', 'Ruby Medallion', 'Past in Flames']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T2 Ruby Storm | life=17 mana=1 hand=4+3L gy=1
+  Hand: ["Wrenn's Resolve", 'Pyretic Ritual', 'Ruby Medallion', 'Past in Flames']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T3 Eldrazi Tron | life=20 mana=1 hand=5+2L gy=0
+  Hand: ['Thought-Knot Seer', 'Ugin, the Spirit Dragon', 'Chalice of the Void', 'Chalice of the Void', 'Expedition Map']
+  Opp board: [] (life=17)
+  EV scores:
+     +15.0  play_land: Wastes <--
+     +15.0  play_land: Ghost Quarter
+      +0.0  cast_spell: Expedition Map
+  >>> PLAY_LAND: Wastes
+  [MAIN1]
+
+T3 Eldrazi Tron | life=20 mana=2 hand=5+1L gy=0
+  Hand: ['Thought-Knot Seer', 'Ugin, the Spirit Dragon', 'Chalice of the Void', 'Chalice of the Void', 'Expedition Map']
+  Opp board: [] (life=17)
+  EV scores:
+      -0.0  cast_spell: Expedition Map <--  [h=-0.0 la=-0.0]
+      -0.1  cast_spell: Chalice of the Void  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Chalice of the Void  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Expedition Map
+  [MAIN1]
+
+T3 Eldrazi Tron | life=20 mana=1 hand=4+1L gy=0
+  Hand: ['Thought-Knot Seer', 'Ugin, the Spirit Dragon', 'Chalice of the Void', 'Chalice of the Void']
+  Permanents: ['Expedition Map']
+  Opp board: [] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T3 Eldrazi Tron | life=20 mana=1 hand=4+2L gy=1
+  Hand: ['Thought-Knot Seer', 'Ugin, the Spirit Dragon', 'Chalice of the Void', 'Chalice of the Void']
+  Opp board: [] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T4 Ruby Storm | life=17 mana=1 hand=5+3L gy=1
+  Hand: ["Wrenn's Resolve", 'Pyretic Ritual', 'Ruby Medallion', 'Past in Flames', 'Wish']
+  Opp board: [] (life=20)
+  EV scores:
+     +22.0  play_land: Scalding Tarn <--
+     +15.0  play_land: Mountain
+     +11.0  play_land: Thundering Falls
+  >>> PLAY_LAND: Scalding Tarn
+  [MAIN1]
+
+T4 Ruby Storm | life=16 mana=2 hand=5+2L gy=2
+  Hand: ["Wrenn's Resolve", 'Pyretic Ritual', 'Ruby Medallion', 'Past in Flames', 'Wish']
+  Opp board: [] (life=20)
+  EV scores:
+      +9.9  cast_spell: Ruby Medallion <--  [h=+9.9 la=+9.9]
+      -3.4  cast_spell: Wrenn's Resolve  [h=-3.4 la=-3.4]
+      -3.8  cast_spell: Pyretic Ritual  [h=-3.8 la=-3.8]
+  >>> CAST_SPELL: Wrenn's Resolve
+  [MAIN1]
+
+T4 Ruby Storm | life=16 mana=0 hand=6+2L gy=3
+  Hand: ['Pyretic Ritual', 'Ruby Medallion', 'Past in Flames', 'Wish', 'Reckless Impulse', 'Desperate Ritual']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T4 Ruby Storm | life=16 mana=0 hand=6+2L gy=3
+  Hand: ['Pyretic Ritual', 'Ruby Medallion', 'Past in Flames', 'Wish', 'Reckless Impulse', 'Desperate Ritual']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T5 Eldrazi Tron | life=20 mana=2 hand=4+3L gy=1
+  Hand: ['Thought-Knot Seer', 'Ugin, the Spirit Dragon', 'Chalice of the Void', 'Chalice of the Void']
+  Opp board: [] (life=16)
+  EV scores:
+     +50.5  play_land: Urza's Tower <--
+     +15.0  play_land: Ghost Quarter
+     +15.0  play_land: Urza's Power Plant
+      -0.1  cast_spell: Chalice of the Void  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Chalice of the Void  [h=-0.1 la=-0.1]
+  >>> PLAY_LAND: Urza's Tower
+  [MAIN1]
+
+T5 Eldrazi Tron | life=20 mana=3 hand=4+2L gy=1
+  Hand: ['Thought-Knot Seer', 'Ugin, the Spirit Dragon', 'Chalice of the Void', 'Chalice of the Void']
+  Opp board: [] (life=16)
+  EV scores:
+      -0.2  cast_spell: Chalice of the Void <--  [h=-0.2 la=-0.2]
+      -0.2  cast_spell: Chalice of the Void  [h=-0.2 la=-0.2]
+  >>> CAST_SPELL: Chalice of the Void
+  [MAIN1]
+
+T5 Eldrazi Tron | life=20 mana=1 hand=3+2L gy=1
+  Hand: ['Thought-Knot Seer', 'Ugin, the Spirit Dragon', 'Chalice of the Void']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=16)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T5 Eldrazi Tron | life=20 mana=1 hand=3+2L gy=1
+  Hand: ['Thought-Knot Seer', 'Ugin, the Spirit Dragon', 'Chalice of the Void']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=16)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T6 Ruby Storm | life=16 mana=2 hand=6+2L gy=4
+  Hand: ['Pyretic Ritual', 'Ruby Medallion', 'Wish', 'Reckless Impulse', 'Desperate Ritual', 'Valakut Awakening // Valakut Stoneforge']
+  Opp board: [] (life=20)
+  EV scores:
+     +15.0  play_land: Mountain <--
+     +11.0  play_land: Thundering Falls
+      +9.9  cast_spell: Ruby Medallion  [h=+9.9 la=+9.9]
+      -3.6  cast_spell: Reckless Impulse  [h=-3.6 la=-3.6]
+      -8.3  cast_spell: Pyretic Ritual  [h=-8.3 la=-8.3]
+      -8.3  cast_spell: Desperate Ritual  [h=-8.3 la=-8.3]
+  >>> PLAY_LAND: Mountain
+  [MAIN1]
+
+T6 Ruby Storm | life=16 mana=3 hand=6+1L gy=4
+  Hand: ['Pyretic Ritual', 'Ruby Medallion', 'Wish', 'Reckless Impulse', 'Desperate Ritual', 'Valakut Awakening // Valakut Stoneforge']
+  Opp board: [] (life=20)
+  EV scores:
+     +14.9  cast_spell: Ruby Medallion <--  [h=+14.9 la=+14.9]
+     -10.3  cast_spell: Reckless Impulse  [h=-10.3 la=-10.3]
+     -13.7  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-13.7 la=-13.7]
+     -16.4  cast_spell: Pyretic Ritual  [h=-16.4 la=-16.4]
+     -16.4  cast_spell: Desperate Ritual  [h=-16.4 la=-16.4]
+     -34.1  cast_spell: Wish  [h=-34.1 la=-34.1]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T6 Ruby Storm | life=16 mana=3 hand=6+1L gy=4
+  Hand: ['Pyretic Ritual', 'Ruby Medallion', 'Wish', 'Reckless Impulse', 'Desperate Ritual', 'Valakut Awakening // Valakut Stoneforge']
+  Opp board: [] (life=20)
+  EV scores:
+     +14.9  cast_spell: Ruby Medallion <--  [h=+14.9 la=+14.9]
+     -10.3  cast_spell: Reckless Impulse  [h=-10.3 la=-10.3]
+     -13.7  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-13.7 la=-13.7]
+     -16.4  cast_spell: Pyretic Ritual  [h=-16.4 la=-16.4]
+     -16.4  cast_spell: Desperate Ritual  [h=-16.4 la=-16.4]
+     -34.1  cast_spell: Wish  [h=-34.1 la=-34.1]
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T7 Eldrazi Tron | life=20 mana=3 hand=4+2L gy=1
+  Hand: ['Thought-Knot Seer', 'Ugin, the Spirit Dragon', 'Chalice of the Void', 'Eldrazi Mimic']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=16)
+  EV scores:
+     +15.0  play_land: Ghost Quarter <--
+     +15.0  play_land: Urza's Power Plant
+      +2.6  cast_spell: Eldrazi Mimic  [h=+2.6 la=+2.6 rmv=4%]
+      -0.2  cast_spell: Chalice of the Void  [h=-0.2 la=-0.2]
+  >>> PLAY_LAND: Ghost Quarter
+  [MAIN1]
+
+T7 Eldrazi Tron | life=20 mana=4 hand=4+1L gy=1
+  Hand: ['Thought-Knot Seer', 'Ugin, the Spirit Dragon', 'Chalice of the Void', 'Eldrazi Mimic']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=16)
+  EV scores:
+      +9.2  cast_spell: Thought-Knot Seer <--  [h=+9.2 la=+9.2 rmv=3%]
+      +2.4  cast_spell: Eldrazi Mimic  [h=+2.4 la=+2.4 rmv=4%]
+      -0.2  cast_spell: Chalice of the Void  [h=-0.2 la=-0.2]
+  >>> CAST_SPELL: Thought-Knot Seer
+  [MAIN1]
+
+T7 Eldrazi Tron | life=20 mana=0 hand=3+2L gy=1
+  Hand: ['Ugin, the Spirit Dragon', 'Chalice of the Void', 'Eldrazi Mimic']
+  Board: ['Thought-Knot Seer (4/4)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=16)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T7 Eldrazi Tron | life=20 mana=0 hand=3+2L gy=1
+  Hand: ['Ugin, the Spirit Dragon', 'Chalice of the Void', 'Eldrazi Mimic']
+  Board: ['Thought-Knot Seer (4/4)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=16)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T8 Ruby Storm | life=16 mana=3 hand=5+2L gy=4
+  Hand: ['Pyretic Ritual', 'Ruby Medallion', 'Reckless Impulse', 'Desperate Ritual', 'Valakut Awakening // Valakut Stoneforge']
+  Opp board: ['Thought-Knot Seer (4/4)'] (life=20)
+  EV scores:
+     +15.0  play_land: Mountain <--
+     +11.0  play_land: Thundering Falls
+      +9.9  cast_spell: Ruby Medallion  [h=+9.9 la=+9.9]
+      -1.3  cast_spell: Reckless Impulse  [h=-1.3 la=-1.3]
+      -2.4  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-2.4 la=-2.4]
+    -1000.1  cast_spell: Pyretic Ritual  [h=-1000.1 la=-1000.1]
+    ... +1 more
+  >>> PLAY_LAND: Mountain
+  [MAIN1]
+
+T8 Ruby Storm | life=16 mana=4 hand=5+1L gy=4
+  Hand: ['Pyretic Ritual', 'Ruby Medallion', 'Reckless Impulse', 'Desperate Ritual', 'Valakut Awakening // Valakut Stoneforge']
+  Opp board: ['Thought-Knot Seer (4/4)'] (life=20)
+  EV scores:
+      +9.9  cast_spell: Ruby Medallion <--  [h=+9.9 la=+9.9]
+      -0.1  cast_spell: Reckless Impulse  [h=-0.1 la=-0.1]
+      -1.3  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-1.3 la=-1.3]
+    -1000.1  cast_spell: Pyretic Ritual  [h=-1000.1 la=-1000.1]
+    -1000.1  cast_spell: Desperate Ritual  [h=-1000.1 la=-1000.1]
+  >>> CAST_SPELL: Reckless Impulse
+  [MAIN1]
+
+T8 Ruby Storm | life=16 mana=2 hand=5+2L gy=5
+  Hand: ['Pyretic Ritual', 'Ruby Medallion', 'Desperate Ritual', 'Valakut Awakening // Valakut Stoneforge', 'Manamorphose']
+  Opp board: ['Thought-Knot Seer (4/4)'] (life=20)
+  EV scores:
+      +5.4  cast_spell: Ruby Medallion <--  [h=+5.4 la=+5.4]
+      -0.7  cast_spell: Pyretic Ritual  [h=-0.7 la=-0.7]
+      -0.7  cast_spell: Desperate Ritual  [h=-0.7 la=-0.7]
+      -0.8  cast_spell: Manamorphose  [h=-0.8 la=-0.8]
+  >>> CAST_SPELL: Ruby Medallion
+  [MAIN1]
+
+T8 Ruby Storm | life=16 mana=0 hand=4+2L gy=5
+  Hand: ['Pyretic Ritual', 'Desperate Ritual', 'Valakut Awakening // Valakut Stoneforge', 'Manamorphose']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Thought-Knot Seer (4/4)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T8 Ruby Storm | life=16 mana=0 hand=4+2L gy=5
+  Hand: ['Pyretic Ritual', 'Desperate Ritual', 'Valakut Awakening // Valakut Stoneforge', 'Manamorphose']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Thought-Knot Seer (4/4)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T9 Eldrazi Tron | life=20 mana=4 hand=4+2L gy=1
+  Hand: ['Ugin, the Spirit Dragon', 'Chalice of the Void', 'Eldrazi Mimic', 'Warping Wail']
+  Board: ['Thought-Knot Seer (4/4)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=16)
+  EV scores:
+     +35.0  play_land: Urza's Mine <--
+     +15.0  play_land: Urza's Power Plant
+      +2.8  cast_spell: Eldrazi Mimic  [h=+2.8 la=+2.8]
+      -0.2  cast_spell: Chalice of the Void  [h=-0.2 la=-0.2]
+  >>> PLAY_LAND: Urza's Mine
+  [MAIN1]
+
+T9 Eldrazi Tron | life=20 mana=9 hand=4+1L gy=1
+  Hand: ['Ugin, the Spirit Dragon', 'Chalice of the Void', 'Eldrazi Mimic', 'Warping Wail']
+  Board: ['Thought-Knot Seer (4/4)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=16)
+  EV scores:
+      +2.7  cast_spell: Eldrazi Mimic <--  [h=+2.7 la=+2.7]
+      -0.2  cast_spell: Chalice of the Void  [h=-0.2 la=-0.2]
+  >>> CAST_SPELL: Eldrazi Mimic
+  [MAIN1]
+
+T9 Eldrazi Tron | life=20 mana=7 hand=3+1L gy=1
+  Hand: ['Ugin, the Spirit Dragon', 'Chalice of the Void', 'Warping Wail']
+  Board: ['Thought-Knot Seer (4/4)', 'Eldrazi Mimic (2/1)']
+  Permanents: ['Chalice of the Void']
+  Opp board: [] (life=16)
+  EV scores:
+      -0.2  cast_spell: Chalice of the Void <--  [h=-0.2 la=-0.2]
+  >>> CAST_SPELL: Chalice of the Void
+  [MAIN1]
+
+T9 Eldrazi Tron | life=20 mana=0 hand=2+1L gy=1
+  Hand: ['Ugin, the Spirit Dragon', 'Warping Wail']
+  Board: ['Thought-Knot Seer (4/4)', 'Eldrazi Mimic (2/1)']
+  Permanents: ['Chalice of the Void', 'Chalice of the Void']
+  Opp board: [] (life=16)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Thought-Knot Seer']
+  [MAIN2]
+
+T9 Eldrazi Tron | life=20 mana=0 hand=2+1L gy=1
+  Hand: ['Ugin, the Spirit Dragon', 'Warping Wail']
+  Board: ['Thought-Knot Seer (4/4)', 'Eldrazi Mimic (2/1)']
+  Permanents: ['Chalice of the Void', 'Chalice of the Void']
+  Opp board: [] (life=12)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T10 Ruby Storm | life=12 mana=4 hand=4+3L gy=5
+  Hand: ['Pyretic Ritual', 'Desperate Ritual', 'Valakut Awakening // Valakut Stoneforge', 'Manamorphose']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Thought-Knot Seer (4/4)', 'Eldrazi Mimic (2/1)'] (life=20)
+  EV scores:
+     +22.0  play_land: Bloodstained Mire <--
+     +15.0  play_land: Sunbaked Canyon
+     +11.0  play_land: Thundering Falls
+      -1.5  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-1.5 la=-1.5]
+    -1000.0  cast_spell: Manamorphose  [h=-1000.0 la=-1000.0]
+    -1000.1  cast_spell: Pyretic Ritual  [h=-1000.1 la=-1000.1]
+    ... +1 more
+  >>> PLAY_LAND: Bloodstained Mire
+  [MAIN1]
+
+T10 Ruby Storm | life=11 mana=5 hand=4+2L gy=6
+  Hand: ['Pyretic Ritual', 'Desperate Ritual', 'Valakut Awakening // Valakut Stoneforge', 'Manamorphose']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Thought-Knot Seer (4/4)', 'Eldrazi Mimic (2/1)'] (life=20)
+  EV scores:
+      -0.4  cast_spell: Valakut Awakening // Valakut Stoneforge <--  [h=-0.4 la=-0.4]
+    -1000.0  cast_spell: Manamorphose  [h=-1000.0 la=-1000.0]
+    -1000.1  cast_spell: Pyretic Ritual  [h=-1000.1 la=-1000.1]
+    -1000.1  cast_spell: Desperate Ritual  [h=-1000.1 la=-1000.1]
+  >>> CAST_SPELL: Valakut Awakening // Valakut Stoneforge
+  [MAIN1]
+
+T10 Ruby Storm | life=11 mana=3 hand=5+2L gy=7
+  Hand: ['Pyretic Ritual', 'Desperate Ritual', 'Manamorphose', "Wrenn's Resolve", 'Manamorphose']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Thought-Knot Seer (4/4)', 'Eldrazi Mimic (2/1)'] (life=20)
+  EV scores:
+      +0.0  cast_spell: Manamorphose <--
+      +0.0  cast_spell: Manamorphose
+      -0.1  cast_spell: Pyretic Ritual  [h=-0.1 la=-0.1]
+      -0.1  cast_spell: Desperate Ritual  [h=-0.1 la=-0.1]
+      -0.4  cast_spell: Wrenn's Resolve  [h=-0.4 la=-0.4]
+  >>> CAST_SPELL: Manamorphose
+  [MAIN1]
+
+T10 Ruby Storm | life=11 mana=2 hand=4+2L gy=8
+  Hand: ['Pyretic Ritual', 'Desperate Ritual', "Wrenn's Resolve", 'Manamorphose']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Thought-Knot Seer (4/4)', 'Eldrazi Mimic (2/1)'] (life=20)
+  EV scores:
+      +0.1  cast_spell: Pyretic Ritual <--  [h=+0.1 la=+0.1]
+      +0.1  cast_spell: Desperate Ritual  [h=+0.1 la=+0.1]
+      +0.0  cast_spell: Manamorphose
+      -0.3  cast_spell: Wrenn's Resolve  [h=-0.3 la=-0.3]
+  >>> CAST_SPELL: Pyretic Ritual
+  [MAIN1]
+
+T10 Ruby Storm | life=11 mana=1 hand=3+2L gy=9
+  Hand: ['Desperate Ritual', "Wrenn's Resolve", 'Manamorphose']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Thought-Knot Seer (4/4)', 'Eldrazi Mimic (2/1)'] (life=20)
+  EV scores:
+      +0.1  cast_spell: Desperate Ritual <--  [h=+0.1 la=+0.1]
+      +0.1  cast_spell: Manamorphose  [h=+0.1 la=+0.1]
+      -0.1  cast_spell: Wrenn's Resolve  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Desperate Ritual
+  [MAIN1]
+
+T10 Ruby Storm | life=11 mana=0 hand=2+2L gy=10
+  Hand: ["Wrenn's Resolve", 'Manamorphose']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Thought-Knot Seer (4/4)', 'Eldrazi Mimic (2/1)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T10 Ruby Storm | life=11 mana=0 hand=2+2L gy=10
+  Hand: ["Wrenn's Resolve", 'Manamorphose']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Thought-Knot Seer (4/4)', 'Eldrazi Mimic (2/1)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T11 Eldrazi Tron | life=20 mana=9 hand=3+1L gy=1
+  Hand: ['Ugin, the Spirit Dragon', 'Warping Wail', 'All Is Dust']
+  Board: ['Thought-Knot Seer (4/4)', 'Eldrazi Mimic (2/1)']
+  Permanents: ['Chalice of the Void', 'Chalice of the Void']
+  Opp board: [] (life=11)
+  EV scores:
+     +15.0  play_land: Urza's Power Plant <--
+  >>> PLAY_LAND: Urza's Power Plant
+  [MAIN1]
+
+T11 Eldrazi Tron | life=20 mana=11 hand=3+0L gy=1
+  Hand: ['Ugin, the Spirit Dragon', 'Warping Wail', 'All Is Dust']
+  Board: ['Thought-Knot Seer (4/4)', 'Eldrazi Mimic (2/1)']
+  Permanents: ['Chalice of the Void', 'Chalice of the Void']
+  Opp board: [] (life=11)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Thought-Knot Seer', 'Eldrazi Mimic']
+  [MAIN2]
+
+T11 Eldrazi Tron | life=20 mana=11 hand=3+0L gy=1
+  Hand: ['Ugin, the Spirit Dragon', 'Warping Wail', 'All Is Dust']
+  Board: ['Thought-Knot Seer (4/4)', 'Eldrazi Mimic (2/1)']
+  Permanents: ['Chalice of the Void', 'Chalice of the Void']
+  Opp board: [] (life=5)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T12 Ruby Storm | life=5 mana=5 hand=3+2L gy=10
+  Hand: ["Wrenn's Resolve", 'Manamorphose', 'Valakut Awakening // Valakut Stoneforge']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Thought-Knot Seer (4/4)', 'Eldrazi Mimic (2/1)'] (life=20)
+  EV scores:
+     +15.0  play_land: Sunbaked Canyon <--
+     +11.0  play_land: Thundering Falls
+      +0.0  cast_spell: Wrenn's Resolve
+      +0.0  cast_spell: Manamorphose
+      -1.1  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-1.1 la=-1.1]
+  >>> PLAY_LAND: Sunbaked Canyon
+  [MAIN1]
+
+T12 Ruby Storm | life=5 mana=6 hand=3+1L gy=10
+  Hand: ["Wrenn's Resolve", 'Manamorphose', 'Valakut Awakening // Valakut Stoneforge']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Thought-Knot Seer (4/4)', 'Eldrazi Mimic (2/1)'] (life=20)
+  EV scores:
+      +0.0  cast_spell: Wrenn's Resolve <--
+      +0.0  cast_spell: Manamorphose
+      -1.1  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-1.1 la=-1.1]
+  >>> CAST_SPELL: Wrenn's Resolve
+  [MAIN1]
+
+T12 Ruby Storm | life=5 mana=5 hand=2+1L gy=11
+  Hand: ['Manamorphose', 'Valakut Awakening // Valakut Stoneforge']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Thought-Knot Seer (4/4)', 'Eldrazi Mimic (2/1)'] (life=20)
+  EV scores:
+      +0.0  cast_spell: Manamorphose <--
+      -2.0  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-2.0 la=-2.0]
+  >>> CAST_SPELL: Manamorphose
+  [MAIN1]
+
+T12 Ruby Storm | life=5 mana=4 hand=1+1L gy=12
+  Hand: ['Valakut Awakening // Valakut Stoneforge']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Thought-Knot Seer (4/4)', 'Eldrazi Mimic (2/1)'] (life=20)
+  EV scores:
+      -2.9  cast_spell: Valakut Awakening // Valakut Stoneforge <--  [h=-2.9 la=-2.9]
+  >>> CAST_SPELL: Past in Flames
+  [MAIN1]
+
+T12 Ruby Storm | life=5 mana=1 hand=1+1L gy=11
+  Hand: ['Valakut Awakening // Valakut Stoneforge']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Thought-Knot Seer (4/4)', 'Eldrazi Mimic (2/1)'] (life=20)
+  >>> CAST_SPELL: Manamorphose
+  [MAIN1]
+
+T12 Ruby Storm | life=5 mana=0 hand=1+1L gy=11
+  Hand: ['Valakut Awakening // Valakut Stoneforge']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Thought-Knot Seer (4/4)', 'Eldrazi Mimic (2/1)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T12 Ruby Storm | life=5 mana=0 hand=2+1L gy=12
+  Hand: ['Valakut Awakening // Valakut Stoneforge', 'Ruby Medallion']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Thought-Knot Seer (4/4)', 'Eldrazi Mimic (2/1)'] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T13 Eldrazi Tron | life=20 mana=10 hand=3+2L gy=2
+  Hand: ['Ugin, the Spirit Dragon', 'Warping Wail', 'All Is Dust']
+  Board: ['Thought-Knot Seer (4/4)', 'Eldrazi Mimic (2/1)']
+  Permanents: ['Chalice of the Void', 'Chalice of the Void']
+  Opp board: [] (life=5)
+  EV scores:
+     +15.0  play_land: Eldrazi Temple <--
+     +15.0  play_land: Urza's Tower
+  >>> PLAY_LAND: Eldrazi Temple
+  [MAIN1]
+
+T13 Eldrazi Tron | life=20 mana=11 hand=3+1L gy=2
+  Hand: ['Ugin, the Spirit Dragon', 'Warping Wail', 'All Is Dust']
+  Board: ['Thought-Knot Seer (4/4)', 'Eldrazi Mimic (2/1)']
+  Permanents: ['Chalice of the Void', 'Chalice of the Void']
+  Opp board: [] (life=5)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Thought-Knot Seer', 'Eldrazi Mimic']

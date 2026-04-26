@@ -1,0 +1,463 @@
+Loaded 21759 cards (0 errors)
+=== Ruby Storm vs Boros Energy (seed 60540) ===
+Result: Boros Energy wins T6 via damage
+Life: P1=-7 P2=19
+
+  [MAIN1]
+
+T1 Boros Energy | life=20 mana=0 hand=4+3L gy=0
+  Hand: ['Ragavan, Nimble Pilferer', 'Blood Moon', 'Seasoned Pyromancer', 'Seasoned Pyromancer']
+  Opp board: [] (life=20)
+  EV scores:
+     +26.0  play_land: Windswept Heath <--
+     +19.0  play_land: Plains
+      +4.0  play_land: Dalkovan Encampment
+  >>> PLAY_LAND: Windswept Heath
+  [MAIN1]
+
+T1 Boros Energy | life=17 mana=1 hand=4+2L gy=1
+  Hand: ['Ragavan, Nimble Pilferer', 'Blood Moon', 'Seasoned Pyromancer', 'Seasoned Pyromancer']
+  Opp board: [] (life=20)
+  EV scores:
+      +2.0  cast_spell: Ragavan, Nimble Pilferer <--  [h=+2.0 la=+2.0]
+  >>> CAST_SPELL: Ragavan, Nimble Pilferer
+  [MAIN1]
+
+T1 Boros Energy | life=17 mana=0 hand=3+2L gy=1
+  Hand: ['Blood Moon', 'Seasoned Pyromancer', 'Seasoned Pyromancer']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T1 Boros Energy | life=17 mana=0 hand=3+2L gy=1
+  Hand: ['Blood Moon', 'Seasoned Pyromancer', 'Seasoned Pyromancer']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Opp board: [] (life=20)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T2 Ruby Storm | life=20 mana=0 hand=4+4L gy=0
+  Hand: ["Wrenn's Resolve", 'Pyretic Ritual', 'Ruby Medallion', 'Past in Flames']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  EV scores:
+     +32.0  play_land: Wooded Foothills <--
+     +32.0  play_land: Scalding Tarn
+     +27.0  play_land: Thundering Falls
+     +25.0  play_land: Mountain
+  >>> PLAY_LAND: Wooded Foothills
+  [MAIN1]
+
+T2 Ruby Storm | life=17 mana=1 hand=4+3L gy=1
+  Hand: ["Wrenn's Resolve", 'Pyretic Ritual', 'Ruby Medallion', 'Past in Flames']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T2 Ruby Storm | life=17 mana=1 hand=4+3L gy=1
+  Hand: ["Wrenn's Resolve", 'Pyretic Ritual', 'Ruby Medallion', 'Past in Flames']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T3 Boros Energy | life=17 mana=1 hand=3+3L gy=1
+  Hand: ['Blood Moon', 'Seasoned Pyromancer', 'Seasoned Pyromancer']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Opp board: [] (life=17)
+  EV scores:
+     +12.0  play_land: Plains <--
+     +10.0  play_land: Dalkovan Encampment
+     +10.0  play_land: Elegant Parlor
+  >>> PLAY_LAND: Plains
+  [MAIN1]
+
+T3 Boros Energy | life=17 mana=2 hand=3+2L gy=1
+  Hand: ['Blood Moon', 'Seasoned Pyromancer', 'Seasoned Pyromancer']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Opp board: [] (life=17)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ragavan, Nimble Pilferer']
+  [MAIN2]
+
+T3 Boros Energy | life=17 mana=2 hand=3+3L gy=1
+  Hand: ['Blood Moon', 'Seasoned Pyromancer', 'Seasoned Pyromancer']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Treasure Token']
+  Opp board: [] (life=15)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T4 Ruby Storm | life=15 mana=1 hand=5+3L gy=1
+  Hand: ["Wrenn's Resolve", 'Pyretic Ritual', 'Ruby Medallion', 'Past in Flames', 'Manamorphose']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  EV scores:
+     +22.0  play_land: Scalding Tarn <--
+     +15.0  play_land: Mountain
+     +11.0  play_land: Thundering Falls
+  >>> PLAY_LAND: Scalding Tarn
+  [MAIN1]
+
+T4 Ruby Storm | life=14 mana=2 hand=5+2L gy=2
+  Hand: ["Wrenn's Resolve", 'Pyretic Ritual', 'Ruby Medallion', 'Past in Flames', 'Manamorphose']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  EV scores:
+     +13.6  cast_spell: Ruby Medallion <--  [h=+13.6 la=+13.6]
+      -1.1  cast_spell: Wrenn's Resolve  [h=-1.1 la=-1.1]
+    -999.0  cast_spell: Pyretic Ritual  [h=-999.0 la=-999.0]
+    -999.0  cast_spell: Manamorphose  [h=-999.0 la=-999.0]
+  >>> CAST_SPELL: Wrenn's Resolve
+  [MAIN1]
+
+T4 Ruby Storm | life=14 mana=0 hand=6+2L gy=3
+  Hand: ['Pyretic Ritual', 'Ruby Medallion', 'Past in Flames', 'Manamorphose', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Valakut Awakening // Valakut Stoneforge']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T4 Ruby Storm | life=14 mana=0 hand=6+2L gy=3
+  Hand: ['Pyretic Ritual', 'Ruby Medallion', 'Past in Flames', 'Manamorphose', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Valakut Awakening // Valakut Stoneforge']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T5 Boros Energy | life=17 mana=2 hand=4+2L gy=1
+  Hand: ['Blood Moon', 'Seasoned Pyromancer', 'Seasoned Pyromancer', 'Guide of Souls']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Treasure Token']
+  Opp board: [] (life=14)
+  EV scores:
+      +7.0  play_land: Dalkovan Encampment <--
+      +7.0  play_land: Elegant Parlor
+      +6.4  cast_spell: Guide of Souls  [h=+6.4 la=+6.4]
+  >>> PLAY_LAND: Dalkovan Encampment
+  [MAIN1]
+
+T5 Boros Energy | life=17 mana=2 hand=4+1L gy=1
+  Hand: ['Blood Moon', 'Seasoned Pyromancer', 'Seasoned Pyromancer', 'Guide of Souls']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Treasure Token']
+  Opp board: [] (life=14)
+  EV scores:
+      +6.5  cast_spell: Guide of Souls <--  [h=+6.5 la=+6.5]
+  >>> CAST_SPELL: Guide of Souls
+  [MAIN1]
+
+T5 Boros Energy | life=17 mana=1 hand=3+1L gy=1
+  Hand: ['Blood Moon', 'Seasoned Pyromancer', 'Seasoned Pyromancer']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Guide of Souls (1/2)']
+  Permanents: ['Treasure Token']
+  Opp board: [] (life=14)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ragavan, Nimble Pilferer']
+  [MAIN2]
+
+T5 Boros Energy | life=17 mana=1 hand=3+2L gy=1
+  Hand: ['Blood Moon', 'Seasoned Pyromancer', 'Seasoned Pyromancer']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Guide of Souls (1/2)']
+  Permanents: ['Treasure Token', 'Treasure Token']
+  Opp board: [] (life=12)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T6 Ruby Storm | life=12 mana=2 hand=5+3L gy=4
+  Hand: ['Pyretic Ritual', 'Ruby Medallion', 'Manamorphose', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Valakut Awakening // Valakut Stoneforge']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Guide of Souls (1/2)'] (life=17)
+  EV scores:
+     +15.0  play_land: Mountain <--
+     +14.0  play_land: Thundering Falls
+      +7.7  cast_spell: Ruby Medallion  [h=+7.7 la=+7.7]
+      +7.0  play_land: Elegant Parlor
+    -998.9  cast_spell: Pyretic Ritual  [h=-998.9 la=-998.9]
+    -999.0  cast_spell: Manamorphose  [h=-999.0 la=-999.0]
+  >>> PLAY_LAND: Mountain
+  [MAIN1]
+
+T6 Ruby Storm | life=12 mana=3 hand=5+2L gy=4
+  Hand: ['Pyretic Ritual', 'Ruby Medallion', 'Manamorphose', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Valakut Awakening // Valakut Stoneforge']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Guide of Souls (1/2)'] (life=17)
+  EV scores:
+     +11.6  cast_spell: Ruby Medallion <--  [h=+11.6 la=+11.6]
+      -2.5  cast_spell: Valakut Awakening // Valakut Stoneforge  [h=-2.5 la=-2.5]
+    -1000.0  cast_spell: Manamorphose  [h=-1000.0 la=-1000.0]
+    -1000.1  cast_spell: Pyretic Ritual  [h=-1000.1 la=-1000.1]
+  >>> CAST_SPELL: Valakut Awakening // Valakut Stoneforge
+  [MAIN1]
+
+T6 Ruby Storm | life=12 mana=0 hand=5+3L gy=5
+  Hand: ['Pyretic Ritual', 'Ruby Medallion', 'Manamorphose', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Guide of Souls (1/2)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T6 Ruby Storm | life=12 mana=0 hand=5+3L gy=5
+  Hand: ['Pyretic Ritual', 'Ruby Medallion', 'Manamorphose', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Guide of Souls (1/2)'] (life=17)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T7 Boros Energy | life=17 mana=3 hand=4+1L gy=1
+  Hand: ['Blood Moon', 'Seasoned Pyromancer', 'Seasoned Pyromancer', 'Ocelot Pride']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Guide of Souls (1/2)']
+  Permanents: ['Treasure Token', 'Treasure Token']
+  Opp board: [] (life=12)
+  EV scores:
+      +7.0  play_land: Elegant Parlor <--
+      +5.9  cast_spell: Ocelot Pride  [h=+5.9 la=+5.9]
+      -0.2  cast_spell: Blood Moon  [h=-0.2 la=-0.2]
+  >>> PLAY_LAND: Elegant Parlor
+  [MAIN1]
+
+T7 Boros Energy | life=17 mana=3 hand=4+0L gy=1
+  Hand: ['Blood Moon', 'Seasoned Pyromancer', 'Seasoned Pyromancer', 'Ocelot Pride']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Guide of Souls (1/2)']
+  Permanents: ['Treasure Token', 'Treasure Token']
+  Opp board: [] (life=12)
+  EV scores:
+      +6.0  cast_spell: Ocelot Pride <--  [h=+6.0 la=+6.0]
+      -0.2  cast_spell: Blood Moon  [h=-0.2 la=-0.2]
+  >>> CAST_SPELL: Ocelot Pride
+  [MAIN1]
+
+T7 Boros Energy | life=18 mana=2 hand=3+0L gy=1
+  Hand: ['Blood Moon', 'Seasoned Pyromancer', 'Seasoned Pyromancer']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Guide of Souls (1/2)', 'Ocelot Pride (1/1)']
+  Permanents: ['Treasure Token', 'Treasure Token']
+  Opp board: [] (life=12)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ragavan, Nimble Pilferer', 'Guide of Souls']
+  [MAIN2]
+
+T7 Boros Energy | life=18 mana=2 hand=3+1L gy=1
+  Hand: ['Blood Moon', 'Seasoned Pyromancer', 'Seasoned Pyromancer']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Guide of Souls (1/2)', 'Ocelot Pride (1/1)']
+  Permanents: ['Treasure Token', 'Treasure Token', 'Treasure Token']
+  Opp board: [] (life=9)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T8 Ruby Storm | life=9 mana=3 hand=6+2L gy=6
+  Hand: ['Pyretic Ritual', 'Ruby Medallion', 'Manamorphose', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot', 'Glimpse the Impossible']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Guide of Souls (1/2)', 'Ocelot Pride (1/1)'] (life=18)
+  EV scores:
+     +39.7  cast_spell: Ruby Medallion <--  [h=+39.7 la=+39.7]
+     +22.0  play_land: Bloodstained Mire
+      +7.0  play_land: Elegant Parlor
+     -11.6  cast_spell: Glimpse the Impossible  [h=-11.6 la=-11.6]
+     -26.3  cast_spell: Manamorphose  [h=-26.3 la=-26.3]
+     -26.4  cast_spell: Pyretic Ritual  [h=-26.4 la=-26.4]
+    ... +1 more
+  >>> PLAY_LAND: Bloodstained Mire
+  [MAIN1]
+
+T8 Ruby Storm | life=8 mana=4 hand=6+1L gy=7
+  Hand: ['Pyretic Ritual', 'Ruby Medallion', 'Manamorphose', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot', 'Glimpse the Impossible']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Guide of Souls (1/2)', 'Ocelot Pride (1/1)'] (life=18)
+  EV scores:
+     +12.9  cast_spell: Glimpse the Impossible <--  [h=+12.9 la=+12.9]
+     +11.3  cast_spell: Ruby Medallion  [h=+11.3 la=+11.3]
+      +5.9  cast_spell: Manamorphose  [h=+5.9 la=+5.9]
+      +5.8  cast_spell: Pyretic Ritual  [h=+5.8 la=+5.8]
+      -4.6  cast_spell: Grapeshot  [h=-4.6 la=-4.6]
+  >>> CAST_SPELL: Glimpse the Impossible
+  [MAIN1]
+
+T8 Ruby Storm | life=8 mana=1 hand=7+2L gy=8
+  Hand: ['Pyretic Ritual', 'Ruby Medallion', 'Manamorphose', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot', 'Reckless Impulse', 'Manamorphose']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Guide of Souls (1/2)', 'Ocelot Pride (1/1)'] (life=18)
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T8 Ruby Storm | life=8 mana=1 hand=7+2L gy=8
+  Hand: ['Pyretic Ritual', 'Ruby Medallion', 'Manamorphose', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot', 'Reckless Impulse', 'Manamorphose']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Guide of Souls (1/2)', 'Ocelot Pride (1/1)'] (life=18)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T9 Boros Energy | life=18 mana=4 hand=3+1L gy=1
+  Hand: ['Blood Moon', 'Seasoned Pyromancer', 'Seasoned Pyromancer']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Guide of Souls (1/2)', 'Ocelot Pride (1/1)']
+  Permanents: ['Treasure Token', 'Treasure Token', 'Treasure Token']
+  Opp board: [] (life=8)
+  EV scores:
+     +11.1  cast_spell: Seasoned Pyromancer <--  [h=+11.1 la=+11.1 rmv=11%]
+     +11.1  cast_spell: Seasoned Pyromancer  [h=+11.1 la=+11.1 rmv=11%]
+      +7.0  play_land: Arena of Glory
+      -0.4  cast_spell: Blood Moon  [h=-0.4 la=-0.4]
+  >>> CAST_SPELL: Seasoned Pyromancer
+  [MAIN1]
+
+T9 Boros Energy | life=19 mana=1 hand=2+1L gy=3
+  Hand: ['Seasoned Pyromancer', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Guide of Souls (1/2)', 'Ocelot Pride (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)']
+  Permanents: ['Treasure Token', 'Treasure Token', 'Treasure Token']
+  Opp board: [] (life=8)
+  EV scores:
+     +22.0  play_land: Marsh Flats <--
+  >>> PLAY_LAND: Marsh Flats
+  [MAIN1]
+
+T9 Boros Energy | life=16 mana=2 hand=2+0L gy=4
+  Hand: ['Seasoned Pyromancer', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Guide of Souls (1/2)', 'Ocelot Pride (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)']
+  Permanents: ['Treasure Token', 'Treasure Token', 'Treasure Token']
+  Opp board: [] (life=8)
+  EV scores:
+     +10.9  cast_spell: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <--  [h=+10.9 la=+10.9 rmv=4%]
+  >>> CAST_SPELL: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [MAIN1]
+
+T9 Boros Energy | life=17 mana=0 hand=1+0L gy=4
+  Hand: ['Seasoned Pyromancer']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Guide of Souls (1/2)', 'Ocelot Pride (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
+  Permanents: ['Treasure Token', 'Treasure Token', 'Treasure Token']
+  Opp board: [] (life=8)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ragavan, Nimble Pilferer', 'Guide of Souls', 'Ocelot Pride']
+  [MAIN2]
+
+T9 Boros Energy | life=18 mana=0 hand=2+0L gy=4
+  Hand: ['Seasoned Pyromancer', 'Manamorphose']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Guide of Souls (1/2)', 'Ocelot Pride (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
+  Permanents: ['Treasure Token', 'Treasure Token', 'Treasure Token', 'Treasure Token']
+  Opp board: [] (life=4)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T10 Ruby Storm | life=4 mana=4 hand=6+2L gy=10
+  Hand: ['Ruby Medallion', 'Manamorphose', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot', 'Reckless Impulse', 'Manamorphose']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Guide of Souls (1/2)', 'Ocelot Pride (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=18)
+  EV scores:
+     +23.4  cast_spell: Reckless Impulse <--  [h=+23.4 la=+23.4]
+     +18.0  play_land: Arid Mesa
+     +17.0  cast_spell: Ruby Medallion  [h=+17.0 la=+17.0]
+     +15.0  play_land: Mountain
+      +6.0  cast_spell: Manamorphose  [h=+6.0 la=+6.0]
+      +6.0  cast_spell: Manamorphose  [h=+6.0 la=+6.0]
+    ... +1 more
+  >>> CAST_SPELL: Reckless Impulse
+  [MAIN1]
+
+T10 Ruby Storm | life=4 mana=2 hand=7+2L gy=11
+  Hand: ['Ruby Medallion', 'Manamorphose', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot', 'Manamorphose', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Manamorphose']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Guide of Souls (1/2)', 'Ocelot Pride (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=18)
+  EV scores:
+     +18.0  play_land: Arid Mesa <--
+     +15.0  play_land: Mountain
+     +14.9  cast_spell: Manamorphose  [h=+14.9 la=+14.9]
+     +14.9  cast_spell: Manamorphose  [h=+14.9 la=+14.9]
+     +14.9  cast_spell: Manamorphose  [h=+14.9 la=+14.9]
+      -7.0  cast_spell: Ruby Medallion  [h=-7.0 la=-7.0]
+    ... +1 more
+  >>> PLAY_LAND: Arid Mesa
+  [MAIN1]
+
+T10 Ruby Storm | life=3 mana=2 hand=7+1L gy=12
+  Hand: ['Ruby Medallion', 'Manamorphose', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot', 'Manamorphose', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Manamorphose']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Guide of Souls (1/2)', 'Ocelot Pride (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=18)
+  EV scores:
+     +15.0  cast_spell: Manamorphose <--  [h=+15.0 la=+15.0]
+     +15.0  cast_spell: Manamorphose  [h=+15.0 la=+15.0]
+     +15.0  cast_spell: Manamorphose  [h=+15.0 la=+15.0]
+      -6.9  cast_spell: Ruby Medallion  [h=-6.9 la=-6.9]
+     -13.6  cast_spell: Grapeshot  [h=-13.6 la=-13.6]
+  >>> CAST_SPELL: Manamorphose
+  [MAIN1]
+
+T10 Ruby Storm | life=3 mana=2 hand=7+1L gy=13
+  Hand: ['Ruby Medallion', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot', 'Manamorphose', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Manamorphose', 'Desperate Ritual']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Guide of Souls (1/2)', 'Ocelot Pride (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=18)
+  EV scores:
+     +15.2  cast_spell: Desperate Ritual <--  [h=+15.2 la=+15.2]
+     +15.0  cast_spell: Manamorphose  [h=+15.0 la=+15.0]
+     +15.0  cast_spell: Manamorphose  [h=+15.0 la=+15.0]
+      -5.9  cast_spell: Ruby Medallion  [h=-5.9 la=-5.9]
+     -12.6  cast_spell: Grapeshot  [h=-12.6 la=-12.6]
+  >>> CAST_SPELL: Desperate Ritual
+  [MAIN1]
+
+T10 Ruby Storm | life=3 mana=3 hand=6+1L gy=14
+  Hand: ['Ruby Medallion', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot', 'Manamorphose', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Manamorphose']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Guide of Souls (1/2)', 'Ocelot Pride (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=18)
+  EV scores:
+     +49.7  cast_spell: Ruby Medallion <--  [h=+49.7 la=+49.7]
+      +8.9  cast_spell: Manamorphose  [h=+8.9 la=+8.9]
+      +8.9  cast_spell: Manamorphose  [h=+8.9 la=+8.9]
+     -12.6  cast_spell: Grapeshot  [h=-12.6 la=-12.6]
+  >>> CAST_SPELL: Ruby Medallion
+  [MAIN1]
+
+T10 Ruby Storm | life=3 mana=1 hand=5+1L gy=14
+  Hand: ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot', 'Manamorphose', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Manamorphose']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Guide of Souls (1/2)', 'Ocelot Pride (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=18)
+  EV scores:
+     +18.4  cast_spell: Manamorphose <--  [h=+18.4 la=+18.4]
+     +18.4  cast_spell: Manamorphose  [h=+18.4 la=+18.4]
+      -6.2  cast_spell: Grapeshot  [h=-6.2 la=-6.2]
+  >>> CAST_SPELL: Manamorphose
+  [MAIN1]
+
+T10 Ruby Storm | life=3 mana=2 hand=4+2L gy=15
+  Hand: ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Manamorphose']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Guide of Souls (1/2)', 'Ocelot Pride (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=18)
+  EV scores:
+      +3.0  cast_spell: Manamorphose <--  [h=+3.0 la=+3.0]
+      -6.4  cast_spell: Grapeshot  [h=-6.4 la=-6.4]
+  >>> CAST_SPELL: Manamorphose
+  [MAIN1]
+
+T10 Ruby Storm | life=3 mana=3 hand=4+2L gy=16
+  Hand: ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Ruby Medallion']
+  Permanents: ['Ruby Medallion']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Guide of Souls (1/2)', 'Ocelot Pride (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=18)
+  EV scores:
+     +49.9  cast_spell: Ruby Medallion <--  [h=+49.9 la=+49.9]
+      -6.6  cast_spell: Grapeshot  [h=-6.6 la=-6.6]
+  >>> CAST_SPELL: Ruby Medallion
+  [MAIN1]
+
+T10 Ruby Storm | life=3 mana=1 hand=3+2L gy=16
+  Hand: ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Guide of Souls (1/2)', 'Ocelot Pride (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=18)
+  EV scores:
+      -6.1  cast_spell: Grapeshot <--  [h=-6.1 la=-6.1]
+  >>> PASS (threshold=-5.0)
+  [MAIN2]
+
+T10 Ruby Storm | life=3 mana=0 hand=3+2L gy=16
+  Hand: ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Grapeshot', 'Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Permanents: ['Ruby Medallion', 'Ruby Medallion']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Guide of Souls (1/2)', 'Ocelot Pride (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)'] (life=18)
+  >>> PASS (threshold=-5.0)
+  [MAIN1]
+
+T11 Boros Energy | life=18 mana=5 hand=2+0L gy=4
+  Hand: ['Seasoned Pyromancer', 'Seasoned Pyromancer']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Guide of Souls (1/2)', 'Ocelot Pride (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)']
+  Permanents: ['Treasure Token', 'Treasure Token', 'Treasure Token', 'Treasure Token']
+  Opp board: [] (life=3)
+  EV scores:
+      -0.6  cast_spell: Seasoned Pyromancer <--  [h=-0.6 la=-0.6]
+      -0.6  cast_spell: Seasoned Pyromancer  [h=-0.6 la=-0.6]
+  >>> CAST_SPELL: Seasoned Pyromancer
+  [MAIN1]
+
+T11 Boros Energy | life=19 mana=2 hand=1+1L gy=5
+  Hand: ['Ragavan, Nimble Pilferer']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Guide of Souls (1/2)', 'Ocelot Pride (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)']
+  Permanents: ['Treasure Token', 'Treasure Token', 'Treasure Token', 'Treasure Token']
+  Opp board: [] (life=3)
+  EV scores:
+     +22.0  play_land: Windswept Heath <--
+  >>> PLAY_LAND: Windswept Heath
+  [MAIN1]
+
+T11 Boros Energy | life=18 mana=2 hand=1+0L gy=6
+  Hand: ['Ragavan, Nimble Pilferer']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Guide of Souls (1/2)', 'Ocelot Pride (1/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)', 'Cat Token (2/1)', 'Seasoned Pyromancer (2/2)', 'Elemental Token (1/1)']
+  Permanents: ['Treasure Token', 'Treasure Token', 'Treasure Token', 'Treasure Token']
+  Opp board: [] (life=3)
+  >>> PASS (threshold=-5.0)
+  >>> ATTACK: ['Ragavan, Nimble Pilferer', 'Guide of Souls', 'Ocelot Pride', 'Seasoned Pyromancer', 'Elemental Token', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Cat Token']
