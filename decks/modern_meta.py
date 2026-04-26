@@ -291,16 +291,29 @@ MODERN_DECKS: Dict[str, Dict[str, Dict[str, int]]] = {
         },
     },
     "Goryo's Vengeance": {
+        # Decklist construction fix (2026-04-26): the gameplan declares
+        # Unburial Rites as a payoff (decks/gameplans/goryos_vengeance.json
+        # card_priorities + critical_pieces) but the original list only
+        # included 1×.  Meanwhile 4× Unmarked Grave was a near-dead slot
+        # because it puts a NONLEGENDARY card in graveyard — the only
+        # legal grab in this deck is Solitude (CMC 5), which the deck's
+        # primary reanimator (Goryo's Vengeance, legendary-only) cannot
+        # then target.  Replacing with 4× Unburial Rites (any creature,
+        # incl. Griselbrand and Archon) gives the deck a real second
+        # reanimation path and matches the gameplan declaration.
+        # Mainboard count balanced by +1× Archon of Cruelty (more
+        # legendary reanimation targets, valid for both Goryo's and
+        # Unburial Rites).  Net: -4 Unmarked Grave, +3 Unburial Rites
+        # (1→4), +1 Archon of Cruelty (2→3).  Total stays at 60.
         "mainboard": {
             "Goryo's Vengeance": 4,
             "Griselbrand": 4,
-            "Archon of Cruelty": 2,
+            "Archon of Cruelty": 3,
             "Solitude": 4,
             "Ephemerate": 4,
             "Faithful Mending": 4,
             "Thoughtseize": 4,
             "Persist": 3,
-            "Unmarked Grave": 4,
             "Undying Evil": 2,
             "Marsh Flats": 4,
             "Godless Shrine": 2,
@@ -313,7 +326,7 @@ MODERN_DECKS: Dict[str, Dict[str, Dict[str, int]]] = {
             "Island": 1,
             "Concealed Courtyard": 4,
             "Leyline of Sanctity": 2,
-            "Unburial Rites": 1,
+            "Unburial Rites": 4,
         },
         "sideboard": {
             "Leyline of the Void": 4,
