@@ -619,21 +619,27 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
     storm = me.spells_cast_this_turn
     role = card_combo_role(card, a)
 
-    # ═══ STORM FINISHER: hold until fuel exhausted ═══
+    # ═══ STORM FINISHER: hold until chain-extending fuel exhausted ═══
     if Kw.STORM in getattr(card.template, 'keywords', set()):
         if storm + 1 >= opp_life:
             return a.combo_value  # lethal — fire immediately
 
-        # Count ALL non-land non-storm spells in hand (not just currently castable).
+        # Only count CHAIN-EXTENDING fuel: cards tagged ritual / cantrip
+        # / draw / card_advantage. Cards without those tags (creatures,
+        # filler) add 1 to storm if cast but don't enable more spells —
+        # holding the finisher for them strands the chain when mana
+        # runs out.  Symmetric to the tutor branch below (F2.1).
+        chain_fuel_tags = {'ritual', 'cantrip', 'draw', 'card_advantage'}
         total_fuel = sum(1 for c in me.hand
                          if c.instance_id != card.instance_id
                          and not c.template.is_land
-                         and Kw.STORM not in getattr(c.template, 'keywords', set()))
+                         and Kw.STORM not in getattr(c.template, 'keywords', set())
+                         and chain_fuel_tags & getattr(c.template, 'tags', set()))
         if total_fuel > 0:
             # Hold: each remaining fuel adds 1/opp_life of a kill × combo_value.
             # This is the opportunity cost of firing early instead of chaining more.
             return -total_fuel / opp_life * a.combo_value
-        # Truly no fuel left — fire now
+        # Truly no chain-extending fuel left — fire now
         return (storm + 1) / opp_life * a.combo_value
 
     # ═══ TUTOR-AS-FINISHER-ACCESS ═══
@@ -657,16 +663,27 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
     if 'tutor' in tags and _tutor_has_payoff_access(card, me):
         if storm + 1 >= opp_life:
             return a.combo_value  # tutor reach is lethal — fire
+        # Only count CHAIN-EXTENDING fuel: cards tagged as ritual
+        # (mana-positive), cantrip / draw / card_advantage (card-positive).
+        # Cards without those tags (creatures like Ral, random filler)
+        # add 1 to storm if cast but don't enable more spells — holding
+        # the tutor "for them" strands the chain when mana runs out.
+        # Audit F2.1: storm vs Dimir T10 trace shows AI passes at 1
+        # life with 2 Wishes uncast because 2 Ral creatures count as
+        # `non_tutor_fuel`. Filtering by chain-extending tags gives
+        # non_tutor_fuel=0 → tutor fires for the kill.
+        chain_fuel_tags = {'ritual', 'cantrip', 'draw', 'card_advantage'}
         non_tutor_fuel = sum(
             1 for c in me.hand
             if c.instance_id != card.instance_id
             and not c.template.is_land
             and Kw.STORM not in getattr(c.template, 'keywords', set())
             and 'tutor' not in getattr(c.template, 'tags', set())
+            and chain_fuel_tags & getattr(c.template, 'tags', set())
         )
         if non_tutor_fuel > 0:
             return -non_tutor_fuel / opp_life * a.combo_value
-        # No more non-tutor fuel — fire the tutor now to close.
+        # No more chain-extending fuel — fire the tutor now to close.
         # +2 spells: the tutor + the fetched payoff.
         return (storm + 2) / opp_life * a.combo_value
 

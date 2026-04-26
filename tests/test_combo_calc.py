@@ -315,7 +315,13 @@ class TestCardComboModifier:
         assert mod == 80.0  # storm+1 (5) >= opp_life (4): fire at full combo_value
 
     def test_storm_finisher_held_with_fuel_in_hand(self):
-        """STORM finisher with fuel remaining: negative modifier (hold for more storm)."""
+        """STORM finisher with chain-extending fuel: negative modifier (hold for more storm).
+
+        F2.1b update (2026-04-26 audit): only chain-extending fuel
+        (ritual / cantrip / draw / card_advantage) keeps the finisher
+        held. Tutor-tagged cards do not extend the chain on their own
+        (they bring a payoff into hand) and are excluded.
+        """
         from engine.cards import Keyword as Kw
         a = ComboAssessment(
             resource_zone="storm", is_ready=False,
@@ -324,20 +330,22 @@ class TestCardComboModifier:
         )
         card = MockCard(name="Grapeshot", instance_id=1, template=MockTemplate(
             name="Grapeshot", keywords={Kw.STORM}))
-        # Three non-storm non-land cards in hand → 3 fuel
+        # Two chain-extending fuel cards (ritual + cantrip) plus a tutor.
+        # Tutor doesn't count as chain-extending fuel under F2.1b.
         fuel1 = MockCard(name="Pyretic Ritual", instance_id=2, template=MockTemplate(
             name="Pyretic Ritual", tags={'ritual'}))
         fuel2 = MockCard(name="Manamorphose", instance_id=3, template=MockTemplate(
             name="Manamorphose", tags={'cantrip'}))
-        fuel3 = MockCard(name="Wish", instance_id=4, template=MockTemplate(
+        tutor = MockCard(name="Wish", instance_id=4, template=MockTemplate(
             name="Wish", tags={'tutor'}))
         snap = _make_snap(opp_life=20)
-        me = type('', (), {'spells_cast_this_turn': 2, 'hand': [card, fuel1, fuel2, fuel3],
+        me = type('', (), {'spells_cast_this_turn': 2, 'hand': [card, fuel1, fuel2, tutor],
                            'library': [None]*30, 'graveyard': [], 'battlefield': []})()
         game = type('', (), {'players': [me, me], 'can_cast': lambda *a: True})()
         mod = card_combo_modifier(card, a, snap, me, game, 0)
-        # 3 fuel × 1/20 × 80.0 = -12.0
-        assert mod == pytest.approx(-12.0)
+        # 2 chain-extending fuel × 1/20 × 80.0 = -8.0
+        # (tutor excluded — it brings a payoff, doesn't grow the chain by itself)
+        assert mod == pytest.approx(-8.0)
 
     def test_storm_finisher_no_fuel_fires_at_partial(self):
         """STORM finisher with no fuel and not lethal: fire at (storm+1)/opp_life × combo_value."""
