@@ -269,14 +269,27 @@ def _clause_body_value(template: "CardTemplate") -> float:
 
 def _clause_artifact_removal(oracle: str,
                               opp_templates: List["CardTemplate"]) -> float:
-    """Value of single-target artifact removal.
+    """Value of artifact removal — single-target, X-target, or mass.
 
-    avg_artifact_cost × artifact_density × residency. Uses CMC as a proxy
-    for artifact strategic value (equipment / mana rocks / planeswalker-
-    adjacent artifacts tend to be CMC 2+).
+    Matches:
+      * "destroy target artifact" / "exile target artifact"
+      * "destroy X target artifacts" / "destroy up to N target artifacts"
+        (Force of Vigor, By Force) — plural via [^.]{0,40} between
+        verb and "artifact"
+      * "destroy all artifacts" / "destroy each artifact" (Shatterstorm,
+        Vandalblast) — scored 2× per artifact (sweeper)
+
+    avg_artifact_cost × artifact_density × residency × mass_multiplier.
+    Uses CMC as a proxy for artifact strategic value.
     """
     from engine.cards import CardType
-    if not re.search(r'(destroy|exile) (target )?artifact', oracle):
+    is_mass = bool(
+        re.search(r'destroy (all|each)\s+artifact', oracle)
+        or re.search(r'destroy each\s+\w+\s*,?\s*\w*\s*and\s+artifact', oracle))
+    is_targeted = bool(
+        re.search(r'(destroy|exile) (target )?artifact', oracle)
+        or re.search(r'(destroy|exile)[^.]{0,40}target\s+artifact', oracle))
+    if not (is_mass or is_targeted):
         return 0.0
     artifacts = [t for t in _nonland(opp_templates)
                  if CardType.ARTIFACT in (t.card_types or []) and not t.is_creature]
@@ -284,7 +297,13 @@ def _clause_artifact_removal(oracle: str,
         return 0.0
     density = len(artifacts) / len(_nonland(opp_templates))
     avg_cmc = sum(t.cmc or 0 for t in artifacts) / len(artifacts)
-    return density * avg_cmc * PERMANENT_VALUE_WINDOW
+    base = density * avg_cmc * PERMANENT_VALUE_WINDOW
+    # Mass removal scales by the number of artifacts it'd destroy —
+    # Shatterstorm vs a 12-artifact Affinity board is worth ~12× a
+    # single-target Wear // Tear.  Capped at the SB-card value window.
+    if is_mass:
+        return min(base * len(artifacts), PERMANENT_VALUE_WINDOW * 12)
+    return base
 
 
 # ─────────────────────────────────────────────────────────────
