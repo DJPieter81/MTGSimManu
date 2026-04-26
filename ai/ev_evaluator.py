@@ -785,6 +785,46 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
                     oracle):
                 signals.append('recurring_engine_trigger')
 
+    # 17. Flashback-combo card with graveyard fuel (Past in Flames
+    #     pattern).  PiF's oracle is a static effect ("Each instant
+    #     and sorcery card in your graveyard gains flashback until
+    #     end of turn.") with no `whenever` trigger, no ETB, no
+    #     literal "draw a card" — signals #1-#16 all miss it.
+    #     `combo_continuation` (signal #10) only fires once the
+    #     chain has started (storm > 0 OR reducer on board), but
+    #     PiF is typically the chain-RESTART play (T4-T6 with
+    #     graveyard fuel from prior turns, no reducer yet).
+    #
+    #     Same-turn signal: casting NOW grants flashback to
+    #     graveyard cards THIS turn for storm count + extra mana;
+    #     casting NEXT TURN delays the chain-restart by a full
+    #     turn.  Gated on graveyard contents to avoid firing the
+    #     signal when there's no fuel to flashback (PiF without
+    #     graveyard targets is a 5-mana spell that does nothing).
+    #
+    #     Sister-fix to signal #6's tutor extension (Wish, PR #192)
+    #     and the cost-reducer signal added in PR #194 — same
+    #     deferral-gate pattern.
+    #
+    #     Generic by construction: detection is `'flashback' in
+    #     tags` AND `'combo' in tags` AND `archetype in ('storm',
+    #     'combo')` AND graveyard contains ≥1 instant/sorcery.
+    #     Today this benefits Ruby Storm only (Past in Flames);
+    #     other flashback-tagged cards (Faithful Mending in
+    #     Goryo's, Unburial Rites for reanimation) live in
+    #     non-storm archetypes or already emit other signals.
+    if (archetype in ('storm', 'combo')
+            and 'flashback' in tags
+            and 'combo' in tags
+            and game is not None):
+        gy = game.players[player_idx].graveyard
+        gy_fuel = sum(
+            1 for c in gy
+            if (c.template.is_instant or c.template.is_sorcery)
+        )
+        if gy_fuel > 0:
+            signals.append('flashback_combo_with_gy_fuel')
+
     return signals
 
 
