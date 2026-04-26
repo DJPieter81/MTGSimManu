@@ -71,9 +71,10 @@ def choose_discard(game: "GameState", player_idx: int,
         return choose_card_to_strip(hand, opp_gameplan)
 
     # Self-discard: score-based choice, highest score = discard first.
+    from ai.predicates import count_lands
     player = game.players[player_idx]
     lands_on_field = len(player.lands)
-    lands_in_hand = sum(1 for c in hand if c.template.is_land)
+    lands_in_hand = count_lands(hand)
 
     # GV-1: Gameplan-aware reanimation-fuel boost.
     #

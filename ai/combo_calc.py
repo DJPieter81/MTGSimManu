@@ -222,10 +222,12 @@ def _assess_storm_zone(game, player_idx, goal_engine, snap, zone, target,
     projected_damage = best_damage
     if best and best.cards_drawn > 0 and len(me.library) > 0:
         # Fuel density: what fraction of library is castable fuel?
+        # Uses `predicates.is_chain_fuel` for the tag check (ritual /
+        # cantrip / draw / card_advantage).
+        from ai.predicates import is_chain_fuel
         fuel_in_library = sum(1 for c in me.library
                               if not c.template.is_land
-                              and any(ft in getattr(c.template, 'tags', set())
-                                      for ft in ('ritual', 'cantrip', 'draw')))
+                              and is_chain_fuel(c))
         fuel_density = fuel_in_library / max(1, len(me.library))
         # Each draw finds fuel with probability fuel_density
         # Each fuel spell adds ~1 storm (and net-positive rituals add mana for more)
@@ -584,10 +586,14 @@ def _has_viable_pif(card, me, snap, after_cast_card_cmc=0,
 
 
 def _has_draw_in_hand(card, me) -> bool:
-    """Any cantrip / card-advantage / draw spell in hand (excluding `card`)."""
+    """Any cantrip / card-advantage / draw spell in hand (excluding `card`).
+
+    Uses `predicates.is_draw_engine` for the tag check so the
+    "what counts as a draw engine" definition lives in one place.
+    """
+    from ai.predicates import is_draw_engine
     return any(
-        any(dt in getattr(c.template, 'tags', set())
-            for dt in ('cantrip', 'card_advantage', 'draw'))
+        is_draw_engine(c)
         for c in me.hand
         if c.instance_id != card.instance_id
         and not c.template.is_land
@@ -624,17 +630,18 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
         if storm + 1 >= opp_life:
             return a.combo_value  # lethal — fire immediately
 
-        # Only count CHAIN-EXTENDING fuel: cards tagged ritual / cantrip
-        # / draw / card_advantage. Cards without those tags (creatures,
-        # filler) add 1 to storm if cast but don't enable more spells —
-        # holding the finisher for them strands the chain when mana
-        # runs out.  Symmetric to the tutor branch below (F2.1).
-        chain_fuel_tags = {'ritual', 'cantrip', 'draw', 'card_advantage'}
+        # Only count CHAIN-EXTENDING fuel via `is_chain_fuel`: cards
+        # tagged ritual / cantrip / draw / card_advantage.  Cards
+        # without those tags (creatures like Ral, filler) add 1 to
+        # storm if cast but don't enable more spells — holding the
+        # finisher for them strands the chain when mana runs out.
+        # Symmetric to the tutor branch below (F2.1 / F2.1b).
+        from ai.predicates import is_chain_fuel
         total_fuel = sum(1 for c in me.hand
                          if c.instance_id != card.instance_id
                          and not c.template.is_land
                          and Kw.STORM not in getattr(c.template, 'keywords', set())
-                         and chain_fuel_tags & getattr(c.template, 'tags', set()))
+                         and is_chain_fuel(c))
         if total_fuel > 0:
             # Hold: each remaining fuel adds 1/opp_life of a kill × combo_value.
             # This is the opportunity cost of firing early instead of chaining more.
@@ -663,23 +670,23 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
     if 'tutor' in tags and _tutor_has_payoff_access(card, me):
         if storm + 1 >= opp_life:
             return a.combo_value  # tutor reach is lethal — fire
-        # Only count CHAIN-EXTENDING fuel: cards tagged as ritual
-        # (mana-positive), cantrip / draw / card_advantage (card-positive).
-        # Cards without those tags (creatures like Ral, random filler)
-        # add 1 to storm if cast but don't enable more spells — holding
-        # the tutor "for them" strands the chain when mana runs out.
-        # Audit F2.1: storm vs Dimir T10 trace shows AI passes at 1
-        # life with 2 Wishes uncast because 2 Ral creatures count as
-        # `non_tutor_fuel`. Filtering by chain-extending tags gives
-        # non_tutor_fuel=0 → tutor fires for the kill.
-        chain_fuel_tags = {'ritual', 'cantrip', 'draw', 'card_advantage'}
+        # Only count CHAIN-EXTENDING fuel via `is_chain_fuel`: cards
+        # tagged ritual / cantrip / draw / card_advantage.  Cards
+        # without those tags (creatures like Ral, random filler)
+        # add 1 to storm if cast but don't enable more spells —
+        # holding the tutor "for them" strands the chain when mana
+        # runs out.  Audit F2.1: storm vs Dimir T10 trace shows AI
+        # passes at 1 life with 2 Wishes uncast because 2 Ral
+        # creatures counted as `non_tutor_fuel`.  Filtering by
+        # chain-extending tags gives non_tutor_fuel=0 → tutor fires.
+        from ai.predicates import is_chain_fuel
         non_tutor_fuel = sum(
             1 for c in me.hand
             if c.instance_id != card.instance_id
             and not c.template.is_land
             and Kw.STORM not in getattr(c.template, 'keywords', set())
             and 'tutor' not in getattr(c.template, 'tags', set())
-            and chain_fuel_tags & getattr(c.template, 'tags', set())
+            and is_chain_fuel(c)
         )
         if non_tutor_fuel > 0:
             return -non_tutor_fuel / opp_life * a.combo_value

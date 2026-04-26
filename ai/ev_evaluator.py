@@ -17,6 +17,10 @@ import re
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Set, Tuple, TYPE_CHECKING
 
+from ai.predicates import (
+    count_gy_creatures, is_draw_engine, is_ritual,
+)
+
 if TYPE_CHECKING:
     from engine.game_state import GameState, PlayerState
     from engine.cards import CardInstance, CardTemplate
@@ -194,8 +198,8 @@ def snapshot_from_game(game: "GameState", player_idx: int) -> EVSnapshot:
         opp_total_lands=len(opp.lands),
         turn_number=game.turn_number,
         storm_count=me.spells_cast_this_turn,
-        my_gy_creatures=sum(1 for c in me.graveyard if c.template.is_creature),
-        opp_gy_creatures=sum(1 for c in opp.graveyard if c.template.is_creature),
+        my_gy_creatures=count_gy_creatures(me.graveyard),
+        opp_gy_creatures=count_gy_creatures(opp.graveyard),
         my_energy=me.energy_counters,
         cards_drawn_this_turn=me.cards_drawn_this_turn,
         archetype_subtype=archetype_subtype,
@@ -450,11 +454,11 @@ def _has_immediate_effect(card: "CardInstance") -> bool:
         return True  # bodies block / attack immediately
     if 'removal' in tags or 'board_wipe' in tags:
         return True  # removes a threat now
-    if 'draw' in tags or 'cantrip' in tags:
+    if is_draw_engine(card):
         return True  # card advantage now
     if 'counterspell' in tags:
         return True  # protects against an incoming spell now
-    if 'ritual' in tags:
+    if is_ritual(card):
         return True  # enables same-turn plays
     # Oracle-driven mana production (belt-and-suspenders over the 'ritual'
     # tag): any spell whose text adds coloured mana contributes to THIS
@@ -761,7 +765,7 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
     produces = getattr(t, 'produces_mana', None) or []
     if produces or ('{t}:' in oracle and 'add' in oracle):
         signals.append('mana_source')
-    elif 'ritual' in tags and 'add' in oracle:
+    elif is_ritual(card) and 'add' in oracle:
         signals.append('mana_source')
 
     # 15. X-cost hate permanent (Chalice-style "cost X, get X charge
@@ -1406,7 +1410,7 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
                 projected.opp_life -= dmg * factor
 
     # Card draw
-    if 'cantrip' in tags or 'draw' in tags:
+    if is_draw_engine(card):
         projected.my_hand_size += 1  # net 0 since we already subtracted 1
         projected.cards_drawn_this_turn += 1
         # If draws more than 1 card
@@ -1419,7 +1423,7 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
             projected.cards_drawn_this_turn += 2
 
     # Rituals — add mana (net positive: Pyretic Ritual costs 2, produces 3)
-    if 'ritual' in tags:
+    if is_ritual(card):
         # Most rituals produce 3 mana for 2 cost = net +1
         # Manamorphose produces 2 for 2 = net 0 but draws a card
         # We already subtracted the cost above, so add the gross production

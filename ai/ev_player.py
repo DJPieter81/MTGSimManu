@@ -1561,7 +1561,8 @@ class EVPlayer:
         if has_cascade:
             ev += CYCLING_CASCADE_BOOST  # cycling is the primary action before cascade
             # Count creatures already in GY — less urgency if GY is full
-            gy_creatures = sum(1 for c in me.graveyard if c.template.is_creature)
+            from ai.predicates import count_gy_creatures
+            gy_creatures = count_gy_creatures(me.graveyard)
             if gy_creatures < 3:
                 ev += CYCLING_GY_URGENCY  # urgent: need more GY creatures before cascading
 

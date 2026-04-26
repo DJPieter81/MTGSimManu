@@ -386,7 +386,8 @@ class BoardAssessor:
                 mana_target = current_goal.resource_target or 6
                 resource_ready = me.available_mana_estimate >= mana_target
 
-        gy_creatures = sum(1 for c in me.graveyard if c.template.is_creature)
+        from ai.predicates import count_gy_creatures
+        gy_creatures = count_gy_creatures(me.graveyard)
 
         return BoardAssessment(
             my_clock=my_clock,
@@ -593,9 +594,10 @@ class GoalEngine:
 
     def card_keep_score(self, card, hand: list) -> float:
         """Score a card for mulligan bottoming. Higher = keep."""
+        from ai.predicates import count_lands
         score = 0.0
         t = card.template
-        lands_in_hand = sum(1 for c in hand if c.template.is_land)
+        lands_in_hand = count_lands(hand)
         if t.is_land:
             score += 10.0 if lands_in_hand <= 3 else 2.0
             score += self.gameplan.land_priorities.get(card.name, 0.0) * 0.5

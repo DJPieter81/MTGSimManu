@@ -354,9 +354,10 @@ class MulliganDecider:
         if card.template.cmc == 0 and Keyword.SUSPEND in card.template.keywords:
             return -100.0
 
+        from ai.predicates import count_lands
         score = 0.0
         t = card.template
-        lands_in_hand = sum(1 for c in hand if c.template.is_land)
+        lands_in_hand = count_lands(hand)
 
         if t.is_land:
             score += 10.0 if lands_in_hand <= 3 else 2.0
