@@ -301,10 +301,16 @@ MODERN_DECKS: Dict[str, Dict[str, Dict[str, int]]] = {
         # then target.  Replacing with 4× Unburial Rites (any creature,
         # incl. Griselbrand and Archon) gives the deck a real second
         # reanimation path and matches the gameplan declaration.
-        # Mainboard count balanced by +1× Archon of Cruelty (more
-        # legendary reanimation targets, valid for both Goryo's and
-        # Unburial Rites).  Net: -4 Unmarked Grave, +3 Unburial Rites
-        # (1→4), +1 Archon of Cruelty (2→3).  Total stays at 60.
+        #
+        # 2026-04-26 (later): replace 3× Persist with 3× Inquisition of
+        # Kozilek.  Persist returns NONLEGENDARY creature cards only;
+        # the deck's reanimation targets (Griselbrand, Archon) are
+        # legendary, so Persist could only return Solitude — a value
+        # play, not a combo win.  Inquisition strips opp's CMC≤3 cards
+        # (Memnite, Mox Opal, Cranial Plating, Frogmite, Springleaf
+        # Drum, Bauble) — denies Affinity's whole curve and routes
+        # cleanly into the existing 4 Thoughtseize (7 disruption
+        # spells total).  Total stays at 60.
         "mainboard": {
             "Goryo's Vengeance": 4,
             "Griselbrand": 4,
@@ -313,7 +319,7 @@ MODERN_DECKS: Dict[str, Dict[str, Dict[str, int]]] = {
             "Ephemerate": 4,
             "Faithful Mending": 4,
             "Thoughtseize": 4,
-            "Persist": 3,
+            "Inquisition of Kozilek": 3,
             "Undying Evil": 2,
             "Marsh Flats": 4,
             "Godless Shrine": 2,

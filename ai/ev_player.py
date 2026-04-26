@@ -493,12 +493,14 @@ class EVPlayer:
         t_oracle = (t.oracle_text or '').lower()
 
         # ── Combo sequencing overlay (Phase 2c.2 + 2c.3) ──
-        # The legacy `_combo_modifier` was a 440-LOC method with five
-        # `storm_patience` clamps and overlapping zone/role/finisher logic.
-        # It has been replaced by `card_combo_modifier`: zone-aware (storm /
-        # graveyard / mana), role-aware (payoff / fuel / engine), and
-        # arithmetic-derived (no per-card scoring tables).  Caching of
-        # `assess_combo` is deferred — single-turn correctness first.
+        # Phase D migration deferred — see docs/PHASE_D_DEFERRED.md.
+        # Two attempts (marginal-delta, flat-credit + hard-hold)
+        # collapsed Storm field N=20 from 44.8% → ~2-7%.  Both
+        # principled approaches missed multi-turn projection: storm
+        # often needs T3 setup → T4 finisher, which a single-turn
+        # simulator can't model.  Live decisions stay on
+        # card_combo_modifier until simulator v2 ships hold_value /
+        # next_turn_proj / coverage_ratio fields.
         if self.profile.has_combo_chain and self.goal_engine is not None:
             from ai.combo_calc import assess_combo, card_combo_modifier
             snap_id = id(snap)
@@ -764,6 +766,49 @@ class EVPlayer:
                 from ai.clock import mana_clock_impact
                 cmc = t.cmc or 2
                 ev -= cmc * mana_clock_impact(snap) * 20.0
+
+        # ── Redundant non-stacking static permanent ──
+        # When a non-creature, non-spell permanent with the same name
+        # is already on the battlefield AND its oracle text describes
+        # a pure static ability (no triggered abilities, no per-cast
+        # cost reduction, no per-instance scaling), the second copy
+        # adds no marginal value — Blood Moon, Damping Sphere,
+        # Trinisphere, Leyline of Sanctity / Void all share this
+        # shape.  Penalize the cast so the AI advances toward its
+        # win condition instead.
+        #
+        # Cards that DO stack (must NOT be penalised):
+        #   * "Whenever ... enters" / "When this enters" — each
+        #     copy fires its own ETB trigger (Spelunking → +1 draw
+        #     + land drop; Amulet of Vigor → another untap event)
+        #   * "Whenever a player casts" / "Whenever you cast" —
+        #     each copy triggers separately on the same cast
+        #   * "cost {N} less" — cost reductions are cumulative
+        #     (Ruby Medallion, Goblin Electromancer)
+        #   * "for each" / "for every" — explicit scaling
+        #   * Active "{T}: ..." abilities — per-source activation
+        #
+        # Detection is oracle-driven (no card names).  Penalty = mana
+        # we'd waste, derived via `mana_clock_impact(snap)` so the
+        # scaling matches the rest of the EV pipeline.
+        if (not t.is_creature and not t.is_instant and not t.is_sorcery
+                and not t.is_land):
+            same_name_on_bf = any(c.name == t.name for c in me.battlefield)
+            if same_name_on_bf:
+                oracle_lower = (t.oracle_text or '').lower()
+                stacks = (
+                    'for each' in oracle_lower
+                    or 'for every' in oracle_lower
+                    or 'cost {' in oracle_lower         # cost reducers
+                    or 'whenever' in oracle_lower       # triggered
+                    or 'when this' in oracle_lower      # ETB triggers
+                    or 'when ' + t.name.lower() + ' enters' in oracle_lower
+                    or '{t}:' in oracle_lower           # tap abilities
+                )
+                if not stacks:
+                    from ai.clock import mana_clock_impact
+                    cmc = t.cmc or 1
+                    ev -= cmc * mana_clock_impact(snap) * 20.0
 
         # ── Board wipe hard gate ──
         # Empty-board wrath is pure waste (we self-wipe for nothing). Mark

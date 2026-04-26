@@ -182,6 +182,17 @@ class OracleTextParser:
         (r"destroy\s+all\s+creatures", "all_creatures"),
         (r"destroy\s+all\s+nonland\s+permanents", "all_nonland"),
         (r"destroy\s+target\s+land", "land"),
+        # X-target / "up to N target" — plurals matter (Force of
+        # Vigor, By Force, Vandalblast).
+        (r"destroy\s+(?:x|up\s+to\s+\w+)\s+target\s+artifacts?", "artifact"),
+        # Mass artifact / enchantment removal — Shatterstorm,
+        # Creeping Corrosion, Patriarch's Bidding pattern.
+        (r"destroy\s+(?:all|each)\s+artifacts?", "all_artifacts"),
+        (r"destroy\s+(?:all|each)\s+enchantments?", "all_enchantments"),
+        # Mass creature removal — "destroy each creature" (Damnation
+        # is "destroy all creatures", caught above; "destroy each
+        # creature" is a different phrasing some cards use).
+        (r"destroy\s+each\s+creature", "all_creatures"),
     ]
 
     # Draw patterns
@@ -543,18 +554,48 @@ class OracleTextParser:
         is_blink = any("you control" in e.raw_text.lower() and e.effect_type == "exile"
                        and ("return" in e.raw_text.lower() or "then return" in e.raw_text.lower())
                        for e in effects)
+        # Walk EVERY effect (no early break) — modal cards
+        # (Brotherhood's End, Kolaghan's Command) have multiple
+        # destroy/exile modes and each must contribute its tag.
+        any_removal = False
         for e in effects:
-            if (not is_land) and e.effect_type in ("damage", "destroy", "exile") and e.target_type in (
-                "creature", "any", "nonland_permanent", "permanent", "all_creatures",
-                "artifact", "enchantment", "all_nonland",
+            if is_land:
+                continue
+            if e.effect_type not in ("damage", "destroy", "exile"):
+                continue
+            if e.target_type not in (
+                "creature", "any", "nonland_permanent", "permanent",
+                "all_creatures", "artifact", "enchantment", "all_nonland",
+                "all_artifacts", "all_enchantments",
             ):
-                if is_blink and e.effect_type == "exile":
-                    tags.add("blink")
-                else:
-                    tags.add("removal")
-                if e.target_type in ("all_creatures", "all_nonland"):
-                    tags.add("board_wipe")
-                break
+                continue
+            any_removal = True
+            if is_blink and e.effect_type == "exile":
+                tags.add("blink")
+            if e.target_type in ("all_creatures", "all_nonland",
+                                   "all_artifacts", "all_enchantments"):
+                tags.add("board_wipe")
+            # Fine-grained removal tags so the SB scorer + AI can
+            # match on parsed effect data instead of re-regexing
+            # oracle text.  Each tag is structural — adding a new
+            # oracle pattern means extending the parser's pattern
+            # list, not editing every consumer.
+            if e.target_type == "artifact":
+                tags.add("destroy_target_artifact")
+            if e.target_type == "creature":
+                tags.add("destroy_target_creature")
+            if e.target_type in ("permanent", "nonland_permanent"):
+                tags.add("destroy_target_permanent")
+            if e.target_type == "all_nonland":
+                tags.add("destroy_all_nonland")
+            if e.target_type == "all_creatures":
+                tags.add("destroy_all_creatures")
+            if e.target_type == "all_artifacts":
+                tags.add("destroy_all_artifacts")
+            if e.target_type == "all_enchantments":
+                tags.add("destroy_all_enchantments")
+        if any_removal and "blink" not in tags:
+            tags.add("removal")
 
         # Counter
         for e in effects:
