@@ -493,20 +493,14 @@ class EVPlayer:
         t_oracle = (t.oracle_text or '').lower()
 
         # ── Combo sequencing overlay (Phase 2c.2 + 2c.3) ──
-        # The legacy `_combo_modifier` was a 440-LOC method with five
-        # `storm_patience` clamps and overlapping zone/role/finisher logic.
-        # It has been replaced by `card_combo_modifier`: zone-aware (storm /
-        # graveyard / mana), role-aware (payoff / fuel / engine), and
-        # arithmetic-derived (no per-card scoring tables).  Caching of
-        # `assess_combo` is deferred — single-turn correctness first.
-        #
-        # Phase D migration (simulator-driven replacement) is held back —
-        # see docs/PHASE_D_DEFERRED.md.  The marginal `(after − before)`
-        # delta from `simulate_finisher_chain` does not capture timing
-        # decisions (hold vs fire, opportunity cost of spent mana, multi-
-        # turn projection).  Storm field N=20 with the simulator wire-up
-        # collapsed from 44.8% → 5.3%.  The simulator needs hold-vs-fire
-        # Choice projection + multi-turn EV before the migration is safe.
+        # Phase D migration deferred — see docs/PHASE_D_DEFERRED.md.
+        # Two attempts (marginal-delta, flat-credit + hard-hold)
+        # collapsed Storm field N=20 from 44.8% → ~2-7%.  Both
+        # principled approaches missed multi-turn projection: storm
+        # often needs T3 setup → T4 finisher, which a single-turn
+        # simulator can't model.  Live decisions stay on
+        # card_combo_modifier until simulator v2 ships hold_value /
+        # next_turn_proj / coverage_ratio fields.
         if self.profile.has_combo_chain and self.goal_engine is not None:
             from ai.combo_calc import assess_combo, card_combo_modifier
             snap_id = id(snap)
