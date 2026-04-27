@@ -740,3 +740,61 @@ def simulate_finisher_chain(
             best = best.model_copy(update={"next_turn_proj": next_proj})
 
     return best
+
+
+# ─── Multi-turn helpers (Forge-pattern: best-across-turns scalar) ─
+
+
+def best_turn_damage(proj: FinisherProjection) -> tuple[float, int]:
+    """Walk `proj.next_turn_proj` chain, return the highest projected
+    damage × success_probability across ALL turns and the turn-offset
+    at which it occurs.
+
+    Pattern adopted from Forge's `summonSickValue` separation
+    (https://github.com/Card-Forge/forge/blob/master/forge-ai/src/main/java/forge/ai/simulation/GameStateEvaluator.java)
+    — Forge keeps `(now_value, next_turn_value)` as a tuple instead
+    of one scalar.  Our equivalent walks the recursive chain:
+
+        turn 0:   proj.expected_damage × proj.success_probability
+        turn 1:   proj.next_turn_proj.expected_damage × ...
+        turn 2:   proj.next_turn_proj.next_turn_proj. ...
+
+    Returns the (max_value, max_turn_offset) so the caller can decide
+    "fire this turn" (offset 0) vs "hold for next turn" (offset 1).
+    Pure read-only walk; no game-state dependency.
+    """
+    best_value = proj.expected_damage * proj.success_probability
+    best_turn = 0
+    node = proj
+    turn = 0
+    while node.next_turn_proj is not None:
+        node = node.next_turn_proj
+        turn += 1
+        node_value = node.expected_damage * node.success_probability
+        if node_value > best_value:
+            best_value = node_value
+            best_turn = turn
+    return best_value, best_turn
+
+
+def chain_lethal_turn(proj: FinisherProjection,
+                      opp_life: int) -> Optional[int]:
+    """Return the FIRST turn-offset at which the projected chain
+    deals lethal damage (≥ opp_life with success ≥ 0.5), or None if
+    no projected turn reaches lethal.
+
+    "First" matters because firing on the earliest lethal turn is
+    optimal — extra damage on later turns is irrelevant for game
+    outcome.
+    """
+    if opp_life <= 0:
+        return None
+    node: Optional[FinisherProjection] = proj
+    turn = 0
+    while node is not None:
+        if (node.expected_damage >= opp_life
+                and node.success_probability >= 0.5):
+            return turn
+        node = node.next_turn_proj
+        turn += 1
+    return None

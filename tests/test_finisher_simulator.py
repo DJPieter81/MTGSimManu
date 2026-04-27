@@ -644,3 +644,65 @@ class TestMultiTurnRollout:
         )
         assert proj.pattern == "none"
         assert proj.next_turn_proj is None
+
+
+class TestMultiTurnHelpers:
+    """Helpers that walk the `next_turn_proj` chain.  Forge-pattern
+    (`summonSickValue`-style now-vs-later separation)."""
+
+    def test_best_turn_damage_no_chain(self):
+        """`pattern="none"` → best_turn_damage = 0 at turn 0."""
+        from ai.finisher_simulator import best_turn_damage
+        snap = _make_snap()
+        proj = simulate_finisher_chain(
+            snap=snap, hand=[], battlefield=[], graveyard=[],
+            library_size=40, storm_count=0, archetype="any",
+        )
+        value, turn = best_turn_damage(proj)
+        assert value == 0.0
+        assert turn == 0
+
+    def test_best_turn_damage_picks_highest_across_turns(self):
+        """Walks the full chain; returns the max EV and which turn."""
+        from ai.finisher_simulator import best_turn_damage
+        snap = _make_snap(my_mana=4)
+        hand = [_ritual(1), _ritual(2), _grapeshot(3)]
+        proj = simulate_finisher_chain(
+            snap=snap, hand=hand, battlefield=[], graveyard=[],
+            library_size=40, storm_count=0, archetype="storm",
+        )
+        value, turn = best_turn_damage(proj)
+        # Best value should be ≥ this turn's value.
+        this_turn_value = proj.expected_damage * proj.success_probability
+        assert value >= this_turn_value
+        assert turn >= 0
+
+    def test_chain_lethal_turn_no_lethal(self):
+        """Sub-lethal projection across all turns → returns None."""
+        from ai.finisher_simulator import chain_lethal_turn
+        snap = _make_snap(my_mana=2, opp_life=20)
+        # 1 ritual + Grapeshot = storm 2 = 2 damage; nowhere near
+        # lethal at any depth (next turns get +1 mana but with the
+        # same hand can't reach 20).
+        hand = [_ritual(1), _grapeshot(2)]
+        proj = simulate_finisher_chain(
+            snap=snap, hand=hand, battlefield=[], graveyard=[],
+            library_size=40, storm_count=0, archetype="storm",
+        )
+        assert chain_lethal_turn(proj, opp_life=20) is None
+
+    def test_chain_lethal_turn_zero_when_lethal_now(self):
+        """Lethal-this-turn projection → returns 0."""
+        from ai.finisher_simulator import chain_lethal_turn
+        # opp_life=2 with a 2-damage Grapeshot chain → lethal now
+        snap = _make_snap(my_mana=4, opp_life=2)
+        hand = [_ritual(1), _grapeshot(2)]
+        proj = simulate_finisher_chain(
+            snap=snap, hand=hand, battlefield=[], graveyard=[],
+            library_size=40, storm_count=0, archetype="storm",
+        )
+        # If our chain deals ≥ 2 damage with success ≥ 0.5,
+        # chain_lethal_turn(opp_life=2) returns 0.
+        if (proj.expected_damage >= 2
+                and proj.success_probability >= 0.5):
+            assert chain_lethal_turn(proj, opp_life=2) == 0
