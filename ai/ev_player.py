@@ -2767,19 +2767,22 @@ class EVPlayer:
             if cost is None or cost > available_mana:
                 continue
 
-            # Score each creature as an equip target. Evasion multiplies
-            # the value since unblocked damage compounds harder than raw
-            # power — a CP-attached flier is typically unblockable, while
-            # a ground creature of equal size often chump-blocked.
+            # Score each creature as an equip target via the same
+            # marginal-contribution formula the burn-target picker
+            # uses: `permanent_threat(c, me, game)` — what does the
+            # creature contribute to OUR position value?  Higher
+            # threat-to-opp = better equip target because the equipment
+            # amplifies whatever clock the creature is already
+            # producing.  Evasion (flying / menace / trample) flows
+            # through `permanent_threat` via the snapshot's
+            # `my_evasion_power` field — the magic FLYING * 2.0,
+            # MENACE * 1.5, TRAMPLE * 1.3 multipliers used to
+            # approximate this and are now derived from
+            # `position_value` directly.
+            from ai.permanent_threat import permanent_threat
             def _equip_target_score(c):
-                base = (c.power or 0) + (c.toughness or 0) * 0.3
-                if Keyword.FLYING in c.keywords:
-                    return base * 2.0
-                if Keyword.MENACE in c.keywords:
-                    return base * 1.5
-                if Keyword.TRAMPLE in c.keywords:
-                    return base * 1.3
-                return base
+                # Use OUR perspective for our own creatures
+                return permanent_threat(c, player, game)
 
             best = max(creatures, key=_equip_target_score)
 
