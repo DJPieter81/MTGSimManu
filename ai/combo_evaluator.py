@@ -58,6 +58,40 @@ STORM_HARD_HOLD = -50.0
 _BASELINE_CACHE: dict = {}
 
 
+# ─── Diagnostic trace (env-gated, zero overhead by default) ────────
+#
+# Set MTGSIM_COMBO_TRACE=1 in the environment to emit a structured
+# line per card_combo_evaluation call to stderr.  Used to diagnose
+# wire-up collapses (per docs/PHASE_D_FOURTH_ATTEMPT.md): the live
+# wire-up has collapsed Storm five times even with the simulator-
+# layer gap closed.  The trace exposes per-card branch decisions so
+# the second gap can be located before a sixth wire-up attempt.
+import os as _os
+import sys as _sys
+
+_TRACE = _os.environ.get("MTGSIM_COMBO_TRACE", "") == "1"
+
+
+def _log_evaluation(card_name: str, branch: str, score: float,
+                     **fields) -> None:
+    """Emit a structured trace line when MTGSIM_COMBO_TRACE=1.
+
+    Off by default → zero overhead (single env-var check at module
+    load + a boolean test per call).  When on, emits one line per
+    card_combo_evaluation call so a Bo3 trace can be diff-ed against
+    expected behavior.
+
+    Format: ``COMBO_TRACE branch=X card="Y" score=Z field1=V1 ...``
+    """
+    if not _TRACE:
+        return
+    parts = [f"COMBO_TRACE", f"branch={branch}", f"card=\"{card_name}\"",
+             f"score={score:.2f}"]
+    for k, v in fields.items():
+        parts.append(f"{k}={v}")
+    print(" ".join(parts), file=_sys.stderr)
+
+
 def _has_search_tax(oracle_text: str) -> bool:
     if not oracle_text:
         return False
@@ -244,8 +278,16 @@ def card_combo_evaluation(
             # CR 500.4: mana empties at phase end.  Casting fuel here
             # wastes the resource; the AI must hold and rebuild on a
             # later turn.  Same sentinel as combo_calc.py's clamp.
-            return STORM_HARD_HOLD + flip_bonus + tax_penalty
-        return flip_bonus + tax_penalty
+            score = STORM_HARD_HOLD + flip_bonus + tax_penalty
+            _log_evaluation(card.template.name, "hard_hold_no_chain",
+                            score, pattern=baseline_proj.pattern,
+                            flip=flip_bonus, tax=tax_penalty)
+            return score
+        score = flip_bonus + tax_penalty
+        _log_evaluation(card.template.name, "no_chain_non_fuel", score,
+                        pattern=baseline_proj.pattern,
+                        flip=flip_bonus, tax=tax_penalty)
+        return score
 
     # ── 4. Hold-vs-fire decision (simulator v2) ──
     # Hold ONLY when next-turn projects LETHAL but this turn does
@@ -264,7 +306,13 @@ def card_combo_evaluation(
         and not fire_lethal
     )
     if hold_lethal and _is_chain_fuel(card):
-        return flip_bonus + tax_penalty
+        score = flip_bonus + tax_penalty
+        _log_evaluation(card.template.name, "hold_lethal", score,
+                        exp_dmg=baseline_proj.expected_damage,
+                        hold_value=baseline_proj.hold_value,
+                        opp_life=opp_life,
+                        flip=flip_bonus, tax=tax_penalty)
+        return score
 
     # ── 5. Chain-fuel credit when chain is reachable AND firing
     #     this turn beats holding ──
@@ -287,6 +335,17 @@ def card_combo_evaluation(
             and relevance == 0.0
             and _is_chain_fuel(card)):
         # Chain is mid-flight, this fuel doesn't extend it — hold.
-        return flip_bonus + tax_penalty
+        score = flip_bonus + tax_penalty
+        _log_evaluation(card.template.name, "coverage_escalation_hold",
+                        score, coverage=baseline_proj.coverage_ratio,
+                        relevance=relevance,
+                        flip=flip_bonus, tax=tax_penalty)
+        return score
 
-    return chain_credit + flip_bonus + tax_penalty
+    final_score = chain_credit + flip_bonus + tax_penalty
+    _log_evaluation(card.template.name, "chain_credit", final_score,
+                    fire_value=fire_value, relevance=relevance,
+                    combo_value=combo_value,
+                    chain_credit=chain_credit,
+                    flip=flip_bonus, tax=tax_penalty)
+    return final_score
