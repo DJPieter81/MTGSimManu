@@ -1,5 +1,34 @@
 # CLAUDE.md — MTG Game Simulator
 
+## ABSTRACTION CONTRACT (read before any engine/AI code change)
+
+The slogan "no patches, solve holistically" does not bind. These rules do. They apply to every change in `engine/` and `ai/`. Before writing the diff, answer all four:
+
+1. **Class size** — how many of Modern's 20k+ cards could legitimately hit this code path? If fewer than 10, you are patching. Stop. Find the mechanic.
+2. **Subsystem** — which single module owns this rule? If the change spans 2+ modules, the boundary is wrong; fix the boundary first.
+3. **Failing test, rule-phrased** — write the test before the fix. The test name describes the *mechanic*, not the card. "equipment instance_id stacks correctly" — yes. "Cranial Plating works" — no. If you can't phrase the rule without naming a card, you don't understand the bug yet.
+4. **Knowledge location** — card-specific knowledge lives in oracle text, MTGJSON, or `decks/gameplans/*.json`. NEVER in `.py` source. The engine is mechanic-driven; the AI scoring layer reads card-specific weights from gameplan JSON via a documented hook.
+
+### Hard prohibitions (CI-enforceable)
+
+- **No new `card.name == "X"` or `name in {…}` in `engine/` or `ai/`.** Pre-commit ratchet (`tools/check_abstraction.py`) blocks any commit that *increases* the count from `tools/abstraction_baseline.json`. Reducing the count requires explicitly lowering the baseline in the same commit. True exceptions (enum checks, supertypes) get `# abstraction-allow: <reason>` on the line.
+- **No new numeric threshold without a test that names the rule it encodes.** A literal `0.7` with no comment, no constant name, and no test is a magic number; it gets reverted on review.
+- **No fix without a failing test in the same diff.** Test goes red first, then the fix lands and turns it green. Both in the same commit.
+- **No second diagnostic phase on an outlier without a Bo3 replay-based root cause first.** Documentation is not progress.
+
+### Loop-break (session protocol)
+
+If three consecutive commits target the same outlier deck without moving the win rate toward its expected band: **halt**. Run `run_meta.py --bo3` against the worst matchup, identify the exact turn where EV diverges from correct play, name the responsible subsystem in writing in `docs/` (with frontmatter `status: active`, `priority: primary`). No further code until that document exists. This is the cure for the diagnostic-loop trap recorded in PROJECT_STATUS.md (three documentation-only phases, zero WR movement).
+
+### Installation (one-time, per clone)
+
+```bash
+bash tools/install_hooks.sh   # sets core.hooksPath to .git-hooks
+python tools/check_abstraction.py   # smoke-test the ratchet
+```
+
+The pre-commit hook runs `tools/check_abstraction.py` and blocks the commit on violation. The script is also runnable standalone for inspection.
+
 ## Workflow rules (standing)
 
 - **Open a PR after pushing a feature-branch commit.** The default

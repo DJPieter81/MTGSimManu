@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# MTGSimManu pre-commit hook — abstraction contract enforcement.
+# Installed by tools/install_hooks.sh (sets core.hooksPath to .git-hooks).
+# Versioned in repo so every clone gets it.
+
+set -e
+
+# Find repo root regardless of where commit is invoked
+ROOT="$(git rev-parse --show-toplevel)"
+
+if [ -f "$ROOT/tools/check_abstraction.py" ]; then
+    python3 "$ROOT/tools/check_abstraction.py"
+else
+    echo "warning: tools/check_abstraction.py missing — abstraction contract not enforced" >&2
+fi

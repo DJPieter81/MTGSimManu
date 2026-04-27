@@ -736,7 +736,7 @@ priority 24 → 14, `always_early` cleared). v2 field WR improved from ~42% →
 - Use heuristic SB tips — only game log data
 - Replace deck variant without being told — run alongside existing
 - Skip `git pull origin main`
-- Hardcode card names in engine — always detect from oracle text or template field
+- Hardcode card names in engine — always detect from oracle text or template field. Enforced by `tools/check_abstraction.py` ratchet (see CLAUDE.md ABSTRACTION CONTRACT). Pre-commit hook blocks any commit that increases the hardcoded-name count.
 
 ### Always do
 - `git pull origin main` before any work

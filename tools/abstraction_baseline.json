@@ -1,0 +1,4 @@
+{
+  "hardcoded_name_count": 8,
+  "_comment": "Abstraction-contract ratchet baseline. Count of hardcoded card-name conditionals in engine/ + ai/ as detected by tools/check_abstraction.py. May only decrease, never increase. Pre-commit hook enforces this. Reduce by replacing name-checks with oracle-text/template-field checks or moving knowledge into decks/gameplans/*.json. See CLAUDE.md ABSTRACTION CONTRACT."
+}
