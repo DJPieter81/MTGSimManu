@@ -2,159 +2,19 @@
 
 > **Last updated:** 2026-04-26 (Storm + Goryo's deferral-gate iteration: Storm 29.2→39.8% +10.6pp, Goryo's 8.1→13.4% +5.3pp, three sister-fix PRs open #194 #195 #196)
 > **Purpose:** Single-source-of-truth for Claude Code planning mode. Read this before any session.
-> **Sister project:** MTGSimClaude (Legacy format, 38 decks, see LEGACY_MODERNISATION_PROPOSAL.md)
+> **Sister project:** MTGSimClaude (Legacy format, 38 decks). See `CROSS_PROJECT_SYNC.md`.
 
 ---
 
-## Recent work — Storm + Goryo's deferral-gate iteration (2026-04-26)
+## Recent session summaries
 
-Three deferral-gate sister-fixes in the same Wish-pattern shape, plus
-a Goryo's deck-construction fix.  All on independent `claude/*` branches
-with separate PRs (per session protocol — no auto-merge).
+The dated "Recent work" entries that previously occupied the top of this file have moved to `docs/history/sessions/` with frontmatter (`status: archived`, `priority: historical`). Most recent first:
 
-The deferral gate at `ai/ev_player.py:417-420` filters cast-spell
-candidates with empty same-turn signal lists.  Three different combo
-cards (Wish tutor PR #192 — already merged; Ruby Medallion cost
-reducer PR #194; Past in Flames flashback static PR #196) all
-returned empty signal lists despite high EV scores, so the AI cast
-lower-EV cantrips or passed instead.
+- **2026-04-26** — Storm + Goryo's deferral-gate iteration (Storm 29.2→39.8% +10.6pp, Goryo's 8.1→13.4% +5.3pp). See `docs/history/sessions/2026-04-26_storm_goryos_deferral_gate.md`.
+- **2026-04-25** — Phase 2c combo refactor complete. See `docs/history/sessions/2026-04-25_phase2c_combo_refactor.md`.
+- **2026-04-20** — EV Correctness Overhaul complete. See `docs/history/sessions/2026-04-20_ev_correctness_overhaul.md`.
 
-| PR | Branch | Mechanism |
-|---|---|---|
-| #194 | `claude/storm-medallion-signal-deploy` | Cost-reducer first-deploy signal (#17) |
-| #195 | `claude/goryos-unburial-rites-decklist` | 4× Unmarked Grave → 4× Unburial Rites + 1× Archon |
-| #196 | `claude/storm-pif-flashback-signal` | PiF flashback + GY-fuel signal (#18) |
-
-**Cumulative N=20 16-deck matrix gate** (all 3 fixes merged on staging branch):
-
-| Deck | Pre-iteration | All 3 Fixes | Δpp |
-|---|---:|---:|---:|
-| **Goryo's Vengeance** | 8.1% | **15.0%** | **+6.9** ✓ |
-| **Ruby Storm** | 29.2% | **38.0%** | **+8.8** ✓ |
-| Affinity | 88% | 87.3% | −0.7 |
-| Boros Energy | 76% | 75.7% | −0.3 |
-| All others | (within ±2pp) | (within ±2pp) | — |
-
-No deck regressed >2pp.  No symmetry violations introduced.
-
-**Storm field N=50 (final precise measurement):** **39.8%** (+10.6pp
-vs pre-iteration baseline 29.2%).  Lift broadly distributed: 7
-matchups gained ≥10pp (4/5c +20, Az WST +26, Domain Zoo +20,
-Dimir +16, Pinnacle +14, WST v2 +16, Jeskai +10).  Did not reach
-the 50% target — remaining gap is structural (Affinity 12%, Tron
-4%, Boros 18% are matchup floors driven by clock pressure).
-
-**Goryo's field N=50:** **13.4%** (+5.3pp vs baseline 8.1%).
-Control matchups 30-40%, aggro 0%.
-
-**Generic by construction:** every fix uses oracle text + tag
-detection.  No card-name hardcoding.  See
-`docs/experiments/2026-04-26_storm_goryos_iteration.md` for the
-full session log including matchup spreads, smoke-test traces,
-and stop-criterion analysis.
-
-**Plan file:** `/root/.claude/plans/lets-do-a-proper-delightful-star.md`
-
----
-
-## Recent work — Phase 2c combo refactor complete (2026-04-25)
-
-The Phase 2 series (`/root/.claude/plans/lets-first-do-a-curried-rocket.md`)
-unified the combo-scoring logic onto a single principled module.  The
-legacy 440-LOC `_combo_modifier` in `ai/ev_player.py` is gone; its role
-is now owned by `ai/combo_calc.py::card_combo_modifier`, which is
-zone-aware (storm / graveyard / mana), role-aware (payoff / fuel /
-engine / dig), and arithmetic-derived (no per-card scoring tables).
-
-| PR | Phase | Outcome |
-|---|---|---|
-| #181 | engine fix | Living End graveyard mutation race (merged) |
-| #182 | engine fix | Seed `runner.rng` for matrix determinism (merged) |
-| #184 | PR-A | Subtlety ETB references `game.stack._items`, not `.items` (merged) |
-| #185 | PR-B (2c.1) | State-query routing + bridge calibration — closed, superseded by #189 |
-| #186 | PR-C (2c.2-prep) | `card_combo_modifier` hardened with 14 new unit tests (merged) |
-| #189 | PR-D+E hard | Delete `_combo_modifier`, port 5 logic blocks, identity cache (merged) |
-
-**Matrix gate (N=20):** all 17 decks within ±5pp tolerance vs pre-2c
-baseline.  Headlines: Ruby Storm **+1.1pp**, Goryo's Vengeance
-**+4.1pp**, Living End −0.4pp, Amulet Titan −3.2pp.  Compared to the
-abandoned Phase 2b retry (#183) which regressed Storm −20.4pp and
-Goryo's −13.0pp, the hard-refactor approach restored or improved
-every combo deck.
-
-**What was ported into `card_combo_modifier`:**
-- `STORM_HARD_HOLD = -1000.0` rules constant (phase-end mana empty
-  is strictly worse than passing the turn)
-- `_has_storm_finisher(card, me)` — direct STORM keyword OR tutor
-  with valid SB ∪ library target (no hardcoded Wish / Grapeshot)
-- `_has_viable_pif(card, me, snap, …)` — flashback-combo card
-  requires GY fuel + mana to cast + finisher access (no hardcoded
-  Past in Flames)
-- `_has_draw_in_hand(card, me)` — cantrip / card_advantage / draw
-- Storm=0 ritual chain gate (proper SB-validation)
-- Storm≥1 mid-chain gate with hard-hold + soft-penalty + storm-coverage
-  escalation (`HALF_LETHAL=0.5`) + draw-miss cascade risk
-  (`MIN_CHAIN_DEPTH=3`, `CASCADE_DRAW_FLOOR=1`)
-
-**Performance:** identity-based per-snapshot cache (`id(snap)`) on
-`assess_combo`.  All spells scored within one `decide_main_phase`
-call share a snap so the assessment runs once per decision instead
-of once per spell.  3.6× speedup vs. uncached: 5 Storm vs Azorius
-games dropped from 102s → 28s (≈ baseline 5s/game).
-
-**Phase 2 superseded artefacts:**
-- Phase 2a (`build_combo_distribution` dispatcher, `OUTCOME_DIST_COMBO`
-  flag, PR #179 merged) — flag stays `False`; the dispatcher is
-  dormant after #189 and may be revisited in a future phase if the
-  single-turn distribution model gains multi-turn lookahead.
-- Phase 2b (PR #183, closed) — single-turn distribution couldn't
-  represent multi-turn combo setup.
-- Phase 2c.1 (PR #185, closed) — state-query routing + bridge
-  calibration; obsoleted by the hard refactor.
-
-Anti-patterns rejected during this work:
-- Magic constants in `card_combo_modifier` — every numeric value is
-  derived from CR damage rules, ritual_mana oracle parsing, or
-  STORM-profile fuel thresholds (with inline justification)
-- Hardcoded card names — Past in Flames, Wish, Grapeshot, Empty the
-  Warrens all detected by tags / oracle text patterns
-- Per-card EV tables — would have re-introduced the `card_ev_overrides`
-  pattern retired in EV correctness Phase 5
-
----
-
-## Recent work — EV Correctness Overhaul complete (2026-04-20)
-
-The EV-correctness design doc (`docs/design/ev_correctness_overhaul.md`,
-`status: superseded`) is closed.  Nine phases shipped across PRs #122,
-#128, #130, #132, #133:
-
-| Phase | Focus | Outcome |
-|---|---|---|
-| 1 | Deferral baseline + pass-preference tiebreaker (Bugs A, B, E.1) | Signal framework + `_enumerate_this_turn_signals` |
-| 2 | Conditional artifact-count term (Bug D) | `EVSnapshot` + `position_value` extended |
-| 3 | Marginal-destruction X optimizer (Bug C) | Wrath of the Skies picks best X |
-| 4 | Landcycling / typecycling resolver (Bug E.2) | Sojourner's Companion tutors lands |
-| 4.5 | Signal-based mulligan escape (Bug F) | Anti-matchup hands kept |
-| 5 | Retire card_ev_overrides prototype | Phase 2's artifact term subsumes it |
-| 6 | N=20 matrix validation | Flagged Storm / Amulet Titan / Pinnacle Affinity |
-| 7 | Pinnacle Emissary `other_enters` trigger | Closed last failing test — suite 226/226 |
-| 8 | Life / energy persistent_power | Closed Phase 7's Boros regression |
-| 9 | Phase 6 follow-ups | Storm finisher patience + Amulet engine signal + Pinnacle hypothesis falsified |
-
-Full suite **232/232** (from baseline 196/197 with 1 pre-existing failure).
-Matrix trend: weighted WRs up (more balanced meta), flat WRs down
-(AI defers junk casts across the board).  Affinity still top (~83% wtd),
-Boros stable, Storm / Amulet Titan / Goryo's all recovered from their
-post-Phase-6 lows.
-
-Experiment log chain (all `status: archived`):
-`docs/experiments/2026-04-20_phase6_matrix_validation.md` →
-`docs/experiments/2026-04-20_phase7_pinnacle_emissary_fix.md` →
-`docs/experiments/2026-04-20_phase8_life_energy_persistent.md` →
-`docs/experiments/2026-04-20_phase9_phase6_followups.md` (tip).
-
----
+For older sessions and falsified hypotheses, use the frontmatter discovery commands in CLAUDE.md → "Session Priorities (discovery protocol)".
 
 ## Current work — frontmatter registry
 
