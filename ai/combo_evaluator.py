@@ -141,23 +141,61 @@ def _search_tax_penalty(card, game, player_idx, snap) -> float:
 
 
 def _is_chain_fuel(card) -> bool:
-    """True when the card is something a storm chain wants — rituals,
-    cantrips, draw-engines, tutors, or storm closers themselves.
+    """True when the card contributes to ANY reachable chain pattern.
 
-    Mirror of `ai.predicates.is_chain_fuel` extended to include the
-    closer (storm-keyword card) and tutors.
+    Originally storm-specific (rituals/cantrips/tutors/storm-keyword).
+    Extended for the multi-pattern simulator (per
+    docs/PHASE_D_FOURTH_ATTEMPT.md fifth-gap diagnosis): Living End
+    and Amulet Titan hands had ALL cards score relevance=0.0
+    because cycling cards, cycling payoffs, cascade enablers, and
+    reanimation-related cards weren't recognised here.
+
+    Coverage:
+      * Storm     — rituals, cantrips, tutors, STORM keyword
+      * Cascade   — CASCADE keyword
+      * Cycling   — cards with `cycling_cost_data`, cycling payoffs
+                    (oracle: "all creature cards … graveyard …
+                    battlefield")
+      * Reanimation — reanimator spells, discard outlets
+      * Chain extender — Past in Flames pattern (oracle: flashback
+                    + graveyard + instant/sorcery)
+
+    All detection oracle/keyword/tag-driven; no card names.
     """
     from engine.cards import Keyword as Kw
     t = card.template
-    if not (t.is_instant or t.is_sorcery):
-        return False
     tags = getattr(t, 'tags', set())
-    if any(tag in tags for tag in ('ritual', 'cantrip',
-                                    'card_advantage', 'draw', 'tutor')):
-        return True
     keywords = getattr(t, 'keywords', set())
-    if Kw.STORM in keywords:
+    oracle = (getattr(t, 'oracle_text', '') or '').lower()
+
+    # Storm/reanimation-style fuel: instant/sorcery spells with
+    # chain-relevant tags, or the STORM keyword closer itself
+    if t.is_instant or t.is_sorcery:
+        if any(tag in tags for tag in ('ritual', 'cantrip',
+                                        'card_advantage', 'draw',
+                                        'tutor', 'reanimate',
+                                        'discard', 'looter')):
+            return True
+        if Kw.STORM in keywords:
+            return True
+        # PiF-pattern chain extender
+        if ('flashback' in oracle and 'graveyard' in oracle
+                and ('instant' in oracle or 'sorcery' in oracle)):
+            return True
+        # Cycling payoff: "all creature cards from graveyards to bf"
+        if ('all creature cards' in oracle
+                and 'graveyard' in oracle
+                and 'to the battlefield' in oracle):
+            return True
+
+    # Cascade enablers (creatures or spells with cascade keyword)
+    if Kw.CASCADE in keywords:
         return True
+
+    # Cycling: any card with cycling cost is cycling fuel
+    if getattr(t, 'cycling_cost_data', None) is not None:
+        return True
+
     return False
 
 

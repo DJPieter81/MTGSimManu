@@ -31,52 +31,46 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 
-def main() -> None:
-    """Run a representative Storm scoring trace.
+def _trace_one_deck(p1_name: str, p2_name: str, seed: int) -> None:
+    """Run the diagnostic for one deck pair at one seed.
 
-    Builds a real Ruby Storm vs Affinity game state via the
-    standard GameRunner, then calls `card_combo_evaluation`
-    directly on each card in the Storm player's hand at the
-    start of each turn — capturing scoring decisions without
-    actually wiring the evaluator into the live decision path.
+    Builds a real game state, then calls `card_combo_evaluation`
+    on each card in P1's opening hand, dumping per-card scores
+    + branch decisions to stderr.
     """
-    if os.environ.get("MTGSIM_COMBO_TRACE", "") != "1":
-        print("WARNING: MTGSIM_COMBO_TRACE is not set; trace will be silent.",
-              file=sys.stderr)
-        print("Set MTGSIM_COMBO_TRACE=1 in env to capture diagnostics.",
-              file=sys.stderr)
-
-    # Import here so MTGSIM_COMBO_TRACE is read after env is set
     from engine.card_database import CardDatabase
     from engine.game_runner import GameRunner
     from engine.game_state import GameState
     from engine.cards import CardInstance
     from decks.modern_meta import MODERN_DECKS
     from ai.ev_evaluator import snapshot_from_game
-    from ai.combo_evaluator import card_combo_evaluation
+    from ai.combo_evaluator import card_combo_evaluation, _BASELINE_CACHE
+    from ai.ev_player import _get_archetype
+
+    _BASELINE_CACHE.clear()
 
     db = CardDatabase("ModernAtomic.json")
-    storm_decklist = MODERN_DECKS["Ruby Storm"]
-    affinity_decklist = MODERN_DECKS["Affinity"]
+    p1_decklist = MODERN_DECKS[p1_name]
+    p2_decklist = MODERN_DECKS[p2_name]
 
-    seed = 50000
     rng = random.Random(seed)
     runner = GameRunner(card_db=db, rng=rng)
 
-    print(f"=== Storm vs Affinity (seed {seed}) — diagnostic harness ===",
+    print(f"\n{'='*60}", file=sys.stderr)
+    print(f"=== {p1_name} vs {p2_name} (seed {seed}) ===",
           file=sys.stderr)
+    print(f"{'='*60}", file=sys.stderr)
 
-    # Build decks + setup game manually so we can intercept the hand
-    deck1 = runner.build_deck(storm_decklist["mainboard"])
-    deck2 = runner.build_deck(affinity_decklist["mainboard"])
+    deck1 = runner.build_deck(p1_decklist["mainboard"])
+    deck2 = runner.build_deck(p2_decklist["mainboard"])
     game = GameState(rng=rng)
     game.setup_game(deck1, deck2)
-    game.players[0].deck_name = "Ruby Storm"
-    game.players[1].deck_name = "Affinity"
+    game.players[0].deck_name = p1_name
+    game.players[1].deck_name = p2_name
 
-    # Load Storm's sideboard so the simulator can see Grapeshot/PiF
-    if storm_decklist.get("sideboard"):
-        for template in runner.build_deck(storm_decklist["sideboard"]):
+    # Load P1 sideboard so simulator can see SB closers / extenders
+    if p1_decklist.get("sideboard"):
+        for template in runner.build_deck(p1_decklist["sideboard"]):
             card = CardInstance(
                 template=template, owner=0, controller=0,
                 instance_id=game.next_instance_id(),
@@ -88,24 +82,48 @@ def main() -> None:
 
     me = game.players[0]
     snap = snapshot_from_game(game, 0)
+    archetype = _get_archetype(p1_name)
 
-    print(f"\nStorm hand: {[c.name for c in me.hand]}",
+    print(f"\nHand:       {[c.name for c in me.hand]}", file=sys.stderr)
+    print(f"SB top-5:   {[c.name for c in (me.sideboard or [])][:5]}",
           file=sys.stderr)
-    print(f"Sideboard top-5: {[c.name for c in (me.sideboard or [])][:5]}",
+    print(f"Library:    {len(me.library)} cards",
           file=sys.stderr)
-    print(f"Library size: {len(me.library)}\n",
-          file=sys.stderr)
+    print(f"Archetype:  {archetype}\n", file=sys.stderr)
 
     for card in list(me.hand):
         score = card_combo_evaluation(
             card=card, snap=snap, me=me, game=game,
-            player_idx=0, archetype="storm",
+            player_idx=0, archetype=archetype,
         )
-        # Trace already emitted to stderr; print summary
-        print(f"  {card.name:30s} → score {score:+8.2f}",
+        # Trace emitted to stderr by combo_evaluator; this is the summary
+        print(f"  {card.name:40s} → {score:+8.2f}", file=sys.stderr)
+
+
+def main() -> None:
+    """Multi-deck diagnostic harness — Storm + Living End + Amulet
+    Titan, each vs Affinity, at the same seed.
+
+    Usage: MTGSIM_COMBO_TRACE=1 python tools/diag_combo_evaluator_trace.py
+
+    The combo_evaluator's chain-progress credit (step 4) should
+    produce non-zero scores for chain-fuel cards in build-up
+    states across ALL combo patterns (storm, cascade,
+    reanimation).  Diagnostic verifies this without a live wire-up.
+    """
+    if os.environ.get("MTGSIM_COMBO_TRACE", "") != "1":
+        print("WARNING: MTGSIM_COMBO_TRACE is not set; trace will be silent.",
+              file=sys.stderr)
+        print("Set MTGSIM_COMBO_TRACE=1 in env to capture diagnostics.",
               file=sys.stderr)
 
-    print("\n=== End of trace ===", file=sys.stderr)
+    seed = 50000
+    for p1_name in ("Ruby Storm", "Living End", "Amulet Titan"):
+        _trace_one_deck(p1_name, "Affinity", seed)
+
+    print(f"\n{'='*60}", file=sys.stderr)
+    print("=== End of multi-deck trace ===", file=sys.stderr)
+    print(f"{'='*60}", file=sys.stderr)
 
 
 if __name__ == "__main__":
