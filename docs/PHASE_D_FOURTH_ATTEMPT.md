@@ -139,6 +139,58 @@ architecture cannot express.
    migration again.  Without that test passing, the migration
    will collapse Storm exactly as it has four times now.
 
+## Update — Phase D fifth attempt also failed
+
+Tried the wire-up again after shipping the simulator gap-closing
+work (`08c4e11`, `da16698`, `30c7a18`).  Empirical pre-check
+showed the gap WAS closed:
+
+* Unit test: tutor-only Storm hand with SB closer → projection
+  returns `expected_damage = 4.0` (was 0.0) ✓
+* Direct call: `card_combo_evaluation` for a chain-fuel ritual
+  returns `+7.97` (was -50.0) ✓
+
+But the live wire-up still collapsed Storm:
+
+* Storm field N=10 = **2.5%** (was 37.5%) ✗
+* Reverted; restored to 37.5%.
+
+So the simulator-layer gap was real but **insufficient**.  There
+must be a second gap — somewhere in the live integration the
+evaluator returns 0 / negative for chain-fuel cards in hands
+that don't trigger the tutor-access path.
+
+Hypotheses to investigate next:
+
+1. **Cache key collisions across snapshots.**  combo_evaluator
+   caches projections keyed by `id(snap)`.  Within one main-
+   phase iteration the snapshot might be re-built on each
+   `_score_spell` call, giving a fresh `id` each time —
+   meaning the cache never hits and projection is recomputed
+   for each candidate card.  If correct, this is wasteful but
+   not incorrect.  Worth verifying.
+
+2. **Hands without tutor or SB closer.**  Storm hands like
+   `[Ritual, Ritual, Manamorphose, Past in Flames, Ral]` —
+   chain assemblable but no Grapeshot in hand AND no Wish.
+   What does `card_combo_evaluation` return for ritual-fuel
+   here?  `_project_storm` may still return zero damage; the
+   tutor-access fallback won't fire (no tutor).  Result might
+   be `STORM_HARD_HOLD = -50` for every chain-fuel card →
+   passes turn.
+
+3. **Evaluator's branches don't compose with default scoring.**
+   The +7.97 chain-credit value is principled but might be
+   double-counted with the projection's natural mana-production
+   value, OR the negative branches (hard-hold, hold-lethal)
+   might be too aggressive.
+
+Next session must instrument the evaluator to log per-card
+scoring decisions for a Storm-vs-Affinity Bo3, identify which
+hand state triggers collapse, and fix at the root.  The five-
+attempt loop-break is now PERMANENT until that instrumentation
+exists.
+
 ## Cross-references
 
 * `docs/PHASE_D_DEFERRED.md` — original deferral diagnosis
