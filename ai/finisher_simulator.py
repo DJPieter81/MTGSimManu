@@ -223,8 +223,9 @@ def _project_storm(
     )
 
     # Detect storm pattern: at least one ritual / chain-fuel card OR a
-    # storm-keyword card OR a tutor with finisher access.  Without any
-    # of these the storm pattern is unreachable.
+    # storm-keyword card OR a tutor with finisher access OR a PiF-like
+    # chain-extender in hand.  Without any of these the storm pattern
+    # is unreachable.
     has_ritual = any(
         'ritual' in getattr(c.template, 'tags', set())
         for c in hand
@@ -234,13 +235,28 @@ def _project_storm(
         c for c in hand
         if 'tutor' in getattr(c.template, 'tags', set())
     ]
+    # Past-in-Flames-pattern detection: oracle text contains
+    # 'flashback', 'graveyard', and 'instant' or 'sorcery'.  Same
+    # predicate the Wish-target picker (engine/card_effects.py)
+    # uses.  No card names, no archetype gates.  Per
+    # docs/PHASE_D_FOURTH_ATTEMPT.md step 1.6 — without this the
+    # simulator returns pattern="none" for Storm hands containing
+    # only PiF + cantrips, leading the combo_evaluator to
+    # hard-hold every fuel card and pass turns forever.
+    def _is_pif_pattern(c):
+        oracle = (getattr(c.template, 'oracle_text', '') or '').lower()
+        return ('flashback' in oracle
+                and 'graveyard' in oracle
+                and ('instant' in oracle or 'sorcery' in oracle))
+    has_pif_pattern = any(_is_pif_pattern(c) for c in hand)
 
     # `library_size`/SB resolution: tutor needs SB ∪ library access.
     # We don't have SB visibility here (the simulator is pure), but
     # the caller can pre-merge SB into the library list if the
     # underlying engine state has a sideboard.  For now scan whatever
     # was passed via `hand` (closer in hand) + battlefield reducers.
-    if not (has_ritual or has_storm_closer or tutors_in_hand):
+    if not (has_ritual or has_storm_closer or tutors_in_hand
+            or has_pif_pattern):
         return None
 
     # Run the chain finder with the in-hand closer set.
@@ -253,18 +269,31 @@ def _project_storm(
     )
 
     if not chains:
-        # No chain found — but a tutor might still reach a closer.
-        # Note: the simulator can't run the tutor's search without
-        # library/SB visibility from the caller.  Report as a
-        # "reachable but unprojected" pattern with low success.
-        if tutors_in_hand:
+        # No chain found — but a tutor might still reach a closer,
+        # or PiF might extend a future-turn chain.  Note: the
+        # simulator can't run the tutor's search without library/SB
+        # visibility from the caller, and can't predict draws over
+        # multiple turns.  Report as a "reachable but unprojected"
+        # pattern with low success when either path is reachable.
+        if tutors_in_hand or has_pif_pattern:
+            # mana_floor: cheapest tutor cmc, or PiF cmc if no tutor.
+            # Used to gate when the chain can't even start.
+            if tutors_in_hand:
+                mana_floor_unprojected = min(
+                    (t.template.cmc or 0) for t in tutors_in_hand
+                )
+            else:
+                # PiF-pattern detected; use the PiF card's cmc
+                pif_cmcs = [
+                    c.template.cmc or 0
+                    for c in hand if _is_pif_pattern(c)
+                ]
+                mana_floor_unprojected = min(pif_cmcs) if pif_cmcs else 0
             return FinisherProjection(
                 pattern="storm",
                 expected_damage=0.0,
                 success_probability=0.0,
-                mana_floor=min(
-                    (t.template.cmc or 0) for t in tutors_in_hand
-                ),
+                mana_floor=mana_floor_unprojected,
                 chain_length=1,
                 closer_name=None,
                 # v2 fields default to 0/False — no chain reachable

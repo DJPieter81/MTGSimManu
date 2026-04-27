@@ -198,6 +198,24 @@ def _gy_creature(iid: int = 900, power: int = 7) -> MockCard:
     )
 
 
+def _pif(iid: int = 1100) -> MockCard:
+    """Past-in-Flames-style chain extender: grants flashback to GY
+    instants/sorceries.  Detection via oracle text — same predicate
+    the simulator's `_is_pif_pattern` helper uses."""
+    return MockCard(
+        template=MockTemplate(
+            name="PastInFlamesMock",
+            cmc=4, is_sorcery=True,
+            oracle_text=(
+                "each instant and sorcery card in your graveyard "
+                "gains flashback until end of turn"
+            ),
+            tags={"flashback", "combo"},
+        ),
+        instance_id=iid,
+    )
+
+
 def _tutor(iid: int = 1000) -> MockCard:
     """Burning Wish-style tutor."""
     return MockCard(
@@ -690,6 +708,86 @@ class TestMultiTurnHelpers:
             library_size=40, storm_count=0, archetype="storm",
         )
         assert chain_lethal_turn(proj, opp_life=20) is None
+
+
+class TestPifAsPatternEnabler:
+    """Step 1.6 from docs/PHASE_D_FOURTH_ATTEMPT.md: `_project_storm`
+    must detect Past-in-Flames-pattern in hand as a chain enabler.
+
+    Empirical motivation: T1 Storm hands like
+    `[Wrenn's Resolve, Past in Flames, ..., Glimpse the Impossible]`
+    (no ritual yet, no closer, no tutor) returned `pattern=none`
+    pre-1.6 → combo_evaluator hard-held every fuel card → AI passed
+    turns forever → Storm field collapse on five wire-up attempts.
+
+    Post-1.6, PiF in hand alone is enough to declare the storm
+    pattern reachable.  expected_damage may still be 0 (no closer
+    yet) but pattern != "none" → combo_evaluator falls through to
+    chain_credit branch with fire_value=0 (which returns 0 from
+    the formula) → AI uses default scoring → casts cantrips to
+    fill GY → eventually combos.
+    """
+
+    def test_pif_only_hand_detected_as_storm_pattern(self):
+        """Hand with PiF + cantrips, no ritual, no closer, no tutor.
+        Pre-1.6: pattern=none.  Post-1.6: pattern=storm with
+        expected_damage=0 (no chain yet) + success_probability=0
+        (no closer reachable yet)."""
+        from ai.finisher_simulator import simulate_finisher_chain
+        from tests.test_finisher_simulator import _pif, _cantrip
+        snap = _make_snap(my_mana=4)
+        # Storm-style hand WITHOUT ritual or closer — only PiF + cantrip
+        hand = [_pif(1), _cantrip(2)]
+        proj = simulate_finisher_chain(
+            snap=snap, hand=hand, battlefield=[], graveyard=[],
+            library_size=40, storm_count=0, archetype="storm",
+        )
+        # Critical: pattern must NOT be "none".  This was the gap
+        # surfaced by `tools/diag_combo_evaluator_trace.py` for
+        # Storm seed 50000 T1.
+        assert proj.pattern == "storm"
+        # No closer reachable → expected_damage=0 is OK
+        # success_probability=0 is OK
+        # The unblock is just pattern detection.
+
+    def test_no_pif_no_ritual_no_tutor_no_closer_returns_none(self):
+        """Without PiF, without ritual, without tutor, without
+        closer → still returns None (no chain pattern reachable).
+        This pins backwards-compat: the new PiF detection doesn't
+        false-positive on hands with no enablers at all."""
+        from ai.finisher_simulator import simulate_finisher_chain
+        # Just a vanilla creature — not chain fuel, not a closer,
+        # not a tutor, not PiF
+        creature = MockCard(
+            template=MockTemplate(
+                name="VanillaBear", cmc=2, is_creature=True,
+                power=2, toughness=2,
+            ),
+            instance_id=1,
+        )
+        snap = _make_snap(my_mana=4)
+        hand = [creature]
+        proj = simulate_finisher_chain(
+            snap=snap, hand=hand, battlefield=[], graveyard=[],
+            library_size=40, storm_count=0, archetype="storm",
+        )
+        assert proj.pattern == "none"
+
+    def test_pif_with_ritual_runs_full_chain(self):
+        """Hand with PiF + ritual + closer → normal chain finder
+        runs.  PiF detection doesn't override the regular path."""
+        from ai.finisher_simulator import simulate_finisher_chain
+        from tests.test_finisher_simulator import (
+            _pif, _ritual, _grapeshot)
+        snap = _make_snap(my_mana=6)
+        hand = [_pif(1), _ritual(2), _grapeshot(3)]
+        proj = simulate_finisher_chain(
+            snap=snap, hand=hand, battlefield=[], graveyard=[],
+            library_size=40, storm_count=0, archetype="storm",
+        )
+        assert proj.pattern == "storm"
+        assert proj.expected_damage > 0.0  # full chain runs
+        assert proj.closer_in_zone['hand'] is True
 
 
 class TestStormWithTutorAccess:
