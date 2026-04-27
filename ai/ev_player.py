@@ -2366,6 +2366,18 @@ class EVPlayer:
                     remaining_toughness = (c.toughness or 0) - getattr(c, 'damage_marked', 0)
                     if dmg >= remaining_toughness > 0 or remaining_toughness <= 0:
                         val = permanent_threat(c, opp, game)
+                        # Equipment carrier bonus: if `c` is wearing
+                        # equipment, killing it strips the equipment
+                        # off (CR 702.6e) and forces opp to re-equip
+                        # at sorcery speed.  Same bonus the response-
+                        # path target picker (`_pick_best_removal_target`)
+                        # applies; propagating to the burn-vs-creature
+                        # decision so a Plating-equipped Memnite at 1
+                        # toughness gets correctly prioritised over
+                        # 3 face damage.
+                        val += self._carrier_disrupt_bonus(
+                            game, opp, c, snap,
+                            removal_destroys_artifact=False)
                         if val > best_kill_val:
                             best_kill_val = val
                             best_kill_id = c.instance_id
