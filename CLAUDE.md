@@ -20,14 +20,13 @@ The slogan "no patches, solve holistically" does not bind. These rules do. They 
 
 If three consecutive commits target the same outlier deck without moving the win rate toward its expected band: **halt**. Run `run_meta.py --bo3` against the worst matchup, identify the exact turn where EV diverges from correct play, name the responsible subsystem in writing in `docs/` (with frontmatter `status: active`, `priority: primary`). No further code until that document exists. This is the cure for the diagnostic-loop trap recorded in PROJECT_STATUS.md (three documentation-only phases, zero WR movement).
 
-### Installation (one-time, per clone)
+### Enforcement (in firing order)
 
-```bash
-bash tools/install_hooks.sh   # sets core.hooksPath to .git-hooks
-python tools/check_abstraction.py   # smoke-test the ratchet
-```
+1. **GitHub Actions CI** — `.github/workflows/abstraction-contract.yml` runs on every push to `main` and every PR. This is the binding mechanism; it cannot be bypassed regardless of how the commit was made (Claude session, web UI, github.dev, local clone). A failed check blocks the merge.
+2. **pytest** — `tests/test_abstraction_contract.py` wraps the ratchet so the existing `python -m pytest tests/ -q` rule catches contract violations before push. Run this after engine/AI changes (already in the standard workflow).
+3. **Pre-commit hook (optional, local only)** — `.git-hooks/pre-commit` calls the same script. Activated per-clone via `bash tools/install_hooks.sh`. Useful for fast feedback in local Claude Code sessions; redundant in fresh containers and irrelevant for github.dev / web UI commits.
 
-The pre-commit hook runs `tools/check_abstraction.py` and blocks the commit on violation. The script is also runnable standalone for inspection.
+The script `tools/check_abstraction.py` is the single source of truth — runnable standalone (`python tools/check_abstraction.py [--list]`) and called by all three layers above.
 
 ## Workflow rules (standing)
 
