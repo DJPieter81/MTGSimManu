@@ -432,6 +432,40 @@ A full path 2 implementation would need to either:
 Both are bigger surgeries than fits a single session.  Path 1
 (coexist) remains the realistic next-session move.
 
+## Update — Path 2 dual-run also failed (9th attempt)
+
+After the path 2 schema-stub regression (-8.1pp), tried the
+**dual-run** variant: keep `find_all_chains`'s full
+`ChainOutcome`, only inject `simulator.expected_damage` into
+`best_damage` when the simulator strictly improves on
+find_all_chains.
+
+Logic: when simulator detects a tutor-access or PiF chain
+that find_all_chains misses, bump damage value used downstream.
+Otherwise leave find_all_chains unchanged.
+
+Storm field N=10 = **23.8%** — past 35% gate (-13.7pp).  Worse
+than the schema-stub attempt (29.4%).  Reverted; restored.
+
+Hypothesis: when the simulator's tutor-access path fires (Wish
+in hand + SB Grapeshot), `card_combo_modifier`'s OWN tutor
+branch is ALSO firing for the same Wish.  My damage injection
+double-counts the tutor's chain value, causing the AI to
+over-fire on Wish or score Wish-paths above their real value.
+
+The architectural lesson stands: any path-2 implementation must
+identify which `card_combo_modifier` branches the simulator's
+projection should REPLACE vs ADD TO — and that mapping is
+genuinely complex because card_combo_modifier's branches were
+built without the simulator in mind.
+
+After 9 attempts (7 full-migration + 2 path-2), the conclusion
+is: **the simulator is a useful TOOL for individual decisions
+(SB scoring, Wish targets, Wrath X-selection — proven), not a
+REPLACEMENT for `card_combo_modifier` without rewriting both.**
+
+Path 1 (coexist) is the only realistic next-session move.
+
 ## Cross-references
 
 * `docs/PHASE_D_DEFERRED.md` — original deferral diagnosis
