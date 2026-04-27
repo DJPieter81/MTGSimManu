@@ -140,8 +140,17 @@ def _chain_relevance(card, chain_card_ids: set) -> float:
 
 
 def _project_baseline(snap, hand, battlefield, graveyard,
-                       library_size, storm_count, archetype):
-    """Run the simulator and extract the chain's card_ids."""
+                       library_size, storm_count, archetype,
+                       sideboard=None, library=None):
+    """Run the simulator and extract the chain's card_ids.
+
+    Passes `sideboard` / `library` through so the simulator can
+    use the tutor-as-finisher-access fallback (per
+    docs/PHASE_D_FOURTH_ATTEMPT.md step 1).  Without these the
+    projection collapses to expected_damage=0 for tutor-only
+    Storm hands — the gap that broke four prior Phase D
+    migration attempts.
+    """
     from ai.finisher_simulator import simulate_finisher_chain
     proj = simulate_finisher_chain(
         snap=snap,
@@ -151,6 +160,8 @@ def _project_baseline(snap, hand, battlefield, graveyard,
         library_size=library_size,
         storm_count=storm_count,
         archetype=archetype,
+        sideboard=sideboard,
+        library=library,
     )
     chain_card_ids: set = set()
     if proj.pattern == "storm":
@@ -205,13 +216,19 @@ def card_combo_evaluation(
         library_size = len(me.library)
 
     # ── 1. Baseline projection (cache per-snap) ──
+    # Pass sideboard + library so the simulator can run the
+    # tutor-as-finisher-access fallback when a tutor is in hand
+    # but the closer lives in SB/library (Wish→Grapeshot).
     cache_key = (id(snap), archetype, id(me))
     if cache_key in _BASELINE_CACHE:
         baseline_proj, chain_card_ids = _BASELINE_CACHE[cache_key]
     else:
+        sb = getattr(me, 'sideboard', None) or []
+        lib = list(me.library)
         baseline_proj, chain_card_ids = _project_baseline(
             snap, list(me.hand), list(me.battlefield),
             list(me.graveyard), library_size, storm_count, archetype,
+            sideboard=sb, library=lib,
         )
         _BASELINE_CACHE[cache_key] = (baseline_proj, chain_card_ids)
 
@@ -251,6 +268,10 @@ def card_combo_evaluation(
 
     # ── 5. Chain-fuel credit when chain is reachable AND firing
     #     this turn beats holding ──
+    fire_value = (
+        baseline_proj.expected_damage
+        * baseline_proj.success_probability
+    )
     relevance = _chain_relevance(card, chain_card_ids)
     chain_credit = (fire_value / opp_life) * combo_value * relevance
 
