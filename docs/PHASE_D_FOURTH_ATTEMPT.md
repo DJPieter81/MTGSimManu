@@ -269,6 +269,74 @@ Once step 1.6 ships, attempt #6 wire-up should not collapse on
 T1 Storm hands with PiF.  Other failure modes may exist —
 the trace will surface them similarly.
 
+## Update — Phase D 6th attempt also failed (FOURTH gap)
+
+After step 1.6 closed the third gap (PiF-pattern detection in
+`_project_storm`), retried the live wire-up.  Storm field N=10 =
+**3.1%** — still collapses, though better than attempt #5
+(0.6%) and #2 (1.9%).
+
+Reverted; restored to 37.5%.
+
+The trace now shows EVERY chain-fuel card scoring `0.00` (was
+`-50.00` in attempt #5).  Pattern detection works.  But 0
+isn't enough either.
+
+### The fourth gap (precise diagnosis)
+
+`combo_evaluator.card_combo_evaluation`'s chain-credit formula:
+
+```python
+chain_credit = (fire_value / opp_life) * combo_value * relevance
+where fire_value = expected_damage * success_probability
+```
+
+For ALL build-up turns where the chain doesn't yet reach
+lethal damage, `expected_damage = 0` → `fire_value = 0` →
+`chain_credit = 0`.  No positive nudge.
+
+But `card_combo_modifier` (the live baseline at 37.5%) gives
+POSITIVE EV to chain pieces in build-up states:
+
+* Rituals at storm=0 with chain access: positive (line 723-734
+  in combo_calc.py — reducer-first heuristic)
+* Cantrips with PiF reachable: positive
+* Cost reducers (Medallion): positive based on chain
+  improvement delta
+
+The simulator-driven evaluator has no equivalent — it scores
+0 for the entire build-up phase, so default scoring drives.
+Default scoring values rituals at ~+0.5 (mana production via
+projection), but card_combo_modifier added another +1 to +5
+on top.  Without that positive boost, the AI doesn't see
+build-up turns as worth as much, and apparently gets the
+sequencing wrong somewhere.
+
+### What "chain-progress credit" needs to encode (without arbitrary constants)
+
+The principled signal: a chain-fuel card cast THIS turn that's
+relevant to a reachable chain advances toward lethal — its
+value is the FRACTION of lethal it represents.
+
+```python
+chain_progress_credit = (
+    relevance × combo_value
+    × (one_spell_contribution / total_chain_required)
+)
+```
+
+Where `total_chain_required = ceil(opp_life / typical_storm_damage)`
+and `one_spell_contribution = 1 / total_chain_required`.  But the
+ratio simplifies to `1/N` where `N` is the chain length needed
+for lethal — which IS in the projection's `chain_length` or
+derivable from `opp_life` and `typical_storm_arithmetic`.
+
+This is principled (no arbitrary multipliers) but requires
+careful implementation — and another wire-up attempt to verify.
+Pin loop-break: no 7th attempt without this credit formula
+shipped on a test bench AND verified to produce non-zero values
+for chain-fuel cards in build-up states.
+
 ## Cross-references
 
 * `docs/PHASE_D_DEFERRED.md` — original deferral diagnosis
