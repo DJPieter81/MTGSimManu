@@ -761,6 +761,9 @@ def simulate_finisher_chain(
     library_size: int,
     storm_count: int,
     archetype: str,
+    *,
+    sideboard: Optional[List["CardInstance"]] = None,
+    library: Optional[List["CardInstance"]] = None,
     _depth: int = 0,
 ) -> FinisherProjection:
     """Project the EV-impact of attempting a finisher chain.
@@ -798,6 +801,27 @@ def simulate_finisher_chain(
     storm = _project_storm(snap, hand, battlefield, storm_count)
     if storm is not None:
         candidates.append(storm)
+
+    # Tutor-as-finisher-access fallback (per docs/PHASE_D_FOURTH_ATTEMPT.md
+    # step 1).  When SB/library are provided AND the regular storm
+    # projection found zero damage (closer not in hand), scan SB/library
+    # for a tutor target and project the chain accordingly.  Without
+    # this branch the simulator can't see Wish→SB-Grapeshot intent and
+    # collapses chain-fuel scoring to 0 — the bug that broke four
+    # prior Phase D migration attempts.
+    if (sideboard is not None or library is not None) and (
+            storm is None or storm.expected_damage <= 0):
+        tutor_proj = _project_storm_with_tutor_access(
+            snap=snap, hand=hand, battlefield=battlefield,
+            sideboard=sideboard or [],
+            library=library or [],
+            storm_count=storm_count,
+        )
+        if tutor_proj is not None and tutor_proj.expected_damage > 0:
+            # Replace the zero-damage storm projection (or add when
+            # storm is None — the tutor-access path IS reachable).
+            candidates = [c for c in candidates if c.pattern != "storm"]
+            candidates.append(tutor_proj)
 
     cascade = _project_cascade(snap, hand, battlefield)
     if cascade is not None:

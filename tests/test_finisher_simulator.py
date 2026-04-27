@@ -806,6 +806,46 @@ class TestStormWithTutorAccess:
         # documented gap.
         assert proj.expected_damage == 0.0
 
+    def test_simulator_with_sb_arg_projects_tutor_access_damage(self):
+        """End-to-end: when `simulate_finisher_chain` is called WITH
+        sideboard/library, the tutor-access fallback fires and the
+        returned projection has expected_damage > 0.
+
+        This is the live-entry-point integration: same input as
+        `test_baseline_storm_returns_zero_without_closer`, plus the
+        sideboard list — and the projection now sees Grapeshot."""
+        from ai.finisher_simulator import simulate_finisher_chain
+        snap = _make_snap(my_mana=6)
+        hand = [_ritual(1), _ritual(2), _tutor(3)]
+        sb = [_grapeshot(99)]
+        proj = simulate_finisher_chain(
+            snap=snap, hand=hand, battlefield=[], graveyard=[],
+            library_size=40, storm_count=0, archetype="storm",
+            sideboard=sb,
+        )
+        assert proj.pattern == "storm"
+        assert proj.expected_damage > 0.0, (
+            "with sb passed, tutor-access fallback must project "
+            "positive damage")
+        assert proj.closer_in_zone['sb'] is True
+
+    def test_simulator_without_sb_arg_unchanged(self):
+        """Backwards-compat: without sb/library passed, behaviour is
+        identical to pre-Sprint-1 (closer-not-in-hand → 0 damage).
+        Existing callers don't need to pass the new args."""
+        from ai.finisher_simulator import simulate_finisher_chain
+        snap = _make_snap(my_mana=6)
+        hand = [_ritual(1), _ritual(2), _tutor(3)]
+        # No sideboard arg
+        proj = simulate_finisher_chain(
+            snap=snap, hand=hand, battlefield=[], graveyard=[],
+            library_size=40, storm_count=0, archetype="storm",
+        )
+        # Tutor-only without SB visibility → simulator can't project
+        # damage.  Same gap as before.  Existing callers see no
+        # behaviour change.
+        assert proj.expected_damage == 0.0
+
 
     def test_chain_lethal_turn_zero_when_lethal_now(self):
         """Lethal-this-turn projection → returns 0."""
