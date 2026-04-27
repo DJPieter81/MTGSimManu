@@ -223,8 +223,9 @@ def _project_storm(
     )
 
     # Detect storm pattern: at least one ritual / chain-fuel card OR a
-    # storm-keyword card OR a tutor with finisher access.  Without any
-    # of these the storm pattern is unreachable.
+    # storm-keyword card OR a tutor with finisher access OR a PiF-like
+    # chain-extender in hand.  Without any of these the storm pattern
+    # is unreachable.
     has_ritual = any(
         'ritual' in getattr(c.template, 'tags', set())
         for c in hand
@@ -234,13 +235,28 @@ def _project_storm(
         c for c in hand
         if 'tutor' in getattr(c.template, 'tags', set())
     ]
+    # Past-in-Flames-pattern detection: oracle text contains
+    # 'flashback', 'graveyard', and 'instant' or 'sorcery'.  Same
+    # predicate the Wish-target picker (engine/card_effects.py)
+    # uses.  No card names, no archetype gates.  Per
+    # docs/PHASE_D_FOURTH_ATTEMPT.md step 1.6 — without this the
+    # simulator returns pattern="none" for Storm hands containing
+    # only PiF + cantrips, leading the combo_evaluator to
+    # hard-hold every fuel card and pass turns forever.
+    def _is_pif_pattern(c):
+        oracle = (getattr(c.template, 'oracle_text', '') or '').lower()
+        return ('flashback' in oracle
+                and 'graveyard' in oracle
+                and ('instant' in oracle or 'sorcery' in oracle))
+    has_pif_pattern = any(_is_pif_pattern(c) for c in hand)
 
     # `library_size`/SB resolution: tutor needs SB ∪ library access.
     # We don't have SB visibility here (the simulator is pure), but
     # the caller can pre-merge SB into the library list if the
     # underlying engine state has a sideboard.  For now scan whatever
     # was passed via `hand` (closer in hand) + battlefield reducers.
-    if not (has_ritual or has_storm_closer or tutors_in_hand):
+    if not (has_ritual or has_storm_closer or tutors_in_hand
+            or has_pif_pattern):
         return None
 
     # Run the chain finder with the in-hand closer set.
@@ -253,18 +269,31 @@ def _project_storm(
     )
 
     if not chains:
-        # No chain found — but a tutor might still reach a closer.
-        # Note: the simulator can't run the tutor's search without
-        # library/SB visibility from the caller.  Report as a
-        # "reachable but unprojected" pattern with low success.
-        if tutors_in_hand:
+        # No chain found — but a tutor might still reach a closer,
+        # or PiF might extend a future-turn chain.  Note: the
+        # simulator can't run the tutor's search without library/SB
+        # visibility from the caller, and can't predict draws over
+        # multiple turns.  Report as a "reachable but unprojected"
+        # pattern with low success when either path is reachable.
+        if tutors_in_hand or has_pif_pattern:
+            # mana_floor: cheapest tutor cmc, or PiF cmc if no tutor.
+            # Used to gate when the chain can't even start.
+            if tutors_in_hand:
+                mana_floor_unprojected = min(
+                    (t.template.cmc or 0) for t in tutors_in_hand
+                )
+            else:
+                # PiF-pattern detected; use the PiF card's cmc
+                pif_cmcs = [
+                    c.template.cmc or 0
+                    for c in hand if _is_pif_pattern(c)
+                ]
+                mana_floor_unprojected = min(pif_cmcs) if pif_cmcs else 0
             return FinisherProjection(
                 pattern="storm",
                 expected_damage=0.0,
                 success_probability=0.0,
-                mana_floor=min(
-                    (t.template.cmc or 0) for t in tutors_in_hand
-                ),
+                mana_floor=mana_floor_unprojected,
                 chain_length=1,
                 closer_name=None,
                 # v2 fields default to 0/False — no chain reachable
@@ -360,6 +389,174 @@ def _project_storm(
         closer_name=closer,
         hold_value=hold_value,
         next_turn_damage=next_turn_damage,
+        coverage_ratio=coverage_ratio,
+        closer_in_zone=closer_in_zone,
+    )
+
+
+# ─── Tutor-as-finisher-access projection (test bench, not live) ───
+# Documented as the missing piece in docs/PHASE_D_FOURTH_ATTEMPT.md.
+# `_project_storm` returns expected_damage=0 when no closer is in
+# hand, even though Storm's intent is "build chain THIS turn, fetch
+# closer NEXT turn via Wish→SB lookup".  This function lifts the
+# tutor-as-finisher-access logic from `combo_calc.py:520-552`
+# (`_tutor_has_payoff_access`) into the simulator.  When a tutor
+# is in hand AND the SB ∪ library contains a STORM-keyword closer
+# (or token-spawning finisher), the chain projection injects the
+# closer as if it were in hand and computes damage accordingly.
+#
+# Pure additive — NOT wired into `simulate_finisher_chain` yet.
+# The integration step happens after this function's unit test
+# proves it returns expected_damage > 0 for tutor-only hands.
+# Per docs/PHASE_D_FOURTH_ATTEMPT.md two-step plan.
+
+
+def _has_token_finisher_oracle(template) -> bool:
+    """Token-spawning finisher pattern (Empty-the-Warrens).
+
+    Detection: oracle text contains 'create … tokens' + 'for each'.
+    Mirrors the predicate at `combo_calc.py:514-516` so the
+    simulator agrees with the live combo modifier on what counts
+    as a finisher.  No card names.
+    """
+    oracle = (getattr(template, 'oracle_text', '') or '').lower()
+    return ('create' in oracle and 'tokens' in oracle
+            and 'for each' in oracle)
+
+
+def _scan_zone_for_storm_closer(zone: List["CardInstance"]):
+    """Return the first STORM-keyword card in `zone`, or None.
+
+    Falls back to a token-spawning finisher (Empty-the-Warrens
+    pattern) if no STORM-keyword card found.  Matches
+    `_tutor_has_payoff_access`'s predicate so the two views agree.
+    """
+    from engine.cards import Keyword as Kw
+    for c in zone:
+        tmpl = getattr(c, 'template', None)
+        if tmpl is None:
+            continue
+        if Kw.STORM in getattr(tmpl, 'keywords', set()):
+            return c
+        if _has_token_finisher_oracle(tmpl):
+            return c
+    return None
+
+
+def _project_storm_with_tutor_access(
+    snap: "EVSnapshot",
+    hand: List["CardInstance"],
+    battlefield: List["CardInstance"],
+    sideboard: List["CardInstance"],
+    library: List["CardInstance"],
+    storm_count: int,
+) -> Optional[FinisherProjection]:
+    """Storm chain projection when a tutor is in hand and the
+    closer lives in sideboard/library.
+
+    Differs from `_project_storm`: that function projects damage =
+    0 when no closer is in hand because `find_all_chains` requires
+    the closer card.  This function:
+
+      1. Detects a tutor in hand (by `'tutor'` tag).
+      2. Scans `sideboard + library` for a STORM-keyword closer or
+         token-spawning finisher (Empty-the-Warrens pattern).
+      3. If both are present, injects the SB/library closer into
+         the chain finder's `payoff_names` set so the chain
+         arithmetic accounts for "tutor → fetch → cast closer".
+      4. Returns a `FinisherProjection` with `closer_in_zone['sb']`
+         or `closer_in_zone['library']` set, and `expected_damage
+         > 0` when the chain reaches damage.
+
+    Pure read-only over the inputs — no game-state mutation.
+    Returns None when the tutor-access pattern doesn't apply
+    (no tutors, no closer in SB/library).
+
+    Test-bench only: NOT called from `simulate_finisher_chain`.
+    Integration is the follow-up step per
+    `docs/PHASE_D_FOURTH_ATTEMPT.md`.
+    """
+    from ai.combo_chain import find_all_chains
+    from engine.cards import Keyword as Kw
+
+    tutors_in_hand = [
+        c for c in hand
+        if 'tutor' in getattr(c.template, 'tags', set())
+    ]
+    if not tutors_in_hand:
+        return None
+
+    sb_closer = _scan_zone_for_storm_closer(sideboard)
+    lib_closer = (
+        _scan_zone_for_storm_closer(library)
+        if sb_closer is None else None
+    )
+    closer_card = sb_closer or lib_closer
+    if closer_card is None:
+        return None
+
+    # Inject the SB/library closer into the payoff set: the chain
+    # finder treats it as if it were in hand for the purposes of
+    # the storm-damage calculation, plus accounts for the tutor
+    # cost (the tutor itself is one spell on the chain).
+    payoff_names = {closer_card.template.name}
+    medallions = sum(
+        1 for c in battlefield
+        if 'cost_reducer' in getattr(c.template, 'tags', set())
+    )
+
+    # Synthesise a hand that includes the closer (the tutor would
+    # fetch it).  We pass the actual tutor card too so the chain
+    # finder includes it in the spell count.  The closer's CMC
+    # contributes to the chain's mana cost just like any other
+    # card.
+    synth_hand = list(hand) + [closer_card]
+    chains = find_all_chains(
+        hand=synth_hand,
+        available_mana=snap.my_mana,
+        medallion_count=medallions,
+        payoff_names=payoff_names,
+        base_storm=storm_count,
+    )
+
+    if not chains:
+        return None
+
+    best = max(chains, key=lambda c: (c.storm_damage, c.storm_count))
+    expected_damage = float(best.storm_damage)
+    if expected_damage <= 0:
+        return None
+
+    # Mana floor: tutor cmc + closer cmc.  Tutor must resolve
+    # before closer can be cast (one extra spell on the chain).
+    cheapest_tutor_cmc = min(
+        (t.template.cmc or 0) for t in tutors_in_hand
+    )
+    closer_cmc = closer_card.template.cmc or 0
+    mana_floor = cheapest_tutor_cmc + closer_cmc
+
+    opp_life = max(1, snap.opp_life)
+    coverage_ratio = min(1.0, expected_damage / opp_life)
+
+    closer_in_zone = {
+        'hand': False,
+        'sb': sb_closer is not None,
+        'library': lib_closer is not None,
+        'graveyard': False,
+    }
+
+    return FinisherProjection(
+        pattern="storm",
+        expected_damage=expected_damage,
+        # Success degrades by 0.5 because the tutor must resolve
+        # without being countered AND the closer must still be in
+        # SB/library (rules-derived sentinel: "one extra rules step
+        # required to make the chain work" — same as the
+        # reanimation-discard-outlet branch in `_project_reanimation`).
+        success_probability=0.5,
+        mana_floor=mana_floor,
+        chain_length=best.storm_count,
+        closer_name=closer_card.template.name,
         coverage_ratio=coverage_ratio,
         closer_in_zone=closer_in_zone,
     )
@@ -593,6 +790,9 @@ def simulate_finisher_chain(
     library_size: int,
     storm_count: int,
     archetype: str,
+    *,
+    sideboard: Optional[List["CardInstance"]] = None,
+    library: Optional[List["CardInstance"]] = None,
     _depth: int = 0,
 ) -> FinisherProjection:
     """Project the EV-impact of attempting a finisher chain.
@@ -630,6 +830,27 @@ def simulate_finisher_chain(
     storm = _project_storm(snap, hand, battlefield, storm_count)
     if storm is not None:
         candidates.append(storm)
+
+    # Tutor-as-finisher-access fallback (per docs/PHASE_D_FOURTH_ATTEMPT.md
+    # step 1).  When SB/library are provided AND the regular storm
+    # projection found zero damage (closer not in hand), scan SB/library
+    # for a tutor target and project the chain accordingly.  Without
+    # this branch the simulator can't see Wish→SB-Grapeshot intent and
+    # collapses chain-fuel scoring to 0 — the bug that broke four
+    # prior Phase D migration attempts.
+    if (sideboard is not None or library is not None) and (
+            storm is None or storm.expected_damage <= 0):
+        tutor_proj = _project_storm_with_tutor_access(
+            snap=snap, hand=hand, battlefield=battlefield,
+            sideboard=sideboard or [],
+            library=library or [],
+            storm_count=storm_count,
+        )
+        if tutor_proj is not None and tutor_proj.expected_damage > 0:
+            # Replace the zero-damage storm projection (or add when
+            # storm is None — the tutor-access path IS reachable).
+            candidates = [c for c in candidates if c.pattern != "storm"]
+            candidates.append(tutor_proj)
 
     cascade = _project_cascade(snap, hand, battlefield)
     if cascade is not None:
@@ -740,3 +961,61 @@ def simulate_finisher_chain(
             best = best.model_copy(update={"next_turn_proj": next_proj})
 
     return best
+
+
+# ─── Multi-turn helpers (Forge-pattern: best-across-turns scalar) ─
+
+
+def best_turn_damage(proj: FinisherProjection) -> tuple[float, int]:
+    """Walk `proj.next_turn_proj` chain, return the highest projected
+    damage × success_probability across ALL turns and the turn-offset
+    at which it occurs.
+
+    Pattern adopted from Forge's `summonSickValue` separation
+    (https://github.com/Card-Forge/forge/blob/master/forge-ai/src/main/java/forge/ai/simulation/GameStateEvaluator.java)
+    — Forge keeps `(now_value, next_turn_value)` as a tuple instead
+    of one scalar.  Our equivalent walks the recursive chain:
+
+        turn 0:   proj.expected_damage × proj.success_probability
+        turn 1:   proj.next_turn_proj.expected_damage × ...
+        turn 2:   proj.next_turn_proj.next_turn_proj. ...
+
+    Returns the (max_value, max_turn_offset) so the caller can decide
+    "fire this turn" (offset 0) vs "hold for next turn" (offset 1).
+    Pure read-only walk; no game-state dependency.
+    """
+    best_value = proj.expected_damage * proj.success_probability
+    best_turn = 0
+    node = proj
+    turn = 0
+    while node.next_turn_proj is not None:
+        node = node.next_turn_proj
+        turn += 1
+        node_value = node.expected_damage * node.success_probability
+        if node_value > best_value:
+            best_value = node_value
+            best_turn = turn
+    return best_value, best_turn
+
+
+def chain_lethal_turn(proj: FinisherProjection,
+                      opp_life: int) -> Optional[int]:
+    """Return the FIRST turn-offset at which the projected chain
+    deals lethal damage (≥ opp_life with success ≥ 0.5), or None if
+    no projected turn reaches lethal.
+
+    "First" matters because firing on the earliest lethal turn is
+    optimal — extra damage on later turns is irrelevant for game
+    outcome.
+    """
+    if opp_life <= 0:
+        return None
+    node: Optional[FinisherProjection] = proj
+    turn = 0
+    while node is not None:
+        if (node.expected_damage >= opp_life
+                and node.success_probability >= 0.5):
+            return turn
+        node = node.next_turn_proj
+        turn += 1
+    return None

@@ -58,6 +58,40 @@ STORM_HARD_HOLD = -50.0
 _BASELINE_CACHE: dict = {}
 
 
+# ─── Diagnostic trace (env-gated, zero overhead by default) ────────
+#
+# Set MTGSIM_COMBO_TRACE=1 in the environment to emit a structured
+# line per card_combo_evaluation call to stderr.  Used to diagnose
+# wire-up collapses (per docs/PHASE_D_FOURTH_ATTEMPT.md): the live
+# wire-up has collapsed Storm five times even with the simulator-
+# layer gap closed.  The trace exposes per-card branch decisions so
+# the second gap can be located before a sixth wire-up attempt.
+import os as _os
+import sys as _sys
+
+_TRACE = _os.environ.get("MTGSIM_COMBO_TRACE", "") == "1"
+
+
+def _log_evaluation(card_name: str, branch: str, score: float,
+                     **fields) -> None:
+    """Emit a structured trace line when MTGSIM_COMBO_TRACE=1.
+
+    Off by default → zero overhead (single env-var check at module
+    load + a boolean test per call).  When on, emits one line per
+    card_combo_evaluation call so a Bo3 trace can be diff-ed against
+    expected behavior.
+
+    Format: ``COMBO_TRACE branch=X card="Y" score=Z field1=V1 ...``
+    """
+    if not _TRACE:
+        return
+    parts = [f"COMBO_TRACE", f"branch={branch}", f"card=\"{card_name}\"",
+             f"score={score:.2f}"]
+    for k, v in fields.items():
+        parts.append(f"{k}={v}")
+    print(" ".join(parts), file=_sys.stderr)
+
+
 def _has_search_tax(oracle_text: str) -> bool:
     if not oracle_text:
         return False
@@ -107,23 +141,61 @@ def _search_tax_penalty(card, game, player_idx, snap) -> float:
 
 
 def _is_chain_fuel(card) -> bool:
-    """True when the card is something a storm chain wants — rituals,
-    cantrips, draw-engines, tutors, or storm closers themselves.
+    """True when the card contributes to ANY reachable chain pattern.
 
-    Mirror of `ai.predicates.is_chain_fuel` extended to include the
-    closer (storm-keyword card) and tutors.
+    Originally storm-specific (rituals/cantrips/tutors/storm-keyword).
+    Extended for the multi-pattern simulator (per
+    docs/PHASE_D_FOURTH_ATTEMPT.md fifth-gap diagnosis): Living End
+    and Amulet Titan hands had ALL cards score relevance=0.0
+    because cycling cards, cycling payoffs, cascade enablers, and
+    reanimation-related cards weren't recognised here.
+
+    Coverage:
+      * Storm     — rituals, cantrips, tutors, STORM keyword
+      * Cascade   — CASCADE keyword
+      * Cycling   — cards with `cycling_cost_data`, cycling payoffs
+                    (oracle: "all creature cards … graveyard …
+                    battlefield")
+      * Reanimation — reanimator spells, discard outlets
+      * Chain extender — Past in Flames pattern (oracle: flashback
+                    + graveyard + instant/sorcery)
+
+    All detection oracle/keyword/tag-driven; no card names.
     """
     from engine.cards import Keyword as Kw
     t = card.template
-    if not (t.is_instant or t.is_sorcery):
-        return False
     tags = getattr(t, 'tags', set())
-    if any(tag in tags for tag in ('ritual', 'cantrip',
-                                    'card_advantage', 'draw', 'tutor')):
-        return True
     keywords = getattr(t, 'keywords', set())
-    if Kw.STORM in keywords:
+    oracle = (getattr(t, 'oracle_text', '') or '').lower()
+
+    # Storm/reanimation-style fuel: instant/sorcery spells with
+    # chain-relevant tags, or the STORM keyword closer itself
+    if t.is_instant or t.is_sorcery:
+        if any(tag in tags for tag in ('ritual', 'cantrip',
+                                        'card_advantage', 'draw',
+                                        'tutor', 'reanimate',
+                                        'discard', 'looter')):
+            return True
+        if Kw.STORM in keywords:
+            return True
+        # PiF-pattern chain extender
+        if ('flashback' in oracle and 'graveyard' in oracle
+                and ('instant' in oracle or 'sorcery' in oracle)):
+            return True
+        # Cycling payoff: "all creature cards from graveyards to bf"
+        if ('all creature cards' in oracle
+                and 'graveyard' in oracle
+                and 'to the battlefield' in oracle):
+            return True
+
+    # Cascade enablers (creatures or spells with cascade keyword)
+    if Kw.CASCADE in keywords:
         return True
+
+    # Cycling: any card with cycling cost is cycling fuel
+    if getattr(t, 'cycling_cost_data', None) is not None:
+        return True
+
     return False
 
 
@@ -140,8 +212,17 @@ def _chain_relevance(card, chain_card_ids: set) -> float:
 
 
 def _project_baseline(snap, hand, battlefield, graveyard,
-                       library_size, storm_count, archetype):
-    """Run the simulator and extract the chain's card_ids."""
+                       library_size, storm_count, archetype,
+                       sideboard=None, library=None):
+    """Run the simulator and extract the chain's card_ids.
+
+    Passes `sideboard` / `library` through so the simulator can
+    use the tutor-as-finisher-access fallback (per
+    docs/PHASE_D_FOURTH_ATTEMPT.md step 1).  Without these the
+    projection collapses to expected_damage=0 for tutor-only
+    Storm hands — the gap that broke four prior Phase D
+    migration attempts.
+    """
     from ai.finisher_simulator import simulate_finisher_chain
     proj = simulate_finisher_chain(
         snap=snap,
@@ -151,6 +232,8 @@ def _project_baseline(snap, hand, battlefield, graveyard,
         library_size=library_size,
         storm_count=storm_count,
         archetype=archetype,
+        sideboard=sideboard,
+        library=library,
     )
     chain_card_ids: set = set()
     if proj.pattern == "storm":
@@ -205,13 +288,19 @@ def card_combo_evaluation(
         library_size = len(me.library)
 
     # ── 1. Baseline projection (cache per-snap) ──
+    # Pass sideboard + library so the simulator can run the
+    # tutor-as-finisher-access fallback when a tutor is in hand
+    # but the closer lives in SB/library (Wish→Grapeshot).
     cache_key = (id(snap), archetype, id(me))
     if cache_key in _BASELINE_CACHE:
         baseline_proj, chain_card_ids = _BASELINE_CACHE[cache_key]
     else:
+        sb = getattr(me, 'sideboard', None) or []
+        lib = list(me.library)
         baseline_proj, chain_card_ids = _project_baseline(
             snap, list(me.hand), list(me.battlefield),
             list(me.graveyard), library_size, storm_count, archetype,
+            sideboard=sb, library=lib,
         )
         _BASELINE_CACHE[cache_key] = (baseline_proj, chain_card_ids)
 
@@ -227,8 +316,16 @@ def card_combo_evaluation(
             # CR 500.4: mana empties at phase end.  Casting fuel here
             # wastes the resource; the AI must hold and rebuild on a
             # later turn.  Same sentinel as combo_calc.py's clamp.
-            return STORM_HARD_HOLD + flip_bonus + tax_penalty
-        return flip_bonus + tax_penalty
+            score = STORM_HARD_HOLD + flip_bonus + tax_penalty
+            _log_evaluation(card.template.name, "hard_hold_no_chain",
+                            score, pattern=baseline_proj.pattern,
+                            flip=flip_bonus, tax=tax_penalty)
+            return score
+        score = flip_bonus + tax_penalty
+        _log_evaluation(card.template.name, "no_chain_non_fuel", score,
+                        pattern=baseline_proj.pattern,
+                        flip=flip_bonus, tax=tax_penalty)
+        return score
 
     # ── 4. Hold-vs-fire decision (simulator v2) ──
     # Hold ONLY when next-turn projects LETHAL but this turn does
@@ -247,12 +344,46 @@ def card_combo_evaluation(
         and not fire_lethal
     )
     if hold_lethal and _is_chain_fuel(card):
-        return flip_bonus + tax_penalty
+        score = flip_bonus + tax_penalty
+        _log_evaluation(card.template.name, "hold_lethal", score,
+                        exp_dmg=baseline_proj.expected_damage,
+                        hold_value=baseline_proj.hold_value,
+                        opp_life=opp_life,
+                        flip=flip_bonus, tax=tax_penalty)
+        return score
 
     # ── 5. Chain-fuel credit when chain is reachable AND firing
     #     this turn beats holding ──
+    fire_value = (
+        baseline_proj.expected_damage
+        * baseline_proj.success_probability
+    )
     relevance = _chain_relevance(card, chain_card_ids)
     chain_credit = (fire_value / opp_life) * combo_value * relevance
+
+    # ── 5b. Chain-progress credit during build-up turns ──
+    # Per docs/PHASE_D_FOURTH_ATTEMPT.md fourth-gap diagnosis:
+    # when the simulator detects a reachable storm pattern but
+    # `expected_damage = 0` (chain not assembled yet — typical
+    # T1-T3 build-up), `chain_credit` collapses to 0.  The live
+    # `card_combo_modifier` gives positive EV in this state to
+    # advance the chain.  The simulator-driven evaluator needs an
+    # equivalent.
+    #
+    # Principled formula: each chain-relevant spell cast represents
+    # `1 / N` of the eventual lethal where `N` = spells-to-lethal.
+    # For Storm-via-Grapeshot, lethal needs storm count = opp_life
+    # (Grapeshot deals storm-count + 1 damage; +1 from itself).
+    # So per-spell progress = combo_value / opp_life.
+    #
+    # Gated by `success_probability > 0` (pattern reachable, not
+    # purely speculative) AND `expected_damage = 0` (no full chain
+    # yet — otherwise the regular chain_credit fires).
+    if (chain_credit == 0
+            and baseline_proj.pattern != "none"
+            and relevance > 0):
+        progress_credit = combo_value * relevance / opp_life
+        chain_credit = progress_credit
 
     # ── 6. Mid-chain coverage escalation (simulator v2) ──
     # When `coverage_ratio > HALF_LETHAL`, additional fuel
@@ -266,6 +397,17 @@ def card_combo_evaluation(
             and relevance == 0.0
             and _is_chain_fuel(card)):
         # Chain is mid-flight, this fuel doesn't extend it — hold.
-        return flip_bonus + tax_penalty
+        score = flip_bonus + tax_penalty
+        _log_evaluation(card.template.name, "coverage_escalation_hold",
+                        score, coverage=baseline_proj.coverage_ratio,
+                        relevance=relevance,
+                        flip=flip_bonus, tax=tax_penalty)
+        return score
 
-    return chain_credit + flip_bonus + tax_penalty
+    final_score = chain_credit + flip_bonus + tax_penalty
+    _log_evaluation(card.template.name, "chain_credit", final_score,
+                    fire_value=fire_value, relevance=relevance,
+                    combo_value=combo_value,
+                    chain_credit=chain_credit,
+                    flip=flip_bonus, tax=tax_penalty)
+    return final_score

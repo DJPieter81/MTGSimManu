@@ -198,6 +198,24 @@ def _gy_creature(iid: int = 900, power: int = 7) -> MockCard:
     )
 
 
+def _pif(iid: int = 1100) -> MockCard:
+    """Past-in-Flames-style chain extender: grants flashback to GY
+    instants/sorceries.  Detection via oracle text — same predicate
+    the simulator's `_is_pif_pattern` helper uses."""
+    return MockCard(
+        template=MockTemplate(
+            name="PastInFlamesMock",
+            cmc=4, is_sorcery=True,
+            oracle_text=(
+                "each instant and sorcery card in your graveyard "
+                "gains flashback until end of turn"
+            ),
+            tags={"flashback", "combo"},
+        ),
+        instance_id=iid,
+    )
+
+
 def _tutor(iid: int = 1000) -> MockCard:
     """Burning Wish-style tutor."""
     return MockCard(
@@ -644,3 +662,301 @@ class TestMultiTurnRollout:
         )
         assert proj.pattern == "none"
         assert proj.next_turn_proj is None
+
+
+class TestMultiTurnHelpers:
+    """Helpers that walk the `next_turn_proj` chain.  Forge-pattern
+    (`summonSickValue`-style now-vs-later separation)."""
+
+    def test_best_turn_damage_no_chain(self):
+        """`pattern="none"` → best_turn_damage = 0 at turn 0."""
+        from ai.finisher_simulator import best_turn_damage
+        snap = _make_snap()
+        proj = simulate_finisher_chain(
+            snap=snap, hand=[], battlefield=[], graveyard=[],
+            library_size=40, storm_count=0, archetype="any",
+        )
+        value, turn = best_turn_damage(proj)
+        assert value == 0.0
+        assert turn == 0
+
+    def test_best_turn_damage_picks_highest_across_turns(self):
+        """Walks the full chain; returns the max EV and which turn."""
+        from ai.finisher_simulator import best_turn_damage
+        snap = _make_snap(my_mana=4)
+        hand = [_ritual(1), _ritual(2), _grapeshot(3)]
+        proj = simulate_finisher_chain(
+            snap=snap, hand=hand, battlefield=[], graveyard=[],
+            library_size=40, storm_count=0, archetype="storm",
+        )
+        value, turn = best_turn_damage(proj)
+        # Best value should be ≥ this turn's value.
+        this_turn_value = proj.expected_damage * proj.success_probability
+        assert value >= this_turn_value
+        assert turn >= 0
+
+    def test_chain_lethal_turn_no_lethal(self):
+        """Sub-lethal projection across all turns → returns None."""
+        from ai.finisher_simulator import chain_lethal_turn
+        snap = _make_snap(my_mana=2, opp_life=20)
+        # 1 ritual + Grapeshot = storm 2 = 2 damage; nowhere near
+        # lethal at any depth (next turns get +1 mana but with the
+        # same hand can't reach 20).
+        hand = [_ritual(1), _grapeshot(2)]
+        proj = simulate_finisher_chain(
+            snap=snap, hand=hand, battlefield=[], graveyard=[],
+            library_size=40, storm_count=0, archetype="storm",
+        )
+        assert chain_lethal_turn(proj, opp_life=20) is None
+
+
+class TestPifAsPatternEnabler:
+    """Step 1.6 from docs/PHASE_D_FOURTH_ATTEMPT.md: `_project_storm`
+    must detect Past-in-Flames-pattern in hand as a chain enabler.
+
+    Empirical motivation: T1 Storm hands like
+    `[Wrenn's Resolve, Past in Flames, ..., Glimpse the Impossible]`
+    (no ritual yet, no closer, no tutor) returned `pattern=none`
+    pre-1.6 → combo_evaluator hard-held every fuel card → AI passed
+    turns forever → Storm field collapse on five wire-up attempts.
+
+    Post-1.6, PiF in hand alone is enough to declare the storm
+    pattern reachable.  expected_damage may still be 0 (no closer
+    yet) but pattern != "none" → combo_evaluator falls through to
+    chain_credit branch with fire_value=0 (which returns 0 from
+    the formula) → AI uses default scoring → casts cantrips to
+    fill GY → eventually combos.
+    """
+
+    def test_pif_only_hand_detected_as_storm_pattern(self):
+        """Hand with PiF + cantrips, no ritual, no closer, no tutor.
+        Pre-1.6: pattern=none.  Post-1.6: pattern=storm with
+        expected_damage=0 (no chain yet) + success_probability=0
+        (no closer reachable yet)."""
+        from ai.finisher_simulator import simulate_finisher_chain
+        from tests.test_finisher_simulator import _pif, _cantrip
+        snap = _make_snap(my_mana=4)
+        # Storm-style hand WITHOUT ritual or closer — only PiF + cantrip
+        hand = [_pif(1), _cantrip(2)]
+        proj = simulate_finisher_chain(
+            snap=snap, hand=hand, battlefield=[], graveyard=[],
+            library_size=40, storm_count=0, archetype="storm",
+        )
+        # Critical: pattern must NOT be "none".  This was the gap
+        # surfaced by `tools/diag_combo_evaluator_trace.py` for
+        # Storm seed 50000 T1.
+        assert proj.pattern == "storm"
+        # No closer reachable → expected_damage=0 is OK
+        # success_probability=0 is OK
+        # The unblock is just pattern detection.
+
+    def test_no_pif_no_ritual_no_tutor_no_closer_returns_none(self):
+        """Without PiF, without ritual, without tutor, without
+        closer → still returns None (no chain pattern reachable).
+        This pins backwards-compat: the new PiF detection doesn't
+        false-positive on hands with no enablers at all."""
+        from ai.finisher_simulator import simulate_finisher_chain
+        # Just a vanilla creature — not chain fuel, not a closer,
+        # not a tutor, not PiF
+        creature = MockCard(
+            template=MockTemplate(
+                name="VanillaBear", cmc=2, is_creature=True,
+                power=2, toughness=2,
+            ),
+            instance_id=1,
+        )
+        snap = _make_snap(my_mana=4)
+        hand = [creature]
+        proj = simulate_finisher_chain(
+            snap=snap, hand=hand, battlefield=[], graveyard=[],
+            library_size=40, storm_count=0, archetype="storm",
+        )
+        assert proj.pattern == "none"
+
+    def test_pif_with_ritual_runs_full_chain(self):
+        """Hand with PiF + ritual + closer → normal chain finder
+        runs.  PiF detection doesn't override the regular path."""
+        from ai.finisher_simulator import simulate_finisher_chain
+        from tests.test_finisher_simulator import (
+            _pif, _ritual, _grapeshot)
+        snap = _make_snap(my_mana=6)
+        hand = [_pif(1), _ritual(2), _grapeshot(3)]
+        proj = simulate_finisher_chain(
+            snap=snap, hand=hand, battlefield=[], graveyard=[],
+            library_size=40, storm_count=0, archetype="storm",
+        )
+        assert proj.pattern == "storm"
+        assert proj.expected_damage > 0.0  # full chain runs
+        assert proj.closer_in_zone['hand'] is True
+
+
+class TestStormWithTutorAccess:
+    """The test-bench projection that lifts tutor-as-finisher-access
+    into the simulator (per docs/PHASE_D_FOURTH_ATTEMPT.md).
+
+    `_project_storm` returns expected_damage=0 when no closer is in
+    hand, even though a tutor + SB closer combo IS a finisher path
+    (this is what `card_combo_modifier` sees and the simulator
+    misses).  `_project_storm_with_tutor_access` lifts that
+    detection — when verified by the test below, the live entry
+    point can integrate the projection."""
+
+    def test_returns_none_without_tutor(self):
+        """No tutor in hand → tutor-access projection doesn't
+        apply → returns None.  The caller falls back to the
+        regular `_project_storm`."""
+        from ai.finisher_simulator import _project_storm_with_tutor_access
+        snap = _make_snap(my_mana=4)
+        hand = [_ritual(1), _ritual(2)]  # no tutor
+        sb = [_grapeshot(99)]  # closer in SB
+        proj = _project_storm_with_tutor_access(
+            snap=snap, hand=hand, battlefield=[],
+            sideboard=sb, library=[], storm_count=0,
+        )
+        assert proj is None
+
+    def test_returns_none_without_closer_in_sb_or_library(self):
+        """Tutor in hand but no closer anywhere → returns None.
+        The chain genuinely isn't reachable."""
+        from ai.finisher_simulator import _project_storm_with_tutor_access
+        snap = _make_snap(my_mana=4)
+        hand = [_ritual(1), _tutor(2)]
+        proj = _project_storm_with_tutor_access(
+            snap=snap, hand=hand, battlefield=[],
+            sideboard=[], library=[], storm_count=0,
+        )
+        assert proj is None
+
+    def test_tutor_in_hand_plus_grapeshot_in_sb_projects_damage(self):
+        """The critical case: Wish in hand + Grapeshot in SB.
+        `_project_storm` returns expected_damage=0 because
+        Grapeshot isn't in hand.  This function returns
+        expected_damage > 0 because the tutor can fetch it.
+
+        This is the failing-test-first per ABSTRACTION CONTRACT
+        Rule 3 — `_project_storm` would return 0 here; the new
+        function returns positive damage."""
+        from ai.finisher_simulator import _project_storm_with_tutor_access
+        snap = _make_snap(my_mana=6)
+        hand = [_ritual(1), _ritual(2), _tutor(3)]
+        sb = [_grapeshot(99)]
+        proj = _project_storm_with_tutor_access(
+            snap=snap, hand=hand, battlefield=[],
+            sideboard=sb, library=[], storm_count=0,
+        )
+        assert proj is not None
+        assert proj.pattern == "storm"
+        assert proj.expected_damage > 0.0, \
+            "tutor+SB-closer must project positive damage"
+        assert proj.closer_in_zone['sb'] is True
+        assert proj.closer_in_zone['hand'] is False
+
+    def test_tutor_plus_library_closer_projects_damage(self):
+        """Closer can also live in the library (e.g. mainboard
+        Grapeshot still in deck, Burning Wish-pattern fetches
+        from library too in some metas)."""
+        from ai.finisher_simulator import _project_storm_with_tutor_access
+        snap = _make_snap(my_mana=6)
+        hand = [_ritual(1), _ritual(2), _tutor(3)]
+        lib = [_grapeshot(99)]
+        proj = _project_storm_with_tutor_access(
+            snap=snap, hand=hand, battlefield=[],
+            sideboard=[], library=lib, storm_count=0,
+        )
+        assert proj is not None
+        assert proj.expected_damage > 0.0
+        assert proj.closer_in_zone['library'] is True
+        assert proj.closer_in_zone['sb'] is False
+
+    def test_success_probability_degraded_for_tutor_path(self):
+        """Tutor-access projection has success_probability=0.5
+        because the tutor must resolve and the closer must still
+        be available — same rules-step-degradation as the
+        reanimation discard-outlet branch."""
+        from ai.finisher_simulator import _project_storm_with_tutor_access
+        snap = _make_snap(my_mana=6)
+        hand = [_ritual(1), _ritual(2), _tutor(3)]
+        sb = [_grapeshot(99)]
+        proj = _project_storm_with_tutor_access(
+            snap=snap, hand=hand, battlefield=[],
+            sideboard=sb, library=[], storm_count=0,
+        )
+        assert proj is not None
+        assert proj.success_probability == 0.5
+
+    def test_baseline_storm_returns_zero_without_closer(self):
+        """Pin the gap that motivated this function: the existing
+        `_project_storm` returns expected_damage=0 (or the
+        tutor-only zero-damage stub) for the same hand.  This is
+        the bug `_project_storm_with_tutor_access` exists to fix."""
+        from ai.finisher_simulator import simulate_finisher_chain
+        snap = _make_snap(my_mana=6)
+        hand = [_ritual(1), _ritual(2), _tutor(3)]
+        # No SB/library passed to `simulate_finisher_chain` — that's
+        # the gap.  Without the new function, the simulator can't
+        # see the closer.
+        proj = simulate_finisher_chain(
+            snap=snap, hand=hand, battlefield=[], graveyard=[],
+            library_size=40, storm_count=0, archetype="storm",
+        )
+        # The existing simulator either returns pattern="none" or
+        # pattern="storm" with expected_damage=0.  Both are the
+        # documented gap.
+        assert proj.expected_damage == 0.0
+
+    def test_simulator_with_sb_arg_projects_tutor_access_damage(self):
+        """End-to-end: when `simulate_finisher_chain` is called WITH
+        sideboard/library, the tutor-access fallback fires and the
+        returned projection has expected_damage > 0.
+
+        This is the live-entry-point integration: same input as
+        `test_baseline_storm_returns_zero_without_closer`, plus the
+        sideboard list — and the projection now sees Grapeshot."""
+        from ai.finisher_simulator import simulate_finisher_chain
+        snap = _make_snap(my_mana=6)
+        hand = [_ritual(1), _ritual(2), _tutor(3)]
+        sb = [_grapeshot(99)]
+        proj = simulate_finisher_chain(
+            snap=snap, hand=hand, battlefield=[], graveyard=[],
+            library_size=40, storm_count=0, archetype="storm",
+            sideboard=sb,
+        )
+        assert proj.pattern == "storm"
+        assert proj.expected_damage > 0.0, (
+            "with sb passed, tutor-access fallback must project "
+            "positive damage")
+        assert proj.closer_in_zone['sb'] is True
+
+    def test_simulator_without_sb_arg_unchanged(self):
+        """Backwards-compat: without sb/library passed, behaviour is
+        identical to pre-Sprint-1 (closer-not-in-hand → 0 damage).
+        Existing callers don't need to pass the new args."""
+        from ai.finisher_simulator import simulate_finisher_chain
+        snap = _make_snap(my_mana=6)
+        hand = [_ritual(1), _ritual(2), _tutor(3)]
+        # No sideboard arg
+        proj = simulate_finisher_chain(
+            snap=snap, hand=hand, battlefield=[], graveyard=[],
+            library_size=40, storm_count=0, archetype="storm",
+        )
+        # Tutor-only without SB visibility → simulator can't project
+        # damage.  Same gap as before.  Existing callers see no
+        # behaviour change.
+        assert proj.expected_damage == 0.0
+
+
+    def test_chain_lethal_turn_zero_when_lethal_now(self):
+        """Lethal-this-turn projection → returns 0."""
+        from ai.finisher_simulator import chain_lethal_turn
+        # opp_life=2 with a 2-damage Grapeshot chain → lethal now
+        snap = _make_snap(my_mana=4, opp_life=2)
+        hand = [_ritual(1), _grapeshot(2)]
+        proj = simulate_finisher_chain(
+            snap=snap, hand=hand, battlefield=[], graveyard=[],
+            library_size=40, storm_count=0, archetype="storm",
+        )
+        # If our chain deals ≥ 2 damage with success ≥ 0.5,
+        # chain_lethal_turn(opp_life=2) returns 0.
+        if (proj.expected_damage >= 2
+                and proj.success_probability >= 0.5):
+            assert chain_lethal_turn(proj, opp_life=2) == 0

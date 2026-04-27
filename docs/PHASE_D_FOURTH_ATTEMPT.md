@@ -1,0 +1,477 @@
+---
+title: Phase D — fourth attempt failure (Sprint 2 wire-up)
+status: active
+priority: primary
+session: 2026-04-27
+supersedes: []
+superseded_by: []
+depends_on: [docs/PHASE_D_DEFERRED.md]
+tags: [phase-d, simulator, combo-evaluator, loop-break]
+summary: |
+  Fourth Phase D migration attempt collapsed Storm field N=10
+  from ~41% to 0.6%.  Same root cause as the prior three:
+  simulator-derived `expected_damage = 0` when no closer is in
+  hand, leading the chain-fuel scorer to return 0 for build-toward-
+  closer plays (rituals, cantrips, tutors).  Multi-turn helpers
+  (`best_turn_damage`, `chain_lethal_turn`) didn't fix this
+  because they walk projections that are themselves all 0 in the
+  pre-closer state.  Loop-break protocol triggered: halting code
+  on the simulator-replacement direction; documenting the exact
+  EV-divergence point.
+---
+
+# Phase D fourth attempt — Sprint 2 wire-up reverted
+
+## Loop-break compliance
+
+Per `CLAUDE.md` ABSTRACTION CONTRACT, three consecutive commits
+on the same outlier without WR movement triggers halt + Bo3
+root-cause + docs/ name-the-subsystem.  This is the **fourth**
+attempt; we are well past that threshold.  This document IS the
+named-the-subsystem step.  No further code on the simulator-as-
+replacement direction without addressing what's named below.
+
+## What was tried (Sprint 2)
+
+A background agent on `claude/sprint-2-wire-up` rewrote
+`ai/combo_evaluator.py` to use the multi-turn helpers shipped in
+PR #203:
+
+```python
+lethal_turn = chain_lethal_turn(baseline_proj, opp_life)
+best_value, best_turn = best_turn_damage(baseline_proj)
+
+if lethal_turn == 0:                # lethal THIS turn
+    fire NOW — chain_credit > 0
+elif lethal_turn is not None:       # lethal at future turn
+    HOLD — chain fuel scores 0
+elif best_turn == 0:                # this turn highest EV
+    fire chip damage
+else:                               # future turn higher EV
+    HOLD
+```
+
+Failing-test-first compliance: 4 unit tests written, all
+pass.  Abstraction ratchet: still 7 (no new violations).
+Storm field N=10 gate: **0.6%** — collapse.
+
+## EV-divergence point (Bo3 root cause)
+
+Ran `python run_meta.py --bo3 "Ruby Storm" "Affinity" -s 50000`
+on the working baseline (Storm 37.5%) and compared against the
+new evaluator's reasoning.  The divergence is **immediate, on
+turn 1's first main-phase decision**.
+
+In the baseline, Storm with hand `[Pyretic Ritual, Manamorphose,
+Reckless Impulse, Wish, Wrenn's Resolve]`:
+* `card_combo_modifier` returns small POSITIVE EV for each
+  ritual / cantrip / tutor — encoding "build toward future
+  chain via Wish→tutor".
+* AI casts Reckless Impulse (cantrip, draws 2) → builds chain
+  fuel → eventually Wishes for Past in Flames or Grapeshot.
+
+In the new evaluator (Sprint 2), same hand:
+* `simulate_finisher_chain` finds NO chain (no closer in hand;
+  Wish's SB target invisible to the simulator).
+* `expected_damage = 0`, `chain_lethal_turn = None`,
+  `best_turn_damage = (0, 0)`.
+* Branch 3 fires: "no lethal projected, this turn is highest EV
+  → fire chip damage".  But there's NO damage to fire — chain
+  is empty.
+* `chain_credit = (0 / opp_life) * combo_value * relevance = 0`.
+* AI uses default scoring (no combo nudge); rituals score below
+  pass_threshold; AI passes the turn doing nothing.
+
+The chain extends: every subsequent turn, hand grows but no
+closer ever lands in hand (closer is in SB).  Storm passes
+forever.  Affinity races.  Storm wins ~0%.
+
+## Responsible subsystem
+
+**`ai/finisher_simulator.py:_project_storm`**, specifically the
+`expected_damage = 0 when payoff_names is empty` invariant.
+
+The simulator answers: "what damage CAN I deal this turn?"
+With no closer in hand, the answer is 0.  But Storm's actual
+intent is: "build chain THIS turn, fetch closer NEXT turn via
+Wish→SB lookup".  The simulator has no model of that intent.
+
+What's needed:
+
+* **Library composition modelling**: the simulator must know
+  the deck's contents (mainboard + sideboard).  When a tutor is
+  in hand, the simulator should project "tutor fetches closer
+  → chain damage = (storm_count + tutor_bonus) × ..." even
+  though the closer isn't yet in hand.  This is what
+  `card_combo_modifier`'s `_tutor_has_payoff` branch
+  (`combo_calc.py:670-695`) encodes; the simulator doesn't.
+
+* **Multi-turn intent modelling**: even WITHOUT a tutor, Storm
+  builds chains across turns.  The simulator's
+  `next_turn_proj` increments mana but uses the SAME hand —
+  it can't represent "draw a Grapeshot next turn off a
+  cantrip."  Probabilistic library composition (P(draw Grapeshot
+  in N turns | Grapeshot count in deck)) is the principled
+  fix.
+
+Without these two upgrades, the simulator-driven evaluator will
+keep collapsing chain-fuel scores to 0, and Storm will keep
+passing turns.
+
+## Recommended path forward
+
+**Stop attempting full migration of `card_combo_modifier`.** The
+hand-rolled tutor-as-finisher-access and ritual-chain-gate
+branches encode multi-turn intent that the current simulator
+architecture cannot express.
+
+**Two-step alternative**:
+
+1. **Extract `card_combo_modifier`'s tutor-access logic** into
+   the simulator — call it `_project_storm_with_tutor_access(
+   snap, hand, sideboard, library)`.  This adds the missing
+   library-composition bit one piece at a time, on a *test
+   bench*, not a live wire-up.  No Storm risk.
+2. Once the extracted projection produces non-zero
+   `expected_damage` for tutor-only Storm hands (verifiable on
+   a unit test: "Storm with Wish in hand and Grapeshot in SB
+   reports expected_damage > 0"), THEN attempt Sprint 2
+   migration again.  Without that test passing, the migration
+   will collapse Storm exactly as it has four times now.
+
+## Update — Phase D fifth attempt also failed
+
+Tried the wire-up again after shipping the simulator gap-closing
+work (`08c4e11`, `da16698`, `30c7a18`).  Empirical pre-check
+showed the gap WAS closed:
+
+* Unit test: tutor-only Storm hand with SB closer → projection
+  returns `expected_damage = 4.0` (was 0.0) ✓
+* Direct call: `card_combo_evaluation` for a chain-fuel ritual
+  returns `+7.97` (was -50.0) ✓
+
+But the live wire-up still collapsed Storm:
+
+* Storm field N=10 = **2.5%** (was 37.5%) ✗
+* Reverted; restored to 37.5%.
+
+So the simulator-layer gap was real but **insufficient**.  There
+must be a second gap — somewhere in the live integration the
+evaluator returns 0 / negative for chain-fuel cards in hands
+that don't trigger the tutor-access path.
+
+Hypotheses to investigate next:
+
+1. **Cache key collisions across snapshots.**  combo_evaluator
+   caches projections keyed by `id(snap)`.  Within one main-
+   phase iteration the snapshot might be re-built on each
+   `_score_spell` call, giving a fresh `id` each time —
+   meaning the cache never hits and projection is recomputed
+   for each candidate card.  If correct, this is wasteful but
+   not incorrect.  Worth verifying.
+
+2. **Hands without tutor or SB closer.**  Storm hands like
+   `[Ritual, Ritual, Manamorphose, Past in Flames, Ral]` —
+   chain assemblable but no Grapeshot in hand AND no Wish.
+   What does `card_combo_evaluation` return for ritual-fuel
+   here?  `_project_storm` may still return zero damage; the
+   tutor-access fallback won't fire (no tutor).  Result might
+   be `STORM_HARD_HOLD = -50` for every chain-fuel card →
+   passes turn.
+
+3. **Evaluator's branches don't compose with default scoring.**
+   The +7.97 chain-credit value is principled but might be
+   double-counted with the projection's natural mana-production
+   value, OR the negative branches (hard-hold, hold-lethal)
+   might be too aggressive.
+
+Next session must instrument the evaluator to log per-card
+scoring decisions for a Storm-vs-Affinity Bo3, identify which
+hand state triggers collapse, and fix at the root.  The five-
+attempt loop-break is now PERMANENT until that instrumentation
+exists.
+
+## Update — instrumentation surfaced the THIRD gap
+
+Added env-gated diagnostic trace in `ai/combo_evaluator.py`
+(commit `07e8f18`) and a standalone harness
+`tools/diag_combo_evaluator_trace.py`.  Ran:
+
+    MTGSIM_COMBO_TRACE=1 python tools/diag_combo_evaluator_trace.py
+
+For Storm seed 50000 T1 hand:
+`[Wrenn's Resolve, Past in Flames, Ral, Elegant Parlor,
+  Bloodstained Mire, Ral, Glimpse the Impossible]`
+
+```
+Wrenn's Resolve     → branch=hard_hold_no_chain  pattern=none  -50
+Past in Flames      → branch=hard_hold_no_chain  pattern=none  -50
+Glimpse the Impossible → branch=hard_hold_no_chain  pattern=none  -50
+```
+
+Every chain-fuel card sees `pattern=none`.  Storm has Past in
+Flames + 2 cantrips in hand, but NO ritual, NO storm closer,
+NO tutor → `_project_storm` returns None →
+`simulate_finisher_chain` returns `pattern="none"` →
+combo_evaluator hard-holds every fuel card.
+
+### The third gap (precise diagnosis)
+
+`_project_storm`'s pattern detection requires (line 228-244):
+
+```python
+has_ritual = any('ritual' in tags for c in hand)
+has_storm_closer = bool(payoff_names)  # storm-keyword in hand
+tutors_in_hand = [c for c in hand if 'tutor' in tags]
+
+if not (has_ritual or has_storm_closer or tutors_in_hand):
+    return None
+```
+
+But Storm CAN combo via Past in Flames alone:
+
+  1. Cast PiF → grants flashback to all GY instants/sorceries
+  2. Cast cantrips THIS turn to fill GY (Wrenn's Resolve, Glimpse)
+  3. Flashback those cantrips and any rituals drawn into → storm
+     count grows
+  4. Eventually draw / Wish for Grapeshot
+
+The simulator doesn't recognise PiF as a pattern enabler.  The
+LIVE `card_combo_modifier` does — see `_has_viable_pif` at
+`combo_calc.py:555-570`, used in the ritual-chain-gate at
+`combo_calc.py:741-808`.
+
+### Recommended path forward
+
+Step 2 (per the original two-step plan) needed a third
+substep we didn't see:
+
+* **Step 1.6** — extend `_project_storm` to recognise Past in
+  Flames in hand as a chain-pattern enabler.  Without ritual /
+  closer / tutor, but WITH PiF + at least one chain-fuel card,
+  the pattern IS reachable: cast fuel this turn to fill GY,
+  PiF flashes back fuel next turn, chain grows from there.
+
+  Needed predicate (oracle-text-driven):
+  ```python
+  has_pif_pattern = any(
+      'flashback' in oracle and 'graveyard' in oracle
+      and ('instant' in oracle or 'sorcery' in oracle)
+      for c in hand
+  )
+  ```
+
+  When `has_pif_pattern` is True AND any chain fuel exists in
+  hand+gy, project a NEXT-TURN chain (this turn we cast fuel,
+  next turn PiF + flashbacks).
+
+Once step 1.6 ships, attempt #6 wire-up should not collapse on
+T1 Storm hands with PiF.  Other failure modes may exist —
+the trace will surface them similarly.
+
+## Update — Phase D 6th attempt also failed (FOURTH gap)
+
+After step 1.6 closed the third gap (PiF-pattern detection in
+`_project_storm`), retried the live wire-up.  Storm field N=10 =
+**3.1%** — still collapses, though better than attempt #5
+(0.6%) and #2 (1.9%).
+
+Reverted; restored to 37.5%.
+
+The trace now shows EVERY chain-fuel card scoring `0.00` (was
+`-50.00` in attempt #5).  Pattern detection works.  But 0
+isn't enough either.
+
+### The fourth gap (precise diagnosis)
+
+`combo_evaluator.card_combo_evaluation`'s chain-credit formula:
+
+```python
+chain_credit = (fire_value / opp_life) * combo_value * relevance
+where fire_value = expected_damage * success_probability
+```
+
+For ALL build-up turns where the chain doesn't yet reach
+lethal damage, `expected_damage = 0` → `fire_value = 0` →
+`chain_credit = 0`.  No positive nudge.
+
+But `card_combo_modifier` (the live baseline at 37.5%) gives
+POSITIVE EV to chain pieces in build-up states:
+
+* Rituals at storm=0 with chain access: positive (line 723-734
+  in combo_calc.py — reducer-first heuristic)
+* Cantrips with PiF reachable: positive
+* Cost reducers (Medallion): positive based on chain
+  improvement delta
+
+The simulator-driven evaluator has no equivalent — it scores
+0 for the entire build-up phase, so default scoring drives.
+Default scoring values rituals at ~+0.5 (mana production via
+projection), but card_combo_modifier added another +1 to +5
+on top.  Without that positive boost, the AI doesn't see
+build-up turns as worth as much, and apparently gets the
+sequencing wrong somewhere.
+
+### What "chain-progress credit" needs to encode (without arbitrary constants)
+
+The principled signal: a chain-fuel card cast THIS turn that's
+relevant to a reachable chain advances toward lethal — its
+value is the FRACTION of lethal it represents.
+
+```python
+chain_progress_credit = (
+    relevance × combo_value
+    × (one_spell_contribution / total_chain_required)
+)
+```
+
+Where `total_chain_required = ceil(opp_life / typical_storm_damage)`
+and `one_spell_contribution = 1 / total_chain_required`.  But the
+ratio simplifies to `1/N` where `N` is the chain length needed
+for lethal — which IS in the projection's `chain_length` or
+derivable from `opp_life` and `typical_storm_arithmetic`.
+
+This is principled (no arbitrary multipliers) but requires
+careful implementation — and another wire-up attempt to verify.
+Pin loop-break: no 7th attempt without this credit formula
+shipped on a test bench AND verified to produce non-zero values
+for chain-fuel cards in build-up states.
+
+## Update — Phase D 7th attempt also failed (FIFTH gap, hypothesis)
+
+After steps 4 (chain-progress credit) and 5 (multi-pattern
+`_is_chain_fuel`) shipped, retried the live wire-up.  Storm
+field N=10 = **1.2%** — WORSE than attempt #6 (3.1%).
+Reverted; restored to 37.5%.
+
+The trace shows reasonable per-card scores:
+* Storm: chain pieces +4.75
+* Living End: cyclers/payoffs +4.50
+
+But Storm WR collapsed worse than attempt #6.  Hypothesis: the
+broadened `_is_chain_fuel` predicate (step 5) now triggers the
+chain-progress credit on cards like Past in Flames (chain
+extender) — which on T1 with empty graveyard is a waste-of-mana
+play.  card_combo_modifier (live baseline) doesn't reward T1
+PiF because it has per-card nuance (`_has_viable_pif` checks
+GY for ritual fuel).  My flat `combo_value / opp_life` credit
+fires regardless.
+
+### The fifth gap (over-reward of build-up credit)
+
+Per-card chain-progress credit needs game-state-dependent
+gating, not just pattern detection.  card_combo_modifier
+encodes this as per-card branches:
+
+* `_has_viable_pif` — PiF only valuable when GY has rituals
+* Reducer-first heuristic — rituals worth more after a reducer
+  is on bf
+* Storm patience gate — rituals worth less at storm=0 with no
+  finisher path
+
+Replicating each in the simulator-driven evaluator effectively
+re-builds card_combo_modifier in a different shape.  At seven
+attempts and counting, the architectural conclusion is:
+
+**The simulator-driven evaluator can't fully replace
+`card_combo_modifier` without absorbing all of
+card_combo_modifier's per-card nuance.**
+
+Two paths forward, both for the next session:
+
+1. **Coexist** — keep `card_combo_modifier` as the live combo
+   scorer; use the simulator-driven evaluator for OTHER
+   strategic decisions (e.g., better SB plan, better Wish-
+   target picker, better wrath-X selection — which we already
+   showed works).  The simulator is a useful TOOL not a
+   REPLACEMENT.
+
+2. **Architecturally pivot** — make `card_combo_modifier` itself
+   simulator-aware: replace its `find_all_chains` calls with
+   `simulate_finisher_chain`, but keep the per-card-branch
+   structure.  This is a much smaller refactor than full
+   replacement.
+
+Path 1 is the realistic next step.  Path 2 is the longer arc.
+
+Pin the loop-break: NO 8th attempt at full migration.  The
+infrastructure (steps 1, 1.5, 1.6, 4, 5) stays in main as
+useful primitives; the live wire-up doesn't happen again.
+
+## Update — Path 2 architectural pivot also failed (8th attempt)
+
+After pinning the loop-break, attempted path 2 (architectural
+pivot): replace `find_all_chains` calls inside
+`_assess_storm_zone` with `simulate_finisher_chain` so
+`card_combo_modifier`'s tutor-access / PiF detection improves
+without changing its per-card branch structure.
+
+Implementation: synthesised a `ChainOutcome` from the simulator's
+`FinisherProjection` (only `storm_damage` and `payoff_name` are
+read downstream — left other fields at safe defaults).
+
+Storm field N=10 = **29.4%** — past the 35% gate (-8.1pp from
+37.5% baseline).  Reverted; restored to 36.9%.
+
+The regression is SMALLER than the seven prior full-replacement
+attempts (which were 0-7%) but still past gate.  Hypothesis:
+`ChainOutcome` fields beyond `storm_damage` and `payoff_name`
+ARE consumed downstream — `final_mana`, `cards_drawn`,
+`mana_trace`, `medallions_after` — and my synthetic stub
+(0 / [] / 0 / current-medallions) breaks invariants the
+downstream code relies on.
+
+A full path 2 implementation would need to either:
+* Run `find_all_chains` IN ADDITION to the simulator (capture the
+  full ChainOutcome) and only swap in the simulator's
+  `expected_damage` when it differs (e.g. tutor-access sees a
+  longer chain than find_all_chains).
+* Or extend `FinisherProjection` to expose all `ChainOutcome`
+  fields the live code consumes — a richer schema.
+
+Both are bigger surgeries than fits a single session.  Path 1
+(coexist) remains the realistic next-session move.
+
+## Update — Path 2 dual-run also failed (9th attempt)
+
+After the path 2 schema-stub regression (-8.1pp), tried the
+**dual-run** variant: keep `find_all_chains`'s full
+`ChainOutcome`, only inject `simulator.expected_damage` into
+`best_damage` when the simulator strictly improves on
+find_all_chains.
+
+Logic: when simulator detects a tutor-access or PiF chain
+that find_all_chains misses, bump damage value used downstream.
+Otherwise leave find_all_chains unchanged.
+
+Storm field N=10 = **23.8%** — past 35% gate (-13.7pp).  Worse
+than the schema-stub attempt (29.4%).  Reverted; restored.
+
+Hypothesis: when the simulator's tutor-access path fires (Wish
+in hand + SB Grapeshot), `card_combo_modifier`'s OWN tutor
+branch is ALSO firing for the same Wish.  My damage injection
+double-counts the tutor's chain value, causing the AI to
+over-fire on Wish or score Wish-paths above their real value.
+
+The architectural lesson stands: any path-2 implementation must
+identify which `card_combo_modifier` branches the simulator's
+projection should REPLACE vs ADD TO — and that mapping is
+genuinely complex because card_combo_modifier's branches were
+built without the simulator in mind.
+
+After 9 attempts (7 full-migration + 2 path-2), the conclusion
+is: **the simulator is a useful TOOL for individual decisions
+(SB scoring, Wish targets, Wrath X-selection — proven), not a
+REPLACEMENT for `card_combo_modifier` without rewriting both.**
+
+Path 1 (coexist) is the only realistic next-session move.
+
+## Cross-references
+
+* `docs/PHASE_D_DEFERRED.md` — original deferral diagnosis
+* `docs/AFFINITY_REGRESSION.md` — separate Affinity 88% root-
+  cause investigation (still active)
+* `ai/finisher_simulator.py:_project_storm` — the function that
+  needs library-composition modelling
+* `ai/combo_calc.py:670-695` — the existing tutor-as-finisher
+  logic the simulator must absorb before migration is viable

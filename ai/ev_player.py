@@ -2366,6 +2366,18 @@ class EVPlayer:
                     remaining_toughness = (c.toughness or 0) - getattr(c, 'damage_marked', 0)
                     if dmg >= remaining_toughness > 0 or remaining_toughness <= 0:
                         val = permanent_threat(c, opp, game)
+                        # Equipment carrier bonus: if `c` is wearing
+                        # equipment, killing it strips the equipment
+                        # off (CR 702.6e) and forces opp to re-equip
+                        # at sorcery speed.  Same bonus the response-
+                        # path target picker (`_pick_best_removal_target`)
+                        # applies; propagating to the burn-vs-creature
+                        # decision so a Plating-equipped Memnite at 1
+                        # toughness gets correctly prioritised over
+                        # 3 face damage.
+                        val += self._carrier_disrupt_bonus(
+                            game, opp, c, snap,
+                            removal_destroys_artifact=False)
                         if val > best_kill_val:
                             best_kill_val = val
                             best_kill_id = c.instance_id
@@ -2512,7 +2524,17 @@ class EVPlayer:
         )
 
         def _rank(c) -> float:
-            base = creature_threat_value(c, snap)
+            # Use `permanent_threat` (marginal-contribution via
+            # snapshot recomputation) instead of `creature_threat_value`
+            # (oracle-driven heuristic).  permanent_threat accounts
+            # for the FULL position swing of removing the creature —
+            # raw clock contribution + evasion + equipment bonuses
+            # + scaling triggers — the same way the burn-target
+            # picker and equip-target picker score.  Architectural
+            # pattern: every threat-scoring decision in the AI now
+            # uses the same primitive.
+            from ai.permanent_threat import permanent_threat
+            base = permanent_threat(c, player, game)
             return base + self._carrier_disrupt_bonus(
                 game, player, c, snap,
                 removal_destroys_artifact=also_destroys_artifact)
@@ -2755,19 +2777,22 @@ class EVPlayer:
             if cost is None or cost > available_mana:
                 continue
 
-            # Score each creature as an equip target. Evasion multiplies
-            # the value since unblocked damage compounds harder than raw
-            # power — a CP-attached flier is typically unblockable, while
-            # a ground creature of equal size often chump-blocked.
+            # Score each creature as an equip target via the same
+            # marginal-contribution formula the burn-target picker
+            # uses: `permanent_threat(c, me, game)` — what does the
+            # creature contribute to OUR position value?  Higher
+            # threat-to-opp = better equip target because the equipment
+            # amplifies whatever clock the creature is already
+            # producing.  Evasion (flying / menace / trample) flows
+            # through `permanent_threat` via the snapshot's
+            # `my_evasion_power` field — the magic FLYING * 2.0,
+            # MENACE * 1.5, TRAMPLE * 1.3 multipliers used to
+            # approximate this and are now derived from
+            # `position_value` directly.
+            from ai.permanent_threat import permanent_threat
             def _equip_target_score(c):
-                base = (c.power or 0) + (c.toughness or 0) * 0.3
-                if Keyword.FLYING in c.keywords:
-                    return base * 2.0
-                if Keyword.MENACE in c.keywords:
-                    return base * 1.5
-                if Keyword.TRAMPLE in c.keywords:
-                    return base * 1.3
-                return base
+                # Use OUR perspective for our own creatures
+                return permanent_threat(c, player, game)
 
             best = max(creatures, key=_equip_target_score)
 
