@@ -337,6 +337,67 @@ Pin loop-break: no 7th attempt without this credit formula
 shipped on a test bench AND verified to produce non-zero values
 for chain-fuel cards in build-up states.
 
+## Update — Phase D 7th attempt also failed (FIFTH gap, hypothesis)
+
+After steps 4 (chain-progress credit) and 5 (multi-pattern
+`_is_chain_fuel`) shipped, retried the live wire-up.  Storm
+field N=10 = **1.2%** — WORSE than attempt #6 (3.1%).
+Reverted; restored to 37.5%.
+
+The trace shows reasonable per-card scores:
+* Storm: chain pieces +4.75
+* Living End: cyclers/payoffs +4.50
+
+But Storm WR collapsed worse than attempt #6.  Hypothesis: the
+broadened `_is_chain_fuel` predicate (step 5) now triggers the
+chain-progress credit on cards like Past in Flames (chain
+extender) — which on T1 with empty graveyard is a waste-of-mana
+play.  card_combo_modifier (live baseline) doesn't reward T1
+PiF because it has per-card nuance (`_has_viable_pif` checks
+GY for ritual fuel).  My flat `combo_value / opp_life` credit
+fires regardless.
+
+### The fifth gap (over-reward of build-up credit)
+
+Per-card chain-progress credit needs game-state-dependent
+gating, not just pattern detection.  card_combo_modifier
+encodes this as per-card branches:
+
+* `_has_viable_pif` — PiF only valuable when GY has rituals
+* Reducer-first heuristic — rituals worth more after a reducer
+  is on bf
+* Storm patience gate — rituals worth less at storm=0 with no
+  finisher path
+
+Replicating each in the simulator-driven evaluator effectively
+re-builds card_combo_modifier in a different shape.  At seven
+attempts and counting, the architectural conclusion is:
+
+**The simulator-driven evaluator can't fully replace
+`card_combo_modifier` without absorbing all of
+card_combo_modifier's per-card nuance.**
+
+Two paths forward, both for the next session:
+
+1. **Coexist** — keep `card_combo_modifier` as the live combo
+   scorer; use the simulator-driven evaluator for OTHER
+   strategic decisions (e.g., better SB plan, better Wish-
+   target picker, better wrath-X selection — which we already
+   showed works).  The simulator is a useful TOOL not a
+   REPLACEMENT.
+
+2. **Architecturally pivot** — make `card_combo_modifier` itself
+   simulator-aware: replace its `find_all_chains` calls with
+   `simulate_finisher_chain`, but keep the per-card-branch
+   structure.  This is a much smaller refactor than full
+   replacement.
+
+Path 1 is the realistic next step.  Path 2 is the longer arc.
+
+Pin the loop-break: NO 8th attempt at full migration.  The
+infrastructure (steps 1, 1.5, 1.6, 4, 5) stays in main as
+useful primitives; the live wire-up doesn't happen again.
+
 ## Cross-references
 
 * `docs/PHASE_D_DEFERRED.md` — original deferral diagnosis
