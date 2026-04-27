@@ -315,13 +315,13 @@ Always save logs to `replays/` and commit. `build_replay.py` is in the repo with
 
 **Current grade: C** (session 3: blocking+attack+mulligan fixes validated; full 16×16 N=50 re-run; Affinity 93% and Living End 5% are new P0s)
 
-Related docs: `MODERN_PROPOSAL.md` (6 infra proposals from Legacy), `docs/history/audits/2026-04-11_LLM_judge.md` (original D+ audit), `LEGACY_MODERNISATION_PROPOSAL.md` (Legacy adoption plan).
+Related docs: `MODERN_PROPOSAL.md` (6 infra proposals from Legacy), `docs/history/audits/2026-04-11_LLM_judge.md` (original D+ audit), `CROSS_PROJECT_SYNC.md` (Modern↔Legacy adoption status).
 
 ## Sister Project — MTGSimClaude (Legacy)
 
 Repository: `github.com/DJPieter81/MTGSimClaude` (38 decks, 2.5ms/game, G1-only matrix).
 
-Both projects share the same Claude skills (`/mtg-meta-matrix`, `/mtg-deck-guide`, `/mtg-bo3-replayer-v2`, `/mtg-dashboard-refresh`) and cross-pollinate architecture ideas. See cross-project proposals in `MODERN_PROPOSAL.md` and `LEGACY_MODERNISATION_PROPOSAL.md`.
+Both projects share the same Claude skills (`/mtg-meta-matrix`, `/mtg-deck-guide`, `/mtg-bo3-replayer-v2`, `/mtg-dashboard-refresh`) and cross-pollinate architecture ideas. Cross-project proposals + adoption status: `MODERN_PROPOSAL.md` and `CROSS_PROJECT_SYNC.md`.
 
 Key differences: Legacy has per-deck strategy functions (deeper knowledge), Modern has EV scoring + BHI + combat sim (better architecture). Neither is strictly better.
 
