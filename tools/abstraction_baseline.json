@@ -1,4 +1,4 @@
 {
-  "hardcoded_name_count": 8,
-  "_comment": "Abstraction-contract ratchet baseline. Count of hardcoded card-name conditionals in engine/ + ai/ as detected by tools/check_abstraction.py. May only decrease, never increase. Pre-commit hook enforces this. Reduce by replacing name-checks with oracle-text/template-field checks or moving knowledge into decks/gameplans/*.json. See CLAUDE.md ABSTRACTION CONTRACT."
+  "hardcoded_name_count": 7,
+  "_comment": "Abstraction-contract ratchet baseline. Counts hardcoded card-name conditionals in engine/+ai/. Ratcheted 8\u21927 on 2026-04-27 by tagging LEGENDARY supertype-enum check as abstraction-allow. Remaining 7 are real debt (Mox Opal, Grapeshot/PiF, Slayers Stronghold land cycle, Solitude/Phlage, storm payoff names \u00d73). May only decrease. See CLAUDE.md ABSTRACTION CONTRACT."
 }

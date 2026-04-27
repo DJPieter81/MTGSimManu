@@ -472,7 +472,7 @@ def goryos_vengeance_resolve(game, card, controller, targets=None, item=None):
     legendary_creatures = [c for c in gy
                            if c.template.is_creature and
                            any(str(st) == "Supertype.LEGENDARY"
-                               or st.name == "LEGENDARY"
+                               or st.name == "LEGENDARY"  # abstraction-allow: supertype enum, not card name
                                for st in c.template.supertypes)]
     # CR 608.2b: Goryo's Vengeance oracle requires "target legendary
     # creature card". If no legal target is available, the spell
