@@ -303,10 +303,13 @@ def _clause_artifact_removal(card: "CardTemplate",
     avg_cmc = sum(t.cmc or 0 for t in artifacts) / len(artifacts)
     base = density * avg_cmc * PERMANENT_VALUE_WINDOW
     # Mass removal scales by the number of artifacts it'd destroy —
-    # Shatterstorm vs a 12-artifact Affinity board is worth ~12× a
-    # single-target Wear // Tear.  Capped at the SB-card value window.
+    # Shatterstorm vs an N-artifact board is worth ~N× a single-
+    # target Wear // Tear.  No upper cap is needed: the more
+    # artifacts the opponent runs, the higher the mass-wipe should
+    # rank, all the way up to N = total nonland count (a deck where
+    # every nonland is an artifact, e.g. mono-affinity).
     if is_mass:
-        return min(base * len(artifacts), PERMANENT_VALUE_WINDOW * 12)
+        return base * len(artifacts)
     return base
 
 

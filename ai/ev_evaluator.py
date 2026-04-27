@@ -2058,9 +2058,13 @@ def estimate_pass_ev(snap: EVSnapshot, archetype: str,
             life_after = life_as_resource(max(0, snap.my_life - damage_taken), snap.opp_power)
             opp_development_penalty = -(life_before - life_after) * 0.3
 
-    # Combo decks: passing is especially bad — they need to chain spells NOW
+    # Combo decks: passing is especially bad — they need to chain spells NOW.
+    # Detection via `StrategyProfile.has_combo_chain` (structural deck-
+    # property signal) instead of an archetype-name comparison, so storm
+    # / cascade / reanimator decks all qualify without hardcoding names.
+    from ai.strategy_profile import get_profile
     combo_penalty = 0.0
-    if archetype == "combo":
+    if get_profile(archetype).has_combo_chain:
         combo_penalty = -snap.my_mana * 1.0  # wasting mana is terrible for combo
         if snap.my_hand_size >= 5:
             combo_penalty -= 2.0  # full hand + doing nothing = bad

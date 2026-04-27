@@ -462,12 +462,25 @@ def card_combo_role(card, assessment):
 # (test_storm_pif_requires_gy_and_mana, test_storm_wish_validates_sideboard,
 # test_storm_ritual_held_without_finisher).
 
-# Sentinel below any reasonable pass_threshold.  Returning this from
-# `card_combo_modifier` forces the caller to discard the play even
-# without explicit knowledge of `profile.pass_threshold`.  Rules
-# constant: a play that wastes the ritual's mana on phase-end empty
-# is strictly worse than passing the turn.
-STORM_HARD_HOLD = -1000.0
+# Force-pass sentinel for when a ritual would empty mana at phase
+# end with no finisher reachable (CR 500.4).  Returned from
+# `card_combo_modifier` and ADDED to `ev` by the caller, so the
+# value must be strongly negative enough to swamp any positive
+# contributions already accumulated in `ev`.
+#
+# Magnitude justification: position_value's natural scale is
+# bounded by NO_CLOCK (99.0 in clock.py — the "no clock" sentinel
+# used as a turn-count cap throughout the EV pipeline).  Setting
+# the hard-hold to `-NO_CLOCK × ratio_of_safety` (here, ratio=10)
+# ensures `ev + STORM_HARD_HOLD` is strongly negative for any
+# realistic `ev` accumulation.  Auto-derived at import time so a
+# future change to NO_CLOCK keeps the sentinel correctly scaled.
+def _derive_storm_hard_hold() -> float:
+    from ai.clock import NO_CLOCK
+    return -NO_CLOCK * 10.0
+
+
+STORM_HARD_HOLD = _derive_storm_hard_hold()
 
 
 def _has_storm_finisher(card, me) -> bool:

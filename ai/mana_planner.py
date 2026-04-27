@@ -375,13 +375,18 @@ def should_stagger_shock(game, player_idx: int, land, archetype: str) -> bool:
     summoning_sick + untapped + untap_life_cost>0 on other lands.
 
     Rules (all thresholds derived from game state):
-      * Never stagger for combo decks — every mana matters, life is noise.
+      * Never stagger when the deck profile has a combo chain — every
+        mana matters, life is noise.  Detection via
+        `StrategyProfile.has_combo_chain` (a structural deck-property
+        signal, not an archetype-name comparison) so storm / cascade /
+        reanimator decks all qualify without hardcoding their names.
       * Never stagger if hand is empty (no need to keep life reserves).
       * Stagger when at least one shock already entered untapped this turn
         AND (a) incoming damage leaves us at <=12 life, OR
             (b) hand has cards, indicating more turns to play.
     """
-    if archetype == "combo":
+    from ai.strategy_profile import get_profile
+    if get_profile(archetype).has_combo_chain:
         return False
     me = game.players[player_idx]
     shocks_already = sum(
