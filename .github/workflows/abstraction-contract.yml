@@ -17,6 +17,9 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Install pytest
+        run: pip install pytest
+
       - name: Run abstraction ratchet
         run: python tools/check_abstraction.py
 
