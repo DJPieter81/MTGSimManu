@@ -114,7 +114,115 @@ class MockMe:
     spells_cast_this_turn: int = 0
 
 
-class TestComboEvaluatorTutorAccessIntegration:
+class TestChainProgressCredit:
+    """Step 4 from docs/PHASE_D_FOURTH_ATTEMPT.md fourth-gap fix:
+    when the simulator detects a reachable storm pattern but
+    `expected_damage = 0` (build-up turn), the evaluator must
+    return a positive chain-progress credit, not 0.
+
+    Without this credit, AI sees chain-fuel cards as worth 0 EV
+    during build-up → defaults to default scoring → doesn't
+    differentiate Storm strategy from random midrange play.
+
+    Formula: `combo_value × relevance / opp_life` — each chain-
+    relevant spell represents 1/N of eventual lethal.  Rules-
+    derived from Grapeshot's storm-count damage arithmetic
+    (lethal at storm = opp_life).
+    """
+
+    def test_pif_only_hand_chain_fuel_gets_positive_credit(self):
+        """Storm hand with PiF + cantrip but no closer.  Pre-step-4:
+        chain_credit = 0.  Post-step-4: chain_credit > 0 (the
+        principled per-spell progress credit)."""
+        from ai.combo_evaluator import card_combo_evaluation, _BASELINE_CACHE
+        _BASELINE_CACHE.clear()
+
+        from tests.test_finisher_simulator import _pif, _cantrip
+        from types import SimpleNamespace
+
+        snap = _make_snap(my_mana=4, opp_life=20)
+        pif = _pif(1)
+        cantrip = _cantrip(2)
+        hand = [pif, cantrip]
+        me = MockMe(hand=hand, library=list(range(40)))
+        opp = SimpleNamespace(battlefield=[])
+        game = SimpleNamespace(players=[me, opp])
+
+        # Score the cantrip — it's chain-fuel, relevance should be 1.0
+        score = card_combo_evaluation(
+            cantrip, snap, me, game, 0, archetype="storm")
+
+        # Build-up credit: combo_value / opp_life ≈ 80/20 = 4.0
+        # Plus orthogonal terms (flip/tax) which are 0 in this setup.
+        # Pin: must be POSITIVE.
+        assert score > 0.0, (
+            f"build-up chain-fuel must score positively, got {score}"
+        )
+        # And must be MUCH less than full lethal credit
+        # (which would be ~combo_value ≈ 80)
+        assert score < 80.0, (
+            f"build-up credit shouldn't equal lethal credit, got {score}"
+        )
+
+    def test_no_pattern_truly_empty_hand_returns_zero(self):
+        """When pattern=none (no chain enabler at all — neither
+        ritual, closer, tutor, nor PiF in hand), the build-up
+        credit doesn't fire.  Pin: relevance + non-fuel cards
+        score 0 cleanly."""
+        from ai.combo_evaluator import card_combo_evaluation, _BASELINE_CACHE
+        _BASELINE_CACHE.clear()
+
+        from tests.test_finisher_simulator import MockCard, MockTemplate
+        from types import SimpleNamespace
+
+        # A creature — not chain fuel.  Hand has ONLY this creature,
+        # so pattern=none (no ritual, closer, tutor, or PiF).
+        creature = MockCard(
+            template=MockTemplate(name="Bear", cmc=2, is_creature=True,
+                                   power=2, toughness=2),
+            instance_id=1,
+        )
+        snap = _make_snap(my_mana=4, opp_life=20)
+        hand = [creature]
+        me = MockMe(hand=hand, library=list(range(40)))
+        opp = SimpleNamespace(battlefield=[])
+        game = SimpleNamespace(players=[me, opp])
+
+        score = card_combo_evaluation(
+            creature, snap, me, game, 0, archetype="storm")
+
+        # Non-fuel card + pattern=none → all-branches return 0
+        # (no chain bonus).
+        assert score == 0.0
+
+    def test_lethal_chain_uses_full_chain_credit_not_progress(self):
+        """When chain reaches lethal damage, the regular
+        chain_credit fires (NOT the build-up progress credit).
+        Pin that the two formulas don't double-count."""
+        from ai.combo_evaluator import card_combo_evaluation, _BASELINE_CACHE
+        _BASELINE_CACHE.clear()
+
+        from tests.test_finisher_simulator import _ritual, _grapeshot
+        from types import SimpleNamespace
+
+        # Hand that produces a lethal Grapeshot chain at low opp_life
+        snap = _make_snap(my_mana=6, opp_life=4)
+        hand = [_ritual(1), _ritual(2), _grapeshot(3)]
+        me = MockMe(hand=hand, library=list(range(40)))
+        opp = SimpleNamespace(battlefield=[])
+        game = SimpleNamespace(players=[me, opp])
+
+        score = card_combo_evaluation(
+            hand[0], snap, me, game, 0, archetype="storm")
+
+        # With opp_life=4 and storm damage ≈ 4, fire_value > 0,
+        # full chain_credit fires.  Score should be MUCH higher
+        # than the build-up progress (which would be combo_value/4).
+        # combo_value/opp_life ≈ 80/4 = 20.  Lethal chain_credit
+        # ≈ damage * combo_value / opp_life ≈ 80.
+        assert score > 20.0, (
+            f"lethal-chain score should exceed build-up credit, got {score}"
+        )
     """Pin that combo_evaluator's `_project_baseline` flows through
     the simulator's tutor-access fallback when sideboard contains
     a closer.  This is the integration the live wire-up depends on."""

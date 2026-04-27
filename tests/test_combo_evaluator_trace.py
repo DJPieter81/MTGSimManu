@@ -107,16 +107,16 @@ class TestTraceOnEmitsBranchDecisions:
         assert "card=" in captured.err
         assert "score=" in captured.err
 
-    def test_zero_fire_value_emits_chain_credit_branch(self, capsys, monkeypatch):
+    def test_zero_fire_value_emits_chain_credit_with_progress(self, capsys, monkeypatch):
         """A chain-fuel card in a hand WITH a ritual (so pattern
         is 'storm') but no closer projects expected_damage=0 →
-        the 'chain_credit' branch fires with fire_value=0.
+        the 'chain_credit' branch fires with fire_value=0 BUT
+        the build-up progress credit (combo_value/opp_life) makes
+        the score POSITIVE.
 
-        This is the EMPIRICAL finding the trace surfaces: even
-        though the chain isn't lethal, pattern detection succeeds
-        via the ritual's presence, so we don't hit hard_hold.
-        Surfacing this explicitly validates the trace's value —
-        we'd have spent another wire-up attempt guessing wrong."""
+        This pins the fourth-gap fix (per docs/PHASE_D_FOURTH_ATTEMPT.md):
+        build-up turns get principled chain-progress credit instead
+        of collapsing to 0."""
         import ai.combo_evaluator as ce
         monkeypatch.setattr(ce, "_TRACE", True)
         ce._BASELINE_CACHE.clear()
@@ -125,16 +125,16 @@ class TestTraceOnEmitsBranchDecisions:
         hand = [_ritual(1)]
         snap, me, game = _make_minimal_game(hand, sb=[], library_size=40)
 
-        ce.card_combo_evaluation(hand[0], snap, me, game, 0,
-                                  archetype="storm")
+        score = ce.card_combo_evaluation(hand[0], snap, me, game, 0,
+                                          archetype="storm")
 
         captured = capsys.readouterr()
         assert "COMBO_TRACE" in captured.err
-        # Storm pattern detected (ritual present), but
-        # expected_damage = 0 (no closer)
+        # Storm pattern detected (ritual present), expected_damage=0
         assert "branch=chain_credit" in captured.err
         assert "fire_value=0.0" in captured.err
-        assert "score=0.00" in captured.err
+        # Score is POSITIVE — build-up credit fired (combo_value/opp_life)
+        assert score > 0.0
 
     def test_truly_empty_hand_emits_no_chain_non_fuel(self, capsys, monkeypatch):
         """A non-fuel card (a creature) in a hand with NO chain

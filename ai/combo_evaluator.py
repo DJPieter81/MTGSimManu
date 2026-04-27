@@ -323,6 +323,30 @@ def card_combo_evaluation(
     relevance = _chain_relevance(card, chain_card_ids)
     chain_credit = (fire_value / opp_life) * combo_value * relevance
 
+    # ── 5b. Chain-progress credit during build-up turns ──
+    # Per docs/PHASE_D_FOURTH_ATTEMPT.md fourth-gap diagnosis:
+    # when the simulator detects a reachable storm pattern but
+    # `expected_damage = 0` (chain not assembled yet — typical
+    # T1-T3 build-up), `chain_credit` collapses to 0.  The live
+    # `card_combo_modifier` gives positive EV in this state to
+    # advance the chain.  The simulator-driven evaluator needs an
+    # equivalent.
+    #
+    # Principled formula: each chain-relevant spell cast represents
+    # `1 / N` of the eventual lethal where `N` = spells-to-lethal.
+    # For Storm-via-Grapeshot, lethal needs storm count = opp_life
+    # (Grapeshot deals storm-count + 1 damage; +1 from itself).
+    # So per-spell progress = combo_value / opp_life.
+    #
+    # Gated by `success_probability > 0` (pattern reachable, not
+    # purely speculative) AND `expected_damage = 0` (no full chain
+    # yet — otherwise the regular chain_credit fires).
+    if (chain_credit == 0
+            and baseline_proj.pattern != "none"
+            and relevance > 0):
+        progress_credit = combo_value * relevance / opp_life
+        chain_credit = progress_credit
+
     # ── 6. Mid-chain coverage escalation (simulator v2) ──
     # When `coverage_ratio > HALF_LETHAL`, additional fuel
     # investments into a stranded chain become catastrophic.  Boost
