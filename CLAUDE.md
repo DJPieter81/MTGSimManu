@@ -1,5 +1,35 @@
 # CLAUDE.md — MTG Game Simulator
 
+## ABSTRACTION CONTRACT (read before any engine/AI code change)
+
+The slogan "no patches, solve holistically" does not bind. These rules do. They apply to every change in `engine/` and `ai/`. Before writing the diff, answer all four:
+
+1. **Class size** — how many of Modern's 20k+ cards could legitimately hit this code path? If fewer than 10, you are patching. Stop. Find the mechanic.
+2. **Subsystem** — which single module owns this rule? If the change spans 2+ modules, the boundary is wrong; fix the boundary first.
+3. **Failing test, rule-phrased** — write the test before the fix. The test name describes the *mechanic*, not the card. "equipment instance_id stacks correctly" — yes. "Cranial Plating works" — no. If you can't phrase the rule without naming a card, you don't understand the bug yet.
+4. **Knowledge location** — card-specific knowledge lives in oracle text, MTGJSON, or `decks/gameplans/*.json`. NEVER in `.py` source. The engine is mechanic-driven; the AI scoring layer reads card-specific weights from gameplan JSON via a documented hook.
+
+### Hard prohibitions (CI-enforceable)
+
+- **No new `card.name == "X"` or `name in {…}` in `engine/` or `ai/`.** Pre-commit ratchet (`tools/check_abstraction.py`) blocks any commit that *increases* the count from `tools/abstraction_baseline.json`. Reducing the count requires explicitly lowering the baseline in the same commit. True exceptions (enum checks, supertypes) get `# abstraction-allow: <reason>` on the line.
+- **No new numeric threshold without a test that names the rule it encodes.** A literal `0.7` with no comment, no constant name, and no test is a magic number; it gets reverted on review.
+- **No fix without a failing test in the same diff.** Test goes red first, then the fix lands and turns it green. Both in the same commit.
+- **No second diagnostic phase on an outlier without a Bo3 replay-based root cause first.** Documentation is not progress.
+- **No plan-file proliferation at root.** Root-level `.md` is restricted to: `README.md`, `CLAUDE.md`, `PROJECT_STATUS.md`, `MODERN_PROPOSAL.md`, `CROSS_PROJECT_SYNC.md`. New design/plan docs go in `docs/design/` or `docs/proposals/` with frontmatter (`status`/`priority`/`summary`). Single-shot task files (`OVERNIGHT_*.md`, `*_FIX_PLAN.md`) belong in `docs/history/plans/` once finished.
+- **No `_V2`/`_V3` filename versioning anywhere.** Supersession is recorded via frontmatter `superseded_by` on the original doc, never by spawning a sibling. `tools/check_doc_hygiene.py` enforces both this and the root allowlist.
+
+### Loop-break (session protocol)
+
+If three consecutive commits target the same outlier deck without moving the win rate toward its expected band: **halt**. Run `run_meta.py --bo3` against the worst matchup, identify the exact turn where EV diverges from correct play, name the responsible subsystem in writing in `docs/` (with frontmatter `status: active`, `priority: primary`). No further code until that document exists. This is the cure for the diagnostic-loop trap recorded in PROJECT_STATUS.md (three documentation-only phases, zero WR movement).
+
+### Enforcement (in firing order)
+
+1. **GitHub Actions CI** — `.github/workflows/abstraction-contract.yml` runs on every push to `main` and every PR. This is the binding mechanism; it cannot be bypassed regardless of how the commit was made (Claude session, web UI, github.dev, local clone). A failed check blocks the merge.
+2. **pytest** — `tests/test_abstraction_contract.py` wraps the ratchet so the existing `python -m pytest tests/ -q` rule catches contract violations before push. Run this after engine/AI changes (already in the standard workflow).
+3. **Pre-commit hook (optional, local only)** — `.git-hooks/pre-commit` calls the same script. Activated per-clone via `bash tools/install_hooks.sh`. Useful for fast feedback in local Claude Code sessions; redundant in fresh containers and irrelevant for github.dev / web UI commits.
+
+The script `tools/check_abstraction.py` is the single source of truth — runnable standalone (`python tools/check_abstraction.py [--list]`) and called by all three layers above.
+
 ## Workflow rules (standing)
 
 - **Open a PR after pushing a feature-branch commit.** The default
@@ -123,103 +153,20 @@ Boros Energy, Jeskai Blink, Ruby Storm, Affinity, Pinnacle Affinity, Eldrazi Tro
 
 **Known DB gaps:** ~~`The Legend of Roku` and `Sink into Stupor`~~ — both now resolved after ModernAtomic refresh (Apr 2026). All 16 decks sim correctly.
 
-## Architecture
+## Architecture (summary)
 
-### Layer 1: Engine (rules enforcement)
+The simulator has three layers — engine (Magic rules), AI (EV-based decisions), deck config (gameplans/lists). The AI's decision flow on each main phase is:
 
-The engine enforces Magic rules. It does NOT make decisions.
-
-**GameState** (`engine/game_state.py`) — central mutable game object:
-- `play_land(player_idx, card)` — land onto battlefield
-- `cast_spell(player_idx, card, targets)` — resolve spell via EFFECT_REGISTRY
-- `can_cast(player_idx, card)` — mana + color check (backtracking color solver for 4+ colors)
-- `check_state_based_actions()` — lethal damage, legend rule
-- `resolve_stack()` — resolve top of stack (handles storm, cascade, flashback, rebound)
-- `combat_damage(attackers, blockers)` — first strike, trample, lifelink, deathtouch
-- `_trigger_landfall(player_idx)` — multi-trigger landfall (Omnath pattern)
-- `reanimate(controller, card)` — put creature from GY to battlefield
-
-**GameRunner** (`engine/game_runner.py`) — turn loop:
-- Untap → Upkeep (rebound) → Draw → Main1 → Combat → Main2 → End Step → Cleanup
-- Mana pools empty between phases (CR 500.4)
-- Main phase loops `EVPlayer.decide_main_phase()` until AI passes
-- Response windows after each spell for counterspells
-
-**EFFECT_REGISTRY** (`engine/card_effects.py`) — 80+ card-specific handlers:
-```python
-@EFFECT_REGISTRY.register("Orcish Bowmasters", EffectTiming.ETB,
-                           description="Deal 1 damage, create Orc Army token")
-def bowmasters_etb(game, card, controller, targets=None, item=None):
-    ...
+```
+EVSnapshot → GoalEngine.current_goal → enumerate legal plays
+  → score (heuristic EV + clock Δ + combo mod)
+  → discount by P(countered)/P(removed)  (BHI)
+  → TurnPlanner: 5 orderings → execute best → log
 ```
 
-### Layer 2: AI (EV-based decisions)
+Full reference (modules, signatures, scoring flow, counterspell targeting, storm mechanics): **`docs/ARCHITECTURE.md`**.
 
-**EVPlayer** (`ai/ev_player.py`) — the AI decision engine:
-- `decide_main_phase(game)` → `("cast_spell", card, targets)` or `None`
-- Scores every legal play via `_score_spell()` using `StrategyProfile` weights
-- Picks the highest-EV play above `pass_threshold`
-- Archetype-specific modifiers: aggro curves out, combo holds fuel, control holds up mana
-
-**StrategyProfile** (`ai/strategy_profile.py`) — per-archetype numerical weights:
-- Profiles: AGGRO, MIDRANGE, CONTROL, COMBO, STORM, RAMP, TEMPO
-- Per-deck overrides: `DECK_ARCHETYPE_OVERRIDES` (Ruby Storm → "storm")
-- Key parameters: `pass_threshold`, `burn_face_mult`, `storm_patience`, `holdback_penalty`
-
-**GoalEngine** (`ai/gameplan.py`) — strategic planning:
-- Each deck has ordered Goals loaded from `decks/gameplans/*.json`
-- Goals define card_roles (enablers, payoffs, interaction, engines)
-- GoalEngine tracks which goal is active
-
-**Key scoring flow:**
-1. `decide_main_phase()` gets legal plays from `game.get_legal_plays()`
-2. Each spell scored by `_score_spell()` → base EV + archetype modifier
-3. Storm patience gate: at storm=0, hold rituals/tutors unless ready to go off
-4. Landfall deferral: hold land play when landfall creature is castable
-5. Best play above `pass_threshold` is selected
-
-### Layer 3: Deck Configuration
-
-**Decklists** (`decks/modern_meta.py`) — mainboard + sideboard for all 16 decks
-
-**Gameplans** (`decks/gameplans/*.json`) — per-deck strategy:
-```json
-{
-  "deck_name": "Ruby Storm",
-  "archetype": "combo",
-  "goals": [...],
-  "mulligan_keys": ["Ruby Medallion", "Desperate Ritual", ...],
-  "mulligan_min_lands": 1,
-  "mulligan_max_lands": 3,
-  "reactive_only": [],
-  "always_early": ["Ruby Medallion"],
-  "critical_pieces": ["Grapeshot", "Empty the Warrens"]
-}
-```
-
-**card_roles** in each goal:
-- **enablers** — deployed proactively to support the plan
-- **payoffs** — high-impact cards the deck builds toward
-- **interaction** — removal, counterspells, disruption
-- **engines** — card advantage or mana engines
-- **fillers** — role players, cantrips
-
-## Counterspell Targeting
-
-Counterspells validate targeting restrictions from oracle text:
-- `noncreature` in oracle → can't counter creature spells (Spell Pierce, Negate)
-- `instant or sorcery` in oracle → can't counter permanents
-- Checked at both AI layer (response.py) and engine layer (game_state.py)
-
-## Storm Mechanics
-
-Ruby Storm uses a dedicated `STORM` strategy profile with:
-- **storm_patience**: hold rituals at storm=0 unless enough fuel + finisher access
-- **storm_go_off_bonus/penalty**: gate the "go off" decision
-- **PiF sequencing**: hold Past in Flames until GY has fuel, don't cast with empty GY
-- **Finisher gating**: reduce ritual commitment when no Wish/Grapeshot in hand
-
-Other combo decks (Goryo's, Amulet, Living End) use base COMBO profile WITHOUT storm patience.
+A re-stated version of the AI flow with module attributions appears later in this file under "AI Decision Architecture (summary)" — that one is the cheat-sheet for in-session work; `docs/ARCHITECTURE.md` is the deep reference.
 
 ## Testing
 
@@ -292,39 +239,7 @@ python build_replay.py replays/log.txt replay.html 55555
 
 ## Known Issues — LLM-Judge Strategy Audit
 
-See **`docs/history/audits/2026-04-11_LLM_judge.md`** for the full 6-expert panel report (~168 games). Overall grade: **D+**. Superseded by `PROJECT_STATUS.md` (see Grade in §6).
-
-### P0 — Critical (game-breaking)
-
-| Issue | Location | Summary |
-|-------|----------|---------|
-| Removal projection kills creature deployment | `ai/ev_evaluator.py:539-572` | `estimate_opponent_response` makes all cheap creatures negative EV (Guide of Souls=-7.6, Memnite=-7.4). Aggro decks pass T1-T3. |
-| Storm finisher uncastable | `ai/ev_player.py:393-484` | PiF penalty `gy_fuel/opp_life*15` makes it -5.8 even with 7 mana + 9 GY spells. Storm at 39% WR. |
-| Goryo's combo non-functional | `engine/card_effects.py` discard | Faithful Mending never bins Griselbrand → Goryo's has no target. Combo never fires. |
-| Living End missing ETBs | `engine/game_state.py:~1710` | `_resolve_living_end()` skips `_handle_permanent_etb()`. Returned creatures get no ETB triggers. |
-| Chalice hardcoded X=1 | `engine/game_state.py:1349` | Always X=1 regardless of opponent. Locks Azorius out of own spells (-0.76 win delta). |
-
-### P1 — High (significant strategy errors)
-
-| Issue | Location | Summary |
-|-------|----------|---------|
-| Wrath on empty board | `ai/ev_evaluator.py:272` | Board wipes with 0 creatures pass the -5.0 threshold at EV=-0.1. |
-| Burn face with no clock | `ai/strategy_profile.py:102` | `burn_face_mult=1.5` makes face burn positive EV even on empty board T1. |
-| Fatal Push mis-targets | `ai/response.py:156-169` | Targets highest-value battlefield creature, not the incoming spell on the stack. |
-| Holdback broken vs spell decks | `ai/ev_player.py:337-349` | Only triggers on `opp_power>0`. Control taps out freely vs Storm. |
-| First strike missing from AI combat sim | `ai/turn_planner.py:398-478` | `_simulate_combat` applies all damage simultaneously. Engine is correct; AI evaluation is not. |
-
-### P2 — Medium
-
-- Living End mulligan too aggressive (`ai/mulligan.py:60`): combo_sets should relax at 6 cards, not 5
-- Tron lands not differentiated (`ai/ev_player.py:540-616`): no assembly bonus for missing piece
-- Empty the Warrens underutilized: Wish tutor too Grapeshot-biased
-- Ghost candidates in EV list: stale snapshot after spell resolution within same main phase
-- Duplicate EV trace blocks: Main1+Main2 without phase labels
-
-### Confirmed Working
-
-Turn structure, cascade, storm copies, counterspell restrictions, legend rule, Bowmasters ETB, Phlage ETB, ritual mana tracking, fetch land prioritization, land-before-spell sequencing.
+The 2026-04-11 6-expert panel report (~168 games, overall grade D+) lives at **`docs/history/audits/2026-04-11_LLM_judge.md`**. Most of its P0/P1 items have been addressed; current bug status is in `PROJECT_STATUS.md` §7. Do not treat that audit as a current to-do list.
 
 ## Dashboard — modern_meta_matrix_full.html
 
@@ -400,13 +315,13 @@ Always save logs to `replays/` and commit. `build_replay.py` is in the repo with
 
 **Current grade: C** (session 3: blocking+attack+mulligan fixes validated; full 16×16 N=50 re-run; Affinity 93% and Living End 5% are new P0s)
 
-Related docs: `MODERN_PROPOSAL.md` (6 infra proposals from Legacy), `docs/history/audits/2026-04-11_LLM_judge.md` (original D+ audit), `LEGACY_MODERNISATION_PROPOSAL.md` (Legacy adoption plan).
+Related docs: `MODERN_PROPOSAL.md` (6 infra proposals from Legacy), `docs/history/audits/2026-04-11_LLM_judge.md` (original D+ audit), `CROSS_PROJECT_SYNC.md` (Modern↔Legacy adoption status).
 
 ## Sister Project — MTGSimClaude (Legacy)
 
 Repository: `github.com/DJPieter81/MTGSimClaude` (38 decks, 2.5ms/game, G1-only matrix).
 
-Both projects share the same Claude skills (`/mtg-meta-matrix`, `/mtg-deck-guide`, `/mtg-bo3-replayer-v2`, `/mtg-dashboard-refresh`) and cross-pollinate architecture ideas. See cross-project proposals in `MODERN_PROPOSAL.md` and `LEGACY_MODERNISATION_PROPOSAL.md`.
+Both projects share the same Claude skills (`/mtg-meta-matrix`, `/mtg-deck-guide`, `/mtg-bo3-replayer-v2`, `/mtg-dashboard-refresh`) and cross-pollinate architecture ideas. Cross-project proposals + adoption status: `MODERN_PROPOSAL.md` and `CROSS_PROJECT_SYNC.md`.
 
 Key differences: Legacy has per-deck strategy functions (deeper knowledge), Modern has EV scoring + BHI + combat sim (better architecture). Neither is strictly better.
 

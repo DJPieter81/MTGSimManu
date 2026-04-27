@@ -12,7 +12,7 @@ MTGSimManu has the better AI brain (EV scoring, GoalEngine, LLM audit). MTGSimCl
 
 **Expected impact:** 3× faster iteration, zero-edit deck additions, automated outlier detection, and reproducible dashboard rebuilds.
 
-**Note:** Modern submitted a counter-proposal (`LEGACY_MODERNISATION_PROPOSAL.md`) with 8 items for Legacy to adopt. Legacy accepted 5: strategic logger (`strategic_logger.py`, 279 lines), clock-based evaluation (`clock.py`, 328 lines), Bayesian hand inference (`bhi.py`, 275 lines), declarative gameplans, and symmetry averaging. These modules are now maintained by Modern for cross-project use — keep them portable.
+**Note:** Modern submitted a counter-proposal with 8 items for Legacy to adopt. Legacy accepted 5: strategic logger (`strategic_logger.py`, 279 lines), clock-based evaluation (`clock.py`, 328 lines), Bayesian hand inference (`bhi.py`, 275 lines), declarative gameplans, and symmetry averaging. These modules are now maintained by Modern for cross-project use — keep them portable. Cross-project adoption status: `CROSS_PROJECT_SYNC.md`.
 
 ---
 

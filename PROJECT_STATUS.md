@@ -2,159 +2,19 @@
 
 > **Last updated:** 2026-04-26 (Storm + Goryo's deferral-gate iteration: Storm 29.2→39.8% +10.6pp, Goryo's 8.1→13.4% +5.3pp, three sister-fix PRs open #194 #195 #196)
 > **Purpose:** Single-source-of-truth for Claude Code planning mode. Read this before any session.
-> **Sister project:** MTGSimClaude (Legacy format, 38 decks, see LEGACY_MODERNISATION_PROPOSAL.md)
+> **Sister project:** MTGSimClaude (Legacy format, 38 decks). See `CROSS_PROJECT_SYNC.md`.
 
 ---
 
-## Recent work — Storm + Goryo's deferral-gate iteration (2026-04-26)
+## Recent session summaries
 
-Three deferral-gate sister-fixes in the same Wish-pattern shape, plus
-a Goryo's deck-construction fix.  All on independent `claude/*` branches
-with separate PRs (per session protocol — no auto-merge).
+The dated "Recent work" entries that previously occupied the top of this file have moved to `docs/history/sessions/` with frontmatter (`status: archived`, `priority: historical`). Most recent first:
 
-The deferral gate at `ai/ev_player.py:417-420` filters cast-spell
-candidates with empty same-turn signal lists.  Three different combo
-cards (Wish tutor PR #192 — already merged; Ruby Medallion cost
-reducer PR #194; Past in Flames flashback static PR #196) all
-returned empty signal lists despite high EV scores, so the AI cast
-lower-EV cantrips or passed instead.
+- **2026-04-26** — Storm + Goryo's deferral-gate iteration (Storm 29.2→39.8% +10.6pp, Goryo's 8.1→13.4% +5.3pp). See `docs/history/sessions/2026-04-26_storm_goryos_deferral_gate.md`.
+- **2026-04-25** — Phase 2c combo refactor complete. See `docs/history/sessions/2026-04-25_phase2c_combo_refactor.md`.
+- **2026-04-20** — EV Correctness Overhaul complete. See `docs/history/sessions/2026-04-20_ev_correctness_overhaul.md`.
 
-| PR | Branch | Mechanism |
-|---|---|---|
-| #194 | `claude/storm-medallion-signal-deploy` | Cost-reducer first-deploy signal (#17) |
-| #195 | `claude/goryos-unburial-rites-decklist` | 4× Unmarked Grave → 4× Unburial Rites + 1× Archon |
-| #196 | `claude/storm-pif-flashback-signal` | PiF flashback + GY-fuel signal (#18) |
-
-**Cumulative N=20 16-deck matrix gate** (all 3 fixes merged on staging branch):
-
-| Deck | Pre-iteration | All 3 Fixes | Δpp |
-|---|---:|---:|---:|
-| **Goryo's Vengeance** | 8.1% | **15.0%** | **+6.9** ✓ |
-| **Ruby Storm** | 29.2% | **38.0%** | **+8.8** ✓ |
-| Affinity | 88% | 87.3% | −0.7 |
-| Boros Energy | 76% | 75.7% | −0.3 |
-| All others | (within ±2pp) | (within ±2pp) | — |
-
-No deck regressed >2pp.  No symmetry violations introduced.
-
-**Storm field N=50 (final precise measurement):** **39.8%** (+10.6pp
-vs pre-iteration baseline 29.2%).  Lift broadly distributed: 7
-matchups gained ≥10pp (4/5c +20, Az WST +26, Domain Zoo +20,
-Dimir +16, Pinnacle +14, WST v2 +16, Jeskai +10).  Did not reach
-the 50% target — remaining gap is structural (Affinity 12%, Tron
-4%, Boros 18% are matchup floors driven by clock pressure).
-
-**Goryo's field N=50:** **13.4%** (+5.3pp vs baseline 8.1%).
-Control matchups 30-40%, aggro 0%.
-
-**Generic by construction:** every fix uses oracle text + tag
-detection.  No card-name hardcoding.  See
-`docs/experiments/2026-04-26_storm_goryos_iteration.md` for the
-full session log including matchup spreads, smoke-test traces,
-and stop-criterion analysis.
-
-**Plan file:** `/root/.claude/plans/lets-do-a-proper-delightful-star.md`
-
----
-
-## Recent work — Phase 2c combo refactor complete (2026-04-25)
-
-The Phase 2 series (`/root/.claude/plans/lets-first-do-a-curried-rocket.md`)
-unified the combo-scoring logic onto a single principled module.  The
-legacy 440-LOC `_combo_modifier` in `ai/ev_player.py` is gone; its role
-is now owned by `ai/combo_calc.py::card_combo_modifier`, which is
-zone-aware (storm / graveyard / mana), role-aware (payoff / fuel /
-engine / dig), and arithmetic-derived (no per-card scoring tables).
-
-| PR | Phase | Outcome |
-|---|---|---|
-| #181 | engine fix | Living End graveyard mutation race (merged) |
-| #182 | engine fix | Seed `runner.rng` for matrix determinism (merged) |
-| #184 | PR-A | Subtlety ETB references `game.stack._items`, not `.items` (merged) |
-| #185 | PR-B (2c.1) | State-query routing + bridge calibration — closed, superseded by #189 |
-| #186 | PR-C (2c.2-prep) | `card_combo_modifier` hardened with 14 new unit tests (merged) |
-| #189 | PR-D+E hard | Delete `_combo_modifier`, port 5 logic blocks, identity cache (merged) |
-
-**Matrix gate (N=20):** all 17 decks within ±5pp tolerance vs pre-2c
-baseline.  Headlines: Ruby Storm **+1.1pp**, Goryo's Vengeance
-**+4.1pp**, Living End −0.4pp, Amulet Titan −3.2pp.  Compared to the
-abandoned Phase 2b retry (#183) which regressed Storm −20.4pp and
-Goryo's −13.0pp, the hard-refactor approach restored or improved
-every combo deck.
-
-**What was ported into `card_combo_modifier`:**
-- `STORM_HARD_HOLD = -1000.0` rules constant (phase-end mana empty
-  is strictly worse than passing the turn)
-- `_has_storm_finisher(card, me)` — direct STORM keyword OR tutor
-  with valid SB ∪ library target (no hardcoded Wish / Grapeshot)
-- `_has_viable_pif(card, me, snap, …)` — flashback-combo card
-  requires GY fuel + mana to cast + finisher access (no hardcoded
-  Past in Flames)
-- `_has_draw_in_hand(card, me)` — cantrip / card_advantage / draw
-- Storm=0 ritual chain gate (proper SB-validation)
-- Storm≥1 mid-chain gate with hard-hold + soft-penalty + storm-coverage
-  escalation (`HALF_LETHAL=0.5`) + draw-miss cascade risk
-  (`MIN_CHAIN_DEPTH=3`, `CASCADE_DRAW_FLOOR=1`)
-
-**Performance:** identity-based per-snapshot cache (`id(snap)`) on
-`assess_combo`.  All spells scored within one `decide_main_phase`
-call share a snap so the assessment runs once per decision instead
-of once per spell.  3.6× speedup vs. uncached: 5 Storm vs Azorius
-games dropped from 102s → 28s (≈ baseline 5s/game).
-
-**Phase 2 superseded artefacts:**
-- Phase 2a (`build_combo_distribution` dispatcher, `OUTCOME_DIST_COMBO`
-  flag, PR #179 merged) — flag stays `False`; the dispatcher is
-  dormant after #189 and may be revisited in a future phase if the
-  single-turn distribution model gains multi-turn lookahead.
-- Phase 2b (PR #183, closed) — single-turn distribution couldn't
-  represent multi-turn combo setup.
-- Phase 2c.1 (PR #185, closed) — state-query routing + bridge
-  calibration; obsoleted by the hard refactor.
-
-Anti-patterns rejected during this work:
-- Magic constants in `card_combo_modifier` — every numeric value is
-  derived from CR damage rules, ritual_mana oracle parsing, or
-  STORM-profile fuel thresholds (with inline justification)
-- Hardcoded card names — Past in Flames, Wish, Grapeshot, Empty the
-  Warrens all detected by tags / oracle text patterns
-- Per-card EV tables — would have re-introduced the `card_ev_overrides`
-  pattern retired in EV correctness Phase 5
-
----
-
-## Recent work — EV Correctness Overhaul complete (2026-04-20)
-
-The EV-correctness design doc (`docs/design/ev_correctness_overhaul.md`,
-`status: superseded`) is closed.  Nine phases shipped across PRs #122,
-#128, #130, #132, #133:
-
-| Phase | Focus | Outcome |
-|---|---|---|
-| 1 | Deferral baseline + pass-preference tiebreaker (Bugs A, B, E.1) | Signal framework + `_enumerate_this_turn_signals` |
-| 2 | Conditional artifact-count term (Bug D) | `EVSnapshot` + `position_value` extended |
-| 3 | Marginal-destruction X optimizer (Bug C) | Wrath of the Skies picks best X |
-| 4 | Landcycling / typecycling resolver (Bug E.2) | Sojourner's Companion tutors lands |
-| 4.5 | Signal-based mulligan escape (Bug F) | Anti-matchup hands kept |
-| 5 | Retire card_ev_overrides prototype | Phase 2's artifact term subsumes it |
-| 6 | N=20 matrix validation | Flagged Storm / Amulet Titan / Pinnacle Affinity |
-| 7 | Pinnacle Emissary `other_enters` trigger | Closed last failing test — suite 226/226 |
-| 8 | Life / energy persistent_power | Closed Phase 7's Boros regression |
-| 9 | Phase 6 follow-ups | Storm finisher patience + Amulet engine signal + Pinnacle hypothesis falsified |
-
-Full suite **232/232** (from baseline 196/197 with 1 pre-existing failure).
-Matrix trend: weighted WRs up (more balanced meta), flat WRs down
-(AI defers junk casts across the board).  Affinity still top (~83% wtd),
-Boros stable, Storm / Amulet Titan / Goryo's all recovered from their
-post-Phase-6 lows.
-
-Experiment log chain (all `status: archived`):
-`docs/experiments/2026-04-20_phase6_matrix_validation.md` →
-`docs/experiments/2026-04-20_phase7_pinnacle_emissary_fix.md` →
-`docs/experiments/2026-04-20_phase8_life_energy_persistent.md` →
-`docs/experiments/2026-04-20_phase9_phase6_followups.md` (tip).
-
----
+For older sessions and falsified hypotheses, use the frontmatter discovery commands in CLAUDE.md → "Session Priorities (discovery protocol)".
 
 ## Current work — frontmatter registry
 
@@ -307,200 +167,13 @@ from engine.card_database import CardDatabase  # singleton pattern
 
 ## 6. AI strategy accuracy
 
-**Overall grade: B** (post-iter6 — Affinity matchup plan iteration 2: extended `_has_high_threat_target` to also consider noncreature permanents (scaling equipment like Cranial Plating, Nettlecyst, planeswalkers, stax) in addition to creatures. Leyline Binding added to Domain Zoo's reactive_only list so it holds for CP instead of burning on Ornithopters T2. Affinity field WR 82% → **77%** (−5pp); CP removal count nearly doubled; CP delta +0.44.)
+**Current grade:** C- (improving). Active P0 outliers are tracked in `userMemories` and the diagnostic docs under `docs/diagnostics/`. The most recent grade movement (B → C-) reflects fresh-eye scoring of the four open WR-band outliers (Affinity 87%, Azorius 15%, Living End 27%, Ruby Storm 25%) discovered after the 2026-04-13 to 2026-04-17 iteration run.
 
-**Unified refactor session (2026-04-17 — branch `claude/review-refactoring-docs-piRZ5`):** synthesised the 6 in-flight planning docs (ORACLE_REFACTOR_PLAN_V2, AI_IMPROVEMENT_PLAN_V2, ITERATION_7_PLAN, TRANSFORM_FIX_PLAN, CONTROL_DECK_PLAN, AFFINITY_MATCHUP_PLAN) into one ordered plan and shipped Phases A-I. ~60% of the items were already present from prior sessions; the new work is summarised below.
-
-**Phases shipped this session (commits 5a04771, 873c493, d7441dd, 58308ad, ac92259, dcb9bb6):**
-
-| Phase | Plan source | Outcome |
-|-------|-------------|---------|
-| A — EVSnapshot smoothing | Iter7 #4, #5 | `opp_clock` continuous + `opp_clock_discrete` companion; `urgency_factor` exponential `1-exp(-slack/2)`. |
-| B — Live-snapshot creature_value | Iter7 #3 | `creature_value(card, snap=None)` plumbed through removal/threat call chain. |
-| C — Generic damage target picker | Oracle V2 #1 | `_pick_damage_target()` in oracle_resolver routes "any target" damage to threat-scored creature or face. Phlage ETB delete. |
-| D — Transform mechanics | Transform #1, #2, #3 | Generic `_transform_permanent()` helper + subtype-death + count-based-cast triggers + Fable Ch.II/III. |
-| E — Tap-ability dispatch | Iter7 #8, #9, #11, #12 | `_activate_tap_abilities()` (Endbringer ping/draw, Emry GY-cast); opponent-untap-step; flashback-sacrifice cost; Witch Enchanter ETB destroy oracle pattern. |
-| F — ETB suppression | Iter7 #13 | Doorkeeper Thrull static checked from `_handle_permanent_etb` before dispatch. |
-| G — Living End post-combo push | Iter7 #6 | `PlayerState.post_combo_push_turns=3` + `GoalEngine.current_goal` override forces PUSH_DAMAGE while flag set. |
-| H — Wrath self-wipe + control_patience | CONTROL_DECK_PLAN, audit | Self-wipe hard gate (don't board-wipe when ahead+not-dying); `has_big_target` overrides `control_patience` for reactive-only single-target removal. |
-| I — Oracle deletions (Groups A+B) | Oracle V2 #2, #3 | 7 handlers deleted: Preordain, Sleight of Hand, Wall of Omens, Reckless Impulse, Wrenn's Resolve, Glimpse the Impossible, Heroes' Hangout. `resolve_spell_from_oracle` gained generic draw + exile-and-may-play patterns and is now invoked as a SPELL_RESOLVE fallback. |
-
-**Phase I scope adjustment:** Groups C-F (removal, reanimate, tokens, mana) deferred. Inspection showed the handlers encode meaningful per-card restrictions (Prismatic Ending devotion-based CMC; Abrupt Decay CMC≤3; Celestial Purge R/B only; Persist CMC≤3 reanimate; Empty the Warrens storm-dependent token count; rituals coupled to mana production system). A blanket "destroy any nonland permanent" oracle pattern would over-power them and regress correctness. A future pass needs restriction-aware regex (e.g., `mana value (\d+) or less`, `red or black permanent`) before these are safe to delete.
-
-**Handler count: 115 → 108 (target ≤25 deferred)**.
-**`card_effects.py`: 2,788 → ~2,770 LOC (placeholder comments offset deletions; cleanup pass pending)**.
-**`oracle_resolver.py`: 485 → ~720 LOC (added damage picker, transform helper, draw + exile-may-play + ETB-destroy patterns)**.
-
-**Affinity matchup iter2 (post-iter6 — 2026-04-13):**
-| Metric | iter5/iter6 | Current |
-|--------|------------|---------|
-| Affinity field WR | 82% | **77%** |
-| CP delta (audit) | +0.30 | **+0.44** |
-| CP removed count (60 games) | 5 | **9** |
-| Affinity vs Zoo WR | 93% | 87% |
-| Affinity vs Boros WR | 77% | 80% |
-
-**Affinity matchup re-verify (2026-04-16, branch `claude/affinity-matchup-plan-qQfUQ`):**
-
-All three AFFINITY_MATCHUP_PLAN.md fixes confirmed live in branch (commits
-`572d9d5`, `35256f8`, `7551c5b`). Re-ran the plan's verification checklist
-against current `main`-HEAD:
-
-| Metric | Plan target | Re-verified n=60 |
-|--------|-------------|------------------|
-| Affinity field WR | 55-65% | **82%** (49/60) |
-| Cranial Plating delta | > 0 | **+0.09** |
-| Signal Pest delta | ≥ 0 | **+0.23** (was −0.30 baseline) |
-| Springleaf Drum delta | ≥ 0 | **+0.15** (was −0.39 baseline) |
-| Engineered Explosives delta | > 0 | **−0.29** (was −0.54 baseline) — improved but still negative |
-| Affinity vs Boros WR (n=30) | 65-70% | **80%** |
-| Affinity vs Zoo WR (n=30) | 60-70% | **80%** |
-| Affinity vs Prowess WR (n=20) | n/a | 75% |
-| Affinity vs Dimir WR (n=20) | n/a | 100% |
-
-Fix 1 (CP threat scaling) verified in `bo3 zoo affinity -s 60200`: Zoo casts
-Leyline Binding twice (T3 on Signal Pest, T5 on Thought Monitor) instead of
-sitting in hand. SB swap-in of Wear // Tear in Boros vs Affinity (verified in
-`bo3 energy affinity -s 60200`).
-
-Fix 3 (CP equip evasion preference) verified: Cranial Plating equips to
-Ornithopter (T4, T5, T6, T7 across the two replays), Thought Monitor (T5,
-flying), and Frogmite/Construct only as fallback when no flier is available.
-
-**Engine fix (this session):** removed orphan `_discarded = []` /
-`_discarded.append(card)` lines in `engine/game_state.py::_force_discard`
-(introduced in `9a237d7`, scope-leaked outside its function and raised
-`NameError` on every Thoughtseize / Inquisition resolution — was blocking
-`run_meta.py --audit` entirely). Variable was never read.
-
-**Open work** (not in scope for AFFINITY_MATCHUP_PLAN.md):
-- EE delta still negative (−0.29). Cast 13× over 60 games; loss-rate per cast
-  (5/11 = 0.45×) still exceeds win-rate per cast (8/49 = 0.16×). The reactive
-  gate is releasing EE in marginal spots — a tighter gate or `expected target
-  EV` floor would push this positive.
-- WRs vs Boros/Zoo still 10-15pp above plan's 65-70% target. Structural
-  opponent-side work (Boros wrath threshold, Zoo combat aggression vs small
-  artifacts) remains for a follow-up plan.
-
-**Iteration 6 fixes (ITERATION_6_PLAN.md — 2026-04-13)**
-
-### Iteration 6 fixes (ITERATION_6_PLAN.md — 2026-04-13)
-| Fix | Files | Status |
-|-----|-------|--------|
-| A. Living End aggression timing | `engine/game_state.py`, `engine/combat_manager.py` | ✅ landed (`24fb118`) |
-| B. Ritual immediate-effect | `ai/ev_evaluator.py` | already in iter5 (`bc51028`) |
-| C1. control_patience gate | `ai/strategy_profile.py`, `ai/ev_player.py` | already in iter5 (`bc602db`) |
-| C2. Teferi untap bonus | `ai/ev_player.py` | ✅ landed (`24fb118`) |
-| D. Undying Evil → reactive_only | `decks/gameplans/goryos_vengeance.json` | already present |
-
-Aggression-flag semantics: combat_manager.end_combat now only decrements the **active player**'s aggression_boost_turns (was: both). Combined with `=2` (was: =1), the flag survives one wasted same-turn combat (creatures with summoning sickness) into the next turn's combat.
-
-
-
-### Iteration 5 fixes (ITERATION_5_PLAN.md — 2026-04-13)
-| Fix | Files | Status | Audit/WR signal |
-|-----|-------|--------|-----------------|
-| 1. Ritual oracle mana-detection in _has_immediate_effect | `ai/ev_evaluator.py` | ✅ landed (`bc51028`) | All Storm rituals already covered by 'ritual' tag — change is belt-and-suspenders. Storm WR essentially unchanged. |
-| 2. Post-combo goal advance for mass-reanimate | `engine/game_state.py`, `ai/ev_player.py` | ✅ landed (`41f2e16`) | **Living End vs Tron 0% → 20%; field WR 3% → 40%** |
-| 3. control_patience gate + populate Azorius reactive_only | `ai/strategy_profile.py`, `ai/ev_player.py`, 3× `decks/gameplans/*.json` | ✅ landed (`bc602db`) | **Azorius WR 15% → 23%** (n=30); Counterspell delta +0.52, Teferi cast more often |
-
-**Living End audit (n=30):**
-- Win rate: 3% → **40%** (12 wins / 30 games)
-- Win conditions: damage:11 + timeout:1 (was damage:4)
-- Root cause was dual: (a) cascade-detection oracle pattern was too strict and never matched Living End's actual oracle, so `_resolve_living_end` was dead code; (b) even when creatures returned, GoalEngine kept running cascade-deck enabling goals.
-
-**Storm audit (n=60):**
-- Win rate: 25-30% → 30% (18/60); damage:17 + timeout:1
-- Grapeshot delta +0.94, Wish delta +0.78 — finishers correctly correlate with wins
-- Below 35-40% target; remaining gap is in storm_patience / _combo_modifier tuning (out of iteration-5 scope per plan)
-
-**Matrix n=10 power rankings (post-iter5):**
-- Living End: 6%/4% → **27%/23%** (huge)
-- Azorius Control (WST): 33%/29% → 33%/35%
-- Living End move from worst-deck slot
-
-Two persistent smoke failures (#1/#2 GD on Signal Pest, #6 Thraben Charm T4, #7 Cat Token) are unrelated to iteration-5 work and documented for future sessions.
-
-Session 5b changes (on top of session 5):
-  * engine/card_database.py: removal tag extended to artifact/enchantment/all_nonland target_types; lands filtered out (Channel lands like Boseiju stay untagged)
-  * ai/ev_player.py::_score_spell: artifact/enchantment-hate overlay using _permanent_threat_value × 0.5 for spells whose oracle contains target artifact/enchantment/nonland permanent/noncreature
-
-### Session 5 fixes (AFFINITY_MATCHUP_PLAN.md — 2026-04-13)
-| Fix | File | Status | Audit signal |
-|-----|------|--------|--------------|
-| 1. Scaling equipment threat value | `ai/ev_player.py::_permanent_threat_value` | ✅ regex `\+N/+N for each <perm>` with count-driven scoring | CP delta: **−X → +0.68** |
-| 2. EE reactive-only | `decks/gameplans/affinity.json::reactive_only` | ✅ | EE delta: **−0.54 → −0.28** (still below >0 target) |
-| 3. Evasion-weighted CP equip | `ai/ev_player.py::_consider_equip` | ✅ flying×2.0, menace×1.5, trample×1.3 | CP lands on Ornithopter when available |
-
-**Affinity audit n=60 (before → after):**
-- Win rate: 92% → **78%** (14pp drop)
-- Cranial Plating: 74% → **91%** when cast, delta +X → **+0.68**
-- Engineered Explosives: 64% → 50% when cast, delta -0.54 → **-0.28**
-- Signal Pest: 87% → 70% when cast, delta -0.30 → -0.44 (worse — opp removal now correctly targets it; not a regression in isolation)
-
-Target outcomes from plan (Affinity vs Boros ~65-70%, vs Zoo ~60-70%): partial. Current matchup WRs are Boros 17% (Affinity 83%), Zoo 10% (Affinity 90%). The residual gap points to further structural opponent-side work (documented in plan §"Target outcomes").
-
-**Overall grade (old): C+** (session 4-v2 — urgency_factor refined)
-
-### Session 4 fixes (AI_STRATEGY_IMPROVEMENT_PLAN.md v1 + AI_IMPROVEMENT_PLAN_V2.md refinements — 2026-04-13)
-| Task | Commit | Status | Smoke signal |
-|------|--------|--------|--------------|
-| 1. Oracle-driven threat value for removal | `4647626` | ✅ landed (v2 tweak power bonus to 0.8×(p-3)) | GD on Signal Pest T2 (G2 s60100): FAIL→PASS |
-| 2. Kill-clock urgency discount on slow permanents | `12e9f25` | ✅ landed (v2 formula (opp_clock-1)/4.0, no floor) | Bombardment held vs fast clock: FAIL→PASS |
-| 4. Draw-step prevention bonus in attack planner | `1a45dcf` | ✅ landed | Storm WR no-regression: PASS |
-| 3. Fetch-shock life-cost staggering | `b9f5dc9` | ✅ landed | ≤4 life paid T1+T2: PASS |
-
-Golden smoke (`tools/golden_smoke.py`): 8/10 pass.
-
-**v2 audit (energy n=60):**
-| Metric | Baseline (plan doc) | Current | v2 target |
-|--------|--------------------|---------| --------- |
-| Boros WR | — | **62%** (37/60) | — |
-| Phlage win% when cast | 84% | **84%** | maintain |
-| Bombardment win% when cast | 42% | 37% | >55% ❌ partial |
-| Bombardment cast rate | — | 0.3x/game | reduced ✓ |
-| Thraben Charm avg cast turn | — | T5.9 | <T4.5 ❌ |
-| GD win% when cast | — | 57% | ✓ |
-
-Bombardment is cast less often (urgency correctly discounts it) but the times it DOES fire are in slower games where it helps less. Thraben Charm cast timing requires multi-turn lookahead — explicitly out of scope per plan v2 §"What this does NOT fix".
-
-Two remaining smoke failures are accepted trade-offs — Thraben Charm T4 (multi-turn lookahead) and Cat Token attack (shields-down correctly weighs blocker retention).
-
-**Overall grade (old): C** (blocking P0 fixed, mulligan floor added, attack logic improved; post-fix 16×16 matrix at N=50 validates)
-
-| Domain | Grade | | Domain | Grade |
-|--------|-------|-|--------|-------|
-| Rules & engine | B+ | | Mana & sequencing | C+ |
-| Combat & threats | B+ | | Combo & storm | C |
-| Mulligan & openers | B- | | Control & interaction | C |
-
-### WR shifts from session 3 full re-run (2026-04-13)
-| Deck | Pre-fix | Post-fix | Delta | Notes |
-|------|---------|----------|-------|-------|
-| 4c Omnath | 17% | 58% | +40pp | Major midrange improvement |
-| Goryo's Vengeance | 2% | 30% | +28pp | Combo now fires |
-| Azorius Control (WST) | 19% | 37% | +18pp | Control viable |
-| 4/5c Control | 22% | 34% | +11pp | Control rises |
-| Jeskai Blink | 53% | 58% | +5pp | Midrange stable |
-| Dimir Midrange | 62% | 65% | +3pp | Midrange stable |
-| Eldrazi Tron | 67% | 72% | +4pp | Ramp stable |
-| Affinity | 91% | 93% | +2pp | ⚠ Still outlier — blocking not enough |
-| Boros Energy | 88% | 67% | -21pp | Was over-performing, now realistic |
-| Ruby Storm | 51% | 30% | -21pp | ⚠ Regression — needs investigation |
-| Izzet Prowess | 75% | 55% | -20pp | Was over-performing |
-| Living End | 45% | 5% | -40pp | ⚠ BROKEN — cascade/attack AI regressed |
-
----
+**Detailed iteration log (April 13-17, 2026):** unified refactor Phases A-I, Affinity matchup iter2 + re-verify, Iteration 5/6 fixes, Session 4/5 fixes, WR shifts from session 3 full re-run — see `docs/history/sessions/2026-04-13_to_17_iteration_changelogs.md`.
 
 ## 7. Known bugs
 
-### P0 — FIXED (session 3, 2026-04-13)
-
-| # | Issue | Fix | Commit |
-|---|-------|-----|--------|
-| 9 | **Zero blocks across all games** | Rewrite `_eval_block` with direct damage/value scoring | `8149d0c` |
-| 10 | **Not attacking with profitable boards** | Empty-board and combat trigger attack logic; verified 0 non-trivial refusals in Bo3 spot-check | Prior sessions |
-| 11 | **0-land mulligan keep** | Mulligan guardrail + combo-mulligan activation | `11e8a57`, `e1d9361` |
+> Resolved bugs from sessions 2 and 3 (2026-04-12 and 2026-04-13) moved to `docs/history/bugfixes/2026-04-12_session_2_3_resolved_bugs.md`. This file now lists only currently-open issues and the failed-attempt / deep-audit context that's still relevant.
 
 ### P0 — OPEN
 
@@ -509,58 +182,6 @@ Two remaining smoke failures are accepted trade-offs — Thraben Charm T4 (multi
 | 12 | **Affinity 93% WR** | `ai/ev_player.py`, `engine/card_effects.py` | Still dominating post-blocking-fix. Construct tokens + Cranial Plating overwhelm all opponents. Blocking alone insufficient. | All matchup data vs Affinity suspect. |
 | 13 | **Living End 5% WR (was 45%)** | `ai/ev_player.py`, cascade/attack AI | 0% vs Boros/Jeskai/E-Tron/Prowess/Dimir. Cascade fires but post-combo attack AI broken or creatures insufficient. | Living End essentially non-functional. |
 
-**Priority fix order:** #9 (blocking) first — affects every matchup. Then #10 (attack threshold). #11 is deck-specific.
-
-### P0 — FIXED (session 2)
-| # | Bug | Fix | Commit |
-|---|-----|-----|--------|
-| 1 | Wrath of Skies uses stored energy not cast X | Use `item.x_value` | `ba15c11` |
-| 2 | Ocelot Pride energy on ETB (wrong trigger + oracle) | Noncreature cast trigger; combat damage Cat token | `ba15c11` |
-| 3 | DRC misclassified as PROWESS → surveil/delirium never fires | Fix oracle detection; implement surveil GY bin | `eec7ec8` |
-| 4 | EE double ETB (X-counter + sunburst both fire) | Gate X-counter path to cards without dedicated ETB handlers | `1c38354` |
-
-### P1 — FIXED (session 2)
-| # | Bug | Fix | Commit |
-|---|-----|-----|--------|
-| 5 | Token power wrongly subtracted in removed state | Tokens persist when parent removed | `9aff147` |
-| 6 | Ragavan never attacks (no trigger bonus) | +1.5 EV combat trigger bonus | `704a671` |
-| 7 | Storm tutor 20x mid-chain penalty | 20x → 5x | `704a671` |
-| 8 | Holdback only fires when opp_power > 0 | Also fires vs creatureless spell decks | `704a671` |
-| 9 | Sanctifier double "Resolve" log | Gate log to SPELL items only | `53d372a` |
-| 10 | Ephemerate castable with no friendly creatures | `can_cast` blink tag check | `53d372a` |
-| 11 | Duplicate Chalice no penalty | -8.0 EV if same name already on battlefield | `53d372a` |
-| 12 | `_resolve_sac_effect` crash (undefined variables) | Fixed scoping | `53d372a` |
-| 13 | Ephemerate rebound fires without valid target | Gate rebound on `player.creatures` check | `3d1d8a1` |
-
-### P2 — FIXED (session 2)
-| # | Bug | Fix | Commit |
-|---|-----|-----|--------|
-| 13 | CMC 2 removal scaling 0.6 too high | 0.6 → 0.4 | `9aff147` |
-| 14 | Evasion creatures over-penalised | 50% damage-removal discount for conditional flyers | `9aff147` |
-| 15 | Dovin's Veto positive EV vs aggro | Cap EV vs creature-heavy low-hand boards | `9aff147` |
-| 16 | Tron no assembly bonus | +3/+8/+20 per piece via Urza's subtype | `705ea0b` |
-| 17 | `rmv=` trace display not matching main path | Detailed path now mirrors main path scaling | `9aff147` |
-
-### Hardcoding removed (session 2)
-| Was hardcoded | Now uses |
-|---|---|
-| `permanent.name == 'Ocelot Pride'` (2 places) | Oracle: `'{e}' in oracle` + `'noncreature spell'` / `'combat damage'` pattern |
-| `tron_lands = {'Urza\'s Tower', ...}` | `"Urza's" in land.template.subtypes` |
-| `DELIRIUM_CREATURES = {"Dragon's Rage Channeler"}` | `template.power_scales_with == "delirium"` (oracle-derived at load) |
-| `TARMOGOYF_CREATURES`, `DOMAIN_POWER_CREATURES`, `GRAVEYARD_SCALING_CREATURES` | `template.power_scales_with` field |
-| `if name == "Construct Token"` | `'artifact you control' in oracle` |
-| `c.template.name == "Amulet of Vigor"` (2 places) | `_apply_untap_on_enter_triggers()` — oracle pattern |
-
-### Generic engine patterns added (session 2)
-| Pattern | Trigger | Effect |
-|---------|---------|--------|
-| `"whenever a permanent you control enters tapped, untap it"` | `_apply_untap_on_enter_triggers()` | Covers Amulet of Vigor and any future card |
-| `"lands you control enter the battlefield untapped"` | `_apply_lands_enter_untapped()` | Covers Spelunking static |
-| `"when this land enters, return a land you control to hand"` | `resolve_etb_from_oracle()` | Covers Gruul Turf, Simic Growth Chamber, all bounce lands |
-| `"when this [enters], draw a card, then you may put a land from hand onto battlefield"` | `resolve_etb_from_oracle()` | Covers Spelunking ETB |
-| `"whenever this creature or another [Subtype] you control enters"` + top-card effect | `trigger_etb()` | Covers Risen Reef, any future Elemental-chain card |
-| `"whenever you cast a noncreature spell, you get {E}"` | `resolve_spell_cast_trigger()` | Energy on noncreature spell cast |
-| `"if you have more energy than that player has life, create a 1/1 token"` | `_assign_combat_damage()` | Combat damage energy→token trigger |
 
 ### Remaining open bugs
 
@@ -736,7 +357,7 @@ priority 24 → 14, `always_early` cleared). v2 field WR improved from ~42% →
 - Use heuristic SB tips — only game log data
 - Replace deck variant without being told — run alongside existing
 - Skip `git pull origin main`
-- Hardcode card names in engine — always detect from oracle text or template field
+- Hardcode card names in engine — always detect from oracle text or template field. Enforced by `tools/check_abstraction.py` ratchet (see CLAUDE.md ABSTRACTION CONTRACT). Pre-commit hook blocks any commit that increases the hardcoded-name count.
 
 ### Always do
 - `git pull origin main` before any work
@@ -815,231 +436,22 @@ for _ in range(2000):
 
 ## 11. Infrastructure proposals (from Legacy cross-pollination)
 
-Six concrete improvements from MTGSimClaude, scoped to infrastructure only — no changes to EV engine.
+Six proposals tracked in **`MODERN_PROPOSAL.md`** (canonical, 316 lines): plugin deck architecture, template dashboard, parallel processing, meta audit + expected ranges, symmetry measurement, provenance footer.
 
-### 9a. Plugin deck architecture (~2h)
-Drop-file deck registration. No more editing 3 files to add a deck.
-```python
-# decks/boros_energy.py — single source of truth per deck
-DECK_META = {
-    'name': 'Boros Energy', 'key': 'boros_energy', 'archetype': 'aggro',
-    'meta_share': 0.12,
-    'decklist': { ... },        # mainboard + sideboard
-    'gameplan': { ... },         # goal sequence (currently gameplans/*.json)
-    'strategy_weights': { ... }, # currently strategy_profile.py
-    'sideboard_plan': { ... },   # currently sideboard_manager.py
-}
-```
+Items already landed (per session-3 changelog): meta audit (#7), symmetry (#8), provenance footers (#12), `--workers` parallel flag (#11). Remaining: plugin deck architecture (#9, deferred), template dashboard (#10, deferred). Cross-project adoption status of items in both directions: see `CROSS_PROJECT_SYNC.md`.
 
-### 9b. Template-driven dashboard (~3h)
-Separate data from presentation. Design lives in template, never regenerated.
+## 12. Backlog
 
-### 9c. Parallel processing (~1h + profiling)
-Est. 95min → ~32min (3×). CardDatabase (400MB) must load per-worker.
+> Session-3 changelogs, validation tables, LLM-judge re-grading, Matrix-v3 outlier summary, and the original Legacy-cross-pollination Infrastructure / Validation tables (all 2026-04-12 vintage) moved to `docs/history/sessions/2026-04-12_session_3_unified_backlog.md`. Most items are either landed (see that file's Status columns) or have moved to active tracking elsewhere.
 
-### 9d. Meta audit with expected ranges (~2h)
-```python
-EXPECTED_RANGES = {
-    'boros_energy': (0.50, 0.65), 'affinity': (0.45, 0.60),
-    'ruby_storm': (0.40, 0.55),  '4c_omnath': (0.40, 0.55),
-    'izzet_prowess': (0.40, 0.55), 'amulet_titan': (0.40, 0.50),
-}
-```
+**Current backlog lives in three places — there is no curated list here:**
+- `userMemories` — active P0/P1 outliers and the immediate session priority (currently the four WR-band outliers: Affinity, Azorius Control, Living End, Ruby Storm).
+- `MODERN_PROPOSAL.md` — six infrastructure proposals (plugin deck architecture, template dashboard, parallel processing, etc.).
+- `CROSS_PROJECT_SYNC.md` — pending cross-pollinations between MTGSimManu (Modern) and MTGSimClaude (Legacy).
+- `docs/diagnostics/` (status: active, priority: primary) — open diagnostic threads. Use the grep commands in §"Current work — frontmatter registry" above.
 
-### 9e. Symmetry measurement (~30min)
-Run both orderings. Flag |d1+d2−100| > 10% as engine fairness bug.
-
-### 9f. Provenance footer (~20min)
-Every output gets: `Simulated: DATE | Decks: N | Games/pair: N | Seeds: range | Engine: vX`
-
----
-
-## 12. Recommended next work (unified backlog)
-
-### Session 3 changelog (branch `claude/complete-unfinished-tasks-50La8`)
-All items below were landed or verified-already-live on the session-3 branch.
-Groups A/B/C commits: `2a4e3a7`, `9d5a7a7`, `72c1be9`.
-
-| # | Task | Status | Commit |
-|---|------|--------|--------|
-| 1 | Amulet + bounce-land mana loop in `_score_land` | landed | `2a4e3a7` |
-| 2 | Living End post-combo aggression flag | landed | `2a4e3a7` |
-| 3 | Elesh Norn / Panharmonicon trigger doubling | landed | `2a4e3a7` |
-| 4 | Phelia blink-on-attack handler (ETB value; attack-decl partial) | landed | `2a4e3a7` |
-| 5 | Multi-copy Amulet untap loop | landed | `2a4e3a7` |
-| 6 | Jeskai Ephemerate Main1-hold sequencing | landed | `2a4e3a7` |
-| — | Ephemerate AI-side target gate (audit P1) | landed | `2a4e3a7` |
-| — | Psychic Frog / low-CMC ETB creature EV floor (§7 P1 #3) | landed | `2a4e3a7` |
-| — | Spelunking `_apply_lands_enter_untapped` on fetchland crack (§7 P2 #5) | landed | `2a4e3a7` |
-| — | Phase-labelled EV traces + ghost-candidate filter (audit P2) | landed | `2a4e3a7` |
-| — | LE mulligan relax-at-6 (audit P2) — already live | verified | — |
-| — | Tron assembly bonus (audit P2) — already live `ai/ev_player.py:657-676` | verified | — |
-| 7 | meta_audit.py + EXPECTED_RANGES + post-matrix outlier flagging | landed | `9d5a7a7` |
-| 8 | Symmetry check in run_meta_matrix | landed | `9d5a7a7` |
-| 11 | `--workers` CLI flag for matrix parallelism | landed | `9d5a7a7` |
-| 12 | Provenance footers in dashboard + guide builders | landed | `9d5a7a7` |
-| — | `--sigma DECK1 DECK2 --repeats N` sampler (fills §5 σ-at-n=50 TODO) | landed | `9d5a7a7` |
-| 9 | Plugin deck architecture | **deferred** — stub in MODERN_PROPOSAL.md §10.1 | `72c1be9` |
-| 10 | Template dashboard | **deferred** — stub in MODERN_PROPOSAL.md §10.2 | `72c1be9` |
-| 15 | Artifact hate in sideboards (Affinity 85%) | **investigation-only** — replay committed for next session | `72c1be9` |
-
-### Still open after session 3
-- Wish tutor Grapeshot-vs-Warrens balance (audit P2). Attempted shift toward
-  Warrens regressed Storm at current sample sizes; original 0.6 threshold
-  restored. Needs a proper EV-weighted decision, not a threshold tweak.
-
-### Session 3 validation (2026-04-12)
-Full 16×16 matrix, `n=100` Bo3 matches per pair, 14 workers, commit `72c1be9`.
-`meta_audit` flagged 11 outliers — the format remains poorly balanced but
-several deck-specific improvements are measurable:
-
-| Deck | Expected | Pre-session 3 | Post-session 3 |
-|------|----------|---------------|----------------|
-| Affinity | 45-65% | ~85% | **88.9% (severe)** — item 15 still unresolved |
-| Azorius Control | 30-50% | — | **7.9% (severe)** — new outlier, needs Isochron Scepter |
-| Eldrazi Tron | 48-62% | — | 73.1% (moderate) |
-| Dimir Midrange | 45-58% | ~50% | 67.9% (moderate) |
-| Amulet Titan | 30-50% | 23% | 23.8% (minor) — A1 fix too small to close the gap |
-| 4c Omnath | 30-52% | 29% | 57.0% (minor, now *above* range — unexpected!) |
-| Boros Energy | 55-70% | ~64% | 73.7% (minor) |
-| Jeskai Blink | 35-55% | 27% | 62.3% (moderate, now *above* range) |
-| Living End | 20-45% | 12% | 36.1% — A2 aggression flag appears to land |
-
-Takeaways:
-- Living End, 4c Omnath, Jeskai — aggression + ETB + sequencing fixes landed
-  (Living End doubled its WR; Jeskai moved from 27% → 62%).
-- Amulet Titan barely moved — A1 mana-loop bonus may need to be larger or
-  needs to model Titan's cast turn specifically (not just land value).
-- **Affinity still severe:** item 15 remains the top priority for the next
-  session; the committed replay in `replays/boros_vs_affinity_s55555.txt`
-  is the starting point.
-- **New regression:** Azorius Control dropped to 7.9% — needs Isochron Scepter
-  implementation (flagged in §8).
-
-### LLM judge re-grading
-The 2026-04-11 LLM judge panel is a static document. We don't have a scripted
-hook to re-run it. `meta_audit.py` provides the automated outlier-flag
-substitute; a real LLM re-grade would need external infra (not in this repo).
-
-### Session 3 phase 2 (2026-04-12, same-day)
-Parallel-work push: Affinity root-cause P0, Isochron Scepter, Amulet depth,
-proper Wish finisher comparison. Commits `823958f`, `<wish-fix>`.
-
-**P0 found in `engine/cards.py:359`** — the `'artifact you control' in oracle`
-creature-scaling check was matching Affinity reminder text, overwriting every
-Affinity creature's P/T with `artifact_count`. Frogmite was 11/11 instead of
-2/2 on a 10-artifact board. Tightened the regex to `\+N/\+N for each artifact
-you control` and switched to additive (`base + artifact_count` not `=`).
-
-Matrix-v2 (n=100 Bo3, commit `823958f`) deltas:
-
-| Deck | v1 WR | v2 WR | Δ |
-|------|-------|-------|---|
-| Affinity | 88.9% | 80.2% | −8.7pp (still severe) |
-| Boros Energy | 73.7% | 77.9% | +4.2pp (moderate; strengthened by Affinity nerf) |
-| Amulet Titan | 23.8% | 24.7% | +0.9pp (A1 loop bonus too small) |
-| Azorius Control | 7.9% | 7.3% | −0.6pp (Isochron lock works but Azorius still loses vs aggro) |
-| Jeskai Blink | 62.3% | 63.9% | +1.6pp |
-| Eldrazi Tron | 73.1% | 75.1% | +2.0pp |
-| Pinnacle Affinity | 40.2% | 31.2% | −9.0pp (same cards.py fix; now too weak) |
-| 4c Omnath | 57.0% | 59.8% | +2.8pp |
-
-σ sampler (n=50, repeats=5) confirms sampling noise is small (2-4pp across
-outliers), so the trends above are real signal.
-
-**Still open — three categories:**
-1. Affinity 80.2% — P0 fix brought it down 9pp but deck is still structurally
-   too strong. Next step: SB investigation (replay already committed) + check
-   Cranial Plating / equipment evaluation in `ai/ev_player.py:1166-1169`.
-2. Over-range cluster (Boros 78, Tron 75, Jeskai 64, Dimir 67, Zoo 71) — needs
-   a decision: tune-down vs update-ranges. Empirically the sim is self-
-   consistent (low σ), so these are true sim realities, not noise.
-3. Under-range cluster (Amulet 25, Azorius 7, Pinnacle Affinity 31, WST 33,
-   Storm 38) — each needs deck-specific work (Amulet ramp AI, Azorius survival
-   against aggro, Pinnacle Affinity was a Frogmite-power-inflation beneficiary
-   and is now weak, Storm needs proper combo-EV evaluation).
-
-The Wish tutor improvement (proper Warrens-vs-Grapeshot comparison with token
-survival factor) nudged Storm vs Dimir from 0% to 20% at n=10. Modest but
-directional.
-
-### Session 3 phase 3 — Affinity SB coverage + audit calibration
-- `engine/sideboard_manager.py`: bumped `max_swaps` from 5 to 7 for artifact
-  matchups (Affinity/Pinnacle/Tron). 5-card cap left the majority of the
-  opponent's 18+ artifacts untouched; 7 pulls Boros closer to a real hate
-  loadout. Spot-check Boros vs Affinity at n=20: 50/50 (was 16/84 pre-session-3,
-  30/70 post-P0-fix).
-- `meta_audit.py`: raised the moderate/minor severity cutoff from 7pp to 10pp.
-  σ at n=50 is 2-4pp, so deltas under ~10pp aren't actionable signal. This
-  keeps the outlier list short enough to act on each session rather than
-  chasing noise.
-
-### Session 3 phase 5 — Azorius Wrath + merge hook
-Cross-session collaboration resumed after PR#94/#95 merged and the other
-session added threat-based removal targeting (`b8556eb`, `0b6079c`) + Consign
-to Memory counterspell tag (`229ee97`). Joint effect: Affinity 88.9 → 78.4%,
-Boros vs Affinity stable 50/50 at n=20.
-
-Azorius investigation (verbose replay + explore agent):
-- Wrath of the Skies was being cast at X=0 on T2 because `available_for_x` is
-  computed AFTER paying the base WW cost. With 2 untapped lands total, X had
-  to be 0, sweeping only 0-CMC tokens while Boros's 1-drops survived.
-- Fix: `ai/ev_player.py:_score_spell` now hard-gates X-cost board wipes when
-  the effective X-budget can't kill ≥2 enemy creatures. Wrath now holds for
-  T3+ when X≥1 sweeps the entire Boros board.
-- `decks/gameplans/azorius_control.json`: emptied `mulligan_combo_sets` (the
-  Scepter+Chant requirement was mulliganing good interaction hands) and
-  `reactive_only` (gated Counterspell/Orim's Chant behind 4+ power threats
-  that don't exist vs aggro).
-
-Smoke (n=20): Azorius vs Prowess 0→25%, vs Boros 0→5%, vs Affinity 0→10%.
-Matrix-v3 (n=100) still shows Azorius at 7.9% overall — structural
-weakness: 0 mainboard blockers. Deferred as requires decklist edit, not
-code fix.
-
-`build_dashboard.py` — added a `merge()` helper so
-`run_meta.py --matrix --save` actually rebuilds the dashboard. It was
-calling a function that didn't exist (`from build_dashboard import merge`)
-and printing "Dashboard merge skipped" every run. Now it reads
-`metagame_results.json`, overwrites `wins[][]`, recomputes overall +
-weighted WRs, and rewrites `metagame_data.jsx` + HTML. Narrative data
-(matchup_cards, deck_cards) is preserved.
-
-### Matrix-v3 outlier summary (2026-04-12, commit `a9b1cd0`)
-`python meta_audit.py` output:
-
-| Severity | Deck | WR | Range |
-|----------|------|-----|-------|
-| severe | Azorius Control | 7.9% | 30-50% |
-| moderate | Affinity | 78.4% | 45-65% |
-| minor (×8) | Pinnacle Aff, Dimir, Zoo, Tron, Amulet, Jeskai, 4c Omnath, Ruby Storm | all within 10pp of band | |
-
-Compared to matrix-v2:
-- Severe outliers: 2 → 1 (Affinity demoted to moderate; other session's
-  threat-targeting + my SB-bump + P0 cards.py fix combined).
-- Azorius: essentially unchanged in matrix (7.3 → 7.9); smoke gains are
-  real but drowned out by structural weakness across full matchup pool.
-- Overall meta: healthier than ever. Only 1 severe outlier; remaining
-  issues are tuning-depth rather than engine bugs.
-
-### Infrastructure (from Legacy proposal)
-| # | Task | Impact | Effort | Deps |
-|---|------|--------|--------|------|
-| 7 | Meta audit + expected ranges | HIGH | 2h | None |
-| 8 | Symmetry measurement | HIGH | 30m | None |
-| 9 | Plugin deck architecture | HIGH | 2h | None |
-| 10 | Template dashboard | HIGH | 3h | None |
-| 11 | Parallel processing | MED | 1h+ | Memory audit |
-| 12 | Provenance footer | LOW | 20m | Template (#10) |
-
-### Validation
-| # | Task | Impact | Effort |
-|---|------|--------|--------|
-| 13 | Full matrix re-run after session 2 fixes | HIGH | 95 min |
-| 14 | Spot-check 10 matchups vs consensus WR | MED | LOW |
-| 15 | Artifact hate in sideboards (Affinity 85% still high) | P1 fix | MED |
-
----
+**Known still-open from session 3 (re-verify before touching):**
+- Wish tutor Grapeshot-vs-Warrens balance (audit P2). Attempted shift toward Warrens regressed Storm at session-3 sample sizes; original 0.6 threshold restored. Needs an EV-weighted decision, not a threshold tweak.
 
 ## 13. Codebase stats
 
@@ -1047,4 +459,4 @@ Compared to matrix-v2:
 
 ---
 
-*See also: docs/ARCHITECTURE.md · QUICKSTART.md · docs/history/audits/2026-04-11_LLM_judge.md · LEGACY_MODERNISATION_PROPOSAL.md*
+*See also: docs/ARCHITECTURE.md · CLAUDE.md · docs/history/audits/2026-04-11_LLM_judge.md*

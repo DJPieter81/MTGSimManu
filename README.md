@@ -44,9 +44,8 @@ Aliases: `storm`, `zoo`, `dimir`, `omnath`, `4c`, `energy`, `boros`, `jeskai`, `
 
 ## Docs
 
-- **[PROJECT_STATUS.md](PROJECT_STATUS.md)** — Planning reference: architecture, all bugs with fix status, deck status table, "never do / always do" rules. **Read before each session.**
-- **[QUICKSTART.md](QUICKSTART.md)** — Full setup, all commands, Python API, seed conventions
-- **[CLAUDE.md](CLAUDE.md)** — Claude Code instructions, workflow, skills (auto-loaded by Claude Code)
+- **[CLAUDE.md](CLAUDE.md)** — Operational handbook: setup, commands, workflow, ABSTRACTION CONTRACT, skills. Read first.
+- **[PROJECT_STATUS.md](PROJECT_STATUS.md)** — Architecture, current bugs with fix status, deck status, "never do / always do" rules. Read before each session.
 
 ## Decks (15)
 
