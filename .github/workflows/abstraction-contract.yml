@@ -20,5 +20,8 @@ jobs:
       - name: Run abstraction ratchet
         run: python tools/check_abstraction.py
 
+      - name: Run doc hygiene check
+        run: python tools/check_doc_hygiene.py
+
       - name: Run abstraction-contract pytest
-        run: python -m pytest tests/test_abstraction_contract.py -q
+        run: python -m pytest tests/test_abstraction_contract.py tests/test_doc_hygiene.py -q

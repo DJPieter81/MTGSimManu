@@ -15,6 +15,8 @@ The slogan "no patches, solve holistically" does not bind. These rules do. They 
 - **No new numeric threshold without a test that names the rule it encodes.** A literal `0.7` with no comment, no constant name, and no test is a magic number; it gets reverted on review.
 - **No fix without a failing test in the same diff.** Test goes red first, then the fix lands and turns it green. Both in the same commit.
 - **No second diagnostic phase on an outlier without a Bo3 replay-based root cause first.** Documentation is not progress.
+- **No plan-file proliferation at root.** Root-level `.md` is restricted to: `README.md`, `CLAUDE.md`, `PROJECT_STATUS.md`, `MODERN_PROPOSAL.md`, `CROSS_PROJECT_SYNC.md`. New design/plan docs go in `docs/design/` or `docs/proposals/` with frontmatter (`status`/`priority`/`summary`). Single-shot task files (`OVERNIGHT_*.md`, `*_FIX_PLAN.md`) belong in `docs/history/plans/` once finished.
+- **No `_V2`/`_V3` filename versioning anywhere.** Supersession is recorded via frontmatter `superseded_by` on the original doc, never by spawning a sibling. `tools/check_doc_hygiene.py` enforces both this and the root allowlist.
 
 ### Loop-break (session protocol)
 

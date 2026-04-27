@@ -1047,4 +1047,4 @@ Compared to matrix-v2:
 
 ---
 
-*See also: docs/ARCHITECTURE.md · QUICKSTART.md · docs/history/audits/2026-04-11_LLM_judge.md · LEGACY_MODERNISATION_PROPOSAL.md*
+*See also: docs/ARCHITECTURE.md · CLAUDE.md · docs/history/audits/2026-04-11_LLM_judge.md*
