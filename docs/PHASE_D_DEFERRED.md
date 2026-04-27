@@ -120,18 +120,47 @@ stranded" state.
 
 ## Path forward
 
-Phase D becomes a two-PR sequence:
+Phase D became a three-PR sequence after simulator v2 also failed:
 
-- **PR3b — simulator v2** (extends `ai/finisher_simulator.py`):
-  - `FinisherProjection.hold_value: float` — EV of skipping this
-    cast
-  - `FinisherProjection.wasted_mana: int` — mana spent in
-    no-chain states
-  - `FinisherProjection.next_turn_proj: Optional[FinisherProjection]`
-    — second-turn projection for multi-turn plans
+- **PR3b — simulator v2 (shipped 04754d2):**
+  - `FinisherProjection.hold_value: float` — projected next-turn
+    damage × survival probability
+  - `FinisherProjection.next_turn_damage: float` — chain damage
+    achievable next turn given +1 land
   - `FinisherProjection.coverage_ratio: float`
   - `FinisherProjection.closer_in_zone: dict[str, bool]` (hand /
     sb / library / graveyard)
+  - 8 new tests, simulator pure-additive (no live wire-up)
+
+- **PR3c — third Phase D migration attempt (REVERTED):**
+  - Wired `combo_evaluator.card_combo_evaluation` into
+    `_score_spell` using v2 `hold_value` / `coverage_ratio` for
+    hold-vs-fire decisions.
+  - Three iterations of the hold gate all collapsed Storm:
+    * `hold_value > fire_value` → Storm holds forever (next turn
+      always projects more mana, recursion non-terminating)
+    * Lethal-gate (only fire when this turn is lethal) → Storm at
+      1.2% (almost never reaches lethal-this-turn projection
+      because closer is in SB via Wish, not in hand)
+    * `hold_lethal AND not fire_lethal` → Storm at 0% (never
+      satisfies hold_lethal because next_turn_damage = 0 when
+      no closer in hand)
+  - Reverted to `card_combo_modifier`; Storm restored to 40.6%.
+
+- **PR3d — simulator v3 (next session)** must model **intermediate
+  value of casting fuel BEFORE the closer is reached.**  The
+  current `expected_damage = 0` when no closer is in hand
+  collapses every chain-fuel decision to "fire_value = 0", and
+  Storm's intent is "build chain THIS turn, find closer NEXT
+  turn via Wish/tutor".  Requires:
+  - Library composition modelling (P(draw closer | N more draws))
+  - Tutor-as-finisher-access semantics (Wish in hand = closer
+    in SB at +N mana cost)
+  - Multi-turn rollout: simulate 1, 2, 3 turns out, pick the
+    turn with highest `damage × survival` product
+  - This is genuinely complex.  card_combo_modifier's hand-tuned
+    branches encode this knowledge; the simulator needs equivalent
+    fidelity before Phase D can ship.
   - Tests covering each new field against the four chain patterns
     (storm / cascade / reanimation / cycling)
 

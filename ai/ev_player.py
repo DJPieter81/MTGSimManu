@@ -492,15 +492,20 @@ class EVPlayer:
         # Oracle text lower-cased once for all downstream checks.
         t_oracle = (t.oracle_text or '').lower()
 
-        # ── Combo sequencing overlay (Phase 2c.2 + 2c.3) ──
-        # Phase D migration deferred — see docs/PHASE_D_DEFERRED.md.
-        # Two attempts (marginal-delta, flat-credit + hard-hold)
-        # collapsed Storm field N=20 from 44.8% → ~2-7%.  Both
-        # principled approaches missed multi-turn projection: storm
-        # often needs T3 setup → T4 finisher, which a single-turn
-        # simulator can't model.  Live decisions stay on
-        # card_combo_modifier until simulator v2 ships hold_value /
-        # next_turn_proj / coverage_ratio fields.
+        # ── Combo sequencing overlay ──
+        # Phase D third attempt (simulator v2 with hold_value) also
+        # collapsed Storm field to 0% — see docs/PHASE_D_DEFERRED.md.
+        # Root cause: the simulator's `expected_damage = 0` when no
+        # closer is in hand, even though Storm has positive-value
+        # build-toward-closer plays via Wish/tutors.  card_combo_modifier
+        # had this nuance (tutor-as-finisher-access branch); the
+        # simulator-driven evaluator doesn't, and the marginal/flat/
+        # hold-value approaches all collapse Storm to ≤ 5%.
+        #
+        # Live decisions remain on card_combo_modifier until a
+        # simulator v3 ships that models "intermediate value" of
+        # casting fuel BEFORE the closer is reached (requires library
+        # composition / draw-probability modelling — beyond v2).
         if self.profile.has_combo_chain and self.goal_engine is not None:
             from ai.combo_calc import assess_combo, card_combo_modifier
             snap_id = id(snap)

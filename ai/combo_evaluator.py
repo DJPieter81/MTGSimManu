@@ -231,21 +231,22 @@ def card_combo_evaluation(
         return flip_bonus + tax_penalty
 
     # ── 4. Hold-vs-fire decision (simulator v2) ──
-    # When `hold_value > expected_damage × success_prob`, the
-    # projection says next-turn damage (with one more mana) exceeds
-    # firing now.  Fuel cards in this state should be HELD: the AI
-    # gets an extra turn to assemble a more lethal chain.  The
-    # `hold_value` field encodes survival-probability already
-    # (`next_turn_damage × (1 - 1/opp_clock)`), so we don't need to
-    # debit opp pressure cost separately.
-    fire_value = baseline_proj.expected_damage * baseline_proj.success_probability
-    hold_value = baseline_proj.hold_value
-    if hold_value > fire_value and _is_chain_fuel(card):
-        # The card itself has positive marginal value (it's chain
-        # fuel for next turn's chain), but firing the chain THIS
-        # turn is suboptimal — return a small positive (don't
-        # actively block; the spell still has development value)
-        # but no chain-credit boost.
+    # Hold ONLY when next-turn projects LETHAL but this turn does
+    # NOT.  Holding indefinitely for "next turn always projects more
+    # mana" is irrational — opp's clock makes it non-terminating.
+    # The principled hold case is the narrow one: this turn's
+    # chain is sub-lethal AND next turn's chain reaches lethal.
+    # All other cases fire (sub-lethal damage still chips opp's
+    # life total toward future lethal turns).
+    fire_lethal = (
+        baseline_proj.expected_damage >= opp_life
+        and baseline_proj.success_probability >= 0.5
+    )
+    hold_lethal = (
+        baseline_proj.hold_value >= opp_life
+        and not fire_lethal
+    )
+    if hold_lethal and _is_chain_fuel(card):
         return flip_bonus + tax_penalty
 
     # ── 5. Chain-fuel credit when chain is reachable AND firing

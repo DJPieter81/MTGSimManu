@@ -173,4 +173,18 @@ class FinisherProjection(BaseModel):
         }
     )
 
+    # ── v3 fields (Sprint 1) ──
+    # Recursive next-turn projection — captures the AI's multi-turn
+    # intent ("build chain this turn, finish next turn via Wish/
+    # tutor").  Depth is bounded by `simulate_finisher_chain` so the
+    # tree doesn't recurse indefinitely; at the leaf, `next_turn_proj`
+    # is None.  Each level represents +1 land drop and one opp turn
+    # of pressure (life -= opp_power).
+    next_turn_proj: Optional["FinisherProjection"] = None
+
     model_config = ConfigDict(frozen=True)
+
+
+# Pydantic v2 forward-ref resolution — needed because the field
+# annotation references the class by name.
+FinisherProjection.model_rebuild()
