@@ -226,16 +226,45 @@ def card_combo_evaluation(
         if _is_chain_fuel(card):
             # CR 500.4: mana empties at phase end.  Casting fuel here
             # wastes the resource; the AI must hold and rebuild on a
-            # later turn.  Same sentinel as combo_calc.py's clamp —
-            # matches the legacy modifier's STORM_HARD_HOLD branch.
+            # later turn.  Same sentinel as combo_calc.py's clamp.
             return STORM_HARD_HOLD + flip_bonus + tax_penalty
         return flip_bonus + tax_penalty
 
-    # ── 4. Chain-fuel credit when chain is reachable ──
-    expected_damage = baseline_proj.expected_damage
-    success_prob = baseline_proj.success_probability
+    # ── 4. Hold-vs-fire decision (simulator v2) ──
+    # When `hold_value > expected_damage × success_prob`, the
+    # projection says next-turn damage (with one more mana) exceeds
+    # firing now.  Fuel cards in this state should be HELD: the AI
+    # gets an extra turn to assemble a more lethal chain.  The
+    # `hold_value` field encodes survival-probability already
+    # (`next_turn_damage × (1 - 1/opp_clock)`), so we don't need to
+    # debit opp pressure cost separately.
+    fire_value = baseline_proj.expected_damage * baseline_proj.success_probability
+    hold_value = baseline_proj.hold_value
+    if hold_value > fire_value and _is_chain_fuel(card):
+        # The card itself has positive marginal value (it's chain
+        # fuel for next turn's chain), but firing the chain THIS
+        # turn is suboptimal — return a small positive (don't
+        # actively block; the spell still has development value)
+        # but no chain-credit boost.
+        return flip_bonus + tax_penalty
+
+    # ── 5. Chain-fuel credit when chain is reachable AND firing
+    #     this turn beats holding ──
     relevance = _chain_relevance(card, chain_card_ids)
-    chain_credit = (expected_damage / opp_life) * success_prob \
-                   * combo_value * relevance
+    chain_credit = (fire_value / opp_life) * combo_value * relevance
+
+    # ── 6. Mid-chain coverage escalation (simulator v2) ──
+    # When `coverage_ratio > HALF_LETHAL`, additional fuel
+    # investments into a stranded chain become catastrophic.  Boost
+    # the chain credit for cards that DO advance the chain, gate
+    # for cards that don't.  Threshold derives from clock arithmetic:
+    # at coverage > 0.5 we've committed half our resources to this
+    # chain and turning back wastes everything spent.
+    HALF_LETHAL = 0.5  # rules constant: half-lethal coverage
+    if (baseline_proj.coverage_ratio > HALF_LETHAL
+            and relevance == 0.0
+            and _is_chain_fuel(card)):
+        # Chain is mid-flight, this fuel doesn't extend it — hold.
+        return flip_bonus + tax_penalty
 
     return chain_credit + flip_bonus + tax_penalty

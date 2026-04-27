@@ -267,6 +267,14 @@ def _project_storm(
                 ),
                 chain_length=1,
                 closer_name=None,
+                # v2 fields default to 0/False — no chain reachable
+                # from current state, so hold/coverage are zero and
+                # zone presence is unknown without SB/lib visibility.
+                hold_value=0.0,
+                next_turn_damage=0.0,
+                coverage_ratio=0.0,
+                closer_in_zone={'hand': False, 'sb': False,
+                                'library': False, 'graveyard': False},
             )
         return None
 
@@ -298,6 +306,51 @@ def _project_storm(
     else:
         success = 0.0
 
+    # ── v2 fields ──
+    opp_life = max(1, snap.opp_life)
+    coverage_ratio = min(1.0, expected_damage / opp_life)
+
+    closer_in_zone = {
+        'hand': bool(payoff_names),
+        # 'sb' / 'library' / 'graveyard' aren't visible to the
+        # simulator (pure-function design — caller decides what to
+        # pass).  Default False; will be populated by callers that
+        # have the deck context (e.g. card_combo_modifier).
+        'sb': False,
+        'library': False,
+        'graveyard': False,
+    }
+
+    # Next-turn projection: we get one more land drop and one more
+    # card.  Approximate by re-running find_all_chains with
+    # available_mana + 1 and storm_count reset to 0 (CR 500.4 — the
+    # storm count is per-turn).  Hand stays the same; we don't try
+    # to predict the drawn card's identity (caller can run the
+    # projection again with hypothetical draws if needed).
+    from dataclasses import replace
+    next_snap = replace(snap, my_mana=snap.my_mana + 1,
+                        my_total_lands=snap.my_total_lands + 1)
+    next_chains = find_all_chains(
+        hand=hand,
+        available_mana=next_snap.my_mana,
+        medallion_count=medallions,
+        payoff_names=payoff_names,
+        base_storm=0,
+    )
+    if next_chains:
+        next_best = max(next_chains,
+                        key=lambda c: (c.storm_damage, c.storm_count))
+        next_turn_damage = float(next_best.storm_damage)
+    else:
+        next_turn_damage = 0.0
+
+    # Hold value: damage available next turn × P(we survive opp's
+    # extra turn).  P(survive) = 1 − 1/opp_clock when opp has a
+    # clock; 1.0 when opp has no clock (NO_CLOCK sentinel).
+    opp_clock = max(1.0, getattr(snap, 'opp_clock_discrete', 99))
+    survival_p = max(0.0, 1.0 - 1.0 / opp_clock)
+    hold_value = next_turn_damage * survival_p
+
     return FinisherProjection(
         pattern="storm",
         expected_damage=expected_damage,
@@ -305,6 +358,10 @@ def _project_storm(
         mana_floor=mana_floor,
         chain_length=best.storm_count,
         closer_name=closer,
+        hold_value=hold_value,
+        next_turn_damage=next_turn_damage,
+        coverage_ratio=coverage_ratio,
+        closer_in_zone=closer_in_zone,
     )
 
 
@@ -342,6 +399,10 @@ def _project_cascade(
     castable = snap.my_mana >= mana_floor
     success = 1.0 if castable else 0.0
 
+    # v2 fields: cascade payoff (Living End / Crashing Footfalls) is
+    # in library by deckbuilding convention.  coverage_ratio is 0.0
+    # because cascade payoffs are board-swings, not direct damage —
+    # the clock.py handles the resulting combat damage downstream.
     return FinisherProjection(
         pattern="cascade",
         expected_damage=0.0,  # board-swing payoff, see docstring
@@ -349,6 +410,9 @@ def _project_cascade(
         mana_floor=mana_floor,
         chain_length=2,  # enabler + free cast
         closer_name=cheapest_enabler.template.name,
+        coverage_ratio=0.0,
+        closer_in_zone={'hand': False, 'sb': False,
+                        'library': True, 'graveyard': False},
     )
 
 
@@ -411,6 +475,17 @@ def _project_reanimation(
 
     chain_length = 1 if gy_creatures else 2  # outlet + reanimator
 
+    # v2 fields: closer is the GY creature (or hand creature awaiting
+    # discard).  coverage_ratio = expected_damage / opp_life clamped.
+    opp_life = max(1, snap.opp_life)
+    coverage_ratio = min(1.0, expected_damage / opp_life)
+    closer_in_zone = {
+        'hand': bool([c for c in hand if c.template.is_creature]),
+        'sb': False,
+        'library': False,
+        'graveyard': bool(gy_creatures),
+    }
+
     return FinisherProjection(
         pattern="reanimation",
         expected_damage=expected_damage,
@@ -418,6 +493,8 @@ def _project_reanimation(
         mana_floor=mana_floor,
         chain_length=chain_length,
         closer_name=cheapest_reanimator.template.name,
+        coverage_ratio=coverage_ratio,
+        closer_in_zone=closer_in_zone,
     )
 
 
@@ -480,6 +557,14 @@ def _project_cycling(
             cascade_enablers[0].template.name if cascade_enablers else None
         )
 
+    # v2 fields: cycling payoff is in hand (or library via cascade).
+    closer_in_zone = {
+        'hand': bool(payoffs_in_hand),
+        'sb': False,
+        'library': not bool(payoffs_in_hand),  # cascade-fed branch
+        'graveyard': False,
+    }
+
     return FinisherProjection(
         pattern="cycling",
         expected_damage=0.0,  # board-swing payoff, see _project_cascade
@@ -487,6 +572,8 @@ def _project_cycling(
         mana_floor=mana_floor,
         chain_length=2,  # cycle + payoff
         closer_name=closer_name,
+        coverage_ratio=0.0,
+        closer_in_zone=closer_in_zone,
     )
 
 
