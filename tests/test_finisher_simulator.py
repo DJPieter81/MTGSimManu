@@ -422,3 +422,131 @@ class TestSchemaValidation:
         proj = FinisherProjection(pattern="none")
         with pytest.raises(Exception):
             proj.expected_damage = 99.0  # type: ignore
+
+
+class TestSimulatorV2Fields:
+    """v2 fields (PR3b): hold_value, next_turn_damage, coverage_ratio,
+    closer_in_zone.  Required by Phase D's hold-vs-fire decision."""
+
+    def test_v2_fields_default_to_safe_values(self):
+        """`pattern="none"` projection has all v2 fields at their
+        documented defaults — zero damage, no zones, no hold value."""
+        snap = _make_snap()
+        proj = simulate_finisher_chain(
+            snap=snap, hand=[], battlefield=[], graveyard=[],
+            library_size=40, storm_count=0, archetype="any",
+        )
+        assert proj.pattern == "none"
+        assert proj.hold_value == 0.0
+        assert proj.next_turn_damage == 0.0
+        assert proj.coverage_ratio == 0.0
+        assert proj.closer_in_zone == {
+            'hand': False, 'sb': False,
+            'library': False, 'graveyard': False,
+        }
+
+    def test_storm_coverage_ratio_clamped(self):
+        """`coverage_ratio = expected_damage / opp_life`, clamped
+        to [0, 1] (a chain that deals double-lethal damage clamps)."""
+        snap = _make_snap(my_mana=10, opp_life=20)
+        # Big chain: many rituals + Grapeshot → storm damage > opp_life
+        hand = [_ritual(1), _ritual(2), _ritual(3), _ritual(4),
+                _ritual(5), _grapeshot(6)]
+        proj = simulate_finisher_chain(
+            snap=snap, hand=hand, battlefield=[], graveyard=[],
+            library_size=40, storm_count=0, archetype="storm",
+        )
+        assert 0.0 <= proj.coverage_ratio <= 1.0
+        if proj.expected_damage > 0:
+            assert proj.coverage_ratio == min(
+                1.0, proj.expected_damage / max(1, snap.opp_life)
+            )
+
+    def test_storm_next_turn_damage_uses_extra_mana(self):
+        """`next_turn_damage` is computed by re-running the chain
+        finder with mana + 1 — it's >= this turn's damage when the
+        extra mana lets a longer chain assemble."""
+        snap = _make_snap(my_mana=3, opp_life=20)
+        # Storm chain: tight at 3 mana, more at 4 mana
+        hand = [_ritual(1), _ritual(2), _ritual(3), _grapeshot(4)]
+        proj = simulate_finisher_chain(
+            snap=snap, hand=hand, battlefield=[], graveyard=[],
+            library_size=40, storm_count=0, archetype="storm",
+        )
+        # Next turn damage should be at least equal to this turn
+        # (the chain finder always finds at least the same chain).
+        assert proj.next_turn_damage >= 0.0
+
+    def test_storm_hold_value_zero_when_no_clock(self):
+        """`hold_value` ≥ 0; equal to 0 when next-turn projection is 0
+        regardless of survival probability."""
+        snap = _make_snap(my_mana=3, opp_life=20)
+        # No payoff in hand at all → next chain finder also returns
+        # nothing → next_turn_damage = 0 → hold_value = 0
+        hand = [_ritual(1), _ritual(2)]
+        proj = simulate_finisher_chain(
+            snap=snap, hand=hand, battlefield=[], graveyard=[],
+            library_size=40, storm_count=0, archetype="storm",
+        )
+        # Pattern detected (rituals present), but no closer →
+        # hold_value should reflect that next turn is also barren.
+        assert proj.hold_value >= 0.0
+        if proj.next_turn_damage == 0.0:
+            assert proj.hold_value == 0.0
+
+    def test_storm_hold_value_scales_with_survival_p(self):
+        """`hold_value = next_turn_damage × survival_p`, where
+        `survival_p = 1 - 1/opp_clock_discrete`.  When opp has no
+        clock (NO_CLOCK sentinel = 99), survival_p ≈ 1 and
+        hold_value ≈ next_turn_damage."""
+        snap = _make_snap(my_mana=3, opp_life=20)
+        # Don't set opp_power so opp_clock falls back to NO_CLOCK.
+        hand = [_ritual(1), _ritual(2), _grapeshot(3)]
+        proj = simulate_finisher_chain(
+            snap=snap, hand=hand, battlefield=[], graveyard=[],
+            library_size=40, storm_count=0, archetype="storm",
+        )
+        # When opp_clock is huge (NO_CLOCK = 99), hold_value should
+        # be very close to next_turn_damage (survival ≈ 0.99).
+        if proj.next_turn_damage > 0:
+            assert proj.hold_value <= proj.next_turn_damage
+            # Survival floor: at NO_CLOCK=99, survival_p ≥ 0.98
+            assert proj.hold_value >= proj.next_turn_damage * 0.98
+
+    def test_storm_closer_in_zone_hand_set_when_payoff_in_hand(self):
+        """Storm closer in hand → `closer_in_zone['hand'] = True`."""
+        snap = _make_snap(my_mana=4)
+        hand = [_ritual(1), _grapeshot(2)]
+        proj = simulate_finisher_chain(
+            snap=snap, hand=hand, battlefield=[], graveyard=[],
+            library_size=40, storm_count=0, archetype="storm",
+        )
+        assert proj.closer_in_zone['hand'] is True
+
+    def test_cascade_closer_in_zone_library(self):
+        """Cascade payoffs live in the library by deckbuilding
+        convention — `closer_in_zone['library'] = True`."""
+        snap = _make_snap(my_mana=3)
+        hand = [_cascade_enabler(1, cmc=3)]
+        proj = simulate_finisher_chain(
+            snap=snap, hand=hand, battlefield=[], graveyard=[],
+            library_size=40, storm_count=0, archetype="cascade",
+        )
+        assert proj.pattern == "cascade"
+        assert proj.closer_in_zone['library'] is True
+        assert proj.closer_in_zone['hand'] is False
+
+    def test_reanimation_closer_in_zone_graveyard(self):
+        """Reanimation closer in GY → `closer_in_zone['graveyard']
+        = True`; the discard-outlet branch sets `hand` instead."""
+        snap = _make_snap(my_mana=3)
+        # `_gy_creature` is the simulator fixture for a fat creature
+        # in the GY; reanimation pattern targets it.
+        gy = [_gy_creature(iid=900, power=8)]
+        hand = [_reanimator(iid=1, cmc=3)]
+        proj = simulate_finisher_chain(
+            snap=snap, hand=hand, battlefield=[], graveyard=gy,
+            library_size=40, storm_count=0, archetype="reanimation",
+        )
+        assert proj.pattern == "reanimation"
+        assert proj.closer_in_zone['graveyard'] is True

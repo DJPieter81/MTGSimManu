@@ -134,6 +134,26 @@ class FinisherProjection(BaseModel):
     All numeric values come from `combo_chain.find_all_chains`
     arithmetic, oracle text, or rules constants documented inline
     in `ai/finisher_simulator.py`.  No tuning weights live here.
+
+    Simulator v2 fields (PR3b):
+
+    * `hold_value` — projected EV of NOT casting any finisher this
+      turn — i.e. holding the chain pieces and developing instead.
+      Computed as `next_turn_damage` debited by the
+      opp-pressure-cost of letting opp untap once.  When
+      `hold_value > expected_damage * success_probability`, the AI
+      should hold the chain rather than fire it.
+    * `next_turn_damage` — projected damage of the chain if cast
+      next turn given an additional land drop and one drawn card.
+      Approximated by re-running the chain finder with mana + 1.
+    * `coverage_ratio` — `expected_damage / opp_life`, clamped to
+      [0, 1].  When > 0.5 mid-chain, additional fuel investments
+      become catastrophic if the closer doesn't land — the
+      "stranded chain" risk grows nonlinearly.
+    * `closer_in_zone` — which zones contain a viable closer card.
+      Keys: 'hand', 'sb', 'library', 'graveyard'.  Used by the
+      tutor-as-finisher gate: a tutor with no closer in any zone
+      is dead.
     """
     pattern: FinisherPattern = "none"
     expected_damage: float = Field(default=0.0, ge=0.0)
@@ -141,5 +161,16 @@ class FinisherProjection(BaseModel):
     mana_floor: int = Field(default=0, ge=0)
     chain_length: int = Field(default=0, ge=0)
     closer_name: Optional[str] = None
+
+    # ── v2 fields ──
+    hold_value: float = Field(default=0.0, ge=0.0)
+    next_turn_damage: float = Field(default=0.0, ge=0.0)
+    coverage_ratio: float = Field(default=0.0, ge=0.0, le=1.0)
+    closer_in_zone: dict[str, bool] = Field(
+        default_factory=lambda: {
+            'hand': False, 'sb': False,
+            'library': False, 'graveyard': False,
+        }
+    )
 
     model_config = ConfigDict(frozen=True)
