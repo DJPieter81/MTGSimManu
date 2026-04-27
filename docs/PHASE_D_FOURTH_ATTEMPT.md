@@ -191,6 +191,84 @@ hand state triggers collapse, and fix at the root.  The five-
 attempt loop-break is now PERMANENT until that instrumentation
 exists.
 
+## Update — instrumentation surfaced the THIRD gap
+
+Added env-gated diagnostic trace in `ai/combo_evaluator.py`
+(commit `07e8f18`) and a standalone harness
+`tools/diag_combo_evaluator_trace.py`.  Ran:
+
+    MTGSIM_COMBO_TRACE=1 python tools/diag_combo_evaluator_trace.py
+
+For Storm seed 50000 T1 hand:
+`[Wrenn's Resolve, Past in Flames, Ral, Elegant Parlor,
+  Bloodstained Mire, Ral, Glimpse the Impossible]`
+
+```
+Wrenn's Resolve     → branch=hard_hold_no_chain  pattern=none  -50
+Past in Flames      → branch=hard_hold_no_chain  pattern=none  -50
+Glimpse the Impossible → branch=hard_hold_no_chain  pattern=none  -50
+```
+
+Every chain-fuel card sees `pattern=none`.  Storm has Past in
+Flames + 2 cantrips in hand, but NO ritual, NO storm closer,
+NO tutor → `_project_storm` returns None →
+`simulate_finisher_chain` returns `pattern="none"` →
+combo_evaluator hard-holds every fuel card.
+
+### The third gap (precise diagnosis)
+
+`_project_storm`'s pattern detection requires (line 228-244):
+
+```python
+has_ritual = any('ritual' in tags for c in hand)
+has_storm_closer = bool(payoff_names)  # storm-keyword in hand
+tutors_in_hand = [c for c in hand if 'tutor' in tags]
+
+if not (has_ritual or has_storm_closer or tutors_in_hand):
+    return None
+```
+
+But Storm CAN combo via Past in Flames alone:
+
+  1. Cast PiF → grants flashback to all GY instants/sorceries
+  2. Cast cantrips THIS turn to fill GY (Wrenn's Resolve, Glimpse)
+  3. Flashback those cantrips and any rituals drawn into → storm
+     count grows
+  4. Eventually draw / Wish for Grapeshot
+
+The simulator doesn't recognise PiF as a pattern enabler.  The
+LIVE `card_combo_modifier` does — see `_has_viable_pif` at
+`combo_calc.py:555-570`, used in the ritual-chain-gate at
+`combo_calc.py:741-808`.
+
+### Recommended path forward
+
+Step 2 (per the original two-step plan) needed a third
+substep we didn't see:
+
+* **Step 1.6** — extend `_project_storm` to recognise Past in
+  Flames in hand as a chain-pattern enabler.  Without ritual /
+  closer / tutor, but WITH PiF + at least one chain-fuel card,
+  the pattern IS reachable: cast fuel this turn to fill GY,
+  PiF flashes back fuel next turn, chain grows from there.
+
+  Needed predicate (oracle-text-driven):
+  ```python
+  has_pif_pattern = any(
+      'flashback' in oracle and 'graveyard' in oracle
+      and ('instant' in oracle or 'sorcery' in oracle)
+      for c in hand
+  )
+  ```
+
+  When `has_pif_pattern` is True AND any chain fuel exists in
+  hand+gy, project a NEXT-TURN chain (this turn we cast fuel,
+  next turn PiF + flashbacks).
+
+Once step 1.6 ships, attempt #6 wire-up should not collapse on
+T1 Storm hands with PiF.  Other failure modes may exist —
+the trace will surface them similarly.
+
 ## Cross-references
 
 * `docs/PHASE_D_DEFERRED.md` — original deferral diagnosis
