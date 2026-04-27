@@ -2524,7 +2524,17 @@ class EVPlayer:
         )
 
         def _rank(c) -> float:
-            base = creature_threat_value(c, snap)
+            # Use `permanent_threat` (marginal-contribution via
+            # snapshot recomputation) instead of `creature_threat_value`
+            # (oracle-driven heuristic).  permanent_threat accounts
+            # for the FULL position swing of removing the creature —
+            # raw clock contribution + evasion + equipment bonuses
+            # + scaling triggers — the same way the burn-target
+            # picker and equip-target picker score.  Architectural
+            # pattern: every threat-scoring decision in the AI now
+            # uses the same primitive.
+            from ai.permanent_threat import permanent_threat
+            base = permanent_threat(c, player, game)
             return base + self._carrier_disrupt_bonus(
                 game, player, c, snap,
                 removal_destroys_artifact=also_destroys_artifact)
