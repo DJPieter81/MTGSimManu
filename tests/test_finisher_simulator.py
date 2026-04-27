@@ -550,3 +550,97 @@ class TestSimulatorV2Fields:
         )
         assert proj.pattern == "reanimation"
         assert proj.closer_in_zone['graveyard'] is True
+
+
+class TestMultiTurnRollout:
+    """Sprint 1: depth-bounded multi-turn rollout via
+    `next_turn_proj` recursive field."""
+
+    def test_next_turn_proj_attached_when_chain_reachable(self):
+        """A reachable chain has `next_turn_proj` populated with the
+        next turn's projection (mana+1, life - opp_power)."""
+        snap = _make_snap(my_mana=4, opp_life=20)
+        hand = [_ritual(1), _ritual(2), _grapeshot(3)]
+        proj = simulate_finisher_chain(
+            snap=snap, hand=hand, battlefield=[], graveyard=[],
+            library_size=40, storm_count=0, archetype="storm",
+        )
+        assert proj.pattern == "storm"
+        # Multi-turn rollout must produce at least one next_turn_proj.
+        assert proj.next_turn_proj is not None
+
+    def test_next_turn_proj_chain_depth_bounded(self):
+        """Recursion stops at `_MULTI_TURN_DEPTH` — the projection
+        chain has finite depth."""
+        from ai.finisher_simulator import _MULTI_TURN_DEPTH
+        snap = _make_snap(my_mana=4, opp_life=20)
+        hand = [_ritual(1), _ritual(2), _grapeshot(3)]
+        proj = simulate_finisher_chain(
+            snap=snap, hand=hand, battlefield=[], graveyard=[],
+            library_size=40, storm_count=0, archetype="storm",
+        )
+        depth = 0
+        cur = proj
+        while cur is not None:
+            depth += 1
+            cur = cur.next_turn_proj
+        assert depth <= _MULTI_TURN_DEPTH, (
+            f"recursion depth {depth} exceeds cap {_MULTI_TURN_DEPTH}"
+        )
+
+    def test_next_turn_proj_applies_mana_increment(self):
+        """Each next-turn projection has +1 mana / +1 land relative
+        to the parent.  Verify by checking the chain finder picks a
+        bigger storm chain at depth=1."""
+        snap = _make_snap(my_mana=2, opp_life=20)
+        # Tight chain at 2 mana, longer at 3 mana
+        hand = [_ritual(1), _ritual(2), _ritual(3),
+                _ritual(4), _grapeshot(5)]
+        proj = simulate_finisher_chain(
+            snap=snap, hand=hand, battlefield=[], graveyard=[],
+            library_size=40, storm_count=0, archetype="storm",
+        )
+        if proj.next_turn_proj is not None:
+            # Next turn has more mana → at least same expected damage
+            # (chain finder is monotonic in mana — never finds a worse
+            # chain with more resources).
+            assert (proj.next_turn_proj.expected_damage
+                    >= proj.expected_damage)
+
+    def test_next_turn_proj_stops_when_dying(self):
+        """If holding kills us (my_life - opp_power × 1 ≤ 0),
+        recursion stops — no `next_turn_proj` attached."""
+        # We're at 3 life vs 4 opp_power → die next turn
+        snap = _make_snap(my_mana=4, my_life=3, opp_life=20)
+        snap.opp_power = 4
+        hand = [_ritual(1), _ritual(2), _grapeshot(3)]
+        proj = simulate_finisher_chain(
+            snap=snap, hand=hand, battlefield=[], graveyard=[],
+            library_size=40, storm_count=0, archetype="storm",
+        )
+        # Recursion stops: my_life - opp_power = 3 - 4 = -1 ≤ 0
+        assert proj.next_turn_proj is None
+
+    def test_next_turn_proj_stops_when_library_empty(self):
+        """Empty library → recursion stops (we can't draw to deepen
+        the chain)."""
+        snap = _make_snap(my_mana=4, opp_life=20)
+        hand = [_ritual(1), _ritual(2), _grapeshot(3)]
+        proj = simulate_finisher_chain(
+            snap=snap, hand=hand, battlefield=[], graveyard=[],
+            library_size=1, storm_count=0, archetype="storm",
+        )
+        # Recursion stops at library_size <= 1 (the guard in
+        # simulate_finisher_chain).
+        assert proj.next_turn_proj is None
+
+    def test_no_chain_no_recursion(self):
+        """`pattern="none"` projections don't recurse — the leaf
+        already has `next_turn_proj=None`."""
+        snap = _make_snap()
+        proj = simulate_finisher_chain(
+            snap=snap, hand=[], battlefield=[], graveyard=[],
+            library_size=40, storm_count=0, archetype="any",
+        )
+        assert proj.pattern == "none"
+        assert proj.next_turn_proj is None

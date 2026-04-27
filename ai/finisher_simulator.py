@@ -579,6 +579,12 @@ def _project_cycling(
 
 # ─── Top-level entry point ─────────────────────────────────────────
 
+# Multi-turn rollout depth cap.  Three turns is enough horizon for
+# Modern combo decks (Storm typically resolves T3-T5; reanimator
+# T2-T4; cascade T3-T4) without exploding the projection tree.
+_MULTI_TURN_DEPTH = 3
+
+
 def simulate_finisher_chain(
     snap: "EVSnapshot",
     hand: List["CardInstance"],
@@ -587,6 +593,7 @@ def simulate_finisher_chain(
     library_size: int,
     storm_count: int,
     archetype: str,
+    _depth: int = 0,
 ) -> FinisherProjection:
     """Project the EV-impact of attempting a finisher chain.
 
@@ -690,4 +697,46 @@ def simulate_finisher_chain(
                 "cascade": 1, "cycling": 0}.get(p.pattern, -1)
 
     best = max(candidates, key=lambda p: (_ev(p), _priority(p)))
+
+    # ── Multi-turn rollout (Sprint 1) ──
+    # Depth-bounded recursion: project up to `_MULTI_TURN_DEPTH`
+    # turns ahead.  Each turn applies a snapshot delta:
+    #   * +1 land drop  → my_mana, my_total_lands += 1
+    #   * +1 opp turn   → my_life -= snap.opp_power
+    #   * storm_count   → resets to 0 (CR 500.4 — per-turn)
+    #   * library_size  → -1 (we drew our turn's card)
+    #   * hand          → same (we don't try to predict the drawn
+    #                     card's identity here; a future iteration
+    #                     can integrate `bhi` for draw modelling)
+    #
+    # The recursion attaches a `next_turn_proj` to the leaf,
+    # forming a chain of projections the caller can walk.  When
+    # `_depth >= _MULTI_TURN_DEPTH`, recursion stops and
+    # `next_turn_proj = None`.
+    if _depth + 1 < _MULTI_TURN_DEPTH and library_size > 1:
+        from dataclasses import replace
+        opp_power = max(0, snap.opp_power)
+        next_snap = replace(
+            snap,
+            my_mana=snap.my_mana + 1,
+            my_total_lands=snap.my_total_lands + 1,
+            my_life=max(0, snap.my_life - opp_power),
+            turn_number=snap.turn_number + 1,
+        )
+        # Stop projecting if we'd be dead by this turn.
+        if next_snap.my_life > 0:
+            next_proj = simulate_finisher_chain(
+                snap=next_snap,
+                hand=hand,
+                battlefield=battlefield,
+                graveyard=graveyard,
+                library_size=library_size - 1,
+                storm_count=0,
+                archetype=archetype,
+                _depth=_depth + 1,
+            )
+            # Attach the projection chain to the leaf via Pydantic
+            # model_copy (frozen model — can't mutate in place).
+            best = best.model_copy(update={"next_turn_proj": next_proj})
+
     return best
