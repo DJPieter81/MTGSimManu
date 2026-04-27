@@ -398,6 +398,40 @@ Pin the loop-break: NO 8th attempt at full migration.  The
 infrastructure (steps 1, 1.5, 1.6, 4, 5) stays in main as
 useful primitives; the live wire-up doesn't happen again.
 
+## Update — Path 2 architectural pivot also failed (8th attempt)
+
+After pinning the loop-break, attempted path 2 (architectural
+pivot): replace `find_all_chains` calls inside
+`_assess_storm_zone` with `simulate_finisher_chain` so
+`card_combo_modifier`'s tutor-access / PiF detection improves
+without changing its per-card branch structure.
+
+Implementation: synthesised a `ChainOutcome` from the simulator's
+`FinisherProjection` (only `storm_damage` and `payoff_name` are
+read downstream — left other fields at safe defaults).
+
+Storm field N=10 = **29.4%** — past the 35% gate (-8.1pp from
+37.5% baseline).  Reverted; restored to 36.9%.
+
+The regression is SMALLER than the seven prior full-replacement
+attempts (which were 0-7%) but still past gate.  Hypothesis:
+`ChainOutcome` fields beyond `storm_damage` and `payoff_name`
+ARE consumed downstream — `final_mana`, `cards_drawn`,
+`mana_trace`, `medallions_after` — and my synthetic stub
+(0 / [] / 0 / current-medallions) breaks invariants the
+downstream code relies on.
+
+A full path 2 implementation would need to either:
+* Run `find_all_chains` IN ADDITION to the simulator (capture the
+  full ChainOutcome) and only swap in the simulator's
+  `expected_damage` when it differs (e.g. tutor-access sees a
+  longer chain than find_all_chains).
+* Or extend `FinisherProjection` to expose all `ChainOutcome`
+  fields the live code consumes — a richer schema.
+
+Both are bigger surgeries than fits a single session.  Path 1
+(coexist) remains the realistic next-session move.
+
 ## Cross-references
 
 * `docs/PHASE_D_DEFERRED.md` — original deferral diagnosis
