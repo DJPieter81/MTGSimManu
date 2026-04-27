@@ -691,6 +691,122 @@ class TestMultiTurnHelpers:
         )
         assert chain_lethal_turn(proj, opp_life=20) is None
 
+
+class TestStormWithTutorAccess:
+    """The test-bench projection that lifts tutor-as-finisher-access
+    into the simulator (per docs/PHASE_D_FOURTH_ATTEMPT.md).
+
+    `_project_storm` returns expected_damage=0 when no closer is in
+    hand, even though a tutor + SB closer combo IS a finisher path
+    (this is what `card_combo_modifier` sees and the simulator
+    misses).  `_project_storm_with_tutor_access` lifts that
+    detection — when verified by the test below, the live entry
+    point can integrate the projection."""
+
+    def test_returns_none_without_tutor(self):
+        """No tutor in hand → tutor-access projection doesn't
+        apply → returns None.  The caller falls back to the
+        regular `_project_storm`."""
+        from ai.finisher_simulator import _project_storm_with_tutor_access
+        snap = _make_snap(my_mana=4)
+        hand = [_ritual(1), _ritual(2)]  # no tutor
+        sb = [_grapeshot(99)]  # closer in SB
+        proj = _project_storm_with_tutor_access(
+            snap=snap, hand=hand, battlefield=[],
+            sideboard=sb, library=[], storm_count=0,
+        )
+        assert proj is None
+
+    def test_returns_none_without_closer_in_sb_or_library(self):
+        """Tutor in hand but no closer anywhere → returns None.
+        The chain genuinely isn't reachable."""
+        from ai.finisher_simulator import _project_storm_with_tutor_access
+        snap = _make_snap(my_mana=4)
+        hand = [_ritual(1), _tutor(2)]
+        proj = _project_storm_with_tutor_access(
+            snap=snap, hand=hand, battlefield=[],
+            sideboard=[], library=[], storm_count=0,
+        )
+        assert proj is None
+
+    def test_tutor_in_hand_plus_grapeshot_in_sb_projects_damage(self):
+        """The critical case: Wish in hand + Grapeshot in SB.
+        `_project_storm` returns expected_damage=0 because
+        Grapeshot isn't in hand.  This function returns
+        expected_damage > 0 because the tutor can fetch it.
+
+        This is the failing-test-first per ABSTRACTION CONTRACT
+        Rule 3 — `_project_storm` would return 0 here; the new
+        function returns positive damage."""
+        from ai.finisher_simulator import _project_storm_with_tutor_access
+        snap = _make_snap(my_mana=6)
+        hand = [_ritual(1), _ritual(2), _tutor(3)]
+        sb = [_grapeshot(99)]
+        proj = _project_storm_with_tutor_access(
+            snap=snap, hand=hand, battlefield=[],
+            sideboard=sb, library=[], storm_count=0,
+        )
+        assert proj is not None
+        assert proj.pattern == "storm"
+        assert proj.expected_damage > 0.0, \
+            "tutor+SB-closer must project positive damage"
+        assert proj.closer_in_zone['sb'] is True
+        assert proj.closer_in_zone['hand'] is False
+
+    def test_tutor_plus_library_closer_projects_damage(self):
+        """Closer can also live in the library (e.g. mainboard
+        Grapeshot still in deck, Burning Wish-pattern fetches
+        from library too in some metas)."""
+        from ai.finisher_simulator import _project_storm_with_tutor_access
+        snap = _make_snap(my_mana=6)
+        hand = [_ritual(1), _ritual(2), _tutor(3)]
+        lib = [_grapeshot(99)]
+        proj = _project_storm_with_tutor_access(
+            snap=snap, hand=hand, battlefield=[],
+            sideboard=[], library=lib, storm_count=0,
+        )
+        assert proj is not None
+        assert proj.expected_damage > 0.0
+        assert proj.closer_in_zone['library'] is True
+        assert proj.closer_in_zone['sb'] is False
+
+    def test_success_probability_degraded_for_tutor_path(self):
+        """Tutor-access projection has success_probability=0.5
+        because the tutor must resolve and the closer must still
+        be available — same rules-step-degradation as the
+        reanimation discard-outlet branch."""
+        from ai.finisher_simulator import _project_storm_with_tutor_access
+        snap = _make_snap(my_mana=6)
+        hand = [_ritual(1), _ritual(2), _tutor(3)]
+        sb = [_grapeshot(99)]
+        proj = _project_storm_with_tutor_access(
+            snap=snap, hand=hand, battlefield=[],
+            sideboard=sb, library=[], storm_count=0,
+        )
+        assert proj is not None
+        assert proj.success_probability == 0.5
+
+    def test_baseline_storm_returns_zero_without_closer(self):
+        """Pin the gap that motivated this function: the existing
+        `_project_storm` returns expected_damage=0 (or the
+        tutor-only zero-damage stub) for the same hand.  This is
+        the bug `_project_storm_with_tutor_access` exists to fix."""
+        from ai.finisher_simulator import simulate_finisher_chain
+        snap = _make_snap(my_mana=6)
+        hand = [_ritual(1), _ritual(2), _tutor(3)]
+        # No SB/library passed to `simulate_finisher_chain` — that's
+        # the gap.  Without the new function, the simulator can't
+        # see the closer.
+        proj = simulate_finisher_chain(
+            snap=snap, hand=hand, battlefield=[], graveyard=[],
+            library_size=40, storm_count=0, archetype="storm",
+        )
+        # The existing simulator either returns pattern="none" or
+        # pattern="storm" with expected_damage=0.  Both are the
+        # documented gap.
+        assert proj.expected_damage == 0.0
+
+
     def test_chain_lethal_turn_zero_when_lethal_now(self):
         """Lethal-this-turn projection → returns 0."""
         from ai.finisher_simulator import chain_lethal_turn

@@ -365,6 +365,174 @@ def _project_storm(
     )
 
 
+# ─── Tutor-as-finisher-access projection (test bench, not live) ───
+# Documented as the missing piece in docs/PHASE_D_FOURTH_ATTEMPT.md.
+# `_project_storm` returns expected_damage=0 when no closer is in
+# hand, even though Storm's intent is "build chain THIS turn, fetch
+# closer NEXT turn via Wish→SB lookup".  This function lifts the
+# tutor-as-finisher-access logic from `combo_calc.py:520-552`
+# (`_tutor_has_payoff_access`) into the simulator.  When a tutor
+# is in hand AND the SB ∪ library contains a STORM-keyword closer
+# (or token-spawning finisher), the chain projection injects the
+# closer as if it were in hand and computes damage accordingly.
+#
+# Pure additive — NOT wired into `simulate_finisher_chain` yet.
+# The integration step happens after this function's unit test
+# proves it returns expected_damage > 0 for tutor-only hands.
+# Per docs/PHASE_D_FOURTH_ATTEMPT.md two-step plan.
+
+
+def _has_token_finisher_oracle(template) -> bool:
+    """Token-spawning finisher pattern (Empty-the-Warrens).
+
+    Detection: oracle text contains 'create … tokens' + 'for each'.
+    Mirrors the predicate at `combo_calc.py:514-516` so the
+    simulator agrees with the live combo modifier on what counts
+    as a finisher.  No card names.
+    """
+    oracle = (getattr(template, 'oracle_text', '') or '').lower()
+    return ('create' in oracle and 'tokens' in oracle
+            and 'for each' in oracle)
+
+
+def _scan_zone_for_storm_closer(zone: List["CardInstance"]):
+    """Return the first STORM-keyword card in `zone`, or None.
+
+    Falls back to a token-spawning finisher (Empty-the-Warrens
+    pattern) if no STORM-keyword card found.  Matches
+    `_tutor_has_payoff_access`'s predicate so the two views agree.
+    """
+    from engine.cards import Keyword as Kw
+    for c in zone:
+        tmpl = getattr(c, 'template', None)
+        if tmpl is None:
+            continue
+        if Kw.STORM in getattr(tmpl, 'keywords', set()):
+            return c
+        if _has_token_finisher_oracle(tmpl):
+            return c
+    return None
+
+
+def _project_storm_with_tutor_access(
+    snap: "EVSnapshot",
+    hand: List["CardInstance"],
+    battlefield: List["CardInstance"],
+    sideboard: List["CardInstance"],
+    library: List["CardInstance"],
+    storm_count: int,
+) -> Optional[FinisherProjection]:
+    """Storm chain projection when a tutor is in hand and the
+    closer lives in sideboard/library.
+
+    Differs from `_project_storm`: that function projects damage =
+    0 when no closer is in hand because `find_all_chains` requires
+    the closer card.  This function:
+
+      1. Detects a tutor in hand (by `'tutor'` tag).
+      2. Scans `sideboard + library` for a STORM-keyword closer or
+         token-spawning finisher (Empty-the-Warrens pattern).
+      3. If both are present, injects the SB/library closer into
+         the chain finder's `payoff_names` set so the chain
+         arithmetic accounts for "tutor → fetch → cast closer".
+      4. Returns a `FinisherProjection` with `closer_in_zone['sb']`
+         or `closer_in_zone['library']` set, and `expected_damage
+         > 0` when the chain reaches damage.
+
+    Pure read-only over the inputs — no game-state mutation.
+    Returns None when the tutor-access pattern doesn't apply
+    (no tutors, no closer in SB/library).
+
+    Test-bench only: NOT called from `simulate_finisher_chain`.
+    Integration is the follow-up step per
+    `docs/PHASE_D_FOURTH_ATTEMPT.md`.
+    """
+    from ai.combo_chain import find_all_chains
+    from engine.cards import Keyword as Kw
+
+    tutors_in_hand = [
+        c for c in hand
+        if 'tutor' in getattr(c.template, 'tags', set())
+    ]
+    if not tutors_in_hand:
+        return None
+
+    sb_closer = _scan_zone_for_storm_closer(sideboard)
+    lib_closer = (
+        _scan_zone_for_storm_closer(library)
+        if sb_closer is None else None
+    )
+    closer_card = sb_closer or lib_closer
+    if closer_card is None:
+        return None
+
+    # Inject the SB/library closer into the payoff set: the chain
+    # finder treats it as if it were in hand for the purposes of
+    # the storm-damage calculation, plus accounts for the tutor
+    # cost (the tutor itself is one spell on the chain).
+    payoff_names = {closer_card.template.name}
+    medallions = sum(
+        1 for c in battlefield
+        if 'cost_reducer' in getattr(c.template, 'tags', set())
+    )
+
+    # Synthesise a hand that includes the closer (the tutor would
+    # fetch it).  We pass the actual tutor card too so the chain
+    # finder includes it in the spell count.  The closer's CMC
+    # contributes to the chain's mana cost just like any other
+    # card.
+    synth_hand = list(hand) + [closer_card]
+    chains = find_all_chains(
+        hand=synth_hand,
+        available_mana=snap.my_mana,
+        medallion_count=medallions,
+        payoff_names=payoff_names,
+        base_storm=storm_count,
+    )
+
+    if not chains:
+        return None
+
+    best = max(chains, key=lambda c: (c.storm_damage, c.storm_count))
+    expected_damage = float(best.storm_damage)
+    if expected_damage <= 0:
+        return None
+
+    # Mana floor: tutor cmc + closer cmc.  Tutor must resolve
+    # before closer can be cast (one extra spell on the chain).
+    cheapest_tutor_cmc = min(
+        (t.template.cmc or 0) for t in tutors_in_hand
+    )
+    closer_cmc = closer_card.template.cmc or 0
+    mana_floor = cheapest_tutor_cmc + closer_cmc
+
+    opp_life = max(1, snap.opp_life)
+    coverage_ratio = min(1.0, expected_damage / opp_life)
+
+    closer_in_zone = {
+        'hand': False,
+        'sb': sb_closer is not None,
+        'library': lib_closer is not None,
+        'graveyard': False,
+    }
+
+    return FinisherProjection(
+        pattern="storm",
+        expected_damage=expected_damage,
+        # Success degrades by 0.5 because the tutor must resolve
+        # without being countered AND the closer must still be in
+        # SB/library (rules-derived sentinel: "one extra rules step
+        # required to make the chain work" — same as the
+        # reanimation-discard-outlet branch in `_project_reanimation`).
+        success_probability=0.5,
+        mana_floor=mana_floor,
+        chain_length=best.storm_count,
+        closer_name=closer_card.template.name,
+        coverage_ratio=coverage_ratio,
+        closer_in_zone=closer_in_zone,
+    )
+
+
 def _project_cascade(
     snap: "EVSnapshot",
     hand: List["CardInstance"],
