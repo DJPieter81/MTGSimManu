@@ -157,16 +157,20 @@ def evaluate_action(game: "GameState", player_idx: int, action: Action) -> float
     me = game.players[player_idx]
 
     if action.action_type == ActionType.EVOKE:
-        return _eval_evoke(game, me, assessment, action.context)
+        return _eval_evoke(game, me, assessment, action.context,
+                            player_idx=player_idx)
 
     elif action.action_type == ActionType.DASH:
-        return _eval_dash(game, me, assessment, action.context)
+        return _eval_dash(game, me, assessment, action.context,
+                          player_idx=player_idx)
 
     elif action.action_type == ActionType.COMBO_NOW:
-        return _eval_combo(game, me, assessment, action.context)
+        return _eval_combo(game, me, assessment, action.context,
+                           player_idx=player_idx)
 
     elif action.action_type == ActionType.BLOCK:
-        return _eval_block(game, me, assessment, action.context)
+        return _eval_block(game, me, assessment, action.context,
+                           player_idx=player_idx)
 
     return 0.0
 
@@ -177,9 +181,18 @@ def evaluate_action(game: "GameState", player_idx: int, action: Action) -> float
 # ─────────────────────────────────────────────────────────────
 
 
-def _eval_evoke(game, me, a: BoardAssessment, ctx: dict) -> float:
+def _eval_evoke(game, me, a: BoardAssessment, ctx: dict,
+                 player_idx: Optional[int] = None) -> float:
     """Evoke (sacrifice for ETB) vs wait to hard-cast?
-    Returns positive = evoke, negative = wait."""
+    Returns positive = evoke, negative = wait.
+
+    `player_idx` should be supplied by the caller; the legacy
+    `me.index` fallback is unsafe because the player object does
+    not carry its own index, causing opp_idx to default to 0
+    (the WRONG opponent when me is player 1).  Bug: AzCon evoking
+    Solitude on Affinity got opp = player[1] = AzCon itself,
+    skipped the small-target gate, and returned +1.0.
+    """
     card = ctx.get('card')
     if card is None:
         return 0.0
@@ -188,8 +201,14 @@ def _eval_evoke(game, me, a: BoardAssessment, ctx: dict) -> float:
     tags = getattr(card.template, 'tags', set())
     oracle = (card.template.oracle_text or "").lower()
 
-    # Check if the ETB has valid targets — don't evoke for nothing
-    opp_idx = 1 - (me.index if hasattr(me, 'index') else 0)
+    # Resolve opponent index.  Prefer the explicit `player_idx`
+    # parameter; fall back to `me.index` for legacy callers that
+    # haven't been updated.  The fallback path is incorrect when
+    # me does not carry an `index` attribute (Player has no such
+    # attribute by default — see engine/game_state.py::Player).
+    if player_idx is None:
+        player_idx = getattr(me, 'index', 0)
+    opp_idx = 1 - player_idx
     opp = game.players[opp_idx]
     
     # Subtlety-like effects: target creature/planeswalker on battlefield
@@ -263,7 +282,8 @@ def _eval_evoke(game, me, a: BoardAssessment, ctx: dict) -> float:
     return 1.0
 
 
-def _eval_dash(game, me, a: BoardAssessment, ctx: dict) -> float:
+def _eval_dash(game, me, a: BoardAssessment, ctx: dict,
+               player_idx: Optional[int] = None) -> float:
     """Dash (haste+bounce) vs hard-cast (permanent body)?
     Returns positive = dash, negative = hard-cast."""
     can_normal = ctx.get('can_normal', False)
@@ -274,7 +294,9 @@ def _eval_dash(game, me, a: BoardAssessment, ctx: dict) -> float:
     if not can_dash:
         return -10.0  # Can't dash
 
-    opp = game.players[1 - me.index if hasattr(me, 'index') else 0]
+    if player_idx is None:
+        player_idx = getattr(me, 'index', 0)
+    opp = game.players[1 - player_idx]
 
     opp_has_blockers = any(c.can_block for c in opp.creatures)
     opp_threatening = len(opp.creatures) >= 2
@@ -298,11 +320,14 @@ def _eval_dash(game, me, a: BoardAssessment, ctx: dict) -> float:
     return score
 
 
-def _eval_combo(game, me, a: BoardAssessment, ctx: dict) -> float:
+def _eval_combo(game, me, a: BoardAssessment, ctx: dict,
+                player_idx: Optional[int] = None) -> float:
     """Fire win condition now vs keep building?
     Returns positive = go for it, negative = wait."""
     projected_damage = ctx.get('projected_damage', 0)
-    opp = game.players[1 - (me.index if hasattr(me, 'index') else 0)]
+    if player_idx is None:
+        player_idx = getattr(me, 'index', 0)
+    opp = game.players[1 - player_idx]
 
     # Lethal projected — always go
     if projected_damage >= opp.life:
@@ -318,13 +343,13 @@ def _eval_combo(game, me, a: BoardAssessment, ctx: dict) -> float:
 
     castable_rituals = sum(1 for c in hand
                            if 'ritual' in getattr(c.template, 'tags', set())
-                           and game.can_cast(me.index if hasattr(me, 'index') else 0, c))
+                           and game.can_cast(player_idx, c))
 
     has_extender = any(
         'flashback_enabler' in getattr(c.template, 'tags', set()) or
         'flashback' in getattr(c.template, 'tags', set()) or
         'tutor' in getattr(c.template, 'tags', set())
-        for c in hand if game.can_cast(me.index if hasattr(me, 'index') else 0, c)
+        for c in hand if game.can_cast(player_idx, c)
     )
 
     gy_rituals = sum(1 for c in gy
@@ -333,7 +358,7 @@ def _eval_combo(game, me, a: BoardAssessment, ctx: dict) -> float:
 
     castable_cantrips = sum(1 for c in hand
                             if 'cantrip' in getattr(c.template, 'tags', set())
-                            and game.can_cast(me.index if hasattr(me, 'index') else 0, c))
+                            and game.can_cast(player_idx, c))
 
     total_chain = castable_rituals + castable_cantrips
     total_with_gy = total_chain + gy_rituals
@@ -354,7 +379,8 @@ def _eval_combo(game, me, a: BoardAssessment, ctx: dict) -> float:
     return score
 
 
-def _eval_block(game, me, a: BoardAssessment, ctx: dict) -> float:
+def _eval_block(game, me, a: BoardAssessment, ctx: dict,
+                player_idx: Optional[int] = None) -> float:
     """Block this attacker with this blocker?
     Returns positive = block, negative = don't.
 
