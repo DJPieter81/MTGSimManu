@@ -93,14 +93,67 @@ class MulliganDecider:
                     self.last_reason = f"too many lands ({land_count} > {gp.mulligan_max_lands})"
                     return False
 
-            # Combo sets: need at least 1 card from each required set
+            # Combo sets: need at least 1 card from each required set.
+            # Reference: docs/diagnostics/2026-04-28_goryos_combo_mana_mulligan.md
+            #
+            # Three-part predicate:
+            #   (a) at 7 cards, at least ONE declared combo_set must
+            #       have >= 2 of its 3 pieces present (Bug #4 fix:
+            #       1-of-3 is functionally zero combo progress and
+            #       leaves the deck unable to assemble in time).
+            #   (b) at <=6 cards, allow keeping a hand missing one
+            #       path's piece — the 6-card escape — UNLESS every
+            #       declared path is empty in hand, in which case mull
+            #       to 5 because keeping a 6 with zero combo cards is
+            #       strictly worse than going to 5 to find one.
+            #   (c) for combo cards present in hand, the lands must
+            #       cover the union of pip requirements (Bug #1 color
+            #       check).
             if gp.mulligan_combo_sets:
-                for combo_set in gp.mulligan_combo_sets:
-                    if not (hand_names & combo_set):
-                        if cards_in_hand <= 6:
-                            self.last_reason = f"missing combo piece but only {cards_in_hand} cards"
-                            return True
-                        self.last_reason = f"missing combo piece from {combo_set}"
+                # How many pieces from each declared combo path are
+                # present in hand?  Used by both the 7-card progress
+                # check (b) and the 6-card empty-paths escape (a).
+                pieces_per_set = [
+                    len(hand_names & s) for s in gp.mulligan_combo_sets
+                ]
+                max_progress = max(pieces_per_set) if pieces_per_set else 0
+
+                if cards_in_hand >= 7:
+                    # 7-card combo decks: need >=2 of 3 from at least
+                    # one path.  Single-piece hands cannot assemble vs
+                    # an aggro clock — proven by replay seed 60200/50000.
+                    if max_progress < 2:
+                        self.last_reason = (
+                            f"combo too weak in 7-card hand "
+                            f"(max {max_progress}/3 pieces from any path)"
+                        )
+                        return False
+                else:
+                    # 6 or fewer cards: original escape — keep if at
+                    # least one piece from any path is present, mull
+                    # if every path is empty (Bug #3 fix).
+                    if max_progress == 0:
+                        self.last_reason = (
+                            f"every combo path empty in {cards_in_hand}-card hand "
+                            f"— mull to {cards_in_hand - 1}"
+                        )
+                        return False
+                    # else: at least 1 piece present → keep (don't
+                    # mull-to-oblivion at 6).
+
+                # Color-soundness: the kept hand's lands must cover the
+                # union of colored pip requirements for the combo cards
+                # actually present.  Cardname-only checks miss hands
+                # that look complete on paper but cannot be cast.
+                if cards_in_hand >= 7:
+                    missing_colors = self._combo_set_color_gap(
+                        hand, lands, gp.mulligan_combo_sets,
+                    )
+                    if missing_colors:
+                        self.last_reason = (
+                            f"combo set present but lands miss colors "
+                            f"{sorted(missing_colors)}"
+                        )
                         return False
 
             # Combo decks with always_early: prefer reducer
@@ -344,6 +397,120 @@ class MulliganDecider:
                 bottom.remove(swap_from_bottom)
                 bottom.append(swap_into_bottom)
         return bottom
+
+    # ── Color-coverage check for combo mulligans ───────────────────
+    # Mechanic: a combo set whose cardnames are all in hand can still
+    # be uncastable if the lands don't cover the union of pip
+    # requirements.  This applies to every combo deck, not Goryo's
+    # specifically (Living End cycler U/B + cascade R, Ruby Storm RR,
+    # Niv-Mizzet shells, etc.).  Implementation is oracle-driven:
+    #   - lands with `produces_mana` populated → those colors directly
+    #   - fetchlands (sac-search basic land types) → colors of the
+    #     basic types named in their oracle text, since the deck
+    #     necessarily runs duals matching at least one such type
+    # Zero hardcoded card names; zero magic numbers.
+
+    _BASIC_TYPE_TO_COLOR = {
+        'Plains': 'W', 'Island': 'U', 'Swamp': 'B',
+        'Mountain': 'R', 'Forest': 'G',
+    }
+
+    @classmethod
+    def _land_supplies_colors(cls, land: "CardInstance") -> set:
+        """Set of WUBRG colors the land can supply (directly or via
+        fetch).  Empty for colorless / Wastes-style lands."""
+        t = land.template
+        # Direct producers — duals, basics, tri-lands, shock lands.
+        direct = {c.upper() for c in (t.produces_mana or [])
+                  if c.upper() in 'WUBRG'}
+        if direct:
+            return direct
+        # Fetchland heuristic: oracle text "Search your library for a
+        # <basic-type> ... card".  Detected by basic-land-type tokens
+        # present in the search clause.  This is a mechanic, not a
+        # cardname list — applies to every fetchland printed past or
+        # future (Modern fetches, Onslaught fetches, Mirage fetches,
+        # surveil lands with fetch riders, etc.).
+        oracle = (getattr(t, 'oracle_text', '') or '').lower()
+        if 'search your library' not in oracle:
+            return set()
+        colors = set()
+        for basic, color in cls._BASIC_TYPE_TO_COLOR.items():
+            if basic.lower() in oracle:
+                colors.add(color)
+        return colors
+
+    @classmethod
+    def _hand_color_supply(cls, lands: List["CardInstance"]) -> set:
+        """Union of colors the hand's lands can supply."""
+        out: set = set()
+        for land in lands:
+            out |= cls._land_supplies_colors(land)
+        return out
+
+    @staticmethod
+    def _card_color_demand(card: "CardInstance") -> set:
+        """Colors required to cast this card from hand (its colored
+        pips).  Generic / colorless / X costs contribute nothing."""
+        cost = getattr(card.template, 'mana_cost', None)
+        if cost is None:
+            return set()
+        # ManaCost has `.colors` returning Color enum members for any
+        # non-zero pip count.
+        return {c.value for c in cost.colors}
+
+    @classmethod
+    def _combo_set_color_gap(cls,
+                              hand: List["CardInstance"],
+                              lands: List["CardInstance"],
+                              combo_sets) -> set:
+        """Return the set of colors required by combo cards in hand
+        but unsupplied by the hand's lands.  Empty set means the
+        kept hand is color-sound for at least one declared combo
+        path.
+
+        Decision rule: for each declared combo_set, take the cards in
+        hand that belong to it and union their pip demands.  The
+        hand is sound iff at least ONE declared combo path's demand
+        is fully covered by the hand's color supply.  A 7 with two
+        partially-covered paths still mulligans — both paths need
+        their missing color, and "two halves" do not make a whole.
+
+        Creature combo entries are excluded from the demand sum.
+        Reanimator targets (Griselbrand, Archon of Cruelty), Living-
+        End cyclers, and Through-the-Breach fatties live in combo_sets
+        as the *payoff*, not the *enabler* — they are discarded /
+        cycled / milled into the graveyard, not hard-cast.  Counting
+        their {B}{B}{B}{B}-style pips inflates demand and forces
+        false-positive mulligans on hands that can actually fire the
+        combo through the spell-side path.  This filter is mechanic-
+        based (card type, not name) and works for every reanimator-
+        / cascade-style archetype."""
+        supply = cls._hand_color_supply(lands)
+        gaps_per_path = []
+        for combo_set in combo_sets:
+            in_hand_combo = [c for c in hand if c.name in combo_set]
+            if not in_hand_combo:
+                continue  # this path isn't even partially present
+            demand: set = set()
+            for c in in_hand_combo:
+                if c.template.is_creature:
+                    continue  # discarded/cycled, not cast
+                demand |= cls._card_color_demand(c)
+            gap = demand - supply
+            if not gap:
+                return set()  # this path is color-sound — keep
+            gaps_per_path.append(gap)
+        if not gaps_per_path:
+            # No combo path even partially in hand — caller handled
+            # this earlier (missing-piece check).  Don't double-fault.
+            return set()
+        # Every present path has at least one missing color.  Return
+        # the union so the log message names them all.
+        out: set = set()
+        for g in gaps_per_path:
+            out |= g
+        return out
 
     def _card_keep_score(self, card: "CardInstance", hand: List["CardInstance"]) -> float:
         """Score a card for mulligan bottom. Higher = more valuable to keep."""
