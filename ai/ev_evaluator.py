@@ -715,6 +715,14 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
     #     OR when the deck is ready to start chaining (storm=0 but a
     #     cost_reducer is on the battlefield, meaning we have engine pieces
     #     deployed and should start firing spells).
+    #
+    #     Payoff-reachability gate (PR fix 2026-04-28): even mid-chain,
+    #     spending a ritual/cantrip with no payoff in sight is wasted.
+    #     Verbose seed 50000 T4: Storm cast Past in Flames 3× without
+    #     ever drawing/casting Grapeshot.  Without this gate, every
+    #     mid-chain ritual/cantrip looks like a same-turn signal and
+    #     gets paid out at goal-priority value — even when the chain
+    #     literally cannot close.
     has_reducer_on_board = (
         game is not None
         and any('cost_reducer' in getattr(p.template, 'tags', set())
@@ -724,7 +732,9 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
     if (archetype in ('storm', 'combo')
             and (snap.storm_count > 0 or has_reducer_on_board)
             and ('ritual' in tags or 'cantrip' in tags
-                 or 'cost_reducer' in tags)):
+                 or 'cost_reducer' in tags)
+            and (game is None or _payoff_reachable_this_turn(
+                card, game, player_idx))):
         signals.append('combo_continuation')
 
     # 10b. Cost-reducer permanent deployment — fires when a non-instant
@@ -762,11 +772,21 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
     #     Also covers ritual instants/sorceries that add mana on resolution
     #     (Pyretic Ritual "Add RRR", Desperate Ritual "Add RRR", etc.) —
     #     they're tagged 'ritual' and their oracle says "add {color}".
+    #
+    #     Payoff-reachability gate (PR fix 2026-04-28): for combo/storm
+    #     archetypes, a ritual whose mana cannot reach a payoff this
+    #     turn is wasted resources (verbose seed 50000 T4 Storm).
+    #     Permanent mana sources (mana rocks, lands) are always cast-
+    #     now valuable — they persist — but ritual instants/sorceries
+    #     resolve once and the mana evaporates at end of turn.  Gate
+    #     ONLY the ritual branch.
     produces = getattr(t, 'produces_mana', None) or []
     if produces or ('{t}:' in oracle and 'add' in oracle):
         signals.append('mana_source')
     elif is_ritual(card) and 'add' in oracle:
-        signals.append('mana_source')
+        if archetype not in ('storm', 'combo') or game is None or (
+                _payoff_reachable_this_turn(card, game, player_idx)):
+            signals.append('mana_source')
 
     # 15. X-cost hate permanent (Chalice-style "cost X, get X charge
     #     counters") — cast-now locks opp spells at the chosen CMC.
@@ -843,10 +863,85 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
             1 for c in gy
             if (c.template.is_instant or c.template.is_sorcery)
         )
-        if gy_fuel > 0:
+        if gy_fuel > 0 and _payoff_reachable_this_turn(
+                card, game, player_idx):
             signals.append('flashback_combo_with_gy_fuel')
 
     return signals
+
+
+def _is_real_dig(card: "CardInstance") -> bool:
+    """A 'real dig' card actually exposes new cards from the library
+    this turn — distinguishing genuine cantrips (Manamorphose,
+    Reckless Impulse, Wrenn's Resolve, Consider) from cards merely
+    tagged cantrip/card_advantage that don't draw (Past in Flames
+    grants flashback, Goblin Bombardment is sometimes mistagged).
+
+    Detection by oracle text — generic across the printed Modern
+    pool: "draw a card" / "draw N cards" / "exile the top N cards
+    of your library" / "look at the top N cards" / "search your
+    library".  No card names; covers any future printing using the
+    same templated wording."""
+    oracle = (card.template.oracle_text or '').lower()
+    if 'draw a card' in oracle or 'draw two card' in oracle:
+        return True
+    if 'draw three card' in oracle or 'draw cards' in oracle:
+        return True
+    if 'exile the top' in oracle and 'card' in oracle and (
+            'play' in oracle or 'cast' in oracle):
+        return True
+    if 'look at the top' in oracle:
+        return True
+    if 'search your library' in oracle:
+        return True
+    return False
+
+
+def _payoff_reachable_this_turn(card: "CardInstance",
+                                 game: "GameState",
+                                 player_idx: int) -> bool:
+    """Combo decks need a path to a payoff this turn for chain-
+    continuation casts to be worth resources.  Without it, the chain
+    spends mana for storm count that goes nowhere — verbose seed
+    50000 T4 (Storm) burned through Past in Flames 3× without
+    drawing Grapeshot.
+
+    Reachability:
+      (a) finisher in hand          (Keyword.STORM — Grapeshot,
+                                     Empty the Warrens, Galvanic
+                                     Relay, future storm cards)
+      (b) tutor in hand             (`'tutor' in tags` — Wish-pattern)
+      (c) cantrip dig in hand       (`'cantrip'`/`'card_advantage'`
+                                     in tags, excluding the card
+                                     being evaluated since PiF and
+                                     Manamorphose are themselves
+                                     cantrip-tagged)
+      (d) finisher already in graveyard with flashback granted
+          (Past in Flames already resolved — chain can replay it).
+
+    Detection is keyword/tag-based with no hardcoded card names —
+    applies to any combo deck declaring storm-keyword payoffs or
+    tutor-tagged enablers.
+    """
+    from engine.cards import Keyword as _Kw
+    me = game.players[player_idx]
+    hand = me.hand
+    for c in hand:
+        kws = c.template.keywords or set()
+        tags_c = c.template.tags or set()
+        if _Kw.STORM in kws:                       # (a)
+            return True
+        if 'tutor' in tags_c:                      # (b)
+            return True
+        if c is not card and _is_real_dig(c):
+            return True                            # (c)
+    # (d) finisher in graveyard with flashback access available
+    for c in me.graveyard:
+        if _Kw.STORM in (c.template.keywords or set()):
+            if c.has_flashback or 'flashback' in (
+                    c.template.tags or set()):
+                return True
+    return False
 
 
 def _compute_exposure_cost(card: "CardInstance", snap: EVSnapshot,
