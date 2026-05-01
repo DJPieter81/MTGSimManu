@@ -863,9 +863,40 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
             1 for c in gy
             if (c.template.is_instant or c.template.is_sorcery)
         )
-        if gy_fuel > 0 and _payoff_reachable_this_turn(
-                card, game, player_idx):
-            signals.append('flashback_combo_with_gy_fuel')
+        # Graveyard fuel is the load-bearing precondition: PiF without
+        # fuel is a 5-mana spell that does literally nothing, so the
+        # signal is correctly suppressed there (anchor test:
+        # `test_pif_no_signal_in_empty_graveyard`).  Beyond that, the
+        # gate splits on `storm_count`:
+        #
+        #   * storm_count == 0 (chain RESTART): no investment yet, so
+        #     casting PiF to expose the graveyard rituals for re-cast
+        #     is a positive-EV opening even without a payoff currently
+        #     in hand — the flashback'd cantrips will dig into the
+        #     library for one. This is the "PR #192 / PR #194 sister
+        #     bug" pattern: high-EV play wrongly filtered when no
+        #     hand-side payoff exists yet.
+        #
+        #   * storm_count > 0 (chain MID-FLIGHT): the chain has
+        #     already invested rituals/cantrips. Casting PiF here
+        #     without a reachable payoff burns more resources for no
+        #     incremental damage (verbose seed 50000: PiF×3 with no
+        #     Grapeshot drawn). Gate through `_payoff_reachable_this_turn`
+        #     so the deferral gate filters PiF when the chain can
+        #     no longer close.
+        #
+        # Both branches keep the rule mechanic-driven (storm_count is a
+        # real game-state quantity, not a tuning constant) and avoid
+        # hardcoding card names. Anchor tests:
+        # `test_pif_emits_signal_with_gy_fuel` (storm=0, must emit) and
+        # `test_pass_when_only_past_in_flames_left_no_finisher`
+        # (storm=6, must defer).
+        if gy_fuel > 0:
+            chain_restart = (snap.storm_count == 0)
+            payoff_reach = chain_restart or _payoff_reachable_this_turn(
+                card, game, player_idx)
+            if payoff_reach:
+                signals.append('flashback_combo_with_gy_fuel')
 
     return signals
 

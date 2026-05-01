@@ -751,17 +751,28 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
     # is not a finisher path; the SB ∪ library must contain a real
     # finisher.  PiF is only a finisher path when GY has fuel + we
     # have mana to cast it + a finisher exists to close the chain.
+    #
+    # `assessment.has_payoff` is the canonical "payoff-in-hand" signal
+    # produced by the zone assessor (see `_assess_storm_zone` →
+    # `what_is_missing`).  When the assessor has already confirmed a
+    # payoff is in hand, the hand-scan predicates (`_has_storm_finisher`
+    # / `_has_viable_pif`) are redundant: the chain has a real closer.
+    # Skipping them lets the reducer-first / patience heuristics below
+    # decide the timing.  When no payoff is confirmed, the hand-scan
+    # predicates remain the last defence against the speculative-chain
+    # mana-burn (CR 500.4).
     if role == 'fuel' and storm == 0 and 'ritual' in tags:
         rdata = getattr(card.template, 'ritual_mana', None)
         ritual_net = max(0, (rdata[1] - (card.template.cmc or 0))) if rdata else 0
-        has_finisher = _has_storm_finisher(card, me)
-        has_pif = _has_viable_pif(card, me, snap,
-                                   after_cast_card_cmc=(card.template.cmc or 0),
-                                   after_cast_ritual_net=ritual_net)
-        if not has_finisher and not has_pif and not snap.am_dead_next:
-            # No finisher path and not under lethal pressure — this
-            # ritual's mana empties at phase end (CR 500.4).  Hard hold.
-            return STORM_HARD_HOLD
+        if not a.has_payoff:
+            has_finisher = _has_storm_finisher(card, me)
+            has_pif = _has_viable_pif(card, me, snap,
+                                       after_cast_card_cmc=(card.template.cmc or 0),
+                                       after_cast_ritual_net=ritual_net)
+            if not has_finisher and not has_pif and not snap.am_dead_next:
+                # No finisher path and not under lethal pressure — this
+                # ritual's mana empties at phase end (CR 500.4).  Hard hold.
+                return STORM_HARD_HOLD
 
         # ── Reducer-first heuristic: rituals are worth more AFTER a reducer ──
         # If no reducer deployed yet but one exists in hand and is castable,
