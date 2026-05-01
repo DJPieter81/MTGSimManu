@@ -52,6 +52,54 @@ class ResponseDecider:
 
         threat = self.evaluate_stack_threat(game, stack_item)
 
+        # Triage rule (counter vs. flash creature-exile):
+        # If the stack threat is a creature AND a flash/instant
+        # creature-removal in hand can answer it post-resolution, the
+        # counter is REDUNDANT against this threat and should be
+        # reserved for non-creature threats (artifacts, planeswalkers,
+        # sorceries) that creature-removal cannot touch.  Skipping the
+        # counter for this creature lets the flash-removal handle it
+        # and preserves the counter as the deck's only answer to
+        # uncounterable-by-creature-removal threats.
+        # Class size: applies to any (counter, flash creature-removal)
+        # pairing — Solitude / Subtlety / Endurance / Path to Exile /
+        # Fatal Push / Lightning Bolt / Swords to Plowshares / etc.
+        #
+        # Override: if the threat is so large that the post-resolution
+        # path can't save us (lethal on resolution — burn at our face
+        # at low life, or a creature swing already lethal), triage is
+        # suspended and the counter fires regardless.
+        #
+        # Threshold uses `card_clock_impact` to derive the floor value
+        # of holding a counter.  A held counter is worth at least
+        # `card_clock_impact(snap) × 20.0` in future EV (same `× 20.0`
+        # scaling the threat evaluator uses for equipment / cascade).
+        # Override fires when the current threat exceeds the LETHAL
+        # sentinel scale (`evaluate_stack_threat`'s 100.0) — at half-
+        # sentinel we already accept that no future use of the counter
+        # is more important than this one.
+        from ai.clock import card_clock_impact
+        from ai.ev_evaluator import snapshot_from_game
+        snap_self = snapshot_from_game(game, self.player_idx)
+        # Floor on held-counter EV — a held counter is worth at least
+        # this much when reserved for a future non-creature threat.
+        # Used as the lower bound for the triage decision.
+        held_counter_floor_ev = card_clock_impact(snap_self) * 20.0
+        # Near-lethal cutoff: ½ × LETHAL_THREAT (sentinel inside
+        # `evaluate_stack_threat`).  Above this, the counter must fire
+        # because no held-counter future EV can outweigh "we lose now".
+        NEAR_LETHAL_CUTOFF = 50.0  # rules constant: ½ × LETHAL_THREAT (=100)
+        # Triage suspends only when current threat dominates BOTH the
+        # near-lethal cutoff AND any plausible held-counter future EV.
+        triage_overridden = (
+            threat >= NEAR_LETHAL_CUTOFF
+            and threat > held_counter_floor_ev
+        )
+        skip_counter_for_this_creature = (
+            not triage_overridden
+            and self._has_post_resolution_creature_answer(game, stack_item)
+        )
+
         # Try TurnPlanner's evaluate_response first
         try:
             from ai.turn_planner import extract_virtual_board, VirtualSpell
@@ -75,6 +123,19 @@ class ResponseDecider:
 
             v_responses = []
             for inst in instants:
+                # Triage: drop redundant counters when a post-resolution
+                # creature-exile is available.
+                if (skip_counter_for_this_creature
+                        and "counterspell" in inst.template.tags):
+                    # Allow nearly-free pitch counters through (their
+                    # opportunity cost is low — exiled card vs. UU).
+                    effective_cost = self._effective_counter_cost(game, inst)
+                    # Rules constant: a "free" pitch counter on opp's
+                    # turn costs 1 (the exiled card).  Counters costing
+                    # 2+ effective should be reserved.
+                    PITCH_COUNTER_FREE_COST = 1
+                    if effective_cost > PITCH_COUNTER_FREE_COST:
+                        continue
                 # Use *effective* cost: pitch counters on opp turn cost 1 card,
                 # not their printed CMC. Without this, TurnPlanner would
                 # prefer the printed-cheaper counter (Counterspell at 2)
@@ -129,10 +190,22 @@ class ResponseDecider:
         # Bug R2 (docs/diagnostics consolidated affinity findings).
         response_value = threat
         counter_candidates: List[Tuple[int, "CardInstance"]] = []
+        # Rules constant: a "free" pitch counter on opp's turn costs 1
+        # (the exiled card).  Counters with effective cost > 1 are
+        # reserved when a post-resolution creature-exile is available.
+        PITCH_COUNTER_FREE_COST = 1
         for instant in instants:
             if "counterspell" not in instant.template.tags:
                 continue
             if not stack_item.source.template.is_spell:
+                continue
+            # Triage: skip redundant counters when a post-resolution
+            # creature-exile in hand can answer the same threat.  Free
+            # pitch counters (effective cost ≤ 1) are still considered
+            # — their opportunity cost is too low to reserve.
+            cost = self._effective_counter_cost(game, instant)
+            if (skip_counter_for_this_creature
+                    and cost > PITCH_COUNTER_FREE_COST):
                 continue
             # Targeting restrictions from oracle text
             oracle = (instant.template.oracle_text or '').lower()
@@ -142,7 +215,6 @@ class ResponseDecider:
             if ('instant or sorcery' in oracle
                 and not (target_spell.is_instant or target_spell.is_sorcery)):
                 continue
-            cost = self._effective_counter_cost(game, instant)
             counter_candidates.append((cost, instant))
 
         if counter_candidates:
@@ -260,6 +332,85 @@ class ResponseDecider:
         if is_pitch_counter:
             return 1  # one exiled card, no mana
         return instant.template.cmc
+
+    def _has_post_resolution_creature_answer(
+        self, game: "GameState", stack_item: "StackItem",
+    ) -> bool:
+        """True iff a flash/instant creature-removal in our hand could
+        kill the stack creature once it resolves onto the battlefield.
+
+        Triage rule: when a counterspell candidate and a flash/instant
+        creature-removal both target the same creature spell, the counter
+        is the strictly more flexible card (counter answers any spell;
+        creature-removal only answers creatures).  Reserve the counter
+        for non-creature threats — let the creature spell resolve and
+        die to the post-resolution answer.
+
+        Class size (>10 cards): Solitude, Subtlety-style flashable
+        creature-exile (any creature with `removal` tag and Flash),
+        Path to Exile, Swords to Plowshares, Lightning Bolt-style burn
+        (when target's toughness ≤ damage), March of Otherworldly Light,
+        Generous Visitor, Otawara channel, Skyclave Apparition (flash
+        equipped), Fatal Push, Cut Down — every flash creature-removal.
+
+        Looks at full hand (not just `can_cast`-filtered instants):
+        evoke-pitch creatures gate `can_cast` on `should_evoke` callback
+        decisions, which would mask their availability here.  The triage
+        check is about CAPACITY — does the hand contain a removal card
+        that could answer this creature post-resolution if the AI chose
+        to fire it.  Whether to actually fire it is decided downstream.
+
+        Filter by what can ACTUALLY kill the threat:
+        - Burn removal: damage must reach toughness.
+        - Exile/destroy creature removal: any creature target works,
+          modulo standard targeting restrictions.
+        """
+        src = stack_item.source
+        tmpl = src.template
+        if not tmpl.is_creature:
+            return False
+
+        from decks.card_knowledge_loader import get_burn_damage
+
+        target_toughness = tmpl.toughness or 0
+        # We use printed toughness as the resolved value — affinity /
+        # cost-reduction effects don't change body stats, only mana cost.
+
+        player = game.players[self.player_idx]
+        for inst in player.hand:
+            i_tmpl = inst.template
+            i_tags = i_tmpl.tags
+            if "removal" not in i_tags:
+                continue
+            if "counterspell" in i_tags:
+                continue  # not a post-resolution answer
+            # Must be flash-speed answer (instant, has-flash, or evoke-
+            # pitch flash creature — Solitude / Subtlety-style).
+            is_flash_speed = (
+                i_tmpl.is_instant or i_tmpl.has_flash
+                or "instant_speed" in i_tags
+            )
+            if not is_flash_speed:
+                continue
+
+            # Burn removal: filter by lethality on the target's toughness.
+            burn = get_burn_damage(i_tmpl.name)
+            if burn > 0:
+                if burn < target_toughness:
+                    continue
+                return True
+
+            # Exile / destroy / bounce target creature: standard creature
+            # removal — assume it can answer any creature target.  Tags
+            # `destroy_target_creature` and `removal` (without `burn`) cover
+            # Path to Exile / Solitude / Fatal Push / Swords to Plowshares.
+            o = (i_tmpl.oracle_text or '').lower()
+            # Skip removal that targets only our own creatures.
+            if 'target creature you control' in o and 'opponent' not in o:
+                continue
+            return True
+
+        return False
 
     def evaluate_stack_threat(self, game: "GameState", stack_item: "StackItem") -> float:
         """Evaluate how threatening a stack item is using clock impact.
