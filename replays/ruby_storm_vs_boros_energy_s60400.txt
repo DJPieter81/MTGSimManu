@@ -1,0 +1,1445 @@
+Loaded 21759 cards (0 errors)
+  Sideboard (Boros Energy vs Ruby Storm): +1 Celestial Purge, -1 Galvanic Discharge
+======================================================================
+  GAME 1: Ruby Storm (P1) vs Boros Energy (P2)  —  seed 60400
+  Series: Ruby Storm 0 - 0 Boros Energy
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Ruby Storm wins → chooses to play first
+║ P1 (on play): Ruby Storm
+║ P2 (on draw): Boros Energy
+╚═══════════════════════════════════════════════════════
+
+P1 (Ruby Storm) opening hand (2 lands, 5 spells):
+  • Scalding Tarn [Land, CMC 0]
+  • Ral, Monsoon Mage // Ral, Leyline Prodigy [Creature, CMC 2]
+  • Ral, Monsoon Mage // Ral, Leyline Prodigy [Creature, CMC 2]
+  • Elegant Parlor [Land, CMC 0]
+  • Ral, Monsoon Mage // Ral, Leyline Prodigy [Creature, CMC 2]
+  • Desperate Ritual [Spell, CMC 2]
+  • Reckless Impulse [Spell, CMC 2]
+→ P1 MULLIGANS (no cost reducer and no ritual+cantrip+finisher backup)
+  New hand (3 lands, 4 spells): ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Pyretic Ritual', 'Desperate Ritual', 'Arid Mesa', 'Desperate Ritual', 'Arid Mesa', 'Elegant Parlor']
+→ P1 mulligans to 6, bottoms: ['Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Keeps: ['Pyretic Ritual', 'Desperate Ritual', 'Arid Mesa', 'Desperate Ritual', 'Arid Mesa', 'Elegant Parlor']
+
+P2 (Boros Energy) opening hand (2 lands, 5 spells):
+  • Ocelot Pride [Creature, CMC 1]
+  • Guide of Souls [Creature, CMC 1]
+  • Goblin Bombardment [Spell, CMC 2]
+  • Arena of Glory [Land, CMC 0]
+  • Ajani, Nacatl Pariah // Ajani, Nacatl Avenger [Creature, CMC 2]
+  • Mountain [Land, CMC 0]
+  • Thraben Charm [Spell, CMC 2]
+→ P2 KEEPS 7 — has key card(s): Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Guide of Souls, Ocelot Pride, 5 cheap spells
+
+
+╔══ TURN 1 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 20  |  Boros Energy 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 54  |  Graveyard: 0
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Arid Mesa
+T1 P1: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (untapped, life: 17)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Ruby Storm 17
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Main 1]
+T1 P2: Play Mountain
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 17  |  Boros Energy 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 1
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Scalding Tarn
+  [Main 1]
+T2 P1: Play Scalding Tarn
+T2 P1: Crack Scalding Tarn -> Mountain (untapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Ruby Storm 16
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Mountain
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thraben Charm
+  [Main 1]
+T2 P2: Play Arena of Glory (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 16  |  Boros Energy 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 2
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Mountain, Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mountain
+  [Main 1]
+T3 P1: Play Arid Mesa
+T3 P1: Crack Arid Mesa -> Mountain (untapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Ruby Storm 15
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Mountain, Arena of Glory
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Phlage, Titan of Fire's Fury
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T3: Phlage, Titan of Fire's Fury moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 4 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 15  |  Boros Energy 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 3
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain, Mountain
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Mountain, Arena of Glory
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Reckless Impulse
+  [Main 1]
+T4 P1: Play Mountain
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R, Mountain→R (paying for Reckless Impulse, 4 mana remaining)
+T4 P1: Cast Reckless Impulse (1R)
+    [Priority] P2 passes (no response)
+T4: Resolve Reckless Impulse
+T4 P1: Reckless Impulse → draw 2 (Ral, Monsoon Mage // Ral, Leyline Prodigy, Past in Flames)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R, Sacred Foundry→R (paying for Pyretic Ritual, 2 mana remaining)
+T4 P1: Cast Pyretic Ritual (1R)
+    [Priority] P2 passes (no response)
+T4: Resolve Pyretic Ritual
+T4 P1: Pyretic Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T4 P1: Cast Desperate Ritual (1R)
+    [Priority] P2 passes (no response)
+T4: Resolve Desperate Ritual
+T4 P1: Desperate Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T4 P1: Cast Past in Flames (3R)
+    [Priority] P2 passes (no response)
+T4: Resolve Past in Flames
+T4 P1: Past in Flames grants flashback
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Ruby Storm 15
+║ Hand: 7 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Mountain, Arena of Glory
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Mountain [T], Mountain [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Dalkovan Encampment
+  [Main 1]
+T4 P2: Play Dalkovan Encampment (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 15  |  Boros Energy 20
+║ Hand: 3 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 7
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain, Mountain, Mountain
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Mountain, Arena of Glory, Dalkovan Encampment [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wrenn's Resolve
+  [Main 1]
+T5 P1: Play Elegant Parlor (enters tapped)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R, Mountain→R (paying for Wrenn's Resolve, 4 mana remaining)
+T5 P1: Cast Wrenn's Resolve (1R)
+    [Priority] P2 passes (no response)
+T5: Resolve Wrenn's Resolve
+T5 P1: Wrenn's Resolve → draw 2 (Wish, Manamorphose)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R, Sacred Foundry→R (paying for Manamorphose, 2 mana remaining)
+T5 P1: Cast Manamorphose (2)
+    [Priority] P2 passes (no response)
+T5: Resolve Manamorphose
+T5 P1: Manamorphose adds 2 any mana
+    → Goal: execute_payoff [enablers]
+T5 P1: Cast Desperate Ritual (1R)
+    [Priority] P2 passes (no response)
+T5: Resolve Desperate Ritual
+T5 P1: Desperate Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T5 P1: Cast Wish (2R)
+    [Priority] P2 passes (no response)
+T5: Resolve Wish
+T5 P1: Wish finds Past in Flames (from sideboard)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Ruby Storm 15
+║ Hand: 7 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 49  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Mountain, Arena of Glory, Dalkovan Encampment
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Mountain [T], Mountain [T], Mountain [T], Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Plains
+  [Main 1]
+T5 P2: Play Plains
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Dalkovan Encampment→W, Mountain→R (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 4 mana remaining)
+T5 P2: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P1 passes (no response)
+T5: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T5 P2: Create 1x Cat token(s)
+T5 P2: Ajani creates 2/1 Cat Warrior token
+    → Goal: curve_out [enablers]
+    [Mana] Tap Plains→W (paying for Ocelot Pride, 2 mana remaining)
+T5 P2: Cast Ocelot Pride (W)
+    [Priority] P1 passes (no response)
+T5: Resolve Ocelot Pride
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 15  |  Boros Energy 20
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 42  |  Graveyard: 11
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain, Mountain, Mountain, Elegant Parlor
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1), Ocelot Pride (1/1)
+║   Lands: Mountain [T], Arena of Glory, Dalkovan Encampment [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Glimpse the Impossible
+  [Main 1]
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R, Mountain→R (paying for Reckless Impulse, 5 mana remaining)
+T6 P1: Cast Reckless Impulse (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Reckless Impulse
+T6 P1: Reckless Impulse → draw 2 (Desperate Ritual, Manamorphose)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R, Sacred Foundry→R (paying for Manamorphose, 3 mana remaining)
+T6 P1: Cast Manamorphose (2)
+    [Priority] P2 passes (no response)
+T6: Resolve Manamorphose
+T6 P1: Manamorphose adds 2 any mana
+    → Goal: execute_payoff [enablers]
+    → Goal: execute_payoff [enablers]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Ruby Storm 15
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1), Ocelot Pride (1/1)
+║   Lands: Mountain, Arena of Glory, Dalkovan Encampment, Plains
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Mountain [T], Mountain [T], Mountain [T], Elegant Parlor
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ranger-Captain of Eos
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Dalkovan Encampment→W (paying for Guide of Souls, 4 mana remaining)
+T6 P2: Cast Guide of Souls (W)
+    [Priority] P1 passes (no response)
+T6: Resolve Guide of Souls
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token, Ocelot Pride
+T6 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token, Ocelot Pride
+  [Declare Blockers] P1 does not block
+T6 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T6 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T6 P2:   Cat Token (2/1) → 2 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 15 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 11  |  Boros Energy 21
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 38  |  Graveyard: 11
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain, Mountain, Mountain, Elegant Parlor
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Cat Token (2/1) [tapped], Ocelot Pride (1/1) [tapped], Guide of Souls (1/2)
+║   Lands: Mountain, Arena of Glory, Dalkovan Encampment [T], Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Pyretic Ritual
+  [Main 1]
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R, Mountain→R, Mountain→R (paying for Glimpse the Impossible, 5 mana remaining)
+T7 P1: Cast Glimpse the Impossible (2R)
+    [Priority] P2 passes (no response)
+T7: Resolve Glimpse the Impossible
+T7 P1: Glimpse the Impossible → draw 3 (Manamorphose, Ruby Medallion, Gemstone Caverns)
+T7 P1: Play Gemstone Caverns
+    → Goal: execute_payoff
+    [Mana] Tap Sacred Foundry→R, Elegant Parlor→R (paying for Ruby Medallion, 3 mana remaining)
+T7 P1: Cast Ruby Medallion (2)
+    [Priority] P2 passes (no response)
+T7: Resolve Ruby Medallion
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Gemstone Caverns→B (paying for Manamorphose, 1 mana remaining)
+T7 P1: Cast Manamorphose (2)
+    [Priority] P2 passes (no response)
+T7: Resolve Manamorphose
+T7 P1: Manamorphose adds 2 any mana
+    → Goal: execute_payoff [enablers]
+T7 P1: Cast Reckless Impulse (1R)
+    [Priority] P2 passes (no response)
+T7: Resolve Reckless Impulse
+T7 P1: Reckless Impulse → draw 2 (Elegant Parlor, Reckless Impulse)
+    → Goal: execute_payoff [enablers]
+T7 P1: Cast Reckless Impulse (1R)
+    [Priority] P2 passes (no response)
+T7: Resolve Reckless Impulse
+T7 P1: Reckless Impulse → draw 2 (Thundering Falls, Wish)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T7: Past in Flames moved hand -> graveyard (discard to hand size)
+T7: Past in Flames moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 7 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 21  |  Ruby Storm 11
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 47  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1), Ocelot Pride (1/1), Guide of Souls (1/2)
+║   Lands: Mountain, Arena of Glory, Dalkovan Encampment, Plains
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry [T], Mountain [T], Mountain [T], Mountain [T], Elegant Parlor [T], Gemstone Caverns [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Dalkovan Encampment→W, Plains→W, Mountain→R (paying for Ranger-Captain of Eos, 4 mana remaining)
+T7 P2: Cast Ranger-Captain of Eos (1WW)
+    [Priority] P1 passes (no response)
+T7: Resolve Ranger-Captain of Eos
+T7 P2: Ranger-Captain tutors Guide of Souls to hand
+T7 P2: Gain 1 life from Guide of Souls (life: 22)
+T7 P2: +1 energy from Guide of Souls (total: 1)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token, Ocelot Pride, Guide of Souls
+T7 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token, Ocelot Pride, Guide of Souls
+  [Declare Blockers] P1 does not block
+T7 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T7 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T7 P2:   Cat Token (2/1) → 2 dmg to player
+T7 P2:   Guide of Souls (1/2) → 1 dmg to player
+  [Combat Damage] 5 damage dealt → P1 life: 11 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 6  |  Boros Energy 23
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 6  |  Opp lands: 4
+║ Library: 29  |  Graveyard: 17
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry, Mountain, Mountain, Mountain, Elegant Parlor, Gemstone Caverns
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Cat Token (2/1) [tapped], Ocelot Pride (1/1) [tapped], Guide of Souls (1/2) [tapped], Ranger-Captain of Eos (3/3)
+║   Lands: Mountain [T], Arena of Glory, Dalkovan Encampment [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Pyretic Ritual
+  [Main 1]
+T8 P1: Play Elegant Parlor (enters tapped)
+    → Goal: execute_payoff
+    [Mana] Tap Gemstone Caverns→U, Mountain→R (paying for Ral, Monsoon Mage // Ral, Leyline Prodigy, 6 mana remaining)
+T8 P1: Cast Ral, Monsoon Mage // Ral, Leyline Prodigy (UR)
+    [Priority] P2 passes (no response)
+T8: Resolve Ral, Monsoon Mage // Ral, Leyline Prodigy
+T8 P1: Ral, Monsoon Mage enters — instants/sorceries cost {1} less
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Desperate Ritual, 4 mana remaining)
+T8 P1: Cast Desperate Ritual (1R)
+    [Priority] P2 passes (no response)
+T8: Resolve Desperate Ritual
+T8 P1: Desperate Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T8 P1: Cast Pyretic Ritual (1R)
+    [Priority] P2 passes (no response)
+T8: Resolve Pyretic Ritual
+T8 P1: Pyretic Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T8 P1: Cast Pyretic Ritual (1R)
+    [Priority] P2 passes (no response)
+T8: Resolve Pyretic Ritual
+T8 P1: Pyretic Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T8 P1: Cast Wish (2R)
+    [Priority] P2 passes (no response)
+T8: Resolve Wish
+T8 P1: Wish finds Grapeshot (from sideboard)
+    → Goal: execute_payoff [payoffs]
+T8 P1: Cast Grapeshot (1R)
+    [Priority] P2 passes (no response)
+T8: Resolve Grapeshot
+T8 P1: Grapeshot deals 1 damage (opponent life: 22)
+T8: Storm copies: 5
+T8 P1: Grapeshot deals 1 damage (opponent life: 21)
+T8 P1: Grapeshot deals 1 damage (opponent life: 20)
+T8 P1: Grapeshot deals 1 damage (opponent life: 19)
+T8 P1: Grapeshot deals 1 damage (opponent life: 18)
+T8 P1: Grapeshot deals 1 damage (opponent life: 17)
+    → Goal: execute_payoff [enablers]
+T8 P1: Cast Pyretic Ritual (1R)
+    [Priority] P2 passes (no response)
+T8: Resolve Pyretic Ritual
+T8 P1: Pyretic Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T8 P1: Cast Desperate Ritual (1R)
+    [Priority] P2 passes (no response)
+T8: Resolve Desperate Ritual
+T8 P1: Desperate Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T8 P1: Cast Past in Flames (3R)
+    [Priority] P2 passes (no response)
+T8: Resolve Past in Flames
+T8 P1: Past in Flames grants flashback
+    → Goal: execute_payoff [enablers]
+T8 P1: Cast Wish (2R)
+    [Priority] P2 passes (no response)
+T8: Resolve Wish
+T8 P1: Wish finds Empty the Warrens (from sideboard)
+    → Goal: execute_payoff [payoffs]
+T8 P1: Cast Empty the Warrens (3R)
+    [Priority] P2 passes (no response)
+T8: Resolve Empty the Warrens
+T8 P1: Create 2x Goblin token(s)
+T8 P1: Empty the Warrens creates 2 Goblin tokens
+T8: Storm copies: 10
+T8 P1: Create 2x Goblin token(s)
+T8 P1: Empty the Warrens creates 2 Goblin tokens
+T8 P1: Create 2x Goblin token(s)
+T8 P1: Empty the Warrens creates 2 Goblin tokens
+T8 P1: Create 2x Goblin token(s)
+T8 P1: Empty the Warrens creates 2 Goblin tokens
+T8 P1: Create 2x Goblin token(s)
+T8 P1: Empty the Warrens creates 2 Goblin tokens
+T8 P1: Create 2x Goblin token(s)
+T8 P1: Empty the Warrens creates 2 Goblin tokens
+T8 P1: Create 2x Goblin token(s)
+T8 P1: Empty the Warrens creates 2 Goblin tokens
+T8 P1: Create 2x Goblin token(s)
+T8 P1: Empty the Warrens creates 2 Goblin tokens
+T8 P1: Create 2x Goblin token(s)
+T8 P1: Empty the Warrens creates 2 Goblin tokens
+T8 P1: Create 2x Goblin token(s)
+T8 P1: Empty the Warrens creates 2 Goblin tokens
+T8 P1: Create 2x Goblin token(s)
+T8 P1: Empty the Warrens creates 2 Goblin tokens
+    → Goal: execute_payoff [enablers]
+T8 P1: Cast Wish (2R)
+    [Priority] P2 passes (no response)
+T8: Resolve Wish
+T8 P1: Wish finds Brotherhood's End (from sideboard)
+    → Goal: execute_payoff [payoffs]
+T8 P1: Cast Grapeshot (1R)
+    [Priority] P2 passes (no response)
+T8: Resolve Grapeshot
+T8 P1: Grapeshot deals 1 damage (opponent life: 16)
+T8: Storm copies: 12
+T8 P1: Grapeshot deals 1 damage (opponent life: 15)
+T8 P1: Grapeshot deals 1 damage (opponent life: 14)
+T8 P1: Grapeshot deals 1 damage (opponent life: 13)
+T8 P1: Grapeshot deals 1 damage (opponent life: 12)
+T8 P1: Grapeshot deals 1 damage (opponent life: 11)
+T8 P1: Grapeshot deals 1 damage (opponent life: 10)
+T8 P1: Grapeshot deals 1 damage (opponent life: 9)
+T8 P1: Grapeshot deals 1 damage (opponent life: 8)
+T8 P1: Grapeshot deals 1 damage (opponent life: 7)
+T8 P1: Grapeshot deals 1 damage (opponent life: 6)
+T8 P1: Grapeshot deals 1 damage (opponent life: 5)
+T8 P1: Grapeshot deals 1 damage (opponent life: 4)
+    → Goal: execute_payoff [enablers]
+T8 P1: Cast Past in Flames (3R)
+    [Priority] P2 passes (no response)
+T8: Resolve Past in Flames
+T8 P1: Past in Flames grants flashback
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Mountain→R, Sacred Foundry→R (paying for Empty the Warrens, 3 mana remaining)
+T8 P1: Cast Empty the Warrens (3R)
+    [Priority] P2 passes (no response)
+T8: Resolve Empty the Warrens
+T8 P1: Create 2x Goblin token(s)
+T8 P1: Empty the Warrens creates 2 Goblin tokens
+T8: Storm copies: 14
+T8 P1: Create 2x Goblin token(s)
+T8 P1: Empty the Warrens creates 2 Goblin tokens
+T8 P1: Create 2x Goblin token(s)
+T8 P1: Empty the Warrens creates 2 Goblin tokens
+T8 P1: Create 2x Goblin token(s)
+T8 P1: Empty the Warrens creates 2 Goblin tokens
+T8 P1: Create 2x Goblin token(s)
+T8 P1: Empty the Warrens creates 2 Goblin tokens
+T8 P1: Create 2x Goblin token(s)
+T8 P1: Empty the Warrens creates 2 Goblin tokens
+T8 P1: Create 2x Goblin token(s)
+T8 P1: Empty the Warrens creates 2 Goblin tokens
+T8 P1: Create 2x Goblin token(s)
+T8 P1: Empty the Warrens creates 2 Goblin tokens
+T8 P1: Create 2x Goblin token(s)
+T8 P1: Empty the Warrens creates 2 Goblin tokens
+T8 P1: Create 2x Goblin token(s)
+T8 P1: Empty the Warrens creates 2 Goblin tokens
+T8 P1: Create 2x Goblin token(s)
+T8 P1: Empty the Warrens creates 2 Goblin tokens
+T8 P1: Create 2x Goblin token(s)
+T8 P1: Empty the Warrens creates 2 Goblin tokens
+T8 P1: Create 2x Goblin token(s)
+T8 P1: Empty the Warrens creates 2 Goblin tokens
+T8 P1: Create 2x Goblin token(s)
+T8 P1: Empty the Warrens creates 2 Goblin tokens
+T8 P1: Create 2x Goblin token(s)
+T8 P1: Empty the Warrens creates 2 Goblin tokens
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Elegant Parlor→R (paying for Wrenn's Resolve, 1 mana remaining)
+T8 P1: Cast Wrenn's Resolve (1R)
+    [Priority] P2 passes (no response)
+T8: Resolve Wrenn's Resolve
+T8 P1: Wrenn's Resolve → draw 2 (Glimpse the Impossible, Wrenn's Resolve)
+    → Goal: execute_payoff [enablers]
+T8 P1: Cast Manamorphose (2)
+    [Priority] P2 passes (no response)
+T8: Resolve Manamorphose
+T8 P1: Manamorphose adds 2 any mana
+    → Goal: execute_payoff [enablers]
+T8 P1: Cast Manamorphose (2)
+    [Priority] P2 passes (no response)
+T8: Resolve Manamorphose
+T8 P1: Manamorphose adds 2 any mana
+    → Goal: execute_payoff
+T8 P1: Cast Ruby Medallion (2)
+    [Priority] P2 passes (no response)
+T8: Resolve Ruby Medallion
+    → Goal: execute_payoff [enablers]
+T8 P1: Cast Manamorphose (2)
+    [Priority] P2 passes (no response)
+T8: Resolve Manamorphose
+T8 P1: Manamorphose adds 2 any mana
+    → Goal: execute_payoff [enablers]
+T8 P1: Cast Desperate Ritual (1R)
+    [Priority] P2 passes (no response)
+T8: Resolve Desperate Ritual
+T8 P1: Desperate Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T8 P1: Cast Desperate Ritual (1R)
+    [Priority] P2 passes (no response)
+T8: Resolve Desperate Ritual
+T8 P1: Desperate Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T8 P1: Cast Desperate Ritual (1R)
+    [Priority] P2 passes (no response)
+T8: Resolve Desperate Ritual
+T8 P1: Desperate Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T8 P1: Cast Pyretic Ritual (1R)
+    [Priority] P2 passes (no response)
+T8: Resolve Pyretic Ritual
+T8 P1: Pyretic Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T8 P1: Cast Pyretic Ritual (1R)
+    [Priority] P2 passes (no response)
+T8: Resolve Pyretic Ritual
+T8 P1: Pyretic Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T8 P1: Cast Wrenn's Resolve (1R)
+    [Priority] P2 passes (no response)
+T8: Resolve Wrenn's Resolve
+T8 P1: Wrenn's Resolve → draw 2 (Mountain, Wrenn's Resolve)
+    → Goal: execute_payoff [enablers]
+T8 P1: Cast Wrenn's Resolve (1R)
+    [Priority] P2 passes (no response)
+T8: Resolve Wrenn's Resolve
+T8 P1: Wrenn's Resolve → draw 2 (Sunbaked Canyon, Arid Mesa)
+    → Goal: execute_payoff [enablers]
+T8 P1: Cast Reckless Impulse (1R)
+    [Priority] P2 passes (no response)
+T8: Resolve Reckless Impulse
+T8 P1: Reckless Impulse → draw 2 (Bloodstained Mire, Wooded Foothills)
+    → Goal: execute_payoff [enablers]
+T8 P1: Cast Reckless Impulse (1R)
+    [Priority] P2 passes (no response)
+T8: Resolve Reckless Impulse
+T8 P1: Reckless Impulse → draw 2 (March of Reckless Joy, Ruby Medallion)
+    → Goal: execute_payoff
+T8 P1: Cast Ruby Medallion (2)
+    [Priority] P2 passes (no response)
+T8: Resolve Ruby Medallion
+    → Goal: execute_payoff [enablers]
+T8 P1: Cast March of Reckless Joy (7R) (X=7)
+    [Priority] P2 passes (no response)
+T8: Resolve March of Reckless Joy
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T8: Thundering Falls moved hand -> graveyard (discard to hand size)
+T8: Bloodstained Mire moved hand -> graveyard (discard to hand size)
+T8: Mountain moved hand -> graveyard (discard to hand size)
+T8: Sunbaked Canyon moved hand -> graveyard (discard to hand size)
+T8: Arid Mesa moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 8 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 4  |  Ruby Storm 6
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 7
+║ Library: 45  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1), Ocelot Pride (1/1), Guide of Souls (1/2), Ranger-Captain of Eos (3/3)
+║   Lands: Mountain, Arena of Glory, Dalkovan Encampment, Plains
+║ Ruby Storm board:
+║   Creatures: Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1), Goblin Token (1/1)
+║   Other: Ruby Medallion, Ruby Medallion, Ruby Medallion
+║   Lands: Sacred Foundry [T], Mountain [T], Mountain [T], Mountain [T], Elegant Parlor [T], Gemstone Caverns [T], Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Windswept Heath
+  [Main 1]
+T8 P2: Play Windswept Heath
+T8 P2: Crack Windswept Heath (pay 1 life) -> Sacred Foundry (untapped, life: 1)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Dalkovan Encampment→W (paying for Guide of Souls, 5 mana remaining)
+T8 P2: Cast Guide of Souls (W)
+    [Priority] P1 passes (no response)
+T8: Resolve Guide of Souls
+T8 P2: Gain 1 life from Guide of Souls (life: 2)
+T8 P2: +1 energy from Guide of Souls (total: 2)
+    → Goal: curve_out [interaction]
+    [Mana] Tap Plains→W, Mountain→R (paying for Thraben Charm, 4 mana remaining)
+T8 P2: Cast Thraben Charm (1W)
+    [Priority] P1 passes (no response)
+T8: Resolve Thraben Charm
+T8 P2: Thraben Charm exiles opponent's graveyard (14 CMC)
+    → Goal: curve_out [interaction]
+    [Mana] Tap Sacred Foundry→W, Arena of Glory→R (paying for Thraben Charm, 2 mana remaining)
+T8 P2: Cast Thraben Charm (1W)
+    [Priority] P1 passes (no response)
+T8: Resolve Thraben Charm
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8: Goblin Token dies
+T8 P2: Thraben Charm -1/-1 kills 52 tokens
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token, Ocelot Pride, Guide of Souls, Ranger-Captain of Eos
+T8 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token, Ocelot Pride, Guide of Souls, Ranger-Captain of Eos
+T8 P1:   [BLOCK-EMERGENCY] Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2) blocks Ranger-Captain of Eos (3/3) — chump block
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T8 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T8 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T8 P2:   Cat Token (2/1) → 2 dmg to player
+T8 P2:   Guide of Souls (1/2) → 1 dmg to player
+T8: Ral, Monsoon Mage // Ral, Leyline Prodigy dies
+  [Combat Damage] 5 damage dealt → P1 life: 6 → 1
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 1  |  Boros Energy 3
+║ Hand: 7 cards  |  Opp hand: 3 cards
+║ Lands: 7  |  Opp lands: 5
+║ Library: 13  |  Graveyard: 53
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion, Ruby Medallion, Ruby Medallion
+║   Lands: Sacred Foundry, Mountain, Mountain, Mountain, Elegant Parlor, Gemstone Caverns, Elegant Parlor
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Cat Token (2/1) [tapped], Ocelot Pride (1/1) [tapped], Guide of Souls (1/2) [tapped], Ranger-Captain of Eos (3/3) [tapped], Guide of Souls (1/2)
+║   Lands: Mountain [T], Arena of Glory [T], Dalkovan Encampment [T], Plains [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ruby Medallion
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Mountain→R, Mountain→R (paying for Ruby Medallion, 7 mana remaining)
+T9 P1: Cast Ruby Medallion (2)
+    [Priority] P2 passes (no response)
+T9: Resolve Ruby Medallion
+    → Goal: execute_payoff
+    [Mana] Tap Mountain→R, Sacred Foundry→R (paying for Brotherhood's End, 5 mana remaining)
+T9 P1: Cast Brotherhood's End (1RR)
+    [Priority] P2 passes (no response)
+T9: Resolve Brotherhood's End
+T9: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger dies
+T9: Cat Token dies
+T9: Ocelot Pride dies
+T9: Guide of Souls dies
+T9: Ranger-Captain of Eos dies
+T9: Guide of Souls dies
+P2 loses: life total 0
+
+>>> Ruby Storm wins Game 1 on turn 9 via damage
+    Final life: Ruby Storm=1  Boros Energy=0
+
+======================================================================
+  GAME 2: Boros Energy (P1) vs Ruby Storm (P2)  —  seed 60401
+  Series: Ruby Storm 1 - 0 Boros Energy
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Boros Energy wins → chooses to play first
+║ P1 (on play): Boros Energy
+║ P2 (on draw): Ruby Storm
+╚═══════════════════════════════════════════════════════
+
+P1 (Boros Energy) opening hand (2 lands, 5 spells):
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Phlage, Titan of Fire's Fury [Creature, CMC 3]
+  • Phlage, Titan of Fire's Fury [Creature, CMC 3]
+  • Thraben Charm [Spell, CMC 2]
+  • Windswept Heath [Land, CMC 0]
+  • Sacred Foundry [Land, CMC 0]
+  • The Legend of Roku // Avatar Roku [Spell, CMC 4]
+→ P1 KEEPS 7 — has key card(s): Ragavan, Nimble Pilferer, 4 cheap spells
+
+P2 (Ruby Storm) opening hand (2 lands, 5 spells):
+  • Scalding Tarn [Land, CMC 0]
+  • Ral, Monsoon Mage // Ral, Leyline Prodigy [Creature, CMC 2]
+  • Manamorphose [Spell, CMC 2]
+  • Pyretic Ritual [Spell, CMC 2]
+  • Reckless Impulse [Spell, CMC 2]
+  • Past in Flames [Spell, CMC 4]
+  • Mountain [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Manamorphose, Past in Flames, Pyretic Ritual, Reckless Impulse, 4 cheap spells
+
+
+╔══ TURN 1 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 20  |  Ruby Storm 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Sacred Foundry (tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 20  |  Boros Energy 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mountain
+  [Main 1]
+T1 P2: Play Scalding Tarn
+T1 P2: Crack Scalding Tarn (pay 1 life) -> Sacred Foundry (untapped, life: 17)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 20  |  Ruby Storm 17
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arena of Glory
+  [Main 1]
+T2 P1: Play Windswept Heath
+T2 P1: Crack Windswept Heath (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T2 P1: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P2 passes (no response)
+T2: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 17  |  Boros Energy 19
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Gemstone Caverns
+  [Main 1]
+T2 P2: Play Gemstone Caverns
+    → Goal: deploy_engine [engines]
+    [Mana] Tap Gemstone Caverns→U, Sacred Foundry→R (paying for Ral, Monsoon Mage // Ral, Leyline Prodigy, 2 mana remaining)
+T2 P2: Cast Ral, Monsoon Mage // Ral, Leyline Prodigy (UR)
+    [Priority] P1 passes (no response)
+T2: Resolve Ral, Monsoon Mage // Ral, Leyline Prodigy
+T2 P2: Ral, Monsoon Mage enters — instants/sorceries cost {1} less
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 19  |  Ruby Storm 17
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ Ruby Storm board:
+║   Creatures: Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)
+║   Lands: Sacred Foundry [T], Gemstone Caverns [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Seasoned Pyromancer
+  [Main 1]
+T3 P1: Play Arena of Glory (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer
+T3 P1: Attack with Ragavan, Nimble Pilferer
+T3 P2:   [BLOCK] Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2) blocks Ragavan, Nimble Pilferer (2/1) — trade (chump)
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T3: Ragavan, Nimble Pilferer dies
+T3: Ral, Monsoon Mage // Ral, Leyline Prodigy dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 17  |  Boros Energy 19
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 2
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Gemstone Caverns
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry, Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wrenn's Resolve
+  [Main 1]
+T3 P2: Play Mountain
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R, Sacred Foundry→R (paying for Reckless Impulse, 3 mana remaining)
+T3 P2: Cast Reckless Impulse (1R)
+    [Priority] P1 passes (no response)
+T3: Resolve Reckless Impulse
+T3 P2: Reckless Impulse → draw 2 (Wrenn's Resolve, Pyretic Ritual)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 19  |  Ruby Storm 17
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry, Arena of Glory
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Gemstone Caverns, Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Windswept Heath
+  [Main 1]
+T4 P1: Play Windswept Heath
+T4 P1: Crack Windswept Heath (pay 1 life) -> Sacred Foundry (tapped, life: 18)
+    → Goal: curve_out
+    [Target] → face (3 dmg, life 17 → 14): no clock yet — build pressure
+    [Mana] Tap Sacred Foundry→W, Arena of Glory→R, Sacred Foundry→R (paying for Phlage, Titan of Fire's Fury, 3 mana remaining)
+T4 P1: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P2 passes (no response)
+T4: Resolve Phlage, Titan of Fire's Fury
+T4 P1: Phlage: 3 damage to opponent, gain 3 life
+T4 P1: Phlage sacrificed (not escaped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 14  |  Boros Energy 21
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 3
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Gemstone Caverns, Mountain
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Arena of Glory [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ruby Medallion
+  [Main 1]
+T4 P2: Play Mountain
+    → Goal: execute_payoff
+    [Mana] Tap Mountain→R, Mountain→R (paying for Ruby Medallion, 4 mana remaining)
+T4 P2: Cast Ruby Medallion (2)
+    [Priority] P1 passes (no response)
+T4: Resolve Ruby Medallion
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Wrenn's Resolve, 2 mana remaining)
+T4 P2: Cast Wrenn's Resolve (1R)
+    [Priority] P1 passes (no response)
+T4: Resolve Wrenn's Resolve
+T4 P2: Wrenn's Resolve → draw 2 (Ral, Monsoon Mage // Ral, Leyline Prodigy, Scalding Tarn)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Gemstone Caverns→R (paying for Wrenn's Resolve, 1 mana remaining)
+T4 P2: Cast Wrenn's Resolve (1R)
+    [Priority] P1 passes (no response)
+T4: Resolve Wrenn's Resolve
+T4 P2: Wrenn's Resolve → draw 2 (Arid Mesa, Thundering Falls)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Past in Flames moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 5 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 21  |  Ruby Storm 14
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 4
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry, Arena of Glory, Sacred Foundry
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry [T], Gemstone Caverns [T], Mountain [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Main 1]
+    → Goal: curve_out
+    [Target] → face (3 dmg, life 14 → 11): no clock yet — build pressure
+    [Mana] Tap Sacred Foundry→W, Arena of Glory→R, Sacred Foundry→R (paying for Phlage, Titan of Fire's Fury, 4 mana remaining)
+T5 P1: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P2 passes (no response)
+T5: Resolve Phlage, Titan of Fire's Fury
+T5 P1: Phlage: 3 damage to opponent, gain 3 life
+T5 P1: Phlage sacrificed (not escaped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 11  |  Boros Energy 24
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 42  |  Graveyard: 6
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry, Gemstone Caverns, Mountain, Mountain
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Arena of Glory [T], Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wrenn's Resolve
+  [Main 1]
+T5 P2: Play Scalding Tarn
+T5 P2: Crack Scalding Tarn -> Mountain (untapped)
+    → Goal: execute_payoff
+    [Mana] Tap Gemstone Caverns→U, Mountain→R (paying for Ral, Monsoon Mage // Ral, Leyline Prodigy, 5 mana remaining)
+T5 P2: Cast Ral, Monsoon Mage // Ral, Leyline Prodigy (UR)
+    [Priority] P1 passes (no response)
+T5: Resolve Ral, Monsoon Mage // Ral, Leyline Prodigy
+T5 P2: Ral, Monsoon Mage enters — instants/sorceries cost {1} less
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Wrenn's Resolve, 3 mana remaining)
+T5 P2: Cast Wrenn's Resolve (1R)
+    [Priority] P1 passes (no response)
+T5: Resolve Wrenn's Resolve
+T5 P2: Wrenn's Resolve → draw 2 (Mountain, Glimpse the Impossible)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Glimpse the Impossible, 2 mana remaining)
+T5 P2: Cast Glimpse the Impossible (2R)
+    [Priority] P1 passes (no response)
+T5: Resolve Glimpse the Impossible
+T5 P2: Glimpse the Impossible → draw 3 (Ruby Medallion, Bloodstained Mire, Desperate Ritual)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Pyretic Ritual, 1 mana remaining)
+T5 P2: Cast Pyretic Ritual (1R)
+    [Priority] P1 passes (no response)
+T5: Resolve Pyretic Ritual
+T5 P2: Pyretic Ritual adds 3 R mana
+    → Goal: execute_payoff
+T5 P2: Cast Ruby Medallion (2)
+    [Priority] P1 passes (no response)
+T5: Resolve Ruby Medallion
+    → Goal: execute_payoff [enablers]
+T5 P2: Cast Past in Flames (3R)
+    [Priority] P1 passes (no response)
+T5: Resolve Past in Flames
+T5 P2: Past in Flames grants flashback
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 24  |  Ruby Storm 10
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 5
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry, Arena of Glory, Sacred Foundry
+║ Ruby Storm board:
+║   Creatures: Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)
+║   Other: Ruby Medallion, Ruby Medallion
+║   Lands: Sacred Foundry [T], Gemstone Caverns [T], Mountain [T], Mountain [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Marsh Flats
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Arena of Glory→R, Sacred Foundry→R, Sacred Foundry→R (paying for Seasoned Pyromancer, 4 mana remaining)
+T6 P1: Cast Seasoned Pyromancer (1RR)
+    [Priority] P2 passes (no response)
+T6: Resolve Seasoned Pyromancer
+T6 P1: Create 1x Elemental token(s)
+T6 P1: Seasoned Pyromancer: discard 2, draw 2 (Windswept Heath, Ragavan, Nimble Pilferer), create 1 Elemental(s)
+T6 P1: Play Windswept Heath
+T6 P1: Crack Windswept Heath -> Plains (untapped)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Plains→W, Sacred Foundry→R (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 2 mana remaining)
+T6 P1: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P2 passes (no response)
+T6: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T6 P1: Create 1x Cat token(s)
+T6 P1: Ajani creates 2/1 Cat Warrior token
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 10  |  Boros Energy 23
+║ Hand: 7 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 35  |  Graveyard: 9
+║ Ruby Storm board:
+║   Creatures: Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)
+║   Other: Ruby Medallion, Ruby Medallion
+║   Lands: Sacred Foundry, Gemstone Caverns, Mountain, Mountain, Mountain
+║ Boros Energy board:
+║   Creatures: Seasoned Pyromancer (2/2), Elemental Token (1/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Arena of Glory [T], Sacred Foundry [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Bloodstained Mire
+  [Main 1]
+T6 P2: Play Arid Mesa
+T6 P2: Crack Arid Mesa -> Elegant Parlor (tapped)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Reckless Impulse, 5 mana remaining)
+T6 P2: Cast Reckless Impulse (1R)
+    [Priority] P1 passes (no response)
+T6: Resolve Reckless Impulse
+T6 P2: Reckless Impulse → draw 2 (Wooded Foothills, Ruby Medallion)
+    → Goal: execute_payoff
+    [Mana] Tap Mountain→R, Mountain→R (paying for Ruby Medallion, 4 mana remaining)
+T6 P2: Cast Ruby Medallion (2)
+    [Priority] P1 passes (no response)
+T6: Resolve Ruby Medallion
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Pyretic Ritual, 2 mana remaining)
+T6 P2: Cast Pyretic Ritual (1R)
+    [Priority] P1 passes (no response)
+T6: Resolve Pyretic Ritual
+T6 P2: Pyretic Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T6 P2: Cast Manamorphose (2)
+    [Priority] P1 passes (no response)
+T6: Resolve Manamorphose
+T6 P2: Manamorphose adds 2 any mana
+    → Goal: execute_payoff [enablers]
+T6 P2: Cast Manamorphose (2)
+    [Priority] P1 passes (no response)
+T6: Resolve Manamorphose
+T6 P2: Manamorphose adds 2 any mana
+    → Goal: execute_payoff [enablers]
+T6 P2:   Splice Desperate Ritual onto Desperate Ritual
+T6 P2: Cast Desperate Ritual (1R)
+    [Priority] P1 passes (no response)
+T6: Resolve Desperate Ritual
+T6 P2: Desperate Ritual adds 3 R mana
+T6 P2:   Spliced Desperate Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T6 P2: Cast Desperate Ritual (1R)
+    [Priority] P1 passes (no response)
+T6: Resolve Desperate Ritual
+T6 P2: Desperate Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T6 P2: Cast Pyretic Ritual (1R)
+    [Priority] P1 passes (no response)
+T6: Resolve Pyretic Ritual
+T6 P2: Pyretic Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T6 P2: Cast Wrenn's Resolve (1R)
+    [Priority] P1 passes (no response)
+T6: Resolve Wrenn's Resolve
+T6 P2: Wrenn's Resolve → draw 2 (Pyretic Ritual, Wooded Foothills)
+    → Goal: execute_payoff [enablers]
+T6 P2: Cast Pyretic Ritual (1R)
+    [Priority] P1 passes (no response)
+T6: Resolve Pyretic Ritual
+T6 P2: Pyretic Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T6 P2: Cast Wrenn's Resolve (1R)
+    [Priority] P1 passes (no response)
+T6: Resolve Wrenn's Resolve
+T6 P2: Wrenn's Resolve → draw 2 (Desperate Ritual, Pyretic Ritual)
+    → Goal: execute_payoff [enablers]
+T6 P2: Cast Desperate Ritual (1R)
+    [Priority] P1 passes (no response)
+T6: Resolve Desperate Ritual
+T6 P2: Desperate Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T6 P2: Cast Pyretic Ritual (1R)
+    [Priority] P1 passes (no response)
+T6: Resolve Pyretic Ritual
+T6 P2: Pyretic Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T6 P2: Cast Wrenn's Resolve (1R)
+    [Priority] P1 passes (no response)
+T6: Resolve Wrenn's Resolve
+T6 P2: Wrenn's Resolve → draw 2 (Manamorphose, Elegant Parlor)
+    → Goal: execute_payoff [enablers]
+T6 P2: Cast Manamorphose (2)
+    [Priority] P1 passes (no response)
+T6: Resolve Manamorphose
+T6 P2: Manamorphose adds 2 any mana
+    → Goal: execute_payoff [enablers]
+T6 P2: Cast Reckless Impulse (1R)
+    [Priority] P1 passes (no response)
+T6: Resolve Reckless Impulse
+T6 P2: Reckless Impulse → draw 2 (Wish, Wrenn's Resolve)
+    → Goal: execute_payoff [enablers]
+T6 P2: Cast Wrenn's Resolve (1R)
+    [Priority] P1 passes (no response)
+T6: Resolve Wrenn's Resolve
+T6 P2: Wrenn's Resolve → draw 2 (Valakut Awakening // Valakut Stoneforge, Valakut Awakening // Valakut Stoneforge)
+    → Goal: execute_payoff [enablers]
+T6 P2: Cast Valakut Awakening // Valakut Stoneforge (2R)
+    [Priority] P1 passes (no response)
+T6: Resolve Valakut Awakening // Valakut Stoneforge
+    → Goal: execute_payoff [enablers]
+T6 P2: Cast Desperate Ritual (1R)
+    [Priority] P1 passes (no response)
+T6: Resolve Desperate Ritual
+T6 P2: Desperate Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T6 P2: Cast Valakut Awakening // Valakut Stoneforge (2R)
+    [Priority] P1 passes (no response)
+T6: Resolve Valakut Awakening // Valakut Stoneforge
+    → Goal: execute_payoff
+T6 P2: Cast Ruby Medallion (2)
+    [Priority] P1 passes (no response)
+T6: Resolve Ruby Medallion
+    → Goal: execute_payoff [enablers]
+T6 P2: Cast Glimpse the Impossible (2R)
+    [Priority] P1 passes (no response)
+T6: Resolve Glimpse the Impossible
+T6 P2: Glimpse the Impossible → draw 3 (Ral, Monsoon Mage // Ral, Leyline Prodigy, Grapeshot, Wish)
+    → Goal: execute_payoff [payoffs]
+T6 P2: Cast Grapeshot (1R)
+    [Priority] P1 passes (no response)
+T6: Resolve Grapeshot
+T6 P2: Grapeshot deals 1 damage (opponent life: 22)
+T6: Storm copies: 22
+T6 P2: Grapeshot deals 1 damage (opponent life: 21)
+T6 P2: Grapeshot deals 1 damage (opponent life: 20)
+T6 P2: Grapeshot deals 1 damage (opponent life: 19)
+T6 P2: Grapeshot deals 1 damage (opponent life: 18)
+T6 P2: Grapeshot deals 1 damage (opponent life: 17)
+T6 P2: Grapeshot deals 1 damage (opponent life: 16)
+T6 P2: Grapeshot deals 1 damage (opponent life: 15)
+T6 P2: Grapeshot deals 1 damage (opponent life: 14)
+T6 P2: Grapeshot deals 1 damage (opponent life: 13)
+T6 P2: Grapeshot deals 1 damage (opponent life: 12)
+T6 P2: Grapeshot deals 1 damage (opponent life: 11)
+T6 P2: Grapeshot deals 1 damage (opponent life: 10)
+T6 P2: Grapeshot deals 1 damage (opponent life: 9)
+T6 P2: Grapeshot deals 1 damage (opponent life: 8)
+T6 P2: Grapeshot deals 1 damage (opponent life: 7)
+T6 P2: Grapeshot deals 1 damage (opponent life: 6)
+T6 P2: Grapeshot deals 1 damage (opponent life: 5)
+T6 P2: Grapeshot deals 1 damage (opponent life: 4)
+T6 P2: Grapeshot deals 1 damage (opponent life: 3)
+T6 P2: Grapeshot deals 1 damage (opponent life: 2)
+T6 P2: Grapeshot deals 1 damage (opponent life: 1)
+T6 P2: Grapeshot deals 1 damage (opponent life: 0)
+P1 loses: life total 0
+
+>>> Ruby Storm wins Game 2 on turn 6 via damage
+    Final life: Boros Energy=0  Ruby Storm=9
+
+======================================================================
+  MATCH RESULT: Ruby Storm wins 2-0
+======================================================================

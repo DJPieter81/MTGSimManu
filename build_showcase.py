@@ -390,6 +390,18 @@ def patch(html, D, overall_grade, radar_data):
     n = len(D['decks'])
     html = re.sub(r'\b16[×x]16\b', f'{n}×{n}', html)
     html = re.sub(r'\b16 decks\b', f'{n} decks', html)
+    # Counter: <div class="counter"><div class="num" data-target="N">0</div><div class="unit">Modern Decks</div>
+    html = re.sub(
+        r'data-target="\d+"(>0</div><div class="unit">Modern Decks)',
+        f'data-target="{n}"\\1',
+        html,
+    )
+    # Section heading: "16 tournament-sourced decks"
+    html = re.sub(
+        r'\b\d+ tournament-sourced decks\b',
+        f'{n} tournament-sourced decks',
+        html,
+    )
 
     # 8b. Total match count (hero text, counter, section titles)
     # Read actual Bo3 count from metagame_results.json if present.
