@@ -911,17 +911,24 @@ def _payoff_reachable_this_turn(card: "CardInstance",
                                      Empty the Warrens, Galvanic
                                      Relay, future storm cards)
       (b) tutor in hand             (`'tutor' in tags` — Wish-pattern)
-      (c) cantrip dig in hand       (`'cantrip'`/`'card_advantage'`
-                                     in tags, excluding the card
+      (c) cascade card in hand      (`template.is_cascade` —
+                                     Shardless Agent, Demonic Dread,
+                                     Violent Outburst, future
+                                     cascade cards.  The cascade
+                                     trigger IS the finisher route
+                                     for Living End, Crashing
+                                     Footfalls, and similar decks.)
+      (d) cantrip dig in hand       (`_is_real_dig` — oracle-text-
+                                     based, excluding the card
                                      being evaluated since PiF and
                                      Manamorphose are themselves
                                      cantrip-tagged)
-      (d) finisher already in graveyard with flashback granted
+      (e) finisher already in graveyard with flashback granted
           (Past in Flames already resolved — chain can replay it).
 
-    Detection is keyword/tag-based with no hardcoded card names —
-    applies to any combo deck declaring storm-keyword payoffs or
-    tutor-tagged enablers.
+    Detection is keyword/tag/template-flag-based with no hardcoded
+    card names — applies to any combo deck declaring storm-keyword
+    payoffs, tutor-tagged enablers, or cascade payoffs.
     """
     from engine.cards import Keyword as _Kw
     me = game.players[player_idx]
@@ -933,9 +940,11 @@ def _payoff_reachable_this_turn(card: "CardInstance",
             return True
         if 'tutor' in tags_c:                      # (b)
             return True
+        if getattr(c.template, 'is_cascade', False):  # (c)
+            return True
         if c is not card and _is_real_dig(c):
-            return True                            # (c)
-    # (d) finisher in graveyard with flashback access available
+            return True                            # (d)
+    # (e) finisher in graveyard with flashback access available
     for c in me.graveyard:
         if _Kw.STORM in (c.template.keywords or set()):
             if c.has_flashback or 'flashback' in (

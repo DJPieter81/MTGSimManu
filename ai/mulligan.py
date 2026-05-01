@@ -119,13 +119,36 @@ class MulliganDecider:
                 max_progress = max(pieces_per_set) if pieces_per_set else 0
 
                 if cards_in_hand >= 7:
-                    # 7-card combo decks: need >=2 of 3 from at least
-                    # one path.  Single-piece hands cannot assemble vs
-                    # an aggro clock — proven by replay seed 60200/50000.
-                    if max_progress < 2:
+                    # 7-card combo decks: scale required progress by
+                    # set cardinality.  Combo-set semantics differ:
+                    #   n=2  → ANY-style "either of 2 cascade cards
+                    #          gets us going" (Living End: Demonic
+                    #          Dread or Shardless Agent).  1 of 2
+                    #          is enough.
+                    #   n=3  → ALL-style "named enabler + target +
+                    #          payoff" (Goryo's: Mending + Vengeance/
+                    #          Rites + fatty).  Need 2 of 3.
+                    #   n>=4 → ANY-style "interchangeable bag"
+                    #          (Storm rituals, Pinnacle artifacts,
+                    #          Living End cyclers).  1 of N is
+                    #          enough — gameplan author wouldn't
+                    #          have declared 7 alternatives if 1
+                    #          weren't sufficient.
+                    # Threshold per path = (1 if n != 3 else 2).
+                    # max_acceptable across paths satisfies the keep.
+                    keep_ok = False
+                    weakest = max_progress
+                    for s, prog in zip(gp.mulligan_combo_sets,
+                                       pieces_per_set):
+                        threshold = 2 if len(s) == 3 else 1
+                        if prog >= threshold:
+                            keep_ok = True
+                            break
+                    if not keep_ok:
                         self.last_reason = (
                             f"combo too weak in 7-card hand "
-                            f"(max {max_progress}/3 pieces from any path)"
+                            f"(max {weakest} pieces; need 2 of 3 "
+                            f"or 1 of 2/4+ from at least one path)"
                         )
                         return False
                 else:
