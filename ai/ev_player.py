@@ -189,16 +189,43 @@ class EVPlayer:
 
     def decide_mulligan(self, hand: List["CardInstance"],
                         cards_in_hand: int) -> bool:
-        """Keep or mulligan. Delegates to MulliganDecider."""
+        """Keep or mulligan. Delegates to MulliganDecider.
+
+        Land-floor invariant — the s60200 bug fix
+        ----------------------------------------
+        The bottoming policy in ``MulliganDecider.choose_cards_to_bottom``
+        guarantees ``min(min_lands, lands_in_hand)`` lands in the kept
+        hand.  But that floor is unsatisfiable when ``lands_in_hand == 0``:
+        no amount of bottoming can conjure a land.  The mulligan
+        decision is therefore the only place where a 0-land hand can
+        be rejected before the engine commits it.
+
+        The previous ordering short-circuited via ``mulligan_always_keep``
+        (defaults to 5) BEFORE the 0-land hard floor, forcing the AI to
+        keep guaranteed-loss hands at the down-to-5 step
+        (replays/affinity_vs_boros_energy_s60200.txt: Boros kept
+        0 lands + 7 spells, lost on T3).  Reordering — hard-floor first,
+        always-keep second — preserves the same "don't mulligan further
+        below 5" intent for keepable hands while honoring the land
+        invariant the trigger declares.
+        """
         lands = [c for c in hand if c.template.is_land]
         spells = [c for c in hand if not c.template.is_land]
 
+        # 0-land hard floor takes precedence over hand-size leniency.
+        # Delegated to MulliganDecider so the rule lives in one place
+        # (and so deck-class exceptions like Affinity's mox-artifact
+        # mana base apply uniformly).
+        if len(lands) == 0:
+            keep = self._mulligan_decider.decide(hand, cards_in_hand)
+            self.mulligan_reason = getattr(self._mulligan_decider, 'last_reason', '')
+            if not keep:
+                return False
+            # MulliganDecider allowed it (Affinity-style mox artifact
+            # exception) — fall through to normal evaluation below.
         if cards_in_hand <= self.profile.mulligan_always_keep:
             self.mulligan_reason = f"only {cards_in_hand} cards — always keep"
             return True
-        if len(lands) == 0:
-            self.mulligan_reason = "0 lands"
-            return False
         if len(lands) >= self.profile.mulligan_bad_land_count:
             self.mulligan_reason = f"{len(lands)} lands (≥ {self.profile.mulligan_bad_land_count})"
             return False
