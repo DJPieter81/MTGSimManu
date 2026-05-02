@@ -22,6 +22,8 @@ from ai.ev_evaluator import (
 from ai.scoring_constants import (
     HELD_RESPONSE_VALUE_PER_CMC,
     held_response_value_per_cmc,
+    STARTING_HAND_SIZE,
+    opp_threat_prob_from_density,
 )
 
 # RC-2 — parse "equipped/enchanted creature gets +X/+Y" bonuses from
@@ -1291,14 +1293,28 @@ class EVPlayer:
             if bhi and bhi._initialized:
                 # P(opp threatens us this/next turn) ≈ max of P(removal)
                 # and P(follow-up creature inferred from non-counter
-                # density). We only have direct removal/counter beliefs
-                # here, so use them as a lower bound and add hand-size
-                # weight for non-tracked threats.
+                # density). The first term is the calibrated posterior
+                # over reactive cards (counters + removal + burn). The
+                # second term derives the unknown-hand threat
+                # probability from the BHI density prior — the rule is
+                # `1 - (1 - density) ** opp_hand_size`, the standard
+                # Bernoulli-trials formula already used by every other
+                # density-based BHI belief. This replaces the prior
+                # flat `0.5 * hand_factor` weighting which inflated the
+                # threat probability identically against any opp at
+                # equal hand size, regardless of pool composition.
                 p_action = max(bhi.beliefs.p_removal,
                                bhi.beliefs.p_counter,
                                bhi.beliefs.p_burn)
-                hand_factor = min(1.0, snap.opp_hand_size / 7.0)
-                return max(0.1, min(1.0, p_action + 0.5 * hand_factor))
+                p_unknown_threat = opp_threat_prob_from_density(
+                    bhi.beliefs.p_threat_in_hand_density,
+                    snap.opp_hand_size,
+                )
+                # Combine: either the known interaction posterior OR a
+                # density-derived unknown-threat draw fires holdback.
+                # MAX (not SUM) keeps the result a probability in
+                # [0.1, 1.0] without silent over-saturation.
+                return max(0.1, min(1.0, max(p_action, p_unknown_threat)))
         except Exception:
             pass
 
@@ -1313,7 +1329,7 @@ class EVPlayer:
         # full holdback; sum-and-divide undercounts when (e.g.) the
         # board already has visible threats but they're all 1/1s.
         creature_signal = min(1.0, snap.opp_creature_count / 2.0)
-        hand_signal = min(1.0, snap.opp_hand_size / 7.0)
+        hand_signal = min(1.0, snap.opp_hand_size / STARTING_HAND_SIZE)
         clock_signal = 0.0
         if snap.my_life > 0 and snap.opp_power > 0:
             clock_signal = min(1.0, snap.opp_power / max(1, snap.my_life))
