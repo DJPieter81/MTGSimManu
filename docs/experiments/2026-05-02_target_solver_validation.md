@@ -13,7 +13,7 @@ tags:
   - cr-601-2c
   - affinity
   - completed
-summary: "N=50 16-deck matrix validates the Phases 1–4 unified target solver refactor. (Numbers pending matrix completion — see §Results.) Predicts Affinity overall WR drops by 2-4pp (per design doc); removal-heavy decks (Boros, Azorius, Dimir, Domain Zoo) gain 2-4pp each. Phases 5-6 deferred. H_ACT_3 sideboard-manager bug confirmed independently and out-of-scope here."
+summary: "N=50 16-deck matrix validates the Phases 1–4 unified target solver refactor. **Affinity barely moves (−0.3pp; 86.0% → 85.7%).** This *falsifies* the design doc's empirical hypothesis that the cast-time fix would correct Affinity's overall WR — confirming the design doc's alternate branch: 'the real Affinity bug is a positive-overscoring issue, separate next-session work.' Boros −3.1pp, Dimir −7.2pp, Living End +11.9pp are the largest shifts; most are within n=20→n=50 noise except Living End and Dimir. Phases 5-6 deferred. H_ACT_1/2/3 confirmed."
 ---
 
 # Unified target solver — Phase 7 N=50 matrix validation
@@ -65,33 +65,79 @@ python3 build_dashboard.py --merge
 
 ## Results — overall WR shift (Phases 1–4, n=50)
 
-_Filled in below once matrix completes. Pre-refactor numbers from
-`/tmp/metagame_baseline_pre_solver.jsx` (n=20)._
+Pre-refactor: n=20 baseline saved at `/tmp/metagame_baseline_pre_solver.jsx`.
+Post-refactor: n=50, this session's matrix.
 
-| Deck                       | Pre flat WR | Post flat WR | Δpp   | Predicted | Verdict |
-|----------------------------|-------------|--------------|-------|-----------|---------|
-| Boros Energy               | 70.7%       | _TBD_        | _TBD_ | +2 to +4  | _TBD_   |
-| Affinity                   | 86.0%       | _TBD_        | _TBD_ | -2 to -4  | _TBD_   |
-| Azorius Control            | 16.7%       | _TBD_        | _TBD_ | +2 to +4  | _TBD_   |
-| Domain Zoo                 | 69.7%       | _TBD_        | _TBD_ | +2 to +4  | _TBD_   |
-| Dimir Midrange             | 54.3%       | _TBD_        | _TBD_ | +2 to +4  | _TBD_   |
-| Eldrazi Tron               | 68.7%       | _TBD_        | _TBD_ | ~0        | _TBD_   |
-| Jeskai Blink               | 62.3%       | _TBD_        | _TBD_ | ~0 to +2  | _TBD_   |
-| Ruby Storm                 | 43.3%       | _TBD_        | _TBD_ | ~0        | _TBD_   |
-| Amulet Titan               | 43.3%       | _TBD_        | _TBD_ | ~0        | _TBD_   |
-| Living End                 | 43.3%       | _TBD_        | _TBD_ | ~0        | _TBD_   |
-| Goryo's Vengeance          | 10.7%       | _TBD_        | _TBD_ | +5 to +10 | _TBD_   |
-| 4c Omnath                  | 62.7%       | _TBD_        | _TBD_ | ~0        | _TBD_   |
-| 4/5c Control               | 42.7%       | _TBD_        | _TBD_ | +2 to +4  | _TBD_   |
-| Pinnacle Affinity          | 57.3%       | _TBD_        | _TBD_ | -2 to -4  | _TBD_   |
-| Izzet Prowess              | 37.0%       | _TBD_        | _TBD_ | ~0        | _TBD_   |
-| Azorius Control (WST)      | 31.3%       | _TBD_        | _TBD_ | +2 to +4  | _TBD_   |
+| Deck                       | Pre flat WR | Post flat WR | Δpp   | Predicted | Verdict           |
+|----------------------------|-------------|--------------|-------|-----------|-------------------|
+| Affinity                   | 86.0%       | 85.7%        | −0.3  | −2 to −4  | **NULL** — falsifies hypothesis |
+| Boros Energy               | 70.7%       | 67.6%        | −3.1  | +2 to +4  | **OPPOSITE**      |
+| Jeskai Blink               | 62.3%       | 63.3%        | +1.0  | ~0 to +2  | OK                |
+| Ruby Storm                 | 43.3%       | 42.9%        | −0.4  | ~0        | OK                |
+| Eldrazi Tron               | 68.7%       | 65.1%        | −3.6  | ~0        | NOISE / OPPOSITE  |
+| Amulet Titan               | 43.3%       | 42.9%        | −0.4  | ~0        | OK                |
+| Goryo's Vengeance          | 10.7%       | 10.3%        | −0.4  | +5 to +10 | NULL — no movement |
+| Domain Zoo                 | 69.7%       | 70.0%        | +0.3  | +2 to +4  | NULL              |
+| Living End                 | 43.3%       | 55.2%        | **+11.9** | ~0    | **MAJOR ANOMALY** |
+| Izzet Prowess              | 37.0%       | 36.4%        | −0.6  | ~0        | OK                |
+| Dimir Midrange             | 54.3%       | 47.1%        | **−7.2**  | +2 to +4 | **MAJOR OPPOSITE** |
+| 4c Omnath                  | 62.7%       | 61.3%        | −1.4  | ~0        | OK                |
+| 4/5c Control               | 42.7%       | 43.6%        | +0.9  | +2 to +4  | OK                |
+| Pinnacle Affinity          | 57.3%       | 60.5%        | +3.2  | −2 to −4  | OPPOSITE          |
+| Azorius Control            | 16.7%       | 14.5%        | −2.2  | +2 to +4  | OPPOSITE          |
+| Azorius Control (WST)      | 31.3%       | 33.5%        | +2.2  | +2 to +4  | OK                |
 
-Early progress (first ~33 matchups while sim was running) showed Boros
-vs Affinity moving from 5%→20% (Boros's WR; equivalently Affinity
-−15pp on this matchup) and Jeskai Blink vs Affinity from 25%→28%
-(Blink +3pp). These are individual-pair shifts; the table above
-captures the deck-level overall WR.
+### Headline read
+
+The design doc's empirical hypothesis explicitly named the
+**falsified branch**:
+
+> If Affinity moves from 87.8% to ~80-83%, this refactor is the
+> biggest contributor since the EV correctness overhaul. **If it
+> doesn't move, the real Affinity bug is a positive-overscoring
+> issue** (Construct token P/T calculation, Mox Opal metalcraft
+> gating, Affinity discount stacking) — separate next-session work.
+
+Affinity didn't move. The cast-time fix was correctness-only, not a
+WR mover. The conclusion the design doc itself proposed is now the
+working hypothesis: **Affinity's 86% WR is sustained by AI scoring
+issues**, not by removal-heavy opponents wasting casts on empty
+boards.
+
+### Anomalies worth flagging
+
+**Living End +11.9pp.** Largest single-deck shift. Living End was a
+combo deck the design doc predicted would be unchanged. Hypothesis:
+the cast-time fix prevents Living End opponents from casting their
+graveyard hate on empty graveyards (e.g., Surgical Extraction or
+Endurance with no targets), which previously fizzled but now refuses
+to cast — letting Living End assemble its cascade chain unmolested
+in matchups where the opp keeps hate in hand. Worth a Bo3 trace.
+
+**Dimir Midrange −7.2pp.** Largest single-deck regression. Dimir
+runs Drown in the Loch, Consider, and other "target [X] in graveyard"
+spells; the cast-time fix may now correctly refuse some of these on
+empty graveyards that previously cast-and-fizzled. The lost casts
+mean Dimir's value engine fires less often. Worth a Bo3 trace.
+
+**Boros Energy −3.1pp.** Lost ground despite being the canonical
+"removal-heavy deck" the prediction said would gain. Combined with
+Living End +11.9pp, this suggests removal-heavy aggro decks lose to
+combo decks more than they gain in fair matchups — the cast-time
+correctness improvement was a lateral move, not a clear win.
+
+### Noise margin
+
+n=20 → n=50 alone reduces single-pair stderr from ~10pp to ~5pp.
+Most of the table's |Δ| ≤ 3pp falls inside that band and could be
+sample-size cleanup rather than refactor effect. The honest read on
+the table:
+
+- **Genuine refactor effects (|Δ| ≥ 5pp):** Living End +11.9pp,
+  Dimir −7.2pp.
+- **Possibly refactor effects (3pp ≤ |Δ| < 5pp):** Boros −3.1pp,
+  Eldrazi Tron −3.6pp, Pinnacle Affinity +3.2pp.
+- **Within noise (|Δ| < 3pp):** the rest, including Affinity itself.
 
 ## Phase 5 + 6 deferral notes
 
@@ -257,19 +303,43 @@ in `docs/diagnostics/2026-05-02_affinity_88pct_hypothesis_list.md`.
    `engine/target_solver.py`. 78 unit tests + 467+ regression tests
    green.
 
-2. **If the matrix shows Affinity ≤ 84%**, the solver refactor + the
-   pre-existing tactical patch from PR #221 closed the
-   removal-target validation gap. The remaining ~20pp Affinity gap
-   is AI-interaction (H_ACT_1, H_ACT_2, H_ACT_3 above).
+2. **Affinity stayed at 85.7% (−0.3pp).** Per the design doc's own
+   alternate-branch language, the cast-time bug class was
+   correctness-only and the real WR mover is one of the AI bugs.
+   This session lands H_ACT_1 (commit `a10a52f`); H_ACT_2 and
+   H_ACT_3 are documented and queued.
 
-3. **If Affinity stays at ≥ 85%**, the cast-time bug class was
-   correctness-only and the real WR mover is one of the AI bugs
-   (H_ACT_1 confirmed, H_ACT_3 confirmed, H_ACT_2 confirmed). Each
-   has a known fix shape; this session's contribution is the solver
-   + the diagnostic.
+3. **Living End +11.9pp** is the biggest validation surprise. It
+   wasn't predicted by the design doc and warrants a focused
+   replay-based investigation: which previously-fizzling cast did
+   Living End's opponents stop making, and is that the new winning
+   margin?
 
-4. Phase 5 + Phase 6 of the original refactor are deferred. They
+4. **Dimir Midrange −7.2pp** is the biggest regression. Hypothesis:
+   Dimir's "target X in graveyard" spells (Drown in the Loch,
+   maybe others) now correctly refuse on empty graveyards. The
+   value engine misses casts it used to silently fizzle on. A
+   replay trace would confirm.
+
+5. Phase 5 + Phase 6 of the original refactor are deferred. They
    don't gate the Affinity investigation.
+
+6. **Next-session priorities (in order):**
+   1. Validate H_ACT_1 fix with a fresh n=50 matrix (the matrix in
+      this doc was run BEFORE the H_ACT_1 commit landed).
+   2. Investigate Living End +11.9pp via Bo3 replay trace
+      (`run_meta.py --bo3 "Living End" "Boros Energy" -s 60100`).
+   3. Investigate Dimir −7.2pp via Bo3 replay trace
+      (`run_meta.py --bo3 "Dimir Midrange" "Affinity" -s 60100`).
+   4. Apply H_ACT_3 sideboard-manager keyword-filter fix
+      (extend to Damping Sphere, Subtlety, Foundation Breaker,
+      Trinisphere, Endurance, Force of Vigor, Force of Negation
+      tokens for the Affinity matchup).
+   5. Apply H_ACT_2 fix iff the previous three are green —
+      requires a cross-cutting refactor that adds oracle-text
+      "can't be blocked except by..." parsing to both
+      `engine/combat_manager.py` (rule enforcement) and
+      `ai/ev_player.py::decide_blockers` (smart block AI).
 
 ## Linked work
 
