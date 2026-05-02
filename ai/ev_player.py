@@ -557,6 +557,16 @@ class EVPlayer:
         #      `resource_target`. No magic numbers — the number is the
         #      same threshold the gameplan uses to transition out of
         #      FILL_RESOURCE.
+        #   4. The projection itself is NOT already positive.  Cascade
+        #      projection (ev_evaluator.py:1622) recursively projects
+        #      the cascade hit and the symmetric reanimation
+        #      (ev_evaluator.py:1398-1434) — when those return a
+        #      positive EV, the cascade is already worth firing even
+        #      with a thin graveyard.  Patience is opportunity-cost
+        #      gating; once projection has verified positive value,
+        #      there is no opportunity to wait for.  This is the
+        #      cascade-payoff must-fire rule (PR #192 / #212 shape):
+        #      the gate must defer to the projection, not override it.
         #
         # When the gate fires, clamp EV below pass_threshold — a HARD
         # reduction in line with the Scapeshift fizzle gate above and the
@@ -564,7 +574,14 @@ class EVPlayer:
         # AI will hold the cascade enabler until the graveyard has critical mass.
         if getattr(t, 'is_cascade', False):
             fill_target = self._cascade_graveyard_target()
-            if fill_target > 0 and snap.my_gy_creatures < fill_target:
+            if (fill_target > 0
+                    and snap.my_gy_creatures < fill_target
+                    and ev <= 0.0):
+                # Defer-to-projection: only clamp when projection is
+                # NOT already positive.  A positive `ev` here means
+                # `compute_play_ev` (which recursively projected the
+                # cascade hit) found a positive swing — the cascade-
+                # payoff must-fire rule says trust that projection.
                 # Clamp matches the Scapeshift fizzle gate treatment
                 # (line 478): profile.pass_threshold - 1.0. No extra
                 # magic: the clamp is "just below pass_threshold" so
