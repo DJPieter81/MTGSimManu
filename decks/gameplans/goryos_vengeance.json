@@ -30,7 +30,8 @@
         ]
       },
       "resource_target": 1,
-      "resource_min_cmc": 5
+      "resource_min_cmc": 5,
+      "resource_zone": "graveyard"
     },
     {
       "goal_type": "EXECUTE_PAYOFF",
@@ -38,7 +39,7 @@
       "card_priorities": {
         "Goryo's Vengeance": 25.0,
         "Unburial Rites": 22.0,
-"Undying Evil": 15.0,
+        "Undying Evil": 15.0,
         "Ephemerate": 14.0
       },
       "card_roles": {
@@ -108,8 +109,13 @@
   "_mulligan_combo_paths_doc": "Typed combo paths supersede the flat combo_sets above for keep/mull decisions.  Each path lists role buckets; at virtual size 7 hand needs >=1 enabler AND >=1 payoff, at virtual size 6 hand needs >=1 enabler (target dig-able through Faithful Mending).  Color-soundness still uses combo_sets above.  Diagnostic: 5-seed --bo3 sweep vs Affinity (60100..60500) showed 9/13 kept hands missing either enabler or payoff bucket; flat combo_sets cannot distinguish since both buckets contribute equally to the per-path piece count.",
   "mulligan_combo_paths": [
     {
-      "enablers": ["Faithful Mending"],
-      "payoffs":  ["Goryo's Vengeance", "Unburial Rites"]
+      "enablers": [
+        "Faithful Mending"
+      ],
+      "payoffs": [
+        "Goryo's Vengeance",
+        "Unburial Rites"
+      ]
     }
   ],
   "reactive_only": [
