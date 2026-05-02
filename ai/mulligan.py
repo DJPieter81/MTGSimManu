@@ -109,7 +109,84 @@ class MulliganDecider:
             #   (c) for combo cards present in hand, the lands must
             #       cover the union of pip requirements (Bug #1 color
             #       check).
-            if gp.mulligan_combo_sets:
+            # Typed-path check (preferred when declared) — supersedes
+            # the flat ``mulligan_combo_sets`` predicate for decks that
+            # have heterogeneous role buckets (enabler / payoff).  Each
+            # path is a dict with role-named buckets; the hand
+            # satisfies a path when role coverage requirements are met
+            # at the current virtual hand size.  Decks without
+            # ``mulligan_combo_paths`` fall through to the existing
+            # flat-set logic — backward-compatible.
+            #
+            # Decision rule (mirrors ai/gameplan.py:DeckGameplan docs):
+            #   - virtual size 7: keep iff some path has hand-coverage
+            #     in BOTH ``enablers`` and ``payoffs``
+            #   - virtual size 6: keep iff some path has hand-coverage
+            #     in ``enablers`` (payoff is dig-able through the
+            #     enabler — Faithful Mending, ritual + cantrip, etc.)
+            #   - virtual size <=5: ``mulligan_always_keep`` short-
+            #     circuited at the top of decide()
+            #
+            # Why no ``targets`` bucket: dig-able through enabler.
+            # Counting them inflates mulligan rate without information
+            # value at standard library densities (4 enablers + 7
+            # targets in 60 → P(dig within 3 cantrips) ≈ 0.45).
+            if gp.mulligan_combo_paths:
+                paths = gp.mulligan_combo_paths
+                # Pre-compute per-path coverage flags so failure
+                # messages can name the most-covered path.
+                best_covered = 0  # number of buckets covered in best path
+                best_total = 0    # number of non-empty buckets in best path
+                keep_ok = False
+                for path in paths:
+                    enablers = set(path.get("enablers", []))
+                    payoffs = set(path.get("payoffs", []))
+                    # Bucket coverage flags.  Empty bucket = vacuously
+                    # covered (don't constrain a path that doesn't
+                    # declare it).
+                    enabler_ok = (not enablers) or bool(hand_names & enablers)
+                    payoff_ok = (not payoffs) or bool(hand_names & payoffs)
+                    non_empty = sum(1 for b in (enablers, payoffs) if b)
+                    covered = sum(
+                        1 for ok, b in ((enabler_ok, enablers),
+                                        (payoff_ok, payoffs))
+                        if ok and b
+                    )
+                    if covered > best_covered or (
+                            covered == best_covered and non_empty > best_total):
+                        best_covered = covered
+                        best_total = non_empty
+                    # Apply per-size keep predicate.
+                    if cards_in_hand >= 7:
+                        if enabler_ok and payoff_ok:
+                            keep_ok = True
+                            break
+                    else:
+                        # Virtual size 6 (5 short-circuited above):
+                        # only the enabler bucket is required.  An
+                        # ``enablers``-less path passes vacuously,
+                        # which is fine — the gameplan author chose
+                        # not to declare that role for that path.
+                        if enabler_ok:
+                            keep_ok = True
+                            break
+                if not keep_ok:
+                    role_required = (
+                        "enabler+payoff" if cards_in_hand >= 7
+                        else "enabler"
+                    )
+                    self.last_reason = (
+                        f"combo path under-covered in "
+                        f"{cards_in_hand}-card hand "
+                        f"(best path: {best_covered}/{best_total} "
+                        f"role buckets; need {role_required})"
+                    )
+                    return False
+                # Typed-path keep_ok: still run color-soundness below
+                # (uses combo_sets if declared; combo_paths-only decks
+                # skip it harmlessly).
+
+            elif gp.mulligan_combo_sets:
                 # How many pieces from each declared combo path are
                 # present in hand?  Used by both the 7-card progress
                 # check (b) and the 6-card empty-paths escape (a).
@@ -164,11 +241,22 @@ class MulliganDecider:
                     # else: at least 1 piece present → keep (don't
                     # mull-to-oblivion at 6).
 
+            if gp.mulligan_combo_sets:
                 # Color-soundness: the kept hand's lands must cover the
                 # union of colored pip requirements for the combo cards
                 # actually present.  Cardname-only checks miss hands
                 # that look complete on paper but cannot be cast.
-                if cards_in_hand >= 7:
+                #
+                # The check runs at every virtual hand size >=5 (not
+                # only at 7).  After the first mulligan the engine
+                # calls decide() at virtual size 6 with 7 actual cards
+                # in hand; gating on ``cards_in_hand >= 7`` skipped
+                # the check and let color-broken hands through (replay
+                # seed 60100 G1: kept 7 with only Swamp, Mending
+                # uncastable for the entire game).  The kept hand's
+                # color demand is independent of which single card we
+                # plan to bottom; verifying it at every size is sound.
+                if cards_in_hand >= 5:
                     missing_colors = self._combo_set_color_gap(
                         hand, lands, gp.mulligan_combo_sets,
                     )

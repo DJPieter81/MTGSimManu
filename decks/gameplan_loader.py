@@ -67,6 +67,15 @@ def _parse_gameplan(data: Dict[str, Any]) -> DeckGameplan:
         mulligan_effective_cmc=data.get("mulligan_effective_cmc", {}),
         mulligan_require_creature_cmc=data.get("mulligan_require_creature_cmc", 0),
         mulligan_combo_sets=[set(s) for s in data.get("mulligan_combo_sets", [])],
+        mulligan_combo_paths=[
+            # Preserve list-of-strings shape for each bucket — the
+            # mulligan decider intersects with hand_names directly.
+            {
+                bucket_name: list(bucket_cards)
+                for bucket_name, bucket_cards in path.items()
+            }
+            for path in data.get("mulligan_combo_paths", [])
+        ],
         land_priorities=data.get("land_priorities", {}),
         reactive_only=set(data.get("reactive_only", [])),
         always_early=set(data.get("always_early", [])),
