@@ -226,12 +226,56 @@ class ResponseDecider:
         if counter_candidates:
             counter_candidates.sort(key=lambda pair: pair[0])
             cost, chosen = counter_candidates[0]
-            if response_value >= 3.0 or (response_value >= 1.5 and cost <= 2):
+            # Gate thresholds derived from held_counter_floor_ev: the
+            # EV of holding the counter for a future spell. A counter
+            # in hand is roughly "one card of impact" — quantified by
+            # `card_clock_impact` × the same scaling factor (×20) used
+            # everywhere else in evaluate_stack_threat to convert
+            # clock-impact units into life-point units. Replaces the
+            # hardcoded 1.5 / 3.0 thresholds (P0-A) which ignored that
+            # a cheap counter is essentially free to spend on any
+            # threat that exceeds the held-card floor.
+            held_counter_floor_ev = self._held_counter_floor_ev(game)
+            # COUNTER_GATE_HIGH: threat must clear the floor EV by a
+            # decisive margin to justify firing an expensive counter.
+            # 1.5× expresses "clearly above replacement value" — one
+            # held card swap is worthwhile if the threat trades up by
+            # 50%+. Mirrors the legacy 3.0 hardcoded threshold for a
+            # typical floor of ~2.0 post-fix (regression-safe).
+            COUNTER_GATE_HIGH = held_counter_floor_ev * 1.5
+            # COUNTER_GATE_LOW: when the trade is favourable (cheap
+            # held counter OR cheaply-paid threat), the gate drops to
+            # 0.5× floor EV. The 0.5 reflects that a cheap counter
+            # firing on a free spell is a tempo-positive trade even
+            # if the absolute threat value is below replacement —
+            # we're denying opp's free value at minimal cost. Pre-fix
+            # the legacy 1.5 floor failed for affinity-discounted
+            # card-advantage spells whose projection-based threat sat
+            # at ~1.0.
+            COUNTER_GATE_LOW = held_counter_floor_ev * 0.5
+            # `cost` is the counter's effective cost (already routed
+            # through _effective_counter_cost which handles pitch-
+            # counter alternatives). `threat_paid_cost` is what the
+            # opponent actually paid to put this spell on the stack
+            # — discounted by affinity, delve, domain, and generic
+            # cost-reducers (extends the X-cost-only handling that
+            # used to live in evaluate_stack_threat). A cheap held
+            # counter OR a cheaply-paid threat both qualify the LOW
+            # gate; either represents a strong tempo trade.
+            CHEAP_COUNTER_PAID = 2
+            CHEAP_THREAT_PAID = 2
+            threat_paid_cost = self._effective_paid_cost(game, stack_item)
+            cheap_trade = (cost <= CHEAP_COUNTER_PAID
+                           or threat_paid_cost <= CHEAP_THREAT_PAID)
+            if (response_value >= COUNTER_GATE_HIGH
+                    or (response_value >= COUNTER_GATE_LOW and cheap_trade)):
                 if self.strategic_logger:
                     self.strategic_logger.log_response(
                         self.player_idx, chosen.name,
                         stack_item.source.name, game,
-                        f"Counter: threat value {response_value:.1f} vs effective cost {cost}. "
+                        f"Counter: threat value {response_value:.1f} vs counter cost {cost} "
+                        f"(opp paid {threat_paid_cost}). Floor EV {held_counter_floor_ev:.2f}, "
+                        f"gate HIGH={COUNTER_GATE_HIGH:.2f}/LOW={COUNTER_GATE_LOW:.2f}. "
                         f"Worth countering (chose cheapest of {len(counter_candidates)} candidates).")
                 return (chosen, [stack_item.source.instance_id])
 
@@ -317,6 +361,96 @@ class ResponseDecider:
                     return [target.instance_id]
             return []
         return []
+
+    def _held_counter_floor_ev(self, game: "GameState") -> float:
+        """EV of holding a counterspell (the floor below which firing is wasteful).
+
+        A counter in hand is worth roughly "one card of impact" — exactly
+        what `card_clock_impact` already quantifies (avg power / opp life,
+        gated by castable mana). Multiply by the same ×20 scaling factor
+        used throughout `evaluate_stack_threat` to convert clock-impact
+        units into life-point units, so the floor is directly comparable
+        to the threat values produced there.
+
+        Floored at a small positive constant (FLOOR_MIN_EV) so an empty
+        snapshot (no mana, no opp life pressure) doesn't collapse the
+        gate to zero — the counter still costs at least a card.
+
+        Used to derive the gate thresholds in `decide_response` instead
+        of the legacy hardcoded 1.5 / 3.0 magic numbers (P0-A).
+        """
+        from ai.clock import card_clock_impact
+        from ai.ev_evaluator import snapshot_from_game
+        snap = snapshot_from_game(game, self.player_idx)
+        # FLOOR_MIN_EV: a held counter is at minimum worth a single card,
+        # which the ×20 scaling places at ~0.5-1.0 in the worst case.
+        # The 1.0 floor matches the lower edge of card_clock_impact ×20
+        # for a typical Modern game state (avg power 2.5 / opp life 20 =
+        # 0.125 base; ×0.4 castable fraction at 1 mana; ×20 = 1.0).
+        FLOOR_MIN_EV = 1.0
+        return max(FLOOR_MIN_EV, card_clock_impact(snap) * 20.0)
+
+    def _effective_paid_cost(self, game: "GameState",
+                             stack_item: "StackItem") -> int:
+        """Mana the controller actually paid for a stack spell, after
+        cost-reducer mechanics (affinity, delve, domain, generic
+        cost-reducers) and X-cost surplus.
+
+        Mirrors the cost computation in `engine.cast_manager.can_cast`
+        without re-running it: subtracts cost-reducer effects from the
+        printed CMC and adds the X paid for X-cost spells. Used to
+        decide whether a counter qualifies as "cheap" in the LOW gate
+        — the original code only handled the X-cost case (line ~573)
+        but missed the cost-reducer case which is the larger source
+        of paid-vs-printed divergence (Affinity, Tron, etc.).
+
+        Returns the printed CMC + X if no cost-reducer applies.
+        """
+        from engine.cards import CardType, Keyword
+        source = stack_item.source
+        template = source.template
+        controller = stack_item.controller
+        player = game.players[controller]
+
+        printed = template.cmc or 0
+        # X surplus: the X actually paid is tracked on the stack item.
+        x_paid = getattr(stack_item, 'x_value', 0) or 0
+        effective = printed + x_paid
+
+        # Affinity for artifacts: -1 per artifact controller has.
+        if Keyword.AFFINITY in template.keywords:
+            artifact_count = sum(
+                1 for c in player.battlefield
+                if CardType.ARTIFACT in c.template.card_types
+            )
+            effective = max(0, effective - artifact_count)
+
+        # Delve: -1 per card exiled from graveyard, capped by generic
+        # portion of the cost (mirrors cast_manager.can_cast).
+        if getattr(template, 'has_delve', False):
+            gy_count = len(player.graveyard)
+            colored_cost = (template.mana_cost.white
+                            + template.mana_cost.blue
+                            + template.mana_cost.black
+                            + template.mana_cost.red
+                            + template.mana_cost.green)
+            generic_portion = max(0, effective - colored_cost)
+            delve_reduction = min(gy_count, generic_portion)
+            effective = max(colored_cost, effective - delve_reduction)
+
+        # Domain: -N per basic land type controlled.
+        if getattr(template, 'domain_reduction', 0) > 0:
+            domain = game._count_domain(controller)
+            effective = max(
+                0, effective - template.domain_reduction * domain)
+
+        # Generic cost reducers (Medallions, Goblin Electromancer, etc.)
+        from engine.oracle_resolver import count_cost_reducers
+        generic_reduction = count_cost_reducers(game, controller, template)
+        if generic_reduction > 0:
+            effective = max(0, effective - generic_reduction)
+
+        return effective
 
     def _effective_counter_cost(self, game: "GameState", instant: "CardInstance") -> int:
         """Cost paid to actually fire this counter, after alternative-cost paths.
@@ -445,6 +579,20 @@ class ResponseDecider:
         known_threat = get_threat_value(source.name)
         if known_threat > 0:
             threat = max(threat, known_threat)
+
+        # Incoming creature spell: route through creature_threat_value()
+        # so the resolved body is scored by oracle + clock semantics
+        # (battle cry, "for each X" scalers, ETB tags) rather than by
+        # the printed mana value scaled through mana_clock_impact. Fixes
+        # mis-evaluation of cost-reduced threats — Sojourner's Companion
+        # at printed CMC 7 paid 0 via affinity reads as a 4/4 body, not
+        # as "expensive low value-density spell". P0-A.
+        # Mirrors the board-wipe summing pattern just above; both lift
+        # the threat by the actual creature_threat_value rather than
+        # leaving the projection alone.
+        if template.is_creature:
+            from ai.ev_evaluator import creature_threat_value
+            threat = max(threat, creature_threat_value(source, snap))
 
         # Lethal burn: sentinel-level threat. LETHAL_THREAT is a rules
         # constant — any spell that kills us is worth countering above all
