@@ -178,25 +178,58 @@ class TestNonEvokeInstantUnchanged:
     """Regression: a non-evoke instant behaves identically to pre-fix."""
 
     def test_counterspell_with_sufficient_mana_castable(self, card_db):
+        # Counterspell needs both sufficient mana AND a legal target on
+        # the stack. Pre-refactor, can_cast only checked mana — empty
+        # stack passed silently. The unified target solver enforces
+        # CR 601.2c, so this regression seeds the stack with an
+        # opposing spell to keep the "sufficient mana" axis the
+        # variable under test.
+        from engine.stack import StackItem, StackItemType
         game = _make_game()
         # Counterspell is {U}{U}.
         for _ in range(2):
             _add_land_untapped(game, card_db, "Island", 0)
         cspell = _add_to_hand(game, card_db, "Counterspell", 0)
+        # Seed an opposing spell so a legal target exists.
+        opp_spell = _add_to_hand(game, card_db, "Memnite", 1)
+        game.stack.push(StackItem(
+            item_type=StackItemType.SPELL, source=opp_spell, controller=1,
+        ))
         assert cspell.template.evoke_cost is None, (
             "Counterspell should not parse an evoke cost; the test is "
             "verifying the non-evoke branch."
         )
         assert game.can_cast(0, cspell), (
-            "Counterspell should be castable with 2 Islands available."
+            "Counterspell should be castable with 2 Islands and a "
+            "spell on the stack."
         )
 
     def test_counterspell_with_insufficient_mana_not_castable(self, card_db):
+        # As above, seed the stack so the only failing axis is mana.
+        from engine.stack import StackItem, StackItemType
         game = _make_game()
-        # Only 1 Island — can't pay {U}{U}.
-        _add_land_untapped(game, card_db, "Island", 0)
+        _add_land_untapped(game, card_db, "Island", 0)  # only 1 Island
         cspell = _add_to_hand(game, card_db, "Counterspell", 0)
+        opp_spell = _add_to_hand(game, card_db, "Memnite", 1)
+        game.stack.push(StackItem(
+            item_type=StackItemType.SPELL, source=opp_spell, controller=1,
+        ))
         assert not game.can_cast(0, cspell), (
             "Counterspell should NOT be castable with only 1 Island — "
             "and there is no evoke path to rescue it."
+        )
+
+    def test_counterspell_with_empty_stack_not_castable(self, card_db):
+        # CR 601.2c regression: Counterspell with no spell on the
+        # stack has no legal target and cannot be cast, regardless of
+        # mana. Pre-refactor this passed silently and fizzled at
+        # resolution; the unified target solver rejects at cast time.
+        game = _make_game()
+        for _ in range(2):
+            _add_land_untapped(game, card_db, "Island", 0)
+        cspell = _add_to_hand(game, card_db, "Counterspell", 0)
+        assert game.stack.is_empty
+        assert not game.can_cast(0, cspell), (
+            "Counterspell on empty stack must be uncastable — no "
+            "legal target."
         )

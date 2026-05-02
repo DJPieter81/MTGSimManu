@@ -389,17 +389,30 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
     #     to the battlefield" — Persist (nonlegendary), Unburial Rites (any).
     #     Goryo's Vengeance is legendary-only with haste + exile-at-EOT and
     #     keeps its dedicated handler.
+    #
+    #     Uses the unified target solver (Phase 4): the type/supertype
+    #     filter and graveyard-zone enumeration both come from
+    #     ``engine.target_solver`` rather than re-implementing the
+    #     parsing here. See
+    #     ``docs/proposals/2026-05-02_unified_target_solver.md``.
     if (re.search(r'return target\s+(\w+\s+)?creature card', oracle)
             and 'graveyard' in oracle
             and 'battlefield' in oracle
             and not re.search(r'return target legendary creature', oracle)):
-        gy = game.players[controller].graveyard
-        creatures = [c for c in gy if c.template.is_creature]
-        if 'nonlegendary' in oracle:
-            from engine.cards import Supertype
-            creatures = [c for c in creatures
-                         if Supertype.LEGENDARY not in
-                         getattr(c.template, 'supertypes', [])]
+        from engine.target_solver import (
+            enumerate_legal_targets,
+            parse as _parse_targets,
+        )
+        requirements = _parse_targets(card.template.oracle_text or "")
+        gy_reqs = [r for r in requirements if r.zone == "graveyard"]
+        creatures: list = []
+        for req in gy_reqs:
+            creatures.extend(
+                enumerate_legal_targets(game, controller, req, exclude=card)
+            )
+        # Restrict to creature-card candidates (the solver may emit
+        # broader types if the oracle reads ambiguously).
+        creatures = [c for c in creatures if c.template.is_creature]
         if creatures:
             # Pick the biggest body — reanimation's value is in the
             # largest recouped investment.
