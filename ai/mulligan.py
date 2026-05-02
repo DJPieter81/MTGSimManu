@@ -15,6 +15,63 @@ if TYPE_CHECKING:
     from ai.strategy_profile import ArchetypeStrategy
 
 
+def _apply_legendary_dedup_penalty(
+    scored: List[tuple],
+) -> List[tuple]:
+    """Subtract a bottom-preference penalty from duplicate legendary copies.
+
+    `scored` is a list of `(card_instance, keep_score)` tuples.  For
+    each legendary card name appearing more than once, the first copy
+    encountered (in input order) keeps its score and every subsequent
+    copy has its score reduced by `LEGENDARY_DUPLICATE_PENALTY` so that
+    the bottom-selection sort places duplicates first.
+
+    Pure function over the template's `supertypes` flag — no card names
+    are referenced.  Magnitude (50) is large enough to drop a duplicate
+    below the highest-scored normal keep (~27) without inverting the
+    relative ranking of the surviving copy.
+    """
+    from engine.cards import Supertype
+    LEGENDARY_DUPLICATE_PENALTY = 50.0
+    seen_legendary: set = set()
+    out: List[tuple] = []
+    for c, s in scored:
+        is_legendary = Supertype.LEGENDARY in getattr(c.template, "supertypes", ())
+        if is_legendary:
+            if c.name in seen_legendary:
+                out.append((c, s - LEGENDARY_DUPLICATE_PENALTY))
+                continue
+            seen_legendary.add(c.name)
+        out.append((c, s))
+    return out
+
+
+def _dedupe_dead_legendaries(cards: List["CardInstance"]) -> List["CardInstance"]:
+    """Filter out duplicate copies of legendary permanents.
+
+    Per the legend rule (CR 704.5j), if a player would control two or
+    more legendary permanents with the same name, all but one are put
+    into their owners' graveyards.  In hand, every copy beyond the
+    first is therefore effectively dead — it cannot generate value.
+
+    Returns a list with at most one copy per legendary card name; non-
+    legendary cards are passed through unchanged.  Pure function over
+    the template's `supertypes` flag — no card names are referenced.
+    """
+    from engine.cards import Supertype
+    seen_legendary: set = set()
+    out: List["CardInstance"] = []
+    for c in cards:
+        is_legendary = Supertype.LEGENDARY in getattr(c.template, "supertypes", ())
+        if is_legendary:
+            if c.name in seen_legendary:
+                # Excess copy — dead on resolution.
+                continue
+            seen_legendary.add(c.name)
+        out.append(c)
+    return out
+
+
 class MulliganDecider:
     """Decides whether to keep or mulligan, and which cards to bottom."""
 
@@ -32,6 +89,15 @@ class MulliganDecider:
 
         lands = [c for c in hand if c.template.is_land]
         spells = [c for c in hand if not c.template.is_land]
+        # Legend rule (CR 704.5j): duplicate copies of the same legendary
+        # permanent are dead on resolution — only one survives.  For
+        # mulligan evaluation, treat each excess copy as not present.
+        # `live_spells` is the spell list with duplicate legendary copies
+        # filtered out (one representative copy retained); use it in
+        # place of `spells` for keep-quality checks below so that a hand
+        # of {3× legendary creature, 2 lands} is correctly recognised as
+        # effectively 3 cards rather than 5.
+        spells = _dedupe_dead_legendaries(spells)
         land_count = len(lands)
         self.last_reason = ""
 
@@ -465,6 +531,16 @@ class MulliganDecider:
             scored = [(c, self.goal_engine.card_keep_score(c, hand)) for c in hand]
         else:
             scored = [(c, self._card_keep_score(c, hand)) for c in hand]
+        # Legend-rule dedup: when the hand contains N copies of a
+        # legendary permanent, only one resolves (CR 704.5j).  Mark the
+        # duplicate copies as preferred-bottom by subtracting a penalty
+        # large enough to drop them below any normally-scored keep.
+        # Magnitude derivation: the keep-score range for non-land cards
+        # tops out near the role+key+cmc cap (~27, see
+        # ai/gameplan.py::card_keep_score).  A penalty of 50 ensures
+        # duplicate copies sort below every realistic alternative
+        # without overflowing into negative-by-design land scores.
+        scored = _apply_legendary_dedup_penalty(scored)
         scored.sort(key=lambda x: x[1])
 
         # Enforce mulligan_min_lands floor on the KEPT hand. Without this,
