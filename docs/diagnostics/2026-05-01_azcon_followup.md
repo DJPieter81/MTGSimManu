@@ -1,6 +1,8 @@
 ---
 title: AzCon vs Affinity remains 0% after counter-triage fix — follow-up
-status: active
+status: superseded
+superseded_by:
+  - "Steps 2+3 shipped on claude/holdback-artifact-aware (2026-05-02): p_artifact_threat in ai/bhi.py + scaled held_response_value_per_cmc(p) in ai/scoring_constants.py wired into ai/ev_player.py::_holdback_penalty. Step 1 (evoke-budget guard in ai/board_eval.py::_eval_evoke) remains open — that is the next step on this thread."
 priority: primary
 session: 2026-05-01
 depends_on:

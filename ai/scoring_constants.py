@@ -9,10 +9,7 @@ in `decks/gameplans/*.json`, not here.  Per-archetype values belong in
 `ai/strategy_profile.py`, not here.
 
 Audit hook: this file is the single point of review for any future
-coefficient re-tune.  The AzCon-followup work tracked in
-`docs/diagnostics/2026-05-01_azcon_followup.md` plans to convert
-HELD_RESPONSE_VALUE_PER_CMC from a constant into a function of
-`bhi.beliefs.p_artifact_threat`; that change should land in this file.
+coefficient re-tune.
 """
 from __future__ import annotations
 
@@ -61,9 +58,49 @@ CONTROL's pass_threshold = -5.0: with 1 counter × 2 CMC × threat_prob
 2× Counterspell still scales to 2×2×1×4 = -16 which keeps the
 Bundle-3 intent intact.
 
+Now exposed as the BASE / floor of `held_response_value_per_cmc(p)` —
+the function-form below scales this up against artifact-heavy
+opponents (Affinity-class) where the held counter is the only stack-
+side answer.  Existing call sites that read the flat constant still
+behave as if facing the average opponent (p_artifact_threat = 0.0).
+
 Sister constant: HELD_COLOR_PRESERVATION_BONUS — same "held interaction
 is worth keeping castable" intent, applied at fetchland decision time.
 """
+
+
+HELD_RESPONSE_VALUE_PER_CMC_ARTIFACT_RAMP: float = 4.0
+"""Additive ramp for `held_response_value_per_cmc(p)`: the per-CMC
+value increases from a base of 2.0 toward 2.0 + RAMP = 6.0 as
+`bhi.beliefs.p_artifact_threat` saturates.  Floored at the Iter-2
+base (4.0), so the function reduces to identity for low-artifact
+opponents.
+
+Derivation: AzCon vs Affinity (`docs/diagnostics/2026-05-01_azcon_followup.md`)
+showed a single-counter holdback at 1×2×1.0×4.0 = -8 was insufficient
+to gate a +7.5 Teferi tap-out (net -0.5, above CONTROL's pass_threshold
+of -5.0).  At p_artifact_threat ≈ 1.0 the function returns 6.0,
+yielding 1×2×1.0×6.0 = -12 (net -4.5) — still inside the gate band
+but bringing the play within reach of the threshold.  Affinity-class
+matchups depend on this ramp; non-artifact matchups stay at the floor.
+"""
+
+
+def held_response_value_per_cmc(p_artifact_threat: float = 0.0) -> float:
+    """Per-CMC value of held interaction, scaled by the artifact-threat
+    density of the opponent.
+
+    Formula:
+        max(HELD_RESPONSE_VALUE_PER_CMC,
+            2.0 + p_artifact_threat * HELD_RESPONSE_VALUE_PER_CMC_ARTIFACT_RAMP)
+
+    For non-artifact opponents (p ≈ 0) the floor binds and the
+    function returns the Iter-2 base (4.0).  For Affinity-class
+    opponents (p ≈ 1) it ramps to 6.0.  At the midpoint (p = 0.5) the
+    linear term equals the floor, so mixed opponents see no change.
+    """
+    return max(HELD_RESPONSE_VALUE_PER_CMC,
+               2.0 + p_artifact_threat * HELD_RESPONSE_VALUE_PER_CMC_ARTIFACT_RAMP)
 
 HELD_COLOR_PRESERVATION_BONUS: float = 8.0
 """Bonus applied to a fetchland candidate that *provides* a color the

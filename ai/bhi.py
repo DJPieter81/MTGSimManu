@@ -45,6 +45,13 @@ class HandBeliefs:
     # documented prior reflecting "the opp is planning to deploy
     # hand disruption". No Bayesian update yet - flat prior only.
     p_discard: float = 0.0      # P(opp plans hand disruption)
+    # Density of artifact threats in the opponent's pool. Drives the
+    # held-interaction value scaler in `_holdback_penalty` against
+    # artifact-equipment archetypes (Affinity-class) where the held
+    # counter is the only stack-side answer to equipment-grade
+    # threats. Density-based prior over the live pool (library +
+    # hand + battlefield), recomputed alongside the other priors.
+    p_artifact_threat: float = 0.0
 
     # Tracking
     observations: int = 0       # number of Bayesian updates applied
@@ -98,6 +105,14 @@ class BayesianHandTracker:
                      if c.template.is_instant
                      and ('pump' in getattr(c.template, 'tags', set())
                           or 'protection' in (c.template.oracle_text or '').lower()))
+        # Artifact threat density — every non-land artifact in the
+        # pool contributes. Includes equipment, mana rocks, and
+        # artifact creatures: each one is a card the held
+        # counter may need to answer when it enters the stack.
+        from engine.cards import CardType
+        artifacts = sum(1 for c in all_cards
+                        if CardType.ARTIFACT in c.template.card_types
+                        and not c.template.is_land)
 
         # Prior: P(has X) = 1 - P(none of X in hand)
         # P(none) = C(non_X, hand_size) / C(total, hand_size)
@@ -114,6 +129,7 @@ class BayesianHandTracker:
         self.beliefs.p_exile_removal = prior(exile)
         self.beliefs.p_burn = prior(burn)
         self.beliefs.p_combat_trick = prior(tricks)
+        self.beliefs.p_artifact_threat = prior(artifacts)
         # -- Discard prior from opponent's gameplan --
         # Look up the opp's published gameplan and check whether any
         # card in its mulligan_keys / critical_pieces / always_early
@@ -296,6 +312,12 @@ class BayesianHandTracker:
         """Current belief: P(opponent has exile-based removal)."""
         return self.beliefs.p_exile_removal
 
+    def get_artifact_threat_probability(self) -> float:
+        """Current belief: density of artifact threats in opp's pool.
+        Used by `_holdback_penalty` to scale the per-CMC value of held
+        interaction against artifact-heavy archetypes."""
+        return self.beliefs.p_artifact_threat
+
     def _recalculate_priors(self, game: "GameState"):
         """Recalculate from current deck state after a card is revealed/used."""
         opp = game.players[self.opponent_idx]
@@ -315,6 +337,10 @@ class BayesianHandTracker:
         lib_exile = sum(1 for c in opp.library
                         if 'removal' in getattr(c.template, 'tags', set())
                         and 'exile' in (c.template.oracle_text or '').lower())
+        from engine.cards import CardType
+        lib_artifacts = sum(1 for c in opp.library
+                            if CardType.ARTIFACT in c.template.card_types
+                            and not c.template.is_land)
 
         # Estimate cards in hand from library density
         # (we don't know the hand, but library composition is ground truth)
@@ -332,10 +358,13 @@ class BayesianHandTracker:
         new_counter = updated_prior(lib_counters)
         new_removal = updated_prior(lib_removal)
         new_exile = updated_prior(lib_exile)
+        new_artifact = updated_prior(lib_artifacts)
 
         self.beliefs.p_counter = obs_weight * self.beliefs.p_counter + prior_weight * new_counter
         self.beliefs.p_removal = obs_weight * self.beliefs.p_removal + prior_weight * new_removal
         self.beliefs.p_exile_removal = obs_weight * self.beliefs.p_exile_removal + prior_weight * new_exile
+        # No observed signal for artifact density; flat prior update.
+        self.beliefs.p_artifact_threat = new_artifact
         self.beliefs.last_hand_size = hand_size
 
 

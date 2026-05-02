@@ -19,7 +19,10 @@ from ai.ev_evaluator import (
     EVSnapshot, snapshot_from_game, evaluate_board, creature_value,
     creature_threat_value,
 )
-from ai.scoring_constants import HELD_RESPONSE_VALUE_PER_CMC
+from ai.scoring_constants import (
+    HELD_RESPONSE_VALUE_PER_CMC,
+    held_response_value_per_cmc,
+)
 
 # RC-2 — parse "equipped/enchanted creature gets +X/+Y" bonuses from
 # oracle text. Detects Cranial Plating, Embercleave, Colossus Hammer,
@@ -1168,16 +1171,24 @@ class EVPlayer:
             return 0.0
 
         # Scale: counter_count × counter_cmc × opp_threat_prob ×
-        # HELD_RESPONSE_VALUE_PER_CMC. Brief A1 specifies count (not
-        # lost_capacity) — holding more counters means more value at
-        # risk even if only one capacity is lost this turn (the second
-        # counter still wants the mana on a future turn).
-        # HELD_RESPONSE_VALUE_PER_CMC is sourced from
-        # ai/scoring_constants.py — see that file for the full
-        # Iteration-2 B3-Tune derivation (7.0 → 4.0 calibration).
+        # held_response_value_per_cmc(p_artifact_threat).  Brief A1
+        # specifies count (not lost_capacity) — holding more counters
+        # means more value at risk even if only one capacity is lost
+        # this turn (the second counter still wants the mana on a
+        # future turn).  The per-CMC value is the function-form from
+        # ai/scoring_constants.py, sourced from BHI's artifact-threat
+        # belief: floored at the Iter-2 base (4.0) for the average
+        # opponent, ramped to 6.0 against Affinity-class.
+        p_art = 0.0
+        try:
+            if self.bhi and self.bhi._initialized:
+                p_art = self.bhi.beliefs.p_artifact_threat
+        except Exception:
+            pass
+        held_value_per_cmc = held_response_value_per_cmc(p_art)
         base_penalty = (counter_count * counter_cmc
                         * opp_threat_prob
-                        * HELD_RESPONSE_VALUE_PER_CMC)
+                        * held_value_per_cmc)
 
         # ── Color-availability amplifier (A5) ────────────────────────
         # If this play would leave us with FEWER sources of a held
@@ -1209,11 +1220,12 @@ class EVPlayer:
         if color_kills > 0:
             # Uncastable held interaction = a free opponent spell. Add
             # the full per-counter response value on top of the lost-
-            # capacity penalty (same scale as base_penalty above —
-            # uses the same Iteration-2 tuned coefficient of 4.0).
+            # capacity penalty (same coefficient as base_penalty above
+            # — `held_value_per_cmc` already incorporates the artifact-
+            # threat ramp).
             base_penalty += (color_kills * counter_cmc
                              * opp_threat_prob
-                             * HELD_RESPONSE_VALUE_PER_CMC)
+                             * held_value_per_cmc)
 
         return -base_penalty
 
