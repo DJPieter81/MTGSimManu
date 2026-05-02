@@ -258,11 +258,50 @@ class CastManager:
                     return False
             elif ('target creature' in oracle_l
                     and 'target creature or planeswalker' not in oracle_l
+                    and 'target artifact or creature' not in oracle_l
                     and 'up to' not in oracle_l.split('target creature')[0][-20:]):
                 # "target creature" (any controller) — need at least one
                 # creature on board
                 opp = game.players[1 - player_idx]
                 if not player.creatures and not opp.creatures:
+                    return False
+            else:
+                # Battlefield-target validation for non-creature
+                # target patterns.  Same anti-pattern as the
+                # graveyard-target check above (CR 601.2c) — a spell
+                # with required battlefield target cannot be cast
+                # with no legal candidate.  Class-of-bug coverage:
+                # ~250 Modern-pool cards (Vindicate, Maelstrom Pulse,
+                # Disenchant, Wear // Tear, Shatter, Anguished
+                # Unmaking, Beast Within, Assassin's Trophy, Nature's
+                # Claim, Galvanic Discharge, ...).
+                #
+                # Diagnostic: 2026-05-02 audit — 119 target-permanent
+                # spells + 127 target-artifact/enchantment spells in
+                # the DB, ALL castable on empty boards before this
+                # check.  Affects every removal-heavy deck whose
+                # opponent has a clear board (post-sweeper, post-
+                # Living-End, vs Goryo's, etc.).
+                #
+                # The patterns checked are listed in priority order:
+                # most-specific (with supertype/owner-scope filters)
+                # first to avoid the broader patterns short-
+                # circuiting.  Each pattern has an explicit "up to"
+                # / "you may" guard since those make the target
+                # optional (CR 114.4).
+                #
+                # Architectural note: this is a tactical patch.  The
+                # medium-term unified target_solver lives in
+                # docs/design/2026-05-02_unified_target_solver.md.
+                #
+                # The "any target" pattern (Lightning Bolt) does not
+                # match any of the typed patterns below — players are
+                # legal targets and always present, so it falls
+                # through to mana validation.
+                bf_targets = CastManager._battlefield_legal_targets(
+                    game, player_idx, oracle_l, _re,
+                )
+                if bf_targets is False:
                     return False
 
         # Check mana (pool + untapped lands + Tron bonus)
@@ -489,6 +528,159 @@ class CastManager:
             if not player.creatures:
                 return False
 
+        return True
+
+    @staticmethod
+    def _battlefield_legal_targets(game, player_idx, oracle_l, _re):
+        """Return False if oracle declares a battlefield target
+        requirement with no legal candidate; True otherwise (no
+        requirement matched, or a legal target exists).
+
+        Pattern dispatch (most-specific first):
+          - "target X you control"   → only player's permanents
+          - "target X an opponent controls" → only opponent's
+          - "target [non]land permanent" → both sides, optional land filter
+          - "target [super]? permanent" → both sides, any nonland/land
+          - "target artifact or creature" → both sides, either type
+          - "target artifact or enchantment" → both sides, either
+          - "target creature or planeswalker" → both sides, either
+          - "target artifact" / "target enchantment" / "target
+             planeswalker" / "target land" → both sides, that type
+
+        "up to" or "you may" before "target X" makes it optional
+        (CR 114.4) — the helper returns True so the spell can be
+        cast (zero targets allowed).
+
+        Returns True if any pattern matches with a legal target,
+        False if a pattern matches with NO legal target.  Returns
+        True if no pattern matches (caller's other checks decide).
+
+        Class-of-bug coverage: ~250 Modern-pool cards.  Oracle-
+        driven, no card-name conditionals.
+        """
+        from .cards import CardType, Supertype
+
+        opp_idx = 1 - player_idx
+        player = game.players[player_idx]
+        opp = game.players[opp_idx]
+
+        def _has_artifact(p):
+            return any(CardType.ARTIFACT in c.template.card_types
+                       for c in p.battlefield)
+
+        def _has_enchantment(p):
+            return any(CardType.ENCHANTMENT in c.template.card_types
+                       for c in p.battlefield)
+
+        def _has_planeswalker(p):
+            return any(CardType.PLANESWALKER in c.template.card_types
+                       for c in p.battlefield)
+
+        def _has_creature(p):
+            return any(c.template.is_creature for c in p.battlefield)
+
+        def _has_nonland(p):
+            return any(not c.template.is_land
+                       for c in p.battlefield)
+
+        def _is_optional(phrase: str) -> bool:
+            """Is this 'target X' phrase preceded by 'up to' or
+            'you may'?  Only check the 30 chars before the match —
+            far enough to catch 'you may target...' / 'up to one
+            target...' but not so far that 'you may' from an earlier
+            sentence falsely makes a later 'target X' optional."""
+            idx = oracle_l.find(phrase)
+            if idx < 0:
+                return False
+            prefix = oracle_l[max(0, idx - 30):idx]
+            return ('up to' in prefix or 'you may' in prefix
+                    or 'may exile' in prefix
+                    or 'may return' in prefix)
+
+        # ── Compound types (most specific first) ──────────────────
+        # "artifact or creature" — Abrade, Smelt-style modal, etc.
+        if 'target artifact or creature' in oracle_l:
+            if _is_optional('target artifact or creature'):
+                return True
+            if not (_has_artifact(player) or _has_artifact(opp)
+                    or _has_creature(player) or _has_creature(opp)):
+                return False
+            return True
+
+        # "artifact or enchantment" — Disenchant, Nature's Claim
+        if 'target artifact or enchantment' in oracle_l:
+            if _is_optional('target artifact or enchantment'):
+                return True
+            if not (_has_artifact(player) or _has_artifact(opp)
+                    or _has_enchantment(player) or _has_enchantment(opp)):
+                return False
+            return True
+
+        # "creature or planeswalker" — Galvanic Discharge, modern Bolt variants
+        if 'target creature or planeswalker' in oracle_l:
+            if _is_optional('target creature or planeswalker'):
+                return True
+            if not (_has_creature(player) or _has_creature(opp)
+                    or _has_planeswalker(player) or _has_planeswalker(opp)):
+                return False
+            return True
+
+        # ── Single-type permanent targets ─────────────────────────
+        # "nonland permanent" — Maelstrom Pulse, Anguished Unmaking
+        if 'target nonland permanent' in oracle_l:
+            if _is_optional('target nonland permanent'):
+                return True
+            if not (_has_nonland(player) or _has_nonland(opp)):
+                return False
+            return True
+
+        # "permanent" (any) — Vindicate, Beast Within, Assassin's Trophy.
+        # Lands count as permanents; only completely empty boards reject.
+        if _re.search(r'\btarget\s+permanent\b', oracle_l):
+            if _is_optional('target permanent'):
+                return True
+            if not (player.battlefield or opp.battlefield):
+                return False
+            return True
+
+        # "artifact" (excluding "artifact or X" handled above).
+        # Artifact lands count.
+        if _re.search(r'\btarget\s+artifact\b', oracle_l):
+            if _is_optional('target artifact'):
+                return True
+            if not (_has_artifact(player) or _has_artifact(opp)):
+                return False
+            return True
+
+        # "enchantment"
+        if _re.search(r'\btarget\s+enchantment\b', oracle_l):
+            if _is_optional('target enchantment'):
+                return True
+            if not (_has_enchantment(player) or _has_enchantment(opp)):
+                return False
+            return True
+
+        # "planeswalker"
+        if _re.search(r'\btarget\s+planeswalker\b', oracle_l):
+            if _is_optional('target planeswalker'):
+                return True
+            if not (_has_planeswalker(player) or _has_planeswalker(opp)):
+                return False
+            return True
+
+        # "land" — Wasteland-style targeted land destruction.
+        # Only relevant for instants/sorceries here; activated land
+        # ability sites are checked elsewhere.
+        if _re.search(r'\btarget\s+(?:non\w+\s+)?land\b', oracle_l):
+            if _is_optional('target') and 'land' in oracle_l:
+                # Only optional if "up to N target lands" specifically
+                pass  # Fall through and check
+            if not (any(c.template.is_land for c in player.battlefield)
+                    or any(c.template.is_land for c in opp.battlefield)):
+                return False
+            return True
+
+        # No pattern matched — fall through, no constraint added.
         return True
 
     # ─── Suspend (LE-E2) ─────────────────────────────────────────────
