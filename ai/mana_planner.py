@@ -55,11 +55,29 @@ class ManaNeeds:
     # Colors needed by high-CMC multi-color payoffs (e.g., Omnath WURG)
     # These get extra weight in fetch/shock decisions
     payoff_missing_colors: Set[str] = field(default_factory=set)
-    # Colors of instants / flash permanents currently in the player's hand
-    # (Bundle 3 A5). Fetch targeting and tap-order decisions must prefer
-    # sources that PRESERVE these colors so the held interaction remains
-    # castable on the opponent's turn. Set is empty when no instants are
-    # held — the preference never biases a deck that has nothing to hold.
+    # Colors of EVERY non-land spell currently in the player's hand
+    # (Bundle 3 A5, locked-hand extension).  Fetch targeting and tap-
+    # order decisions must prefer sources that PRESERVE these colors
+    # so the held interaction remains castable.
+    #
+    # Originally restricted to instants / flash permanents (the only
+    # cards castable on the opponent's turn), but the same principle
+    # applies to held SORCERIES, creatures and planeswalkers — every
+    # spell whose colored pips aren't yet covered by an untapped
+    # source represents future castability at risk.  The redundant-
+    # preservation guard in `score_land` (held_unmet =
+    # held_color_pips - existing_colors) keeps the bonus from firing
+    # for already-preserved colors, so widening the collection adds
+    # signal without overweighting decks that hold a single instant.
+    #
+    # Set stays empty when no spells are held with colored pips — the
+    # preference never biases a deck that has nothing to hold (e.g.,
+    # Eldrazi Tron with only colorless / generic-cost spells).
+    #
+    # NOTE: the field name is preserved for backward compatibility
+    # with the engine `tap_lands_for_mana` interface and the existing
+    # held-instant preservation tests; the broader semantics described
+    # above apply.
     held_instant_colors: Set[str] = field(default_factory=set)
 
 
@@ -73,19 +91,24 @@ def analyze_mana_needs(game: "GameState", player_idx: int,
     player = game.players[player_idx]
     needs = ManaNeeds()
 
-    # ── Held instant-speed interaction colors (Bundle 3 A5) ──
-    # Populated from every instant or flash-permanent in hand: for each
-    # colored pip in its mana cost, that color is "held" — we need to
-    # preserve the ability to produce it on the opponent's turn.
-    # Oracle-driven (checks template.is_instant + keyword "flash"); no
-    # hardcoded card names.
-    from engine.cards import Keyword as _Kw
+    # ── Held-spell colors (Bundle 3 A5, locked-hand extension) ──
+    # Populated from EVERY non-land spell in hand: for each colored
+    # pip in its mana cost, that color is "held" — we need to keep
+    # the ability to produce it.  The original Bundle-3 logic only
+    # tracked instants / flash permanents (opponent-turn castability);
+    # the locked-hand seed-60100 diagnostic showed the same principle
+    # applies to held sorceries / creatures / planeswalkers — anything
+    # whose colored pips aren't covered yet should bias the fetch.
+    # Oracle-driven (template.is_spell on every non-land card); no
+    # hardcoded card names.  The redundant-preservation guard in
+    # `score_land` ensures the bonus only fires for held colors NOT
+    # already in `existing_colors`, so widening the collection adds
+    # signal without overweighting already-preserved colors.
     for card in player.hand:
         tmpl = card.template
         if tmpl.is_land:
             continue
-        is_flash = _Kw.FLASH in getattr(tmpl, 'keywords', set())
-        if not (tmpl.is_instant or is_flash):
+        if not tmpl.is_spell:
             continue
         mc = tmpl.mana_cost
         for code, attr in COLOR_MAP.items():
@@ -292,9 +315,22 @@ def score_land(land, needs: ManaNeeds, is_fetchable: bool = False,
     # HELD_COLOR_PRESERVATION_BONUS matches the per-demand weight in
     # block (A) above (8.0 per enabled spell) — held interaction is
     # worth the same as the spell it protects being castable.
+    #
+    # Locked-hand refinement (seed-60100 G2 T2 Living End): the bonus
+    # has *marginal* value only for held colors that are not yet
+    # produced by an existing untapped source.  When the held color
+    # is already in `existing_colors`, the preservation goal is
+    # already met — duplicating the source has zero EV.  Without this
+    # guard a held flash spell (e.g. Subtlety, UU) whose color is
+    # already on the battlefield can dominate the fetch decision,
+    # crowding out lands that would unlock missing colors held
+    # SORCERIES (cascade payoffs, board wipes, threats) need.
+    # Generalises to every deck running fetchlands + flash + multi-
+    # color spells (≥10 of the 16 registered Modern decks).
     if needs.held_instant_colors:
         HELD_COLOR_PRESERVATION_BONUS = 8.0
-        if any(c in needs.held_instant_colors for c in produces):
+        held_unmet = needs.held_instant_colors - needs.existing_colors
+        if held_unmet and any(c in held_unmet for c in produces):
             score += HELD_COLOR_PRESERVATION_BONUS
 
     return score
