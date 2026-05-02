@@ -45,9 +45,26 @@ def permanent_threat(card: "CardInstance", owner: "PlayerState",
 
     Returns 0.0 when `card` is not currently on `owner`'s
     battlefield; callers should filter to on-battlefield targets.
+
+    Implementation note (P0-B): the partial snapshot must reflect
+    the post-pop state for every count-derived field that
+    `position_value` consumes.  `snapshot_from_game` recomputes
+    `my_artifact_count` by walking the live battlefield, so a
+    correctly-popped artifact is naturally excluded — but the
+    marginal-identity invariant is load-bearing for removal
+    targeting, so we guard it explicitly: when an artifact card is
+    popped, force `partial_snap.my_artifact_count` to
+    `full_snap.my_artifact_count - 1`.  This is a no-op today
+    (the live walk already returns N-1) but protects against
+    future regressions in the snapshot field set, where a stale
+    or cached read could leave the artifact-count term in
+    `position_value` unchanged across the pop, causing target
+    inversion (e.g. picking a non-tapping mana rock over a
+    body-bearing artifact creature on a Cranial-Plating board).
     """
     from ai.ev_evaluator import snapshot_from_game
     from ai.clock import position_value
+    from engine.cards import CardType
 
     bf = owner.battlefield
     idx = -1
@@ -66,6 +83,18 @@ def permanent_threat(card: "CardInstance", owner: "PlayerState",
     removed = bf.pop(idx)
     try:
         partial_snap = snapshot_from_game(game, owner_idx)
+        # Marginal-identity guard: ensure the count-based resource
+        # fields in `partial_snap` reflect the popped card.  The
+        # snap's `my_artifact_count` is taken from `owner_idx`'s
+        # battlefield, so it is already N-1 today; the explicit
+        # synchronisation makes that contract part of this
+        # function rather than relying on the snapshot's internals.
+        if CardType.ARTIFACT in removed.template.card_types:
+            partial_snap.my_artifact_count = max(
+                0, full_snap.my_artifact_count - 1)
+        if CardType.ENCHANTMENT in removed.template.card_types:
+            partial_snap.my_enchantment_count = max(
+                0, full_snap.my_enchantment_count - 1)
         v_partial = position_value(partial_snap)
     finally:
         bf.insert(idx, removed)
