@@ -78,7 +78,7 @@
     "Springleaf Drum",
     "Urza's Saga"
   ],
-  "mulligan_min_lands": 1,
+  "mulligan_min_lands": 2,
   "mulligan_max_lands": 3,
   "mulligan_combo_sets": [
     ["Pinnacle Emissary", "Mox Opal", "Ornithopter", "Memnite", "Springleaf Drum", "Mishra's Bauble", "Tormod's Crypt"]
