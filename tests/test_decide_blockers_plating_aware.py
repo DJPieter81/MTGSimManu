@@ -69,20 +69,21 @@ class TestNoChumpIntoPlatedAttackerWithoutAnswer:
 
         Expected: chump-block IS correct here, even though Plating
         rebinds and we have no answer in hand. Without chumping, Boros
-        drops to 2 life (danger zone) and dies next turn to the same
-        6/2 (Plating rebinds for {1}). Chumping Guide buys an entire
-        turn at the cost of one 1-power creature — almost always a
-        winning trade.
+        drops to 2 life and dies next turn to the same 6/2 (Plating
+        rebinds for {1}). Specifically: 8 - 6 = 2 ≤ 6 satisfies the
+        rebound-swing-lethal predicate (post-skip life ≤ next swing's
+        damage). Chumping Guide buys an entire turn at the cost of one
+        1-power creature — almost always a winning trade.
 
         History: this test originally pinned the OPPOSITE rule ("never
         chump when Plating rebinds"). Bo3 trace s=50500 G1 T5 showed
         Boros at 23 life facing 21/1 Memnite refusing to chump → drops
         to 2 → dies T6. Had Boros chumped, it would have lived to
-        win T8. The fix at ev_player.py:2238 added the
-        drops_to_danger_zone clause; this test now pins the corrected
-        behavior. The "plating-futile still applies in comfortable
-        non-danger-zone emergencies" branch is covered by
-        test_chump_block_plating_when_lethal_range.py::test_plating_futile_gate_still_skips_when_survival_comfortable."""
+        win T8. The fix at ev_player.py added the rebound-swing-lethal
+        clause (derived from attacker damage, no magic number); this
+        test now pins the corrected behavior. The "plating-futile still
+        applies in comfortable cases" branch is covered by
+        test_chump_block_plating_when_lethal_range.py."""
         game = GameState(rng=random.Random(0))
         game.players[0].life = 8
         game.players[1].life = 20

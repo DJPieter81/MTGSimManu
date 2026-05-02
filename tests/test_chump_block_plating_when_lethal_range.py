@@ -63,16 +63,18 @@ def _equip(equipment, creature):
     equipment.instance_tags.add("equipment_attached")
 
 
-def test_chumps_when_skipping_attacker_drops_us_to_danger_zone():
+def test_chumps_when_skipping_attacker_makes_rebound_swing_lethal():
     """Defender at 23 life facing a 21/1 attacker with rebinding
     equipment. Has 2 untapped chump candidates. Skipping the block
-    drops us to 2 life — within one big attack of dying. Must chump
-    even though the equipment rebinds for {1} mana next turn.
+    drops us to 2 life — and the same equipment rebinds to a fresh
+    creature next turn for another ~21-power swing. Must chump
+    even though the equipment rebinds for {1} mana.
 
-    Rule pinned: when ``me.life - damage_if_skipped <= DANGER_ZONE_LIFE``
-    (5), the plating-futile gate at ev_player.py:2238 must NOT
-    suppress the chump. Trading one creature to defer death by one
-    turn is almost always correct.
+    Rule pinned (no magic number — derived from attacker damage):
+    when ``me.life - damage_if_skipped <= damage_if_skipped`` (the
+    rebound swing kills us next turn), the plating-futile gate at
+    ev_player.py must NOT suppress the chump. Trading one creature
+    to defer death by one turn is almost always correct.
 
     Fixture cards (Memnite + Cranial Plating + Mox Opal +
     Darksteel Citadels) are illustrative — the rule applies to any
