@@ -21,6 +21,10 @@ The gate must NOT fire for:
 - Non-reanimator cascade spells (e.g., Cascade Zenith into a burn deck) —
   cascading is the whole point, there is no graveyard-fueled payoff.
 - Cascade spells cast when the graveyard already has enough creatures.
+- Cascade spells whose projection is already positive-EV (the projection
+  models the cascade hit + symmetric reanimation; when its delta is
+  positive the gate has nothing to wait for — the cascade-payoff
+  must-fire rule, see test_cascade_payoff_must_fire.py).
 """
 from __future__ import annotations
 
@@ -126,21 +130,44 @@ def _build_living_end_game(card_db, gy_creature_count: int):
 class TestCascadePatienceGate:
     """LE-A3 — Living End should not cascade with insufficient GY fuel."""
 
-    def test_cascade_clamped_when_graveyard_too_thin(self, card_db):
-        """Empty-ish graveyard (0-1 creatures) → scoring Shardless Agent
-        must yield EV below pass_threshold so the AI holds it. Resolving
-        Living End with a near-empty GY returns nothing — the cascade is
-        a wasted card."""
+    def test_cascade_clamped_when_graveyard_too_thin_and_projection_nonpositive(
+            self, card_db):
+        """Empty-ish graveyard AND projection non-positive (no payoff
+        in library to cascade into) → gate clamps so the AI holds the
+        cascade enabler.  This is the gate's primary purpose: defer
+        cascade when the projected outcome is negative because there
+        is genuinely nothing to swing toward.
+
+        Differs from the historical formulation: the previous rule
+        clamped on graveyard-thinness alone, regardless of
+        projection.  That over-fired and contradicted the cascade-
+        payoff must-fire rule — see test_cascade_payoff_must_fire.py.
+        """
         game, shardless = _build_living_end_game(card_db, gy_creature_count=1)
+        # Strip Living End from the library — projection now sees a
+        # cascade with no reanimate payoff to recover.  Without the
+        # symmetric-reanimation swing, projection collapses into the
+        # vanilla creature-body baseline and the gate's clamp is
+        # justified.
+        game.players[0].library = [
+            c for c in game.players[0].library
+            if c.template.name != "Living End"
+        ]
+        # And clear the free-cast flag so we exercise the from-hand
+        # casting branch, not the cascade-resolution branch.  (See
+        # ai/ev_player.py:471-479: free-cast bonus floors EV at 0
+        # and adds +1.5, so it bypasses the gate's clamping anyway.)
+        shardless._free_cast_opportunity = False
 
         player, ev = _score_spell(game, "Living End", shardless)
 
         pass_threshold = player.profile.pass_threshold
-        assert ev < pass_threshold, (
-            f"Shardless Agent EV with 1 GY creature = {ev:.2f}, should be "
-            f"below pass_threshold={pass_threshold} so the AI holds cascade "
-            f"until the graveyard is full. Cascading into an empty GY "
-            f"returns no board and burns the enabler."
+        assert ev <= pass_threshold, (
+            f"Shardless Agent EV with 1 GY creature and no library "
+            f"reanimate payoff = {ev:.2f}, should be <= "
+            f"pass_threshold={pass_threshold}.  Without a payoff in "
+            f"library, projection is non-positive and the gate must "
+            f"clamp to keep the cascade enabler in hand."
         )
 
     def test_cascade_allowed_when_graveyard_has_critical_mass(self, card_db):
