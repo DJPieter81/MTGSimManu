@@ -109,6 +109,10 @@ for _, deck, idx, direction, wr in top3:
     seed += 1
 PY
 
+echo "=== Step 9.5: regenerate showcase ==="
+python3 build_showcase.py mtgsimmanu_showcase.html
+ls -lh templates/reference_showcase.html mtgsimmanu_showcase.html
+
 echo "=== Step 10: WR delta table ==="
 python3 - <<'PY'
 import json, re
@@ -139,7 +143,7 @@ PY
 echo "=== Step 11: commit + push ==="
 git config user.name  "Pieter"
 git config user.email "pieterv@infomet.com"
-git add metagame_data.jsx modern_meta_matrix_full.html guides/*.html run_history.json run_history_embed.js replays/*.txt replays/replay_*.html
+git add metagame_data.jsx modern_meta_matrix_full.html guides/*.html run_history.json run_history_embed.js replays/*.txt replays/replay_*.html templates/reference_showcase.html mtgsimmanu_showcase.html
 git status --short
 git commit -m "data: weekly matrix refresh — n=50 Bo3, 16 decks
 
