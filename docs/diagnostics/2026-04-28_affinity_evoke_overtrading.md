@@ -1,8 +1,9 @@
 ---
 title: Affinity 89% — defenders evoke-trade Solitudes on Memnites (board_eval index bug)
-status: active
+status: superseded
 priority: primary
 session: 2026-04-28
+superseded_by: docs/diagnostics/2026-05-02_me_index_sister_bug_audit.md
 depends_on:
   - docs/diagnostics/2026-04-23_affinity_consolidated_findings.md
 tags:
