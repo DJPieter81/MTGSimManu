@@ -19,6 +19,7 @@ from ai.ev_evaluator import (
     EVSnapshot, snapshot_from_game, evaluate_board, creature_value,
     creature_threat_value,
 )
+from ai.scoring_constants import HELD_RESPONSE_VALUE_PER_CMC
 
 # RC-2 — parse "equipped/enchanted creature gets +X/+Y" bonuses from
 # oracle text. Detects Cranial Plating, Embercleave, Colossus Hammer,
@@ -1154,19 +1155,9 @@ class EVPlayer:
         # lost_capacity) — holding more counters means more value at
         # risk even if only one capacity is lost this turn (the second
         # counter still wants the mana on a future turn).
-        # Iteration-2 B3-Tune: coefficient lowered 7.0 → 4.0. The
-        # Bundle-3 value of 7.0 was calibrated against 2× Counterspell
-        # held (2×2×1×7 = 28, gates a +20 EV play), but the single-
-        # counter case (1×2×1×7 = 14) floored ordinary main-phase
-        # plays, triggering a measurable defender-collapse in N=50
-        # matrix (Jeskai -5pp, Dimir -6pp, AzCon WST -8pp after the
-        # surrounding Affinity session fixes shipped). 4.0 is derived
-        # from CONTROL's pass_threshold = -5.0: with 1 counter × 2
-        # CMC × threat_prob 1.0 × 4.0 = -8 the gate still blocks a +5
-        # main-phase play, but a +10 draw engine (EV 10 − 8 = +2 >
-        # -5.0) remains castable. 2× Counterspell still scales to
-        # 2×2×1×4 = -16 which keeps the Bundle-3 intent intact.
-        HELD_RESPONSE_VALUE_PER_CMC = 4.0
+        # HELD_RESPONSE_VALUE_PER_CMC is sourced from
+        # ai/scoring_constants.py — see that file for the full
+        # Iteration-2 B3-Tune derivation (7.0 → 4.0 calibration).
         base_penalty = (counter_count * counter_cmc
                         * opp_threat_prob
                         * HELD_RESPONSE_VALUE_PER_CMC)

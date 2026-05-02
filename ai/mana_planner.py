@@ -17,6 +17,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Dict, List, Optional, Set, Tuple
 
+from ai.scoring_constants import HELD_COLOR_PRESERVATION_BONUS
+
 if TYPE_CHECKING:
     from engine.game_state import GameState
 
@@ -328,7 +330,9 @@ def score_land(land, needs: ManaNeeds, is_fetchable: bool = False,
     # Generalises to every deck running fetchlands + flash + multi-
     # color spells (≥10 of the 16 registered Modern decks).
     if needs.held_instant_colors:
-        HELD_COLOR_PRESERVATION_BONUS = 8.0
+        # HELD_COLOR_PRESERVATION_BONUS sourced from
+        # ai/scoring_constants.py — matches the per-demand weight in
+        # block (A) above (8.0 per enabled spell).
         held_unmet = needs.held_instant_colors - needs.existing_colors
         if held_unmet and any(c in held_unmet for c in produces):
             score += HELD_COLOR_PRESERVATION_BONUS
