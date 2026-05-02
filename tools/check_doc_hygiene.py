@@ -38,13 +38,50 @@ def find_root_md() -> list[Path]:
 
 
 def find_versioned_md() -> list[Path]:
+    """Walk only git-tracked files. This matches what CI sees on a fresh
+    `actions/checkout` and excludes scratch state (worktrees under
+    .claude/, untracked design drafts, vendored docs in node_modules).
+
+    Skipped: anything under `docs/history/` — that subtree is the
+    frozen archive and may contain legacy `_V[0-9]+.md` filenames that
+    the rule grandfathered in. New files anywhere else, even outside
+    `docs/`, must use frontmatter supersession.
+    """
+    import subprocess
+    hits: list[Path] = []
+    try:
+        out = subprocess.run(
+            ["git", "ls-files", "*.md"],
+            cwd=ROOT,
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        # Fallback to filesystem walk when not in a git checkout
+        # (rare — abstraction-allow: bootstrap path for dev shells).
+        return _find_versioned_md_fs()
+    for line in out.splitlines():
+        rel = Path(line.strip())
+        if not rel.parts:
+            continue
+        # docs/history/ is the frozen archive — legacy _V2.md grandfather.
+        if rel.parts[:2] == ("docs", "history"):
+            continue
+        if VERSIONED_FILENAME.search(rel.name):
+            hits.append(rel)
+    return hits
+
+
+def _find_versioned_md_fs() -> list[Path]:
+    """Filesystem-walk fallback for non-git environments. Same skip
+    rule as the git-tracked path."""
     hits: list[Path] = []
     for p in ROOT.rglob("*.md"):
-        # skip git internals and history (history is allowed to contain old _V2 files)
         rel = p.relative_to(ROOT)
-        if rel.parts and rel.parts[0] in {".git", "node_modules"}:
+        if rel.parts and rel.parts[0] in {".git", "node_modules", ".claude"}:
             continue
-        if rel.parts[:3] == ("docs", "history", "plans"):
+        if rel.parts[:2] == ("docs", "history"):
             continue
         if VERSIONED_FILENAME.search(p.name):
             hits.append(rel)
