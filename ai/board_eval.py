@@ -297,6 +297,24 @@ def _eval_evoke(game, me, a: BoardAssessment, ctx: dict,
     archetype = gp.archetype if gp else 'midrange'
     th = _ARCHETYPE_THRESHOLDS.get(archetype, DecisionThresholds())
 
+    # Evoke-budget guard for removal-class evokes: each subsequent
+    # removal-evoke this turn carries an additive penalty unless the
+    # candidate target is sentinel-class (a forced trade). Captures
+    # the AzCon vs Affinity T3 double-evoke pattern documented in
+    # `docs/diagnostics/2026-05-01_azcon_followup.md`. For non-removal
+    # evokes (e.g. Subtlety, Endurance) the penalty is 0 because the
+    # counter only tracks removal-class.
+    budget_penalty = 0.0
+    if 'removal' in tags and card.template.is_creature:
+        prior = getattr(me, 'removal_evokes_resolved_this_turn', 0)
+        if prior > 0 and opp.creatures:
+            from ai.ev_evaluator import creature_threat_value
+            from ai.scoring_constants import evoke_budget_penalty
+            best_target_threat = max(
+                creature_threat_value(c) for c in opp.creatures
+            )
+            budget_penalty = evoke_budget_penalty(prior, best_target_threat)
+
     # Check if we can actually hard-cast with correct COLORS, not just land count
     total_lands = len(me.lands)
     if total_lands >= cmc:
@@ -313,12 +331,12 @@ def _eval_evoke(game, me, a: BoardAssessment, ctx: dict,
         has_all_colors = needed_colors <= existing_colors
 
         if has_all_colors:
-            return a.pressure - th.evoke_hardcast_next_turn
+            return a.pressure - th.evoke_hardcast_next_turn + budget_penalty
         else:
-            return a.pressure - th.evoke_wrong_colors
+            return a.pressure - th.evoke_wrong_colors + budget_penalty
 
     # Can't hard-cast for multiple turns — evoke for the ETB value
-    return 1.0
+    return 1.0 + budget_penalty
 
 
 def _eval_dash(game, me, a: BoardAssessment, ctx: dict,
