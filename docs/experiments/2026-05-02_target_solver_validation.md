@@ -13,7 +13,7 @@ tags:
   - cr-601-2c
   - affinity
   - completed
-summary: "N=50 16-deck matrix validates the Phases 1–4 unified target solver refactor. **Affinity barely moves (−0.3pp; 86.0% → 85.7%).** This *falsifies* the design doc's empirical hypothesis that the cast-time fix would correct Affinity's overall WR — confirming the design doc's alternate branch: 'the real Affinity bug is a positive-overscoring issue, separate next-session work.' Boros −3.1pp, Dimir −7.2pp, Living End +11.9pp are the largest shifts; most are within n=20→n=50 noise except Living End and Dimir. Phases 5-6 deferred. H_ACT_1/2/3 confirmed."
+summary: "N=50 16-deck matrix validates the Phases 1–4 unified target solver refactor. **Affinity barely moves (−0.3pp; 86.0% → 85.7%).** This *falsifies* the design doc's empirical hypothesis that the cast-time fix would correct Affinity's overall WR — confirming the design doc's alternate branch: 'the real Affinity bug is a positive-overscoring issue, separate next-session work.' Boros −3.1pp, Dimir −7.2pp, Living End +11.9pp are the largest shifts. Follow-up fixes: H_ACT_1 (creature-threat-value for removal targets) + modal-spell parser (Drown in the Loch) landed; **H_ACT_3 (SB keyword filter extension) tried and reverted — net-negative empirically (Affinity +1.2pp, Living End −2.5pp).** Phases 5-6 deferred. H_ACT_2 deferred."
 ---
 
 # Unified target solver — Phase 7 N=50 matrix validation
@@ -294,6 +294,101 @@ combat manager queries this predicate at block-assignment time. The
 AI's `decide_blockers` then filters its candidate pool through the
 predicate. This is a separate, larger refactor. Filed as a follow-up
 in `docs/diagnostics/2026-05-02_affinity_88pct_hypothesis_list.md`.
+
+## Validation matrix v2 (n=50, all fixes including H_ACT_3) — H_ACT_3 reverted
+
+After Phase 7 landed, I applied three additional fixes:
+  - `a10a52f` — H_ACT_1 (creature_threat_value for removal targeting)
+  - `b0adf4a` — modal-spell parser (mode_group OR semantics) — recovers
+    Dimir Drown in the Loch and other "Choose one" spells
+  - `56eb6af` + `f1f8e9c` — H_ACT_3 (extend SB keyword filter for
+    anti-Affinity tech: Damping Sphere, Subtlety, Foundation Breaker,
+    Trinisphere, Endurance, Force of Negation, plus OUT-side
+    extensions for Chalice / Sanctifier / Wan Shi Tong / Wrenn /
+    Phelia / Risen Reef / Force of Negation)
+
+I ran a second n=50 matrix to validate the combined effect. **H_ACT_3
+is net-negative.** The decks that should have improved most (Living
+End, Azorius WST, 4c Omnath — all previously boarding 0 hate vs
+Affinity) are flat-to-worse, and Affinity itself moved UP.
+
+Three-way comparison (overall flat WR):
+
+| Deck                       | n=20 baseline | n=50 cast-only | n=50 + all fixes | Δ(this set) |
+|----------------------------|---------------|----------------|------------------|-------------|
+| Affinity                   | 86.0%         | 85.7%          | **86.9%**        | **+1.2**    |
+| Pinnacle Affinity          | 57.3%         | 60.5%          | **63.1%**        | **+2.6**    |
+| Living End                 | 43.3%         | 55.2%          | 52.7%            | −2.5        |
+| Domain Zoo                 | 69.7%         | 70.0%          | 67.5%            | −2.5        |
+| Azorius Control (WST)      | 31.3%         | 33.5%          | 31.3%            | −2.2        |
+| Eldrazi Tron               | 68.7%         | 65.1%          | 69.3%            | +4.2        |
+| Dimir Midrange             | 54.3%         | 47.1%          | 49.3%            | +2.2 (modal recovery) |
+| 4c Omnath                  | 62.7%         | 61.3%          | 61.6%            | +0.3        |
+| Boros Energy               | 70.7%         | 67.6%          | 67.5%            | −0.1        |
+
+Δ(this set) = effect of the three new fixes against the n=50
+cast-only baseline.
+
+### Why H_ACT_3 failed
+
+The IN-side keyword extension was correct in shape (Damping Sphere
+etc. are real anti-Affinity tech). The OUT-side extension was the
+problem. To make boards-out happen for decks like Living End / WST /
+4c Omnath that had no previously-matched out-cards, I added cuts for:
+
+  - `force of negation`  — counterspell that's "dead" vs creature
+    aggro
+  - `wrenn and six`      — slow planeswalker
+  - `phelia`             — slow flicker
+  - `risen reef`         — slow ETB engine
+  - `chalice of the void`, `sanctifier en-vec`, `wan shi tong`
+
+The post-board mainboards looked sensible on paper (Damping Sphere +
+Wrath of the Skies in for Wrenn + Phelia, etc.) but in actual
+post-board games:
+
+  - Damping Sphere arrives T2 at earliest; Affinity's T2 plays still
+    resolve, and Affinity's mana base (Mox Opal + Spire of Industry)
+    isn't crippled by the +1 tax on the second spell.
+  - Force of Vigor / Foundation Breaker only exile artifacts at
+    sorcery speed (Boseiju) or via creature ETBs that arrive after
+    the Plating-equipped lethal.
+  - Cutting Force of Negation removes a turn-2 hard-counter that
+    actually mattered in the long-tail mirror games.
+
+The boarded-IN cards don't pull their weight on the timeline that
+Affinity wins on. The boarded-OUT cards were doing more work than
+the keyword filter assumed.
+
+### Decision: revert H_ACT_3
+
+Both H_ACT_3 commits reverted via `git revert` (commits `83698ff` +
+`3aa6e85`). The repo's `metagame_data.jsx` is restored to the
+n=50 cast-only baseline so the dashboard reflects the merged PR
+#222 state plus only the H_ACT_1 + modal fixes that survived.
+
+The principled fix-shape for the SB problem is the
+oracle-driven solver in `ai/sideboard_solver.py` (opt-in via
+`SB_SOLVER=new`), not more keyword tokens. That solver values cards
+by marginal contribution rather than substring match. Switching the
+default belongs in a separate session because it needs its own
+matrix-validated rollout.
+
+### What survives
+
+The H_ACT_1 + modal-spell fixes stay landed:
+
+  - **Modal-spell fix** clearly recovers Dimir +2.2pp from the
+    cast-time-fix-only baseline (post1=47.1% → post2=49.3%). Drown
+    in the Loch and other "Choose one — / • mode A / • mode B"
+    spells now correctly cast when at least one mode is legal.
+
+  - **H_ACT_1 fix** (creature_threat_value for creature-only removal
+    targeting) doesn't surface as a clean per-deck Δ in the matrix
+    — its effect is per-decision, not per-game-WR — but the unit
+    test pins the bug shape: pre-fix the AI picked Memnite (1/1
+    vanilla) over Signal Pest (0/1 battle cry); post-fix it picks
+    Signal Pest. Class-of-bug fix; principled; no card names.
 
 ## What this means for next session
 

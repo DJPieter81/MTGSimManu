@@ -63,34 +63,16 @@ def sideboard(mainboard: Dict[str, int], sideboard_cards: Dict[str, int],
         # "orchid phantom" catches White Orchid Phantom (land destruction vs
         # Razortide / Silverbluff / Treasure Vault); "clarion conqueror" creates
         # 2/2 prison tokens that tax artifact attackers.
-        #
-        # H_ACT_3 fix (2026-05-02 Affinity diagnosis): added "damping"
-        # (Damping Sphere — cost-tax vs Affinity ramp), "subtlety"
-        # (flash bounce of Construct/Mox), "foundation breaker"
-        # (Living End's evoke artifact removal), "trinisphere" (Eldrazi
-        # Tron tax piece), "endurance" (3/4 flash reach blocker shuts
-        # Plating's ground game) to the keyword list. Each appears in
-        # at least one top deck's sideboard but pre-fix sat unused
-        # vs Affinity, leaving 8 of 10 top decks under-tuned.
         if any(w in opp_lower for w in ["affinity", "tron", "pinnacle"]):
             if any(w in card_lower for w in ["wear", "force of vigor", "collector",
                                                "haywire", "shattering", "hurkyl",
                                                "pithing", "meltdown", "boseiju",
                                                "time raveler", "orchid phantom",
-                                               "clarion conqueror",
-                                               "damping", "subtlety",
-                                               "foundation breaker",
-                                               "trinisphere", "endurance"]):
+                                               "clarion conqueror"]):
                 board_in_priority.append((card_name, count, 9))
 
-        # Counterspells vs combo + artifact aggro
-        # H_ACT_3 fix: artifact aggro (Affinity/Pinnacle) added to the
-        # match list because cheap free-cast counterspells (Force of
-        # Negation, Mystical Dispute) are excellent vs T4-kill decks.
-        # Spell Pierce is included for the same reason — Affinity's
-        # threats (Saga, Plating, Frogmite) all cost {1}-{2}.
-        if any(w in opp_lower for w in ["storm", "living end", "goryo", "titan",
-                                          "affinity", "pinnacle"]):
+        # Counterspells vs combo
+        if any(w in opp_lower for w in ["storm", "living end", "goryo", "titan"]):
             if any(w in card_lower for w in ["flusterstorm", "mystical dispute",
                                                "spell pierce", "force of negation"]):
                 board_in_priority.append((card_name, count, 8))
@@ -176,41 +158,13 @@ def sideboard(mainboard: Dict[str, int], sideboard_cards: Dict[str, int],
             # blocker for a single Boseiju land-destroy). Previous
             # versions caught these and caused 4c Omnath / Goryo's
             # regressions.
-            #
-            # H_ACT_3 fix (2026-05-02 Affinity diagnosis): real T1
-            # decks (Azorius Control WST, Living End, 4c Omnath) had
-            # NONE of the previously-listed slow patterns in their
-            # mainboards, so the swap couldn't execute even when SB
-            # hate was available. Added (each justified vs Affinity
-            # specifically):
-            #   "chalice of the void" — Memnite/Mox Opal at 0CMC
-            #     dodge it; mostly dead in this matchup.
-            #   "sanctifier en-vec" — anti-red/black creature hate;
-            #     useless vs colorless Affinity.
-            #   "wan shi tong" — 5CMC legendary, too slow vs T4 kill.
-            #   "wrenn and six" — 3CMC planeswalker, slow value, no
-            #     direct Affinity disruption.
-            #   "phelia" — 2CMC flicker creature, slow value.
-            #   "risen reef" — 3CMC ETB engine, slow vs T4 kill.
-            #   "force of negation" — pitch counterspell; dead vs
-            #     creature-only aggro (no game-ending sorceries to
-            #     counter). Cuts free for hate in Living End / 4c
-            #     Omnath. Both decks board into Force of Vigor or
-            #     Foundation Breaker for the artifact answer.
             if any(w in card_lower for w in ["bombardment", "voice of victory",
                                                "static prison", "fable",
                                                "consign", "witch enchanter",
                                                "undying evil",
                                                "summoner's pact",
                                                "mutagenic growth",
-                                               "vexing bauble",
-                                               "chalice of the void",
-                                               "sanctifier en-vec",
-                                               "wan shi tong",
-                                               "wrenn and six",
-                                               "phelia",
-                                               "risen reef",
-                                               "force of negation"]):
+                                               "vexing bauble"]):
                 board_out_priority.append((card_name, min(count, 2), 6))
 
         # Board out Blood Moon vs mono-R and base-R aggro decks. Rationale:
