@@ -212,9 +212,47 @@ def _eval_evoke(game, me, a: BoardAssessment, ctx: dict,
     opp_idx = 1 - player_idx
     opp = game.players[opp_idx]
     
-    # Subtlety-like effects: target creature/planeswalker on battlefield
-    # If the ETB targets opponent creatures and there are none, don't evoke
-    if ('creature spell' in oracle or 'target creature' in oracle) and 'removal' not in tags:
+    # Stack-targeting ETBs (e.g. "target creature spell or planeswalker
+    # spell" on Subtlety): the word "spell" after the target type means
+    # the ETB targets the STACK, not the battlefield.  When the stack
+    # contains no opponent spell of the matching type, the ETB fizzles
+    # and the evoke pitch (often a free pitch counter) is wasted.
+    # Class-wide rule: any printing whose oracle reads "target <type>
+    # spell" is covered — the gate is oracle-driven, no card names.
+    # Subtlety's wording is "target creature spell or planeswalker
+    # spell" (one "target", two clauses); accept the chained "or
+    # planeswalker spell" form too.
+    targets_creature_spell = 'target creature spell' in oracle
+    targets_pw_spell = (
+        'target planeswalker spell' in oracle
+        or 'or planeswalker spell' in oracle  # Subtlety-style chained clause
+    )
+    if (targets_creature_spell or targets_pw_spell) and 'removal' not in tags:
+        # Walk the stack — does it contain an opponent spell whose type
+        # matches what the ETB can target?  Self-controlled spells are
+        # excluded (bouncing one's own spell is strict self-harm).
+        from engine.stack import StackItemType
+        from engine.cards import CardType
+        opp_target_on_stack = False
+        for item in game.stack.items:
+            if item.controller != opp_idx:
+                continue
+            if item.item_type != StackItemType.SPELL:
+                continue
+            t = item.source.template
+            ctypes = getattr(t, 'card_types', set())
+            if targets_creature_spell and CardType.CREATURE in ctypes:
+                opp_target_on_stack = True
+                break
+            if targets_pw_spell and CardType.PLANESWALKER in ctypes:
+                opp_target_on_stack = True
+                break
+        if not opp_target_on_stack:
+            return -10.0  # ETB fizzles → pitch cost is wasted
+
+    # Battlefield-targeting ETBs (e.g. "target creature" — no "spell"):
+    # if the opponent has no creatures, the ETB fizzles.
+    elif 'target creature' in oracle and 'removal' not in tags:
         if not opp.creatures:
             return -10.0  # No valid targets, evoke would waste a card
     
