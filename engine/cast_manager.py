@@ -130,7 +130,130 @@ class CastManager:
         # cannot be cast if no legal target exists.
         if template.is_instant or template.is_sorcery:
             oracle_l = (template.oracle_text or "").lower()
-            if 'target creature you control' in oracle_l:
+
+            # ── Graveyard-target spells (Goryo's Vengeance, Unburial
+            #    Rites, Persist [the card], Reanimate, Dread Return,
+            #    Animate Dead's hardcast variants, …).  Detect any
+            #    "target [TYPE] card from your graveyard" / "from a
+            #    graveyard" / "in your graveyard" / "in a graveyard"
+            #    pattern.  When matched, the *graveyard* (not the
+            #    battlefield) is the legal-target zone, and the
+            #    "target creature" battlefield check below must be
+            #    skipped.  Empty matching zone → no legal target →
+            #    cannot cast.
+            #
+            #    Class-of-bug coverage: 50+ Modern-legal cards have
+            #    "return target [...]creature card from your graveyard"
+            #    per CardDatabase regex sweep.  This check is oracle-
+            #    driven and contains zero hardcoded card names — adding
+            #    a new reanimator spell to a deck list does not require
+            #    code changes.
+            #
+            #    Diagnostic: 5-seed --bo3 sweep Goryo's vs Affinity
+            #    (60100..60500), trace S60400 G2 T4: Goryo's Vengeance
+            #    cast for {1}{B} with empty graveyard, spell silently
+            #    fizzled at resolution, board unchanged.  Cost: 2 mana
+            #    + 1 card per wasted cast.
+            import re as _re
+            gy_target_match = _re.search(
+                r'target\s+((?:non)?legendary\s+)?'
+                r'(creature|instant|sorcery|artifact|enchantment|'
+                r'planeswalker|land|permanent|card)\s+card?s?\s+'
+                r'(?:from|in)\s+(your|a)\s+graveyard',
+                oracle_l,
+            )
+            if gy_target_match is None and (
+                    'from your graveyard' in oracle_l
+                    or 'from a graveyard' in oracle_l
+                    or 'in your graveyard' in oracle_l):
+                # Slack pattern for oracles where the type word is
+                # split off (e.g. "Return target creature card you own
+                # from your graveyard").  Match the most permissive
+                # form: "target ... graveyard" anywhere in oracle.
+                m_loose = _re.search(
+                    r'target\s+((?:non)?legendary\s+)?'
+                    r'(creature|instant|sorcery|artifact|enchantment|'
+                    r'planeswalker|land|permanent|card)',
+                    oracle_l,
+                )
+                if m_loose:
+                    gy_target_match = m_loose
+
+            if gy_target_match is not None:
+                supertype_word = (gy_target_match.group(1) or "").strip()
+                type_word = gy_target_match.group(2)
+                # Determine source-zone scope.  Default to "your" if
+                # the explicit "(from|in) (your|a) graveyard" capture
+                # is unavailable (loose match path).
+                groups = gy_target_match.groups()
+                scope = groups[2] if len(groups) >= 3 and groups[2] else "your"
+                if scope == "a":
+                    candidate_gys = [game.players[i].graveyard
+                                     for i in range(len(game.players))]
+                else:  # "your"
+                    candidate_gys = [player.graveyard]
+
+                # Build the type predicate.  All filters work off
+                # CardTemplate attributes — no card-name lookups.
+                # CardType is imported at module scope; Supertype is
+                # not, so a local import here.
+                from .cards import Supertype
+
+                def _matches(gy_card) -> bool:
+                    t = gy_card.template
+                    # Type filter
+                    if type_word == "creature":
+                        if not t.is_creature:
+                            return False
+                    elif type_word == "instant":
+                        if not t.is_instant:
+                            return False
+                    elif type_word == "sorcery":
+                        if not t.is_sorcery:
+                            return False
+                    elif type_word == "artifact":
+                        if CardType.ARTIFACT not in t.card_types:
+                            return False
+                    elif type_word == "enchantment":
+                        if CardType.ENCHANTMENT not in t.card_types:
+                            return False
+                    elif type_word == "planeswalker":
+                        if CardType.PLANESWALKER not in t.card_types:
+                            return False
+                    elif type_word == "land":
+                        if not t.is_land:
+                            return False
+                    elif type_word == "permanent":
+                        # Any non-instant/non-sorcery
+                        if t.is_instant or t.is_sorcery:
+                            return False
+                    # type_word == "card" places no type filter
+                    # Supertype filter
+                    supertypes = getattr(t, 'supertypes', []) or []
+                    if supertype_word == "legendary":
+                        if Supertype.LEGENDARY not in supertypes:
+                            return False
+                    elif supertype_word == "nonlegendary":
+                        if Supertype.LEGENDARY in supertypes:
+                            return False
+                    return True
+
+                # Exclude the spell-being-cast itself if it is in a
+                # graveyard zone (CR 601.2c — a spell on the stack
+                # is not in its prior zone, and a spell can never
+                # target itself in the source zone).
+                has_legal_target = any(
+                    _matches(c)
+                    for gy in candidate_gys
+                    for c in gy
+                    if c is not card
+                )
+                if not has_legal_target:
+                    return False
+                # Graveyard-target oracle resolved — skip the
+                # "target creature" battlefield check below since the
+                # target is in graveyard, not on the battlefield.
+            elif 'target creature you control' in oracle_l:
                 if not player.creatures:
                     return False
             elif ('target creature' in oracle_l
