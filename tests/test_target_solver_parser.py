@@ -284,6 +284,50 @@ def test_target_opponent_emits_owner_opponent():
 
 # ── 11. Multi-requirement spells ───────────────────────────────────
 
+def test_choose_one_modal_groups_modes_under_same_mode_group():
+    # Drown in the Loch. CR 700.2: a modal spell needs ONE legal mode,
+    # not all of them. The parser's legacy behavior emitted both
+    # requirements as required-AND, causing a Phase 7 regression
+    # (Dimir −7.2pp): Drown couldn't be cast unless BOTH stack had a
+    # spell AND a creature was on the battlefield.
+    #
+    # Fix: requirements from inside a "Choose one" / "Choose up to N"
+    # block share a non-None ``mode_group`` int. The legality query
+    # treats requirements with the same mode_group as OR — at least
+    # one must be legal — while requirements with mode_group=None
+    # remain AND-required.
+    text = (
+        "Choose one —\n"
+        "• Counter target spell with mana value less than or equal "
+        "to the number of cards in its controller's graveyard.\n"
+        "• Destroy target creature with mana value less than or "
+        "equal to the number of cards in its controller's graveyard."
+    )
+    reqs = parse(text)
+    # Both modes must be present
+    zones = {r.zone for r in reqs}
+    assert "stack" in zones, f"Counter mode missing from {reqs}"
+    assert "battlefield" in zones, f"Destroy mode missing from {reqs}"
+    # Both modes must share the same non-None mode_group
+    mgs = [r.mode_group for r in reqs]
+    assert all(mg is not None for mg in mgs), (
+        f"All modal-spell requirements must have a mode_group set; "
+        f"got {mgs}"
+    )
+    assert len(set(mgs)) == 1, (
+        f"Both modes of a 'Choose one' block must share the same "
+        f"mode_group id; got {mgs}"
+    )
+
+
+def test_non_modal_spell_has_mode_group_none():
+    # Bare "Destroy target creature." is not modal — mode_group
+    # remains None. has_legal_target_for_spell will treat it as
+    # required-AND with any other non-modal requirements.
+    req = _only(parse("Destroy target creature."))
+    assert req.mode_group is None
+
+
 def test_modal_artifact_or_creature_returns_single_compound():
     # Conservative Q2 default: solver returns the union as a single
     # compound. AI/caller picks the mode at cast time and the

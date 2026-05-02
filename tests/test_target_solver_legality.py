@@ -474,3 +474,79 @@ def test_target_creature_an_opponent_controls_filters_correctly(card_db):
     assert req.owner_scope == "opponent"
     targets = enumerate_legal_targets(game, 0, req)
     assert targets == [b]
+
+
+# ── 10. Modal spells (CR 700.2 — pick one mode) ────────────────────
+
+
+def test_modal_choose_one_castable_when_only_one_mode_legal(card_db):
+    # Drown in the Loch. The Phase 3 solver migration regressed Dimir
+    # −7.2pp at n=50 because Drown's two modes were treated as AND-
+    # required: Counter target spell AND Destroy target creature.
+    # The fix groups the modes under a shared `mode_group` and
+    # treats them as OR at the spell-level legality query.
+    drown = (
+        "Choose one —\n"
+        "• Counter target spell with mana value less than or equal "
+        "to the number of cards in its controller's graveyard.\n"
+        "• Destroy target creature with mana value less than or "
+        "equal to the number of cards in its controller's graveyard."
+    )
+    # Only a creature on board — no spell on stack. The Destroy mode
+    # is legal; the Counter mode is not. The spell as a whole must
+    # be castable (CR 700.2).
+    game = _new_game()
+    _battlefield(game, card_db, "Memnite", 1)
+    reqs = parse(drown)
+    assert has_legal_target_for_spell(game, 0, reqs) is True
+
+
+def test_modal_choose_one_uncastable_when_no_mode_legal(card_db):
+    # Same modal spell, both modes' targets absent. The spell is
+    # uncastable (CR 700.2 — must choose at least one mode, and the
+    # chosen mode must have a legal target).
+    drown = (
+        "Choose one —\n"
+        "• Counter target spell with mana value less than or equal "
+        "to the number of cards in its controller's graveyard.\n"
+        "• Destroy target creature with mana value less than or "
+        "equal to the number of cards in its controller's graveyard."
+    )
+    game = _new_game()  # empty stack, empty boards
+    reqs = parse(drown)
+    assert has_legal_target_for_spell(game, 0, reqs) is False
+
+
+def test_modal_choose_one_castable_when_only_counter_mode_legal(card_db):
+    # Symmetric of test above: only the Counter mode has a legal
+    # target. The spell is still castable.
+    from engine.stack import StackItem, StackItemType
+    drown = (
+        "Choose one —\n"
+        "• Counter target spell with mana value less than or equal "
+        "to the number of cards in its controller's graveyard.\n"
+        "• Destroy target creature with mana value less than or "
+        "equal to the number of cards in its controller's graveyard."
+    )
+    game = _new_game()
+    spell_card = _hand(game, card_db, "Memnite", 1)
+    game.stack.push(StackItem(
+        item_type=StackItemType.SPELL, source=spell_card, controller=1,
+    ))
+    # No creature on battlefield. Only counter mode is legal.
+    reqs = parse(drown)
+    assert has_legal_target_for_spell(game, 0, reqs) is True
+
+
+def test_non_modal_spell_with_two_required_targets_is_AND(card_db):
+    # Sanity: a non-modal multi-target spell (rare in Modern, but
+    # CR 700.2 says non-modal targets are AND-required). The mode_group
+    # should be None for non-modal phrasings, and the legality query
+    # should treat them as AND.
+    game = _new_game()
+    # No targets on battlefield at all
+    reqs = parse("Destroy target creature. Destroy target artifact.")
+    # Both should have mode_group=None (no "Choose one" prefix)
+    assert all(r.mode_group is None for r in reqs)
+    # Neither has a legal target → spell uncastable
+    assert has_legal_target_for_spell(game, 0, reqs) is False

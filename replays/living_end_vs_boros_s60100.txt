@@ -1,0 +1,929 @@
+Loaded 21759 cards (0 errors)
+  Sideboard (Boros Energy vs Living End): +1 Surgical Extraction, -1 Galvanic Discharge
+======================================================================
+  GAME 1: Living End (P1) vs Boros Energy (P2)  —  seed 60100
+  Series: Living End 0 - 0 Boros Energy
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Living End wins → chooses to play first
+║ P1 (on play): Living End
+║ P2 (on draw): Boros Energy
+╚═══════════════════════════════════════════════════════
+
+P1 (Living End) opening hand (3 lands, 4 spells):
+  • Island [Land, CMC 0]
+  • Breeding Pool [Land, CMC 0]
+  • Subtlety [Creature, CMC 4]
+  • Misty Rainforest [Land, CMC 0]
+  • Force of Negation [Spell, CMC 3]
+  • Waker of Waves [Creature, CMC 7]
+  • Street Wraith [Creature, CMC 5]
+→ P1 KEEPS 7 — has key card(s): Street Wraith, 1 cheap spells
+
+P2 (Boros Energy) opening hand (3 lands, 4 spells):
+  • Windswept Heath [Land, CMC 0]
+  • Elegant Parlor [Land, CMC 0]
+  • Thraben Charm [Spell, CMC 2]
+  • Galvanic Discharge [Spell, CMC 1]
+  • Arid Mesa [Land, CMC 0]
+  • Ajani, Nacatl Pariah // Ajani, Nacatl Avenger [Creature, CMC 2]
+  • Voice of Victory [Creature, CMC 2]
+→ P2 KEEPS 7 — has key card(s): Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Galvanic Discharge, 4 cheap spells
+
+
+╔══ TURN 1 — Living End (P1) ══════════════════════════
+║ Life: Living End 20  |  Boros Energy 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Misty Rainforest
+T1 P1: Crack Misty Rainforest (pay 1 life) -> Watery Grave (untapped, life: 17)
+T1 P1: Cycle Street Wraith (pay 2 life, draw: Verdant Catacombs)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Living End 15
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ranger-Captain of Eos
+  [Main 1]
+T1 P2: Play Arid Mesa
+T1 P2: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Living End (P1) ══════════════════════════
+║ Life: Living End 15  |  Boros Energy 19
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 51  |  Graveyard: 2
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Botanical Sanctum
+  [Main 1]
+T2 P1: Play Verdant Catacombs
+T2 P1: Crack Verdant Catacombs (pay 1 life) -> Overgrown Tomb (tapped, life: 14)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Living End 14
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T2 P2: Play Windswept Heath
+T2 P2: Crack Windswept Heath (pay 1 life) -> Sacred Foundry (tapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Living End (P1) ══════════════════════════
+║ Life: Living End 14  |  Boros Energy 18
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 3
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Overgrown Tomb
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Island
+  [Main 1]
+T3 P1: Play Island
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 18  |  Living End 14
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Overgrown Tomb, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Galvanic Discharge
+  [Main 1]
+T3 P2: Play Arid Mesa
+T3 P2: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 17)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 2 mana remaining)
+T3 P2: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P1 passes (no response)
+T3: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T3 P2: Create 1x Cat token(s)
+T3 P2: Ajani creates 2/1 Cat Warrior token
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Living End (P1) ══════════════════════════
+║ Life: Living End 14  |  Boros Energy 17
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 3
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Overgrown Tomb, Island
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Force of Negation
+  [Main 1]
+T4 P1: Play Breeding Pool (tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 17  |  Living End 14
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 3
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Overgrown Tomb, Island, Breeding Pool [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Phlage, Titan of Fire's Fury
+  [Main 1]
+    → Goal: curve_out
+    [Target] → face (3 dmg, life 14 → 11): no killable target
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R, Sacred Foundry→R (paying for Phlage, Titan of Fire's Fury, 3 mana remaining)
+T4 P2: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P1 passes (no response)
+T4: Resolve Phlage, Titan of Fire's Fury
+T4 P2: Phlage: 3 damage to opponent, gain 3 life
+T4 P2: Phlage sacrificed (not escaped)
+T4 P2: Play Elegant Parlor (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+T4 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+  [Declare Blockers] P1 does not block
+T4 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T4 P2:   Cat Token (2/1) → 2 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 11 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Living End (P1) ══════════════════════════
+║ Life: Living End 8  |  Boros Energy 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 3
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Overgrown Tomb, Island, Breeding Pool
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Cat Token (2/1) [tapped]
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Living End
+  [Main 1]
+T5 P1: Play Island
+    → Goal: fill_resource
+    [Mana] Tap Island→U, Island→U, Watery Grave→B, Overgrown Tomb→B (paying for Subtlety, 5 mana remaining)
+T5 P1: Cast Subtlety (2UU)
+    [Priority] P2 passes (no response)
+T5: Resolve Subtlety
+T5 P1: Subtlety enters (no creature/PW spell on stack to target)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Living End 8
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 4
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Elegant Parlor
+║ Living End board:
+║   Creatures: Subtlety (3/3)
+║   Lands: Watery Grave [T], Overgrown Tomb [T], Island [T], Breeding Pool, Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Dalkovan Encampment
+  [Main 1]
+    → Goal: curve_out [interaction]
+    [Target] → face (3 dmg, life 8 → 5): opponent low life
+    [Mana] Tap Sacred Foundry→R (paying for Galvanic Discharge, 4 mana remaining)
+T5 P2: Cast Galvanic Discharge (R)
+    [Priority] P1 responds with Force of Negation
+T5 P1: Pay alternate cost: exile Botanical Sanctum for Force of Negation
+T5 P1: Cast Force of Negation (1UU)
+T5: Resolve Force of Negation
+T5: Galvanic Discharge is countered
+    → Goal: curve_out [interaction]
+    [Target] → face (3 dmg, life 8 → 5): opponent low life
+    [Mana] Tap Sacred Foundry→R (paying for Galvanic Discharge, 3 mana remaining)
+T5 P2: Cast Galvanic Discharge (R)
+    [Priority] P1 responds with Force of Negation
+T5 P1: Pay alternate cost: exile Waker of Waves for Force of Negation
+T5 P1: Cast Force of Negation (1UU)
+T5: Resolve Force of Negation
+T5: Galvanic Discharge is countered
+T5 P2: Play Dalkovan Encampment (enters tapped)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→W, Elegant Parlor→R (paying for Voice of Victory, 2 mana remaining)
+T5 P2: Cast Voice of Victory (1W)
+    [Priority] P1 passes (no response)
+T5: Resolve Voice of Victory
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+T5 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+T5 P1:   [BLOCK-EMERGENCY] Subtlety (3/3) blocks Cat Token (2/1) — favorable trade
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T5 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T5: Cat Token dies
+  [Combat Damage] 1 damage dealt → P1 life: 8 → 7
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Living End (P1) ══════════════════════════
+║ Life: Living End 7  |  Boros Energy 20
+║ Hand: 1 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 5
+║ Living End board:
+║   Creatures: Subtlety (3/3)
+║   Lands: Watery Grave, Overgrown Tomb, Island, Breeding Pool, Island
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Voice of Victory (1/3)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Elegant Parlor [T], Dalkovan Encampment [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Living End
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Subtlety
+T6 P1: Attack with Subtlety
+  [Declare Blockers] P2 does not block
+T6 P1:   Subtlety (3/3) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 20 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 17  |  Living End 7
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 7
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Voice of Victory (1/3)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Elegant Parlor, Dalkovan Encampment
+║ Living End board:
+║   Creatures: Subtlety (3/3) [tapped]
+║   Lands: Watery Grave, Overgrown Tomb, Island, Breeding Pool, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Main 1]
+    → Goal: curve_out
+    [Target] → Subtlety: marginal threat 7.8 (3/3 body) — better than 3 face dmg
+T6 P2: Escape Phlage, Titan of Fire's Fury (exile 5 cards)
+    [Mana] Tap Sacred Foundry→R, Sacred Foundry→R, Dalkovan Encampment→W, Sacred Foundry→W (paying for Phlage, Titan of Fire's Fury, 5 mana remaining)
+T6 P2: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P1 passes (no response)
+T6: Resolve Phlage, Titan of Fire's Fury
+T6 P2: Phlage: 3 damage to Subtlety, gain 3 life
+T6: Subtlety dies
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Voice of Victory
+T6 P2: Create 2x Warrior token(s)
+T6 P2: Voice of Victory mobilize 2 — create 2 1/1 tokens
+T6 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Voice of Victory
+  [Declare Blockers] P1 does not block
+T6 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T6 P2:   Voice of Victory (1/3) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 7 → 5
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Living End (P1) ══════════════════════════
+║ Life: Living End 5  |  Boros Energy 20
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 6
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Overgrown Tomb, Island, Breeding Pool, Island
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Voice of Victory (1/3) [tapped], Phlage, Titan of Fire's Fury (6/6), Warrior Token (1/1), Warrior Token (1/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Elegant Parlor, Dalkovan Encampment [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Verdant Catacombs
+  [Main 1]
+T7 P1: Play Verdant Catacombs
+T7 P1: Crack Verdant Catacombs (pay 1 life) -> Blood Crypt (tapped, life: 4)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Living End 4
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 44  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Voice of Victory (1/3), Phlage, Titan of Fire's Fury (6/6), Warrior Token (1/1), Warrior Token (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Elegant Parlor, Dalkovan Encampment
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Overgrown Tomb, Island, Breeding Pool, Island, Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Windswept Heath
+  [Main 1]
+T7 P2: Play Windswept Heath
+T7 P2: Crack Windswept Heath -> Plains (untapped)
+    → Goal: curve_out
+    [Mana] Tap Dalkovan Encampment→W, Plains→W (paying for Ranger-Captain of Eos, 6 mana remaining)
+T7 P2: Cast Ranger-Captain of Eos (1WW)
+    [Priority] P1 passes (no response)
+T7: Resolve Ranger-Captain of Eos
+T7 P2: Ranger-Captain tutors Guide of Souls to hand
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Guide of Souls, 4 mana remaining)
+T7 P2: Cast Guide of Souls (W)
+    [Priority] P1 passes (no response)
+T7: Resolve Guide of Souls
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Voice of Victory, Phlage, Titan of Fire's Fury, Warrior Token, Warrior Token
+T7 P2: Create 2x Warrior token(s)
+T7 P2: Voice of Victory mobilize 2 — create 2 1/1 tokens
+T7 P2: Gain 3 life from Phlage, Titan of Fire's Fury (life: 22)
+T7 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Voice of Victory, Phlage, Titan of Fire's Fury, Warrior Token, Warrior Token
+  [Declare Blockers] P1 does not block
+T7 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T7 P2:   Voice of Victory (1/3) → 1 dmg to player
+T7 P2:   Phlage, Titan of Fire's Fury (6/6) → 6 dmg to player
+T7 P2:   Warrior Token (1/1) → 1 dmg to player
+T7 P2:   Warrior Token (1/1) → 1 dmg to player
+P1 loses: life total -9
+  [Combat Damage] 10 damage dealt → P1 life: 1 → -9
+
+>>> Boros Energy wins Game 1 on turn 7 via damage
+    Final life: Living End=-9  Boros Energy=22
+
+======================================================================
+  GAME 2: Living End (P1) vs Boros Energy (P2)  —  seed 60101
+  Series: Living End 0 - 1 Boros Energy
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Living End wins → chooses to play first
+║ P1 (on play): Living End
+║ P2 (on draw): Boros Energy
+╚═══════════════════════════════════════════════════════
+
+P1 (Living End) opening hand (2 lands, 5 spells):
+  • Living End [Spell, CMC 0]
+  • Subtlety [Creature, CMC 4]
+  • Architects of Will [Creature, CMC 4]
+  • Striped Riverwinder [Creature, CMC 7]
+  • Verdant Catacombs [Land, CMC 0]
+  • Misty Rainforest [Land, CMC 0]
+  • Force of Negation [Spell, CMC 3]
+→ P1 KEEPS 7 — has key card(s): Architects of Will, Striped Riverwinder, 2 cheap spells
+
+P2 (Boros Energy) opening hand (1 lands, 6 spells):
+  • Marsh Flats [Land, CMC 0]
+  • Ajani, Nacatl Pariah // Ajani, Nacatl Avenger [Creature, CMC 2]
+  • Voice of Victory [Creature, CMC 2]
+  • Ocelot Pride [Creature, CMC 1]
+  • Ocelot Pride [Creature, CMC 1]
+  • The Legend of Roku // Avatar Roku [Spell, CMC 4]
+  • Seasoned Pyromancer [Creature, CMC 3]
+→ P2 MULLIGANS (too few lands (1 < 2))
+  New hand (5 lands, 2 spells): ['Elegant Parlor', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Windswept Heath', 'Arena of Glory', 'Arid Mesa', 'Voice of Victory', 'Sacred Foundry']
+→ P2 MULLIGANS (too many lands (5 > 3))
+  New hand (2 lands, 5 spells): ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ragavan, Nimble Pilferer', 'Galvanic Discharge', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Galvanic Discharge', 'Marsh Flats', 'Elegant Parlor']
+→ P2 mulligans to 5, bottoms: ['Galvanic Discharge', 'Galvanic Discharge']
+  Keeps: ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Ragavan, Nimble Pilferer', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Marsh Flats', 'Elegant Parlor']
+
+
+╔══ TURN 1 — Living End (P1) ══════════════════════════
+║ Life: Living End 20  |  Boros Energy 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Misty Rainforest
+T1 P1: Crack Misty Rainforest (pay 1 life) -> Watery Grave (untapped, life: 17)
+T1 P1: Cycle Striped Riverwinder (pay 1 mana, draw: Force of Negation)
+T1 P1: Cycle Architects of Will (pay 0 mana, draw: Blooming Marsh)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Living End 17
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 55  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Phlage, Titan of Fire's Fury
+  [Main 1]
+T1 P2: Play Marsh Flats
+T1 P2: Crack Marsh Flats (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Living End (P1) ══════════════════════════
+║ Life: Living End 17  |  Boros Energy 19
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 50  |  Graveyard: 3
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Subtlety
+  [Main 1]
+T2 P1: Play Verdant Catacombs
+T2 P1: Crack Verdant Catacombs (pay 1 life) -> Breeding Pool (tapped, life: 16)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Living End 16
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 53  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Breeding Pool [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Surgical Extraction
+  [Main 1]
+T2 P2: Play Elegant Parlor (enters tapped)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T2 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T2: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Living End (P1) ══════════════════════════
+║ Life: Living End 16  |  Boros Energy 19
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 4
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Breeding Pool
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry [T], Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Indatha Triome
+  [Main 1]
+T3 P1: Play Indatha Triome (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Living End 16
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 52  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry, Elegant Parlor
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Breeding Pool, Indatha Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Windswept Heath
+  [Main 1]
+T3 P2: Play Windswept Heath
+T3 P2: Crack Windswept Heath (pay 1 life) -> Sacred Foundry (tapped, life: 18)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→W, Elegant Parlor→R (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 2 mana remaining)
+T3 P2: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P1 passes (no response)
+T3: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T3 P2: Create 1x Cat token(s)
+T3 P2: Ajani creates 2/1 Cat Warrior token
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T3 P2: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T3 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T3 P2: Create 1x Treasure token(s)
+T3 P2: Ragavan, Nimble Pilferer exiles Waker of Waves from top of P1's library
+T3 P2: Ragavan, Nimble Pilferer — may cast Waker of Waves this turn
+  [Combat Damage] 2 damage dealt → P1 life: 16 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+T3: Waker of Waves returned to exile (uncast)
+
+╔══ TURN 4 — Living End (P1) ══════════════════════════
+║ Life: Living End 14  |  Boros Energy 18
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 4
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Breeding Pool, Indatha Triome
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Elegant Parlor [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Island
+  [Main 1]
+T4 P1: Play Island
+    → Goal: fill_resource
+    [Mana] Tap Island→U, Watery Grave→U, Breeding Pool→G, Indatha Triome→B (paying for Subtlety, 4 mana remaining)
+T4 P1: Cast Subtlety (2UU)
+    [Priority] P2 passes (no response)
+T4: Resolve Subtlety
+T4 P1: Subtlety enters (no creature/PW spell on stack to target)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 18  |  Living End 14
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Elegant Parlor, Sacred Foundry
+║ Living End board:
+║   Creatures: Subtlety (3/3)
+║   Lands: Watery Grave [T], Breeding Pool [T], Indatha Triome [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T4 P2: Play Arid Mesa
+T4 P2: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 17)
+    → Goal: curve_out
+    [Target] → face (3 dmg, life 14 → 11): face damage worth more
+    [Mana] Tap Sacred Foundry→W, Elegant Parlor→R, Sacred Foundry→R (paying for Phlage, Titan of Fire's Fury, 3 mana remaining)
+T4 P2: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P1 passes (no response)
+T4: Resolve Phlage, Titan of Fire's Fury
+T4 P2: Phlage: 3 damage to opponent, gain 3 life
+T4 P2: Phlage sacrificed (not escaped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+T4 P2: Attack with Ragavan, Nimble Pilferer, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+T4 P1:   [BLOCK] Subtlety (3/3) blocks Ragavan, Nimble Pilferer (2/1) — favorable trade
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T4 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T4 P2:   Cat Token (2/1) → 2 dmg to player
+T4: Ragavan, Nimble Pilferer dies
+  [Combat Damage] 3 damage dealt → P1 life: 11 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Living End (P1) ══════════════════════════
+║ Life: Living End 8  |  Boros Energy 20
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 4
+║ Living End board:
+║   Creatures: Subtlety (3/3)
+║   Lands: Watery Grave, Breeding Pool, Indatha Triome, Island
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Cat Token (2/1) [tapped]
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Elegant Parlor [T], Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Living End
+  [Main 1]
+T5 P1: Play Blooming Marsh (tapped, 4 other lands)
+    → Goal: fill_resource
+    [Mana] Tap Island→U, Watery Grave→U, Breeding Pool→G, Indatha Triome→B (paying for Subtlety, 4 mana remaining)
+T5 P1: Cast Subtlety (2UU)
+    [Priority] P2 passes (no response)
+T5: Resolve Subtlety
+T5 P1: Subtlety enters (no creature/PW spell on stack to target)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Subtlety
+T5 P1: Attack with Subtlety
+  [Declare Blockers] P2 does not block
+T5 P1:   Subtlety (3/3) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 20 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 17  |  Living End 8
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 5
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Elegant Parlor, Sacred Foundry, Sacred Foundry
+║ Living End board:
+║   Creatures: Subtlety (3/3) [tapped], Subtlety (3/3)
+║   Lands: Watery Grave [T], Breeding Pool [T], Indatha Triome [T], Island [T], Blooming Marsh [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Phlage, Titan of Fire's Fury
+  [Main 1]
+    → Goal: curve_out
+    [Target] → Subtlety: marginal threat 9.8 (3/3 body) — better than 3 face dmg
+    [Mana] Tap Sacred Foundry→W, Elegant Parlor→R, Sacred Foundry→R (paying for Phlage, Titan of Fire's Fury, 4 mana remaining)
+T5 P2: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P1 passes (no response)
+T5: Resolve Phlage, Titan of Fire's Fury
+T5 P2: Phlage: 3 damage to Subtlety, gain 3 life
+T5: Subtlety dies
+T5 P2: Phlage sacrificed (not escaped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+T5 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+T5 P1:   [BLOCK-EMERGENCY] Subtlety (3/3) blocks Cat Token (2/1) — favorable trade
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T5 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T5: Cat Token dies
+  [Combat Damage] 1 damage dealt → P1 life: 8 → 7
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Living End (P1) ══════════════════════════
+║ Life: Living End 7  |  Boros Energy 20
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 44  |  Graveyard: 5
+║ Living End board:
+║   Creatures: Subtlety (3/3)
+║   Lands: Watery Grave, Breeding Pool, Indatha Triome, Island, Blooming Marsh
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped]
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Elegant Parlor [T], Sacred Foundry [T], Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Raugrin Triome
+  [Main 1]
+T6 P1: Cycle Raugrin Triome (pay 3 mana, draw: Striped Riverwinder)
+T6 P1: Cycle Striped Riverwinder (pay 1 mana, draw: Waker of Waves)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Subtlety
+T6 P1: Attack with Subtlety
+  [Declare Blockers] P2 does not block
+T6 P1:   Subtlety (3/3) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 20 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 17  |  Living End 7
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 7
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Elegant Parlor, Sacred Foundry, Sacred Foundry
+║ Living End board:
+║   Creatures: Subtlety (3/3) [tapped]
+║   Lands: Watery Grave [T], Breeding Pool [T], Indatha Triome [T], Island [T], Blooming Marsh
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Main 1]
+    → Goal: curve_out
+    [Target] → Subtlety: marginal threat 13.2 (3/3 body) — better than 3 face dmg
+T6 P2: Escape Phlage, Titan of Fire's Fury (exile 5 cards)
+    [Mana] Tap Sacred Foundry→W, Elegant Parlor→W, Sacred Foundry→R, Sacred Foundry→R (paying for Phlage, Titan of Fire's Fury, 4 mana remaining)
+T6 P2: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P1 passes (no response)
+T6: Resolve Phlage, Titan of Fire's Fury
+T6 P2: Phlage: 3 damage to Subtlety, gain 3 life
+T6: Subtlety dies
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T6 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Declare Blockers] P1 does not block
+T6 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 7 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Living End (P1) ══════════════════════════
+║ Life: Living End 6  |  Boros Energy 20
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 41  |  Graveyard: 8
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Breeding Pool, Indatha Triome, Island, Blooming Marsh
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Phlage, Titan of Fire's Fury (6/6)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Elegant Parlor [T], Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Living End
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Living End 6
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Phlage, Titan of Fire's Fury (6/6)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Elegant Parlor, Sacred Foundry, Sacred Foundry
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Breeding Pool, Indatha Triome, Island, Blooming Marsh
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 4 mana remaining)
+T7 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T7: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Phlage, Titan of Fire's Fury
+T7 P2: Gain 3 life from Phlage, Titan of Fire's Fury (life: 23)
+T7 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Phlage, Titan of Fire's Fury
+  [Declare Blockers] P1 does not block
+T7 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T7 P2:   Phlage, Titan of Fire's Fury (6/6) → 6 dmg to player
+P1 loses: life total -4
+  [Combat Damage] 7 damage dealt → P1 life: 3 → -4
+
+>>> Boros Energy wins Game 2 on turn 7 via damage
+    Final life: Living End=-4  Boros Energy=23
+
+======================================================================
+  MATCH RESULT: Boros Energy wins 2-0
+======================================================================

@@ -43,11 +43,9 @@ class TargetRequirement:
     """One target requirement parsed from an oracle text fragment.
 
     A spell with multiple required targets has multiple
-    ``TargetRequirement``s. Modal spells (Charms, Wear // Tear) have
-    one per mode; the caller picks the chosen mode and asks the
-    solver about that mode's requirements (Q2 default: solver returns
-    the flat union and the legality query treats the union as
-    "any-mode legal").
+    ``TargetRequirement``s. Modal spells (Drown in the Loch,
+    Charms, Wear // Tear) emit one requirement per mode and group
+    them under a shared ``mode_group`` int — see CR 700.2.
 
     Fields:
         zone:           where the target lives (battlefield/graveyard/...)
@@ -63,6 +61,14 @@ class TargetRequirement:
         count_min:      1 for plain "target X"; 0 for "up to N target X";
                         N for "N target X-s".
         count_max:      equal to count_min unless "up to N".
+        mode_group:     None for non-modal spells (each requirement is
+                        AND-required). For modal spells ("Choose one"
+                        / "Choose two" / "Choose up to N"), all
+                        requirements emitted from the same modal block
+                        share the same int id. The legality query
+                        treats requirements with matching mode_group
+                        as OR — at least one must be legal — while
+                        mode_group=None requirements remain AND.
         raw_phrase:     original oracle substring matched, for debugging.
     """
     zone: Zone
@@ -72,6 +78,7 @@ class TargetRequirement:
     is_optional: bool = False
     count_min: int = 1
     count_max: int = 1
+    mode_group: Optional[int] = None
     raw_phrase: str = ""
 
 
@@ -184,22 +191,50 @@ _SPELL_TARGET = re.compile(
 )
 
 
+_MODAL_PREFIX_RE = re.compile(
+    r"choose\s+(?:one|two|three|up\s+to\s+(?:one|two|three|\d+))\b"
+)
+
+
+def _detect_mode_group(oracle_l: str, hit_idx: int,
+                       modal_section_start: int) -> Optional[int]:
+    """If a "Choose one — / Choose up to two —" prefix appears
+    before ``hit_idx`` and the section continues to (or past)
+    ``hit_idx``, return a non-None mode-group identifier (int).
+    Otherwise return None.
+
+    For Phase 1's scope, every modal section maps to a single shared
+    int id (1). The parser does not yet support nested modal blocks
+    (no Modern card has them).
+    """
+    if modal_section_start < 0 or hit_idx < modal_section_start:
+        return None
+    return 1
+
+
 def parse(oracle_text: str) -> List[TargetRequirement]:
     """Parse all target requirements from an oracle text.
 
     Returns an empty list when no targets are required (draw, mill,
-    lifegain, mass effects with no "target" keyword). Caller treats
-    a non-empty list as a logical AND of required targets — except
-    for entries with ``is_optional=True``, which the caller may skip.
+    lifegain, mass effects with no "target" keyword). The caller
+    treats requirements with ``mode_group=None`` as logical AND
+    (every non-optional one must be legal). Requirements with the
+    same non-None ``mode_group`` are OR — at least one must be
+    legal (CR 700.2 — modal spells need only one chosen mode).
 
-    See ``docs/proposals/2026-05-02_unified_target_solver.md`` for
-    the contract; Phase 1 covers the patterns currently checked by
-    ``cast_manager._battlefield_legal_targets`` and the inline
-    graveyard-target dispatcher in ``cast_manager.can_cast``.
+    See ``docs/proposals/2026-05-02_unified_target_solver.md``.
     """
     if not oracle_text:
         return []
     oracle_l = oracle_text.lower()
+    # Detect the start of a modal block. We use the first occurrence
+    # of "Choose one —" / "Choose up to two —" / etc; everything
+    # after that index is in the modal section. Cards with both a
+    # non-modal prefix ("Sacrifice an artifact, then choose one —")
+    # and a modal block work because the prefix's targets parse
+    # before the modal index and get mode_group=None correctly.
+    m_modal = _MODAL_PREFIX_RE.search(oracle_l)
+    modal_start = m_modal.start() if m_modal else -1
     out: List[TargetRequirement] = []
 
     # ── 1. Graveyard targets ────────────────────────────────────────
@@ -230,6 +265,8 @@ def parse(oracle_text: str) -> List[TargetRequirement]:
             is_optional=_is_optional_at(oracle_l, gy_match.start()),
             count_min=1,
             count_max=1,
+            mode_group=_detect_mode_group(oracle_l, gy_match.start(),
+                                          modal_start),
             raw_phrase=gy_match.group(0),
         ))
         return out
@@ -249,6 +286,8 @@ def parse(oracle_text: str) -> List[TargetRequirement]:
             types=types,
             owner_scope="any",
             is_optional=_is_optional_at(oracle_l, spell_match.start()),
+            mode_group=_detect_mode_group(oracle_l, spell_match.start(),
+                                          modal_start),
             raw_phrase=spell_match.group(0),
         ))
         # A counterspell may also target a permanent in modal text
@@ -263,6 +302,7 @@ def parse(oracle_text: str) -> List[TargetRequirement]:
                 types=types,
                 owner_scope="any",
                 is_optional=_is_optional_at(oracle_l, idx),
+                mode_group=_detect_mode_group(oracle_l, idx, modal_start),
                 raw_phrase=phrase,
             ))
 
@@ -275,6 +315,8 @@ def parse(oracle_text: str) -> List[TargetRequirement]:
             types=frozenset({kind}),
             owner_scope="any",
             is_optional=_is_optional_at(oracle_l, perm_match.start()),
+            mode_group=_detect_mode_group(oracle_l, perm_match.start(),
+                                          modal_start),
             raw_phrase=perm_match.group(0),
         ))
 
@@ -288,6 +330,8 @@ def parse(oracle_text: str) -> List[TargetRequirement]:
             types=frozenset({"creature"}),
             owner_scope="you",
             is_optional=_is_optional_at(oracle_l, you_ctrl.start()),
+            mode_group=_detect_mode_group(oracle_l, you_ctrl.start(),
+                                          modal_start),
             raw_phrase=you_ctrl.group(0),
         ))
     elif opp_ctrl is not None:
@@ -296,6 +340,8 @@ def parse(oracle_text: str) -> List[TargetRequirement]:
             types=frozenset({"creature"}),
             owner_scope="opponent",
             is_optional=_is_optional_at(oracle_l, opp_ctrl.start()),
+            mode_group=_detect_mode_group(oracle_l, opp_ctrl.start(),
+                                          modal_start),
             raw_phrase=opp_ctrl.group(0),
         ))
     elif (bare_creature is not None
@@ -306,6 +352,8 @@ def parse(oracle_text: str) -> List[TargetRequirement]:
             types=frozenset({"creature"}),
             owner_scope="any",
             is_optional=_is_optional_at(oracle_l, bare_creature.start()),
+            mode_group=_detect_mode_group(oracle_l, bare_creature.start(),
+                                          modal_start),
             raw_phrase=bare_creature.group(0),
         ))
 
@@ -324,6 +372,7 @@ def parse(oracle_text: str) -> List[TargetRequirement]:
             types=frozenset({token}),
             owner_scope="any",
             is_optional=_is_optional_at(oracle_l, m.start()),
+            mode_group=_detect_mode_group(oracle_l, m.start(), modal_start),
             raw_phrase=m.group(0),
         ))
 
@@ -336,6 +385,7 @@ def parse(oracle_text: str) -> List[TargetRequirement]:
             types=frozenset({"any"}),
             owner_scope="any",
             is_optional=_is_optional_at(oracle_l, m.start()),
+            mode_group=_detect_mode_group(oracle_l, m.start(), modal_start),
             raw_phrase=m.group(0),
         ))
     player_match = _PLAYER_TARGET.search(oracle_l)
@@ -348,6 +398,8 @@ def parse(oracle_text: str) -> List[TargetRequirement]:
             types=frozenset({"player"}),
             owner_scope=scope,
             is_optional=_is_optional_at(oracle_l, player_match.start()),
+            mode_group=_detect_mode_group(oracle_l, player_match.start(),
+                                          modal_start),
             raw_phrase=player_match.group(0),
         ))
 
@@ -640,16 +692,36 @@ def has_legal_target_for_spell(game: "GameState", controller: int,
                                ) -> bool:
     """Convenience wrapper used by Phase 3 cast_manager migration.
 
-    A spell is castable if every non-optional target requirement has
-    at least one legal candidate. Optional requirements ("up to N
-    target X") never block the cast.
+    A spell is castable iff:
+      - every non-modal (``mode_group=None``) non-optional
+        requirement has at least one legal candidate (logical AND),
+        AND
+      - for each modal group (a set of requirements sharing the same
+        non-None ``mode_group``), at least one requirement in the
+        group has a legal candidate (logical OR per CR 700.2 — the
+        caster needs only one chosen mode).
 
-    Returns True for spells with no requirements (no "target" keyword
-    in the oracle).
+    Optional requirements ("up to N target X") never block the cast,
+    independent of mode_group.
+
+    Returns True for spells with no requirements (no "target"
+    keyword in the oracle).
     """
+    # Bucket modal requirements by mode_group; non-modal go through
+    # the AND path directly.
+    modal_groups: dict = {}
     for req in requirements:
         if req.is_optional:
             continue
-        if not has_legal_target(game, controller, req, exclude=exclude):
+        if req.mode_group is None:
+            if not has_legal_target(game, controller, req, exclude=exclude):
+                return False
+        else:
+            modal_groups.setdefault(req.mode_group, []).append(req)
+
+    # For each modal group, at least one requirement must be legal.
+    for group_id, group_reqs in modal_groups.items():
+        if not any(has_legal_target(game, controller, r, exclude=exclude)
+                   for r in group_reqs):
             return False
     return True

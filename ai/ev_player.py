@@ -2490,9 +2490,33 @@ class EVPlayer:
                     return [best.instance_id]
                 return []
             else:
-                # Creature-only removal
+                # Creature-only removal — pick the highest-threat
+                # creature, not the highest-base-value one. Uses
+                # `creature_threat_value` (oracle-driven amplifier
+                # premiums for battle cry / "for each ..." scaling)
+                # rather than `creature_value` (raw clock impact).
+                # The base function caused removal to prefer Memnite
+                # (1/1 vanilla, base 1.15) over Signal Pest (0/1
+                # battle cry, base 1.00 / threat 2.15) because the
+                # amplifier's effect on other attackers does not
+                # appear in raw clock-impact math.
+                #
+                # `permanent_threat` (used by the burn branch above)
+                # is also threat-aware but defined as a *marginal
+                # position-value drop* — for a 0-power creature like
+                # Signal Pest the drop is zero (position_value sees
+                # only the body, not the amplifier). For creature-
+                # only removal we prefer `creature_threat_value`,
+                # which explicitly credits oracle amplifiers as
+                # virtual power.
+                #
+                # See H_ACT_1 in
+                # docs/diagnostics/2026-05-02_affinity_88pct_hypothesis_list.md
+                # and the regression test in
+                # tests/test_creature_removal_targets_threat_amplifiers.py.
                 if opp.creatures:
-                    best = max(opp.creatures, key=lambda c: creature_value(c, snap))
+                    best = max(opp.creatures,
+                               key=lambda c: creature_threat_value(c, snap))
                     return [best.instance_id]
                 return []
 
