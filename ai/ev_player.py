@@ -973,6 +973,49 @@ class EVPlayer:
                     if (t.cmc or 0) <= 1:
                         ev += 1.0
 
+                # ── Spot-removal timing deferral (BHI-driven) ──
+                # Pro-annotation rule (replay seed 60100 G1 T1):
+                # "Spot-removal value depends on the best target
+                # available across the next 2 turns, not just the
+                # current best target."
+                #
+                # When BHI predicts a higher-EV target arriving within
+                # the next 2 turns, reduce the EV of a CHEAP removal
+                # cast on the current low-tier target.  Detection:
+                #   * Cheap = effective CMC ≤ 1.  Higher-CMC removal
+                #     occupies a different turn slot (e.g. T3 Path)
+                #     and isn't typically interchangeable across turns.
+                #   * "Higher-EV target arrives" = BHI's
+                #     `p_higher_threat_in_n_turns` against the
+                #     opp library + hand size.
+                #
+                # The deferral is a ONE-DIRECTION reduction: it never
+                # *adds* score, only reduces it.  Existing logic still
+                # decides "is this a valid removal target"; this layer
+                # adds "is this the right TIME for this removal".
+                if (t.cmc or 0) <= 1 and self.bhi is not None:
+                    # Initialise BHI on demand - decide_main_phase
+                    # may run before any priority pass has triggered
+                    # initialize_from_game.
+                    if not self.bhi._initialized:
+                        self.bhi.initialize_from_game(game)
+                    target_value = creature_threat_value(best, snap)
+                    p_better = self.bhi.beliefs.p_higher_threat_in_n_turns(
+                        current_target_value=target_value,
+                        turns=2,
+                        opp_library=opp.library,
+                        opp_hand_size=len(opp.hand),
+                    )
+                    # REMOVAL_DEFERRAL_TARGET_GAP encodes the typical
+                    # ``creature_threat_value`` gap between a 1-power
+                    # vanilla body and a premium (battle-cry / equipped /
+                    # scaling) future target - same scale as the
+                    # threat-premium term above. Derivation lives in
+                    # ai/scoring_constants.py.
+                    from ai.scoring_constants import REMOVAL_DEFERRAL_TARGET_GAP
+                    deferral_penalty = p_better * REMOVAL_DEFERRAL_TARGET_GAP
+                    ev -= deferral_penalty
+
         # ── Artifact/enchantment-hate removal overlay ──
         # Spells like Wear // Tear, Boseiju, Force of Vigor target non-
         # creature permanents. `_project_spell` models removal as

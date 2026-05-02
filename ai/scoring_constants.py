@@ -80,6 +80,39 @@ Sister constant: HELD_RESPONSE_VALUE_PER_CMC — same "held interaction
 is worth keeping castable" intent, applied at tap-out decision time.
 """
 
+# ─── Spot-removal timing constants ───────────────────────────────────
+# Used by ai/ev_player.py to defer cheap removal when BHI predicts a
+# higher-EV target arriving within the next few turns.
+
+REMOVAL_DEFERRAL_TARGET_GAP: float = 4.0
+"""Expected ``creature_threat_value`` gap between a low-tier current
+target and the higher-tier future target the deferral term anticipates.
+
+Derivation (matches creature_threat_value's mid-game scale, no magic
+number):
+
+    A 1-power vanilla body on a typical Modern board scores ~1 in
+    ``creature_threat_value`` (Memnite ≈ 1.15 with the snap defaults).
+    A "premium threat" — a battle-cry / equipped / scaling creature
+    with effective power ~3-4 plus virtual-power amplifiers — scores
+    ~5-6 (Signal Pest under Plating, equipped Ornithopter, Construct
+    token).  The gap is therefore ~4 in the same units used by every
+    other removal-side scoring overlay (`_score_spell` adds
+    `premium * 0.5` for the threat-premium term, where `premium` is
+    in this exact `creature_threat_value` unit space).
+
+The deferral penalty is computed as ``p_better * GAP`` so that a 1.0
+probability of a higher-threat arrival reduces the cheap-removal score
+by exactly one threat-tier — enough to let a non-removal alternative
+outrank a 1-mana burn against a vanilla body, but not enough to gate
+removal when the current target is already a premium threat
+(`p_better → 0` against the top of the deck profile).
+
+Sister constant: BATTLE_CRY_AMPLIFIER_VP (in ai/ev_evaluator.py) — the
+same +2 virtual-power rule that produces the threat-value gap this
+constant anticipates.
+"""
+
 # ─── Pitch / opportunity-cost constants ──────────────────────────────
 
 PITCH_COUNTER_FREE_COST: int = 1

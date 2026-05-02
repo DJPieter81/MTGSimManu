@@ -50,6 +50,110 @@ class HandBeliefs:
     observations: int = 0       # number of Bayesian updates applied
     last_hand_size: int = 0     # opponent hand size at last update
 
+    # ─────────────────────────────────────────────────────────────
+    # Future-threat density prior (spot-removal timing primitive)
+    # ─────────────────────────────────────────────────────────────
+
+    def p_higher_threat_in_n_turns(self,
+                                    current_target_value: float,
+                                    turns: int = 2,
+                                    opp_library=None,
+                                    opp_hand_size: int = 0) -> float:
+        """P(opponent draws/produces a creature with threat value >
+        ``current_target_value`` within the next ``turns`` turns).
+
+        This is the BHI primitive consumed by spot-removal-timing
+        decisions in `ai/ev_player.py`.  It encodes the rule:
+        *"Spot-removal value depends on the best target available
+        across the next N turns, not just the current best target."*
+
+        Derivation (no card names, no magic numbers):
+
+          1. Count the cards in the opp pool (library + hand) whose
+             ``creature_threat_value`` strictly exceeds
+             ``current_target_value``.  Library is observable to the
+             tracker (the simulator gives us the full deck list);
+             hand is hidden but its size matters (more unknown cards =
+             more chance one is high-threat).
+          2. Estimate the per-turn density of "higher-threat draw"
+             as ``higher_count / total_pool``.  Turns ahead acts as a
+             Bernoulli trials count: P(at least one in N draws) =
+             1 - (1 - density) ** N.
+          3. Hand contribution: an unknown hand of size H drawing
+             from the same density adds ``1 - (1 - density) ** H``.
+             We combine the two with the standard inclusion-style
+             formula on independent draws.
+
+        Inputs other than ``current_target_value`` are kept optional
+        so the function is callable both inside the live decision
+        path (where ``initialize_from_game`` has already cached the
+        opp library handle) and from unit tests (which pass library
+        + hand_size explicitly to build deterministic fixtures).
+
+        Returns a probability in ``[0.0, 1.0]``.  Monotone-decreasing
+        in ``current_target_value`` (a higher current target makes
+        "an even higher target arrives" strictly less likely).
+        """
+        # Local import to avoid an import cycle at module load
+        # (ai.ev_evaluator imports from ai.bhi via TYPE_CHECKING).
+        from ai.ev_evaluator import creature_threat_value
+
+        if opp_library is None:
+            opp_library = []
+        # Build a unified pool for density estimation. Hand cards are
+        # not enumerable here (hidden information) but their COUNT
+        # contributes to the unknown-draw mass.
+        higher = 0
+        non_land = 0
+        for c in opp_library:
+            t = getattr(c, 'template', None)
+            if t is None or getattr(t, 'is_land', False):
+                continue
+            non_land += 1
+            # Only creatures contribute to "higher threat target" - the
+            # current target is also a creature (spot removal targets
+            # creatures). Equipment/Saga aren't directly higher-threat
+            # targets, but they amplify whichever creature is below
+            # them - count an "equipment" card the same way: if its
+            # equipped pump would push a small creature above the
+            # threshold, it's a signal that a higher-EV target arrives.
+            # Detection is purely oracle-driven (creature_threat_value
+            # for creatures; "equip" / "equipped creature gets" oracle
+            # for equipment-class artifacts).
+            if getattr(t, 'is_creature', False):
+                if creature_threat_value(c) > current_target_value:
+                    higher += 1
+            else:
+                oracle = (getattr(t, 'oracle_text', '') or '').lower()
+                if 'equipped creature gets' in oracle or 'equip ' in oracle:
+                    # Equipment that pumps - any opp creature wearing
+                    # it becomes a higher-threat target than the naked
+                    # current one. Count it once.
+                    higher += 1
+                # Saga-style "create [...] token" non-land permanents
+                # also produce future creature threats.
+                elif 'create' in oracle and 'token' in oracle:
+                    higher += 1
+
+        total_pool = max(1, non_land + max(0, opp_hand_size))
+        density = higher / total_pool
+        if density <= 0.0:
+            return 0.0
+
+        # Number of "fresh draws" within the window: one card drawn
+        # per turn (rules constant: untap-upkeep-DRAW-main).  Hand
+        # cards are already drawn but unobserved - treat them as a
+        # batch of `opp_hand_size` independent unknown draws.
+        # Cards-per-turn = 1 is a Magic rules constant.
+        CARDS_DRAWN_PER_TURN = 1
+        trials = max(0, opp_hand_size) + CARDS_DRAWN_PER_TURN * max(0, turns)
+        if trials == 0:
+            return 0.0
+        # P(at least one higher-threat in `trials` independent draws)
+        p = 1.0 - (1.0 - density) ** trials
+        # Clamp to [0, 1] for safety against floating-point drift.
+        return max(0.0, min(1.0, p))
+
 
 class BayesianHandTracker:
     """Tracks and updates beliefs about opponent's hand.
