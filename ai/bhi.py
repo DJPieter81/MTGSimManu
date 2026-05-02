@@ -52,6 +52,15 @@ class HandBeliefs:
     # threats. Density-based prior over the live pool (library +
     # hand + battlefield), recomputed alongside the other priors.
     p_artifact_threat: float = 0.0
+    # Per-card density of "threat we want to interact with" in the
+    # opp's non-land pool. A creature, planeswalker, or burn spell
+    # counts; a cantrip / mana rock / utility enchantment does not.
+    # This is the density input to the unknown-hand probability
+    # `1 - (1 - density) ** opp_hand_size` consumed by
+    # `ai/ev_player.py::_estimate_opp_threat_prob` to derive
+    # P(opp deploys a follow-up threat next turn) from the pool
+    # composition rather than a flat `0.5 * hand_factor` weighting.
+    p_threat_in_hand_density: float = 0.0
 
     # Tracking
     observations: int = 0       # number of Bayesian updates applied
@@ -217,6 +226,20 @@ class BayesianHandTracker:
         artifacts = sum(1 for c in all_cards
                         if CardType.ARTIFACT in c.template.card_types
                         and not c.template.is_land)
+        # Threat-in-hand density: cards in the non-land pool that the
+        # holdback wants to anticipate. Creatures and planeswalkers
+        # are board threats; burn spells are face-damage threats.
+        # Counters / removal / cantrips / mana sources are explicitly
+        # excluded — they are tracked by their own beliefs
+        # (p_counter, p_removal, p_burn) and would double-count the
+        # signal here. Detection is tag-driven (no card names).
+        threats_pool = sum(1 for c in all_cards
+                           if not c.template.is_land
+                           and (c.template.is_creature
+                                or CardType.PLANESWALKER in c.template.card_types
+                                or 'burn' in getattr(c.template, 'tags', set())))
+        non_land_pool = sum(1 for c in all_cards
+                            if not c.template.is_land)
 
         # Prior: P(has X) = 1 - P(none of X in hand)
         # P(none) = C(non_X, hand_size) / C(total, hand_size)
@@ -234,6 +257,14 @@ class BayesianHandTracker:
         self.beliefs.p_burn = prior(burn)
         self.beliefs.p_combat_trick = prior(tricks)
         self.beliefs.p_artifact_threat = prior(artifacts)
+        # Per-card density (NOT a hand-size-weighted prior): the
+        # consumer in `_estimate_opp_threat_prob` applies the
+        # `1 - (1 - density) ** opp_hand_size` formula at decision
+        # time using the live opp_hand_size, so we cache the raw
+        # per-card density here.
+        self.beliefs.p_threat_in_hand_density = (
+            threats_pool / non_land_pool if non_land_pool > 0 else 0.0
+        )
         # -- Discard prior from opponent's gameplan --
         # Look up the opp's published gameplan and check whether any
         # card in its mulligan_keys / critical_pieces / always_early
@@ -445,6 +476,13 @@ class BayesianHandTracker:
         lib_artifacts = sum(1 for c in opp.library
                             if CardType.ARTIFACT in c.template.card_types
                             and not c.template.is_land)
+        lib_threats = sum(1 for c in opp.library
+                          if not c.template.is_land
+                          and (c.template.is_creature
+                               or CardType.PLANESWALKER in c.template.card_types
+                               or 'burn' in getattr(c.template, 'tags', set())))
+        lib_non_land = sum(1 for c in opp.library
+                           if not c.template.is_land)
 
         # Estimate cards in hand from library density
         # (we don't know the hand, but library composition is ground truth)
@@ -469,6 +507,11 @@ class BayesianHandTracker:
         self.beliefs.p_exile_removal = obs_weight * self.beliefs.p_exile_removal + prior_weight * new_exile
         # No observed signal for artifact density; flat prior update.
         self.beliefs.p_artifact_threat = new_artifact
+        # Per-card density refresh — consumed at decision time with
+        # the live opp_hand_size (see _estimate_opp_threat_prob).
+        self.beliefs.p_threat_in_hand_density = (
+            lib_threats / lib_non_land if lib_non_land > 0 else 0.0
+        )
         self.beliefs.last_hand_size = hand_size
 
 

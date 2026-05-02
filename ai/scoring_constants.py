@@ -150,6 +150,51 @@ same +2 virtual-power rule that produces the threat-value gap this
 constant anticipates.
 """
 
+# ─── Opp-threat-probability primitives ──────────────────────────────
+# Used by ai/ev_player.py::_estimate_opp_threat_prob to derive
+# P(opp deploys a follow-up threat next turn) from the opp's pool
+# composition rather than a flat coefficient on raw hand size.
+
+STARTING_HAND_SIZE: int = 7
+"""Modern starting hand size — Magic rules constant.
+
+Used as the denominator in the legacy `min(1.0, hand_size / 7)` hand-
+saturation factor in `_estimate_opp_threat_prob`. Pinned as a named
+constant so the heuristic-fallback branch (un-initialised BHI) shares
+the same rules anchor as the BHI-driven branch and re-tuning is a
+single-point change.
+"""
+
+
+def opp_threat_prob_from_density(p_threat_density: float,
+                                  opp_hand_size: int) -> float:
+    """P(at least one threat in the opp's unknown hand), derived from
+    the per-card threat density and the live hand size.
+
+    Formula (no magic numbers):
+
+        P(at least one threat in N draws) = 1 - (1 - density) ** N
+
+    This is the standard Bernoulli-trials form already used by every
+    other density-based prior in `ai/bhi.py` (counter / removal /
+    artifact-threat). It replaces the previous flat `0.5 * hand_factor`
+    weighting in `_estimate_opp_threat_prob`'s BHI branch — that
+    coefficient ignored the threat composition of the opp's pool and
+    inflated the threat probability identically against a counter-
+    heavy control deck and a creature-heavy aggro deck at equal hand
+    size.
+
+    Sister primitive: `HandBeliefs.p_higher_threat_in_n_turns` —
+    same Bernoulli formula applied to the spot-removal-deferral
+    decision. Both consume density priors maintained by
+    `BayesianHandTracker._recalculate_priors`.
+    """
+    if p_threat_density <= 0.0 or opp_hand_size <= 0:
+        return 0.0
+    p = 1.0 - (1.0 - p_threat_density) ** max(0, opp_hand_size)
+    return max(0.0, min(1.0, p))
+
+
 # ─── Pitch / opportunity-cost constants ──────────────────────────────
 
 PITCH_COUNTER_FREE_COST: int = 1
