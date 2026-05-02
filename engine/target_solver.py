@@ -22,6 +22,7 @@ from typing import FrozenSet, List, Literal, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .cards import CardInstance
+    from .game_state import GameState
 
 
 Zone = Literal[
@@ -397,3 +398,258 @@ def _already_covered_by_compound(
         if len(req.types) > 1 and token in req.types:
             return True
     return False
+
+
+# ── Legality queries ────────────────────────────────────────────────
+
+
+def _matches_type(card: "CardInstance", types: FrozenSet[str],
+                  zone: Zone) -> bool:
+    """Predicate: does ``card`` satisfy any token in ``types``?
+
+    Mapping by zone:
+      battlefield — checks card_types + supertype-derived booleans
+      graveyard / hand / library / exile — same; "card" is the universal
+        token (no filter).
+      stack — special: tokens are *_spell variants checked elsewhere.
+    """
+    from .cards import CardType
+
+    t = card.template
+    for tok in types:
+        if tok == "creature" and t.is_creature:
+            return True
+        if tok == "artifact" and CardType.ARTIFACT in t.card_types:
+            return True
+        if tok == "enchantment" and CardType.ENCHANTMENT in t.card_types:
+            return True
+        if tok == "planeswalker" and CardType.PLANESWALKER in t.card_types:
+            return True
+        if tok == "land" and t.is_land:
+            return True
+        if tok == "instant" and t.is_instant:
+            return True
+        if tok == "sorcery" and t.is_sorcery:
+            return True
+        if tok == "permanent":
+            # Any permanent (battlefield card). On the battlefield,
+            # all cards are permanents by definition.
+            if zone == "battlefield":
+                return True
+            # In graveyard zone, "permanent" means
+            # creature/artifact/enchantment/planeswalker/land card —
+            # i.e. anything except instant/sorcery.
+            if not (t.is_instant or t.is_sorcery):
+                return True
+        if tok == "permanent_nonland":
+            if zone == "battlefield":
+                return not t.is_land
+            if not (t.is_instant or t.is_sorcery or t.is_land):
+                return True
+        if tok == "card":
+            return True  # No type filter
+    return False
+
+
+def _matches_supertype(card: "CardInstance",
+                       supertype: Optional[str]) -> bool:
+    """Filter by supertype. None = no filter. Mirrors the legendary /
+    nonlegendary check in cast_manager.can_cast (line 232)."""
+    if supertype is None:
+        return True
+    from .cards import Supertype
+
+    supertypes = getattr(card.template, "supertypes", []) or []
+    if supertype == "legendary":
+        return Supertype.LEGENDARY in supertypes
+    if supertype == "nonlegendary":
+        return Supertype.LEGENDARY not in supertypes
+    if supertype == "basic":
+        return Supertype.BASIC in supertypes
+    if supertype == "snow":
+        return Supertype.SNOW in supertypes
+    return True
+
+
+def _matches_owner(card: "CardInstance", controller: int,
+                   owner_scope: OwnerScope) -> bool:
+    """Owner / controller filter. CR 109.4: cards on the battlefield
+    have a controller; cards in non-battlefield zones have an owner.
+    For zone-agnostic call sites we use ``controller`` if set,
+    otherwise fall back to ``owner``."""
+    if owner_scope == "any":
+        return True
+    card_ctrl = getattr(card, "controller", None)
+    if card_ctrl is None:
+        card_ctrl = card.owner
+    if owner_scope == "you":
+        return card_ctrl == controller
+    if owner_scope == "opponent":
+        return card_ctrl != controller
+    return True
+
+
+def _zone_cards(game: "GameState", controller: int,
+                req: TargetRequirement) -> List["CardInstance"]:
+    """Return the candidate-card list for a TargetRequirement,
+    pre-filtered by zone + owner scope but NOT by type/supertype."""
+    cards: List["CardInstance"] = []
+    if req.zone == "battlefield":
+        for i, p in enumerate(game.players):
+            if req.owner_scope == "you" and i != controller:
+                continue
+            if req.owner_scope == "opponent" and i == controller:
+                continue
+            cards.extend(p.battlefield)
+    elif req.zone == "graveyard":
+        for i, p in enumerate(game.players):
+            if req.owner_scope == "you" and i != controller:
+                continue
+            if req.owner_scope == "opponent" and i == controller:
+                continue
+            cards.extend(p.graveyard)
+    elif req.zone == "hand":
+        for i, p in enumerate(game.players):
+            if req.owner_scope == "you" and i != controller:
+                continue
+            if req.owner_scope == "opponent" and i == controller:
+                continue
+            cards.extend(p.hand)
+    elif req.zone == "exile":
+        for i, p in enumerate(game.players):
+            if req.owner_scope == "you" and i != controller:
+                continue
+            if req.owner_scope == "opponent" and i == controller:
+                continue
+            cards.extend(p.exile)
+    elif req.zone == "library":
+        for i, p in enumerate(game.players):
+            if req.owner_scope == "you" and i != controller:
+                continue
+            if req.owner_scope == "opponent" and i == controller:
+                continue
+            cards.extend(p.library)
+    elif req.zone == "stack":
+        for item in game.stack.items:
+            cards.append(item.source)
+    elif req.zone == "any":
+        # Players are always present; nothing to enumerate as a card.
+        pass
+    return cards
+
+
+def _spell_token_matches(item_source: "CardInstance",
+                         types: FrozenSet[str]) -> bool:
+    """Stack-zone spell token check. ``types`` contains tokens like
+    "spell", "creature_spell", "noncreature_spell"."""
+    t = item_source.template
+    for tok in types:
+        if tok == "spell":
+            return True
+        if tok == "creature_spell" and t.is_creature:
+            return True
+        if tok == "noncreature_spell" and not t.is_creature:
+            return True
+        if tok == "instant_spell" and t.is_instant:
+            return True
+        if tok == "sorcery_spell" and t.is_sorcery:
+            return True
+    return False
+
+
+def has_legal_target(game: "GameState", controller: int,
+                     req: TargetRequirement,
+                     exclude: Optional["CardInstance"] = None) -> bool:
+    """CR 601.2c — does at least one legal target exist for this
+    requirement in the current game state?
+
+    For ``zone == "any"`` (Lightning Bolt's "any target" / "target
+    player"), the predicate is always True: players are always
+    present. The caller is responsible for refusing "any target"
+    casts when the player would, e.g., gain life from the cast (no
+    legal targets among creatures/planeswalkers AND damaging the
+    controller is irrational); that policy lives in the AI layer.
+
+    ``exclude`` is the spell being cast — for graveyard-cast spells
+    (Persist), the spell on the stack is no longer a legal target in
+    its source zone (CR 601.2c).
+    """
+    if req.zone == "any":
+        return True
+
+    if req.zone == "stack":
+        for item in game.stack.items:
+            if exclude is not None and item.source is exclude:
+                continue
+            if _spell_token_matches(item.source, req.types):
+                return True
+        return False
+
+    for card in _zone_cards(game, controller, req):
+        if exclude is not None and card is exclude:
+            continue
+        if not _matches_type(card, req.types, req.zone):
+            continue
+        if not _matches_supertype(card, req.supertype):
+            continue
+        # Owner already pre-filtered by _zone_cards.
+        return True
+    return False
+
+
+def enumerate_legal_targets(game: "GameState", controller: int,
+                            req: TargetRequirement,
+                            exclude: Optional["CardInstance"] = None,
+                            ) -> List["CardInstance"]:
+    """Same predicate as ``has_legal_target`` but returns every
+    candidate. Phase 6 will use this for AI scoring (best-target
+    pick); Phase 5 uses it for stack fizzle-on-illegal-target
+    re-validation at resolve time (CR 608.2b).
+
+    Returns an empty list for ``zone == "any"`` because there is no
+    card-instance candidate (the target is a player). Callers that
+    need to enumerate players should not call this function.
+    """
+    if req.zone == "any":
+        return []
+
+    if req.zone == "stack":
+        out: List["CardInstance"] = []
+        for item in game.stack.items:
+            if exclude is not None and item.source is exclude:
+                continue
+            if _spell_token_matches(item.source, req.types):
+                out.append(item.source)
+        return out
+
+    out = []
+    for card in _zone_cards(game, controller, req):
+        if exclude is not None and card is exclude:
+            continue
+        if not _matches_type(card, req.types, req.zone):
+            continue
+        if not _matches_supertype(card, req.supertype):
+            continue
+        out.append(card)
+    return out
+
+
+def has_legal_target_for_spell(game: "GameState", controller: int,
+                               requirements: List[TargetRequirement],
+                               exclude: Optional["CardInstance"] = None,
+                               ) -> bool:
+    """Convenience wrapper used by Phase 3 cast_manager migration.
+
+    A spell is castable if every non-optional target requirement has
+    at least one legal candidate. Optional requirements ("up to N
+    target X") never block the cast.
+
+    Returns True for spells with no requirements (no "target" keyword
+    in the oracle).
+    """
+    for req in requirements:
+        if req.is_optional:
+            continue
+        if not has_legal_target(game, controller, req, exclude=exclude):
+            return False
+    return True
