@@ -2218,26 +2218,35 @@ class EVPlayer:
 
             sacrificed_value = 0.0
             plating_skipped_any = False
-            # Rules constant: ≤5 life is "one big attack from dying"
-            # — same threshold the outer emergency trigger uses
-            # (line ~2121: `me.life - total_incoming <= 5`). When
-            # taking the damage drops us into this band, the
-            # plating-futile gate must NOT skip the chump even if
-            # the equipment rebinds. Trading one creature to defer
-            # death by a turn is almost always correct.
-            DANGER_ZONE_LIFE = 5
             for attacker in sorted(attackers, key=lambda a: a.power or 0, reverse=True):
                 # RC-2: if this attacker's power is dominated by equipment/aura
                 # bonuses AND we can't remove those next turn, chumping is
                 # futile — the plating rebinds. Skip unless skipping is
-                # lethal OR drops us into the danger zone.
+                # lethal NOW or lethal NEXT turn from a rebound swing.
                 #
-                # Bug history (s=50500 G1 T5): pre-fix Boros at 23 life
-                # facing 21/1 Memnite (double-Plating) DID NOT chump
-                # because still_lethal_if_skipped was False (21 < 23).
-                # Boros took 21 to face, dropped to 2 (danger zone),
-                # died T6. Had Boros chumped, it would have lived.
-                # The danger-zone clause closes that case.
+                # Two-turn-lethal-from-rebound projection: if the same
+                # equipment rebinds to a new creature next turn, the
+                # opponent will swing for ~damage_if_skipped again. So
+                # post-skip life ≤ damage_if_skipped means we're dead
+                # next turn. Chumping NOW trades one creature for one
+                # turn of survival — almost always correct.
+                #
+                # Derived from the attacker's own damage; no magic
+                # number. Replaces the prior DANGER_ZONE_LIFE=5
+                # constant which over-fired in non-equipment-rebound
+                # situations. See PR-#229 chump-block validation
+                # (matrix v3) — the constant was empirically too
+                # aggressive (Affinity overall WR essentially
+                # unchanged but field decks lost 1-3pp from over-
+                # chumping).
+                #
+                # Bug origin: s=50500 G1 T5 — Boros at 23 life facing
+                # 21/1 Memnite (double-Plating) DID NOT chump because
+                # still_lethal_if_skipped was False (21 < 23). Boros
+                # took 21, dropped to 2, died T6 to a rebound swing.
+                # Under the new derivation: 23 - 21 = 2 ≤ 21, so the
+                # rebound-swing-lethal clause fires, chump assigned,
+                # Boros lives.
                 equip_bonus = self._attacker_equipment_bonus(game, opp, attacker)
                 damage_so_far = sum(
                     (a.power or 0) for a in attackers
@@ -2245,13 +2254,13 @@ class EVPlayer:
                 )
                 damage_if_skipped = total_incoming - damage_so_far
                 still_lethal_if_skipped = damage_if_skipped >= me.life
-                drops_to_danger_zone = (
-                    me.life - damage_if_skipped <= DANGER_ZONE_LIFE
+                rebound_swing_lethal_if_skipped = (
+                    me.life - damage_if_skipped <= damage_if_skipped
                 )
                 if (equip_bonus >= 3
                         and not self._equipment_breakable(game, me)
                         and not still_lethal_if_skipped
-                        and not drops_to_danger_zone):
+                        and not rebound_swing_lethal_if_skipped):
                     plating_skipped_any = True
                     continue
 
