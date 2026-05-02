@@ -46,6 +46,10 @@ class PlayerState:
     life_gained_this_turn: int = 0
     damage_dealt_this_turn: int = 0
     cards_drawn_this_turn: int = 0
+    # Diminishing-return budget for `_eval_evoke`: each successful
+    # removal-class evoke this turn ramps the cost of the next one.
+    # See `ai/board_eval.py::_eval_evoke` for consumption.
+    removal_evokes_resolved_this_turn: int = 0
     # Storm count is spells_cast_this_turn (both players contribute)
     # Energy tracking
     energy_produced_this_game: int = 0
@@ -203,6 +207,7 @@ class PlayerState:
         self.life_gained_this_turn = 0
         self.damage_dealt_this_turn = 0
         self.cards_drawn_this_turn = 0
+        self.removal_evokes_resolved_this_turn = 0
         self.silenced_this_turn = False
         # Consume a pending silence from Orim's Chant cast on the previous
         # opponent turn (Isochron Scepter lock pattern).

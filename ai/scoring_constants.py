@@ -195,6 +195,67 @@ def opp_threat_prob_from_density(p_threat_density: float,
     return max(0.0, min(1.0, p))
 
 
+# ─── Evoke-budget constants ──────────────────────────────────────────
+# Used by ai/board_eval.py::_eval_evoke to gate the Nth removal-evoke
+# in the same turn. The flat per-evoke value of +1.0 (the default-
+# evoke branch) has no context for "we already burned two cards on a
+# removal-evoke this turn", which produced the AzCon vs Affinity T3
+# double-evoke described in
+# `docs/diagnostics/2026-05-01_azcon_followup.md`.
+
+EVOKE_BUDGET_PENALTY_PER_PRIOR: float = 4.0
+"""Additive penalty applied to each subsequent removal-evoke after the
+first this turn.
+
+Derivation: a removal-evoke spends two cards (the elemental itself
+plus the pitched support card). The default-evoke branch in
+`_eval_evoke` returns +1.0 for the ETB value alone — that score makes
+sense for the FIRST trade but ignores the second's marginal cost.
+4.0 matches the per-CMC value of held interaction
+(`HELD_RESPONSE_VALUE_PER_CMC`) — both encode "a card we expected to
+keep is now committed", so the units agree. With counter = 1 the
+penalty is -4.0, which dominates the +1.0 default and gates the
+second evoke. With counter = 2 the penalty ramps to -8.0 (no chained
+third evoke survives without a sentinel target).
+
+Sister constant: EVOKE_BUDGET_SENTINEL_THREAT — the threshold above
+which the penalty is waived because the trade is forced.
+"""
+
+
+EVOKE_BUDGET_SENTINEL_THREAT: float = 8.0
+"""Target `creature_threat_value` at or above which the evoke-budget
+penalty is waived. 8.0 = 2 × REMOVAL_DEFERRAL_TARGET_GAP — twice the
+premium-threat tier, the level at which "we lose if this resolves"
+outweighs the marginal-card argument the budget guard encodes.
+
+Derivation: a Cranial-Plating-equipped carrier with ~5 artifacts in
+play scores ~13 in `creature_threat_value`; a vanilla 4/4 (Sojourner's
+Companion) scores ~4.45; a Memnite scores ~1.15. The threshold sits
+between vanilla-4/4 and Plating-buffed carriers so that the second
+evoke fires on the latter (a forced trade) but not on the former.
+
+Sister constant: REMOVAL_DEFERRAL_TARGET_GAP — same scale, same
+intent ("premium threat" tier in `creature_threat_value` units).
+"""
+
+
+def evoke_budget_penalty(prior_evokes: int, target_threat: float) -> float:
+    """Return the additive penalty for the next removal-evoke given
+    the count of prior removal-evokes this turn and the candidate
+    target's threat value.
+
+    Returns 0 (no penalty) when no prior evokes have fired this turn,
+    or when the target clears the sentinel-class threshold. Otherwise
+    returns ``-prior_evokes × EVOKE_BUDGET_PENALTY_PER_PRIOR``.
+    """
+    if prior_evokes <= 0:
+        return 0.0
+    if target_threat >= EVOKE_BUDGET_SENTINEL_THREAT:
+        return 0.0
+    return -float(prior_evokes) * EVOKE_BUDGET_PENALTY_PER_PRIOR
+
+
 # ─── Pitch / opportunity-cost constants ──────────────────────────────
 
 PITCH_COUNTER_FREE_COST: int = 1

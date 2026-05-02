@@ -925,6 +925,12 @@ class CastManager:
         card._evoked = evoked  # Track for sacrifice after ETB
         card._dashed = dashed  # Track for haste + return to hand at end of turn
         card._escaped = getattr(card, '_escaped', False) or (escaped if not free_cast else False)  # Track for sacrifice-unless-escaped
+        # Turn-scoped budget for `_eval_evoke`: each removal-class
+        # evoke ramps the cost of the next one. Increment at cast
+        # time (not on resolve) — even a fizzling evoke pitches the
+        # support card, so the budget should be debited regardless.
+        if evoked and 'removal' in getattr(template, 'tags', set()):
+            player.removal_evokes_resolved_this_turn += 1
 
         # Calculate X value for X-cost spells
         x_value = 0
