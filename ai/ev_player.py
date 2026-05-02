@@ -764,7 +764,15 @@ class EVPlayer:
                 # generate value. +1 accounts for the opp-removal cost.
                 expected_activations = max(1, loyalty - 1) + 1
                 card_val = card_clock_impact(snap) * 20.0  # scale to board-eval units
-                ev += expected_activations * card_val
+                pw_bonus = expected_activations * card_val
+                # PW survival floor: when opp_life is high or board impact small,
+                # card_clock_impact → 0 collapses the bonus and PWs lose to
+                # vanilla creatures of equal CMC. Floor at +3.0 represents the
+                # minimum value of one activation (one card draw, one removal,
+                # one Cat token) before the planeswalker dies. Holds even when
+                # combat-clock-derived card_val rounds to ~0 in early/mid game.
+                pw_bonus = max(3.0, pw_bonus)
+                ev += pw_bonus
                 # No additional per-oracle bumps: loyalty × card_val already
                 # integrates over whatever the planeswalker actually does,
                 # including the Teferi-pattern "untap lands" mana-advantage
