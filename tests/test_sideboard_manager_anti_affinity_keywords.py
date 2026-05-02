@@ -163,3 +163,91 @@ def test_force_of_negation_boards_in_vs_affinity():
     sb = {"Force of Negation": 2}
     new_main, _ = sideboard(main, sb, "4c Omnath", "Affinity")
     assert new_main.get("Force of Negation", 0) >= 1
+
+
+# ── Real-deck end-to-end tests ─────────────────────────────────────
+#
+# The IN-side tests above use synthetic mainboards seeded with a card
+# that the existing OUT-filter recognizes ("Undying Evil",
+# "Bombardment", etc.) so the swap can actually execute. Real decks
+# (Azorius Control WST, Living End, 4c Omnath) have NONE of those
+# patterns in their mainboards — pre-fix this left them at 0 hate
+# boarded vs Affinity even though their sideboards contain Damping
+# Sphere, Subtlety, Foundation Breaker, etc.
+#
+# These tests pin the OUT-side extension: the keyword filter must
+# match patterns that DO appear in real T1 deck mainboards so the
+# swap completes.
+
+
+def test_wst_real_deck_boards_at_least_2_hate_vs_affinity():
+    """Azorius Control (WST): real mainboard + real sideboard. Pre-fix
+    boarded 0 hate (no out-match). Post-fix must board ≥2 hate cards.
+
+    Out-pattern targets in WST main: Chalice of the Void (dead vs
+    0CMC artifacts), Sanctifier en-Vec (color hate, useless vs
+    colorless Affinity), Wan Shi Tong (5CMC legendary, too slow)."""
+    from decks.modern_meta import MODERN_DECKS
+    if "Azorius Control (WST)" not in MODERN_DECKS:
+        pytest.skip("WST deck not registered")
+    d = MODERN_DECKS["Azorius Control (WST)"]
+    new_main, _ = sideboard(
+        dict(d["mainboard"]), dict(d["sideboard"]),
+        "Azorius Control (WST)", "Affinity",
+    )
+    boarded = sum(
+        max(0, new_main.get(c, 0) - d["mainboard"].get(c, 0))
+        for c in set(new_main) | set(d["mainboard"])
+    )
+    assert boarded >= 2, (
+        f"WST mainboard contains Chalice / Sanctifier / Wan Shi Tong, "
+        f"sideboard contains Damping Sphere×3 / Subtlety×3 / "
+        f"Engineered Explosives×2 — at least 2 swaps must complete "
+        f"vs Affinity. Got {boarded} cards boarded in."
+    )
+
+
+def test_living_end_real_deck_boards_at_least_2_hate_vs_affinity():
+    """Living End: real deck. Force of Negation (4 main) is dead vs
+    creature aggro and gets cut for Foundation Breaker / Endurance
+    from the SB."""
+    from decks.modern_meta import MODERN_DECKS
+    if "Living End" not in MODERN_DECKS:
+        pytest.skip("Living End deck not registered")
+    d = MODERN_DECKS["Living End"]
+    new_main, _ = sideboard(
+        dict(d["mainboard"]), dict(d["sideboard"]),
+        "Living End", "Affinity",
+    )
+    boarded = sum(
+        max(0, new_main.get(c, 0) - d["mainboard"].get(c, 0))
+        for c in set(new_main) | set(d["mainboard"])
+    )
+    assert boarded >= 2, (
+        f"Living End SB contains Foundation Breaker×3, Endurance×3, "
+        f"Force of Vigor×2, Boseiju×2 — at least 2 must come in vs "
+        f"Affinity. Got {boarded} cards boarded in."
+    )
+
+
+def test_4c_omnath_real_deck_boards_at_least_2_hate_vs_affinity():
+    """4c Omnath: real deck. Wrenn and Six / Phelia / Risen Reef are
+    slow non-impact slots that get cut for Force of Negation /
+    Boseiju / Force of Vigor / Surgical Extraction."""
+    from decks.modern_meta import MODERN_DECKS
+    if "4c Omnath" not in MODERN_DECKS:
+        pytest.skip("4c Omnath deck not registered")
+    d = MODERN_DECKS["4c Omnath"]
+    new_main, _ = sideboard(
+        dict(d["mainboard"]), dict(d["sideboard"]),
+        "4c Omnath", "Affinity",
+    )
+    boarded = sum(
+        max(0, new_main.get(c, 0) - d["mainboard"].get(c, 0))
+        for c in set(new_main) | set(d["mainboard"])
+    )
+    assert boarded >= 2, (
+        f"4c Omnath SB contains Force of Negation×2, Force of Vigor×2, "
+        f"Boseiju, Surgical Extraction, Endurance — at least 2 must "
+        f"come in vs Affinity. Got {boarded} cards boarded in."
+    )
