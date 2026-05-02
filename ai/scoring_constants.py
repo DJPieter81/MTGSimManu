@@ -1,0 +1,95 @@
+"""Centralized scoring constants for the AI layer.
+
+Each constant is justified by a docstring explaining its derivation.
+Sister constants (LETHAL_THREAT / NEAR_LETHAL_CUTOFF, the held-* family)
+live in the same section so re-tuning one prompts review of the other.
+
+Convention: rules constants only.  Per-card or per-deck values belong
+in `decks/gameplans/*.json`, not here.  Per-archetype values belong in
+`ai/strategy_profile.py`, not here.
+
+Audit hook: this file is the single point of review for any future
+coefficient re-tune.  The AzCon-followup work tracked in
+`docs/diagnostics/2026-05-01_azcon_followup.md` plans to convert
+HELD_RESPONSE_VALUE_PER_CMC from a constant into a function of
+`bhi.beliefs.p_artifact_threat`; that change should land in this file.
+"""
+from __future__ import annotations
+
+# ─── Threat-evaluation sentinels ─────────────────────────────────────
+# Used by ai/response.py to score stack threats and gate counter triage.
+
+LETHAL_THREAT: float = 100.0
+"""Sentinel value for a stack item that, if it resolves, kills us this turn.
+
+Pinned at the top of the threat scale so any spell with a credible
+lethal projection outranks any non-lethal threat in counter selection.
+Used by `evaluate_stack_threat` in `ai/response.py` for known burn that
+exceeds our remaining life.
+"""
+
+NEAR_LETHAL_CUTOFF: float = 50.0
+"""Half of LETHAL_THREAT — the threshold above which counter-triage
+suspends and the counter must fire regardless of whether a flash creature-
+removal could answer the same threat post-resolution.
+
+Above this threshold no held-counter future EV can outweigh "we lose now".
+Derivation: ½ × LETHAL_THREAT.  Re-tune in lockstep with LETHAL_THREAT.
+"""
+
+# ─── Held-interaction preservation values ────────────────────────────
+# Used by ai/ev_player.py (holdback) and ai/mana_planner.py (fetch).
+# These two constants describe the same underlying quantity from
+# different angles: the value of holding interaction in hand.
+
+HELD_RESPONSE_VALUE_PER_CMC: float = 4.0
+"""Per-CMC value of held interaction (counterspells / removal) that may
+be lost when a main-phase tap-out forfeits response capacity.
+
+Scale used by `_held_response_penalty` in `ai/ev_player.py` as
+    counter_count × counter_cmc × opp_threat_prob × HELD_RESPONSE_VALUE_PER_CMC
+
+Iteration-2 B3-Tune: coefficient lowered 7.0 → 4.0.  The Bundle-3 value
+of 7.0 was calibrated against 2× Counterspell held (2×2×1×7 = 28, gates
+a +20 EV play), but the single-counter case (1×2×1×7 = 14) floored
+ordinary main-phase plays, triggering a measurable defender-collapse
+in N=50 matrix (Jeskai -5pp, Dimir -6pp, AzCon WST -8pp after the
+surrounding Affinity session fixes shipped).  4.0 is derived from
+CONTROL's pass_threshold = -5.0: with 1 counter × 2 CMC × threat_prob
+1.0 × 4.0 = -8 the gate still blocks a +5 main-phase play, but a
++10 draw engine (EV 10 − 8 = +2 > -5.0) remains castable.
+2× Counterspell still scales to 2×2×1×4 = -16 which keeps the
+Bundle-3 intent intact.
+
+Sister constant: HELD_COLOR_PRESERVATION_BONUS — same "held interaction
+is worth keeping castable" intent, applied at fetchland decision time.
+"""
+
+HELD_COLOR_PRESERVATION_BONUS: float = 8.0
+"""Bonus applied to a fetchland candidate that *provides* a color the
+player currently holds an instant / flash spell of, when no existing
+untapped source covers that color.
+
+Used by `score_land` in `ai/mana_planner.py`.
+
+Matches the per-demand weight in block (A) of the same scoring
+function (8.0 per enabled spell) — held interaction is worth the
+same as the spell it protects being castable.
+
+Sister constant: HELD_RESPONSE_VALUE_PER_CMC — same "held interaction
+is worth keeping castable" intent, applied at tap-out decision time.
+"""
+
+# ─── Pitch / opportunity-cost constants ──────────────────────────────
+
+PITCH_COUNTER_FREE_COST: int = 1
+"""Effective cost of a "free" pitch counter on the opponent's turn — 1
+exiled card, no mana.
+
+Used by `respond_to_stack` in `ai/response.py` to decide whether a
+counter is cheap enough to fire even when a post-resolution creature-
+exile is also available.  Counters with effective cost > 1 are reserved
+when triage would otherwise skip them; pitch counters at cost 1 always
+fire because the opportunity cost (one exiled card vs. opp's spell) is
+strictly favorable.
+"""

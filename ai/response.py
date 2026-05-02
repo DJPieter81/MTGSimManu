@@ -8,6 +8,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Callable, List, Optional, Tuple
 
+from ai.scoring_constants import (
+    LETHAL_THREAT,
+    NEAR_LETHAL_CUTOFF,
+    PITCH_COUNTER_FREE_COST,
+)
+
 if TYPE_CHECKING:
     from engine.game_state import GameState
     from engine.cards import CardInstance
@@ -88,7 +94,7 @@ class ResponseDecider:
         # Near-lethal cutoff: ½ × LETHAL_THREAT (sentinel inside
         # `evaluate_stack_threat`).  Above this, the counter must fire
         # because no held-counter future EV can outweigh "we lose now".
-        NEAR_LETHAL_CUTOFF = 50.0  # rules constant: ½ × LETHAL_THREAT (=100)
+        # Sourced from ai/scoring_constants.py (NEAR_LETHAL_CUTOFF).
         # Triage suspends only when current threat dominates BOTH the
         # near-lethal cutoff AND any plausible held-counter future EV.
         triage_overridden = (
@@ -132,8 +138,8 @@ class ResponseDecider:
                     effective_cost = self._effective_counter_cost(game, inst)
                     # Rules constant: a "free" pitch counter on opp's
                     # turn costs 1 (the exiled card).  Counters costing
-                    # 2+ effective should be reserved.
-                    PITCH_COUNTER_FREE_COST = 1
+                    # 2+ effective should be reserved.  Sourced from
+                    # ai/scoring_constants.py (PITCH_COUNTER_FREE_COST).
                     if effective_cost > PITCH_COUNTER_FREE_COST:
                         continue
                 # Use *effective* cost: pitch counters on opp turn cost 1 card,
@@ -193,7 +199,7 @@ class ResponseDecider:
         # Rules constant: a "free" pitch counter on opp's turn costs 1
         # (the exiled card).  Counters with effective cost > 1 are
         # reserved when a post-resolution creature-exile is available.
-        PITCH_COUNTER_FREE_COST = 1
+        # Sourced from ai/scoring_constants.py (PITCH_COUNTER_FREE_COST).
         for instant in instants:
             if "counterspell" not in instant.template.tags:
                 continue
@@ -442,8 +448,8 @@ class ResponseDecider:
 
         # Lethal burn: sentinel-level threat. LETHAL_THREAT is a rules
         # constant — any spell that kills us is worth countering above all
-        # else, so we pin it at the top of the threat scale.
-        LETHAL_THREAT = 100.0
+        # else, so we pin it at the top of the threat scale.  Sourced
+        # from ai/scoring_constants.py (LETHAL_THREAT).
         known_burn = get_burn_damage(source.name)
         if known_burn > 0:
             my_life = game.players[self.player_idx].life
