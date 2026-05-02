@@ -1234,10 +1234,13 @@ def wish_resolve(game, card, controller, targets=None, item=None):
 def gifts_ungiven_resolve(game, card, controller, targets=None, item=None):
     lib = game.players[controller].library
     candidates = [c for c in lib if c.template.is_instant or c.template.is_sorcery]
-    candidates.sort(key=lambda c: (
-        0 if c.name in ("Grapeshot", "Past in Flames") else 1,
-        -c.template.cmc
-    ))
+    # Prefer cards that are usable from the graveyard: storm payoffs (recur
+    # via Past in Flames) and flashback spells. Falls back to highest CMC.
+    def _gifts_priority(c):
+        ctags = getattr(c.template, 'tags', set())
+        gy_useful = ('storm_payoff' in ctags or 'flashback' in ctags)
+        return (0 if gy_useful else 1, -c.template.cmc)
+    candidates.sort(key=_gifts_priority)
     found = candidates[:2]
     for card_found in found:
         lib.remove(card_found)
@@ -1630,9 +1633,13 @@ def _primeval_titan_search(game, controller):
             score += 10  # bounce lands are best with Amulet
         if "Valakut" in c.name:
             score += 8  # Valakut for damage
-        if c.name in ("Slayers' Stronghold", "Sunhome, Fortress of the Legion",
-                       "Boros Garrison", "Hanweir Battlements // Hanweir, the Writhing Township"):
-            score += 7  # haste/double strike enablers
+        # Lands that grant haste / double strike to creatures (oracle-detected
+        # combat enablers, e.g. Slayers' Stronghold, Hanweir Battlements,
+        # Sunhome). Activated abilities targeting creatures show up as the
+        # phrase "gains haste" / "double strike" in oracle text.
+        otext = (c.template.oracle_text or "").lower()
+        if "gains haste" in otext or "double strike" in otext:
+            score += 7
         if c.template.produces_mana:
             score += 3
         return score
@@ -2527,10 +2534,7 @@ def phelia_attack(game, card, controller, targets=None, item=None):
     own_etb = [c for c in player.battlefield
                if c.instance_id != card.instance_id
                and not c.template.is_land
-               and ('etb_value' in getattr(c.template, 'tags', set())
-                    or c.name in ('Solitude', 'Phlage, Titan of Fire\'s Fury',
-                                  'Omnath, Locus of Creation', 'Subtlety',
-                                  'Endurance'))]
+               and 'etb_value' in getattr(c.template, 'tags', set())]
 
     # Find opponent nonlands
     opp_nonlands = [c for c in opp.battlefield if not c.template.is_land]

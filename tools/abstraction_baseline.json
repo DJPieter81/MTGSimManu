@@ -1,4 +1,4 @@
 {
-  "hardcoded_name_count": 7,
-  "_comment": "Abstraction-contract ratchet baseline. Counts hardcoded card-name conditionals in engine/+ai/. Ratcheted 8\u21927 on 2026-04-27 by tagging LEGENDARY supertype-enum check as abstraction-allow. Remaining 7 are real debt (Mox Opal, Grapeshot/PiF, Slayers Stronghold land cycle, Solitude/Phlage, storm payoff names \u00d73). May only decrease. See CLAUDE.md ABSTRACTION CONTRACT."
+  "hardcoded_name_count": 1,
+  "_comment": "Abstraction-contract ratchet baseline. Counts hardcoded card-name conditionals in engine/+ai/. Ratcheted 8→7 on 2026-04-27 by tagging LEGENDARY supertype-enum check as abstraction-allow. Ratcheted 7→1 on 2026-05-02 by tagging cards with `storm_payoff` (oracle-derived from storm effect) and removing redundant name fallbacks where existing tags (etb_value, cantrip, card_advantage) already covered the listed cards; lifted Gifts-Ungiven sort key, Primeval-Titan land priority, and Phelia ETB filter to tag/oracle checks. Remaining 1 is Mox Opal mana-payment (intentional patch with explicit comment justifying name check). May only decrease. See CLAUDE.md ABSTRACTION CONTRACT."
 }

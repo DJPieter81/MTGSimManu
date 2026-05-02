@@ -1941,11 +1941,9 @@ def _estimate_combo_chain(game, player_idx: int, first_card=None):
 
         if 'ritual' in tags:
             rituals.append((name, cmc, 3))  # name, cost, mana produced
-        elif name in ('Grapeshot', 'Empty the Warrens'):
+        elif 'storm_payoff' in tags:
             finishers.append((name, cmc))
-        elif 'cantrip' in tags or 'card_advantage' in tags or name in (
-                'Reckless Impulse', "Wrenn's Resolve", 'Glimpse the Impossible',
-                'Expressive Iteration', 'Valakut Awakening // Valakut Stoneforge'):
+        elif 'cantrip' in tags or 'card_advantage' in tags:
             draws.append((name, cmc))
         elif 'instant_speed' in tags or not c.template.is_creature:
             other_spells.append((name, cmc))
@@ -2075,8 +2073,8 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
         tags = getattr(card.template, 'tags', set())
         is_chain_starter = ('ritual' in tags or 'cantrip' in tags or
                            'card_advantage' in tags or 'cost_reducer' in tags or
-                           card.name in ('Grapeshot', 'Empty the Warrens',
-                                        'Past in Flames', 'Wish'))
+                           'storm_payoff' in tags or
+                           ('tutor' in tags and 'combo' in tags))
         if is_chain_starter:
             can_kill, storm_count, damage, chain = _estimate_combo_chain(
                 game, player_idx, first_card=card)
