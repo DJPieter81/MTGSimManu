@@ -671,6 +671,10 @@ class OracleTextParser:
         for e in effects:
             if e.effect_type in ("storm", "cascade"):
                 tags.add("combo")
+            if e.effect_type == "storm":
+                # Storm payoff = a card whose effect scales with storm count.
+                # Used by Storm decks as a finisher (Grapeshot, Empty the Warrens).
+                tags.add("storm_payoff")
 
         if "Living End" in (card_data.get("name") or ""):
             tags.add("combo")
