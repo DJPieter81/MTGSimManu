@@ -24,7 +24,7 @@ is absent from the board.
 
 Architectural note: this is a tactical patch that extends the
 existing pattern-by-pattern validation. The medium-term plan is
-``docs/design/2026-05-02_unified_target_solver.md`` — a unified
+``docs/proposals/2026-05-02_unified_target_solver.md`` — a unified
 ``engine/target_solver`` module replacing five scattered
 validation paths with one oracle-driven solver. This patch closes
 the immediate bug class without depending on that refactor.
