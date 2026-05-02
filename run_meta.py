@@ -131,25 +131,59 @@ def _init_worker():
     _worker_runner = GameRunner(db)
 
 
+def _report_worker_errors(worker_results, sample_lines: int = 30):
+    """Surface aggregated worker exceptions to the parent's stderr.
+
+    Workers redirect their own stderr to /dev/null in `_init_worker`
+    to silence known sideboard noise; without this report, real
+    Python exceptions are invisible to the caller. Each result is
+    expected to be a (d1, d2, pct, errors) tuple from
+    `_worker_matchup`. The sample traceback shown is truncated to
+    `sample_lines` to keep matrix-run output usable.
+    """
+    total = sum(len(errs) for _, _, _, errs in worker_results)
+    if total == 0:
+        return
+    print(f'\n[parallel-worker errors] {total} game(s) failed across '
+          f'{sum(1 for _, _, _, e in worker_results if e)} matchups',
+          file=sys.stderr)
+    for d1, d2, _pct, errs in worker_results:
+        if not errs:
+            continue
+        seed_sample, tb_sample = errs[0]
+        head = tb_sample.strip().splitlines()
+        head = head[-sample_lines:] if len(head) > sample_lines else head
+        print(f'  {d1} vs {d2}: {len(errs)} error(s); '
+              f'first at seed={seed_sample}', file=sys.stderr)
+        for line in head:
+            print(f'    {line}', file=sys.stderr)
+
+
 def _worker_matchup(args):
     """Worker function for parallel matchup execution.
     Uses the pre-initialized _worker_runner (one DB load per process).
 
     Args tuple: (d1_name, d2_name, n_games, seed_start, bo1).
-    Returns (d1_name, d2_name, pct, bo1) — pct is MATCH WR in Bo3 mode.
+    Returns (d1_name, d2_name, pct, errors) — pct is MATCH WR in Bo3
+    mode; errors is a list of (seed, traceback_str) for any games
+    that raised. The errors field is the dispatch contract that lets
+    the parent process distinguish a crashing worker from a deck
+    that cleanly lost every game (both report pct=0).
     """
+    import traceback
     d1_name, d2_name, n_games, seed_start, bo1 = args
     runner = _worker_runner
     wins = {d1_name: 0, d2_name: 0}
+    errors = []
     for i in range(n_games):
         seed = seed_start + i * 500
         try:
             r = _run_pair(runner, d1_name, d2_name, seed, bo1=bo1)
             wins[r.winner_deck] = wins.get(r.winner_deck, 0) + 1
         except Exception:
-            pass
+            errors.append((seed, traceback.format_exc()))
     pct = round(wins.get(d1_name, 0) / max(n_games, 1) * 100)
-    return (d1_name, d2_name, pct)
+    return (d1_name, d2_name, pct, errors)
 
 
 def _run_game_no_runner(d1_name, d2_name, seed):
@@ -263,7 +297,8 @@ def run_field(deck: str, n_games: int = 30, opponents: List[str] = None,
         args = [(deck, opp, n_games, 50000, bo1) for opp in opponents]
         with mp.Pool(_DEFAULT_WORKERS, initializer=_init_worker) as pool:
             worker_results = pool.map(_worker_matchup, args)
-        results = {d2: pct for d1, d2, pct in worker_results}
+        results = {d2: pct for d1, d2, pct, _errs in worker_results}
+        _report_worker_errors(worker_results)
     else:
         runner = _get_runner()
         results = {}
@@ -318,10 +353,16 @@ def run_meta_matrix(top_tier: int = None, n_games: int = 20,
         print(f'Running {total} matchups × {n_games} {fmt} = {total * n_games} total '
               f'({workers} workers)', file=sys.stderr)
         with mp.Pool(workers, initializer=_init_worker) as pool:
-            for i, (d1, d2, pct) in enumerate(pool.imap_unordered(_worker_matchup, pairs)):
+            collected = []
+            for i, result in enumerate(pool.imap_unordered(_worker_matchup, pairs)):
+                d1, d2, pct, errors = result
                 matrix[(d1, d2)] = pct
                 matrix[(d2, d1)] = 100 - pct
-                print(f'  [{i+1}/{total}] {d1} vs {d2}: {pct}%-{100-pct}%', file=sys.stderr)
+                err_tag = f' [{len(errors)} ERR]' if errors else ''
+                print(f'  [{i+1}/{total}] {d1} vs {d2}: {pct}%-{100-pct}%{err_tag}',
+                      file=sys.stderr)
+                collected.append(result)
+            _report_worker_errors(collected)
     else:
         runner = _get_runner()
         for idx, (d1_name, d2_name, ng, ss, _bo1) in enumerate(pairs):
