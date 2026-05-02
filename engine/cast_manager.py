@@ -292,7 +292,7 @@ class CastManager:
                 #
                 # Architectural note: this is a tactical patch.  The
                 # medium-term unified target_solver lives in
-                # docs/design/2026-05-02_unified_target_solver.md.
+                # docs/proposals/2026-05-02_unified_target_solver.md.
                 #
                 # The "any target" pattern (Lightning Bolt) does not
                 # match any of the typed patterns below — players are

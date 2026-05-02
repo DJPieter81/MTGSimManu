@@ -4,7 +4,7 @@ status: active
 priority: primary
 session: 2026-05-02
 depends_on:
-  - docs/design/2026-05-02_unified_target_solver.md
+  - docs/proposals/2026-05-02_unified_target_solver.md
 tags:
   - affinity
   - diagnostic
@@ -349,7 +349,7 @@ session, plus matrix re-baseline.
   — tactical patch closing the 250+ card removal-target validation
   bug class. No WR impact but correctness-improving and prerequisite
   for the unified target_solver refactor.
-- **Design doc:** `docs/design/2026-05-02_unified_target_solver.md` —
+- **Design doc:** `docs/proposals/2026-05-02_unified_target_solver.md` —
   unified target validation refactor (1 working session in Claude
   Code). Independent of Affinity diagnosis but should land first
   because it removes a confounding variable from any future
