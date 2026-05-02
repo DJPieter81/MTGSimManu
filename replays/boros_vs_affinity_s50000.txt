@@ -1,0 +1,1843 @@
+Loaded 21759 cards (0 errors)
+  Sideboard (Boros Energy vs Affinity): +2 Wear // Tear, +2 Wrath of the Skies, -1 Blood Moon, -1 Goblin Bombardment, -2 Voice of Victory
+  Sideboard (Boros Energy vs Affinity): +2 Wear // Tear, +2 Wrath of the Skies, -1 Blood Moon, -1 Goblin Bombardment, -2 Voice of Victory
+======================================================================
+  GAME 1: Boros Energy (P1) vs Affinity (P2)  —  seed 50000
+  Series: Boros Energy 0 - 0 Affinity
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Boros Energy wins → chooses to play first
+║ P1 (on play): Boros Energy
+║ P2 (on draw): Affinity
+╚═══════════════════════════════════════════════════════
+
+P1 (Boros Energy) opening hand (2 lands, 5 spells):
+  • Voice of Victory [Creature, CMC 2]
+  • Goblin Bombardment [Spell, CMC 2]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Plains [Land, CMC 0]
+  • Marsh Flats [Land, CMC 0]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Galvanic Discharge [Spell, CMC 1]
+→ P1 KEEPS 7 — has key card(s): Galvanic Discharge, Ragavan, Nimble Pilferer, 5 cheap spells
+
+P2 (Affinity) opening hand (3 lands, 4 spells):
+  • Mox Opal [Spell, CMC 0]
+  • Urza's Saga [Land, CMC 0]
+  • Spire of Industry [Land, CMC 0]
+  • Frogmite [Creature, CMC 4]
+  • Ornithopter [Creature, CMC 0]
+  • Thought Monitor [Creature, CMC 7]
+  • Mistvault Bridge [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Mox Opal, Ornithopter, 2 cheap spells
+
+
+╔══ TURN 1 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Marsh Flats
+T1 P1: Crack Marsh Flats (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Boros Energy 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Sojourner's Companion
+  [Main 1]
+T1 P2: Play Spire of Industry
+    → Goal: deploy_engine [engines]
+T1 P2: Cast Mox Opal (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Mox Opal
+    → Goal: curve_out
+T1 P2: Cast Ornithopter (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Ornithopter
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 19  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Affinity board:
+║   Creatures: Ornithopter (0/2)
+║   Other: Mox Opal
+║   Lands: Spire of Industry
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ocelot Pride
+  [Main 1]
+T2 P1: Play Plains
+    → Goal: curve_out [enablers]
+    [Mana] Tap Plains→W (paying for Ocelot Pride, 2 mana remaining)
+T2 P1: Cast Ocelot Pride (W)
+    [Priority] P2 passes (no response)
+T2: Resolve Ocelot Pride
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T2 P1: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P2 passes (no response)
+T2: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Boros Energy 19
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Ornithopter (0/2)
+║   Other: Mox Opal
+║   Lands: Spire of Industry
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Spire of Industry
+  [Main 1]
+T2 P2: Play Urza's Saga
+    → Goal: curve_out [enablers]
+    [Mana] Tap Urza's Saga→C (paying for Frogmite, 2 mana remaining)
+T2 P2: Cast Frogmite (4)
+    [Priority] P1 passes (no response)
+T2: Resolve Frogmite
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 19  |  Affinity 20
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry, Plains
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Frogmite (2/2)
+║   Other: Mox Opal
+║   Lands: Spire of Industry, Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Thraben Charm
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Plains→W, Sacred Foundry→R (paying for Voice of Victory, 2 mana remaining)
+T3 P1: Cast Voice of Victory (1W)
+    [Priority] P2 passes (no response)
+T3: Resolve Voice of Victory
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer
+T3 P1: Attack with Ragavan, Nimble Pilferer
+T3 P2:   [BLOCK] Frogmite (2/2) blocks Ragavan, Nimble Pilferer (2/1) — trade (chump)
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T3: Ragavan, Nimble Pilferer dies
+T3: Frogmite dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Boros Energy 19
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Ornithopter (0/2)
+║   Other: Mox Opal
+║   Lands: Spire of Industry, Urza's Saga
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Voice of Victory (1/3)
+║   Lands: Sacred Foundry [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Springleaf Drum
+  [Main 1]
+T3 P2: Play Mistvault Bridge (enters tapped)
+T3 P2: Cycle Sojourner's Companion (pay 2 mana, tutor: Tanglepool Bridge)
+    → Goal: curve_out
+T3 P2: Cast Springleaf Drum (1)
+    [Priority] P1 passes (no response)
+T3: Resolve Springleaf Drum
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 19  |  Affinity 20
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Voice of Victory (1/3)
+║   Lands: Sacred Foundry, Plains
+║ Affinity board:
+║   Creatures: Ornithopter (0/2)
+║   Other: Mox Opal, Springleaf Drum
+║   Lands: Spire of Industry [T], Urza's Saga [T], Mistvault Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ocelot Pride
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R, Plains→W (paying for Ragavan, Nimble Pilferer, 2 mana remaining)
+T4 P1: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P2 passes (no response)
+T4: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ocelot Pride, Voice of Victory, Ragavan, Nimble Pilferer
+T4 P1: Create 2x Warrior token(s)
+T4 P1: Voice of Victory mobilize 2 — create 2 1/1 tokens
+T4 P1: Attack with Ocelot Pride, Voice of Victory, Ragavan, Nimble Pilferer
+  [Declare Blockers] P2 does not block
+T4 P1:   Ocelot Pride (1/1) → 1 dmg to player
+T4 P1:   Voice of Victory (1/3) → 1 dmg to player
+T4 P1:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T4 P1: Create 1x Treasure token(s)
+T4 P1: Ragavan, Nimble Pilferer exiles Treasure Vault from top of P2's library
+T4 P1: Ragavan, Nimble Pilferer — may cast Treasure Vault this turn
+  [Combat Damage] 4 damage dealt → P2 life: 20 → 16
+  [End Combat]
+  [Main 2]
+T4 P1: Play Treasure Vault
+  [End Step]
+T4: Ragavan, Nimble Pilferer moved battlefield -> hand (Dash return)
+T4: Ragavan, Nimble Pilferer returned to hand (Dash)
+
+╔══ TURN 4 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 16  |  Boros Energy 20
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 2
+║ Affinity board:
+║   Creatures: Ornithopter (0/2)
+║   Other: Mox Opal, Springleaf Drum
+║   Lands: Spire of Industry, Urza's Saga, Mistvault Bridge
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped], Voice of Victory (1/3) [tapped], Warrior Token (1/1), Warrior Token (1/1)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Plains [T], Treasure Vault
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T4 P2: Create 1x Construct token(s)
+T4 P2: Urza's Saga Ch.II: Create Construct Token
+  [Draw] P2 draws: Thought Monitor
+  [Main 1]
+T4 P2: Play Tanglepool Bridge (enters tapped)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Mistvault Bridge→U (paying for Thought Monitor, 3 mana remaining)
+T4 P2: Cast Thought Monitor (6U)
+    [Priority] P1 passes (no response)
+T4: Resolve Thought Monitor
+T4 P2: Thought Monitor ETB: draw 2 (Silverbluff Bridge, Thought Monitor)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 20  |  Affinity 16
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Voice of Victory (1/3), Warrior Token (1/1), Warrior Token (1/1)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Plains, Treasure Vault
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Construct Token (7/7), Thought Monitor (2/2)
+║   Other: Mox Opal, Springleaf Drum
+║   Lands: Spire of Industry, Urza's Saga, Mistvault Bridge [T], Tanglepool Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Thraben Charm
+  [Main 1]
+    → Goal: curve_out [interaction]
+    [Mana] Tap Plains→W, Treasure Vault→C (paying for Thraben Charm, 3 mana remaining)
+T5 P1: Cast Thraben Charm (1W)
+    [Priority] P2 passes (no response)
+T5: Resolve Thraben Charm
+T5: Urza's Saga moved battlefield -> graveyard (destroyed)
+T5 P1: Thraben Charm destroys enchantment Urza's Saga
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T5 P1: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P2 passes (no response)
+T5: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 16  |  Boros Energy 20
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 45  |  Graveyard: 3
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Construct Token (7/7), Thought Monitor (2/2)
+║   Other: Mox Opal, Springleaf Drum
+║   Lands: Spire of Industry, Mistvault Bridge, Tanglepool Bridge
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Voice of Victory (1/3), Warrior Token (1/1), Warrior Token (1/1), Ragavan, Nimble Pilferer (2/1)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Plains [T], Treasure Vault [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Engineered Explosives
+  [Main 1]
+T5 P2: Play Silverbluff Bridge (enters tapped)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Mistvault Bridge→U (paying for Thought Monitor, 3 mana remaining)
+T5 P2: Cast Thought Monitor (6U)
+    [Priority] P1 passes (no response)
+T5: Resolve Thought Monitor
+T5 P2: Thought Monitor ETB: draw 2 (Springleaf Drum, Memnite)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Tanglepool Bridge→U (paying for Thought Monitor, 2 mana remaining)
+T5 P2: Cast Thought Monitor (6U)
+    [Priority] P1 passes (no response)
+T5: Resolve Thought Monitor
+T5 P2: Thought Monitor ETB: draw 2 (Darksteel Citadel, Thought Monitor)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Spire of Industry→U (paying for Thought Monitor, 1 mana remaining)
+T5 P2: Cast Thought Monitor (6U)
+    [Priority] P1 passes (no response)
+T5: Resolve Thought Monitor
+T5 P2: Thought Monitor ETB: draw 2 (Sojourner's Companion, Razortide Bridge)
+    → Goal: curve_out [enablers]
+T5 P2: Cast Sojourner's Companion (7)
+    [Priority] P1 passes (no response)
+T5: Resolve Sojourner's Companion
+    → Goal: curve_out
+T5 P2: Cast Memnite (0)
+    [Priority] P1 passes (no response)
+T5: Resolve Memnite
+    → Goal: curve_out
+T5 P2: Cast Springleaf Drum (1)
+    [Priority] P1 passes (no response)
+T5: Resolve Springleaf Drum
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Construct Token, Thought Monitor
+T5 P2: Attack with Construct Token, Thought Monitor
+T5 P1:   [BLOCK-EMERGENCY] Warrior Token (1/1) blocks Construct Token (14/14) — chump block
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T5 P2:   Thought Monitor (2/2) → 2 dmg to player
+T5: Warrior Token dies
+  [Combat Damage] 2 damage dealt → P1 life: 20 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 18  |  Affinity 16
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 4
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Voice of Victory (1/3), Warrior Token (1/1), Ragavan, Nimble Pilferer (2/1)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Plains, Treasure Vault
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Construct Token (14/14) [tapped], Thought Monitor (2/2) [tapped], Thought Monitor (2/2), Thought Monitor (2/2), Thought Monitor (2/2), Sojourner's Companion (4/4), Memnite (1/1)
+║   Other: Mox Opal, Springleaf Drum, Springleaf Drum
+║   Lands: Spire of Industry [T], Mistvault Bridge [T], Tanglepool Bridge [T], Silverbluff Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Seasoned Pyromancer
+  [Main 1]
+    → Goal: curve_out [interaction]
+    [Mana] Tap Plains→W, Treasure Vault→C (paying for Thraben Charm, 3 mana remaining)
+T6 P1: Cast Thraben Charm (1W)
+    [Priority] P2 passes (no response)
+T6: Resolve Thraben Charm
+T6 P1: Thraben Charm exiles opponent's graveyard (11 CMC)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Ocelot Pride, 1 mana remaining)
+T6 P1: Cast Ocelot Pride (W)
+    [Priority] P2 passes (no response)
+T6: Resolve Ocelot Pride
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer
+T6 P1: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P2 does not block
+T6 P1:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T6 P1: Create 1x Treasure token(s)
+T6 P1: Ragavan, Nimble Pilferer exiles Memnite from top of P2's library
+T6 P1: Ragavan, Nimble Pilferer — may cast Memnite this turn
+  [Combat Damage] 2 damage dealt → P2 life: 16 → 14
+  [End Combat]
+  [Main 2]
+    → Goal: curve_out
+T6 P1: Cast Memnite (0)
+    [Priority] P2 passes (no response)
+T6: Resolve Memnite
+  [End Step]
+
+╔══ TURN 6 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 14  |  Boros Energy 18
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 37  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Construct Token (14/14), Thought Monitor (2/2), Thought Monitor (2/2), Thought Monitor (2/2), Thought Monitor (2/2), Sojourner's Companion (4/4), Memnite (1/1)
+║   Other: Mox Opal, Springleaf Drum, Springleaf Drum
+║   Lands: Spire of Industry, Mistvault Bridge, Tanglepool Bridge, Silverbluff Bridge
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Voice of Victory (1/3), Warrior Token (1/1), Ragavan, Nimble Pilferer (2/1) [tapped], Ocelot Pride (1/1), Memnite (1/1)
+║   Other: Treasure Token, Treasure Token
+║   Lands: Sacred Foundry [T], Plains [T], Treasure Vault [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mistvault Bridge
+  [Main 1]
+T6 P2: Play Darksteel Citadel
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Construct Token, Thought Monitor, Thought Monitor, Thought Monitor, Thought Monitor, Sojourner's Companion, Memnite
+T6 P2: Attack with Construct Token, Thought Monitor, Thought Monitor, Thought Monitor, Thought Monitor, Sojourner's Companion, Memnite
+T6 P1:   [BLOCK-EMERGENCY] Warrior Token (1/1) blocks Construct Token (15/15) — chump block
+T6 P1:   [BLOCK-EMERGENCY] Memnite (1/1) blocks Sojourner's Companion (4/4) — chump block
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T6 P2:   Thought Monitor (2/2) → 2 dmg to player
+T6 P2:   Thought Monitor (2/2) → 2 dmg to player
+T6 P2:   Thought Monitor (2/2) → 2 dmg to player
+T6 P2:   Thought Monitor (2/2) → 2 dmg to player
+T6 P2:   Memnite (1/1) → 1 dmg to player
+T6: Warrior Token dies
+T6: Memnite dies
+  [Combat Damage] 9 damage dealt → P1 life: 18 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 9  |  Affinity 14
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 6
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Voice of Victory (1/3), Ragavan, Nimble Pilferer (2/1), Ocelot Pride (1/1)
+║   Other: Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Plains, Treasure Vault
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Construct Token (15/15) [tapped], Thought Monitor (2/2) [tapped], Thought Monitor (2/2) [tapped], Thought Monitor (2/2) [tapped], Thought Monitor (2/2) [tapped], Sojourner's Companion (4/4) [tapped], Memnite (1/1) [tapped]
+║   Other: Mox Opal, Springleaf Drum, Springleaf Drum
+║   Lands: Spire of Industry, Mistvault Bridge, Tanglepool Bridge, Silverbluff Bridge, Darksteel Citadel
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Goblin Bombardment
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Sacred Foundry→R, Plains→W (paying for Goblin Bombardment, 3 mana remaining)
+T7 P1: Cast Goblin Bombardment (1R)
+    [Priority] P2 passes (no response)
+T7: Resolve Goblin Bombardment
+T7 P1: Goblin Bombardment enters — sacrifice creatures for 1 damage each
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ocelot Pride, Voice of Victory, Ragavan, Nimble Pilferer, Ocelot Pride
+T7 P1: Create 2x Warrior token(s)
+T7 P1: Voice of Victory mobilize 2 — create 2 1/1 tokens
+T7 P1: Attack with Ocelot Pride, Voice of Victory, Ragavan, Nimble Pilferer, Ocelot Pride
+  [Declare Blockers] P2 does not block
+T7 P1:   Ocelot Pride (1/1) → 1 dmg to player
+T7 P1:   Ocelot Pride (1/1) → 1 dmg to player
+T7 P1:   Voice of Victory (1/3) → 1 dmg to player
+T7 P1:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T7 P1: Create 1x Treasure token(s)
+T7 P1: Ragavan, Nimble Pilferer exiles Springleaf Drum from top of P2's library
+T7 P1: Ragavan, Nimble Pilferer — may cast Springleaf Drum this turn
+  [Combat Damage] 5 damage dealt → P2 life: 14 → 9
+  [End Combat]
+  [Main 2]
+    → Goal: curve_out
+    [Mana] Tap Treasure Vault→C (paying for Springleaf Drum, 1 mana remaining)
+T7 P1: Cast Springleaf Drum (1)
+    [Priority] P2 passes (no response)
+T7: Resolve Springleaf Drum
+  [End Step]
+
+╔══ TURN 7 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 9  |  Boros Energy 11
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 35  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Construct Token (15/15), Thought Monitor (2/2), Thought Monitor (2/2), Thought Monitor (2/2), Thought Monitor (2/2), Sojourner's Companion (4/4), Memnite (1/1)
+║   Other: Mox Opal, Springleaf Drum, Springleaf Drum
+║   Lands: Spire of Industry, Mistvault Bridge, Tanglepool Bridge, Silverbluff Bridge, Darksteel Citadel
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped], Voice of Victory (1/3) [tapped], Ragavan, Nimble Pilferer (2/1) [tapped], Ocelot Pride (1/1) [tapped], Warrior Token (1/1), Warrior Token (1/1)
+║   Other: Treasure Token, Treasure Token, Goblin Bombardment, Treasure Token, Springleaf Drum
+║   Lands: Sacred Foundry [T], Plains [T], Treasure Vault [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Darksteel Citadel
+  [Main 1]
+T7 P2: Play Darksteel Citadel
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Construct Token, Thought Monitor, Thought Monitor, Thought Monitor, Thought Monitor, Sojourner's Companion, Memnite
+T7 P2: Attack with Construct Token, Thought Monitor, Thought Monitor, Thought Monitor, Thought Monitor, Sojourner's Companion, Memnite
+T7 P1:   [BLOCK-EMERGENCY] Warrior Token (1/1) blocks Construct Token (16/16) — chump block
+T7 P1:   [BLOCK-EMERGENCY] Warrior Token (1/1) blocks Sojourner's Companion (4/4) — chump block
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T7 P2:   Thought Monitor (2/2) → 2 dmg to player
+T7 P2:   Thought Monitor (2/2) → 2 dmg to player
+T7 P2:   Thought Monitor (2/2) → 2 dmg to player
+T7 P2:   Thought Monitor (2/2) → 2 dmg to player
+T7 P2:   Memnite (1/1) → 1 dmg to player
+T7: Warrior Token dies
+T7: Warrior Token dies
+  [Combat Damage] 9 damage dealt → P1 life: 11 → 2
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 2  |  Affinity 9
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 6
+║ Library: 46  |  Graveyard: 8
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Voice of Victory (1/3), Ragavan, Nimble Pilferer (2/1), Ocelot Pride (1/1)
+║   Other: Treasure Token, Treasure Token, Goblin Bombardment, Treasure Token, Springleaf Drum
+║   Lands: Sacred Foundry, Plains, Treasure Vault
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Construct Token (16/16) [tapped], Thought Monitor (2/2) [tapped], Thought Monitor (2/2) [tapped], Thought Monitor (2/2) [tapped], Thought Monitor (2/2) [tapped], Sojourner's Companion (4/4) [tapped], Memnite (1/1) [tapped]
+║   Other: Mox Opal, Springleaf Drum, Springleaf Drum
+║   Lands: Spire of Industry, Mistvault Bridge, Tanglepool Bridge, Silverbluff Bridge, Darksteel Citadel, Darksteel Citadel
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Goblin Bombardment
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Sacred Foundry→R, Plains→W (paying for Goblin Bombardment, 3 mana remaining)
+T8 P1: Cast Goblin Bombardment (1R)
+    [Priority] P2 passes (no response)
+T8: Resolve Goblin Bombardment
+T8 P1: Goblin Bombardment enters — sacrifice creatures for 1 damage each
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ocelot Pride, Voice of Victory, Ragavan, Nimble Pilferer, Ocelot Pride
+T8 P1: Create 2x Warrior token(s)
+T8 P1: Voice of Victory mobilize 2 — create 2 1/1 tokens
+T8 P1: Attack with Ocelot Pride, Voice of Victory, Ragavan, Nimble Pilferer, Ocelot Pride
+  [Declare Blockers] P2 does not block
+T8 P1:   Ocelot Pride (1/1) → 1 dmg to player
+T8 P1:   Ocelot Pride (1/1) → 1 dmg to player
+T8 P1:   Voice of Victory (1/3) → 1 dmg to player
+T8 P1:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T8 P1: Create 1x Treasure token(s)
+T8 P1: Ragavan, Nimble Pilferer exiles Mox Opal from top of P2's library
+T8 P1: Ragavan, Nimble Pilferer — may cast Mox Opal this turn
+  [Combat Damage] 5 damage dealt → P2 life: 9 → 4
+  [End Combat]
+  [Main 2]
+    → Goal: curve_out
+T8 P1: Cast Mox Opal (0)
+    [Priority] P2 passes (no response)
+T8: Resolve Mox Opal
+  [End Step]
+
+╔══ TURN 8 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 4  |  Boros Energy 4
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 6  |  Opp lands: 3
+║ Library: 33  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Construct Token (16/16), Thought Monitor (2/2), Thought Monitor (2/2), Thought Monitor (2/2), Thought Monitor (2/2), Sojourner's Companion (4/4), Memnite (1/1)
+║   Other: Mox Opal, Springleaf Drum, Springleaf Drum
+║   Lands: Spire of Industry, Mistvault Bridge, Tanglepool Bridge, Silverbluff Bridge, Darksteel Citadel, Darksteel Citadel
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped], Voice of Victory (1/3) [tapped], Ragavan, Nimble Pilferer (2/1) [tapped], Ocelot Pride (1/1) [tapped], Warrior Token (1/1), Warrior Token (1/1)
+║   Other: Treasure Token, Treasure Token, Goblin Bombardment, Treasure Token, Springleaf Drum, Goblin Bombardment, Treasure Token, Mox Opal
+║   Lands: Sacred Foundry [T], Plains [T], Treasure Vault
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ornithopter
+  [Main 1]
+T8 P2: Play Razortide Bridge (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Construct Token, Thought Monitor, Thought Monitor, Thought Monitor, Thought Monitor, Sojourner's Companion, Memnite
+T8 P2: Attack with Construct Token, Thought Monitor, Thought Monitor, Thought Monitor, Thought Monitor, Sojourner's Companion, Memnite
+T8 P1:   [BLOCK-EMERGENCY] Warrior Token (1/1) blocks Construct Token (17/17) — chump block
+T8 P1:   [BLOCK-EMERGENCY] Warrior Token (1/1) blocks Sojourner's Companion (4/4) — chump block
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T8 P2:   Thought Monitor (2/2) → 2 dmg to player
+T8 P2:   Thought Monitor (2/2) → 2 dmg to player
+T8 P2:   Thought Monitor (2/2) → 2 dmg to player
+T8 P2:   Thought Monitor (2/2) → 2 dmg to player
+T8 P2:   Memnite (1/1) → 1 dmg to player
+P1 loses: life total -5
+  [Combat Damage] 9 damage dealt → P1 life: 4 → -5
+
+>>> Affinity wins Game 1 on turn 8 via damage
+    Final life: Boros Energy=-5  Affinity=4
+
+======================================================================
+  GAME 2: Boros Energy (P1) vs Affinity (P2)  —  seed 50001
+  Series: Boros Energy 0 - 1 Affinity
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Affinity wins → chooses to play first
+║ P1 (on play): Affinity
+║ P2 (on draw): Boros Energy
+╚═══════════════════════════════════════════════════════
+
+P1 (Boros Energy) opening hand (2 lands, 5 spells):
+  • Goblin Bombardment [Spell, CMC 2]
+  • Seasoned Pyromancer [Creature, CMC 3]
+  • Marsh Flats [Land, CMC 0]
+  • Elegant Parlor [Land, CMC 0]
+  • Phlage, Titan of Fire's Fury [Creature, CMC 3]
+  • Phlage, Titan of Fire's Fury [Creature, CMC 3]
+  • Thraben Charm [Spell, CMC 2]
+→ P1 KEEPS 7 — 2 lands, 5 castable spells
+
+P2 (Affinity) opening hand (2 lands, 5 spells):
+  • Mistvault Bridge [Land, CMC 0]
+  • Memnite [Creature, CMC 0]
+  • Mox Opal [Spell, CMC 0]
+  • Memnite [Creature, CMC 0]
+  • Mox Opal [Spell, CMC 0]
+  • Springleaf Drum [Spell, CMC 1]
+  • Urza's Saga [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Memnite, Mox Opal, Springleaf Drum, 5 cheap spells
+
+
+╔══ TURN 1 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Boros Energy 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Urza's Saga
+    → Goal: deploy_engine [enablers]
+T1 P2: Cast Memnite (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Memnite
+    → Goal: deploy_engine [enablers]
+T1 P2: Cast Memnite (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Memnite
+    → Goal: deploy_engine [engines]
+T1 P2: Cast Springleaf Drum (1)
+    [Priority] P1 passes (no response)
+T1: Resolve Springleaf Drum
+    → Goal: curve_out
+T1 P2: Cast Mox Opal (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Mox Opal
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 2 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: Memnite (1/1), Memnite (1/1)
+║   Other: Springleaf Drum, Mox Opal
+║   Lands: Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ocelot Pride
+  [Main 1]
+T1 P1: Play Marsh Flats
+T1 P1: Crack Marsh Flats (pay 1 life) -> Sacred Foundry (untapped, life: 17)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Boros Energy 17
+║ Hand: 2 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Memnite (1/1), Memnite (1/1)
+║   Other: Springleaf Drum, Mox Opal
+║   Lands: Urza's Saga
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Frogmite
+  [Main 1]
+T2 P2: Play Mistvault Bridge (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Memnite, Memnite
+T2 P2: Attack with Memnite, Memnite
+  [Declare Blockers] P1 does not block
+T2 P2:   Memnite (1/1) → 1 dmg to player
+T2 P2:   Memnite (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 17 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 15  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 2 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Affinity board:
+║   Creatures: Memnite (1/1) [tapped], Memnite (1/1) [tapped]
+║   Other: Springleaf Drum, Mox Opal
+║   Lands: Urza's Saga, Mistvault Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Windswept Heath
+  [Main 1]
+T2 P1: Play Windswept Heath
+T2 P1: Crack Windswept Heath (pay 1 life) -> Sacred Foundry (untapped, life: 12)
+    → Goal: curve_out [interaction]
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R (paying for Thraben Charm, 2 mana remaining)
+T2 P1: Cast Thraben Charm (1W)
+    [Priority] P2 passes (no response)
+T2: Resolve Thraben Charm
+T2: Urza's Saga moved battlefield -> graveyard (destroyed)
+T2 P1: Thraben Charm destroys enchantment Urza's Saga
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Boros Energy 12
+║ Hand: 2 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Memnite (1/1), Memnite (1/1)
+║   Other: Springleaf Drum, Mox Opal
+║   Lands: Mistvault Bridge
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Nettlecyst
+  [Main 1]
+    → Goal: curve_out [enablers]
+T3 P2: Cast Frogmite (4)
+    [Priority] P1 passes (no response)
+T3: Resolve Frogmite
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Memnite, Memnite
+T3 P2: Attack with Memnite, Memnite
+  [Declare Blockers] P1 does not block
+T3 P2:   Memnite (1/1) → 1 dmg to player
+T3 P2:   Memnite (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 12 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 10  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 1
+║ Library: 49  |  Graveyard: 3
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ Affinity board:
+║   Creatures: Memnite (1/1) [tapped], Memnite (1/1) [tapped], Frogmite (2/2)
+║   Other: Springleaf Drum, Mox Opal
+║   Lands: Mistvault Bridge
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Windswept Heath
+  [Main 1]
+T3 P1: Play Windswept Heath
+T3 P1: Crack Windswept Heath (pay 1 life) -> Sacred Foundry (untapped, life: 7)
+    → Goal: curve_out
+    [Target] → Frogmite: marginal threat 9.6 (2/2 body) — better than 3 face dmg
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R, Sacred Foundry→R (paying for Phlage, Titan of Fire's Fury, 3 mana remaining)
+T3 P1: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P2 passes (no response)
+T3: Resolve Phlage, Titan of Fire's Fury
+T3 P1: Phlage: 3 damage to Frogmite, gain 3 life
+T3: Frogmite dies
+T3 P1: Phlage sacrificed (not escaped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Boros Energy 10
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 2
+║ Affinity board:
+║   Creatures: Memnite (1/1), Memnite (1/1)
+║   Other: Springleaf Drum, Mox Opal
+║   Lands: Mistvault Bridge
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Darksteel Citadel
+  [Main 1]
+T4 P2: Play Darksteel Citadel
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Memnite, Memnite
+T4 P2: Attack with Memnite, Memnite
+  [Declare Blockers] P1 does not block
+T4 P2:   Memnite (1/1) → 1 dmg to player
+T4 P2:   Memnite (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 10 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 8  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 47  |  Graveyard: 5
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry
+║ Affinity board:
+║   Creatures: Memnite (1/1) [tapped], Memnite (1/1) [tapped]
+║   Other: Springleaf Drum, Mox Opal
+║   Lands: Mistvault Bridge, Darksteel Citadel
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arid Mesa
+  [Main 1]
+T4 P1: Play Arid Mesa
+T4 P1: Crack Arid Mesa -> Mountain (untapped)
+    → Goal: curve_out
+    [Target] → Memnite: marginal threat 5.0 (1/1 body) — better than 3 face dmg
+    [Mana] Tap Sacred Foundry→W, Mountain→R, Sacred Foundry→R (paying for Phlage, Titan of Fire's Fury, 4 mana remaining)
+T4 P1: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P2 passes (no response)
+T4: Resolve Phlage, Titan of Fire's Fury
+T4 P1: Phlage: 3 damage to Memnite, gain 3 life
+T4: Memnite dies
+T4 P1: Phlage sacrificed (not escaped)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Ocelot Pride, 1 mana remaining)
+T4 P1: Cast Ocelot Pride (W)
+    [Priority] P2 passes (no response)
+T4: Resolve Ocelot Pride
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Boros Energy 10
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 3
+║ Affinity board:
+║   Creatures: Memnite (1/1)
+║   Other: Springleaf Drum, Mox Opal
+║   Lands: Mistvault Bridge, Darksteel Citadel
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Springleaf Drum
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Darksteel Citadel→C (paying for Springleaf Drum, 2 mana remaining)
+T5 P2: Cast Springleaf Drum (1)
+    [Priority] P1 passes (no response)
+T5: Resolve Springleaf Drum
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 10  |  Affinity 20
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 2
+║ Library: 45  |  Graveyard: 7
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Mountain
+║ Affinity board:
+║   Creatures: Memnite (1/1)
+║   Other: Springleaf Drum, Mox Opal, Springleaf Drum
+║   Lands: Mistvault Bridge, Darksteel Citadel [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ocelot Pride
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Ocelot Pride, 4 mana remaining)
+T5 P1: Cast Ocelot Pride (W)
+    [Priority] P2 passes (no response)
+T5: Resolve Ocelot Pride
+T5 P1: Play Elegant Parlor (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Boros Energy 10
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 5
+║ Library: 49  |  Graveyard: 3
+║ Affinity board:
+║   Creatures: Memnite (1/1)
+║   Other: Springleaf Drum, Mox Opal, Springleaf Drum
+║   Lands: Mistvault Bridge, Darksteel Citadel
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ocelot Pride (1/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry, Sacred Foundry, Mountain, Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Cranial Plating
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Darksteel Citadel→C, Mistvault Bridge→B (paying for Cranial Plating, 2 mana remaining)
+T6 P2: Cast Cranial Plating (2)
+    [Priority] P1 passes (no response)
+T6: Resolve Cranial Plating
+T6 P2: Cranial Plating enters the battlefield (unattached)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 10  |  Affinity 20
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 2
+║ Library: 44  |  Graveyard: 7
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ocelot Pride (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Mountain, Elegant Parlor
+║ Affinity board:
+║   Creatures: Memnite (1/1)
+║   Other: Springleaf Drum, Mox Opal, Springleaf Drum, Cranial Plating
+║   Lands: Mistvault Bridge [T], Darksteel Citadel [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wear // Tear
+  [Main 1]
+    → Goal: curve_out
+    [Target] → face (3 dmg, life 20 → 17): no killable target
+T6 P1: Escape Phlage, Titan of Fire's Fury (exile 5 cards)
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→W, Mountain→R, Sacred Foundry→R (paying for Phlage, Titan of Fire's Fury, 5 mana remaining)
+T6 P1: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P2 passes (no response)
+T6: Resolve Phlage, Titan of Fire's Fury
+T6 P1: Phlage: 3 damage to opponent, gain 3 life
+    → Goal: curve_out
+    [Mana] Tap Elegant Parlor→R (paying for Wear // Tear, 1 mana remaining)
+T6 P1: Cast Wear // Tear (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Wear // Tear
+T6: Springleaf Drum moved battlefield -> graveyard (destroyed)
+T6 P1: Wear // Tear destroys Springleaf Drum
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 17  |  Boros Energy 13
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 4
+║ Affinity board:
+║   Creatures: Memnite (1/1)
+║   Other: Mox Opal, Springleaf Drum, Cranial Plating
+║   Lands: Mistvault Bridge, Darksteel Citadel
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ocelot Pride (1/1), Phlage, Titan of Fire's Fury (6/6)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Mountain [T], Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Springleaf Drum
+  [Main 1]
+T7 P2: Equip Cranial Plating to Memnite (cost 1)
+    → Goal: curve_out
+    [Mana] Tap Darksteel Citadel→C (paying for Springleaf Drum, 1 mana remaining)
+T7 P2: Cast Springleaf Drum (1)
+    [Priority] P1 passes (no response)
+T7: Resolve Springleaf Drum
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Memnite
+T7 P2: Attack with Memnite
+  [Declare Blockers] P1 does not block
+T7 P2:   Memnite (8/1) → 8 dmg to player
+  [Combat Damage] 8 damage dealt → P1 life: 13 → 5
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 5  |  Affinity 17
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 2
+║ Library: 43  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ocelot Pride (1/1), Phlage, Titan of Fire's Fury (6/6)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Mountain, Elegant Parlor
+║ Affinity board:
+║   Creatures: Memnite (8/1) [tapped]
+║   Other: Mox Opal, Springleaf Drum, Cranial Plating, Springleaf Drum
+║   Lands: Mistvault Bridge [T], Darksteel Citadel [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Mountain→R (paying for Goblin Bombardment, 5 mana remaining)
+T7 P1: Cast Goblin Bombardment (1R)
+    [Priority] P2 passes (no response)
+T7: Resolve Goblin Bombardment
+T7 P1: Goblin Bombardment enters — sacrifice creatures for 1 damage each
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→R, Sacred Foundry→R (paying for Seasoned Pyromancer, 4 mana remaining)
+T7 P1: Cast Seasoned Pyromancer (1RR)
+    [Priority] P2 passes (no response)
+T7: Resolve Seasoned Pyromancer
+T7 P1: Create 1x Elemental token(s)
+T7 P1: Seasoned Pyromancer: discard 2, draw 2 (Thraben Charm, Arena of Glory), create 1 Elemental(s)
+    → Goal: curve_out [interaction]
+    [Mana] Tap Sacred Foundry→W (paying for Thraben Charm, 2 mana remaining)
+T7 P1: Cast Thraben Charm (1W)
+    [Priority] P2 passes (no response)
+T7: Resolve Thraben Charm
+T7 P1: Thraben Charm: no high-value mode available
+T7 P1: Play Arena of Glory (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ocelot Pride, Ocelot Pride, Phlage, Titan of Fire's Fury
+T7 P1: Phlage, Titan of Fire's Fury attack trigger: 3 damage to Memnite
+T7: Cranial Plating falls off Memnite (unattached)
+T7: Memnite dies
+T7 P1: Gain 3 life from Phlage, Titan of Fire's Fury (life: 8)
+T7 P1: Attack with Ocelot Pride, Ocelot Pride, Phlage, Titan of Fire's Fury
+  [Declare Blockers] P2 does not block
+T7 P1:   Ocelot Pride (1/1) → 1 dmg to player
+T7 P1:   Ocelot Pride (1/1) → 1 dmg to player
+T7 P1:   Phlage, Titan of Fire's Fury (6/6) → 6 dmg to player
+  [Combat Damage] 8 damage dealt → P2 life: 17 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 9  |  Boros Energy 10
+║ Hand: 2 cards  |  Opp hand: 0 cards
+║ Lands: 2  |  Opp lands: 6
+║ Library: 47  |  Graveyard: 5
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Springleaf Drum, Cranial Plating, Springleaf Drum
+║   Lands: Mistvault Bridge, Darksteel Citadel
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped], Ocelot Pride (1/1) [tapped], Phlage, Titan of Fire's Fury (6/6) [tapped], Seasoned Pyromancer (2/2), Elemental Token (1/1)
+║   Other: Goblin Bombardment
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Mountain [T], Elegant Parlor, Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Signal Pest
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 10  |  Affinity 9
+║ Hand: 0 cards  |  Opp hand: 3 cards
+║ Lands: 6  |  Opp lands: 2
+║ Library: 40  |  Graveyard: 4
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ocelot Pride (1/1), Phlage, Titan of Fire's Fury (6/6), Seasoned Pyromancer (2/2), Elemental Token (1/1)
+║   Other: Goblin Bombardment
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Mountain, Elegant Parlor, Arena of Glory
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Springleaf Drum, Cranial Plating, Springleaf Drum
+║   Lands: Mistvault Bridge, Darksteel Citadel
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Phlage, Titan of Fire's Fury
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ocelot Pride, Ocelot Pride, Phlage, Titan of Fire's Fury, Seasoned Pyromancer, Elemental Token
+T8 P1: Gain 3 life from Phlage, Titan of Fire's Fury (life: 13)
+T8 P1: Attack with Ocelot Pride, Ocelot Pride, Phlage, Titan of Fire's Fury, Seasoned Pyromancer, Elemental Token
+  [Declare Blockers] P2 does not block
+T8 P1:   Ocelot Pride (1/1) → 1 dmg to player
+T8 P1:   Ocelot Pride (1/1) → 1 dmg to player
+T8 P1:   Phlage, Titan of Fire's Fury (6/6) → 6 dmg to player
+T8 P1:   Seasoned Pyromancer (2/2) → 2 dmg to player
+T8 P1:   Elemental Token (1/1) → 1 dmg to player
+P2 loses: life total -5
+  [Combat Damage] 11 damage dealt → P2 life: 6 → -5
+
+>>> Boros Energy wins Game 2 on turn 8 via damage
+    Final life: Boros Energy=15  Affinity=-5
+
+======================================================================
+  GAME 3: Affinity (P1) vs Boros Energy (P2)  —  seed 50002
+  Series: Boros Energy 1 - 1 Affinity
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Affinity wins → chooses to play first
+║ P1 (on play): Affinity
+║ P2 (on draw): Boros Energy
+╚═══════════════════════════════════════════════════════
+
+P1 (Affinity) opening hand (3 lands, 4 spells):
+  • Ornithopter [Creature, CMC 0]
+  • Treasure Vault [Land, CMC 0]
+  • Thought Monitor [Creature, CMC 7]
+  • Silverbluff Bridge [Land, CMC 0]
+  • Darksteel Citadel [Land, CMC 0]
+  • Cranial Plating [Spell, CMC 2]
+  • Signal Pest [Creature, CMC 1]
+→ P1 KEEPS 7 — has key card(s): Cranial Plating, Ornithopter, 3 cheap spells
+
+P2 (Boros Energy) opening hand (2 lands, 5 spells):
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Ajani, Nacatl Pariah // Ajani, Nacatl Avenger [Creature, CMC 2]
+  • Sacred Foundry [Land, CMC 0]
+  • Thraben Charm [Spell, CMC 2]
+  • Ranger-Captain of Eos [Creature, CMC 3]
+  • Phlage, Titan of Fire's Fury [Creature, CMC 3]
+  • Sacred Foundry [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Ragavan, Nimble Pilferer, 5 cheap spells
+
+
+╔══ TURN 1 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Boros Energy 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Treasure Vault
+    → Goal: deploy_engine [enablers]
+T1 P1: Cast Ornithopter (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Ornithopter
+    → Goal: deploy_engine
+    [Mana] Tap Treasure Vault→C (paying for Signal Pest, 1 mana remaining)
+T1 P1: Cast Signal Pest (1)
+    [Priority] P2 passes (no response)
+T1: Resolve Signal Pest
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1)
+║   Lands: Treasure Vault [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arena of Glory
+  [Main 1]
+T1 P2: Play Sacred Foundry (tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Boros Energy 20
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1)
+║   Lands: Treasure Vault
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Memnite
+  [Main 1]
+T2 P1: Play Silverbluff Bridge (enters tapped)
+    → Goal: deploy_engine [enablers]
+T2 P1: Cast Memnite (0)
+    [Priority] P2 passes (no response)
+T2: Resolve Memnite
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Signal Pest
+T2 P1: Attack with Signal Pest
+  [Declare Blockers] P2 does not block
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 3 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1) [tapped], Memnite (1/1)
+║   Lands: Treasure Vault, Silverbluff Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Windswept Heath
+  [Main 1]
+T2 P2: Play Windswept Heath
+T2 P2: Crack Windswept Heath (pay 1 life) -> Sacred Foundry (untapped, life: 17)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 2 mana remaining)
+T2 P2: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P1 passes (no response)
+T2: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T2 P2: Create 1x Cat token(s)
+T2 P2: Ajani creates 2/1 Cat Warrior token
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Boros Energy 17
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1), Memnite (1/1)
+║   Lands: Treasure Vault, Silverbluff Bridge
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Memnite
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Silverbluff Bridge→U, Treasure Vault→C (paying for Thought Monitor, 2 mana remaining)
+T3 P1: Cast Thought Monitor (6U)
+    [Priority] P2 passes (no response)
+T3: Resolve Thought Monitor
+T3 P1: Thought Monitor ETB: draw 2 (Urza's Saga, Spire of Industry)
+T3 P1: Play Urza's Saga
+    → Goal: curve_out
+T3 P1: Cast Memnite (0)
+    [Priority] P2 passes (no response)
+T3: Resolve Memnite
+    → Goal: curve_out [payoffs]
+T3 P1: Cast Cranial Plating (2)
+    [Priority] P2 passes (no response)
+T3: Resolve Cranial Plating
+T3 P1: Cranial Plating enters the battlefield (unattached)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Memnite
+T3 P1: Attack with Memnite
+T3 P2:   [BLOCK] Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) blocks Memnite (1/1) — favorable trade
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T3: Memnite dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 17  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1), Thought Monitor (2/2), Memnite (1/1)
+║   Other: Cranial Plating
+║   Lands: Treasure Vault [T], Silverbluff Bridge [T], Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Main 1]
+    → Goal: curve_out [interaction]
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R (paying for Thraben Charm, 2 mana remaining)
+T3 P2: Cast Thraben Charm (1W)
+    [Priority] P1 passes (no response)
+T3: Resolve Thraben Charm
+T3: Urza's Saga moved battlefield -> graveyard (destroyed)
+T3 P2: Thraben Charm destroys enchantment Urza's Saga
+T3 P2: Play Sacred Foundry (tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Boros Energy 17
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1), Thought Monitor (2/2), Memnite (1/1)
+║   Other: Cranial Plating
+║   Lands: Treasure Vault, Silverbluff Bridge
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Saga
+  [Main 1]
+T4 P1: Play Urza's Saga
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Thought Monitor
+T4 P1: Attack with Thought Monitor
+  [Declare Blockers] P2 does not block
+T4 P1:   Thought Monitor (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 17 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 15  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1), Thought Monitor (2/2) [tapped], Memnite (1/1)
+║   Other: Cranial Plating
+║   Lands: Treasure Vault, Silverbluff Bridge, Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wrath of the Skies
+  [Main 1]
+    → Goal: curve_out
+    [Target] → Thought Monitor: marginal threat 27.8 (2/2 body) — better than 3 face dmg
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R, Sacred Foundry→R (paying for Phlage, Titan of Fire's Fury, 3 mana remaining)
+T4 P2: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P1 passes (no response)
+T4: Resolve Phlage, Titan of Fire's Fury
+T4 P2: Phlage: 3 damage to Thought Monitor, gain 3 life
+T4: Thought Monitor dies
+T4 P2: Phlage sacrificed (not escaped)
+T4 P2: Play Arena of Glory (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T4 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Declare Blockers] P1 does not block
+T4 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 20 → 19
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 19  |  Boros Energy 18
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 3
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1), Memnite (1/1)
+║   Other: Cranial Plating
+║   Lands: Treasure Vault, Silverbluff Bridge, Urza's Saga
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Cat Token (2/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Cranial Plating
+  [Main 1]
+T5 P1: Play Darksteel Citadel
+T5 P1: Equip Cranial Plating to Signal Pest (cost 1)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Urza's Saga→C (paying for Cranial Plating, 3 mana remaining)
+T5 P1: Cast Cranial Plating (2)
+    [Priority] P2 passes (no response)
+T5: Resolve Cranial Plating
+T5 P1: Cranial Plating enters the battlefield (unattached)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Signal Pest, Memnite
+T5 P1: Attack with Signal Pest, Memnite
+T5 P2:   [BLOCK] Cat Token (2/1) blocks Signal Pest (8/1) — trade (chump)
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T5 P1:   Memnite (2/1) → 2 dmg to player
+T5: Cranial Plating falls off Signal Pest (unattached)
+T5: Signal Pest dies
+T5: Cat Token dies
+  [Combat Damage] 2 damage dealt → P2 life: 18 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 16  |  Affinity 19
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 4
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Arena of Glory
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Memnite (1/1) [tapped]
+║   Other: Cranial Plating, Cranial Plating
+║   Lands: Treasure Vault [T], Silverbluff Bridge, Urza's Saga [T], Darksteel Citadel
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ocelot Pride
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→W, Arena of Glory→R (paying for Ranger-Captain of Eos, 4 mana remaining)
+T5 P2: Cast Ranger-Captain of Eos (1WW)
+    [Priority] P1 passes (no response)
+T5: Resolve Ranger-Captain of Eos
+T5 P2: Ranger-Captain tutors Guide of Souls to hand
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Guide of Souls, 1 mana remaining)
+T5 P2: Cast Guide of Souls (W)
+    [Priority] P1 passes (no response)
+T5: Resolve Guide of Souls
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T5 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Declare Blockers] P1 does not block
+T5 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 19 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 18  |  Boros Energy 16
+║ Hand: 1 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 4
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Memnite (1/1)
+║   Other: Cranial Plating, Cranial Plating
+║   Lands: Treasure Vault, Silverbluff Bridge, Urza's Saga, Darksteel Citadel
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Ranger-Captain of Eos (3/3), Guide of Souls (1/2)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T6 P1: Create 1x Construct token(s)
+T6 P1: Urza's Saga Ch.II: Create Construct Token
+  [Draw] P1 draws: Spire of Industry
+  [Main 1]
+T6 P1: Play Spire of Industry
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Memnite
+T6 P1: Attack with Memnite
+T6 P2:   [BLOCK] Ranger-Captain of Eos (3/3) blocks Memnite (1/1) — favorable trade
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T6: Memnite dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 16  |  Affinity 18
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 4
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Ranger-Captain of Eos (3/3), Guide of Souls (1/2)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Arena of Glory
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Construct Token (7/7)
+║   Other: Cranial Plating, Cranial Plating
+║   Lands: Treasure Vault, Silverbluff Bridge, Urza's Saga, Darksteel Citadel, Spire of Industry
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T6 P2: Play Arid Mesa
+T6 P2: Crack Arid Mesa -> Plains (untapped)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Arena of Glory→R, Plains→W (paying for Ragavan, Nimble Pilferer, 5 mana remaining)
+T6 P2: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P1 passes (no response)
+T6: Resolve Ragavan, Nimble Pilferer
+T6 P2: Gain 1 life from Guide of Souls (life: 16)
+T6 P2: +1 energy from Guide of Souls (total: 1)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Ocelot Pride, 3 mana remaining)
+T6 P2: Cast Ocelot Pride (W)
+    [Priority] P1 passes (no response)
+T6: Resolve Ocelot Pride
+T6 P2: Gain 1 life from Guide of Souls (life: 17)
+T6 P2: +1 energy from Guide of Souls (total: 2)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T6 P2: Attack with Ragavan, Nimble Pilferer
+T6 P1:   [BLOCK] Construct Token (7/7) blocks Ragavan, Nimble Pilferer (2/1) — favorable trade
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T6: Ragavan, Nimble Pilferer dies
+  [End Combat]
+  [Main 2]
+    → Goal: curve_out
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→W (paying for Wrath of the Skies, 2 mana remaining)
+T6 P2: Cast Wrath of the Skies (WW)
+    [Priority] P1 passes (no response)
+T6: Resolve Wrath of the Skies
+T6: Ornithopter dies
+T6: Cranial Plating moved battlefield -> graveyard (destroyed)
+T6: Cranial Plating moved battlefield -> graveyard (destroyed)
+T6: Construct Token dies
+T6: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger dies
+T6: Guide of Souls dies
+T6: Ocelot Pride dies
+T6 P2: Wrath of the Skies (X=2) sweeps the board
+  [End Step]
+
+╔══ TURN 7 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 18  |  Boros Energy 17
+║ Hand: 1 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 9
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: Treasure Vault, Silverbluff Bridge, Urza's Saga, Darksteel Citadel, Spire of Industry
+║ Boros Energy board:
+║   Creatures: Ranger-Captain of Eos (3/3)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Arena of Glory [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T7 P1: Create 1x Construct token(s)
+T7 P1: Urza's Saga Ch.III: Create Construct Token
+T7 P1: Urza's Saga tutors Mox Opal
+T7 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Sojourner's Companion
+  [Main 1]
+T7 P1: Play Spire of Industry
+T7 P1: Cycle Sojourner's Companion (pay 2 mana, tutor: Darksteel Citadel)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 17  |  Affinity 18
+║ Hand: 1 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 10
+║ Boros Energy board:
+║   Creatures: Ranger-Captain of Eos (3/3)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Arena of Glory, Plains
+║ Affinity board:
+║   Creatures: Construct Token (5/5)
+║   Other: Mox Opal
+║   Lands: Treasure Vault [T], Silverbluff Bridge [T], Darksteel Citadel, Spire of Industry, Spire of Industry
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+    → Goal: curve_out
+    [Target] → face (3 dmg, life 18 → 15): no killable target
+T7 P2: Escape Phlage, Titan of Fire's Fury (exile 5 cards)
+    [Mana] Tap Plains→W, Sacred Foundry→W, Arena of Glory→R, Sacred Foundry→R (paying for Phlage, Titan of Fire's Fury, 5 mana remaining)
+T7 P2: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P1 passes (no response)
+T7: Resolve Phlage, Titan of Fire's Fury
+T7 P2: Phlage: 3 damage to opponent, gain 3 life
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→W (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 1 mana remaining)
+T7 P2: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P1 passes (no response)
+T7: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T7 P2: Create 1x Cat token(s)
+T7 P2: Ajani creates 2/1 Cat Warrior token
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 15  |  Boros Energy 20
+║ Hand: 1 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 43  |  Graveyard: 11
+║ Affinity board:
+║   Creatures: Construct Token (5/5)
+║   Other: Mox Opal
+║   Lands: Treasure Vault, Silverbluff Bridge, Darksteel Citadel, Spire of Industry, Spire of Industry
+║ Boros Energy board:
+║   Creatures: Ranger-Captain of Eos (3/3), Phlage, Titan of Fire's Fury (6/6), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Arena of Glory [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Frogmite
+  [Main 1]
+T8 P1: Play Darksteel Citadel
+    → Goal: curve_out [enablers]
+T8 P1: Cast Frogmite (4)
+    [Priority] P2 passes (no response)
+T8: Resolve Frogmite
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Construct Token
+T8 P1: Attack with Construct Token
+  [Declare Blockers] P2 does not block
+T8 P1:   Construct Token (7/7) → 7 dmg to player
+  [Combat Damage] 7 damage dealt → P2 life: 20 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 13  |  Affinity 15
+║ Hand: 1 cards  |  Opp hand: 0 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 43  |  Graveyard: 4
+║ Boros Energy board:
+║   Creatures: Ranger-Captain of Eos (3/3), Phlage, Titan of Fire's Fury (6/6), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Arena of Glory, Plains
+║ Affinity board:
+║   Creatures: Construct Token (7/7) [tapped], Frogmite (2/2)
+║   Other: Mox Opal
+║   Lands: Treasure Vault, Silverbluff Bridge, Darksteel Citadel, Spire of Industry, Spire of Industry, Darksteel Citadel
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mountain
+  [Main 1]
+T8 P2: Play Mountain
+    → Goal: curve_out [enablers]
+    [Mana] Tap Arena of Glory→R (paying for Ragavan, Nimble Pilferer, 6 mana remaining)
+T8 P2: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P1 passes (no response)
+T8: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ranger-Captain of Eos, Phlage, Titan of Fire's Fury, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+T8 P2: Phlage, Titan of Fire's Fury attack trigger: 3 damage to Frogmite
+T8: Frogmite dies
+T8 P2: Gain 3 life from Phlage, Titan of Fire's Fury (life: 16)
+T8 P2: Attack with Ranger-Captain of Eos, Phlage, Titan of Fire's Fury, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+  [Declare Blockers] P1 does not block
+T8 P2:   Ranger-Captain of Eos (3/3) → 3 dmg to player
+T8 P2:   Phlage, Titan of Fire's Fury (6/6) → 6 dmg to player
+T8 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T8 P2:   Cat Token (2/1) → 2 dmg to player
+  [Combat Damage] 12 damage dealt → P1 life: 15 → 3
+  [End Combat]
+  [Main 2]
+  [End Step]
+T8: Ragavan, Nimble Pilferer moved battlefield -> hand (Dash return)
+T8: Ragavan, Nimble Pilferer returned to hand (Dash)
+
+╔══ TURN 9 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 3  |  Boros Energy 16
+║ Hand: 0 cards  |  Opp hand: 1 cards
+║ Lands: 6  |  Opp lands: 6
+║ Library: 42  |  Graveyard: 12
+║ Affinity board:
+║   Creatures: Construct Token (6/6)
+║   Other: Mox Opal
+║   Lands: Treasure Vault, Silverbluff Bridge, Darksteel Citadel, Spire of Industry, Spire of Industry, Darksteel Citadel
+║ Boros Energy board:
+║   Creatures: Ranger-Captain of Eos (3/3) [tapped], Phlage, Titan of Fire's Fury (6/6) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Cat Token (2/1) [tapped]
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Arena of Glory [T], Plains, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mox Opal
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Construct Token
+T9 P1: Attack with Construct Token
+  [Declare Blockers] P2 does not block
+T9 P1:   Construct Token (6/6) → 6 dmg to player
+  [Combat Damage] 6 damage dealt → P2 life: 16 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 10  |  Affinity 3
+║ Hand: 1 cards  |  Opp hand: 1 cards
+║ Lands: 6  |  Opp lands: 6
+║ Library: 42  |  Graveyard: 4
+║ Boros Energy board:
+║   Creatures: Ranger-Captain of Eos (3/3), Phlage, Titan of Fire's Fury (6/6), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Arena of Glory, Plains, Mountain
+║ Affinity board:
+║   Creatures: Construct Token (6/6) [tapped]
+║   Other: Mox Opal
+║   Lands: Treasure Vault, Silverbluff Bridge, Darksteel Citadel, Spire of Industry, Spire of Industry, Darksteel Citadel
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Arena of Glory→R (paying for Ragavan, Nimble Pilferer, 6 mana remaining)
+T9 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T9: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ranger-Captain of Eos, Phlage, Titan of Fire's Fury, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+T9 P2: Gain 3 life from Phlage, Titan of Fire's Fury (life: 13)
+T9 P2: Attack with Ranger-Captain of Eos, Phlage, Titan of Fire's Fury, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+P1 loses: life total 0
+
+>>> Boros Energy wins Game 3 on turn 9 via damage
+    Final life: Affinity=0  Boros Energy=13
+
+======================================================================
+  MATCH RESULT: Boros Energy wins 2-1
+======================================================================

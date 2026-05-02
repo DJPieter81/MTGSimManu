@@ -2202,10 +2202,26 @@ class EVPlayer:
 
             sacrificed_value = 0.0
             plating_skipped_any = False
+            # Rules constant: ≤5 life is "one big attack from dying"
+            # — same threshold the outer emergency trigger uses
+            # (line ~2121: `me.life - total_incoming <= 5`). When
+            # taking the damage drops us into this band, the
+            # plating-futile gate must NOT skip the chump even if
+            # the equipment rebinds. Trading one creature to defer
+            # death by a turn is almost always correct.
+            DANGER_ZONE_LIFE = 5
             for attacker in sorted(attackers, key=lambda a: a.power or 0, reverse=True):
                 # RC-2: if this attacker's power is dominated by equipment/aura
                 # bonuses AND we can't remove those next turn, chumping is
-                # futile — the plating rebinds. Skip unless skipping is lethal.
+                # futile — the plating rebinds. Skip unless skipping is
+                # lethal OR drops us into the danger zone.
+                #
+                # Bug history (s=50500 G1 T5): pre-fix Boros at 23 life
+                # facing 21/1 Memnite (double-Plating) DID NOT chump
+                # because still_lethal_if_skipped was False (21 < 23).
+                # Boros took 21 to face, dropped to 2 (danger zone),
+                # died T6. Had Boros chumped, it would have lived.
+                # The danger-zone clause closes that case.
                 equip_bonus = self._attacker_equipment_bonus(game, opp, attacker)
                 damage_so_far = sum(
                     (a.power or 0) for a in attackers
@@ -2213,9 +2229,13 @@ class EVPlayer:
                 )
                 damage_if_skipped = total_incoming - damage_so_far
                 still_lethal_if_skipped = damage_if_skipped >= me.life
+                drops_to_danger_zone = (
+                    me.life - damage_if_skipped <= DANGER_ZONE_LIFE
+                )
                 if (equip_bonus >= 3
                         and not self._equipment_breakable(game, me)
-                        and not still_lethal_if_skipped):
+                        and not still_lethal_if_skipped
+                        and not drops_to_danger_zone):
                     plating_skipped_any = True
                     continue
 

@@ -62,21 +62,28 @@ def _attach_equipment(equipment, creature):
 
 
 class TestNoChumpIntoPlatedAttackerWithoutAnswer:
-    def test_plated_frogmite_not_chumped_at_healthy_life(self, card_db):
+    def test_plated_frogmite_chumped_in_danger_zone(self, card_db):
         """Opp: Frogmite + Cranial Plating equipped + 4 artifacts total
-        (Plating, Frogmite, Memnite x2). Plating grants +4/+0.
-        Me: life=12 (just in emergency range via drop-below-5), one
-        Guide of Souls as chump. Empty hand.
+        (Plating, Frogmite, Memnite x2). Plating grants +4/+0 → 6/2
+        attacker. Me: life=8, one Guide of Souls as chump.
 
-        Expected: NO emergency block against the plated attacker —
-        plating rebinds regardless."""
+        Expected: chump-block IS correct here, even though Plating
+        rebinds and we have no answer in hand. Without chumping, Boros
+        drops to 2 life (danger zone) and dies next turn to the same
+        6/2 (Plating rebinds for {1}). Chumping Guide buys an entire
+        turn at the cost of one 1-power creature — almost always a
+        winning trade.
+
+        History: this test originally pinned the OPPOSITE rule ("never
+        chump when Plating rebinds"). Bo3 trace s=50500 G1 T5 showed
+        Boros at 23 life facing 21/1 Memnite refusing to chump → drops
+        to 2 → dies T6. Had Boros chumped, it would have lived to
+        win T8. The fix at ev_player.py:2238 added the
+        drops_to_danger_zone clause; this test now pins the corrected
+        behavior. The "plating-futile still applies in comfortable
+        non-danger-zone emergencies" branch is covered by
+        test_chump_block_plating_when_lethal_range.py::test_plating_futile_gate_still_skips_when_survival_comfortable."""
         game = GameState(rng=random.Random(0))
-        # life=12, 6 damage drops to 6, just misses drop-below-5 threshold;
-        # but a 6-power attacker vs life=12 used to trigger RC-1's old
-        # biggest_attacker >= life//2 clause. Need to trigger emergency
-        # explicitly for this test: set life=8, incoming=6 → drop to 2
-        # (emergency fires via drop-below-5). That's the real scenario
-        # where we were chumping into a plated attacker.
         game.players[0].life = 8
         game.players[1].life = 20
 
@@ -105,12 +112,14 @@ class TestNoChumpIntoPlatedAttackerWithoutAnswer:
         )
 
         blocks = player.decide_blockers(game, [frogmite])
-        # No chump into the plated attacker (no answer in hand).
-        # Guide may or may not be assigned; the specific assertion is that
-        # Frogmite is not blocked.
-        assert frogmite.instance_id not in blocks, (
-            f"expected NO chump into plated Frogmite (no answer in hand). "
-            f"Got {blocks}."
+        # Chump-block IS correct: skipping drops Boros to 2 life
+        # (danger zone). Even though Plating rebinds for {1} mana,
+        # chumping buys a full turn at the cost of 1 creature.
+        assert frogmite.instance_id in blocks and blocks[frogmite.instance_id], (
+            f"expected chump block into plated Frogmite at danger-zone "
+            f"life (8 - 6 = 2 ≤ 5). Skipping kills Boros next turn; "
+            f"chumping Guide of Souls trades 1 creature for 1 turn of "
+            f"survival. Got {blocks}."
         )
 
 
