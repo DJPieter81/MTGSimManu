@@ -127,6 +127,13 @@ def main(argv: list[str]) -> int:
         )
         for p in versioned:
             print(f"  {p}", file=sys.stderr)
+        # Diagnostic: also print to STDOUT so CI annotation captures the
+        # offending paths (some runners only surface stdout in summaries).
+        print(
+            "DOC HYGIENE: violating _V[0-9]+.md paths (stdout copy):"
+        )
+        for p in versioned:
+            print(f"  {p}")
 
     if failed:
         # Diagnostic on failure: dump root .md state + git pool to STDOUT

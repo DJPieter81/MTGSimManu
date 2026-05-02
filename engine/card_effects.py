@@ -16,6 +16,7 @@ This is an incremental migration: we move cards one at a time from game_state.py
 into this registry, validating with the stress test after each batch.
 """
 from __future__ import annotations
+import re
 from typing import Callable, Dict, List, Optional, Any, TYPE_CHECKING
 from dataclasses import dataclass, field
 from enum import Enum
@@ -1234,8 +1235,15 @@ def wish_resolve(game, card, controller, targets=None, item=None):
 def gifts_ungiven_resolve(game, card, controller, targets=None, item=None):
     lib = game.players[controller].library
     candidates = [c for c in lib if c.template.is_instant or c.template.is_sorcery]
-    # Prefer cards that are usable from the graveyard: storm payoffs (recur
-    # via Past in Flames) and flashback spells. Falls back to highest CMC.
+    # Deterministic engine simplification (not strategic scoring): for
+    # the GY pile choice, prefer cards usable from graveyard — storm
+    # payoffs (recur via Past in Flames) and flashback spells — over
+    # cards that are dead in graveyard.  All keys are oracle/tag
+    # derived; no card-name conditionals.  A future AI-side variant
+    # could consult the gameplan for matchup-specific GY value, but
+    # since the opponent makes the actual choice in real Gifts, the
+    # engine's "best 2 to send to GY" sort is a categorical heuristic,
+    # not a strategic decision.
     def _gifts_priority(c):
         ctags = getattr(c.template, 'tags', set())
         gy_useful = ('storm_payoff' in ctags or 'flashback' in ctags)
@@ -1626,18 +1634,32 @@ def _primeval_titan_search(game, controller):
     if not lands_in_library:
         return
 
-    # Priority: bounce lands (for mana with Amulet), utility lands, basics
+    # Priority: bounce lands (for mana with Amulet) > damage-dealing
+    # lands (Valakut-class finishers) > combat-enabler lands > plain
+    # mana producers > basics.  All checks oracle-text / template-field
+    # driven; no card-name conditionals.
+    #
+    # The constants 10/8/7/3 are deterministic engine tie-breakers
+    # (categorical ordering, not strategic weights).  Strategic value
+    # of a Titan-fetched land in the wider plan lives in the AI layer
+    # (`ai/permanent_threat.py` once it lands on the battlefield); the
+    # engine only needs to break ties consistently when several lands
+    # match the same category.
     def land_priority(c):
         score = 0
+        otext = (c.template.oracle_text or "").lower()
         if c.template.enters_tapped and c.template.produces_mana:
             score += 10  # bounce lands are best with Amulet
-        if "Valakut" in c.name:
-            score += 8  # Valakut for damage
+        # Damage-source lands: any land whose oracle text contains a
+        # "deal[s] N damage to any target" clause is a closer/finisher
+        # tile (Valakut, the Molten Pinnacle and any future printing
+        # of the same template).
+        if re.search(r"deals?\s+\d+\s+damage\s+to\s+any\s+target", otext):
+            score += 8
         # Lands that grant haste / double strike to creatures (oracle-detected
         # combat enablers, e.g. Slayers' Stronghold, Hanweir Battlements,
         # Sunhome). Activated abilities targeting creatures show up as the
         # phrase "gains haste" / "double strike" in oracle text.
-        otext = (c.template.oracle_text or "").lower()
         if "gains haste" in otext or "double strike" in otext:
             score += 7
         if c.template.produces_mana:
@@ -2543,11 +2565,12 @@ def phelia_attack(game, card, controller, targets=None, item=None):
     target_owner = None
 
     if own_etb:
-        # Blink own best ETB creature — repeating value engine
-        # Prioritize: Solitude (removal) > Phlage (damage+life) > others
-        priority = {'Solitude': 10, 'Phlage, Titan of Fire\'s Fury': 8,
-                    'Omnath, Locus of Creation': 7}
-        target = max(own_etb, key=lambda c: priority.get(c.name, _threat_score(c)))
+        # Blink own best ETB creature — repeating value engine.
+        # Ranking is delegated to the AI primitive `_threat_score`
+        # (which routes creatures through `creature_threat_value`):
+        # exile-ETB > burn-ETB > cantrip-ETB falls out of the
+        # principled formula without any per-card tuning.
+        target = max(own_etb, key=lambda c: _threat_score(c))
         target_owner = controller
     elif opp_nonlands:
         # Tempo: exile opponent's best nonland (it returns at end step)

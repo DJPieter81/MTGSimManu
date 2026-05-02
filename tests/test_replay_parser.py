@@ -51,12 +51,18 @@ def test_parses_one_replay_file():
 
 
 def test_total_snapshots_in_range():
-    """Across all replays/*.txt the parser yields between 1900 and 2200 snapshots."""
+    """Across all replays/*.txt the parser yields at least 1900 snapshots.
+
+    Lower-bound only: this test guards against a parser regression that
+    silently drops snapshots (format drift in the replay log). The
+    upper bound was removed because it broke every time a new replay
+    was committed to ``replays/`` — corpus growth is not a parser bug.
+    """
     total = 0
     for f in sorted(REPLAYS_DIR.glob("*.txt")):
         total += sum(1 for _ in parser.parse_replay_file(f))
-    assert 1900 <= total <= 2200, (
-        f"Expected snapshots in [1900, 2200], got {total}. "
+    assert total >= 1900, (
+        f"Expected at least 1900 snapshots, got {total}. "
         f"Format may have drifted."
     )
 
