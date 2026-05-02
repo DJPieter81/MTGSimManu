@@ -202,12 +202,13 @@ def _eval_evoke(game, me, a: BoardAssessment, ctx: dict,
     oracle = (card.template.oracle_text or "").lower()
 
     # Resolve opponent index.  Prefer the explicit `player_idx`
-    # parameter; fall back to `me.index` for legacy callers that
-    # haven't been updated.  The fallback path is incorrect when
-    # me does not carry an `index` attribute (Player has no such
-    # attribute by default — see engine/game_state.py::Player).
+    # parameter; fall back to `me.player_idx` for legacy callers
+    # that haven't been updated.  PlayerState carries `player_idx`
+    # from construction (engine/game_state.py); the previous `index`
+    # attribute name was wrong and silently returned 0 — which
+    # collapsed opp to self when me was player 1.
     if player_idx is None:
-        player_idx = getattr(me, 'index', 0)
+        player_idx = getattr(me, 'player_idx', 0)
     opp_idx = 1 - player_idx
     opp = game.players[opp_idx]
     
@@ -295,7 +296,10 @@ def _eval_dash(game, me, a: BoardAssessment, ctx: dict,
         return -10.0  # Can't dash
 
     if player_idx is None:
-        player_idx = getattr(me, 'index', 0)
+        # Fallback: PlayerState always carries `player_idx`.
+        # Using `index` here was the structural bug that caused
+        # opp to collapse to self when me was player 1.
+        player_idx = getattr(me, 'player_idx', 0)
     opp = game.players[1 - player_idx]
 
     opp_has_blockers = any(c.can_block for c in opp.creatures)
@@ -326,7 +330,10 @@ def _eval_combo(game, me, a: BoardAssessment, ctx: dict,
     Returns positive = go for it, negative = wait."""
     projected_damage = ctx.get('projected_damage', 0)
     if player_idx is None:
-        player_idx = getattr(me, 'index', 0)
+        # Fallback: PlayerState always carries `player_idx`.
+        # Using `index` here was the structural bug that caused
+        # opp to collapse to self when me was player 1.
+        player_idx = getattr(me, 'player_idx', 0)
     opp = game.players[1 - player_idx]
 
     # Lethal projected — always go
