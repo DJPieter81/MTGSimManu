@@ -282,6 +282,31 @@ class DeckGameplan:
     # means hand must have at least one reanimate AND one enabler
     mulligan_combo_sets: List[Set[str]] = field(default_factory=list)
 
+    # Mulligan: typed combo paths — supersedes mulligan_combo_sets when
+    # declared.  Each path is a dict of role buckets:
+    #   {"enablers": [...], "payoffs": [...]}
+    # Decision rule:
+    #   - virtual hand size 7: keep iff some path has ≥1 hand card
+    #     in BOTH enablers and payoffs (anchor + executor in hand)
+    #   - virtual hand size 6: keep iff some path has ≥1 hand card
+    #     in enablers (payoff is dig-able through the enabler)
+    #   - virtual hand size <=5: existing mulligan_always_keep short-
+    #     circuit applies before this check
+    # Paths are OR'd; buckets within a path are AND'd at 7, anchor-
+    # only at 6.  Targets are intentionally not a bucket here — they
+    # are dig-able through the enabler and counting them inflates the
+    # mulligan rate.  Decks not declaring this field fall back to
+    # ``mulligan_combo_sets`` (existing flat-set behaviour).
+    #
+    # Class-of-bug this addresses: every combo deck whose path has
+    # heterogeneous typed roles (enabler / payoff / target) where flat
+    # intersection counts cannot tell whether the missing piece is
+    # the dig-able one or the anchor one.  Reanimator decks
+    # (Goryo's, Through-the-Breach) match this shape.  Living End
+    # and Storm have homogeneous combo sets (cyclers / rituals are
+    # interchangeable) and stay on flat ``mulligan_combo_sets``.
+    mulligan_combo_paths: List[Dict[str, List[str]]] = field(default_factory=list)
+
     # Land play priorities: card_name -> priority (higher = play first)
     land_priorities: Dict[str, float] = field(default_factory=dict)
 
