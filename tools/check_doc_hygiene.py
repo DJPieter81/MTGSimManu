@@ -128,6 +128,31 @@ def main(argv: list[str]) -> int:
         for p in versioned:
             print(f"  {p}", file=sys.stderr)
 
+    if failed:
+        # Diagnostic on failure: dump root .md state + git pool to STDOUT
+        # so CI annotation captures *what* the script saw. Without this,
+        # the annotation only shows the exit code and any stderr text
+        # that the runner happens to surface.
+        import os as _os
+        print("\n=== DOC HYGIENE DIAG (stdout) ===")
+        print(f"cwd={_os.getcwd()}")
+        print(f"ROOT={ROOT}")
+        try:
+            import subprocess as _sp
+            r = _sp.run(["git", "ls-files"], cwd=ROOT,
+                        capture_output=True, text=True, check=False)
+            lines = r.stdout.splitlines()
+            print(f"git_ls_files rc={r.returncode} count={len(lines)}")
+            v_hits = [ln for ln in lines if "_V" in ln and ln.endswith(".md")]
+            print(f"V-files seen: {len(v_hits)}")
+            for ln in v_hits:
+                print(f"  {ln}")
+        except Exception as exc:
+            print(f"diagnostic git error: {exc!r}")
+        for p in find_root_md():
+            mark = "OK " if p.name in ROOT_MD_ALLOWLIST else "BAD"
+            print(f"  {mark} {p.name}")
+
     return 1 if failed else 0
 
 
