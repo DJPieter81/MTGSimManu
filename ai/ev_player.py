@@ -2538,12 +2538,22 @@ class EVPlayer:
                                    or 'artifact' in oracle)
 
             if can_hit_noncreature:
-                # Evaluate all nonland permanents via marginal threat.
+                # Evaluate all nonland permanents via marginal threat
+                # plus the combo-engine disruption premium. The
+                # premium is non-zero only when opp's gameplan is
+                # combo-archetype AND the card is one of opp's
+                # declared engines/payoffs AND opp's combo_clock is
+                # inside the disruption window — see
+                # ai/engine_disruption.py for the gating contract
+                # and tests/test_combo_engine_disruption_premium.py
+                # for the rule each constant encodes.
                 from ai.permanent_threat import permanent_threat
+                from ai.engine_disruption import engine_disruption_value
                 nonland = [c for c in opp.battlefield if not c.template.is_land]
                 if nonland:
                     best = max(nonland,
-                               key=lambda c: permanent_threat(c, opp, game))
+                               key=lambda c: (permanent_threat(c, opp, game)
+                                              + engine_disruption_value(c, opp, game)))
                     return [best.instance_id]
                 return []
             else:
