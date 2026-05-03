@@ -1,0 +1,852 @@
+Loaded 21759 cards (0 errors)
+======================================================================
+  GAME 1: Goryo's Vengeance (P1) vs Domain Zoo (P2)  —  seed 60500
+  Series: Goryo's Vengeance 0 - 0 Domain Zoo
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Domain Zoo wins → chooses to play first
+║ P1 (on play): Domain Zoo
+║ P2 (on draw): Goryo's Vengeance
+╚═══════════════════════════════════════════════════════
+
+P1 (Goryo's Vengeance) opening hand (3 lands, 4 spells):
+  • Flooded Strand [Land, CMC 0]
+  • Undying Evil [Spell, CMC 1]
+  • Goryo's Vengeance [Spell, CMC 2]
+  • Solitude [Creature, CMC 5]
+  • Marsh Flats [Land, CMC 0]
+  • Silent Clearing [Land, CMC 0]
+  • Thoughtseize [Spell, CMC 1]
+→ P1 MULLIGANS (combo path under-covered in 7-card hand (best path: 1/2 role buckets; need enabler+payoff))
+  New hand (2 lands, 5 spells): ['Concealed Courtyard', 'Inquisition of Kozilek', 'Inquisition of Kozilek', 'Solitude', "Goryo's Vengeance", 'Silent Clearing', 'Faithful Mending']
+→ P1 MULLIGANS (combo set present but lands miss colors ['U'])
+  New hand (1 lands, 6 spells): ['Hallowed Fountain', 'Faithful Mending', 'Inquisition of Kozilek', 'Leyline of Sanctity', 'Unburial Rites', 'Thoughtseize', 'Griselbrand']
+→ P1 mulligans to 5, bottoms: ['Leyline of Sanctity', 'Inquisition of Kozilek']
+  Keeps: ['Hallowed Fountain', 'Faithful Mending', 'Unburial Rites', 'Thoughtseize', 'Griselbrand']
+
+P2 (Domain Zoo) opening hand (3 lands, 4 spells):
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Flooded Strand [Land, CMC 0]
+  • Leyline Binding [Spell, CMC 6]
+  • Doorkeeper Thrull [Creature, CMC 2]
+  • Stubborn Denial [Spell, CMC 1]
+  • Thundering Falls [Land, CMC 0]
+  • Flooded Strand [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Doorkeeper Thrull, Leyline Binding, Ragavan, Nimble Pilferer, 3 cheap spells
+
+
+╔══ TURN 1 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  Goryo's Vengeance 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Flooded Strand
+T1 P2: Crack Flooded Strand (pay 1 life) -> Steam Vents (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 20  |  Domain Zoo 19
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 55  |  Graveyard: 0
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ephemerate
+  [Main 1]
+T1 P1: Play Hallowed Fountain (untapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 19  |  Goryo's Vengeance 18
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T2 P2: Play Flooded Strand
+T2 P2: Crack Flooded Strand (pay 1 life) -> Temple Garden (tapped, life: 18)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T2 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T2: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 18  |  Domain Zoo 18
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 54  |  Graveyard: 0
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Steam Vents [T], Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Concealed Courtyard
+  [Main 1]
+T2 P1: Play Concealed Courtyard (untapped, 1 other lands)
+    → Goal: fill_resource [enablers]
+    [Mana] Tap Hallowed Fountain→U, Concealed Courtyard→W (paying for Faithful Mending, 2 mana remaining)
+T2 P1: Cast Faithful Mending (WU)
+    [Priority] P2 passes (no response)
+T2: Resolve Faithful Mending
+T2: Griselbrand moved hand -> graveyard (discard)
+T2: Griselbrand moved hand -> graveyard (discard)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 18  |  Goryo's Vengeance 20
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Steam Vents, Temple Garden
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T], Concealed Courtyard [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+T3 P2: Play Arid Mesa
+T3 P2: Crack Arid Mesa (pay 1 life) -> Blood Crypt (tapped, life: 17)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Temple Garden→W, Steam Vents→R (paying for Doorkeeper Thrull, 2 mana remaining)
+T3 P2: Cast Doorkeeper Thrull (1W)
+    [Priority] P1 passes (no response)
+T3: Resolve Doorkeeper Thrull
+T3 P2: Doorkeeper Thrull: opponent ETB triggers suppressed
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T3 P2: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T3 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T3 P2: Create 1x Treasure token(s)
+T3 P2: Ragavan, Nimble Pilferer exiles Watery Grave from top of P1's library
+T3 P2: Ragavan, Nimble Pilferer — may cast Watery Grave this turn
+  [Combat Damage] 2 damage dealt → P1 life: 20 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+T3: Watery Grave returned to exile (uncast)
+
+╔══ TURN 3 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 18  |  Domain Zoo 17
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 3
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Concealed Courtyard
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Doorkeeper Thrull (1/2)
+║   Other: Treasure Token
+║   Lands: Steam Vents [T], Temple Garden [T], Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Marsh Flats
+  [Main 1]
+T3 P1: Play Flooded Strand
+T3 P1: Crack Flooded Strand (pay 1 life) -> Godless Shrine (tapped, life: 17)
+    → Goal: execute_payoff
+    [Mana] Tap Hallowed Fountain→U, Concealed Courtyard→W (paying for Faithful Mending, 2 mana remaining)
+T3 P1: Cast Faithful Mending (WU)
+    [Priority] P2 passes (no response)
+T3: Resolve Faithful Mending
+T3: Archon of Cruelty moved hand -> graveyard (discard)
+T3: Faithful Mending moved hand -> graveyard (discard)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 17  |  Goryo's Vengeance 19
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Doorkeeper Thrull (1/2)
+║   Other: Treasure Token
+║   Lands: Steam Vents, Temple Garden, Blood Crypt
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T], Concealed Courtyard [T], Godless Shrine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Lightning Bolt
+  [Main 1]
+T4 P2: Play Thundering Falls (enters tapped)
+    → Goal: curve_out
+    [Target] → face (3 dmg, life 19 → 16): no killable target
+    [Mana] Tap Steam Vents→R (paying for Lightning Bolt, 3 mana remaining)
+T4 P2: Cast Lightning Bolt (R)
+    [Priority] P1 passes (no response)
+T4: Resolve Lightning Bolt
+T4 P2: Lightning Bolt → 3 damage → life 16
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer, Doorkeeper Thrull
+T4 P2: Attack with Ragavan, Nimble Pilferer, Doorkeeper Thrull
+  [Declare Blockers] P1 does not block
+T4 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T4 P2: Create 1x Treasure token(s)
+T4 P2: Ragavan, Nimble Pilferer exiles Solitude from top of P1's library
+T4 P2: Ragavan, Nimble Pilferer — may cast Solitude this turn
+T4 P2:   Doorkeeper Thrull (1/2) → 1 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 16 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Solitude returned to exile (uncast)
+
+╔══ TURN 4 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 13  |  Domain Zoo 17
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 5
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Concealed Courtyard, Godless Shrine
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Doorkeeper Thrull (1/2) [tapped]
+║   Other: Treasure Token, Treasure Token
+║   Lands: Steam Vents [T], Temple Garden, Blood Crypt, Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Flooded Strand
+  [Main 1]
+T4 P1: Play Marsh Flats
+T4 P1: Crack Marsh Flats (pay 1 life) -> Godless Shrine (tapped, life: 12)
+    → Goal: execute_payoff
+    [Mana] Tap Hallowed Fountain→U, Concealed Courtyard→W (paying for Faithful Mending, 3 mana remaining)
+T4 P1: Cast Faithful Mending (WU)
+    [Priority] P2 passes (no response)
+T4: Resolve Faithful Mending
+T4: Griselbrand moved hand -> graveyard (discard)
+T4: Unburial Rites moved hand -> graveyard (discard)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 17  |  Goryo's Vengeance 14
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 4
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Doorkeeper Thrull (1/2)
+║   Other: Treasure Token, Treasure Token
+║   Lands: Steam Vents, Temple Garden, Blood Crypt, Thundering Falls
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T], Concealed Courtyard [T], Godless Shrine, Godless Shrine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Lush Portico
+  [Main 1]
+T5 P2: Play Lush Portico (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer, Doorkeeper Thrull
+T5 P2: Attack with Ragavan, Nimble Pilferer, Doorkeeper Thrull
+  [Declare Blockers] P1 does not block
+T5 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T5 P2: Create 1x Treasure token(s)
+T5 P2: Ragavan, Nimble Pilferer exiles Flooded Strand from top of P1's library
+T5 P2: Ragavan, Nimble Pilferer — may cast Flooded Strand this turn
+T5 P2:   Doorkeeper Thrull (1/2) → 1 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 14 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Flooded Strand returned to exile (uncast)
+
+╔══ TURN 5 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 11  |  Domain Zoo 17
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 40  |  Graveyard: 7
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Concealed Courtyard, Godless Shrine, Godless Shrine
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Doorkeeper Thrull (1/2) [tapped]
+║   Other: Treasure Token, Treasure Token, Treasure Token
+║   Lands: Steam Vents, Temple Garden, Blood Crypt, Thundering Falls, Lush Portico [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Island
+  [Main 1]
+T5 P1: Play Flooded Strand
+T5 P1: Crack Flooded Strand -> Plains (untapped)
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Concealed Courtyard→B, Plains→W, Hallowed Fountain→U, Godless Shrine→B, Godless Shrine→B (paying for Unburial Rites, 5 mana remaining)
+T5 P1: Cast Unburial Rites (4B)
+    [Priority] P2 responds with Stubborn Denial
+    [Mana] Tap Steam Vents→U (paying for Stubborn Denial, 4 mana remaining)
+T5 P2: Cast Stubborn Denial (U)
+T5: Resolve Stubborn Denial
+T5: Unburial Rites is countered
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 17  |  Goryo's Vengeance 10
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 5
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Doorkeeper Thrull (1/2)
+║   Other: Treasure Token, Treasure Token, Treasure Token
+║   Lands: Steam Vents, Temple Garden, Blood Crypt, Thundering Falls, Lush Portico
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T], Concealed Courtyard [T], Godless Shrine [T], Godless Shrine [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Territorial Kavu
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Temple Garden→G, Steam Vents→R (paying for Territorial Kavu, 5 mana remaining)
+T6 P2: Cast Territorial Kavu (RG)
+    [Priority] P1 passes (no response)
+T6: Resolve Territorial Kavu
+T6: Territorial Kavu ETB suppressed by Doorkeeper Thrull
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer, Doorkeeper Thrull
+T6 P2: Attack with Ragavan, Nimble Pilferer, Doorkeeper Thrull
+  [Declare Blockers] P1 does not block
+T6 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T6 P2: Create 1x Treasure token(s)
+T6 P2: Ragavan, Nimble Pilferer exiles Thoughtseize from top of P1's library
+T6 P2: Ragavan, Nimble Pilferer — may cast Thoughtseize this turn
+T6 P2:   Doorkeeper Thrull (1/2) → 1 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 10 → 7
+  [End Combat]
+  [Main 2]
+  [End Step]
+T6: Thoughtseize returned to exile (uncast)
+
+╔══ TURN 6 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 7  |  Domain Zoo 17
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 37  |  Graveyard: 8
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Concealed Courtyard, Godless Shrine, Godless Shrine, Plains
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Doorkeeper Thrull (1/2) [tapped], Territorial Kavu (4/4)
+║   Other: Treasure Token, Treasure Token, Treasure Token, Treasure Token
+║   Lands: Steam Vents [T], Temple Garden [T], Blood Crypt, Thundering Falls, Lush Portico
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Goryo's Vengeance
+  [Main 1]
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Concealed Courtyard→B, Plains→W (paying for Goryo's Vengeance, 5 mana remaining)
+T6 P1: Cast Goryo's Vengeance (1B)
+    [Priority] P2 passes (no response)
+T6: Resolve Goryo's Vengeance
+T6 P1: Reanimate Griselbrand
+T6: Griselbrand ETB suppressed by Doorkeeper Thrull
+T6 P1: Play Island
+    → Goal: execute_payoff
+    [Mana] Tap Godless Shrine→B (paying for Thoughtseize, 4 mana remaining)
+T6 P1: Cast Thoughtseize (B)
+    [Priority] P2 responds with Leyline Binding
+    [Mana] Tap Lush Portico→W (paying for Leyline Binding, 3 mana remaining)
+T6 P2: Cast Leyline Binding (5W)
+T6: Resolve Leyline Binding
+T6: Griselbrand moved battlefield -> exile (exiled)
+T6 P2: Leyline Binding exiles Griselbrand
+T6: Resolve Thoughtseize
+T6: Ragavan, Nimble Pilferer moved hand -> graveyard (forced discard)
+T6 P1: Thoughtseize → opponent discards 1
+    → Goal: execute_payoff [protection]
+    [Mana] Tap Godless Shrine→B (paying for Undying Evil, 3 mana remaining)
+T6 P1: Cast Undying Evil (B)
+    [Priority] P2 passes (no response)
+T6: Resolve Undying Evil
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 17  |  Goryo's Vengeance 5
+║ Hand: 0 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 45  |  Graveyard: 6
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Doorkeeper Thrull (1/2), Territorial Kavu (4/4)
+║   Other: Treasure Token, Treasure Token, Treasure Token, Treasure Token, Leyline Binding
+║   Lands: Steam Vents, Temple Garden, Blood Crypt, Thundering Falls, Lush Portico
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Concealed Courtyard [T], Godless Shrine [T], Godless Shrine [T], Plains [T], Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Doorkeeper Thrull
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Temple Garden→W (paying for Doorkeeper Thrull, 5 mana remaining)
+T7 P2: Cast Doorkeeper Thrull (1W)
+    [Priority] P1 passes (no response)
+T7: Resolve Doorkeeper Thrull
+T7: Doorkeeper Thrull ETB suppressed by Doorkeeper Thrull
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer, Doorkeeper Thrull, Territorial Kavu
+T7 P2: Attack with Ragavan, Nimble Pilferer, Doorkeeper Thrull, Territorial Kavu
+  [Declare Blockers] P1 does not block
+T7 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T7 P2: Create 1x Treasure token(s)
+T7 P2: Ragavan, Nimble Pilferer exiles Unburial Rites from top of P1's library
+T7 P2: Ragavan, Nimble Pilferer — may cast Unburial Rites this turn
+T7 P2:   Doorkeeper Thrull (1/2) → 1 dmg to player
+T7 P2:   Territorial Kavu (4/4) → 4 dmg to player
+P1 loses: life total -2
+  [Combat Damage] 7 damage dealt → P1 life: 5 → -2
+
+>>> Domain Zoo wins Game 1 on turn 7 via damage
+    Final life: Goryo's Vengeance=-2  Domain Zoo=17
+
+======================================================================
+  GAME 2: Goryo's Vengeance (P1) vs Domain Zoo (P2)  —  seed 60501
+  Series: Goryo's Vengeance 0 - 1 Domain Zoo
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Goryo's Vengeance wins → chooses to play first
+║ P1 (on play): Goryo's Vengeance
+║ P2 (on draw): Domain Zoo
+╚═══════════════════════════════════════════════════════
+
+P1 (Goryo's Vengeance) opening hand (4 lands, 3 spells):
+  • Griselbrand [Creature, CMC 8]
+  • Archon of Cruelty [Creature, CMC 8]
+  • Godless Shrine [Land, CMC 0]
+  • Ephemerate [Spell, CMC 1]
+  • Plains [Land, CMC 0]
+  • Concealed Courtyard [Land, CMC 0]
+  • Flooded Strand [Land, CMC 0]
+→ P1 MULLIGANS (combo path under-covered in 7-card hand (best path: 0/2 role buckets; need enabler+payoff))
+  New hand (5 lands, 2 spells): ['Plains', 'Flooded Strand', 'Watery Grave', 'Flooded Strand', "Goryo's Vengeance", 'Hallowed Fountain', 'Solitude']
+→ P1 MULLIGANS (too many lands (5 > 4))
+  New hand (2 lands, 5 spells): ['Marsh Flats', "Goryo's Vengeance", 'Unburial Rites', 'Unburial Rites', 'Inquisition of Kozilek', 'Godless Shrine', 'Leyline of Sanctity']
+→ P1 mulligans to 5, bottoms: ['Leyline of Sanctity', 'Inquisition of Kozilek']
+  Keeps: ['Marsh Flats', "Goryo's Vengeance", 'Unburial Rites', 'Unburial Rites', 'Godless Shrine']
+
+P2 (Domain Zoo) opening hand (2 lands, 5 spells):
+  • Teferi, Time Raveler [Spell, CMC 3]
+  • Flooded Strand [Land, CMC 0]
+  • Stubborn Denial [Spell, CMC 1]
+  • Fable of the Mirror-Breaker // Reflection of Kiki-Jiki [Spell, CMC 3]
+  • Arid Mesa [Land, CMC 0]
+  • Scion of Draco [Creature, CMC 12]
+  • Leyline Binding [Spell, CMC 6]
+→ P2 KEEPS 7 — has key card(s): Leyline Binding, 3 cheap spells
+
+
+╔══ TURN 1 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 20  |  Domain Zoo 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 55  |  Graveyard: 0
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Marsh Flats
+T1 P1: Crack Marsh Flats (pay 1 life) -> Godless Shrine (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  Goryo's Vengeance 19
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arena of Glory
+  [Main 1]
+T1 P2: Play Flooded Strand
+T1 P2: Crack Flooded Strand (pay 1 life) -> Steam Vents (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 19  |  Domain Zoo 19
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 1
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Concealed Courtyard
+  [Main 1]
+T2 P1: Play Godless Shrine (untapped, life: 17)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 19  |  Goryo's Vengeance 17
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Godless Shrine
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T2 P2: Play Arid Mesa
+T2 P2: Crack Arid Mesa (pay 1 life) -> Temple Garden (tapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 17  |  Domain Zoo 18
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 53  |  Graveyard: 1
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Godless Shrine
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Unburial Rites
+  [Main 1]
+T3 P1: Play Concealed Courtyard (untapped, 2 other lands)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 18  |  Goryo's Vengeance 17
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Temple Garden
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Godless Shrine, Concealed Courtyard
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Lightning Bolt
+  [Main 1]
+T3 P2: Play Arid Mesa
+T3 P2: Crack Arid Mesa (pay 1 life) -> Blood Crypt (tapped, life: 17)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Steam Vents→R, Temple Garden→G (paying for Scion of Draco, 2 mana remaining)
+T3 P2: Cast Scion of Draco (12)
+    [Priority] P1 passes (no response)
+T3: Resolve Scion of Draco
+T3 P2: Scion of Draco enters (no Leyline — partial keywords)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 17  |  Domain Zoo 17
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 52  |  Graveyard: 1
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Godless Shrine, Concealed Courtyard
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4)
+║   Lands: Steam Vents [T], Temple Garden [T], Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Unburial Rites
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 17  |  Goryo's Vengeance 17
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4)
+║   Lands: Steam Vents, Temple Garden, Blood Crypt
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Godless Shrine, Concealed Courtyard
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Phlage, Titan of Fire's Fury
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Target] → face (3 dmg, life 17 → 14): no killable target
+    [Mana] Tap Temple Garden→W, Steam Vents→R (paying for Phlage, Titan of Fire's Fury, 3 mana remaining)
+T4 P2: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P1 passes (no response)
+T4: Resolve Phlage, Titan of Fire's Fury
+T4 P2: Phlage: 3 damage to opponent, gain 3 life
+T4 P2: Phlage sacrificed (not escaped)
+T4 P2: Play Arena of Glory (enters tapped)
+    → Goal: curve_out
+    [Target] → face (3 dmg, life 14 → 11): no killable target
+    [Mana] Tap Blood Crypt→R (paying for Lightning Bolt, 1 mana remaining)
+T4 P2: Cast Lightning Bolt (R)
+    [Priority] P1 passes (no response)
+T4: Resolve Lightning Bolt
+T4 P2: Lightning Bolt → 3 damage → life 11
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Scion of Draco
+T4 P2: Attack with Scion of Draco
+  [Declare Blockers] P1 does not block
+T4 P2:   Scion of Draco (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 11 → 7
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 7  |  Domain Zoo 20
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 51  |  Graveyard: 1
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Godless Shrine, Concealed Courtyard
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4) [tapped]
+║   Lands: Steam Vents [T], Temple Garden [T], Blood Crypt [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Archon of Cruelty
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  Goryo's Vengeance 7
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 5
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4)
+║   Lands: Steam Vents, Temple Garden, Blood Crypt, Arena of Glory
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Godless Shrine, Concealed Courtyard
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Leyline Binding
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Temple Garden→W, Steam Vents→U, Arena of Glory→R (paying for Teferi, Time Raveler, 4 mana remaining)
+T5 P2: Cast Teferi, Time Raveler (1WU)
+    [Priority] P1 passes (no response)
+T5: Resolve Teferi, Time Raveler
+T5 P2: Teferi draws Doorkeeper Thrull
+T5 P2: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Scion of Draco
+T5 P2: Attack with Scion of Draco
+  [Declare Blockers] P1 does not block
+T5 P2:   Scion of Draco (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 7 → 3
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 3  |  Domain Zoo 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 1
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Godless Shrine, Concealed Courtyard
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4) [tapped]
+║   Other: Teferi, Time Raveler
+║   Lands: Steam Vents [T], Temple Garden [T], Blood Crypt, Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Goryo's Vengeance
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  Goryo's Vengeance 3
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 44  |  Graveyard: 5
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4)
+║   Other: Teferi, Time Raveler
+║   Lands: Steam Vents, Temple Garden, Blood Crypt, Arena of Glory
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Godless Shrine, Concealed Courtyard
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T6 P2: Play Flooded Strand
+T6 P2: Crack Flooded Strand (pay 1 life) -> Steam Vents (tapped, life: 19)
+    → Goal: curve_out [payoffs]
+T6 P2: Escape Phlage, Titan of Fire's Fury (exile 5 cards)
+    → Goal: curve_out
+    [Mana] Tap Arena of Glory→R, Steam Vents→R (paying for Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, 4 mana remaining)
+T6 P2: Cast Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2R)
+T6: Resolve Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+T6 P2: Create 1x Goblin token(s)
+T6 P2: Fable Ch.I: Create 2/2 Goblin Shaman with haste
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Temple Garden→W, Blood Crypt→B (paying for Doorkeeper Thrull, 2 mana remaining)
+T6 P2: Cast Doorkeeper Thrull (1W)
+T6: Resolve Doorkeeper Thrull
+T6 P2: Doorkeeper Thrull: opponent ETB triggers suppressed
+T6 P2: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Scion of Draco, Goblin Token
+T6 P2: Attack with Scion of Draco, Goblin Token
+  [Declare Blockers] P1 does not block
+T6 P2:   Scion of Draco (4/4) → 4 dmg to player
+T6 P2:   Goblin Token (2/2) → 2 dmg to player
+P1 loses: life total -3
+  [Combat Damage] 6 damage dealt → P1 life: 3 → -3
+
+>>> Domain Zoo wins Game 2 on turn 6 via damage
+    Final life: Goryo's Vengeance=-3  Domain Zoo=19
+
+======================================================================
+  MATCH RESULT: Domain Zoo wins 2-0
+======================================================================
