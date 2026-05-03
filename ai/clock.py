@@ -129,6 +129,43 @@ def mana_clock_impact(snap: "EVSnapshot") -> float:
 
 
 # ─────────────────────────────────────────────────────────────
+# Game-phase predicate — derived from clock state, not turn count
+# ─────────────────────────────────────────────────────────────
+
+EARLY_GAME_CLOCK_THRESHOLD: float = 4.0
+"""Derived: number of remaining turns of clock above which the game is
+classified as "early."
+
+Symmetric across both players via min(my_clock, opp_clock) — the game
+is early iff *neither* side is within striking distance. Replaces the
+hard-coded `turn_number <= 4` heuristic in bhi.py / evaluator.py /
+gameplan.py — those checks ignored board state entirely, so a fast
+aggro deck on T2 with lethal in 2 still triggered "early game" hold
+rates and bonuses, mis-modelling the actual decision.
+
+Threshold of 4 chosen to match the original turn-counter heuristic on
+average game pacing (early-game discard / hold-rate decisions kicked
+in through ~T4 of a typical Modern game). Past 4 turns of clock on
+both sides, the average Modern board has resolved or is about to.
+"""
+
+
+def is_early_game(snap: "EVSnapshot") -> bool:
+    """Early-game predicate, derived from board state instead of turn count.
+
+    Returns True iff *both* sides' clocks exceed
+    `EARLY_GAME_CLOCK_THRESHOLD` turns. A fast deck on a slow board
+    is correctly classified as mid-game by T2 once the clock collapses;
+    a Tron-style board with no creatures stays in "early game" past T6
+    if neither side is pressuring.
+
+    Uses the existing `EVSnapshot.my_clock` / `opp_clock` properties
+    (continuous turns-to-lethal) — no separate clock primitive needed.
+    """
+    return min(snap.my_clock, snap.opp_clock) > EARLY_GAME_CLOCK_THRESHOLD
+
+
+# ─────────────────────────────────────────────────────────────
 # Combo clock — turns until combo fires
 # ─────────────────────────────────────────────────────────────
 
