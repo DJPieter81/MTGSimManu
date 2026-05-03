@@ -2775,10 +2775,10 @@ def leyline_guildpact_etb(game, card, controller, targets=None, item=None):
 
 
 # ═══════════════════════════════════════════════════════════════════
-# Territorial Kavu — domain P/T
+# Territorial Kavu — domain P/T + modal attack trigger
 # ═══════════════════════════════════════════════════════════════════
 @EFFECT_REGISTRY.register("Territorial Kavu", EffectTiming.ETB,
-                           description="P/T = domain count, attack: exile from hand or GY")
+                           description="P/T = domain count")
 def territorial_kavu_etb(game, card, controller, targets=None, item=None):
     """Territorial Kavu: 0/0 base + domain. With Leyline = 5/5."""
     # Power/toughness handled by CardInstance._dynamic_base_power
@@ -2787,6 +2787,118 @@ def territorial_kavu_etb(game, card, controller, targets=None, item=None):
     game.log.append(
         f"T{game.display_turn} P{controller+1}: "
         f"Territorial Kavu enters as {domain}/{domain} (domain={domain})")
+
+
+@EFFECT_REGISTRY.register("Territorial Kavu", EffectTiming.ATTACK,
+                           description="Modal: loot (discard, draw) / exile up to 1 from a graveyard")
+def territorial_kavu_attack(game, card, controller, targets=None, item=None):
+    """Territorial Kavu attack trigger — modal:
+
+        • Discard a card. If you do, draw a card.
+        • Exile up to one target card from a graveyard.
+
+    Mode selection rules (oracle-grounded, no card-name hardcoding):
+
+      - Loot value = the marginal benefit of a card swap. We model
+        the discard target as the worst card in hand: the lowest-CMC
+        non-creature, non-removal card. If hand has only lands, the
+        loot is hollow (we still discard the worst land if no
+        graveyard target exists, since "if you do" requires the
+        discard to fire and net zero is acceptable).
+
+      - Graveyard-exile value = the highest CMC of any non-token
+        card in opponent's graveyard. CMC is the principled proxy
+        already used by Thraben Charm and Relic of Progenitus for
+        graveyard-hate value (delve / reanimation / flashback fuel
+        scales with CMC).
+
+      - Tie-break: if opp graveyard has a target with CMC ≥ 1 AND
+        the controller has nothing better than a land to discard,
+        prefer the graveyard-exile mode. Otherwise prefer loot.
+
+      - Both modes dead → no-op (logs only).
+    """
+    me = game.players[controller]
+    opp = game.players[1 - controller]
+
+    # ── Score graveyard mode ──
+    gy_targets = [c for c in opp.graveyard if not c.template.is_land]
+    best_gy_target = None
+    if gy_targets:
+        best_gy_target = max(gy_targets, key=lambda c: (c.template.cmc or 0))
+    gy_value = (best_gy_target.template.cmc or 0) if best_gy_target else 0
+
+    # ── Score loot mode ──
+    # Hand non-land count is the principled proxy: a non-land discard is
+    # cheaper to give up than a land in midgame, so loot is "good" when
+    # we have at least one non-land we'd happily discard. But even a
+    # land-only loot is fine (we lose a land, gain an unknown card =
+    # cycling value).
+    hand = me.hand
+    has_hand = len(hand) > 0
+    loot_value = 1 if has_hand else 0  # any non-empty hand → loot can fire
+
+    # ── Tie-break: graveyard hate beats loot when GY target is
+    #     non-trivial (CMC ≥ 1) and loot would discard a land or empty
+    #     hand. Otherwise loot wins.
+    pick_gy = False
+    if gy_value > 0:
+        # Prefer GY hate when loot is hollow OR when GY target is
+        # high-impact (CMC ≥ 3 — same threshold as Thraben Charm
+        # graveyard floor scaled per-card instead of per-pile).
+        nonland_in_hand = any(not c.template.is_land for c in hand)
+        if not nonland_in_hand:
+            pick_gy = True
+        elif gy_value >= 3:
+            pick_gy = True
+
+    if pick_gy and best_gy_target is not None:
+        opp.graveyard.remove(best_gy_target)
+        best_gy_target.zone = "exile"
+        opp.exile.append(best_gy_target)
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: "
+            f"Territorial Kavu exiles {best_gy_target.name} from opponent GY"
+        )
+        return
+
+    if loot_value > 0:
+        # Discard the worst card: prefer extra land if we already have
+        # plenty, else prefer the lowest-CMC non-essential spell.
+        # Simple rule: lowest CMC overall, with lands preferred when we
+        # have surplus lands (≥ 4 lands in play). Otherwise discard the
+        # lowest-CMC non-land (keeps the mana base flowing).
+        lands_in_play = sum(1 for c in me.battlefield if c.template.is_land)
+        if lands_in_play >= 4:
+            worst = min(hand, key=lambda c: (
+                0 if c.template.is_land else 1,  # prefer lands
+                c.template.cmc or 0,
+            ))
+        else:
+            nonlands = [c for c in hand if not c.template.is_land]
+            if nonlands:
+                worst = min(nonlands, key=lambda c: c.template.cmc or 0)
+            else:
+                # Land-only hand and we don't have surplus lands —
+                # still must discard if loot mode chosen.  Discard the
+                # extra land; cantrip value still net-zero.
+                worst = min(hand, key=lambda c: c.template.cmc or 0)
+        hand.remove(worst)
+        worst.zone = "graveyard"
+        me.graveyard.append(worst)
+        game.draw_cards(controller, 1)
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: "
+            f"Territorial Kavu loots — discard {worst.name}, draw 1"
+        )
+        return
+
+    # Both modes dead: log no-op.
+    game.log.append(
+        f"T{game.display_turn} P{controller+1}: "
+        f"Territorial Kavu attack trigger: no legal mode (empty hand, "
+        f"empty opposing graveyard)"
+    )
 
 
 # ═══════════════════════════════════════════════════════════════════
