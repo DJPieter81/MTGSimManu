@@ -1726,3 +1726,26 @@ enough draws to dig).
 
 Used by the mid-chain ritual gate in `ai/combo_calc.py`.
 """
+
+
+# ─── Combo-chain arithmetic constants (ai/combo_chain.py) ────────────
+# Used by `find_all_chains` and `ChainOutcome` to bound enumeration
+# and convert storm count to per-spell payoff units.
+
+STORM_TOKEN_PAYOFF_PER_COPY: int = 2
+"""Rules-constant: tokens created per Empty-the-Warrens-class storm
+copy. Empty the Warrens reads "Create two 1/1 red Goblin creature
+tokens" — every storm copy is also worth 2 tokens.
+
+Used by `ChainOutcome.storm_tokens` in `ai/combo_chain.py`.
+"""
+
+CHAIN_EXHAUSTIVE_FUEL_BUDGET: int = 7
+"""Rules-constant: maximum fuel-card count for which the exhaustive
+chain enumerator runs. Beyond 7! permutations × subsets the search
+space exceeds the per-decision budget; we fall through to the greedy
+heuristic. 7 matches the Modern starting-hand size — empirically the
+deepest hand a storm chain ever needs to reason over.
+
+Used by `find_all_chains` in `ai/combo_chain.py`.
+"""

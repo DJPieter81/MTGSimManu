@@ -14,6 +14,11 @@ from typing import TYPE_CHECKING, Optional, List, Tuple, Dict, Set
 from dataclasses import dataclass, field
 from itertools import permutations, combinations
 
+from ai.scoring_constants import (
+    STORM_TOKEN_PAYOFF_PER_COPY,
+    CHAIN_EXHAUSTIVE_FUEL_BUDGET,
+)
+
 if TYPE_CHECKING:
     from engine.cards import CardInstance
     from engine.game_state import GameState
@@ -63,9 +68,13 @@ class ChainOutcome:
 
     @property
     def storm_tokens(self) -> int:
-        """Tokens created if payoff is a storm token spell (e.g. Empty the Warrens)."""
+        """Tokens created if payoff is a storm token spell (e.g. Empty the Warrens).
+
+        Uses STORM_TOKEN_PAYOFF_PER_COPY (Empty-the-Warrens reads
+        "Create two 1/1 red Goblin creature tokens").
+        """
         if self.payoff_has_storm and not self.payoff_deals_damage:
-            return self.storm_count * 2  # 2 goblins per copy
+            return self.storm_count * STORM_TOKEN_PAYOFF_PER_COPY
         return 0
 
 def classify_card(card, available_mana: int, medallion_count: int,
@@ -256,7 +265,7 @@ def find_all_chains(
 
     results = []
 
-    if len(fuel) <= 7:
+    if len(fuel) <= CHAIN_EXHAUSTIVE_FUEL_BUDGET:
         # Exhaustive: try all SUBSETS of fuel (not just full set),
         # each in all permutations, each with payoff appended at end.
         # This finds short viable chains (e.g. Ritual→Grapeshot)
