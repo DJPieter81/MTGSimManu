@@ -148,7 +148,14 @@ def _format_decklist_for_prompt(
     db,
 ) -> str:
     """Backward-compat alias for the prompt formatter (now in
-    `tools._synth_gameplan_input`)."""
+    `tools._synth_gameplan_input`).
+
+    TODO (Phase I-3 cost-aware redesign): once card_features integration
+    lands, swap raw oracle-text rendering inside
+    `tools._synth_gameplan_input.format_decklist_for_prompt` for
+    `ai.card_features.extract_features_for_deck(...)` — cuts ~70% of
+    input tokens.
+    """
     return format_decklist_for_prompt(deck_name, mainboard, db)
 
 
