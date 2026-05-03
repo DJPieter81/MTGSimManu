@@ -24,6 +24,39 @@ from ai.scoring_constants import (
     held_response_value_per_cmc,
     STARTING_HAND_SIZE,
     opp_threat_prob_from_density,
+    REANIMATE_OVERRIDE_BONUS,
+    FREE_CAST_TEMPO_BONUS,
+    EVOKE_CARD_LOSS_MULTIPLIER,
+    EVOKE_DESPERATE_BONUS,
+    EVOKE_NO_TARGET_PENALTY,
+    PLANESWALKER_SURVIVAL_FLOOR,
+    MIDGAME_HORIZON_TURNS,
+    GAME_HORIZON_MIN_TURNS,
+    GAME_HORIZON_MAX_COST_REDUCER,
+    GAME_HORIZON_MAX_TRON,
+    MODERN_AVG_GAME_LENGTH,
+    BLINK_M1_HOLD_PENALTY,
+    NONCREATURE_COUNTER_DEAD_FLOOR,
+    REMOVAL_THREAT_PREMIUM_SCALE,
+    CHEAP_REMOVAL_ACTION_BONUS,
+    LANDFALL_DEFERRAL_PENALTY,
+    X_BOARD_WIPE_WASTE_FLOOR,
+    BLINK_FIZZLE_FLOOR,
+    CHUMP_SENTINEL_VALUE,
+    NO_CLOCK_FACE_VAL_MULTIPLIER,
+    COMBO_FORCE_PAYOFF_STORM_THRESHOLD,
+    LANDFALL_TRIGGER_VALUE,
+    ARTIFACT_LAND_SYNERGY_BONUS,
+    TRON_MANA_ADVANTAGE,
+    AMULET_TITAN_MANA_BONUS,
+    CYCLING_CASCADE_BOOST,
+    CYCLING_GY_URGENCY,
+    CYCLING_GAMEPLAN_BOOST,
+    CYCLING_FREE_COST_BONUS,
+    CYCLING_CHEAP_COST_BONUS,
+    CYCLING_GY_REANIMATE_BASE,
+    CYCLING_GY_REANIMATE_PER_POWER,
+    CLOCK_IMPACT_LIFE_SCALING,
 )
 
 # RC-2 — parse "equipped/enchanted creature gets +X/+Y" bonuses from
@@ -327,7 +360,7 @@ class EVPlayer:
             from ai.ev_evaluator import _estimate_combo_chain
             can_kill, storm_count, damage, chain = _estimate_combo_chain(
                 game, self.player_idx)
-            if can_kill or storm_count >= 5:
+            if can_kill or storm_count >= COMBO_FORCE_PAYOFF_STORM_THRESHOLD:
                 # Force goal to last phase (EXECUTE_PAYOFF / CLOSE_GAME)
                 while self.goal_engine.current_goal_idx < len(self.goal_engine.gameplan.goals) - 1:
                     self.goal_engine.advance_goal(game, f"Combo kill detected (storm={storm_count})")
@@ -400,7 +433,7 @@ class EVPlayer:
 
             # Reanimate override: massive boost when big creature is in GY
             if reanimate_override and spell.instance_id == reanimate_override.instance_id:
-                ev += 40.0  # force-cast reanimation when target ready
+                ev += REANIMATE_OVERRIDE_BONUS  # force-cast reanimation when target ready
 
             # Spells that need targets but have none = skip
             if self._spell_requires_targets(spell) and not targets:
@@ -509,18 +542,18 @@ class EVPlayer:
         #       +1.5 bonus on top of projection to reflect tempo gain.
         if getattr(card, "_free_cast_opportunity", False):
             ev = max(ev, 0.0)  # floor: never negative
-            ev += 1.5          # tempo: got it for free
+            ev += FREE_CAST_TEMPO_BONUS  # tempo: got it for free
 
         # ── Evoke overlay: projection doesn't model 2-card cost ──
         if ('evoke' in tags or 'evoke_pitch' in tags) and snap.my_mana < (t.cmc or 0):
             # Evoking costs an extra card — subtract its future clock value
             from ai.clock import card_clock_impact
-            ev -= card_clock_impact(snap) * 15  # losing a card is significant
+            ev -= card_clock_impact(snap) * EVOKE_CARD_LOSS_MULTIPLIER  # losing a card is significant
             # But if we're dying, evoking removal is still worth it
             if snap.am_dead_next:
-                ev += 10.0
+                ev += EVOKE_DESPERATE_BONUS
             elif snap.opp_creature_count == 0 and 'removal' in tags:
-                ev -= 20.0  # never evoke removal with no targets
+                ev -= EVOKE_NO_TARGET_PENALTY  # never evoke removal with no targets
 
         # Oracle text lower-cased once for all downstream checks.
         t_oracle = (t.oracle_text or '').lower()
@@ -761,7 +794,7 @@ class EVPlayer:
         # bounce a land for re-play while staying untapped for another
         # tap next turn. Floor the effect at 2 lands untapped; bounce
         # lands compound further but we don't model that precisely.
-        AMULET_TITAN_MANA_BONUS = 4.0  # rules: 2 lands × 2 mana each
+        # AMULET_TITAN_MANA_BONUS — see ai/scoring_constants.py for derivation.
         from ai.clock import mana_clock_impact
         mana_impact = mana_clock_impact(snap)  # value per point of mana
         if is_amulet and has_titan_in_hand:
@@ -769,10 +802,10 @@ class EVPlayer:
             # cast a 6-drop. If we're at 4+ lands, near-immediate.
             turns_to_cast = max(1, 6 - len(me.lands))
             # Discount by turns — Amulet benefit realized only once Titan lands.
-            ev += (AMULET_TITAN_MANA_BONUS * mana_impact * 20.0) / turns_to_cast
+            ev += (AMULET_TITAN_MANA_BONUS * mana_impact * CLOCK_IMPACT_LIFE_SCALING) / turns_to_cast
         if is_titan_like and has_amulet_on_board:
             # Immediate payoff when Titan is being cast now.
-            ev += AMULET_TITAN_MANA_BONUS * mana_impact * 20.0
+            ev += AMULET_TITAN_MANA_BONUS * mana_impact * CLOCK_IMPACT_LIFE_SCALING
 
         # ── Non-creature permanent overlay (Pattern B) ──
         from engine.cards import CardType
@@ -790,15 +823,15 @@ class EVPlayer:
                 # enters-with-loyalty first use is net-0; subsequent uses
                 # generate value. +1 accounts for the opp-removal cost.
                 expected_activations = max(1, loyalty - 1) + 1
-                card_val = card_clock_impact(snap) * 20.0  # scale to board-eval units
+                card_val = card_clock_impact(snap) * CLOCK_IMPACT_LIFE_SCALING  # scale to board-eval units
                 pw_bonus = expected_activations * card_val
                 # PW survival floor: when opp_life is high or board impact small,
                 # card_clock_impact → 0 collapses the bonus and PWs lose to
-                # vanilla creatures of equal CMC. Floor at +3.0 represents the
+                # vanilla creatures of equal CMC. Floor represents the
                 # minimum value of one activation (one card draw, one removal,
                 # one Cat token) before the planeswalker dies. Holds even when
                 # combat-clock-derived card_val rounds to ~0 in early/mid game.
-                pw_bonus = max(3.0, pw_bonus)
+                pw_bonus = max(PLANESWALKER_SURVIVAL_FLOOR, pw_bonus)
                 ev += pw_bonus
                 # No additional per-oracle bumps: loyalty × card_val already
                 # integrates over whatever the planeswalker actually does,
@@ -814,9 +847,9 @@ class EVPlayer:
                                       snap.opp_evasion_power, snap.my_toughness)
                 turns = min(my_c, opp_c)
                 if turns >= NO_CLOCK:
-                    turns = 6.0  # rules constant: Modern midgame horizon
-                turns = max(2.0, min(turns, 8.0))
-                ev += turns * card_clock_impact(snap) * 20.0
+                    turns = MIDGAME_HORIZON_TURNS  # rules constant: Modern midgame horizon
+                turns = max(GAME_HORIZON_MIN_TURNS, min(turns, GAME_HORIZON_MAX_COST_REDUCER))
+                ev += turns * card_clock_impact(snap) * CLOCK_IMPACT_LIFE_SCALING
 
         # ── Duplicate Chalice-of-the-Void / hate permanent penalty ──
         # Casting a second Chalice with the same X is useless (same CMC
@@ -828,7 +861,7 @@ class EVPlayer:
             if existing:
                 from ai.clock import mana_clock_impact
                 cmc = t.cmc or 2
-                ev -= cmc * mana_clock_impact(snap) * 20.0
+                ev -= cmc * mana_clock_impact(snap) * CLOCK_IMPACT_LIFE_SCALING
 
         # ── Redundant non-stacking static permanent ──
         # When a non-creature, non-spell permanent with the same name
@@ -871,7 +904,7 @@ class EVPlayer:
                 if not stacks:
                     from ai.clock import mana_clock_impact
                     cmc = t.cmc or 1
-                    ev -= cmc * mana_clock_impact(snap) * 20.0
+                    ev -= cmc * mana_clock_impact(snap) * CLOCK_IMPACT_LIFE_SCALING
 
         # ── Board wipe hard gate ──
         # Empty-board wrath provides no creature-removal benefit.  The
@@ -883,7 +916,7 @@ class EVPlayer:
         # mode, scry rider, etc.) it can still pass the threshold.
         if 'board_wipe' in tags and snap.opp_creature_count == 0:
             from ai.clock import mana_clock_impact
-            waste_penalty = ((t.cmc or 0) * mana_clock_impact(snap) * 20.0
+            waste_penalty = ((t.cmc or 0) * mana_clock_impact(snap) * CLOCK_IMPACT_LIFE_SCALING
                              + 1.0)  # +1 = card loss (EV unit)
             ev -= waste_penalty
 
@@ -911,7 +944,7 @@ class EVPlayer:
                     for c in me.battlefield
                     if c.template.is_creature
                 )
-                waste_penalty = ((t.cmc or 0) * mana_clock_impact(snap) * 20.0
+                waste_penalty = ((t.cmc or 0) * mana_clock_impact(snap) * CLOCK_IMPACT_LIFE_SCALING
                                  + 1.0 + me_lost)
                 ev -= waste_penalty
 
@@ -937,12 +970,12 @@ class EVPlayer:
             desperate = snap.my_life <= 10
             if not desperate:
                 if kill_count == 0:
-                    return min(ev, -20.0)
+                    return min(ev, X_BOARD_WIPE_WASTE_FLOOR)
                 if kill_count == 1 and killable_power < 2:
-                    return min(ev, -20.0)
+                    return min(ev, X_BOARD_WIPE_WASTE_FLOOR)
             elif kill_count == 0:
                 # Even desperate, zero kills is pure waste
-                return min(ev, -20.0)
+                return min(ev, X_BOARD_WIPE_WASTE_FLOOR)
 
         # ── Blink/flicker hard gate: no legal target means the spell fizzles ──
         # Engine safely bails (Ephemerate returns early), but AI should never
@@ -952,7 +985,7 @@ class EVPlayer:
         if ('blink' in tags or 'exile target creature you control' in oracle_lower_full) \
                 and (t.is_instant or t.is_sorcery) \
                 and len(me.creatures) == 0:
-            return min(ev, -50.0)
+            return min(ev, BLINK_FIZZLE_FLOOR)
 
         # ── Jeskai / blink M1 hold: prefer M2 blink so combat damage applies ──
         # If we hold a blink instant AND an ETB-value creature, and it is Main1,
@@ -967,7 +1000,7 @@ class EVPlayer:
                                 and not getattr(c, 'tapped', False)
                                 for c in me.creatures)
             if etb_creatures and has_attackers:
-                ev -= 2.0  # wait for M2 so we keep combat damage
+                ev -= BLINK_M1_HOLD_PENALTY  # wait for M2 so we keep combat damage
 
         # ── Noncreature-only counter dead vs creature-heavy opponents ──
         # Dovin's Veto / Negate can't target creature spells.
@@ -979,7 +1012,7 @@ class EVPlayer:
                 and snap.opp_power >= 4
                 and snap.opp_hand_size <= 3):
             # Opponent is an aggro deck running out of cards — counter is dead
-            ev = min(ev, -3.0)
+            ev = min(ev, NONCREATURE_COUNTER_DEAD_FLOOR)
 
         # ── Removal threat-premium overlay ──
         # The projection subtracts raw power when removal resolves, but
@@ -1009,9 +1042,9 @@ class EVPlayer:
                     # Discharge, Unholy Heat) eke out a win over an equal-CMC
                     # deploy, modelling real-world play where a 1-mana
                     # removal leaves room for a second action.
-                    ev += premium * 0.5
+                    ev += premium * REMOVAL_THREAT_PREMIUM_SCALE
                     if (t.cmc or 0) <= 1:
-                        ev += 1.0
+                        ev += CHEAP_REMOVAL_ACTION_BONUS
 
                 # ── Spot-removal timing deferral (BHI-driven) ──
                 # Pro-annotation rule (replay seed 60100 G1 T1):
@@ -1525,17 +1558,15 @@ class EVPlayer:
                         or 'affinity for artifacts' in c_oracle):
                     synergy_signals += 1
             if synergy_signals > 0:
-                # Rules constant: 1 power (or 1 mana) gained per synergy
-                # card × residency × mana_clock_impact × 20 ≈ 4.
-                SYNERGY_ARTIFACT_BONUS = 4.0
-                ev += synergy_signals * SYNERGY_ARTIFACT_BONUS
+                # ARTIFACT_LAND_SYNERGY_BONUS — see ai/scoring_constants.py.
+                ev += synergy_signals * ARTIFACT_LAND_SYNERGY_BONUS
 
         # Landfall: each trigger ≈ ETB effect value (life, damage, ramp)
         landfall_count = sum(1 for c in me.battlefield
                              if 'landfall' in (c.template.oracle_text or '').lower())
         if landfall_count > 0:
             triggers = 2 if is_fetch else 1
-            ev += landfall_count * triggers * 3.0
+            ev += landfall_count * triggers * LANDFALL_TRIGGER_VALUE
 
         # Tron land assembly bonus: detect via "Urza's" subtype (shared by all 3 pieces).
         # Completing the set unlocks {C}{C}{C} production — a huge mana jump.
@@ -1558,12 +1589,7 @@ class EVPlayer:
             completing = new_type not in tron_types_present
             if completing:
                 after_count = len(tron_types_present) + 1
-                # Rules constants:
-                #   TRON_MANA_ADVANTAGE: completed Tron = 7 colorless mana
-                #     from 3 lands vs 3 from vanilla lands = +4/turn.
-                #   TRON_ASSEMBLY_COST: approximate mana investment to
-                #     continue playing Tron lands — no magic discount.
-                TRON_MANA_ADVANTAGE = 4.0
+                # TRON_MANA_ADVANTAGE — see ai/scoring_constants.py.
                 # Expected remaining turns = time for the mana advantage to
                 # compound. Use the slower of the two clocks (game ends when
                 # someone dies). NO_CLOCK stalls → long game.
@@ -1574,12 +1600,12 @@ class EVPlayer:
                                       snap.opp_evasion_power, snap.my_toughness)
                 expected_turns = min(my_c, opp_c)
                 if expected_turns >= NO_CLOCK:
-                    expected_turns = 8.0  # rules constant: Modern avg game length
-                expected_turns = max(2.0, min(expected_turns, 10.0))
+                    expected_turns = MODERN_AVG_GAME_LENGTH  # rules constant: Modern avg game length
+                expected_turns = max(GAME_HORIZON_MIN_TURNS, min(expected_turns, GAME_HORIZON_MAX_TRON))
                 # Mana-clock impact gives value per point of mana advantage.
                 mana_impact = mana_clock_impact(snap)
                 completed_value = (TRON_MANA_ADVANTAGE * expected_turns
-                                   * mana_impact * 20.0)
+                                   * mana_impact * CLOCK_IMPACT_LIFE_SCALING)
                 # 20.0 scales mana_clock_impact (1/opp_life ~= 0.05) back to
                 # board-eval units — same convention as creature_value().
                 #
@@ -1612,7 +1638,7 @@ class EVPlayer:
             if 'landfall' not in oracle:
                 continue
             if game.can_cast(self.player_idx, spell):
-                ev -= 12.0  # defer land so creature resolves first
+                ev -= LANDFALL_DEFERRAL_PENALTY  # defer land so creature resolves first
                 break
 
         return ev
@@ -1707,17 +1733,12 @@ class EVPlayer:
         Constants calibrated so cycling outscores creature-casting when
         the gameplan requires GY filling before cascade.
         """
-        # EV scaling constants (tuned against creature cast EV of ~15-20)
-        CYCLING_CASCADE_BOOST = 8.0   # cascade in hand: cycling is primary action
-        CYCLING_GY_URGENCY = 6.0      # GY < 3 creatures: need more before cascade
-        CYCLING_GAMEPLAN_BOOST = 10.0  # gameplan says prefer_cycling
-        CYCLING_FREE_COST_BONUS = 2.0  # pay life instead of mana
-        CYCLING_CHEAP_COST_BONUS = 1.0 # mana cost <= 1
+        # EV scaling constants — see ai/scoring_constants.py for derivations.
 
         from ai.clock import card_clock_impact
 
         # Drawing a card: future clock change
-        ev = card_clock_impact(snap) * 20.0  # scale to match spell scores
+        ev = card_clock_impact(snap) * CLOCK_IMPACT_LIFE_SCALING  # scale to match spell scores
 
         # Cycling creatures into GY: Living End-style reanimation gameplan.
         # Design: docs/design/ev_correctness_overhaul.md §2.E — the
@@ -1727,7 +1748,7 @@ class EVPlayer:
         if card.template.is_creature and self._has_reanimation_path(game, me):
             power = card.template.power or 0
             # Creature in GY = future reanimation target
-            ev += (4.0 + power * 0.5)
+            ev += (CYCLING_GY_REANIMATE_BASE + power * CYCLING_GY_REANIMATE_PER_POWER)
 
         # Cycling cost: cheaper = better tempo
         cost_data = card.template.cycling_cost_data
@@ -2300,7 +2321,7 @@ class EVPlayer:
                     continue
 
                 best_chump = None
-                best_chump_val = 999
+                best_chump_val = CHUMP_SENTINEL_VALUE
                 cands = _blocker_candidates(attacker, e_used)
                 # Prefer non-battle-cry blockers; only use battle cry sources as last resort
                 non_bc = [b for b in cands if not _is_battle_cry(b)]
@@ -2534,7 +2555,7 @@ class EVPlayer:
             # Don't burn face with no board presence unless opponent is low
             me = game.players[self.player_idx]
             if not me.creatures and opp.life > self.profile.burn_low_life_threshold:
-                face_val *= 0.1  # near-zero value without a clock
+                face_val *= NO_CLOCK_FACE_VAL_MULTIPLIER  # near-zero value without a clock
 
             # Prefer removing big creatures unless burn is near-lethal
             if best_kill_id and best_kill_val > face_val:
@@ -2808,7 +2829,7 @@ class EVPlayer:
         pump_impact = (
             creature_clock_impact(pump_total, tough, kws, snap)
             - creature_clock_impact(0, tough, kws, snap)
-        ) * 20.0
+        ) * CLOCK_IMPACT_LIFE_SCALING
         # If removal also destroys the equipment, pump is permanently
         # denied — double-count to reflect the multi-turn loss.
         if removal_destroys_artifact:
@@ -2816,7 +2837,7 @@ class EVPlayer:
 
         # Re-equip tempo: mana spent on a sorcery-speed ability is
         # mana not available for a spell that turn.
-        mana_tempo = equip_cost_total * mana_clock_impact(snap) * 20.0
+        mana_tempo = equip_cost_total * mana_clock_impact(snap) * CLOCK_IMPACT_LIFE_SCALING
 
         return pump_impact + mana_tempo
 

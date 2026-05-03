@@ -572,3 +572,686 @@ creatures (excluding mana dorks) across the 16 tracked decks.
 Sister constant: CASCADE_FREE_SPELL_VALUE — same baseline for the
 "another creature's worth" intent.
 """
+
+# ─── Spell-scoring constants (ai/ev_player.py) ────────────────────
+# Bare-literal extraction pass. Each constant below was a numeric
+# literal in `ai/ev_player.py`; the inline comment justifying the
+# value is promoted into the docstring here so the derivation
+# survives grep and any future re-tune is single-point.
+
+REANIMATE_OVERRIDE_BONUS: float = 40.0
+"""Sentinel: force-cast reanimation when a big graveyard target is
+ready. 40.0 is large enough to dominate any other main-phase candidate
+EV — the gameplan has already declared payoff readiness via gates
+(`is_ready_for_payoff`) and the reanimate spell is THE win condition,
+so the override pins it at the top regardless of projection noise.
+
+Used by `decide_main_phase` in `ai/ev_player.py` for the reanimate
+priority override branch (gameplan-gated).
+"""
+
+FREE_CAST_TEMPO_BONUS: float = 1.5
+"""Derived: tempo bonus on top of projection-EV for any spell offered
+at 0 effective mana (Ragavan exile, cascade, suspend, Wish-style).
+
+Reflects the "got it for free" nature of the cast: even if the
+projection is exactly zero, casting it is strictly better than
+declining. 1.5 matches the trigger-value bonus applied elsewhere for
+Ragavan combat triggers — same scale, same "one extra free action
+this turn" intent.
+
+Used by `_score_spell` in `ai/ev_player.py` after the
+`_free_cast_opportunity` floor.
+"""
+
+EVOKE_CARD_LOSS_MULTIPLIER: float = 15.0
+"""Derived: multiplier applied to `card_clock_impact(snap)` to convert
+the second-card cost of evoke into clock-units.
+
+Evoke pays an extra card on top of the mana cost; subtracting
+`card_clock_impact × 15` converts that lost-card future-value into
+the same scale as the projection EV. 15 is a midgame residency
+window (≈ 2× EQUIPMENT_RESIDENCY_TURNS × AVG_CREATURE_POWER) — the
+future turns the lost card was expected to contribute across before
+the game ends.
+
+Used by `_score_spell` evoke overlay in `ai/ev_player.py`.
+"""
+
+EVOKE_DESPERATE_BONUS: float = 10.0
+"""Derived: additive bonus to evoke EV when `snap.am_dead_next` is
+True. 10.0 ≈ ½ × LETHAL_THREAT in life-units, large enough to
+overcome the default evoke card-loss penalty when dying makes the
+trade worth the card.
+
+Sister constant: EVOKE_NO_TARGET_PENALTY — same scale, opposite
+direction (no targets means evoke fizzles).
+
+Used by `_score_spell` evoke overlay in `ai/ev_player.py`.
+"""
+
+EVOKE_NO_TARGET_PENALTY: float = 20.0
+"""Sentinel: penalty applied to evoke-removal when the opponent has
+no creatures to target. -20.0 is below `pass_threshold` for every
+archetype (the most permissive `pass_threshold` is around -5.0), so
+the AI never evokes a removal-elemental into an empty board.
+
+Used by `_score_spell` evoke overlay in `ai/ev_player.py`.
+"""
+
+PLANESWALKER_SURVIVAL_FLOOR: float = 3.0
+"""Derived: floor on the planeswalker EV bonus. Represents the
+minimum value of one activation (one card draw, one removal, one
+Cat token) BEFORE the planeswalker dies.
+
+When `card_clock_impact → 0` (early game with low opp board) the
+loyalty-based bonus collapses; without this floor a planeswalker
+loses to a vanilla creature of equal CMC. 3.0 matches the
+`PROACTIVE_REMOVAL_MIN_VALUE` "worth a card" floor — at minimum a
+planeswalker is worth one card swap.
+
+Used by `_score_spell` non-creature-permanent overlay in
+`ai/ev_player.py`.
+"""
+
+MIDGAME_HORIZON_TURNS: float = 6.0
+"""Rules-constant: Modern midgame horizon, used as a sentinel when
+combat-clock returns NO_CLOCK (no creatures = no clock).
+
+6 turns matches the empirical Modern midgame turn (typical kill
+turns 5-7 for aggro, 7-10 for midrange, 10+ for control). Used as
+the fallback for cost-reducer EV scaling so the bonus integrates
+over a sensible window even when the live clock is undefined.
+
+Sister constant: MODERN_AVG_GAME_LENGTH (8.0) — same horizon family,
+used for Tron-assembly compounding which expects a longer window.
+"""
+
+GAME_HORIZON_MIN_TURNS: float = 2.0
+"""Rules-constant: lower bound for the cost-reducer / Tron-assembly
+horizon clamp. 2.0 turns is the minimum window over which a mana
+advantage compounds to a meaningful EV — anything shorter and the
+game ends before the bonus realises.
+
+Sister constant: GAME_HORIZON_MAX_COST_REDUCER (8.0) and
+GAME_HORIZON_MAX_TRON (10.0) — upper bounds for the same clamp.
+"""
+
+GAME_HORIZON_MAX_COST_REDUCER: float = 8.0
+"""Rules-constant: upper bound for cost-reducer EV horizon. 8.0
+matches `MODERN_AVG_GAME_LENGTH` — a cost reducer realises its full
+value across the average Modern game.
+
+Used by `_score_spell` cost-reducer branch in `ai/ev_player.py`.
+"""
+
+MODERN_AVG_GAME_LENGTH: float = 8.0
+"""Rules-constant: average Modern game length (in turns) used for
+Tron-assembly mana-compounding when combat-clock returns NO_CLOCK.
+
+8 turns is empirically the median game length across the 16 tracked
+decks per `run_meta.py --matrix` data. Tron specifically has a
+longer expected window than the cost-reducer case (which is
+dominated by faster aggro matchups), so the upper-clamp differs.
+
+Used by `_score_land` Tron-assembly branch in `ai/ev_player.py`.
+"""
+
+GAME_HORIZON_MAX_TRON: float = 10.0
+"""Rules-constant: upper bound for Tron-assembly EV horizon. 10.0
+caps the compounding window for the Tron mana advantage so a hung-
+clock state can't inflate it without bound. Higher than the cost-
+reducer cap (8.0) because Tron is specifically a long-game shell —
+its mana advantage matters most in protracted games.
+
+Used by `_score_land` Tron-assembly branch in `ai/ev_player.py`.
+"""
+
+BLINK_M1_HOLD_PENALTY: float = 2.0
+"""Derived: small penalty applied to blink-instant EV when
+- we're in MAIN1
+- we hold a blink instant AND control an ETB-value creature
+- we have at least one untapped attacker
+
+The penalty nudges the AI to pass M1, swing for combat damage, then
+blink in M2 — preserving the combat damage step. 2.0 is below most
+spell scores (typical range 5-15) so it acts as a tie-breaker, not
+a hard gate. Mirrors the threat-amplifier scale used by the
+`_score_spell` removal premium term.
+
+Used by `_score_spell` Jeskai/blink M1 hold branch in
+`ai/ev_player.py`.
+"""
+
+NONCREATURE_COUNTER_DEAD_FLOOR: float = -3.0
+"""Derived: ceiling EV for a noncreature-only counter (Negate / Dovin's
+Veto) when the opponent's board and hand point to a creature-heavy
+aggro deck (≥2 creatures in play, ≥4 power, ≤3 cards in hand).
+
+The counter is "dead in hand" — there's no realistic non-creature
+target to spend it on. -3.0 is just below `pass_threshold = -5.0`
+on the COUNTER side but well above the "force a discard" sentinel,
+so the AI shelves the counter without throwing it away.
+
+Used by `_score_spell` noncreature-counter branch in
+`ai/ev_player.py`.
+"""
+
+REMOVAL_THREAT_PREMIUM_SCALE: float = 0.5
+"""Derived: scaling factor on the threat-premium overlay for non-
+creature removal. A battle-cry / equipped / scaling target whose
+threat-value exceeds its raw clock value gets `(threat - clock) × 0.5`
+added to the removal EV.
+
+0.5 brings a typical battle-cry premium (~+4 threat units) into the
++2 EV tiebreaker range with equal-CMC deploys — enough to lift
+removal above a non-removal alternative when the target is amplified,
+but not enough to override a clearly better deploy.
+
+Sister constant: REMOVAL_DEFERRAL_TARGET_GAP — same threat-tier
+unit space.
+
+Used by `_score_spell` removal threat-premium overlay in
+`ai/ev_player.py`.
+"""
+
+CHEAP_REMOVAL_ACTION_BONUS: float = 1.0
+"""Derived: additive bonus for 1-CMC removal that has a valid target.
+
+1-mana removal leaves room for a second action this turn (deploy,
+draw, ramp), so its real EV is its kill-target value PLUS the value
+of the additional play. 1.0 is one EV unit — the smallest meaningful
+EV difference, standing in for "one extra card-equivalent action".
+
+Used by `_score_spell` removal threat-premium overlay in
+`ai/ev_player.py`.
+"""
+
+LANDFALL_DEFERRAL_PENALTY: float = 12.0
+"""Derived: penalty applied to land-EV when a landfall creature is
+castable with current mana. The land must be played AFTER the creature
+so the landfall trigger fires (otherwise we waste the "first land"
+event).
+
+12.0 matches the `RAMP_TO_BIG_NOW` magnitude in the same scoring
+function — same scale ("a land that materially changes our turn"),
+applied as a defer rather than a ramp.
+
+Used by `_score_land` landfall-deferral branch in `ai/ev_player.py`.
+"""
+
+X_BOARD_WIPE_WASTE_FLOOR: float = -20.0
+"""Sentinel: floor EV for an X-cost board wipe whose X-budget can't
+meaningfully clear. -20.0 is below `pass_threshold` for every
+archetype, ensuring the AI holds X-wraths until enough mana to clear
+the board is available (or we're at low life and forced to wipe
+anyway).
+
+Used by `_score_spell` X-cost-board-wipe gate in `ai/ev_player.py`.
+"""
+
+BLINK_FIZZLE_FLOOR: float = -50.0
+"""Sentinel: floor EV for a blink/flicker spell with no legal target
+(no creatures we control). The engine bails safely, but the AI must
+never score a fizzling blink as positive EV. -50.0 is well below
+every archetype's `pass_threshold` and below the X-board-wipe waste
+floor — fizzle is the worst possible outcome (mana wasted AND card
+consumed).
+
+Used by `_score_spell` blink hard-gate in `ai/ev_player.py`.
+"""
+
+CHUMP_SENTINEL_VALUE: float = 999.0
+"""Sentinel: initial value for `best_chump_val` when scanning chump
+candidates. Any real creature_value will be smaller, so the first
+candidate replaces the sentinel and the loop converges on the
+cheapest chump.
+
+Used by `decide_blockers` emergency-block path in `ai/ev_player.py`.
+"""
+
+NO_CLOCK_FACE_VAL_MULTIPLIER: float = 0.1
+"""Derived: face-burn EV multiplier when we have no creatures and the
+opponent is not low-life. Without an on-board clock, burning face
+contributes only marginally to a kill — the burn must combine with a
+future clock that doesn't exist yet.
+
+0.1 collapses face-burn EV to near-zero so removal targeting takes
+priority, which is correct: a 3-damage Bolt with no clock to follow
+up should hit a Ragavan, not the dome.
+
+Used by `_choose_targets` burn-vs-creature decision in
+`ai/ev_player.py`.
+"""
+
+COMBO_FORCE_PAYOFF_STORM_THRESHOLD: int = 5
+"""Rules-constant: storm count threshold above which the combo-kill
+goal-advance fires in `decide_main_phase`. At storm count ≥ 5 the
+deck has cast enough cheap fuel that even non-lethal storm payoffs
+(Grapeshot for 5, Tendrils for 7) close the game on the next
+finisher.
+
+Used by `decide_main_phase` combo kill override in
+`ai/ev_player.py`.
+"""
+
+LANDFALL_TRIGGER_VALUE: float = 3.0
+"""Derived: per-landfall-trigger EV. Each landfall trigger ≈ ETB
+effect value (1 life, 1 damage, 1 ramp event). 3.0 matches the
+`PROACTIVE_REMOVAL_MIN_VALUE` "worth a card" floor — one landfall
+trigger is roughly one card-quality event.
+
+Used by `_score_land` landfall bonus in `ai/ev_player.py`.
+"""
+
+ARTIFACT_LAND_SYNERGY_BONUS: float = 4.0
+"""Derived: per-synergy-card bonus for an artifact-typed land when
+the player's visible cards carry artifact-scaling text.
+
+Derivation: 1 power (or 1 mana) gained per synergy card × ~4
+residency turns × ~0.05 mana_clock_impact × 20
+(CLOCK_IMPACT_LIFE_SCALING) ≈ 4.0. Matches the
+`EVOKE_BUDGET_PENALTY_PER_PRIOR` and `HELD_RESPONSE_VALUE_PER_CMC`
+family — same "one card committed" scale.
+
+Used by `_score_land` artifact-synergy branch in `ai/ev_player.py`.
+"""
+
+TRON_MANA_ADVANTAGE: float = 4.0
+"""Derived: completed Tron yields {C}{C}{C}{C}{C}{C}{C} = 7 colorless
+mana from 3 lands vs ~3 mana from 3 vanilla lands, so the assembly
+advantage is +4 mana / turn.
+
+Used by `_score_land` Tron-assembly branch in `ai/ev_player.py`.
+"""
+
+AMULET_TITAN_MANA_BONUS: float = 4.0
+"""Rules-constant: 2 lands × 2 mana each = +4 mana when Primeval Titan
+ETBs with Amulet of Vigor on the battlefield. Both fetched lands come
+in tapped and Amulet untaps them, so all 4 mana are available the
+same turn.
+
+Bounce lands compound this further but are not modelled precisely;
+the floor is 2 lands untapped.
+
+Used by `_score_spell` Amulet+Titan synergy branch in
+`ai/ev_player.py`.
+"""
+
+CYCLING_CASCADE_BOOST: float = 8.0
+"""Derived: cycling EV bonus when a cascade spell is in hand.
+
+When cascade is the deck's primary action, filling the graveyard
+via cycling becomes the urgent setup move. 8.0 matches the
+`HELD_COLOR_PRESERVATION_BONUS` scale — same "this enables our key
+card" intent.
+
+Used by `_score_cycling` in `ai/ev_player.py`.
+"""
+
+CYCLING_GY_URGENCY: float = 6.0
+"""Derived: additional cycling EV when graveyard creature count < 3
+AND a cascade is in hand.
+
+Compounds with `CYCLING_CASCADE_BOOST` to express "we MUST cycle
+before cascading or the cascade will hit an empty graveyard". 6.0
+is sized to match the `card_clock_impact × 20` scale of a typical
+cascade hit — losing the cascade payoff entirely costs roughly this
+much EV.
+
+Used by `_score_cycling` in `ai/ev_player.py`.
+"""
+
+CYCLING_GAMEPLAN_BOOST: float = 10.0
+"""Derived: cycling EV bonus when the gameplan's current goal sets
+`prefer_cycling = True` (Living End and similar reanimator shells).
+
+10.0 is the largest cycling-overlay constant — when the gameplan
+explicitly says "cycling IS the gameplan", cycling should beat
+almost every other play. Matches the LAND_BASE_EV scale so a
+cycling activation reads as "as important as a land drop".
+
+Used by `_score_cycling` in `ai/ev_player.py`.
+"""
+
+CYCLING_FREE_COST_BONUS: float = 2.0
+"""Derived: cycling EV bonus when cycling cost involves paying life
+instead of mana ("free" cycling — Street Wraith, Decree of Pain).
+
+Matches the per-trigger bonus on `ETB_VALUE_BONUS` — same "small
+extra value at no mana cost" intent.
+
+Used by `_score_cycling` in `ai/ev_player.py`.
+"""
+
+CYCLING_CHEAP_COST_BONUS: float = 1.0
+"""Derived: cycling EV bonus for cheap cycling (mana cost ≤ 1).
+
+1.0 = one EV unit, matching `CHEAP_REMOVAL_ACTION_BONUS` — same
+"mana-efficient enough to leave room for a second action" intent.
+
+Used by `_score_cycling` in `ai/ev_player.py`.
+"""
+
+CYCLING_GY_REANIMATE_BASE: float = 4.0
+"""Derived: base cycling EV when cycling a creature into the graveyard
+in a deck with a visible reanimation path.
+
+The cycled creature becomes a future reanimation target, so its
+graveyard value is roughly its hardcast value minus its mana cost.
+4.0 ≈ the `ARTIFACT_LAND_SYNERGY_BONUS` scale — same "one card-
+worth of future value" intent.
+
+Sister constant: CYCLING_GY_REANIMATE_PER_POWER — power-scaling
+addend.
+
+Used by `_score_cycling` reanimation-path branch in
+`ai/ev_player.py`.
+"""
+
+CYCLING_GY_REANIMATE_PER_POWER: float = 0.5
+"""Derived: per-power cycling EV addend on top of
+`CYCLING_GY_REANIMATE_BASE`. A power-5 creature in graveyard is
+worth more as a reanimation target than a power-2 creature —
+0.5 × power roughly tracks the threat-value gap (a 5/5 vs 2/2 in
+`creature_value` units).
+
+Used by `_score_cycling` reanimation-path branch in
+`ai/ev_player.py`.
+"""
+
+# ─── Combat / turn-planning constants (ai/turn_planner.py) ────────
+# Bare-literal extraction pass for ai/turn_planner.py. Several of
+# these were already named module-level constants in turn_planner.py
+# with derivation comments; centralising preserves the single point
+# of review for future re-tunes.
+
+LETHAL_BONUS: float = 100.0
+"""Sentinel: structural lethal bonus for combat scoring.
+
+100.0 matches `LETHAL_THREAT` (life-units sentinel for stack-side
+threats) — same "game-ending event" scale, applied to combat.
+Pinned at the top of the combat scale so any lethal attack
+configuration outranks any non-lethal one regardless of trade math.
+
+Used by `CombatPlanner.plan_attack` in `ai/turn_planner.py`.
+"""
+
+TWO_TURN_LETHAL_BONUS: float = 15.0
+"""Derived: bonus for combat configurations that set up lethal NEXT
+turn (surviving power minus opp's surviving block power ≥ opp life).
+
+15.0 sits in the "strong but not game-ending" tier between
+LETHAL_BONUS (100.0) and TRADE_UP_BONUS (2.0). Beats a typical
+trade-up bonus by a factor of ~7, ensuring 2-turn lethal setups are
+pursued even when the immediate combat trade is even.
+
+Used by `CombatPlanner.plan_attack` in `ai/turn_planner.py`.
+"""
+
+TRADE_UP_BONUS: float = 2.0
+"""Derived: bonus for combat configurations where opp loses more
+total creature value than we do.
+
+2.0 matches the `BLINK_M1_HOLD_PENALTY` / `CYCLING_FREE_COST_BONUS`
+tier — small enough that it's a tie-breaker, not a hard gate. The
+combat math already values surviving creatures via post-board
+score; this is just a nudge to prefer trades where we come out
+ahead.
+
+Sister constant: TRADE_DOWN_PENALTY — same scale, opposite sign.
+
+Used by `CombatPlanner.plan_attack` in `ai/turn_planner.py`.
+"""
+
+TRADE_DOWN_PENALTY: float = -2.5
+"""Derived: penalty for combat configurations where we lose more
+total creature value than opp does (and the attack isn't lethal).
+
+Slightly larger than `TRADE_UP_BONUS` because the typical trade-down
+also tempo-loses (we used the attack step as well as the creature),
+so the penalty captures both the value loss and the lost combat
+turn. Scaled at the call site by `min(my_lost_value / 5.0, 1.0)` so
+small trade-downs (1/1 tokens) penalise less than big ones.
+
+Sister constant: TRADE_UP_BONUS — same scale, opposite sign.
+
+Used by `CombatPlanner.plan_attack` in `ai/turn_planner.py`.
+"""
+
+SHIELDS_DOWN_PENALTY: float = -1.5
+"""Derived: penalty for tapping out attackers when opponent has open
+mana for tricks (`board.opp_mana >= 2`).
+
+1.5 mirrors the `FREE_CAST_TEMPO_BONUS` / `BLINK_M1_HOLD_PENALTY`
+scale — a tie-breaker, not a hard gate. Scaled at the call site by
+the damage being dealt: heavy attacks discount the penalty (tapping
+out is worth it for big damage).
+
+Used by `CombatPlanner.plan_attack` in `ai/turn_planner.py`.
+"""
+
+MAX_ATTACK_CONFIGS: int = 32
+"""Rules-constant: computational budget for attack configuration
+enumeration. 2^N grows quickly; 32 covers all realistic Modern board
+states (≤5 attackers fully enumerated; larger boards prune via
+heuristic categorisation in `_generate_attack_configs`).
+
+Used by `CombatPlanner._generate_attack_configs` in
+`ai/turn_planner.py`.
+"""
+
+COUNTER_THRESHOLD: float = 5.0
+"""Derived: minimum threat-value to fire a non-cheap (CMC>2) counter.
+
+5.0 ≈ a 3/3 with a keyword in `creature_value` units. Below this
+threshold the counter is held for a more impactful target later.
+Sister to `COUNTER_CHEAP_THRESHOLD = 2.0` — the cheap-counter
+gate has a lower bar because the held-mana opportunity cost is
+smaller.
+
+Used by `TurnPlanner.evaluate_response` in `ai/turn_planner.py`.
+"""
+
+COUNTER_CHEAP_THRESHOLD: float = 2.0
+"""Derived: minimum threat-value to fire a cheap (CMC≤2) counter.
+
+2.0 ≈ a 1-power vanilla creature in `creature_value` units. Cheap
+counters can fire on almost anything because the mana cost barely
+constrains the rest of the turn.
+
+Sister constant: COUNTER_THRESHOLD — same family, larger floor for
+the non-cheap branch.
+
+Used by `TurnPlanner.evaluate_response` in `ai/turn_planner.py`.
+"""
+
+REMOVAL_RESPONSE_THRESHOLD: float = 4.0
+"""Derived: minimum net-value (threat × 0.8 minus removal cost) to
+fire instant-speed removal in response to a creature spell on the
+stack.
+
+4.0 ≈ a 3/3 worth of threat in `creature_value` units. Below this
+the removal is held for a higher-EV target post-resolution. Sister
+to `PROACTIVE_REMOVAL_MIN_VALUE = 3.0` (the reactive non-creature
+branch) — slightly higher here because we're spending the response
+on a creature target instead of letting opp commit and answering
+post-resolution.
+
+Used by `TurnPlanner.evaluate_response` in `ai/turn_planner.py`.
+"""
+
+BLINK_SAVE_THRESHOLD: float = 3.5
+"""Derived: minimum creature value at which blinking to save it from
+removal is worth the response card.
+
+3.5 ≈ a 2/2 with a keyword in `creature_value` units. Below this
+the creature isn't worth a blink card; above it the save is correct
+because the creature's ETB re-trigger plus the saved body exceeds
+the response card's opportunity cost.
+
+Used by `TurnPlanner.evaluate_response` in `ai/turn_planner.py`.
+"""
+
+PRE_COMBAT_REMOVAL_BONUS: float = 2.5
+"""Derived: bonus for the "remove blocker pre-combat, then attack"
+strategy.
+
+Killing a blocker enables roughly 3 extra damage = 3/20 clock gain
+× CLOCK_IMPACT_LIFE_SCALING (20) ≈ 3, scaled down to 2.5 because
+the removed creature also costs us a card. Matches the
+`PROACTIVE_REMOVAL_MIN_VALUE` "worth a card" floor.
+
+Used by `TurnPlanner._evaluate_remove_then_attack` in
+`ai/turn_planner.py`.
+"""
+
+MANA_RESERVATION_WEIGHT: float = 5.0
+"""Derived: bonus for holding up mana for instant-speed responses.
+
+Value ≈ avg_threat × P(needing_response) ≈ 5 × 0.5 ≈ 2.5, doubled
+to 5.0 because the held mana also enables a future combat block /
+trick the opponent must play around. Matches the
+`COUNTER_THRESHOLD` scale — same "one piece of held interaction is
+worth a 3/3" intent.
+
+Used by `TurnPlanner._evaluate_hold_up_mana` in `ai/turn_planner.py`.
+"""
+
+INFORMATION_BONUS: float = 0.3
+"""Derived: bonus for the "attack first (see blocks), deploy in
+main 2" strategy.
+
+0.3 is small enough to be a tie-breaker only — when the attack-then-
+deploy and deploy-then-attack strategies score similarly, we prefer
+seeing the opp's blocks first. Matches the chip-damage scale
+(`CHIP_DAMAGE_VALUE = 0.3`) — same "small information / damage
+nudge" intent.
+
+Used by `TurnPlanner._evaluate_attack_then_deploy` in
+`ai/turn_planner.py`.
+"""
+
+NO_INTERACTION_PENALTY: float = 5.0
+"""Derived: penalty applied to the hold-up-mana strategy when the
+hand contains no instant-speed interaction.
+
+5.0 matches `MANA_RESERVATION_WEIGHT` — symmetric: the hold-up
+strategy gains +5 when interaction is held, and loses -5 when it
+isn't (because doing nothing this turn is strictly worse than ANY
+proactive play).
+
+Used by `TurnPlanner._evaluate_hold_up_mana` in `ai/turn_planner.py`.
+"""
+
+LETHAL_PUSH_INFEASIBLE_PENALTY: float = 10.0
+"""Derived: penalty for the lethal-push strategy when total potential
+damage falls short of opp's life.
+
+10.0 sized to dominate any positive lethal-push delta: if we can't
+actually kill, the strategy must rank below every other strategy.
+Matches the `EVOKE_DESPERATE_BONUS` scale — same "decisive override"
+sized event.
+
+Used by `TurnPlanner._evaluate_lethal_push` in `ai/turn_planner.py`.
+"""
+
+CARD_IN_HAND_VALUE: float = 2.5
+"""Derived: per-card EV in `VirtualBoard.score`.
+
+Each card in hand ≈ avg_creature_power / opp_life × CLOCK_IMPACT_LIFE_SCALING
+= 2.5 / 20 × 20 = 2.5. Matches `AVG_CREATURE_POWER` exactly — the
+clock-units scale for "one extra creature's worth of action".
+
+Used by `VirtualBoard.score` in `ai/turn_planner.py`.
+"""
+
+MANA_AVAILABLE_VALUE: float = 0.3
+"""Derived: per-mana EV in `VirtualBoard.score`.
+
+Mana ≈ ~1 power of deployment / opp_life × CLOCK_IMPACT_LIFE_SCALING
+≈ 1.0, discounted to 0.3 because mana can't always be fully spent
+each turn (color requirements, missing lands, hand composition).
+
+Used by `VirtualBoard.score` in `ai/turn_planner.py`.
+"""
+
+LIFE_SCORE_SCALE: float = 5.0
+"""Derived: scaling factor for the life-as-resource score in
+`VirtualBoard._life_score`.
+
+`life_as_resource(life, 3)` returns clock-survival turns; scaling
+by 5 maps that 0-6 range onto the ~0-30 board score range expected
+by `VirtualBoard.score` (roughly 1/4 of LETHAL_BONUS = 25, matching
+the empirical ceiling of life-only board states).
+
+Used by `_life_score` in `ai/turn_planner.py`.
+"""
+
+LIFE_SCORE_AVG_INCOMING: int = 3
+"""Derived: assumed average incoming damage per turn used to evaluate
+life-as-resource in a context-free `VirtualBoard`.
+
+3 matches the empirical Modern incoming-damage median (one ~3-power
+creature, or 1-2 burn spells per turn). Used as the second arg to
+`life_as_resource(life, avg_incoming)` so the function returns a
+sensible "turns until lethal" estimate without needing a live
+opp-power signal.
+
+Used by `_life_score` in `ai/turn_planner.py`.
+"""
+
+CHIP_DAMAGE_VALUE: float = 0.3
+"""Derived: bonus per point of damage dealt to opp (chip damage
+value).
+
+0.3 is a small per-point reward — 5 chip damage = +1.5 EV, not
+enough to override block math but enough to break ties between
+"attack for 1 vs don't attack". Reused for the draw-step-prevention
+bonus on the same scale.
+
+Used by `CombatPlanner.plan_attack` in `ai/turn_planner.py`.
+"""
+
+AGGRESSION_BONUS_LIFE8: float = 0.8
+"""Derived: per-power aggression bonus when opp_life ≤ 8.
+
+In real MTG, players push damage hard at single-digit life because
+the kill is reachable. 0.8 × total_attack_power means a 6-power
+attack into 7 life nets +4.8 — large enough to override moderate
+trade-down penalties when lethal is in reach.
+
+Sister constants: AGGRESSION_BONUS_LIFE12 (0.4),
+AGGRESSION_BONUS_LIFE16 (0.15) — tiered curve.
+
+Used by `CombatPlanner.plan_attack` in `ai/turn_planner.py`.
+"""
+
+AGGRESSION_BONUS_LIFE12: float = 0.4
+"""Derived: per-power aggression bonus when 8 < opp_life ≤ 12.
+Half of `AGGRESSION_BONUS_LIFE8` — moderate aggression, kill is
+plausible within 2 turns.
+
+Used by `CombatPlanner.plan_attack` in `ai/turn_planner.py`.
+"""
+
+AGGRESSION_BONUS_LIFE16: float = 0.15
+"""Derived: per-power aggression bonus when 12 < opp_life ≤ 16.
+Roughly half of `AGGRESSION_BONUS_LIFE12` — slight aggression, the
+kill is multiple turns away but pressure compounds.
+
+Used by `CombatPlanner.plan_attack` in `ai/turn_planner.py`.
+"""
+
+DOUBLE_BLOCK_VALUE_THRESHOLD: float = 4.0
+"""Derived: minimum attacker value at which the opponent will
+consider a double-block.
+
+4.0 ≈ a 4/4 vanilla creature in `creature_value` units. Below this
+threshold, sacrificing two blockers to kill a single attacker
+trades down — the opp's blocking heuristic only commits the second
+blocker on real threats.
+
+Used by `CombatPlanner._predict_blocks` Phase 4 (double-block) in
+`ai/turn_planner.py`.
+"""
