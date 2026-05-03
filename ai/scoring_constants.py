@@ -2263,3 +2263,123 @@ PLANESWALKER_LOYALTY_VALUE: float = 0.5
 
 Used by `_permanent_value` in `ai/evaluator.py`.
 """
+
+
+# ─── Discard advisor constants (ai/discard_advisor.py) ──────────────
+# `ai/discard_advisor.py` ranks self-discard candidates so the AI bins
+# the most graveyard-useful card (or the most-excess card). The scores
+# are an ORDER, not a calibration — only relative ordering matters, so
+# the constants encode tier boundaries and within-tier nudges.
+#
+# Score tiers (ascending priority):
+#   - Removal-keep nudge:   +DISCARD_REMOVAL_NUDGE      (10)
+#   - Counterspell-keep:    +DISCARD_COUNTERSPELL_NUDGE (20)
+#   - Combo/tutor protect:  -DISCARD_COMBO_TUTOR_PROTECT (30)
+#   - Excess lands (3-deep):+DISCARD_LANDS_EXCESS_BONUS  (40)
+#   - Excess lands (gluts): +DISCARD_LANDS_GLUT_BONUS    (50)
+#   - Big creature fuel:    +DISCARD_BIG_CREATURE_BASE   (80) + cmc
+#   - Flashback target:     +DISCARD_FLASHBACK_BONUS     (90)
+#   - Escape target:        +100 (rules-exempt — see GV-1 docstring)
+#   - Reanimation fuel:     +100 + cmc (rules-exempt — see GV-1)
+
+DISCARD_FLASHBACK_BONUS: int = 90
+"""Rules-constant: discard-score for cards tagged `flashback` — they
+WANT to be in the graveyard (Faithful Mending, Lingering Souls).
+
+90 sits below the +100 escape bonus and reanimation-fuel threshold,
+above all generic "good-to-bin" tiers (60-50-40 land glut). This
+ordering means: reanimation fuel > escape > flashback > heavy
+creature fuel > land glut > nudges.
+
+Used by `discard_score` in `ai/discard_advisor.py`.
+"""
+
+DISCARD_BIG_CREATURE_CMC_THRESHOLD: int = 5
+"""Rules-constant: CMC at or above which a creature-in-hand is
+treated as accidental reanimator fuel (generic fallback for decks
+without a declared FILL_RESOURCE graveyard goal).
+
+5 = the same floor as `_reanimation_fuel_min_cmc`'s
+REANIMATION_FUEL_FLOOR — Goryo's / Persist / Unburial Rites all
+target 5+ CMC creatures; cheaper creatures should be hard-cast.
+
+Used by `discard_score` in `ai/discard_advisor.py`.
+"""
+
+DISCARD_BIG_CREATURE_BASE: int = 80
+"""Rules-constant: base score for high-CMC creatures (>=
+DISCARD_BIG_CREATURE_CMC_THRESHOLD) that could be reanimation
+targets even without a declared graveyard plan.
+
+80 < DISCARD_FLASHBACK_BONUS (90) — flashback cards are stronger
+graveyard signals than accidental fat creatures. The +cmc tiebreaker
+prefers binning the biggest body.
+
+Used by `discard_score` in `ai/discard_advisor.py`.
+"""
+
+DISCARD_LANDS_GLUT_THRESHOLD: int = 3
+"""Rules-constant: minimum lands-on-battlefield at which an extra
+land-in-hand counts as excess (we already have enough mana).
+
+3 lands ≈ enough to cast most Modern threats; additional lands
+beyond this floor are excess in most matchups.
+
+Used by `discard_score` in `ai/discard_advisor.py`.
+"""
+
+DISCARD_LANDS_GLUT_BONUS: int = 50
+"""Rules-constant: discard-score for an excess land when we have
+DISCARD_LANDS_GLUT_THRESHOLD lands on the battlefield AND > 1 land
+in hand.
+
+50 sits above the deep-glut (40) tier — once the battlefield has
+enough mana, additional lands in hand are dead draws.
+
+Used by `discard_score` in `ai/discard_advisor.py`.
+"""
+
+DISCARD_LANDS_EXCESS_BONUS: int = 40
+"""Rules-constant: discard-score for a land when we have many
+lands-in-hand (>2) but the battlefield doesn't yet show 3+ lands.
+
+40 < DISCARD_LANDS_GLUT_BONUS (50) — flooded-but-still-developing
+hands are slightly less keen to bin lands than hands that have
+already hit critical mass on the battlefield.
+
+Used by `discard_score` in `ai/discard_advisor.py`.
+"""
+
+DISCARD_COUNTERSPELL_NUDGE: int = 20
+"""Rules-constant: small nudge to discard a non-creature
+counterspell over a removal spell.
+
+20 < DISCARD_COMBO_TUTOR_PROTECT (30) — counterspells are
+protection but combo/tutor pieces are wincon-critical, so the
+ordering correctly prioritises keeping the wincon.
+
+Used by `discard_score` in `ai/discard_advisor.py`.
+"""
+
+DISCARD_COMBO_TUTOR_PROTECT: int = 30
+"""Rules-constant: NEGATIVE score adjustment to keep combo / tutor
+cards out of the discard pile.
+
+-30 lowers the discard score below the keep-class baseline of
++10 (removal nudge) so combo/tutor pieces are the LAST to be
+discarded. The exception in source (`if not (creature & cmc >= 5)`)
+preserves reanimation-fuel intent.
+
+Used by `discard_score` in `ai/discard_advisor.py`.
+"""
+
+DISCARD_REMOVAL_NUDGE: int = 10
+"""Rules-constant: small nudge AGAINST discarding removal — we
+slightly prefer keeping interaction.
+
++10 puts removal above bare-baseline (0) but well below land-excess
+(40+) and graveyard-target (80+) tiers. Removal is moderately
+important; we'd rather bin a flooded land than a Bolt.
+
+Used by `discard_score` in `ai/discard_advisor.py`.
+"""
