@@ -3,6 +3,8 @@ title: Living End 38% — cascade not recognized as payoff + uniform mulligan th
 status: active
 priority: primary
 session: 2026-04-28
+supersedes:
+  - docs/diagnostics/2026-04-24_living_end_consolidated_findings.md
 depends_on:
   - docs/diagnostics/2026-04-28_storm_wasted_enablers.md
   - docs/diagnostics/2026-04-28_goryos_combo_mana_mulligan.md
