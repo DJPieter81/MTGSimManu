@@ -9,6 +9,25 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, List, Optional
 
+from ai.scoring_constants import (
+    LEGENDARY_DUPLICATE_PENALTY,
+    DEFAULT_MULLIGAN_MIN_LANDS,
+    SUSPEND_ONLY_DEAD_PENALTY,
+    KEEP_SCORE_LAND_NEEDED,
+    KEEP_SCORE_LAND_FLOOD,
+    KEEP_SCORE_LAND_FLOOD_THRESHOLD,
+    KEEP_SCORE_LAND_PRODUCES_BONUS,
+    KEEP_SCORE_CMC_INVERTED_CEIL,
+    KEEP_SCORE_REMOVAL_TAG,
+    KEEP_SCORE_THREAT_TAG,
+    KEEP_SCORE_EARLY_PLAY_AT_HOME,
+    KEEP_SCORE_EARLY_PLAY_AWAY,
+    KEEP_SCORE_COMBO_AT_HOME,
+    KEEP_SCORE_COMBO_AWAY,
+    KEEP_SCORE_COUNTERSPELL_AT_HOME,
+    KEEP_SCORE_COUNTERSPELL_AWAY,
+)
+
 if TYPE_CHECKING:
     from engine.cards import CardInstance
     from ai.gameplan import GoalEngine
@@ -27,12 +46,12 @@ def _apply_legendary_dedup_penalty(
     the bottom-selection sort places duplicates first.
 
     Pure function over the template's `supertypes` flag — no card names
-    are referenced.  Magnitude (50) is large enough to drop a duplicate
-    below the highest-scored normal keep (~27) without inverting the
-    relative ranking of the surviving copy.
+    are referenced.  Magnitude is calibrated in
+    `ai.scoring_constants.LEGENDARY_DUPLICATE_PENALTY` to drop a
+    duplicate below the highest-scored normal keep (~27) without
+    inverting the relative ranking of the surviving copy.
     """
     from engine.cards import Supertype
-    LEGENDARY_DUPLICATE_PENALTY = 50.0
     seen_legendary: set = set()
     out: List[tuple] = []
     for c, s in scored:
@@ -559,9 +578,10 @@ class MulliganDecider:
         # seed 55555 bottomed Marsh Flats + Arena of Glory to keep 5
         # creatures, then drew into lands naturally — but for 2 turns had
         # no mana.
-        min_lands = 2  # default floor
+        min_lands = DEFAULT_MULLIGAN_MIN_LANDS  # default floor
         if self.goal_engine and self.goal_engine.gameplan:
-            min_lands = self.goal_engine.gameplan.mulligan_min_lands or 2
+            min_lands = (self.goal_engine.gameplan.mulligan_min_lands
+                         or DEFAULT_MULLIGAN_MIN_LANDS)
         lands_in_hand = [c for c in hand if c.template.is_land]
         kept_count = len(hand) - count
         # Protect at least min(min_lands, total_lands_available) lands in
@@ -715,7 +735,7 @@ class MulliganDecider:
 
         # Suspend-only cards are dead in hand — always bottom
         if card.template.cmc == 0 and Keyword.SUSPEND in card.template.keywords:
-            return -100.0
+            return SUSPEND_ONLY_DEAD_PENALTY
 
         from ai.predicates import count_lands
         score = 0.0
@@ -723,22 +743,30 @@ class MulliganDecider:
         lands_in_hand = count_lands(hand)
 
         if t.is_land:
-            score += 10.0 if lands_in_hand <= 3 else 2.0
+            score += (KEEP_SCORE_LAND_NEEDED
+                      if lands_in_hand <= KEEP_SCORE_LAND_FLOOD_THRESHOLD
+                      else KEEP_SCORE_LAND_FLOOD)
             if t.produces_mana:
-                score += len(t.produces_mana) * 0.5
+                score += len(t.produces_mana) * KEEP_SCORE_LAND_PRODUCES_BONUS
         else:
-            score += max(0, 5 - t.cmc)
+            score += max(0, KEEP_SCORE_CMC_INVERTED_CEIL - t.cmc)
             if "removal" in t.tags:
-                score += 3.0
+                score += KEEP_SCORE_REMOVAL_TAG
             if "threat" in t.tags:
-                score += 2.0
+                score += KEEP_SCORE_THREAT_TAG
             if "early_play" in t.tags:
-                score += 4.0 if self.archetype == ArchetypeStrategy.AGGRO else 2.0
+                score += (KEEP_SCORE_EARLY_PLAY_AT_HOME
+                          if self.archetype == ArchetypeStrategy.AGGRO
+                          else KEEP_SCORE_EARLY_PLAY_AWAY)
             if "combo" in t.tags:
-                score += 5.0 if self.archetype == ArchetypeStrategy.COMBO else 1.0
+                score += (KEEP_SCORE_COMBO_AT_HOME
+                          if self.archetype == ArchetypeStrategy.COMBO
+                          else KEEP_SCORE_COMBO_AWAY)
             if "counterspell" in t.tags:
-                score += 3.0 if self.archetype in (ArchetypeStrategy.CONTROL,
-                                                     ArchetypeStrategy.TEMPO) else 1.0
+                score += (KEEP_SCORE_COUNTERSPELL_AT_HOME
+                          if self.archetype in (ArchetypeStrategy.CONTROL,
+                                                ArchetypeStrategy.TEMPO)
+                          else KEEP_SCORE_COUNTERSPELL_AWAY)
         return score
 
     @staticmethod

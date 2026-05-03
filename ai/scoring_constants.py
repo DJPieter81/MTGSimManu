@@ -1387,3 +1387,171 @@ Sister constant: OBSERVATION_WEIGHT_CAP.
 
 Used by `_recalculate_priors` in `ai/bhi.py`.
 """
+
+
+# ─── Mulligan keep-score weights (ai/mulligan.py) ────────────────────
+# Used by `MulliganDecider._card_keep_score` to rank cards for the
+# choose-cards-to-bottom decision. These are role-tag weights, NOT
+# per-card scores; values are calibrated against the lands-first
+# baseline so that a needed land outranks any spell role and a
+# needed spell role outranks an unneeded one.
+#
+# All values are in the same "card keep score" scale used by
+# `ai.gameplan.card_keep_score` (the gameplan-aware path), so the
+# fallback heuristic and the gp-aware ordering live on the same
+# scale and can swap in either direction.
+
+LEGENDARY_DUPLICATE_PENALTY: float = 50.0
+"""Sentinel: penalty subtracted from a duplicate legendary card's
+keep-score so it sorts to the bottom of `choose_cards_to_bottom`.
+
+Per CR 704.5j, when a player would control two or more legendaries
+of the same name, all but one go to the graveyard. In hand, every
+duplicate copy beyond the first is dead on resolution. Magnitude 50
+is large enough to drop a duplicate below the highest non-land keep
+score (~27 from `ai.gameplan.card_keep_score`) while staying above
+the suspend-only sentinel (-100) so it doesn't compound with that.
+
+Used by `_apply_legendary_dedup_penalty` and the inline note in
+`MulliganDecider.choose_cards_to_bottom` in `ai/mulligan.py`.
+"""
+
+DEFAULT_MULLIGAN_MIN_LANDS: int = 2
+"""Rules-constant: default `mulligan_min_lands` floor when no
+gameplan declares it. 2 lands cover the typical Modern T1-T2 curve
+(one land per turn, plays a 2-CMC spell on T2). Below this floor
+the kept hand cannot meaningfully develop.
+
+Used by `MulliganDecider.choose_cards_to_bottom` in `ai/mulligan.py`
+as the fallback `min_lands` when the gameplan is silent.
+"""
+
+SUSPEND_ONLY_DEAD_PENALTY: float = -100.0
+"""Sentinel: keep-score for a 0-CMC suspend-only card (Living End,
+Ancestral Vision, Wheel of Fate). These cards cannot be hard-cast
+from hand — they exist only to be cycled / suspended / cascaded
+into. -100.0 is below every other keep-score so they always sort to
+the bottom.
+
+Used by `_card_keep_score` in `ai/mulligan.py`.
+"""
+
+KEEP_SCORE_LAND_NEEDED: float = 10.0
+"""Derived: keep-score for a land in a hand that has at most 3 lands.
+A "needed" land is more valuable than any spell role at this stage —
+mana is the gating resource. 10.0 sits above the highest spell-role
+weight (KEEP_SCORE_COMBO_AT_HOME = 5.0) plus the cmc bonus, ensuring
+needed lands are never bottomed before role-positive spells.
+
+Used by `_card_keep_score` in `ai/mulligan.py`.
+"""
+
+KEEP_SCORE_LAND_FLOOD: float = 2.0
+"""Derived: keep-score for a land in a hand with 4+ lands. The
+hand has enough mana — extra lands compete with spells for keep
+priority. 2.0 matches `KEEP_SCORE_THREAT_TAG` so a 5th land sits at
+the same keep tier as a generic threat.
+
+Used by `_card_keep_score` in `ai/mulligan.py`.
+"""
+
+KEEP_SCORE_LAND_FLOOD_THRESHOLD: int = 3
+"""Rules-constant: lands-in-hand count above which extra lands are
+treated as flood. 3 lands cover the T1-T3 curve plus one — the
+fourth land is the first one not strictly required for on-curve
+development.
+
+Used by `_card_keep_score` in `ai/mulligan.py`.
+"""
+
+KEEP_SCORE_LAND_PRODUCES_BONUS: float = 0.5
+"""Derived: per-color-produced bonus for a land's keep-score.
+A dual / shock / surveil land produces 2 colors → +1.0; a tri-land
+produces 3 → +1.5; a basic produces 1 → +0.5. Caps the total land
+bonus below the role-weighted spell tier so a 3-color land in a
+flooded hand doesn't outrank a removal spell.
+
+Used by `_card_keep_score` in `ai/mulligan.py`.
+"""
+
+KEEP_SCORE_CMC_INVERTED_CEIL: int = 5
+"""Rules-constant: CMC ceiling above which the inverse-CMC bonus
+collapses to zero. Modern's mana curve tops out around 5 mana for
+midrange and 6+ for ramp; cards above 5 are kept on role weight
+alone, not on CMC.
+
+Used by `_card_keep_score` in `ai/mulligan.py` as `max(0, 5 - cmc)`.
+"""
+
+KEEP_SCORE_REMOVAL_TAG: float = 3.0
+"""Derived: keep-score weight for a card tagged `removal`. 3.0 ≈
+`PROACTIVE_REMOVAL_MIN_VALUE` — one card-swap of value, the floor
+above which removal is "worth keeping" against a typical Modern
+opener.
+
+Used by `_card_keep_score` in `ai/mulligan.py`.
+"""
+
+KEEP_SCORE_THREAT_TAG: float = 2.0
+"""Derived: keep-score weight for a card tagged `threat`. Slightly
+below removal because a threat in opening hand requires mana to
+develop, while removal can be reactively held.
+
+Used by `_card_keep_score` in `ai/mulligan.py`.
+"""
+
+KEEP_SCORE_EARLY_PLAY_AT_HOME: float = 4.0
+"""Derived: keep-score for an `early_play`-tagged card in an aggro
+archetype. Above the removal weight because an aggro deck's clock
+relies on T1-T2 deploys; without an early play the hand has no
+pressure.
+
+Sister constant: KEEP_SCORE_EARLY_PLAY_AWAY (the lower fallback for
+non-aggro archetypes).
+
+Used by `_card_keep_score` in `ai/mulligan.py`.
+"""
+
+KEEP_SCORE_EARLY_PLAY_AWAY: float = 2.0
+"""Derived: keep-score for an `early_play`-tagged card in a non-aggro
+archetype. Half the AT_HOME weight — useful but not essential.
+
+Used by `_card_keep_score` in `ai/mulligan.py`.
+"""
+
+KEEP_SCORE_COMBO_AT_HOME: float = 5.0
+"""Derived: keep-score for a `combo`-tagged card in a combo archetype.
+Above every other role weight because a combo deck's hand without a
+combo piece is a mulligan candidate — the piece is the entire reason
+to keep the hand.
+
+Sister constant: KEEP_SCORE_COMBO_AWAY (lower fallback).
+
+Used by `_card_keep_score` in `ai/mulligan.py`.
+"""
+
+KEEP_SCORE_COMBO_AWAY: float = 1.0
+"""Derived: keep-score for a `combo`-tagged card in a non-combo
+archetype. Combo cards hard-cast (not as combo) are a card-swap of
+value — same scale as `CHEAP_REMOVAL_ACTION_BONUS`.
+
+Used by `_card_keep_score` in `ai/mulligan.py`.
+"""
+
+KEEP_SCORE_COUNTERSPELL_AT_HOME: float = 3.0
+"""Derived: keep-score for a `counterspell`-tagged card in a control
+or tempo archetype. Matches the removal weight — both are reactive
+interaction the deck relies on.
+
+Sister constant: KEEP_SCORE_COUNTERSPELL_AWAY.
+
+Used by `_card_keep_score` in `ai/mulligan.py`.
+"""
+
+KEEP_SCORE_COUNTERSPELL_AWAY: float = 1.0
+"""Derived: keep-score for a counterspell in a non-control / non-tempo
+archetype. Same scale as `KEEP_SCORE_COMBO_AWAY` — a counter without
+a defensive plan is a card-swap of value, not a primary lever.
+
+Used by `_card_keep_score` in `ai/mulligan.py`.
+"""
