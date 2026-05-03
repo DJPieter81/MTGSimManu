@@ -1,8 +1,9 @@
 ---
 title: Phase 11b — N=50 matrix validation with Bo3 loser-chooses-play
-status: active
+status: archived
 priority: historical
 session: 2026-04-21
+superseded_by: docs/experiments/2026-05-02_target_solver_validation.md
 depends_on:
   - docs/experiments/2026-04-20_phase6_matrix_validation.md
   - docs/experiments/2026-04-20_phase9_phase6_followups.md

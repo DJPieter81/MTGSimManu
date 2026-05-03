@@ -1,8 +1,9 @@
 ---
 title: Living End 27% underperformance — EV divergence diagnostic
-status: active
+status: superseded
 priority: primary
 session: 2026-04-21
+superseded_by: docs/diagnostics/2026-04-24_living_end_consolidated_findings.md
 depends_on:
   - docs/experiments/2026-04-20_phase11_n50_matrix_validation.md
 tags:

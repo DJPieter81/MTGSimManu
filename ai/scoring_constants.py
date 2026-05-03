@@ -1683,3 +1683,34 @@ survives a centralised re-tune.
 Used by `GoalEngine.card_keep_score` critical-singleton branch in
 `ai/gameplan.py`.
 """
+
+
+# ─── Outcome-distribution constants (ai/outcome_ev.py) ────────────────
+# Bare-literal extraction pass for `ai/outcome_ev.py`. The remaining
+# numerics in that module are probability bounds (0.0 / 1.0) and
+# sentinels (best=0 for max-search, +1 for "one extra card seen") that
+# are mathematical primitives, not magic numbers — they stay inline.
+# The single rule-encoding literal is the lookahead window for the
+# finisher-reachability hypergeometric, lifted below.
+
+FINISHER_REACHABLE_LOOKAHEAD_DRAWS: int = 2
+"""Rules-constant: number of upcoming draws to consider when computing
+``p_finisher_reachable`` via the hypergeometric in
+``p_draw_in_n_turns``.
+
+2 matches the canonical short-horizon lookahead used elsewhere in the
+codebase: ``HandBeliefs.p_higher_threat_in_n_turns`` defaults to
+``turns=2`` and the spot-removal-deferral branch in
+``ai/ev_player.py`` passes the same ``turns=2``. Same intent: "what
+will be available within roughly the next two draws", which covers
+the next untap step plus the typical search/cantrip cast on the
+following turn without overcounting late-game draws that won't
+arrive before the chain has either fired or fizzled.
+
+Used by ``build_combo_distribution`` in ``ai/outcome_ev.py`` for the
+``p_finisher_reachable`` probability prior.
+
+Sister primitive: ``HandBeliefs.p_higher_threat_in_n_turns(turns=2)``
+in ``ai/bhi.py`` — same lookahead window for the spot-removal-timing
+decision.
+"""

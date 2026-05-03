@@ -12,6 +12,7 @@ The slogan "no patches, solve holistically" does not bind. These rules do. They 
 ### Hard prohibitions (CI-enforceable)
 
 - **No new `card.name == "X"` or `name in {…}` in `engine/` or `ai/`.** Pre-commit ratchet (`tools/check_abstraction.py`) blocks any commit that *increases* the count from `tools/abstraction_baseline.json`. Reducing the count requires explicitly lowering the baseline in the same commit. True exceptions (enum checks, supertypes) get `# abstraction-allow: <reason>` on the line.
+- **No new bare numeric literal in `ai/*.py` outside the excluded infra modules.** CI ratchet (`tools/check_magic_numbers.py`) blocks any commit that increases a file's count from `tools/magic_numbers_baseline.json`. Replace with a named constant in `ai/scoring_constants.py` (with inline justification comment) or derive from a primitive (`ai/clock.py`, `ai/bhi.py`, oracle predicates). True rules-constants get `# magic-allow: <reason>` on the line. The script is the single source of truth: `python tools/check_magic_numbers.py [--list]`.
 - **No new numeric threshold without a test that names the rule it encodes.** A literal `0.7` with no comment, no constant name, and no test is a magic number; it gets reverted on review.
 - **No fix without a failing test in the same diff.** Test goes red first, then the fix lands and turns it green. Both in the same commit.
 - **No second diagnostic phase on an outlier without a Bo3 replay-based root cause first.** Documentation is not progress.
