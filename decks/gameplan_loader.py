@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
 
 # Import the dataclasses we're populating
-from ai.gameplan import DeckGameplan, Goal, GoalType
+from ai.gameplan import DEFAULT_MULLIGAN_CMC_PROFILE, DeckGameplan, Goal, GoalType
 
 
 _GAMEPLANS_DIR = Path(__file__).parent / "gameplans"
@@ -255,12 +255,22 @@ def _parse_gameplan(
         else _derive_reactive_only(decklist, db)
     )
 
+    # Mulligan CMC profile: JSON override merged into the default.  Decks
+    # may declare any subset of {cheap, medium, premium}; unspecified
+    # brackets fall through to `DEFAULT_MULLIGAN_CMC_PROFILE`.  This is
+    # the per-archetype hook that lets ramp / land-pinging decks (Tron,
+    # Amulet Titan) raise their effective curve without patching the
+    # mulligan code — see ai/gameplan.py for the field contract.
+    mulligan_cmc_profile = dict(DEFAULT_MULLIGAN_CMC_PROFILE)
+    mulligan_cmc_profile.update(data.get("mulligan_cmc_profile", {}))
+
     return DeckGameplan(
         deck_name=data["deck_name"],
         goals=goals,
         mulligan_keys=mulligan_keys,
         mulligan_min_lands=data.get("mulligan_min_lands", 2),
         mulligan_max_lands=data.get("mulligan_max_lands", 4),
+        mulligan_cmc_profile=mulligan_cmc_profile,
         mulligan_effective_cmc=data.get("mulligan_effective_cmc", {}),
         mulligan_require_creature_cmc=data.get("mulligan_require_creature_cmc", 0),
         mulligan_combo_sets=[set(s) for s in data.get("mulligan_combo_sets", [])],
