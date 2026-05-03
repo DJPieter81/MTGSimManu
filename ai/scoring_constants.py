@@ -1987,3 +1987,92 @@ of pressure" the fallback is meant to approximate.
 
 Used by `_featurize_position_only` in `ai/win_probability.py`.
 """
+
+
+# ─── Structural / safety limits (migrated from ai/constants.py) ──────
+# Computational and rule-anchored bounds used by the engine and
+# response-modeling layers. Originally defined in `ai/constants.py`;
+# centralised here so all AI-layer constants share a single review
+# point. `ai/constants.py` retains a re-export shim for back-compat.
+
+MAX_ACTIONS_COMBO: int = 40
+"""Rules-constant: max main-phase actions for combo decks per turn.
+40 = empirical ceiling for a long Storm chain (~10 cantrips ×
+2 rituals + ~10 fuel spells + payoffs). Used by the engine to bound
+runaway loops that don't otherwise self-terminate.
+
+Used by `engine/game_runner.py` to gate the per-turn action budget.
+"""
+
+MAX_ACTIONS_NORMAL: int = 20
+"""Rules-constant: max main-phase actions for non-combo decks per
+turn. 20 covers all realistic Modern non-combo turns (typical: 1-3
+spells + a land + combat). Used by the engine to bound runaway
+loops in non-combo archetypes where 40 actions would never occur.
+
+Used by `engine/game_runner.py` to gate the per-turn action budget.
+"""
+
+GAME_TIMEOUT_SECONDS: float = 8.0
+"""Rules-constant: per-game wall-clock safety timeout. 8 seconds
+covers the slowest registered Modern matchup (Tron mirror) with
+~2× headroom. Beyond this, the game is aborted as a draw rather
+than risk a hung simulator.
+
+Used by `engine/game_runner.py` as the deadline anchor.
+"""
+
+SHOCK_LETHAL_LIFE_THRESHOLD: int = 2
+"""Rules-constant: life total below which the AI should not
+voluntarily pay 2 life for an untapped shockland (the loss would
+either kill outright or hand the opponent a Bolt-lethal turn).
+
+Used by mana-payment logic across the engine. Note: `ai/mana_planner.py`
+runs the shock decision through `analyze_mana_needs()`; this constant
+is the rules anchor cited by that decision.
+"""
+
+NO_CLOCK: float = 99.0
+"""Sentinel: "no clock" — no win condition / no creatures / stalled
+position. Pinned at 99.0 so it always exceeds any realistic
+turns-to-lethal value (typical clock <= 8 turns). Used as a sentinel
+in `ai/clock.py` and as a turn-cap throughout the EV pipeline.
+
+Sister constant: STORM_HARD_HOLD (in `ai/combo_calc.py`) is derived
+as -NO_CLOCK × 10 — the "bigger than any realistic EV" floor for
+the storm-chain hard-hold.
+"""
+
+COUNTER_ESTIMATED_COST: int = 2
+"""Rules-constant: estimated mana cost of a generic Modern
+counterspell (Counterspell = UU, Mana Leak = 1U, Force Spike = U).
+2 mana is the median; used by `estimate_opponent_response` in
+`ai/ev_evaluator.py` to predict whether the opp can counter our
+spell given their visible mana.
+"""
+
+REMOVAL_ESTIMATED_COST: int = 1
+"""Rules-constant: estimated mana cost of generic Modern removal
+(Lightning Bolt = R, Fatal Push = B, Unholy Heat = R). 1 mana is
+the median; used by `estimate_opponent_response` in
+`ai/ev_evaluator.py` to predict whether the opp can spot-remove
+our creature given their visible mana.
+"""
+
+DAMAGE_REMOVAL_EFF_HIGH_TOUGH: float = 0.3
+"""Derived: P(damage-based removal kills) when the target has
+toughness >= 4. 30% reflects the 1-of-3 Bolt/Push hit rate against
+a 4+ toughness creature in Modern — the creature lives through Bolt
+and Push, dies to Heat / Unholy Anointment.
+
+Used by `estimate_opponent_response` in `ai/ev_evaluator.py`.
+"""
+
+DAMAGE_REMOVAL_EFF_MID_TOUGH: float = 0.6
+"""Derived: P(damage-based removal kills) when the target has
+toughness == 3. 60% reflects the empirical hit rate at this
+toughness band — Heat / Unholy Anointment / Phoenix Chasm hit, Bolt
+/ Push miss.
+
+Used by `estimate_opponent_response` in `ai/ev_evaluator.py`.
+"""
