@@ -109,9 +109,9 @@ untapped source covers that color.
 
 Used by `score_land` in `ai/mana_planner.py`.
 
-Matches the per-demand weight in block (A) of the same scoring
-function (8.0 per enabled spell) — held interaction is worth the
-same as the spell it protects being castable.
+Derivation: matches the per-demand weight in block (A) of the same
+scoring function (8.0 per enabled spell) — held interaction is worth
+the same as the spell it protects being castable.
 
 Sister constant: HELD_RESPONSE_VALUE_PER_CMC — same "held interaction
 is worth keeping castable" intent, applied at tap-out decision time.
@@ -259,8 +259,8 @@ def evoke_budget_penalty(prior_evokes: int, target_threat: float) -> float:
 # ─── Pitch / opportunity-cost constants ──────────────────────────────
 
 PITCH_COUNTER_FREE_COST: int = 1
-"""Effective cost of a "free" pitch counter on the opponent's turn — 1
-exiled card, no mana.
+"""Rules-constant: effective cost of a "free" pitch counter on the
+opponent's turn — 1 exiled card, no mana.
 
 Used by `respond_to_stack` in `ai/response.py` to decide whether a
 counter is cheap enough to fire even when a post-resolution creature-
@@ -268,4 +268,153 @@ exile is also available.  Counters with effective cost > 1 are reserved
 when triage would otherwise skip them; pitch counters at cost 1 always
 fire because the opportunity cost (one exiled card vs. opp's spell) is
 strictly favorable.
+"""
+
+
+# ─── Keyword clock multipliers (creature_clock_impact in ai/clock.py) ─
+# Multiplicative bonuses applied to a creature's base clock contribution
+# (`power / opp_life`) when it has a clock-relevant keyword. These were
+# previously inline-commented bare literals in `creature_clock_impact`;
+# centralized here so re-tuning is a single-point change and the
+# derivation comments survive grep.
+
+PURE_BLOCKER_TOUGHNESS_VALUE: float = 0.05
+"""Derived: per-toughness clock value of a 0-power creature.
+
+A pure blocker has no offensive clock — its only contribution is
+absorbing damage. Each point of toughness is worth ~0.05 turns of
+clock against an average opponent (delays opp's lethal by ~5%
+per point on the typical 20-life curve). Multiplied against
+`toughness` so a 0/4 wall returns 0.20 turns of defensive value.
+"""
+
+EVASION_VS_BLOCKERS_MULTIPLIER: float = 1.3
+"""Derived: ground creatures lose ~30% damage to blockers on average.
+
+Applied as `base *= 1.3` when a creature with flying/menace/trample
+attacks an opponent who has at least one blocker. The +30% reflects
+the marginal damage that ground-only attackers forfeit to blocking.
+"""
+
+FIRST_STRIKE_SURVIVAL_MULTIPLIER: float = 1.15
+"""Derived: first-strike survives combat more often than a vanilla
+attacker, preserving its clock contribution across turns.
+
++15% reflects the empirical survival rate against equal-toughness
+ground blockers in Modern (most 2-drops are 2/2, so first-strike
+3/2 trades up rather than dying).
+"""
+
+REMOVAL_RESISTANT_MULTIPLIER: float = 1.25
+"""Derived: hexproof / indestructible creatures' clock is more
+reliable because removal can't shorten their contribution window.
+
++25% reflects the typical 1-in-4 removal incidence per turn against
+a relevant threat in Modern (one Bolt / Push / wrath per ~4 turns
+during the threat's expected lifespan).
+"""
+
+UNDYING_RECURSION_MULTIPLIER: float = 1.5
+"""Derived: undying creatures die and come back = roughly 1.5×
+the clock contribution of a vanilla creature.
+
+Not 2.0× because the +1/+1 counter precludes a second undying trigger,
+and the returning body is +1/+1 but the original death still cost a
+combat step. Net = ~1.5 baseline clocks.
+"""
+
+KEYWORD_HALF_WEIGHT: float = 0.5
+"""Derived: lifelink and deathtouch each contribute ~half a vanilla
+creature's clock to the offensive base.
+
+Lifelink: each attack gains life = extends survival by `power/opp_power`
+turns; weighted at 0.5 because the offensive clock and the survival
+extension are partially redundant against a fast clock.
+
+Deathtouch: effectively removes a blocker = improves ground clock by
+`avg_opp_power / opp_life` per attack; weighted at 0.5 because the
+"removed" blocker can be re-deployed by the opponent.
+
+Sister constant: KEYWORD_MINOR_WEIGHT — same "fractional contribution"
+intent for less impactful defensive keywords (vigilance, reach).
+"""
+
+KEYWORD_MINOR_WEIGHT: float = 0.3
+"""Derived: vigilance / reach contribute ~0.3 of a vanilla creature's
+worth of defensive clock.
+
+Vigilance: attacks without tapping = also blocks; defensive value is
+`min(toughness, opp_power) / my_life` per turn, weighted at 0.3
+because the offensive clock dominates and the block availability is
+conditional on opp choosing to attack.
+
+Reach: same formula scoped to opp's evasion power. Same weighting
+rationale.
+
+Sister constant: KEYWORD_HALF_WEIGHT — the higher-impact bracket
+(lifelink, deathtouch).
+"""
+
+TOUGHNESS_DEFENSIVE_WEIGHT: float = 0.15
+"""Derived: a creature's raw toughness contributes a minor blocking
+clock when the opponent has attacking power.
+
+0.15 ≈ ½ × KEYWORD_MINOR_WEIGHT, reflecting that the implicit
+"can block" baseline is worth half as much as an explicit
+defense-improving keyword. Capped by the actual blocking math
+(`min(toughness, opp_power) / my_life`) so over-toughness on
+a single creature doesn't dominate.
+"""
+
+ANNIHILATOR_CHIP_PER_OPP_CREATURE: float = 0.3
+"""Derived: each opp creature on board contributes ~0.3 expected
+forced sacrifices per annihilator trigger, normalized by opp_life.
+
+Captures the "annihilator chips through the opp's board" component
+separately from the per-trigger sacrifice (ANNIHILATOR_BASE_SAC).
+"""
+
+ANNIHILATOR_BASE_SAC: float = 2.0
+"""Derived: each annihilator trigger forces opp to sacrifice ~2 worth
+of permanents (lands + creatures, weighted by typical Modern board
+composition).
+"""
+
+PROWESS_TRIGGER_PER_TURN: float = 1.0
+"""Derived: a prowess creature gains ~+1/+0 per turn from the typical
+Modern noncreature-spell density (1 instant or sorcery per turn for
+spell-heavy decks). Adds 1.0 / opp_life of clock.
+"""
+
+CASCADE_FREE_SPELL_VALUE: float = 2.5
+"""Derived: cascade casts a free spell of CMC strictly less than the
+caster — roughly worth another small creature's clock (~2.5 power
+equivalent). Scaled by 1/opp_life for clock units.
+
+Sister constant: AVG_CREATURE_POWER (this file, defined below) — the
+2.5 here matches the same "average Modern creature" baseline.
+"""
+
+ETB_VALUE_BONUS: float = 2.0
+"""Derived: a creature with the `etb_value` tag has an enter-the-
+battlefield effect worth ~2 damage equivalent on average (typical
+Modern ETBs: 2 damage, 2 life, +1/+1 counter, scry). Scaled by
+1/opp_life for clock units.
+"""
+
+TOKEN_MAKER_BONUS: float = 1.5
+"""Derived: a creature with the `token_maker` tag creates ~1 extra
+body, worth ~1.5 of a vanilla creature's clock contribution. Scaled
+by 1/opp_life for clock units. The token is typically smaller than
+the parent, hence 1.5 rather than 2.5 (cascade) or 2.0 (etb_value).
+"""
+
+AVG_CREATURE_POWER: float = 2.5
+"""Derived: average creature power in Modern. Used by
+`card_clock_impact` to estimate the clock change one card in hand
+provides on average. 2.5 reflects the empirical mean of relevant
+creatures (excluding mana dorks) across the 16 tracked decks.
+
+Sister constant: CASCADE_FREE_SPELL_VALUE — same baseline for the
+"another creature's worth" intent.
 """
