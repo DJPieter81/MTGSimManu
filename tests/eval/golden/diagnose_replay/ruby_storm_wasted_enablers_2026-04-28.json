@@ -1,0 +1,12 @@
+{
+  "input": {
+    "diagnostic_doc": "docs/diagnostics/2026-04-28_storm_wasted_enablers.md",
+    "log_excerpt": "Storm casts Past in Flames 3 times across T2-T4, generating storm count and mana, but never casts Grapeshot (not drawn — 1-of in 60).  AI evaluates flashback_combo_with_gy_fuel signal as positive without checking whether the payoff is reachable in hand or via tutor.  Game ends T4 with 12 storm count, no damage dealt."
+  },
+  "expected": {
+    "observed_symptom": "Storm enablers cast repeatedly with no finisher in hand and no tutor to find one",
+    "suspected_subsystem": "ai.ev_evaluator",
+    "failing_test_rule": "combo enabler ev gated on payoff reachability via hand or tutor",
+    "confidence": 0.9
+  }
+}
