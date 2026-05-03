@@ -3,6 +3,9 @@ title: Affinity 88.1% Overall WR — Diagnostic & Hypothesis List
 status: active
 priority: primary
 session: 2026-05-02
+supersedes:
+  - docs/AFFINITY_REGRESSION.md
+  - docs/diagnostics/2026-04-23_affinity_consolidated_findings.md
 depends_on:
   - docs/proposals/2026-05-02_unified_target_solver.md
 tags:
