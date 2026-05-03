@@ -670,13 +670,13 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
     if _is_immediate_interaction(oracle, tags):
         signals.append('immediate_interaction')
 
-    # 5. Card draw this turn — includes true draw AND impulse-draw
-    #    (exile top N, may play).  Impulse-draw gives card advantage
-    #    this turn even though it isn't technically "draw".
-    if 'draw' in oracle and (
-            'draw a card' in oracle or 'draw two' in oracle
-            or 'draw three' in oracle or 'draw four' in oracle
-            or 'cantrip' in tags or 'card_advantage' in tags):
+    # 5. Card draw this turn — includes true draw, library-dig
+    #    "put X into your hand", and impulse-draw "exile top N, may
+    #    play".  All three deliver same-turn card advantage even
+    #    though only the first uses the literal verb "draw".
+    if (_oracle_signals_card_draw(oracle)
+            or ('draw' in oracle
+                and ('cantrip' in tags or 'card_advantage' in tags))):
         signals.append('card_draw')
     elif ('exile' in oracle and 'may play' in oracle
           and ('cantrip' in tags or 'card_advantage' in tags)):
@@ -899,6 +899,55 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
                 signals.append('flashback_combo_with_gy_fuel')
 
     return signals
+
+
+def _oracle_signals_card_draw(oracle: str) -> bool:
+    """Oracle-text-only detection of same-turn card-advantage.
+
+    Three families register:
+      (a) literal draw — "draw a card", "draw two/three/four cards"
+      (b) library-dig with hand transfer — "look at the top N cards"
+          / "reveal" / "exile" / "search your library" combined with
+          "into your hand". Stock Up, Ancient Stirrings, Anticipate,
+          Augur of Bolas, Memory Deluge, etc.
+      (c) the canonical "search your library" tutor phrasing — already
+          firing as `tutor` in signal #6 but ALSO valid card_draw
+          since it puts a card into hand same-turn.
+
+    Generic by oracle text: 453 ModernAtomic cards match the
+    "into your hand" without "draw" pattern; this function treats
+    them all uniformly without any card-name checks.
+
+    No tags consulted — pure oracle-text check so it composes with
+    the existing tag-gated branch in the enumerator (which preserves
+    legacy semantics for tag-driven cantrip detection that has no
+    matching oracle text).
+    """
+    o = (oracle or '').lower()
+    if not o:
+        return False
+    # (a) literal draw verb forms
+    if ('draw a card' in o or 'draws a card' in o
+            or 'draw two' in o or 'draws two' in o
+            or 'draw three' in o or 'draws three' in o
+            or 'draw four' in o or 'draws four' in o):
+        return True
+    # (b) library-dig that puts a card into hand same-turn.  Both
+    #     halves are required: "into your hand" alone matches bounce
+    #     ("return ~ to its owner's hand") and reanimation modes
+    #     ("return target creature card from your graveyard ... to
+    #     your hand") which are not card-advantage; the library-
+    #     touching verb is what makes the effect a dig.
+    has_library_verb = (
+        'look at the top' in o
+        or 'reveal the top' in o
+        or 'reveal cards from the top' in o
+        or 'exile the top' in o
+        or 'search your library' in o
+    )
+    if has_library_verb and 'into your hand' in o:
+        return True
+    return False
 
 
 def _is_real_dig(card: "CardInstance") -> bool:
