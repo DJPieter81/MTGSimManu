@@ -17,8 +17,10 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install pytest
-        run: pip install pytest
+      - name: Install dependencies
+        # pydantic-ai is required by the LLM-backend synth tests.
+        # CI uses TestModel only — no real API calls happen here.
+        run: pip install pytest pydantic-ai
 
       - name: Run abstraction ratchet
         run: python tools/check_abstraction.py

@@ -22,9 +22,9 @@ The contract this test locks in:
   3. Round-tripped `DeckGameplan` has the same goals, archetype, and
      mulligan ranges as the synthesized plan.
 
-The LLM backend is intentionally unimplemented in this PR; a smoke
-test asserts the placeholder raises `NotImplementedError` so a
-later removal is detected.
+The LLM backend (pydantic-ai) lives in
+`tests/test_synth_gameplan_llm_backend.py`; it uses pydantic-ai's
+`TestModel` so CI never makes a real API call.
 """
 from __future__ import annotations
 
@@ -136,10 +136,3 @@ def test_round_trip_synth_to_loader_to_dataclass(card_db):
     assert dataclass_plan.archetype == plan.archetype
 
 
-def test_llm_backend_unimplemented_until_followup_pr():
-    """The pydantic-ai LLM backend is a follow-up.  This test asserts
-    the placeholder raises `NotImplementedError` so the eventual
-    implementation removes the placeholder rather than shadowing it."""
-    from tools.synth_gameplan import synth_gameplan_llm
-    with pytest.raises(NotImplementedError):
-        synth_gameplan_llm("X", {"Lightning Bolt": 4})
