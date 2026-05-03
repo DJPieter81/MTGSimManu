@@ -32,29 +32,34 @@ if TYPE_CHECKING:
     from engine.cards import CardInstance, CardTemplate, Keyword
 
 # ── Combat constants ──
-# Structural: lethal = game over
-LETHAL_BONUS = 100.0
-# 2-turn lethal: strong but not game-over
-TWO_TURN_LETHAL_BONUS = 15.0
-# Trade values: derived from creature clock impact difference
-TRADE_UP_BONUS = 2.0
-TRADE_DOWN_PENALTY = -2.5
-# Risk of tapping out vs open opponent mana
-SHIELDS_DOWN_PENALTY = -1.5
-# Computational budget (structural)
-MAX_ATTACK_CONFIGS = 32
-# Response thresholds: derived from creature_value() scale (~1-15).
-# A 3/3 vanilla = ~3.0, a 3/3 flyer = ~4.3, a 6/6 trample = ~10.
-# Counter if threat > cost of holding counter (opportunity cost of the card).
-# Cheap counters (CMC≤2) have low opportunity cost → lower threshold.
-COUNTER_THRESHOLD = 5.0         # ~3/3 with a keyword
-COUNTER_CHEAP_THRESHOLD = 2.0   # cheap counter: counter almost anything
-REMOVAL_RESPONSE_THRESHOLD = 4.0  # remove if creature ≥ ~3/3
-BLINK_SAVE_THRESHOLD = 3.5       # save creature worth ≥ ~2/2 with keyword
-# Pre-combat removal: killing a blocker enables ~3 extra damage = 3/20 clock gain × 20 ≈ 3
-PRE_COMBAT_REMOVAL_BONUS = 2.5
-# Holding up mana: value ≈ avg_threat × P(needing_response) ≈ 5 × 0.5 + counter_value
-MANA_RESERVATION_WEIGHT = 5.0
+# Centralised in ai/scoring_constants.py — see that module for full
+# derivations. Re-imported here so existing call sites keep working.
+from ai.scoring_constants import (
+    LETHAL_BONUS,
+    TWO_TURN_LETHAL_BONUS,
+    TRADE_UP_BONUS,
+    TRADE_DOWN_PENALTY,
+    SHIELDS_DOWN_PENALTY,
+    MAX_ATTACK_CONFIGS,
+    COUNTER_THRESHOLD,
+    COUNTER_CHEAP_THRESHOLD,
+    REMOVAL_RESPONSE_THRESHOLD,
+    BLINK_SAVE_THRESHOLD,
+    PRE_COMBAT_REMOVAL_BONUS,
+    MANA_RESERVATION_WEIGHT,
+    INFORMATION_BONUS,
+    NO_INTERACTION_PENALTY,
+    LETHAL_PUSH_INFEASIBLE_PENALTY,
+    CARD_IN_HAND_VALUE,
+    MANA_AVAILABLE_VALUE,
+    LIFE_SCORE_SCALE,
+    LIFE_SCORE_AVG_INCOMING,
+    CHIP_DAMAGE_VALUE,
+    AGGRESSION_BONUS_LIFE8,
+    AGGRESSION_BONUS_LIFE12,
+    AGGRESSION_BONUS_LIFE16,
+    DOUBLE_BLOCK_VALUE_THRESHOLD,
+)
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -146,10 +151,10 @@ class VirtualBoard:
         score += my_board - opp_board
         # Card advantage: each card ≈ avg creature power / opp_life in clock terms
         # ~2.5 power / 20 life × 20 (scale factor) ≈ 2.5 per card
-        score += len(self.my_hand) * 2.5
+        score += len(self.my_hand) * CARD_IN_HAND_VALUE
         # Mana: each mana enables ~1 power of deployment / opp_life
         # ~1/20 × 20 ≈ 1.0, but discounted (can't always use all mana)
-        score += self.my_mana * 0.3
+        score += self.my_mana * MANA_AVAILABLE_VALUE
         return score
 
 
@@ -158,7 +163,7 @@ def _life_score(life: int) -> float:
     from ai.clock import life_as_resource
     # Use average incoming power of 3 for context-free evaluation
     # Scale by 5 to match the ~0-30 range the VirtualBoard.score() expects
-    return life_as_resource(life, 3) * 5.0
+    return life_as_resource(life, LIFE_SCORE_AVG_INCOMING) * LIFE_SCORE_SCALE
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -271,7 +276,7 @@ class CombatPlanner:
             # Chip damage bonus: dealing ANY damage has inherent value
             # This ensures profitable-but-small attacks (1/1 into empty) are taken
             if result.damage_to_opp > 0:
-                delta += result.damage_to_opp * 0.3  # base chip value
+                delta += result.damage_to_opp * CHIP_DAMAGE_VALUE  # base chip value
                 # Draw-step prevention bonus: each damage point advances the
                 # game toward a state where opponent has fewer draw steps.
                 # Scales with fraction of opponent's remaining life — pushing
@@ -282,17 +287,17 @@ class CombatPlanner:
                 # (where the block math already dominates).
                 if board.opp_life > 0:
                     turns_of_draws_removed = result.damage_to_opp / max(board.opp_life, 1)
-                    delta += turns_of_draws_removed * 0.3
+                    delta += turns_of_draws_removed * CHIP_DAMAGE_VALUE
 
             # Aggression bonus: attacks become more valuable as opponent's life drops.
             # In real MTG, players push damage aggressively when opponent is low.
             total_attack_power = sum(c.power for c in config)
             if board.opp_life <= 8:
-                delta += total_attack_power * 0.8  # push hard for lethal range
+                delta += total_attack_power * AGGRESSION_BONUS_LIFE8  # push hard for lethal range
             elif board.opp_life <= 12:
-                delta += total_attack_power * 0.4  # moderate aggression
+                delta += total_attack_power * AGGRESSION_BONUS_LIFE12  # moderate aggression
             elif board.opp_life <= 16:
-                delta += total_attack_power * 0.15  # slight aggression
+                delta += total_attack_power * AGGRESSION_BONUS_LIFE16  # slight aggression
 
             if delta > best_score:
                 best_score = delta
@@ -609,7 +614,7 @@ class CombatPlanner:
         for attacker in sorted_attackers:
             if attacker.instance_id in blocks:
                 continue
-            if attacker.value < 4.0:
+            if attacker.value < DOUBLE_BLOCK_VALUE_THRESHOLD:
                 continue  # only double-block high-value threats
             available = [b for b in blockers if b.instance_id not in used_blockers
                         and self._can_block(b, attacker)]
@@ -667,9 +672,9 @@ class TurnPlanner:
     - "Don't deploy a creature pre-combat — hold up counter mana"
     - "Attack first to see what they block, THEN cast creature in main 2"
 
-    Tunable parameters — imported from ai/constants.py
+    Tunable parameters — imported from ai/scoring_constants.py
+    (INFORMATION_BONUS).
     """
-    INFORMATION_BONUS = 0.3  # bonus for attacking first (see blocks before committing)
 
     def __init__(self):
         self.combat_planner = CombatPlanner()
@@ -928,7 +933,7 @@ class TurnPlanner:
             reasoning_parts.append(f"Deploy {best.name} in main 2")
             combat_score += best.spell_value * 0.9  # slight discount for delayed deploy
 
-        score = sim.score() + combat_score + self.INFORMATION_BONUS
+        score = sim.score() + combat_score + INFORMATION_BONUS
 
         return TurnPlan(
             pre_combat_actions=[],
@@ -955,7 +960,7 @@ class TurnPlanner:
                 pre_combat_actions=[],
                 attack_config=[],
                 post_combat_actions=[],
-                expected_score=sim.score() - 5.0,  # penalty for doing nothing
+                expected_score=sim.score() - NO_INTERACTION_PENALTY,  # penalty for doing nothing
                 reasoning="No interaction available — bad strategy",
             )
 
@@ -1012,7 +1017,7 @@ class TurnPlanner:
                 pre_combat_actions=[],
                 attack_config=[],
                 post_combat_actions=[],
-                expected_score=sim.score() - 10.0,
+                expected_score=sim.score() - LETHAL_PUSH_INFEASIBLE_PENALTY,
                 reasoning="Not enough damage for lethal push",
             )
 
