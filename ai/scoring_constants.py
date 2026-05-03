@@ -1972,3 +1972,18 @@ deployed per turn, a blocker dies in combat every ~3 turns).
 Used by `combat_clock` in `ai/clock.py` as the divisor in the
 blocker-absorption term `opp_total_toughness / 3.0`.
 """
+
+
+# ─── Win-probability fallback constants (ai/win_probability.py) ──────
+# Used by the position-only fallback featurizer when the calibrator
+# artifact is missing the full numeric model.
+
+WIN_PROB_LIFE_DIFF_NORMALIZER: float = 5.0
+"""Derived: divisor that maps the (opp_life - my_life) gap into a
+single fallback feature for the position-only featurizer. 5.0 ≈ 1/4
+of Modern's starting life total — a 5-life swing corresponds to one
+unit of feature magnitude, matching the typical "one attacker's worth
+of pressure" the fallback is meant to approximate.
+
+Used by `_featurize_position_only` in `ai/win_probability.py`.
+"""
