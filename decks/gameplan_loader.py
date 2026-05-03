@@ -21,6 +21,39 @@ _GAMEPLANS_DIR = Path(__file__).parent / "gameplans"
 _cache: Dict[str, DeckGameplan] = {}
 
 
+# Roles that count as "essential" for mulligan-key derivation. Excludes
+# `interaction` (a control deck's removal suite isn't a mulligan key —
+# the deck wins by interacting on the opp's clock, not by drawing
+# interaction in the opener) and `support` / `engine` synonyms.
+_MULLIGAN_KEY_ROLES = ("enablers", "payoffs", "finishers")
+
+
+def _derive_mulligan_keys(goals: List["Goal"]) -> Set[str]:
+    """Derive `mulligan_keys` from the goals' `card_roles` declarations.
+
+    Returns the union of every goal's `enablers` / `payoffs` / `finishers`
+    role buckets.  These are the cards the deck *needs* to assemble its
+    plan — exactly the set a hand should be evaluated against at
+    mulligan time.
+
+    Used when a gameplan JSON omits or empties `mulligan_keys`.  An
+    explicit JSON list always overrides the derived set (override
+    semantics — the deck author may have a non-obvious mulligan rule).
+
+    Per CLAUDE.md ABSTRACTION CONTRACT: card-specific knowledge lives in
+    the goals, not duplicated as a hand-maintained `mulligan_keys` list
+    that drifts out of sync with the goal definitions.
+    """
+    derived: Set[str] = set()
+    for goal in goals:
+        roles = goal.card_roles or {}
+        for role_name in _MULLIGAN_KEY_ROLES:
+            cards = roles.get(role_name)
+            if cards:
+                derived.update(cards)
+    return derived
+
+
 def _parse_goal(data: Dict[str, Any]) -> Goal:
     """Convert a JSON goal dict to a Goal dataclass."""
     # Convert card_roles values from lists to sets
@@ -58,10 +91,15 @@ def _parse_gameplan(data: Dict[str, Any]) -> DeckGameplan:
         from ai.gameplan import generic_combo_readiness
         combo_readiness_check = generic_combo_readiness
 
+    # Mulligan keys: explicit JSON list overrides the derived set.
+    # Empty / missing → derive from goals (single source of truth).
+    explicit_keys = set(data.get("mulligan_keys", []))
+    mulligan_keys = explicit_keys if explicit_keys else _derive_mulligan_keys(goals)
+
     return DeckGameplan(
         deck_name=data["deck_name"],
         goals=goals,
-        mulligan_keys=set(data.get("mulligan_keys", [])),
+        mulligan_keys=mulligan_keys,
         mulligan_min_lands=data.get("mulligan_min_lands", 2),
         mulligan_max_lands=data.get("mulligan_max_lands", 4),
         mulligan_effective_cmc=data.get("mulligan_effective_cmc", {}),
