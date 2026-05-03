@@ -9,9 +9,18 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Callable, List, Optional, Tuple
 
 from ai.scoring_constants import (
+    CHEAP_COUNTER_PAID_THRESHOLD,
+    CHEAP_THREAT_PAID_THRESHOLD,
+    CLOCK_IMPACT_LIFE_SCALING,
+    COUNTER_GATE_HIGH_MULTIPLIER,
+    COUNTER_GATE_LOW_MULTIPLIER,
+    EQUIPMENT_DEFAULT_POWER_BONUS,
+    EQUIPMENT_RESIDENCY_TURNS,
+    HELD_COUNTER_FLOOR_MIN_EV,
     LETHAL_THREAT,
     NEAR_LETHAL_CUTOFF,
     PITCH_COUNTER_FREE_COST,
+    PROACTIVE_REMOVAL_MIN_VALUE,
 )
 
 if TYPE_CHECKING:
@@ -78,8 +87,9 @@ class ResponseDecider:
         #
         # Threshold uses `card_clock_impact` to derive the floor value
         # of holding a counter.  A held counter is worth at least
-        # `card_clock_impact(snap) × 20.0` in future EV (same `× 20.0`
-        # scaling the threat evaluator uses for equipment / cascade).
+        # `card_clock_impact(snap) × CLOCK_IMPACT_LIFE_SCALING` in future
+        # EV (same scaling the threat evaluator uses for equipment /
+        # cascade).
         # Override fires when the current threat exceeds the LETHAL
         # sentinel scale (`evaluate_stack_threat`'s 100.0) — at half-
         # sentinel we already accept that no future use of the counter
@@ -90,7 +100,9 @@ class ResponseDecider:
         # Floor on held-counter EV — a held counter is worth at least
         # this much when reserved for a future non-creature threat.
         # Used as the lower bound for the triage decision.
-        held_counter_floor_ev = card_clock_impact(snap_self) * 20.0
+        # CLOCK_IMPACT_LIFE_SCALING converts clock-impact units into
+        # life-point units (sourced from ai/scoring_constants.py).
+        held_counter_floor_ev = card_clock_impact(snap_self) * CLOCK_IMPACT_LIFE_SCALING
         # Near-lethal cutoff: ½ × LETHAL_THREAT (sentinel inside
         # `evaluate_stack_threat`).  Above this, the counter must fire
         # because no held-counter future EV can outweigh "we lose now".
@@ -238,21 +250,15 @@ class ResponseDecider:
             held_counter_floor_ev = self._held_counter_floor_ev(game)
             # COUNTER_GATE_HIGH: threat must clear the floor EV by a
             # decisive margin to justify firing an expensive counter.
-            # 1.5× expresses "clearly above replacement value" — one
-            # held card swap is worthwhile if the threat trades up by
-            # 50%+. Mirrors the legacy 3.0 hardcoded threshold for a
-            # typical floor of ~2.0 post-fix (regression-safe).
-            COUNTER_GATE_HIGH = held_counter_floor_ev * 1.5
+            # Multiplier sourced from ai/scoring_constants.py
+            # (COUNTER_GATE_HIGH_MULTIPLIER).
+            COUNTER_GATE_HIGH = held_counter_floor_ev * COUNTER_GATE_HIGH_MULTIPLIER
             # COUNTER_GATE_LOW: when the trade is favourable (cheap
             # held counter OR cheaply-paid threat), the gate drops to
-            # 0.5× floor EV. The 0.5 reflects that a cheap counter
-            # firing on a free spell is a tempo-positive trade even
-            # if the absolute threat value is below replacement —
-            # we're denying opp's free value at minimal cost. Pre-fix
-            # the legacy 1.5 floor failed for affinity-discounted
-            # card-advantage spells whose projection-based threat sat
-            # at ~1.0.
-            COUNTER_GATE_LOW = held_counter_floor_ev * 0.5
+            # below-replacement so we still fire on tempo-positive
+            # trades.  Multiplier sourced from ai/scoring_constants.py
+            # (COUNTER_GATE_LOW_MULTIPLIER).
+            COUNTER_GATE_LOW = held_counter_floor_ev * COUNTER_GATE_LOW_MULTIPLIER
             # `cost` is the counter's effective cost (already routed
             # through _effective_counter_cost which handles pitch-
             # counter alternatives). `threat_paid_cost` is what the
@@ -262,11 +268,11 @@ class ResponseDecider:
             # used to live in evaluate_stack_threat). A cheap held
             # counter OR a cheaply-paid threat both qualify the LOW
             # gate; either represents a strong tempo trade.
-            CHEAP_COUNTER_PAID = 2
-            CHEAP_THREAT_PAID = 2
+            # Thresholds sourced from ai/scoring_constants.py
+            # (CHEAP_COUNTER_PAID_THRESHOLD / CHEAP_THREAT_PAID_THRESHOLD).
             threat_paid_cost = self._effective_paid_cost(game, stack_item)
-            cheap_trade = (cost <= CHEAP_COUNTER_PAID
-                           or threat_paid_cost <= CHEAP_THREAT_PAID)
+            cheap_trade = (cost <= CHEAP_COUNTER_PAID_THRESHOLD
+                           or threat_paid_cost <= CHEAP_THREAT_PAID_THRESHOLD)
             if (response_value >= COUNTER_GATE_HIGH
                     or (response_value >= COUNTER_GATE_LOW and cheap_trade)):
                 if self.strategic_logger:
@@ -318,7 +324,11 @@ class ResponseDecider:
                         val = estimate_removal_value(
                             target, instant.template.cmc,
                             opponent, game, 1 - self.player_idx)
-                        if val >= 3.0:
+                        # Threshold sourced from ai/scoring_constants.py
+                        # (PROACTIVE_REMOVAL_MIN_VALUE) — the "worth a
+                        # card" floor on estimate_removal_value below
+                        # which we hold removal for a higher-EV target.
+                        if val >= PROACTIVE_REMOVAL_MIN_VALUE:
                             return (instant, [target.instance_id])
 
         if self.strategic_logger:
@@ -367,14 +377,14 @@ class ResponseDecider:
 
         A counter in hand is worth roughly "one card of impact" — exactly
         what `card_clock_impact` already quantifies (avg power / opp life,
-        gated by castable mana). Multiply by the same ×20 scaling factor
-        used throughout `evaluate_stack_threat` to convert clock-impact
-        units into life-point units, so the floor is directly comparable
-        to the threat values produced there.
+        gated by castable mana). Multiply by CLOCK_IMPACT_LIFE_SCALING
+        (the same factor used throughout `evaluate_stack_threat`) to
+        convert clock-impact units into life-point units, so the floor
+        is directly comparable to the threat values produced there.
 
-        Floored at a small positive constant (FLOOR_MIN_EV) so an empty
-        snapshot (no mana, no opp life pressure) doesn't collapse the
-        gate to zero — the counter still costs at least a card.
+        Floored at HELD_COUNTER_FLOOR_MIN_EV so an empty snapshot (no
+        mana, no opp life pressure) doesn't collapse the gate to zero
+        — the counter still costs at least a card.
 
         Used to derive the gate thresholds in `decide_response` instead
         of the legacy hardcoded 1.5 / 3.0 magic numbers (P0-A).
@@ -382,13 +392,10 @@ class ResponseDecider:
         from ai.clock import card_clock_impact
         from ai.ev_evaluator import snapshot_from_game
         snap = snapshot_from_game(game, self.player_idx)
-        # FLOOR_MIN_EV: a held counter is at minimum worth a single card,
-        # which the ×20 scaling places at ~0.5-1.0 in the worst case.
-        # The 1.0 floor matches the lower edge of card_clock_impact ×20
-        # for a typical Modern game state (avg power 2.5 / opp life 20 =
-        # 0.125 base; ×0.4 castable fraction at 1 mana; ×20 = 1.0).
-        FLOOR_MIN_EV = 1.0
-        return max(FLOOR_MIN_EV, card_clock_impact(snap) * 20.0)
+        # Floor and scaling sourced from ai/scoring_constants.py
+        # (HELD_COUNTER_FLOOR_MIN_EV / CLOCK_IMPACT_LIFE_SCALING).
+        return max(HELD_COUNTER_FLOOR_MIN_EV,
+                   card_clock_impact(snap) * CLOCK_IMPACT_LIFE_SCALING)
 
     def _effective_paid_cost(self, game: "GameState",
                              stack_item: "StackItem") -> int:
@@ -628,7 +635,7 @@ class ResponseDecider:
             # Cascade ~= 1 free spell at cmc - 1 mana. Value = saved mana
             # + expected threat value of what they cast.
             saved_mana = max(1, (template.cmc or 2) - 1)
-            threat += saved_mana * mana_clock_impact(snap_for_clock) * 20.0
+            threat += saved_mana * mana_clock_impact(snap_for_clock) * CLOCK_IMPACT_LIFE_SCALING
         if 'reanimate' in getattr(template, 'tags', set()):
             # Reanimate value = threat value of the biggest creature in
             # opp graveyard (oracle-driven, not hardcoded).
@@ -642,15 +649,16 @@ class ResponseDecider:
         # Equipment: ongoing damage amplifier. Value = damage added to
         # the creature it equips × expected turns the equipment sticks.
         # Derive from oracle: flat +P/+T bonuses and "for each" scalers.
+        # Residency window + default pump sourced from
+        # ai/scoring_constants.py (EQUIPMENT_RESIDENCY_TURNS /
+        # EQUIPMENT_DEFAULT_POWER_BONUS).
         import re
-        # Rules constant: 3 combat turns is the typical equipment
-        # residency window in Modern (equipment is rarely removed).
-        EQUIP_RESIDENCY_TURNS = 3
         if ('Equipment' in subtypes
                 or 'equipment' in getattr(template, 'tags', set())):
-            # Base equipment: approximate +2 power on a creature over
-            # ~3 combat turns. Uses mana_clock_impact × effective power.
-            power_bonus = 2  # default equipment P/T bonus
+            # Base equipment: approximate default power bonus on a
+            # creature over the residency window.  Uses mana_clock_impact
+            # × effective power.
+            power_bonus = EQUIPMENT_DEFAULT_POWER_BONUS
             m = re.search(r'\+(\d+)/\+\d+', oracle)
             if m:
                 power_bonus = int(m.group(1))
@@ -661,13 +669,14 @@ class ResponseDecider:
                 from engine.cards import CardType as _CT
                 power_bonus += sum(1 for c in opp_player.battlefield
                                     if _CT.ARTIFACT in c.template.card_types)
-            threat += power_bonus * EQUIP_RESIDENCY_TURNS * mana_clock_impact(snap_for_clock) * 20.0
+            threat += (power_bonus * EQUIPMENT_RESIDENCY_TURNS
+                       * mana_clock_impact(snap_for_clock) * CLOCK_IMPACT_LIFE_SCALING)
 
         # Carrier-pool synergy (R1). When the incoming spell is a creature,
         # check opp's battlefield for equipment whose pump rebinds onto
         # any creature each turn. Adding a NEW carrier to the pool means
         # the pump can land on a fresh attacker — the equipment's damage
-        # over EQUIP_RESIDENCY_TURNS multiplies across more bodies before
+        # over EQUIPMENT_RESIDENCY_TURNS multiplies across more bodies before
         # any single blocker can trade them all away.
         #
         # Marginal value per equipment = pump / (current_carriers + 1):
@@ -699,8 +708,8 @@ class ResponseDecider:
                         if _CT.ARTIFACT in c.template.card_types
                     )
                 marginal = pump / (current_carriers + 1)
-                threat += (marginal * EQUIP_RESIDENCY_TURNS
-                           * mana_clock_impact(snap_for_clock) * 20.0)
+                threat += (marginal * EQUIPMENT_RESIDENCY_TURNS
+                           * mana_clock_impact(snap_for_clock) * CLOCK_IMPACT_LIFE_SCALING)
 
         # X-cost / 'for each' creatures (R1). Walking Ballista enters with
         # X +1/+1 counters where X is the mana paid; its printed P/T is
@@ -722,10 +731,10 @@ class ResponseDecider:
             expected_x = max(0, snap_for_clock.my_mana - fixed_cost)
             if 'x +1/+1 counter' in oracle or 'x +1/+1 counters' in oracle:
                 # Each counter = +1 power on the body. Treat the projected
-                # body as a creature attacking over EQUIP_RESIDENCY_TURNS
+                # body as a creature attacking over EQUIPMENT_RESIDENCY_TURNS
                 # (same residency primitive used elsewhere in this fn).
-                threat += (expected_x * EQUIP_RESIDENCY_TURNS
-                           * mana_clock_impact(snap_for_clock) * 20.0)
+                threat += (expected_x * EQUIPMENT_RESIDENCY_TURNS
+                           * mana_clock_impact(snap_for_clock) * CLOCK_IMPACT_LIFE_SCALING)
             elif 'for each' in oracle:
                 # Generic 'for each X' creature scaler — count opp's
                 # matching permanents and credit one power per match.
@@ -749,24 +758,24 @@ class ResponseDecider:
                         )
                     else:
                         n = len(opp_player.battlefield)
-                    threat += (n * EQUIP_RESIDENCY_TURNS
-                               * mana_clock_impact(snap_for_clock) * 20.0)
+                    threat += (n * EQUIPMENT_RESIDENCY_TURNS
+                               * mana_clock_impact(snap_for_clock) * CLOCK_IMPACT_LIFE_SCALING)
 
         # Cost reducers: enable combos. Value = mana saved per spell ×
         # spells_per_turn × turns_remaining. Use card_clock_impact as a
         # proxy for "card advantage via mana savings".
         if getattr(template, 'is_cost_reducer', False):
-            threat += card_clock_impact(snap_for_clock) * 20.0
+            threat += card_clock_impact(snap_for_clock) * CLOCK_IMPACT_LIFE_SCALING
 
         # Token generators / engines: value = ongoing bodies over time.
         # card_clock_impact already expresses "future card as clock change",
         # so one trigger per turn over a few turns.
         if 'whenever' in oracle and ('create' in oracle or 'token' in oracle):
-            threat += card_clock_impact(snap_for_clock) * 20.0
+            threat += card_clock_impact(snap_for_clock) * CLOCK_IMPACT_LIFE_SCALING
 
         # Card advantage engines (Thought Monitor draws 2): value = one
         # extra card — already what card_clock_impact computes.
         if 'card_advantage' in getattr(template, 'tags', set()):
-            threat += card_clock_impact(snap_for_clock) * 20.0
+            threat += card_clock_impact(snap_for_clock) * CLOCK_IMPACT_LIFE_SCALING
 
         return max(0, threat)
