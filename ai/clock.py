@@ -13,6 +13,24 @@ from __future__ import annotations
 import math
 from typing import TYPE_CHECKING, Optional, Set
 
+from ai.scoring_constants import (
+    PURE_BLOCKER_TOUGHNESS_VALUE,
+    EVASION_VS_BLOCKERS_MULTIPLIER,
+    FIRST_STRIKE_SURVIVAL_MULTIPLIER,
+    REMOVAL_RESISTANT_MULTIPLIER,
+    UNDYING_RECURSION_MULTIPLIER,
+    KEYWORD_HALF_WEIGHT,
+    KEYWORD_MINOR_WEIGHT,
+    TOUGHNESS_DEFENSIVE_WEIGHT,
+    ANNIHILATOR_CHIP_PER_OPP_CREATURE,
+    ANNIHILATOR_BASE_SAC,
+    PROWESS_TRIGGER_PER_TURN,
+    CASCADE_FREE_SPELL_VALUE,
+    ETB_VALUE_BONUS,
+    TOKEN_MAKER_BONUS,
+    AVG_CREATURE_POWER,
+)
+
 if TYPE_CHECKING:
     from ai.ev_evaluator import EVSnapshot
     from engine.cards import CardInstance
@@ -88,10 +106,10 @@ def card_clock_impact(snap: "EVSnapshot") -> float:
     A card is worth roughly "average creature power / opponent life" turns,
     discounted by whether we have mana to cast it.
     """
-    # Average creature in Modern: ~2.5 power, ~2.5 CMC
-    avg_power = 2.5
+    # AVG_CREATURE_POWER is the centralized "average Modern creature"
+    # baseline (~2.5 power, ~2.5 CMC), shared with cascade/token bonuses.
     opp_life = max(1, snap.opp_life)
-    base_impact = avg_power / opp_life  # ~0.125 at 20 life, ~0.5 at 5 life
+    base_impact = AVG_CREATURE_POWER / opp_life  # ~0.125 at 20 life, ~0.5 at 5 life
 
     # Mana gating: cards are worth less if we can't cast them
     castable_fraction = min(1.0, snap.my_mana / 3.0) if snap.my_mana > 0 else 0.2
@@ -187,82 +205,78 @@ def creature_clock_impact(power: int, toughness: int,
     """
     opp_life = max(1, snap.opp_life)
     if power <= 0 and not keywords:
-        return toughness * 0.05  # pure blocker, tiny clock value
+        return toughness * PURE_BLOCKER_TOUGHNESS_VALUE
 
-    # Base clock impact: fraction of kill per turn
-    # A 3/3 vs 20 life = 0.15 turns per combat step
+    # Base clock impact: fraction of kill per turn.
+    # A 3/3 vs 20 life = 0.15 turns per combat step.
     base = power / opp_life
 
-    # Keywords modify clock through game mechanics:
-
-    # Flying/menace/trample: evasion bypasses blockers → power connects reliably
-    # Without evasion, some damage is absorbed by blockers
+    # Flying / menace / trample bypass blockers; multiplier from
+    # EVASION_VS_BLOCKERS_MULTIPLIER (ground attackers lose ~30%).
     has_evasion = keywords & {"flying", "menace", "trample"}
     if has_evasion and snap.opp_creature_count > 0:
-        # Evasion is worth more when opponent has blockers
-        # Ground creatures lose ~30% damage to blockers on average
-        base *= 1.3
+        base *= EVASION_VS_BLOCKERS_MULTIPLIER
 
-    # Haste: immediate attack the turn it enters = one extra combat step
+    # Haste: immediate attack the turn it enters = one extra combat step.
     if "haste" in keywords:
         base += power / opp_life
 
-    # Lifelink: extends my survival clock
+    # Lifelink: each attack gains life = extends survival by
+    # power/opp_power turns; weighted by KEYWORD_HALF_WEIGHT
+    # (offensive + defensive contributions partially redundant).
     if "lifelink" in keywords and snap.opp_power > 0:
-        # Each attack gains life = extends survival by power/opp_power turns
         life_extension = power / max(1, snap.opp_power)
-        base += life_extension * 0.5  # half weight (offensive + defensive)
+        base += life_extension * KEYWORD_HALF_WEIGHT
 
-    # Deathtouch: forces opponent to sacrifice a creature to block
+    # Deathtouch: effectively removes a blocker = improves ground clock,
+    # weighted by KEYWORD_HALF_WEIGHT (blocker can be re-deployed).
     if "deathtouch" in keywords and snap.opp_creature_count > 0:
-        # Effectively removes a blocker = improves ground clock
         avg_opp_power = snap.opp_power / max(1, snap.opp_creature_count)
-        base += avg_opp_power / opp_life * 0.5
+        base += avg_opp_power / opp_life * KEYWORD_HALF_WEIGHT
 
-    # Double strike: effectively doubles power for clock
+    # Double strike: effectively doubles power for clock.
     if "double_strike" in keywords:
         base += power / opp_life
 
-    # First strike: survives combat more often, preserving clock contribution
+    # First strike: survives combat more often, preserving clock.
     if "first_strike" in keywords and snap.opp_creature_count > 0:
-        base *= 1.15
+        base *= FIRST_STRIKE_SURVIVAL_MULTIPLIER
 
-    # Hexproof/indestructible: harder to remove = clock contribution persists
+    # Hexproof / indestructible: removal-proof clock is more reliable.
     if "hexproof" in keywords or "indestructible" in keywords:
-        # Removal-proof creature's clock value is more reliable
-        base *= 1.25
+        base *= REMOVAL_RESISTANT_MULTIPLIER
 
-    # Vigilance: attacks without tapping = also blocks
+    # Vigilance: attacks without tapping = also blocks; defensive
+    # contribution at KEYWORD_MINOR_WEIGHT (offensive clock dominates).
     if "vigilance" in keywords and snap.opp_power > 0:
         block_value = min(toughness, snap.opp_power) / max(1, snap.my_life)
-        base += block_value * 0.3
+        base += block_value * KEYWORD_MINOR_WEIGHT
 
-    # Reach: blocks flyers
+    # Reach: blocks flyers; same minor defensive bracket as vigilance.
     if "reach" in keywords and snap.opp_evasion_power > 0:
-        base += min(toughness, snap.opp_evasion_power) / max(1, snap.my_life) * 0.3
+        base += min(toughness, snap.opp_evasion_power) / max(1, snap.my_life) * KEYWORD_MINOR_WEIGHT
 
-    # Undying: dies and comes back = double the clock contribution
+    # Undying: dies and comes back = ~1.5× clock contribution.
     if "undying" in keywords:
-        base *= 1.5
+        base *= UNDYING_RECURSION_MULTIPLIER
 
-    # Annihilator: forces opponent to sacrifice permanents
+    # Annihilator: forced sacrifice — board chip + per-trigger sac.
     if "annihilator" in keywords:
-        # Devastating — removes opponent's clock AND resources
-        base += snap.opp_creature_count * 0.3 / max(1, opp_life)
-        base += 2.0 / opp_life  # sacrifice permanents
+        base += snap.opp_creature_count * ANNIHILATOR_CHIP_PER_OPP_CREATURE / max(1, opp_life)
+        base += ANNIHILATOR_BASE_SAC / opp_life
 
-    # Prowess: gains +1/+0 per noncreature spell, estimate ~1 trigger/turn
+    # Prowess: ~1 noncreature spell per turn = ~1 trigger.
     if "prowess" in keywords:
-        base += 1.0 / opp_life
+        base += PROWESS_TRIGGER_PER_TURN / opp_life
 
-    # Cascade: casts a free spell = roughly another creature's worth
+    # Cascade: free spell of CMC < caster ≈ another small creature.
     if "cascade" in keywords:
-        base += 2.5 / opp_life
+        base += CASCADE_FREE_SPELL_VALUE / opp_life
 
-    # Toughness as blocking value: absorbs opponent damage
+    # Implicit toughness blocking value (no keyword required).
     if toughness > 0 and snap.opp_power > 0:
         block_value = min(toughness, snap.opp_power) / max(1, snap.my_life)
-        base += block_value * 0.15  # minor defensive contribution
+        base += block_value * TOUGHNESS_DEFENSIVE_WEIGHT
 
     return base
 
@@ -282,11 +296,11 @@ def creature_clock_impact_from_card(card: "CardInstance",
     tags = getattr(t, 'tags', set())
     opp_life = max(1, snap.opp_life)
     if "etb_value" in tags:
-        base += 2.0 / opp_life  # ETB = extra effect worth ~2 damage
+        base += ETB_VALUE_BONUS / opp_life
     if "card_advantage" in tags:
         base += card_clock_impact(snap)  # draws a card = future clock change
     if "token_maker" in tags:
-        base += 1.5 / opp_life  # creates an extra body
+        base += TOKEN_MAKER_BONUS / opp_life
 
     return base
 

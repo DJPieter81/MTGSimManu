@@ -62,6 +62,10 @@ class StrategyProfile:
 
     # ── Combat ──
     attack_threshold: float = -0.5        # slightly negative: attack when trades are close
+    # Aggro closes games by lowering the EV threshold for "go for it" attacks
+    # by this much when opp is at lethal range. Per-archetype tuning: aggro
+    # lists are willing to accept marginal EV trades that midrange/control
+    # decks would refuse, because the aggro plan loses if the game grinds.
     aggro_closing_threshold_reduction: float = 2.0
     # Opp won't block with creatures whose power exceeds attacker.power * this ratio
     # (trading up forfeits offensive value the bigger creature would generate).
@@ -103,6 +107,10 @@ class StrategyProfile:
     control_patience: bool = False
 
     # ── Burn target comparison ──
+    # Multiplier applied to a creature target's clock-derived value when
+    # comparing against face-burn EV. >1.0 means burn-removal is preferred
+    # over face damage at parity, reflecting that a removed creature
+    # avoids future damage while face damage is one-shot.
     creature_value_mult: float = 1.5
 
     # ── Pump (Psychic Frog etc.) ──
@@ -111,6 +119,10 @@ class StrategyProfile:
     pump_max_discards: int = 2
 
     # ── Pass threshold ──
+    # Plays scoring below this EV are skipped (the AI passes the turn
+    # rather than burning a card on a negative-EV play). -5.0 is the
+    # default; CONTROL profiles are stricter (more patient) and aggro
+    # profiles override looser (the aggro plan can't afford to pass).
     pass_threshold: float = -5.0
 
 
