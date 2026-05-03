@@ -423,7 +423,10 @@ class MulliganDecider:
             # on any mulligan_keys hit, letting decks with dense cheap keys
             # (Affinity, Boros Energy, Domain Zoo) auto-keep almost every
             # 7-card hand and biasing the meta toward proactive decks.
-            cheap_spells = sum(1 for s in spells if (s.template.cmc or 0) <= 3)
+            # "Cheap" here means medium-or-better on the gameplan's CMC
+            # profile — anything castable by T2-T3 counts as development.
+            medium_cmc = gp.mulligan_cmc_profile.get("medium", 3)
+            cheap_spells = sum(1 for s in spells if (s.template.cmc or 0) <= medium_cmc)
             if gp.mulligan_keys:
                 hand_names = {c.name for c in hand}
                 found_keys = hand_names & gp.mulligan_keys
@@ -492,6 +495,12 @@ class MulliganDecider:
     def _generic(self, hand: List["CardInstance"], lands: List["CardInstance"], spells: List["CardInstance"], cards_in_hand: int) -> bool:
         """Generic mulligan heuristic when no gameplan is available."""
         from ai.strategy_profile import ArchetypeStrategy
+        from ai.gameplan import DEFAULT_MULLIGAN_CMC_PROFILE
+
+        # No-gameplan fallback uses the default CMC profile — same brackets
+        # the gp-aware path reads from `gp.mulligan_cmc_profile`.
+        cheap_cmc = DEFAULT_MULLIGAN_CMC_PROFILE["cheap"]
+        medium_cmc = DEFAULT_MULLIGAN_CMC_PROFILE["medium"]
 
         land_count = len(lands)
         # P1 fix: 0 lands = always mulligan (no free-spell exception needed
@@ -501,7 +510,7 @@ class MulliganDecider:
             return False
         if land_count == 1 and cards_in_hand == 7:
             if self.archetype == ArchetypeStrategy.AGGRO:
-                return sum(1 for s in spells if s.template.cmc <= 2) >= 4
+                return sum(1 for s in spells if s.template.cmc <= cheap_cmc) >= 4
             return False
         if land_count >= 5 and cards_in_hand == 7:
             return False
@@ -511,7 +520,7 @@ class MulliganDecider:
                 return True
             return cards_in_hand <= 6 or land_count >= 2
         if self.archetype == ArchetypeStrategy.AGGRO:
-            return 1 <= land_count <= 3 and sum(1 for s in spells if s.template.cmc <= 2) >= 2
+            return 1 <= land_count <= 3 and sum(1 for s in spells if s.template.cmc <= cheap_cmc) >= 2
         if self.archetype == ArchetypeStrategy.CONTROL:
             if land_count >= 3:
                 return sum(1 for s in spells
@@ -519,7 +528,7 @@ class MulliganDecider:
                            "counterspell" in s.template.tags) >= 1
             return False
         if 2 <= land_count <= 4:
-            return sum(1 for s in spells if s.template.cmc <= 3) >= 2
+            return sum(1 for s in spells if s.template.cmc <= medium_cmc) >= 2
         return cards_in_hand <= 6
 
     def choose_cards_to_bottom(self, hand: List["CardInstance"],
@@ -735,8 +744,10 @@ class MulliganDecider:
     @staticmethod
     def reason(hand: List["CardInstance"], lands: List["CardInstance"], spells: List["CardInstance"], keep: bool) -> str:
         """Generate a human-readable mulligan reason."""
+        from ai.gameplan import DEFAULT_MULLIGAN_CMC_PROFILE
+        cheap_cmc = DEFAULT_MULLIGAN_CMC_PROFILE["cheap"]
         land_count = len(lands)
-        cheap = sum(1 for s in spells if (s.template.cmc or 0) <= 2)
+        cheap = sum(1 for s in spells if (s.template.cmc or 0) <= cheap_cmc)
         interaction = sum(1 for s in spells if 'removal' in s.template.tags or 'counterspell' in s.template.tags)
         if keep:
             parts = [f"{land_count} lands"]

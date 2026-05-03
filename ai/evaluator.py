@@ -435,7 +435,12 @@ def estimate_spell_value(spell: "CardInstance",
 
     # --- Discard / disruption ---
     if "discard" in tags:
-        if game.turn_number <= 4:
+        # Clock-derived early-game (replaces literal `turn_number <= 4`).
+        # Discard is "powerful" when neither side has a clock yet — the
+        # opp's hand still contains their game plan to be ripped apart.
+        from ai.clock import is_early_game
+        from ai.ev_evaluator import snapshot_from_game
+        if is_early_game(snapshot_from_game(game, player_idx)):
             value += 4.0  # early disruption is powerful
         else:
             value += 1.5

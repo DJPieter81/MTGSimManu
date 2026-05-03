@@ -255,6 +255,20 @@ def get_thresholds(gameplan: "DeckGameplan") -> DecisionThresholds:
     return _ARCHETYPE_THRESHOLDS.get(gameplan.archetype, DecisionThresholds())
 
 
+# Default per-bracket CMC thresholds used by the mulligan heuristic.
+# A "cheap" spell is castable on T1 (or T2 with a tapland), "medium" on T2-T3
+# under standard land-drop assumptions, "premium" is the topdeck-pivot tier
+# that the heuristic should not classify as a cheap-development spell.
+# Decks override per-archetype via DeckGameplan.mulligan_cmc_profile —
+# Tron / Amulet Titan raise these brackets because their land pings deliver
+# more mana per drop, while pure aggro lists keep the defaults.
+DEFAULT_MULLIGAN_CMC_PROFILE: Dict[str, int] = {
+    "cheap": 2,
+    "medium": 3,
+    "premium": 5,
+}
+
+
 @dataclass
 class DeckGameplan:
     """Complete strategic plan for a deck archetype."""
@@ -268,6 +282,16 @@ class DeckGameplan:
     mulligan_keys: Set[str] = field(default_factory=set)
     mulligan_min_lands: int = 2
     mulligan_max_lands: int = 4
+
+    # Mulligan: per-bracket CMC thresholds.  Replaces the literal
+    # `<= 2` / `<= 3` checks that previously hard-coded "cheap" and
+    # "medium" inside `ai/mulligan.py`.  Deck authors override these
+    # for ramp / land-pinging archetypes (Tron, Amulet Titan) whose
+    # effective mana curve runs higher than the default Modern curve.
+    # Falls back to `DEFAULT_MULLIGAN_CMC_PROFILE` when unspecified.
+    mulligan_cmc_profile: Dict[str, int] = field(
+        default_factory=lambda: dict(DEFAULT_MULLIGAN_CMC_PROFILE)
+    )
 
     # Mulligan: effective CMC overrides for cards with cost reduction (e.g., domain)
     # Maps card_name -> effective_cmc for mulligan evaluation

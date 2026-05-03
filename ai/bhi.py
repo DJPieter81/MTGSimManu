@@ -381,8 +381,13 @@ class BayesianHandTracker:
             hold_rate = 0.3
             if opp_life <= 10:
                 hold_rate = 0.15  # desperate, would counter almost anything
-            elif game.turn_number <= 4:
-                hold_rate = 0.4  # early game, saving for better target
+            else:
+                # Clock-derived early-game (replaces literal `turn_number <= 4`).
+                # Aggro-collapsed boards no longer mis-classify as "early."
+                from ai.clock import is_early_game
+                from ai.ev_evaluator import snapshot_from_game
+                if is_early_game(snapshot_from_game(game, self.player_idx)):
+                    hold_rate = 0.4  # early game, saving for better target
 
             self.beliefs.p_counter = _bayesian_update(
                 self.beliefs.p_counter, hold_rate, 1.0)
