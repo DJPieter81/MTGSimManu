@@ -1555,3 +1555,49 @@ a defensive plan is a card-swap of value, not a primary lever.
 
 Used by `_card_keep_score` in `ai/mulligan.py`.
 """
+
+
+# ─── Sideboard-solver constants (ai/sideboard_solver.py) ─────────────
+# Used by `plan_sideboard` and clause evaluators to gate swap decisions
+# and supply fallbacks where the deck's own profile is unobservable.
+
+SB_GY_FULL_RELIANCE_TARGET: float = 5.0
+"""Rules-constant: number of graveyard creatures at which an opponent's
+graveyard reliance saturates (returns 1.0). 5 = full Living End return
+(the canonical reanimator-class effect that returns ~5 creatures).
+
+Used by `_gy_reliance` in `ai/sideboard_solver.py` and consumed by
+`_clause_gy_hate` to scale graveyard-hate value with opp reliance.
+"""
+
+SB_EXPECTED_GY_CREATURES_DENIED: float = 5.0
+"""Rules-constant: expected creatures denied per resolved graveyard-
+hate effect against a fully-relying opponent. Mirrors
+`SB_GY_FULL_RELIANCE_TARGET` — when reliance saturates and we resolve
+hate, we deny ~5 creatures' worth of value.
+
+Sister constant: SB_GY_FULL_RELIANCE_TARGET — same canonical
+reanimator scale.
+
+Used by `_clause_gy_hate` in `ai/sideboard_solver.py`.
+"""
+
+SB_DEFAULT_AVG_CMC: float = 2.5
+"""Rules-constant: fallback average CMC for our nonland cards when
+the deck has zero non-land templates (degenerate case). 2.5 matches
+the empirical Modern average across the 16 tracked decks (also the
+value of `AVG_CREATURE_POWER`).
+
+Used by `plan_sideboard` in `ai/sideboard_solver.py` as the
+`my_avg_cmc` fallback.
+"""
+
+SB_SWAP_EPSILON_MANA_FRACTION: float = 0.5
+"""Derived: minimum net-gain (in fractional mana-units) required to
+commit a sideboard swap. Below ½ mana-unit the swap is "marginal" and
+the churn cost (re-shuffling, missed synergy) outweighs the projected
+gain. 0.5 mana-unit ≈ half a Bolt's worth of EV — below the noise
+floor of the matrix run.
+
+Used by `plan_sideboard` in `ai/sideboard_solver.py`.
+"""
