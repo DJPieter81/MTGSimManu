@@ -1749,3 +1749,185 @@ deepest hand a storm chain ever needs to reason over.
 
 Used by `find_all_chains` in `ai/combo_chain.py`.
 """
+
+
+# ─── Mana-planner constants (ai/mana_planner.py) ─────────────────────
+# Used by `score_land`, `choose_best_land`, and `choose_fetch_target`
+# to rank land candidates against the hand's color demand and the
+# turn-bounded tempo curve. All weights live on the same "card swap
+# value" scale used elsewhere in the AI scoring layer.
+
+LAND_SCORE_PER_MISSING_COLOR_DEMAND: float = 8.0
+"""Derived: per-spell-demand bonus for a land that supplies a missing
+color. A color needed by 3 spells × 8.0 = 24 — three card-swaps of
+value, the empirical scale at which "this land enables three plays
+this turn" outranks every other land-scoring axis. Matches the
+`HELD_COLOR_PRESERVATION_BONUS` per-demand weight so the held-color
+preservation guard reads as the same magnitude.
+
+Used by `score_land` block (A) in `ai/mana_planner.py`.
+"""
+
+LAND_SCORE_PAYOFF_MISSING_COLOR_BONUS: float = 10.0
+"""Derived: bonus for a land that supplies a color demanded by a
+high-CMC multi-color payoff (CMC ≥ 3, ≥2-color identity — Omnath WURG,
+Leyline Binding, etc.). 10.0 is above the per-demand weight (8.0)
+because these payoffs are deck-defining and missing their color
+strands the win condition.
+
+Used by `score_land` block (A) in `ai/mana_planner.py`.
+"""
+
+LAND_SCORE_REDUNDANT_COLOR_WEIGHT: float = 2.0
+"""Derived: per-demand weight for a land supplying a color we already
+have (redundancy bonus). Quarter of the missing-color weight (8.0)
+because the marginal value of the second source is one-quarter of
+the first — covers tap-out scenarios and color-screw protection.
+
+Used by `score_land` block (B) in `ai/mana_planner.py`.
+"""
+
+LAND_SCORE_ENABLED_SPELL_URGENCY: float = 3.0
+"""Derived: multiplier on the per-CMC urgency curve for the
+"this land enables a spell currently uncastable" bonus. 3.0 = one
+card-swap (`PROACTIVE_REMOVAL_MIN_VALUE`) per spell-tier — the value
+of unblocking one specific play in hand.
+
+Used by `score_land` block (C) in `ai/mana_planner.py`.
+"""
+
+LAND_SCORE_URGENCY_CMC_CEIL: int = 8
+"""Rules-constant: CMC ceiling above which the per-CMC urgency curve
+floors at 1. 8 covers the high end of Modern's mana curve (Eldrazi
+Tron, Amulet Titan); a 1-mana spell is worth 7 turns of clock, an
+8-mana spell is worth 0 turns of curve-relevant urgency.
+
+Used by `score_land` block (C) in `ai/mana_planner.py` as
+`max(1, LAND_SCORE_URGENCY_CMC_CEIL - cmc) * LAND_SCORE_ENABLED_SPELL_URGENCY`.
+"""
+
+LAND_SCORE_TAPPED_PENALTY_EARLY: float = 0.15
+"""Derived: tapped-spell-enablement multiplier on T1-T2. A tapped
+land delays the spell by 1 turn — early game that's a 6-turn-clock
+loss out of ~7 turns to lethal, ≈ 0.15 of the un-tapped value
+(empirically calibrated against the Boros vs Affinity matrix
+baseline).
+
+Used by `score_land` block (C) in `ai/mana_planner.py`.
+"""
+
+LAND_SCORE_TAPPED_PENALTY_LATE: float = 0.4
+"""Derived: tapped-spell-enablement multiplier on T3+. After T2 the
+delayed spell still costs a turn but the absolute clock impact is
+smaller; the empirical Boros / Jeskai matrix shows ~0.4 of the
+un-tapped value preserves correct behaviour.
+
+Sister constant: LAND_SCORE_TAPPED_PENALTY_EARLY.
+
+Used by `score_land` block (C) in `ai/mana_planner.py`.
+"""
+
+LAND_SCORE_DOMAIN_BASE: float = 2.0
+"""Derived: base bonus per new basic-land-type for a domain-relevant
+land. 2.0 = one redundant-color weight — the floor at which a new
+type matters even without domain creatures in hand.
+
+Used by `score_land` block (D) in `ai/mana_planner.py`.
+"""
+
+LAND_SCORE_DOMAIN_PER_CARD_BONUS: float = 2.0
+"""Derived: per-domain-card-in-hand bonus for a new basic-land-type.
+A hand with 3 domain cards × 2.0 = +6 per new type, so a fetched
+shockland adding 2 new types is worth +12 — high enough to outrank
+a mono-color basic in domain decks.
+
+Used by `score_land` block (D) in `ai/mana_planner.py`.
+"""
+
+LAND_SCORE_DOMAIN_CARD_CAP: int = 5
+"""Rules-constant: cap on the domain-card count used for the domain
+bonus. Five domain cards already saturate the per-card bonus; beyond
+that the marginal new-type value plateaus.
+
+Used by `score_land` block (D) in `ai/mana_planner.py`.
+"""
+
+LAND_SCORE_TAPPED_BASE_PENALTY: float = 8.0
+"""Derived: base tempo penalty for a land that enters tapped without
+an optional-untap escape. 8.0 = one card-swap × `LAND_SCORE_PER_MISSING_COLOR_DEMAND`
+— the cost of "this turn's mana is forfeit" against a typical hand
+with one castable spell.
+
+Used by `score_land` block (E) in `ai/mana_planner.py`.
+"""
+
+LAND_SCORE_TAPPED_TURN_DECAY: float = 0.15
+"""Derived: per-turn decay multiplier on the tapped-tempo penalty.
+Each turn that passes reduces the penalty: T1 = 8 × 0.85 = 6.8,
+T2 = 8 × 0.7 = 5.6, … capped at 0.5 floor (4.0) by `max(0.5, ...)`.
+
+Used by `score_land` block (E) in `ai/mana_planner.py`.
+"""
+
+LAND_SCORE_TAPPED_FLOOR_FRACTION: float = 0.5
+"""Rules-constant: floor on the tapped-tempo decay. After T3+ the
+penalty plateaus at half the early-game value (4.0) — a tapped land
+in the late game still costs tempo but not as much as on T1.
+
+Used by `score_land` block (E) in `ai/mana_planner.py`.
+"""
+
+LAND_SCORE_UNTAPPED_BONUS: float = 5.0
+"""Derived: bonus for a land that enters untapped (or has the
+untap-life option). 5.0 = ⅝ of the tapped penalty — captures the
+asymmetry that "no penalty" is more valuable than "no bonus" because
+the tap-out decision compounds across turns.
+
+Used by `score_land` blocks (E) and the optional-untap branch in
+`ai/mana_planner.py`.
+"""
+
+LAND_SCORE_FETCHLAND_FLEXIBILITY_BONUS: float = 4.0
+"""Derived: flexibility bonus for fetchlands when scored directly
+(not via the proxy-target rescore). 4.0 = ½ of the per-demand weight
+— the option to find any color is worth half a single-color land.
+
+Used by `score_land` block (F) in `ai/mana_planner.py`.
+"""
+
+LAND_SCORE_VERSATILITY_PER_COLOR: float = 1.0
+"""Derived: per-color versatility bonus. Mono-color = +1, two-color
+shock = +2, tri-land = +3 — small enough to break ties between equal-
+demand candidates but not enough to override the missing-color block.
+
+Used by `score_land` block (G) in `ai/mana_planner.py`.
+"""
+
+LAND_SCORE_BEST_INIT_SENTINEL: float = -999.0
+"""Sentinel: initial value for `best_score` in `choose_best_land` and
+`choose_fetch_target`. Lower than any realistic land score (the worst
+case is a tapped colorless land at ~-8.0), so the first candidate
+always replaces the sentinel.
+
+Used by `choose_best_land` and `choose_fetch_target` in
+`ai/mana_planner.py`.
+"""
+
+LAND_SCORE_FETCH_LIFE_TEMPO_PENALTY: float = 1.0
+"""Derived: fetchland life + click cost when scoring fetch-as-proxy.
+1.0 = one EV unit (`CHEAP_REMOVAL_ACTION_BONUS` scale) — the small
+penalty for paying 1 life and using the fetch click. Net effect is
+small because thinning the deck partly compensates.
+
+Used by `choose_best_land`'s fetch-as-proxy branch in
+`ai/mana_planner.py`.
+"""
+
+LAND_SHOCK_RACING_LIFE_THRESHOLD: int = 12
+"""Rules-constant: opp life total at which `should_stagger_shock`
+defers a second shock to preserve life. 12 = 60% of the Modern
+starting life — empirically the threshold below which "one more
+shock" can collapse into a Bolt + Push lethal sequence next turn.
+
+Used by `should_stagger_shock` in `ai/mana_planner.py`.
+"""
