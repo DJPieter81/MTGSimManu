@@ -12,3 +12,4 @@ node_modules/
 metagame_results.json
 *.patch
 .claude/worktrees/
+cache/llm/
