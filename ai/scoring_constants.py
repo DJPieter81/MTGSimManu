@@ -1255,3 +1255,135 @@ blocker on real threats.
 Used by `CombatPlanner._predict_blocks` Phase 4 (double-block) in
 `ai/turn_planner.py`.
 """
+
+
+# ─── Bayesian-hand-inference hold-rates (ai/bhi.py) ──────────────────
+# Used by `BayesianHandTracker.observe_priority_pass` to model the
+# probability that the opponent held interaction (counter / removal)
+# even though they could have used it. Values reflect rational-player
+# behaviour: hold rate decreases as opponent's life pressure increases
+# (desperate players counter everything; comfortable players save
+# interaction for bigger threats).
+
+COUNTER_HOLD_RATE_DEFAULT: float = 0.3
+"""Derived: default P(opp holds counter | opp has counter) when their
+life is in the comfortable mid-range and we're not early game.
+
+Reflects a rational player's willingness to hold interaction for a
+better target ~30% of the time. Below this fraction the player feels
+under enough pressure to fire on any target; above it the player has
+slack to wait.
+
+Sister constants: COUNTER_HOLD_RATE_DESPERATE (low-life) and
+COUNTER_HOLD_RATE_EARLY_GAME (saving for bigger target).
+
+Used by `observe_priority_pass` in `ai/bhi.py`.
+"""
+
+
+COUNTER_HOLD_RATE_DESPERATE: float = 0.15
+"""Derived: P(opp holds counter | opp has counter) when opp_life ≤
+COUNTER_HOLD_OPP_LIFE_DESPERATE (10). Half of the default rate —
+desperate players counter almost any threat because untreated threats
+will kill them quickly.
+
+Sister constant: COUNTER_HOLD_RATE_DEFAULT (the comfortable mid-range
+rate this halves from).
+
+Used by `observe_priority_pass` in `ai/bhi.py`.
+"""
+
+
+COUNTER_HOLD_RATE_EARLY_GAME: float = 0.4
+"""Derived: P(opp holds counter | opp has counter) in the early game
+(detected via `ai.clock.is_early_game`). Slightly above the default
+rate — early game the opponent has more turns ahead in which to use
+the counter, so saving for a bigger target is more rational.
+
+Sister constant: COUNTER_HOLD_RATE_DEFAULT.
+
+Used by `observe_priority_pass` in `ai/bhi.py`.
+"""
+
+
+REMOVAL_HOLD_RATE_DEFAULT: float = 0.25
+"""Derived: default P(opp holds instant removal | opp has it) when
+not at desperate life. Slightly below COUNTER_HOLD_RATE_DEFAULT
+because removal is more target-specific (must hit a creature) so
+saving it is less commonly profitable than saving a counter.
+
+Sister constant: REMOVAL_HOLD_RATE_DESPERATE.
+
+Used by `observe_priority_pass` in `ai/bhi.py`.
+"""
+
+
+REMOVAL_HOLD_RATE_DESPERATE: float = 0.1
+"""Derived: P(opp holds removal | opp has it) when opp_life ≤
+REMOVAL_HOLD_OPP_LIFE_DESPERATE (8). Lower than the default rate
+because at near-lethal life every creature is a kill threat — opp
+must fire removal immediately or lose.
+
+Sister constant: REMOVAL_HOLD_RATE_DEFAULT.
+
+Used by `observe_priority_pass` in `ai/bhi.py`.
+"""
+
+
+COUNTER_HOLD_OPP_LIFE_DESPERATE: int = 10
+"""Rules-constant: opp life at or below which COUNTER_HOLD_RATE_DESPERATE
+applies. 10 = half of the Modern starting life total — the empirical
+threshold below which players visibly play more reactively.
+
+Used by `observe_priority_pass` in `ai/bhi.py`.
+"""
+
+
+REMOVAL_HOLD_OPP_LIFE_DESPERATE: int = 8
+"""Rules-constant: opp life at or below which REMOVAL_HOLD_RATE_DESPERATE
+applies. 8 ≈ two Lightning Bolts of distance from lethal — empirically
+the threshold at which removal-based decks must answer every threat.
+
+Used by `observe_priority_pass` in `ai/bhi.py`.
+"""
+
+
+NON_INTERACTION_CAST_DECAY: float = 0.9
+"""Derived: multiplicative decay applied to `p_counter` and `p_removal`
+when the opponent casts a non-interaction spell. Tapping mana for
+something else is weak evidence they don't have interaction held.
+
+10% decay matches the "weak evidence" intent — strong evidence
+(observing a cast counter) triggers a full Bayesian recalculation
+instead. Re-applied each non-interaction cast, so repeated tapping
+out compounds the evidence.
+
+Used by `observe_spell_cast` in `ai/bhi.py`.
+"""
+
+
+OBSERVATION_WEIGHT_CAP: float = 0.7
+"""Derived: maximum weight given to observed-pass beliefs over the
+fresh per-card density prior. Capped at 0.7 so the static prior
+(library composition) always retains at least 30% influence —
+prevents the belief from collapsing to a single observed pass when
+the unobserved hand still contains relevant information.
+
+Sister constant: OBSERVATION_WEIGHT_PER_OBS — per-observation
+increment that ramps toward this cap.
+
+Used by `_recalculate_priors` in `ai/bhi.py`.
+"""
+
+
+OBSERVATION_WEIGHT_PER_OBS: float = 0.1
+"""Derived: per-observation increment applied to the observation
+weight in the prior/posterior blend. After 7 observations the cap
+(OBSERVATION_WEIGHT_CAP = 0.7) binds — empirically 7 priority-passes
+is enough to dominate the static prior, matching the typical Modern
+"by turn 7 we've seen the relevant cards from opp's hand" heuristic.
+
+Sister constant: OBSERVATION_WEIGHT_CAP.
+
+Used by `_recalculate_priors` in `ai/bhi.py`.
+"""

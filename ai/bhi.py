@@ -20,6 +20,19 @@ import math
 from dataclasses import dataclass, field
 from typing import Dict, Optional, TYPE_CHECKING
 
+from ai.scoring_constants import (
+    COUNTER_HOLD_RATE_DEFAULT,
+    COUNTER_HOLD_RATE_DESPERATE,
+    COUNTER_HOLD_RATE_EARLY_GAME,
+    REMOVAL_HOLD_RATE_DEFAULT,
+    REMOVAL_HOLD_RATE_DESPERATE,
+    COUNTER_HOLD_OPP_LIFE_DESPERATE,
+    REMOVAL_HOLD_OPP_LIFE_DESPERATE,
+    NON_INTERACTION_CAST_DECAY,
+    OBSERVATION_WEIGHT_CAP,
+    OBSERVATION_WEIGHT_PER_OBS,
+)
+
 if TYPE_CHECKING:
     from engine.game_state import GameState, PlayerState
 
@@ -375,28 +388,29 @@ class BayesianHandTracker:
         opp_life = opp.life
 
         if spell_on_stack and opp_mana_available >= 2:
-            # Could have countered — update P(counter)
-            # P(hold | has_counter): rational player holds counter ~30% of the time
-            # for a bigger threat. Higher hold rate early game, lower when threatened.
-            hold_rate = 0.3
-            if opp_life <= 10:
-                hold_rate = 0.15  # desperate, would counter almost anything
+            # Could have countered — update P(counter). Rational-player
+            # hold-rates from `ai.scoring_constants`: desperate at low
+            # life, higher in early game (more turns ahead to use it),
+            # default in comfortable mid-range.
+            hold_rate = COUNTER_HOLD_RATE_DEFAULT
+            if opp_life <= COUNTER_HOLD_OPP_LIFE_DESPERATE:
+                hold_rate = COUNTER_HOLD_RATE_DESPERATE
             else:
                 # Clock-derived early-game (replaces literal `turn_number <= 4`).
                 # Aggro-collapsed boards no longer mis-classify as "early."
                 from ai.clock import is_early_game
                 from ai.ev_evaluator import snapshot_from_game
                 if is_early_game(snapshot_from_game(game, self.player_idx)):
-                    hold_rate = 0.4  # early game, saving for better target
+                    hold_rate = COUNTER_HOLD_RATE_EARLY_GAME
 
             self.beliefs.p_counter = _bayesian_update(
                 self.beliefs.p_counter, hold_rate, 1.0)
 
         if spell_is_creature and opp_mana_available >= 1:
-            # Could have used instant removal — update P(removal)
-            hold_rate = 0.25  # might save removal for bigger creature
-            if opp_life <= 8:
-                hold_rate = 0.1
+            # Could have used instant removal — update P(removal).
+            hold_rate = REMOVAL_HOLD_RATE_DEFAULT
+            if opp_life <= REMOVAL_HOLD_OPP_LIFE_DESPERATE:
+                hold_rate = REMOVAL_HOLD_RATE_DESPERATE
 
             self.beliefs.p_removal = _bayesian_update(
                 self.beliefs.p_removal, hold_rate, 1.0)
@@ -424,9 +438,9 @@ class BayesianHandTracker:
             self._recalculate_priors(game)
         else:
             # Cast a non-interaction spell → slight evidence against holding
-            # interaction (they chose to tap mana for something else)
-            self.beliefs.p_counter *= 0.9  # slight reduction
-            self.beliefs.p_removal *= 0.9
+            # interaction (they chose to tap mana for something else).
+            self.beliefs.p_counter *= NON_INTERACTION_CAST_DECAY
+            self.beliefs.p_removal *= NON_INTERACTION_CAST_DECAY
 
         self.beliefs.observations += 1
 
@@ -497,9 +511,11 @@ class BayesianHandTracker:
             density = lib_count / remaining
             return 1.0 - (1.0 - density) ** hand_size
 
-        # Blend: keep some of old belief (from observed passes), mix with new prior
-        # More observations = trust observations more
-        obs_weight = min(0.7, self.beliefs.observations * 0.1)
+        # Blend: keep some of old belief (from observed passes), mix with new prior.
+        # More observations = trust observations more, capped so the static prior
+        # always retains some influence (see scoring_constants).
+        obs_weight = min(OBSERVATION_WEIGHT_CAP,
+                         self.beliefs.observations * OBSERVATION_WEIGHT_PER_OBS)
         prior_weight = 1.0 - obs_weight
 
         new_counter = updated_prior(lib_counters)
