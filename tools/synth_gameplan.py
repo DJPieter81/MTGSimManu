@@ -228,6 +228,11 @@ def _format_decklist_for_prompt(
 ) -> str:
     """Render a decklist as a text blob: each card with its quantity
     and oracle text, ready to feed as the user prompt."""
+    # TODO: integrate after Phase H lands.  Once `ai/llm_schemas.py`
+    # exists, swap raw oracle-text rendering for
+    # `ai.card_features.extract_features_for_deck(...)` and feed the
+    # typed feature surface into the prompt instead — cuts ~70% of
+    # input tokens (Phase I-3 cost-aware redesign).
     lines = [f"Deck name: {deck_name}", ""]
     lines.append("Mainboard (with oracle text):")
     for name in sorted(mainboard.keys()):
