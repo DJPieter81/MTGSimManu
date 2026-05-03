@@ -1,0 +1,108 @@
+{
+  "expected": {
+    "always_early": [
+      "Guide of Souls",
+      "Ocelot Pride",
+      "Ragavan, Nimble Pilferer"
+    ],
+    "archetype": "aggro",
+    "deck_name": "Boros Energy",
+    "goals": [
+      {
+        "card_priorities": {
+          "Ajani, Nacatl Pariah // Ajani, Nacatl Avenger": 18.0,
+          "Galvanic Discharge": 19.0,
+          "Goblin Bombardment": 14.0,
+          "Guide of Souls": 20.0,
+          "Ocelot Pride": 20.0,
+          "Ragavan, Nimble Pilferer": 22.0,
+          "Seasoned Pyromancer": 12.0,
+          "Thraben Charm": 15.0,
+          "Voice of Victory": 16.0
+        },
+        "card_roles": {
+          "enablers": [
+            "Guide of Souls",
+            "Ocelot Pride",
+            "Ragavan, Nimble Pilferer"
+          ],
+          "interaction": [
+            "Galvanic Discharge",
+            "Static Prison",
+            "Thraben Charm"
+          ],
+          "payoffs": [
+            "Ajani, Nacatl Pariah // Ajani, Nacatl Avenger",
+            "Seasoned Pyromancer",
+            "Voice of Victory"
+          ]
+        },
+        "description": "Deploy efficient creatures on curve while interacting",
+        "goal_type": "CURVE_OUT"
+      },
+      {
+        "card_priorities": {
+          "Blood Moon": 10.0,
+          "Galvanic Discharge": 15.0,
+          "Phlage, Titan of Fire's Fury": 18.0,
+          "Thraben Charm": 12.0
+        },
+        "card_roles": {
+          "interaction": [
+            "Galvanic Discharge",
+            "Thraben Charm"
+          ],
+          "payoffs": [
+            "Phlage, Titan of Fire's Fury"
+          ]
+        },
+        "description": "Attack aggressively, use removal to clear blockers",
+        "goal_type": "PUSH_DAMAGE"
+      },
+      {
+        "card_priorities": {
+          "Goblin Bombardment": 15.0,
+          "Phlage, Titan of Fire's Fury": 12.0
+        },
+        "description": "Convert board advantage into lethal damage",
+        "goal_type": "CLOSE_GAME"
+      }
+    ],
+    "mulligan_keys": [
+      "Ajani, Nacatl Pariah // Ajani, Nacatl Avenger",
+      "Galvanic Discharge",
+      "Guide of Souls",
+      "Ocelot Pride",
+      "Ragavan, Nimble Pilferer"
+    ],
+    "mulligan_max_lands": 3,
+    "mulligan_require_creature_cmc": 2
+  },
+  "input": {
+    "deck_name": "Boros Energy",
+    "mainboard": {
+      "Ajani, Nacatl Pariah // Ajani, Nacatl Avenger": 4,
+      "Arena of Glory": 3,
+      "Arid Mesa": 4,
+      "Blood Moon": 1,
+      "Dalkovan Encampment": 1,
+      "Elegant Parlor": 2,
+      "Galvanic Discharge": 4,
+      "Goblin Bombardment": 3,
+      "Guide of Souls": 4,
+      "Marsh Flats": 3,
+      "Mountain": 1,
+      "Ocelot Pride": 4,
+      "Phlage, Titan of Fire's Fury": 4,
+      "Plains": 2,
+      "Ragavan, Nimble Pilferer": 4,
+      "Ranger-Captain of Eos": 1,
+      "Sacred Foundry": 3,
+      "Seasoned Pyromancer": 3,
+      "The Legend of Roku": 1,
+      "Thraben Charm": 2,
+      "Voice of Victory": 2,
+      "Windswept Heath": 4
+    }
+  }
+}

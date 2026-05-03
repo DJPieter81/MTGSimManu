@@ -1,0 +1,12 @@
+{
+  "input": {
+    "diagnostic_doc": "docs/diagnostics/2026-04-24_living_end_consolidated_findings.md",
+    "log_excerpt": "Living End cascades into Living End on T3 with only 4 cyclers in graveyard and an empty board.  Reanimates 4 small creatures; opponent has Lightning Bolt + Galvanic Discharge.  T4: opponent kills two creatures, swings for lethal next turn.  AI's turn_planner counts the summoning-sick creatures as attackers in its decision."
+  },
+  "expected": {
+    "observed_symptom": "Living End cast with insufficient graveyard fuel; turn_planner counts summoning-sick creatures as attackers",
+    "suspected_subsystem": "ai.ev_player",
+    "failing_test_rule": "cascade payoff not cast when graveyard fuel below mininum reanimation threshold",
+    "confidence": 0.8
+  }
+}

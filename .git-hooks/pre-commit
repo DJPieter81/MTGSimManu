@@ -13,3 +13,9 @@ if [ -f "$ROOT/tools/check_abstraction.py" ]; then
 else
     echo "warning: tools/check_abstraction.py missing — abstraction contract not enforced" >&2
 fi
+
+if [ -f "$ROOT/tools/check_magic_numbers.py" ]; then
+    python3 "$ROOT/tools/check_magic_numbers.py"
+else
+    echo "warning: tools/check_magic_numbers.py missing — magic-number ratchet not enforced" >&2
+fi
