@@ -1255,3 +1255,1011 @@ blocker on real threats.
 Used by `CombatPlanner._predict_blocks` Phase 4 (double-block) in
 `ai/turn_planner.py`.
 """
+
+
+# ─── Board-evaluator constants (ai/evaluator.py) ────────────────────
+# `ai/evaluator.py` is the legacy "life-point equivalent" board
+# evaluator (used by `ai/response.py`, `ai/turn_planner.py`, and
+# `engine/game_runner.py` for permanent / spell / removal valuation).
+# The whole module is calibrated so that +1.0 ≈ being one life ahead;
+# every constant below preserves that scale.
+#
+# Bare-literal extraction pass: each constant was a numeric literal in
+# `ai/evaluator.py`; the inline justification is promoted to the
+# docstring here so future re-tunes are single-point.
+
+# ── Role assessment (assess_role) ────────────────────────────────
+ROLE_LIFE_BEATDOWN_GAP: int = 5
+"""Rules-constant: opp-life deficit at which we adopt the BEATDOWN
+role even when board power is even.
+
+5 life ≈ one Lightning Bolt + a 2/2 attack in life-point units —
+when the opponent is at least that far behind on life, the race is
+already in our favour and aggression maximises EV. Symmetric with
+`POWER_DELTA_BEATDOWN_GAP` on the board-power axis.
+
+Used by `assess_role` in `ai/evaluator.py`.
+"""
+
+# ── Creature-stat scaling (P/T → life-point equivalent) ─────────
+CREATURE_POWER_VALUE: float = 1.5
+"""Rules-constant: life-point equivalent of one point of creature
+power.
+
+1.5 ≈ the average damage a 1-power creature deals over its
+combat lifetime (≈ 1.5 unblocked attacks before it trades or is
+removed), normalised so a 2/2 vanilla scores ~3.0 + ~1.6 = ~4.6 —
+the canonical "average creature" baseline.
+
+Sister constant: `CREATURE_TOUGHNESS_VALUE` — defensive side of the
+same P/T → life-points conversion.
+"""
+
+CREATURE_TOUGHNESS_VALUE: float = 0.8
+"""Rules-constant: life-point equivalent of one point of creature
+toughness.
+
+0.8 < `CREATURE_POWER_VALUE` because toughness is defensive (only
+matters in combat) while power both attacks and blocks. Together
+the pair calibrates a 2/2 vanilla to ~4.6 life-points.
+"""
+
+# ── Tag-derived ability bonuses (_ability_bonus) ────────────────
+ABILITY_BONUS_ETB_VALUE: float = 2.0
+"""Rules-constant: bonus for cards tagged `etb_value` — ETB
+creatures are worth blinking / protecting.
+
+2.0 ≈ one cantrip's worth of card-advantage value; ETB triggers
+recur via blink / flicker effects so the bonus rewards engine
+potential beyond raw P/T.
+
+Used by `_ability_bonus` in `ai/evaluator.py`.
+"""
+
+ABILITY_BONUS_CARD_ADVANTAGE: float = 3.0
+"""Rules-constant: bonus for cards tagged `card_advantage` — they
+draw cards each turn = snowball engine.
+
+3.0 = `CARD_IN_HAND_VALUE` (2.5) + one turn's amortised draw — a
+single activation already justifies the bonus, and the recurring
+nature compounds across the rest of the game.
+
+Used by `_ability_bonus` in `ai/evaluator.py`.
+"""
+
+ABILITY_BONUS_COST_REDUCER: float = 2.5
+"""Rules-constant: bonus for cards tagged `cost_reducer` — enables
+cheaper spells = engine piece.
+
+Slightly below `ABILITY_BONUS_CARD_ADVANTAGE` because cost reduction
+is conditional (needs a spell to reduce) while draw is unconditional.
+
+Used by `_ability_bonus` in `ai/evaluator.py`.
+"""
+
+ABILITY_BONUS_TOKEN_MAKER: float = 1.5
+"""Rules-constant: bonus for cards tagged `token_maker` — creates
+board presence over time.
+
+1.5 ≈ value of one token-creature per turn × 2 turn residency.
+
+Used by `_ability_bonus` in `ai/evaluator.py`.
+"""
+
+ABILITY_BONUS_THREAT: float = 1.0
+"""Rules-constant: bonus for cards tagged `threat` — flagged as a
+significant clock contribution.
+
+1.0 = one life-point of additional clock pressure per turn vs the
+default creature curve.
+
+Used by `_ability_bonus` in `ai/evaluator.py`.
+"""
+
+ABILITY_BONUS_COMBO: float = 2.0
+"""Rules-constant: bonus for cards tagged `combo` (a piece in the
+deck's combo line) at the permanent-evaluation layer.
+
+2.0 captures "combo piece is worth more than vanilla" without
+duplicating the heavier `COMBO_PIECE_SPELL_BONUS` (5.5) used at
+spell-cast time — once on board, the piece's combo value is partly
+realised, so the residual bonus is smaller.
+
+Used by `_ability_bonus` in `ai/evaluator.py`.
+"""
+
+ABILITY_BONUS_PROTECTION: float = 1.0
+"""Rules-constant: bonus for cards tagged `protection` — protects
+other pieces.
+
+1.0 ≈ one prevented removal worth ~one card.
+
+Used by `_ability_bonus` in `ai/evaluator.py`.
+"""
+
+ABILITY_BONUS_EQUIPMENT: float = 1.0
+"""Rules-constant: bonus for cards tagged `equipment` — force
+multiplier when paired with a creature.
+
+1.0 standalone (idle equipment); the active-buff case is handled by
+`_permanent_value`'s equipped-detection branch.
+
+Used by `_ability_bonus` in `ai/evaluator.py`.
+"""
+
+# ── Ability-type bonuses (recurring vs one-shot) ────────────────
+ABILITY_TYPE_ATTACK_TRIGGER: float = 2.5
+"""Rules-constant: bonus for creatures with attack-triggered
+abilities (Goblin Guide reveal, Ragavan dash-treasure).
+
+2.5 ≈ value of one trigger × ~2 attacks before removal — attack
+triggers generate value EVERY combat phase, so they accumulate
+faster than ETB.
+
+Used by `_ability_bonus` in `ai/evaluator.py`.
+"""
+
+ABILITY_TYPE_DIES_TRIGGER: float = 1.5
+"""Rules-constant: bonus for creatures with dies-triggered
+abilities (Mayhem Devil-style, Bloodghast-style return).
+
+1.5 ≈ one mana-equivalent payback when the opponent removes the
+creature; it makes the trade neutral-or-favourable.
+
+Used by `_ability_bonus` in `ai/evaluator.py`.
+"""
+
+ABILITY_TYPE_ACTIVATED: float = 1.5
+"""Rules-constant: bonus for permanents with activated abilities
+(loyalty-style options every turn).
+
+1.5 = one activation per turn × residual residency value.
+
+Used by `_ability_bonus` in `ai/evaluator.py`.
+"""
+
+ABILITY_TYPE_STATIC: float = 1.0
+"""Rules-constant: bonus for permanents with static abilities
+(anthems, cost-reducer auras).
+
+Smaller than activated/triggered because static effects only matter
+when the relevant board state exists.
+
+Used by `_ability_bonus` in `ai/evaluator.py`.
+"""
+
+ABILITY_TYPE_UPKEEP: float = 1.5
+"""Rules-constant: bonus for permanents with upkeep triggers
+(Phyrexian Arena-style recurring value).
+
+Equal to `ABILITY_TYPE_DIES_TRIGGER` — both fire reliably each turn
+the permanent survives.
+
+Used by `_ability_bonus` in `ai/evaluator.py`.
+"""
+
+# ── Oracle-derived effect magnitudes ────────────────────────────
+ORACLE_DRAW_VALUE_PER_CARD: float = 1.0
+"""Rules-constant: per-card-drawn life-point equivalent for
+oracle-text-detected draw effects ("draw N cards").
+
+Used by `_ability_bonus` in `ai/evaluator.py`. Each drawn card is
+~1 life-point of advantage in the evaluator's calibrated scale.
+"""
+
+ORACLE_RECURRING_DRAW_BONUS: float = 2.0
+"""Rules-constant: bonus when oracle text matches "whenever ... draw"
+— recurring draw triggers (Phyrexian Arena, Sylvan Library).
+
+2.0 = `ABILITY_BONUS_ETB_VALUE`-class engine bonus.
+
+Used by `_ability_bonus` in `ai/evaluator.py`.
+"""
+
+ORACLE_RECURRING_DAMAGE_PER_POINT: float = 0.8
+"""Rules-constant: per-damage-point bonus when the source deals
+damage to "each opponent" / "each player" each turn (Pulse of Murasa
+class, Sulfuric Vortex, Underworld Dreams).
+
+Slightly below `CREATURE_TOUGHNESS_VALUE` (0.8) on purpose — same
+order, since recurring damage roughly equates to a defensive stat
+on the opponent's side.
+
+Used by `_ability_bonus` in `ai/evaluator.py`.
+"""
+
+ORACLE_TRIGGER_DAMAGE_PER_POINT: float = 0.5
+"""Rules-constant: per-damage-point bonus when the source deals
+damage as an ETB or attack trigger (Hellrider-style).
+
+½ × `ORACLE_RECURRING_DAMAGE_PER_POINT` because trigger damage is
+conditional on the trigger firing (creature must attack / survive).
+
+Used by `_ability_bonus` in `ai/evaluator.py`.
+"""
+
+ORACLE_LIFE_GAIN_PER_POINT: float = 0.3
+"""Rules-constant: per-life-point bonus for oracle-text-detected
+life gain effects.
+
+Below `ORACLE_TRIGGER_DAMAGE_PER_POINT` because gaining life is
+strictly less impactful than dealing damage at parity (20-life
+default means damage closes the game while gain only stalls).
+
+Used by `_ability_bonus` in `ai/evaluator.py`.
+"""
+
+ORACLE_TOKEN_CREATION_BONUS: float = 1.5
+"""Rules-constant: bonus when oracle text contains both "create" and
+"token" (an unconditional token-maker not already tagged).
+
+Equal to `ABILITY_BONUS_TOKEN_MAKER` — same intent reached via
+oracle scan.
+
+Used by `_ability_bonus` in `ai/evaluator.py`.
+"""
+
+ORACLE_TUTOR_BONUS: float = 2.0
+"""Rules-constant: bonus when oracle text contains "search your
+library" — tutoring is powerful (deck-thinning + threat-selection).
+
+2.0 = one cantrip's worth of card selection.
+
+Used by `_ability_bonus` in `ai/evaluator.py`.
+"""
+
+ORACLE_LOCK_PIECE_BONUS: float = 3.0
+"""Rules-constant: bonus when oracle text contains a tax/lock phrase
+("can't cast", "spells cost", "additional cost").
+
+3.0 = `ABILITY_BONUS_CARD_ADVANTAGE`-class — lock pieces are high-
+priority targets because they invalidate multiple opponent cards.
+
+Used by `_ability_bonus` in `ai/evaluator.py`.
+"""
+
+ORACLE_RECUR_BONUS: float = 1.5
+"""Rules-constant: bonus when oracle text contains a graveyard-
+recursion keyword ("escape", "flashback", "undying", "persist",
+"return ... from ... graveyard").
+
+1.5 ≈ the marginal value of a second cast / activation cycle.
+
+Used by `_ability_bonus` in `ai/evaluator.py`.
+"""
+
+ORACLE_SCALE_OVER_TIME_BONUS: float = 1.0
+"""Rules-constant: bonus when oracle text describes self-scaling
+("put a +1/+1 counter", "gets +", "additional +") — the permanent
+grows over time.
+
+1.0 = one scaling tick's life-point contribution.
+
+Used by `_ability_bonus` in `ai/evaluator.py`.
+"""
+
+# ── CMC-tier residency bonuses ──────────────────────────────────
+HIGH_CMC_THRESHOLD: int = 6
+"""Rules-constant: CMC threshold above which a stuck permanent is
+"expensive" and gets a top-tier residency bonus.
+
+6 ≈ the line between midrange threats (4-5 CMC) and finishers
+(6+ CMC) — finishers that resolve typically end the game.
+
+Used by `_ability_bonus` in `ai/evaluator.py`.
+"""
+
+MID_CMC_THRESHOLD: int = 4
+"""Rules-constant: CMC threshold above which a stuck permanent is
+"midrange" and gets a smaller residency bonus.
+
+4 = the standard midrange-threat CMC (Snapcaster Mage class is 2
+CMC but its supporting cast lives at 4-5).
+
+Used by `_ability_bonus` in `ai/evaluator.py`.
+"""
+
+HIGH_CMC_RESIDENCY_BONUS: float = 1.5
+"""Rules-constant: residency bonus for high-CMC (>= 6) permanents
+that have stuck on the battlefield.
+
+1.5 = `ABILITY_BONUS_TOKEN_MAKER`-class — represents the impact
+amplification of a 6+ CMC threat (it would not have been worth
+casting if the impact were small).
+
+Used by `_ability_bonus` in `ai/evaluator.py`.
+"""
+
+MID_CMC_RESIDENCY_BONUS: float = 0.5
+"""Rules-constant: residency bonus for mid-CMC (>= 4 and < 6)
+permanents.
+
+⅓ × `HIGH_CMC_RESIDENCY_BONUS` — proportional to the impact gap
+between 4-CMC and 6+-CMC threats.
+
+Used by `_ability_bonus` in `ai/evaluator.py`.
+"""
+
+# ── Removal valuation (estimate_removal_value) ──────────────────
+EQUIPMENT_BUFF_VALUE_MULTIPLIER: float = 1.5
+"""Rules-constant: multiplier on (actual_power − base_power) when
+the target carries equipment buff tags.
+
+1.5 = `CREATURE_POWER_VALUE` — the buff is treated as raw extra
+power on the carrier, valued at the same per-point rate.
+
+Used by `estimate_removal_value` in `ai/evaluator.py`.
+"""
+
+REMOVAL_TEMPO_DELTA_PER_CMC: float = 0.5
+"""Rules-constant: per-CMC tempo-swing weight applied to
+(target_cmc − removal_cmc).
+
+0.5 ≈ ½ life-point per mana of tempo gained — a 1-mana removal
+killing a 4-mana threat scores +1.5 tempo (3 × 0.5), making cheap
+removal on big threats clearly favourable.
+
+Used by `estimate_removal_value` in `ai/evaluator.py`.
+"""
+
+# ── Spell-damage estimation (_estimate_spell_damage_for_eval) ───
+SPELL_DAMAGE_DESTROY_EXILE_SENTINEL: int = 99
+"""Sentinel: returned by `_estimate_spell_damage_for_eval` for
+destroy/exile spells (Path to Exile, Swords to Plowshares, Wrath).
+
+99 is large enough to clear any toughness in Modern (Eldrazi top
+out at 15) — used as a "kills anything" marker so the lethality
+gate in `estimate_spell_value` always passes for hard removal.
+
+Used by `_estimate_spell_damage_for_eval` and the lethality gate in
+`estimate_spell_value` (`ai/evaluator.py`).
+"""
+
+SPELL_DAMAGE_ENERGY_FALLBACK: int = 2
+"""Rules-constant: conservative damage estimate for energy-scaling
+removal (Galvanic Discharge) when oracle text doesn't yield an
+explicit number.
+
+2 ≈ assumes the caster has zero energy reserves on cast — the
+floor case for energy-scaling burn.
+
+Used by `_estimate_spell_damage_for_eval` in `ai/evaluator.py`.
+"""
+
+SPELL_DAMAGE_DOMAIN_MAX: int = 5
+"""Rules-constant: maximum domain count in 5c decks — used as
+upper-bound damage estimate for domain-scaling removal (Tribal
+Flames).
+
+Modern's max domain is 5 (Plains, Island, Swamp, Mountain, Forest);
+this constant is the saturated case for 5c manabases.
+
+Used by `_estimate_spell_damage_for_eval` in `ai/evaluator.py`.
+"""
+
+SPELL_DAMAGE_X_SPELL_FALLBACK: int = 3
+"""Rules-constant: conservative damage estimate for X-cost burn
+spells (Fireball, Crash Through-style X) when X isn't specified.
+
+3 = avg X-payment in midgame (≈ available_mana − cmc_other_spells).
+
+Used by `_estimate_spell_damage_for_eval` in `ai/evaluator.py`.
+"""
+
+# ── Spell-scoring constants (estimate_spell_value) ──────────────
+ROLE_BEATDOWN_THREAT_MULTIPLIER: float = 1.2
+"""Rules-constant: multiplier on creature value when we're in the
+BEATDOWN role.
+
++20% reflects the role's "press the clock" intent — threats are
+worth more when their job is to close the game.
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+ROLE_CONTROL_SMALL_CREATURE_DAMPER: float = 0.7
+"""Rules-constant: multiplier on creature value when we're CONTROL
+and the creature has power <= 1.
+
+−30% reflects that small bodies don't help control's plan — they
+neither apply pressure nor stabilise vs real threats.
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+HASTE_IMMEDIATE_BONUS: float = 1.1
+"""Rules-constant: additive bonus on top of keyword pricing for
+haste creatures (one extra attack the turn it lands).
+
+1.1 ≈ `CREATURE_POWER_VALUE` (1.5) × 0.7 expected damage — a 2-power
+haster swings for 1.4 expected damage on the deploy turn.
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+REMOVAL_NO_LETHAL_PENALTY: float = 15.0
+"""Sentinel: penalty applied to damage-based removal when no
+opponent creature is killable by the spell's damage.
+
+−15 is below `pass_threshold` for every archetype — the spell
+short-circuits and won't be cast.
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+REMOVAL_TARGET_VALUE_MULTIPLIER: float = 1.2
+"""Rules-constant: multiplier on best target's permanent-value when
+scoring removal.
+
+1.2 (was 0.7 pre-iteration-2) properly values removing a Ragavan
+T1 above merely deploying our own 2-drop. Anchored to
+`ROLE_BEATDOWN_THREAT_MULTIPLIER` — symmetric across the
+threat/answer axis.
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+REMOVAL_MUST_KILL_THRESHOLD: float = 7.0
+"""Rules-constant: target permanent-value at or above which the
+target counts as "must-kill" (high-value engine / value generator).
+
+7.0 ≈ `ABILITY_BONUS_CARD_ADVANTAGE` (3.0) + a midrange creature's
+P/T (≈ 4.0) — the threshold where the creature has crossed into
+engine territory.
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+REMOVAL_MUST_KILL_BONUS: float = 3.0
+"""Rules-constant: extra bonus added when removing a must-kill
+target (>= REMOVAL_MUST_KILL_THRESHOLD).
+
+3.0 = `ABILITY_BONUS_CARD_ADVANTAGE`-class — represents the
+preserved EV of NOT letting the engine generate one more card.
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+REMOVAL_NONCREATURE_FALLBACK_BONUS: float = 3.0
+"""Rules-constant: bonus when removal can hit non-creature
+permanents (artifacts, enchantments) but no creatures exist.
+
+3.0 = the conservative lower bound on a non-creature target's
+value (mana rocks, anthems, equipment).
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+REMOVAL_NO_TARGET_PENALTY: float = 5.0
+"""Sentinel: penalty applied when removal has no legal targets at
+all (or only land targets).
+
+−5 = pass_threshold-class — gate the spell from being cast on an
+empty board.
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+ROLE_CONTROL_REMOVAL_MULTIPLIER: float = 1.4
+"""Rules-constant: multiplier on removal value when we're in the
+CONTROL role.
+
++40% reflects control's reliance on 1-for-1 trades — removal is
+the deck's primary game plan, not a side effect.
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+# ── Board-wipe scoring ──────────────────────────────────────────
+WIPE_NET_DESTROYED_VALUE: float = 3.0
+"""Rules-constant: per-net-creature life-point value when a board
+wipe destroys more opp creatures than ours.
+
+3.0 ≈ the average creature's life-point value in this evaluator's
+scale (a 2-power creature × `CREATURE_POWER_VALUE`).
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+WIPE_FAVOURABLE_FLAT_BONUS: float = 2.0
+"""Rules-constant: flat additive bonus on top of net-destroyed
+value when a wipe is favourable.
+
+2.0 ≈ `ABILITY_BONUS_ETB_VALUE` — the "we got initiative back"
+component of a clean wipe.
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+WIPE_OPP_CREATURE_VALUE: float = 2.0
+"""Rules-constant: per-opp-creature value when wiping with
+non-strict-favourable parity (>= 2 opp creatures).
+
+2.0 ≈ a small body's life-point value.
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+WIPE_MY_CREATURE_LOSS_VALUE: float = 1.5
+"""Rules-constant: per-my-creature loss penalty when wiping with
+parity (we're trading our own board too).
+
+1.5 < `WIPE_OPP_CREATURE_VALUE` because we accept the wipe even
+when slightly down (board reset > board down 1).
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+# ── Card-advantage / cantrip ────────────────────────────────────
+CARD_DRAW_BASE_VALUE: float = 2.0
+"""Rules-constant: base value for cards tagged `card_advantage` or
+`cantrip` at spell-evaluation time.
+
+Equal to `ABILITY_BONUS_ETB_VALUE` — single-cast draw is roughly
+one cantrip's worth of EV.
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+CARD_DRAW_CONTROL_BONUS: float = 1.5
+"""Rules-constant: extra bonus to card draw when in CONTROL role.
+
+Control wins via card-advantage attrition; +1.5 captures that
+asymmetry without overlapping `ROLE_CONTROL_REMOVAL_MULTIPLIER`
+(which scales removal, not draw).
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+CANTRIP_REPLACEMENT_BONUS: float = 0.5
+"""Rules-constant: extra bonus when the spell is tagged `cantrip`
+(replaces itself in hand).
+
+0.5 ≈ ½ × `CARD_DRAW_BASE_VALUE` — a cantrip is "free" but the EV
+captured here is just the no-card-cost adjustment.
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+# ── Discard / disruption ────────────────────────────────────────
+DISCARD_EARLY_GAME_VALUE: float = 4.0
+"""Rules-constant: discard value during the early game (before
+either side has set up a clock).
+
+4.0 = `ORACLE_RECUR_BONUS` × ~3 — early discard is "powerful"
+because the opponent's hand still contains the entire game plan.
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+DISCARD_LATE_GAME_VALUE: float = 1.5
+"""Rules-constant: discard value after the early-game window has
+closed.
+
+1.5 ≈ `ORACLE_RECUR_BONUS` — late discard is mostly just stripping
+top-decks, not real game-plan disruption.
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+# ── Silence / counterspell / blink ──────────────────────────────
+SILENCE_THREAT_CMC_THRESHOLD: int = 3
+"""Rules-constant: CMC threshold above which a hand card counts as
+a "key threat" worthy of silence-protection.
+
+3 = the inflection between cantrips and real threats (most Modern
+threats live at 3+ CMC).
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+SILENCE_PROTECT_BONUS: float = 3.0
+"""Rules-constant: bonus when casting silence to protect a key
+deployment.
+
+3.0 = `ABILITY_BONUS_CARD_ADVANTAGE`-class — protecting a 3+ CMC
+play from a counter is worth roughly the EV preserved.
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+SILENCE_NO_TARGET_PENALTY: float = 20.0
+"""Sentinel: penalty when casting silence with nothing to protect.
+
+−20 ≈ −2 × `SILENCE_PROTECT_BONUS` — strongly gates the spell from
+being cast pre-emptively.
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+COUNTERSPELL_PROACTIVE_PENALTY: float = 10.0
+"""Sentinel: penalty for casting a counterspell during main phase
+(rather than reactively).
+
+−10 ensures counterspells never score as proactive plays — they
+belong in `ai/response.py`'s decide_response path.
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+BLINK_ETB_AVAILABLE_BONUS: float = 2.5
+"""Rules-constant: bonus when casting blink with an ETB-creature
+on board.
+
+2.5 = `ABILITY_TYPE_ATTACK_TRIGGER`-class — re-triggering an ETB is
+roughly one extra trigger's worth of value.
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+BLINK_NO_ETB_PENALTY: float = 5.0
+"""Sentinel: penalty when casting blink with creatures but no
+ETB-tagged ones (the spell exists but has no high-value target).
+
+−5 = pass_threshold-class — gates the cast unless held for
+protection.
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+BLINK_NO_CREATURES_PENALTY: float = 15.0
+"""Sentinel: penalty when casting blink with no creatures on board
+at all (spell fizzles).
+
+−15 = `REMOVAL_NO_LETHAL_PENALTY`-class — strongly negative.
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+# ── Prowess / spell-trigger synergy ─────────────────────────────
+PROWESS_PER_CREATURE_BASE: float = 2.5
+"""Rules-constant: per-prowess-creature bonus when casting a
+noncreature spell.
+
+2.5 ≈ +1/+1 to one prowess creature × ~2 attacks before removal —
+the lifetime value of a single prowess trigger.
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+PROWESS_PER_CREATURE_CHEAP_BONUS: float = 1.5
+"""Rules-constant: extra per-prowess-creature bonus when the spell
+costs 1 or less (chains better).
+
+1.5 ≈ "cheap = more triggers per turn" amortisation.
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+PROWESS_PER_CREATURE_FREE_BONUS: float = 2.0
+"""Rules-constant: extra per-prowess-creature bonus when the spell
+is free (cmc 0 — Mutagenic Growth, Lava Dart flashback).
+
+2.0 ≈ pure-trigger value with no opportunity cost.
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+# ── Combo piece ─────────────────────────────────────────────────
+COMBO_PIECE_SPELL_BONUS: float = 5.5
+"""Rules-constant: bonus when casting a card tagged `combo` (a
+piece in the deck's combo line).
+
+5.5 = `ORACLE_LOCK_PIECE_BONUS` (3.0) + `ABILITY_BONUS_CARD_ADVANTAGE`
+(3.0) − `CANTRIP_REPLACEMENT_BONUS` (0.5) — combo pieces are nearly
+must-cast for combo decks.
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+# ── Ramp / mana production ──────────────────────────────────────
+RAMP_EARLY_GAME_BONUS: float = 4.0
+"""Rules-constant: ramp value during the early game (when the
+mana boost compounds across many turns).
+
+4.0 = `DISCARD_EARLY_GAME_VALUE` — early ramp is strictly tempo-
+positive.
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+RAMP_MID_GAME_BONUS: float = 2.0
+"""Rules-constant: ramp value during the mid game.
+
+½ × `RAMP_EARLY_GAME_BONUS` — fewer turns left to compound the
+mana advantage.
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+RAMP_LATE_GAME_BONUS: float = 0.5
+"""Rules-constant: ramp value during the late game.
+
+Near-zero — by the late game the mana boost rarely matters.
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+# ── Mana efficiency ─────────────────────────────────────────────
+MANA_EFFICIENCY_GOOD_LOW: float = 0.6
+"""Rules-constant: lower bound of the "using mana well" efficiency
+band (cmc / available_mana).
+
+0.6 ≈ the threshold below which we're significantly under-using
+our mana for the turn.
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+MANA_EFFICIENCY_GOOD_HIGH: float = 1.0
+"""Rules-constant: upper bound of the "using mana well" efficiency
+band.
+
+1.0 = full mana usage; above this would mean over-cost (impossible
+without floating mana, so 1.0 is the natural cap).
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+MANA_EFFICIENCY_GOOD_BONUS: float = 1.1
+"""Rules-constant: bonus when efficiency lies in the "using mana
+well" band.
+
+1.1 ≈ `HASTE_IMMEDIATE_BONUS`-scale — small but positive.
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+MANA_EFFICIENCY_LOW_THRESHOLD: float = 0.3
+"""Rules-constant: efficiency threshold below which a cheap spell
+gets a small "fine but suboptimal" bonus.
+
+0.3 ≈ casting a 1-mana spell with 4 available — common situation
+worth a small acknowledgement bonus.
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+MANA_EFFICIENCY_LOW_BONUS: float = 0.5
+"""Rules-constant: bonus for cheap spells in the "low efficiency"
+band (cmc > 0 and efficiency < 0.3).
+
+½ × `MANA_EFFICIENCY_GOOD_BONUS` — recognises the cast without
+endorsing the floating mana.
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+UNCASTABLE_PENALTY: float = 10.0
+"""Sentinel: hard floor for spells we don't have mana to cast
+(mana_after < 0).
+
+−10 ensures the spell is never selected. Acts as the upper bound
+on the literal "−10.0 = can't cast" gate.
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+TAP_OUT_HOLDING_REMOVAL_PENALTY: float = 2.0
+"""Rules-constant: penalty when tapping out forfeits an instant-
+speed removal in hand against an active opp board.
+
+2.0 ≈ `WIPE_OPP_CREATURE_VALUE` — the EV of one removal cast we
+gave up.
+
+Used by `estimate_spell_value` in `ai/evaluator.py`.
+"""
+
+# ── Life valuation curve (_life_value) ──────────────────────────
+LIFE_DEAD_PENALTY: float = 50.0
+"""Sentinel: returned for life <= 0 (we're dead).
+
+50.0 ≈ ½ × `LETHAL_THREAT` — large enough to dominate any other
+evaluation term.
+
+Used by `_life_value` in `ai/evaluator.py`.
+"""
+
+LIFE_BAND_CRITICAL_MAX: int = 3
+"""Rules-constant: upper bound of the "critical" life band
+(life <= 3).
+
+3 ≈ one Bolt or one swing-from-2 away from death; each life
+point in this band is worth `LIFE_PER_POINT_CRITICAL`.
+
+Used by `_life_value` in `ai/evaluator.py`.
+"""
+
+LIFE_PER_POINT_CRITICAL: float = 3.0
+"""Rules-constant: per-life-point value in the critical band.
+
+3.0 = `WIPE_NET_DESTROYED_VALUE`-class — each point of life is
+worth roughly one creature when we're about to die.
+
+Used by `_life_value` in `ai/evaluator.py`.
+"""
+
+LIFE_BAND_DANGER_MAX: int = 7
+"""Rules-constant: upper bound of the "dangerous" life band
+(3 < life <= 7).
+
+7 ≈ within-range of a 2-card combo kill (Lightning Bolt + Lava
+Spike).
+
+Used by `_life_value` in `ai/evaluator.py`.
+"""
+
+LIFE_DANGER_BAND_BASE: float = 9.0
+"""Rules-constant: piecewise-linear base value at the start of the
+dangerous band (life == 3).
+
+9.0 = `LIFE_BAND_CRITICAL_MAX` × `LIFE_PER_POINT_CRITICAL`
+(3 × 3.0) — preserves continuity with the critical band.
+
+Used by `_life_value` in `ai/evaluator.py`.
+"""
+
+LIFE_PER_POINT_DANGER: float = 2.0
+"""Rules-constant: per-life-point value in the dangerous band.
+
+⅔ × `LIFE_PER_POINT_CRITICAL` — still scary but no longer one
+shock from death.
+
+Used by `_life_value` in `ai/evaluator.py`.
+"""
+
+LIFE_BAND_NORMAL_MAX: int = 15
+"""Rules-constant: upper bound of the "normal" life band
+(7 < life <= 15).
+
+15 ≈ a Boros / Burn pre-game life total below which the average
+shock-damage opp is making meaningful progress.
+
+Used by `_life_value` in `ai/evaluator.py`.
+"""
+
+LIFE_NORMAL_BAND_BASE: float = 17.0
+"""Rules-constant: piecewise-linear base at the start of the
+normal band (life == 7).
+
+17.0 = `LIFE_DANGER_BAND_BASE` (9.0) + (LIFE_BAND_DANGER_MAX − 3) ×
+`LIFE_PER_POINT_DANGER` (4 × 2.0) — preserves piecewise continuity.
+
+Used by `_life_value` in `ai/evaluator.py`.
+"""
+
+LIFE_PER_POINT_NORMAL: float = 1.0
+"""Rules-constant: per-life-point value in the normal band.
+
+½ × `LIFE_PER_POINT_DANGER` — life is "saved up" for later in this
+range.
+
+Used by `_life_value` in `ai/evaluator.py`.
+"""
+
+LIFE_DIMINISHING_BAND_BASE: float = 25.0
+"""Rules-constant: piecewise-linear base at the start of the
+diminishing band (life == 15).
+
+25.0 = `LIFE_NORMAL_BAND_BASE` (17.0) + (LIFE_BAND_NORMAL_MAX − 7) ×
+`LIFE_PER_POINT_NORMAL` (8 × 1.0) — preserves piecewise continuity.
+
+Used by `_life_value` in `ai/evaluator.py`.
+"""
+
+LIFE_PER_POINT_DIMINISHING: float = 0.3
+"""Rules-constant: per-life-point value above 15 life.
+
+≈ ⅓ × `LIFE_PER_POINT_NORMAL` — extra life above the normal band
+has clear diminishing returns (a 30-life Soul Sister won't lose to
+chip damage, so the marginal point matters less).
+
+Used by `_life_value` in `ai/evaluator.py`.
+"""
+
+# ── Permanent-value (_permanent_value) ──────────────────────────
+EQUIPPED_CREATURE_VULNERABILITY_BONUS: float = 2.0
+"""Rules-constant: bonus on a creature carrying equipment-tag
+instance tags (removing it also wastes the equipment buff).
+
+2.0 = `ABILITY_BONUS_ETB_VALUE`-class — represents the cascade
+value lost on removal.
+
+Used by `_permanent_value` in `ai/evaluator.py`.
+"""
+
+LAND_BASE_VALUE: float = 1.0
+"""Rules-constant: base life-point value of any land permanent.
+
+1.0 ≈ one mana × one cast (the lifetime contribution of a single
+land used to cast a 1-mana spell).
+
+Used by `_permanent_value` in `ai/evaluator.py`.
+"""
+
+LAND_PER_COLOR_BONUS: float = 0.3
+"""Rules-constant: per-mana-symbol bonus for lands with multiple
+producible colors (dual lands, fetch-fixed bases).
+
+0.3 ≈ the colour-fixing optionality value per extra colour.
+
+Used by `_permanent_value` in `ai/evaluator.py`.
+"""
+
+LAND_UNTAPPED_BONUS: float = 0.5
+"""Rules-constant: bonus when a land is untapped (representing
+options — cast or hold-up).
+
+0.5 = `CANTRIP_REPLACEMENT_BONUS`-class — small but positive.
+
+Used by `_permanent_value` in `ai/evaluator.py`.
+"""
+
+ARTIFACT_MANA_ROCK_VALUE: float = 2.0
+"""Rules-constant: base value of a mana-producing artifact.
+
+2.0 = `ABILITY_BONUS_ETB_VALUE`-class — a Sol Ring-class accelerator
+contributes ~2 life-points of advantage.
+
+Used by `_permanent_value` in `ai/evaluator.py`.
+"""
+
+ARTIFACT_EQUIPMENT_ACTIVE_VALUE: float = 4.0
+"""Rules-constant: value of an equipment that's currently equipped
+(actively boosting a creature).
+
+4.0 ≈ `RAMP_EARLY_GAME_BONUS`-class — equipment turns a 1/1 into a
+3/3 in many cases, which is large.
+
+Used by `_permanent_value` in `ai/evaluator.py`.
+"""
+
+ARTIFACT_EQUIPMENT_IDLE_VALUE: float = 1.0
+"""Rules-constant: value of an idle (un-equipped) equipment
+permanent.
+
+1.0 = `LAND_BASE_VALUE` — sitting equipment has potential but no
+realised impact.
+
+Used by `_permanent_value` in `ai/evaluator.py`.
+"""
+
+ARTIFACT_GENERIC_PER_CMC: float = 0.5
+"""Rules-constant: per-CMC value for artifacts that aren't mana
+sources or equipment.
+
+0.5 = `MID_CMC_RESIDENCY_BONUS`-class — a 2-CMC artifact is worth
+~1 life-point.
+
+Used by `_permanent_value` in `ai/evaluator.py`.
+"""
+
+ENCHANTMENT_PER_CMC: float = 0.8
+"""Rules-constant: per-CMC value for enchantments.
+
+0.8 > `ARTIFACT_GENERIC_PER_CMC` because enchantments tend to have
+stronger per-mana effects (Sphere of Resistance, Leyline class).
+
+Used by `_permanent_value` in `ai/evaluator.py`.
+"""
+
+PLANESWALKER_BASE_VALUE: float = 4.0
+"""Rules-constant: flat base value for planeswalker permanents.
+
+4.0 = `RAMP_EARLY_GAME_BONUS`-class — represents the threat-of-
+activation value beyond raw loyalty.
+
+Sister constant: `PLANESWALKER_SURVIVAL_FLOOR` (3.0) — survival floor
+in `ai/ev_player.py`'s spell-cast layer.
+
+Used by `_permanent_value` in `ai/evaluator.py`.
+"""
+
+PLANESWALKER_LOYALTY_VALUE: float = 0.5
+"""Rules-constant: per-loyalty-counter bonus for planeswalkers.
+
+0.5 ≈ `MID_CMC_RESIDENCY_BONUS`-class — each loyalty counter is
+~0.5 life-points of future activations.
+
+Used by `_permanent_value` in `ai/evaluator.py`.
+"""
