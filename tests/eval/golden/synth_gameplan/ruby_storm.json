@@ -1,0 +1,160 @@
+{
+  "expected": {
+    "always_early": [
+      "Ruby Medallion"
+    ],
+    "archetype": "combo",
+    "combo_readiness_check": "generic_combo_readiness",
+    "critical_pieces": [
+      "Grapeshot",
+      "Empty the Warrens",
+      "Past in Flames"
+    ],
+    "deck_name": "Ruby Storm",
+    "fallback_goals": [
+      {
+        "card_priorities": {
+          "Ral, Monsoon Mage // Ral, Leyline Prodigy": 20.0
+        },
+        "description": "Plan B: attack with Ral or any creatures",
+        "goal_type": "PUSH_DAMAGE"
+      }
+    ],
+    "goals": [
+      {
+        "card_priorities": {
+          "Glimpse the Impossible": 14.0,
+          "Manamorphose": 15.0,
+          "Ral, Monsoon Mage // Ral, Leyline Prodigy": 20.0,
+          "Reckless Impulse": 16.0,
+          "Ruby Medallion": 25.0,
+          "Wrenn's Resolve": 16.0
+        },
+        "card_roles": {
+          "engines": [
+            "Ral, Monsoon Mage // Ral, Leyline Prodigy",
+            "Ruby Medallion"
+          ],
+          "fillers": [
+            "Manamorphose",
+            "Reckless Impulse",
+            "Wrenn's Resolve",
+            "Glimpse the Impossible",
+            "Valakut Awakening // Valakut Stoneforge"
+          ]
+        },
+        "description": "Deploy Ruby Medallion or Ral, or accumulate rituals in hand",
+        "goal_type": "DEPLOY_ENGINE"
+      },
+      {
+        "card_priorities": {
+          "Desperate Ritual": 30.0,
+          "Empty the Warrens": 17.0,
+          "Glimpse the Impossible": 26.0,
+          "Grapeshot": 18.0,
+          "Manamorphose": 28.0,
+          "March of Reckless Joy": 20.0,
+          "Past in Flames": 24.0,
+          "Pyretic Ritual": 30.0,
+          "Reckless Impulse": 26.0,
+          "Valakut Awakening // Valakut Stoneforge": 20.0,
+          "Wish": 22.0,
+          "Wrenn's Resolve": 26.0
+        },
+        "card_roles": {
+          "enablers": [
+            "Desperate Ritual",
+            "Pyretic Ritual",
+            "Manamorphose",
+            "Reckless Impulse",
+            "Wrenn's Resolve",
+            "Glimpse the Impossible",
+            "Past in Flames",
+            "Wish",
+            "Valakut Awakening // Valakut Stoneforge",
+            "March of Reckless Joy"
+          ],
+          "payoffs": [
+            "Empty the Warrens",
+            "Grapeshot"
+          ],
+          "rituals": [
+            "Desperate Ritual",
+            "Manamorphose",
+            "Pyretic Ritual"
+          ]
+        },
+        "description": "Chain ALL rituals + cantrips in one turn, then fire Grapeshot/Empty the Warrens",
+        "goal_type": "EXECUTE_PAYOFF",
+        "resource_target": 5,
+        "resource_zone": "storm"
+      }
+    ],
+    "land_priorities": {
+      "Arid Mesa": 4.0,
+      "Elegant Parlor": 3.0,
+      "Gemstone Caverns": 4.0,
+      "Mountain": 2.0,
+      "Sacred Foundry": 2.0,
+      "Scalding Tarn": 5.0,
+      "Sunbaked Canyon": 3.0,
+      "Thundering Falls": 2.0
+    },
+    "mulligan_combo_sets": [
+      [
+        "Desperate Ritual",
+        "Manamorphose",
+        "Pyretic Ritual",
+        "Ral, Monsoon Mage // Ral, Leyline Prodigy",
+        "Ruby Medallion"
+      ],
+      [
+        "Reckless Impulse",
+        "Wrenn's Resolve",
+        "Glimpse the Impossible",
+        "Past in Flames",
+        "Wish"
+      ]
+    ],
+    "mulligan_keys": [
+      "Desperate Ritual",
+      "Manamorphose",
+      "Past in Flames",
+      "Pyretic Ritual",
+      "Reckless Impulse",
+      "Ruby Medallion",
+      "Wish",
+      "Wrenn's Resolve"
+    ],
+    "mulligan_max_lands": 3,
+    "mulligan_min_lands": 1
+  },
+  "input": {
+    "deck_name": "Ruby Storm",
+    "mainboard": {
+      "Arid Mesa": 3,
+      "Bloodstained Mire": 2,
+      "Desperate Ritual": 4,
+      "Elegant Parlor": 2,
+      "Gemstone Caverns": 1,
+      "Glimpse the Impossible": 3,
+      "Grapeshot": 1,
+      "Manamorphose": 4,
+      "March of Reckless Joy": 1,
+      "Mountain": 4,
+      "Past in Flames": 3,
+      "Pyretic Ritual": 4,
+      "Ral, Monsoon Mage // Ral, Leyline Prodigy": 4,
+      "Reckless Impulse": 4,
+      "Ruby Medallion": 4,
+      "Sacred Foundry": 1,
+      "Scalding Tarn": 3,
+      "Sunbaked Canyon": 1,
+      "Thundering Falls": 1,
+      "Valakut Awakening // Valakut Stoneforge": 2,
+      "Wish": 2,
+      "Wooded Foothills": 2,
+      "Wrenn's Resolve": 4
+    }
+  }
+}

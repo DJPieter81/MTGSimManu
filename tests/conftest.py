@@ -95,3 +95,39 @@ def run_seeded_game(runner, deck1_name, deck2_name, seed=42):
         deck1_sideboard=d1.get("sideboard", {}),
         deck2_sideboard=d2.get("sideboard", {}),
     )
+
+
+# ─── LLM eval-harness opt-in flag ────────────────────────────────────
+#
+# `tests/eval/` runs against a real foundation model when
+# `--run-eval` is passed.  Without the flag, only the smoke tests
+# (which use `pydantic_ai.models.test.TestModel`) execute, so CI
+# stays cheap and offline.  See `tests/eval/llm_eval.py` docstring.
+
+def pytest_addoption(parser):
+    parser.addoption(
+        "--run-eval",
+        action="store_true",
+        default=False,
+        help="Run LLM eval-harness tests against a real foundation model. "
+             "Set MTG_LLM_MODEL or MTG_LLM_MODEL_<TASK> to pick the model.",
+    )
+
+
+def pytest_collection_modifyitems(config, items):
+    if config.getoption("--run-eval"):
+        return
+    skip_marker = pytest.mark.skip(
+        reason="LLM eval test (real model) — pass --run-eval to run."
+    )
+    for item in items:
+        if "llm_eval_real_model" in item.keywords:
+            item.add_marker(skip_marker)
+
+
+def pytest_configure(config):
+    config.addinivalue_line(
+        "markers",
+        "llm_eval_real_model: marks LLM eval tests that hit a real model "
+        "(skipped unless --run-eval is passed).",
+    )
