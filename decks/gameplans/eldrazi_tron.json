@@ -72,6 +72,11 @@
   ],
   "mulligan_min_lands": 2,
   "mulligan_max_lands": 4,
+  "mulligan_cmc_profile": {
+    "cheap": 2,
+    "medium": 4,
+    "premium": 5
+  },
   "land_priorities": {
     "Eldrazi Temple": 10.0,
     "Urza's Tower": 8.0,

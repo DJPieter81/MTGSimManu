@@ -108,3 +108,58 @@ def test_mulligan_cmc_profile_default_matches_legacy_thresholds(card_db):
 
     gp_default = DeckGameplan(deck_name="Default", goals=[], archetype="control")
     assert gp_default.mulligan_cmc_profile == DEFAULT_MULLIGAN_CMC_PROFILE
+
+
+# ─────────────────────────────────────────────────────────────
+# JSON-loader contract: shipped gameplan overrides reach the runtime
+# ─────────────────────────────────────────────────────────────
+
+# Per-deck overrides shipped in `decks/gameplans/*.json`.  Adding a new
+# entry here is the only place the test needs to change — the loader
+# is the single read path, so the assertion form is uniform.
+EXPECTED_PROFILE_OVERRIDES = {
+    # Eldrazi Tron's effective curve runs higher than the default
+    # Modern curve: with Tron assembled, Thought-Knot Seer (CMC 4)
+    # is castable on T2 via Eldrazi Temple, and Reality Smasher /
+    # Endbringer (CMC 5) is the real "premium" pivot.  Setting
+    # medium=4 lets the mulligan key-card-development gate count
+    # TKS as developmental rather than mulliganing the typical
+    # "Tron + threats" 7-card.
+    "Eldrazi Tron": {"cheap": 2, "medium": 4, "premium": 5},
+}
+
+
+@pytest.mark.parametrize("deck_name,expected", EXPECTED_PROFILE_OVERRIDES.items())
+def test_shipped_gameplan_cmc_profile_overrides_load(deck_name, expected):
+    """For each deck shipping a `mulligan_cmc_profile` override, the
+    JSON loader must merge it into the runtime gameplan.  Without
+    this contract the override is dead data and the abstraction
+    contract for ramp archetypes silently regresses to defaults."""
+    from decks.gameplan_loader import load_gameplan
+
+    gp = load_gameplan(deck_name)
+    assert gp is not None, f"missing gameplan for {deck_name}"
+    assert gp.mulligan_cmc_profile == expected, (
+        f"{deck_name}: expected {expected}, got {gp.mulligan_cmc_profile}"
+    )
+
+
+def test_unspecified_brackets_fall_back_to_default():
+    """Loader contract: a JSON `mulligan_cmc_profile` that declares
+    only a subset of {cheap, medium, premium} merges into the default
+    profile rather than dropping the unspecified brackets to None.
+    Guards against an override regressing the unrelated brackets."""
+    from ai.gameplan import DEFAULT_MULLIGAN_CMC_PROFILE
+    from decks.gameplan_loader import _parse_gameplan
+
+    # Synthesize a minimal JSON-shaped dict with only `medium` overridden.
+    data = {
+        "deck_name": "PartialProfile",
+        "archetype": "ramp",
+        "goals": [],
+        "mulligan_cmc_profile": {"medium": 4},
+    }
+    gp = _parse_gameplan(data)
+    assert gp.mulligan_cmc_profile["medium"] == 4
+    assert gp.mulligan_cmc_profile["cheap"] == DEFAULT_MULLIGAN_CMC_PROFILE["cheap"]
+    assert gp.mulligan_cmc_profile["premium"] == DEFAULT_MULLIGAN_CMC_PROFILE["premium"]
