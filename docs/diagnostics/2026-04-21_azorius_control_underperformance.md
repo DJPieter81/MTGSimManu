@@ -1,8 +1,9 @@
 ---
 title: Azorius Control 15% underperformance — EV divergence diagnostic
-status: active
+status: superseded
 priority: primary
 session: 2026-04-21
+superseded_by: docs/diagnostics/2026-05-01_azcon_followup.md
 depends_on:
   - docs/experiments/2026-04-20_phase11_n50_matrix_validation.md
   - docs/diagnostics/2026-04-21_affinity_overperformance.md

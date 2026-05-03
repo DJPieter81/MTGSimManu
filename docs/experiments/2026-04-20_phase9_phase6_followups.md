@@ -1,6 +1,6 @@
 ---
 title: Phase 9 — Phase 6 follow-ups (Storm finisher patience, Amulet recurring engine, Pinnacle Affinity diagnosis)
-status: active
+status: archived
 priority: historical
 session: 2026-04-20
 depends_on:
