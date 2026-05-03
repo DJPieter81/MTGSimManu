@@ -142,21 +142,47 @@ def _threat_score(card, game=None, owner=None) -> float:
     Used by removal / interaction effects to pick the best target.
     Higher = more threatening = should be removed first.
 
-    Creatures: delegate to `ai.ev_evaluator.creature_threat_value`
-    (oracle-driven, clock-math-backed).  Ward is modelled as a
-    removal-targeting tax and subtracted on the same scale.
+    SINGLE-SCALE INVARIANT: when `game` and `owner` are supplied, every
+    permanent — creature OR non-creature — is scored via the marginal-
+    contribution formula `ai.permanent_threat.permanent_threat`.  That
+    formula returns the drop in `owner`'s position value when the card
+    is removed; it covers raw clock impact, evasion, equipment carriers,
+    scaling artifacts, and mana rocks under one definition.
 
-    Non-creature permanents: when `game` and `owner` (the player
-    controlling `card`) are supplied, delegate to the marginal-
-    contribution formula `ai.permanent_threat.permanent_threat`,
-    which returns the drop in the owner's position value when
-    `card` is removed.  When context is unavailable (legacy
-    callsites that don't have the game in scope), fall back to a
-    neutral CMC proxy so scoring remains monotonic.
+    The previous split (creatures → `creature_threat_value`,
+    non-creatures → `permanent_threat`) mixed two unit systems
+    (clock_impact*20 vs position-value delta), so cross-type rankings
+    such as "Plating-equipped Memnite (artifact creature) vs Springleaf
+    Drum (artifact)" became category errors and let removal walk past
+    the actual win condition.  See
+    `tests/test_removal_targeting_picks_creature_over_mana_rock.py`
+    for the rule each line of this function pins.
+
+    Ward (creature-only): a removal-targeting tax subtracted on the
+    same scale via `mana_clock_impact * 20.0`.
+
+    When context is unavailable (legacy callsites that don't have the
+    game in scope), fall back to oracle-driven creature heuristic for
+    creatures and a neutral CMC proxy for non-creatures so scoring
+    remains monotonic without requiring game state.
     """
     t = card.template
     oracle = (t.oracle_text or '').lower()
 
+    # Preferred path: marginal-contribution formula on a single scale.
+    if game is not None and owner is not None:
+        from ai.permanent_threat import permanent_threat
+        base = permanent_threat(card, owner, game)
+        if t.is_creature and 'ward' in oracle:
+            import re as _re
+            from ai.clock import mana_clock_impact
+            from ai.ev_evaluator import _DEFAULT_SNAP
+            m = _re.search(r'ward\s*\{?(\d+)\}?', oracle)
+            ward_cost = int(m.group(1)) if m else 3
+            base -= ward_cost * mana_clock_impact(_DEFAULT_SNAP) * 20.0
+        return base
+
+    # Context-free fallback path.
     if t.is_creature:
         from ai.ev_evaluator import creature_threat_value
         base = creature_threat_value(card)
@@ -168,14 +194,6 @@ def _threat_score(card, game=None, owner=None) -> float:
             ward_cost = int(m.group(1)) if m else 3
             base -= ward_cost * mana_clock_impact(_DEFAULT_SNAP) * 20.0
         return base
-
-    if game is not None and owner is not None:
-        from ai.permanent_threat import permanent_threat
-        return permanent_threat(card, owner, game)
-
-    # Context-free fallback: CMC proxy.  Only reached when a caller
-    # scores a non-creature permanent without threading `game`
-    # through.  All callers with game in scope pass it.
     return float(t.cmc or 0)
 
 
