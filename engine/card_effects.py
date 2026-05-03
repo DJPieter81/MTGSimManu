@@ -2489,47 +2489,118 @@ def celestial_purge_resolve(game, card, controller, targets=None, item=None):
 
 
 # ═══════════════════════════════════════════════════════════════════
-# Thraben Charm — modal: destroy enchantment, GY hate, or -1/-1
+# Thraben Charm — modal: damage / destroy enchantment / exile graveyard
 # ═══════════════════════════════════════════════════════════════════
+# Oracle text (https://scryfall.com/card/dft/207/thraben-charm):
+#
+#   Choose one —
+#   • Thraben Charm deals damage equal to twice the number of creatures
+#     you control to target creature.
+#   • Destroy target enchantment.
+#   • Exile any number of target players' graveyards.
+#
+# Mode selection at resolve time:
+#   - If `targets` is supplied, dispatch by target type so the cast-time
+#     pick (damage on a creature / destroy an enchantment) is respected.
+#   - Otherwise pick the mode with the highest expected value killed:
+#       damage:      best opp creature threat_value where 2N is lethal
+#       enchantment: best opp enchantment threat_score
+#       graveyard:   opp_gy_value when >= GRAVEYARD_HATE_FLOOR
+#     Damage > enchantment > graveyard on ties.
 @EFFECT_REGISTRY.register("Thraben Charm", EffectTiming.SPELL_RESOLVE,
-                           description="Modal: destroy enchantment / exile GY / -1/-1 creatures")
+                           description="Modal: 2N damage to creature / destroy enchantment / exile graveyard")
 def thraben_charm_resolve(game, card, controller, targets=None, item=None):
-    """Thraben Charm: choose best mode based on game state."""
+    from .cards import CardType
     opp_idx = 1 - controller
     opp = game.players[opp_idx]
-    from .cards import CardType
+    me = game.players[controller]
+    n = len(me.creatures)
+    damage = 2 * n
 
-    # Mode 1: Destroy target enchantment
-    enchantments = [c for c in opp.battlefield
-                    if CardType.ENCHANTMENT in c.template.card_types]
-    # Mode 2: Exile target player's graveyard
-    opp_gy_value = sum((c.template.cmc or 0) for c in opp.graveyard)
-    # Mode 3: All creatures get -1/-1 until end of turn (mini-wipe for tokens)
-    opp_tokens = sum(1 for c in opp.creatures if (c.toughness or c.template.toughness or 0) <= 1)
+    # Threshold below which graveyard exile is dead value (rules constant
+    # mirroring the previous implementation; protects against weak picks).
+    GRAVEYARD_HATE_FLOOR = 10
 
-    if enchantments:
-        target = max(enchantments, key=lambda c: _threat_score(c, game, opp))
-        game._permanent_destroyed(target)
+    def _deal_damage(target_creature):
+        target_creature.damage_marked += damage
+        if target_creature.is_dead:
+            game._creature_dies(target_creature)
         game.log.append(
             f"T{game.display_turn} P{controller+1}: "
-            f"Thraben Charm destroys enchantment {target.name}")
-    elif opp_gy_value >= 10:
-        # Exile graveyard
+            f"Thraben Charm deals {damage} to {target_creature.name}")
+
+    def _destroy_enchantment(target_enchantment):
+        game._permanent_destroyed(target_enchantment)
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: "
+            f"Thraben Charm destroys enchantment {target_enchantment.name}")
+
+    def _exile_graveyard():
+        gy_total = sum((c.template.cmc or 0) for c in opp.graveyard)
         for c in list(opp.graveyard):
             opp.graveyard.remove(c)
             c.zone = "exile"
             opp.exile.append(c)
         game.log.append(
             f"T{game.display_turn} P{controller+1}: "
-            f"Thraben Charm exiles opponent's graveyard ({opp_gy_value} CMC)")
-    elif opp_tokens >= 2:
-        # -1/-1 to all creatures (kills tokens)
-        to_kill = [c for c in opp.creatures if (c.toughness or c.template.toughness or 0) <= 1]
-        for c in to_kill:
-            game._creature_dies(c)
-        game.log.append(
-            f"T{game.display_turn} P{controller+1}: "
-            f"Thraben Charm -1/-1 kills {len(to_kill)} tokens")
+            f"Thraben Charm exiles opponent's graveyard ({gy_total} CMC)")
+
+    # Caller-supplied target — dispatch by type.
+    if targets:
+        for tid in targets:
+            target = game.get_card_by_id(tid)
+            if not target or target.zone != "battlefield":
+                continue
+            if target.template.is_creature:
+                _deal_damage(target)
+                return
+            if CardType.ENCHANTMENT in target.template.card_types:
+                _destroy_enchantment(target)
+                return
+        # Fall through to auto-pick if no usable supplied target.
+
+    # Auto-pick: score each mode by its principled value and choose the
+    # highest. Damage mode value uses creature_threat_value (the same
+    # primitive the AI scoring layer uses) so a Plating-equipped 9/1
+    # outranks an unequipped 0/2.
+    from ai.ev_evaluator import creature_threat_value
+
+    best_creature = None
+    best_creature_value = 0.0
+    if damage > 0:
+        for c in opp.creatures:
+            tough = c.toughness if c.toughness is not None else (c.template.toughness or 0)
+            if damage >= tough > 0:  # 2N kills it
+                v = creature_threat_value(c)
+                if v > best_creature_value:
+                    best_creature_value = v
+                    best_creature = c
+
+    enchantments = [c for c in opp.battlefield
+                    if CardType.ENCHANTMENT in c.template.card_types]
+    best_enchantment = None
+    best_enchantment_value = 0.0
+    if enchantments:
+        best_enchantment = max(enchantments,
+                               key=lambda c: _threat_score(c, game, opp))
+        best_enchantment_value = _threat_score(best_enchantment, game, opp)
+
+    opp_gy_value = sum((c.template.cmc or 0) for c in opp.graveyard)
+    graveyard_value = opp_gy_value if opp_gy_value >= GRAVEYARD_HATE_FLOOR else 0.0
+
+    # Choose the highest-EV mode. Ties prefer damage > enchantment > GY
+    # because removing a battlefield threat is generally tempo-positive
+    # while graveyard hate is situational.
+    options = [
+        ("damage", best_creature_value, lambda: _deal_damage(best_creature)),
+        ("enchantment", best_enchantment_value,
+         lambda: _destroy_enchantment(best_enchantment)),
+        ("graveyard", graveyard_value, _exile_graveyard),
+    ]
+    options.sort(key=lambda x: -x[1])  # stable: preserves declaration order on ties
+    mode_name, mode_value, fire = options[0]
+    if mode_value > 0:
+        fire()
     else:
         game.log.append(
             f"T{game.display_turn} P{controller+1}: "
