@@ -271,6 +271,160 @@ strictly favorable.
 """
 
 
+# ─── Stack-threat / response gating constants (ai/response.py) ───────
+# Thresholds and scaling factors used by `evaluate_stack_threat` and
+# `decide_response`.  These were inline literals with extensive in-line
+# derivation comments; centralizing them here keeps the "no magic
+# numbers" contract intact and allows re-tuning at a single point.
+
+CLOCK_IMPACT_LIFE_SCALING: float = 20.0
+"""Derived: factor that converts clock-impact units (cards/turn /
+opp_life) into life-point units suitable for direct comparison with
+threat values produced by `evaluate_stack_threat`.
+
+Used throughout `ai/response.py`'s `evaluate_stack_threat` to lift
+mana-clock and card-clock terms (cascade saved mana, equipment pump,
+X-cost scalers, token engines, card-advantage engines, cost reducers,
+held-counter floor) onto the same scale as the projected board-EV
+delta.
+
+Derivation: a typical Modern opponent's life total is 20.  Clock-
+impact primitives (`mana_clock_impact`, `card_clock_impact`) return
+values normalised by `opp_life`, so multiplying by 20 reverses the
+normalisation and yields life-points / turn.  The same factor anchors
+the held-counter floor (`_held_counter_floor_ev`) so the floor is
+directly comparable to the threat values it gates against.
+
+Sister scaling: the BASE / RAMP held-interaction constants above use
+a different per-CMC scale (mana-cost units, not life units); they are
+NOT interchangeable with this constant.
+"""
+
+
+HELD_COUNTER_FLOOR_MIN_EV: float = 1.0
+"""Derived: minimum EV of a held counter, even when the snapshot
+has no mana and no opponent life pressure.
+
+Floored so an empty snapshot doesn't collapse the counter-gate
+threshold to zero — the counter still costs at least a card.  1.0
+matches the lower edge of `card_clock_impact × CLOCK_IMPACT_LIFE_SCALING`
+for a typical Modern game state (avg power 2.5 / opp life 20 = 0.125
+base; ×0.4 castable fraction at 1 mana; ×20 ≈ 1.0).
+
+Used by `_held_counter_floor_ev` in `ai/response.py` as the floor
+for the gate-threshold computation in `decide_response`.
+"""
+
+
+COUNTER_GATE_HIGH_MULTIPLIER: float = 1.5
+"""Derived: multiplier applied to the held-counter floor EV to obtain
+the high-confidence counter-fire gate.
+
+A counter must clear the floor by 50%+ to justify firing on a
+non-cheap trade — "clearly above replacement value", one held card
+swap is worthwhile if the threat trades up by 50%+.  Mirrors the
+legacy hardcoded 3.0 threshold for a typical floor of ~2.0 post-fix
+(regression-safe).
+
+Used by `decide_response` in `ai/response.py` as
+``COUNTER_GATE_HIGH = held_counter_floor_ev × COUNTER_GATE_HIGH_MULTIPLIER``.
+
+Sister constant: COUNTER_GATE_LOW_MULTIPLIER — same gate, lower
+threshold for cheap-trade scenarios.
+"""
+
+
+COUNTER_GATE_LOW_MULTIPLIER: float = 0.5
+"""Derived: multiplier applied to the held-counter floor EV to obtain
+the cheap-trade counter-fire gate.
+
+When the trade is favourable (cheap held counter OR cheaply-paid
+threat), the gate drops to 0.5× floor EV.  Reflects that a cheap
+counter firing on a free spell is a tempo-positive trade even if
+the absolute threat value is below replacement — we're denying
+opp's free value at minimal cost.  Pre-fix the legacy 1.5 floor
+failed for affinity-discounted card-advantage spells whose
+projection-based threat sat at ~1.0.
+
+Used by `decide_response` in `ai/response.py` as
+``COUNTER_GATE_LOW = held_counter_floor_ev × COUNTER_GATE_LOW_MULTIPLIER``.
+
+Sister constant: COUNTER_GATE_HIGH_MULTIPLIER — same gate, higher
+threshold for non-cheap trades.
+"""
+
+
+CHEAP_COUNTER_PAID_THRESHOLD: int = 2
+"""Rules-constant: maximum effective mana cost at which a counter
+qualifies as "cheap" for the LOW gate in `decide_response`.
+
+A counter at effective cost ≤ 2 (Counterspell UU, free pitch
+counters, 1U Spell Pierce-style) is cheap enough that firing it on
+a moderate threat is a tempo-positive trade — we drop the gate to
+COUNTER_GATE_LOW.  Counters above this threshold (Cryptic Command at
+1UUU, Force of Will at 0+exile-and-life) are reserved for the HIGH
+gate.
+
+Sister constant: CHEAP_THREAT_PAID_THRESHOLD — same scale, applied
+to the threat side of the trade.
+"""
+
+
+CHEAP_THREAT_PAID_THRESHOLD: int = 2
+"""Rules-constant: maximum effective mana the opponent paid at which
+their threat qualifies as "cheap" for the LOW gate in `decide_response`.
+
+When opp casts a spell whose effective paid cost (printed CMC after
+affinity / delve / domain / generic cost-reducers and X-paid) is ≤ 2,
+countering it is a tempo-positive trade even if its absolute threat
+value is below replacement — we're denying free / cheap value.
+
+Sister constant: CHEAP_COUNTER_PAID_THRESHOLD — same scale, applied
+to our counter's side of the trade.
+"""
+
+
+PROACTIVE_REMOVAL_MIN_VALUE: float = 3.0
+"""Rules-constant: minimum `estimate_removal_value` at which an
+instant-speed removal spell is fired reactively (in response to an
+opponent's non-creature spell on the stack) against a creature on
+their board.
+
+3.0 is the "worth a card" floor on the `estimate_removal_value`
+scale — one mana invested in removal must net at least the card-
+swap value.  Below this we hold the removal for a higher-EV target
+later.  Used by `decide_response` in `ai/response.py` to gate the
+reactive-removal branch.
+"""
+
+
+EQUIPMENT_RESIDENCY_TURNS: int = 3
+"""Rules-constant: typical equipment residency window in Modern.
+
+Equipment is rarely removed (most decks lack artifact removal in the
+main), so a resolved equipment is expected to contribute its pump
+across ~3 combat turns before it leaves the battlefield.  Used by
+`evaluate_stack_threat` in `ai/response.py` to scale equipment-pump
+and X-cost / "for each" creature-scaler threat values.
+
+Re-used as the residency window for X-cost creature scalers (Walking
+Ballista, Hangarback Walker) — same intent: how many combat turns
+the projected body contributes before opp's removal answers it.
+"""
+
+
+EQUIPMENT_DEFAULT_POWER_BONUS: int = 2
+"""Derived: default +P/+T bonus assumed for an equipment whose oracle
+text doesn't specify an explicit `+N/+N` clause.
+
++2 reflects the median power bonus on Modern-playable equipment
+(Bonesplitter +3, Cranial Plating variable, Sword cycle +2, Skullclamp
++1, Shadowspear +1).  Used by `evaluate_stack_threat` in
+`ai/response.py` as the fallback when the regex `\\+(\\d+)/\\+\\d+`
+doesn't match the equipment's oracle text.
+"""
+
+
 # ─── Keyword clock multipliers (creature_clock_impact in ai/clock.py) ─
 # Multiplicative bonuses applied to a creature's base clock contribution
 # (`power / opp_life`) when it has a clock-relevant keyword. These were
