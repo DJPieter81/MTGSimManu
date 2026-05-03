@@ -1601,3 +1601,128 @@ floor of the matrix run.
 
 Used by `plan_sideboard` in `ai/sideboard_solver.py`.
 """
+
+
+# ─── Combo-calc / storm-chain constants (ai/combo_calc.py) ───────────
+# Used by `_compute_combo_value`, the zone assessors, and the
+# mid-chain ritual gate to score storm chains and graveyard combos.
+
+COMBO_IDEAL_POSITION_CEIL: float = 100.0
+"""Sentinel: ideal `position_value` ceiling for `_compute_combo_value`.
+Position-value scales bottom-out at 0 (winning) and top-out at the
+NO_CLOCK sentinel (losing); the combo value is `ceil - current_pos`,
+so 100.0 sets the upper edge for a chain that resolves into a win.
+
+Matches the LETHAL_THREAT / LETHAL_BONUS scale — same "game-ending
+event" tier in different unit spaces.
+
+Used by `_compute_combo_value` in `ai/combo_calc.py`.
+"""
+
+COMBO_DIVERGENCE_RES_THRESHOLD: int = 3
+"""Rules-constant: r_res (chain-reaction residue) divergence point.
+At r_res >= 3 the chain has +3 mana surplus per spell — empirically
+the threshold above which drawn fuel can be cast immediately
+(cantrips at 1U, rituals at R/U). Below this value the chain hasn't
+yet reached self-sustaining mana production.
+
+Used by `_assess_storm_zone` (storm projection) and the mid-chain
+ritual patience gate in `ai/combo_calc.py`.
+"""
+
+COMBO_EARLY_GAME_LAND_THRESHOLD: int = 4
+"""Rules-constant: lands-on-battlefield count above which the early-
+game patience factor collapses to zero. 4 lands = T4 land-drop
+(typical "cast our 4-mana payoff" threshold); after this point the
+deck has access to the resources it needs and waiting no longer
+multiplies output.
+
+Used by the patience-penalty gate in `ai/combo_calc.py`.
+"""
+
+COMBO_PATIENCE_PENALTY_SCALE: float = 0.2
+"""Derived: scaling factor on the early-game patience penalty
+(divergence_gap × early_factor × combo_value × scale). 0.2 = ⅕ of
+combo_value — large enough to gate a speculative ritual on T1-T2
+when no reducer is deployed, small enough that mid-game chains with
+adequate r_res aren't hampered.
+
+Used by the patience-penalty gate in `ai/combo_calc.py`.
+"""
+
+COMBO_NON_READY_POTENTIAL_FALLBACK: float = 0.5
+"""Derived: fallback potential value when a non-storm payoff has no
+declared `resource_target`. 0.5 = half of `opp_life` worth of payoff
+— the "we still need a chunk of resources" baseline used to compute
+the wasted-potential penalty when the combo isn't ready.
+
+Used by the non-storm payoff branch of `card_combo_modifier` in
+`ai/combo_calc.py`.
+"""
+
+COMBO_RITUAL_MISSED_FINISHER_SCALE: float = 5.0
+"""Derived: penalty scale for mid-chain rituals when no finisher path
+exists but draws remain in hand. 5.0 ≈ the COUNTER_THRESHOLD scale —
+the "one premium-threat tier" weight, applied at storm-coverage
+escalation to express the marginal-card cost of an empty chain.
+
+Used by the mid-chain ritual gate in `ai/combo_calc.py`.
+"""
+
+COMBO_CASCADE_RISK_SCALE: float = 3.0
+"""Derived: penalty scale for the draw-miss cascade-risk term at
+storm >= 3 with one draw remaining. 3.0 = `PROACTIVE_REMOVAL_MIN_VALUE`
+— the per-card-swap baseline; the chain at near-lethal storm is one
+bad top-deck from collapse, and 3.0 expresses that as one card-swap
+of expected loss per probability point of miss.
+
+Used by the mid-chain ritual gate in `ai/combo_calc.py`.
+"""
+
+COMBO_FLIP_TRANSFORM_VALUE_FRACTION: float = 0.3
+"""Derived: fraction of combo_value attributed to a successful flip-
+transform on a creature with a "flip a coin" on-cast trigger. 0.3 =
+COMBO_PATIENCE_PENALTY_SCALE + 0.1 — the transformation flips the
+creature into a planeswalker / engine, contributing roughly ⅓ of the
+chain's win value.
+
+Used by the flip-transform stack-batching branch in
+`ai/combo_calc.py`.
+"""
+
+COMBO_SEARCH_TAX_CARD_SCALE: float = 3.0
+"""Derived: per-tax-permanent card value scale used by the search-tax
+awareness branch. 3.0 = `PROACTIVE_REMOVAL_MIN_VALUE` — one card-swap
+of value granted to the opp per resolved tutor against a search-tax
+permanent. Scaled at the call site by `combo_value / opp_life` so the
+absolute penalty stays in the EV-comparable range.
+
+Used by the search-tax penalty branch in `ai/combo_calc.py`.
+"""
+
+COMBO_HALF_LETHAL_FRACTION: float = 0.5
+"""Rules-constant: storm-coverage threshold (storm / opp_life) above
+which the mid-chain escalation kicks in. 0.5 = half of opp_life worth
+of storm already invested — at this point we've committed the chain's
+resources and missing the closer is increasingly catastrophic.
+
+Used by the mid-chain ritual gate in `ai/combo_calc.py`.
+"""
+
+COMBO_MIN_CHAIN_DEPTH: int = 3
+"""Rules-constant: minimum storm count at which the draw-miss cascade-
+risk term applies. 3 = the depth at which a chain has invested enough
+spells that one bad top-deck causes the chain to collapse mid-way
+(rather than fizzle on the first ritual).
+
+Used by the mid-chain ritual gate in `ai/combo_calc.py`.
+"""
+
+COMBO_CASCADE_DRAW_FLOOR: int = 1
+"""Rules-constant: minimum draws-in-hand at which the cascade-risk
+penalty applies. 1 = one draw remaining = the chain is now "all in"
+on top-deck luck. Below this floor the penalty is suppressed (we have
+enough draws to dig).
+
+Used by the mid-chain ritual gate in `ai/combo_calc.py`.
+"""
