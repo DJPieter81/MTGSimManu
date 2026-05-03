@@ -84,7 +84,9 @@ def test_cache_miss_calls_underlying_agent() -> None:
     agent runs once.  Output is a validated SynthesizedGameplan."""
     counter = _CountingTestModel(_VALID_PAYLOAD)
 
-    agent = build_agent("synth_gameplan", use_cache=True)
+    # `instrument=False` keeps the metering wrapper out of the
+    # picture so this test asserts the cache contract in isolation.
+    agent = build_agent("synth_gameplan", use_cache=True, instrument=False)
     assert isinstance(agent, CachedAgent)
 
     _make_counted_run_sync(agent._agent, counter)
@@ -104,7 +106,9 @@ def test_cache_hit_skips_underlying_agent() -> None:
     """Second identical call → cache hit → underlying agent never
     invoked again, but result equivalent."""
     counter = _CountingTestModel(_VALID_PAYLOAD)
-    agent = build_agent("synth_gameplan", use_cache=True)
+    # `instrument=False` keeps the metering wrapper out of the
+    # picture so this test asserts the cache contract in isolation.
+    agent = build_agent("synth_gameplan", use_cache=True, instrument=False)
     assert isinstance(agent, CachedAgent)
     _make_counted_run_sync(agent._agent, counter)
 
@@ -133,7 +137,9 @@ def test_cache_hit_preserves_field_values() -> None:
     via the schema's serialized form — proving the cache isn't
     silently mutating fields."""
     counter = _CountingTestModel(_VALID_PAYLOAD)
-    agent = build_agent("synth_gameplan", use_cache=True)
+    # `instrument=False` keeps the metering wrapper out of the
+    # picture so this test asserts the cache contract in isolation.
+    agent = build_agent("synth_gameplan", use_cache=True, instrument=False)
     assert isinstance(agent, CachedAgent)
     _make_counted_run_sync(agent._agent, counter)
 
@@ -152,7 +158,11 @@ def test_use_cache_false_bypasses() -> None:
     """`build_agent(..., use_cache=False)` returns the raw pydantic-ai
     Agent — every call hits the underlying model, no cache lookups."""
     counter = _CountingTestModel(_VALID_PAYLOAD)
-    raw_agent = build_agent("synth_gameplan", use_cache=False)
+    # `instrument=False` so we get the raw agent (no metering wrapper
+    # either) — this test asserts the cache-bypass contract directly.
+    raw_agent = build_agent(
+        "synth_gameplan", use_cache=False, instrument=False
+    )
 
     # Not a CachedAgent — explicit bypass requested.
     assert not isinstance(raw_agent, CachedAgent)
@@ -177,7 +187,9 @@ def test_override_propagates_to_underlying() -> None:
     pydantic-ai Agent so test fixtures (TestModel injection) keep
     working unchanged."""
     counter = _CountingTestModel(_VALID_PAYLOAD)
-    agent = build_agent("synth_gameplan", use_cache=True)
+    # `instrument=False` keeps the metering wrapper out of the
+    # picture so this test asserts the cache contract in isolation.
+    agent = build_agent("synth_gameplan", use_cache=True, instrument=False)
     assert isinstance(agent, CachedAgent)
     _make_counted_run_sync(agent._agent, counter)
 
@@ -198,7 +210,9 @@ def test_different_inputs_produce_separate_entries() -> None:
     """Two calls with different inputs both miss, both run the
     underlying agent, and the cache ends with two rows."""
     counter = _CountingTestModel(_VALID_PAYLOAD)
-    agent = build_agent("synth_gameplan", use_cache=True)
+    # `instrument=False` keeps the metering wrapper out of the
+    # picture so this test asserts the cache contract in isolation.
+    agent = build_agent("synth_gameplan", use_cache=True, instrument=False)
     assert isinstance(agent, CachedAgent)
     _make_counted_run_sync(agent._agent, counter)
 
