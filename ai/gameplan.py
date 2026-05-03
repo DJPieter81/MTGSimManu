@@ -779,11 +779,48 @@ def generic_combo_readiness(game, player_idx: int, engine: "GoalEngine"):
 # Factory functions
 # ═══════════════════════════════════════════════════════════════════
 
+def _lookup_deck_and_db(deck_name: str):
+    """Best-effort lookup of (mainboard, CardDatabase) for derivation
+    plumbing in `load_gameplan`.  Returns (None, None) on any failure
+    so the caller falls back to JSON-only behaviour.
+
+    Intentionally keeps the dependency optional: tests that don't load
+    `decks.modern_meta` or the full ModernAtomic shouldn't pay the
+    import / load cost just to get a gameplan back.
+    """
+    decklist = None
+    db = None
+    try:
+        from decks.modern_meta import MODERN_DECKS
+        deck = MODERN_DECKS.get(deck_name)
+        if deck:
+            decklist = deck.get("mainboard")
+    except Exception:
+        decklist = None
+    try:
+        # Re-use the sideboard manager's lazily-cached singleton when
+        # available — saves a 21k-card reload per gameplan request.
+        from engine.sideboard_manager import _get_card_db  # type: ignore
+        db = _get_card_db()
+    except Exception:
+        db = None
+    return decklist, db
+
+
 def get_gameplan(deck_name: str) -> Optional[DeckGameplan]:
-    """Get the gameplan for a deck from JSON config."""
+    """Get the gameplan for a deck from JSON config.
+
+    Plumbs the deck's mainboard + a shared CardDatabase into the
+    loader so `always_early` / `reactive_only` can be derived from
+    oracle data when the JSON omits those fields.  All plumbing is
+    best-effort: a missing decklist or db falls back to JSON-only
+    behaviour, which preserves correctness for the 18 shipped
+    gameplans (they all declare those fields explicitly).
+    """
     try:
         from decks.gameplan_loader import load_gameplan
-        return load_gameplan(deck_name)
+        decklist, db = _lookup_deck_and_db(deck_name)
+        return load_gameplan(deck_name, decklist=decklist, db=db)
     except ImportError:
         return None
 
