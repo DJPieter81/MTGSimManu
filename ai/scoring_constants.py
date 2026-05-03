@@ -1931,3 +1931,44 @@ shock" can collapse into a Bolt + Push lethal sequence next turn.
 
 Used by `should_stagger_shock` in `ai/mana_planner.py`.
 """
+
+
+# ─── Clock-position constants (ai/clock.py) ──────────────────────────
+# Used by `position_value` and `combo_clock` to bound clock-derived
+# scoring under degenerate or extreme states.
+
+CLOCK_LETHAL_ADVANTAGE_CAP: float = 20.0
+"""Sentinel: clock-differential cap applied when the opponent has no
+clock but we do. 20.0 ≈ Modern starting life total — the maximum
+"clock advantage" value, reached when our clock = 1 turn (lethal next
+turn) while opp_clock is NO_CLOCK. Below this cap the formula is
+20 / my_clock, so clock=2 gives 10, clock=4 gives 5, etc.
+
+Sister constant: CLOCK_IMPACT_LIFE_SCALING (also 20.0) — same Modern
+life-total anchor, different unit space. Renamed locally in clock.py
+to highlight that this cap is the "we are winning by lethal" tier in
+position-value units.
+
+Used by `position_value` in `ai/clock.py`.
+"""
+
+LIFELINK_LIFE_GAIN_WEIGHT: float = 0.3
+"""Derived: scaling factor on lifelink life-extension turns when added
+to the position-value life-advantage term. 0.3 matches
+`COMBO_FLIP_TRANSFORM_VALUE_FRACTION` and `CHIP_DAMAGE_VALUE` — the
+"small-but-real per-turn nudge" tier. Lifelink's full damage is
+already counted in the combat clock; this bonus captures the
+incremental survival extension.
+
+Used by `position_value` in `ai/clock.py`.
+"""
+
+CLOCK_BLOCKER_ABSORPTION_TURN_CYCLE: float = 3.0
+"""Rules-constant: assumed turn cycle over which opponent blockers are
+"refreshed" by replacement creatures. 3 turns matches the empirical
+mid-game replacement cadence on a typical Modern board (one creature
+deployed per turn, a blocker dies in combat every ~3 turns).
+
+Used by `combat_clock` in `ai/clock.py` as the divisor in the
+blocker-absorption term `opp_total_toughness / 3.0`.
+"""

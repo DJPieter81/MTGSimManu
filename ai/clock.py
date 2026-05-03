@@ -29,6 +29,10 @@ from ai.scoring_constants import (
     ETB_VALUE_BONUS,
     TOKEN_MAKER_BONUS,
     AVG_CREATURE_POWER,
+    CLOCK_IMPACT_LIFE_SCALING,
+    CLOCK_LETHAL_ADVANTAGE_CAP,
+    LIFELINK_LIFE_GAIN_WEIGHT,
+    CLOCK_BLOCKER_ABSORPTION_TURN_CYCLE,
 )
 
 if TYPE_CHECKING:
@@ -57,10 +61,12 @@ def combat_clock(power: int, opp_life: int,
     if power <= 0 or opp_life <= 0:
         return NO_CLOCK if power <= 0 else 1.0
 
-    # Evasion damage lands every turn; ground damage is reduced by blockers
-    # Simplified model: blockers absorb (total_toughness / 3) per turn on avg
-    # (creatures regenerate via summoning sick replacements, ~3 turn cycle)
-    blocker_absorption = opp_total_toughness / 3.0 if opp_total_toughness > 0 else 0
+    # Evasion damage lands every turn; ground damage is reduced by blockers.
+    # Simplified model: blockers absorb (total_toughness / N) per turn on
+    # average where N = CLOCK_BLOCKER_ABSORPTION_TURN_CYCLE (replacement
+    # cadence on a typical Modern board).
+    blocker_absorption = (opp_total_toughness / CLOCK_BLOCKER_ABSORPTION_TURN_CYCLE
+                          if opp_total_toughness > 0 else 0)
     ground_power = max(0, power - evasion_power)
     effective_ground = max(0, ground_power - blocker_absorption)
     effective_power = evasion_power + effective_ground
@@ -389,9 +395,10 @@ def position_value(snap: "EVSnapshot", archetype: str = "midrange") -> float:
         # I have no clock, opponent does → I'm losing; worse as opp gets faster
         clock_diff = -opp_clock
     elif opp_clock >= NO_CLOCK:
-        # Opponent has no clock, I do → I'm winning; better as I get faster
-        # Invert: lower my_clock = bigger advantage
-        clock_diff = 20.0 / my_clock  # cap near 20 when I have lethal
+        # Opponent has no clock, I do → I'm winning; better as I get faster.
+        # Invert: lower my_clock = bigger advantage. CLOCK_LETHAL_ADVANTAGE_CAP
+        # caps the differential near Modern starting life when I have lethal.
+        clock_diff = CLOCK_LETHAL_ADVANTAGE_CAP / my_clock
 
     # Resource advantage: cards and mana as future clock changes
     card_diff = snap.my_hand_size - snap.opp_hand_size
@@ -408,15 +415,16 @@ def position_value(snap: "EVSnapshot", archetype: str = "midrange") -> float:
     # Lifelink: extends survival
     if snap.my_lifelink_power > 0 and snap.opp_power > 0:
         lifelink_turns = snap.my_lifelink_power / max(1, snap.opp_power)
-        life_advantage += lifelink_turns * 0.3
+        life_advantage += lifelink_turns * LIFELINK_LIFE_GAIN_WEIGHT
 
     # Persistent (recurring-trigger token) power contribution.
     # Expected damage = persistent_power × urgency_factor (fraction of
     # residency we actually survive). Converted to life-point units via
-    # mana_clock_impact × 20 — same scale the clock_diff / card_value /
-    # mana_value terms use. No clock non-linearity; linear additive.
+    # mana_clock_impact × CLOCK_IMPACT_LIFE_SCALING — same scale the
+    # clock_diff / card_value / mana_value terms use. No clock non-
+    # linearity; linear additive.
     persistent_value = (snap.persistent_power * snap.urgency_factor
-                        * mana_clock_impact(snap) * 20.0)
+                        * mana_clock_impact(snap) * CLOCK_IMPACT_LIFE_SCALING)
 
     # Artifact-count resource (design: docs/design/ev_correctness_overhaul.md §4).
     # Each artifact is worth roughly +1 virtual power to decks that
@@ -430,9 +438,11 @@ def position_value(snap: "EVSnapshot", archetype: str = "midrange") -> float:
     if snap.opp_artifact_scaling_active:
         artifact_diff -= snap.opp_artifact_count
     # Convert each marginal artifact into life-point units via the same
-    # mana_clock_impact × 20 scaling used by card_value / mana_value — a
-    # rules-derived "value per power point" rather than a tuning constant.
-    artifact_value = artifact_diff * mana_clock_impact(snap) * 20.0
+    # mana_clock_impact × CLOCK_IMPACT_LIFE_SCALING used by card_value /
+    # mana_value — a rules-derived "value per power point" rather than a
+    # tuning constant.
+    artifact_value = (artifact_diff * mana_clock_impact(snap)
+                      * CLOCK_IMPACT_LIFE_SCALING)
 
     return (clock_diff + card_value + mana_value + life_advantage
             + persistent_value + artifact_value)
