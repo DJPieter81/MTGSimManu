@@ -1,33 +1,28 @@
 """
-AI Constants — structural limits and opponent response modeling.
+AI Constants — re-export shim (kept for back-compat, see scoring_constants).
 
-Most AI scoring is now derived from clock-based game mechanics (ai/clock.py).
-Combat scoring constants live in ai/turn_planner.py (local to that module).
+Historical home of structural limits + opponent-response coefficients.
+After the abstraction-cleanup sweep these constants live in
+`ai/scoring_constants.py` alongside every other AI scoring constant
+(see CLAUDE.md ABSTRACTION CONTRACT).
 
-What remains here:
-- Computational/safety limits (timeouts, max actions)
-- Opponent response modeling (counter/removal effectiveness)
-- Legacy creature_value() weights (used by blocking/targeting until Phase 5+)
+Existing callers that import from `ai.constants` keep working via
+this shim. New code should import directly from `ai.scoring_constants`.
+
+Migration log:
+- 2026-05-03: structural-limits + response-modeling constants moved
+  to `ai/scoring_constants.py`. This module re-exports them so
+  `ai/ev_evaluator.py` and `engine/game_runner.py` keep working
+  without edits in this PR.
 """
-
-# ══════════════════════════════════════════════════════════════
-# Structural / Safety Limits
-# ══════════════════════════════════════════════════════════════
-
-MAX_ACTIONS_COMBO = 40             # Max main phase actions for combo decks
-MAX_ACTIONS_NORMAL = 20            # Max main phase actions for normal decks
-GAME_TIMEOUT_SECONDS = 8.0         # Safety timeout per game
-SHOCK_LETHAL_LIFE_THRESHOLD = 2    # Don't shock when life <= this
-NO_CLOCK = 99.0                    # Sentinel: no clock (no win condition)
-
-# ══════════════════════════════════════════════════════════════
-# Opponent Response Modeling (ev_evaluator.py)
-# ══════════════════════════════════════════════════════════════
-
-# Estimated mana costs for opponent responses
-COUNTER_ESTIMATED_COST = 2         # Most counters cost 2 (Counterspell, Mana Leak)
-REMOVAL_ESTIMATED_COST = 1         # Most removal costs 1 (Bolt, Push, Ending)
-
-# Damage removal effectiveness by creature toughness
-DAMAGE_REMOVAL_EFF_HIGH_TOUGH = 0.3  # 4+ toughness: 30% of damage removal kills it
-DAMAGE_REMOVAL_EFF_MID_TOUGH = 0.6   # 3 toughness: 60% of damage removal kills it
+from ai.scoring_constants import (  # noqa: F401  (re-export shim)
+    MAX_ACTIONS_COMBO,
+    MAX_ACTIONS_NORMAL,
+    GAME_TIMEOUT_SECONDS,
+    SHOCK_LETHAL_LIFE_THRESHOLD,
+    NO_CLOCK,
+    COUNTER_ESTIMATED_COST,
+    REMOVAL_ESTIMATED_COST,
+    DAMAGE_REMOVAL_EFF_HIGH_TOUGH,
+    DAMAGE_REMOVAL_EFF_MID_TOUGH,
+)

@@ -15,6 +15,21 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Optional, List, Set, Dict
 
+from ai.scoring_constants import (
+    COMBO_IDEAL_POSITION_CEIL,
+    COMBO_DIVERGENCE_RES_THRESHOLD,
+    COMBO_EARLY_GAME_LAND_THRESHOLD,
+    COMBO_PATIENCE_PENALTY_SCALE,
+    COMBO_NON_READY_POTENTIAL_FALLBACK,
+    COMBO_RITUAL_MISSED_FINISHER_SCALE,
+    COMBO_CASCADE_RISK_SCALE,
+    COMBO_FLIP_TRANSFORM_VALUE_FRACTION,
+    COMBO_SEARCH_TAX_CARD_SCALE,
+    COMBO_HALF_LETHAL_FRACTION,
+    COMBO_MIN_CHAIN_DEPTH,
+    COMBO_CASCADE_DRAW_FLOOR,
+)
+
 if TYPE_CHECKING:
     from engine.cards import CardInstance
     from engine.game_state import GameState
@@ -113,10 +128,10 @@ def _build_role_cache(goal_engine):
 
 
 def _compute_combo_value(snap, archetype="combo"):
-    """Position swing from winning: 100 - current position."""
+    """Position swing from winning: COMBO_IDEAL_POSITION_CEIL - current position."""
     from ai.clock import position_value
     current_pos = position_value(snap, archetype)
-    return max(1.0, 100.0 - current_pos)
+    return max(1.0, COMBO_IDEAL_POSITION_CEIL - current_pos)
 
 
 def _compute_risk_discount(bhi, opp):
@@ -232,8 +247,9 @@ def _assess_storm_zone(game, player_idx, goal_engine, snap, zone, target,
         # Each draw finds fuel with probability fuel_density
         # Each fuel spell adds ~1 storm (and net-positive rituals add mana for more)
         expected_extra = best.cards_drawn * fuel_density
-        # If R_res >= 3 (mana surplus), drawn fuel can be cast
-        if r_res >= 3:
+        # If R_res >= COMBO_DIVERGENCE_RES_THRESHOLD (mana surplus),
+        # drawn fuel can be cast.
+        if r_res >= COMBO_DIVERGENCE_RES_THRESHOLD:
             projected_damage += int(expected_extra * 2)  # fuel chains into more fuel
         elif r_res >= 0:
             projected_damage += int(expected_extra)
@@ -711,7 +727,9 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
     if role == 'payoff' and Kw.CASCADE not in getattr(card.template, 'keywords', set()):
         if not a.is_ready:
             # Wasted potential = (target - current) / opp_life × combo_value
-            potential = a.resource_target / opp_life if a.resource_target > 0 else 0.5
+            potential = (a.resource_target / opp_life
+                         if a.resource_target > 0
+                         else COMBO_NON_READY_POTENTIAL_FALLBACK)
             wasted = max(0.01, potential - a.payoff_value)
             return -wasted * a.combo_value
         # Ready — let projection handle the positive value
@@ -814,17 +832,25 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
         # by enough to sustain the chain. If R_res is low, we haven't reached
         # it yet — waiting for another land drop or reducer will multiply
         # our chain's output significantly.
-        if a.resource_zone == "storm" and a.r_res < 3:
+        if (a.resource_zone == "storm"
+                and a.r_res < COMBO_DIVERGENCE_RES_THRESHOLD):
             # Count lands (proxy for turn number / ramp)
             land_count = snap.my_total_lands
             # On early turns (few lands, no reducer), the chain can't sustain.
             # Penalty scales with how far below the divergence threshold we are.
-            # At R_res=3 (divergence point), no penalty.
-            divergence_gap = (3 - a.r_res) / 3.0  # 0..1+
+            # At divergence-point r_res, no penalty.
+            divergence_gap = ((COMBO_DIVERGENCE_RES_THRESHOLD - a.r_res)
+                              / float(COMBO_DIVERGENCE_RES_THRESHOLD))  # 0..1+
             # Early game (fewer lands) means waiting is more valuable
-            # because the next land drop adds proportionally more mana
-            early_factor = max(0.0, (4 - land_count) / 4.0)  # peaks at 1 land
-            patience_penalty = divergence_gap * early_factor * a.combo_value * 0.2
+            # because the next land drop adds proportionally more mana.
+            early_factor = max(
+                0.0,
+                (COMBO_EARLY_GAME_LAND_THRESHOLD - land_count)
+                / float(COMBO_EARLY_GAME_LAND_THRESHOLD),
+            )  # peaks at 1 land
+            patience_penalty = (divergence_gap * early_factor
+                                * a.combo_value
+                                * COMBO_PATIENCE_PENALTY_SCALE)
             if patience_penalty > 0:
                 return -patience_penalty
 
@@ -854,20 +880,20 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
                     return STORM_HARD_HOLD
                 # Draws remain — soft penalty with two refinements.
                 # (A) Storm-coverage escalation: when storm/opp_life
-                #     > HALF_LETHAL we've already invested most of the
-                #     resources in this chain; missing the closer is
-                #     increasingly catastrophic.
+                #     > COMBO_HALF_LETHAL_FRACTION we've already invested
+                #     most of the resources in this chain; missing the
+                #     closer is increasingly catastrophic.
                 storm_coverage = storm / opp_life
-                HALF_LETHAL = 0.5
-                escalation = 1.0 + max(0.0, storm_coverage - HALF_LETHAL)
-                penalty = (storm + 2) / opp_life * 5.0 * escalation
-                # (B) Draw-miss cascade risk: at storm >= 3 and only
-                #     one draw left, the chain is one bad top-deck
+                escalation = 1.0 + max(0.0,
+                                       storm_coverage - COMBO_HALF_LETHAL_FRACTION)
+                penalty = ((storm + 2) / opp_life
+                           * COMBO_RITUAL_MISSED_FINISHER_SCALE
+                           * escalation)
+                # (B) Draw-miss cascade risk: at storm >= COMBO_MIN_CHAIN_DEPTH
+                #     and only one draw left, the chain is one bad top-deck
                 #     from collapse.  Penalty scales with library
                 #     miss probability times coverage.
-                MIN_CHAIN_DEPTH = 3
-                CASCADE_DRAW_FLOOR = 1
-                if storm >= MIN_CHAIN_DEPTH:
+                if storm >= COMBO_MIN_CHAIN_DEPTH:
                     draw_count = sum(
                         1 for c in me.hand
                         if c.instance_id != card.instance_id
@@ -875,11 +901,12 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
                         and any(dt in getattr(c.template, 'tags', set())
                                 for dt in ('cantrip', 'card_advantage', 'draw'))
                     )
-                    if draw_count <= CASCADE_DRAW_FLOOR:
+                    if draw_count <= COMBO_CASCADE_DRAW_FLOOR:
                         lethal_gap = max(0, opp_life - storm)
                         library_size = max(1, len(me.library))
                         miss_risk = min(1.0, lethal_gap / library_size)
-                        penalty += miss_risk * (storm / opp_life) * 3.0
+                        penalty += (miss_risk * (storm / opp_life)
+                                    * COMBO_CASCADE_RISK_SCALE)
                 return -penalty
 
     # ═══ FLIP-TRANSFORM STACK BATCHING ═══
@@ -906,7 +933,8 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
             # Transform value: the creature becomes a planeswalker with
             # loyalty = base + spells_cast. Use combo_value as proxy for
             # how good transformation is (engines boost the combo turn).
-            transform_value = a.combo_value * 0.3  # fraction of combo win value
+            transform_value = (a.combo_value
+                               * COMBO_FLIP_TRANSFORM_VALUE_FRACTION)
             return marginal_p * transform_value * len(flip_creatures)
 
     # ═══ SEARCH-TAX AWARENESS ═══
@@ -924,7 +952,8 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
             # when we search. Penalty = cards given away × card_value.
             # If the combo is near-lethal, searching may still be worth it
             # — scale by (1 - payoff_value) so lethal combos override.
-            card_value = a.combo_value / opp_life * 3.0
+            card_value = (a.combo_value / opp_life
+                          * COMBO_SEARCH_TAX_CARD_SCALE)
             non_lethal_factor = max(0.0, 1.0 - a.payoff_value)
             return -search_tax_count * card_value * non_lethal_factor
 

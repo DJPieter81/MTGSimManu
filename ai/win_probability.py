@@ -19,6 +19,8 @@ import math
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
+from ai.scoring_constants import WIN_PROB_LIFE_DIFF_NORMALIZER
+
 if TYPE_CHECKING:
     from ai.ev_evaluator import EVSnapshot
 
@@ -125,14 +127,19 @@ def _featurize(
 
 
 def _featurize_position_only(snap: "EVSnapshot") -> List[float]:
-    """Fallback feature set: a single clock-diff scalar."""
+    """Fallback feature set: a single clock-diff scalar.
+
+    Normalised by WIN_PROB_LIFE_DIFF_NORMALIZER so the fallback
+    feature magnitude tracks the "one attacker's worth of pressure"
+    scale the calibrated model expects.
+    """
     my_life = float(getattr(snap, "my_life", 20))
     opp_life = float(getattr(snap, "opp_life", 20))
     if my_life <= 0:
         return [-100.0]
     if opp_life <= 0:
         return [100.0]
-    return [(opp_life - my_life) / 5.0]
+    return [(opp_life - my_life) / WIN_PROB_LIFE_DIFF_NORMALIZER]
 
 
 def p_win(
