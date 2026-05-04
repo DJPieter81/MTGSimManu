@@ -13,6 +13,8 @@ coefficient re-tune.
 """
 from __future__ import annotations
 
+from typing import Dict
+
 # ─── Threat-evaluation sentinels ─────────────────────────────────────
 # Used by ai/response.py to score stack threats and gate counter triage.
 
@@ -1254,6 +1256,432 @@ blocker on real threats.
 
 Used by `CombatPlanner._predict_blocks` Phase 4 (double-block) in
 `ai/turn_planner.py`.
+"""
+
+
+# ─── Gameplan / goal-engine constants (ai/gameplan.py) ────────────
+# Bare-literal extraction pass for ai/gameplan.py. The goal-engine
+# scores three things with bare literals: (1) goal-transition pacing,
+# (2) generic combo-readiness confidences, and (3) the mulligan-bottom
+# `card_keep_score` weights. Centralising preserves the single point of
+# review for future re-tunes and keeps the "no magic numbers" contract
+# intact for the gameplan module too.
+
+# ---- Goal-transition pacing ----
+
+NO_CLOCK_SENTINEL: int = 999
+"""Sentinel: clock value used when a player has no offensive power
+and therefore cannot kill the opponent in a finite number of turns.
+
+Anchored at 999 so any real clock comparison
+(`opp_clock <= dying_clock`) treats "no clock" as the opposite of
+imminent danger. Used by `BoardAssessor.assess` for both `my_clock`
+and `opp_clock` when total power on the relevant side is zero.
+
+Sister constant: `ai/clock.NO_CLOCK = 99.0` — same "cannot reach
+lethal" intent in the float clock-impact subsystem. Different units
+but identical meaning; the integer form here belongs to the discrete
+turn-count sentinel used by `BoardAssessment`.
+"""
+
+
+DEPLOY_ENGINE_FORCE_ADVANCE_TURNS: int = 3
+"""Rules-constant: turns spent in DEPLOY_ENGINE before the goal
+auto-advances even without an engine on the battlefield.
+
+3 turns matches the typical Modern T3-ish window for most engine
+cards (Amulet of Vigor on T1, Medallion-style on T2, etc.). After
+this window, sticking on DEPLOY_ENGINE risks freezing the deck on
+a goal whose primary card is unreachable (mulligan bottomed, exiled,
+or simply not drawn), so we advance to the next goal even though the
+engine never landed. Used by `GoalEngine.check_transition` in
+`ai/gameplan.py` for the DEPLOY_ENGINE branch.
+"""
+
+
+GENERIC_GOAL_TIMEOUT_TURNS: int = 2
+"""Rules-constant: minimum turns spent in a non-engine goal before
+auto-advancing to the next goal.
+
+2 turns gives the goal one full main-phase cycle to make progress
+(turn-N entry main, turn-N+1 main, advance). Used by
+`GoalEngine.check_transition` for DISRUPT, INTERACT, GRIND_VALUE,
+PUSH_DAMAGE, and the FILL_RESOURCE payoff-in-hand fallback. Smaller
+than `DEPLOY_ENGINE_FORCE_ADVANCE_TURNS` because the engine slot has
+a stickier "we really want this online" intent than the generic
+disruption / value windows.
+
+Sister constant: `Goal.min_turns` (per-goal override) — when a goal
+declares its own min_turns, the larger of the two binds.
+"""
+
+
+# ---- Resource-target fallbacks ----
+
+DEFAULT_FILL_RESOURCE_TARGET: int = 3
+"""Rules-constant: fallback `resource_target` when a FILL_RESOURCE
+goal does not declare its own target.
+
+3 is the smallest "meaningful" pool size for the four resource zones
+the FILL_RESOURCE branch tracks: 3 graveyard creatures (typical
+reanimator threshold), 3 storm count (smallest pre-payoff chain),
+3 mana available, 3 creatures on battlefield (token / go-wide
+pre-payoff). Chosen as the floor at which most payoff effects start
+producing meaningful EV. Goals that need a different threshold (e.g.
+Storm at 5, Tron at 7) declare their own `resource_target`.
+
+Used by `GoalEngine.check_transition` and `generic_combo_readiness`
+in `ai/gameplan.py` for the graveyard and "default" zones.
+"""
+
+
+DEFAULT_STORM_RESOURCE_TARGET: int = 5
+"""Rules-constant: fallback `resource_target` for the storm zone in
+`generic_combo_readiness`.
+
+5 matches `COMBO_FORCE_PAYOFF_STORM_THRESHOLD` in `ai/ev_player.py` —
+the same "we have enough storm fuel that even non-lethal payoffs
+close the game" threshold. Goals that declare their own storm target
+override this.
+
+Sister constant: `COMBO_FORCE_PAYOFF_STORM_THRESHOLD` (same value,
+same intent, different decision site).
+"""
+
+
+DEFAULT_MANA_RESOURCE_TARGET: int = 5
+"""Rules-constant: fallback `resource_target` for the mana zone in
+`generic_combo_readiness`.
+
+5 mana is the typical Modern "deploy-and-protect" threshold — enough
+for a 4-drop payoff plus a 1-mana counter held up. Goals that need
+more mana (Tron at 7, Amulet ramp at 6+) declare their own target.
+
+Used by `generic_combo_readiness` mana-zone branch in
+`ai/gameplan.py`.
+"""
+
+
+DEFAULT_RAMP_GOAL_MANA_TARGET: int = 6
+"""Rules-constant: fallback mana target for a RAMP goal's resource-
+ready check when `resource_target` is unset.
+
+6 mana is the typical Modern "ramp goal complete" threshold —
+enough for a 6-drop finisher (Primeval Titan, Cruel Ultimatum) on
+the curve a ramp goal accelerates toward. Slightly higher than
+`DEFAULT_MANA_RESOURCE_TARGET` because RAMP goals typically guard a
+higher-CMC payoff than generic mana goals. Goals that need a
+different threshold declare their own target.
+
+Used by `BoardAssessor.assess` RAMP-goal branch in `ai/gameplan.py`.
+"""
+
+
+# ---- Generic combo-readiness confidence levels ----
+# Confidence values returned by `generic_combo_readiness` to express
+# "how ready is the combo right now". These are not thresholds — they
+# are reported confidences (0-1) on the already-Boolean ready flag.
+# Centralised so the readiness ladder is reviewable in one place.
+
+COMBO_FIRED_CONFIDENCE: float = 0.9
+"""Derived: confidence reported when the storm count already meets
+the goal's target — the combo is *physically* ready to fire this turn.
+
+0.9 not 1.0 because confidence is reserved space for "fires AND
+resolves" (counterspell / hate-piece risk priced into the remaining
+0.1). The downstream EV layer applies its own BHI discount on top.
+
+Used by `generic_combo_readiness` storm-zone branch in
+`ai/gameplan.py`.
+"""
+
+
+COMBO_MANA_FIRE_CONFIDENCE: float = 0.85
+"""Derived: confidence reported when the mana zone meets the goal's
+target AND a payoff is in hand.
+
+Slightly lower than `COMBO_FIRED_CONFIDENCE` (storm) because mana
+availability can be disrupted by Wasteland-style land destruction or
+mana-tap effects mid-resolution, where storm count is locked once
+declared. The 0.05 gap reflects that marginal disruption surface.
+
+Used by `generic_combo_readiness` mana-zone branch in
+`ai/gameplan.py`.
+"""
+
+
+COMBO_GY_FIRE_CONFIDENCE: float = 0.8
+"""Derived: confidence reported when graveyard count meets the goal's
+target AND a payoff is in hand.
+
+Lower than the mana/storm cases because graveyards face active hate
+(Grafdigger's Cage, Leyline of the Void, Endurance) at a higher
+incidence than stack / mana disruption. The 0.05-0.10 gap below
+storm/mana reflects that empirical hate-piece exposure.
+
+Used by `generic_combo_readiness` graveyard-zone branch in
+`ai/gameplan.py`.
+"""
+
+
+COMBO_PROJECTED_FIRE_CONFIDENCE: float = 0.7
+"""Derived: confidence reported when the *projected* resource
+(current + rituals in hand) meets the storm target AND a payoff is in
+hand.
+
+Lower than `COMBO_FIRED_CONFIDENCE` because the projection requires
+casting all rituals successfully — each cast faces counter / removal
+risk. 0.7 is empirically the survival probability of a 2-3 ritual
+chain through typical Modern interaction (≈0.85 per cast, compounded
+across 2 casts ≈ 0.72).
+
+Used by `generic_combo_readiness` storm-projection branch in
+`ai/gameplan.py`.
+"""
+
+
+COMBO_BASE_CONFIDENCE: float = 0.6
+"""Derived: base confidence when a combo has both a payoff and an
+enabler in hand but no resource-zone gate to consult.
+
+0.6 reflects "we have the cards but not yet the timing" — the combo
+is reachable, but the window hasn't arrived. Used as the starting
+point of the ramp formula:
+
+    confidence = COMBO_BASE_CONFIDENCE
+                 + COMBO_PIECE_CONFIDENCE_BONUS × payoff_count
+                 + COMBO_PIECE_CONFIDENCE_BONUS × enabler_count
+
+so a hand with 2 payoffs and 2 enablers reports 0.6+0.2+0.2 = 1.0.
+
+Used by `generic_combo_readiness` default branch in `ai/gameplan.py`.
+"""
+
+
+COMBO_PIECE_CONFIDENCE_BONUS: float = 0.1
+"""Derived: per-piece additive confidence in the default-branch ramp.
+
+0.1 = (1.0 - COMBO_BASE_CONFIDENCE) / 4 — saturates the confidence
+to 1.0 with 4 redundant pieces total (any combination of payoffs +
+enablers). The denominator 4 reflects the "two of each piece is
+plenty for a Modern combo" rule of thumb.
+
+Used by `generic_combo_readiness` default branch in `ai/gameplan.py`.
+"""
+
+
+COMBO_NO_PAYOFF_CONFIDENCE: float = 0.1
+"""Derived: confidence reported when the goal declares payoffs but
+none are available in hand or on the battlefield.
+
+0.1 not 0.0 because the deck may still draw into a payoff via top-
+deck or tutor effects in the remaining turns. Floored above zero so
+downstream consumers can distinguish "no payoff in hand" from "no
+combo plan declared at all".
+
+Used by `generic_combo_readiness` payoff-availability gate in
+`ai/gameplan.py`.
+"""
+
+
+COMBO_NO_PIECES_CONFIDENCE: float = 0.3
+"""Derived: confidence reported when the goal has no zone gate, no
+payoff / enabler match, and no other readiness signal — the
+"fallback" branch.
+
+0.3 is between `COMBO_NO_PAYOFF_CONFIDENCE` (0.1) and
+`COMBO_BASE_CONFIDENCE` (0.6) — higher than no-payoff (we may still
+have a payoff via topdeck), lower than the with-pieces case (the
+combo is structurally reachable but materially absent right now).
+
+Used by `generic_combo_readiness` final fallback in `ai/gameplan.py`.
+"""
+
+
+# ---- Mulligan card_keep_score weights (ai/gameplan.py) ----
+# Weights used by `GoalEngine.card_keep_score` to rank cards when
+# bottoming on a London-mulligan keep. Higher score = keep. The
+# entire scale is internal to `card_keep_score` (it ranks cards
+# against each other within a single hand), so absolute values
+# matter less than relative ordering.
+
+MULL_KEEP_LAND_TARGET: int = 3
+"""Rules-constant: lands-in-hand threshold below which an additional
+land is treated as "needed" for the keep score.
+
+3 is the upper bound of the 2-3-land mulligan-keep band (
+`mulligan_min_lands=2` for most decks, `mulligan_max_lands=4`). At
+≤3 lands we still want lands; above that the next land becomes a
+"flood risk" and scores lower.
+
+Used by `GoalEngine.card_keep_score` land branch in
+`ai/gameplan.py`.
+"""
+
+
+MULL_KEEP_LAND_NEEDED: float = 10.0
+"""Derived: keep score for a land when the hand has ≤
+`MULL_KEEP_LAND_TARGET` lands.
+
+10.0 sits above the role-based keep weights below (max
+`MULL_KEEP_ENGINE_ROLE` 8.0 + `MULL_KEEP_KEY_BONUS` 8.0 capped) so a
+land we *need* outranks a non-land we'd love to keep. Lands are the
+single highest-priority keep when the mana base is short; this
+ranking is what prevents Storm-style mulligans from bottoming a
+critical land in favour of a Manamorphose.
+"""
+
+
+MULL_KEEP_LAND_EXTRA: float = 2.0
+"""Derived: keep score for a land when the hand already has more
+than `MULL_KEEP_LAND_TARGET` lands.
+
+2.0 is in the "tie-breaker" band — above noise (the floor of role
+scores), below any meaningful keep card. A flood-risk land scores
+lower than every non-land except `mulligan_require_creature_cmc`-
+gated misses, so the bottoming logic prefers shipping the surplus
+land first.
+"""
+
+
+MULL_KEEP_LAND_PRIORITY_SCALE: float = 0.5
+"""Derived: weight applied to `gameplan.land_priorities[card.name]`
+in the land keep score.
+
+0.5 reflects "land priorities are a soft signal, not a hard order" —
+a deck that prefers Battlefield Forge over Plains values that
+preference at half-weight relative to the structural land/role
+weights. Used by `GoalEngine.card_keep_score` land branch.
+"""
+
+
+MULL_KEEP_LAND_COLOR_PRODUCTION_SCALE: float = 0.5
+"""Derived: per-color-produced bonus for a land that taps for
+multiple colors.
+
+A 2-color land contributes +1.0 over a 1-color land
+(`len(produces_mana) × 0.5`), which is the same scale as the
+land-priority weight — the two signals are roughly comparable in
+mulligan-keep value.
+"""
+
+
+MULL_KEEP_CMC_BUDGET: int = 5
+"""Rules-constant: CMC budget for the cheap-spell keep score.
+
+A spell at CMC ≤ this value contributes `MULL_KEEP_CMC_BUDGET - cmc`
+to the keep score — so a 1-mana spell scores 4, a 2-mana spell
+scores 3, a 5-mana spell scores 0. The 5 cap matches the typical
+Modern curve top: spells above CMC 5 are unlikely to be cast on the
+keep window and don't deserve cheap-action credit.
+
+Used by `GoalEngine.card_keep_score` non-land branch.
+"""
+
+
+MULL_KEEP_KEY_BONUS: float = 8.0
+"""Derived: keep score bonus for a card declared in
+`gameplan.mulligan_keys`.
+
+8.0 matches the engine-role bonus `MULL_KEEP_ENGINE_ROLE` — a deck-
+declared key card has equal weight to an engine. Same scale, same
+"this card is what we mulligan for" intent. Cancelled by
+`MULL_KEEP_REACTIVE_PENALTY` for cards also flagged reactive_only,
+preventing decks from keeping answers as opening cards.
+"""
+
+
+MULL_KEEP_REACTIVE_PENALTY: float = 8.0
+"""Derived: keep score penalty for a `reactive_only` card.
+
+8.0 cancels the `MULL_KEEP_KEY_BONUS` cleanly — when a reactive-
+flagged card is also in `mulligan_keys` (Zoo's Leyline Binding
+audit case F-R3-3), the two terms net to zero so the card no longer
+scores as a keep. Net result: opening hand prefers proactive cards
+over answers waiting for a target.
+"""
+
+
+# Role weights for the mulligan keep score. Each goal's
+# `card_roles[role]` set contributes `MULL_KEEP_ROLE_WEIGHTS[role]`
+# (or `MULL_KEEP_ROLE_DEFAULT` if the role name isn't in the table)
+# when `card.name` is in that role set, and we take the MAX across
+# every goal so a payoff in any goal wins the payoff weight.
+MULL_KEEP_ROLE_WEIGHTS: Dict[str, float] = {
+    "engines": 8.0,
+    "payoffs": 7.0,
+    "enablers": 6.0,
+    "interaction": 5.0,
+    "protection": 4.0,
+    "fillers": 3.0,
+}
+"""Derived: per-role keep weights for `card_keep_score`. Tiering:
+
+- engines (8.0): the deck cannot execute its plan without these.
+- payoffs (7.0): the win condition; one rank below engines because
+  the deck can sometimes dig to a payoff but not to an engine.
+- enablers (6.0): mid-curve setup pieces.
+- interaction (5.0): non-reactive answers (proactive removal).
+- protection (4.0): held-up answers (counterspells, blink).
+- fillers (3.0): redundant role-fillers.
+
+Sister constant: MULL_KEEP_REACTIVE_PENALTY — same scale, applied to
+the `reactive_only` flag that overrides interaction/protection roles.
+"""
+
+
+MULL_KEEP_ROLE_DEFAULT: float = 4.0
+"""Derived: default role weight for any role name not explicitly
+listed in `MULL_KEEP_ROLE_WEIGHTS`.
+
+4.0 matches the `protection` weight — a sensible "middle of the
+pack" default for unknown roles. New role names added to gameplan
+JSON without a matching entry here ship at this neutral weight.
+"""
+
+
+MULL_KEEP_ALWAYS_EARLY_BONUS: float = 6.0
+"""Derived: keep bonus for a card declared in
+`gameplan.always_early`.
+
+6.0 matches `MULL_KEEP_ROLE_WEIGHTS["enablers"]` — an "always early"
+card behaves as an opening enabler regardless of role. Same scale,
+same "we want this in the opening hand" intent.
+"""
+
+
+MULL_KEEP_REMOVAL_TEXT_BONUS: float = 4.0
+"""Derived: keep bonus for a non-`always_early` card whose oracle
+text contains a removal keyword (`destroy`, `exile target`, `damage
+to each`).
+
+4.0 matches `MULL_KEEP_ROLE_DEFAULT` — generic removal is a default-
+weight keep, slightly below explicit role-tagged interaction (5.0).
+The discount reflects that oracle-text-derived removal hasn't been
+explicitly role-tagged by the gameplan author, so the fit is less
+certain than a tagged role match.
+"""
+
+
+MULL_KEEP_CRITICAL_SINGLETON_FLOOR: float = 20.0
+"""Sentinel: floor keep score for a card declared in
+`gameplan.critical_pieces` that has only one copy in hand.
+
+The "floor" equals the maximum achievable score from normal
+role+key+cmc weights:
+
+    8 (engine) + 8 (key) + 5 (cmc_max) + 6 (always_early) ≈ 27 cap
+
+Setting the floor at 20 keeps the singleton above almost every
+normal keep but below the synthetic "max stack" (engine + key +
+cmc + always_early all on one card). Bottoming the last copy of a
+critical piece sabotages the deck's win condition; this constant
+prevents that. Already named at the call site as
+`CRITICAL_SINGLETON_FLOOR` — promoted here so the derivation
+survives a centralised re-tune.
+
+Used by `GoalEngine.card_keep_score` critical-singleton branch in
+`ai/gameplan.py`.
 """
 
 

@@ -21,6 +21,37 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Callable, Dict, List, Optional, Set, Tuple, TYPE_CHECKING
 
+from ai.scoring_constants import (
+    NO_CLOCK_SENTINEL,
+    DEPLOY_ENGINE_FORCE_ADVANCE_TURNS,
+    GENERIC_GOAL_TIMEOUT_TURNS,
+    DEFAULT_FILL_RESOURCE_TARGET,
+    DEFAULT_STORM_RESOURCE_TARGET,
+    DEFAULT_MANA_RESOURCE_TARGET,
+    DEFAULT_RAMP_GOAL_MANA_TARGET,
+    COMBO_FIRED_CONFIDENCE,
+    COMBO_MANA_FIRE_CONFIDENCE,
+    COMBO_GY_FIRE_CONFIDENCE,
+    COMBO_PROJECTED_FIRE_CONFIDENCE,
+    COMBO_BASE_CONFIDENCE,
+    COMBO_PIECE_CONFIDENCE_BONUS,
+    COMBO_NO_PAYOFF_CONFIDENCE,
+    COMBO_NO_PIECES_CONFIDENCE,
+    MULL_KEEP_LAND_TARGET,
+    MULL_KEEP_LAND_NEEDED,
+    MULL_KEEP_LAND_EXTRA,
+    MULL_KEEP_LAND_PRIORITY_SCALE,
+    MULL_KEEP_LAND_COLOR_PRODUCTION_SCALE,
+    MULL_KEEP_CMC_BUDGET,
+    MULL_KEEP_KEY_BONUS,
+    MULL_KEEP_REACTIVE_PENALTY,
+    MULL_KEEP_ROLE_WEIGHTS,
+    MULL_KEEP_ROLE_DEFAULT,
+    MULL_KEEP_ALWAYS_EARLY_BONUS,
+    MULL_KEEP_REMOVAL_TEXT_BONUS,
+    MULL_KEEP_CRITICAL_SINGLETON_FLOOR,
+)
+
 if TYPE_CHECKING:
     from engine.game_state import GameState, PlayerState
     from engine.cards import CardInstance
@@ -400,8 +431,8 @@ class BoardAssessor:
         opp_power = sum(c.power for c in opp.creatures if c.power and c.power > 0)
 
         # Clock calculation
-        my_clock = 999 if my_power <= 0 else max(1, (opp.life + my_power - 1) // my_power)
-        opp_clock = 999 if opp_power <= 0 else max(1, (me.life + opp_power - 1) // opp_power)
+        my_clock = NO_CLOCK_SENTINEL if my_power <= 0 else max(1, (opp.life + my_power - 1) // my_power)
+        opp_clock = NO_CLOCK_SENTINEL if opp_power <= 0 else max(1, (me.life + opp_power - 1) // opp_power)
 
         # Lethal check: can total power kill this turn?
         has_lethal = my_power >= opp.life and opp.life > 0
@@ -432,7 +463,7 @@ class BoardAssessor:
                     c.name in engine_cards for c in me.battlefield
                 )
             elif current_goal.goal_type == GoalType.RAMP:
-                mana_target = current_goal.resource_target or 6
+                mana_target = current_goal.resource_target or DEFAULT_RAMP_GOAL_MANA_TARGET
                 resource_ready = me.available_mana_estimate >= mana_target
 
         from ai.predicates import count_gy_creatures
@@ -565,20 +596,23 @@ class GoalEngine:
             if deployed:
                 should_advance = True
                 reason = f"Engine online: {deployed[0]}"
-            elif self.turns_in_goal >= 3:
+            elif self.turns_in_goal >= DEPLOY_ENGINE_FORCE_ADVANCE_TURNS:
                 should_advance = True
-                reason = "No engine after 3 turns, advancing anyway"
+                reason = (
+                    f"No engine after {DEPLOY_ENGINE_FORCE_ADVANCE_TURNS} "
+                    f"turns, advancing anyway"
+                )
 
         elif gt == GoalType.DISRUPT:
             # Combo decks: advance once we've had time to disrupt
-            should_advance = self.turns_in_goal >= 2
+            should_advance = self.turns_in_goal >= GENERIC_GOAL_TIMEOUT_TURNS
             reason = "Disruption window passed"
 
         elif gt == GoalType.FILL_RESOURCE:
             # Check resource target (GY creatures for Living End, mana for
             # Amulet, storm count for Storm, battlefield size for go-wide).
             zone = goal.resource_zone
-            target = goal.resource_target or 3
+            target = goal.resource_target or DEFAULT_FILL_RESOURCE_TARGET
             min_cmc = getattr(goal, 'resource_min_cmc', 0)
             resource_progress = 0
             if zone == "graveyard":
@@ -608,7 +642,7 @@ class GoalEngine:
                 next_payoffs = self.gameplan.goals[next_goal_idx].card_roles.get('payoffs', set())
                 has_payoff = any(c.name in next_payoffs for c in me.hand)
                 half_target = max(1, target // 2)
-                if (has_payoff and self.turns_in_goal >= 2
+                if (has_payoff and self.turns_in_goal >= GENERIC_GOAL_TIMEOUT_TURNS
                         and resource_progress >= half_target):
                     should_advance = True
                     reason = (f"Payoff in hand, "
@@ -616,12 +650,12 @@ class GoalEngine:
 
         elif gt == GoalType.INTERACT:
             # Control: advance after min_turns
-            if self.turns_in_goal >= max(goal.min_turns, 2):
+            if self.turns_in_goal >= max(goal.min_turns, GENERIC_GOAL_TIMEOUT_TURNS):
                 should_advance = True
                 reason = "Interaction phase complete"
 
         elif gt == GoalType.GRIND_VALUE:
-            if self.turns_in_goal >= 2:
+            if self.turns_in_goal >= GENERIC_GOAL_TIMEOUT_TURNS:
                 should_advance = True
                 reason = "Value phase complete"
 
@@ -630,7 +664,7 @@ class GoalEngine:
             pass
 
         elif gt == GoalType.PUSH_DAMAGE:
-            if self.turns_in_goal >= 2:
+            if self.turns_in_goal >= GENERIC_GOAL_TIMEOUT_TURNS:
                 should_advance = True
                 reason = "Push damage phase complete"
 
@@ -642,20 +676,33 @@ class GoalEngine:
     # GoalEngine is now a thin container for DeckGameplan + card role data.
 
     def card_keep_score(self, card, hand: list) -> float:
-        """Score a card for mulligan bottoming. Higher = keep."""
+        """Score a card for mulligan bottoming. Higher = keep.
+
+        All weights are sourced from `ai/scoring_constants.py`
+        (MULL_KEEP_*) so re-tuning the mulligan-bottom heuristic is
+        a single-point change. The constants' docstrings carry the
+        derivation comments that previously lived inline here.
+        """
         from ai.predicates import count_lands
         score = 0.0
         t = card.template
         lands_in_hand = count_lands(hand)
         if t.is_land:
-            score += 10.0 if lands_in_hand <= 3 else 2.0
-            score += self.gameplan.land_priorities.get(card.name, 0.0) * 0.5
+            score += (
+                MULL_KEEP_LAND_NEEDED
+                if lands_in_hand <= MULL_KEEP_LAND_TARGET
+                else MULL_KEEP_LAND_EXTRA
+            )
+            score += (
+                self.gameplan.land_priorities.get(card.name, 0.0)
+                * MULL_KEEP_LAND_PRIORITY_SCALE
+            )
             if t.produces_mana:
-                score += len(t.produces_mana) * 0.5
+                score += len(t.produces_mana) * MULL_KEEP_LAND_COLOR_PRODUCTION_SCALE
         else:
-            score += max(0, 5 - (t.cmc or 0))
+            score += max(0, MULL_KEEP_CMC_BUDGET - (t.cmc or 0))
             if card.name in self.gameplan.mulligan_keys:
-                score += 8.0
+                score += MULL_KEEP_KEY_BONUS
             # Reactive-only cards shouldn't be mulligan-keep signals. A
             # deck's own gameplan marks them as "don't open with this" —
             # opening hand on the play / draw wants enablers and threats,
@@ -663,7 +710,7 @@ class GoalEngine:
             # bonus for cards the deck itself has flagged reactive
             # (audit F-R3-3 Zoo keeping Leyline Binding over creatures).
             if card.name in self.gameplan.reactive_only:
-                score -= 8.0
+                score -= MULL_KEEP_REACTIVE_PENALTY
             # Iterate ALL goals, not just the first. Multi-goal gameplans
             # place payoffs in later goals (Amulet Titan: Primeval Titan in
             # goal[1] RAMP, not goal[0] DEPLOY_ENGINE). Previously bottomed
@@ -671,36 +718,31 @@ class GoalEngine:
             # Take the MAX role weight across goals so a payoff in any goal
             # gets the payoff weight regardless of goal ordering.
             best_role_weight = 0.0
-            role_weight = {'engines': 8.0, 'payoffs': 7.0, 'enablers': 6.0,
-                           'fillers': 3.0, 'protection': 4.0, 'interaction': 5.0}
             for goal in self.gameplan.goals:
                 for role_name, role_cards in goal.card_roles.items():
                     if card.name in role_cards:
-                        w = role_weight.get(role_name, 4.0)
+                        w = MULL_KEEP_ROLE_WEIGHTS.get(role_name, MULL_KEEP_ROLE_DEFAULT)
                         if w > best_role_weight:
                             best_role_weight = w
             score += best_role_weight
             if card.name in self.gameplan.always_early:
-                score += 6.0
+                score += MULL_KEEP_ALWAYS_EARLY_BONUS
             else:
                 oracle = (t.oracle_text or '').lower()
                 if any(kw in oracle for kw in ('destroy', 'exile target', 'damage to each')):
-                    score += 4.0
+                    score += MULL_KEEP_REMOVAL_TEXT_BONUS
             # Preserve critical-piece singletons. critical_pieces (from the
             # gameplan) enumerates the card names the deck cannot execute
             # its plan without — e.g. Storm's Grapeshot / Empty the Warrens
             # / Past in Flames. Bottoming the last copy of a critical piece
-            # sabotages the deck's win condition. Boost score so a singleton
-            # critical card never ends up the lowest-scored in hand.
-            # Derivation: the "floor" equals the maximum achievable score
-            # from normal role+key+cmc weights (8 engine + 8 key + 5 cmc_max
-            # + 6 always_early = 27 cap). Setting floor at 20 keeps
-            # criticals ranked above almost any normal keep.
+            # sabotages the deck's win condition. The floor weight (sourced
+            # from ai/scoring_constants.py::MULL_KEEP_CRITICAL_SINGLETON_FLOOR)
+            # keeps a singleton critical card ranked above almost any
+            # normal keep.
             if card.name in self.gameplan.critical_pieces:
                 same_copies_in_hand = sum(1 for c in hand if c.name == card.name)
                 if same_copies_in_hand <= 1:
-                    CRITICAL_SINGLETON_FLOOR = 20.0
-                    score = max(score, CRITICAL_SINGLETON_FLOOR)
+                    score = max(score, MULL_KEEP_CRITICAL_SINGLETON_FLOOR)
         return score
 
 
@@ -727,7 +769,7 @@ def generic_combo_readiness(game, player_idx: int, engine: "GoalEngine"):
     payoffs = goal.card_roles.get("payoffs", set())
     available_payoffs = payoffs & (hand_names | bf_names)
     if not available_payoffs and payoffs:
-        return False, 0.1, f"No payoff available (need one of: {', '.join(list(payoffs)[:3])})"
+        return False, COMBO_NO_PAYOFF_CONFIDENCE, f"No payoff available (need one of: {', '.join(list(payoffs)[:3])})"
 
     # Check enabler availability
     enablers = goal.card_roles.get("enablers", set())
@@ -736,44 +778,48 @@ def generic_combo_readiness(game, player_idx: int, engine: "GoalEngine"):
     # Resource zone checks
     if goal.resource_zone == "storm":
         storm = getattr(game, '_global_storm_count', 0)
-        target = goal.resource_target or 5
+        target = goal.resource_target or DEFAULT_STORM_RESOURCE_TARGET
         if storm >= target:
-            return True, 0.9, f"Storm count {storm} >= {target}, ready to fire payoff"
+            return True, COMBO_FIRED_CONFIDENCE, f"Storm count {storm} >= {target}, ready to fire payoff"
         # Check ritual density in hand for potential storm
         rituals = goal.card_roles.get("rituals", set())
         ritual_count = len(rituals & hand_names)
         projected = storm + ritual_count
         if projected >= target and available_payoffs:
-            return True, 0.7, f"Storm {storm} + {ritual_count} rituals in hand = {projected} projected (target {target})"
+            return True, COMBO_PROJECTED_FIRE_CONFIDENCE, f"Storm {storm} + {ritual_count} rituals in hand = {projected} projected (target {target})"
         return False, projected / max(target, 1), f"Storm {storm}, projected {projected}, need {target}"
 
     elif goal.resource_zone == "graveyard":
         gy_count = len(me.graveyard)
-        target = goal.resource_target or 3
+        target = goal.resource_target or DEFAULT_FILL_RESOURCE_TARGET
         min_cmc = getattr(goal, 'resource_min_cmc', 0)
         from engine.cards import CardType
         gy_creatures = sum(1 for c in me.graveyard
                           if CardType.CREATURE in c.template.card_types
                           and (c.template.cmc or 0) >= min_cmc)
         if gy_creatures >= target and available_payoffs:
-            return True, 0.8, f"{gy_creatures} creatures in graveyard (target {target}, min_cmc {min_cmc}), payoff ready"
+            return True, COMBO_GY_FIRE_CONFIDENCE, f"{gy_creatures} creatures in graveyard (target {target}, min_cmc {min_cmc}), payoff ready"
         return False, gy_creatures / max(target, 1), f"{gy_creatures} creatures in graveyard, need {target} (min_cmc {min_cmc})"
 
     elif goal.resource_zone == "mana":
         mana = len(me.untapped_lands)
-        target = goal.resource_target or 5
+        target = goal.resource_target or DEFAULT_MANA_RESOURCE_TARGET
         if mana >= target and available_payoffs:
-            return True, 0.85, f"{mana} mana available (target {target}), payoff ready"
+            return True, COMBO_MANA_FIRE_CONFIDENCE, f"{mana} mana available (target {target}), payoff ready"
         return False, mana / max(target, 1), f"{mana} mana, need {target}"
 
     # Default: check if we have both enablers and payoffs
     if available_payoffs and (available_enablers or not enablers):
-        confidence = 0.6 + 0.1 * len(available_payoffs) + 0.1 * len(available_enablers)
+        confidence = (
+            COMBO_BASE_CONFIDENCE
+            + COMBO_PIECE_CONFIDENCE_BONUS * len(available_payoffs)
+            + COMBO_PIECE_CONFIDENCE_BONUS * len(available_enablers)
+        )
         return True, min(confidence, 1.0), (
             f"Payoff ({', '.join(available_payoffs)}) and "
             f"enablers ({', '.join(available_enablers) if available_enablers else 'none needed'}) ready")
 
-    return False, 0.3, "Missing key combo pieces"
+    return False, COMBO_NO_PIECES_CONFIDENCE, "Missing key combo pieces"
 
 # ═══════════════════════════════════════════════════════════════════
 # Factory functions
