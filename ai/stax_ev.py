@@ -25,6 +25,20 @@ and rough magnitude, not precise calibration.
 from __future__ import annotations
 from typing import TYPE_CHECKING, Optional, Callable
 
+from ai.scoring_constants import (
+    BLOOD_MOON_DISRUPTION_CAP,
+    BLOOD_MOON_DISRUPTION_COEFFICIENT,
+    CANONIST_DENSITY_FLOOR,
+    CANONIST_DISRUPTION_COEFFICIENT,
+    CANONIST_DISRUPTION_TURN_COUNT,
+    CHALICE_PRACTICAL_X_CEIL,
+    CLOCK_IMPACT_LIFE_SCALING,
+    STAX_LOCK_DECAY_BURNOUT_TURN,
+    STAX_TURN_DECAY_PER_TURN,
+    TORPOR_ORB_ETB_DENSITY_FLOOR,
+    TORPOR_ORB_PER_ETB_VALUE,
+)
+
 if TYPE_CHECKING:
     from engine.cards import CardTemplate
     from engine.game_state import PlayerState
@@ -73,9 +87,9 @@ def _turn_decay(turn_number: int) -> float:
     """
     if turn_number <= 1:
         return 1.0
-    if turn_number >= 5:
+    if turn_number >= STAX_LOCK_DECAY_BURNOUT_TURN:
         return 0.0
-    return max(0.0, 1.0 - 0.25 * (turn_number - 1))
+    return max(0.0, 1.0 - STAX_TURN_DECAY_PER_TURN * (turn_number - 1))
 
 
 # ──────────────────────────────────────────────────────────────────────
@@ -166,7 +180,7 @@ def _chalice_lock_ev(template, me, opp, snap) -> float:
     best_net = 0
     candidate_cmcs = set(opp_cmcs) | set(my_cmcs)
     for x in candidate_cmcs:
-        if x > 3:
+        if x > CHALICE_PRACTICAL_X_CEIL:
             continue
         net = opp_cmcs.get(x, 0) - my_cmcs.get(x, 0)
         if net > best_net:
@@ -179,7 +193,7 @@ def _chalice_lock_ev(template, me, opp, snap) -> float:
     # (a library with 14 one-drops doesn't translate to 14 locked spells).
     best_net = min(best_net, MAX_NET_LOCK)
 
-    impact = card_clock_impact(snap) * 20.0
+    impact = card_clock_impact(snap) * CLOCK_IMPACT_LIFE_SCALING
     return best_net * impact * ARTIFACT_EXPECTED_LIFETIME * REALISM_DISCOUNT
 
 
@@ -232,10 +246,13 @@ def _blood_moon_lock_ev(template, me, opp, snap) -> float:
         return 0.0
 
     # Disruption scales with nonbasic count × missing colors.
-    # 0.3 coefficient keeps magnitudes in the same range as Chalice.
-    # Cap at 15 to avoid dominating all other considerations.
-    disruption = min(nonbasic_count * other_colors * 0.3, 15.0)
-    impact = card_clock_impact(snap) * 20.0
+    # Coefficient keeps magnitudes in the same range as Chalice; cap
+    # avoids dominating all other considerations.
+    disruption = min(
+        nonbasic_count * other_colors * BLOOD_MOON_DISRUPTION_COEFFICIENT,
+        BLOOD_MOON_DISRUPTION_CAP,
+    )
+    impact = card_clock_impact(snap) * CLOCK_IMPACT_LIFE_SCALING
     return disruption * impact * ENCHANTMENT_EXPECTED_LIFETIME * REALISM_DISCOUNT
 
 
@@ -258,16 +275,18 @@ def _canonist_lock_ev(template, me, opp, snap) -> float:
     if total_nonland == 0:
         return 0.0
     density = low_cmc / total_nonland
-    if density < 0.3:
+    if density < CANONIST_DENSITY_FLOOR:
         return 0.0  # not enough low-CMC density for the lock to bite
 
     # Disruption ≈ 1 extra spell/turn × lifetime × density.
     from engine.cards import CardType
     is_creature = CardType.CREATURE in template.card_types
     lifetime = CREATURE_EXPECTED_LIFETIME if is_creature else ENCHANTMENT_EXPECTED_LIFETIME
-    disruption = density * 3.0  # 3 turns of spell-limiting, scaled by density
-    impact = card_clock_impact(snap) * 20.0
-    return disruption * impact * lifetime * 0.4  # slightly lower coefficient
+    # Spell-limiting turns × density.
+    disruption = density * CANONIST_DISRUPTION_TURN_COUNT
+    impact = card_clock_impact(snap) * CLOCK_IMPACT_LIFE_SCALING
+    # Slightly lower coefficient — Canonist's lock is per-turn-skippable.
+    return disruption * impact * lifetime * CANONIST_DISRUPTION_COEFFICIENT
 
 
 def _torpor_orb_lock_ev(template, me, opp, snap) -> float:
@@ -283,12 +302,13 @@ def _torpor_orb_lock_ev(template, me, opp, snap) -> float:
         tags = getattr(c.template, 'tags', set())
         if CardType.CREATURE in c.template.card_types and 'etb_value' in tags:
             etb_count += 1
-    if etb_count < 3:
+    if etb_count < TORPOR_ORB_ETB_DENSITY_FLOOR:
         return 0.0
 
-    # Each disrupted ETB ≈ 0.4 cards worth of value (not all ETBs are huge).
-    impact = card_clock_impact(snap) * 20.0
-    return etb_count * 0.4 * impact * ARTIFACT_EXPECTED_LIFETIME * REALISM_DISCOUNT
+    # Each disrupted ETB worth a fraction of a card (not all ETBs are huge).
+    impact = card_clock_impact(snap) * CLOCK_IMPACT_LIFE_SCALING
+    return (etb_count * TORPOR_ORB_PER_ETB_VALUE * impact
+            * ARTIFACT_EXPECTED_LIFETIME * REALISM_DISCOUNT)
 
 
 # ──────────────────────────────────────────────────────────────────────

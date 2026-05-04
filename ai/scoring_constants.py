@@ -3016,6 +3016,118 @@ Used by `_priority` in `simulate_finisher_chain`.
 """
 
 
+# ─── Stax / lock-piece valuation constants (ai/stax_ev.py) ──────────
+# Used by per-pattern lock evaluators (Chalice / Blood Moon / Canonist
+# / Torpor Orb). Constants are intentionally conservative — tests
+# validate sign and rough magnitude, not precise calibration. The
+# 20.0 life-as-resource scaling factor is the same `CLOCK_IMPACT_LIFE_SCALING`
+# used elsewhere in the AI scoring layer; it is imported by stax_ev.
+
+STAX_TURN_DECAY_PER_TURN: float = 0.25
+"""Derived: per-turn decay factor for stax lock value as the game
+progresses. 0.25 = -25% per turn = full decay over 4 turns (T1=1.0,
+T2=0.75, T3=0.5, T4=0.25, T5+=0.0). Reflects "by T5 opp has resolved
+their cheap spells, so the lock only catches topdecks". Calibrated
+against the v1-vs-Boros trace where casting Chalice on T5 cost tempo.
+
+Used by `_turn_decay` in `ai/stax_ev.py`.
+"""
+
+
+STAX_LOCK_DECAY_BURNOUT_TURN: int = 5
+"""Sentinel: turn at and after which the stax-lock decay returns 0.0.
+5 = 1 / STAX_TURN_DECAY_PER_TURN + 1 (T1=1.0, decays by 0.25 each
+turn, hits 0 by T5). Encoded as a separate constant so future re-tunes
+of the decay rate also move the sentinel.
+
+Used by `_turn_decay` in `ai/stax_ev.py`.
+"""
+
+
+CHALICE_PRACTICAL_X_CEIL: int = 3
+"""Rules-constant: maximum X value scanned for Chalice of the Void
+counter-density. Reflects Modern's practical X bound: X=0 freely,
+X=1 on T1 with untapped land, X=2 on T2, X=3 on T3. Higher X is rare
+in practice and burns enough mana to skip the rest of the curve.
+
+Used by `_chalice_lock_ev` in `ai/stax_ev.py`.
+"""
+
+
+BLOOD_MOON_DISRUPTION_COEFFICIENT: float = 0.3
+"""Derived: per (nonbasic_count × missing_colors) coefficient on
+Blood Moon disruption. 0.3 keeps magnitudes in the same range as
+Chalice's net-lock × clock_impact product. Below 0.3 Blood Moon
+under-fires vs 5c manabases; above 0.3 it dominates EV calculations
+even against decks playing only one off-color.
+
+Used by `_blood_moon_lock_ev` in `ai/stax_ev.py`.
+"""
+
+
+BLOOD_MOON_DISRUPTION_CAP: float = 15.0
+"""Derived: cap on Blood Moon disruption magnitude. 15.0 sits in the
+same ceiling band as `MAX_NET_LOCK × clock_impact` (Chalice ceiling)
+— a Blood Moon disrupting 50 nonbasics × 3 missing colors theoretically
+yields 45.0 raw, which would dominate every other EV term. The cap
+keeps Blood Moon in proportion to other lock pieces.
+
+Used by `_blood_moon_lock_ev` in `ai/stax_ev.py`.
+"""
+
+
+CANONIST_DENSITY_FLOOR: float = 0.3
+"""Derived: minimum low-CMC fraction of opp's nonland library at
+which a Canonist / Rule-of-Law lock fires. 30% reflects "if less than
+3-of-10 spells are CMC ≤ 2, the lock barely bites" — control decks
+typically run ~25% low-CMC spells, so the floor correctly skips
+control mirrors.
+
+Used by `_canonist_lock_ev` in `ai/stax_ev.py`.
+"""
+
+
+CANONIST_DISRUPTION_TURN_COUNT: float = 3.0
+"""Rules-constant: turns of spell-limiting credited to a Canonist /
+Rule-of-Law per density unit. 3 turns reflects the typical "lock
+lasts ~3 turns before opp answers it" window, scaled by density (so
+density 0.5 yields 1.5 effective turns of disruption).
+
+Used by `_canonist_lock_ev` in `ai/stax_ev.py`.
+"""
+
+
+CANONIST_DISRUPTION_COEFFICIENT: float = 0.4
+"""Derived: post-product coefficient on Canonist disruption × impact ×
+lifetime. 0.4 is "slightly lower than the Chalice/Blood Moon line"
+because Canonist's lock is per-turn-skippable (opp casts the highest-
+EV spell first then stops), whereas Chalice's lock is total. The
+40% coefficient calibrates the magnitude difference.
+
+Used by `_canonist_lock_ev` in `ai/stax_ev.py`.
+"""
+
+
+TORPOR_ORB_ETB_DENSITY_FLOOR: int = 3
+"""Rules-constant: minimum count of `etb_value`-tagged creatures in
+opp's library for Torpor Orb's lock to fire. Below 3 the orb's
+disruption is too small to justify the artifact slot — opp's deck
+just doesn't lean on ETBs enough.
+
+Used by `_torpor_orb_lock_ev` in `ai/stax_ev.py`.
+"""
+
+
+TORPOR_ORB_PER_ETB_VALUE: float = 0.4
+"""Derived: per-disrupted-ETB value multiplier. 0.4 reflects "not all
+ETBs are huge" — a typical mix of small ETB triggers (1/1 Solitude
+companion) up to medium ETBs (Reflector Mage flicker) averages around
+40% of a card's worth of value.
+
+Used by `_torpor_orb_lock_ev` in `ai/stax_ev.py`.
+"""
+
+
 # ─── Mana-planner constants (ai/mana_planner.py) ─────────────────────
 # Used by `score_land`, `choose_best_land`, and `choose_fetch_target`
 # to rank land candidates against the hand's color demand and the
