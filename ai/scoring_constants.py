@@ -1520,6 +1520,228 @@ matter for the attacker-survives check.
 Used by `_spell_damage` in `ai/turn_planner.py`.
 """
 
+BOARD_EVAL_HARD_VETO: float = 10.0
+"""Sentinel: hard-veto / unconditional-fire magnitude used by
+`_eval_evoke`, `_eval_dash`, `_eval_combo`. Returning ±10.0 from a
+sub-evaluator means "this branch is decisive — every other
+consideration is dwarfed". Magnitude is large enough to dominate
+every other contributor (pressure ≤ 1.0, score increments < 5.0).
+
+Used by `ai/board_eval.py` sub-evaluators.
+"""
+
+BOARD_EVAL_NO_BLOCKER_EARLY_TURN: int = 3
+"""Rules-constant: turn-number ceiling at which "opponent has no
+blockers" boosts dash damage. ≤3 = "T1-T3 dash" — early-turn empty
+boards mean uncontested haste damage with no opp interaction yet
+deployed. Beyond T3 the opp has typically committed defensive
+creatures.
+
+Used by `_eval_dash` in `ai/board_eval.py`.
+"""
+
+BOARD_EVAL_DASH_EARLY_HASTE_BONUS: float = 2.0
+"""Derived: dash bonus when opp has no blockers in early turns. 2.0
+matches the TRADE_UP_BONUS scale — "dashing for guaranteed haste
+damage in the empty-board window is worth a value-trade".
+
+Used by `_eval_dash` in `ai/board_eval.py`.
+"""
+
+BOARD_EVAL_DASH_BLOCKER_DODGE_BONUS: float = 1.0
+"""Derived: dash bonus when opp has blockers or threatening creatures.
+1.0 reflects "dodging removal by bouncing back is worth one card-
+value unit" — half the early-haste bonus.
+
+Used by `_eval_dash` in `ai/board_eval.py`.
+"""
+
+BOARD_EVAL_DASH_PRESSURE_THRESHOLD: float = 0.6
+"""Derived: pressure level above which a "moderate-pressure" dash
+bonus fires. 0.6 = "above 60% pressure" — calibrated against the
+DECISION_EVOKE_HARDCAST_NEXT_TURN threshold (0.7) so dash fires at
+slightly lower pressure than evoke (dash protects the body).
+
+Used by `_eval_dash` in `ai/board_eval.py`.
+"""
+
+BOARD_EVAL_DASH_PRESSURE_BONUS: float = 0.5
+"""Derived: dash bonus when pressure > BOARD_EVAL_DASH_PRESSURE_THRESHOLD.
+0.5 is half the basic dash bonus — pressure adds urgency but doesn't
+dominate the empty-board / blocker-dodge signals.
+
+Used by `_eval_dash` in `ai/board_eval.py`.
+"""
+
+BOARD_EVAL_DASH_BLOCKER_BODY_PENALTY: float = 0.3
+"""Derived: dash penalty when opp has blockers (because the permanent
+body has blocking value lost on dash bounce). 0.3 = small penalty —
+the lost body value matters but doesn't outweigh the haste benefit.
+
+Used by `_eval_dash` in `ai/board_eval.py`.
+"""
+
+BOARD_EVAL_COMBO_DEFAULT_WAIT: float = -0.5
+"""Sentinel: default "wait, don't fire combo" score when no positive
+resource signals are present. Mildly negative — prefers to advance
+the chain rather than fire prematurely, but doesn't hard-veto.
+
+Used by `_eval_combo` in `ai/board_eval.py`.
+"""
+
+BOARD_EVAL_COMBO_REDUCER_FIRE: float = 1.5
+"""Derived: combo-fire score when a cost reducer is on battlefield
+AND the chain has at least one piece. 1.5 sits above
+DEFAULT_TRADE_UP_BONUS scale — "we have the engine and the fuel,
+fire now".
+
+Used by `_eval_combo` in `ai/board_eval.py`.
+"""
+
+BOARD_EVAL_COMBO_DOUBLE_CHAIN_FIRE: float = 0.8
+"""Derived: combo-fire score when ≥2 chain spells are castable.
+0.8 sits below the reducer-fire score (1.5) — "two pieces is
+enough to start, but not as decisive as having an engine".
+
+Used by `_eval_combo` in `ai/board_eval.py`.
+"""
+
+BOARD_EVAL_COMBO_DESPERATION_PRESSURE: float = 0.7
+"""Derived: pressure threshold at which a "desperation" combo attempt
+fires. 0.7 matches the DECISION_EVOKE_HARDCAST_NEXT_TURN threshold —
+"if pressure forces evoke, it forces a desperation combo too".
+
+Used by `_eval_combo` in `ai/board_eval.py`.
+"""
+
+BOARD_EVAL_COMBO_DESPERATION_FIRE: float = 0.5
+"""Derived: combo-fire score in the desperation branch. 0.5 is below
+the regular-fire scores — "we're firing because we have to, not
+because we have great resources".
+
+Used by `_eval_combo` in `ai/board_eval.py`.
+"""
+
+BOARD_EVAL_COMBO_RITUAL_FIRE: float = 1.0
+"""Derived: combo-fire score with at least one castable ritual.
+1.0 is the standard fire score — one ritual is enough to start a
+chain in most archetypes.
+
+Used by `_eval_combo` in `ai/board_eval.py`.
+"""
+
+BOARD_EVAL_COMBO_EXTENDER_FIRE: float = 1.0
+"""Derived: combo-fire score with an extender (flashback / tutor)
+plus 2 chain spells in hand+GY. Equal to RITUAL_FIRE because the
+extender already beats the chain length.
+
+Used by `_eval_combo` in `ai/board_eval.py`.
+"""
+
+BOARD_EVAL_PRESSURE_SIGMOID_SCALE: float = 0.5
+"""Derived: scale on the pressure sigmoid `_sigmoid(my_clock -
+opp_clock, k)`. 0.5 means a 1-turn clock-differential moves pressure
+by ~tanh(0.5)/2 ≈ 23%. Calibrated to give a clear pressure signal
+but avoid saturating on a single-turn swing.
+
+Used by `assess_board` in `ai/board_eval.py`.
+"""
+
+BOARD_EVAL_PRESSURE_NO_OWN_CLOCK: float = 0.8
+"""Sentinel: pressure when only opp has a clock (we cannot kill but
+they can). 0.8 = "high pressure, must act" — close to maximum but
+leaves headroom for the symmetric-clock branch.
+
+Used by `assess_board` in `ai/board_eval.py`.
+"""
+
+BOARD_EVAL_PRESSURE_RELAXED: float = 0.2
+"""Sentinel: pressure when opp has no clock (we cannot lose to combat
+in any meaningful timeframe). 0.2 = "low pressure" — non-zero so the
+AI still considers proactive plays.
+
+Used by `assess_board` in `ai/board_eval.py`.
+"""
+
+BOARD_EVAL_DEFAULT_LIFE: int = 20
+"""Rules-constant (CR 103.4): Modern starting life total. Used as
+the default for `BoardAssessment.my_life` / `opp_life` before
+real life totals are read off the game state.
+
+Used by `BoardAssessment` in `ai/board_eval.py`.
+"""
+
+BOARD_EVAL_NO_CLOCK_FLOAT: float = 99.0
+"""Sentinel: float "no clock" sentinel for `BoardAssessment.my_clock`
+/ `opp_clock`. Mirrors `ai/clock.NO_CLOCK = 99.0` — same "cannot
+reach lethal" intent, used in the BoardAssessment dataclass and
+all comparisons in `_life_value`, `_block_value`, etc.
+"""
+
+BOARD_EVAL_NO_CLOCK_SENTINEL: int = 99
+"""Sentinel: integer "no spell in hand" sentinel for
+`BoardAssessment.cheapest_spell_cmc`. 99 is unreachable in Modern
+(max card CMC ~15) — a real spell scan replaces it. Sister constant:
+`MANA_NEEDS_NO_SPELL_SENTINEL` (same semantics, different module).
+
+Used by `BoardAssessment` in `ai/board_eval.py`.
+"""
+
+CREATURE_VALUE_TOUGH_WEIGHT: float = 0.3
+"""Derived: weight on toughness when computing creature value as
+`max(cmc, power + toughness * 0.3)`. Toughness is worth ~30% of
+power in the value formula — captures "high-toughness wall" decks
+losing some value vs offensive creatures while keeping the formula
+proportional to total stats.
+
+Used by `_block_value` in `ai/board_eval.py`.
+"""
+
+CREATURE_VALUE_CMC_MULT: float = 1.5
+"""Derived: outer multiplier converting `max(cmc, power_tough_blend)`
+to creature value. 1.5 anchors the value scale — a 4/4 with CMC 4
+(4*1.5 = 6.0) sits above the DOUBLE_BLOCK_VALUE_THRESHOLD (4.0) so
+4-power creatures correctly trigger double-block consideration.
+
+Used by `_block_value` in `ai/board_eval.py`.
+"""
+
+LIFE_VALUE_DEAD_SENTINEL: float = 999.0
+"""Sentinel: life value returned when my_life ≤ 0. 999.0 = "infinite
+priority" — saving a single life when at 0 dominates every other
+consideration.
+
+Used by `_life_value` in `ai/board_eval.py`.
+"""
+
+LIFE_VALUE_NO_OPP_CLOCK_SCARCITY: float = 0.05
+"""Derived: life-scarcity factor when opp has no clock. 0.05 = "5% of
+the per-clock-turn scarcity" — life points still have small value
+even without a kill threat (preserves general life-as-resource
+arithmetic in pure-grind matchups).
+
+Used by `_life_value` in `ai/board_eval.py`.
+"""
+
+LIFE_VALUE_OUTER_SCALE: float = 10.0
+"""Derived: outer scale converting `fraction * scarcity` to life
+value. 10.0 keeps life-value magnitudes in the same band as
+TRADE_DOWN_PENALTY (-2.5) and TRADE_UP_BONUS (2.0) — a single life
+point's value typically sits around 0.5-2.0.
+
+Used by `_life_value` in `ai/board_eval.py`.
+"""
+
+DOMAIN_BASIC_TYPE_CAP: int = 5
+"""Rules-constant: maximum number of basic land types counted toward
+domain (CR 702.x — Domain). The 5 basics are Plains, Island, Swamp,
+Mountain, Forest — `min(count, 5)` clamps the domain count at the
+canonical maximum.
+
+Used by `_count_domain` in `ai/board_eval.py`.
+"""
+
+
 DEFAULT_PLAN_TURN: int = 5
 """Sentinel: default `game_turn` value for `TurnPlanner.plan_turn`
 when callers don't pass a turn number. 5 reflects the "Modern midgame"
