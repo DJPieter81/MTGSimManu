@@ -62,10 +62,13 @@ MODERN_DECKS: Dict[str, Dict[str, Dict[str, int]]] = {
             "Voice of Victory": 2,
             "Ranger-Captain of Eos": 1,
             "Galvanic Discharge": 4,
-            "Thraben Charm": 2,
+            "Thraben Charm": 1,
             "Blood Moon": 1,
             "Goblin Bombardment": 3,
             "The Legend of Roku": 1,
+            # Phase K PR-K4 (Class H): +1 MB Wear // Tear vs Affinity
+            # — was 0 MB hate; canonical Boros lists run 0-1
+            "Wear // Tear": 1,
             "Arid Mesa": 4,
             "Windswept Heath": 4,
             "Marsh Flats": 3,
@@ -219,12 +222,16 @@ MODERN_DECKS: Dict[str, Dict[str, Dict[str, int]]] = {
         "mainboard": {
             "Thought-Knot Seer": 4,
             "Reality Smasher": 4,
-            "Endbringer": 2,
+            "Endbringer": 1,
             "Walking Ballista": 2,
             "Matter Reshaper": 4,
             "Eldrazi Mimic": 4,
             "Chalice of the Void": 4,
             "Expedition Map": 4,
+            # Phase K PR-K6 (Class H): +1 MB Pithing Needle vs Affinity
+            # — was 0 MB hate; canonical ETron lists run 0-2 MB Needle
+            # to lock Mox Opal / Cranial Plating / Urza's Saga
+            "Pithing Needle": 1,
             "All Is Dust": 2,
             "Warping Wail": 2,
             "Ugin, the Spirit Dragon": 2,
@@ -355,7 +362,10 @@ MODERN_DECKS: Dict[str, Dict[str, Dict[str, int]]] = {
             "Teferi, Time Raveler": 1,
             "Lightning Bolt": 4,
             "Consign to Memory": 1,
-            "Stubborn Denial": 2,
+            "Stubborn Denial": 1,
+            # Phase K PR-K8 (Class H): +1 MB Wear // Tear vs Affinity
+            # — was 0 MB hate; 5-colour deck via white splash
+            "Wear // Tear": 1,
             "Leyline Binding": 4,
             "Leyline of the Guildpact": 4,
             "Fable of the Mirror-Breaker // Reflection of Kiki-Jiki": 1,
@@ -392,10 +402,15 @@ MODERN_DECKS: Dict[str, Dict[str, Dict[str, int]]] = {
             "Demonic Dread": 4,
             "Force of Negation": 4,
             "Subtlety": 4,
+            # Phase K PR-K9 (Class H): +1 MB Force of Vigor vs Affinity
+            # — was 0 MB hate; pitchable evoke, fits the cascade plan;
+            # cascade-safe (CMC 4 > 3, won't be hit by Demonic Dread or
+            # Shardless Agent cascade)
+            "Force of Vigor": 1,
             "Street Wraith": 4,
             "Striped Riverwinder": 4,
             "Architects of Will": 4,
-            "Curator of Mysteries": 2,
+            "Curator of Mysteries": 1,
             "Waker of Waves": 2,
             "Misty Rainforest": 4,
             "Verdant Catacombs": 4,
