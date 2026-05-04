@@ -2894,6 +2894,62 @@ Used by `find_all_chains` in `ai/combo_chain.py`.
 """
 
 
+# ─── Combo-evaluator constants (ai/combo_evaluator.py) ───────────────
+# Used by the simulator-driven combo evaluator to score flip-coin
+# transform progress, tutor-tax penalties, and hold-vs-fire decisions.
+# These constants tune the bridge between the chain simulator's
+# `(expected_damage, success_probability, coverage_ratio)` projection
+# and the per-card EV scoring used by `ev_player`.
+
+FLIP_COIN_TRANSFORM_VALUE_FRACTION: float = 0.3
+"""Derived: fraction of `combo_value` credited per untransformed
+flip-creature when adding marginal coin-flip transform progress. 0.3
+reflects "one chained instant/sorcery is roughly a third of the value
+the eventual transform brings" — the transform itself is the payoff,
+each marginal flip is incremental progress. Below 0.3 the AI under-
+prioritizes filling the chain; above 0.3 it over-credits the
+incremental flip relative to other build-up actions.
+
+Used by `_flip_transform_bonus` in `ai/combo_evaluator.py`.
+"""
+
+
+TUTOR_TAX_LIFE_NORMALIZER: float = 3.0
+"""Derived: scaling factor on `combo_value / opp_life` when computing
+per-card tutor-tax penalty. 3.0 = three EV units (CHEAP_REMOVAL_ACTION
+scale × 3) — the empirical magnitude at which a tax-piece (e.g.
+Thalia, Sphere of Resistance) on the opp's battlefield reduces our
+willingness to fetch by enough to cancel the tutor's marginal value.
+Below 3 the tutor still scores positively against tax; above 3 the
+tutor scores too negatively even when its target wins on the spot.
+
+Used by `_search_tax_penalty` in `ai/combo_evaluator.py`.
+"""
+
+
+COMBO_FIRE_SUCCESS_THRESHOLD: float = 0.5
+"""Derived: minimum `success_probability` at which a sub-lethal-but-
+expected-lethal chain is considered "fire" rather than "hold". 0.5 is
+the fair-coin floor — below 50% confidence the combo is too volatile
+to commit, so the AI prefers to hold for a more reliable line. Above
+50% the AI fires because expected-damage already covers opp_life.
+
+Used by the hold-vs-fire decision in `ai/combo_evaluator.py`.
+"""
+
+
+COMBO_COVERAGE_HALF_LETHAL: float = 0.5
+"""Rules-constant: chain-coverage ratio at which mid-chain investment
+becomes catastrophic if abandoned. 0.5 = half-lethal — at coverage
+above 0.5 we've committed half our resources to the chain, and any
+non-extending fuel-burn wastes that investment. Threshold derives
+from clock arithmetic, not tuning: it's the point where "this turn
+or never" applies to the chain.
+
+Used by the mid-chain coverage gate in `ai/combo_evaluator.py`.
+"""
+
+
 # ─── Mana-planner constants (ai/mana_planner.py) ─────────────────────
 # Used by `score_land`, `choose_best_land`, and `choose_fetch_target`
 # to rank land candidates against the hand's color demand and the

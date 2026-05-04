@@ -41,6 +41,13 @@ are documented rules-derived sentinels.
 from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
+from ai.scoring_constants import (
+    COMBO_COVERAGE_HALF_LETHAL,
+    COMBO_FIRE_SUCCESS_THRESHOLD,
+    FLIP_COIN_TRANSFORM_VALUE_FRACTION,
+    TUTOR_TAX_LIFE_NORMALIZER,
+)
+
 if TYPE_CHECKING:
     from engine.cards import CardInstance
     from engine.game_state import GameState
@@ -117,10 +124,10 @@ def _flip_transform_bonus(card, snap, me, storm_count) -> float:
     ]
     if not flip_creatures:
         return 0.0
-    marginal_p = 0.5 ** (storm_count + 1)
+    marginal_p = 0.5 ** (storm_count + 1)  # magic-allow: P(heads) for fair coin (CR 705.2)
     from ai.combo_calc import _compute_combo_value
     combo_value = _compute_combo_value(snap, "combo")
-    return marginal_p * combo_value * 0.3 * len(flip_creatures)
+    return marginal_p * combo_value * FLIP_COIN_TRANSFORM_VALUE_FRACTION * len(flip_creatures)
 
 
 def _search_tax_penalty(card, game, player_idx, snap) -> float:
@@ -136,7 +143,7 @@ def _search_tax_penalty(card, game, player_idx, snap) -> float:
     from ai.combo_calc import _compute_combo_value
     combo_value = _compute_combo_value(snap, "combo")
     opp_life = max(1, snap.opp_life)
-    card_value = combo_value / opp_life * 3.0
+    card_value = combo_value / opp_life * TUTOR_TAX_LIFE_NORMALIZER
     return -tax_count * card_value
 
 
@@ -337,7 +344,7 @@ def card_combo_evaluation(
     # life total toward future lethal turns).
     fire_lethal = (
         baseline_proj.expected_damage >= opp_life
-        and baseline_proj.success_probability >= 0.5
+        and baseline_proj.success_probability >= COMBO_FIRE_SUCCESS_THRESHOLD
     )
     hold_lethal = (
         baseline_proj.hold_value >= opp_life
@@ -392,8 +399,7 @@ def card_combo_evaluation(
     # for cards that don't.  Threshold derives from clock arithmetic:
     # at coverage > 0.5 we've committed half our resources to this
     # chain and turning back wastes everything spent.
-    HALF_LETHAL = 0.5  # rules constant: half-lethal coverage
-    if (baseline_proj.coverage_ratio > HALF_LETHAL
+    if (baseline_proj.coverage_ratio > COMBO_COVERAGE_HALF_LETHAL
             and relevance == 0.0
             and _is_chain_fuel(card)):
         # Chain is mid-flight, this fuel doesn't extend it — hold.
