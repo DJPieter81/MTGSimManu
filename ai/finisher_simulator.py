@@ -365,9 +365,10 @@ def _project_storm(
     # storm count is per-turn).  Hand stays the same; we don't try
     # to predict the drawn card's identity (caller can run the
     # projection again with hypothetical draws if needed).
-    from dataclasses import replace
-    next_snap = replace(snap, my_mana=snap.my_mana + 1,
-                        my_total_lands=snap.my_total_lands + 1)
+    # Phase J-1: ``snap.replace(...)`` is the pydantic equivalent of
+    # ``dataclasses.replace(snap, ...)`` — validated copy with overrides.
+    next_snap = snap.replace(my_mana=snap.my_mana + 1,
+                             my_total_lands=snap.my_total_lands + 1)
     next_chains = find_all_chains(
         hand=hand,
         available_mana=next_snap.my_mana,
@@ -946,10 +947,9 @@ def simulate_finisher_chain(
     # `_depth >= _MULTI_TURN_DEPTH`, recursion stops and
     # `next_turn_proj = None`.
     if _depth + 1 < _MULTI_TURN_DEPTH and library_size > 1:
-        from dataclasses import replace
+        # Phase J-1: pydantic ``snap.replace(...)`` replaces dataclasses.replace.
         opp_power = max(0, snap.opp_power)
-        next_snap = replace(
-            snap,
+        next_snap = snap.replace(
             my_mana=snap.my_mana + 1,
             my_total_lands=snap.my_total_lands + 1,
             my_life=max(0, snap.my_life - opp_power),

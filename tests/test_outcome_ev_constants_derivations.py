@@ -114,9 +114,9 @@ def _make_bhi_safe_mock():
 
 
 def _make_snap(opp_life=20, my_mana=1):
-    """Minimal real EVSnapshot — `dataclasses.replace` is used by
-    `build_combo_distribution` to project outcome states, so we need
-    an actual dataclass instance (not a MagicMock)."""
+    """Minimal real EVSnapshot — `EVSnapshot.replace` (pydantic
+    `model_copy`) is used by `build_combo_distribution` to project
+    outcome states, so we need an actual instance (not a MagicMock)."""
     from ai.ev_evaluator import EVSnapshot
     return EVSnapshot(
         opp_life=opp_life,
@@ -143,8 +143,8 @@ def storm_distribution():
     card.template.keywords = set()
     card.template.cmc = 1
 
-    # Snapshot — must be a real EVSnapshot dataclass (build_combo_distribution
-    # uses dataclasses.replace to project outcome states).
+    # Snapshot — must be a real EVSnapshot (build_combo_distribution
+    # uses EVSnapshot.replace to project outcome states).
     snap = _make_snap(opp_life=20, my_mana=1)
 
     # Players: empty hand-of-finishers, small library with finishers,
