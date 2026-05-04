@@ -184,7 +184,20 @@ def run_eval(
     """
     pairs = load_golden_pairs(task)
     threshold = threshold if threshold is not None else DEFAULT_THRESHOLD[task]
-    agent = build_agent(task, model=model)
+    # When `test_model_payload` is supplied (smoke-test harness path),
+    # disable cache + metrics: the cache key is `(task, model,
+    # prompt_version, input_blob)` and does NOT include the override
+    # payload, so a previously-stored TestModel response would be
+    # returned instead of the current override.  That would silently
+    # break the threshold-gate smoke test (and any future smoke test
+    # that uses `test_model_payload` to drive specific outputs).
+    use_cache_and_metrics = test_model_payload is None
+    agent = build_agent(
+        task,
+        model=model,
+        use_cache=use_cache_and_metrics,
+        instrument=use_cache_and_metrics,
+    )
     chosen_model = _agent_model_id(agent)
 
     report = EvalReport(task=task, model=chosen_model, threshold=threshold)
