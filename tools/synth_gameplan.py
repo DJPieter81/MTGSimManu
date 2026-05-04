@@ -49,6 +49,7 @@ from pathlib import Path
 from typing import Dict, Optional
 
 from ai.llm_agents import build_agent
+from ai.llm_compression import compress_decklist
 from ai.llm_models import DEFAULT_MODELS, LEGACY_SYNTH_ENV
 from ai.llm_schemas import SynthesizedGameplan, SynthesizedGoal, to_json_dict
 from tools._synth_gameplan_input import format_decklist_for_prompt
@@ -147,16 +148,19 @@ def _format_decklist_for_prompt(
     mainboard: Dict[str, int],
     db,
 ) -> str:
-    """Backward-compat alias for the prompt formatter (now in
-    `tools._synth_gameplan_input`).
+    """Backward-compat alias for the prompt formatter.
 
-    TODO (Phase I-3 cost-aware redesign): once card_features integration
-    lands, swap raw oracle-text rendering inside
-    `tools._synth_gameplan_input.format_decklist_for_prompt` for
-    `ai.card_features.extract_features_for_deck(...)` — cuts ~70% of
-    input tokens.
+    Phase I-3 swapped the oracle-text dump in
+    `tools._synth_gameplan_input.format_decklist_for_prompt` for the
+    feature-vector compressor in `ai.llm_compression.compress_decklist`,
+    cutting ~70% of input tokens by replacing per-card oracle text with
+    the deterministic mechanic flags from `ai.card_features`.
+
+    The legacy `format_decklist_for_prompt` is intentionally still
+    importable so any out-of-tree caller pinning the old surface keeps
+    working — only the LLM-facing path migrated.
     """
-    return format_decklist_for_prompt(deck_name, mainboard, db)
+    return compress_decklist(deck_name, mainboard, db)
 
 
 def synth_gameplan_llm(
@@ -173,7 +177,10 @@ def synth_gameplan_llm(
         db = CardDatabase()
 
     agent = _build_llm_agent(model=model)
-    user_prompt = format_decklist_for_prompt(deck_name, mainboard, db)
+    # Phase I-3: feature-vector compression replaces the raw oracle
+    # dump.  The legacy `format_decklist_for_prompt` import is kept for
+    # backward compatibility but no longer used on the LLM path.
+    user_prompt = compress_decklist(deck_name, mainboard, db)
     result = agent.run_sync(user_prompt)
     output = result.output
     # The model occasionally drops `deck_name` even with structured
