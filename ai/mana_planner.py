@@ -17,7 +17,28 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Dict, List, Optional, Set, Tuple
 
-from ai.scoring_constants import HELD_COLOR_PRESERVATION_BONUS
+from ai.scoring_constants import (
+    HELD_COLOR_PRESERVATION_BONUS,
+    LAND_SCORE_PER_MISSING_COLOR_DEMAND,
+    LAND_SCORE_PAYOFF_MISSING_COLOR_BONUS,
+    LAND_SCORE_REDUNDANT_COLOR_WEIGHT,
+    LAND_SCORE_ENABLED_SPELL_URGENCY,
+    LAND_SCORE_URGENCY_CMC_CEIL,
+    LAND_SCORE_TAPPED_PENALTY_EARLY,
+    LAND_SCORE_TAPPED_PENALTY_LATE,
+    LAND_SCORE_DOMAIN_BASE,
+    LAND_SCORE_DOMAIN_PER_CARD_BONUS,
+    LAND_SCORE_DOMAIN_CARD_CAP,
+    LAND_SCORE_TAPPED_BASE_PENALTY,
+    LAND_SCORE_TAPPED_TURN_DECAY,
+    LAND_SCORE_TAPPED_FLOOR_FRACTION,
+    LAND_SCORE_UNTAPPED_BONUS,
+    LAND_SCORE_FETCHLAND_FLEXIBILITY_BONUS,
+    LAND_SCORE_VERSATILITY_PER_COLOR,
+    LAND_SCORE_BEST_INIT_SENTINEL,
+    LAND_SCORE_FETCH_LIFE_TEMPO_PENALTY,
+    LAND_SHOCK_RACING_LIFE_THRESHOLD,
+)
 
 if TYPE_CHECKING:
     from engine.game_state import GameState
@@ -248,20 +269,18 @@ def score_land(land, needs: ManaNeeds, is_fetchable: bool = False,
     player_turn = (turn + 1) // 2
 
     # ── (A) Missing color: value = sum of clock impact of spells it enables ──
-    # A color needed by 3 spells is worth 3× a color needed by 1 spell
+    # A color needed by 3 spells is worth 3× a color needed by 1 spell.
     for c in produces:
         if c in needs.missing_colors:
             demand = needs.needed_colors.get(c, 1)
-            # Each spell enabled is worth ~1 turn of clock (creature power / opp_life)
-            # Scale: demand × base_value, where base_value ≈ avg creature clock impact × 20
-            score += demand * 8.0  # ~8 points per spell needing this color
+            score += demand * LAND_SCORE_PER_MISSING_COLOR_DEMAND
         if c in needs.payoff_missing_colors:
-            score += 10.0  # high-CMC multi-color payoffs are especially valuable
+            score += LAND_SCORE_PAYOFF_MISSING_COLOR_BONUS
 
     # ── (B) Needed color: still valuable even if we have it (redundancy) ──
     for c in produces:
         if c in needs.needed_colors:
-            score += needs.needed_colors[c] * 2.0
+            score += needs.needed_colors[c] * LAND_SCORE_REDUNDANT_COLOR_WEIGHT
 
     # ── (C) Spell enablement: value = clock impact of enabled spell ──
     land_colors = set(produces)
@@ -269,13 +288,16 @@ def score_land(land, needs: ManaNeeds, is_fetchable: bool = False,
     for entry in needs.spells_enabled_by_one_more:
         spell, spell_colors = entry[0], entry[1]
         if spell_colors <= combined_colors:
-            # Enabled spell's value: cheaper spells = more urgent (on-curve)
+            # Enabled spell's value: cheaper spells = more urgent (on-curve).
+            # Clock impact: a 1-mana creature attacks for ~7 turns, 5-mana for ~3.
             cmc = spell.template.cmc or 0
-            # Clock impact: a 1-mana creature attacks for ~7 turns, 5-mana for ~3
-            urgency = max(1, 8 - cmc) * 3.0
+            urgency = (max(1, LAND_SCORE_URGENCY_CMC_CEIL - cmc)
+                       * LAND_SCORE_ENABLED_SPELL_URGENCY)
             if enters_tapped and not is_optional_untap:
-                # Tapped = spell delayed 1 turn = lose 1 combat step
-                urgency *= 0.15 if player_turn <= 2 else 0.4
+                # Tapped = spell delayed 1 turn = lose 1 combat step.
+                urgency *= (LAND_SCORE_TAPPED_PENALTY_EARLY
+                            if player_turn <= 2
+                            else LAND_SCORE_TAPPED_PENALTY_LATE)
             score += urgency
 
     # ── (D) Domain: each new land type = +1 power per domain creature ──
@@ -284,29 +306,34 @@ def score_land(land, needs: ManaNeeds, is_fetchable: bool = False,
         if st in BASIC_LAND_TYPES and st not in needs.existing_subtypes:
             new_subtypes += 1
     # Domain value: each new type gives +1 power to domain creatures
-    # = +1 damage per turn per domain creature = 1/(opp_life) clock per creature
-    # Simplified: 2 base + 2 per domain card in hand (power boost × remaining turns)
-    domain_value = 2.0 + min(needs.domain_card_count, 5) * 2.0
+    # = +1 damage per turn per domain creature = 1/(opp_life) clock per creature.
+    domain_value = (LAND_SCORE_DOMAIN_BASE
+                    + min(needs.domain_card_count, LAND_SCORE_DOMAIN_CARD_CAP)
+                    * LAND_SCORE_DOMAIN_PER_CARD_BONUS)
     score += new_subtypes * domain_value
 
     # ── (E) Tempo: tapped land = lose 1 turn of mana ──
-    # Derived: penalty = best spell we could cast this turn × delay
+    # Derived: penalty = best spell we could cast this turn × delay.
     if enters_tapped and not is_optional_untap:
-        # Tapped = can't use mana this turn. Penalty scales with tempo importance.
-        tempo_penalty = 8.0 * max(0.5, 1.0 - player_turn * 0.15)  # ~8 T1, ~5 T4+
+        # Tapped = can't use mana this turn. Penalty decays with player_turn,
+        # capped below by LAND_SCORE_TAPPED_FLOOR_FRACTION.
+        tempo_penalty = LAND_SCORE_TAPPED_BASE_PENALTY * max(
+            LAND_SCORE_TAPPED_FLOOR_FRACTION,
+            1.0 - player_turn * LAND_SCORE_TAPPED_TURN_DECAY,
+        )
         score -= tempo_penalty
     elif not enters_tapped:
-        score += 5.0  # untapped = immediate mana availability
+        score += LAND_SCORE_UNTAPPED_BONUS  # immediate mana availability
     if is_optional_untap:
-        score += 5.0  # shock lands have option to enter untapped
+        score += LAND_SCORE_UNTAPPED_BONUS  # shock lands have option to enter untapped
 
     # ── (F) Fetchlands: flexibility to find what you need ──
     from engine.card_database import FETCH_LAND_COLORS
     if template.name in FETCH_LAND_COLORS and not is_fetchable:
-        score += 4.0
+        score += LAND_SCORE_FETCHLAND_FLEXIBILITY_BONUS
 
     # ── (G) Versatility: more colors = more flexible ──
-    score += len(produces) * 1.0
+    score += len(produces) * LAND_SCORE_VERSATILITY_PER_COLOR
 
     # ── (H) Gameplan priority from deck config ──
     score += gameplan_priority
@@ -368,7 +395,7 @@ def choose_best_land(lands: list, needs: ManaNeeds,
 
     prios = gameplan_priorities or {}
     best = None
-    best_score = -999.0
+    best_score = LAND_SCORE_BEST_INIT_SENTINEL
 
     for land in lands:
         template = land.template if hasattr(land, "template") else land
@@ -390,8 +417,8 @@ def choose_best_land(lands: list, needs: ManaNeeds,
                     turn=turn
                 )
                 # Small penalty: fetch costs 1 life and is slightly slower
-                # But it also thins the deck, so net penalty is small
-                s = proxy_score - 1.0
+                # But it also thins the deck, so net penalty is small.
+                s = proxy_score - LAND_SCORE_FETCH_LIFE_TEMPO_PENALTY
             else:
                 # No valid target in library — score the fetch itself
                 s = score_land(land, needs, gameplan_priority=gp, turn=turn)
@@ -441,8 +468,9 @@ def should_stagger_shock(game, player_idx: int, land, archetype: str) -> bool:
     opp = game.players[1 - player_idx]
     incoming = sum((c.power or 0) for c in opp.creatures
                    if not getattr(c, 'tapped', False))
-    # Racing: always defer second shock
-    if me.life - incoming <= 12:
+    # Racing: always defer second shock when life-after-incoming is below
+    # LAND_SHOCK_RACING_LIFE_THRESHOLD.
+    if me.life - incoming <= LAND_SHOCK_RACING_LIFE_THRESHOLD:
         return True
     # More plays to make: defer to preserve life
     if len(me.hand) > 0:
@@ -463,7 +491,7 @@ def choose_fetch_target(library: list, fetch_colors: list,
 
     prios = gameplan_priorities or {}
     best = None
-    best_score = -999.0
+    best_score = LAND_SCORE_BEST_INIT_SENTINEL
 
     # Map fetch colors to the basic land types they represent
     _COLOR_TO_BASIC_TYPE = {

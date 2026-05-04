@@ -1,10 +1,11 @@
 ---
 title: Affinity 55% → 88% regression — root cause + path forward
-status: active
+status: superseded
 priority: primary
 session: 2026-04-26
 supersedes: []
-superseded_by: []
+superseded_by:
+  - docs/diagnostics/2026-05-02_affinity_88pct_hypothesis_list.md
 depends_on: []
 tags: [affinity, holdback, mana-management, regression]
 summary: |

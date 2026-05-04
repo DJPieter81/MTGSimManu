@@ -12,6 +12,14 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Tuple
 
+from ai.scoring_constants import (
+    CLOCK_IMPACT_LIFE_SCALING,
+    SB_GY_FULL_RELIANCE_TARGET,
+    SB_EXPECTED_GY_CREATURES_DENIED,
+    SB_DEFAULT_AVG_CMC,
+    SB_SWAP_EPSILON_MANA_FRACTION,
+)
+
 if TYPE_CHECKING:
     from engine.cards import CardTemplate
     from engine.card_database import CardDatabase
@@ -106,9 +114,11 @@ def _gy_reliance(opp_templates: List["CardTemplate"],
         for goal in getattr(opp_gameplan, 'goals', []):
             if (getattr(goal, 'goal_type', None) == GoalType.FILL_RESOURCE
                     and getattr(goal, 'resource_zone', '') == 'graveyard'):
-                # Declared dependency: weight by target creatures needed
+                # Declared dependency: weight by target creatures needed.
+                # Saturates at SB_GY_FULL_RELIANCE_TARGET — full Living
+                # End return = full reliance.
                 target = max(1, getattr(goal, 'resource_target', 1))
-                return min(1.0, target / 5.0)  # 5 GY creatures = full reliance
+                return min(1.0, target / SB_GY_FULL_RELIANCE_TARGET)
 
     # Secondary: oracle-driven — cards that read from / cast from GY, or
     # reanimator targets (large creatures the deck wants in GY).
@@ -226,10 +236,10 @@ def _clause_gy_hate(oracle: str,
     reliance = _gy_reliance(opp_templates, opp_gameplan)
     if reliance <= 0:
         return 0.0
-    # Hate card residency × reliance × expected-creatures-denied
-    # Creatures denied ≈ opp's average creatures-in-GY at combo time (~5).
-    EXPECTED_GY_CREATURES_DENIED = 5.0  # rules constant: full Living End return
-    return reliance * EXPECTED_GY_CREATURES_DENIED * PERMANENT_VALUE_WINDOW
+    # Hate card residency × reliance × expected-creatures-denied.
+    # Creatures denied = SB_EXPECTED_GY_CREATURES_DENIED (rules constant
+    # in scoring_constants — full Living End return).
+    return reliance * SB_EXPECTED_GY_CREATURES_DENIED * PERMANENT_VALUE_WINDOW
 
 
 def _clause_body_value(template: "CardTemplate") -> float:
@@ -260,9 +270,12 @@ def _clause_body_value(template: "CardTemplate") -> float:
         from ai.clock import mana_clock_impact
         from ai.ev_evaluator import _DEFAULT_SNAP
         # One free cast ≈ cmc-limit worth of mana advantage.
-        # Using mana_clock_impact × 20 (unit conversion) × cmc of cascade
-        # floor ≈ creature_clock_impact × average_hit_cmc.
-        return (template.cmc or 0) * mana_clock_impact(_DEFAULT_SNAP) * 20.0
+        # mana_clock_impact × CLOCK_IMPACT_LIFE_SCALING converts the
+        # opp_life-normalised clock-units back into life-points / turn,
+        # then × cmc gives the cascade's free-cast life-equivalent.
+        return ((template.cmc or 0)
+                * mana_clock_impact(_DEFAULT_SNAP)
+                * CLOCK_IMPACT_LIFE_SCALING)
 
     return 0.0
 
@@ -425,7 +438,8 @@ def plan_sideboard(
             continue
         my_nonland_cmc_total += (tmpl.cmc or 0) * count
         my_nonland_count += count
-    my_avg_cmc = (my_nonland_cmc_total / my_nonland_count) if my_nonland_count else 2.5
+    my_avg_cmc = ((my_nonland_cmc_total / my_nonland_count)
+                  if my_nonland_count else SB_DEFAULT_AVG_CMC)
 
     # Score every card in main + sb against this opponent.
     def _score(name: str) -> float:
@@ -492,16 +506,19 @@ def plan_sideboard(
         # over-penalized control-deck curve-upgrades (Sheoldred, finishers).
         from ai.clock import mana_clock_impact
         from ai.ev_evaluator import _DEFAULT_SNAP
-        mana_unit = mana_clock_impact(_DEFAULT_SNAP) * 20.0  # ~1.0
+        # mana_unit ≈ 1.0 — clock-impact × CLOCK_IMPACT_LIFE_SCALING
+        # reverses the opp_life normalisation in mana_clock_impact.
+        mana_unit = mana_clock_impact(_DEFAULT_SNAP) * CLOCK_IMPACT_LIFE_SCALING
         sb_cmc = sb_tmpl.cmc or 0
         main_cmc = main_tmpl.cmc or 0
         cmc_floor = max(main_cmc, my_avg_cmc)
         tempo_cost = max(0.0, sb_cmc - cmc_floor) * mana_unit * PERMANENT_VALUE_WINDOW
 
-        # ε-threshold gate: only commit swaps where net gain exceeds half a
-        # mana-unit. Prevents churn from marginal-delta swaps that won't
-        # meaningfully change the matchup.
-        epsilon = mana_unit * 0.5
+        # ε-threshold gate: only commit swaps where net gain exceeds the
+        # SB_SWAP_EPSILON_MANA_FRACTION (½ mana-unit by default). Prevents
+        # churn from marginal-delta swaps that won't meaningfully change
+        # the matchup.
+        epsilon = mana_unit * SB_SWAP_EPSILON_MANA_FRACTION
         net_gain = (sb_val - tempo_cost) - main_val
         if net_gain <= epsilon:
             break  # no further profitable swaps

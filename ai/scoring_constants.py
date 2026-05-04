@@ -13,6 +13,8 @@ coefficient re-tune.
 """
 from __future__ import annotations
 
+from typing import Dict
+
 # ─── Threat-evaluation sentinels ─────────────────────────────────────
 # Used by ai/response.py to score stack threats and gate counter triage.
 
@@ -2382,4 +2384,1282 @@ slightly prefer keeping interaction.
 important; we'd rather bin a flooded land than a Bolt.
 
 Used by `discard_score` in `ai/discard_advisor.py`.
+"""
+
+
+# ─── Bayesian-hand-inference hold-rates (ai/bhi.py) ──────────────────
+# Used by `BayesianHandTracker.observe_priority_pass` to model the
+# probability that the opponent held interaction (counter / removal)
+# even though they could have used it. Values reflect rational-player
+# behaviour: hold rate decreases as opponent's life pressure increases
+# (desperate players counter everything; comfortable players save
+# interaction for bigger threats).
+
+COUNTER_HOLD_RATE_DEFAULT: float = 0.3
+"""Derived: default P(opp holds counter | opp has counter) when their
+life is in the comfortable mid-range and we're not early game.
+
+Reflects a rational player's willingness to hold interaction for a
+better target ~30% of the time. Below this fraction the player feels
+under enough pressure to fire on any target; above it the player has
+slack to wait.
+
+Sister constants: COUNTER_HOLD_RATE_DESPERATE (low-life) and
+COUNTER_HOLD_RATE_EARLY_GAME (saving for bigger target).
+
+Used by `observe_priority_pass` in `ai/bhi.py`.
+"""
+
+
+COUNTER_HOLD_RATE_DESPERATE: float = 0.15
+"""Derived: P(opp holds counter | opp has counter) when opp_life ≤
+COUNTER_HOLD_OPP_LIFE_DESPERATE (10). Half of the default rate —
+desperate players counter almost any threat because untreated threats
+will kill them quickly.
+
+Sister constant: COUNTER_HOLD_RATE_DEFAULT (the comfortable mid-range
+rate this halves from).
+
+Used by `observe_priority_pass` in `ai/bhi.py`.
+"""
+
+
+COUNTER_HOLD_RATE_EARLY_GAME: float = 0.4
+"""Derived: P(opp holds counter | opp has counter) in the early game
+(detected via `ai.clock.is_early_game`). Slightly above the default
+rate — early game the opponent has more turns ahead in which to use
+the counter, so saving for a bigger target is more rational.
+
+Sister constant: COUNTER_HOLD_RATE_DEFAULT.
+
+Used by `observe_priority_pass` in `ai/bhi.py`.
+"""
+
+
+REMOVAL_HOLD_RATE_DEFAULT: float = 0.25
+"""Derived: default P(opp holds instant removal | opp has it) when
+not at desperate life. Slightly below COUNTER_HOLD_RATE_DEFAULT
+because removal is more target-specific (must hit a creature) so
+saving it is less commonly profitable than saving a counter.
+
+Sister constant: REMOVAL_HOLD_RATE_DESPERATE.
+
+Used by `observe_priority_pass` in `ai/bhi.py`.
+"""
+
+
+REMOVAL_HOLD_RATE_DESPERATE: float = 0.1
+"""Derived: P(opp holds removal | opp has it) when opp_life ≤
+REMOVAL_HOLD_OPP_LIFE_DESPERATE (8). Lower than the default rate
+because at near-lethal life every creature is a kill threat — opp
+must fire removal immediately or lose.
+
+Sister constant: REMOVAL_HOLD_RATE_DEFAULT.
+
+Used by `observe_priority_pass` in `ai/bhi.py`.
+"""
+
+
+COUNTER_HOLD_OPP_LIFE_DESPERATE: int = 10
+"""Rules-constant: opp life at or below which COUNTER_HOLD_RATE_DESPERATE
+applies. 10 = half of the Modern starting life total — the empirical
+threshold below which players visibly play more reactively.
+
+Used by `observe_priority_pass` in `ai/bhi.py`.
+"""
+
+
+REMOVAL_HOLD_OPP_LIFE_DESPERATE: int = 8
+"""Rules-constant: opp life at or below which REMOVAL_HOLD_RATE_DESPERATE
+applies. 8 ≈ two Lightning Bolts of distance from lethal — empirically
+the threshold at which removal-based decks must answer every threat.
+
+Used by `observe_priority_pass` in `ai/bhi.py`.
+"""
+
+
+NON_INTERACTION_CAST_DECAY: float = 0.9
+"""Derived: multiplicative decay applied to `p_counter` and `p_removal`
+when the opponent casts a non-interaction spell. Tapping mana for
+something else is weak evidence they don't have interaction held.
+
+10% decay matches the "weak evidence" intent — strong evidence
+(observing a cast counter) triggers a full Bayesian recalculation
+instead. Re-applied each non-interaction cast, so repeated tapping
+out compounds the evidence.
+
+Used by `observe_spell_cast` in `ai/bhi.py`.
+"""
+
+
+OBSERVATION_WEIGHT_CAP: float = 0.7
+"""Derived: maximum weight given to observed-pass beliefs over the
+fresh per-card density prior. Capped at 0.7 so the static prior
+(library composition) always retains at least 30% influence —
+prevents the belief from collapsing to a single observed pass when
+the unobserved hand still contains relevant information.
+
+Sister constant: OBSERVATION_WEIGHT_PER_OBS — per-observation
+increment that ramps toward this cap.
+
+Used by `_recalculate_priors` in `ai/bhi.py`.
+"""
+
+
+OBSERVATION_WEIGHT_PER_OBS: float = 0.1
+"""Derived: per-observation increment applied to the observation
+weight in the prior/posterior blend. After 7 observations the cap
+(OBSERVATION_WEIGHT_CAP = 0.7) binds — empirically 7 priority-passes
+is enough to dominate the static prior, matching the typical Modern
+"by turn 7 we've seen the relevant cards from opp's hand" heuristic.
+
+Sister constant: OBSERVATION_WEIGHT_CAP.
+
+Used by `_recalculate_priors` in `ai/bhi.py`.
+"""
+
+
+# ─── Mulligan keep-score weights (ai/mulligan.py) ────────────────────
+# Used by `MulliganDecider._card_keep_score` to rank cards for the
+# choose-cards-to-bottom decision. These are role-tag weights, NOT
+# per-card scores; values are calibrated against the lands-first
+# baseline so that a needed land outranks any spell role and a
+# needed spell role outranks an unneeded one.
+#
+# All values are in the same "card keep score" scale used by
+# `ai.gameplan.card_keep_score` (the gameplan-aware path), so the
+# fallback heuristic and the gp-aware ordering live on the same
+# scale and can swap in either direction.
+
+LEGENDARY_DUPLICATE_PENALTY: float = 50.0
+"""Sentinel: penalty subtracted from a duplicate legendary card's
+keep-score so it sorts to the bottom of `choose_cards_to_bottom`.
+
+Per CR 704.5j, when a player would control two or more legendaries
+of the same name, all but one go to the graveyard. In hand, every
+duplicate copy beyond the first is dead on resolution. Magnitude 50
+is large enough to drop a duplicate below the highest non-land keep
+score (~27 from `ai.gameplan.card_keep_score`) while staying above
+the suspend-only sentinel (-100) so it doesn't compound with that.
+
+Used by `_apply_legendary_dedup_penalty` and the inline note in
+`MulliganDecider.choose_cards_to_bottom` in `ai/mulligan.py`.
+"""
+
+DEFAULT_MULLIGAN_MIN_LANDS: int = 2
+"""Rules-constant: default `mulligan_min_lands` floor when no
+gameplan declares it. 2 lands cover the typical Modern T1-T2 curve
+(one land per turn, plays a 2-CMC spell on T2). Below this floor
+the kept hand cannot meaningfully develop.
+
+Used by `MulliganDecider.choose_cards_to_bottom` in `ai/mulligan.py`
+as the fallback `min_lands` when the gameplan is silent.
+"""
+
+SUSPEND_ONLY_DEAD_PENALTY: float = -100.0
+"""Sentinel: keep-score for a 0-CMC suspend-only card (Living End,
+Ancestral Vision, Wheel of Fate). These cards cannot be hard-cast
+from hand — they exist only to be cycled / suspended / cascaded
+into. -100.0 is below every other keep-score so they always sort to
+the bottom.
+
+Used by `_card_keep_score` in `ai/mulligan.py`.
+"""
+
+KEEP_SCORE_LAND_NEEDED: float = 10.0
+"""Derived: keep-score for a land in a hand that has at most 3 lands.
+A "needed" land is more valuable than any spell role at this stage —
+mana is the gating resource. 10.0 sits above the highest spell-role
+weight (KEEP_SCORE_COMBO_AT_HOME = 5.0) plus the cmc bonus, ensuring
+needed lands are never bottomed before role-positive spells.
+
+Used by `_card_keep_score` in `ai/mulligan.py`.
+"""
+
+KEEP_SCORE_LAND_FLOOD: float = 2.0
+"""Derived: keep-score for a land in a hand with 4+ lands. The
+hand has enough mana — extra lands compete with spells for keep
+priority. 2.0 matches `KEEP_SCORE_THREAT_TAG` so a 5th land sits at
+the same keep tier as a generic threat.
+
+Used by `_card_keep_score` in `ai/mulligan.py`.
+"""
+
+KEEP_SCORE_LAND_FLOOD_THRESHOLD: int = 3
+"""Rules-constant: lands-in-hand count above which extra lands are
+treated as flood. 3 lands cover the T1-T3 curve plus one — the
+fourth land is the first one not strictly required for on-curve
+development.
+
+Used by `_card_keep_score` in `ai/mulligan.py`.
+"""
+
+KEEP_SCORE_LAND_PRODUCES_BONUS: float = 0.5
+"""Derived: per-color-produced bonus for a land's keep-score.
+A dual / shock / surveil land produces 2 colors → +1.0; a tri-land
+produces 3 → +1.5; a basic produces 1 → +0.5. Caps the total land
+bonus below the role-weighted spell tier so a 3-color land in a
+flooded hand doesn't outrank a removal spell.
+
+Used by `_card_keep_score` in `ai/mulligan.py`.
+"""
+
+KEEP_SCORE_CMC_INVERTED_CEIL: int = 5
+"""Rules-constant: CMC ceiling above which the inverse-CMC bonus
+collapses to zero. Modern's mana curve tops out around 5 mana for
+midrange and 6+ for ramp; cards above 5 are kept on role weight
+alone, not on CMC.
+
+Used by `_card_keep_score` in `ai/mulligan.py` as `max(0, 5 - cmc)`.
+"""
+
+KEEP_SCORE_REMOVAL_TAG: float = 3.0
+"""Derived: keep-score weight for a card tagged `removal`. 3.0 ≈
+`PROACTIVE_REMOVAL_MIN_VALUE` — one card-swap of value, the floor
+above which removal is "worth keeping" against a typical Modern
+opener.
+
+Used by `_card_keep_score` in `ai/mulligan.py`.
+"""
+
+KEEP_SCORE_THREAT_TAG: float = 2.0
+"""Derived: keep-score weight for a card tagged `threat`. Slightly
+below removal because a threat in opening hand requires mana to
+develop, while removal can be reactively held.
+
+Used by `_card_keep_score` in `ai/mulligan.py`.
+"""
+
+KEEP_SCORE_EARLY_PLAY_AT_HOME: float = 4.0
+"""Derived: keep-score for an `early_play`-tagged card in an aggro
+archetype. Above the removal weight because an aggro deck's clock
+relies on T1-T2 deploys; without an early play the hand has no
+pressure.
+
+Sister constant: KEEP_SCORE_EARLY_PLAY_AWAY (the lower fallback for
+non-aggro archetypes).
+
+Used by `_card_keep_score` in `ai/mulligan.py`.
+"""
+
+KEEP_SCORE_EARLY_PLAY_AWAY: float = 2.0
+"""Derived: keep-score for an `early_play`-tagged card in a non-aggro
+archetype. Half the AT_HOME weight — useful but not essential.
+
+Used by `_card_keep_score` in `ai/mulligan.py`.
+"""
+
+KEEP_SCORE_COMBO_AT_HOME: float = 5.0
+"""Derived: keep-score for a `combo`-tagged card in a combo archetype.
+Above every other role weight because a combo deck's hand without a
+combo piece is a mulligan candidate — the piece is the entire reason
+to keep the hand.
+
+Sister constant: KEEP_SCORE_COMBO_AWAY (lower fallback).
+
+Used by `_card_keep_score` in `ai/mulligan.py`.
+"""
+
+KEEP_SCORE_COMBO_AWAY: float = 1.0
+"""Derived: keep-score for a `combo`-tagged card in a non-combo
+archetype. Combo cards hard-cast (not as combo) are a card-swap of
+value — same scale as `CHEAP_REMOVAL_ACTION_BONUS`.
+
+Used by `_card_keep_score` in `ai/mulligan.py`.
+"""
+
+KEEP_SCORE_COUNTERSPELL_AT_HOME: float = 3.0
+"""Derived: keep-score for a `counterspell`-tagged card in a control
+or tempo archetype. Matches the removal weight — both are reactive
+interaction the deck relies on.
+
+Sister constant: KEEP_SCORE_COUNTERSPELL_AWAY.
+
+Used by `_card_keep_score` in `ai/mulligan.py`.
+"""
+
+KEEP_SCORE_COUNTERSPELL_AWAY: float = 1.0
+"""Derived: keep-score for a counterspell in a non-control / non-tempo
+archetype. Same scale as `KEEP_SCORE_COMBO_AWAY` — a counter without
+a defensive plan is a card-swap of value, not a primary lever.
+
+Used by `_card_keep_score` in `ai/mulligan.py`.
+"""
+
+
+# ─── Sideboard-solver constants (ai/sideboard_solver.py) ─────────────
+# Used by `plan_sideboard` and clause evaluators to gate swap decisions
+# and supply fallbacks where the deck's own profile is unobservable.
+
+SB_GY_FULL_RELIANCE_TARGET: float = 5.0
+"""Rules-constant: number of graveyard creatures at which an opponent's
+graveyard reliance saturates (returns 1.0). 5 = full Living End return
+(the canonical reanimator-class effect that returns ~5 creatures).
+
+Used by `_gy_reliance` in `ai/sideboard_solver.py` and consumed by
+`_clause_gy_hate` to scale graveyard-hate value with opp reliance.
+"""
+
+SB_EXPECTED_GY_CREATURES_DENIED: float = 5.0
+"""Rules-constant: expected creatures denied per resolved graveyard-
+hate effect against a fully-relying opponent. Mirrors
+`SB_GY_FULL_RELIANCE_TARGET` — when reliance saturates and we resolve
+hate, we deny ~5 creatures' worth of value.
+
+Sister constant: SB_GY_FULL_RELIANCE_TARGET — same canonical
+reanimator scale.
+
+Used by `_clause_gy_hate` in `ai/sideboard_solver.py`.
+"""
+
+SB_DEFAULT_AVG_CMC: float = 2.5
+"""Rules-constant: fallback average CMC for our nonland cards when
+the deck has zero non-land templates (degenerate case). 2.5 matches
+the empirical Modern average across the 16 tracked decks (also the
+value of `AVG_CREATURE_POWER`).
+
+Used by `plan_sideboard` in `ai/sideboard_solver.py` as the
+`my_avg_cmc` fallback.
+"""
+
+SB_SWAP_EPSILON_MANA_FRACTION: float = 0.5
+"""Derived: minimum net-gain (in fractional mana-units) required to
+commit a sideboard swap. Below ½ mana-unit the swap is "marginal" and
+the churn cost (re-shuffling, missed synergy) outweighs the projected
+gain. 0.5 mana-unit ≈ half a Bolt's worth of EV — below the noise
+floor of the matrix run.
+
+Used by `plan_sideboard` in `ai/sideboard_solver.py`.
+"""
+
+
+# ─── Combo-calc / storm-chain constants (ai/combo_calc.py) ───────────
+# Used by `_compute_combo_value`, the zone assessors, and the
+# mid-chain ritual gate to score storm chains and graveyard combos.
+
+COMBO_IDEAL_POSITION_CEIL: float = 100.0
+"""Sentinel: ideal `position_value` ceiling for `_compute_combo_value`.
+Position-value scales bottom-out at 0 (winning) and top-out at the
+NO_CLOCK sentinel (losing); the combo value is `ceil - current_pos`,
+so 100.0 sets the upper edge for a chain that resolves into a win.
+
+Matches the LETHAL_THREAT / LETHAL_BONUS scale — same "game-ending
+event" tier in different unit spaces.
+
+Used by `_compute_combo_value` in `ai/combo_calc.py`.
+"""
+
+COMBO_DIVERGENCE_RES_THRESHOLD: int = 3
+"""Rules-constant: r_res (chain-reaction residue) divergence point.
+At r_res >= 3 the chain has +3 mana surplus per spell — empirically
+the threshold above which drawn fuel can be cast immediately
+(cantrips at 1U, rituals at R/U). Below this value the chain hasn't
+yet reached self-sustaining mana production.
+
+Used by `_assess_storm_zone` (storm projection) and the mid-chain
+ritual patience gate in `ai/combo_calc.py`.
+"""
+
+COMBO_EARLY_GAME_LAND_THRESHOLD: int = 4
+"""Rules-constant: lands-on-battlefield count above which the early-
+game patience factor collapses to zero. 4 lands = T4 land-drop
+(typical "cast our 4-mana payoff" threshold); after this point the
+deck has access to the resources it needs and waiting no longer
+multiplies output.
+
+Used by the patience-penalty gate in `ai/combo_calc.py`.
+"""
+
+COMBO_PATIENCE_PENALTY_SCALE: float = 0.2
+"""Derived: scaling factor on the early-game patience penalty
+(divergence_gap × early_factor × combo_value × scale). 0.2 = ⅕ of
+combo_value — large enough to gate a speculative ritual on T1-T2
+when no reducer is deployed, small enough that mid-game chains with
+adequate r_res aren't hampered.
+
+Used by the patience-penalty gate in `ai/combo_calc.py`.
+"""
+
+COMBO_NON_READY_POTENTIAL_FALLBACK: float = 0.5
+"""Derived: fallback potential value when a non-storm payoff has no
+declared `resource_target`. 0.5 = half of `opp_life` worth of payoff
+— the "we still need a chunk of resources" baseline used to compute
+the wasted-potential penalty when the combo isn't ready.
+
+Used by the non-storm payoff branch of `card_combo_modifier` in
+`ai/combo_calc.py`.
+"""
+
+COMBO_RITUAL_MISSED_FINISHER_SCALE: float = 5.0
+"""Derived: penalty scale for mid-chain rituals when no finisher path
+exists but draws remain in hand. 5.0 ≈ the COUNTER_THRESHOLD scale —
+the "one premium-threat tier" weight, applied at storm-coverage
+escalation to express the marginal-card cost of an empty chain.
+
+Used by the mid-chain ritual gate in `ai/combo_calc.py`.
+"""
+
+COMBO_CASCADE_RISK_SCALE: float = 3.0
+"""Derived: penalty scale for the draw-miss cascade-risk term at
+storm >= 3 with one draw remaining. 3.0 = `PROACTIVE_REMOVAL_MIN_VALUE`
+— the per-card-swap baseline; the chain at near-lethal storm is one
+bad top-deck from collapse, and 3.0 expresses that as one card-swap
+of expected loss per probability point of miss.
+
+Used by the mid-chain ritual gate in `ai/combo_calc.py`.
+"""
+
+COMBO_FLIP_TRANSFORM_VALUE_FRACTION: float = 0.3
+"""Derived: fraction of combo_value attributed to a successful flip-
+transform on a creature with a "flip a coin" on-cast trigger. 0.3 =
+COMBO_PATIENCE_PENALTY_SCALE + 0.1 — the transformation flips the
+creature into a planeswalker / engine, contributing roughly ⅓ of the
+chain's win value.
+
+Used by the flip-transform stack-batching branch in
+`ai/combo_calc.py`.
+"""
+
+COMBO_SEARCH_TAX_CARD_SCALE: float = 3.0
+"""Derived: per-tax-permanent card value scale used by the search-tax
+awareness branch. 3.0 = `PROACTIVE_REMOVAL_MIN_VALUE` — one card-swap
+of value granted to the opp per resolved tutor against a search-tax
+permanent. Scaled at the call site by `combo_value / opp_life` so the
+absolute penalty stays in the EV-comparable range.
+
+Used by the search-tax penalty branch in `ai/combo_calc.py`.
+"""
+
+COMBO_HALF_LETHAL_FRACTION: float = 0.5
+"""Rules-constant: storm-coverage threshold (storm / opp_life) above
+which the mid-chain escalation kicks in. 0.5 = half of opp_life worth
+of storm already invested — at this point we've committed the chain's
+resources and missing the closer is increasingly catastrophic.
+
+Used by the mid-chain ritual gate in `ai/combo_calc.py`.
+"""
+
+COMBO_MIN_CHAIN_DEPTH: int = 3
+"""Rules-constant: minimum storm count at which the draw-miss cascade-
+risk term applies. 3 = the depth at which a chain has invested enough
+spells that one bad top-deck causes the chain to collapse mid-way
+(rather than fizzle on the first ritual).
+
+Used by the mid-chain ritual gate in `ai/combo_calc.py`.
+"""
+
+COMBO_CASCADE_DRAW_FLOOR: int = 1
+"""Rules-constant: minimum draws-in-hand at which the cascade-risk
+penalty applies. 1 = one draw remaining = the chain is now "all in"
+on top-deck luck. Below this floor the penalty is suppressed (we have
+enough draws to dig).
+
+Used by the mid-chain ritual gate in `ai/combo_calc.py`.
+"""
+
+
+# ─── Combo-chain arithmetic constants (ai/combo_chain.py) ────────────
+# Used by `find_all_chains` and `ChainOutcome` to bound enumeration
+# and convert storm count to per-spell payoff units.
+
+STORM_TOKEN_PAYOFF_PER_COPY: int = 2
+"""Rules-constant: tokens created per Empty-the-Warrens-class storm
+copy. Empty the Warrens reads "Create two 1/1 red Goblin creature
+tokens" — every storm copy is also worth 2 tokens.
+
+Used by `ChainOutcome.storm_tokens` in `ai/combo_chain.py`.
+"""
+
+CHAIN_EXHAUSTIVE_FUEL_BUDGET: int = 7
+"""Rules-constant: maximum fuel-card count for which the exhaustive
+chain enumerator runs. Beyond 7! permutations × subsets the search
+space exceeds the per-decision budget; we fall through to the greedy
+heuristic. 7 matches the Modern starting-hand size — empirically the
+deepest hand a storm chain ever needs to reason over.
+
+Used by `find_all_chains` in `ai/combo_chain.py`.
+"""
+
+
+# ─── Mana-planner constants (ai/mana_planner.py) ─────────────────────
+# Used by `score_land`, `choose_best_land`, and `choose_fetch_target`
+# to rank land candidates against the hand's color demand and the
+# turn-bounded tempo curve. All weights live on the same "card swap
+# value" scale used elsewhere in the AI scoring layer.
+
+LAND_SCORE_PER_MISSING_COLOR_DEMAND: float = 8.0
+"""Derived: per-spell-demand bonus for a land that supplies a missing
+color. A color needed by 3 spells × 8.0 = 24 — three card-swaps of
+value, the empirical scale at which "this land enables three plays
+this turn" outranks every other land-scoring axis. Matches the
+`HELD_COLOR_PRESERVATION_BONUS` per-demand weight so the held-color
+preservation guard reads as the same magnitude.
+
+Used by `score_land` block (A) in `ai/mana_planner.py`.
+"""
+
+LAND_SCORE_PAYOFF_MISSING_COLOR_BONUS: float = 10.0
+"""Derived: bonus for a land that supplies a color demanded by a
+high-CMC multi-color payoff (CMC ≥ 3, ≥2-color identity — Omnath WURG,
+Leyline Binding, etc.). 10.0 is above the per-demand weight (8.0)
+because these payoffs are deck-defining and missing their color
+strands the win condition.
+
+Used by `score_land` block (A) in `ai/mana_planner.py`.
+"""
+
+LAND_SCORE_REDUNDANT_COLOR_WEIGHT: float = 2.0
+"""Derived: per-demand weight for a land supplying a color we already
+have (redundancy bonus). Quarter of the missing-color weight (8.0)
+because the marginal value of the second source is one-quarter of
+the first — covers tap-out scenarios and color-screw protection.
+
+Used by `score_land` block (B) in `ai/mana_planner.py`.
+"""
+
+LAND_SCORE_ENABLED_SPELL_URGENCY: float = 3.0
+"""Derived: multiplier on the per-CMC urgency curve for the
+"this land enables a spell currently uncastable" bonus. 3.0 = one
+card-swap (`PROACTIVE_REMOVAL_MIN_VALUE`) per spell-tier — the value
+of unblocking one specific play in hand.
+
+Used by `score_land` block (C) in `ai/mana_planner.py`.
+"""
+
+LAND_SCORE_URGENCY_CMC_CEIL: int = 8
+"""Rules-constant: CMC ceiling above which the per-CMC urgency curve
+floors at 1. 8 covers the high end of Modern's mana curve (Eldrazi
+Tron, Amulet Titan); a 1-mana spell is worth 7 turns of clock, an
+8-mana spell is worth 0 turns of curve-relevant urgency.
+
+Used by `score_land` block (C) in `ai/mana_planner.py` as
+`max(1, LAND_SCORE_URGENCY_CMC_CEIL - cmc) * LAND_SCORE_ENABLED_SPELL_URGENCY`.
+"""
+
+LAND_SCORE_TAPPED_PENALTY_EARLY: float = 0.15
+"""Derived: tapped-spell-enablement multiplier on T1-T2. A tapped
+land delays the spell by 1 turn — early game that's a 6-turn-clock
+loss out of ~7 turns to lethal, ≈ 0.15 of the un-tapped value
+(empirically calibrated against the Boros vs Affinity matrix
+baseline).
+
+Used by `score_land` block (C) in `ai/mana_planner.py`.
+"""
+
+LAND_SCORE_TAPPED_PENALTY_LATE: float = 0.4
+"""Derived: tapped-spell-enablement multiplier on T3+. After T2 the
+delayed spell still costs a turn but the absolute clock impact is
+smaller; the empirical Boros / Jeskai matrix shows ~0.4 of the
+un-tapped value preserves correct behaviour.
+
+Sister constant: LAND_SCORE_TAPPED_PENALTY_EARLY.
+
+Used by `score_land` block (C) in `ai/mana_planner.py`.
+"""
+
+LAND_SCORE_DOMAIN_BASE: float = 2.0
+"""Derived: base bonus per new basic-land-type for a domain-relevant
+land. 2.0 = one redundant-color weight — the floor at which a new
+type matters even without domain creatures in hand.
+
+Used by `score_land` block (D) in `ai/mana_planner.py`.
+"""
+
+LAND_SCORE_DOMAIN_PER_CARD_BONUS: float = 2.0
+"""Derived: per-domain-card-in-hand bonus for a new basic-land-type.
+A hand with 3 domain cards × 2.0 = +6 per new type, so a fetched
+shockland adding 2 new types is worth +12 — high enough to outrank
+a mono-color basic in domain decks.
+
+Used by `score_land` block (D) in `ai/mana_planner.py`.
+"""
+
+LAND_SCORE_DOMAIN_CARD_CAP: int = 5
+"""Rules-constant: cap on the domain-card count used for the domain
+bonus. Five domain cards already saturate the per-card bonus; beyond
+that the marginal new-type value plateaus.
+
+Used by `score_land` block (D) in `ai/mana_planner.py`.
+"""
+
+LAND_SCORE_TAPPED_BASE_PENALTY: float = 8.0
+"""Derived: base tempo penalty for a land that enters tapped without
+an optional-untap escape. 8.0 = one card-swap × `LAND_SCORE_PER_MISSING_COLOR_DEMAND`
+— the cost of "this turn's mana is forfeit" against a typical hand
+with one castable spell.
+
+Used by `score_land` block (E) in `ai/mana_planner.py`.
+"""
+
+LAND_SCORE_TAPPED_TURN_DECAY: float = 0.15
+"""Derived: per-turn decay multiplier on the tapped-tempo penalty.
+Each turn that passes reduces the penalty: T1 = 8 × 0.85 = 6.8,
+T2 = 8 × 0.7 = 5.6, … capped at 0.5 floor (4.0) by `max(0.5, ...)`.
+
+Used by `score_land` block (E) in `ai/mana_planner.py`.
+"""
+
+LAND_SCORE_TAPPED_FLOOR_FRACTION: float = 0.5
+"""Rules-constant: floor on the tapped-tempo decay. After T3+ the
+penalty plateaus at half the early-game value (4.0) — a tapped land
+in the late game still costs tempo but not as much as on T1.
+
+Used by `score_land` block (E) in `ai/mana_planner.py`.
+"""
+
+LAND_SCORE_UNTAPPED_BONUS: float = 5.0
+"""Derived: bonus for a land that enters untapped (or has the
+untap-life option). 5.0 = ⅝ of the tapped penalty — captures the
+asymmetry that "no penalty" is more valuable than "no bonus" because
+the tap-out decision compounds across turns.
+
+Used by `score_land` blocks (E) and the optional-untap branch in
+`ai/mana_planner.py`.
+"""
+
+LAND_SCORE_FETCHLAND_FLEXIBILITY_BONUS: float = 4.0
+"""Derived: flexibility bonus for fetchlands when scored directly
+(not via the proxy-target rescore). 4.0 = ½ of the per-demand weight
+— the option to find any color is worth half a single-color land.
+
+Used by `score_land` block (F) in `ai/mana_planner.py`.
+"""
+
+LAND_SCORE_VERSATILITY_PER_COLOR: float = 1.0
+"""Derived: per-color versatility bonus. Mono-color = +1, two-color
+shock = +2, tri-land = +3 — small enough to break ties between equal-
+demand candidates but not enough to override the missing-color block.
+
+Used by `score_land` block (G) in `ai/mana_planner.py`.
+"""
+
+LAND_SCORE_BEST_INIT_SENTINEL: float = -999.0
+"""Sentinel: initial value for `best_score` in `choose_best_land` and
+`choose_fetch_target`. Lower than any realistic land score (the worst
+case is a tapped colorless land at ~-8.0), so the first candidate
+always replaces the sentinel.
+
+Used by `choose_best_land` and `choose_fetch_target` in
+`ai/mana_planner.py`.
+"""
+
+LAND_SCORE_FETCH_LIFE_TEMPO_PENALTY: float = 1.0
+"""Derived: fetchland life + click cost when scoring fetch-as-proxy.
+1.0 = one EV unit (`CHEAP_REMOVAL_ACTION_BONUS` scale) — the small
+penalty for paying 1 life and using the fetch click. Net effect is
+small because thinning the deck partly compensates.
+
+Used by `choose_best_land`'s fetch-as-proxy branch in
+`ai/mana_planner.py`.
+"""
+
+LAND_SHOCK_RACING_LIFE_THRESHOLD: int = 12
+"""Rules-constant: opp life total at which `should_stagger_shock`
+defers a second shock to preserve life. 12 = 60% of the Modern
+starting life — empirically the threshold below which "one more
+shock" can collapse into a Bolt + Push lethal sequence next turn.
+
+Used by `should_stagger_shock` in `ai/mana_planner.py`.
+"""
+
+
+# ─── Clock-position constants (ai/clock.py) ──────────────────────────
+# Used by `position_value` and `combo_clock` to bound clock-derived
+# scoring under degenerate or extreme states.
+
+CLOCK_LETHAL_ADVANTAGE_CAP: float = 20.0
+"""Sentinel: clock-differential cap applied when the opponent has no
+clock but we do. 20.0 ≈ Modern starting life total — the maximum
+"clock advantage" value, reached when our clock = 1 turn (lethal next
+turn) while opp_clock is NO_CLOCK. Below this cap the formula is
+20 / my_clock, so clock=2 gives 10, clock=4 gives 5, etc.
+
+Sister constant: CLOCK_IMPACT_LIFE_SCALING (also 20.0) — same Modern
+life-total anchor, different unit space. Renamed locally in clock.py
+to highlight that this cap is the "we are winning by lethal" tier in
+position-value units.
+
+Used by `position_value` in `ai/clock.py`.
+"""
+
+LIFELINK_LIFE_GAIN_WEIGHT: float = 0.3
+"""Derived: scaling factor on lifelink life-extension turns when added
+to the position-value life-advantage term. 0.3 matches
+`COMBO_FLIP_TRANSFORM_VALUE_FRACTION` and `CHIP_DAMAGE_VALUE` — the
+"small-but-real per-turn nudge" tier. Lifelink's full damage is
+already counted in the combat clock; this bonus captures the
+incremental survival extension.
+
+Used by `position_value` in `ai/clock.py`.
+"""
+
+CLOCK_BLOCKER_ABSORPTION_TURN_CYCLE: float = 3.0
+"""Rules-constant: assumed turn cycle over which opponent blockers are
+"refreshed" by replacement creatures. 3 turns matches the empirical
+mid-game replacement cadence on a typical Modern board (one creature
+deployed per turn, a blocker dies in combat every ~3 turns).
+
+Used by `combat_clock` in `ai/clock.py` as the divisor in the
+blocker-absorption term `opp_total_toughness / 3.0`.
+"""
+
+
+# ─── Win-probability fallback constants (ai/win_probability.py) ──────
+# Used by the position-only fallback featurizer when the calibrator
+# artifact is missing the full numeric model.
+
+WIN_PROB_LIFE_DIFF_NORMALIZER: float = 5.0
+"""Derived: divisor that maps the (opp_life - my_life) gap into a
+single fallback feature for the position-only featurizer. 5.0 ≈ 1/4
+of Modern's starting life total — a 5-life swing corresponds to one
+unit of feature magnitude, matching the typical "one attacker's worth
+of pressure" the fallback is meant to approximate.
+
+Used by `_featurize_position_only` in `ai/win_probability.py`.
+"""
+
+
+# ─── Structural / safety limits (migrated from ai/constants.py) ──────
+# Computational and rule-anchored bounds used by the engine and
+# response-modeling layers. Originally defined in `ai/constants.py`;
+# centralised here so all AI-layer constants share a single review
+# point. `ai/constants.py` retains a re-export shim for back-compat.
+
+MAX_ACTIONS_COMBO: int = 40
+"""Rules-constant: max main-phase actions for combo decks per turn.
+40 = empirical ceiling for a long Storm chain (~10 cantrips ×
+2 rituals + ~10 fuel spells + payoffs). Used by the engine to bound
+runaway loops that don't otherwise self-terminate.
+
+Used by `engine/game_runner.py` to gate the per-turn action budget.
+"""
+
+MAX_ACTIONS_NORMAL: int = 20
+"""Rules-constant: max main-phase actions for non-combo decks per
+turn. 20 covers all realistic Modern non-combo turns (typical: 1-3
+spells + a land + combat). Used by the engine to bound runaway
+loops in non-combo archetypes where 40 actions would never occur.
+
+Used by `engine/game_runner.py` to gate the per-turn action budget.
+"""
+
+GAME_TIMEOUT_SECONDS: float = 8.0
+"""Rules-constant: per-game wall-clock safety timeout. 8 seconds
+covers the slowest registered Modern matchup (Tron mirror) with
+~2× headroom. Beyond this, the game is aborted as a draw rather
+than risk a hung simulator.
+
+Used by `engine/game_runner.py` as the deadline anchor.
+"""
+
+SHOCK_LETHAL_LIFE_THRESHOLD: int = 2
+"""Rules-constant: life total below which the AI should not
+voluntarily pay 2 life for an untapped shockland (the loss would
+either kill outright or hand the opponent a Bolt-lethal turn).
+
+Used by mana-payment logic across the engine. Note: `ai/mana_planner.py`
+runs the shock decision through `analyze_mana_needs()`; this constant
+is the rules anchor cited by that decision.
+"""
+
+NO_CLOCK: float = 99.0
+"""Sentinel: "no clock" — no win condition / no creatures / stalled
+position. Pinned at 99.0 so it always exceeds any realistic
+turns-to-lethal value (typical clock <= 8 turns). Used as a sentinel
+in `ai/clock.py` and as a turn-cap throughout the EV pipeline.
+
+Sister constant: STORM_HARD_HOLD (in `ai/combo_calc.py`) is derived
+as -NO_CLOCK × 10 — the "bigger than any realistic EV" floor for
+the storm-chain hard-hold.
+"""
+
+COUNTER_ESTIMATED_COST: int = 2
+"""Rules-constant: estimated mana cost of a generic Modern
+counterspell (Counterspell = UU, Mana Leak = 1U, Force Spike = U).
+2 mana is the median; used by `estimate_opponent_response` in
+`ai/ev_evaluator.py` to predict whether the opp can counter our
+spell given their visible mana.
+"""
+
+REMOVAL_ESTIMATED_COST: int = 1
+"""Rules-constant: estimated mana cost of generic Modern removal
+(Lightning Bolt = R, Fatal Push = B, Unholy Heat = R). 1 mana is
+the median; used by `estimate_opponent_response` in
+`ai/ev_evaluator.py` to predict whether the opp can spot-remove
+our creature given their visible mana.
+"""
+
+DAMAGE_REMOVAL_EFF_HIGH_TOUGH: float = 0.3
+"""Derived: P(damage-based removal kills) when the target has
+toughness >= 4. 30% reflects the 1-of-3 Bolt/Push hit rate against
+a 4+ toughness creature in Modern — the creature lives through Bolt
+and Push, dies to Heat / Unholy Anointment.
+
+Used by `estimate_opponent_response` in `ai/ev_evaluator.py`.
+"""
+
+DAMAGE_REMOVAL_EFF_MID_TOUGH: float = 0.6
+"""Derived: P(damage-based removal kills) when the target has
+toughness == 3. 60% reflects the empirical hit rate at this
+toughness band — Heat / Unholy Anointment / Phoenix Chasm hit, Bolt
+/ Push miss.
+
+Used by `estimate_opponent_response` in `ai/ev_evaluator.py`.
+"""
+
+
+# ─── Gameplan / goal-engine constants (ai/gameplan.py) ────────────
+# Bare-literal extraction pass for ai/gameplan.py. The goal-engine
+# scores three things with bare literals: (1) goal-transition pacing,
+# (2) generic combo-readiness confidences, and (3) the mulligan-bottom
+# `card_keep_score` weights. Centralising preserves the single point of
+# review for future re-tunes and keeps the "no magic numbers" contract
+# intact for the gameplan module too.
+
+# ---- Goal-transition pacing ----
+
+NO_CLOCK_SENTINEL: int = 999
+"""Sentinel: clock value used when a player has no offensive power
+and therefore cannot kill the opponent in a finite number of turns.
+
+Anchored at 999 so any real clock comparison
+(`opp_clock <= dying_clock`) treats "no clock" as the opposite of
+imminent danger. Used by `BoardAssessor.assess` for both `my_clock`
+and `opp_clock` when total power on the relevant side is zero.
+
+Sister constant: `ai/clock.NO_CLOCK = 99.0` — same "cannot reach
+lethal" intent in the float clock-impact subsystem. Different units
+but identical meaning; the integer form here belongs to the discrete
+turn-count sentinel used by `BoardAssessment`.
+"""
+
+
+DEPLOY_ENGINE_FORCE_ADVANCE_TURNS: int = 3
+"""Rules-constant: turns spent in DEPLOY_ENGINE before the goal
+auto-advances even without an engine on the battlefield.
+
+3 turns matches the typical Modern T3-ish window for most engine
+cards (Amulet of Vigor on T1, Medallion-style on T2, etc.). After
+this window, sticking on DEPLOY_ENGINE risks freezing the deck on
+a goal whose primary card is unreachable (mulligan bottomed, exiled,
+or simply not drawn), so we advance to the next goal even though the
+engine never landed. Used by `GoalEngine.check_transition` in
+`ai/gameplan.py` for the DEPLOY_ENGINE branch.
+"""
+
+
+GENERIC_GOAL_TIMEOUT_TURNS: int = 2
+"""Rules-constant: minimum turns spent in a non-engine goal before
+auto-advancing to the next goal.
+
+2 turns gives the goal one full main-phase cycle to make progress
+(turn-N entry main, turn-N+1 main, advance). Used by
+`GoalEngine.check_transition` for DISRUPT, INTERACT, GRIND_VALUE,
+PUSH_DAMAGE, and the FILL_RESOURCE payoff-in-hand fallback. Smaller
+than `DEPLOY_ENGINE_FORCE_ADVANCE_TURNS` because the engine slot has
+a stickier "we really want this online" intent than the generic
+disruption / value windows.
+
+Sister constant: `Goal.min_turns` (per-goal override) — when a goal
+declares its own min_turns, the larger of the two binds.
+"""
+
+
+# ---- Resource-target fallbacks ----
+
+DEFAULT_FILL_RESOURCE_TARGET: int = 3
+"""Rules-constant: fallback `resource_target` when a FILL_RESOURCE
+goal does not declare its own target.
+
+3 is the smallest "meaningful" pool size for the four resource zones
+the FILL_RESOURCE branch tracks: 3 graveyard creatures (typical
+reanimator threshold), 3 storm count (smallest pre-payoff chain),
+3 mana available, 3 creatures on battlefield (token / go-wide
+pre-payoff). Chosen as the floor at which most payoff effects start
+producing meaningful EV. Goals that need a different threshold (e.g.
+Storm at 5, Tron at 7) declare their own `resource_target`.
+
+Used by `GoalEngine.check_transition` and `generic_combo_readiness`
+in `ai/gameplan.py` for the graveyard and "default" zones.
+"""
+
+
+DEFAULT_STORM_RESOURCE_TARGET: int = 5
+"""Rules-constant: fallback `resource_target` for the storm zone in
+`generic_combo_readiness`.
+
+5 matches `COMBO_FORCE_PAYOFF_STORM_THRESHOLD` in `ai/ev_player.py` —
+the same "we have enough storm fuel that even non-lethal payoffs
+close the game" threshold. Goals that declare their own storm target
+override this.
+
+Sister constant: `COMBO_FORCE_PAYOFF_STORM_THRESHOLD` (same value,
+same intent, different decision site).
+"""
+
+
+DEFAULT_MANA_RESOURCE_TARGET: int = 5
+"""Rules-constant: fallback `resource_target` for the mana zone in
+`generic_combo_readiness`.
+
+5 mana is the typical Modern "deploy-and-protect" threshold — enough
+for a 4-drop payoff plus a 1-mana counter held up. Goals that need
+more mana (Tron at 7, Amulet ramp at 6+) declare their own target.
+
+Used by `generic_combo_readiness` mana-zone branch in
+`ai/gameplan.py`.
+"""
+
+
+DEFAULT_RAMP_GOAL_MANA_TARGET: int = 6
+"""Rules-constant: fallback mana target for a RAMP goal's resource-
+ready check when `resource_target` is unset.
+
+6 mana is the typical Modern "ramp goal complete" threshold —
+enough for a 6-drop finisher (Primeval Titan, Cruel Ultimatum) on
+the curve a ramp goal accelerates toward. Slightly higher than
+`DEFAULT_MANA_RESOURCE_TARGET` because RAMP goals typically guard a
+higher-CMC payoff than generic mana goals. Goals that need a
+different threshold declare their own target.
+
+Used by `BoardAssessor.assess` RAMP-goal branch in `ai/gameplan.py`.
+"""
+
+
+# ---- Generic combo-readiness confidence levels ----
+# Confidence values returned by `generic_combo_readiness` to express
+# "how ready is the combo right now". These are not thresholds — they
+# are reported confidences (0-1) on the already-Boolean ready flag.
+# Centralised so the readiness ladder is reviewable in one place.
+
+COMBO_FIRED_CONFIDENCE: float = 0.9
+"""Derived: confidence reported when the storm count already meets
+the goal's target — the combo is *physically* ready to fire this turn.
+
+0.9 not 1.0 because confidence is reserved space for "fires AND
+resolves" (counterspell / hate-piece risk priced into the remaining
+0.1). The downstream EV layer applies its own BHI discount on top.
+
+Used by `generic_combo_readiness` storm-zone branch in
+`ai/gameplan.py`.
+"""
+
+
+COMBO_MANA_FIRE_CONFIDENCE: float = 0.85
+"""Derived: confidence reported when the mana zone meets the goal's
+target AND a payoff is in hand.
+
+Slightly lower than `COMBO_FIRED_CONFIDENCE` (storm) because mana
+availability can be disrupted by Wasteland-style land destruction or
+mana-tap effects mid-resolution, where storm count is locked once
+declared. The 0.05 gap reflects that marginal disruption surface.
+
+Used by `generic_combo_readiness` mana-zone branch in
+`ai/gameplan.py`.
+"""
+
+
+COMBO_GY_FIRE_CONFIDENCE: float = 0.8
+"""Derived: confidence reported when graveyard count meets the goal's
+target AND a payoff is in hand.
+
+Lower than the mana/storm cases because graveyards face active hate
+(Grafdigger's Cage, Leyline of the Void, Endurance) at a higher
+incidence than stack / mana disruption. The 0.05-0.10 gap below
+storm/mana reflects that empirical hate-piece exposure.
+
+Used by `generic_combo_readiness` graveyard-zone branch in
+`ai/gameplan.py`.
+"""
+
+
+COMBO_PROJECTED_FIRE_CONFIDENCE: float = 0.7
+"""Derived: confidence reported when the *projected* resource
+(current + rituals in hand) meets the storm target AND a payoff is in
+hand.
+
+Lower than `COMBO_FIRED_CONFIDENCE` because the projection requires
+casting all rituals successfully — each cast faces counter / removal
+risk. 0.7 is empirically the survival probability of a 2-3 ritual
+chain through typical Modern interaction (≈0.85 per cast, compounded
+across 2 casts ≈ 0.72).
+
+Used by `generic_combo_readiness` storm-projection branch in
+`ai/gameplan.py`.
+"""
+
+
+COMBO_BASE_CONFIDENCE: float = 0.6
+"""Derived: base confidence when a combo has both a payoff and an
+enabler in hand but no resource-zone gate to consult.
+
+0.6 reflects "we have the cards but not yet the timing" — the combo
+is reachable, but the window hasn't arrived. Used as the starting
+point of the ramp formula:
+
+    confidence = COMBO_BASE_CONFIDENCE
+                 + COMBO_PIECE_CONFIDENCE_BONUS × payoff_count
+                 + COMBO_PIECE_CONFIDENCE_BONUS × enabler_count
+
+so a hand with 2 payoffs and 2 enablers reports 0.6+0.2+0.2 = 1.0.
+
+Used by `generic_combo_readiness` default branch in `ai/gameplan.py`.
+"""
+
+
+COMBO_PIECE_CONFIDENCE_BONUS: float = 0.1
+"""Derived: per-piece additive confidence in the default-branch ramp.
+
+0.1 = (1.0 - COMBO_BASE_CONFIDENCE) / 4 — saturates the confidence
+to 1.0 with 4 redundant pieces total (any combination of payoffs +
+enablers). The denominator 4 reflects the "two of each piece is
+plenty for a Modern combo" rule of thumb.
+
+Used by `generic_combo_readiness` default branch in `ai/gameplan.py`.
+"""
+
+
+COMBO_NO_PAYOFF_CONFIDENCE: float = 0.1
+"""Derived: confidence reported when the goal declares payoffs but
+none are available in hand or on the battlefield.
+
+0.1 not 0.0 because the deck may still draw into a payoff via top-
+deck or tutor effects in the remaining turns. Floored above zero so
+downstream consumers can distinguish "no payoff in hand" from "no
+combo plan declared at all".
+
+Used by `generic_combo_readiness` payoff-availability gate in
+`ai/gameplan.py`.
+"""
+
+
+COMBO_NO_PIECES_CONFIDENCE: float = 0.3
+"""Derived: confidence reported when the goal has no zone gate, no
+payoff / enabler match, and no other readiness signal — the
+"fallback" branch.
+
+0.3 is between `COMBO_NO_PAYOFF_CONFIDENCE` (0.1) and
+`COMBO_BASE_CONFIDENCE` (0.6) — higher than no-payoff (we may still
+have a payoff via topdeck), lower than the with-pieces case (the
+combo is structurally reachable but materially absent right now).
+
+Used by `generic_combo_readiness` final fallback in `ai/gameplan.py`.
+"""
+
+
+# ---- Mulligan card_keep_score weights (ai/gameplan.py) ----
+# Weights used by `GoalEngine.card_keep_score` to rank cards when
+# bottoming on a London-mulligan keep. Higher score = keep. The
+# entire scale is internal to `card_keep_score` (it ranks cards
+# against each other within a single hand), so absolute values
+# matter less than relative ordering.
+
+MULL_KEEP_LAND_TARGET: int = 3
+"""Rules-constant: lands-in-hand threshold below which an additional
+land is treated as "needed" for the keep score.
+
+3 is the upper bound of the 2-3-land mulligan-keep band (
+`mulligan_min_lands=2` for most decks, `mulligan_max_lands=4`). At
+≤3 lands we still want lands; above that the next land becomes a
+"flood risk" and scores lower.
+
+Used by `GoalEngine.card_keep_score` land branch in
+`ai/gameplan.py`.
+"""
+
+
+MULL_KEEP_LAND_NEEDED: float = 10.0
+"""Derived: keep score for a land when the hand has ≤
+`MULL_KEEP_LAND_TARGET` lands.
+
+10.0 sits above the role-based keep weights below (max
+`MULL_KEEP_ENGINE_ROLE` 8.0 + `MULL_KEEP_KEY_BONUS` 8.0 capped) so a
+land we *need* outranks a non-land we'd love to keep. Lands are the
+single highest-priority keep when the mana base is short; this
+ranking is what prevents Storm-style mulligans from bottoming a
+critical land in favour of a Manamorphose.
+"""
+
+
+MULL_KEEP_LAND_EXTRA: float = 2.0
+"""Derived: keep score for a land when the hand already has more
+than `MULL_KEEP_LAND_TARGET` lands.
+
+2.0 is in the "tie-breaker" band — above noise (the floor of role
+scores), below any meaningful keep card. A flood-risk land scores
+lower than every non-land except `mulligan_require_creature_cmc`-
+gated misses, so the bottoming logic prefers shipping the surplus
+land first.
+"""
+
+
+MULL_KEEP_LAND_PRIORITY_SCALE: float = 0.5
+"""Derived: weight applied to `gameplan.land_priorities[card.name]`
+in the land keep score.
+
+0.5 reflects "land priorities are a soft signal, not a hard order" —
+a deck that prefers Battlefield Forge over Plains values that
+preference at half-weight relative to the structural land/role
+weights. Used by `GoalEngine.card_keep_score` land branch.
+"""
+
+
+MULL_KEEP_LAND_COLOR_PRODUCTION_SCALE: float = 0.5
+"""Derived: per-color-produced bonus for a land that taps for
+multiple colors.
+
+A 2-color land contributes +1.0 over a 1-color land
+(`len(produces_mana) × 0.5`), which is the same scale as the
+land-priority weight — the two signals are roughly comparable in
+mulligan-keep value.
+"""
+
+
+MULL_KEEP_CMC_BUDGET: int = 5
+"""Rules-constant: CMC budget for the cheap-spell keep score.
+
+A spell at CMC ≤ this value contributes `MULL_KEEP_CMC_BUDGET - cmc`
+to the keep score — so a 1-mana spell scores 4, a 2-mana spell
+scores 3, a 5-mana spell scores 0. The 5 cap matches the typical
+Modern curve top: spells above CMC 5 are unlikely to be cast on the
+keep window and don't deserve cheap-action credit.
+
+Used by `GoalEngine.card_keep_score` non-land branch.
+"""
+
+
+MULL_KEEP_KEY_BONUS: float = 8.0
+"""Derived: keep score bonus for a card declared in
+`gameplan.mulligan_keys`.
+
+8.0 matches the engine-role bonus `MULL_KEEP_ENGINE_ROLE` — a deck-
+declared key card has equal weight to an engine. Same scale, same
+"this card is what we mulligan for" intent. Cancelled by
+`MULL_KEEP_REACTIVE_PENALTY` for cards also flagged reactive_only,
+preventing decks from keeping answers as opening cards.
+"""
+
+
+MULL_KEEP_REACTIVE_PENALTY: float = 8.0
+"""Derived: keep score penalty for a `reactive_only` card.
+
+8.0 cancels the `MULL_KEEP_KEY_BONUS` cleanly — when a reactive-
+flagged card is also in `mulligan_keys` (Zoo's Leyline Binding
+audit case F-R3-3), the two terms net to zero so the card no longer
+scores as a keep. Net result: opening hand prefers proactive cards
+over answers waiting for a target.
+"""
+
+
+# Role weights for the mulligan keep score. Each goal's
+# `card_roles[role]` set contributes `MULL_KEEP_ROLE_WEIGHTS[role]`
+# (or `MULL_KEEP_ROLE_DEFAULT` if the role name isn't in the table)
+# when `card.name` is in that role set, and we take the MAX across
+# every goal so a payoff in any goal wins the payoff weight.
+MULL_KEEP_ROLE_WEIGHTS: Dict[str, float] = {
+    "engines": 8.0,
+    "payoffs": 7.0,
+    "enablers": 6.0,
+    "interaction": 5.0,
+    "protection": 4.0,
+    "fillers": 3.0,
+}
+"""Derived: per-role keep weights for `card_keep_score`. Tiering:
+
+- engines (8.0): the deck cannot execute its plan without these.
+- payoffs (7.0): the win condition; one rank below engines because
+  the deck can sometimes dig to a payoff but not to an engine.
+- enablers (6.0): mid-curve setup pieces.
+- interaction (5.0): non-reactive answers (proactive removal).
+- protection (4.0): held-up answers (counterspells, blink).
+- fillers (3.0): redundant role-fillers.
+
+Sister constant: MULL_KEEP_REACTIVE_PENALTY — same scale, applied to
+the `reactive_only` flag that overrides interaction/protection roles.
+"""
+
+
+MULL_KEEP_ROLE_DEFAULT: float = 4.0
+"""Derived: default role weight for any role name not explicitly
+listed in `MULL_KEEP_ROLE_WEIGHTS`.
+
+4.0 matches the `protection` weight — a sensible "middle of the
+pack" default for unknown roles. New role names added to gameplan
+JSON without a matching entry here ship at this neutral weight.
+"""
+
+
+MULL_KEEP_ALWAYS_EARLY_BONUS: float = 6.0
+"""Derived: keep bonus for a card declared in
+`gameplan.always_early`.
+
+6.0 matches `MULL_KEEP_ROLE_WEIGHTS["enablers"]` — an "always early"
+card behaves as an opening enabler regardless of role. Same scale,
+same "we want this in the opening hand" intent.
+"""
+
+
+MULL_KEEP_REMOVAL_TEXT_BONUS: float = 4.0
+"""Derived: keep bonus for a non-`always_early` card whose oracle
+text contains a removal keyword (`destroy`, `exile target`, `damage
+to each`).
+
+4.0 matches `MULL_KEEP_ROLE_DEFAULT` — generic removal is a default-
+weight keep, slightly below explicit role-tagged interaction (5.0).
+The discount reflects that oracle-text-derived removal hasn't been
+explicitly role-tagged by the gameplan author, so the fit is less
+certain than a tagged role match.
+"""
+
+
+MULL_KEEP_CRITICAL_SINGLETON_FLOOR: float = 20.0
+"""Sentinel: floor keep score for a card declared in
+`gameplan.critical_pieces` that has only one copy in hand.
+
+The "floor" equals the maximum achievable score from normal
+role+key+cmc weights:
+
+    8 (engine) + 8 (key) + 5 (cmc_max) + 6 (always_early) ≈ 27 cap
+
+Setting the floor at 20 keeps the singleton above almost every
+normal keep but below the synthetic "max stack" (engine + key +
+cmc + always_early all on one card). Bottoming the last copy of a
+critical piece sabotages the deck's win condition; this constant
+prevents that. Already named at the call site as
+`CRITICAL_SINGLETON_FLOOR` — promoted here so the derivation
+survives a centralised re-tune.
+
+Used by `GoalEngine.card_keep_score` critical-singleton branch in
+`ai/gameplan.py`.
+"""
+
+
+# ─── Outcome-distribution constants (ai/outcome_ev.py) ────────────────
+# Bare-literal extraction pass for `ai/outcome_ev.py`. The remaining
+# numerics in that module are probability bounds (0.0 / 1.0) and
+# sentinels (best=0 for max-search, +1 for "one extra card seen") that
+# are mathematical primitives, not magic numbers — they stay inline.
+# The single rule-encoding literal is the lookahead window for the
+# finisher-reachability hypergeometric, lifted below.
+
+FINISHER_REACHABLE_LOOKAHEAD_DRAWS: int = 2
+"""Rules-constant: number of upcoming draws to consider when computing
+``p_finisher_reachable`` via the hypergeometric in
+``p_draw_in_n_turns``.
+
+2 matches the canonical short-horizon lookahead used elsewhere in the
+codebase: ``HandBeliefs.p_higher_threat_in_n_turns`` defaults to
+``turns=2`` and the spot-removal-deferral branch in
+``ai/ev_player.py`` passes the same ``turns=2``. Same intent: "what
+will be available within roughly the next two draws", which covers
+the next untap step plus the typical search/cantrip cast on the
+following turn without overcounting late-game draws that won't
+arrive before the chain has either fired or fizzled.
+
+Used by ``build_combo_distribution`` in ``ai/outcome_ev.py`` for the
+``p_finisher_reachable`` probability prior.
+
+Sister primitive: ``HandBeliefs.p_higher_threat_in_n_turns(turns=2)``
+in ``ai/bhi.py`` — same lookahead window for the spot-removal-timing
+decision.
 """

@@ -1,0 +1,16 @@
+{
+  "input": {
+    "card_name": "Thraben Charm",
+    "oracle_text": "Choose one — Thraben Charm deals X damage to target creature, where X is twice the number of W mana spent to cast it. Destroy target enchantment. Exile target player's graveyard.",
+    "handler_signature": "Registered ETB; pre-PR-244 implemented (a) destroy enchantment, (b) exile graveyard, (c) fake -1/-1 to creatures (NOT printed). Post-fix: damage / destroy enchantment / exile graveyard."
+  },
+  "expected": {
+    "card_name": "Thraben Charm",
+    "timing": "ETB",
+    "printed_modes": ["damage to creature", "destroy enchantment", "exile graveyard"],
+    "handler_modes": ["damage to creature", "destroy enchantment", "exile graveyard"],
+    "missing_modes": [],
+    "fabricated_modes": [],
+    "severity": "P0"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "input": {
+    "card_name": "Territorial Kavu",
+    "oracle_text": "Whenever Territorial Kavu attacks, choose one — Discard a card, then draw a card. Exile up to one target card from a graveyard.",
+    "handler_signature": "Registered ATTACK; pre-audit: handler body was empty / placeholder.  Post-fix: implements both modes (loot, exile up to 1 from graveyard)."
+  },
+  "expected": {
+    "card_name": "Territorial Kavu",
+    "timing": "ATTACK",
+    "printed_modes": ["loot (discard then draw)", "exile up to one card from a graveyard"],
+    "handler_modes": ["loot (discard then draw)", "exile up to one card from a graveyard"],
+    "missing_modes": [],
+    "fabricated_modes": [],
+    "severity": "P0"
+  }
+}
