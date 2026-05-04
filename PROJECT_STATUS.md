@@ -179,8 +179,8 @@ from engine.card_database import CardDatabase  # singleton pattern
 
 | # | Issue | Location | Evidence | Impact |
 |---|-------|----------|----------|--------|
-| 12 | **Affinity 93% WR** | `ai/ev_player.py`, `engine/card_effects.py` | Still dominating post-blocking-fix. Construct tokens + Cranial Plating overwhelm all opponents. Blocking alone insufficient. | All matchup data vs Affinity suspect. |
-| 13 | **Living End 5% WR (was 45%)** | `ai/ev_player.py`, cascade/attack AI | 0% vs Boros/Jeskai/E-Tron/Prowess/Dimir. Cascade fires but post-combo attack AI broken or creatures insufficient. | Living End essentially non-functional. |
+| 12 | ~~**Affinity 93% WR**~~ — **RE-FRAMED 2026-05-04 by Phase K audit (PR #284-#288).** Was misclassified as AI-scoring bug; actual root cause is Class H (inverted) — 9 of 15 opposing decks had 0 mainboard artifact hate for Bo1. Fixed via decklist edits in PR #288 (+1 MB hate to Boros / ETron / Zoo / LE). Boros vs Affinity smoke 10% → 30% (+20pp). Awaiting Phase D matrix re-run to confirm overall WR drop into 65-70% expected band. | `decks/modern_meta.py` (decklist data, NOT AI) | n/a — RESOLVED via data, not code | Closes once matrix verifies. |
+| 13 | ~~**Living End 5% WR**~~ — **RE-FRAMED 2026-05-04 by Phase K audit.** 53.3% in latest matrix; sample variance. Class A bug (Waker of Waves wrong oracle) fixed in PR #287; LE vs Boros 30% → 40% (+10pp). | `ModernAtomic_part8.json` (data) | n/a — RESOLVED via data, not code | Closes once matrix verifies. |
 
 
 ### Remaining open bugs
@@ -188,7 +188,7 @@ from engine.card_database import CardDatabase  # singleton pattern
 #### P1
 | # | Bug | Location |
 |---|-----|----------|
-| 1 | Amulet Titan WR still low (~23% vs expected ~45%) — Arboreal Grazer not prioritising bounce lands; AI doesn't model Amulet mana loop value | `ai/ev_player.py`, `_score_land()` |
+| 1 | ~~Amulet Titan WR ~23%~~ — **WITHDRAWN 2026-05-04 by Phase K audit.** Matrix-recent flat WR is 45.1%, in expected band. Outliers are Class C/E (multi-turn lookahead, multi-Amulet stacking — see P2 #4 promotion below). | n/a |
 | 2 | Living End ~12% vs Boros — AI doesn't attack aggressively after Living End resolves; Force of Negation not held for protection | `ai/ev_player.py`, `ai/response.py` |
 | 3 | Psychic Frog early EV still negative when Orcish Bowmasters is better option (correct priority, but EV magnitude off) | `ai/ev_evaluator.py` |
 | 4 | Chalice of the Void (and other stax permanents) undervalued by `_score_spell` — treated as generic 2-mana artifact. First attempt with `ai/stax_ev.py` built but not wired; see "Failed attempt" below. Next try needs threat-gating. | `ai/ev_player.py`, `ai/stax_ev.py` |
@@ -197,11 +197,14 @@ from engine.card_database import CardDatabase  # singleton pattern
 | 7 | Wrath of the Skies cast on T3 with 0 mana for X, kills own Chalice and leaves CMC-2 threats alive. AI doesn't weigh "cast now" vs "hold mana for Counterspell next turn." See session 2 bug C. | `ai/ev_player.py` (sweeper-timing EV) |
 | 8 | T2 Chalice-over-pass misplay — AI jams Chalice @ X=1 on T2 with Counterspell in hand and no opp threat on stack. Cast-vs-pass EV threshold is wrong; gameplan priority tweak didn't fix it. See session 2 bug D. | `ai/ev_player.py` (pass EV) |
 | 9 | Mulligan heuristic doesn't deduplicate legendaries — keeps 3×Wan Shi Tong + 2 land as a valid 7. See session 2 bug E. | `decks/gameplan_loader.py` / mulligan scorer |
+| **NEW-A** | **Goal-fallback** (from Phase K Goryo's audit) — when GoalEngine's selected goal has no plays, AI passes instead of trying next-priority goal. Goryo's selects FILL_RESOURCE on T1, has no plays, falls through. Affects Goryo's, Storm, LE. **Will be addressed by Phase J-4** (Goal/GoalEngine state machine refactor). | `ai/gameplan.py` GoalEngine |
+| **NEW-B** | **Wish-as-finisher EV** (from Phase K Storm audit) — Wish should score as finisher-access path when SB ∪ library has payoff and storm count ≥ opp_life. Currently underweighted. | `ai/ev_evaluator.py` / `ai/combo_calc.py` |
+| **NEW-C** | **Suspend-as-payoff** (from Phase K Living End audit) — Living End AI should suspend on T2 when no cascade enabler in hand. Currently treats suspend as deferred play with no payoff signal. | `ai/ev_player.py` |
 
 #### P2
 | # | Bug | Location |
 |---|-----|----------|
-| 4 | Amulet of Vigor multiple copies don't stack (only 1 untap applied per land ETB) | `engine/game_state.py:_apply_untap_on_enter_triggers()` |
+| 4 | **PROMOTED P2 → P1 (2026-05-04 Phase K Amulet audit)** — Amulet of Vigor multiple copies don't stack (only 1 untap applied per land ETB). Multi-Amulet bounce-land cascade is the deck's late-game ceiling; this is rules-incorrect. | `engine/game_state.py:_apply_untap_on_enter_triggers()` or `engine/triggered_abilities.py` |
 | 5 | Spelunking "Lands you control enter untapped" not applied to normal `play_land` path consistently | `engine/game_state.py` |
 | 6 | Elesh Norn trigger doubling not implemented | `engine/game_state.py` |
 | 7 | Phelia blink-on-attack not fully implemented | `engine/card_effects.py` |
