@@ -34,9 +34,29 @@ summary: >
   Affinity's win rate in a direction that supports the
   overperformance hypothesis. The other findings are correctness
   issues that don't substantially move the meter alone.
+notes:
+  - "WR numbers in this doc are from Bo1 matrix runs and are systematically biased; Bo3 is the canonical framework as of 2026-05-04."
 ---
 
 # Phase L — Affinity AI-side audit
+
+## Annotation (2026-05-04 — added post-discussion)
+
+**Bo1-framing caveat.** The premise of this audit ("Phase K's decklist
+fixes don't fully close the Affinity gap, so AI/engine bias must
+explain the residual") rested on Bo1 matrix runs. As of 2026-05-04
+the canonical evaluation format is **Bo3 with sideboarding** (see
+CLAUDE.md → "Match format: Bo3 by default"). A meaningful share of
+the 84% Bo1 WR was Bo1-framing distortion, not AI/engine bias.
+
+The Class A and Class D/E findings in this audit (Nettlecyst clause
+unscored, artifact-count includes artifact lands, mulligan deck-name
+substring gates) are real bugs and remain valid regardless of match
+format — those are not Bo1 artifacts.
+
+The "we still need engine-side fixes after Phase K" framing should
+be re-anchored: re-run Affinity under canonical Bo3 first, then
+measure the residual gap.
 
 ## Context
 

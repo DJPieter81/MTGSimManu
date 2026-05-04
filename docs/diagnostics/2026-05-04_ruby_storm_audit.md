@@ -20,9 +20,23 @@ summary: >
   Class H (opp Mystical Dispute density: Dimir 2 SB only, but the matchup
   loss is internal — Storm killed itself with Bowmasters chip + no finisher).
   Class B is the actionable same-day fix.
+notes:
+  - "WR numbers in this doc are from Bo1 matrix runs and are systematically biased; Bo3 is the canonical framework as of 2026-05-04."
 ---
 
 # Ruby Storm combo audit
+
+## Annotation (2026-05-04 — added post-discussion)
+
+**Bo1-framing caveat.** WR numbers in this audit are from Bo1 matrix
+runs. The canonical evaluation framework as of 2026-05-04 is **Bo3
+with sideboarding** (see CLAUDE.md → "Match format: Bo3 by default").
+The Class B (finisher density) and Class C (Wish-as-finisher-access)
+findings are real bugs and unaffected by format. The Class H finding
+on opp Mystical Dispute density is reframed: under Bo3 the SB
+density is what matters, and bumping mainboard hate against Storm
+would be the same anti-pattern flagged in the methodology doc top
+caveat.
 
 ## Context
 

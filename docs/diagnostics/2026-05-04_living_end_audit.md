@@ -20,9 +20,23 @@ summary: >
   E (cycling not counted as a "free spell" in turn-EV when cycling fixes
   colour or fills graveyard for cascade target threshold). Class A is the
   same-day-actionable fix.
+notes:
+  - "WR numbers in this doc are from Bo1 matrix runs and are systematically biased; Bo3 is the canonical framework as of 2026-05-04."
 ---
 
 # Living End combo audit
+
+## Annotation (2026-05-04 — added post-discussion)
+
+**Bo1-framing caveat.** WR numbers in this audit are from Bo1 matrix
+runs. The canonical evaluation framework as of 2026-05-04 is **Bo3
+with sideboarding** (see CLAUDE.md → "Match format: Bo3 by default").
+The Class A (Waker of Waves oracle) and Class C/E (suspend EV,
+cycling-as-free-spell) findings are real bugs and unaffected by the
+format change. The vs-Boros 30% number specifically should be
+re-measured under Bo3 — Phase K's PR #288 added +1 mainboard
+artifact-hate to Living End (a Bo1-framing edit) which may now be
+hurting LE's MB consistency under Bo3 and is a candidate for revert.
 
 ## Context
 

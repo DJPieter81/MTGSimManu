@@ -63,6 +63,27 @@ Keep these portable — no project-specific imports.
 
 ## Common Standards
 
+### Match format (canonical: Bo3)
+- **Modern (MTGSimManu):** As of 2026-05-04, `run_meta.py` defaults all
+  matrix / matchup / field runs to **Bo3 with sideboarding**. Bo1 is
+  diagnostic-only (`--bo1` flag). Driver: 2026-05-04 user directive
+  *"many people sideboard against artifacts. so we should rely on g1
+  stats, should always be bo3. we should note this throughout"*.
+  Class H "Bo1 hate-card density" findings in the combo-audit
+  methodology are largely Bo1-framing artifacts under this default
+  (see `docs/design/2026-05-04_modern_combo_audit_methodology.md` top
+  caveat).
+- **Legacy (MTGSimClaude):** Has historically used a G1-only / Bo1
+  matrix per its own `CROSS_PROJECT_SYNC.md`. **Action item for the
+  next Legacy session:** verify whether Legacy's matrix still defaults
+  to Bo1; if so, the same Bo3 reframe applies, and Legacy's Class H
+  audit findings (lessons #29/#30) inherit the same caveat. If Legacy
+  is already on Bo3, treat this as confirmation that the two projects
+  are aligned.
+- **Both:** WR numbers cited in cross-project diagnostics should
+  carry an explicit `format: bo1|bo3` tag so adoption decisions
+  aren't made on incomparable measurements.
+
 ### File naming
 - Canonical data: `metagame_data.jsx` (not `metagame_14deck.jsx` or `meta_fresh.json`)
 - Dashboard: `modern_meta_matrix_full.html` / `legacy_meta_matrix.html`

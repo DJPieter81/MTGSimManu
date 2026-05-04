@@ -86,7 +86,8 @@ python run_meta.py --trace zoo omnath -s 42000          # full AI reasoning
 | **Head-to-head** | `python run_meta.py --matchup storm dimir -n 50` |
 | **Field sweep** | `python run_meta.py --field storm -n 30` |
 | **Meta matrix** | `python run_meta.py --matrix --decks 8 -n 30` |
-| **Detailed Bo3** | `python run_meta.py --bo3 storm dimir -s 55555` |
+| **Bo3 play-by-play** | `python run_meta.py --bo3 storm dimir -s 55555` |
+| **Single-game (diagnostic)** | `python run_meta.py --matchup storm dimir -n 10 --bo1` |
 | **Deck audit** | `python run_meta.py --audit affinity -n 60` |
 | **Game log** | `python run_meta.py --verbose storm dimir -s 42000` |
 | **AI reasoning** | `python run_meta.py --trace storm dimir -s 42000` |
@@ -154,6 +155,23 @@ Auto-detects archetype, generates gameplan, prints code to paste into modern_met
 Boros Energy, Jeskai Blink, Ruby Storm, Affinity, Pinnacle Affinity, Eldrazi Tron, Amulet Titan, Goryo's Vengeance, Domain Zoo, Living End, Izzet Prowess, Dimir Midrange, 4c Omnath, 4/5c Control, Azorius Control, Azorius Control (WST)
 
 **Known DB gaps:** ~~`The Legend of Roku` and `Sink into Stupor`~~ — both now resolved after ModernAtomic refresh (Apr 2026). All 16 decks sim correctly.
+
+## Match format: Bo3 by default (canonical)
+
+`python run_meta.py --matrix`, `python run_meta.py --matchup`, and `python run_meta.py --field` all default to **Bo3 with sideboarding**. This reflects real-world Modern. The Python API mirrors the CLI: `run_meta_matrix`, `run_matchup`, `run_field`, and `run_sigma` all default to `bo3=True`.
+
+**Why Bo3 is canonical (2026-05-04 directive):**
+> "Many people sideboard against artifacts. So we should rely on g1 stats, should always be bo3. We should note this throughout."
+
+Bo1 evaluation systematically over-rewards decks whose worst matchups are answered by **sideboard hate** that opponents lack in their mainboard. The canonical case is **Affinity** — opponents carry 2-3 artifact destroyers in their SB, near-zero in MB, so Bo1 sees an unrealistic pre-board world that inflates Affinity by ~15-25pp on the matrix. The same effect distorts evaluations of any hate-sensitive archetype (graveyard combo, Storm, Stax).
+
+**Use `--bo1` to force a single-game run for diagnostic purposes only.** Never use Bo1 numbers as the basis for tournament-relevant WR claims; they describe a world without sideboards, which is not the world Modern players play in.
+
+**Wall-clock impact:** Bo3 matches average ~3× the time of a Bo1 game (1 game guaranteed + ~50% chance of 2nd + ~25% chance of 3rd ≈ 1.75 games per match in practice, plus sideboard logic overhead). Matrix runs at `n=20` Bo3 take roughly the wall time of `n=60` Bo1.
+
+**Treat WR numbers from Bo1 matrix runs as a Bo1-distorted reference**, not as the canonical evaluation. Diagnostic docs that cite Bo1-derived numbers are annotated with `notes: "WR numbers in this doc are from Bo1 matrix runs and are systematically biased"`.
+
+**Standard seeds (unchanged):** matchups start at 50000 (step 500), matrix at 40000 (step 500). Only the format changed; reproducibility is preserved.
 
 ## Architecture (summary)
 

@@ -19,9 +19,22 @@ summary: >
   Spelunking on T3 — turn-order regression in TurnPlanner), 1 Class E (multiple
   Amulets do not stack their bouncelands' mana — known P2), 0 Class F/G/H/I
   bugs. Class C is the dominant cause of slow-kill traces.
+notes:
+  - "WR numbers in this doc are from Bo1 matrix runs and are systematically biased; Bo3 is the canonical framework as of 2026-05-04."
 ---
 
 # Amulet Titan combo audit
+
+## Annotation (2026-05-04 — added post-discussion)
+
+**Bo1-framing caveat.** WR numbers in this audit are from Bo1 matrix
+runs. The canonical evaluation framework as of 2026-05-04 is **Bo3
+with sideboarding** (see CLAUDE.md → "Match format: Bo3 by default").
+This audit found 0 Class H findings, so Bo1 vs Bo3 framing matters
+less here. The Class B-soft, C, and E findings are real bugs and
+unaffected by the format change. The vs-Boros 10% / vs-Affinity 15%
+matchup outliers should be re-measured under canonical Bo3 before
+treating their magnitudes as ground truth.
 
 ## Context
 

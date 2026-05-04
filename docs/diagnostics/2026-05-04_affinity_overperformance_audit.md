@@ -21,9 +21,31 @@ summary: >
   Class B/C/D/E/F/G/I findings on Affinity itself. The fix is on opponents'
   decklists, not Affinity's. **9 fix PRs** are filed (one per opponent that
   needs MB artifact-hate density bumped 0→2).
+notes:
+  - "WR numbers in this doc are from Bo1 matrix runs and are systematically biased; Bo3 is the canonical framework as of 2026-05-04."
+  - "Class H (inverted) framing here is the canonical Bo1-artifact case. Under canonical Bo3, opponents' SB carries the artifact hate; the gap should largely dissolve before any decklist edit. PR #288's mainboard hate edits are a candidate for revert."
 ---
 
 # Affinity overperformance combo audit (inverted-H)
+
+## Annotation (2026-05-04 — added post-discussion)
+
+**Bo1-framing caveat.** The 84% Affinity sim WR includes an estimated
+15-25pp Bo1-framing distortion. Real Modern players carry artifact
+hate in their **sideboard**, not their mainboard. The canonical
+evaluation framework as of 2026-05-04 is **Bo3 with sideboarding**
+(see CLAUDE.md → "Match format: Bo3 by default" and the user
+directive: *"many people sideboard against artifacts. so we should
+rely on g1 stats, should always be bo3"*).
+
+The 9 Class H "fixes" filed in this audit (and merged as PR #288 for
+4 of the decks) are now classified as a Bo1-framing anti-pattern:
+they distort the deck's mainboard evaluation toward one matchup at
+the cost of every other matchup. Under Bo3 they are a candidate for
+revert pending Bo3 matrix verification.
+
+See `docs/design/2026-05-04_modern_combo_audit_methodology.md` top
+caveat for the full reframing.
 
 ## Context
 

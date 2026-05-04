@@ -21,9 +21,22 @@ summary: >
   is good for Goryo, but the deck nevertheless cannot win — root cause is
   internal). Class B is the only same-day-actionable finding; Class C is
   the dominant cause but is a deferred AI fix.
+notes:
+  - "WR numbers in this doc are from Bo1 matrix runs and are systematically biased; Bo3 is the canonical framework as of 2026-05-04."
 ---
 
 # Goryo's Vengeance combo audit
+
+## Annotation (2026-05-04 — added post-discussion)
+
+**Bo1-framing caveat.** WR numbers in this audit are from Bo1 matrix
+runs. The canonical evaluation framework as of 2026-05-04 is **Bo3
+with sideboarding** (see CLAUDE.md → "Match format: Bo3 by default").
+The Class H finding (zero MB graveyard hate) loses force under Bo3,
+since opponents' SB carries graveyard hate. The Class A (Wear // Tear
+fuse CMC), Class B (missing Atraxa / Grand Unifier targets), and
+Class C/E (turn-1 disruption + graveyard heuristic) findings are
+real bugs and unaffected by the format change.
 
 ## Context
 
