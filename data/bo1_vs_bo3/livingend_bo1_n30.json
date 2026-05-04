@@ -1,0 +1,93 @@
+{
+  "mode": "field",
+  "format": "bo1",
+  "n_games": 30,
+  "seed_start": 50000,
+  "workers": 2,
+  "elapsed_sec": 78.0,
+  "matrix": {
+    "Living End|Boros Energy": 47,
+    "Living End|Jeskai Blink": 57,
+    "Living End|Affinity": 27,
+    "Living End|Eldrazi Tron": 57,
+    "Living End|Amulet Titan": 53,
+    "Living End|Goryo's Vengeance": 53,
+    "Living End|Domain Zoo": 40,
+    "Living End|Izzet Prowess": 63,
+    "Living End|Dimir Midrange": 57,
+    "Living End|4c Omnath": 43,
+    "Living End|4/5c Control": 57,
+    "Living End|Ruby Storm": 53,
+    "Living End|Azorius Control (WST v2)": 63,
+    "Living End|Azorius Control (WST)": 67,
+    "Living End|Pinnacle Affinity": 50,
+    "Living End|Azorius Control": 70
+  },
+  "rankings": [
+    {
+      "opponent": "Azorius Control",
+      "wr": 70
+    },
+    {
+      "opponent": "Azorius Control (WST)",
+      "wr": 67
+    },
+    {
+      "opponent": "Izzet Prowess",
+      "wr": 63
+    },
+    {
+      "opponent": "Azorius Control (WST v2)",
+      "wr": 63
+    },
+    {
+      "opponent": "Jeskai Blink",
+      "wr": 57
+    },
+    {
+      "opponent": "Eldrazi Tron",
+      "wr": 57
+    },
+    {
+      "opponent": "Dimir Midrange",
+      "wr": 57
+    },
+    {
+      "opponent": "4/5c Control",
+      "wr": 57
+    },
+    {
+      "opponent": "Amulet Titan",
+      "wr": 53
+    },
+    {
+      "opponent": "Goryo's Vengeance",
+      "wr": 53
+    },
+    {
+      "opponent": "Ruby Storm",
+      "wr": 53
+    },
+    {
+      "opponent": "Pinnacle Affinity",
+      "wr": 50
+    },
+    {
+      "opponent": "Boros Energy",
+      "wr": 47
+    },
+    {
+      "opponent": "4c Omnath",
+      "wr": 43
+    },
+    {
+      "opponent": "Domain Zoo",
+      "wr": 40
+    },
+    {
+      "opponent": "Affinity",
+      "wr": 27
+    }
+  ],
+  "deck": "Living End"
+}
