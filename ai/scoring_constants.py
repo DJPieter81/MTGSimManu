@@ -1245,6 +1245,33 @@ kill is multiple turns away but pressure compounds.
 Used by `CombatPlanner.plan_attack` in `ai/turn_planner.py`.
 """
 
+OPP_LIFE_LOW_BAND: int = 8
+"""Rules-constant: opp_life ceiling for the high-pressure aggression
+band. ≤8 = "two-turn-lethal range with 4-power on board" — at this
+life total every attack pushes toward immediate kill, so the highest
+aggression bonus (AGGRESSION_BONUS_LIFE8) applies.
+
+Sister constants: OPP_LIFE_MID_BAND (12), OPP_LIFE_HIGH_BAND (16) —
+tiered life-band ladder for the aggression bonus curve.
+"""
+
+OPP_LIFE_MID_BAND: int = 12
+"""Rules-constant: opp_life ceiling for the moderate aggression band.
+≤12 = "three-turn-lethal range" — 60% of the Modern starting life,
+the threshold below which racing decks pivot from develop to push.
+
+Sister constants: OPP_LIFE_LOW_BAND (8), OPP_LIFE_HIGH_BAND (16).
+"""
+
+OPP_LIFE_HIGH_BAND: int = 16
+"""Rules-constant: opp_life ceiling for the slight aggression band.
+≤16 = "four-turn-lethal range" — 80% of the Modern starting life,
+above which the kill is too far away to justify aggression-induced
+risks.
+
+Sister constants: OPP_LIFE_LOW_BAND (8), OPP_LIFE_MID_BAND (12).
+"""
+
 DOUBLE_BLOCK_VALUE_THRESHOLD: float = 4.0
 """Derived: minimum attacker value at which the opponent will
 consider a double-block.
@@ -1256,6 +1283,250 @@ blocker on real threats.
 
 Used by `CombatPlanner._predict_blocks` Phase 4 (double-block) in
 `ai/turn_planner.py`.
+"""
+
+
+# ── CombatPlanner attack-config gates ────────────────────────────
+
+BOARD_WIPE_THRESHOLD_FRACTION: float = 0.1
+"""Derived: minimum fractional value-loss differential at which an
+attack is treated as a "board wipe risk" by the attack planner.
+0.1 = 10% — below this the value differential is too small to matter
+even after combat damage. Class-level attribute on `CombatPlanner`.
+
+Used by `CombatPlanner.plan_attack` in `ai/turn_planner.py`.
+"""
+
+ATTACK_TRADE_DOWN_RATIO: float = 1.5
+"""Derived: my-lost-value / opp-lost-value ratio above which a trade
+is considered "trading down badly" enough to apply TRADE_DOWN_PENALTY.
+1.5 = "we lose at least 50% more value than them" — below this
+threshold even-trades with small value asymmetries are tolerated.
+
+Used by `CombatPlanner.plan_attack` in `ai/turn_planner.py`.
+"""
+
+ATTACK_TRADE_DOWN_SCALE_DENOM: float = 5.0
+"""Derived: denominator scaling the lost-value penalty curve. With
+my_lost_value = 5.0 the scale saturates at 1.0 (full TRADE_DOWN_PENALTY);
+at 1.0 lost the scale is 0.2; at 3.0 the scale is 0.6. Calibrated to
+"lose a 5/5 = full penalty, lose a 1/1 = trivial penalty".
+
+Used by `CombatPlanner.plan_attack` in `ai/turn_planner.py`.
+"""
+
+ATTACK_TRADE_UP_RATIO: float = 1.2
+"""Derived: opp-lost-value / my-lost-value ratio above which the
+TRADE_UP_BONUS applies. 1.2 = "opp loses at least 20% more value than
+us" — distinguishes a real trade-up from an even trade with marginal
+value asymmetry.
+
+Used by `CombatPlanner.plan_attack` in `ai/turn_planner.py`.
+"""
+
+ATTACK_SHIELDS_DOWN_VALUE_FLOOR: float = 3.0
+"""Derived: minimum creature value at which the shields-down check
+counts the creature's value toward the tapped-down total. Below 3.0
+the creature is a token / chump-attacker / 1-drop the deck is happy
+to lose; only meaningful creatures (2-power+ commons and up) trigger
+the shields-down penalty.
+
+Used by `CombatPlanner.plan_attack` shields-down check in
+`ai/turn_planner.py`.
+"""
+
+ATTACK_SHIELDS_DOWN_TOTAL_FLOOR: float = 5.0
+"""Derived: minimum total tapped-down value at which the shields-down
+penalty fires. 5.0 ≈ "we tapped down a 3/3 + a 2/2" — below this the
+total exposed value is too low to justify the penalty.
+
+Used by `CombatPlanner.plan_attack` shields-down check in
+`ai/turn_planner.py`.
+"""
+
+ATTACK_SHIELDS_DOWN_DAMAGE_RELIEF: float = 0.6
+"""Derived: damage-ratio relief coefficient on the shields-down
+penalty. At full opp_life damage (damage_ratio=1.0) the penalty is
+reduced by 0.6 (40% of full penalty applies); at no damage the full
+penalty fires. Calibrated so big-damage attacks justify the shields-
+down risk.
+
+Used by `CombatPlanner.plan_attack` shields-down check in
+`ai/turn_planner.py`.
+"""
+
+ATTACK_RISKY_PAIR_LIMIT: int = 4
+"""Sentinel: maximum number of risky attackers considered when
+generating Config 5 (pairs of risky creatures). Above 4 the
+combinatorial explosion (4×3/2 = 6 pairs vs 5×4/2 = 10) outpaces
+the planner's per-decision budget.
+
+Used by `CombatPlanner._generate_attack_configs` in `ai/turn_planner.py`.
+"""
+
+# ── Block-prioritisation trade ratios ───────────────────────────
+
+BLOCK_TRADE_UP_VALUE_RATIO: float = 0.9
+"""Derived: blocker-value / attacker-value ratio below which Phase 2
+(profitable trades) commits the block. 0.9 = "blocker is worth at
+most 90% of the attacker" — below 1.0 always, but slightly above
+1.0-0.1 to allow tight trades.
+
+Used by `CombatPlanner._predict_blocks` Phase 2 in `ai/turn_planner.py`.
+"""
+
+BLOCK_EVEN_TRADE_VALUE_RATIO: float = 1.1
+"""Derived: blocker-value / attacker-value ratio below which Phase 3
+(even trades) commits the block. 1.1 = "blocker is worth at most
+110% of the attacker" — accepts a 10% value loss for clearing a
+threat. Tighter than the trade-down threshold (1.5) because the
+opponent loses their attacker outright.
+
+Used by `CombatPlanner._predict_blocks` Phase 3 in `ai/turn_planner.py`.
+"""
+
+BLOCK_DOUBLE_VALUE_RATIO: float = 1.3
+"""Derived: combined-blocker-value / attacker-value ratio below which
+Phase 4 (double-block) commits two blockers. 1.3 = "two blockers
+worth at most 130% of the attacker" — gives more margin than even
+trade because we kill a high-value threat and the second blocker is
+typically the cheapest available.
+
+Used by `CombatPlanner._predict_blocks` Phase 4 in `ai/turn_planner.py`.
+"""
+
+# ── Response evaluation constants ───────────────────────────────
+
+COUNTER_CMC_PENALTY: float = 0.5
+"""Derived: per-CMC penalty applied to counterspell net value.
+0.5 = "each mana spent costs half a card-value unit" — cheap counters
+(1U / U) are more efficient than expensive ones (3UU). Below 0.5
+the AI prefers expensive counters; above 0.5 the AI never uses
+heavier counters.
+
+Used by `TurnPlanner.evaluate_response` counterspell branch in
+`ai/turn_planner.py`.
+"""
+
+COUNTER_TAP_OUT_RISK_PENALTY: float = 1.5
+"""Derived: penalty applied when countering taps us out and the hand
+still has >2 cards. 1.5 = "tapping out costs 1.5 card-value units of
+flexibility" — discourages dumping the last counterspell when more
+threats are queued.
+
+Used by `TurnPlanner.evaluate_response` counterspell branch in
+`ai/turn_planner.py`.
+"""
+
+REMOVAL_RESPONSE_VALUE_FRACTION: float = 0.8
+"""Derived: fraction of threat value retained when responding with
+post-resolution removal (rather than counter). 0.8 = "the threat
+already saw 20% value (cast trigger / one combat hit) before we
+removed it". Calibrated against counter (full value at 100%).
+
+Used by `TurnPlanner.evaluate_response` removal branch in
+`ai/turn_planner.py`.
+"""
+
+REMOVAL_RESPONSE_CMC_PENALTY: float = 0.3
+"""Derived: per-CMC penalty for the removal response. Lower than
+COUNTER_CMC_PENALTY (0.5) because removal is typically cheaper than
+counters and the per-CMC pressure on resource use is smaller.
+
+Used by `TurnPlanner.evaluate_response` removal branch in
+`ai/turn_planner.py`.
+"""
+
+BLINK_CREATURE_VALUE_FRACTION: float = 0.7
+"""Derived: fraction of saved creature value credited to a blink
+response. 0.7 = "we save 70% of the creature's value (rest is the
+opportunity cost of the blink)" — reflects that blink saves the body
+but costs the blink card and one mana cycle.
+
+Used by `TurnPlanner.evaluate_response` blink branch in
+`ai/turn_planner.py`.
+"""
+
+BLINK_ETB_RETRIGGER_BONUS: float = 3.0
+"""Derived: bonus credited to a blink response that re-triggers an
+ETB ability. 3.0 ≈ one half of an engine-tier role bonus — captures
+"blinking a creature with an etb_value tag is roughly worth a
+mid-tier card draw" (Reflector Mage, Solitude, Ephemerate-style
+patterns).
+
+Used by `TurnPlanner.evaluate_response` blink branch in
+`ai/turn_planner.py`.
+"""
+
+# ── Pre-combat removal / strategy weighting ──────────────────────
+
+PRE_COMBAT_TARGET_VALUE_FRACTION: float = 0.5
+"""Derived: fraction of removed-target value credited to the
+pre-combat removal improvement. 0.5 reflects "half the target's value
+goes to combat improvement, the other half to opp's library
+shrinkage / future-attack reduction" — splits the removal's total
+value between immediate combat impact and future tempo.
+
+Used by `TurnPlanner._evaluate_remove_then_attack` in
+`ai/turn_planner.py`.
+"""
+
+DELAYED_DEPLOY_DISCOUNT: float = 0.9
+"""Derived: discount applied to deploy-in-main-2 spell value.
+0.9 = "the deploy is 90% as valuable as deploying pre-combat" —
+the small discount captures "creature gets summoning-sick before
+attack next turn anyway" but keeps the deploy in contention.
+
+Used by `TurnPlanner._evaluate_attack_then_deploy` in
+`ai/turn_planner.py`.
+"""
+
+HOLD_UP_COUNTER_BONUS_RATIO: float = 1.5
+"""Derived: bonus multiplier on MANA_RESERVATION_WEIGHT when the
+held-up mana protects a counterspell. 1.5 = "holding up counter mana
+is 50% more valuable than holding up generic interaction mana" —
+counterspells protect against any threat type, removal only against
+creatures.
+
+Used by `TurnPlanner._evaluate_hold_up_mana` in `ai/turn_planner.py`.
+"""
+
+EVASIVE_ATTACK_VALUE_FRACTION: float = 0.5
+"""Derived: per-power bonus for safe evasive attacks during a
+hold-up-mana strategy. 0.5 reflects "evasive damage is half the value
+of damage from a full attack" — flying/menace damage isn't blockable
+but the attack still taps the creature.
+
+Used by `TurnPlanner._evaluate_hold_up_mana` in `ai/turn_planner.py`.
+"""
+
+REMOVAL_PREFERENCE_IMPROVEMENT_FLOOR: float = 2.0
+"""Derived: minimum improvement at which `_evaluate_remove_then_attack`
+commits the removal. 2.0 = "improvement must clear the
+TRADE_DOWN_PENALTY threshold" — below this the removal isn't worth
+the mana investment.
+
+Used by `TurnPlanner._evaluate_remove_then_attack` in
+`ai/turn_planner.py`.
+"""
+
+GENERIC_REMOVAL_DAMAGE_SENTINEL: int = 99
+"""Sentinel: damage attributed to a generic removal spell with no
+parsed damage amount. 99 = "kills anything in Modern" — treats
+removal as universally lethal for combat-prediction purposes,
+since the spell's actual mode (destroy / exile / -X/-X) doesn't
+matter for the attacker-survives check.
+
+Used by `_spell_damage` in `ai/turn_planner.py`.
+"""
+
+DEFAULT_PLAN_TURN: int = 5
+"""Sentinel: default `game_turn` value for `TurnPlanner.plan_turn`
+when callers don't pass a turn number. 5 reflects the "Modern midgame"
+fallback — most aggression-bonus and life-band branches engage
+near T5 anyway, so the default approximates "no turn-aware modifier".
+
+Used by `TurnPlanner.plan_turn` in `ai/turn_planner.py`.
 """
 
 
