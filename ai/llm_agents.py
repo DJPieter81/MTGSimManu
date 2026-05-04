@@ -313,14 +313,67 @@ class MeteredAgent:
         record is written.  This keeps the cost report honest — a
         cache hit shows up as ``cost_usd=0`` even if tokens were
         recorded by the model usage object on a miss.
+
+        Budget gating (Phase I-7): before invoking the wrapped agent,
+        :func:`ai.llm_budgets.check_budget` is called with a rough
+        input-token estimate.  If month-to-date spend on the task is
+        already over the cap, :class:`~ai.llm_budgets.BudgetExceededError`
+        is raised and *no* API call is made (the metrics layer still
+        records the failure for observability).  The per-call
+        ``usage_limits=UsageLimits(input_tokens_limit=...)`` kwarg is
+        injected to also bound a single runaway prompt.
         """
         # Local import: keeps `ai.llm_agents` importable in
         # environments where `ai.llm_metrics` was not installed
         # (currently always present, but the same pattern is used
         # for the pydantic-ai import itself).
         from ai.llm_metrics import CallTimer, _input_hash_for_metrics
+        from ai.llm_budgets import (
+            check_budget,
+            estimate_input_tokens,
+            select_token_cap,
+        )
 
         input_hash = _input_hash_for_metrics(user_prompt)
+
+        # Per-call input-token cap — passed through pydantic-ai's
+        # UsageLimits so a single oversized prompt cannot drain
+        # budget even before the per-task USD gate fires.  Caller can
+        # still override by passing their own `usage_limits=...` in
+        # `kwargs` (we only inject when not present).
+        if "usage_limits" not in kwargs:
+            try:
+                from pydantic_ai.usage import UsageLimits  # type: ignore
+                kwargs["usage_limits"] = UsageLimits(
+                    input_tokens_limit=select_token_cap(self._task),
+                )
+            except Exception:
+                # Older / missing pydantic-ai versions: skip the
+                # token cap rather than crash.  USD gate below still
+                # protects the wallet.
+                pass
+
+        # Budget gate — raises BudgetExceededError before any API
+        # request if month-to-date spend would exceed the cap.
+        # Record the failure via CallTimer so cost reports / alerts
+        # see budget blocks too.
+        try:
+            check_budget(
+                self._task,
+                self._model,
+                estimate_input_tokens(user_prompt),
+            )
+        except Exception as exc:
+            with CallTimer(
+                task=self._task,
+                model=self._model,
+                prompt_version=self._prompt_version,
+                cache_hit=False,
+                input_hash=input_hash,
+            ) as gate_timer:
+                gate_timer.set_output_type(type(exc).__name__)
+                raise
+
         with CallTimer(
             task=self._task,
             model=self._model,

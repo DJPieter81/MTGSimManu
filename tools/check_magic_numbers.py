@@ -52,6 +52,7 @@ EXCLUDED_FILES = {
     "ai/llm_agents.py",        # PR #260
     "ai/llm_cache.py",         # PR #266 — infra
     "ai/llm_metrics.py",       # I-5 incoming
+    "ai/llm_budgets.py",       # I-7 — budget caps, pricing-derived constants
     "ai/llm_embeddings.py",    # PR #262
     "ai/card_features.py",     # I-2 incoming
     "ai/predicates.py",        # tag definitions can have literal limits
