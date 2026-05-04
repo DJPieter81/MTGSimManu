@@ -14,6 +14,18 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, List, Optional
 
+from ai.scoring_constants import (
+    DISCARD_BIG_CREATURE_BASE,
+    DISCARD_BIG_CREATURE_CMC_THRESHOLD,
+    DISCARD_COMBO_TUTOR_PROTECT,
+    DISCARD_COUNTERSPELL_NUDGE,
+    DISCARD_FLASHBACK_BONUS,
+    DISCARD_LANDS_EXCESS_BONUS,
+    DISCARD_LANDS_GLUT_BONUS,
+    DISCARD_LANDS_GLUT_THRESHOLD,
+    DISCARD_REMOVAL_NUDGE,
+)
+
 if TYPE_CHECKING:
     from engine.cards import CardInstance
     from engine.game_state import GameState
@@ -113,34 +125,34 @@ def choose_discard(game: "GameState", player_idx: int,
         if t.escape_cost is not None:
             score += 100  # Escape (Phlage) — great to discard
         if 'flashback' in t.tags:
-            score += 90
+            score += DISCARD_FLASHBACK_BONUS
 
         # High-CMC creatures are reanimation targets (generic fallback
         # for decks that don't declare a FILL_RESOURCE graveyard goal —
         # e.g. a random midrange hand with an accidental fat body).
-        if t.is_creature and t.cmc >= 5:
-            score += 80 + t.cmc
+        if t.is_creature and t.cmc >= DISCARD_BIG_CREATURE_CMC_THRESHOLD:
+            score += DISCARD_BIG_CREATURE_BASE + t.cmc
 
         # Excess lands (4+ in hand with 3+ already on battlefield).
         if t.is_land:
-            if lands_in_hand > 1 and lands_on_field >= 3:
-                score += 50
+            if lands_in_hand > 1 and lands_on_field >= DISCARD_LANDS_GLUT_THRESHOLD:
+                score += DISCARD_LANDS_GLUT_BONUS
             elif lands_in_hand > 2:
-                score += 40
+                score += DISCARD_LANDS_EXCESS_BONUS
 
         # Protection/reactive spells are lower priority to keep.
         if 'counterspell' in t.tags and not t.is_creature:
-            score += 20
+            score += DISCARD_COUNTERSPELL_NUDGE
 
         # Combo pieces and key spells should be kept (lower score).
         # Exception: high-CMC creatures are reanimation targets.
         if any(tag in t.tags for tag in ('combo', 'tutor')):
-            if not (t.is_creature and t.cmc >= 5):
-                score -= 30
+            if not (t.is_creature and t.cmc >= DISCARD_BIG_CREATURE_CMC_THRESHOLD):
+                score -= DISCARD_COMBO_TUTOR_PROTECT
 
         # Removal is moderately important — slightly prefer to keep.
         if 'removal' in t.tags:
-            score += 10
+            score += DISCARD_REMOVAL_NUDGE
 
         return score
 
@@ -175,7 +187,9 @@ def _reanimation_fuel_min_cmc(game: "GameState",
     # fine. Reanimator payoffs (Goryo's / Persist / Unburial Rites)
     # target 5+ CMC creatures; anything cheaper can be hard-cast
     # normally and doesn't need the self-discard chute.
-    REANIMATION_FUEL_FLOOR = 5  # rules constant, see docstring above
+    # Floor is shared with DISCARD_BIG_CREATURE_CMC_THRESHOLD — same
+    # rules-derived "5+ CMC = reanimation target" definition.
+    REANIMATION_FUEL_FLOOR = DISCARD_BIG_CREATURE_CMC_THRESHOLD
     for goal in plan.goals:
         if goal.goal_type != GoalType.FILL_RESOURCE:
             continue
