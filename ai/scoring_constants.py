@@ -3075,6 +3075,28 @@ shock" can collapse into a Bolt + Push lethal sequence next turn.
 Used by `should_stagger_shock` in `ai/mana_planner.py`.
 """
 
+MANA_NEEDS_NO_SPELL_SENTINEL: int = 99
+"""Sentinel: starting `cheapest_spell_cmc` / `cheapest_proactive_cmc`
+on `ManaNeeds`. 99 is unreachable in Modern (max card CMC is the
+emerge/cascade bound at ~15) — any real spell-CMC scan replaces it
+with a smaller value. The sentinel makes "no spell in hand" trivial
+to detect without a separate Optional/None branch.
+
+Used by `ManaNeeds` in `ai/mana_planner.py`.
+"""
+
+PAYOFF_HIGH_CMC_THRESHOLD: int = 3
+"""Derived: minimum CMC at which a multi-color (≥2-color identity)
+spell counts as a "high-CMC payoff" whose colors should weight fetch
+decisions. 3 is the boundary above which mana investment is high
+enough to make color-screw catastrophic — Leyline Binding, Omnath
+WURG, and Wrenn-and-Six all sit at or above CMC 3 with multi-color
+costs. Below CMC 3 the color requirement is usually only one pip and
+already covered by the per-demand color tracker.
+
+Used by `compute_mana_needs` in `ai/mana_planner.py`.
+"""
+
 
 # ─── Clock-position constants (ai/clock.py) ──────────────────────────
 # Used by `position_value` and `combo_clock` to bound clock-derived
