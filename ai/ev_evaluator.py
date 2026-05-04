@@ -20,6 +20,40 @@ from typing import Dict, List, Optional, Set, Tuple, TYPE_CHECKING
 from ai.predicates import (
     count_gy_creatures, is_draw_engine, is_ritual,
 )
+from ai.scoring_constants import (
+    AMASS_WORD_MAP,
+    ENERGY_TO_POWER_EQUIVALENT,
+    LIFE_TO_POWER_EQUIVALENT,
+    NONLAND_PERMANENT_ENTERS_PER_TURN,
+    SURVIVAL_TURNS_FLOOR,
+    CMC_REMOVAL_EFFICIENCY_CMC0,
+    CMC_REMOVAL_EFFICIENCY_CMC1,
+    CMC_REMOVAL_EFFICIENCY_CMC2,
+    CREATURE_HIGH_TOUGHNESS,
+    CREATURE_MID_TOUGHNESS,
+    CREATURE_VALUE_OUTER_SCALE,
+    DESPERATE_LIFE_THRESHOLD,
+    ENERGY_PRODUCED_ESTIMATE,
+    EOT_EXILE_POWER_FACTOR,
+    EVASION_DAMAGE_REMOVAL_RELIEF,
+    EV_SNAPSHOT_DEFAULT_LIFE,
+    EV_SNAPSHOT_NO_CLOCK_DISCRETE,
+    EV_SNAPSHOT_NO_CLOCK_FLOAT,
+    EXILE_FRAC_DEFAULT,
+    FALLBACK_OPP_HAND_SIZE,
+    FUTURE_DECAY_MAX_CONTINUATION,
+    FUTURE_DECAY_MIN_CONTINUATION,
+    PASS_COMBO_FULL_HAND_PENALTY,
+    PASS_COMBO_FULL_HAND_THRESHOLD,
+    PASS_MANA_WASTE_PENALTY,
+    PASS_OPP_DEVELOPMENT_PENALTY_SCALE,
+    REANIMATION_LIFE_GAIN_ESTIMATE,
+    REMOVAL_BHI_PROBABILITY_FLOOR,
+    RITUAL_MANA_PRODUCED,
+    STORM_GOBLIN_LETHAL_TOKENS,
+    THREAT_BATTLE_CRY_AMPLIFIER_VP,
+    THREAT_SCALING_FUTURE_VP,
+)
 
 if TYPE_CHECKING:
     from engine.game_state import GameState, PlayerState
@@ -38,8 +72,8 @@ class EVSnapshot:
 
     All values are derived from game state — no hardcoded defaults.
     """
-    my_life: int = 20
-    opp_life: int = 20
+    my_life: int = EV_SNAPSHOT_DEFAULT_LIFE
+    opp_life: int = EV_SNAPSHOT_DEFAULT_LIFE
     my_power: int = 0          # total power of my creatures
     opp_power: int = 0         # total power of opp creatures
     my_toughness: int = 0      # total toughness of my creatures
@@ -114,28 +148,28 @@ class EVSnapshot:
         Use my_clock_discrete for boolean rule checks ("will it die?").
         """
         if self.my_power <= 0:
-            return 99.0
+            return EV_SNAPSHOT_NO_CLOCK_FLOAT
         return max(1.0, self.opp_life / self.my_power)
 
     @property
     def opp_clock(self) -> float:
         """Turns until opponent kills me (continuous; lower = worse)."""
         if self.opp_power <= 0:
-            return 99.0
+            return EV_SNAPSHOT_NO_CLOCK_FLOAT
         return max(1.0, self.my_life / self.opp_power)
 
     @property
     def my_clock_discrete(self) -> int:
         """Integer turns-to-kill for rule-based checks."""
         if self.my_power <= 0:
-            return 99
+            return EV_SNAPSHOT_NO_CLOCK_DISCRETE
         return max(1, math.ceil(self.opp_life / self.my_power))
 
     @property
     def opp_clock_discrete(self) -> int:
         """Integer turns-to-die for rule-based checks (will I survive untap?)."""
         if self.opp_power <= 0:
-            return 99
+            return EV_SNAPSHOT_NO_CLOCK_DISCRETE
         return max(1, math.ceil(self.my_life / self.opp_power))
 
     @property
@@ -336,7 +370,7 @@ def creature_value(card: "CardInstance", snap: Optional[EVSnapshot] = None) -> f
     from ai.clock import creature_clock_impact_from_card
     effective_snap = snap if snap is not None else _DEFAULT_SNAP
     # Clock impact is ~0.05-0.5; scale by 20 (opp_life) to get ~1-10 range
-    return creature_clock_impact_from_card(card, effective_snap) * 20.0
+    return creature_clock_impact_from_card(card, effective_snap) * CREATURE_VALUE_OUTER_SCALE
 
 
 def creature_threat_value(card: "CardInstance", snap: Optional[EVSnapshot] = None) -> float:
@@ -365,21 +399,16 @@ def creature_threat_value(card: "CardInstance", snap: Optional[EVSnapshot] = Non
     oracle = (getattr(t, 'oracle_text', '') or '').lower()
     name = (getattr(t, 'name', '') or '').lower().split(' //')[0].strip()
 
-    # Rules constants: virtual power contributions for oracle amplifiers.
-    # BATTLE_CRY_AMPLIFIER_VP: typical count of other attackers this
-    # creature's attack-trigger boosts per combat in Modern (~2).
-    BATTLE_CRY_AMPLIFIER_VP = 2
-    # SCALING_FUTURE_VP: avg future power gain of a "for each …" scaler,
-    # approximated as +1 power/turn × ~3 turns of typical game residual.
-    SCALING_FUTURE_VP = 3
-
+    # Rules constants imported from scoring_constants:
+    #   THREAT_BATTLE_CRY_AMPLIFIER_VP — typical count of other attackers
+    #   THREAT_SCALING_FUTURE_VP       — avg future power gain
     virtual_power = 0
     if 'whenever this creature attacks' in oracle:
-        virtual_power += BATTLE_CRY_AMPLIFIER_VP
+        virtual_power += THREAT_BATTLE_CRY_AMPLIFIER_VP
     elif name and f'whenever {name} attacks' in oracle:
-        virtual_power += BATTLE_CRY_AMPLIFIER_VP
+        virtual_power += THREAT_BATTLE_CRY_AMPLIFIER_VP
     if re.search(r'for each (artifact|creature|land|card)', oracle):
-        virtual_power += SCALING_FUTURE_VP
+        virtual_power += THREAT_SCALING_FUTURE_VP
 
     p = (card.power or 0) + virtual_power
     tough = card.toughness or 0
@@ -392,11 +421,11 @@ def creature_threat_value(card: "CardInstance", snap: Optional[EVSnapshot] = Non
     # scoring in a single principled formula.
     from ai.clock import creature_clock_impact_from_card
     effective_snap = snap if snap is not None else _DEFAULT_SNAP
-    base = creature_clock_impact_from_card(card, effective_snap) * 20.0
+    base = creature_clock_impact_from_card(card, effective_snap) * CREATURE_VALUE_OUTER_SCALE
     # The call above used card.power; add the virtual-power contribution
     # separately via the same clock formula so it scales identically.
     vp_impact = (creature_clock_impact(p, tough, kws, effective_snap)
-                 - creature_clock_impact(card.power or 0, tough, kws, effective_snap)) * 20.0
+                 - creature_clock_impact(card.power or 0, tough, kws, effective_snap)) * CREATURE_VALUE_OUTER_SCALE
     return base + vp_impact
 
 
@@ -1113,15 +1142,14 @@ def _project_token_bonus(oracle_l: str, snap: "EVSnapshot"
     RESIDENCY = 2.0
     MODERN_SPELLS_PER_TURN = 1.0
     OPP_DRAWS_PER_TURN = 1.0
-    NONLAND_PERMANENT_ENTERS_PER_TURN = 0.7
+    # NONLAND_PERMANENT_ENTERS_PER_TURN imported from scoring_constants.
 
     NON_CREATURE_TOKENS = ('treasure token', 'food token',
                             'clue token', 'gold token', 'blood token',
                             'map token', 'powerstone token')
-    AMASS_WORD_MAP = {
-        'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5,
-        'six': 6, 'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10,
-    }
+    # AMASS_WORD_MAP — oracle-text cardinals (CR 107).
+    # Imported from scoring_constants to avoid re-declaring inline magic-
+    # number-style literals.
 
     def _clause_token_power(clause: str) -> int:
         """Power produced per token firing of this clause."""
@@ -1252,8 +1280,8 @@ def _project_token_bonus(oracle_l: str, snap: "EVSnapshot"
     #     activation costs {E}{E}{E} for +2/+2 + flying = ~3 power),
     #     so 1 energy ≈ 1.0 power-equivalent.  Cap at 0.5 to avoid
     #     over-crediting decks that produce energy without finishers.
-    LIFE_TO_POWER_EQUIVALENT = 0.25
-    ENERGY_TO_POWER_EQUIVALENT = 0.5
+    # LIFE_TO_POWER_EQUIVALENT and ENERGY_TO_POWER_EQUIVALENT imported
+    # from scoring_constants.
 
     def _clause_life_gain(clause: str) -> int:
         """Lifegain N per firing of this clause."""
@@ -1504,7 +1532,7 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
             # 0.5 — one guaranteed combat vs an unbounded future stream.
             # Oracle-driven, no card-name checks. The clause-free case
             # (Persist) keeps the full power contribution unchanged.
-            EOT_EXILE_POWER_FACTOR = 0.5  # rules: 1 attack before exile
+            # EOT_EXILE_POWER_FACTOR imported from scoring_constants.
             # Normalise curly/fancy apostrophes so 'end’s' variants match.
             reanim_oracle = (t.oracle_text or '').lower().replace(
                 '’', "'")
@@ -1579,7 +1607,7 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
             # expresses "life total as turns of survival". High survival value
             # → low burn payoff; low survival value → near-full payoff.
             from ai.clock import life_as_resource
-            if snap.my_creature_count > 0 or snap.opp_life <= 10:
+            if snap.my_creature_count > 0 or snap.opp_life <= DESPERATE_LIFE_THRESHOLD:
                 # We have a clock, or opp is already in burn range.
                 projected.opp_life -= dmg
             else:
@@ -1590,7 +1618,7 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
                 # at opp_life=5 it yields ~0.4 — a smooth derivation, not a
                 # magic cutoff.
                 survival_turns = life_as_resource(snap.opp_life, 1)
-                factor = min(1.0, 1.0 / max(survival_turns, 0.5))
+                factor = min(1.0, 1.0 / max(survival_turns, SURVIVAL_TURNS_FLOOR))
                 projected.opp_life -= dmg * factor
 
     # Card draw
@@ -1611,7 +1639,7 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         # Most rituals produce 3 mana for 2 cost = net +1
         # Manamorphose produces 2 for 2 = net 0 but draws a card
         # We already subtracted the cost above, so add the gross production
-        projected.my_mana += 3  # Pyretic/Desperate produce 3R
+        projected.my_mana += RITUAL_MANA_PRODUCED  # Pyretic/Desperate produce 3R
         # Manamorphose produces 2 + draws (already handled by cantrip)
         if 'cantrip' in tags:
             projected.my_mana -= 1  # Manamorphose only produces 2
@@ -1621,11 +1649,11 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         oracle = (t.oracle_text or '').lower()
         if 'gain' in oracle and 'life' in oracle:
             # Estimate: most ETB life gain is 2-4
-            projected.my_life += 3
+            projected.my_life += REANIMATION_LIFE_GAIN_ESTIMATE
 
     # Energy producers
     if 'energy' in tags:
-        projected.my_energy += 2  # conservative estimate
+        projected.my_energy += ENERGY_PRODUCED_ESTIMATE  # conservative estimate
 
     # Prowess bonus: noncreature spells pump prowess creatures
     # Each prowess trigger = +1 power (or more for Slickshot +2/+0)
@@ -1761,7 +1789,7 @@ def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
     else:
         counter_worthiness = 1.0
 
-    opp_hand_size = snap.opp_hand_size if snap.opp_hand_size > 0 else 5
+    opp_hand_size = snap.opp_hand_size if snap.opp_hand_size > 0 else FALLBACK_OPP_HAND_SIZE
     counter_probability = 0.0
     removal_probability = 0.0
 
@@ -1776,11 +1804,11 @@ def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
             if hasattr(card, 'toughness') and card.toughness is not None:
                 creature_toughness = card.toughness
             exile_fraction = (bhi.get_exile_removal_probability()
-                              / max(0.01, bhi.get_removal_probability()))
+                              / max(REMOVAL_BHI_PROBABILITY_FLOOR, bhi.get_removal_probability()))
             damage_fraction = 1.0 - exile_fraction
-            if creature_toughness >= 4:
+            if creature_toughness >= CREATURE_HIGH_TOUGHNESS:
                 removal_probability *= (exile_fraction + damage_fraction * DAMAGE_REMOVAL_EFF_HIGH_TOUGH)
-            elif creature_toughness >= 3:
+            elif creature_toughness >= CREATURE_MID_TOUGHNESS:
                 removal_probability *= (exile_fraction + damage_fraction * DAMAGE_REMOVAL_EFF_MID_TOUGH)
     elif game:
         # Fallback: static deck density (no BHI tracker available)
@@ -1794,9 +1822,9 @@ def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
             exile_prob = 1.0 - (1.0 - opp.exile_density) ** opp_hand_size if opp.exile_density > 0 else 0.0
             damage_density = opp.removal_density - opp.exile_density
             damage_prob = 1.0 - (1.0 - max(0, damage_density)) ** opp_hand_size if damage_density > 0 else 0.0
-            if creature_toughness >= 4:
+            if creature_toughness >= CREATURE_HIGH_TOUGHNESS:
                 damage_prob *= DAMAGE_REMOVAL_EFF_HIGH_TOUGH
-            elif creature_toughness >= 3:
+            elif creature_toughness >= CREATURE_MID_TOUGHNESS:
                 damage_prob *= DAMAGE_REMOVAL_EFF_MID_TOUGH
             removal_probability = min(1.0, exile_prob + damage_prob * (1.0 - exile_prob))
 
@@ -1832,11 +1860,16 @@ def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
         # Evasion means damage-based removal is less effective at stopping attacks.
         # Reduce only the damage-removal portion (exile still applies fully).
         if bhi and bhi._initialized:
-            exile_frac = bhi.get_exile_removal_probability() / max(0.01, bhi.get_removal_probability()) if bhi.get_removal_probability() > 0 else 0.5
+            exile_frac = (bhi.get_exile_removal_probability()
+                          / max(REMOVAL_BHI_PROBABILITY_FLOOR,
+                                bhi.get_removal_probability())
+                          if bhi.get_removal_probability() > 0
+                          else EXILE_FRAC_DEFAULT)
         else:
-            exile_frac = 0.5
+            exile_frac = EXILE_FRAC_DEFAULT
         damage_frac = 1.0 - exile_frac
-        removal_probability *= (exile_frac + damage_frac * 0.5)  # halve damage-removal relevance
+        removal_probability *= (exile_frac
+                                + damage_frac * EVASION_DAMAGE_REMOVAL_RELIEF)
 
     # Compute expected value as weighted average of outcomes:
     # P(counter) * V(countered) + P(removal) * V(removed) + P(pass) * V(projected)
@@ -1989,7 +2022,7 @@ def _estimate_combo_chain(game, player_idx: int, first_card=None):
         cmc = max(0, (c.template.cmc or 0) - reducers)
 
         if 'ritual' in tags:
-            rituals.append((name, cmc, 3))  # name, cost, mana produced
+            rituals.append((name, cmc, RITUAL_MANA_PRODUCED))  # name, cost, mana produced
         elif 'storm_payoff' in tags:
             finishers.append((name, cmc))
         elif 'cantrip' in tags or 'card_advantage' in tags:
@@ -2037,7 +2070,8 @@ def _estimate_combo_chain(game, player_idx: int, first_card=None):
                 return can_kill, storm, total_damage, chain
             elif name == 'Empty the Warrens':
                 tokens = storm * 2
-                return tokens >= 6, storm, tokens, chain  # 6+ goblins is usually enough
+                return (tokens >= STORM_GOBLIN_LETHAL_TOKENS,
+                        storm, tokens, chain)  # 6+ goblins is usually enough
 
     return False, storm, 0, chain
 
@@ -2163,7 +2197,7 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
     can_counter = (projected.opp_mana >= COUNTER_ESTIMATED_COST
                    and "can't be countered" not in oracle
                    and "can\u2019t be countered" not in oracle)
-    opp_hand = snap.opp_hand_size if snap.opp_hand_size > 0 else 5
+    opp_hand = snap.opp_hand_size if snap.opp_hand_size > 0 else FALLBACK_OPP_HAND_SIZE
     if game:
         opp = game.players[1 - player_idx]
         if can_counter and opp.counter_density > 0:
@@ -2175,19 +2209,19 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
             exile_prob = 1.0 - (1.0 - opp.exile_density) ** opp_hand if opp.exile_density > 0 else 0.0
             damage_density = opp.removal_density - opp.exile_density
             damage_prob = 1.0 - (1.0 - max(0, damage_density)) ** opp_hand if damage_density > 0 else 0.0
-            if creature_toughness >= 4:
+            if creature_toughness >= CREATURE_HIGH_TOUGHNESS:
                 damage_prob *= DAMAGE_REMOVAL_EFF_HIGH_TOUGH
-            elif creature_toughness >= 3:
+            elif creature_toughness >= CREATURE_MID_TOUGHNESS:
                 damage_prob *= DAMAGE_REMOVAL_EFF_MID_TOUGH
             removal_pct = min(1.0, exile_prob + damage_prob * (1.0 - exile_prob))
             # Apply same CMC scaling as estimate_opponent_response
             cmc = t.cmc or 0
             if cmc == 0:
-                removal_pct *= 0.15
+                removal_pct *= CMC_REMOVAL_EFFICIENCY_CMC0
             elif cmc == 1:
-                removal_pct *= 0.25
+                removal_pct *= CMC_REMOVAL_EFFICIENCY_CMC1
             elif cmc == 2:
-                removal_pct *= 0.4
+                removal_pct *= CMC_REMOVAL_EFFICIENCY_CMC2
             # Evasion discount: conditional or innate flying/evasion
             has_innate_evasion = bool(
                 getattr(t, 'keywords', set()) & {'flying', 'menace', 'trample', 'shadow'}
@@ -2197,9 +2231,9 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
                 ('counter' in oracle or 'discard' in oracle or 'whenever' in oracle)
             )
             if has_innate_evasion or has_conditional_evasion:
-                exile_frac = opp.exile_density / max(0.01, opp.removal_density)
+                exile_frac = opp.exile_density / max(REMOVAL_BHI_PROBABILITY_FLOOR, opp.removal_density)
                 damage_frac = 1.0 - exile_frac
-                removal_pct *= (exile_frac + damage_frac * 0.5)
+                removal_pct *= (exile_frac + damage_frac * EVASION_DAMAGE_REMOVAL_RELIEF)
 
     return ev, {
         'current_value': current_value,
@@ -2227,7 +2261,7 @@ def estimate_pass_ev(snap: EVSnapshot, archetype: str,
 
     # Passing wastes mana — penalty proportional to unused mana
     # Having 3 mana and passing is worse than having 1 mana and passing
-    mana_waste_penalty = -snap.my_mana * 0.5
+    mana_waste_penalty = -snap.my_mana * PASS_MANA_WASTE_PENALTY
 
     # Opponent develops: they get another turn to attack and deploy
     opp_development_penalty = 0.0
@@ -2238,7 +2272,7 @@ def estimate_pass_ev(snap: EVSnapshot, archetype: str,
             from ai.clock import life_as_resource
             life_before = life_as_resource(snap.my_life, snap.opp_power)
             life_after = life_as_resource(max(0, snap.my_life - damage_taken), snap.opp_power)
-            opp_development_penalty = -(life_before - life_after) * 0.3
+            opp_development_penalty = -(life_before - life_after) * PASS_OPP_DEVELOPMENT_PENALTY_SCALE
 
     # Combo decks: passing is especially bad — they need to chain spells NOW.
     # Detection via `StrategyProfile.has_combo_chain` (structural deck-
@@ -2248,8 +2282,8 @@ def estimate_pass_ev(snap: EVSnapshot, archetype: str,
     combo_penalty = 0.0
     if get_profile(archetype).has_combo_chain:
         combo_penalty = -snap.my_mana * 1.0  # wasting mana is terrible for combo
-        if snap.my_hand_size >= 5:
-            combo_penalty -= 2.0  # full hand + doing nothing = bad
+        if snap.my_hand_size >= PASS_COMBO_FULL_HAND_THRESHOLD:
+            combo_penalty -= PASS_COMBO_FULL_HAND_PENALTY  # full hand + doing nothing = bad
 
     return current + mana_waste_penalty + opp_development_penalty + combo_penalty
 
@@ -2324,8 +2358,11 @@ def estimate_future_value(snap: EVSnapshot, archetype: str,
     # Rules-constant clamps: at least a floor 0.5 when close to dying (we
     # still care about the possible surviving turn), at most 0.95 (even in a
     # long game, cards/mana shift enough per turn to warrant ≥5% discount).
-    MIN_CONTINUATION = 0.5
-    MAX_CONTINUATION = 0.95
+    # Imported from scoring_constants:
+    #   FUTURE_DECAY_MIN_CONTINUATION (0.5) — floor near death
+    #   FUTURE_DECAY_MAX_CONTINUATION (0.95) — ceiling for long games
+    MIN_CONTINUATION = FUTURE_DECAY_MIN_CONTINUATION
+    MAX_CONTINUATION = FUTURE_DECAY_MAX_CONTINUATION
     per_turn = 1.0 - 1.0 / max(2.0, expected_length)
     per_turn = max(MIN_CONTINUATION, min(MAX_CONTINUATION, per_turn))
     discount = per_turn ** turns_ahead
@@ -2456,4 +2493,4 @@ def choose_card_to_strip(hand: List["CardInstance"],
     ]
     # Highest score, then highest CMC, then earliest index.
     scored.sort(key=lambda x: (-x[0], -x[1], x[2]))
-    return scored[0][3]
+    return scored[0][3]  # magic-allow: 4-tuple accessor — (score, cmc, idx, CARD); the card is at index 3

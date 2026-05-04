@@ -1742,6 +1742,306 @@ Used by `_count_domain` in `ai/board_eval.py`.
 """
 
 
+# ─── EVSnapshot / threat-value constants (ai/ev_evaluator.py) ────────
+# These constants tune the EVSnapshot dataclass defaults, threat-value
+# augmentation, and 1-ply opponent-response projection. Many sentinels
+# here mirror similar constants in board_eval / clock — keeping them
+# named makes the cross-module pattern explicit.
+
+EV_SNAPSHOT_DEFAULT_LIFE: int = 20
+"""Rules-constant (CR 103.4): Modern starting life total used as
+default for EVSnapshot.my_life / opp_life when no game state is yet
+populated. Sister constant: BOARD_EVAL_DEFAULT_LIFE (same value, same
+intent — both reflect the CR-defined starting life).
+"""
+
+EV_SNAPSHOT_NO_CLOCK_FLOAT: float = 99.0
+"""Sentinel: float "no clock" sentinel returned by EVSnapshot.my_clock
+/ opp_clock properties when the relevant side has no power. Mirrors
+ai/clock.NO_CLOCK and BOARD_EVAL_NO_CLOCK_FLOAT — same "cannot reach
+lethal" intent. The continuous-division form (vs the discrete 99 int
+form) is used for smooth EV gradients.
+"""
+
+EV_SNAPSHOT_NO_CLOCK_DISCRETE: int = 99
+"""Sentinel: integer "no clock" sentinel returned by EVSnapshot
+.my_clock_discrete / opp_clock_discrete properties when the relevant
+side has no power. Used for boolean rule checks ("will it die?")
+where the discrete turn count matters. Mirrors NO_CLOCK_SENTINEL
+(gameplan), CHAIN_NO_CLOCK_DEFAULT (finisher_simulator), etc.
+"""
+
+CREATURE_VALUE_OUTER_SCALE: float = 20.0
+"""Derived: outer scale converting `creature_clock_impact` (range
+~0.05-0.5) to creature value units (~1-10). 20.0 = the
+CLOCK_IMPACT_LIFE_SCALING factor — same Modern starting-life
+denominator. Promoted from a function-local literal so both
+`creature_value` and `creature_threat_value` share the named scale.
+"""
+
+THREAT_BATTLE_CRY_AMPLIFIER_VP: int = 2
+"""Rules-constant: virtual-power contribution for an attack-trigger
+battle-cry-class amplifier. 2 reflects "the typical Modern board
+this creature attacks alongside ~2 other attackers it amplifies".
+Already named in code as BATTLE_CRY_AMPLIFIER_VP; promoted to the
+central constants module so future re-tunes are single-point.
+
+Used by `creature_threat_value` in `ai/ev_evaluator.py`.
+"""
+
+THREAT_SCALING_FUTURE_VP: int = 3
+"""Rules-constant: virtual-power contribution for a "for each ..."
+scaling threat (Tarmogoyf, Murktide Regent, etc.). 3 ≈ +1 power per
+turn × ~3 turns of typical game residual. Promoted from a function-
+local literal.
+
+Used by `creature_threat_value` in `ai/ev_evaluator.py`.
+"""
+
+EOT_EXILE_POWER_FACTOR: float = 0.5
+"""Rules-derived: power-contribution factor for a temporarily-
+reanimated creature (Goryo's, Footsteps of the Goryo) — the body
+gets one combat (haste granted) before exile at end step. 0.5 ≈
+"one guaranteed combat vs an unbounded future stream".
+
+Used by reanimation-projection in `ai/ev_evaluator.py`.
+"""
+
+REANIMATION_LIFE_GAIN_ESTIMATE: int = 3
+"""Derived: estimated life gain from a generic ETB-life-gain creature
+(Omnath, Thragtusk-class). 3 sits in the typical 2-4 range for ETB
+life triggers in Modern.
+
+Used by ETB-life-gain projection in `ai/ev_evaluator.py`.
+"""
+
+RITUAL_MANA_PRODUCED: int = 3
+"""Rules-constant: mana produced by a typical ritual (Pyretic Ritual
+/ Desperate Ritual: pay 2, produce 3). 3 reflects the standard "net
++1 mana, +1 storm count" ritual pattern.
+
+Used by ritual projection in `ai/ev_evaluator.py`.
+"""
+
+ENERGY_PRODUCED_ESTIMATE: int = 2
+"""Derived: estimated energy counters produced by a generic energy
+trigger. 2 is a conservative midpoint (Guide of Souls = 1, Voltage
+Surge / Galvanic Iteration = 1-3).
+
+Used by energy projection in `ai/ev_evaluator.py`.
+"""
+
+FALLBACK_OPP_HAND_SIZE: int = 5
+"""Sentinel: opp_hand_size fallback when snap reports 0. 5 reflects
+"default mid-game hand size" — between full grip (7) and post-spell
+hand (4). Used in counter/removal-probability calculations as the
+exponent in `(1 - density)^opp_hand`.
+
+Used by `estimate_opponent_response` and pre-response projection in
+`ai/ev_evaluator.py`.
+"""
+
+EXILE_FRAC_DEFAULT: float = 0.5
+"""Sentinel: exile-fraction fallback when BHI reports zero
+removal_probability. 0.5 reflects "uncertain mix" — half exile, half
+damage-based — a non-informative midpoint until BHI updates posterior.
+
+Used by evasion-discount calculation in `ai/ev_evaluator.py`.
+"""
+
+EVASION_DAMAGE_REMOVAL_RELIEF: float = 0.5
+"""Derived: relief multiplier on damage-based removal probability for
+evasive creatures. 0.5 = "halve damage-removal relevance" — flying /
+trample / menace creatures are still vulnerable to bolts but not as
+vulnerable as ground non-evasive bodies.
+
+Used by evasion-discount calculation in `ai/ev_evaluator.py`.
+"""
+
+REMOVAL_BHI_PROBABILITY_FLOOR: float = 0.01
+"""Sentinel: floor on the divisor when computing
+`exile_density / removal_density`. Prevents division by zero when
+BHI reports near-zero removal probability — a legitimate state for
+opp decks with few removal slots.
+
+Used by evasion-discount and CMC-bucket scaling in `ai/ev_evaluator.py`.
+"""
+
+CREATURE_HIGH_TOUGHNESS: int = 4
+"""Rules-constant: toughness floor at which damage-based removal
+relevance is reduced via DAMAGE_REMOVAL_EFF_HIGH_TOUGH. 4 = "Bolt
+doesn't kill" — at toughness ≥4 the most common Modern damage
+removal (Lightning Bolt) is dead.
+
+Used by removal-probability adjustment in `ai/ev_evaluator.py`.
+"""
+
+CREATURE_MID_TOUGHNESS: int = 3
+"""Rules-constant: toughness floor at which damage-based removal
+relevance is reduced via DAMAGE_REMOVAL_EFF_MID_TOUGH. 3 = "survives
+Bolt" but "dies to Push" — partial damage-removal vulnerability.
+
+Used by removal-probability adjustment in `ai/ev_evaluator.py`.
+"""
+
+CMC_REMOVAL_EFFICIENCY_CMC0: float = 0.15
+"""Derived: removal-priority multiplier for CMC-0 spells. 0.15 = "tiny
+threat" — opp's removal stays in hand for bigger targets. Reflects
+the Memnite / Ornithopter pattern: face-down for opp's removal slot.
+
+Used by `estimate_opponent_response` in `ai/ev_evaluator.py`.
+"""
+
+CMC_REMOVAL_EFFICIENCY_CMC1: float = 0.25
+"""Derived: removal-priority multiplier for CMC-1 spells. 0.25 = "small
+threat" — most CMC-1 creatures aren't worth a 2-mana removal trade
+unless they're tagged as combo pieces.
+
+Used by `estimate_opponent_response` in `ai/ev_evaluator.py`.
+"""
+
+CMC_REMOVAL_EFFICIENCY_CMC2: float = 0.4
+"""Derived: removal-priority multiplier for CMC-2 spells. 0.4 = "even
+trade" — at CMC 2 the threat is at the boundary where opp will
+sometimes use removal sometimes not.
+
+Used by `estimate_opponent_response` in `ai/ev_evaluator.py`.
+"""
+
+# ── Storm chain simulation constants (oracle-derived cardinals) ────
+
+STORM_GOBLIN_LETHAL_TOKENS: int = 6
+"""Rules-derived: minimum goblin tokens (Empty the Warrens) that are
+"usually enough" to win the game. 6 = 6 power + 6 toughness across
+the board — typically lethal in 2 swings even into a 20-life opponent
+with one or two blockers.
+
+Used by `simulate_storm_kill` in `ai/ev_evaluator.py`.
+"""
+
+# ── pass-EV / future-value constants ────────────────────────────────
+
+PASS_MANA_WASTE_PENALTY: float = 0.5
+"""Derived: per-mana penalty for passing with unused mana. 0.5 ≈
+half a card-value unit per mana — wasting mana directly reduces the
+clock-impact we could have applied this turn. The full mana-budget
+penalty applies linearly: passing with 3 mana is worse than passing
+with 1.
+
+Used by `estimate_pass_ev` in `ai/ev_evaluator.py`.
+"""
+
+PASS_OPP_DEVELOPMENT_PENALTY_SCALE: float = 0.3
+"""Derived: scale on opp-development damage penalty when passing.
+0.3 = "30% of the life-as-resource swing" — the full swing is what
+the opp's next attack does to our life total; the 30% scaling
+captures "we still get one more turn to interact, so the swing isn't
+permanent".
+
+Used by `estimate_pass_ev` in `ai/ev_evaluator.py`.
+"""
+
+PASS_COMBO_FULL_HAND_PENALTY: float = 2.0
+"""Derived: extra pass-EV penalty when a combo deck has ≥5 cards in
+hand and is doing nothing. 2.0 ≈ TRADE_UP_BONUS scale — "we missed
+a trade-up opportunity by sitting on the chain".
+
+Used by `estimate_pass_ev` combo branch in `ai/ev_evaluator.py`.
+"""
+
+PASS_COMBO_FULL_HAND_THRESHOLD: int = 5
+"""Rules-constant: hand-size threshold at which the combo full-hand
+pass penalty fires. 5 = "more than half a starting hand" — at this
+size combo decks definitely have chain pieces to deploy.
+
+Used by `estimate_pass_ev` combo branch in `ai/ev_evaluator.py`.
+"""
+
+FUTURE_DECAY_MIN_CONTINUATION: float = 0.5
+"""Derived: minimum per-turn continuation factor in future-value
+decay. 0.5 = "even when close to dying we still get a 50% chance of
+the surviving turn mattering" — prevents the decay from collapsing
+to 0.0 in lethal-soon states.
+
+Used by `estimate_future_value` in `ai/ev_evaluator.py`.
+"""
+
+LIFE_TO_POWER_EQUIVALENT: float = 0.25
+"""Derived: life→power-equivalent conversion ratio for the
+deferred-trigger value model. 0.25 matches life_as_resource at
+opp_power=3 — life is also a buffer against burn / removal /
+non-combat damage which raw clock_diff doesn't model.
+
+Used by `_clause_life_gain` deferred-trigger value in
+`ai/ev_evaluator.py`.
+"""
+
+ENERGY_TO_POWER_EQUIVALENT: float = 0.5
+"""Derived: energy→power-equivalent conversion ratio. 1 energy ≈ 1/3
+of an angel activation (Guide of Souls's {E}{E}{E} → +2/+2 + flying ≈
+3 power), so 1 energy ≈ 1.0 power-equivalent. Capped at 0.5 to avoid
+over-crediting decks that produce energy without finishers.
+
+Used by `_clause_energy_gain` deferred-trigger value in
+`ai/ev_evaluator.py`.
+"""
+
+SURVIVAL_TURNS_FLOOR: float = 0.5
+"""Sentinel: minimum survival_turns value used as the divisor in
+the no-clock burn-payoff scaling (`1.0 / max(survival_turns, 0.5)`).
+Below 0.5 the factor saturates at 2.0 — at that point the opp is
+already dead, so the divisor floor prevents division-by-near-zero
+without changing the saturated branch's behavior.
+
+Used by burn projection in `ai/ev_evaluator.py`.
+"""
+
+NONLAND_PERMANENT_ENTERS_PER_TURN: float = 0.7
+"""Derived: average non-land permanents entering per turn in Modern.
+0.7 reflects "Modern decks deploy roughly one nonland permanent per
+main phase" — slightly less than 1.0 because some turns are pure
+land + cantrip / removal-only. Used by per-permanent recurring
+triggers (Pinnacle Emissary, Guide of Souls, anthem-style stacks).
+
+Used by `_clause_token_power` recurring-trigger branch in
+`ai/ev_evaluator.py`.
+"""
+
+FUTURE_DECAY_MAX_CONTINUATION: float = 0.95
+"""Derived: maximum per-turn continuation factor in future-value
+decay. 0.95 = "in a long game, cards/mana shift enough per turn to
+warrant ≥5% discount" — prevents the decay from saturating at 1.0
+in stalled positions.
+
+Used by `estimate_future_value` in `ai/ev_evaluator.py`.
+"""
+
+
+# ─── Word-cardinal map for amass parsing (ai/ev_evaluator.py) ───────
+# These literals encode oracle-text English cardinals (CR 107 — Numbers
+# and Symbols). Tagged as rules-text rather than tuning weights.
+
+AMASS_WORD_MAP: dict = {
+    'one': 1,    # magic-allow: oracle-text cardinal
+    'two': 2,    # magic-allow: oracle-text cardinal
+    'three': 3,  # magic-allow: oracle-text cardinal
+    'four': 4,   # magic-allow: oracle-text cardinal
+    'five': 5,   # magic-allow: oracle-text cardinal
+    'six': 6,    # magic-allow: oracle-text cardinal
+    'seven': 7,  # magic-allow: oracle-text cardinal
+    'eight': 8,  # magic-allow: oracle-text cardinal
+    'nine': 9,   # magic-allow: oracle-text cardinal
+    'ten': 10,   # magic-allow: oracle-text cardinal
+}
+"""Word→integer cardinal map for parsing amass clauses ("amass three"
+→ +3 +1/+1 counters). These literals encode CR 107 cardinals — they
+are not tuning weights. Each value is tagged with `# magic-allow:
+oracle-text cardinal` because they encode rules text.
+
+Used by `_clause_token_power` in `ai/ev_evaluator.py`.
+"""
+
+
 DEFAULT_PLAN_TURN: int = 5
 """Sentinel: default `game_turn` value for `TurnPlanner.plan_turn`
 when callers don't pass a turn number. 5 reflects the "Modern midgame"
