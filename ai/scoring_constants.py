@@ -3725,6 +3725,92 @@ Used by `GoalEngine.card_keep_score` critical-singleton branch in
 """
 
 
+# ---- DecisionThresholds dataclass defaults ----
+# These are the midrange/default values for the per-deck
+# `DecisionThresholds` config. Each archetype's gameplan can override
+# any of these via its DecisionThresholds(...) constructor; the values
+# here are the defaults applied when no override is given. Kept as
+# named module-level constants so re-tuning the default is a
+# single-point edit visible in scoring_constants.
+
+DECISION_DYING_CLOCK: int = 4
+"""Derived: default `dying_clock` for `DecisionThresholds`. Triggers
+the "I'm dying" SURVIVE branch when `opp_clock <= 4` AND the opp's
+board has at least `DECISION_DYING_MIN_BOARD_POWER` power. 4 turns
+matches the Modern "panic threshold" — under 4 turns to die we must
+prioritise removal over deploys.
+
+Used by `DecisionThresholds.dying_clock` in `ai/gameplan.py`.
+"""
+
+
+DECISION_DYING_MIN_BOARD_POWER: int = 3
+"""Derived: default opp-board power that gates the SURVIVE branch's
+"dying" trigger. 3 power is "one solid creature or two small ones"
+— below this the threat is small enough that life-as-resource
+arithmetic (`ai/clock.py`) prefers race over removal.
+
+Sister constant: DECISION_DYING_CLOCK (turn axis).
+"""
+
+
+DECISION_ANSWER_MIN_POWER: int = 3
+"""Derived: minimum creature power for "meaningful threat" at the MED
+classification level when under pressure. Same magnitude as the
+SURVIVE branch's board-power floor — the threshold for "this creature
+warrants removal" matches "this board is dangerous".
+
+Used by `DecisionThresholds.answer_min_power` in `ai/gameplan.py`.
+"""
+
+
+DECISION_WRATH_SINGLE_TARGET_MIN_VAL: float = 8.0
+"""Derived: minimum threat value at which a single creature warrants
+a board wipe. 8.0 sits at the role-bonus tier (`MULL_KEEP_ENGINE_ROLE`
+scale) — a creature must be worth at least an engine-tier card before
+we burn a wrath on it alone. Below 8 we save the wrath for a wider
+board.
+
+Used by `DecisionThresholds.wrath_single_target_min_val` in
+`ai/gameplan.py`.
+"""
+
+
+DECISION_EVOKE_HARDCAST_NEXT_TURN: float = 0.7
+"""Derived: pressure level (0.0-1.0) at which evoke fires when we
+COULD hardcast next turn. 0.7 = "70% pressure, still close enough to
+hold for the hardcast", so the AI prefers to wait. Above 70% pressure
+we evoke now even at the cost of the body — the next-turn hardcast
+arrives too late.
+
+Used by `DecisionThresholds.evoke_hardcast_next_turn` in
+`ai/gameplan.py`.
+"""
+
+
+DECISION_EVOKE_WRONG_COLORS: float = 0.4
+"""Derived: pressure level at which evoke fires when we'd never be
+able to hardcast (wrong colors). 0.4 = "40% pressure, the body is
+unreachable so the only access is evoke" — lower than the hardcast
+threshold (0.7) because hardcast isn't a viable alternative.
+
+Used by `DecisionThresholds.evoke_wrong_colors` in `ai/gameplan.py`.
+"""
+
+
+# ---- DeckGameplan dataclass defaults ----
+
+DEFAULT_MULLIGAN_MAX_LANDS: int = 4
+"""Derived: default max-lands threshold for the mulligan keep
+heuristic. 4 lands is the "flood ceiling" for a 7-card hand — at 5+
+the hand is too land-heavy to develop a meaningful threat density.
+Decks with high mana curves (Tron, Amulet Titan) override this
+upward; aggro decks override downward.
+
+Used by `DeckGameplan.mulligan_max_lands` in `ai/gameplan.py`.
+"""
+
+
 # ─── Outcome-distribution constants (ai/outcome_ev.py) ────────────────
 # Bare-literal extraction pass for `ai/outcome_ev.py`. The remaining
 # numerics in that module are probability bounds (0.0 / 1.0) and

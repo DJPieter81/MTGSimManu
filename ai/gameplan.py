@@ -37,6 +37,13 @@ from ai.scoring_constants import (
     COMBO_PIECE_CONFIDENCE_BONUS,
     COMBO_NO_PAYOFF_CONFIDENCE,
     COMBO_NO_PIECES_CONFIDENCE,
+    DECISION_DYING_CLOCK,
+    DECISION_DYING_MIN_BOARD_POWER,
+    DECISION_ANSWER_MIN_POWER,
+    DECISION_WRATH_SINGLE_TARGET_MIN_VAL,
+    DECISION_EVOKE_HARDCAST_NEXT_TURN,
+    DECISION_EVOKE_WRONG_COLORS,
+    DEFAULT_MULLIGAN_MAX_LANDS,
     MULL_KEEP_LAND_TARGET,
     MULL_KEEP_LAND_NEEDED,
     MULL_KEEP_LAND_EXTRA,
@@ -174,8 +181,8 @@ class DecisionThresholds:
     # "Am I dying?" fires when opp_clock <= this AND opp_board_power >= min_board_power.
     # Empirically measured: clock<=4,power>=3 triggers ~50-70% vs aggro (archetype-dependent).
     # This is the baseline survival check — it's MEANT to trigger often.
-    dying_clock: int = 4
-    dying_min_board_power: int = 3
+    dying_clock: int = DECISION_DYING_CLOCK
+    dying_min_board_power: int = DECISION_DYING_MIN_BOARD_POWER
 
     # --- ANSWER: threat classification tuning ---
     # Categorical threat classification (MUST/HIGH/MED/LOW) replaces
@@ -183,7 +190,7 @@ class DecisionThresholds:
     # Emergency clock: answer ALL creatures when this close to dying
     answer_emergency_clock: int = 2
     # Minimum power for a "meaningful" creature under pressure (MED level)
-    answer_min_power: int = 3
+    answer_min_power: int = DECISION_ANSWER_MIN_POWER
 
     # --- ADVANCE (reactive): mana holdback for interaction ---
     # Minimum mana to leave untapped when deploying a threat.
@@ -193,14 +200,14 @@ class DecisionThresholds:
     # --- Board wipe conservation ---
     # Don't use a board wipe on a single creature unless its value exceeds this.
     # Higher = save wraths for bigger boards. Lower = wrath single threats.
-    wrath_single_target_min_val: float = 8.0
+    wrath_single_target_min_val: float = DECISION_WRATH_SINGLE_TARGET_MIN_VAL
 
     # --- Evoke thresholds ---
     # Pressure level needed to evoke when we can hardcast next turn (0.0-1.0).
     # Higher = more reluctant to evoke (wait for hardcast).
-    evoke_hardcast_next_turn: float = 0.7
+    evoke_hardcast_next_turn: float = DECISION_EVOKE_HARDCAST_NEXT_TURN
     # Pressure level needed to evoke when colors are wrong.
-    evoke_wrong_colors: float = 0.4
+    evoke_wrong_colors: float = DECISION_EVOKE_WRONG_COLORS
     # Don't evoke removal against creatures with power AND cmc at or below these.
     evoke_skip_small_power: int = 2
     evoke_skip_small_cmc: int = 2
@@ -312,7 +319,7 @@ class DeckGameplan:
     # Mulligan: card names that are essential to keep
     mulligan_keys: Set[str] = field(default_factory=set)
     mulligan_min_lands: int = 2
-    mulligan_max_lands: int = 4
+    mulligan_max_lands: int = DEFAULT_MULLIGAN_MAX_LANDS
 
     # Mulligan: per-bracket CMC thresholds.  Replaces the literal
     # `<= 2` / `<= 3` checks that previously hard-coded "cheap" and
@@ -769,7 +776,7 @@ def generic_combo_readiness(game, player_idx: int, engine: "GoalEngine"):
     payoffs = goal.card_roles.get("payoffs", set())
     available_payoffs = payoffs & (hand_names | bf_names)
     if not available_payoffs and payoffs:
-        return False, COMBO_NO_PAYOFF_CONFIDENCE, f"No payoff available (need one of: {', '.join(list(payoffs)[:3])})"
+        return False, COMBO_NO_PAYOFF_CONFIDENCE, f"No payoff available (need one of: {', '.join(list(payoffs)[:3])})"  # magic-allow: display-only slice (first 3 of payoff names)
 
     # Check enabler availability
     enablers = goal.card_roles.get("enablers", set())
