@@ -3791,6 +3791,194 @@ Used by `generic_combo_readiness` final fallback in `ai/gameplan.py`.
 """
 
 
+# ---- Mulligan keep/mull decision constants (ai/mulligan.py) ----
+# Hand-size and bracket thresholds used by `MulliganDecider.decide`.
+# Most are CR 103.4 / London-mulligan structural constants
+# (starting hand size 7, mull steps 7→6→5→4) plus deck-archetype-
+# independent flood/development brackets.
+
+MULLIGAN_STARTING_HAND_SIZE: int = 7
+"""Rules-constant (CR 103.4): starting hand size in Magic. The
+London-mulligan mechanic always draws 7, then bottoms `mull_count`
+cards before play. The 7-card check identifies the pre-bottom hand
+where the strictest keep predicates apply (full-strength keep tests,
+combo-progress requirements, etc.).
+
+Used by `MulliganDecider.decide` and `_generic` in `ai/mulligan.py`.
+"""
+
+
+MULLIGAN_FIRST_MULL_HAND_SIZE: int = 6
+"""Rules-constant (CR 103.4): hand size after one mulligan. The
+London-mulligan keeps physical hand at 7 but bottoms one card, so
+the "virtual size" the AI evaluates is 6. At this size relaxed keep
+predicates apply (combo decks accept slower development, key-card
+hands can be kept on 1 cheap spell).
+
+Used by `MulliganDecider.decide` and `_generic` in `ai/mulligan.py`.
+"""
+
+
+MULLIGAN_FLOOD_LAND_COUNT: int = 5
+"""Derived: lands-in-hand threshold above which the soft-ceiling
+flood check fires. ≥5 lands in a 7-card hand leaves <2 spells, which
+fails to develop a meaningful threat density. Same threshold as
+`STAX_LOCK_DECAY_BURNOUT_TURN` (the curve is fully developed by T5),
+not a coincidence — both encode "the deck has resolved its early
+plays by 5".
+
+Used by `MulliganDecider.decide` flood-ceiling check and `_generic`
+in `ai/mulligan.py`.
+"""
+
+
+MULLIGAN_MIN_SPELLS_BASIC: int = 2
+"""Rules-constant: minimum spell count for a non-flooded keep. Below
+2 spells a hand has nothing to develop after the first land drop
+fails to threaten. Combined with `MULLIGAN_FLOOD_LAND_COUNT` to detect
+flooded keeps.
+
+Used by `MulliganDecider.decide` flood and dead-card branches in
+`ai/mulligan.py`.
+"""
+
+
+MULLIGAN_COMBO_PATH_3SET_THRESHOLD: int = 2
+"""Rules-constant: minimum pieces in a 3-card combo path required at
+7-card-hand keep. n=3 sets are ALL-style ("named enabler + target +
+payoff") so 2-of-3 is the minimum — 1-of-3 leaves the deck without
+two of the three legs.
+
+Used by `MulliganDecider.decide` combo-path threshold logic.
+"""
+
+
+MULLIGAN_COMBO_PATH_3SET_SIZE: int = 3
+"""Rules-constant: combo-set cardinality flagging the ALL-style path
+(n=3 → "named enabler + target + payoff"). Different cardinalities
+have different keep thresholds; n=2 is ANY-style (1-of-2 fine), n=3
+is ALL-style (2-of-3 needed), n>=4 is interchangeable bag (1-of-N
+fine).
+
+Used by `MulliganDecider.decide` combo-path threshold logic.
+"""
+
+
+MULLIGAN_COLOR_SOUNDNESS_FLOOR: int = 5
+"""Rules-constant: minimum virtual hand size at which combo-color
+soundness check fires. Below 5 the hand is too small for color-broken
+combo cards to matter (engine has scheduled a 4-card hand which is
+already being mulled aggressively). 5+ matches the post-mull-twice
+window where the player has chosen to commit.
+
+Used by `MulliganDecider.decide` color-soundness gate.
+"""
+
+
+MULLIGAN_CMC_PROFILE_MEDIUM_DEFAULT: int = 3
+"""Sentinel: fallback `medium` CMC when a gameplan declares no
+`mulligan_cmc_profile["medium"]`. 3 reflects the standard "castable
+by T2-T3" boundary used for development-counting in the keep heuristic.
+
+Used by `MulliganDecider.decide` development-counting branch.
+"""
+
+
+MULLIGAN_KEY_DEVELOPMENT_REQUIRED: int = 2
+"""Rules-constant: minimum cheap-spell count for a non-combo-archetype
+key-card keep at 7 cards. Below 2 the hand has the key card but no
+turn-2 development — the key resolves but the deck doesn't follow up.
+Combo and post-mull (≤6 cards) hands accept 1.
+
+Used by `MulliganDecider.decide` key-card branch.
+"""
+
+
+MULLIGAN_CRITICAL_PIECE_LAND_OFFSET: int = 2
+"""Rules-constant: lands-needed offset below the critical piece's CMC
+when validating a critical-piece keep. Ramp decks cast CMC-6 Titans
+on 4-5 lands via bounce lands + Amulet, so the floor is `max_cmc - 2`
+clamped above `mulligan_min_lands`. Below this offset the piece is
+genuinely uncastable; at offset the hand has a realistic ramp path.
+
+Used by `MulliganDecider.decide` critical-piece branch.
+"""
+
+
+MULLIGAN_GENERIC_AGGRO_CHEAP_FLOOR: int = 4
+"""Rules-constant: cheap-spell count required for the no-gameplan
+aggro fallback to keep a 1-land hand. With 1 land and ≥4 cheap spells
+the hand has Mountain + 4 one-drops curve — historically a common
+Modern aggro keep against slow decks. Below 4 the curve breaks too
+early.
+
+Used by `MulliganDecider._generic` aggro branch.
+"""
+
+
+MULLIGAN_GENERIC_AGGRO_CHEAP_DEV: int = 2
+"""Rules-constant: cheap-spell count required for the no-gameplan
+aggro fallback to keep a 1-3 land hand. ≥2 cheap spells covers T1
+play + T2 play; below this the deck stalls.
+
+Used by `MulliganDecider._generic` aggro 1-3 land branch.
+"""
+
+
+MULLIGAN_GENERIC_LAND_FLOOR_AGGRO: int = 3
+"""Rules-constant: upper bound on lands for the no-gameplan aggro
+1-3 keep. Above 3 the hand is land-flooded for an aggro deck.
+
+Used by `MulliganDecider._generic` aggro branch.
+"""
+
+
+MULLIGAN_GENERIC_LAND_FLOOR_CONTROL: int = 3
+"""Rules-constant: minimum lands for the no-gameplan control fallback
+to evaluate the interaction-spell check. Below 3 lands a control deck
+cannot reliably hold up its 2-CMC interaction; the hand is mulled.
+
+Used by `MulliganDecider._generic` control branch.
+"""
+
+
+MULLIGAN_GENERIC_MIDRANGE_LAND_LOW: int = 2
+"""Rules-constant: lower bound on lands for the no-gameplan midrange
+fallback. Below 2 the hand is mana-screw risk on a 7-card keep.
+
+Used by `MulliganDecider._generic` midrange land-bracket branch.
+"""
+
+
+MULLIGAN_GENERIC_MIDRANGE_LAND_HIGH: int = 4
+"""Rules-constant: upper bound on lands for the no-gameplan midrange
+fallback's medium-spell development check. 4 lands matches
+`DEFAULT_MULLIGAN_MAX_LANDS` — same flood-ceiling concept.
+
+Used by `MulliganDecider._generic` midrange land-bracket branch.
+"""
+
+
+MULLIGAN_GENERIC_MIDRANGE_MED_DEV: int = 2
+"""Rules-constant: medium-CMC spell count required for the no-gameplan
+midrange fallback. ≥2 medium-CMC spells gives T2-T3 plays after the
+land drops.
+
+Used by `MulliganDecider._generic` midrange branch.
+"""
+
+
+MULLIGAN_CURVE_SUBSTITUTE_FLOOR: int = 3
+"""Rules-constant: minimum actionable spells (within max_actionable_cmc)
+that substitute for a missing curve creature. 3 actionable spells
+cover T1-T3 plays (or T2-T4 if we miss land 1), matching the
+"curve-out" expectation the original rule was enforcing. Below 3
+the hand has nothing to substitute for the missing creature.
+
+Used by `MulliganDecider.decide` curve-substitute branch.
+"""
+
+
 # ---- Mulligan card_keep_score weights (ai/gameplan.py) ----
 # Weights used by `GoalEngine.card_keep_score` to rank cards when
 # bottoming on a London-mulligan keep. Higher score = keep. The
