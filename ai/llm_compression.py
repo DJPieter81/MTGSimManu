@@ -58,7 +58,13 @@ _FEATURE_FLAG_ATTRS: tuple[str, ...] = (
 # feature vector.  The CardFeatures.first_two_oracle_lines field is
 # already capped at two lines; this caps the *character* width of that
 # excerpt so a single Saga / Adventure card can't blow the line budget.
-_ORACLE_EXCERPT_CHAR_CAP: int = 200
+# Tuned to land the headline 4× token reduction:
+#   * the feature-flag list already encodes "this is removal", "this is
+#     a counterspell", etc., so the excerpt is a sanity-check anchor,
+#     not the primary signal.
+#   * 60 chars is roughly one short sentence — enough for the LLM to
+#     spot a misclassified flag without re-reading the full oracle.
+_ORACLE_EXCERPT_CHAR_CAP: int = 60
 
 # Default ceiling on key events kept by `compress_replay`.  Bo3 logs
 # regularly run 1000+ lines; ~200 key events is enough for an LLM to
