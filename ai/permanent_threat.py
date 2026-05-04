@@ -85,16 +85,27 @@ def permanent_threat(card: "CardInstance", owner: "PlayerState",
         #
         # Solution: restore counts to match the full_snap state, so both
         # snapshots have consistent count-based terms.
+        # PR-L1: mirror the snapshot-level rule that artifact lands
+        # do NOT contribute to artifact_count.  If we don't gate on
+        # ``CardType.LAND not in card_types`` here, popping an
+        # artifact land from the battlefield would leave partial_snap
+        # with the same artifact_count as full_snap (because the
+        # snapshot recompute already excluded lands), and then we'd
+        # increment it by 1, creating a phantom +1 delta.
         card_types = card.template.card_types
+        is_non_land_artifact = (
+            CardType.ARTIFACT in card_types
+            and CardType.LAND not in card_types
+        )
         if owner_idx == 0:
             # Popped from my side
-            if CardType.ARTIFACT in card_types:
+            if is_non_land_artifact:
                 partial_snap.my_artifact_count += 1
             if CardType.ENCHANTMENT in card_types:
                 partial_snap.my_enchantment_count += 1
         else:
             # Popped from opp side
-            if CardType.ARTIFACT in card_types:
+            if is_non_land_artifact:
                 partial_snap.opp_artifact_count += 1
             if CardType.ENCHANTMENT in card_types:
                 partial_snap.opp_enchantment_count += 1
