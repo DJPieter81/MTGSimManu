@@ -316,6 +316,25 @@ class CardInstance:
         player = self._game_state.players[self.controller]
         return sum(1 for c in player.battlefield if CardType.ARTIFACT in c.template.card_types)
 
+    def _get_artifact_or_enchantment_count(self) -> int:
+        """Count permanents that are artifacts OR enchantments,
+        controlled by this card's controller (no double-count of
+        cards that are both, e.g. Urza's Saga or theros enchantment-
+        creatures).  Mirrors the set-union semantics of equipment
+        oracles like Nettlecyst's "+1/+1 for each artifact and/or
+        enchantment you control."
+        """
+        if self._game_state is None:
+            return 0
+        player = self._game_state.players[self.controller]
+        count = 0
+        for c in player.battlefield:
+            types = c.template.card_types
+            if (CardType.ARTIFACT in types
+                    or CardType.ENCHANTMENT in types):
+                count += 1
+        return count
+
     def _get_controller_battlefield(self):
         """Get the controller's battlefield."""
         if self._game_state is None:
@@ -389,7 +408,13 @@ class CardInstance:
                     if equip_perm is None:
                         continue
                     eq_oracle = (equip_perm.template.oracle_text or '').lower()
-                    if 'for each artifact' in eq_oracle or 'artifact you control' in eq_oracle:
+                    # "X and/or Y" clauses (Nettlecyst: artifact and/or
+                    # enchantment) count the union, not just X. Detect
+                    # the union form before the artifact-only form.
+                    if ('artifact and/or enchantment' in eq_oracle
+                            or 'enchantment and/or artifact' in eq_oracle):
+                        base += self._get_artifact_or_enchantment_count()
+                    elif 'for each artifact' in eq_oracle or 'artifact you control' in eq_oracle:
                         base += self._get_artifact_count()
                 except (ValueError, AttributeError):
                     pass
@@ -441,7 +466,12 @@ class CardInstance:
                     if m:
                         tou_component = m.group(2)
                         if tou_component != '0':
-                            base += self._get_artifact_count()
+                            # "X and/or Y" set-union form (Nettlecyst).
+                            if ('artifact and/or enchantment' in eq_oracle
+                                    or 'enchantment and/or artifact' in eq_oracle):
+                                base += self._get_artifact_or_enchantment_count()
+                            else:
+                                base += self._get_artifact_count()
                 except (ValueError, AttributeError):
                     pass
         return base
