@@ -6,7 +6,6 @@ keeping the kernel test pure: it exercises the primitive's contract
 state construction.
 """
 from __future__ import annotations
-from dataclasses import replace
 
 import pytest
 
@@ -104,7 +103,7 @@ def test_higher_ev_choice_wins():
 def test_baseline_override_compares_against_alternative_state():
     snap = _baseline_snap()
     # Hypothetical "after opponent's turn" baseline — we've taken damage
-    after_opp = replace(snap, my_life=snap.my_life - 5)
+    after_opp = snap.replace(my_life=snap.my_life - 5)
 
     def hold(s):
         return s

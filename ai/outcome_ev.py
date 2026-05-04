@@ -379,19 +379,21 @@ def build_combo_distribution(card, snap, game, me, opp, bhi,
     # reanimate, project a board with the reanimated creature.
     if category == 'reanimate':
         target_power = _best_creature_power_in_gy(me)
-        after = replace(
-            snap,
+        # Phase J-1: ``snap.replace(...)`` — pydantic equivalent of
+        # ``dataclasses.replace(snap, ...)``.  Validated copy with
+        # field overrides.  EVSnapshot is no longer a dataclass.
+        after = snap.replace(
             my_power=snap.my_power + target_power,
             my_creature_count=snap.my_creature_count + 1,
         )
     else:
         # Lethal-on-success: zero opponent's life, p_win saturates near 1.
-        after = replace(snap, opp_life=0)
+        after = snap.replace(opp_life=0)
     v_complete = p_win_delta(snap, after, my_arch, opp_arch)
 
     # PARTIAL_ADVANCE: cantrip-equivalent — credit one extra card seen.
-    after_partial = replace(
-        snap, cards_drawn_this_turn=snap.cards_drawn_this_turn + 1)
+    after_partial = snap.replace(
+        cards_drawn_this_turn=snap.cards_drawn_this_turn + 1)
     v_partial = p_win_delta(snap, after_partial, my_arch, opp_arch)
 
     # FIZZLE / DISRUPTED / NEUTRAL: zero swing in P_win units.  The

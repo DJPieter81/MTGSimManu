@@ -7,7 +7,6 @@ optional-cost mechanic requires NO callback changes — only oracle-
 parser extensions.
 """
 from __future__ import annotations
-from dataclasses import replace
 from types import SimpleNamespace
 
 import pytest
@@ -79,7 +78,7 @@ def test_apply_to_snap_does_not_share_color_dict_with_caller():
                        produces_mana=("U", "R"))
     opt = parse_optional_costs(card, trigger="etb")[0]
     original = {"U": 2}
-    snap = replace(EVSnapshot(my_life=20, my_mana_by_color=original))
+    snap = EVSnapshot(my_life=20, my_mana_by_color=original).fast_replace()
     # apply mutates a copy of snap's dict in place; the caller's
     # original dict reference must remain unchanged
     opt.apply_to_snap(snap)

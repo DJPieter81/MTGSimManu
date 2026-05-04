@@ -16,7 +16,6 @@ This is the single primitive that replaces every domain-named
 `should_pay_X` / `pick_best_Y` callback in the codebase.
 """
 from __future__ import annotations
-from dataclasses import replace
 from typing import TYPE_CHECKING, Optional
 
 from ai.schemas import Choice
@@ -78,7 +77,11 @@ def best_choice(
     best_ev = base_ev
     best: Optional[Choice] = None
     for c in choices:
-        snap_after = c.apply(replace(snap_now))
+        # Phase J-1: ``snap_now.fast_replace()`` is the pydantic-model
+        # equivalent of ``dataclasses.replace(snap_now)`` — produces a
+        # mutable clone the choice's ``apply`` lambda can mutate
+        # without aliasing back to the baseline.
+        snap_after = c.apply(snap_now.fast_replace())
         ev = evaluate_board(snap_after, archetype)
         if ev > best_ev:
             best_ev = ev
