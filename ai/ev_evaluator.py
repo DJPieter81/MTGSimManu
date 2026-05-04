@@ -283,16 +283,23 @@ def snapshot_from_game(game: "GameState", player_idx: int) -> EVSnapshot:
     # Populate artifact/enchantment counts unconditionally; gate the
     # activation flags on oracle-visible scaling cards in the respective
     # player's visible zones.
+    #
+    # PR-L1: artifact-typed *lands* (Darksteel Citadel, Vault of
+    # Whispers, Inkmoth Nexus, ...) are part of the mana base, not
+    # board-strength permanents.  They must not contribute to
+    # artifact_count, which clock.py:artifact_value reads as a
+    # board-strength proxy.  Mirrors the existing ``not t.is_land``
+    # gate in the cast-projection code below.
     from engine.cards import CardType
     for c in me.battlefield:
         types = c.template.card_types
-        if CardType.ARTIFACT in types:
+        if CardType.ARTIFACT in types and CardType.LAND not in types:
             snap.my_artifact_count += 1
         if CardType.ENCHANTMENT in types:
             snap.my_enchantment_count += 1
     for c in opp.battlefield:
         types = c.template.card_types
-        if CardType.ARTIFACT in types:
+        if CardType.ARTIFACT in types and CardType.LAND not in types:
             snap.opp_artifact_count += 1
         if CardType.ENCHANTMENT in types:
             snap.opp_enchantment_count += 1
