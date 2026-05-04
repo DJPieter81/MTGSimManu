@@ -2950,6 +2950,72 @@ Used by the mid-chain coverage gate in `ai/combo_evaluator.py`.
 """
 
 
+# ─── Finisher-simulator constants (ai/finisher_simulator.py) ────────
+# Used by `simulate_finisher_chain` and pattern projectors. Every
+# value below is either a rules-derived sentinel ("one extra rules
+# step required") or an unreachable-CMC sentinel.
+
+CHAIN_EXTRA_RULES_STEP_SUCCESS: float = 0.5
+"""Rules-derived sentinel: success probability when the chain
+requires one extra rules step beyond its primary access. Examples:
+tutor must resolve uncountered before fetching the closer; discard
+outlet must succeed before the reanimator can target; cascade or
+draw must reveal the cycling payoff before Living End fires.
+
+0.5 reflects "one fair-coin event must succeed for the chain to
+work" — not a tuning weight, the same fair-coin floor used in
+`COMBO_FIRE_SUCCESS_THRESHOLD`. All four pattern projectors share
+this floor when the primary access is one rules step away.
+
+Used by `_project_storm`, `_project_storm_via_tutor`,
+`_project_reanimation`, `_project_cycling`, and `chain_lethal_turn`
+in `ai/finisher_simulator.py`.
+"""
+
+
+CHAIN_NO_CLOCK_DEFAULT: int = 99
+"""Sentinel: opp_clock fallback when `opp_clock_discrete` is missing
+on the snapshot. 99 turns is unreachable in any realistic Modern game
+and matches the sentinel semantics of `NO_CLOCK_SENTINEL` (gameplan)
+and `NO_CLOCK = 99.0` (clock.py): "no clock means opponent cannot
+reach lethal in any meaningful timeframe".
+
+Used by the hold-value computation in `ai/finisher_simulator.py`.
+"""
+
+
+CHAIN_CYCLING_COST_UNREACHABLE: int = 99
+"""Sentinel: cycling-cost fallback when a card lacks parsed
+`cycling_cost_data['mana']`. 99 mana is unreachable in Modern, so a
+card with missing cost-data sorts to the bottom of the cheapest-
+cycler search and never gets picked as the chain's cheapest fuel.
+
+Used by `_project_cycling` in `ai/finisher_simulator.py`.
+"""
+
+
+CHAIN_ARCHETYPE_MATCH_PRIORITY: int = 4
+"""Tiebreaker: priority assigned to a candidate pattern whose name
+matches the deck's archetype hint (storm/cascade/reanimation/cycling).
+4 sits above the default ordering (storm=3, reanimation=2, cascade=1,
+cycling=0) so an archetype-hinted match always wins ties — used only
+when EV proxies are equal between candidates.
+
+Used by `_priority` in `simulate_finisher_chain`.
+"""
+
+
+CHAIN_DEFAULT_PRIORITY_ORDER: dict = {"storm": 3, "reanimation": 2,
+                                       "cascade": 1, "cycling": 0}
+"""Tiebreaker: default candidate-pattern ordering when no archetype
+hint binds. Reflects how directly each pattern translates to damage:
+storm and reanimation deal damage outright; cascade and cycling set
+up boards that need an extra turn to convert. Highest = preferred.
+
+Used by `_priority` in `simulate_finisher_chain`.
+"""
+
+
 # ─── Mana-planner constants (ai/mana_planner.py) ─────────────────────
 # Used by `score_land`, `choose_best_land`, and `choose_fetch_target`
 # to rank land candidates against the hand's color demand and the

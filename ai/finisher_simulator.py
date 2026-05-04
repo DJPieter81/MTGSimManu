@@ -55,6 +55,13 @@ if TYPE_CHECKING:
 
 from ai.schemas import FinisherProjection, FinisherPattern
 from ai.predicates import is_chain_fuel
+from ai.scoring_constants import (
+    CHAIN_ARCHETYPE_MATCH_PRIORITY,
+    CHAIN_CYCLING_COST_UNREACHABLE,
+    CHAIN_DEFAULT_PRIORITY_ORDER,
+    CHAIN_EXTRA_RULES_STEP_SUCCESS,
+    CHAIN_NO_CLOCK_DEFAULT,
+)
 
 
 # ─── Rules constants (no tuning weights — every value documented) ──
@@ -331,7 +338,9 @@ def _project_storm(
     if closer is not None:
         success = 1.0
     elif tutors_in_hand:
-        success = 0.5  # tutor present but caller hasn't given SB
+        # Tutor present but caller hasn't given SB — one extra rules
+        # step (tutor must resolve and find target) is required.
+        success = CHAIN_EXTRA_RULES_STEP_SUCCESS
     else:
         success = 0.0
 
@@ -376,7 +385,7 @@ def _project_storm(
     # Hold value: damage available next turn × P(we survive opp's
     # extra turn).  P(survive) = 1 − 1/opp_clock when opp has a
     # clock; 1.0 when opp has no clock (NO_CLOCK sentinel).
-    opp_clock = max(1.0, getattr(snap, 'opp_clock_discrete', 99))
+    opp_clock = max(1.0, getattr(snap, 'opp_clock_discrete', CHAIN_NO_CLOCK_DEFAULT))
     survival_p = max(0.0, 1.0 - 1.0 / opp_clock)
     hold_value = next_turn_damage * survival_p
 
@@ -548,12 +557,12 @@ def _project_storm_with_tutor_access(
     return FinisherProjection(
         pattern="storm",
         expected_damage=expected_damage,
-        # Success degrades by 0.5 because the tutor must resolve
-        # without being countered AND the closer must still be in
-        # SB/library (rules-derived sentinel: "one extra rules step
-        # required to make the chain work" — same as the
-        # reanimation-discard-outlet branch in `_project_reanimation`).
-        success_probability=0.5,
+        # Success degrades because the tutor must resolve without
+        # being countered AND the closer must still be in SB/library
+        # (rules-derived sentinel: "one extra rules step required to
+        # make the chain work" — same as the reanimation-discard-outlet
+        # branch in `_project_reanimation`).
+        success_probability=CHAIN_EXTRA_RULES_STEP_SUCCESS,
         mana_floor=mana_floor,
         chain_length=best.storm_count,
         closer_name=closer_card.template.name,
@@ -658,15 +667,15 @@ def _project_reanimation(
     mana_floor = cheapest_reanimator.template.cmc or 0
 
     # Success: 1.0 when GY already has a target AND mana suffices.
-    # When a discard outlet is needed first, success degrades by
-    # 0.5 (the outlet might miss, the target might not be in hand) —
-    # this is a rules-derived sentinel, not a tuning weight: it
-    # represents "one extra rules step required to make the chain
-    # work" (the outlet must succeed before the reanimator can fire).
+    # When a discard outlet is needed first, success degrades to the
+    # one-extra-rules-step sentinel (the outlet might miss, the
+    # target might not be in hand) — not a tuning weight, the same
+    # fair-coin floor used in the storm-tutor and cycling-cascade
+    # branches.
     if gy_creatures and snap.my_mana >= mana_floor:
         success = 1.0
     elif discard_outlets_in_hand:
-        success = 0.5
+        success = CHAIN_EXTRA_RULES_STEP_SUCCESS
     else:
         success = 0.0
 
@@ -735,20 +744,23 @@ def _project_cycling(
 
     cheapest_cycler = min(
         cyclers,
-        key=lambda c: (c.template.cycling_cost_data or {}).get('mana', 99)
+        key=lambda c: (c.template.cycling_cost_data or {}).get(
+            'mana', CHAIN_CYCLING_COST_UNREACHABLE
+        )
     )
     mana_floor = (
         cheapest_cycler.template.cycling_cost_data or {}
     ).get('mana', 0)
 
     # Success scales with whether the payoff is in hand (1.0) or
-    # depends on cascade/draw (0.5 — same rules-derived sentinel as
-    # the reanimation outlet case: one extra rules step required).
+    # depends on cascade/draw (rules-derived sentinel: same fair-coin
+    # floor as the reanimation outlet case — one extra rules step
+    # required).
     if payoffs_in_hand:
         success = 1.0
         closer_name = payoffs_in_hand[0].template.name
     else:
-        success = 0.5
+        success = CHAIN_EXTRA_RULES_STEP_SUCCESS
         cascade_enablers = [c for c in hand if _has_cascade_keyword(c)]
         closer_name = (
             cascade_enablers[0].template.name if cascade_enablers else None
@@ -903,19 +915,18 @@ def simulate_finisher_chain(
         # Higher = preferred.  Used only as tiebreaker — primary key
         # remains the EV proxy above.
         if archetype_lc.startswith("storm") and p.pattern == "storm":
-            return 4
+            return CHAIN_ARCHETYPE_MATCH_PRIORITY
         if archetype_lc.startswith("cascade") and p.pattern == "cascade":
-            return 4
+            return CHAIN_ARCHETYPE_MATCH_PRIORITY
         if (archetype_lc.startswith("rean") or "reanimat" in archetype_lc) \
                 and p.pattern == "reanimation":
-            return 4
+            return CHAIN_ARCHETYPE_MATCH_PRIORITY
         if "cycling" in archetype_lc and p.pattern == "cycling":
-            return 4
+            return CHAIN_ARCHETYPE_MATCH_PRIORITY
         # Default ordering: storm > reanimation > cascade > cycling.
         # Reflects how directly each pattern translates to damage:
         # storm/reanimation deal damage; cascade/cycling set up boards.
-        return {"storm": 3, "reanimation": 2,
-                "cascade": 1, "cycling": 0}.get(p.pattern, -1)
+        return CHAIN_DEFAULT_PRIORITY_ORDER.get(p.pattern, -1)
 
     best = max(candidates, key=lambda p: (_ev(p), _priority(p)))
 
@@ -1001,8 +1012,9 @@ def best_turn_damage(proj: FinisherProjection) -> tuple[float, int]:
 def chain_lethal_turn(proj: FinisherProjection,
                       opp_life: int) -> Optional[int]:
     """Return the FIRST turn-offset at which the projected chain
-    deals lethal damage (≥ opp_life with success ≥ 0.5), or None if
-    no projected turn reaches lethal.
+    deals lethal damage (≥ opp_life with success ≥
+    CHAIN_EXTRA_RULES_STEP_SUCCESS), or None if no projected turn
+    reaches lethal.
 
     "First" matters because firing on the earliest lethal turn is
     optimal — extra damage on later turns is irrelevant for game
@@ -1014,7 +1026,7 @@ def chain_lethal_turn(proj: FinisherProjection,
     turn = 0
     while node is not None:
         if (node.expected_damage >= opp_life
-                and node.success_probability >= 0.5):
+                and node.success_probability >= CHAIN_EXTRA_RULES_STEP_SUCCESS):
             return turn
         node = node.next_turn_proj
         turn += 1
