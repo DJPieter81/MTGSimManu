@@ -1,0 +1,12 @@
+{
+  "input": {
+    "diagnostic_doc": "docs/diagnostics/2026-04-23_affinity_mana_holdback_bug.md",
+    "log_excerpt": "AzCon has UU in hand and a counterspell.  At T3 it casts Isochron Scepter (3 mana), tapping all islands.  Opponent (Affinity) untaps and casts a threat with no AzCon counter active.  Repeats T4: AzCon taps out for board action; counterspell stays in hand."
+  },
+  "expected": {
+    "observed_symptom": "Control deck taps out on own turn with counterspell in hand, leaves no untapped mana for opponent's priority window",
+    "suspected_subsystem": "ai.ev_player",
+    "failing_test_rule": "control deck holds mana for counter when reactive-only card in hand",
+    "confidence": 0.85
+  }
+}

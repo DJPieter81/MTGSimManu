@@ -1,0 +1,340 @@
+[
+  {
+    "gameplan": {
+      "always_early": [
+        "Guide of Souls",
+        "Ocelot Pride",
+        "Ragavan, Nimble Pilferer"
+      ],
+      "archetype": "aggro",
+      "deck_name": "Boros Energy",
+      "goals": [
+        {
+          "card_priorities": {
+            "Ajani, Nacatl Pariah // Ajani, Nacatl Avenger": 18.0,
+            "Galvanic Discharge": 19.0,
+            "Goblin Bombardment": 14.0,
+            "Guide of Souls": 20.0,
+            "Ocelot Pride": 20.0,
+            "Ragavan, Nimble Pilferer": 22.0,
+            "Seasoned Pyromancer": 12.0,
+            "Thraben Charm": 15.0,
+            "Voice of Victory": 16.0
+          },
+          "card_roles": {
+            "enablers": [
+              "Guide of Souls",
+              "Ocelot Pride",
+              "Ragavan, Nimble Pilferer"
+            ],
+            "interaction": [
+              "Galvanic Discharge",
+              "Static Prison",
+              "Thraben Charm"
+            ],
+            "payoffs": [
+              "Ajani, Nacatl Pariah // Ajani, Nacatl Avenger",
+              "Seasoned Pyromancer",
+              "Voice of Victory"
+            ]
+          },
+          "description": "Deploy efficient creatures on curve while interacting",
+          "goal_type": "CURVE_OUT"
+        },
+        {
+          "card_priorities": {
+            "Blood Moon": 10.0,
+            "Galvanic Discharge": 15.0,
+            "Phlage, Titan of Fire's Fury": 18.0,
+            "Thraben Charm": 12.0
+          },
+          "card_roles": {
+            "interaction": [
+              "Galvanic Discharge",
+              "Thraben Charm"
+            ],
+            "payoffs": [
+              "Phlage, Titan of Fire's Fury"
+            ]
+          },
+          "description": "Attack aggressively, use removal to clear blockers",
+          "goal_type": "PUSH_DAMAGE"
+        },
+        {
+          "card_priorities": {
+            "Goblin Bombardment": 15.0,
+            "Phlage, Titan of Fire's Fury": 12.0
+          },
+          "description": "Convert board advantage into lethal damage",
+          "goal_type": "CLOSE_GAME"
+        }
+      ],
+      "mulligan_keys": [
+        "Ajani, Nacatl Pariah // Ajani, Nacatl Avenger",
+        "Galvanic Discharge",
+        "Guide of Souls",
+        "Ocelot Pride",
+        "Ragavan, Nimble Pilferer"
+      ],
+      "mulligan_max_lands": 3,
+      "mulligan_require_creature_cmc": 2
+    },
+    "stem": "boros_energy"
+  },
+  {
+    "gameplan": {
+      "_mulligan_combo_paths_doc": "Typed combo paths supersede the flat combo_sets above for keep/mull decisions.  Each path lists role buckets; at virtual size 7 hand needs >=1 enabler AND >=1 payoff, at virtual size 6 hand needs >=1 enabler (target dig-able through Faithful Mending).  Color-soundness still uses combo_sets above.  Diagnostic: 5-seed --bo3 sweep vs Affinity (60100..60500) showed 9/13 kept hands missing either enabler or payoff bucket; flat combo_sets cannot distinguish since both buckets contribute equally to the per-path piece count.",
+      "always_early": [
+        "Faithful Mending",
+        "Thoughtseize"
+      ],
+      "archetype": "combo",
+      "critical_pieces": [
+        "Archon of Cruelty",
+        "Goryo's Vengeance",
+        "Griselbrand",
+        "Unburial Rites"
+      ],
+      "deck_name": "Goryo's Vengeance",
+      "goals": [
+        {
+          "card_priorities": {
+            "Faithful Mending": 20.0,
+            "Thoughtseize": 18.0
+          },
+          "card_roles": {
+            "enablers": [
+              "Faithful Mending",
+              "Thoughtseize"
+            ]
+          },
+          "description": "Early disruption with Thoughtseize while setting up",
+          "goal_type": "DISRUPT",
+          "min_turns": 1
+        },
+        {
+          "card_priorities": {
+            "Faithful Mending": 25.0,
+            "Thoughtseize": 8.0
+          },
+          "card_roles": {
+            "enablers": [
+              "Faithful Mending"
+            ]
+          },
+          "description": "Get Griselbrand or Archon into the graveyard via self-discard",
+          "goal_type": "FILL_RESOURCE",
+          "resource_min_cmc": 5,
+          "resource_target": 1,
+          "resource_zone": "graveyard"
+        },
+        {
+          "card_priorities": {
+            "Ephemerate": 14.0,
+            "Goryo's Vengeance": 25.0,
+            "Unburial Rites": 22.0,
+            "Undying Evil": 15.0
+          },
+          "card_roles": {
+            "payoffs": [
+              "Goryo's Vengeance",
+              "Unburial Rites"
+            ],
+            "protection": [
+              "Ephemerate",
+              "Undying Evil"
+            ]
+          },
+          "description": "Reanimate with Goryo's Vengeance (legendary) or Unburial Rites (any creature, with flashback)",
+          "goal_type": "EXECUTE_PAYOFF",
+          "min_mana_for_payoff": 2,
+          "min_turns": 2,
+          "resource_min_cmc": 5,
+          "resource_zone": "graveyard"
+        },
+        {
+          "card_priorities": {
+            "Ephemerate": 15.0,
+            "Solitude": 10.0,
+            "Undying Evil": 12.0
+          },
+          "card_roles": {
+            "interaction": [
+              "Solitude"
+            ],
+            "protection": [
+              "Ephemerate",
+              "Undying Evil"
+            ]
+          },
+          "description": "Attack with reanimated creature, protect with blink",
+          "goal_type": "PUSH_DAMAGE"
+        }
+      ],
+      "mulligan_combo_paths": [
+        {
+          "enablers": [
+            "Faithful Mending"
+          ],
+          "payoffs": [
+            "Goryo's Vengeance",
+            "Unburial Rites"
+          ]
+        }
+      ],
+      "mulligan_combo_sets": [
+        [
+          "Faithful Mending",
+          "Goryo's Vengeance",
+          "Griselbrand"
+        ],
+        [
+          "Faithful Mending",
+          "Goryo's Vengeance",
+          "Archon of Cruelty"
+        ],
+        [
+          "Faithful Mending",
+          "Unburial Rites",
+          "Griselbrand"
+        ],
+        [
+          "Faithful Mending",
+          "Unburial Rites",
+          "Archon of Cruelty"
+        ]
+      ],
+      "mulligan_keys": [
+        "Archon of Cruelty",
+        "Faithful Mending",
+        "Goryo's Vengeance",
+        "Griselbrand",
+        "Unburial Rites"
+      ],
+      "mulligan_min_lands": 1,
+      "reactive_only": [
+        "Ephemerate",
+        "Undying Evil"
+      ]
+    },
+    "stem": "goryos_vengeance"
+  },
+  {
+    "gameplan": {
+      "archetype": "combo",
+      "archetype_subtype": "cascade_reanimator",
+      "combo_readiness_check": "generic_combo_readiness",
+      "critical_pieces": [
+        "Demonic Dread",
+        "Shardless Agent",
+        "Violent Outburst",
+        "Living End"
+      ],
+      "deck_name": "Living End",
+      "fallback_goals": [
+        {
+          "description": "Plan B: attack with cycled creatures if cascade is unavailable",
+          "goal_type": "PUSH_DAMAGE"
+        }
+      ],
+      "goals": [
+        {
+          "card_priorities": {
+            "Architects of Will": 26.0,
+            "Curator of Mysteries": 26.0,
+            "Demonic Dread": 15.0,
+            "Shardless Agent": 15.0,
+            "Street Wraith": 28.0,
+            "Striped Riverwinder": 26.0,
+            "Waker of Waves": 24.0
+          },
+          "card_roles": {
+            "fillers": [
+              "Architects of Will",
+              "Curator of Mysteries",
+              "Street Wraith",
+              "Striped Riverwinder",
+              "Waker of Waves"
+            ],
+            "payoffs": [
+              "Demonic Dread",
+              "Shardless Agent"
+            ]
+          },
+          "description": "Cycle creatures into GY while ramping to 3 mana for cascade",
+          "goal_type": "FILL_RESOURCE",
+          "prefer_cycling": true,
+          "resource_target": 4
+        },
+        {
+          "card_priorities": {
+            "Architects of Will": 10.0,
+            "Curator of Mysteries": 10.0,
+            "Demonic Dread": 30.0,
+            "Shardless Agent": 30.0,
+            "Street Wraith": 12.0,
+            "Striped Riverwinder": 10.0,
+            "Waker of Waves": 10.0
+          },
+          "card_roles": {
+            "fillers": [
+              "Architects of Will",
+              "Curator of Mysteries",
+              "Street Wraith",
+              "Striped Riverwinder",
+              "Waker of Waves"
+            ],
+            "payoffs": [
+              "Demonic Dread",
+              "Shardless Agent"
+            ]
+          },
+          "description": "Cascade into Living End NOW \u2014 cast Shardless Agent or Demonic Dread",
+          "goal_type": "EXECUTE_PAYOFF",
+          "prefer_cycling": true
+        },
+        {
+          "card_priorities": {
+            "Demonic Dread": 15.0,
+            "Shardless Agent": 15.0
+          },
+          "description": "Attack with reanimated creatures to close the game",
+          "goal_type": "PUSH_DAMAGE"
+        }
+      ],
+      "land_priorities": {
+        "Blooming Marsh": 5.0,
+        "Botanical Sanctum": 5.0,
+        "Forest": 2.0,
+        "Misty Rainforest": 4.0,
+        "Verdant Catacombs": 4.0,
+        "Zagoth Triome": 2.0
+      },
+      "mulligan_combo_sets": [
+        [
+          "Demonic Dread",
+          "Shardless Agent"
+        ],
+        [
+          "Architects of Will",
+          "Curator of Mysteries",
+          "Street Wraith",
+          "Striped Riverwinder",
+          "Waker of Waves"
+        ]
+      ],
+      "mulligan_keys": [
+        "Architects of Will",
+        "Demonic Dread",
+        "Shardless Agent",
+        "Street Wraith",
+        "Striped Riverwinder"
+      ],
+      "mulligan_min_lands": 1,
+      "reactive_only": [
+        "Force of Negation"
+      ]
+    },
+    "stem": "living_end"
+  }
+]

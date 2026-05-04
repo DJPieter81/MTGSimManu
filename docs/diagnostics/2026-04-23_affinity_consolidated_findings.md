@@ -1,10 +1,12 @@
 ---
 title: Affinity overperformance — consolidated findings (11-agent audit)
-status: active
+status: superseded
 priority: primary
 session: 2026-04-23
 supersedes:
   - docs/diagnostics/2026-04-23_affinity_mana_holdback_bug.md
+superseded_by:
+  - docs/diagnostics/2026-05-02_affinity_88pct_hypothesis_list.md
 depends_on:
   - docs/experiments/2026-04-20_phase11_n50_matrix_validation.md
 tags:

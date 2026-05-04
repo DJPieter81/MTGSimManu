@@ -1,0 +1,127 @@
+{
+  "expected": {
+    "always_early": [
+      "Teferi, Time Raveler"
+    ],
+    "archetype": "control",
+    "critical_pieces": [
+      "Isochron Scepter",
+      "Orim's Chant"
+    ],
+    "deck_name": "Azorius Control",
+    "goals": [
+      {
+        "card_priorities": {
+          "Consult the Star Charts": 10.0,
+          "Counterspell": 18.0,
+          "Orim's Chant": 12.0,
+          "Prismatic Ending": 20.0,
+          "Sanctifier en-Vec": 21.0,
+          "Solitude": 22.0,
+          "Teferi, Time Raveler": 24.0
+        },
+        "card_roles": {
+          "enablers": [
+            "Teferi, Time Raveler",
+            "Sanctifier en-Vec",
+            "Consult the Star Charts"
+          ],
+          "interaction": [
+            "Solitude",
+            "Prismatic Ending",
+            "Counterspell",
+            "Orim's Chant"
+          ]
+        },
+        "description": "Answer early threats with Solitude, Prismatic Ending, Counterspell. Deploy Sanctifier en-Vec as pro-red/black blocker vs Boros/Dimir. T3feri to shut off instant speed.",
+        "goal_type": "INTERACT",
+        "hold_mana": true,
+        "min_turns": 2
+      },
+      {
+        "card_priorities": {
+          "Isochron Scepter": 24.0,
+          "Orim's Chant": 16.0,
+          "Stock Up": 12.0,
+          "Supreme Verdict": 20.0,
+          "Teferi, Hero of Dominaria": 18.0,
+          "Wrath of the Skies": 22.0
+        },
+        "card_roles": {
+          "engines": [
+            "Consult the Star Charts",
+            "Stock Up"
+          ],
+          "interaction": [
+            "Supreme Verdict",
+            "Wrath of the Skies"
+          ],
+          "payoffs": [
+            "Isochron Scepter",
+            "Teferi, Hero of Dominaria"
+          ]
+        },
+        "description": "Stabilize with sweepers, deploy Isochron Scepter imprinting Orim's Chant for soft-lock. Teferi Hero for card advantage",
+        "goal_type": "GRIND_VALUE",
+        "hold_mana": true
+      },
+      {
+        "card_priorities": {
+          "Isochron Scepter": 20.0,
+          "Orim's Chant": 16.0,
+          "Teferi, Hero of Dominaria": 22.0
+        },
+        "description": "Lock opponent out with Scepter-Chant, win with Teferi Hero ultimate or Hall of Storm Giants",
+        "goal_type": "CLOSE_GAME"
+      }
+    ],
+    "mulligan_combo_sets": [],
+    "mulligan_keys": [
+      "Teferi, Time Raveler",
+      "Counterspell",
+      "Prismatic Ending",
+      "Solitude",
+      "Isochron Scepter",
+      "Orim's Chant"
+    ],
+    "mulligan_max_lands": 5,
+    "mulligan_min_lands": 2,
+    "reactive_only": [
+      "Orim's Chant",
+      "Prismatic Ending",
+      "Supreme Verdict",
+      "Counterspell"
+    ]
+  },
+  "input": {
+    "deck_name": "Azorius Control",
+    "mainboard": {
+      "Arid Mesa": 2,
+      "Consult the Star Charts": 2,
+      "Counterspell": 4,
+      "Demolition Field": 2,
+      "Flooded Strand": 4,
+      "Hall of Storm Giants": 1,
+      "Hallowed Fountain": 2,
+      "Island": 3,
+      "Isochron Scepter": 2,
+      "L\u00f3rien Revealed": 2,
+      "Meticulous Archive": 2,
+      "Monumental Henge": 1,
+      "Mystic Gate": 1,
+      "Orim's Chant": 4,
+      "Otawara, Soaring City": 1,
+      "Plains": 2,
+      "Prismatic Ending": 4,
+      "Sanctifier en-Vec": 3,
+      "Solitude": 4,
+      "Steam Vents": 1,
+      "Stock Up": 2,
+      "Supreme Verdict": 2,
+      "Teferi, Hero of Dominaria": 2,
+      "Teferi, Time Raveler": 4,
+      "Thundering Falls": 1,
+      "Wrath of the Skies": 2
+    }
+  }
+}

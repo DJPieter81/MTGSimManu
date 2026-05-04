@@ -1,0 +1,103 @@
+{
+  "expected": {
+    "always_early": [
+      "Memnite",
+      "Mox Opal",
+      "Ornithopter",
+      "Springleaf Drum"
+    ],
+    "archetype": "aggro",
+    "deck_name": "Affinity",
+    "goals": [
+      {
+        "card_priorities": {
+          "Memnite": 20.0,
+          "Mox Opal": 25.0,
+          "Ornithopter": 20.0,
+          "Signal Pest": 18.0,
+          "Springleaf Drum": 22.0
+        },
+        "card_roles": {
+          "enablers": [
+            "Memnite",
+            "Ornithopter"
+          ],
+          "engines": [
+            "Mox Opal",
+            "Springleaf Drum"
+          ]
+        },
+        "description": "Deploy artifact count enablers: Mox Opal, Springleaf Drum, 0-drops",
+        "goal_type": "DEPLOY_ENGINE"
+      },
+      {
+        "card_priorities": {
+          "Cranial Plating": 22.0,
+          "Frogmite": 14.0,
+          "Nettlecyst": 20.0,
+          "Signal Pest": 12.0,
+          "Sojourner's Companion": 16.0,
+          "Thought Monitor": 18.0
+        },
+        "card_roles": {
+          "enablers": [
+            "Frogmite",
+            "Sojourner's Companion",
+            "Thought Monitor"
+          ],
+          "payoffs": [
+            "Cranial Plating",
+            "Nettlecyst"
+          ]
+        },
+        "description": "Deploy threats and equipment: Cranial Plating, Nettlecyst",
+        "goal_type": "CURVE_OUT"
+      },
+      {
+        "card_priorities": {
+          "Cranial Plating": 20.0,
+          "Signal Pest": 15.0
+        },
+        "description": "Equip and attack for massive damage",
+        "goal_type": "PUSH_DAMAGE"
+      }
+    ],
+    "mulligan_keys": [
+      "Cranial Plating",
+      "Memnite",
+      "Mox Opal",
+      "Ornithopter",
+      "Springleaf Drum"
+    ],
+    "mulligan_max_lands": 3,
+    "mulligan_min_lands": 2,
+    "reactive_only": [
+      "Engineered Explosives"
+    ]
+  },
+  "input": {
+    "deck_name": "Affinity",
+    "mainboard": {
+      "Cranial Plating": 4,
+      "Darksteel Citadel": 4,
+      "Engineered Explosives": 2,
+      "Frogmite": 2,
+      "Island": 1,
+      "Memnite": 4,
+      "Mistvault Bridge": 2,
+      "Mox Opal": 4,
+      "Nettlecyst": 2,
+      "Ornithopter": 4,
+      "Razortide Bridge": 2,
+      "Signal Pest": 4,
+      "Silverbluff Bridge": 2,
+      "Sojourner's Companion": 4,
+      "Spire of Industry": 3,
+      "Springleaf Drum": 4,
+      "Tanglepool Bridge": 2,
+      "Thought Monitor": 4,
+      "Treasure Vault": 2,
+      "Urza's Saga": 4
+    }
+  }
+}

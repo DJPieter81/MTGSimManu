@@ -1,0 +1,16 @@
+{
+  "input": {
+    "card_name": "Pick Your Poison",
+    "oracle_text": "Choose one — Target opponent sacrifices an artifact. Target opponent sacrifices an enchantment. Target opponent sacrifices a creature with flying.",
+    "handler_signature": "Registered RESOLVE; current handler implements all three modes (sac artifact / enchantment / flier)."
+  },
+  "expected": {
+    "card_name": "Pick Your Poison",
+    "timing": "RESOLVE",
+    "printed_modes": ["sacrifice artifact", "sacrifice enchantment", "sacrifice creature with flying"],
+    "handler_modes": ["sacrifice artifact", "sacrifice enchantment", "sacrifice creature with flying"],
+    "missing_modes": [],
+    "fabricated_modes": [],
+    "severity": "P1"
+  }
+}

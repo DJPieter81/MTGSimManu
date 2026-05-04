@@ -9,6 +9,8 @@ from enum import Enum, auto
 from typing import Dict, Optional
 import math
 
+from ai.scoring_constants import FINISHER_REACHABLE_LOOKAHEAD_DRAWS
+
 
 # Phase-2a master flag.  When False, the dispatcher in
 # `ev_player._score_spell` does NOT call `build_combo_distribution`,
@@ -226,7 +228,8 @@ def build_combo_distribution(card, snap, game, me, opp, bhi,
       * `p_chain_resolves` and `p_chain_advances` come from
         `combo_chain.find_all_chains` over the live hand and mana.
       * `p_finisher_reachable` is a hand-check first; otherwise a
-        hypergeometric `p_draw_in_n_turns(library, payoffs, n=2)`.
+        hypergeometric `p_draw_in_n_turns(library, payoffs,
+        n=FINISHER_REACHABLE_LOOKAHEAD_DRAWS)`.
       * `p_disrupted` = `1 - _compute_risk_discount(bhi, opp)` from
         `ai/combo_calc.py` (counters + discard).
 
@@ -300,7 +303,7 @@ def build_combo_distribution(card, snap, game, me, opp, bhi,
         p_finisher_reachable = p_draw_in_n_turns(
             library_size=max(1, len(me.library)),
             target_count=finisher_in_lib,
-            n_draws=2,
+            n_draws=FINISHER_REACHABLE_LOOKAHEAD_DRAWS,
         )
     p_chain_advances = (1.0 if fuel_only_chains else 0.0) * p_finisher_reachable
 
