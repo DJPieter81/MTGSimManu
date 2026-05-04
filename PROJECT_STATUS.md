@@ -179,9 +179,23 @@ from engine.card_database import CardDatabase  # singleton pattern
 
 | # | Issue | Location | Evidence | Impact |
 |---|-------|----------|----------|--------|
-| 12 | ~~**Affinity 93% WR**~~ — **RE-FRAMED 2026-05-04 by Phase K audit (PR #284-#288).** Was misclassified as AI-scoring bug; actual root cause is Class H (inverted) — 9 of 15 opposing decks had 0 mainboard artifact hate for Bo1. Fixed via decklist edits in PR #288 (+1 MB hate to Boros / ETron / Zoo / LE). Boros vs Affinity smoke 10% → 30% (+20pp). Awaiting Phase D matrix re-run to confirm overall WR drop into 65-70% expected band. | `decks/modern_meta.py` (decklist data, NOT AI) | n/a — RESOLVED via data, not code | Closes once matrix verifies. |
-| 13 | ~~**Living End 5% WR**~~ — **RE-FRAMED 2026-05-04 by Phase K audit.** 53.3% in latest matrix; sample variance. Class A bug (Waker of Waves wrong oracle) fixed in PR #287; LE vs Boros 30% → 40% (+10pp). | `ModernAtomic_part8.json` (data) | n/a — RESOLVED via data, not code | Closes once matrix verifies. |
+| 12 | ~~**Affinity 93% WR**~~ — **RE-FRAMED 2026-05-04 by Phase K audit (PR #284-#288).** Was misclassified as AI-scoring bug; actual root cause is Class H (inverted) — 9 of 15 opposing decks had 0 mainboard artifact hate for Bo1. Fixed via decklist edits in PR #288 (+1 MB hate to Boros / ETron / Zoo / LE). Boros vs Affinity smoke 10% → 30% (+20pp). Awaiting Phase D matrix re-run to confirm overall WR drop into 65-70% expected band. **Footnote (2026-05-04):** the prior 84%/93% Affinity numbers were Bo1-framework artifacts. Canonical Bo3 numbers — under the new `run_meta.py` defaults — are the reference going forward. The 4 PR #288 mainboard hate edits (Boros / ETron / Zoo / Living End) were Bo1-framing fixes; under Bo3 the SB already covers them and PR #288 is a candidate for revert pending Bo3 verification. See `docs/design/2026-05-04_modern_combo_audit_methodology.md` top caveat. | `decks/modern_meta.py` (decklist data, NOT AI) | n/a — RESOLVED via data, not code | Closes once matrix verifies. |
+| 13 | ~~**Living End 5% WR**~~ — **RE-FRAMED 2026-05-04 by Phase K audit.** 53.3% in latest matrix; sample variance. Class A bug (Waker of Waves wrong oracle) fixed in PR #287; LE vs Boros 30% → 40% (+10pp). **Footnote (2026-05-04):** the prior 5% Living End number was a Bo1-framework artifact. Canonical Bo3 numbers are the reference going forward. The Class A Waker-of-Waves oracle fix is real and remains; the Class H/PR #288 mainboard hate edit on Living End is a Bo1-framing fix and a candidate for revert. | `ModernAtomic_part8.json` (data) | n/a — RESOLVED via data, not code | Closes once matrix verifies. |
 
+
+### Tracking — PR #288 reconsideration under canonical Bo3 (2026-05-04)
+
+**Open question, not a bug.** Under the canonical Bo3 framework adopted on 2026-05-04 (see `CLAUDE.md` → "Match format: Bo3 by default"), Phase K's PR #288 mainboard hate edits should be re-evaluated. Real-world Modern players carry artifact hate in their **sideboard**, not their mainboard. The PR #288 edits were responding to a Bo1-framing artifact and are anti-pattern under Bo3.
+
+**Decks affected by PR #288 (verify the exact MB cards added):**
+- **Boros Energy** — +1 MB artifact hate
+- **Eldrazi Tron** — +1 MB artifact hate
+- **Domain Zoo** — +1 MB artifact hate
+- **Living End** — +1 MB artifact hate
+
+**Evaluation criterion:** run a canonical Bo3 matrix at `n=20`. If Affinity's WR is already inside the expected 50-65% band without PR #288, revert it. If Affinity remains above the band, the SB-side audit (does `engine/sideboard_manager.py` bring in the hate?) is the next debugging step — not more mainboard edits.
+
+This tracking entry exists so the candidate-for-revert decision is not lost; it does NOT itself revert PR #288.
 
 ### Remaining open bugs
 
