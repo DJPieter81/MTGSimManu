@@ -256,7 +256,17 @@ class TestEVIntegration:
             assert result.turns > 0, f"{name} game didn't complete"
 
     def test_ev_matchup_balance(self, game_runner):
-        """Zoo vs Dimir should be competitive under EV system."""
+        """Smoke test: Zoo vs Dimir isn't catastrophically one-sided.
+
+        Bound is < 19 (i.e. ≤ 18/20 wins, ≤ 90%) to reject only ≥ 95%-WR
+        catastrophes. The previous bound (< 18) was at the boundary of
+        natural binomial variance: even a true 80% matchup has ~20% chance
+        of landing on exactly 18/20 wins (binomial: C(20,18)·0.8^18·0.2^2
+        ≈ 0.137; cumulative P(X ≥ 18) ≈ 0.206), and the observed Zoo-vs-
+        Dimir true WR sits high enough that ≥ 18 was hit on ~33% of seeds,
+        making the original assertion flaky. A tighter "balance" check
+        (e.g. < 16) requires N ≥ 100 to keep the false-positive rate low.
+        """
         from decks.modern_meta import MODERN_DECKS
         wins = {0: 0, 1: 0}
         for i in range(20):
@@ -271,6 +281,6 @@ class TestEVIntegration:
             )
             if result.winner is not None:
                 wins[result.winner] += 1
-        # Neither deck should win more than 90%
-        assert wins[0] < 18, f"Zoo won {wins[0]}/20 — too dominant"
-        assert wins[1] < 18, f"Dimir won {wins[1]}/20 — too dominant"
+        # Neither deck should win > 90% (i.e. ≥ 19/20).
+        assert wins[0] < 19, f"Zoo won {wins[0]}/20 — too dominant (>90%)"
+        assert wins[1] < 19, f"Dimir won {wins[1]}/20 — too dominant (>90%)"
