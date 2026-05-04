@@ -2519,6 +2519,19 @@ Used by `_recalculate_priors` in `ai/bhi.py`.
 """
 
 
+BHI_DISCARD_FLAT_PRIOR: float = 0.5
+"""Bayesian flat prior used when the opponent's published gameplan
+declares a hand-attack spell (mulligan_keys / critical_pieces /
+always_early). With no observational evidence yet, we estimate a 50%
+chance they will deploy it before our combo turn — the standard
+non-informative "present-or-absent" 0.5 prior.
+
+Used by `BayesianHandTracker._compute_discard_prior` in `ai/bhi.py`.
+Posterior probabilities are updated as priority-passes are observed
+via `_recalculate_priors`.
+"""
+
+
 # ─── Mulligan keep-score weights (ai/mulligan.py) ────────────────────
 # Used by `MulliganDecider._card_keep_score` to rank cards for the
 # choose-cards-to-bottom decision. These are role-tag weights, NOT
