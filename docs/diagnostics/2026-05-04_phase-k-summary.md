@@ -26,9 +26,33 @@ summary: >
   framed (the 45% flat WR matches expected; matchup outliers are Class C/E
   not "scoring fix"). RE-FRAME P0-C Affinity dominance as 9-PR
   decklist-edit dispatch (Class H), not AI-scoring.
+notes:
+  - "WR numbers in this doc are from Bo1 matrix runs and are systematically biased; Bo3 is the canonical framework as of 2026-05-04."
+  - "Class H findings (especially the Affinity inverted-H batch and PR #288 mainboard hate edits to Boros / ETron / Zoo / Living End) are largely Bo1-framing artifacts and should be re-evaluated under canonical Bo3 — see docs/design/2026-05-04_modern_combo_audit_methodology.md top caveat."
 ---
 
 # Phase K combo audit — summary report
+
+## Annotation (2026-05-04 — added post-discussion)
+
+**Bo1-framing caveat.** All WR numbers in this report are from Bo1
+matrix runs and are systematically biased. The canonical evaluation
+framework as of 2026-05-04 is **Bo3 with sideboarding** (`run_meta.py`
+defaults flipped; CLAUDE.md → "Match format: Bo3 by default").
+
+The Class H findings in particular — and Phase K's PR #288 mainboard
+artifact hate edits to Boros / ETron / Zoo / Living End — are largely
+Bo1-framing artifacts. Real Modern players carry that hate in their
+**sideboard**, not their mainboard, and the Bo3 sim already accounts
+for it. PR #288's mainboard edits are a candidate for revert pending
+Bo3 verification.
+
+The Class A and Class B findings (Waker of Waves oracle text, Wear //
+Tear fuse CMC, Goryo's missing Atraxa, Storm finisher density) are
+unaffected by the format change — those are real bugs.
+
+See `docs/design/2026-05-04_modern_combo_audit_methodology.md` top
+caveat for the full reframing.
 
 ## Cross-deck findings table
 
