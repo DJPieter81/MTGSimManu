@@ -57,6 +57,42 @@ from ai.scoring_constants import (
     CYCLING_GY_REANIMATE_BASE,
     CYCLING_GY_REANIMATE_PER_POWER,
     CLOCK_IMPACT_LIFE_SCALING,
+    REANIMATE_TARGET_MIN_POWER,
+    CONTROL_PATIENCE_OPP_CLOCK_THRESHOLD,
+    LAND_SACRIFICE_MIN_LANDS,
+    BIG_CREATURE_CMC_FLOOR,
+    PLANESWALKER_DEFAULT_LOYALTY,
+    DESPERATE_LIFE_THRESHOLD,
+    NONCREATURE_COUNTER_AGGRO_POWER,
+    NONCREATURE_COUNTER_AGGRO_HAND,
+    PHYREXIAN_LIFE_PENALTY_SCALE,
+    OPP_HAND_FULL_HOLDBACK_THRESHOLD,
+    HOLDBACK_PROBABILITY_FLOOR,
+    LAND_BASE_EV,
+    LAND_UNTAPPED_USEFUL,
+    LAND_UNTAPPED_IDLE,
+    LAND_TAPPED_STALL,
+    LAND_TAPPED_MINOR,
+    BOUNCE_LAND_AMULET_MANA,
+    RAMP_TO_BIG_NOW,
+    RAMP_TO_BIG_SOON,
+    LAND_COLOR_ENABLES_SPELL,
+    LAND_NEW_COLOR_GENERIC,
+    LAND_FETCH_FLEXIBILITY,
+    TRON_PIECES_REQUIRED,
+    CYCLING_GY_URGENCY_FLOOR,
+    DESPERATION_LIFE_FLOOR,
+    ATTACK_THRESHOLD_REDUCTION_AGGRESSION,
+    ATTACK_THRESHOLD_REDUCTION_ANTI_COMBO,
+    COMBAT_TRIGGER_DAMAGE_BONUS,
+    COMBAT_ENERGY_TRIGGER_BONUS,
+    EMERGENCY_BLOCK_LOW_LIFE,
+    EMERGENCY_BLOCK_INCOMING_FLOOR,
+    PLATING_REBOUND_EQUIP_BONUS,
+    EMERGENCY_BLOCK_STABILIZE_LIFE_GAIN,
+    LOW_LIFE_BURN_DEFAULT,
+    PUMP_DISCARD_LAND_FLOOR,
+    PUMP_DISCARD_SPELL_GLUT,
 )
 
 # RC-2 — parse "equipped/enchanted creature gets +X/+Y" bonuses from
@@ -375,7 +411,7 @@ class EVPlayer:
         from engine.cards import CardType
         gy_big = [c for c in me.graveyard
                   if CardType.CREATURE in c.template.card_types
-                  and (c.template.power or 0) >= 5]
+                  and (c.template.power or 0) >= REANIMATE_TARGET_MIN_POWER]
         payoff_gates_ready = True
         if self.goal_engine:
             from ai.gameplan import GoalType, is_ready_for_payoff
@@ -423,7 +459,8 @@ class EVPlayer:
                     # Cranial Plating had already locked the game.
                     if is_dying or has_big_target:
                         pass  # allow through reactive-only gate
-                    elif prof.control_patience and snap.opp_clock_discrete >= 4:
+                    elif (prof.control_patience
+                          and snap.opp_clock_discrete >= CONTROL_PATIENCE_OPP_CLOCK_THRESHOLD):
                         continue  # control: no pressure, no threat — hold
                     else:
                         continue  # non-control: no threat, not dying — hold
@@ -593,8 +630,8 @@ class EVPlayer:
         if 'sacrifice any number of lands' in t_oracle and 'search your library' in t_oracle:
             my_land_count = sum(1 for c in me.battlefield if c.template.is_land)
             # Rules constant matching engine threshold at
-            # engine/card_effects.py:scapeshift_resolve.
-            LAND_SACRIFICE_MIN_LANDS = 4
+            # engine/card_effects.py:scapeshift_resolve. Imported from
+            # scoring_constants.
             if my_land_count < LAND_SACRIFICE_MIN_LANDS:
                 # Force the score below pass_threshold so the AI holds the
                 # spell until critical mass is available. Derivation: profile-
@@ -783,7 +820,7 @@ class EVPlayer:
              and 'enters tapped' in (c.template.oracle_text or '').lower()
              and 'untap it' in (c.template.oracle_text or '').lower())
             for c in me.battlefield)
-        is_titan_like = (t.is_creature and (t.cmc or 0) >= 6
+        is_titan_like = (t.is_creature and (t.cmc or 0) >= BIG_CREATURE_CMC_FLOOR
                          and 'search your library' in t_oracle
                          and 'two' in t_oracle and 'land' in t_oracle)
         # Amulet + Titan mana synergy: deterministic rules math.
@@ -800,7 +837,7 @@ class EVPlayer:
         if is_amulet and has_titan_in_hand:
             # P(Titan lands in time) proxy: how many turns until we can
             # cast a 6-drop. If we're at 4+ lands, near-immediate.
-            turns_to_cast = max(1, 6 - len(me.lands))
+            turns_to_cast = max(1, BIG_CREATURE_CMC_FLOOR - len(me.lands))
             # Discount by turns — Amulet benefit realized only once Titan lands.
             ev += (AMULET_TITAN_MANA_BONUS * mana_impact * CLOCK_IMPACT_LIFE_SCALING) / turns_to_cast
         if is_titan_like and has_amulet_on_board:
@@ -818,7 +855,7 @@ class EVPlayer:
                 # card exchange in our favor on the turn it resolves.
                 # Derives from clock.card_clock_impact — no flat tiers.
                 from ai.clock import card_clock_impact
-                loyalty = t.loyalty or 3
+                loyalty = t.loyalty or PLANESWALKER_DEFAULT_LOYALTY
                 # Expected activations before death: loyalty-1 because the
                 # enters-with-loyalty first use is net-0; subsequent uses
                 # generate value. +1 accounts for the opp-removal cost.
@@ -967,7 +1004,7 @@ class EVPlayer:
                         if (c.template.cmc or 0) <= effective_x]
             kill_count = len(killable)
             killable_power = sum((c.power or 0) for c in killable)
-            desperate = snap.my_life <= 10
+            desperate = snap.my_life <= DESPERATE_LIFE_THRESHOLD
             if not desperate:
                 if kill_count == 0:
                     return min(ev, X_BOARD_WIPE_WASTE_FLOOR)
@@ -1009,8 +1046,8 @@ class EVPlayer:
         oracle_lower = (t.oracle_text or '').lower()
         if ('counterspell' in tags and 'noncreature' in oracle_lower
                 and snap.opp_creature_count >= 2
-                and snap.opp_power >= 4
-                and snap.opp_hand_size <= 3):
+                and snap.opp_power >= NONCREATURE_COUNTER_AGGRO_POWER
+                and snap.opp_hand_size <= NONCREATURE_COUNTER_AGGRO_HAND):
             # Opponent is an aggro deck running out of cards — counter is dead
             ev = min(ev, NONCREATURE_COUNTER_DEAD_FLOOR)
 
@@ -1145,7 +1182,7 @@ class EVPlayer:
         phyrexian_count = oracle_lower.count('/p}')
         if phyrexian_count > 0:
             life_cost = phyrexian_count * 2
-            ev -= life_cost / max(1, snap.my_life) * 10.0
+            ev -= life_cost / max(1, snap.my_life) * PHYREXIAN_LIFE_PENALTY_SCALE
 
         return ev
 
@@ -1180,9 +1217,10 @@ class EVPlayer:
         # to >=4: 3-card post-discard hands are typically mostly lands
         # (no real threat density) and the broader gate caused defender
         # decks to stall out against discard-heavy opponents.
-        opp_has_spells = snap.opp_hand_size >= 4 and snap.opp_power == 0
+        opp_has_spells = (snap.opp_hand_size >= OPP_HAND_FULL_HOLDBACK_THRESHOLD
+                          and snap.opp_power == 0)
         holdback_relevant = (snap.opp_power > 0
-                             or snap.opp_hand_size >= 4
+                             or snap.opp_hand_size >= OPP_HAND_FULL_HOLDBACK_THRESHOLD
                              or opp_has_spells)
         if not holdback_relevant:
             return 0.0
@@ -1382,7 +1420,7 @@ class EVPlayer:
                 # density-derived unknown-threat draw fires holdback.
                 # MAX (not SUM) keeps the result a probability in
                 # [0.1, 1.0] without silent over-saturation.
-                return max(0.1, min(1.0, max(p_action, p_unknown_threat)))
+                return max(HOLDBACK_PROBABILITY_FLOOR, min(1.0, max(p_action, p_unknown_threat)))
         except Exception:
             pass
 
@@ -1401,7 +1439,7 @@ class EVPlayer:
         clock_signal = 0.0
         if snap.my_life > 0 and snap.opp_power > 0:
             clock_signal = min(1.0, snap.opp_power / max(1, snap.my_life))
-        return max(0.1, min(1.0,
+        return max(HOLDBACK_PROBABILITY_FLOOR, min(1.0,
                             max(creature_signal, hand_signal, clock_signal)))
 
     def _score_land(self, land, me, spells, game) -> float:
@@ -1422,17 +1460,13 @@ class EVPlayer:
         # facts (timing: tapped lands cost 1 turn of mana availability;
         # color enabling unlocks 1 spell per new color; bounce-land loops
         # generate +1 land worth of mana per turn).
-        LAND_BASE_EV = 10.0              # mid-range of the spell EV scale
-        LAND_UNTAPPED_USEFUL = 5.0       # land pays off this turn
-        LAND_UNTAPPED_IDLE = 2.0         # land is stored mana, not spent now
-        LAND_TAPPED_STALL = 10.0         # tapped-with-1-drop-in-hand: lose entire T1 tempo
-        LAND_TAPPED_MINOR = 3.0          # tapped when we can still play most plays
-        BOUNCE_LAND_AMULET_MANA = 8.0    # bounce+Amulet loop = +1 land-equiv mana / turn × residency
-        RAMP_TO_BIG_NOW = 12.0           # this land lets us cast a 6+ CMC spell THIS turn
-        RAMP_TO_BIG_SOON = 4.0           # on-curve ramp to big next turn
-        COLOR_ENABLES_SPELL = 3.0        # each specific spell unlocked by a new colour
-        NEW_COLOR_GENERIC = 4.0          # each colour added to mana base when hand needs it
-        FETCH_FLEXIBILITY = 3.0          # fetch = choice of colour next turn
+        # Land scoring constants imported from scoring_constants.
+        # Local aliases for the color/fetch tier (different names in
+        # the centralised module to avoid collision with downstream
+        # callers).
+        COLOR_ENABLES_SPELL = LAND_COLOR_ENABLES_SPELL
+        NEW_COLOR_GENERIC = LAND_NEW_COLOR_GENERIC
+        FETCH_FLEXIBILITY = LAND_FETCH_FLEXIBILITY
 
         ev = LAND_BASE_EV
 
@@ -1481,10 +1515,10 @@ class EVPlayer:
         # and this land brings us to casting threshold, rush the land.
         # (Primeval Titan, Cultivator Colossus, Reality Smasher, etc.)
         high_cmc_creature = next(
-            (c for c in me.hand if c.template.is_creature and (c.template.cmc or 0) >= 6),
+            (c for c in me.hand if c.template.is_creature and (c.template.cmc or 0) >= BIG_CREATURE_CMC_FLOOR),
             None)
         if high_cmc_creature:
-            target_cmc = high_cmc_creature.template.cmc or 6
+            target_cmc = high_cmc_creature.template.cmc or BIG_CREATURE_CMC_FLOOR
             effective_mana_after = current_untapped + (1 if not effectively_tapped else 0)
             # Amulet doubles tapped-land mana: add +1 if we have enabler + tapped land
             if has_untap_enabler and land.template.enters_tapped:
@@ -1612,7 +1646,7 @@ class EVPlayer:
                 # P(find missing piece(s) in remaining turns) from actual
                 # library composition: count Tron pieces in library + tutors
                 # (Sylvan Scrying, Expedition Map). No hardcoded magic.
-                missing = 3 - after_count
+                missing = TRON_PIECES_REQUIRED - after_count
                 if missing == 0:
                     ev += completed_value
                 else:
@@ -1766,7 +1800,7 @@ class EVPlayer:
             # Count creatures already in GY — less urgency if GY is full
             from ai.predicates import count_gy_creatures
             gy_creatures = count_gy_creatures(me.graveyard)
-            if gy_creatures < 3:
+            if gy_creatures < CYCLING_GY_URGENCY_FLOOR:
                 ev += CYCLING_GY_URGENCY  # urgent: need more GY creatures before cascading
 
         # Gameplan prefer_cycling: massive boost (Living End, etc.)
@@ -1838,7 +1872,7 @@ class EVPlayer:
                 discardable = []
 
                 # 1. Excess lands (keep 1 for next land drop)
-                if len(hand_lands) >= 2 and len(me.lands) >= 3:
+                if len(hand_lands) >= 2 and len(me.lands) >= PUMP_DISCARD_LAND_FLOOR:
                     discardable.extend(hand_lands[1:])
                 elif len(hand_lands) >= 1 and len(me.lands) >= prof.pump_extra_lands_threshold:
                     discardable.extend(hand_lands)
@@ -1851,7 +1885,7 @@ class EVPlayer:
                             discardable.append(c)
 
                 # 3. High-CMC spells we can't cast soon
-                if len(hand_spells) >= 3:
+                if len(hand_spells) >= PUMP_DISCARD_SPELL_GLUT:
                     for c in hand_spells:
                         tags = getattr(c.template, 'tags', set())
                         if tags & protect_tags:
@@ -1989,7 +2023,7 @@ class EVPlayer:
             )
         )
         # Desperation: we're low on life and going to lose anyway — maximise damage
-        is_desperate = me.life <= 6 and total_power > 0 and opp.life > 0
+        is_desperate = me.life <= DESPERATION_LIFE_FLOOR and total_power > 0 and opp.life > 0
 
         # ── Anti-combo: vs spell-based decks, creature attacks are always right ──
         opp_is_spell_deck = opp_archetype in ('combo', 'storm')
@@ -2009,15 +2043,15 @@ class EVPlayer:
             # sick this turn — they must wait until next turn to attack). On
             # that next turn, swing with everything to cash in the tempo swing.
             if getattr(me, 'aggression_boost_turns', 0) > 0:
-                threshold -= 2.0
+                threshold -= ATTACK_THRESHOLD_REDUCTION_AGGRESSION
 
             # Racing: when we can kill in ~2 swings, be aggressive
             if is_racing:
-                threshold -= 2.0
+                threshold -= ATTACK_THRESHOLD_REDUCTION_AGGRESSION
 
             # Anti-combo: opponent won't block with creatures, so attacks are free
             if opp_is_spell_deck:
-                threshold -= 3.0
+                threshold -= ATTACK_THRESHOLD_REDUCTION_ANTI_COMBO
 
             # Bonus EV for combat damage / attack triggers the planner doesn't model
             trigger_bonus = 0.0
@@ -2025,9 +2059,9 @@ class EVPlayer:
                 for vc in attack_plan:
                     c_oracle = (getattr(vc, 'oracle', None) or '').lower()
                     if 'combat damage to a player' in c_oracle:
-                        trigger_bonus += 1.5  # Ragavan: Treasure + exile ≈ 1.5 EV
+                        trigger_bonus += COMBAT_TRIGGER_DAMAGE_BONUS  # Ragavan: Treasure + exile ≈ 1.5 EV
                     if 'whenever' in c_oracle and 'attacks' in c_oracle and '{e}' in c_oracle:
-                        trigger_bonus += 0.5  # Guide of Souls energy
+                        trigger_bonus += COMBAT_ENERGY_TRIGGER_BONUS  # Guide of Souls energy
 
             if attack_plan and (score_delta + trigger_bonus) > threshold:
                 attack_ids = {vc.instance_id for vc in attack_plan}
@@ -2245,7 +2279,8 @@ class EVPlayer:
         # (the old single-attacker heuristic treated a 10/10 at life=20 as an emergency;
         #  replaced with a lookahead that only fires when next-turn math is lethal too).
         emergency = (total_incoming >= me.life
-                     or (me.life - total_incoming <= 5 and total_incoming >= 3)
+                     or (me.life - total_incoming <= EMERGENCY_BLOCK_LOW_LIFE
+                         and total_incoming >= EMERGENCY_BLOCK_INCOMING_FLOOR)
                      or self._two_turn_lethal(game, me, opp, attackers))
         if emergency:
             emergency_blocks: Dict[int, List[int]] = {}
@@ -2313,7 +2348,7 @@ class EVPlayer:
                 rebound_swing_lethal_if_skipped = (
                     me.life - damage_if_skipped <= damage_if_skipped
                 )
-                if (equip_bonus >= 3
+                if (equip_bonus >= PLATING_REBOUND_EQUIP_BONUS
                         and not self._equipment_breakable(game, me)
                         and not still_lethal_if_skipped
                         and not rebound_swing_lethal_if_skipped):
@@ -2347,7 +2382,9 @@ class EVPlayer:
                     if (not still_lethal
                             and sacrificed_value > max(remaining, 1.0)):
                         break
-                    if remaining < me.life and (me.life - remaining > 5 or remaining == 0):
+                    if (remaining < me.life
+                            and (me.life - remaining > EMERGENCY_BLOCK_STABILIZE_LIFE_GAIN
+                                 or remaining == 0)):
                         break  # stabilized
             # RC-2: if the emergency path skipped every attacker via the
             # plating-futile gate and assigned no blocks, accept the damage
@@ -2572,7 +2609,7 @@ class EVPlayer:
                     self._last_target_reason = (f"→ {best_kill_card.name}: "
                         f"({best_kill_why or self._target_why(best_kill_card)}) — life safe")
             _why_face = []
-            if opp.life <= getattr(getattr(self, "profile", None), "burn_low_life_threshold", 8):
+            if opp.life <= getattr(getattr(self, "profile", None), "burn_low_life_threshold", LOW_LIFE_BURN_DEFAULT):
                 _why_face.append("opponent low life")
             elif not game.players[self.player_idx].creatures:
                 _why_face.append("no clock yet — build pressure")

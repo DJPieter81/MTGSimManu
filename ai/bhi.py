@@ -21,6 +21,7 @@ from dataclasses import dataclass, field
 from typing import Dict, Optional, TYPE_CHECKING
 
 from ai.scoring_constants import (
+    BHI_DISCARD_FLAT_PRIOR,
     COUNTER_HOLD_RATE_DEFAULT,
     COUNTER_HOLD_RATE_DESPERATE,
     COUNTER_HOLD_RATE_EARLY_GAME,
@@ -295,8 +296,9 @@ class BayesianHandTracker:
     # chance they are planning to deploy it before our combo turn.
     # No observational evidence has been incorporated yet - this is
     # the flat prior used at game start. Sourced from the standard
-    # "noninformative for present-or-absent" 0.5 prior.
-    _DISCARD_PRIOR = 0.5
+    # "noninformative for present-or-absent" 0.5 prior. See
+    # `BHI_DISCARD_FLAT_PRIOR` in `ai/scoring_constants.py`.
+    _DISCARD_PRIOR = BHI_DISCARD_FLAT_PRIOR
 
     def _compute_discard_prior(self, opp, all_cards) -> float:
         """Return the discard prior for the opponent.

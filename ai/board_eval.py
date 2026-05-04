@@ -19,6 +19,35 @@ from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import TYPE_CHECKING, Set, Optional, List
 
+from ai.scoring_constants import (
+    BOARD_EVAL_COMBO_DEFAULT_WAIT,
+    BOARD_EVAL_COMBO_DESPERATION_FIRE,
+    BOARD_EVAL_COMBO_DESPERATION_PRESSURE,
+    BOARD_EVAL_COMBO_DOUBLE_CHAIN_FIRE,
+    BOARD_EVAL_COMBO_EXTENDER_FIRE,
+    BOARD_EVAL_COMBO_REDUCER_FIRE,
+    BOARD_EVAL_COMBO_RITUAL_FIRE,
+    BOARD_EVAL_DASH_BLOCKER_BODY_PENALTY,
+    BOARD_EVAL_DASH_BLOCKER_DODGE_BONUS,
+    BOARD_EVAL_DASH_EARLY_HASTE_BONUS,
+    BOARD_EVAL_DASH_PRESSURE_BONUS,
+    BOARD_EVAL_DASH_PRESSURE_THRESHOLD,
+    BOARD_EVAL_DEFAULT_LIFE,
+    BOARD_EVAL_HARD_VETO,
+    BOARD_EVAL_NO_BLOCKER_EARLY_TURN,
+    BOARD_EVAL_NO_CLOCK_FLOAT,
+    BOARD_EVAL_NO_CLOCK_SENTINEL,
+    BOARD_EVAL_PRESSURE_NO_OWN_CLOCK,
+    BOARD_EVAL_PRESSURE_RELAXED,
+    BOARD_EVAL_PRESSURE_SIGMOID_SCALE,
+    CREATURE_VALUE_CMC_MULT,
+    CREATURE_VALUE_TOUGH_WEIGHT,
+    DOMAIN_BASIC_TYPE_CAP,
+    LIFE_VALUE_DEAD_SENTINEL,
+    LIFE_VALUE_NO_OPP_CLOCK_SCARCITY,
+    LIFE_VALUE_OUTER_SCALE,
+)
+
 if TYPE_CHECKING:
     from engine.game_state import GameState
     from engine.cards import CardInstance
@@ -33,15 +62,15 @@ class BoardAssessment:
     """Strategic snapshot derived entirely from game state."""
 
     # Clock (turns to win/lose, lower = faster)
-    my_clock: float = 99.0
-    opp_clock: float = 99.0
+    my_clock: float = BOARD_EVAL_NO_CLOCK_FLOAT
+    opp_clock: float = BOARD_EVAL_NO_CLOCK_FLOAT
 
     # Derived pressure (0 = relaxed, 1 = must act now)
     pressure: float = 0.0
 
     # Life
-    my_life: int = 20
-    opp_life: int = 20
+    my_life: int = BOARD_EVAL_DEFAULT_LIFE
+    opp_life: int = BOARD_EVAL_DEFAULT_LIFE
 
     # Mana
     mana_available: int = 0
@@ -54,7 +83,7 @@ class BoardAssessment:
     opp_creature_count: int = 0
 
     # Hand analysis
-    cheapest_spell_cmc: int = 99
+    cheapest_spell_cmc: int = BOARD_EVAL_NO_CLOCK_SENTINEL
     has_instant_in_hand: bool = False
     colors_available: Set[str] = field(default_factory=set)
     colors_missing: Set[str] = field(default_factory=set)
@@ -91,12 +120,12 @@ def assess_board(game: "GameState", player_idx: int) -> BoardAssessment:
         a.opp_clock = max(1.0, a.my_life / a.opp_power)
 
     # Pressure
-    if a.opp_clock < 99 and a.my_clock < 99:
-        a.pressure = _sigmoid(a.my_clock - a.opp_clock, 0.5)
-    elif a.opp_clock < 99:
-        a.pressure = 0.8
+    if a.opp_clock < BOARD_EVAL_NO_CLOCK_FLOAT and a.my_clock < BOARD_EVAL_NO_CLOCK_FLOAT:
+        a.pressure = _sigmoid(a.my_clock - a.opp_clock, BOARD_EVAL_PRESSURE_SIGMOID_SCALE)
+    elif a.opp_clock < BOARD_EVAL_NO_CLOCK_FLOAT:
+        a.pressure = BOARD_EVAL_PRESSURE_NO_OWN_CLOCK
     else:
-        a.pressure = 0.2
+        a.pressure = BOARD_EVAL_PRESSURE_RELAXED
 
     # Colors available from untapped lands
     for c in me.battlefield:
@@ -246,18 +275,18 @@ def _eval_evoke(game, me, a: BoardAssessment, ctx: dict,
                 opp_target_on_stack = True
                 break
         if not opp_target_on_stack:
-            return -10.0  # ETB fizzles → pitch cost is wasted
+            return -BOARD_EVAL_HARD_VETO  # ETB fizzles → pitch cost is wasted
 
     # Battlefield-targeting ETBs (e.g. "target creature" — no "spell"):
     # if the opponent has no creatures, the ETB fizzles.
     elif 'target creature' in oracle and 'removal' not in tags:
         if not opp.creatures:
-            return -10.0  # No valid targets, evoke would waste a card
+            return -BOARD_EVAL_HARD_VETO  # No valid targets, evoke would waste a card
     
     # Removal ETBs (Solitude, Fury): check if opponent has creatures
     if 'removal' in tags and card.template.is_creature:
         if not opp.creatures and not opp.battlefield:
-            return -10.0  # No targets to remove
+            return -BOARD_EVAL_HARD_VETO  # No targets to remove
         # Removal ETBs that heal the opponent (oracle: "gains life equal to its power")
         # are a poor trade when the target is small: 2 cards spent to exile a 1/1
         # while healing the opponent. Only worthwhile against meaningful threats.
@@ -287,7 +316,7 @@ def _eval_evoke(game, me, a: BoardAssessment, ctx: dict,
         if mc.red > 0: needed_colors.add("R")
         if mc.green > 0: needed_colors.add("G")
         if needed_colors <= existing_colors:
-            return -10.0  # Can actually hardcast — prefer body + ETB
+            return -BOARD_EVAL_HARD_VETO  # Can actually hardcast — prefer body + ETB
 
     # Load evoke thresholds from archetype
     from ai.gameplan import _ARCHETYPE_THRESHOLDS, DecisionThresholds, get_gameplan
@@ -350,9 +379,9 @@ def _eval_dash(game, me, a: BoardAssessment, ctx: dict,
     can_dash = ctx.get('can_dash', False)
 
     if can_dash and not can_normal:
-        return 10.0  # Only option
+        return BOARD_EVAL_HARD_VETO  # Only option
     if not can_dash:
-        return -10.0  # Can't dash
+        return -BOARD_EVAL_HARD_VETO  # Can't dash
 
     opp = game.players[1 - player_idx]
 
@@ -362,18 +391,18 @@ def _eval_dash(game, me, a: BoardAssessment, ctx: dict,
     score = 0.0
 
     # Early game with empty opponent board: Dash for guaranteed haste damage
-    if not opp_has_blockers and game.turn_number <= 3:
-        score += 2.0  # Haste damage is huge in early turns
+    if not opp_has_blockers and game.turn_number <= BOARD_EVAL_NO_BLOCKER_EARLY_TURN:
+        score += BOARD_EVAL_DASH_EARLY_HASTE_BONUS  # Haste damage is huge in early turns
 
     if opp_has_blockers or opp_threatening:
-        score += 1.0  # Dodge removal by bouncing back
+        score += BOARD_EVAL_DASH_BLOCKER_DODGE_BONUS  # Dodge removal by bouncing back
 
-    if a.pressure > 0.6:
-        score += 0.5
+    if a.pressure > BOARD_EVAL_DASH_PRESSURE_THRESHOLD:
+        score += BOARD_EVAL_DASH_PRESSURE_BONUS
 
     # Prefer permanent body only when they can block (body has blocking value)
     if opp_has_blockers:
-        score -= 0.3
+        score -= BOARD_EVAL_DASH_BLOCKER_BODY_PENALTY
 
     return score
 
@@ -392,7 +421,7 @@ def _eval_combo(game, me, a: BoardAssessment, ctx: dict,
 
     # Lethal projected — always go
     if projected_damage >= opp.life:
-        return 10.0
+        return BOARD_EVAL_HARD_VETO
 
     # Count combo resources by card mechanics
     hand = [c for c in me.hand if not c.template.is_land]
@@ -425,17 +454,17 @@ def _eval_combo(game, me, a: BoardAssessment, ctx: dict,
     total_with_gy = total_chain + gy_rituals
 
     # Score based on resources available
-    score = -0.5  # Default: wait
+    score = BOARD_EVAL_COMBO_DEFAULT_WAIT  # Default: wait
     if castable_rituals >= 1:
-        score = 1.0
+        score = BOARD_EVAL_COMBO_RITUAL_FIRE
     if cost_reducers >= 1 and total_chain >= 1:
-        score = max(score, 1.5)
+        score = max(score, BOARD_EVAL_COMBO_REDUCER_FIRE)
     if has_extender and total_with_gy >= 2:
-        score = max(score, 1.0)
+        score = max(score, BOARD_EVAL_COMBO_EXTENDER_FIRE)
     if total_chain >= 2:
-        score = max(score, 0.8)
-    if a.pressure > 0.7:
-        score = max(score, 0.5)  # Desperation attempt
+        score = max(score, BOARD_EVAL_COMBO_DOUBLE_CHAIN_FIRE)
+    if a.pressure > BOARD_EVAL_COMBO_DESPERATION_PRESSURE:
+        score = max(score, BOARD_EVAL_COMBO_DESPERATION_FIRE)  # Desperation attempt
 
     return score
 
@@ -488,15 +517,17 @@ def _eval_block(game, me, a: BoardAssessment, ctx: dict,
     # --- Creature values (CMC-weighted) ---
     a_cmc = attacker.template.cmc or 0
     b_cmc = blocker.template.cmc or 0
-    attacker_val = max(a_cmc, a_power + a_tough * 0.3) * 1.5
-    blocker_val = max(b_cmc, b_power + b_tough * 0.3) * 1.5
+    attacker_val = (max(a_cmc, a_power + a_tough * CREATURE_VALUE_TOUGH_WEIGHT)
+                    * CREATURE_VALUE_CMC_MULT)
+    blocker_val = (max(b_cmc, b_power + b_tough * CREATURE_VALUE_TOUGH_WEIGHT)
+                   * CREATURE_VALUE_CMC_MULT)
 
     # --- Score: benefit - cost ---
     # Benefit 1: life saved (direct value, 1 point per life point)
     value = float(damage_prevented)
 
     # Scale life value by urgency — shorter opponent clock = each life point matters more
-    if a.opp_clock < 99:
+    if a.opp_clock < BOARD_EVAL_NO_CLOCK_FLOAT:
         value *= (1.0 + 1.0 / max(a.opp_clock, 1))
     # Scale by fraction of life this hit represents
     life_fraction = damage_prevented / max(a.my_life, 1)
@@ -532,13 +563,13 @@ def _eval_block(game, me, a: BoardAssessment, ctx: dict,
 def _life_value(life_points: int, a: BoardAssessment) -> float:
     """How much is N life worth? Scales with life scarcity and opponent's clock."""
     if a.my_life <= 0:
-        return 999.0
+        return LIFE_VALUE_DEAD_SENTINEL
     fraction = life_points / a.my_life
-    if a.opp_clock < 99:
+    if a.opp_clock < BOARD_EVAL_NO_CLOCK_FLOAT:
         scarcity = 1.0 / max(1.0, a.opp_clock)
     else:
-        scarcity = 0.05
-    return fraction * scarcity * 10.0
+        scarcity = LIFE_VALUE_NO_OPP_CLOCK_SCARCITY
+    return fraction * scarcity * LIFE_VALUE_OUTER_SCALE
 
 
 # ─────────────────────────────────────────────────────────────
@@ -561,7 +592,7 @@ def _count_domain(game: "GameState", player_idx: int) -> int:
             for st in getattr(c.template, "subtypes", []):
                 if st in {"Plains", "Island", "Swamp", "Mountain", "Forest"}:
                     subtypes.add(st)
-    return min(len(subtypes), 5)
+    return min(len(subtypes), DOMAIN_BASIC_TYPE_CAP)
 
 
 def _effective_cmc(card: "CardInstance", player) -> int:

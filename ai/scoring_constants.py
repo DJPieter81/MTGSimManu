@@ -1245,6 +1245,33 @@ kill is multiple turns away but pressure compounds.
 Used by `CombatPlanner.plan_attack` in `ai/turn_planner.py`.
 """
 
+OPP_LIFE_LOW_BAND: int = 8
+"""Rules-constant: opp_life ceiling for the high-pressure aggression
+band. ≤8 = "two-turn-lethal range with 4-power on board" — at this
+life total every attack pushes toward immediate kill, so the highest
+aggression bonus (AGGRESSION_BONUS_LIFE8) applies.
+
+Sister constants: OPP_LIFE_MID_BAND (12), OPP_LIFE_HIGH_BAND (16) —
+tiered life-band ladder for the aggression bonus curve.
+"""
+
+OPP_LIFE_MID_BAND: int = 12
+"""Rules-constant: opp_life ceiling for the moderate aggression band.
+≤12 = "three-turn-lethal range" — 60% of the Modern starting life,
+the threshold below which racing decks pivot from develop to push.
+
+Sister constants: OPP_LIFE_LOW_BAND (8), OPP_LIFE_HIGH_BAND (16).
+"""
+
+OPP_LIFE_HIGH_BAND: int = 16
+"""Rules-constant: opp_life ceiling for the slight aggression band.
+≤16 = "four-turn-lethal range" — 80% of the Modern starting life,
+above which the kill is too far away to justify aggression-induced
+risks.
+
+Sister constants: OPP_LIFE_LOW_BAND (8), OPP_LIFE_MID_BAND (12).
+"""
+
 DOUBLE_BLOCK_VALUE_THRESHOLD: float = 4.0
 """Derived: minimum attacker value at which the opponent will
 consider a double-block.
@@ -1256,6 +1283,1090 @@ blocker on real threats.
 
 Used by `CombatPlanner._predict_blocks` Phase 4 (double-block) in
 `ai/turn_planner.py`.
+"""
+
+
+# ── CombatPlanner attack-config gates ────────────────────────────
+
+BOARD_WIPE_THRESHOLD_FRACTION: float = 0.1
+"""Derived: minimum fractional value-loss differential at which an
+attack is treated as a "board wipe risk" by the attack planner.
+0.1 = 10% — below this the value differential is too small to matter
+even after combat damage. Class-level attribute on `CombatPlanner`.
+
+Used by `CombatPlanner.plan_attack` in `ai/turn_planner.py`.
+"""
+
+ATTACK_TRADE_DOWN_RATIO: float = 1.5
+"""Derived: my-lost-value / opp-lost-value ratio above which a trade
+is considered "trading down badly" enough to apply TRADE_DOWN_PENALTY.
+1.5 = "we lose at least 50% more value than them" — below this
+threshold even-trades with small value asymmetries are tolerated.
+
+Used by `CombatPlanner.plan_attack` in `ai/turn_planner.py`.
+"""
+
+ATTACK_TRADE_DOWN_SCALE_DENOM: float = 5.0
+"""Derived: denominator scaling the lost-value penalty curve. With
+my_lost_value = 5.0 the scale saturates at 1.0 (full TRADE_DOWN_PENALTY);
+at 1.0 lost the scale is 0.2; at 3.0 the scale is 0.6. Calibrated to
+"lose a 5/5 = full penalty, lose a 1/1 = trivial penalty".
+
+Used by `CombatPlanner.plan_attack` in `ai/turn_planner.py`.
+"""
+
+ATTACK_TRADE_UP_RATIO: float = 1.2
+"""Derived: opp-lost-value / my-lost-value ratio above which the
+TRADE_UP_BONUS applies. 1.2 = "opp loses at least 20% more value than
+us" — distinguishes a real trade-up from an even trade with marginal
+value asymmetry.
+
+Used by `CombatPlanner.plan_attack` in `ai/turn_planner.py`.
+"""
+
+ATTACK_SHIELDS_DOWN_VALUE_FLOOR: float = 3.0
+"""Derived: minimum creature value at which the shields-down check
+counts the creature's value toward the tapped-down total. Below 3.0
+the creature is a token / chump-attacker / 1-drop the deck is happy
+to lose; only meaningful creatures (2-power+ commons and up) trigger
+the shields-down penalty.
+
+Used by `CombatPlanner.plan_attack` shields-down check in
+`ai/turn_planner.py`.
+"""
+
+ATTACK_SHIELDS_DOWN_TOTAL_FLOOR: float = 5.0
+"""Derived: minimum total tapped-down value at which the shields-down
+penalty fires. 5.0 ≈ "we tapped down a 3/3 + a 2/2" — below this the
+total exposed value is too low to justify the penalty.
+
+Used by `CombatPlanner.plan_attack` shields-down check in
+`ai/turn_planner.py`.
+"""
+
+ATTACK_SHIELDS_DOWN_DAMAGE_RELIEF: float = 0.6
+"""Derived: damage-ratio relief coefficient on the shields-down
+penalty. At full opp_life damage (damage_ratio=1.0) the penalty is
+reduced by 0.6 (40% of full penalty applies); at no damage the full
+penalty fires. Calibrated so big-damage attacks justify the shields-
+down risk.
+
+Used by `CombatPlanner.plan_attack` shields-down check in
+`ai/turn_planner.py`.
+"""
+
+ATTACK_RISKY_PAIR_LIMIT: int = 4
+"""Sentinel: maximum number of risky attackers considered when
+generating Config 5 (pairs of risky creatures). Above 4 the
+combinatorial explosion (4×3/2 = 6 pairs vs 5×4/2 = 10) outpaces
+the planner's per-decision budget.
+
+Used by `CombatPlanner._generate_attack_configs` in `ai/turn_planner.py`.
+"""
+
+# ── Block-prioritisation trade ratios ───────────────────────────
+
+BLOCK_TRADE_UP_VALUE_RATIO: float = 0.9
+"""Derived: blocker-value / attacker-value ratio below which Phase 2
+(profitable trades) commits the block. 0.9 = "blocker is worth at
+most 90% of the attacker" — below 1.0 always, but slightly above
+1.0-0.1 to allow tight trades.
+
+Used by `CombatPlanner._predict_blocks` Phase 2 in `ai/turn_planner.py`.
+"""
+
+BLOCK_EVEN_TRADE_VALUE_RATIO: float = 1.1
+"""Derived: blocker-value / attacker-value ratio below which Phase 3
+(even trades) commits the block. 1.1 = "blocker is worth at most
+110% of the attacker" — accepts a 10% value loss for clearing a
+threat. Tighter than the trade-down threshold (1.5) because the
+opponent loses their attacker outright.
+
+Used by `CombatPlanner._predict_blocks` Phase 3 in `ai/turn_planner.py`.
+"""
+
+BLOCK_DOUBLE_VALUE_RATIO: float = 1.3
+"""Derived: combined-blocker-value / attacker-value ratio below which
+Phase 4 (double-block) commits two blockers. 1.3 = "two blockers
+worth at most 130% of the attacker" — gives more margin than even
+trade because we kill a high-value threat and the second blocker is
+typically the cheapest available.
+
+Used by `CombatPlanner._predict_blocks` Phase 4 in `ai/turn_planner.py`.
+"""
+
+# ── Response evaluation constants ───────────────────────────────
+
+COUNTER_CMC_PENALTY: float = 0.5
+"""Derived: per-CMC penalty applied to counterspell net value.
+0.5 = "each mana spent costs half a card-value unit" — cheap counters
+(1U / U) are more efficient than expensive ones (3UU). Below 0.5
+the AI prefers expensive counters; above 0.5 the AI never uses
+heavier counters.
+
+Used by `TurnPlanner.evaluate_response` counterspell branch in
+`ai/turn_planner.py`.
+"""
+
+COUNTER_TAP_OUT_RISK_PENALTY: float = 1.5
+"""Derived: penalty applied when countering taps us out and the hand
+still has >2 cards. 1.5 = "tapping out costs 1.5 card-value units of
+flexibility" — discourages dumping the last counterspell when more
+threats are queued.
+
+Used by `TurnPlanner.evaluate_response` counterspell branch in
+`ai/turn_planner.py`.
+"""
+
+REMOVAL_RESPONSE_VALUE_FRACTION: float = 0.8
+"""Derived: fraction of threat value retained when responding with
+post-resolution removal (rather than counter). 0.8 = "the threat
+already saw 20% value (cast trigger / one combat hit) before we
+removed it". Calibrated against counter (full value at 100%).
+
+Used by `TurnPlanner.evaluate_response` removal branch in
+`ai/turn_planner.py`.
+"""
+
+REMOVAL_RESPONSE_CMC_PENALTY: float = 0.3
+"""Derived: per-CMC penalty for the removal response. Lower than
+COUNTER_CMC_PENALTY (0.5) because removal is typically cheaper than
+counters and the per-CMC pressure on resource use is smaller.
+
+Used by `TurnPlanner.evaluate_response` removal branch in
+`ai/turn_planner.py`.
+"""
+
+BLINK_CREATURE_VALUE_FRACTION: float = 0.7
+"""Derived: fraction of saved creature value credited to a blink
+response. 0.7 = "we save 70% of the creature's value (rest is the
+opportunity cost of the blink)" — reflects that blink saves the body
+but costs the blink card and one mana cycle.
+
+Used by `TurnPlanner.evaluate_response` blink branch in
+`ai/turn_planner.py`.
+"""
+
+BLINK_ETB_RETRIGGER_BONUS: float = 3.0
+"""Derived: bonus credited to a blink response that re-triggers an
+ETB ability. 3.0 ≈ one half of an engine-tier role bonus — captures
+"blinking a creature with an etb_value tag is roughly worth a
+mid-tier card draw" (Reflector Mage, Solitude, Ephemerate-style
+patterns).
+
+Used by `TurnPlanner.evaluate_response` blink branch in
+`ai/turn_planner.py`.
+"""
+
+# ── Pre-combat removal / strategy weighting ──────────────────────
+
+PRE_COMBAT_TARGET_VALUE_FRACTION: float = 0.5
+"""Derived: fraction of removed-target value credited to the
+pre-combat removal improvement. 0.5 reflects "half the target's value
+goes to combat improvement, the other half to opp's library
+shrinkage / future-attack reduction" — splits the removal's total
+value between immediate combat impact and future tempo.
+
+Used by `TurnPlanner._evaluate_remove_then_attack` in
+`ai/turn_planner.py`.
+"""
+
+DELAYED_DEPLOY_DISCOUNT: float = 0.9
+"""Derived: discount applied to deploy-in-main-2 spell value.
+0.9 = "the deploy is 90% as valuable as deploying pre-combat" —
+the small discount captures "creature gets summoning-sick before
+attack next turn anyway" but keeps the deploy in contention.
+
+Used by `TurnPlanner._evaluate_attack_then_deploy` in
+`ai/turn_planner.py`.
+"""
+
+HOLD_UP_COUNTER_BONUS_RATIO: float = 1.5
+"""Derived: bonus multiplier on MANA_RESERVATION_WEIGHT when the
+held-up mana protects a counterspell. 1.5 = "holding up counter mana
+is 50% more valuable than holding up generic interaction mana" —
+counterspells protect against any threat type, removal only against
+creatures.
+
+Used by `TurnPlanner._evaluate_hold_up_mana` in `ai/turn_planner.py`.
+"""
+
+EVASIVE_ATTACK_VALUE_FRACTION: float = 0.5
+"""Derived: per-power bonus for safe evasive attacks during a
+hold-up-mana strategy. 0.5 reflects "evasive damage is half the value
+of damage from a full attack" — flying/menace damage isn't blockable
+but the attack still taps the creature.
+
+Used by `TurnPlanner._evaluate_hold_up_mana` in `ai/turn_planner.py`.
+"""
+
+REMOVAL_PREFERENCE_IMPROVEMENT_FLOOR: float = 2.0
+"""Derived: minimum improvement at which `_evaluate_remove_then_attack`
+commits the removal. 2.0 = "improvement must clear the
+TRADE_DOWN_PENALTY threshold" — below this the removal isn't worth
+the mana investment.
+
+Used by `TurnPlanner._evaluate_remove_then_attack` in
+`ai/turn_planner.py`.
+"""
+
+GENERIC_REMOVAL_DAMAGE_SENTINEL: int = 99
+"""Sentinel: damage attributed to a generic removal spell with no
+parsed damage amount. 99 = "kills anything in Modern" — treats
+removal as universally lethal for combat-prediction purposes,
+since the spell's actual mode (destroy / exile / -X/-X) doesn't
+matter for the attacker-survives check.
+
+Used by `_spell_damage` in `ai/turn_planner.py`.
+"""
+
+BOARD_EVAL_HARD_VETO: float = 10.0
+"""Sentinel: hard-veto / unconditional-fire magnitude used by
+`_eval_evoke`, `_eval_dash`, `_eval_combo`. Returning ±10.0 from a
+sub-evaluator means "this branch is decisive — every other
+consideration is dwarfed". Magnitude is large enough to dominate
+every other contributor (pressure ≤ 1.0, score increments < 5.0).
+
+Used by `ai/board_eval.py` sub-evaluators.
+"""
+
+BOARD_EVAL_NO_BLOCKER_EARLY_TURN: int = 3
+"""Rules-constant: turn-number ceiling at which "opponent has no
+blockers" boosts dash damage. ≤3 = "T1-T3 dash" — early-turn empty
+boards mean uncontested haste damage with no opp interaction yet
+deployed. Beyond T3 the opp has typically committed defensive
+creatures.
+
+Used by `_eval_dash` in `ai/board_eval.py`.
+"""
+
+BOARD_EVAL_DASH_EARLY_HASTE_BONUS: float = 2.0
+"""Derived: dash bonus when opp has no blockers in early turns. 2.0
+matches the TRADE_UP_BONUS scale — "dashing for guaranteed haste
+damage in the empty-board window is worth a value-trade".
+
+Used by `_eval_dash` in `ai/board_eval.py`.
+"""
+
+BOARD_EVAL_DASH_BLOCKER_DODGE_BONUS: float = 1.0
+"""Derived: dash bonus when opp has blockers or threatening creatures.
+1.0 reflects "dodging removal by bouncing back is worth one card-
+value unit" — half the early-haste bonus.
+
+Used by `_eval_dash` in `ai/board_eval.py`.
+"""
+
+BOARD_EVAL_DASH_PRESSURE_THRESHOLD: float = 0.6
+"""Derived: pressure level above which a "moderate-pressure" dash
+bonus fires. 0.6 = "above 60% pressure" — calibrated against the
+DECISION_EVOKE_HARDCAST_NEXT_TURN threshold (0.7) so dash fires at
+slightly lower pressure than evoke (dash protects the body).
+
+Used by `_eval_dash` in `ai/board_eval.py`.
+"""
+
+BOARD_EVAL_DASH_PRESSURE_BONUS: float = 0.5
+"""Derived: dash bonus when pressure > BOARD_EVAL_DASH_PRESSURE_THRESHOLD.
+0.5 is half the basic dash bonus — pressure adds urgency but doesn't
+dominate the empty-board / blocker-dodge signals.
+
+Used by `_eval_dash` in `ai/board_eval.py`.
+"""
+
+BOARD_EVAL_DASH_BLOCKER_BODY_PENALTY: float = 0.3
+"""Derived: dash penalty when opp has blockers (because the permanent
+body has blocking value lost on dash bounce). 0.3 = small penalty —
+the lost body value matters but doesn't outweigh the haste benefit.
+
+Used by `_eval_dash` in `ai/board_eval.py`.
+"""
+
+BOARD_EVAL_COMBO_DEFAULT_WAIT: float = -0.5
+"""Sentinel: default "wait, don't fire combo" score when no positive
+resource signals are present. Mildly negative — prefers to advance
+the chain rather than fire prematurely, but doesn't hard-veto.
+
+Used by `_eval_combo` in `ai/board_eval.py`.
+"""
+
+BOARD_EVAL_COMBO_REDUCER_FIRE: float = 1.5
+"""Derived: combo-fire score when a cost reducer is on battlefield
+AND the chain has at least one piece. 1.5 sits above
+DEFAULT_TRADE_UP_BONUS scale — "we have the engine and the fuel,
+fire now".
+
+Used by `_eval_combo` in `ai/board_eval.py`.
+"""
+
+BOARD_EVAL_COMBO_DOUBLE_CHAIN_FIRE: float = 0.8
+"""Derived: combo-fire score when ≥2 chain spells are castable.
+0.8 sits below the reducer-fire score (1.5) — "two pieces is
+enough to start, but not as decisive as having an engine".
+
+Used by `_eval_combo` in `ai/board_eval.py`.
+"""
+
+BOARD_EVAL_COMBO_DESPERATION_PRESSURE: float = 0.7
+"""Derived: pressure threshold at which a "desperation" combo attempt
+fires. 0.7 matches the DECISION_EVOKE_HARDCAST_NEXT_TURN threshold —
+"if pressure forces evoke, it forces a desperation combo too".
+
+Used by `_eval_combo` in `ai/board_eval.py`.
+"""
+
+BOARD_EVAL_COMBO_DESPERATION_FIRE: float = 0.5
+"""Derived: combo-fire score in the desperation branch. 0.5 is below
+the regular-fire scores — "we're firing because we have to, not
+because we have great resources".
+
+Used by `_eval_combo` in `ai/board_eval.py`.
+"""
+
+BOARD_EVAL_COMBO_RITUAL_FIRE: float = 1.0
+"""Derived: combo-fire score with at least one castable ritual.
+1.0 is the standard fire score — one ritual is enough to start a
+chain in most archetypes.
+
+Used by `_eval_combo` in `ai/board_eval.py`.
+"""
+
+BOARD_EVAL_COMBO_EXTENDER_FIRE: float = 1.0
+"""Derived: combo-fire score with an extender (flashback / tutor)
+plus 2 chain spells in hand+GY. Equal to RITUAL_FIRE because the
+extender already beats the chain length.
+
+Used by `_eval_combo` in `ai/board_eval.py`.
+"""
+
+BOARD_EVAL_PRESSURE_SIGMOID_SCALE: float = 0.5
+"""Derived: scale on the pressure sigmoid `_sigmoid(my_clock -
+opp_clock, k)`. 0.5 means a 1-turn clock-differential moves pressure
+by ~tanh(0.5)/2 ≈ 23%. Calibrated to give a clear pressure signal
+but avoid saturating on a single-turn swing.
+
+Used by `assess_board` in `ai/board_eval.py`.
+"""
+
+BOARD_EVAL_PRESSURE_NO_OWN_CLOCK: float = 0.8
+"""Sentinel: pressure when only opp has a clock (we cannot kill but
+they can). 0.8 = "high pressure, must act" — close to maximum but
+leaves headroom for the symmetric-clock branch.
+
+Used by `assess_board` in `ai/board_eval.py`.
+"""
+
+BOARD_EVAL_PRESSURE_RELAXED: float = 0.2
+"""Sentinel: pressure when opp has no clock (we cannot lose to combat
+in any meaningful timeframe). 0.2 = "low pressure" — non-zero so the
+AI still considers proactive plays.
+
+Used by `assess_board` in `ai/board_eval.py`.
+"""
+
+BOARD_EVAL_DEFAULT_LIFE: int = 20
+"""Rules-constant (CR 103.4): Modern starting life total. Used as
+the default for `BoardAssessment.my_life` / `opp_life` before
+real life totals are read off the game state.
+
+Used by `BoardAssessment` in `ai/board_eval.py`.
+"""
+
+BOARD_EVAL_NO_CLOCK_FLOAT: float = 99.0
+"""Sentinel: float "no clock" sentinel for `BoardAssessment.my_clock`
+/ `opp_clock`. Mirrors `ai/clock.NO_CLOCK = 99.0` — same "cannot
+reach lethal" intent, used in the BoardAssessment dataclass and
+all comparisons in `_life_value`, `_block_value`, etc.
+"""
+
+BOARD_EVAL_NO_CLOCK_SENTINEL: int = 99
+"""Sentinel: integer "no spell in hand" sentinel for
+`BoardAssessment.cheapest_spell_cmc`. 99 is unreachable in Modern
+(max card CMC ~15) — a real spell scan replaces it. Sister constant:
+`MANA_NEEDS_NO_SPELL_SENTINEL` (same semantics, different module).
+
+Used by `BoardAssessment` in `ai/board_eval.py`.
+"""
+
+CREATURE_VALUE_TOUGH_WEIGHT: float = 0.3
+"""Derived: weight on toughness when computing creature value as
+`max(cmc, power + toughness * 0.3)`. Toughness is worth ~30% of
+power in the value formula — captures "high-toughness wall" decks
+losing some value vs offensive creatures while keeping the formula
+proportional to total stats.
+
+Used by `_block_value` in `ai/board_eval.py`.
+"""
+
+CREATURE_VALUE_CMC_MULT: float = 1.5
+"""Derived: outer multiplier converting `max(cmc, power_tough_blend)`
+to creature value. 1.5 anchors the value scale — a 4/4 with CMC 4
+(4*1.5 = 6.0) sits above the DOUBLE_BLOCK_VALUE_THRESHOLD (4.0) so
+4-power creatures correctly trigger double-block consideration.
+
+Used by `_block_value` in `ai/board_eval.py`.
+"""
+
+LIFE_VALUE_DEAD_SENTINEL: float = 999.0
+"""Sentinel: life value returned when my_life ≤ 0. 999.0 = "infinite
+priority" — saving a single life when at 0 dominates every other
+consideration.
+
+Used by `_life_value` in `ai/board_eval.py`.
+"""
+
+LIFE_VALUE_NO_OPP_CLOCK_SCARCITY: float = 0.05
+"""Derived: life-scarcity factor when opp has no clock. 0.05 = "5% of
+the per-clock-turn scarcity" — life points still have small value
+even without a kill threat (preserves general life-as-resource
+arithmetic in pure-grind matchups).
+
+Used by `_life_value` in `ai/board_eval.py`.
+"""
+
+LIFE_VALUE_OUTER_SCALE: float = 10.0
+"""Derived: outer scale converting `fraction * scarcity` to life
+value. 10.0 keeps life-value magnitudes in the same band as
+TRADE_DOWN_PENALTY (-2.5) and TRADE_UP_BONUS (2.0) — a single life
+point's value typically sits around 0.5-2.0.
+
+Used by `_life_value` in `ai/board_eval.py`.
+"""
+
+DOMAIN_BASIC_TYPE_CAP: int = 5
+"""Rules-constant: maximum number of basic land types counted toward
+domain (CR 702.x — Domain). The 5 basics are Plains, Island, Swamp,
+Mountain, Forest — `min(count, 5)` clamps the domain count at the
+canonical maximum.
+
+Used by `_count_domain` in `ai/board_eval.py`.
+"""
+
+
+# ─── EVSnapshot / threat-value constants (ai/ev_evaluator.py) ────────
+# These constants tune the EVSnapshot dataclass defaults, threat-value
+# augmentation, and 1-ply opponent-response projection. Many sentinels
+# here mirror similar constants in board_eval / clock — keeping them
+# named makes the cross-module pattern explicit.
+
+EV_SNAPSHOT_DEFAULT_LIFE: int = 20
+"""Rules-constant (CR 103.4): Modern starting life total used as
+default for EVSnapshot.my_life / opp_life when no game state is yet
+populated. Sister constant: BOARD_EVAL_DEFAULT_LIFE (same value, same
+intent — both reflect the CR-defined starting life).
+"""
+
+EV_SNAPSHOT_NO_CLOCK_FLOAT: float = 99.0
+"""Sentinel: float "no clock" sentinel returned by EVSnapshot.my_clock
+/ opp_clock properties when the relevant side has no power. Mirrors
+ai/clock.NO_CLOCK and BOARD_EVAL_NO_CLOCK_FLOAT — same "cannot reach
+lethal" intent. The continuous-division form (vs the discrete 99 int
+form) is used for smooth EV gradients.
+"""
+
+EV_SNAPSHOT_NO_CLOCK_DISCRETE: int = 99
+"""Sentinel: integer "no clock" sentinel returned by EVSnapshot
+.my_clock_discrete / opp_clock_discrete properties when the relevant
+side has no power. Used for boolean rule checks ("will it die?")
+where the discrete turn count matters. Mirrors NO_CLOCK_SENTINEL
+(gameplan), CHAIN_NO_CLOCK_DEFAULT (finisher_simulator), etc.
+"""
+
+CREATURE_VALUE_OUTER_SCALE: float = 20.0
+"""Derived: outer scale converting `creature_clock_impact` (range
+~0.05-0.5) to creature value units (~1-10). 20.0 = the
+CLOCK_IMPACT_LIFE_SCALING factor — same Modern starting-life
+denominator. Promoted from a function-local literal so both
+`creature_value` and `creature_threat_value` share the named scale.
+"""
+
+THREAT_BATTLE_CRY_AMPLIFIER_VP: int = 2
+"""Rules-constant: virtual-power contribution for an attack-trigger
+battle-cry-class amplifier. 2 reflects "the typical Modern board
+this creature attacks alongside ~2 other attackers it amplifies".
+Already named in code as BATTLE_CRY_AMPLIFIER_VP; promoted to the
+central constants module so future re-tunes are single-point.
+
+Used by `creature_threat_value` in `ai/ev_evaluator.py`.
+"""
+
+THREAT_SCALING_FUTURE_VP: int = 3
+"""Rules-constant: virtual-power contribution for a "for each ..."
+scaling threat (Tarmogoyf, Murktide Regent, etc.). 3 ≈ +1 power per
+turn × ~3 turns of typical game residual. Promoted from a function-
+local literal.
+
+Used by `creature_threat_value` in `ai/ev_evaluator.py`.
+"""
+
+EOT_EXILE_POWER_FACTOR: float = 0.5
+"""Rules-derived: power-contribution factor for a temporarily-
+reanimated creature (Goryo's, Footsteps of the Goryo) — the body
+gets one combat (haste granted) before exile at end step. 0.5 ≈
+"one guaranteed combat vs an unbounded future stream".
+
+Used by reanimation-projection in `ai/ev_evaluator.py`.
+"""
+
+REANIMATION_LIFE_GAIN_ESTIMATE: int = 3
+"""Derived: estimated life gain from a generic ETB-life-gain creature
+(Omnath, Thragtusk-class). 3 sits in the typical 2-4 range for ETB
+life triggers in Modern.
+
+Used by ETB-life-gain projection in `ai/ev_evaluator.py`.
+"""
+
+RITUAL_MANA_PRODUCED: int = 3
+"""Rules-constant: mana produced by a typical ritual (Pyretic Ritual
+/ Desperate Ritual: pay 2, produce 3). 3 reflects the standard "net
++1 mana, +1 storm count" ritual pattern.
+
+Used by ritual projection in `ai/ev_evaluator.py`.
+"""
+
+ENERGY_PRODUCED_ESTIMATE: int = 2
+"""Derived: estimated energy counters produced by a generic energy
+trigger. 2 is a conservative midpoint (Guide of Souls = 1, Voltage
+Surge / Galvanic Iteration = 1-3).
+
+Used by energy projection in `ai/ev_evaluator.py`.
+"""
+
+FALLBACK_OPP_HAND_SIZE: int = 5
+"""Sentinel: opp_hand_size fallback when snap reports 0. 5 reflects
+"default mid-game hand size" — between full grip (7) and post-spell
+hand (4). Used in counter/removal-probability calculations as the
+exponent in `(1 - density)^opp_hand`.
+
+Used by `estimate_opponent_response` and pre-response projection in
+`ai/ev_evaluator.py`.
+"""
+
+EXILE_FRAC_DEFAULT: float = 0.5
+"""Sentinel: exile-fraction fallback when BHI reports zero
+removal_probability. 0.5 reflects "uncertain mix" — half exile, half
+damage-based — a non-informative midpoint until BHI updates posterior.
+
+Used by evasion-discount calculation in `ai/ev_evaluator.py`.
+"""
+
+EVASION_DAMAGE_REMOVAL_RELIEF: float = 0.5
+"""Derived: relief multiplier on damage-based removal probability for
+evasive creatures. 0.5 = "halve damage-removal relevance" — flying /
+trample / menace creatures are still vulnerable to bolts but not as
+vulnerable as ground non-evasive bodies.
+
+Used by evasion-discount calculation in `ai/ev_evaluator.py`.
+"""
+
+REMOVAL_BHI_PROBABILITY_FLOOR: float = 0.01
+"""Sentinel: floor on the divisor when computing
+`exile_density / removal_density`. Prevents division by zero when
+BHI reports near-zero removal probability — a legitimate state for
+opp decks with few removal slots.
+
+Used by evasion-discount and CMC-bucket scaling in `ai/ev_evaluator.py`.
+"""
+
+CREATURE_HIGH_TOUGHNESS: int = 4
+"""Rules-constant: toughness floor at which damage-based removal
+relevance is reduced via DAMAGE_REMOVAL_EFF_HIGH_TOUGH. 4 = "Bolt
+doesn't kill" — at toughness ≥4 the most common Modern damage
+removal (Lightning Bolt) is dead.
+
+Used by removal-probability adjustment in `ai/ev_evaluator.py`.
+"""
+
+CREATURE_MID_TOUGHNESS: int = 3
+"""Rules-constant: toughness floor at which damage-based removal
+relevance is reduced via DAMAGE_REMOVAL_EFF_MID_TOUGH. 3 = "survives
+Bolt" but "dies to Push" — partial damage-removal vulnerability.
+
+Used by removal-probability adjustment in `ai/ev_evaluator.py`.
+"""
+
+CMC_REMOVAL_EFFICIENCY_CMC0: float = 0.15
+"""Derived: removal-priority multiplier for CMC-0 spells. 0.15 = "tiny
+threat" — opp's removal stays in hand for bigger targets. Reflects
+the Memnite / Ornithopter pattern: face-down for opp's removal slot.
+
+Used by `estimate_opponent_response` in `ai/ev_evaluator.py`.
+"""
+
+CMC_REMOVAL_EFFICIENCY_CMC1: float = 0.25
+"""Derived: removal-priority multiplier for CMC-1 spells. 0.25 = "small
+threat" — most CMC-1 creatures aren't worth a 2-mana removal trade
+unless they're tagged as combo pieces.
+
+Used by `estimate_opponent_response` in `ai/ev_evaluator.py`.
+"""
+
+CMC_REMOVAL_EFFICIENCY_CMC2: float = 0.4
+"""Derived: removal-priority multiplier for CMC-2 spells. 0.4 = "even
+trade" — at CMC 2 the threat is at the boundary where opp will
+sometimes use removal sometimes not.
+
+Used by `estimate_opponent_response` in `ai/ev_evaluator.py`.
+"""
+
+# ── Storm chain simulation constants (oracle-derived cardinals) ────
+
+STORM_GOBLIN_LETHAL_TOKENS: int = 6
+"""Rules-derived: minimum goblin tokens (Empty the Warrens) that are
+"usually enough" to win the game. 6 = 6 power + 6 toughness across
+the board — typically lethal in 2 swings even into a 20-life opponent
+with one or two blockers.
+
+Used by `simulate_storm_kill` in `ai/ev_evaluator.py`.
+"""
+
+# ── pass-EV / future-value constants ────────────────────────────────
+
+PASS_MANA_WASTE_PENALTY: float = 0.5
+"""Derived: per-mana penalty for passing with unused mana. 0.5 ≈
+half a card-value unit per mana — wasting mana directly reduces the
+clock-impact we could have applied this turn. The full mana-budget
+penalty applies linearly: passing with 3 mana is worse than passing
+with 1.
+
+Used by `estimate_pass_ev` in `ai/ev_evaluator.py`.
+"""
+
+PASS_OPP_DEVELOPMENT_PENALTY_SCALE: float = 0.3
+"""Derived: scale on opp-development damage penalty when passing.
+0.3 = "30% of the life-as-resource swing" — the full swing is what
+the opp's next attack does to our life total; the 30% scaling
+captures "we still get one more turn to interact, so the swing isn't
+permanent".
+
+Used by `estimate_pass_ev` in `ai/ev_evaluator.py`.
+"""
+
+PASS_COMBO_FULL_HAND_PENALTY: float = 2.0
+"""Derived: extra pass-EV penalty when a combo deck has ≥5 cards in
+hand and is doing nothing. 2.0 ≈ TRADE_UP_BONUS scale — "we missed
+a trade-up opportunity by sitting on the chain".
+
+Used by `estimate_pass_ev` combo branch in `ai/ev_evaluator.py`.
+"""
+
+PASS_COMBO_FULL_HAND_THRESHOLD: int = 5
+"""Rules-constant: hand-size threshold at which the combo full-hand
+pass penalty fires. 5 = "more than half a starting hand" — at this
+size combo decks definitely have chain pieces to deploy.
+
+Used by `estimate_pass_ev` combo branch in `ai/ev_evaluator.py`.
+"""
+
+FUTURE_DECAY_MIN_CONTINUATION: float = 0.5
+"""Derived: minimum per-turn continuation factor in future-value
+decay. 0.5 = "even when close to dying we still get a 50% chance of
+the surviving turn mattering" — prevents the decay from collapsing
+to 0.0 in lethal-soon states.
+
+Used by `estimate_future_value` in `ai/ev_evaluator.py`.
+"""
+
+LIFE_TO_POWER_EQUIVALENT: float = 0.25
+"""Derived: life→power-equivalent conversion ratio for the
+deferred-trigger value model. 0.25 matches life_as_resource at
+opp_power=3 — life is also a buffer against burn / removal /
+non-combat damage which raw clock_diff doesn't model.
+
+Used by `_clause_life_gain` deferred-trigger value in
+`ai/ev_evaluator.py`.
+"""
+
+ENERGY_TO_POWER_EQUIVALENT: float = 0.5
+"""Derived: energy→power-equivalent conversion ratio. 1 energy ≈ 1/3
+of an angel activation (Guide of Souls's {E}{E}{E} → +2/+2 + flying ≈
+3 power), so 1 energy ≈ 1.0 power-equivalent. Capped at 0.5 to avoid
+over-crediting decks that produce energy without finishers.
+
+Used by `_clause_energy_gain` deferred-trigger value in
+`ai/ev_evaluator.py`.
+"""
+
+SURVIVAL_TURNS_FLOOR: float = 0.5
+"""Sentinel: minimum survival_turns value used as the divisor in
+the no-clock burn-payoff scaling (`1.0 / max(survival_turns, 0.5)`).
+Below 0.5 the factor saturates at 2.0 — at that point the opp is
+already dead, so the divisor floor prevents division-by-near-zero
+without changing the saturated branch's behavior.
+
+Used by burn projection in `ai/ev_evaluator.py`.
+"""
+
+NONLAND_PERMANENT_ENTERS_PER_TURN: float = 0.7
+"""Derived: average non-land permanents entering per turn in Modern.
+0.7 reflects "Modern decks deploy roughly one nonland permanent per
+main phase" — slightly less than 1.0 because some turns are pure
+land + cantrip / removal-only. Used by per-permanent recurring
+triggers (Pinnacle Emissary, Guide of Souls, anthem-style stacks).
+
+Used by `_clause_token_power` recurring-trigger branch in
+`ai/ev_evaluator.py`.
+"""
+
+FUTURE_DECAY_MAX_CONTINUATION: float = 0.95
+"""Derived: maximum per-turn continuation factor in future-value
+decay. 0.95 = "in a long game, cards/mana shift enough per turn to
+warrant ≥5% discount" — prevents the decay from saturating at 1.0
+in stalled positions.
+
+Used by `estimate_future_value` in `ai/ev_evaluator.py`.
+"""
+
+
+# ─── Word-cardinal map for amass parsing (ai/ev_evaluator.py) ───────
+# These literals encode oracle-text English cardinals (CR 107 — Numbers
+# and Symbols). Tagged as rules-text rather than tuning weights.
+
+AMASS_WORD_MAP: dict = {
+    'one': 1,    # magic-allow: oracle-text cardinal
+    'two': 2,    # magic-allow: oracle-text cardinal
+    'three': 3,  # magic-allow: oracle-text cardinal
+    'four': 4,   # magic-allow: oracle-text cardinal
+    'five': 5,   # magic-allow: oracle-text cardinal
+    'six': 6,    # magic-allow: oracle-text cardinal
+    'seven': 7,  # magic-allow: oracle-text cardinal
+    'eight': 8,  # magic-allow: oracle-text cardinal
+    'nine': 9,   # magic-allow: oracle-text cardinal
+    'ten': 10,   # magic-allow: oracle-text cardinal
+}
+"""Word→integer cardinal map for parsing amass clauses ("amass three"
+→ +3 +1/+1 counters). These literals encode CR 107 cardinals — they
+are not tuning weights. Each value is tagged with `# magic-allow:
+oracle-text cardinal` because they encode rules text.
+
+Used by `_clause_token_power` in `ai/ev_evaluator.py`.
+"""
+
+
+DEFAULT_PLAN_TURN: int = 5
+"""Sentinel: default `game_turn` value for `TurnPlanner.plan_turn`
+when callers don't pass a turn number. 5 reflects the "Modern midgame"
+fallback — most aggression-bonus and life-band branches engage
+near T5 anyway, so the default approximates "no turn-aware modifier".
+
+Used by `TurnPlanner.plan_turn` in `ai/turn_planner.py`.
+"""
+
+
+# ─── ev_player gates and thresholds (ai/ev_player.py) ──────────────
+# Constants below tune the per-card EV evaluator and combat decisions.
+# Many are CR-derived sentinels (Modern starting life, big-creature
+# CMC) or scaling factors against the existing CLOCK_IMPACT_LIFE_SCALING
+# scale.
+
+REANIMATE_TARGET_MIN_POWER: int = 5
+"""Rules-constant: minimum power for a graveyard creature to count as
+a "big reanimation target". 5+ power matches Goryo's, Persist, and
+Reanimate-style payoffs — below 5 the creature isn't worth the
+multi-step rules path.
+
+Used by `_main_phase_decision` in `ai/ev_player.py`.
+"""
+
+CONTROL_PATIENCE_OPP_CLOCK_THRESHOLD: int = 4
+"""Rules-constant: opp_clock at and above which control_patience
+holds reactive-only spells. ≥4 = "we have at least 4 turns of slack"
+— below this the threat is close enough that we must fire the
+reactive spell rather than wait for late-game value.
+
+Used by `_main_phase_decision` reactive-only gate in `ai/ev_player.py`.
+"""
+
+LAND_SACRIFICE_MIN_LANDS: int = 4
+"""Rules-constant: minimum land count required for a "sacrifice any
+number of lands" payoff (Scapeshift) to be worth casting. Mirrors the
+engine threshold at engine/card_effects.py:scapeshift_resolve. Below
+4 lands the search-and-replace destroys our mana base for too small
+a payoff.
+
+Used by `_score_spell` Scapeshift gate in `ai/ev_player.py`.
+"""
+
+BIG_CREATURE_CMC_FLOOR: int = 6
+"""Rules-constant: minimum CMC at which a creature is "Titan-class"
+(Primeval Titan, Cultivator Colossus, Reality Smasher, Eldrazi).
+6 = Titan's CMC, the canonical big-creature ramp threshold.
+
+Used by `_score_spell` Amulet/Titan synergy and `_score_land`
+high-CMC ramp branches in `ai/ev_player.py`.
+"""
+
+PLANESWALKER_DEFAULT_LOYALTY: int = 3
+"""Sentinel: default loyalty when `template.loyalty` is missing.
+3 reflects the typical mid-tier planeswalker (Liliana, Chandra, etc.)
+— a baseline activation count that doesn't over- or under-credit
+unparsed planeswalkers.
+
+Used by the planeswalker bonus branch in `ai/ev_player.py`.
+"""
+
+DESPERATE_LIFE_THRESHOLD: int = 10
+"""Rules-constant: my_life at and below which X-cost board wipes
+fire even when their kill count is suboptimal. ≤10 = "half life" —
+the desperation threshold below which suboptimal-kill wipes are
+preferable to dying next turn.
+
+Used by `_score_spell` X-cost board wipe branch in `ai/ev_player.py`.
+"""
+
+NONCREATURE_COUNTER_AGGRO_POWER: int = 4
+"""Rules-constant: opp_power at and above which a non-creature
+counter is considered dead vs an aggro deck running out of cards.
+4 = "two solid creatures or one big one" — at this power the opp's
+remaining hand is likely creatures the counter cannot stop.
+
+Used by `_score_spell` noncreature-counter dead gate in `ai/ev_player.py`.
+"""
+
+NONCREATURE_COUNTER_AGGRO_HAND: int = 3
+"""Rules-constant: opp_hand_size at and below which the noncreature-
+counter gate fires. ≤3 cards = "deck is running out" — below this
+the counter is dead because remaining cards are creatures the spell
+cannot target.
+
+Used by `_score_spell` noncreature-counter dead gate in `ai/ev_player.py`.
+"""
+
+PHYREXIAN_LIFE_PENALTY_SCALE: float = 10.0
+"""Derived: outer scale on Phyrexian-mana life-cost penalty.
+Same magnitude as `CLOCK_IMPACT_LIFE_SCALING` — Phyrexian costs
+trade life for mana, so the penalty scales with life-as-resource.
+
+Used by `_score_spell` Phyrexian mana penalty in `ai/ev_player.py`.
+"""
+
+OPP_HAND_FULL_HOLDBACK_THRESHOLD: int = 4
+"""Rules-constant: opp_hand_size threshold at and above which the
+holdback-relevance gate fires (treating opp hand as "full of threats").
+4 cards is the post-Bundle-3 B3-Tune threshold — 3-card hands are
+typically mostly lands without real threat density.
+
+Used by `_holdback_penalty` in `ai/ev_player.py`.
+"""
+
+HOLDBACK_PROBABILITY_FLOOR: float = 0.1
+"""Sentinel: minimum opponent-action probability returned by the
+holdback heuristic. 10% is the noise floor — below this the heuristic
+treats "opp has no relevant threats" but never collapses to 0.0
+(any positive probability still warrants partial holdback).
+
+Used by `_p_opp_action_next_turn` in `ai/ev_player.py`.
+"""
+
+LAND_BASE_EV: float = 10.0
+"""Derived: baseline EV for a land play. 10.0 sits in the mid-range
+of the spell EV scale (-5 = pass_threshold, +15 = high-EV cast) —
+land plays must generally outrank spells of the current turn (mana
+is fundamental). Promoted from a function-local constant so it
+appears in the central scale documentation.
+
+Used by `_score_land` in `ai/ev_player.py`.
+"""
+
+LAND_UNTAPPED_USEFUL: float = 5.0
+"""Derived: bonus when a land pays off this turn (untapped, plays a
+spell). Half the LAND_BASE_EV — the bonus is meaningful but doesn't
+dominate the base score.
+
+Used by `_score_land` in `ai/ev_player.py`.
+"""
+
+LAND_UNTAPPED_IDLE: float = 2.0
+"""Derived: bonus when a land is "stored mana" rather than spent
+this turn. 2.0 = half of LAND_UNTAPPED_USEFUL — stored mana has
+real value but less than mana spent.
+
+Used by `_score_land` in `ai/ev_player.py`.
+"""
+
+LAND_TAPPED_STALL: float = 10.0
+"""Derived: penalty when a tapped land enters with a 1-drop in hand
+(loses entire T1 tempo). Same magnitude as LAND_BASE_EV — losing T1
+fully cancels the land's per-turn value.
+
+Used by `_score_land` in `ai/ev_player.py`.
+"""
+
+LAND_TAPPED_MINOR: float = 3.0
+"""Derived: penalty when a tapped land enters but we can still play
+most plays. Less than LAND_TAPPED_STALL because the cost is one
+turn of suboptimal sequencing rather than a lost play.
+
+Used by `_score_land` in `ai/ev_player.py`.
+"""
+
+BOUNCE_LAND_AMULET_MANA: float = 8.0
+"""Derived: bonus for a bounce-land in an Amulet shell (bounce + Amulet
+loop = +1 land-equiv mana / turn × residency). 8.0 is below
+LAND_BASE_EV (10.0) because the loop value is realised over multiple
+turns rather than this turn alone.
+
+Used by `_score_land` in `ai/ev_player.py`.
+"""
+
+RAMP_TO_BIG_NOW: float = 12.0
+"""Derived: bonus when a land brings us to a 6+ CMC payoff THIS turn.
+Above LAND_BASE_EV — the "this turn" component captures finisher
+deployment that wins the game.
+
+Used by `_score_land` Titan-ramp branch in `ai/ev_player.py`.
+"""
+
+RAMP_TO_BIG_SOON: float = 4.0
+"""Derived: bonus when a land brings us to a 6+ CMC payoff next turn.
+One-third of RAMP_TO_BIG_NOW because the payoff is delayed by one
+turn during which opp can still interact.
+
+Used by `_score_land` Titan-ramp branch in `ai/ev_player.py`.
+"""
+
+LAND_COLOR_ENABLES_SPELL: float = 3.0
+"""Derived: bonus per specific spell unlocked by a new color. 3.0 is
+in the "card-value" band — each enabled spell is roughly one card-
+value unit.
+
+Used by `_score_land` color-enabling branch in `ai/ev_player.py`.
+"""
+
+LAND_NEW_COLOR_GENERIC: float = 4.0
+"""Derived: bonus per color added to mana base when hand needs it.
+Above LAND_COLOR_ENABLES_SPELL because adding a new color enables
+multiple downstream spells over the rest of the game.
+
+Used by `_score_land` color-enabling branch in `ai/ev_player.py`.
+"""
+
+LAND_FETCH_FLEXIBILITY: float = 3.0
+"""Derived: bonus for fetch land's choice-of-color-next-turn value.
+Same magnitude as LAND_COLOR_ENABLES_SPELL — fetch flexibility ≈
+one enabled spell.
+
+Used by `_score_land` fetch branch in `ai/ev_player.py`.
+"""
+
+TRON_PIECES_REQUIRED: int = 3
+"""Rules-constant: number of Tron land subtypes (Mine, Tower, Plant)
+required to assemble Tron. 3 is the canonical Tron piece count.
+
+Used by `_score_land` Tron-progress branch in `ai/ev_player.py`.
+"""
+
+CYCLING_GY_URGENCY_FLOOR: int = 3
+"""Rules-constant: GY creature count below which cycling gains
+urgency (need more GY creatures before cascading). 3 = "Living End
+threshold" — fewer than 3 creatures returned by Living End is
+sub-lethal in most matchups.
+
+Used by `_score_cycling` in `ai/ev_player.py`.
+"""
+
+DESPERATION_LIFE_FLOOR: int = 6
+"""Rules-constant: my_life at and below which "is_desperate" attack
+mode fires (maximize damage even at high blocker risk). 6 = "two
+hits from death" — at this life total surviving via blocks is
+already failing, so racing for damage maximizes win probability.
+
+Used by `decide_attackers` in `ai/ev_player.py`.
+"""
+
+ATTACK_THRESHOLD_REDUCTION_AGGRESSION: float = 2.0
+"""Derived: attack-threshold reduction during aggression-boost or
+racing windows. 2.0 ≈ TRADE_UP_BONUS — "the trade-up window justifies
+loosening the attack gate by one trade-up unit".
+
+Used by `decide_attackers` aggression boost in `ai/ev_player.py`.
+"""
+
+ATTACK_THRESHOLD_REDUCTION_ANTI_COMBO: float = 3.0
+"""Derived: attack-threshold reduction vs spell-based decks (combo /
+storm). Higher than the racing reduction because opp will not block,
+so attacks are essentially free.
+
+Used by `decide_attackers` anti-combo branch in `ai/ev_player.py`.
+"""
+
+COMBAT_TRIGGER_DAMAGE_BONUS: float = 1.5
+"""Derived: per-attacker EV bonus when the attacker has a "combat
+damage to a player" trigger (Ragavan: Treasure + exile ≈ 1.5 EV).
+1.5 = TRADE_UP_BONUS magnitude — the trigger is worth roughly one
+trade-up of value.
+
+Used by `decide_attackers` combat-trigger bonus in `ai/ev_player.py`.
+"""
+
+COMBAT_ENERGY_TRIGGER_BONUS: float = 0.5
+"""Derived: per-attacker EV bonus for energy-on-attack triggers
+(Guide of Souls). Below COMBAT_TRIGGER_DAMAGE_BONUS — one energy
+counter is worth ~0.5 card-value.
+
+Used by `decide_attackers` energy-trigger bonus in `ai/ev_player.py`.
+"""
+
+EMERGENCY_BLOCK_LOW_LIFE: int = 5
+"""Rules-constant: my_life floor below which "drop-below-5"
+emergency blocking fires. 5 = "next-attack-lethal range" — under
+5 life we cannot afford the next damage step.
+
+Used by `decide_blockers` emergency branch in `ai/ev_player.py`.
+"""
+
+EMERGENCY_BLOCK_INCOMING_FLOOR: int = 3
+"""Rules-constant: total_incoming damage at and above which the
+drop-below-5 emergency block branch fires. 3 = "Bolt damage" —
+below this the incoming damage is too small to trigger emergency
+blocking even at low life.
+
+Used by `decide_blockers` emergency branch in `ai/ev_player.py`.
+"""
+
+PLATING_REBOUND_EQUIP_BONUS: int = 3
+"""Rules-constant: equipment power bonus at and above which the
+plating-rebound futility check fires. 3 = "Cranial Plating-tier
+amplification" — below this the rebound damage isn't large enough
+to make chumping futile.
+
+Used by `decide_blockers` plating-rebound branch in `ai/ev_player.py`.
+"""
+
+EMERGENCY_BLOCK_STABILIZE_LIFE_GAIN: int = 5
+"""Rules-constant: minimum life gain (life - remaining damage) at
+which emergency blocking is considered "stabilized" and stops
+sacrificing more blockers. 5 = "one-Bolt buffer" — once we have
+5 life of headroom from incoming damage, additional chumps are
+overspending.
+
+Used by `decide_blockers` emergency stabilize check in
+`ai/ev_player.py`.
+"""
+
+LOW_LIFE_BURN_DEFAULT: int = 8
+"""Sentinel: default `burn_low_life_threshold` when profile is
+missing. 8 = OPP_LIFE_LOW_BAND — same threshold for "in burn range"
+shared with the aggression-bonus curve.
+
+Used by `decide_burn_target` profile fallback in `ai/ev_player.py`.
+"""
+
+PUMP_DISCARD_LAND_FLOOR: int = 3
+"""Rules-constant: minimum lands on battlefield to consider a
+"well-developed board" for the pre-combat-pump discard heuristic.
+≥3 lands = "we have made our T3 land drop", below which discarding
+extra lands is premature.
+
+Used by `decide_attackers` pump-discard branch in `ai/ev_player.py`.
+"""
+
+PUMP_DISCARD_SPELL_GLUT: int = 3
+"""Rules-constant: minimum non-land spells in hand at which the
+"high-CMC uncastable" discard branch fires. ≥3 spells in hand =
+"hand is dense enough that some are slow", below which we shouldn't
+discard non-lands.
+
+Used by `decide_attackers` pump-discard branch in `ai/ev_player.py`.
 """
 
 
@@ -2519,6 +3630,19 @@ Used by `_recalculate_priors` in `ai/bhi.py`.
 """
 
 
+BHI_DISCARD_FLAT_PRIOR: float = 0.5
+"""Bayesian flat prior used when the opponent's published gameplan
+declares a hand-attack spell (mulligan_keys / critical_pieces /
+always_early). With no observational evidence yet, we estimate a 50%
+chance they will deploy it before our combo turn — the standard
+non-informative "present-or-absent" 0.5 prior.
+
+Used by `BayesianHandTracker._compute_discard_prior` in `ai/bhi.py`.
+Posterior probabilities are updated as priority-passes are observed
+via `_recalculate_priors`.
+"""
+
+
 # ─── Mulligan keep-score weights (ai/mulligan.py) ────────────────────
 # Used by `MulliganDecider._card_keep_score` to rank cards for the
 # choose-cards-to-bottom decision. These are role-tag weights, NOT
@@ -2737,6 +3861,81 @@ Used by `plan_sideboard` in `ai/sideboard_solver.py`.
 # Used by `_compute_combo_value`, the zone assessors, and the
 # mid-chain ritual gate to score storm chains and graveyard combos.
 
+COMBO_ROLE_PRIORITY_LADDER: dict = {
+    'rituals': 0, 'fuel': 0,
+    'payoffs': 1, 'finishers': 1,
+    'engines': 2,
+    'enablers': 3,
+    'protection': 4,
+    'interaction': 5,
+    'fillers': 6,
+}
+"""Ladder: card-role priority used by `_build_role_cache` to pick
+the most specific role for a card listed under multiple roles. Lower
+= higher priority (chosen first). Structure matters more than the
+absolute numbers — the ordering rituals < payoffs < engines <
+enablers < protection < interaction < fillers reflects "most-specific
+combo role" first.
+
+Used by `_build_role_cache` in `ai/combo_calc.py`.
+"""
+
+
+COMBO_ROLE_PRIORITY_UNKNOWN_CACHE: int = 99
+"""Sentinel: priority assigned to a card not yet in the role cache.
+99 sits well above the highest real priority (fillers=6) so any new
+role assignment automatically wins the priority comparison.
+
+Used by `_build_role_cache` in `ai/combo_calc.py`.
+"""
+
+
+COMBO_ROLE_PRIORITY_UNKNOWN_ROLE: int = 50
+"""Sentinel: priority assigned to a role name not in the ladder. 50
+sits between the highest real priority (fillers=6) and the unknown-
+cache sentinel (99). Ensures unknown roles never win the priority
+comparison against a known role, but still beat unassigned cards.
+
+Used by `_build_role_cache` in `ai/combo_calc.py`.
+"""
+
+
+COMBO_REANIMATION_MIN_CMC: int = 5
+"""Rules-constant: minimum CMC at which a graveyard creature warrants
+the single-big-target reanimation pattern (Goryo's, Persist patterns).
+Below 5 CMC the creature is too small for reanimation to swing
+position — small reanimation targets feed Living-End-style mass
+patterns instead.
+
+Used by `_assess_graveyard_zone` in `ai/combo_calc.py`.
+"""
+
+
+COMBO_HARD_HOLD_NO_CLOCK_RATIO: float = 10.0
+"""Rules-constant: ratio applied to `-NO_CLOCK` to derive the
+STORM_HARD_HOLD sentinel. Position_value's natural scale is bounded
+by NO_CLOCK (99.0); -NO_CLOCK × 10.0 = -990.0 is strongly negative
+for any realistic ev accumulation, ensuring `ev + STORM_HARD_HOLD`
+collapses the play's score below every legal alternative.
+
+Auto-derived at import time so a future change to NO_CLOCK keeps
+the sentinel correctly scaled.
+
+Used by `_derive_storm_hard_hold` in `ai/combo_calc.py`.
+"""
+
+
+COMBO_WASTED_POTENTIAL_FLOOR: float = 0.01
+"""Sentinel: minimum positive value of "wasted potential" when a
+non-storm payoff is held. Prevents a zero or near-zero wasted-
+potential value from flattening the negative payoff penalty to 0.0
+(which would let the AI hold an unready payoff indefinitely). The
+floor preserves the sign of the penalty.
+
+Used by the non-storm payoff branch in `card_combo_modifier`.
+"""
+
+
 COMBO_IDEAL_POSITION_CEIL: float = 100.0
 """Sentinel: ideal `position_value` ceiling for `_compute_combo_value`.
 Position-value scales bottom-out at 0 (winning) and top-out at the
@@ -2878,6 +4077,240 @@ heuristic. 7 matches the Modern starting-hand size — empirically the
 deepest hand a storm chain ever needs to reason over.
 
 Used by `find_all_chains` in `ai/combo_chain.py`.
+"""
+
+
+# ─── Combo-evaluator constants (ai/combo_evaluator.py) ───────────────
+# Used by the simulator-driven combo evaluator to score flip-coin
+# transform progress, tutor-tax penalties, and hold-vs-fire decisions.
+# These constants tune the bridge between the chain simulator's
+# `(expected_damage, success_probability, coverage_ratio)` projection
+# and the per-card EV scoring used by `ev_player`.
+
+FLIP_COIN_TRANSFORM_VALUE_FRACTION: float = 0.3
+"""Derived: fraction of `combo_value` credited per untransformed
+flip-creature when adding marginal coin-flip transform progress. 0.3
+reflects "one chained instant/sorcery is roughly a third of the value
+the eventual transform brings" — the transform itself is the payoff,
+each marginal flip is incremental progress. Below 0.3 the AI under-
+prioritizes filling the chain; above 0.3 it over-credits the
+incremental flip relative to other build-up actions.
+
+Used by `_flip_transform_bonus` in `ai/combo_evaluator.py`.
+"""
+
+
+TUTOR_TAX_LIFE_NORMALIZER: float = 3.0
+"""Derived: scaling factor on `combo_value / opp_life` when computing
+per-card tutor-tax penalty. 3.0 = three EV units (CHEAP_REMOVAL_ACTION
+scale × 3) — the empirical magnitude at which a tax-piece (e.g.
+Thalia, Sphere of Resistance) on the opp's battlefield reduces our
+willingness to fetch by enough to cancel the tutor's marginal value.
+Below 3 the tutor still scores positively against tax; above 3 the
+tutor scores too negatively even when its target wins on the spot.
+
+Used by `_search_tax_penalty` in `ai/combo_evaluator.py`.
+"""
+
+
+COMBO_FIRE_SUCCESS_THRESHOLD: float = 0.5
+"""Derived: minimum `success_probability` at which a sub-lethal-but-
+expected-lethal chain is considered "fire" rather than "hold". 0.5 is
+the fair-coin floor — below 50% confidence the combo is too volatile
+to commit, so the AI prefers to hold for a more reliable line. Above
+50% the AI fires because expected-damage already covers opp_life.
+
+Used by the hold-vs-fire decision in `ai/combo_evaluator.py`.
+"""
+
+
+COMBO_COVERAGE_HALF_LETHAL: float = 0.5
+"""Rules-constant: chain-coverage ratio at which mid-chain investment
+becomes catastrophic if abandoned. 0.5 = half-lethal — at coverage
+above 0.5 we've committed half our resources to the chain, and any
+non-extending fuel-burn wastes that investment. Threshold derives
+from clock arithmetic, not tuning: it's the point where "this turn
+or never" applies to the chain.
+
+Used by the mid-chain coverage gate in `ai/combo_evaluator.py`.
+"""
+
+
+# ─── Finisher-simulator constants (ai/finisher_simulator.py) ────────
+# Used by `simulate_finisher_chain` and pattern projectors. Every
+# value below is either a rules-derived sentinel ("one extra rules
+# step required") or an unreachable-CMC sentinel.
+
+CHAIN_EXTRA_RULES_STEP_SUCCESS: float = 0.5
+"""Rules-derived sentinel: success probability when the chain
+requires one extra rules step beyond its primary access. Examples:
+tutor must resolve uncountered before fetching the closer; discard
+outlet must succeed before the reanimator can target; cascade or
+draw must reveal the cycling payoff before Living End fires.
+
+0.5 reflects "one fair-coin event must succeed for the chain to
+work" — not a tuning weight, the same fair-coin floor used in
+`COMBO_FIRE_SUCCESS_THRESHOLD`. All four pattern projectors share
+this floor when the primary access is one rules step away.
+
+Used by `_project_storm`, `_project_storm_via_tutor`,
+`_project_reanimation`, `_project_cycling`, and `chain_lethal_turn`
+in `ai/finisher_simulator.py`.
+"""
+
+
+CHAIN_NO_CLOCK_DEFAULT: int = 99
+"""Sentinel: opp_clock fallback when `opp_clock_discrete` is missing
+on the snapshot. 99 turns is unreachable in any realistic Modern game
+and matches the sentinel semantics of `NO_CLOCK_SENTINEL` (gameplan)
+and `NO_CLOCK = 99.0` (clock.py): "no clock means opponent cannot
+reach lethal in any meaningful timeframe".
+
+Used by the hold-value computation in `ai/finisher_simulator.py`.
+"""
+
+
+CHAIN_CYCLING_COST_UNREACHABLE: int = 99
+"""Sentinel: cycling-cost fallback when a card lacks parsed
+`cycling_cost_data['mana']`. 99 mana is unreachable in Modern, so a
+card with missing cost-data sorts to the bottom of the cheapest-
+cycler search and never gets picked as the chain's cheapest fuel.
+
+Used by `_project_cycling` in `ai/finisher_simulator.py`.
+"""
+
+
+CHAIN_ARCHETYPE_MATCH_PRIORITY: int = 4
+"""Tiebreaker: priority assigned to a candidate pattern whose name
+matches the deck's archetype hint (storm/cascade/reanimation/cycling).
+4 sits above the default ordering (storm=3, reanimation=2, cascade=1,
+cycling=0) so an archetype-hinted match always wins ties — used only
+when EV proxies are equal between candidates.
+
+Used by `_priority` in `simulate_finisher_chain`.
+"""
+
+
+CHAIN_DEFAULT_PRIORITY_ORDER: dict = {"storm": 3, "reanimation": 2,
+                                       "cascade": 1, "cycling": 0}
+"""Tiebreaker: default candidate-pattern ordering when no archetype
+hint binds. Reflects how directly each pattern translates to damage:
+storm and reanimation deal damage outright; cascade and cycling set
+up boards that need an extra turn to convert. Highest = preferred.
+
+Used by `_priority` in `simulate_finisher_chain`.
+"""
+
+
+# ─── Stax / lock-piece valuation constants (ai/stax_ev.py) ──────────
+# Used by per-pattern lock evaluators (Chalice / Blood Moon / Canonist
+# / Torpor Orb). Constants are intentionally conservative — tests
+# validate sign and rough magnitude, not precise calibration. The
+# 20.0 life-as-resource scaling factor is the same `CLOCK_IMPACT_LIFE_SCALING`
+# used elsewhere in the AI scoring layer; it is imported by stax_ev.
+
+STAX_TURN_DECAY_PER_TURN: float = 0.25
+"""Derived: per-turn decay factor for stax lock value as the game
+progresses. 0.25 = -25% per turn = full decay over 4 turns (T1=1.0,
+T2=0.75, T3=0.5, T4=0.25, T5+=0.0). Reflects "by T5 opp has resolved
+their cheap spells, so the lock only catches topdecks". Calibrated
+against the v1-vs-Boros trace where casting Chalice on T5 cost tempo.
+
+Used by `_turn_decay` in `ai/stax_ev.py`.
+"""
+
+
+STAX_LOCK_DECAY_BURNOUT_TURN: int = 5
+"""Sentinel: turn at and after which the stax-lock decay returns 0.0.
+5 = 1 / STAX_TURN_DECAY_PER_TURN + 1 (T1=1.0, decays by 0.25 each
+turn, hits 0 by T5). Encoded as a separate constant so future re-tunes
+of the decay rate also move the sentinel.
+
+Used by `_turn_decay` in `ai/stax_ev.py`.
+"""
+
+
+CHALICE_PRACTICAL_X_CEIL: int = 3
+"""Rules-constant: maximum X value scanned for Chalice of the Void
+counter-density. Reflects Modern's practical X bound: X=0 freely,
+X=1 on T1 with untapped land, X=2 on T2, X=3 on T3. Higher X is rare
+in practice and burns enough mana to skip the rest of the curve.
+
+Used by `_chalice_lock_ev` in `ai/stax_ev.py`.
+"""
+
+
+BLOOD_MOON_DISRUPTION_COEFFICIENT: float = 0.3
+"""Derived: per (nonbasic_count × missing_colors) coefficient on
+Blood Moon disruption. 0.3 keeps magnitudes in the same range as
+Chalice's net-lock × clock_impact product. Below 0.3 Blood Moon
+under-fires vs 5c manabases; above 0.3 it dominates EV calculations
+even against decks playing only one off-color.
+
+Used by `_blood_moon_lock_ev` in `ai/stax_ev.py`.
+"""
+
+
+BLOOD_MOON_DISRUPTION_CAP: float = 15.0
+"""Derived: cap on Blood Moon disruption magnitude. 15.0 sits in the
+same ceiling band as `MAX_NET_LOCK × clock_impact` (Chalice ceiling)
+— a Blood Moon disrupting 50 nonbasics × 3 missing colors theoretically
+yields 45.0 raw, which would dominate every other EV term. The cap
+keeps Blood Moon in proportion to other lock pieces.
+
+Used by `_blood_moon_lock_ev` in `ai/stax_ev.py`.
+"""
+
+
+CANONIST_DENSITY_FLOOR: float = 0.3
+"""Derived: minimum low-CMC fraction of opp's nonland library at
+which a Canonist / Rule-of-Law lock fires. 30% reflects "if less than
+3-of-10 spells are CMC ≤ 2, the lock barely bites" — control decks
+typically run ~25% low-CMC spells, so the floor correctly skips
+control mirrors.
+
+Used by `_canonist_lock_ev` in `ai/stax_ev.py`.
+"""
+
+
+CANONIST_DISRUPTION_TURN_COUNT: float = 3.0
+"""Rules-constant: turns of spell-limiting credited to a Canonist /
+Rule-of-Law per density unit. 3 turns reflects the typical "lock
+lasts ~3 turns before opp answers it" window, scaled by density (so
+density 0.5 yields 1.5 effective turns of disruption).
+
+Used by `_canonist_lock_ev` in `ai/stax_ev.py`.
+"""
+
+
+CANONIST_DISRUPTION_COEFFICIENT: float = 0.4
+"""Derived: post-product coefficient on Canonist disruption × impact ×
+lifetime. 0.4 is "slightly lower than the Chalice/Blood Moon line"
+because Canonist's lock is per-turn-skippable (opp casts the highest-
+EV spell first then stops), whereas Chalice's lock is total. The
+40% coefficient calibrates the magnitude difference.
+
+Used by `_canonist_lock_ev` in `ai/stax_ev.py`.
+"""
+
+
+TORPOR_ORB_ETB_DENSITY_FLOOR: int = 3
+"""Rules-constant: minimum count of `etb_value`-tagged creatures in
+opp's library for Torpor Orb's lock to fire. Below 3 the orb's
+disruption is too small to justify the artifact slot — opp's deck
+just doesn't lean on ETBs enough.
+
+Used by `_torpor_orb_lock_ev` in `ai/stax_ev.py`.
+"""
+
+
+TORPOR_ORB_PER_ETB_VALUE: float = 0.4
+"""Derived: per-disrupted-ETB value multiplier. 0.4 reflects "not all
+ETBs are huge" — a typical mix of small ETB triggers (1/1 Solitude
+companion) up to medium ETBs (Reflector Mage flicker) averages around
+40% of a card's worth of value.
+
+Used by `_torpor_orb_lock_ev` in `ai/stax_ev.py`.
 """
 
 
@@ -3060,6 +4493,28 @@ starting life — empirically the threshold below which "one more
 shock" can collapse into a Bolt + Push lethal sequence next turn.
 
 Used by `should_stagger_shock` in `ai/mana_planner.py`.
+"""
+
+MANA_NEEDS_NO_SPELL_SENTINEL: int = 99
+"""Sentinel: starting `cheapest_spell_cmc` / `cheapest_proactive_cmc`
+on `ManaNeeds`. 99 is unreachable in Modern (max card CMC is the
+emerge/cascade bound at ~15) — any real spell-CMC scan replaces it
+with a smaller value. The sentinel makes "no spell in hand" trivial
+to detect without a separate Optional/None branch.
+
+Used by `ManaNeeds` in `ai/mana_planner.py`.
+"""
+
+PAYOFF_HIGH_CMC_THRESHOLD: int = 3
+"""Derived: minimum CMC at which a multi-color (≥2-color identity)
+spell counts as a "high-CMC payoff" whose colors should weight fetch
+decisions. 3 is the boundary above which mana investment is high
+enough to make color-screw catastrophic — Leyline Binding, Omnath
+WURG, and Wrenn-and-Six all sit at or above CMC 3 with multi-color
+costs. Below CMC 3 the color requirement is usually only one pip and
+already covered by the per-demand color tracker.
+
+Used by `compute_mana_needs` in `ai/mana_planner.py`.
 """
 
 
@@ -3447,6 +4902,194 @@ Used by `generic_combo_readiness` final fallback in `ai/gameplan.py`.
 """
 
 
+# ---- Mulligan keep/mull decision constants (ai/mulligan.py) ----
+# Hand-size and bracket thresholds used by `MulliganDecider.decide`.
+# Most are CR 103.4 / London-mulligan structural constants
+# (starting hand size 7, mull steps 7→6→5→4) plus deck-archetype-
+# independent flood/development brackets.
+
+MULLIGAN_STARTING_HAND_SIZE: int = 7
+"""Rules-constant (CR 103.4): starting hand size in Magic. The
+London-mulligan mechanic always draws 7, then bottoms `mull_count`
+cards before play. The 7-card check identifies the pre-bottom hand
+where the strictest keep predicates apply (full-strength keep tests,
+combo-progress requirements, etc.).
+
+Used by `MulliganDecider.decide` and `_generic` in `ai/mulligan.py`.
+"""
+
+
+MULLIGAN_FIRST_MULL_HAND_SIZE: int = 6
+"""Rules-constant (CR 103.4): hand size after one mulligan. The
+London-mulligan keeps physical hand at 7 but bottoms one card, so
+the "virtual size" the AI evaluates is 6. At this size relaxed keep
+predicates apply (combo decks accept slower development, key-card
+hands can be kept on 1 cheap spell).
+
+Used by `MulliganDecider.decide` and `_generic` in `ai/mulligan.py`.
+"""
+
+
+MULLIGAN_FLOOD_LAND_COUNT: int = 5
+"""Derived: lands-in-hand threshold above which the soft-ceiling
+flood check fires. ≥5 lands in a 7-card hand leaves <2 spells, which
+fails to develop a meaningful threat density. Same threshold as
+`STAX_LOCK_DECAY_BURNOUT_TURN` (the curve is fully developed by T5),
+not a coincidence — both encode "the deck has resolved its early
+plays by 5".
+
+Used by `MulliganDecider.decide` flood-ceiling check and `_generic`
+in `ai/mulligan.py`.
+"""
+
+
+MULLIGAN_MIN_SPELLS_BASIC: int = 2
+"""Rules-constant: minimum spell count for a non-flooded keep. Below
+2 spells a hand has nothing to develop after the first land drop
+fails to threaten. Combined with `MULLIGAN_FLOOD_LAND_COUNT` to detect
+flooded keeps.
+
+Used by `MulliganDecider.decide` flood and dead-card branches in
+`ai/mulligan.py`.
+"""
+
+
+MULLIGAN_COMBO_PATH_3SET_THRESHOLD: int = 2
+"""Rules-constant: minimum pieces in a 3-card combo path required at
+7-card-hand keep. n=3 sets are ALL-style ("named enabler + target +
+payoff") so 2-of-3 is the minimum — 1-of-3 leaves the deck without
+two of the three legs.
+
+Used by `MulliganDecider.decide` combo-path threshold logic.
+"""
+
+
+MULLIGAN_COMBO_PATH_3SET_SIZE: int = 3
+"""Rules-constant: combo-set cardinality flagging the ALL-style path
+(n=3 → "named enabler + target + payoff"). Different cardinalities
+have different keep thresholds; n=2 is ANY-style (1-of-2 fine), n=3
+is ALL-style (2-of-3 needed), n>=4 is interchangeable bag (1-of-N
+fine).
+
+Used by `MulliganDecider.decide` combo-path threshold logic.
+"""
+
+
+MULLIGAN_COLOR_SOUNDNESS_FLOOR: int = 5
+"""Rules-constant: minimum virtual hand size at which combo-color
+soundness check fires. Below 5 the hand is too small for color-broken
+combo cards to matter (engine has scheduled a 4-card hand which is
+already being mulled aggressively). 5+ matches the post-mull-twice
+window where the player has chosen to commit.
+
+Used by `MulliganDecider.decide` color-soundness gate.
+"""
+
+
+MULLIGAN_CMC_PROFILE_MEDIUM_DEFAULT: int = 3
+"""Sentinel: fallback `medium` CMC when a gameplan declares no
+`mulligan_cmc_profile["medium"]`. 3 reflects the standard "castable
+by T2-T3" boundary used for development-counting in the keep heuristic.
+
+Used by `MulliganDecider.decide` development-counting branch.
+"""
+
+
+MULLIGAN_KEY_DEVELOPMENT_REQUIRED: int = 2
+"""Rules-constant: minimum cheap-spell count for a non-combo-archetype
+key-card keep at 7 cards. Below 2 the hand has the key card but no
+turn-2 development — the key resolves but the deck doesn't follow up.
+Combo and post-mull (≤6 cards) hands accept 1.
+
+Used by `MulliganDecider.decide` key-card branch.
+"""
+
+
+MULLIGAN_CRITICAL_PIECE_LAND_OFFSET: int = 2
+"""Rules-constant: lands-needed offset below the critical piece's CMC
+when validating a critical-piece keep. Ramp decks cast CMC-6 Titans
+on 4-5 lands via bounce lands + Amulet, so the floor is `max_cmc - 2`
+clamped above `mulligan_min_lands`. Below this offset the piece is
+genuinely uncastable; at offset the hand has a realistic ramp path.
+
+Used by `MulliganDecider.decide` critical-piece branch.
+"""
+
+
+MULLIGAN_GENERIC_AGGRO_CHEAP_FLOOR: int = 4
+"""Rules-constant: cheap-spell count required for the no-gameplan
+aggro fallback to keep a 1-land hand. With 1 land and ≥4 cheap spells
+the hand has Mountain + 4 one-drops curve — historically a common
+Modern aggro keep against slow decks. Below 4 the curve breaks too
+early.
+
+Used by `MulliganDecider._generic` aggro branch.
+"""
+
+
+MULLIGAN_GENERIC_AGGRO_CHEAP_DEV: int = 2
+"""Rules-constant: cheap-spell count required for the no-gameplan
+aggro fallback to keep a 1-3 land hand. ≥2 cheap spells covers T1
+play + T2 play; below this the deck stalls.
+
+Used by `MulliganDecider._generic` aggro 1-3 land branch.
+"""
+
+
+MULLIGAN_GENERIC_LAND_FLOOR_AGGRO: int = 3
+"""Rules-constant: upper bound on lands for the no-gameplan aggro
+1-3 keep. Above 3 the hand is land-flooded for an aggro deck.
+
+Used by `MulliganDecider._generic` aggro branch.
+"""
+
+
+MULLIGAN_GENERIC_LAND_FLOOR_CONTROL: int = 3
+"""Rules-constant: minimum lands for the no-gameplan control fallback
+to evaluate the interaction-spell check. Below 3 lands a control deck
+cannot reliably hold up its 2-CMC interaction; the hand is mulled.
+
+Used by `MulliganDecider._generic` control branch.
+"""
+
+
+MULLIGAN_GENERIC_MIDRANGE_LAND_LOW: int = 2
+"""Rules-constant: lower bound on lands for the no-gameplan midrange
+fallback. Below 2 the hand is mana-screw risk on a 7-card keep.
+
+Used by `MulliganDecider._generic` midrange land-bracket branch.
+"""
+
+
+MULLIGAN_GENERIC_MIDRANGE_LAND_HIGH: int = 4
+"""Rules-constant: upper bound on lands for the no-gameplan midrange
+fallback's medium-spell development check. 4 lands matches
+`DEFAULT_MULLIGAN_MAX_LANDS` — same flood-ceiling concept.
+
+Used by `MulliganDecider._generic` midrange land-bracket branch.
+"""
+
+
+MULLIGAN_GENERIC_MIDRANGE_MED_DEV: int = 2
+"""Rules-constant: medium-CMC spell count required for the no-gameplan
+midrange fallback. ≥2 medium-CMC spells gives T2-T3 plays after the
+land drops.
+
+Used by `MulliganDecider._generic` midrange branch.
+"""
+
+
+MULLIGAN_CURVE_SUBSTITUTE_FLOOR: int = 3
+"""Rules-constant: minimum actionable spells (within max_actionable_cmc)
+that substitute for a missing curve creature. 3 actionable spells
+cover T1-T3 plays (or T2-T4 if we miss land 1), matching the
+"curve-out" expectation the original rule was enforcing. Below 3
+the hand has nothing to substitute for the missing creature.
+
+Used by `MulliganDecider.decide` curve-substitute branch.
+"""
+
+
 # ---- Mulligan card_keep_score weights (ai/gameplan.py) ----
 # Weights used by `GoalEngine.card_keep_score` to rank cards when
 # bottoming on a London-mulligan keep. Higher score = keep. The
@@ -3631,6 +5274,92 @@ survives a centralised re-tune.
 
 Used by `GoalEngine.card_keep_score` critical-singleton branch in
 `ai/gameplan.py`.
+"""
+
+
+# ---- DecisionThresholds dataclass defaults ----
+# These are the midrange/default values for the per-deck
+# `DecisionThresholds` config. Each archetype's gameplan can override
+# any of these via its DecisionThresholds(...) constructor; the values
+# here are the defaults applied when no override is given. Kept as
+# named module-level constants so re-tuning the default is a
+# single-point edit visible in scoring_constants.
+
+DECISION_DYING_CLOCK: int = 4
+"""Derived: default `dying_clock` for `DecisionThresholds`. Triggers
+the "I'm dying" SURVIVE branch when `opp_clock <= 4` AND the opp's
+board has at least `DECISION_DYING_MIN_BOARD_POWER` power. 4 turns
+matches the Modern "panic threshold" — under 4 turns to die we must
+prioritise removal over deploys.
+
+Used by `DecisionThresholds.dying_clock` in `ai/gameplan.py`.
+"""
+
+
+DECISION_DYING_MIN_BOARD_POWER: int = 3
+"""Derived: default opp-board power that gates the SURVIVE branch's
+"dying" trigger. 3 power is "one solid creature or two small ones"
+— below this the threat is small enough that life-as-resource
+arithmetic (`ai/clock.py`) prefers race over removal.
+
+Sister constant: DECISION_DYING_CLOCK (turn axis).
+"""
+
+
+DECISION_ANSWER_MIN_POWER: int = 3
+"""Derived: minimum creature power for "meaningful threat" at the MED
+classification level when under pressure. Same magnitude as the
+SURVIVE branch's board-power floor — the threshold for "this creature
+warrants removal" matches "this board is dangerous".
+
+Used by `DecisionThresholds.answer_min_power` in `ai/gameplan.py`.
+"""
+
+
+DECISION_WRATH_SINGLE_TARGET_MIN_VAL: float = 8.0
+"""Derived: minimum threat value at which a single creature warrants
+a board wipe. 8.0 sits at the role-bonus tier (`MULL_KEEP_ENGINE_ROLE`
+scale) — a creature must be worth at least an engine-tier card before
+we burn a wrath on it alone. Below 8 we save the wrath for a wider
+board.
+
+Used by `DecisionThresholds.wrath_single_target_min_val` in
+`ai/gameplan.py`.
+"""
+
+
+DECISION_EVOKE_HARDCAST_NEXT_TURN: float = 0.7
+"""Derived: pressure level (0.0-1.0) at which evoke fires when we
+COULD hardcast next turn. 0.7 = "70% pressure, still close enough to
+hold for the hardcast", so the AI prefers to wait. Above 70% pressure
+we evoke now even at the cost of the body — the next-turn hardcast
+arrives too late.
+
+Used by `DecisionThresholds.evoke_hardcast_next_turn` in
+`ai/gameplan.py`.
+"""
+
+
+DECISION_EVOKE_WRONG_COLORS: float = 0.4
+"""Derived: pressure level at which evoke fires when we'd never be
+able to hardcast (wrong colors). 0.4 = "40% pressure, the body is
+unreachable so the only access is evoke" — lower than the hardcast
+threshold (0.7) because hardcast isn't a viable alternative.
+
+Used by `DecisionThresholds.evoke_wrong_colors` in `ai/gameplan.py`.
+"""
+
+
+# ---- DeckGameplan dataclass defaults ----
+
+DEFAULT_MULLIGAN_MAX_LANDS: int = 4
+"""Derived: default max-lands threshold for the mulligan keep
+heuristic. 4 lands is the "flood ceiling" for a 7-card hand — at 5+
+the hand is too land-heavy to develop a meaningful threat density.
+Decks with high mana curves (Tron, Amulet Titan) override this
+upward; aggro decks override downward.
+
+Used by `DeckGameplan.mulligan_max_lands` in `ai/gameplan.py`.
 """
 
 

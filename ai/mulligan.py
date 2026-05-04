@@ -26,6 +26,24 @@ from ai.scoring_constants import (
     KEEP_SCORE_COMBO_AWAY,
     KEEP_SCORE_COUNTERSPELL_AT_HOME,
     KEEP_SCORE_COUNTERSPELL_AWAY,
+    MULLIGAN_CMC_PROFILE_MEDIUM_DEFAULT,
+    MULLIGAN_COLOR_SOUNDNESS_FLOOR,
+    MULLIGAN_COMBO_PATH_3SET_SIZE,
+    MULLIGAN_COMBO_PATH_3SET_THRESHOLD,
+    MULLIGAN_CRITICAL_PIECE_LAND_OFFSET,
+    MULLIGAN_CURVE_SUBSTITUTE_FLOOR,
+    MULLIGAN_FIRST_MULL_HAND_SIZE,
+    MULLIGAN_FLOOD_LAND_COUNT,
+    MULLIGAN_GENERIC_AGGRO_CHEAP_DEV,
+    MULLIGAN_GENERIC_AGGRO_CHEAP_FLOOR,
+    MULLIGAN_GENERIC_LAND_FLOOR_AGGRO,
+    MULLIGAN_GENERIC_LAND_FLOOR_CONTROL,
+    MULLIGAN_GENERIC_MIDRANGE_LAND_HIGH,
+    MULLIGAN_GENERIC_MIDRANGE_LAND_LOW,
+    MULLIGAN_GENERIC_MIDRANGE_MED_DEV,
+    MULLIGAN_KEY_DEVELOPMENT_REQUIRED,
+    MULLIGAN_MIN_SPELLS_BASIC,
+    MULLIGAN_STARTING_HAND_SIZE,
 )
 
 if TYPE_CHECKING:
@@ -140,7 +158,7 @@ class MulliganDecider:
 
         # ── Soft ceiling: 5+ lands with < 2 spells = mulligan ─────────
         # Exception: Amulet Titan actively wants land-heavy hands.
-        if land_count >= 5 and len(spells) < 2:
+        if land_count >= MULLIGAN_FLOOD_LAND_COUNT and len(spells) < MULLIGAN_MIN_SPELLS_BASIC:
             deck_name = ""
             if self.goal_engine and self.goal_engine.gameplan:
                 deck_name = self.goal_engine.gameplan.deck_name
@@ -156,7 +174,8 @@ class MulliganDecider:
         dead_cards = [c for c in spells
                       if c.template.cmc == 0 and Keyword.SUSPEND in c.template.keywords]
         live_spells = [c for c in spells if c not in dead_cards]
-        if dead_cards and len(live_spells) < 2 and cards_in_hand >= 6:
+        if (dead_cards and len(live_spells) < MULLIGAN_MIN_SPELLS_BASIC
+                and cards_in_hand >= MULLIGAN_FIRST_MULL_HAND_SIZE):
             self.last_reason = f"dead card in hand ({dead_cards[0].name}) + too few live spells"
             return False
 
@@ -242,7 +261,7 @@ class MulliganDecider:
                         best_covered = covered
                         best_total = non_empty
                     # Apply per-size keep predicate.
-                    if cards_in_hand >= 7:
+                    if cards_in_hand >= MULLIGAN_STARTING_HAND_SIZE:
                         if enabler_ok and payoff_ok:
                             keep_ok = True
                             break
@@ -257,7 +276,7 @@ class MulliganDecider:
                             break
                 if not keep_ok:
                     role_required = (
-                        "enabler+payoff" if cards_in_hand >= 7
+                        "enabler+payoff" if cards_in_hand >= MULLIGAN_STARTING_HAND_SIZE
                         else "enabler"
                     )
                     self.last_reason = (
@@ -280,7 +299,7 @@ class MulliganDecider:
                 ]
                 max_progress = max(pieces_per_set) if pieces_per_set else 0
 
-                if cards_in_hand >= 7:
+                if cards_in_hand >= MULLIGAN_STARTING_HAND_SIZE:
                     # 7-card combo decks: scale required progress by
                     # set cardinality.  Combo-set semantics differ:
                     #   n=2  → ANY-style "either of 2 cascade cards
@@ -302,7 +321,9 @@ class MulliganDecider:
                     weakest = max_progress
                     for s, prog in zip(gp.mulligan_combo_sets,
                                        pieces_per_set):
-                        threshold = 2 if len(s) == 3 else 1
+                        threshold = (MULLIGAN_COMBO_PATH_3SET_THRESHOLD
+                                     if len(s) == MULLIGAN_COMBO_PATH_3SET_SIZE
+                                     else 1)
                         if prog >= threshold:
                             keep_ok = True
                             break
@@ -341,7 +362,7 @@ class MulliganDecider:
                 # uncastable for the entire game).  The kept hand's
                 # color demand is independent of which single card we
                 # plan to bottom; verifying it at every size is sound.
-                if cards_in_hand >= 5:
+                if cards_in_hand >= MULLIGAN_COLOR_SOUNDNESS_FLOOR:
                     missing_colors = self._combo_set_color_gap(
                         hand, lands, gp.mulligan_combo_sets,
                     )
@@ -357,7 +378,9 @@ class MulliganDecider:
             # Bug fix: the previous check `self.archetype in ('storm', 'combo')`
             # compared an ArchetypeStrategy enum against string literals, which
             # always evaluated False — making this entire guardrail dead code.
-            if gp.always_early and cards_in_hand >= 7 and self.archetype == ArchetypeStrategy.COMBO:
+            if (gp.always_early
+                    and cards_in_hand >= MULLIGAN_STARTING_HAND_SIZE
+                    and self.archetype == ArchetypeStrategy.COMBO):
                 # Include only IMMEDIATE cost-reducers: the always_early
                 # list (curated per deck — e.g. Ruby Medallion) plus any
                 # non-creature cost_reducer-tagged card in hand.
@@ -402,7 +425,7 @@ class MulliganDecider:
                     c.template.is_creature and (c.template.cmc or 0) <= gp.mulligan_require_creature_cmc
                     for c in spells
                 )
-                if not has_creature and cards_in_hand >= 6:
+                if not has_creature and cards_in_hand >= MULLIGAN_FIRST_MULL_HAND_SIZE:
                     # Actionable spells across the first ~4 turns:
                     # oracle/tag-driven, no card names.
                     max_actionable_cmc = gp.mulligan_require_creature_cmc + 2
@@ -423,8 +446,7 @@ class MulliganDecider:
                     # matching the "curve-out" expectation the original
                     # rule was enforcing.  A hand with fewer than three
                     # has nothing to substitute for the missing creature.
-                    MIN_ACTIONABLE_FOR_CURVE_SUBSTITUTE = 3
-                    if len(actionable_spells) < MIN_ACTIONABLE_FOR_CURVE_SUBSTITUTE:
+                    if len(actionable_spells) < MULLIGAN_CURVE_SUBSTITUTE_FLOOR:
                         self.last_reason = f"no creature with CMC ≤ {gp.mulligan_require_creature_cmc}"
                         return False
                     # Keep path: note the substitute in the reason so
@@ -444,7 +466,7 @@ class MulliganDecider:
             # 7-card hand and biasing the meta toward proactive decks.
             # "Cheap" here means medium-or-better on the gameplan's CMC
             # profile — anything castable by T2-T3 counts as development.
-            medium_cmc = gp.mulligan_cmc_profile.get("medium", 3)
+            medium_cmc = gp.mulligan_cmc_profile.get("medium", MULLIGAN_CMC_PROFILE_MEDIUM_DEFAULT)
             cheap_spells = sum(1 for s in spells if (s.template.cmc or 0) <= medium_cmc)
             if gp.mulligan_keys:
                 hand_names = {c.name for c in hand}
@@ -457,12 +479,12 @@ class MulliganDecider:
                     #     deck often keeps a slow hand that has the piece
                     #   - else (aggro/midrange/control/tempo/ramp): need ≥2
                     #     cheap spells so the key-card hand actually develops
-                    if cards_in_hand <= 6:
+                    if cards_in_hand <= MULLIGAN_FIRST_MULL_HAND_SIZE:
                         min_cheap = 1
                     elif self.archetype == ArchetypeStrategy.COMBO:
                         min_cheap = 1
                     else:
-                        min_cheap = 2
+                        min_cheap = MULLIGAN_KEY_DEVELOPMENT_REQUIRED
                     if cheap_spells >= min_cheap:
                         self.last_reason = (
                             f"has key card(s): {', '.join(sorted(found_keys))}, "
@@ -491,7 +513,10 @@ class MulliganDecider:
                     # decks cast CMC-6 Titans on 4-5 lands via bounce lands
                     # + Amulet; allow land_count >= max_cmc - 2 as the
                     # floor (lower bound: mulligan_min_lands).
-                    land_floor = max(gp.mulligan_min_lands or 2, max_cmc - 2)
+                    land_floor = max(
+                        gp.mulligan_min_lands or DEFAULT_MULLIGAN_MIN_LANDS,
+                        max_cmc - MULLIGAN_CRITICAL_PIECE_LAND_OFFSET,
+                    )
                     if land_count >= land_floor:
                         self.last_reason = (
                             f"has critical piece(s): {', '.join(sorted(found_critical))}, "
@@ -527,28 +552,35 @@ class MulliganDecider:
         if land_count == 0:
             self.last_reason = "0 lands — auto-mulligan"
             return False
-        if land_count == 1 and cards_in_hand == 7:
+        if land_count == 1 and cards_in_hand == MULLIGAN_STARTING_HAND_SIZE:
             if self.archetype == ArchetypeStrategy.AGGRO:
-                return sum(1 for s in spells if s.template.cmc <= cheap_cmc) >= 4
+                return (sum(1 for s in spells if s.template.cmc <= cheap_cmc)
+                        >= MULLIGAN_GENERIC_AGGRO_CHEAP_FLOOR)
             return False
-        if land_count >= 5 and cards_in_hand == 7:
+        if (land_count >= MULLIGAN_FLOOD_LAND_COUNT
+                and cards_in_hand == MULLIGAN_STARTING_HAND_SIZE):
             return False
         if self.archetype == ArchetypeStrategy.COMBO:
             has_piece = any("combo" in c.template.tags for c in spells)
-            if land_count >= 2 and has_piece:
+            if land_count >= DEFAULT_MULLIGAN_MIN_LANDS and has_piece:
                 return True
-            return cards_in_hand <= 6 or land_count >= 2
+            return (cards_in_hand <= MULLIGAN_FIRST_MULL_HAND_SIZE
+                    or land_count >= DEFAULT_MULLIGAN_MIN_LANDS)
         if self.archetype == ArchetypeStrategy.AGGRO:
-            return 1 <= land_count <= 3 and sum(1 for s in spells if s.template.cmc <= cheap_cmc) >= 2
+            return (1 <= land_count <= MULLIGAN_GENERIC_LAND_FLOOR_AGGRO
+                    and sum(1 for s in spells if s.template.cmc <= cheap_cmc)
+                    >= MULLIGAN_GENERIC_AGGRO_CHEAP_DEV)
         if self.archetype == ArchetypeStrategy.CONTROL:
-            if land_count >= 3:
+            if land_count >= MULLIGAN_GENERIC_LAND_FLOOR_CONTROL:
                 return sum(1 for s in spells
                            if "removal" in s.template.tags or
                            "counterspell" in s.template.tags) >= 1
             return False
-        if 2 <= land_count <= 4:
-            return sum(1 for s in spells if s.template.cmc <= medium_cmc) >= 2
-        return cards_in_hand <= 6
+        if (MULLIGAN_GENERIC_MIDRANGE_LAND_LOW <= land_count
+                <= MULLIGAN_GENERIC_MIDRANGE_LAND_HIGH):
+            return (sum(1 for s in spells if s.template.cmc <= medium_cmc)
+                    >= MULLIGAN_GENERIC_MIDRANGE_MED_DEV)
+        return cards_in_hand <= MULLIGAN_FIRST_MULL_HAND_SIZE
 
     def choose_cards_to_bottom(self, hand: List["CardInstance"],
                                 count: int) -> List["CardInstance"]:
@@ -788,7 +820,7 @@ class MulliganDecider:
             issues = []
             if land_count <= 1:
                 issues.append("too few lands")
-            if land_count >= 5:
+            if land_count >= MULLIGAN_FLOOD_LAND_COUNT:
                 issues.append("too many lands")
             if cheap == 0:
                 issues.append("no early plays")

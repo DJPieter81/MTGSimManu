@@ -59,6 +59,33 @@ from ai.scoring_constants import (
     AGGRESSION_BONUS_LIFE12,
     AGGRESSION_BONUS_LIFE16,
     DOUBLE_BLOCK_VALUE_THRESHOLD,
+    BOARD_WIPE_THRESHOLD_FRACTION,
+    ATTACK_TRADE_DOWN_RATIO,
+    ATTACK_TRADE_DOWN_SCALE_DENOM,
+    ATTACK_TRADE_UP_RATIO,
+    ATTACK_SHIELDS_DOWN_VALUE_FLOOR,
+    ATTACK_SHIELDS_DOWN_TOTAL_FLOOR,
+    ATTACK_SHIELDS_DOWN_DAMAGE_RELIEF,
+    ATTACK_RISKY_PAIR_LIMIT,
+    BLOCK_TRADE_UP_VALUE_RATIO,
+    BLOCK_EVEN_TRADE_VALUE_RATIO,
+    BLOCK_DOUBLE_VALUE_RATIO,
+    COUNTER_CMC_PENALTY,
+    COUNTER_TAP_OUT_RISK_PENALTY,
+    REMOVAL_RESPONSE_VALUE_FRACTION,
+    REMOVAL_RESPONSE_CMC_PENALTY,
+    BLINK_CREATURE_VALUE_FRACTION,
+    BLINK_ETB_RETRIGGER_BONUS,
+    PRE_COMBAT_TARGET_VALUE_FRACTION,
+    DELAYED_DEPLOY_DISCOUNT,
+    HOLD_UP_COUNTER_BONUS_RATIO,
+    EVASIVE_ATTACK_VALUE_FRACTION,
+    REMOVAL_PREFERENCE_IMPROVEMENT_FLOOR,
+    GENERIC_REMOVAL_DAMAGE_SENTINEL,
+    DEFAULT_PLAN_TURN,
+    OPP_LIFE_LOW_BAND,
+    OPP_LIFE_MID_BAND,
+    OPP_LIFE_HIGH_BAND,
 )
 
 
@@ -196,8 +223,8 @@ class CombatPlanner:
     4. Plan 2-turn lethal: even if not lethal now, is the setup worth it?
     """
 
-    # Tunable parameters — imported from ai/constants.py
-    BOARD_WIPE_THRESHOLD = 0.1  # don't attack if we lose >30% more value than them
+    # Tunable parameters — imported from ai/scoring_constants.py
+    BOARD_WIPE_THRESHOLD = BOARD_WIPE_THRESHOLD_FRACTION  # don't attack if we lose >30% more value than them
 
     def plan_attack(self, board: VirtualBoard) -> Tuple[List[VirtualCreature], float]:
         """Find the best attack configuration.
@@ -248,12 +275,13 @@ class CombatPlanner:
             # Losing a 1/1 token for nothing is minor; losing a 4/4 is serious
             my_lost_value = sum(c.value for c in result.my_dead)
             opp_lost_value = sum(c.value for c in result.opp_dead)
-            if my_lost_value > opp_lost_value * 1.5 and not result.is_lethal:
-                scale = min(my_lost_value / 5.0, 1.0)  # 1/1≈0.2x, 3/3≈0.6x, 5/5=1.0x
+            if (my_lost_value > opp_lost_value * ATTACK_TRADE_DOWN_RATIO
+                    and not result.is_lethal):
+                scale = min(my_lost_value / ATTACK_TRADE_DOWN_SCALE_DENOM, 1.0)
                 delta += TRADE_DOWN_PENALTY * scale
 
             # Bonus for trading up
-            if opp_lost_value > my_lost_value * 1.2:
+            if opp_lost_value > my_lost_value * ATTACK_TRADE_UP_RATIO:
                 delta += TRADE_UP_BONUS
 
             # Shields down penalty: if we tap our creatures and opponent
@@ -265,12 +293,14 @@ class CombatPlanner:
                 # Tokens and small creatures (value < 3.0) are expendable.
                 tapped_value = sum(c.value for c in config
                                    if "vigilance" not in c.keywords
-                                   and c.value >= 3.0)
+                                   and c.value >= ATTACK_SHIELDS_DOWN_VALUE_FLOOR)
                 total_attack_power = sum(c.power for c in config)
-                if tapped_value > 5.0:
+                if tapped_value > ATTACK_SHIELDS_DOWN_TOTAL_FLOOR:
                     # Reduce penalty when dealing significant damage
                     damage_ratio = min(total_attack_power / max(board.opp_life, 1), 1.0)
-                    scaled_penalty = SHIELDS_DOWN_PENALTY * (1.0 - damage_ratio * 0.6)
+                    scaled_penalty = SHIELDS_DOWN_PENALTY * (
+                        1.0 - damage_ratio * ATTACK_SHIELDS_DOWN_DAMAGE_RELIEF
+                    )
                     delta += scaled_penalty
 
             # Chip damage bonus: dealing ANY damage has inherent value
@@ -292,11 +322,11 @@ class CombatPlanner:
             # Aggression bonus: attacks become more valuable as opponent's life drops.
             # In real MTG, players push damage aggressively when opponent is low.
             total_attack_power = sum(c.power for c in config)
-            if board.opp_life <= 8:
+            if board.opp_life <= OPP_LIFE_LOW_BAND:
                 delta += total_attack_power * AGGRESSION_BONUS_LIFE8  # push hard for lethal range
-            elif board.opp_life <= 12:
+            elif board.opp_life <= OPP_LIFE_MID_BAND:
                 delta += total_attack_power * AGGRESSION_BONUS_LIFE12  # moderate aggression
-            elif board.opp_life <= 16:
+            elif board.opp_life <= OPP_LIFE_HIGH_BAND:
                 delta += total_attack_power * AGGRESSION_BONUS_LIFE16  # slight aggression
 
             if delta > best_score:
@@ -348,8 +378,8 @@ class CombatPlanner:
 
         # Config 5: Pairs of risky creatures (force multi-block decisions)
         if len(risky) >= 2:
-            for i in range(min(len(risky), 4)):
-                for j in range(i + 1, min(len(risky), 4)):
+            for i in range(min(len(risky), ATTACK_RISKY_PAIR_LIMIT)):
+                for j in range(i + 1, min(len(risky), ATTACK_RISKY_PAIR_LIMIT)):
                     configs.append(evasive + safe + [risky[i], risky[j]])
 
         # Config 6: Lethal-seeking — find minimum attackers for lethal
@@ -590,7 +620,7 @@ class CombatPlanner:
                 can_kill = (blocker.power >= attacker.toughness or
                            "deathtouch" in blocker.keywords)
                 # Is it a trade-up? (we lose less value)
-                if can_kill and blocker.value < attacker.value * 0.9:
+                if can_kill and blocker.value < attacker.value * BLOCK_TRADE_UP_VALUE_RATIO:
                     blocks[attacker.instance_id] = [blocker.instance_id]
                     used_blockers.add(blocker.instance_id)
                     break
@@ -605,7 +635,8 @@ class CombatPlanner:
                 can_kill = (blocker.power >= attacker.toughness or
                            "deathtouch" in blocker.keywords)
                 survives = attacker.power < blocker.toughness
-                if can_kill and (survives or blocker.value <= attacker.value * 1.1):
+                if can_kill and (survives
+                                  or blocker.value <= attacker.value * BLOCK_EVEN_TRADE_VALUE_RATIO):
                     blocks[attacker.instance_id] = [blocker.instance_id]
                     used_blockers.add(blocker.instance_id)
                     break
@@ -626,7 +657,7 @@ class CombatPlanner:
                         combined_power = available[i].power + available[j].power
                         combined_value = available[i].value + available[j].value
                         if (combined_power >= attacker.toughness and
-                                combined_value < attacker.value * 1.3):
+                                combined_value < attacker.value * BLOCK_DOUBLE_VALUE_RATIO):
                             blocks[attacker.instance_id] = [
                                 available[i].instance_id,
                                 available[j].instance_id
@@ -680,7 +711,7 @@ class TurnPlanner:
         self.combat_planner = CombatPlanner()
 
     def plan_turn(self, board: VirtualBoard,
-                  game_turn: int = 5) -> TurnPlan:
+                  game_turn: int = DEFAULT_PLAN_TURN) -> TurnPlan:
         """Plan the optimal sequence for this turn.
 
         Evaluates multiple strategies:
@@ -740,7 +771,7 @@ class TurnPlanner:
 
             if "counterspell" in response.tags:
                 # Counter: removes the threat entirely
-                net_value = threat_value - response.cmc * 0.5
+                net_value = threat_value - response.cmc * COUNTER_CMC_PENALTY
                 # Cheap counters are more efficient
                 if response.cmc <= 2:
                     threshold = COUNTER_CHEAP_THRESHOLD
@@ -754,7 +785,7 @@ class TurnPlanner:
                 # If opponent has bigger threats in deck, maybe save it
                 remaining_mana_after = board.my_mana - response.cmc
                 if remaining_mana_after <= 0 and len(board.my_hand) > 2:
-                    net_value -= 1.5  # tapping out to counter is risky
+                    net_value -= COUNTER_TAP_OUT_RISK_PENALTY
 
                 reasoning = f"Counter {threat_spell.name if threat_spell else 'spell'} (threat={threat_value:.1f})"
 
@@ -763,7 +794,8 @@ class TurnPlanner:
                 if threat_spell and threat_spell.is_creature:
                     # Will this removal kill it?
                     if response.damage >= threat_spell.toughness or response.damage == 0:
-                        net_value = threat_value * 0.8 - response.cmc * 0.3
+                        net_value = (threat_value * REMOVAL_RESPONSE_VALUE_FRACTION
+                                     - response.cmc * REMOVAL_RESPONSE_CMC_PENALTY)
                     else:
                         continue  # removal won't kill it
 
@@ -781,9 +813,9 @@ class TurnPlanner:
                     if board.my_creatures:
                         best_creature = max(board.my_creatures, key=lambda c: c.value)
                         if best_creature.value >= BLINK_SAVE_THRESHOLD:
-                            net_value = best_creature.value * 0.7
+                            net_value = best_creature.value * BLINK_CREATURE_VALUE_FRACTION
                             if best_creature.has_etb:
-                                net_value += 3.0  # bonus: re-trigger ETB
+                                net_value += BLINK_ETB_RETRIGGER_BONUS  # bonus: re-trigger ETB
                             reasoning = f"Blink {best_creature.name} to save from removal"
                             if best_creature.has_etb:
                                 reasoning += f" + re-trigger ETB"
@@ -881,7 +913,8 @@ class TurnPlanner:
                     _, combat_after = self.combat_planner.plan_attack(test_board)
                     _, combat_before = self.combat_planner.plan_attack(sim)
 
-                    improvement = combat_after - combat_before + target.value * 0.5
+                    improvement = (combat_after - combat_before
+                                   + target.value * PRE_COMBAT_TARGET_VALUE_FRACTION)
                     improvement += PRE_COMBAT_REMOVAL_BONUS
 
                     if improvement > best_improvement:
@@ -889,7 +922,8 @@ class TurnPlanner:
                         best_removal = spell
                         best_target = target
 
-            if best_removal and best_target and best_improvement > 2.0:
+            if (best_removal and best_target
+                    and best_improvement > REMOVAL_PREFERENCE_IMPROVEMENT_FLOOR):
                 sim.opp_creatures = [c for c in sim.opp_creatures
                                      if c.instance_id != best_target.instance_id]
                 sim.my_mana -= best_removal.cmc
@@ -931,7 +965,7 @@ class TurnPlanner:
             best = max(creatures, key=lambda s: s.spell_value)
             post_actions.append(("cast_creature", best.instance_id))
             reasoning_parts.append(f"Deploy {best.name} in main 2")
-            combat_score += best.spell_value * 0.9  # slight discount for delayed deploy
+            combat_score += best.spell_value * DELAYED_DEPLOY_DISCOUNT  # slight discount for delayed deploy
 
         score = sim.score() + combat_score + INFORMATION_BONUS
 
@@ -973,7 +1007,7 @@ class TurnPlanner:
         score = sim.score()
         # Bonus for holding up mana
         if has_counter:
-            score += MANA_RESERVATION_WEIGHT * 1.5
+            score += MANA_RESERVATION_WEIGHT * HOLD_UP_COUNTER_BONUS_RATIO
             reasoning_parts.append("Hold up counter mana")
         if has_removal:
             score += MANA_RESERVATION_WEIGHT
@@ -981,7 +1015,7 @@ class TurnPlanner:
 
         # Small bonus for evasive attacks that don't tap us out
         if evasive:
-            score += sum(c.power for c in evasive) * 0.5
+            score += sum(c.power for c in evasive) * EVASIVE_ATTACK_VALUE_FRACTION
             reasoning_parts.append(f"Attack with {len(evasive)} evasive creatures")
 
         return TurnPlan(
@@ -1136,5 +1170,5 @@ def _spell_damage(card) -> int:
     if known > 0:
         return known
     if "removal" in card.template.tags:
-        return 99  # generic removal kills anything
+        return GENERIC_REMOVAL_DAMAGE_SENTINEL  # generic removal kills anything
     return 0

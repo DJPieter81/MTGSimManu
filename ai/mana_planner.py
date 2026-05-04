@@ -38,6 +38,8 @@ from ai.scoring_constants import (
     LAND_SCORE_BEST_INIT_SENTINEL,
     LAND_SCORE_FETCH_LIFE_TEMPO_PENALTY,
     LAND_SHOCK_RACING_LIFE_THRESHOLD,
+    MANA_NEEDS_NO_SPELL_SENTINEL,
+    PAYOFF_HIGH_CMC_THRESHOLD,
 )
 
 if TYPE_CHECKING:
@@ -64,7 +66,7 @@ class ManaNeeds:
     # Basic land types already on the battlefield (for domain)
     existing_subtypes: Set[str] = field(default_factory=set)
     # The cheapest spell CMC in hand (for tempo priority)
-    cheapest_spell_cmc: int = 99
+    cheapest_spell_cmc: int = MANA_NEEDS_NO_SPELL_SENTINEL
     # Number of untapped lands on battlefield
     untapped_land_count: int = 0
     # Total available mana (untapped lands + mana pool)
@@ -72,7 +74,7 @@ class ManaNeeds:
     # Spells that could be cast with exactly 1 more mana of the right color
     spells_enabled_by_one_more: List = field(default_factory=list)
     # Cheapest PROACTIVE spell CMC (creatures, sorceries, planeswalkers — not instants)
-    cheapest_proactive_cmc: int = 99
+    cheapest_proactive_cmc: int = MANA_NEEDS_NO_SPELL_SENTINEL
     # Number of domain-scaling cards in hand (affects land subtype priority)
     domain_card_count: int = 0
     # Colors needed by high-CMC multi-color payoffs (e.g., Omnath WURG)
@@ -209,7 +211,7 @@ def analyze_mana_needs(game: "GameState", player_idx: int,
         if card.template.is_land:
             continue
         cmc = card.template.cmc or 0
-        if cmc >= 3 and len(card.template.color_identity) >= 2:
+        if cmc >= PAYOFF_HIGH_CMC_THRESHOLD and len(card.template.color_identity) >= 2:
             card_colors = set()
             for c in card.template.color_identity:
                 card_colors.add(c.value if hasattr(c, 'value') else str(c))
