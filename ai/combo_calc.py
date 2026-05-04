@@ -16,18 +16,26 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Optional, List, Set, Dict
 
 from ai.scoring_constants import (
+    CHAIN_CYCLING_COST_UNREACHABLE as _CMC_UNREACHABLE,
+    CHAIN_NO_CLOCK_DEFAULT as _OPP_CLOCK_NO_CLOCK,
     COMBO_IDEAL_POSITION_CEIL,
     COMBO_DIVERGENCE_RES_THRESHOLD,
     COMBO_EARLY_GAME_LAND_THRESHOLD,
+    COMBO_HARD_HOLD_NO_CLOCK_RATIO,
     COMBO_PATIENCE_PENALTY_SCALE,
     COMBO_NON_READY_POTENTIAL_FALLBACK,
+    COMBO_REANIMATION_MIN_CMC,
     COMBO_RITUAL_MISSED_FINISHER_SCALE,
+    COMBO_ROLE_PRIORITY_LADDER,
+    COMBO_ROLE_PRIORITY_UNKNOWN_CACHE,
+    COMBO_ROLE_PRIORITY_UNKNOWN_ROLE,
     COMBO_CASCADE_RISK_SCALE,
     COMBO_FLIP_TRANSFORM_VALUE_FRACTION,
     COMBO_SEARCH_TAX_CARD_SCALE,
     COMBO_HALF_LETHAL_FRACTION,
     COMBO_MIN_CHAIN_DEPTH,
     COMBO_CASCADE_DRAW_FLOOR,
+    COMBO_WASTED_POTENTIAL_FLOOR,
 )
 
 if TYPE_CHECKING:
@@ -111,17 +119,14 @@ def _build_role_cache(goal_engine):
     specific classification (e.g. Desperate Ritual in both 'enablers'
     and 'rituals' gets 'rituals').
     """
-    _ROLE_PRIORITY = {
-        'rituals': 0, 'payoffs': 1, 'finishers': 1, 'engines': 2,
-        'enablers': 3, 'protection': 4, 'interaction': 5, 'fillers': 6,
-        'fuel': 0,
-    }
     cache = {}
     for goal in goal_engine.gameplan.goals:
         for role, card_names in goal.card_roles.items():
             for name in card_names:
-                existing_priority = _ROLE_PRIORITY.get(cache.get(name, ''), 99)
-                new_priority = _ROLE_PRIORITY.get(role, 50)
+                existing_priority = COMBO_ROLE_PRIORITY_LADDER.get(
+                    cache.get(name, ''), COMBO_ROLE_PRIORITY_UNKNOWN_CACHE)
+                new_priority = COMBO_ROLE_PRIORITY_LADDER.get(
+                    role, COMBO_ROLE_PRIORITY_UNKNOWN_ROLE)
                 if new_priority < existing_priority:
                     cache[name] = role
     return cache
@@ -213,10 +218,10 @@ def _assess_storm_zone(game, player_idx, goal_engine, snap, zone, target,
                        if 'cost_reducer' in getattr(c.template, 'tags', set())
                        and not c.template.is_instant and not c.template.is_sorcery]
     if reducer_in_hand:
-        cheapest_cmc = min(c.template.cmc or 99 for c in reducer_in_hand)
+        cheapest_cmc = min(c.template.cmc or _CMC_UNREACHABLE for c in reducer_in_hand)
         if mana >= cheapest_cmc:
             # Remove the cheapest reducer from hand, subtract its cost, add 1 medallion
-            cheapest = min(reducer_in_hand, key=lambda c: c.template.cmc or 99)
+            cheapest = min(reducer_in_hand, key=lambda c: c.template.cmc or _CMC_UNREACHABLE)
             hand_after = [c for c in me.hand if c.instance_id != cheapest.instance_id]
             mana_after = mana - cheapest_cmc
             chains_with = find_all_chains(hand_after, mana_after, medallions + 1,
@@ -323,7 +328,7 @@ def _assess_graveyard_zone(game, player_idx, goal_engine, snap, zone, target,
                     if c.template.is_creature
                     and (c.template.cmc or 0) >= min_cmc]
 
-    if min_cmc >= 5:
+    if min_cmc >= COMBO_REANIMATION_MIN_CMC:
         # Single big target pattern (reanimate)
         best_power = max((c.power or 0 for c in gy_creatures), default=0)
         payoff_value = best_power / opp_life
@@ -346,8 +351,9 @@ def _assess_graveyard_zone(game, player_idx, goal_engine, snap, zone, target,
 
     is_ready = (resource_current >= target and has_payoff
                 and snap.my_mana >= min(
-                    (c.template.cmc or 99 for c in me.hand if c.name in payoff_names),
-                    default=99))
+                    (c.template.cmc or _CMC_UNREACHABLE
+                     for c in me.hand if c.name in payoff_names),
+                    default=_CMC_UNREACHABLE))
 
     return ComboAssessment(
         resource_zone=zone,
@@ -493,7 +499,7 @@ def card_combo_role(card, assessment):
 # future change to NO_CLOCK keeps the sentinel correctly scaled.
 def _derive_storm_hard_hold() -> float:
     from ai.clock import NO_CLOCK
-    return -NO_CLOCK * 10.0
+    return -NO_CLOCK * COMBO_HARD_HOLD_NO_CLOCK_RATIO
 
 
 STORM_HARD_HOLD = _derive_storm_hard_hold()
@@ -730,7 +736,7 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
             potential = (a.resource_target / opp_life
                          if a.resource_target > 0
                          else COMBO_NON_READY_POTENTIAL_FALLBACK)
-            wasted = max(0.01, potential - a.payoff_value)
+            wasted = max(COMBO_WASTED_POTENTIAL_FLOOR, potential - a.payoff_value)
             return -wasted * a.combo_value
         # Ready — let projection handle the positive value
         return 0.0
@@ -873,7 +879,7 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
                                    after_cast_card_cmc=(card.template.cmc or 0),
                                    after_cast_ritual_net=ritual_net)
         if not has_finisher and not has_pif:
-            opp_clock = getattr(snap, 'opp_clock_discrete', 99)
+            opp_clock = getattr(snap, 'opp_clock_discrete', _OPP_CLOCK_NO_CLOCK)
             if not snap.am_dead_next and opp_clock > 2:
                 if not _has_draw_in_hand(card, me):
                     # No finisher, no flashback, no draws → hard hold.
@@ -929,7 +935,7 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
             # P(at least one flip in storm+1 tries) - P(at least one in storm tries)
             # = (1 - 0.5^(storm+1)) - (1 - 0.5^storm) = 0.5^storm - 0.5^(storm+1)
             # = 0.5^(storm+1)
-            marginal_p = 0.5 ** (storm + 1)
+            marginal_p = 0.5 ** (storm + 1)  # magic-allow: P(heads) for fair coin (CR 705.2)
             # Transform value: the creature becomes a planeswalker with
             # loyalty = base + spells_cast. Use combo_value as proxy for
             # how good transformation is (engines boost the combo turn).

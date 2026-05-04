@@ -2750,6 +2750,81 @@ Used by `plan_sideboard` in `ai/sideboard_solver.py`.
 # Used by `_compute_combo_value`, the zone assessors, and the
 # mid-chain ritual gate to score storm chains and graveyard combos.
 
+COMBO_ROLE_PRIORITY_LADDER: dict = {
+    'rituals': 0, 'fuel': 0,
+    'payoffs': 1, 'finishers': 1,
+    'engines': 2,
+    'enablers': 3,
+    'protection': 4,
+    'interaction': 5,
+    'fillers': 6,
+}
+"""Ladder: card-role priority used by `_build_role_cache` to pick
+the most specific role for a card listed under multiple roles. Lower
+= higher priority (chosen first). Structure matters more than the
+absolute numbers — the ordering rituals < payoffs < engines <
+enablers < protection < interaction < fillers reflects "most-specific
+combo role" first.
+
+Used by `_build_role_cache` in `ai/combo_calc.py`.
+"""
+
+
+COMBO_ROLE_PRIORITY_UNKNOWN_CACHE: int = 99
+"""Sentinel: priority assigned to a card not yet in the role cache.
+99 sits well above the highest real priority (fillers=6) so any new
+role assignment automatically wins the priority comparison.
+
+Used by `_build_role_cache` in `ai/combo_calc.py`.
+"""
+
+
+COMBO_ROLE_PRIORITY_UNKNOWN_ROLE: int = 50
+"""Sentinel: priority assigned to a role name not in the ladder. 50
+sits between the highest real priority (fillers=6) and the unknown-
+cache sentinel (99). Ensures unknown roles never win the priority
+comparison against a known role, but still beat unassigned cards.
+
+Used by `_build_role_cache` in `ai/combo_calc.py`.
+"""
+
+
+COMBO_REANIMATION_MIN_CMC: int = 5
+"""Rules-constant: minimum CMC at which a graveyard creature warrants
+the single-big-target reanimation pattern (Goryo's, Persist patterns).
+Below 5 CMC the creature is too small for reanimation to swing
+position — small reanimation targets feed Living-End-style mass
+patterns instead.
+
+Used by `_assess_graveyard_zone` in `ai/combo_calc.py`.
+"""
+
+
+COMBO_HARD_HOLD_NO_CLOCK_RATIO: float = 10.0
+"""Rules-constant: ratio applied to `-NO_CLOCK` to derive the
+STORM_HARD_HOLD sentinel. Position_value's natural scale is bounded
+by NO_CLOCK (99.0); -NO_CLOCK × 10.0 = -990.0 is strongly negative
+for any realistic ev accumulation, ensuring `ev + STORM_HARD_HOLD`
+collapses the play's score below every legal alternative.
+
+Auto-derived at import time so a future change to NO_CLOCK keeps
+the sentinel correctly scaled.
+
+Used by `_derive_storm_hard_hold` in `ai/combo_calc.py`.
+"""
+
+
+COMBO_WASTED_POTENTIAL_FLOOR: float = 0.01
+"""Sentinel: minimum positive value of "wasted potential" when a
+non-storm payoff is held. Prevents a zero or near-zero wasted-
+potential value from flattening the negative payoff penalty to 0.0
+(which would let the AI hold an unready payoff indefinitely). The
+floor preserves the sign of the penalty.
+
+Used by the non-storm payoff branch in `card_combo_modifier`.
+"""
+
+
 COMBO_IDEAL_POSITION_CEIL: float = 100.0
 """Sentinel: ideal `position_value` ceiling for `_compute_combo_value`.
 Position-value scales bottom-out at 0 (winning) and top-out at the
