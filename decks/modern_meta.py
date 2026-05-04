@@ -314,8 +314,8 @@ MODERN_DECKS: Dict[str, Dict[str, Dict[str, int]]] = {
         "mainboard": {
             "Goryo's Vengeance": 4,
             "Griselbrand": 4,
+            "Atraxa, Grand Unifier": 4,
             "Archon of Cruelty": 3,
-            "Solitude": 4,
             "Ephemerate": 4,
             "Faithful Mending": 4,
             "Thoughtseize": 4,
