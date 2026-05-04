@@ -1752,6 +1752,324 @@ Used by `TurnPlanner.plan_turn` in `ai/turn_planner.py`.
 """
 
 
+# ─── ev_player gates and thresholds (ai/ev_player.py) ──────────────
+# Constants below tune the per-card EV evaluator and combat decisions.
+# Many are CR-derived sentinels (Modern starting life, big-creature
+# CMC) or scaling factors against the existing CLOCK_IMPACT_LIFE_SCALING
+# scale.
+
+REANIMATE_TARGET_MIN_POWER: int = 5
+"""Rules-constant: minimum power for a graveyard creature to count as
+a "big reanimation target". 5+ power matches Goryo's, Persist, and
+Reanimate-style payoffs — below 5 the creature isn't worth the
+multi-step rules path.
+
+Used by `_main_phase_decision` in `ai/ev_player.py`.
+"""
+
+CONTROL_PATIENCE_OPP_CLOCK_THRESHOLD: int = 4
+"""Rules-constant: opp_clock at and above which control_patience
+holds reactive-only spells. ≥4 = "we have at least 4 turns of slack"
+— below this the threat is close enough that we must fire the
+reactive spell rather than wait for late-game value.
+
+Used by `_main_phase_decision` reactive-only gate in `ai/ev_player.py`.
+"""
+
+LAND_SACRIFICE_MIN_LANDS: int = 4
+"""Rules-constant: minimum land count required for a "sacrifice any
+number of lands" payoff (Scapeshift) to be worth casting. Mirrors the
+engine threshold at engine/card_effects.py:scapeshift_resolve. Below
+4 lands the search-and-replace destroys our mana base for too small
+a payoff.
+
+Used by `_score_spell` Scapeshift gate in `ai/ev_player.py`.
+"""
+
+BIG_CREATURE_CMC_FLOOR: int = 6
+"""Rules-constant: minimum CMC at which a creature is "Titan-class"
+(Primeval Titan, Cultivator Colossus, Reality Smasher, Eldrazi).
+6 = Titan's CMC, the canonical big-creature ramp threshold.
+
+Used by `_score_spell` Amulet/Titan synergy and `_score_land`
+high-CMC ramp branches in `ai/ev_player.py`.
+"""
+
+PLANESWALKER_DEFAULT_LOYALTY: int = 3
+"""Sentinel: default loyalty when `template.loyalty` is missing.
+3 reflects the typical mid-tier planeswalker (Liliana, Chandra, etc.)
+— a baseline activation count that doesn't over- or under-credit
+unparsed planeswalkers.
+
+Used by the planeswalker bonus branch in `ai/ev_player.py`.
+"""
+
+DESPERATE_LIFE_THRESHOLD: int = 10
+"""Rules-constant: my_life at and below which X-cost board wipes
+fire even when their kill count is suboptimal. ≤10 = "half life" —
+the desperation threshold below which suboptimal-kill wipes are
+preferable to dying next turn.
+
+Used by `_score_spell` X-cost board wipe branch in `ai/ev_player.py`.
+"""
+
+NONCREATURE_COUNTER_AGGRO_POWER: int = 4
+"""Rules-constant: opp_power at and above which a non-creature
+counter is considered dead vs an aggro deck running out of cards.
+4 = "two solid creatures or one big one" — at this power the opp's
+remaining hand is likely creatures the counter cannot stop.
+
+Used by `_score_spell` noncreature-counter dead gate in `ai/ev_player.py`.
+"""
+
+NONCREATURE_COUNTER_AGGRO_HAND: int = 3
+"""Rules-constant: opp_hand_size at and below which the noncreature-
+counter gate fires. ≤3 cards = "deck is running out" — below this
+the counter is dead because remaining cards are creatures the spell
+cannot target.
+
+Used by `_score_spell` noncreature-counter dead gate in `ai/ev_player.py`.
+"""
+
+PHYREXIAN_LIFE_PENALTY_SCALE: float = 10.0
+"""Derived: outer scale on Phyrexian-mana life-cost penalty.
+Same magnitude as `CLOCK_IMPACT_LIFE_SCALING` — Phyrexian costs
+trade life for mana, so the penalty scales with life-as-resource.
+
+Used by `_score_spell` Phyrexian mana penalty in `ai/ev_player.py`.
+"""
+
+OPP_HAND_FULL_HOLDBACK_THRESHOLD: int = 4
+"""Rules-constant: opp_hand_size threshold at and above which the
+holdback-relevance gate fires (treating opp hand as "full of threats").
+4 cards is the post-Bundle-3 B3-Tune threshold — 3-card hands are
+typically mostly lands without real threat density.
+
+Used by `_holdback_penalty` in `ai/ev_player.py`.
+"""
+
+HOLDBACK_PROBABILITY_FLOOR: float = 0.1
+"""Sentinel: minimum opponent-action probability returned by the
+holdback heuristic. 10% is the noise floor — below this the heuristic
+treats "opp has no relevant threats" but never collapses to 0.0
+(any positive probability still warrants partial holdback).
+
+Used by `_p_opp_action_next_turn` in `ai/ev_player.py`.
+"""
+
+LAND_BASE_EV: float = 10.0
+"""Derived: baseline EV for a land play. 10.0 sits in the mid-range
+of the spell EV scale (-5 = pass_threshold, +15 = high-EV cast) —
+land plays must generally outrank spells of the current turn (mana
+is fundamental). Promoted from a function-local constant so it
+appears in the central scale documentation.
+
+Used by `_score_land` in `ai/ev_player.py`.
+"""
+
+LAND_UNTAPPED_USEFUL: float = 5.0
+"""Derived: bonus when a land pays off this turn (untapped, plays a
+spell). Half the LAND_BASE_EV — the bonus is meaningful but doesn't
+dominate the base score.
+
+Used by `_score_land` in `ai/ev_player.py`.
+"""
+
+LAND_UNTAPPED_IDLE: float = 2.0
+"""Derived: bonus when a land is "stored mana" rather than spent
+this turn. 2.0 = half of LAND_UNTAPPED_USEFUL — stored mana has
+real value but less than mana spent.
+
+Used by `_score_land` in `ai/ev_player.py`.
+"""
+
+LAND_TAPPED_STALL: float = 10.0
+"""Derived: penalty when a tapped land enters with a 1-drop in hand
+(loses entire T1 tempo). Same magnitude as LAND_BASE_EV — losing T1
+fully cancels the land's per-turn value.
+
+Used by `_score_land` in `ai/ev_player.py`.
+"""
+
+LAND_TAPPED_MINOR: float = 3.0
+"""Derived: penalty when a tapped land enters but we can still play
+most plays. Less than LAND_TAPPED_STALL because the cost is one
+turn of suboptimal sequencing rather than a lost play.
+
+Used by `_score_land` in `ai/ev_player.py`.
+"""
+
+BOUNCE_LAND_AMULET_MANA: float = 8.0
+"""Derived: bonus for a bounce-land in an Amulet shell (bounce + Amulet
+loop = +1 land-equiv mana / turn × residency). 8.0 is below
+LAND_BASE_EV (10.0) because the loop value is realised over multiple
+turns rather than this turn alone.
+
+Used by `_score_land` in `ai/ev_player.py`.
+"""
+
+RAMP_TO_BIG_NOW: float = 12.0
+"""Derived: bonus when a land brings us to a 6+ CMC payoff THIS turn.
+Above LAND_BASE_EV — the "this turn" component captures finisher
+deployment that wins the game.
+
+Used by `_score_land` Titan-ramp branch in `ai/ev_player.py`.
+"""
+
+RAMP_TO_BIG_SOON: float = 4.0
+"""Derived: bonus when a land brings us to a 6+ CMC payoff next turn.
+One-third of RAMP_TO_BIG_NOW because the payoff is delayed by one
+turn during which opp can still interact.
+
+Used by `_score_land` Titan-ramp branch in `ai/ev_player.py`.
+"""
+
+LAND_COLOR_ENABLES_SPELL: float = 3.0
+"""Derived: bonus per specific spell unlocked by a new color. 3.0 is
+in the "card-value" band — each enabled spell is roughly one card-
+value unit.
+
+Used by `_score_land` color-enabling branch in `ai/ev_player.py`.
+"""
+
+LAND_NEW_COLOR_GENERIC: float = 4.0
+"""Derived: bonus per color added to mana base when hand needs it.
+Above LAND_COLOR_ENABLES_SPELL because adding a new color enables
+multiple downstream spells over the rest of the game.
+
+Used by `_score_land` color-enabling branch in `ai/ev_player.py`.
+"""
+
+LAND_FETCH_FLEXIBILITY: float = 3.0
+"""Derived: bonus for fetch land's choice-of-color-next-turn value.
+Same magnitude as LAND_COLOR_ENABLES_SPELL — fetch flexibility ≈
+one enabled spell.
+
+Used by `_score_land` fetch branch in `ai/ev_player.py`.
+"""
+
+TRON_PIECES_REQUIRED: int = 3
+"""Rules-constant: number of Tron land subtypes (Mine, Tower, Plant)
+required to assemble Tron. 3 is the canonical Tron piece count.
+
+Used by `_score_land` Tron-progress branch in `ai/ev_player.py`.
+"""
+
+CYCLING_GY_URGENCY_FLOOR: int = 3
+"""Rules-constant: GY creature count below which cycling gains
+urgency (need more GY creatures before cascading). 3 = "Living End
+threshold" — fewer than 3 creatures returned by Living End is
+sub-lethal in most matchups.
+
+Used by `_score_cycling` in `ai/ev_player.py`.
+"""
+
+DESPERATION_LIFE_FLOOR: int = 6
+"""Rules-constant: my_life at and below which "is_desperate" attack
+mode fires (maximize damage even at high blocker risk). 6 = "two
+hits from death" — at this life total surviving via blocks is
+already failing, so racing for damage maximizes win probability.
+
+Used by `decide_attackers` in `ai/ev_player.py`.
+"""
+
+ATTACK_THRESHOLD_REDUCTION_AGGRESSION: float = 2.0
+"""Derived: attack-threshold reduction during aggression-boost or
+racing windows. 2.0 ≈ TRADE_UP_BONUS — "the trade-up window justifies
+loosening the attack gate by one trade-up unit".
+
+Used by `decide_attackers` aggression boost in `ai/ev_player.py`.
+"""
+
+ATTACK_THRESHOLD_REDUCTION_ANTI_COMBO: float = 3.0
+"""Derived: attack-threshold reduction vs spell-based decks (combo /
+storm). Higher than the racing reduction because opp will not block,
+so attacks are essentially free.
+
+Used by `decide_attackers` anti-combo branch in `ai/ev_player.py`.
+"""
+
+COMBAT_TRIGGER_DAMAGE_BONUS: float = 1.5
+"""Derived: per-attacker EV bonus when the attacker has a "combat
+damage to a player" trigger (Ragavan: Treasure + exile ≈ 1.5 EV).
+1.5 = TRADE_UP_BONUS magnitude — the trigger is worth roughly one
+trade-up of value.
+
+Used by `decide_attackers` combat-trigger bonus in `ai/ev_player.py`.
+"""
+
+COMBAT_ENERGY_TRIGGER_BONUS: float = 0.5
+"""Derived: per-attacker EV bonus for energy-on-attack triggers
+(Guide of Souls). Below COMBAT_TRIGGER_DAMAGE_BONUS — one energy
+counter is worth ~0.5 card-value.
+
+Used by `decide_attackers` energy-trigger bonus in `ai/ev_player.py`.
+"""
+
+EMERGENCY_BLOCK_LOW_LIFE: int = 5
+"""Rules-constant: my_life floor below which "drop-below-5"
+emergency blocking fires. 5 = "next-attack-lethal range" — under
+5 life we cannot afford the next damage step.
+
+Used by `decide_blockers` emergency branch in `ai/ev_player.py`.
+"""
+
+EMERGENCY_BLOCK_INCOMING_FLOOR: int = 3
+"""Rules-constant: total_incoming damage at and above which the
+drop-below-5 emergency block branch fires. 3 = "Bolt damage" —
+below this the incoming damage is too small to trigger emergency
+blocking even at low life.
+
+Used by `decide_blockers` emergency branch in `ai/ev_player.py`.
+"""
+
+PLATING_REBOUND_EQUIP_BONUS: int = 3
+"""Rules-constant: equipment power bonus at and above which the
+plating-rebound futility check fires. 3 = "Cranial Plating-tier
+amplification" — below this the rebound damage isn't large enough
+to make chumping futile.
+
+Used by `decide_blockers` plating-rebound branch in `ai/ev_player.py`.
+"""
+
+EMERGENCY_BLOCK_STABILIZE_LIFE_GAIN: int = 5
+"""Rules-constant: minimum life gain (life - remaining damage) at
+which emergency blocking is considered "stabilized" and stops
+sacrificing more blockers. 5 = "one-Bolt buffer" — once we have
+5 life of headroom from incoming damage, additional chumps are
+overspending.
+
+Used by `decide_blockers` emergency stabilize check in
+`ai/ev_player.py`.
+"""
+
+LOW_LIFE_BURN_DEFAULT: int = 8
+"""Sentinel: default `burn_low_life_threshold` when profile is
+missing. 8 = OPP_LIFE_LOW_BAND — same threshold for "in burn range"
+shared with the aggression-bonus curve.
+
+Used by `decide_burn_target` profile fallback in `ai/ev_player.py`.
+"""
+
+PUMP_DISCARD_LAND_FLOOR: int = 3
+"""Rules-constant: minimum lands on battlefield to consider a
+"well-developed board" for the pre-combat-pump discard heuristic.
+≥3 lands = "we have made our T3 land drop", below which discarding
+extra lands is premature.
+
+Used by `decide_attackers` pump-discard branch in `ai/ev_player.py`.
+"""
+
+PUMP_DISCARD_SPELL_GLUT: int = 3
+"""Rules-constant: minimum non-land spells in hand at which the
+"high-CMC uncastable" discard branch fires. ≥3 spells in hand =
+"hand is dense enough that some are slow", below which we shouldn't
+discard non-lands.
+
+Used by `decide_attackers` pump-discard branch in `ai/ev_player.py`.
+"""
+
+
 # ─── Board-evaluator constants (ai/evaluator.py) ────────────────────
 # `ai/evaluator.py` is the legacy "life-point equivalent" board
 # evaluator (used by `ai/response.py`, `ai/turn_planner.py`, and
