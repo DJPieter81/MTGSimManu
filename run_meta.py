@@ -203,12 +203,16 @@ def _run_game_no_runner(d1_name, d2_name, seed):
 
 def run_sigma(deck1: str, deck2: str, n_games: int = 50,
               repeats: int = 5, seed_start: int = 50000,
-              bo1: bool = False) -> Dict:
+              bo3: bool = True) -> Dict:
     """Quantify run-to-run variance for a single matchup.
 
     Runs the same matchup `repeats` times with stepped starting seeds, returning
     mean and standard deviation of deck1's win rate. Used to fill the
     PROJECT_STATUS.md §5 σ-at-n=50 TODO.
+
+    Default is Bo3 with sideboarding (canonical match format per the
+    2026-05-04 directive). Pass bo3=False for Bo1 single-game tallies
+    (diagnostic only).
     """
     import statistics
     rates = []
@@ -219,7 +223,7 @@ def run_sigma(deck1: str, deck2: str, n_games: int = 50,
         for i in range(n_games):
             seed = ss + i * 500
             try:
-                res = _run_pair(runner, deck1, deck2, seed, bo1=bo1)
+                res = _run_pair(runner, deck1, deck2, seed, bo1=not bo3)
                 wins[res.winner_deck] = wins.get(res.winner_deck, 0) + 1
             except Exception:
                 pass
@@ -237,12 +241,16 @@ def run_sigma(deck1: str, deck2: str, n_games: int = 50,
 
 def run_matchup(deck1: str, deck2: str, n_games: int = 50,
                 seed_start: int = 50000, verbose: bool = False,
-                bo1: bool = False) -> Dict:
+                bo3: bool = True) -> Dict:
     """Run N matchups between two decks. Returns stats dict.
 
     Default is Bo3 matches with sideboarding (n_games = number of matches).
-    Pass bo1=True for single-game tallies (legacy behaviour).
+    This is the canonical evaluation format per the 2026-05-04 directive
+    ("real-world Modern is Bo3 — Bo1 systematically over-rewards decks
+    whose worst matchups are answered by SB hate, e.g. Affinity").
+    Pass bo3=False for single-game tallies (diagnostic only).
     """
+    bo1 = not bo3
     runner = _get_runner()
     wins = {deck1: 0, deck2: 0, 'draw': 0}
     turn_wins = {deck1: [], deck2: []}
@@ -284,12 +292,14 @@ def run_matchup(deck1: str, deck2: str, n_games: int = 50,
 
 
 def run_field(deck: str, n_games: int = 30, opponents: List[str] = None,
-              parallel: bool = True, bo1: bool = False) -> Dict:
+              parallel: bool = True, bo3: bool = True) -> Dict:
     """Run one deck against all others. Returns {opponent: win_pct}.
 
     Default is Bo3 matches with sideboarding (n_games = matches per opponent).
-    Pass bo1=True for single-game tallies.
+    This is the canonical evaluation format per the 2026-05-04 directive.
+    Pass bo3=False for single-game tallies (diagnostic only).
     """
+    bo1 = not bo3
     if opponents is None:
         opponents = [n for n in get_all_deck_names() if n != deck]
 
@@ -317,15 +327,24 @@ def run_field(deck: str, n_games: int = 30, opponents: List[str] = None,
 
 def run_meta_matrix(top_tier: int = None, n_games: int = 20,
                     seed_start: int = 40000, parallel: bool = True,
-                    bo1: bool = False) -> Dict:
+                    bo3: bool = True) -> Dict:
     """Run full metagame matrix. Returns matrix dict + rankings.
+
+    Default is Bo3 with sideboarding — the canonical evaluation format
+    per the 2026-05-04 directive ("real-world Modern is Bo3 with
+    sideboarding; Bo1 systematically over-rewards decks whose worst
+    matchups are answered by SB hate"). Bo1 evaluation should be
+    treated as diagnostic only and never used as the basis for
+    tournament-relevant WR claims.
 
     Args:
         top_tier: Only include top N decks by metagame share (None = all)
         n_games: Matches per pair (Bo3 by default; n_games = match count)
         seed_start: Starting seed
         parallel: Use multiprocessing (default True)
-        bo1: Bo1 single games instead of Bo3 matches (default False)
+        bo3: Bo3 matches with sideboarding (default True; canonical).
+             Pass bo3=False to fall back to single-game Bo1 sims —
+             diagnostic only, not for tournament-relevant evaluation.
 
     Returns dict with:
         'matrix': {(deck1, deck2): win_pct}
@@ -333,6 +352,7 @@ def run_meta_matrix(top_tier: int = None, n_games: int = 20,
         'names': list of deck names included
         'format': 'bo1' or 'bo3'
     """
+    bo1 = not bo3
     names = get_all_deck_names()
     if top_tier and top_tier < len(names):
         names = sorted(names, key=lambda n: METAGAME_SHARES.get(n, 0), reverse=True)[:top_tier]
@@ -1101,8 +1121,14 @@ if __name__ == '__main__':
     parser.add_argument('--save', action='store_true', help='Save results to metagame_results.json')
     parser.add_argument('--results', action='store_true', help='Print last saved results (no sim)')
     parser.add_argument('--bo1', action='store_true',
-                        help='Use Bo1 single games for matrix/field/matchup '
-                             '(default is Bo3 with sideboarding)')
+                        help='Force Bo1 single games for matrix/field/matchup. '
+                             'DIAGNOSTIC USE ONLY. Default is Bo3 with '
+                             'sideboarding — the canonical evaluation format '
+                             'per the 2026-05-04 directive. Bo1 systematically '
+                             'over-rewards decks whose worst matchups are '
+                             'answered by sideboard hate (e.g. Affinity vs '
+                             'opponents that carry artifact destroyers in SB '
+                             'but not MB).')
     parser.add_argument('--sigma', nargs=2, metavar=('DECK1', 'DECK2'),
                         help='Measure run-to-run WR variance for a matchup; '
                              'pair with -n and --repeats')
@@ -1159,7 +1185,7 @@ if __name__ == '__main__':
     elif args.sigma:
         d1, d2 = resolve_deck_name(args.sigma[0]), resolve_deck_name(args.sigma[1])
         sig = run_sigma(d1, d2, n_games=args.games, repeats=args.repeats,
-                        bo1=args.bo1)
+                        bo3=not args.bo1)
         print(f'{sig["deck1"]} vs {sig["deck2"]} — '
               f'{sig["repeats"]} × {sig["n_games"]} games')
         for i, r in enumerate(sig['rates'], 1):
@@ -1168,12 +1194,12 @@ if __name__ == '__main__':
         sys.exit(0)
     elif args.matchup:
         d1, d2 = resolve_deck_name(args.matchup[0]), resolve_deck_name(args.matchup[1])
-        result = run_matchup(d1, d2, n_games=args.games, bo1=args.bo1)
+        result = run_matchup(d1, d2, n_games=args.games, bo3=not args.bo1)
         print_matchup(result)
         if args.save:
             save_results(result)
     elif args.field:
-        result = run_field(resolve_deck_name(args.field), n_games=args.games, bo1=args.bo1)
+        result = run_field(resolve_deck_name(args.field), n_games=args.games, bo3=not args.bo1)
         print_field(result)
         if args.save:
             save_results(result)
@@ -1212,7 +1238,7 @@ if __name__ == '__main__':
                       'names': names, 'n_games': args.games,
                       'format': 'bo1' if args.bo1 else 'bo3'}
         else:
-            result = run_meta_matrix(top_tier=args.decks, n_games=args.games, bo1=args.bo1)
+            result = run_meta_matrix(top_tier=args.decks, n_games=args.games, bo3=not args.bo1)
         print_matrix(result)
 
         # Phase 2.5: always run symmetry invariant check after matrix
