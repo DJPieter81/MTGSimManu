@@ -54,6 +54,7 @@ EXCLUDED_FILES = {
     "ai/llm_metrics.py",       # I-5 incoming
     "ai/llm_embeddings.py",    # PR #262
     "ai/card_features.py",     # I-2 incoming
+    "ai/llm_compression.py",   # I-3 — token caps / pattern strings, not scoring
     "ai/predicates.py",        # tag definitions can have literal limits
     "ai/clock.py",             # rules-derived constants
     "ai/strategy_profile.py",  # tuning data
