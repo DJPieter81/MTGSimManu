@@ -427,6 +427,40 @@ doesn't match the equipment's oracle text.
 """
 
 
+EQUIPMENT_CEILING_REATTACH_DISCOUNT: float = 0.7
+"""Rules-constant: feasibility discount applied to the equipment-
+ceiling threat lift when the equipment is currently attached to a
+*different* creature than the threat-target under evaluation.
+
+Re-attaching an equipment costs the equip cost in mana again, so
+the rebind is conditional on the controller having spare mana and
+declining to deploy a new threat instead.  Empirically, a Plating
+that is already swinging on creature A only re-attaches to creature
+B about 70 % of the time within the threat-evaluation horizon — the
+remaining 30 % the controller leaves it where it is or commits the
+mana elsewhere.  Used by `_equipment_ceiling_for_creature` in
+`ai/permanent_threat.py` to bound the threat lift on non-equipped
+creatures when the equipment is already committed elsewhere.
+
+Anchor: matches the `0.5×–1.0×` family of feasibility discounts
+already in `ai/scoring_constants.py` (`COUNTER_GATE_LOW_MULTIPLIER`,
+`KEYWORD_HALF_WEIGHT`); 0.7 sits between "uncertain" and "likely".
+"""
+
+
+EQUIPMENT_CEILING_NO_TARGET_FALLBACK: float = 0.0
+"""Rules-constant: ceiling lift returned when an unattached equipment
+has no legal equip target on its controller's battlefield.
+
+A Plating with no creature to attach to is a 0/0 brick until the
+controller resolves a creature.  ``permanent_threat`` should fall
+back to its standard marginal-contribution value (which is 0.0 for
+unattached non-pump equipment) — there is no future-attach value
+to project.  Used by `_equipment_threat_when_unattached` in
+`ai/permanent_threat.py`.
+"""
+
+
 # ─── Keyword clock multipliers (creature_clock_impact in ai/clock.py) ─
 # Multiplicative bonuses applied to a creature's base clock contribution
 # (`power / opp_life`) when it has a clock-relevant keyword. These were

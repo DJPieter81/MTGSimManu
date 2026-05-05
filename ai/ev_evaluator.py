@@ -617,7 +617,26 @@ def creature_threat_value(card: "CardInstance", snap: Optional[EVSnapshot] = Non
     # separately via the same clock formula so it scales identically.
     vp_impact = (creature_clock_impact(p, tough, kws, effective_snap)
                  - creature_clock_impact(card.power or 0, tough, kws, effective_snap)) * CREATURE_VALUE_OUTER_SCALE
-    return base + vp_impact
+
+    # PR-L3: equipment-ceiling lift. If the controller has an
+    # unattached / rebindable Equipment with a `gets +N/+M …` static
+    # oracle modifier, project the option-to-equip threat onto this
+    # creature.  Oracle-driven, generalizes across every Modern
+    # Equipment with a static buff (Cranial Plating, Nettlecyst,
+    # Colossus Hammer, Bonesplitter, Sword cycle, future printings).
+    # See `docs/diagnostics/2026-05-04_affinity_plating_threat_undervaluation_audit.md`.
+    ceiling_lift = 0.0
+    game = getattr(card, '_game_state', None)
+    if game is not None and card.zone == 'battlefield':
+        try:
+            controller = game.players[card.controller]
+        except (IndexError, AttributeError):
+            controller = None
+        if controller is not None:
+            from ai.permanent_threat import _equipment_ceiling_for_creature
+            ceiling_lift = _equipment_ceiling_for_creature(
+                card, controller, game)
+    return base + vp_impact + ceiling_lift
 
 
 # ─────────────────────────────────────────────────────────────
