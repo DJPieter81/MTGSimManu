@@ -307,12 +307,44 @@ def permanent_threat(card: "CardInstance", owner: "PlayerState",
     Returns 0.0 when `card` is not currently on `owner`'s
     battlefield; callers should filter to on-battlefield targets.
 
-    KEY FIX (Bug A): count-based artifact/enchantment fields must be
-    frozen between full and partial snapshots. When we pop a card,
-    snapshot_from_game will recompute artifact_count from the live
-    battlefield, creating state drift. The marginal contribution formula
-    is correct in principle (V_full - V_partial), but we must adjust
-    counts manually instead of letting them recompute.
+    P0-B fix (2026-05-08): a previous implementation conditioned the
+    partial-snapshot count adjustment on ``owner_idx`` ("if
+    ``owner_idx == 0``: ``my_artifact_count += 1``; else:
+    ``opp_artifact_count += 1``").  That confuses the absolute player
+    index with the snapshot's perspective.
+    ``snapshot_from_game(game, owner_idx)`` returns a snapshot in
+    which ``my_*`` always refers to ``owner``'s side, so when ``owner``
+    is player 1 — the canonical case where an AI scores opponent
+    threats — the previous code incremented the wrong field, leaving
+    ``my_artifact_count`` decremented in the partial snapshot.
+    Combined with ``my_artifact_scaling_active=True`` on Plating-style
+    boards, that turned the marginal artifact contribution into a
+    ``mana_clock_impact * CLOCK_IMPACT_LIFE_SCALING`` term whose
+    magnitude varied with opponent life total — the source of the
+    Springleaf Drum 1.333 vs Memnite 1.150 inversion at T5 documented
+    in P0-B of the 2026-05-03 backlog.
+
+    The correct semantics, used here, is the marginal-contribution
+    formula at face value: ``snapshot_from_game`` correctly recomputes
+    ``my_artifact_count`` and ``my_enchantment_count`` from the
+    post-pop battlefield, so popping a non-land artifact yields
+    ``v_full - v_partial > 0`` — removing an artifact reduces the
+    owner's position value through the artifact-value term, which is
+    exactly what a removal-targeting AI should see.  No manual count
+    adjustment is required.  The earlier "restore counts" fix was
+    based on an inverted reading of ``artifact_value``'s sign and only
+    appeared to work because the wrong-field branch was a no-op for
+    ``owner == player 1`` (where the AI's removal-target evaluation
+    actually runs).
+
+    Pinned by ``tests/test_threat_invariance.py`` ::
+    ``test_artifact_pop_threat_invariant_to_owner_player_index``:
+    threat must not depend on which absolute ``player_idx`` the owner
+    is.  The invariance generalises to every matchup whose AI scores
+    removal targets on artifact-scaling boards — Boros Energy or Zoo
+    side-boarding into hate against Affinity, Living End post-cascade
+    artifact reanimation, Eldrazi Tron Karn-Liberated trinkets — not
+    just Affinity.
 
     PR-L3 (Phase L follow-up): an UNATTACHED Equipment with a
     `gets +N/+M …` oracle clause gets a special-case ceiling lift
@@ -324,7 +356,6 @@ def permanent_threat(card: "CardInstance", owner: "PlayerState",
     """
     from ai.ev_evaluator import snapshot_from_game
     from ai.clock import position_value
-    from engine.cards import CardType
 
     bf = owner.battlefield
     idx = -1
@@ -342,43 +373,14 @@ def permanent_threat(card: "CardInstance", owner: "PlayerState",
 
     removed = bf.pop(idx)
     try:
+        # ``snapshot_from_game`` correctly recomputes count-based
+        # fields (``my_artifact_count``, ``my_enchantment_count``) from
+        # the post-pop battlefield, with the artifact-land carve-out
+        # handled at the snapshot level.  No manual count adjustment is
+        # needed — the marginal-contribution formula at face value
+        # gives the right sign and magnitude.  See module docstring
+        # for why earlier "restore counts" fixes were inverted.
         partial_snap = snapshot_from_game(game, owner_idx)
-
-        # CRITICAL: Adjust count fields to reflect the removed card's type.
-        # snapshot_from_game recomputes counts from the current (popped) state.
-        # We want to compare V(full board) - V(board \\ {card}), but the
-        # count fields in position_value create state drift: removing an
-        # artifact decreases artifact_count, which improves the owner's
-        # position_value through the artifact_value term (line 384 in clock.py).
-        # This is backward — removing a mana rock should hurt, not help.
-        #
-        # Solution: restore counts to match the full_snap state, so both
-        # snapshots have consistent count-based terms.
-        # PR-L1: mirror the snapshot-level rule that artifact lands
-        # do NOT contribute to artifact_count.  If we don't gate on
-        # ``CardType.LAND not in card_types`` here, popping an
-        # artifact land from the battlefield would leave partial_snap
-        # with the same artifact_count as full_snap (because the
-        # snapshot recompute already excluded lands), and then we'd
-        # increment it by 1, creating a phantom +1 delta.
-        card_types = card.template.card_types
-        is_non_land_artifact = (
-            CardType.ARTIFACT in card_types
-            and CardType.LAND not in card_types
-        )
-        if owner_idx == 0:
-            # Popped from my side
-            if is_non_land_artifact:
-                partial_snap.my_artifact_count += 1
-            if CardType.ENCHANTMENT in card_types:
-                partial_snap.my_enchantment_count += 1
-        else:
-            # Popped from opp side
-            if is_non_land_artifact:
-                partial_snap.opp_artifact_count += 1
-            if CardType.ENCHANTMENT in card_types:
-                partial_snap.opp_enchantment_count += 1
-
         v_partial = position_value(partial_snap)
     finally:
         bf.insert(idx, removed)
