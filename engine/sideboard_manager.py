@@ -10,7 +10,108 @@ Two backends:
 from __future__ import annotations
 
 import os
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Optional
+
+
+def _classify_anti_artifact_priority(template) -> int:
+    """Classify a card's anti-artifact role by oracle text.
+
+    Returns the priority a card should receive when boarded against
+    an artifact-dense deck (Affinity, Pinnacle Affinity, Eldrazi
+    Tron). Three categories:
+
+      - **10** — Destruction. Oracle directly destroys, exiles, or
+        bounces artifacts (Wear // Tear, Force of Vigor, Boseiju
+        channel, Shattering Spree, Hurkyl's Recall, Meltdown,
+        Haywire Mite).
+      - **9** — Stax / cost tax. Oracle locks activated abilities of
+        artifacts or taxes their casting (Stony Silence, Collector
+        Ouphe, Damping Sphere, Clarion Conqueror, Karn the Great
+        Creator).
+      - **5** — Single-target activated-ability lock. Pithing
+        Needle, Phyrexian Revoker — useful but narrow (locks one
+        chosen permanent's abilities, leaving the rest of the
+        artifact base untouched).
+      - **0** — Not anti-artifact (Teferi/3 tempo, Lightning Bolt,
+        White Orchid Phantom which only catches artifact LANDS).
+
+    All detection is oracle-pattern, NOT card-name based.
+
+    Phase 2A: replaces the previous flat keyword list which assigned
+    priority 9 uniformly to a mix of true destruction (Wear // Tear)
+    and narrow locks (Pithing Needle), and missed Damping Sphere
+    entirely.
+    """
+    if template is None:
+        return 0
+    oracle = (template.oracle_text or "").lower()
+    if not oracle:
+        return 0
+
+    # 10 — Destruction / mass bounce. Pattern matches:
+    #   "destroy target artifact", "destroy each artifact",
+    #   "destroy any artifact", "destroy all artifacts",
+    #   "destroy up to ... artifact", "exile target ... artifact",
+    #   "return all artifacts target player owns".
+    destruction_phrases = (
+        "destroy target artifact",
+        "destroy each artifact",
+        "destroy all artifacts",
+        "destroy any number of target artifact",
+        "destroy up to one target artifact",
+        "destroy up to two target artifact",
+        "exile target artifact",
+        "exile target noncreature artifact",
+        "return all artifacts target player owns",
+    )
+    if any(p in oracle for p in destruction_phrases):
+        return 10
+    # "destroy target artifact, enchantment, or nonbasic" — Boseiju
+    # channel idiom (and similar mass-removal-with-artifact-clause).
+    if "destroy target artifact," in oracle:
+        return 10
+    # "destroy target ... artifact ..." (Force of Vigor: "destroy up
+    # to two target artifacts and/or enchantments")
+    if "destroy" in oracle and "artifact" in oracle and (
+        "and/or enchantment" in oracle or "or enchantment" in oracle
+    ):
+        return 10
+
+    # 9 — Stax / cost-tax. The cardinal pattern is "activated
+    # abilities of artifacts ... can't be activated" (Stony Silence,
+    # Collector Ouphe, Clarion Conqueror) — Clarion's wording
+    # extends to "artifacts, creatures, and planeswalkers", so we
+    # match the leading clause loosely. Karn variant restricts to
+    # "your opponents control".  Damping Sphere uses the
+    # "tapped for two or more mana, it produces {c} instead" idiom.
+    if "activated abilities of artifacts" in oracle and "can't be activated" in oracle:
+        return 9
+    if "tapped for two or more mana, it produces {c} instead" in oracle:
+        return 9
+
+    # 5 — Single-target activated-ability lock. The Pithing-Needle
+    # / Phyrexian-Revoker idiom: name a card, lock its activated
+    # abilities. Useful situationally (Mox Opal lock) but doesn't
+    # pressure the artifact base.
+    if "choose a card name" in oracle or "choose a nonland card name" in oracle:
+        if "activated abilities of sources with the chosen name" in oracle:
+            return 5
+
+    return 0
+
+
+def _build_artifact_hate_swap_in(card_name: str, count: int,
+                                  card_db: Optional[object] = None
+                                  ) -> Optional[Tuple[str, int, int]]:
+    """Return ``(name, count, priority)`` if the card qualifies as
+    artifact hate, else None. Reads oracle text via the cached
+    ``_get_card_db`` singleton."""
+    db = card_db if card_db is not None else _get_card_db()
+    template = db.get_card(card_name)
+    priority = _classify_anti_artifact_priority(template)
+    if priority > 0:
+        return (card_name, count, priority)
+    return None
 
 
 def sideboard(mainboard: Dict[str, int], sideboard_cards: Dict[str, int],
@@ -56,20 +157,23 @@ def sideboard(mainboard: Dict[str, int], sideboard_cards: Dict[str, int],
                                                "bojuka"]):
                 board_in_priority.append((card_name, count, 10))
 
-        # Artifact hate vs artifact decks
-        # pithing catches Pithing Needle (Tron SB), meltdown catches Meltdown
-        # (Storm/Izzet SB), boseiju catches Boseiju, Who Endures (LE/Omnath/4-5c SB).
-        # "time raveler" catches Teferi, Time Raveler (bounces Urza's Saga tokens);
-        # "orchid phantom" catches White Orchid Phantom (land destruction vs
-        # Razortide / Silverbluff / Treasure Vault); "clarion conqueror" creates
-        # 2/2 prison tokens that tax artifact attackers.
+        # Artifact hate vs artifact decks. Phase 2A: replaces the
+        # flat keyword list (which assigned priority 9 uniformly to a
+        # mix of true destruction (Wear // Tear) and narrow single-
+        # target locks (Pithing Needle), and missed Damping Sphere
+        # entirely) with an oracle-driven category classification:
+        #   10 = destruction (Wear, Force of Vigor, Boseiju channel,
+        #        Shattering Spree, Hurkyl's Recall, Meltdown, Haywire Mite)
+        #    9 = stax / cost tax (Stony Silence, Collector Ouphe,
+        #        Damping Sphere, Clarion Conqueror, Karn)
+        #    5 = single-target activated-ability lock (Pithing Needle,
+        #        Phyrexian Revoker — narrow vs an 18-artifact deck)
+        # See engine/sideboard_manager.py:_classify_anti_artifact_priority
+        # and tests/test_sideboard_anti_artifact_categories.py.
         if any(w in opp_lower for w in ["affinity", "tron", "pinnacle"]):
-            if any(w in card_lower for w in ["wear", "force of vigor", "collector",
-                                               "haywire", "shattering", "hurkyl",
-                                               "pithing", "meltdown", "boseiju",
-                                               "time raveler", "orchid phantom",
-                                               "clarion conqueror"]):
-                board_in_priority.append((card_name, count, 9))
+            swap = _build_artifact_hate_swap_in(card_name, count)
+            if swap is not None:
+                board_in_priority.append(swap)
 
         # Counterspells vs combo
         if any(w in opp_lower for w in ["storm", "living end", "goryo", "titan"]):
