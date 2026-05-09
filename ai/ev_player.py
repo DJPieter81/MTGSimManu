@@ -1621,8 +1621,14 @@ class EVPlayer:
         # the derivation traceable without per-card magic.
         from engine.cards import CardType
         if CardType.ARTIFACT in land.template.card_types:
+            # E-2 (Phase L): count battlefield scaling cards only.
+            # Hand-side scaling cards are scored separately when the AI
+            # considers casting them; counting them here double-books
+            # the same expected value. Mirrors PR-L1's symmetry —
+            # artifact lands contribute marginal +1 to *active* scaling
+            # effects, not to hand-side intent.
             synergy_signals = 0
-            for c in list(me.hand) + list(me.battlefield):
+            for c in me.battlefield:
                 if c is land:
                     continue
                 c_oracle = (c.template.oracle_text or '').lower()
@@ -1631,7 +1637,6 @@ class EVPlayer:
                         or 'affinity for artifacts' in c_oracle):
                     synergy_signals += 1
             if synergy_signals > 0:
-                # ARTIFACT_LAND_SYNERGY_BONUS — see ai/scoring_constants.py.
                 ev += synergy_signals * ARTIFACT_LAND_SYNERGY_BONUS
 
         # Landfall: each trigger ≈ ETB effect value (life, damage, ramp)

@@ -69,6 +69,23 @@ class GameCallbacks(Protocol):
         """
         ...
 
+    def choose_artifact_tutor_target(
+        self, game: GameState, player_idx: int,
+        eligible: List[CardInstance],
+    ) -> Optional[CardInstance]:
+        """Pick the best artifact target from the engine-narrowed list.
+
+        The engine has already filtered the controller's library to
+        cards that satisfy the rule (artifact, mana_value <= 1, no
+        duplicate-legendary collision with the battlefield). The
+        callback chooses *which* eligible target serves the deck plan
+        best given current board state.
+
+        Returns one of the elements of `eligible`, or None if the
+        list is empty (engine handles the no-target case).
+        """
+        ...
+
 
 class DefaultCallbacks:
     """Safe defaults: always tapped, first legal target, no evoke, no dash."""
@@ -106,3 +123,40 @@ class DefaultCallbacks:
         by CMC desc, take head). AI callback implementations should
         override this with a proper discard-scoring strategy."""
         return max(hand, key=lambda c: c.template.cmc or 0)
+
+    def choose_artifact_tutor_target(
+        self, game: GameState, player_idx: int,
+        eligible: List[CardInstance],
+    ) -> Optional[CardInstance]:
+        """Default heuristic — oracle-driven, no card names.
+
+        Phase 1D ranking:
+          1. Mana producers (oracle has "{T}: Add" or "add one mana")
+             come first — acceleration is universally valuable.
+          2. Equipment with artifact-scaling (oracle has "+N/+M for
+             each artifact you control" + an equip cost) come next.
+          3. Otherwise the highest-CMC eligible artifact.
+
+        AI callback implementations may override with state-aware
+        scoring (e.g. demote redundant equipment when no creatures
+        are deployed, demote a second mana rock when on-curve mana
+        is already sufficient).
+        """
+        if not eligible:
+            return None
+
+        def _rank(c: CardInstance) -> tuple:
+            oracle = (c.template.oracle_text or "").lower()
+            is_mana = (
+                "{t}: add" in oracle
+                or "add one mana" in oracle
+                or "add {" in oracle
+            )
+            is_artifact_scaler = (
+                "for each artifact" in oracle
+                and ("equip {" in oracle or "equipped creature gets" in oracle)
+            )
+            cmc = c.template.cmc or 0
+            return (is_mana, is_artifact_scaler, cmc)
+
+        return max(eligible, key=_rank)

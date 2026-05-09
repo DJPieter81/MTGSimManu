@@ -10,7 +10,7 @@ from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass, field
 
 from .game_state import GameState, Phase, PHASE_ORDER, PlayerState
-from .cards import CardTemplate, CardInstance, Keyword, CardType
+from .cards import CardTemplate, CardInstance, Keyword, CardType, Supertype
 from .card_database import CardDatabase
 from .stack import StackItem
 from .turn_manager import TurnManager, TurnStep
@@ -25,6 +25,37 @@ URZA_TRON_LANDS = {"Urza's Tower", "Urza's Mine", "Urza's Power Plant"}
 from ai.ev_player import EVPlayer as AIPlayer
 from ai.board_eval import evaluate_action, Action, ActionType
 from ai.mana_planner import analyze_mana_needs, choose_fetch_target
+
+
+def _saga_iii_eligible_targets(
+    game: "GameState", player_idx: int
+) -> List["CardInstance"]:
+    """Narrow the controller's library to legal Saga Ch.III targets.
+
+    Saga Ch.III oracle: "Search your library for an artifact card with
+    mana cost {0} or {1}, put it onto the battlefield, then shuffle."
+
+    Engine-side rule enforcement only — the AI callback then chooses
+    among the legal targets via
+    `game.callbacks.choose_artifact_tutor_target`.
+
+    Excludes legendary artifacts that would collide (legend rule)
+    with one already on the controller's battlefield.
+    """
+    player = game.players[player_idx]
+    owned_legend_names = {
+        bc.name for bc in player.battlefield
+        if Supertype.LEGENDARY in bc.template.supertypes
+    }
+    eligible = []
+    for c in player.library:
+        if (CardType.ARTIFACT in c.template.card_types
+                and (c.template.cmc or 0) <= 1):
+            if (Supertype.LEGENDARY in c.template.supertypes
+                    and c.name in owned_legend_names):
+                continue
+            eligible.append(c)
+    return eligible
 
 
 def _sorcery_speed_only_active(player: PlayerState) -> bool:
@@ -131,6 +162,35 @@ class AICallbacks(GameCallbacks):
     def choose_discard(self, game, player_idx, hand, self_discard):
         from ai.discard_advisor import choose_discard as _choose
         return _choose(game, player_idx, hand, self_discard)
+
+    def choose_artifact_tutor_target(self, game, player_idx, eligible):
+        """State-aware ranking on top of the default heuristic.
+
+        Phase 1D: demote redundant copies of permanents already in
+        play (e.g. tutoring a second Cranial Plating when one is
+        already deployed = diminishing returns). Otherwise inherit
+        the DefaultCallbacks heuristic (mana acceleration > artifact
+        scaling > highest CMC).
+        """
+        if not eligible:
+            return None
+        from .callbacks import DefaultCallbacks
+        # Names of artifacts already controlled — used to demote
+        # tutoring a duplicate (legend rule + diminishing returns).
+        owned_artifact_names = {
+            c.name for c in game.players[player_idx].battlefield
+            if CardType.ARTIFACT in c.template.card_types
+        }
+        # Filter out already-controlled names; if anything remains,
+        # rank that filtered list. Otherwise fall back to the full
+        # eligible list (better to tutor a duplicate than nothing).
+        non_redundant = [
+            c for c in eligible if c.name not in owned_artifact_names
+        ]
+        candidates = non_redundant if non_redundant else eligible
+        return DefaultCallbacks.choose_artifact_tutor_target(
+            self, game, player_idx, candidates,
+        )
 
 
 @dataclass
@@ -1332,27 +1392,12 @@ class GameRunner:
                         t.template.tags.add("artifact")
                     game.log.append(f"T{game.display_turn} P{active+1}: "
                                     f"Urza's Saga Ch.III: Create Construct Token")
-                    best = None
-                    best_priority = -1
-                    tutor_priority = {
-                        "Cranial Plating": 10, "Springleaf Drum": 5,
-                        "Mox Opal": 8, "Engineered Explosives": 3,
-                    }
-                    # Avoid tutoring a legend we already control (dies to legend rule)
-                    owned_legend_names = {
-                        bc.name for bc in player.battlefield
-                        if Supertype.LEGENDARY in bc.template.supertypes
-                    }
-                    for c in player.library:
-                        if (CardType.ARTIFACT in c.template.card_types
-                                and (c.template.cmc or 0) <= 1):
-                            if (Supertype.LEGENDARY in c.template.supertypes
-                                    and c.name in owned_legend_names):
-                                continue
-                            prio = tutor_priority.get(c.name, 1)
-                            if prio > best_priority:
-                                best = c
-                                best_priority = prio
+                    # Engine narrows the library to rule-legal targets;
+                    # callback picks the best one for the current state.
+                    eligible = _saga_iii_eligible_targets(game, active)
+                    best = game.callbacks.choose_artifact_tutor_target(
+                        game, active, eligible=eligible,
+                    )
                     if best:
                         player.library.remove(best)
                         best.zone = "battlefield"

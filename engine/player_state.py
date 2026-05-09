@@ -257,12 +257,12 @@ TOKEN_DEFS = {
     "goblin": ("Goblin", [CardType.CREATURE], 1, 1, set()),
     "soldier": ("Soldier", [CardType.CREATURE], 1, 1, set()),
     "spirit": ("Spirit", [CardType.CREATURE], 1, 1, {Keyword.FLYING}),
-    "construct": ("Construct", [CardType.CREATURE], 0, 0, set()),  # P/T = artifact count
-    # Nettlecyst creates "a 0/0 black Phyrexian Germ" per oracle. Previously
-    # absent from TOKEN_DEFS, falling through to the generic 1/1 default in
-    # create_token() — Germ tokens ended up +1/+1 larger than intended,
-    # contributing ~1-2pp to Affinity's overall WR.
-    "germ": ("Germ", [CardType.CREATURE], 0, 0, set()),
+    # Construct (Saga Ch II) and Germ (Nettlecyst) are *artifact creature*
+    # tokens per oracle text — must be both Artifact and Creature so they
+    # count toward metalcraft, Affinity discount, Plating scaling, and
+    # the token's own "+1/+1 for each artifact you control" self-reference.
+    "construct": ("Construct", [CardType.ARTIFACT, CardType.CREATURE], 0, 0, set()),
+    "germ": ("Germ", [CardType.ARTIFACT, CardType.CREATURE], 0, 0, set()),
     "cat": ("Cat", [CardType.CREATURE], 1, 1, set()),
     "elemental": ("Elemental", [CardType.CREATURE], 1, 1, set()),
     "treasure": ("Treasure", [CardType.ARTIFACT], 0, 0, set()),

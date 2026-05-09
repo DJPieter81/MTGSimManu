@@ -599,7 +599,23 @@ def creature_threat_value(card: "CardInstance", snap: Optional[EVSnapshot] = Non
     elif name and f'whenever {name} attacks' in oracle:
         virtual_power += THREAT_BATTLE_CRY_AMPLIFIER_VP
     if re.search(r'for each (artifact|creature|land|card)', oracle):
-        virtual_power += THREAT_SCALING_FUTURE_VP
+        # Phase 1C: skip the future-scaling bonus when the dynamic P/T
+        # already captures the scaling. `engine/cards.py:_dynamic_base_power`
+        # detects the strict "+N/+M for each artifact you control" pattern
+        # and computes card.power = template.power + artifact_count at
+        # battlefield read time. Adding virtual_power on top double-counts
+        # the contribution: a 5/5 Construct on a 5-artifact board gets
+        # threat-scored as 8/8. Discriminator mirrors the regex used by
+        # _dynamic_base_power (line 397).
+        already_dynamic = (
+            getattr(card, 'zone', None) == 'battlefield'
+            and re.search(
+                r'\+\d+/\+\d+\s+for\s+each\s+artifact\s+you\s+control',
+                oracle,
+            )
+        )
+        if not already_dynamic:
+            virtual_power += THREAT_SCALING_FUTURE_VP
 
     p = (card.power or 0) + virtual_power
     tough = card.toughness or 0
