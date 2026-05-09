@@ -1,8 +1,10 @@
 ---
 title: Living End combo audit (Phase K, methodology v1)
-status: active
+status: superseded
 priority: secondary
 session: 2026-05-04
+superseded_by:
+  - docs/diagnostics/2026-05-09_living_end_loop_break_root_cause.md
 depends_on:
   - docs/design/2026-05-04_modern_combo_audit_methodology.md
 tags:

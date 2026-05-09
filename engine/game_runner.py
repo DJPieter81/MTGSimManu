@@ -957,6 +957,8 @@ class GameRunner:
                 game.play_land(ai.player_idx, card)
             elif action == "cycle":
                 game.activate_cycling(ai.player_idx, card)
+            elif action == "suspend":
+                game.suspend_card(ai.player_idx, card)
             elif action == "equip":
                 # targets[0] = creature instance_id to equip to
                 if targets:

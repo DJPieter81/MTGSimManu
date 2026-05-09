@@ -56,6 +56,7 @@ from ai.scoring_constants import (
     CYCLING_CHEAP_COST_BONUS,
     CYCLING_GY_REANIMATE_BASE,
     CYCLING_GY_REANIMATE_PER_POWER,
+    AVG_CREATURE_POWER,
     CLOCK_IMPACT_LIFE_SCALING,
     REANIMATE_TARGET_MIN_POWER,
     CONTROL_PATIENCE_OPP_CLOCK_THRESHOLD,
@@ -354,7 +355,21 @@ class EVPlayer:
                 return None
 
         lands = [c for c in legal if c.template.is_land]
-        spells = [c for c in legal if not c.template.is_land]
+
+        # Identify suspend cards (sorcery-speed special action, distinct
+        # from casting). Suspend-only cards (CMC 0, suspend keyword) are
+        # not hand-castable — they reach legal_plays only through the
+        # suspend branch in engine/game_state.py::get_legal_plays.
+        # Exclude them from `spells` so they aren't also scored as cast
+        # candidates against a non-existent cast path.
+        suspend_cards = [c for c in me.hand
+                         if game.can_suspend(self.player_idx, c)]
+        suspend_only = [c for c in suspend_cards
+                        if not game.can_cast(self.player_idx, c)]
+
+        spells = [c for c in legal
+                  if not c.template.is_land
+                  and c not in suspend_only]
 
         # Identify cycling cards (special action, not casting)
         cycling_cards = [c for c in me.hand if game.can_cycle(self.player_idx, c)]
@@ -369,6 +384,15 @@ class EVPlayer:
             ev = self._score_cycling(card, snap, game, me, opp)
             candidates.append(Play("cycle", card, [], ev,
                                    f"Cycle: {card.name}"))
+
+        # Score suspend plays (Living End / Ancestral Vision / etc.).
+        # Suspend is a sorcery-speed special action. EV is gated by
+        # _payoff_reachable_this_turn (no faster route in hand) and by
+        # the opponent's clock (resolution must arrive before lethal).
+        for card in suspend_cards:
+            ev = self._score_suspend(card, snap, game, me, opp)
+            candidates.append(Play("suspend", card, [], ev,
+                                   f"Suspend: {card.name}"))
 
         # Score land plays — lands compete with spells for priority
         if lands and me.lands_played_this_turn < (1 + me.extra_land_drops):
@@ -1833,6 +1857,104 @@ class EVPlayer:
             exclude_instance_id=card.instance_id)
 
         return ev
+
+    def _score_suspend(self, card, snap, game, me, opp) -> float:
+        """EV for paying a card's suspend cost (CR 702.62a).
+
+        Suspend is a sorcery-speed special action: pay the suspend
+        cost, exile the card with N time counters; remove one each
+        upkeep; cast for free when the last is removed.
+
+        EV model — every term derived from existing primitives:
+
+          payoff = expected_gy_creatures_at_resolution
+                   × per_creature_reanimation_ev
+          waste  = mana_clock_impact(snap) × suspend_mana_cost
+          EV     = payoff - waste
+
+        Where:
+          - per_creature_reanimation_ev reuses
+            CYCLING_GY_REANIMATE_BASE + AVG_CREATURE_POWER
+            × CYCLING_GY_REANIMATE_PER_POWER (the same per-creature
+            equity the cycling scorer assigns to graveyard-fill).
+          - expected_gy_at_resolution = current GY creatures plus
+            min(hand_cyclers, N counters) — every upkeep before
+            resolution is an opportunity to cycle one more creature.
+
+        Two gates make suspend defer to faster lines:
+
+          1. _payoff_reachable_this_turn returns True → cascade /
+             tutor / storm finisher / dig is in hand; the same
+             reanimation payoff is reachable in 1-2 turns instead of
+             N+1.  Suspend is the slow plan; faster wins.
+          2. resolution_offset > snap.opp_clock → opponent will kill
+             us before suspend resolves; deferring saves the mana.
+
+        Class size: every Modern suspend card — Living End, Ancestral
+        Vision, Crashing Footfalls, Restore Balance, Wheel of Fate,
+        Lotus Bloom, Greater Gargadon, future printings.  No card
+        names; reads SUSPEND keyword + parsed clause.
+        """
+        from ai.clock import mana_clock_impact
+        from engine.cards import Keyword as _Kw
+        from engine.cast_manager import CastManager
+
+        # Gate 1: a faster route to the same finisher in hand?
+        #
+        # Suspend resolves on T+N+1.  If a cascade enabler / storm
+        # finisher / tutor is already in hand, the same payoff is
+        # reachable in 1-2 turns instead — suspend is strictly
+        # slower and should defer.
+        #
+        # Note: this gate intentionally does NOT include the
+        # cantrip-dig branch from _payoff_reachable_this_turn.  A
+        # cycler draws a card; it does not by itself cast the
+        # finisher.  For suspend, the semantically correct gate is
+        # "fast finisher present", not "any payoff route present".
+        for c in me.hand:
+            if c is card:
+                continue
+            kws = c.template.keywords or set()
+            tags_c = c.template.tags or set()
+            if _Kw.STORM in kws:
+                return 0.0
+            if 'tutor' in tags_c:
+                return 0.0
+            if getattr(c.template, 'is_cascade', False):
+                return 0.0
+
+        parsed = CastManager._parse_suspend_clause(card.template)
+        if parsed is None:
+            return 0.0
+        counters, cost = parsed
+
+        # Gate 2: time-to-resolution vs opponent clock.
+        # resolution_offset = counters + 1 (each upkeep removes one
+        # counter; the cast happens on the upkeep when the last is
+        # removed — that's N upkeeps + the cast turn).
+        resolution_offset = counters + 1
+        opp_clock = getattr(snap, 'opp_clock', None)
+        if opp_clock is not None and resolution_offset > opp_clock:
+            return 0.0
+
+        # Payoff: expected GY creatures × per-creature equity.
+        gy_creatures = sum(1 for c in me.graveyard
+                           if c.template.is_creature)
+        hand_cyclers = sum(1 for c in me.hand
+                           if c.template.is_creature
+                           and game.can_cycle(self.player_idx, c))
+        expected_gy = gy_creatures + min(hand_cyclers, counters)
+
+        per_creature_ev = (CYCLING_GY_REANIMATE_BASE
+                           + AVG_CREATURE_POWER
+                           * CYCLING_GY_REANIMATE_PER_POWER)
+        payoff_ev = expected_gy * per_creature_ev
+
+        # Waste: mana committed produces no this-turn signal — same
+        # shape as ev_evaluator._compute_exposure_cost.
+        waste = (cost.cmc or 0) * mana_clock_impact(snap)
+
+        return payoff_ev - waste
 
     def _best_removal_target_value(self, removal, game, opp) -> float:
         """Find the most valuable creature this removal can kill.
