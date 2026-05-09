@@ -618,6 +618,20 @@ class GameState:
         for card in player.hand:
             if card not in legal and self.can_cycle(player_idx, card):
                 legal.append(card)
+        # Include suspend cards from hand. Suspend is a sorcery-speed
+        # special action (CR 702.62a) — paid by exiling the card with N
+        # time counters. Without this branch, suspend-only CMC-0 cards
+        # (Living End, Ancestral Vision, Lotus Bloom, Restore Balance,
+        # Wheel of Fate, Crashing Footfalls) are unreachable: they are
+        # not hand-castable so the cast branch above filters them out.
+        # Phase / stack / active-player gates mirror the land branch
+        # since suspend is sorcery-speed.
+        if self.current_phase in (Phase.MAIN1, Phase.MAIN2) and \
+                self.active_player == player_idx and \
+                self.stack.is_empty:
+            for card in player.hand:
+                if card not in legal and self.can_suspend(player_idx, card):
+                    legal.append(card)
         return legal
 
     def can_cycle(self, player_idx: int, card: "CardInstance") -> bool:
