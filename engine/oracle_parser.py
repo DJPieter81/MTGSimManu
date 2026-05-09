@@ -274,15 +274,20 @@ def parse_cost_reduction(oracle: str) -> Optional[Dict]:
     """Parse cost reduction rules from oracle text.
 
     Returns {'target': str, 'amount': int, 'color': str|None} or None.
+
+    A cost-reduction effect requires an explicit ``cost {N} less``
+    pattern (e.g. "Spells you cast cost {1} less to cast"). The mere
+    co-occurrence of ``'cost'`` and ``'less'`` is not sufficient — the
+    substring ``'less'`` lives inside ``'colorless'`` and ``'cost'``
+    appears in any ``mana cost {N}`` phrase, generating false
+    positives on non-reducers like Urza's Saga, Trinisphere, and
+    every cascade card. See ``tests/test_parse_cost_reduction_strict.py``.
     """
     oracle = oracle.lower()
-    if 'cost' not in oracle or 'less' not in oracle:
-        return None
-
-    amount = 1
     m = re.search(r'cost\s*\{(\d+)\}\s*less', oracle)
-    if m:
-        amount = int(m.group(1))
+    if not m:
+        return None
+    amount = int(m.group(1))
 
     target = 'all'
     if 'instant and sorcery' in oracle or 'instants and sorceries' in oracle:
