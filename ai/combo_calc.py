@@ -703,7 +703,16 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
     # Same mechanism credits Wish, Burning Wish, Living Wish,
     # Demonic Tutor, Summoner's Pact — any tutor with a real target.
     if 'tutor' in tags and _tutor_has_payoff_access(card, me):
-        if storm + 1 >= opp_life:
+        # Lethal shortcut: a tutor that fetches a STORM-keyword closer
+        # contributes TWO spells to the chain — itself, then the
+        # fetched payoff cast immediately after.  Grapeshot at
+        # `storm_count = S + 1` (after Wish) deals `1 + (S + 1) = S + 2`
+        # damage.  So lethal iff `storm + 2 >= opp_life`, NOT
+        # `storm + 1 >= opp_life`.  The trailing return at the bottom
+        # of this branch already encodes the `+2`; this shortcut was
+        # off-by-one and held the tutor when Wish→Grapeshot would
+        # exactly kill.  See test_storm_tutor_lethal_fires.py.
+        if storm + 2 >= opp_life:
             return a.combo_value  # tutor reach is lethal — fire
         # Only count CHAIN-EXTENDING fuel via `is_chain_fuel`: cards
         # tagged ritual / cantrip / draw / card_advantage.  Cards
