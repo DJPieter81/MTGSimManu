@@ -42,6 +42,11 @@ from ai.llm.llama_cpp_backend import (
     LlamaCppBackend,
     make_backend_from_env,
 )
+from ai.llm.oracle_parse import (
+    ORACLE_EFFECT_SCHEMA_ID,
+    OracleEffect,
+    parse_oracle,
+)
 
 __all__ = [
     "BackendUnavailable",
@@ -50,4 +55,7 @@ __all__ = [
     "StubBackend",
     "LlamaCppBackend",
     "make_backend_from_env",
+    "ORACLE_EFFECT_SCHEMA_ID",
+    "OracleEffect",
+    "parse_oracle",
 ]
