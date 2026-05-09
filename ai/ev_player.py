@@ -2053,11 +2053,25 @@ class EVPlayer:
             if opp.life <= self.profile.burn_low_life_threshold and self.archetype in ('aggro', 'tempo'):
                 threshold -= self.profile.aggro_closing_threshold_reduction
 
-            # Post-board-refill aggression: Living End just resolved, opponent's
-            # board was wiped, and our creatures came back (still summoning
-            # sick this turn — they must wait until next turn to attack). On
-            # that next turn, swing with everything to cash in the tempo swing.
-            if getattr(me, 'aggression_boost_turns', 0) > 0:
+            # Post-payoff aggression: when the goal layer has advanced to
+            # PUSH_DAMAGE the deck has declared "the army on the table is
+            # how I win" — the gameplan-final goal of every combo /
+            # cascade / reanimator shell.  Loosen the attack-EV threshold
+            # so a borderline-trade combat still fires.  Generalises the
+            # legacy ``aggression_boost_turns`` flag, which only fired on
+            # Living End resolution and left Goryo's Vengeance, Through
+            # the Breach, Crashing Footfalls, and any future
+            # cascade-into-army payoff stranded on a default threshold
+            # that the trade-down penalty can sink them under.
+            #
+            # Either signal — engine-set boost flag OR goal-layer
+            # declared — fires the same reduction; they're alternative
+            # paths to the same post-payoff state.  P1-3.
+            post_payoff_active = (
+                getattr(me, 'aggression_boost_turns', 0) > 0
+                or self._is_push_damage_goal()
+            )
+            if post_payoff_active:
                 threshold -= ATTACK_THRESHOLD_REDUCTION_AGGRESSION
 
             # Racing: when we can kill in ~2 swings, be aggressive
@@ -2107,6 +2121,32 @@ class EVPlayer:
             return [c for c in valid if _has_combat_value(c)]
 
         return safe if safe else []
+
+    def _is_push_damage_goal(self) -> bool:
+        """True iff the GoalEngine has advanced to ``PUSH_DAMAGE``.
+
+        ``PUSH_DAMAGE`` is the deck-declared post-payoff phase in the
+        gameplan JSON — every combo / cascade / reanimator shell ends
+        on this goal once its win condition has been deployed.  When
+        the goal layer has reached it, the deck is in "win with the
+        army on the table" mode and combat thresholds should reflect
+        that priority.
+
+        Generic by construction: the goal lives in
+        ``decks/gameplans/*.json``; no card-name or deck-name lookup.
+        Returns False when the AI has no goal engine (decks without a
+        gameplan JSON) or when the engine is on an earlier goal.
+        """
+        # Local import to avoid a module-level dependency on
+        # gameplan.GoalType (kept consistent with other call sites
+        # in this file that import lazily).
+        from ai.gameplan import GoalType
+        if self.goal_engine is None:
+            return False
+        try:
+            return self.goal_engine.current_goal.goal_type == GoalType.PUSH_DAMAGE
+        except Exception:
+            return False
 
     def _two_turn_lethal(self, game, me, opp, attackers) -> bool:
         # incoming this turn + opp's uninvolved creatures that can swing next turn
