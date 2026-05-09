@@ -10,7 +10,11 @@ Rules pinned (one test each, eight tests total):
   1. test_chain_fuel_credited_when_chain_reachable
      STORM-keyword finisher with chain-extending fuel still in hand
      returns a NEGATIVE modifier (hold to grow chain). Lethal short-
-     circuit returns combo_value (fire immediately).
+     circuit fires immediately at combo_value (token closer) or
+     combo_value + combo_value/opp_life (damage closer); the
+     direct-damage premium is the per-point-of-damage swing the
+     chain arithmetic already uses, encoding CR 302.1: tokens cast
+     this turn are summoning-sick and don't kill same-turn.
 
   2. test_storm_hard_hold_when_chain_unreachable
      Ritual at storm=0 with no finisher path AND not under lethal
@@ -167,9 +171,41 @@ class TestChainFuelCreditedWhenChainReachable:
         ev = card_combo_modifier(
             finisher, a, snap, game.players[0], game, 0)
 
+        # Grapeshot deals direct damage same-turn (oracle "deals N
+        # damage to any target"), so the lethal short-circuit returns
+        # combo_value + combo_value/opp_life — the per-point-of-damage
+        # premium that ranks damage closers strictly above token
+        # closers (CR 302.1).  Token closers (Empty the Warrens) at
+        # the same lethal range return combo_value (no premium).
+        expected = a.combo_value + a.combo_value / max(1, snap.opp_life)
+        assert ev == pytest.approx(expected), (
+            f"Lethal STORM damage-finisher must short-circuit to "
+            f"combo_value + combo_value/opp_life ({expected}); got {ev}."
+        )
+
+    def test_token_finisher_at_lethal_no_premium(self, card_db):
+        """Companion to test_fires_when_storm_count_is_lethal: the
+        same lethal condition (storm+1 >= opp_life) for a TOKEN
+        finisher (Empty the Warrens) returns combo_value — no
+        per-point-of-damage premium, because tokens cast this turn
+        are summoning-sick and the cast does NOT close the game
+        same-turn.  This test pins the asymmetry between the two
+        STORM payoffs that the modifier encodes (CR 302.1)."""
+        game, snap = _base_game(card_db, opp_life=3, storm=3)
+        finisher = _add(game, card_db, "Empty the Warrens",
+                        controller=0, zone="hand")
+        _add(game, card_db, "Desperate Ritual", controller=0, zone="hand")
+
+        a = _assessment(combo_value=80.0,
+                        payoff_names={"Empty the Warrens", "Grapeshot"})
+        ev = card_combo_modifier(
+            finisher, a, snap, game.players[0], game, 0)
+
         assert ev == pytest.approx(a.combo_value), (
-            f"Lethal STORM finisher must short-circuit to combo_value "
-            f"({a.combo_value}); got {ev}."
+            f"Lethal STORM token-finisher must short-circuit to "
+            f"combo_value ({a.combo_value}) — NO direct-damage "
+            f"premium, because tokens are summoning-sick (CR 302.1) "
+            f"and the cast does not close same-turn; got {ev}."
         )
 
     def test_fires_when_no_chain_fuel_remains(self, card_db):

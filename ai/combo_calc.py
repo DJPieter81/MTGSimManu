@@ -505,6 +505,28 @@ def _derive_storm_hard_hold() -> float:
 STORM_HARD_HOLD = _derive_storm_hard_hold()
 
 
+def _payoff_deals_direct_damage(card) -> bool:
+    """Oracle-driven detection: does this payoff deal damage to a
+    target/each player same-turn (Grapeshot pattern), or does it
+    create creature tokens (Empty-the-Warrens pattern)?
+
+    Same classification as `combo_chain.classify_card`'s
+    `deals_direct_damage` flag — kept on the same oracle predicate
+    (`'damage' in oracle AND ('target'|'each'|'any')`) so any future
+    storm reprint follows the same rule by mechanic, not by name.
+
+    The combat-step distinction matters at lethal range: a damage
+    finisher closes the game on resolution; a token finisher leaves
+    opp alive because creatures cast this turn cannot attack the
+    same turn (CR 302.1 — summoning sickness).
+    """
+    oracle = (getattr(card.template, 'oracle_text', '') or '').lower()
+    return ('damage' in oracle
+            and ('target' in oracle
+                 or 'each' in oracle
+                 or 'any' in oracle))
+
+
 def _has_storm_finisher(card, me) -> bool:
     """Direct STORM-keyword finisher in hand, OR tutor with valid target.
 
@@ -662,8 +684,32 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
 
     # ═══ STORM FINISHER: hold until chain-extending fuel exhausted ═══
     if Kw.STORM in getattr(card.template, 'keywords', set()):
+        # Distinguish DIRECT-DAMAGE payoff (Grapeshot pattern: oracle
+        # "deals N damage to any/each target") from TOKEN payoff
+        # (Empty-the-Warrens pattern: oracle "create … tokens").
+        # Same oracle classification as `combo_chain.classify_card`'s
+        # `deals_direct_damage` — single source, no card names.
+        # Rule (CR 302.1): a creature cast this turn cannot attack
+        # the same turn it ETBs (summoning sickness), so a token
+        # finisher dealing damage this turn requires combat next
+        # turn.  At lethal range, only the damage finisher closes —
+        # the token finisher leaves opp alive on its current life.
+        deals_damage = _payoff_deals_direct_damage(card)
+
         if storm + 1 >= opp_life:
-            return a.combo_value  # lethal — fire immediately
+            # Both payoffs are accessible at lethal range; the token
+            # payoff still enables a kill NEXT turn, so it's the
+            # baseline cast value.  The damage payoff additionally
+            # closes THIS turn (CR 302.1: tokens are summoning sick),
+            # so it earns a per-point-of-damage premium derived from
+            # the same primitive the rest of this branch uses
+            # (combo_value / opp_life — the "one point of damage"
+            # swing).  This makes mod(damage) > mod(token) by a
+            # principled margin while keeping the lone-token case
+            # at full combo_value (no token suppression).
+            if deals_damage:
+                return a.combo_value + (a.combo_value / opp_life)
+            return a.combo_value
 
         # Only count CHAIN-EXTENDING fuel via `is_chain_fuel`: cards
         # tagged ritual / cantrip / draw / card_advantage.  Cards
