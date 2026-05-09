@@ -1,4 +1,4 @@
-"""Bug 6 — Land-order heuristic ignores artifact synergy.
+"""Bug 6 — Land-order heuristic must reflect active artifact synergy.
 
 Evidence: replays/boros_vs_affinity_bo3.txt:51-58 (G1 T1 Affinity)
     T1 P2: Play Spire of Industry        ← paid 1 life on later taps
@@ -6,17 +6,22 @@ Evidence: replays/boros_vs_affinity_bo3.txt:51-58 (G1 T1 Affinity)
 
 Affinity has both Spire of Industry (painful colourless / colored
 land) and Darksteel Citadel (artifact land) in the opening hand.
-Darksteel Citadel is the correct T1 play because:
-  - It is itself an artifact → +1 for Mox Opal metalcraft,
-    Cranial Plating scaling, Thought Monitor affinity discount.
-  - It has no life-tap tax unlike Spire of Industry.
+Darksteel Citadel is the correct play when active scaling effects
+(Mox Opal metalcraft, equipped Cranial Plating, Construct token) are
+already on the battlefield because the marginal artifact contributes
+power / mana / cost-reduction to those deployed effects.
 
-The land-scoring heuristic preferred Spire because it treats
-"colored mana access" as more valuable than "artifact count", even
-when the deck's strategy hinges on artifact count. Fix: when the
-player's visible cards (hand + battlefield) include artifact-synergy
-text ("for each artifact", "metalcraft", "affinity for artifacts"),
-lands typed `artifact` gain a synergy bonus.
+Phase 1B / Phase L E-2 (2026-05-09): the synergy bonus reads
+**battlefield** scaling cards only, not hand-side intent. Hand cards
+are scored separately when the AI considers casting them; counting
+them here double-books the same EV. The previous version of this
+test put scaling cards in HAND (anticipatory synergy); it was
+encoding the bug. This test now reflects the corrected rule:
+deployed-only synergy.
+
+Sister tests:
+  - tests/test_artifact_land_synergy_excludes_hand.py (Phase 1B)
+  - tests/test_evsnapshot_artifact_count_excludes_lands.py (PR-L1)
 """
 from __future__ import annotations
 
@@ -50,28 +55,47 @@ def _put_in_hand(game, card_db, name, controller):
     return card
 
 
+def _put_in_play(game, card_db, name, controller):
+    tmpl = card_db.get_card(name)
+    assert tmpl is not None, f"missing card: {name}"
+    card = CardInstance(
+        template=tmpl, owner=controller, controller=controller,
+        instance_id=game.next_instance_id(), zone="battlefield",
+    )
+    card._game_state = game
+    card.enter_battlefield()
+    card.summoning_sick = False
+    game.players[controller].battlefield.append(card)
+    return card
+
+
 class TestAffinityLandOrdering:
-    """T1 Affinity — Darksteel Citadel (artifact land) must outscore
-    Spire of Industry (non-artifact land) when the hand signals
-    artifact synergy."""
+    """Mid-game Affinity — Darksteel Citadel (artifact land) must
+    outscore Spire of Industry (non-artifact land) when the
+    BATTLEFIELD has active artifact-scaling effects."""
 
     def _setup(self, card_db):
-        """T1 Affinity hand: both lands, an artifact, and Mox Opal."""
+        """Battlefield has deployed scaling: Mox Opal + Cranial
+        Plating + Memnite (carrier). Hand has just the two land
+        candidates and a noise card.
+        """
         game = GameState(rng=random.Random(0))
         citadel = _put_in_hand(game, card_db, "Darksteel Citadel", 0)
         spire = _put_in_hand(game, card_db, "Spire of Industry", 0)
-        # Artifact-synergy signal from hand: Mox Opal (metalcraft) and
-        # Cranial Plating ("for each artifact"). Both oracle signals
-        # that the land's artifact-type matters.
-        _put_in_hand(game, card_db, "Mox Opal", 0)
-        _put_in_hand(game, card_db, "Cranial Plating", 0)
+        # Hand-side noise (must NOT contribute to synergy_signals
+        # post-Phase-1B).
         _put_in_hand(game, card_db, "Ornithopter", 0)
+        # Active battlefield-side scaling: Mox Opal (metalcraft
+        # oracle) and Cranial Plating ("for each artifact" oracle).
+        _put_in_play(game, card_db, "Mox Opal", 0)
+        _put_in_play(game, card_db, "Cranial Plating", 0)
+        _put_in_play(game, card_db, "Memnite", 0)
 
         player = EVPlayer(player_idx=0, deck_name="Affinity",
                           rng=random.Random(0))
         return game, player, citadel, spire
 
-    def test_darksteel_citadel_outscores_spire_with_synergy_signal(
+    def test_darksteel_citadel_outscores_spire_with_active_synergy(
             self, card_db):
         game, player, citadel, spire = self._setup(card_db)
         me = game.players[0]
@@ -81,12 +105,12 @@ class TestAffinityLandOrdering:
         spire_ev = player._score_land(spire, me, spells, game)
 
         assert citadel_ev > spire_ev, (
-            f"Darksteel Citadel should outscore Spire of Industry when "
-            f"opp has artifact-synergy cards in hand (Mox Opal + "
-            f"Cranial Plating). Got citadel={citadel_ev:.2f}, "
-            f"spire={spire_ev:.2f}. Darksteel is itself an artifact — "
-            f"it directly enables metalcraft, Plating scaling, and "
-            f"affinity cost reduction."
+            f"Darksteel Citadel must outscore Spire of Industry when "
+            f"the BATTLEFIELD has active artifact-scaling effects "
+            f"(Mox Opal + Plating + Memnite carrier). The marginal "
+            f"artifact land contributes +1 power to the equipped "
+            f"carrier and bumps Mox Opal's metalcraft count. Got "
+            f"citadel={citadel_ev:.2f}, spire={spire_ev:.2f}."
         )
 
     def test_non_artifact_deck_does_not_prefer_artifact_lands(
