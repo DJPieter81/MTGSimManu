@@ -882,6 +882,33 @@ def _has_equipment_carrier_and_mana(card: "CardInstance",
     return post_cast_mana >= equip_cost
 
 
+def _grants_graveyard_flashback(oracle: str) -> bool:
+    """True if the spell's oracle text grants flashback to ALL
+    instants/sorceries in the controller's graveyard until end of
+    turn (the static-effect family, Past in Flames pattern).
+
+    Oracle-driven detection, no card names. The canonical phrasing
+    is "Each instant and sorcery card in your graveyard gains
+    flashback until end of turn" (Past in Flames). Any future
+    printing using this templated wording is covered.
+
+    Distinct from Snapcaster Mage (targets ONE card individually —
+    a second Snapcaster picks a different card so the second cast
+    is not redundant) and from cards that put a flashback cost on
+    a single specific spell.
+    """
+    o = (oracle or '').lower()
+    if not o:
+        return False
+    # Canonical phrasing — must include the until-end-of-turn
+    # qualifier so we don't accidentally match Snapcaster's targeted
+    # phrasing or other one-card grants.
+    if ('each instant and sorcery card in your graveyard gains '
+            'flashback' in o):
+        return True
+    return False
+
+
 def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
                                   game: "GameState" = None,
                                   player_idx: int = 0,
@@ -901,6 +928,26 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
         return ['unknown_template']  # never defer on unknown
 
     oracle = (t.oracle_text or '').lower()
+    # Redundant graveyard-wide flashback grant — short-circuit to []. A
+    # spell whose oracle is "Each instant and sorcery card in your
+    # graveyard gains flashback until end of turn" is a static, until-
+    # end-of-turn effect. The first cast already grants flashback to
+    # every eligible graveyard card for the rest of the turn; casting
+    # a second copy re-grants the same flashback to the same cards —
+    # zero incremental value. The engine records the resolution in
+    # `flashback_granted_this_turn` (PlayerState); when set, this
+    # spell's same-turn signals (combo_continuation, card_advantage,
+    # flashback_combo_with_gy_fuel) all describe value the FIRST cast
+    # already provided. Returning [] here routes the duplicate cast
+    # to the deferral / pass-preference filter, which preserves hand
+    # and mana for a finisher path. Generic by oracle text — covers
+    # any future printing using the same templated wording, no card
+    # names.
+    if (game is not None
+            and getattr(game.players[player_idx],
+                        'flashback_granted_this_turn', False)
+            and _grants_graveyard_flashback(oracle)):
+        return []
     # Normalise keyword set to lower-case strings for membership checks.
     keywords = set()
     for kw in getattr(t, 'keywords', set()):
@@ -1113,6 +1160,11 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
             and 'flashback' in tags
             and 'combo' in tags
             and game is not None):
+        # Note: the redundant-cast suppression (when flashback was
+        # already granted this turn) is handled at the top of
+        # `_enumerate_this_turn_signals` via the
+        # `_grants_graveyard_flashback` short-circuit — this
+        # branch only sees first-cast scenarios.
         gy = game.players[player_idx].graveyard
         gy_fuel = sum(
             1 for c in gy

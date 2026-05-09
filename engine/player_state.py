@@ -50,6 +50,17 @@ class PlayerState:
     # removal-class evoke this turn ramps the cost of the next one.
     # See `ai/board_eval.py::_eval_evoke` for consumption.
     removal_evokes_resolved_this_turn: int = 0
+    # Turn-scoped fact: a static effect that grants flashback to
+    # ALL instants/sorceries in this player's graveyard until end
+    # of turn has already resolved this turn (Past in Flames
+    # pattern). Set by the resolution path of any spell whose
+    # oracle matches the canonical "each instant and sorcery card
+    # in your graveyard gains flashback" pattern; reset in
+    # `reset_turn_tracking`. The AI consults this flag to suppress
+    # the same-turn signal for redundant copies — the second cast
+    # re-grants the same flashback to the same cards (zero
+    # incremental value).
+    flashback_granted_this_turn: bool = False
     # Storm count is spells_cast_this_turn (both players contribute)
     # Energy tracking
     energy_produced_this_game: int = 0
@@ -208,6 +219,7 @@ class PlayerState:
         self.damage_dealt_this_turn = 0
         self.cards_drawn_this_turn = 0
         self.removal_evokes_resolved_this_turn = 0
+        self.flashback_granted_this_turn = False
         self.silenced_this_turn = False
         # Consume a pending silence from Orim's Chant cast on the previous
         # opponent turn (Isochron Scepter lock pattern).
