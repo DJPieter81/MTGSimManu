@@ -665,18 +665,33 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
         if storm + 1 >= opp_life:
             return a.combo_value  # lethal — fire immediately
 
-        # Only count CHAIN-EXTENDING fuel via `is_chain_fuel`: cards
-        # tagged ritual / cantrip / draw / card_advantage.  Cards
-        # without those tags (creatures like Ral, filler) add 1 to
-        # storm if cast but don't enable more spells — holding the
-        # finisher for them strands the chain when mana runs out.
-        # Symmetric to the tutor branch below (F2.1 / F2.1b).
+        # Count CHAIN-EXTENDING fuel.  Two categories qualify:
+        #   1. Plain chain fuel (`is_chain_fuel`): cards tagged
+        #      ritual / cantrip / draw / card_advantage.  Casting one
+        #      adds 1 to storm and produces mana or cards to enable
+        #      another spell.
+        #   2. Tutor-with-payoff-access: a tutor whose target zone
+        #      (SB ∪ library) contains a real finisher is itself a
+        #      chain extender — casting it adds 1 to storm AND brings
+        #      a payoff to hand, which then adds 1 more to storm when
+        #      cast.  Symmetric to how the TUTOR branch below treats
+        #      `non_tutor_fuel` (it excludes tutors so two coexisting
+        #      tutors don't cancel out — same logic in the storm
+        #      branch when the keyword finisher and a tutor share the
+        #      hand).  See `test_storm_finisher_holds_for_tutor_with_
+        #      payoff_access` for the rule the count encodes.
+        # Cards without either qualification (creatures like Ral,
+        # filler spells) add 1 to storm if cast but don't enable
+        # more spells — holding the finisher for them strands the
+        # chain when mana runs out.
         from ai.predicates import is_chain_fuel
-        total_fuel = sum(1 for c in me.hand
-                         if c.instance_id != card.instance_id
-                         and not c.template.is_land
-                         and Kw.STORM not in getattr(c.template, 'keywords', set())
-                         and is_chain_fuel(c))
+        total_fuel = sum(
+            1 for c in me.hand
+            if c.instance_id != card.instance_id
+            and not c.template.is_land
+            and Kw.STORM not in getattr(c.template, 'keywords', set())
+            and (is_chain_fuel(c) or _tutor_has_payoff_access(c, me))
+        )
         if total_fuel > 0:
             # Hold: each remaining fuel adds 1/opp_life of a kill × combo_value.
             # This is the opportunity cost of firing early instead of chaining more.

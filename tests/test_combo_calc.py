@@ -368,6 +368,59 @@ class TestCardComboModifier:
         # storm+1 (7) / opp_life (20) × combo_value (80.0) = 28.0
         assert mod == pytest.approx(28.0)
 
+    def test_storm_finisher_holds_for_tutor_with_payoff_access(self):
+        """STORM finisher held when tutor-with-payoff-access is in hand.
+
+        Mechanic: a tutor whose target zone (SB ∪ library) contains
+        another finisher is itself a chain extender — casting it adds
+        +1 to storm AND brings a payoff into hand, which then adds
+        +1 more to storm when chained.  Treating such a tutor as
+        chain fuel is symmetric to the tutor branch's `non_tutor_fuel`
+        count (which excludes tutors so two co-existing tutors don't
+        cancel out).
+
+        Concrete example (Storm vs Boros s50500): hand = [Grapeshot,
+        Past in Flames, Wish], SB has Grapeshot.  Without this rule
+        the gate counts only PiF as fuel, returns -1/opp_life ×
+        combo_value (~-3.6), which loses to the +4.9 projection of
+        firing Grapeshot for 6 chip damage.  With Wish-with-payoff
+        counted, fuel = 2 (PiF + Wish), penalty doubles, the held
+        plan (chain → Wish → second Grapeshot) wins.
+
+        Same fix lifts any combo deck whose closer is reached via a
+        tutor with a real payoff in SB/library — Goryo's Vengeance
+        with Goryo's, Living End cascade-tutoring, Burning Wish decks.
+        """
+        from engine.cards import Keyword as Kw
+        a = ComboAssessment(
+            resource_zone="storm", is_ready=False,
+            payoff_value=0.3, combo_value=80.0, risk_discount=0.7,
+            has_payoff=True, _role_cache={"Grapeshot": "payoffs"},
+        )
+        card = MockCard(name="Grapeshot", instance_id=1, template=MockTemplate(
+            name="Grapeshot", keywords={Kw.STORM}))
+        # One chain-fuel card (PiF) and a tutor with payoff access in SB.
+        fuel = MockCard(name="Past in Flames", instance_id=2, template=MockTemplate(
+            name="Past in Flames", tags={'cantrip', 'card_advantage', 'flashback', 'combo'}))
+        tutor = MockCard(name="Wish", instance_id=3, template=MockTemplate(
+            name="Wish", tags={'tutor', 'combo'}))
+        # SB contains a STORM-keyword payoff so `_tutor_has_payoff_access` → True.
+        sb_payoff = MockCard(name="Grapeshot", instance_id=4, template=MockTemplate(
+            name="Grapeshot", keywords={Kw.STORM}))
+        snap = _make_snap(opp_life=20)
+        me = type('', (), {'spells_cast_this_turn': 5,
+                           'hand': [card, fuel, tutor],
+                           'library': [],
+                           'graveyard': [], 'battlefield': [],
+                           'sideboard': [sb_payoff]})()
+        game = type('', (), {'players': [me, me], 'can_cast': lambda *a: True})()
+        mod = card_combo_modifier(card, a, snap, me, game, 0)
+        # 2 chain extenders (PiF + Wish-with-payoff) × 1/20 × 80.0 = -8.0.
+        # Without the fix: only PiF counted → -4.0.  The -8.0 hold
+        # penalty is large enough to overcome the projection's
+        # positive valuation of firing Grapeshot for partial damage.
+        assert mod == pytest.approx(-8.0)
+
     # ─── COST REDUCER branch ─────────────────────────────────────
 
     def test_cost_reducer_returns_chain_improvement(self, monkeypatch):
