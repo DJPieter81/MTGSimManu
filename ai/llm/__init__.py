@@ -38,10 +38,16 @@ from ai.llm.policy import (
     LLMResponse,
     StubBackend,
 )
+from ai.llm.llama_cpp_backend import (
+    LlamaCppBackend,
+    make_backend_from_env,
+)
 
 __all__ = [
     "BackendUnavailable",
     "LLMPolicy",
     "LLMResponse",
     "StubBackend",
+    "LlamaCppBackend",
+    "make_backend_from_env",
 ]
