@@ -1173,10 +1173,25 @@ class EVPlayer:
         # _score_cycling and _consider_equip can reuse the same gate.
         # Fast-skip when this profile doesn't hold, the candidate IS an
         # instant, or it has flash — none of those tap out.
+        holdback = 0.0
         if p.holdback_applies and not t.is_instant and not t.has_flash:
-            ev += self._holdback_penalty(
+            holdback = self._holdback_penalty(
                 me, opp, snap, cost=t.cmc or 0,
                 exclude_instance_id=card.instance_id)
+            ev += holdback
+
+        # ── Stax lock-piece overlay (P1-1) ──
+        # `stax_lock_ev` returns a positive EV for stax permanents
+        # (Chalice, Blood Moon, Canonist, Torpor Orb) based on
+        # opponent deck composition. The bonus is GATED on
+        # `holdback == 0`: if tapping out for this play would
+        # forfeit held instant-speed interaction, the overlay must
+        # not crowd out the concrete answer. Without this gate the
+        # AI casts T2 Chalice over a held Counterspell (the WST
+        # regression that caused the previous wiring to be reverted).
+        if holdback == 0.0:
+            from ai.stax_ev import stax_lock_ev
+            ev += stax_lock_ev(t, me, opp, snap)
 
         oracle_lower = (t.oracle_text or '').lower()
         phyrexian_count = oracle_lower.count('/p}')
