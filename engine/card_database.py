@@ -741,6 +741,30 @@ class OracleTextParser:
             if e.effect_type == "discard" and e.target_type in ("opponent", "each_opponent"):
                 tags.add("discard")
                 tags.add("interaction")
+        # ── Generic discard text-based fallback ──
+        # Covers cards whose OracleEffect parser fails on the canonical
+        # Modern hand-rip phrasings:
+        #   - "(that player|target player|target opponent|each player|
+        #      each opponent) discards" — Thoughtseize, Inquisition,
+        #     Duress, Mind Rot, Liliana of the Veil [+1].
+        #   - reveal-then-exile: "reveals their hand" + "exile that
+        #     card" — Brain Maggot, Tidehollow Sculler. The
+        #     exile-from-hand variant is functionally a discard for
+        #     AI scoring purposes (hand-disruption interaction).
+        if "discard" not in tags:
+            import re as _disc_re
+            if _disc_re.search(
+                r'(?:that player|target (?:player|opponent)|each player|'
+                r'each opponent)\s+discards?\b',
+                text,
+            ):
+                tags.add("discard")
+                tags.add("interaction")
+            elif ('reveals their hand' in text
+                  and ('discards that card' in text
+                       or 'exile that card' in text)):
+                tags.add("discard")
+                tags.add("interaction")
 
         # Silence / spell-lock effects (e.g., "target player can't cast spells")
         if "can't cast spells" in text or "can't cast spell" in text:
@@ -1277,10 +1301,6 @@ class CardDatabase:
         # pin the runtime tag set on every touched card so a future
         # regression in classify_card_role surfaces immediately.
         TAG_OVERRIDES = {
-            # Discard pieces — parser picks lose_life over discard for
-            # "reveal-and-discard" cards (Thoughtseize, Inquisition).
-            "Thoughtseize": {"discard", "interaction"},
-            "Inquisition of Kozilek": {"discard", "interaction"},
             # Storm pieces — abstract `combo` tag is per-deck strategy,
             # not derivable from oracle text in isolation.
             "Ruby Medallion": {"combo"},
