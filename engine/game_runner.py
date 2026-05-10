@@ -343,11 +343,20 @@ class GameRunner:
                   verbose: bool = False,
                   deck1_sideboard: Dict[str, int] = None,
                   deck2_sideboard: Dict[str, int] = None,
-                  forced_first_player: Optional[int] = None) -> GameResult:
+                  forced_first_player: Optional[int] = None,
+                  replay_log=None,
+                  game_number: int = 1) -> GameResult:
         """Run a complete game and return the result.
 
         forced_first_player: see GameState.setup_game. Bo3 match orchestration
         passes this for games 2-3 so the loser of the previous game plays first.
+
+        replay_log: optional engine.replay_log.ReplayLog instance.  When
+        provided, structured events are emitted alongside the text log
+        (game.log).  No effect on game outcome; this is purely a parallel
+        recording channel for the new HTML replayer.
+
+        game_number: 1/2/3 within a Bo3 — used as the GAME_START id.
         """
         deck1 = self.build_deck(deck1_list)
         deck2 = self.build_deck(deck2_list)
@@ -379,6 +388,11 @@ class GameRunner:
         ai1 = AIPlayer(0, deck1_name, self.rng)
         ai2 = AIPlayer(1, deck2_name, self.rng)
         ais = [ai1, ai2]
+        # Wire structured replay log into the AIs so each main-phase
+        # decision emits a DECISION event with the candidate list.
+        if replay_log is not None:
+            ai1.replay_log = replay_log
+            ai2.replay_log = replay_log
 
         # Copy effective CMC overrides from gameplan to PlayerState
         # so mana decisions (shock/fetch) use domain cost reduction etc.
@@ -418,6 +432,26 @@ class GameRunner:
         game.log.append(f'║ P2 (on draw): {game.players[on_draw].deck_name}')
         game.log.append(f'╚{"═" * 55}')
 
+        # Structured GAME_START.  Note `_emit` is a tiny closure: when
+        # `replay_log is None`, we still want the call sites below to
+        # read cleanly (no `if log:` everywhere), so this becomes a
+        # no-op without changing the surrounding control flow.
+        def _emit(kind, **fields):
+            if replay_log is not None:
+                replay_log.emit(kind, **fields)
+
+        from engine.replay_log import (
+            KIND_GAME_START, KIND_MULLIGAN, KIND_TURN_START, KIND_PHASE,
+            KIND_PLAY, KIND_TRIGGER, KIND_COMBAT, KIND_LIFE, KIND_NOTE,
+            KIND_GAME_END, snapshot_state, snapshot_board,
+        )
+        _emit(
+            KIND_GAME_START, game=game_number,
+            deck1=deck1_name, deck2=deck2_name,
+            on_play=game.players[on_play].deck_name,
+            on_play_idx=on_play,
+        )
+
         # Mulligan phase
         mulligan_counts = [0, 0]
         for p_idx in range(2):
@@ -450,12 +484,27 @@ class GameRunner:
                             f"→ P{p_idx+1} mulligans to {hand_size}, "
                             f"bottoms: {bottom_names}")
                         game.log.append(f"  Keeps: {kept}")
+                        _emit(KIND_MULLIGAN, pidx=p_idx,
+                              actor=player.deck_name,
+                              keep=True, hand_size=hand_size,
+                              kept=kept, bottomed=bottom_names,
+                              reason=reason)
                     else:
                         game.log.append(f"→ P{p_idx+1} KEEPS {hand_size} — {reason}")
+                        _emit(KIND_MULLIGAN, pidx=p_idx,
+                              actor=player.deck_name,
+                              keep=True, hand_size=hand_size,
+                              kept=[c.name for c in player.hand],
+                              bottomed=[], reason=reason)
                     break
                 else:
                     mulligan_counts[p_idx] += 1
                     game.log.append(f"→ P{p_idx+1} MULLIGANS ({reason})")
+                    _emit(KIND_MULLIGAN, pidx=p_idx,
+                          actor=player.deck_name,
+                          keep=False, hand_size=hand_size,
+                          kept=[c.name for c in player.hand],
+                          bottomed=[], reason=reason)
                     for card in player.hand[:]:
                         player.hand.remove(card)
                         card.zone = "library"
@@ -560,13 +609,35 @@ class GameRunner:
                     game.current_phase = Phase.UNTAP
                     game.untap_step(active)
                     _board_summary()
+                    # Structured TURN_START — carries per-player board
+                    # snapshot so the HTML can render the start-of-turn
+                    # state without regex-parsing the ╔══ TURN ══╗ box.
+                    if replay_log is not None:
+                        # display_turn is a str property — coerce to
+                        # int so consumers (build_replay.py sort) can
+                        # rely on a numeric turn field.
+                        try:
+                            _t = int(game.display_turn)
+                        except (TypeError, ValueError):
+                            _t = game.turn_number
+                        replay_log.emit(
+                            KIND_TURN_START,
+                            turn=_t,
+                            actor=game.players[active].deck_name,
+                            pidx=active,
+                            board=[snapshot_board(game, 0),
+                                   snapshot_board(game, 1)],
+                            state=snapshot_state(game),
+                        )
                     _vlog(f'  [Untap] P{active+1} untaps all permanents')
+                    _emit(KIND_PHASE, phase="Untap", pidx=active)
                     # Reset planeswalker activation tracking for this turn
                     ai._pw_activated_this_turn.clear()
 
                 elif step == TurnStep.UPKEEP:
                     game.current_phase = Phase.UPKEEP
                     _vlog(f'  [Upkeep]')
+                    _emit(KIND_PHASE, phase="Upkeep", pidx=active)
                     # Rebound: cast exiled rebound spells for free
                     if hasattr(game, '_rebound_cards'):
                         to_cast = [c for c in game._rebound_cards
@@ -609,17 +680,22 @@ class GameRunner:
 
                 elif step == TurnStep.DRAW:
                     game.current_phase = Phase.DRAW
+                    _emit(KIND_PHASE, phase="Draw", pidx=active)
                     if not turn_mgr.should_skip_draw(game):
                         drawn = game.draw_cards(active, 1)
                         if drawn and getattr(game, 'verbose', False):
                             card_name = drawn[0].name if drawn else '?'
                             _vlog(f'  [Draw] P{active+1} draws: {card_name}')
+                            _emit("DRAW", pidx=active,
+                                  actor=game.players[active].deck_name,
+                                  card=card_name)
                     else:
                         _vlog(f'  [Draw] Skipped (first turn on play)')
 
                 elif step == TurnStep.MAIN1:
                     game.current_phase = Phase.MAIN1
                     _vlog(f'  [Main 1]')
+                    _emit(KIND_PHASE, phase="Main1", pidx=active)
                     prev_lands = len(game.players[active].lands)
                     self._execute_main_phase(game, ai, opponent_ai)
                     if game.game_over:
@@ -640,6 +716,7 @@ class GameRunner:
                 elif step == TurnStep.BEGIN_COMBAT:
                     game.current_phase = Phase.BEGIN_COMBAT
                     _vlog(f'  [Begin Combat]')
+                    _emit(KIND_PHASE, phase="BeginCombat", pidx=active)
                     for p in game.players:
                         p.mana_pool.empty()
                     self._opponent_instant_window(game, opponent_ai, ai)
@@ -650,9 +727,22 @@ class GameRunner:
                     if attackers:
                         atk_names = [a.name for a in attackers]
                         _vlog(f'  [Declare Attackers] P{active+1} attacks with: {", ".join(atk_names)}')
+                        atk_details = [
+                            {"name": a.name,
+                             "p": a.power if a.power is not None else 0,
+                             "t": a.toughness if a.toughness is not None else 0}
+                            for a in attackers
+                        ]
+                        _emit(KIND_COMBAT, sub="declare_attackers",
+                              pidx=active,
+                              actor=game.players[active].deck_name,
+                              attackers=atk_details)
                         combat_mgr.declare_attackers(game, attackers, active)
                     else:
                         _vlog(f'  [Declare Attackers] P{active+1} does not attack')
+                        _emit(KIND_COMBAT, sub="no_attack",
+                              pidx=active,
+                              actor=game.players[active].deck_name)
 
                 elif step == TurnStep.AFTER_ATTACKERS_DECLARED:
                     if combat_mgr.attackers:
@@ -666,8 +756,25 @@ class GameRunner:
                         blocks = opponent_ai.decide_blockers(game, combat_mgr.attackers)
                         if blocks:
                             _vlog(f'  [Declare Blockers] P{1-active+1} blocks: (see BLOCK lines below)')
+                            # Capture block assignments for the HTML.
+                            block_summary = []
+                            for atk, blockers in blocks.items():
+                                atk_name = getattr(atk, "name", str(atk))
+                                blk_names = [getattr(b, "name", str(b))
+                                             for b in (blockers or [])]
+                                block_summary.append({
+                                    "attacker": atk_name,
+                                    "blockers": blk_names,
+                                })
+                            _emit(KIND_COMBAT, sub="declare_blockers",
+                                  pidx=opponent_idx,
+                                  actor=game.players[opponent_idx].deck_name,
+                                  blocks=block_summary)
                         else:
                             _vlog(f'  [Declare Blockers] P{1-active+1} does not block')
+                            _emit(KIND_COMBAT, sub="no_block",
+                                  pidx=opponent_idx,
+                                  actor=game.players[opponent_idx].deck_name)
                         combat_mgr.declare_blockers(game, blocks)
 
                 elif step == TurnStep.AFTER_BLOCKERS_DECLARED:
@@ -688,6 +795,13 @@ class GameRunner:
                         if damage > 0:
                             _vlog(f'  [Combat Damage] {damage} damage dealt → '
                                   f'P{opponent_idx+1} life: {pre_life} → {game.players[opponent_idx].life}')
+                            _emit(KIND_COMBAT, sub="damage", pidx=active,
+                                  actor=game.players[active].deck_name,
+                                  damage=damage,
+                                  defender=game.players[opponent_idx].deck_name,
+                                  defender_life_before=pre_life,
+                                  defender_life_after=game.players[opponent_idx].life,
+                                  lethal=(game.players[opponent_idx].life <= 0))
                         if game.game_over:
                             break
 
@@ -699,6 +813,7 @@ class GameRunner:
                 elif step == TurnStep.MAIN2:
                     game.current_phase = Phase.MAIN2
                     _vlog(f'  [Main 2]')
+                    _emit(KIND_PHASE, phase="Main2", pidx=active)
                     for p in game.players:
                         p.mana_pool.empty()
                     self._execute_main_phase(game, ai, opponent_ai)
@@ -719,6 +834,7 @@ class GameRunner:
                 elif step == TurnStep.END_STEP:
                     game.current_phase = Phase.END_STEP
                     _vlog(f'  [End Step]')
+                    _emit(KIND_PHASE, phase="EndStep", pidx=active)
                     # Goblin Bombardment: sacrifice tokens/small creatures to deal damage
                     self._activate_goblin_bombardment(game, active)
                     if game.game_over:
@@ -806,6 +922,18 @@ class GameRunner:
             on_play_won=(winner == first_player) if winner is not None else False,
             mulligan_count=mulligan_counts,
             game_log=game.log if verbose else [],
+        )
+
+        # Structured GAME_END — terminator for the replayer's
+        # event consumer.  Includes final state so the HTML can render
+        # a closing summary without tail-scanning the events list.
+        _emit(
+            KIND_GAME_END, game=game_number,
+            winner=result.winner_deck if winner is not None else None,
+            winner_idx=winner,
+            turns=result.turns,
+            win_condition=result.win_condition,
+            life=[game.players[0].life, game.players[1].life],
         )
 
         return result
@@ -1012,6 +1140,26 @@ class GameRunner:
 
             action, card, targets = decision
             priority.take_action(game)  # CR 117.3c
+
+            # Structured PLAY event — fired BEFORE the engine applies
+            # the play so the consumer sees `chosen.card` in the
+            # preceding DECISION event resolve to a concrete PLAY in
+            # the next event (no off-by-one when a cast_spell fails).
+            rlog = getattr(ai, "replay_log", None)
+            if rlog is not None:
+                from engine.replay_log import KIND_PLAY as _KIND_PLAY
+                tgt_names = []
+                for t in (targets or []):
+                    n = getattr(t, "name", None)
+                    tgt_names.append(n if n else f"id:{t}")
+                rlog.emit(
+                    _KIND_PLAY,
+                    pidx=ai.player_idx,
+                    actor=game.players[ai.player_idx].deck_name,
+                    action=action,
+                    card=getattr(card, "name", None),
+                    targets=tgt_names,
+                )
 
             if action == "play_land":
                 game.play_land(ai.player_idx, card)

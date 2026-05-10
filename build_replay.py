@@ -1,871 +1,968 @@
+"""build_replay.py — MTG replay HTML builder.
+
+Usage:
+    # NEW format (recommended): structured NDJSON event log
+    python run_meta.py --bo3 storm affinity -s 55555 --dump-replay r.ndjson
+    python build_replay.py r.ndjson out.html 55555
+
+    # LEGACY format (still works): text log from --bo3 stdout
+    python run_meta.py --bo3 storm affinity -s 55555 > r.txt
+    python build_replay.py r.txt out.html 55555
+
+The two formats are auto-detected.  NDJSON renders the new
+decision-first viewer with EV bars, alternative plays, subsystem
+deltas, and a 👍/👎 feedback form on every decision.  Text falls back
+to the original turn-card renderer in build_replay_legacy.py — kept
+unchanged so existing logs in `replays/` still build.
+
+Why decision-first
+------------------
+The old viewer surfaced "what happened this turn"; the new one surfaces
+"where the AI's choice was close or wrong" so reviewers can flag bad
+plays without scrolling.  Each decision card shows:
+
+  • the chosen play with its EV
+  • up to 4 runner-up plays with EV gap (red bar = bigger gap)
+  • subsystem contributions (clock / BHI / combo) when available
+  • the goal at decision time
+  • a feedback form: 👍 / 👎 / freeform note → exports as JSONL
+
+Feedback persists in localStorage AND is exportable from the toolbar:
+the "Export feedback" button writes a JSONL blob you can drop into a
+PR or grep across runs to find systematic AI failure modes.
 """
-build_replay.py — MTG Bo3 Log → HTML Replay Viewer
-Usage: python build_replay.py <log_file> <output_html> <seed>
+from __future__ import annotations
 
-Parses verbose --bo3 log output from run_meta.py and produces a standalone
-interactive HTML replay following the replay_burn_vs_sneak_a.html reference spec.
-
-Rules:
-- NO AI-generated narrative. Only raw sim data from the log.
-- Board state keyed by player name (not active/opp) — avoids per-turn swap bug.
-- End-of-turn board uses next turn's header (state after plays resolved).
-- Hand tracked: opening hand + draws - plays each turn.
-- Reasoning from log: "→ Goal: X [role]" lines only.
-"""
-
-import re, ast, sys, os
-
-P1C, P2C = '#0969da', '#d1242f'
-
-def esc(s): return str(s).replace('&','&amp;').replace('<','&lt;').replace('>','&gt;')
-
-BADGE_CATS = {
-    'land':    ('#dafbe1','#1a7f37','LAND'),
-    'spell':   ('#ddf4ff','#0969da','SPELL'),
-    'draw':    ('#f0f0ff','#5a5a9a','DRAW'),
-    'cantrip': ('#e0f0ff','#0550ae','DIG'),
-    'combat':  ('#ffebe9','#d1242f','COMBAT'),
-    'counter': ('#f5f0ff','#8250df','COUNTER'),
-    'trigger': ('#fff8c5','#9a6700','TRIGGER'),
-    'mana':    ('#dafbe1','#1a7f37','MANA'),
-    'removal': ('#ffebe9','#d1242f','REMOVE'),
-    'combo':   ('#fff0f8','#bf4b8a','COMBO'),
-    'fetch':   ('#f5f0ff','#6639ba','FETCH'),
-    'discard': ('#fff8c5','#9a6700','DISCARD'),
-    'damage':  ('#ffebe9','#d1242f','DAMAGE'),
-    'other':   ('#f6f8fa','#656d76','OTHER'),
-}
-
-def badge(cat):
-    bg, col, lbl = BADGE_CATS.get(cat, BADGE_CATS['other'])
-    return f'<span class="cat-badge" style="background:{bg};color:{col}">{lbl}</span>'
-
-def classify(play):
-    p = play.lower()
-    if p.startswith('play ') or 'enters tapped' in p: return 'land'
-    if p.startswith('crack '): return 'fetch'
-    if p.startswith('cast ') or p.startswith('escape '):
-        if any(x in p for x in ['consign','negate','pierce','fluster','force of will','daze']): return 'counter'
-        if any(x in p for x in ['thoughtseize','duress']): return 'discard'
-        if any(x in p for x in ['lightning bolt','galvanic discharge','fatal push','unholy heat','solitude']): return 'removal'
-        if any(x in p for x in ['grapeshot','empty the warrens']): return 'combo'
-        if any(x in p for x in ['manamorphose','pyretic ritual','desperate ritual','seething song','reckless impulse',"wrenn's resolve"]): return 'mana'
-        return 'spell'
-    if 'ch.' in p and ('saga' in p or 'chapter' in p or 'fable' in p): return 'trigger'
-    if 'equip' in p: return 'trigger'
-    if 'attack with' in p: return 'combat'
-    if 'deals' in p or ('damage' in p and 'to' in p): return 'damage'
-    return 'other'
-
-def pill(card):
-    from urllib.parse import quote as _q
-    sf = card.split(" (")[0].strip()
-    img = "https://api.scryfall.com/cards/named?exact=" + _q(sf) + "&format=image&version=small"
-    q = chr(39)
-    art = f"<img class=\"hand-card-art\" src=\"{img}\" alt=\"{esc(sf)}\" loading=\"lazy\" onerror=\"this.style.display={q}none{q}\">"
-    label = f"<span class=\"hand-card-label\">{esc(sf[:18])}</span>"
-    return f"<span class=\"hand-card\">{art}{label}</span>"
-def life_svg(turns, p1n, p2n):
-    lp1, lp2 = [20], [20]
-    for t in turns:
-        lp1.append(t.get('life_p1', lp1[-1]))
-        lp2.append(t.get('life_p2', lp2[-1]))
-    n = len(lp1)
-    if n < 2: return ''
-    W, H = 760, 80
-    def px(i): return 10 + int(i/(n-1)*(W-20))
-    def py(v): return 5 + int((1-max(0,min(20,v))/20)*(H-12))
-    def poly(ls, col):
-        return f'<polyline points="{" ".join(f"{px(i)},{py(v)}" for i,v in enumerate(ls))}" fill="none" stroke="{col}" stroke-width="2" opacity=".85"/>'
-    def dot(i, v, col, anc='middle'):
-        return f'<circle cx="{px(i)}" cy="{py(v)}" r="3" fill="{col}"/><text x="{px(i)}" y="{py(v)-5}" fill="{col}" font-size="8" text-anchor="{anc}">{v}</text>'
-    s = f'<svg viewBox="0 0 {W} {H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:80px">'
-    # grid lines at 10 and 5
-    for life in [5,10,15]:
-        y=py(life)
-        s+=f'<line x1="10" y1="{y}" x2="{W-10}" y2="{y}" stroke="#d0d7de" stroke-width="1" stroke-dasharray="3,3"/>'
-        s+=f'<text x="6" y="{y+3}" fill="#484f58" font-size="7" text-anchor="end">{life}</text>'
-    s += poly(lp1,P1C)+poly(lp2,P2C)
-    s += dot(0,lp1[0],P1C)+dot(n-1,lp1[-1],P1C,'end')
-    s += dot(0,lp2[0],P2C)+dot(n-1,lp2[-1],P2C,'end')
-    s += f'<text x="10" y="{H-4}" fill="{P1C}" font-size="8" font-weight="600">{esc(p1n)}</text>'
-    s += f'<text x="{W-10}" y="{H-4}" fill="{P2C}" font-size="8" font-weight="600" text-anchor="end">{esc(p2n)}</text>'
-    s += '</svg>'
-    return s
-
-def parse_games(lines):
-    bounds = [i for i,l in enumerate(lines) if re.match(r'\s+GAME \d+:', l)]
-    bounds.append(len(lines))
-    return [parse_game(lines[bounds[i]:bounds[i+1]], i+1) for i in range(len(bounds)-1)]
-
-def parse_game(block, gnum):
-    g = {'num':gnum,'turns':[],'hands':{},'result':{},'p1name':'','p2name':'','on_play':''}
-    hm = re.search(r'GAME \d+: (.+?) \(P1\) vs (.+?) \(P2\)', block[0])
-    if hm: g['p1name'],g['p2name'] = hm.group(1),hm.group(2)
-    op = next((re.search(r'on play\): (.+)',l) for l in block[:12] if 'on play' in l), None)
-    if op: g['on_play'] = op.group(1)
-
-    cur_p=None; mull_acc={1:[],2:[]}
-    for line in block:
-        ohm=re.match(r'P(\d) \(.+?\) opening hand', line)
-        if ohm:
-            cur_p=int(ohm.group(1))
-            if cur_p not in g['hands']:
-                g['hands'][cur_p]={'cards':[],'mull_hands':[],'mulled':False,'keep_size':7,'mull_reason':''}
-        cm=re.match(r'\s+• (.+?) \[', line)
-        if cm and cur_p and cur_p in g['hands']: g['hands'][cur_p]['cards'].append(cm.group(1))
-        km=re.match(r'→ P(\d) KEEPS (\d+) — (.+)', line)
-        if km:
-            p=int(km.group(1))
-            if p in g['hands']:
-                g['hands'][p]['keep_size']=int(km.group(2))
-                g['hands'][p]['keep_reason']=km.group(3).strip()
-        elif re.match(r'→ P(\d) KEEPS (\d)', line):
-            km2=re.match(r'→ P(\d) KEEPS (\d)', line)
-            p=int(km2.group(1))
-            if p in g['hands']: g['hands'][p]['keep_size']=int(km2.group(2))
-        mm=re.match(r'→ P(\d) MULLIGANS \((.+?)\)', line)
-        if mm:
-            p=int(mm.group(1))
-            if p in g['hands']:
-                g['hands'][p]['mulled']=True; g['hands'][p]['mull_reason']=mm.group(2)
-                mull_acc[p].append(list(g['hands'][p]['cards'])); g['hands'][p]['cards']=[]
-        nm=re.match(r"  New hand \(\d+ lands, \d+ spells\): (\[.+?\])", line)
-        if nm and cur_p and cur_p in g['hands']:
-            try: g['hands'][cur_p]['cards']=ast.literal_eval(nm.group(1))
-            except: pass
-        kp=re.match(r"  Keeps: (\[.+?\])", line)
-        if kp and cur_p and cur_p in g['hands']:
-            try: g['hands'][cur_p]['cards']=ast.literal_eval(kp.group(1))
-            except: pass
-    for p in g['hands']: g['hands'][p]['mull_hands']=mull_acc.get(p,[])
-
-    # Live hand tracking per player
-    live_hands = {
-        1: list(g['hands'].get(1,{}).get('cards',[])),
-        2: list(g['hands'].get(2,{}).get('cards',[]))
-    }
-
-    cur=None; cur_board_player=None; pending_goal=None
-    for line in block:
-        tm=re.match(r"╔══ TURN (\d+) — (.+?) \(P(\d)\)", line)
-        if tm:
-            cur={'num':int(tm.group(1)),'player':tm.group(2),'pidx':int(tm.group(3)),
-                 'life_active':20,'life_opp':20,'life_p1':20,'life_p2':20,
-                 'plays':[],'combat':[],'drawn':None,'hand_snapshot':[],
-                 'boards':{g['p1name']:{'creatures':'','lands':'','other':''},
-                           g['p2name']:{'creatures':'','lands':'','other':''}},
-                 'equip_map':{}}
-            g['turns'].append(cur); cur_board_player=None; pending_goal=None; pending_response=None
-        if not cur: continue
-
-        lm=re.search(r'║ Life: (.+?) (\d+)\s+\|  (.+?) (\d+)', line)
-        if lm:
-            la,lo=int(lm.group(2)),int(lm.group(4))
-            cur['life_active'],cur['life_opp']=la,lo
-            if cur['pidx']==1: cur['life_p1'],cur['life_p2']=la,lo
-            else: cur['life_p2'],cur['life_p1']=la,lo
-
-        # Drawn card
-        dm=re.search(r'\[Draw\] P(\d) draws: (.+)', line)
-        if dm:
-            p,card=int(dm.group(1)),dm.group(2).strip()
-            cur['drawn']=card
-            live_hands[p].append(card)
-            cur['hand_snapshot']=list(live_hands[cur['pidx']])
-
-        # Ragavan / free-cast: card added to active player hand from exile
-        rm=re.search(r'T\d+ P(\d): .+ — may cast (.+) this turn', line)
-        if rm:
-            p,card=int(rm.group(1)),rm.group(2).strip()
-            live_hands[p].append(card)
-            cur['hand_snapshot']=list(live_hands[cur['pidx']])
-
-        if '[Draw] Skipped' in line:
-            cur['hand_snapshot']=list(live_hands[cur['pidx']])
-
-        # Goal reasoning (line before play)
-        gm=re.search(r'→ Goal: (.+)', line)
-        if gm: pending_goal=gm.group(1).strip()
-        # Target reasoning (follows goal, shown as additional reasoning context)
-        tm=re.search(r'\[Target\] (.+)', line)
-        if tm:
-            extra = tm.group(1).strip()
-            pending_goal = (pending_goal + ' | ' + extra) if pending_goal else extra
-
-        # Board sections keyed by player name
-        bm=re.match(r'║ (.+?) board:', line)
-        if bm:
-            pname=bm.group(1).strip()
-            cur_board_player=pname if pname in cur['boards'] else None
-        if cur_board_player:
-            cbm=re.search(r'║\s+Creatures: (.+)', line)
-            if cbm:
-                v=cbm.group(1).strip()
-                if v!='(empty)': cur['boards'][cur_board_player]['creatures']=v
-            lbm=re.search(r'║\s+Lands: (.+)', line)
-            if lbm:
-                v=lbm.group(1).strip()
-                if v not in ('(none)',''):  cur['boards'][cur_board_player]['lands']=v
-            obm=re.search(r'║\s+Other: (.+)', line)
-            if obm:
-                v=obm.group(1).strip()
-                if v: cur['boards'][cur_board_player]['other']=v
-
-        # Track equipment attachments for creature badge rendering
-        em=re.search(r'T\d+ P(\d+): Equip (.+?) to (.+?) \(cost', line)
-        if em and cur:
-            eq_name=em.group(2).strip(); cr_name=em.group(3).strip()
-            emap = cur.setdefault('equip_map', {})
-            # Remove this equipment from wherever it was
-            for k in list(emap.keys()):
-                emap[k] = [e for e in emap[k] if e != eq_name]
-                if not emap[k]: del emap[k]
-            emap.setdefault(cr_name, []).append(eq_name)
-        falls=re.search(r': (.+?) falls off (.+?) \(unattached\)', line)
-        if falls and cur:
-            eq_name=falls.group(1).strip(); cr_name=falls.group(2).strip()
-            emap = cur.get('equip_map', {})
-            if cr_name in emap:
-                emap[cr_name] = [e for e in emap[cr_name] if e != eq_name]
-                if not emap[cr_name]: del emap[cr_name]
-
-        # Response flag — "[Priority] P# responds with Card"
-        resp=re.search(r'\[Priority\] P(\d) responds with (.+)', line)
-        if resp: pending_response=(int(resp.group(1)), resp.group(2).strip())
-
-        # Plays with goal reasoning attached
-        pm=re.match(rf'T{cur["num"]} P(\d)+: (.+)', line)
-        if pm:
-            pidx=int(pm.group(1)); play=pm.group(2)
-            is_response = bool(pending_response and pending_response[0]==pidx)
-            if is_response: pending_response=None
-            cur['plays'].append({'text':play,'reasoning':pending_goal,'is_response':is_response,'pidx':pidx})
-            pending_goal=None
-            pending_goal=None
-            # Remove from live hand
-            cm2=re.match(r'(?:Cast|Play|Escape|Equip) (.+?)(?:\s*\(|$)', play)
-            if cm2:
-                card=cm2.group(1).strip()
-                matches=[c for c in live_hands[pidx] if card.lower() in c.lower() or c.lower() in card.lower()]
-                if matches: live_hands[pidx].remove(matches[0])
-
-        dam=re.search(r'\[Combat Damage\] (\d+) damage dealt → P\d+ life: (\d+) → (-?\d+)', line)
-        if dam:
-            lethal = int(dam.group(3)) <= 0
-            prefix = 'LETHAL:' if lethal else ''
-            cur['combat'].append(f'{prefix}{dam.group(1)} damage → life {dam.group(2)} → {dam.group(3)}')
-        atk=re.search(r'P\d attacks with: (.+)', line)
-        if atk: cur['combat'].append(f'⚔ {esc(atk.group(1))}')
-        # Capture per-creature block assignments (these are the actionable lines)
-        bemrg=re.search(r'\[BLOCK-EMERGENCY\] (.+)', line)
-        if bemrg: cur['combat'].append(f'BLOCK-EMRG: {esc(bemrg.group(1))}')
-        bnorm=re.search(r'\[BLOCK\] (.+)', line)
-        if bnorm: cur['combat'].append(f'BLOCK: {esc(bnorm.group(1))}')
-        # Legacy fallback: "P# blocks:" summary line (ignored if per-creature lines present)
-        blk=re.search(r'P\d blocks: (.+)', line)
-        if blk and blk.group(1).strip() and '(see BLOCK' not in blk.group(1): cur['combat'].append(f'🛡 {esc(blk.group(1))}')
-        brk=re.search(r'P\d+:\s{2}(.+?) \((\d+)/(\d+)\) → (\d+) dmg to player(.*)', line)
-        if brk:
-            note = ' (trample)' if 'trample' in brk.group(5) else ''
-            cur['combat'].append(f'BREAKDOWN:{esc(brk.group(1))} {brk.group(2)}/{brk.group(3)} · {brk.group(4)} dmg{note}')
-
-    rm=re.search(r'>>> (.+?) wins Game \d+ on turn (\d+) via (.+)', '\n'.join(block))
-    if rm: g['result']={'winner':rm.group(1),'turn':int(rm.group(2)),'how':rm.group(3)}
-    return g
-
-# ── HTML rendering ────────────────────────────────────────────
-
-def hand_section(h):
-    html=''
-    for mh in h.get('mull_hands',[]):
-        html+='<div class="mull-step"><span class="mull-tag">MULL</span><span class="mull-label">Mulled hand:</span></div>'
-        html+='<div class="mull-pills">'+''.join(pill(c) for c in mh)+'</div>'
-        if h.get('mull_reason'): html+=f'<div class="mull-reason">{esc(h["mull_reason"])}</div>'
-    ks=h.get('keep_size',7)
-    keep_reason=h.get('keep_reason','')
-    kr_html = f'<span class="keep-reason">{esc(keep_reason)}</span>' if keep_reason else ''
-    html+=f'<div class="mull-step"><span class="keep-tag">KEEP {ks}</span>{kr_html}</div>'
-    html+='<div class="hand-pills">'+''.join(pill(c) for c in h.get('cards',[]))+'</div>'
-    keys=[c for c in h.get('cards',[]) if any(k in c for k in
-          ['Cranial Plating','Mox Opal','Ornithopter','Springleaf Drum','Memnite','Signal Pest',
-           'Ragavan','Territorial','Phlage','Scion','Ruby Medallion','Grapeshot','Past in Flames',
-           "Urza's Saga",'Thought Monitor'])]
-    if keys and not keep_reason:
-        html+=f'<div class="hand-analysis">✓ Key {"pieces" if len(keys)>1 else "piece"}: {", ".join(esc(c) for c in keys[:3])}</div>'
-    return html
-
-def creature_badges(s, equip_map=None):
-    if not s: return '<span style="color:#484f58">empty</span>'
-    bits=re.split(r',\s*(?=[A-Z])',s)
-    out=''
-    equip_map = equip_map or {}
-    for b in bits:  # b may contain [tapped]
-        is_tapped = "[tapped]" in b.lower()
-        pm=re.search(r'(.+?)\s*\((\d+/\d+)\)',b.strip())
-        name = pm.group(1).strip() if pm else re.sub(r'\s*\[.*?\]','',b.strip())
-        pt   = pm.group(2) if pm else None
-        if not name: continue
-        # Equipment attached to this creature
-        equips = equip_map.get(name, [])
-        eq_html = ''.join(f'<span class="equip-tag" title="{esc(e)}">⚔{esc(e)}</span>' for e in equips)
-        # Scryfall image tooltip
-        sf_name = name.split(' (')[0].strip()
-        from urllib.parse import quote as _qu
-        img_url = "https://api.scryfall.com/cards/named?exact=" + _qu(sf_name) + "&format=image&version=art_crop"
-        q = chr(39)
-        art = f'<img class="badge-art" src="{img_url}" alt="{esc(sf_name)}" loading="lazy" onerror="this.style.display={q}none{q}">'
-        pt_html = f'<span class="pt">{pt}</span>' if pt else ''
-        tap_cls = " tapped" if is_tapped else ""; tap_icon = "<span class=\"tap-icon\">↷</span>" if is_tapped else ""; out += f'<span class="creature-badge{tap_cls}">{art}<span class="badge-text">{tap_icon}{esc(name)}{pt_html}{eq_html}</span></span>'
-    return out or '<span style="color:#484f58">empty</span>'
+import json
+import os
+import sys
+import urllib.parse
+from typing import Any, Dict, List, Optional
 
 
-def other_badges(s):
-    """Render non-creature permanents (equipment, artifacts, enchantments) with art thumbnails."""
-    if not s: return ''
-    from urllib.parse import quote as _qu
-    items = [x.strip() for x in s.split(',') if x.strip()]
-    out = ''
-    for name in items:
-        sf_name = name.split(' (')[0].strip()
-        img_url = "https://api.scryfall.com/cards/named?exact=" + _qu(sf_name) + "&format=image&version=art_crop"
-        q = chr(39)
-        art = f'<img class="badge-art" src="{img_url}" alt="{esc(sf_name)}" loading="lazy" onerror="this.style.display={q}none{q}">'
-        out += f'<span class="creature-badge other-badge">{art}<span class="badge-text">{esc(name)}</span></span>'
-    return out
+# ─── Format sniff ───────────────────────────────────────────────
 
-def split_lands(s):
-    """Split a land string into (saga_names[], plain_land_string)."""
-    if not s or s == 'none': return [], s or 'none'
-    # Known saga / enchantment land names that should show as visual badges
-    SAGA_KEYWORDS = ('saga', 'urza', 'fable', 'witch')
-    items = [x.strip() for x in s.split(',') if x.strip()]
-    sagas, plains = [], []
-    for item in items:
-        name_part = item.replace('[T]','').strip().rstrip()
-        tapped = '[T]' in item
-        # Detect saga/enchantment land by name keywords
-        if any(k in name_part.lower() for k in SAGA_KEYWORDS):
-            sagas.append((name_part, tapped))
-        else:
-            plains.append(item)
-    plain_str = ', '.join(plains) if plains else 'none'
-    return sagas, plain_str
+def sniff_format(text: str) -> str:
+    """Return 'ndjson' if the file looks like NDJSON header+events, else
+    'text' (legacy human-readable log).
 
-def land_pills(s):
-    if not s or s == "none": return "<span style=\"color:#9198a1\">none</span>"
-    items = [x.strip() for x in s.split(",") if x.strip()]
-    out = ""
-    for item in items:
-        tapped = "[T]" in item
-        name = item.replace("[T]","").strip()
-        cls = "land-pill tapped-land" if tapped else "land-pill"
-        icon = "↷ " if tapped else ""
-        out += f"<span class=\"{cls}\">{icon}{esc(name)}</span>"
-    return out or "<span style=\"color:#9198a1\">none</span>"
-
-_LAND_MANA = {"Plains":("W",),"Island":("U",),"Swamp":("B",),"Mountain":("R",),"Forest":("G",),"Snow-Covered Plains":("W",),"Snow-Covered Island":("U",),"Snow-Covered Swamp":("B",),"Snow-Covered Mountain":("R",),"Snow-Covered Forest":("G",),"Sacred Foundry":("R","W"),"Hallowed Fountain":("U","W"),"Steam Vents":("U","R"),"Blood Crypt":("B","R"),"Overgrown Tomb":("B","G"),"Watery Grave":("U","B"),"Temple Garden":("G","W"),"Godless Shrine":("B","W"),"Stomping Ground":("G","R"),"Breeding Pool":("G","U"),"Arid Mesa":("any",),"Scalding Tarn":("any",),"Misty Rainforest":("any",),"Verdant Catacombs":("any",),"Marsh Flats":("any",),"Flooded Strand":("any",),"Windswept Heath":("any",),"Wooded Foothills":("any",),"Polluted Delta":("any",),"Bloodstained Mire":("any",),"Darksteel Citadel":("C",),"Treasure Vault":("C",),"Urza's Saga":("C",),"Spire of Industry":("C",),"Tanglepool Bridge":("C",),"Simic Growth Chamber":("G","U"),"Gruul Turf":("G","R"),"Lotus Field":("any",),"Dryad Arbor":("G",),"Arena of Glory":("R",),"Demolition Field":("C",),"Gemstone Caverns":("any",),"Boseiju, Who Endures":("G",),"Otawara, Soaring City":("U",),"Sokenzan, Crucible of Defiance":("R",),"Eiganjo, Seat of the Empire":("W",),}
-_MANA_COLS = {"W":"#f9e79f","U":"#85c1e9","B":"#b2bec3","R":"#f1948a","G":"#82e0aa","C":"#d7dbdd","any":"#c39bd3"}
-
-def mana_summary(land_str):
-    if not land_str or land_str == "none": return ""
-    from collections import Counter
-    items = [x.strip() for x in land_str.split(",") if x.strip()]
-    untapped = [x.replace("[T]","").strip() for x in items if "[T]" not in x]
-    if not untapped: return "<span class=\"mana-zero\">0 mana</span>"
-    counts = Counter()
-    for name in untapped:
-        for c in _LAND_MANA.get(name, ("?",)): counts[c] += 1
-    total = len(untapped)
-    pips = ""
-    for col in ["W","U","B","R","G","C","any","?"]:
-        n = counts.get(col, 0)
-        if n:
-            bg = _MANA_COLS.get(col, "#eee")
-            lbl = {"W":"W","U":"U","B":"B","R":"R","G":"G","C":"◇","any":"?","?":"?"}.get(col,col)
-            pips += f"<span class=\"mana-pip\" style=\"background:{bg}\" title=\"{n} {col}\">{n}{lbl}</span>"
-    return f"<span class=\"mana-bar\">{pips}<span class=\"mana-total\">{total} open</span></span>"
-
-def saga_badges(sagas):
-    """Render saga/enchantment lands as visual badges."""
-    if not sagas: return ''
-    from urllib.parse import quote as _qu
-    out = ''
-    for name, tapped in sagas:
-        sf = name.split(' (')[0].strip()
-        img_url = "https://api.scryfall.com/cards/named?exact=" + _qu(sf) + "&format=image&version=art_crop"
-        q = chr(39)
-        art = f'<img class="badge-art" src="{img_url}" alt="{esc(sf)}" loading="lazy" onerror="this.style.display={q}none{q}">'
-        tap_icon = '<span class="saga-tapped" title="Tapped">↷</span>' if tapped else ''
-        label = f'<span class="badge-text saga-label">{tap_icon}{esc(sf[:14])}</span>'
-        out += f'<span class="creature-badge saga-badge">{art}{label}</span>'
-    return out
-
-def lc(s): _, plain = split_lands(s); return len([x for x in plain.split(',') if x.strip()]) if plain and plain!='none' else 0
-
-SKIP = {'untaps all','upkeep','goal:','[mana]','[priority]','main 1','begin combat',
-        'declare attackers p','declare blockers p','end combat','main 2','end step','resolve '}
-
-def turn_html(t, next_t, gnum, p1name, p2name, star_turns):
-    is_p1=(t['pidx']==1); cls='bug' if is_p1 else 'opp'
-    la,lo=t['life_active'],t['life_opp']
-    star=f'<span class="star-marker" title="Key turn">★{star_turns.index(t["num"])+1}</span>' if t['num'] in star_turns else ''
-
-    # Draw
-    drawn_html=''
-    if t['drawn']:
-        drawn_html=f'<div class="section-label">Draw</div><div class="draw-row">{badge("draw")}<span class="pill">{esc(t["drawn"])}</span></div>'
-
-    # Hand (always shown — tracked from opening hand + draws - plays)
-    hand_html=''
-    if t['hand_snapshot']:
-        hand_html=(f'<div class="section-label">Hand ({len(t["hand_snapshot"])} cards)</div>'
-                  f'<div class="hand-pills">'+''.join(pill(c) for c in t["hand_snapshot"])+'</div>')
-
-    # Plays with reasoning from log
-    plays_html=''
-    step=0
-    for play in t['plays']:
-        text=play['text']; reason=play.get('reasoning','')
-        is_response=play.get('is_response',False)
-        play_pidx=play.get('pidx', t['pidx'])
-        if any(s in text.lower() for s in SKIP): continue
-        step+=1
-        cat=classify(text)
-        is_key=any(k in text.lower() for k in ['cranial plating','grapeshot','lethal','equip cranial'])
-        rid = f'r{gnum}t{t["num"]}p{play_pidx}s{step}'
-        rtoggle = (f'<span class="reason-toggle" onclick="toggleReason(\'{rid}\')" title="Show reasoning">\xb7</span>') if reason else ''
-        rhtml = (f'<div class="reasoning" id="{rid}" style="display:none">\u2190 {esc(reason)}</div>') if reason else ''
-        # Response: opponent plays during active player's turn
-        if is_response:
-            resp_cls = 'opp' if is_p1 else 'bug'
-            resp_name = (p2name if is_p1 else p1name).split()[0]
-            resp_badge = f'<span class="respond-badge" style="color:{"#f85149" if is_p1 else "#58a6ff"}">⚡ {resp_name}</span>'
-            plays_html += f'<div class="play play-response">{resp_badge}{badge(cat)}<span class="action">{esc(text)}</span>{rtoggle}{rhtml}</div>\n'
-        else:
-            plays_html += f'<div class="play"><span class="step">{step}.</span>{badge(cat)}<span class="action{" key" if is_key else ""}">{esc(text)}</span>{rtoggle}{rhtml}</div>\n'
-    if not plays_html: plays_html='<div class="play"><span class="pass-label">— pass —</span></div>'
-
-    # Combat
-    combat_html=''
-    if t['combat']:
-        breakdown_lines = [c for c in t["combat"] if c.startswith("BREAKDOWN:")]
-        # Parse all attackers from the ⚔ line (covers blocked ones too)
-        import re as _re_atk
-        all_atk_line = next((c for c in t["combat"] if c.startswith("⚔")), "")
-        all_attackers = [a.strip() for a in all_atk_line[1:].split(",") if a.strip()] if all_atk_line else []
-        # Map attacker name -> damage from BREAKDOWN lines
-        dmg_map = {}
-        for bd in breakdown_lines:
-            m = _re_atk.match(r"BREAKDOWN:(.+?)\s+(\d+)/(\d+)\s+·\s+(\d+)\s+dmg(.*)", bd[10:])
-            if m: dmg_map[m.group(1).strip()] = (m.group(2), m.group(3), m.group(4), m.group(5).strip())
-        # Use all_attackers to drive the strip; fall back to breakdown_lines if ⚔ line missing
-        has_breakdown = bool(all_attackers or breakdown_lines)
-
-        # Parse BLOCK lines -> attacker_name: [{blocker info}]
-        import re as _re3
-        _blk_pat = _re3.compile(r"(.+?)\s+\((\d+)/(\d+)\)\s+blocks\s+(.+?)\s+\((\d+)/(\d+)\)\s+—\s+(.+)")
-        block_map = {}
-        for c in t["combat"]:
-            if c.startswith("BLOCK:") or c.startswith("BLOCK-EMRG:"):
-                body = c[11:] if c.startswith("BLOCK-EMRG:") else c[6:]
-                bm = _blk_pat.match(body.strip())
-                if bm:
-                    atk_name = bm.group(4).strip()
-                    block_map.setdefault(atk_name, []).append({
-                        "name": bm.group(1).strip(), "pw": bm.group(2), "tg": bm.group(3),
-                        "reason": bm.group(7), "emrg": c.startswith("BLOCK-EMRG:")
-                    })
-
-        def _blocker_mini(bl):
-            from urllib.parse import quote as _qu3
-            sf = bl["name"].split(" (")[0].strip()
-            img = "https://api.scryfall.com/cards/named?exact=" + _qu3(sf) + "&format=image&version=art_crop"
-            q = chr(39)
-            art = '<img class="blk-art" src="' + img + '" alt="' + esc(sf) + '" loading="lazy" onerror="this.style.display=' + q + 'none' + q + '">'
-            icon = "🚨" if bl["emrg"] else "🛡"
-            is_chump = "chump" in bl["reason"] and "trade" not in bl["reason"]
-            cls = "blk-card chump" if is_chump else "blk-card trade"
-            return ('<div class="' + cls + '">' + art +
-                    '<div class="blk-info"><span class="blk-icon">' + icon + '</span>' +
-                    '<span class="blk-name">' + esc(sf[:12]) + '</span>' +
-                    '<span class="blk-pt">' + bl["pw"] + '/' + bl["tg"] + '</span></div></div>')
-
-        def _atk_card(name_or_bd):
-            from urllib.parse import quote as _qu2
-            import re as _re2
-            # Accept either a raw attacker name or a BREAKDOWN: line
-            if isinstance(name_or_bd, str) and name_or_bd.startswith("BREAKDOWN:"):
-                m = _re2.match(r"BREAKDOWN:(.+?)\s+(\d+)/(\d+)\s+·\s+(\d+)\s+dmg(.*)", name_or_bd[10:])
-                if not m: return '<div class="combat-breakdown">' + name_or_bd[10:] + '</div>'
-                name,pw,tg,dmg,note = m.group(1),m.group(2),m.group(3),m.group(4),m.group(5).strip()
-            else:
-                name = name_or_bd
-                info = dmg_map.get(name, ('?','?','0',''))
-                pw,tg,dmg,note = info
-            sf = name.split(" (")[0].strip()
-            q = chr(39)
-            from urllib.parse import quote as _qu2b
-            img = "https://api.scryfall.com/cards/named?exact=" + _qu2b(sf) + "&format=image&version=art_crop"
-            art = '<img class="atk-art" src="' + img + '" alt="' + esc(sf) + '" loading="lazy" onerror="this.style.display=' + q + 'none' + q + '">'
-            trample = '<span class="atk-trample" title="Trample">↠</span>' if "trample" in note else ""
-            blocked = bool(block_map.get(name))
-            dmg_badge = ('<span class="atk-dmg">⚔' + dmg + '</span>') if int(dmg) > 0 else '<span class="atk-dmg blocked">✕0</span>'
-            atk_cls = "atk-card blocked" if blocked else "atk-card"
-            blockers_html = "".join(_blocker_mini(bl) for bl in block_map.get(name, []))
-            arrow = '<div class="block-arrow">▼</div>' if blocked else ""
-            return ('<div class="combat-pair">' +
-                    '<div class="' + atk_cls + '">' + art +
-                    '<div class="atk-info"><span class="atk-name">' + esc(sf[:14]) + '</span>' +
-                    '<span class="atk-pt">' + pw + '/' + tg + '</span>' +
-                    dmg_badge + trample + '</div></div>' +
-                    arrow + blockers_html +
-                    '</div>')
-
-        def _combat_line(c):
-            if c.startswith("BREAKDOWN:"): return ""
-            if c.startswith("BLOCK-EMRG:") or c.startswith("BLOCK:"): return ""
-            if c.startswith("LETHAL:"): return '<div class="combat-lethal">☠ LETHAL — ' + c[7:] + '</div>'
-            if c.startswith("⚔") and has_breakdown: return ""
-            return '<div class="combat-detail">' + c + '</div>'
-        _atk_source = all_attackers if all_attackers else [b for b in breakdown_lines]
-        atk_strip = ('<div class="atk-strip">' + "".join(_atk_card(a) for a in _atk_source) + '</div>') if has_breakdown else ""
-        combat_html = '<div class="section-label">Combat</div>' + atk_strip + "".join(_combat_line(c) for c in t["combat"])
+    Heuristic: first non-empty line parses as JSON with kind=='HEADER'.
+    No partial-NDJSON support — we don't try to recover from a corrupt
+    middle line because the upstream emitter is deterministic.
+    """
+    for line in text.splitlines():
+        stripped = line.strip()
+        if not stripped:
+            continue
+        if stripped.startswith("{"):
+            try:
+                obj = json.loads(stripped)
+                if obj.get("kind") == "HEADER":
+                    return "ndjson"
+            except json.JSONDecodeError:
+                pass
+        return "text"
+    return "text"
 
 
+# ─── Helpers ────────────────────────────────────────────────────
 
-    # Board — from next turn's header = state AFTER this turn's plays
-    src=next_t if next_t else t
-    p1b=src['boards'].get(p1name,{'creatures':'','lands':'','other':''})
-    p2b=src['boards'].get(p2name,{'creatures':'','lands':'','other':''})
-    p1_cr,p1_l_raw,p1_o=p1b['creatures'],p1b['lands'] or 'none',p1b.get('other','')
-    p2_cr,p2_l_raw,p2_o=p2b['creatures'],p2b['lands'] or 'none',p2b.get('other','')
-    p1_sagas, p1_l = split_lands(p1_l_raw)
-    p2_sagas, p2_l = split_lands(p2_l_raw)
-    p1_mana = mana_summary(p1_l)
-    p2_mana = mana_summary(p2_l)
+def esc(s: Any) -> str:
+    """HTML-escape a value rendered as text."""
+    return (str(s)
+            .replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;"))
 
-    return f'''<div class="turn {cls}" id="g{gnum}t{t["num"]}">
-  <div class="turn-header" onclick="toggle(this.parentElement)">
-    <div class="left">
-      <span class="tnum {cls}">T{t["num"]}</span>
-      <span class="player {cls}">{esc(t["player"])}</span>
-      <span class="life">Life: <b>{la}</b> &nbsp;|&nbsp; Opp: {lo}</span>
-      {f'<span class="hand-count">{len(t["hand_snapshot"])}c</span>' if t["hand_snapshot"] else ''}
-      {star}
+
+def scryfall_url(card: str) -> str:
+    """Build a Scryfall thumbnail URL for hover-image previews.
+
+    Uses `version=small` (~150KB) so a 200-card replay loads fast.
+    """
+    return ("https://api.scryfall.com/cards/named?exact="
+            + urllib.parse.quote(card)
+            + "&format=image&version=small")
+
+
+def play_kind(action: str, card: Optional[str]) -> str:
+    """Coarse category for the colored badge on each play.
+
+    Mirrors the legacy classify() — kept tiny because the structured
+    log already has `action`, so we mostly route on that.
+    """
+    if action in ("play_land",):
+        return "land"
+    if action == "cycle":
+        return "cycle"
+    if action == "suspend":
+        return "suspend"
+    if action == "equip":
+        return "equip"
+    if action == "cast_spell":
+        return "spell"
+    return "other"
+
+
+def ev_bar_pct(value: float, lo: float, hi: float) -> int:
+    """Map an EV in [lo, hi] to a 0-100% bar width.  Clamps."""
+    if hi <= lo:
+        return 50
+    pct = (value - lo) / (hi - lo) * 100.0
+    return max(0, min(100, int(pct)))
+
+
+# ─── NDJSON parser → render-ready model ─────────────────────────
+
+def parse_ndjson(text: str) -> Dict[str, Any]:
+    """Parse the structured replay log into a render model.
+
+    Output shape:
+        {
+          "header":  {schema, seed, deck1, deck2, ...},
+          "games":   [{number, on_play, events: [...], result: {...}}],
+        }
+
+    Within `events`, each item carries the original kind plus a
+    `display_turn` for grouping in the HTML.  No regex; pure JSON.
+    """
+    header: Dict[str, Any] = {}
+    games: List[Dict[str, Any]] = []
+    current_game: Optional[Dict[str, Any]] = None
+
+    for raw in text.splitlines():
+        raw = raw.strip()
+        if not raw:
+            continue
+        obj = json.loads(raw)
+        kind = obj.get("kind")
+        if kind == "HEADER":
+            header = obj
+            continue
+        if kind == "GAME_START":
+            current_game = {
+                "number": obj.get("game", len(games) + 1),
+                "on_play": obj.get("on_play"),
+                "deck1": obj.get("deck1"),
+                "deck2": obj.get("deck2"),
+                "events": [],
+                "result": None,
+            }
+            games.append(current_game)
+            continue
+        if kind == "GAME_END":
+            if current_game is not None:
+                current_game["result"] = {
+                    "winner": obj.get("winner"),
+                    "winner_idx": obj.get("winner_idx"),
+                    "turns": obj.get("turns"),
+                    "win_condition": obj.get("win_condition"),
+                    "life": obj.get("life", []),
+                }
+            continue
+        if kind == "MATCH_END":
+            header["match_winner"] = obj.get("winner")
+            header["match_score"] = obj.get("score")
+            continue
+        if current_game is None:
+            continue
+        current_game["events"].append(obj)
+
+    return {"header": header, "games": games}
+
+
+# ─── HTML renderer ──────────────────────────────────────────────
+
+def render_html(model: Dict[str, Any], seed: Any) -> str:
+    """Render the NDJSON model as a self-contained HTML document."""
+    header = model["header"]
+    games = model["games"]
+    deck1 = header.get("deck1", "Deck 1")
+    deck2 = header.get("deck2", "Deck 2")
+    total_decisions = sum(
+        1 for g in games for e in g["events"] if e.get("kind") == "DECISION"
+    )
+
+    games_html_parts = [render_game(g, gi) for gi, g in enumerate(games)]
+    games_html = "\n".join(games_html_parts)
+
+    return _PAGE_TEMPLATE.format(
+        title=f"{esc(deck1)} vs {esc(deck2)} — seed {seed}",
+        deck1=esc(deck1),
+        deck2=esc(deck2),
+        seed=esc(seed),
+        match_score=_match_score_html(header),
+        total_games=len(games),
+        total_decisions=total_decisions,
+        games_html=games_html,
+        css=_CSS,
+        js=_JS,
+    )
+
+
+def _match_score_html(header: Dict[str, Any]) -> str:
+    score = header.get("match_score") or []
+    winner = header.get("match_winner")
+    if not score or winner is None:
+        return ""
+    return (f'<span class="match-score">'
+            f'<strong>{esc(winner)}</strong> '
+            f'wins {max(score)}–{min(score)}'
+            f'</span>')
+
+
+def render_game(game: Dict[str, Any], game_index: int) -> str:
+    """Render one game as a section: header + grouped turn cards."""
+    number = game.get("number", game_index + 1)
+    deck1 = game.get("deck1") or "Deck 1"
+    deck2 = game.get("deck2") or "Deck 2"
+    on_play = game.get("on_play") or "?"
+    result = game.get("result") or {}
+    winner = result.get("winner") or "draw"
+    turns = result.get("turns", "?")
+    win_cond = result.get("win_condition", "?")
+
+    turns_html = render_turns(game)
+
+    return f'''
+<section class="game" id="game-{number}" data-game="{number}">
+  <header class="game-header">
+    <h2>Game {number}</h2>
+    <div class="game-meta">
+      <span class="chip on-play">on play: <strong>{esc(on_play)}</strong></span>
+      <span class="chip result">winner: <strong>{esc(winner)}</strong> ({esc(win_cond)}, T{esc(turns)})</span>
+      <span class="chip decks">{esc(deck1)} <em>vs</em> {esc(deck2)}</span>
     </div>
-    <span class="arrow">&#9654;</span>
+  </header>
+  <div class="turns">
+    {turns_html}
   </div>
+</section>
+'''
+
+
+def render_turns(game: Dict[str, Any]) -> str:
+    """Group events by turn, render each as a collapsible card."""
+    turns: Dict[int, Dict[str, Any]] = {}
+    turn_order: List[int] = []
+    mulligans: List[Dict[str, Any]] = []
+    for e in game["events"]:
+        kind = e.get("kind")
+        if kind == "MULLIGAN":
+            mulligans.append(e)
+            continue
+        # Coerce turn to int — early replay logs from before the
+        # display_turn fix emitted strings, and we want stable sort.
+        try:
+            t = int(e.get("turn", 0))
+        except (TypeError, ValueError):
+            t = 0
+        if t not in turns:
+            turns[t] = {"events": [], "decisions": [], "header": None,
+                        "boards": None}
+            turn_order.append(t)
+        turns[t]["events"].append(e)
+        if kind == "TURN_START":
+            turns[t]["header"] = e
+            turns[t]["boards"] = e.get("board")
+        elif kind == "DECISION":
+            turns[t]["decisions"].append(e)
+
+    parts = []
+    if mulligans:
+        parts.append(render_mulligans(mulligans))
+    for t in sorted(turn_order):
+        if t == 0:
+            interesting = [
+                e for e in turns[t]["events"]
+                if e.get("kind") in ("DECISION", "PLAY", "TRIGGER")
+            ]
+            if not interesting:
+                continue
+        parts.append(render_turn(t, turns[t], game.get("number", 1)))
+    return "\n".join(parts)
+
+
+def render_mulligans(events: List[Dict[str, Any]]) -> str:
+    rows = []
+    for e in events:
+        actor = esc(e.get("actor", "?"))
+        kept = "KEEP" if e.get("keep") else "MULLIGAN"
+        size = e.get("hand_size", "?")
+        reason = esc(e.get("reason", ""))
+        cards = e.get("kept") or []
+        pills = " ".join(card_pill(c) for c in cards)
+        cls = "keep" if e.get("keep") else "mull-no"
+        rows.append(
+            f'<div class="mull">'
+            f'<span class="mull-decision {cls}">{kept}</span>'
+            f'<span class="mull-actor">{actor}</span>'
+            f'<span class="mull-size">→ {esc(size)}</span>'
+            f'<span class="mull-reason">{reason}</span>'
+            f'<div class="mull-cards">{pills}</div>'
+            f'</div>'
+        )
+    return f'<div class="mulls"><h3>Mulligans</h3>{"".join(rows)}</div>'
+
+
+def card_pill(name: str) -> str:
+    """A small inline card chip with hover-thumbnail."""
+    if not name:
+        return ""
+    return (f'<span class="card-pill" data-card="{esc(name)}">'
+            f'{esc(name)}</span>')
+
+
+def render_turn(turn: int, bundle: Dict[str, Any], game_number: int) -> str:
+    """Render a single turn card."""
+    header = bundle.get("header") or {}
+    actor = esc(header.get("actor", "?"))
+    pidx = header.get("pidx", -1)
+    state = header.get("state") or {}
+    life = state.get("life", [])
+    boards = bundle.get("boards") or [None, None]
+
+    decision_html = "".join(
+        render_decision(d, game_number) for d in bundle.get("decisions", [])
+    )
+    combat_html = render_combat(bundle.get("events", []))
+    play_html = render_plays(bundle.get("events", []))
+
+    life_str = (f'<span class="life">'
+                f'<span class="p1-life">{life[0]}</span>'
+                f' <span class="vs-dot">·</span> '
+                f'<span class="p2-life">{life[1]}</span>'
+                f'</span>') if life else ''
+
+    actor_meta = f' <em class="p">(P{pidx+1})</em>' if pidx >= 0 else ''
+
+    return f'''
+<details class="turn" data-turn="{turn}" open>
+  <summary class="turn-summary">
+    <span class="turn-num">T{turn}</span>
+    <span class="turn-actor">{actor}{actor_meta}</span>
+    {life_str}
+    <span class="turn-counts">{len(bundle.get("decisions", []))} decisions</span>
+  </summary>
   <div class="turn-body">
-    {drawn_html}
-    {hand_html}
-    <div class="section-label">Plays</div>{plays_html}
+    {render_boards(boards)}
+    {decision_html}
     {combat_html}
-    <div class="section-label">Board after turn</div>
-    <div class="board-grid">
-      <div class="board-side bug">
-        <h4><span style="color:{P1C}">{esc(p1name)}</span> — {lc(p1_l)} land{"s" if lc(p1_l)!=1 else ""}</h4>
-        <div class="board">{creature_badges(p1_cr, src.get('equip_map',{}))}</div>
-        {f'<div class="other-list">{other_badges(p1_o)}</div>' if p1_o else ''}
-        {f'<div class="other-list saga-row">{saga_badges(p1_sagas)}</div>' if p1_sagas else ''}
-        {p1_mana}<div class="land-list">{land_pills(p1_l)}</div>
-      </div>
-      <div class="board-side opp">
-        <h4><span style="color:{P2C}">{esc(p2name)}</span> — {lc(p2_l)} land{"s" if lc(p2_l)!=1 else ""}</h4>
-        <div class="board">{creature_badges(p2_cr, src.get('equip_map',{}))}</div>
-        {f'<div class="other-list">{other_badges(p2_o)}</div>' if p2_o else ''}
-        {f'<div class="other-list saga-row">{saga_badges(p2_sagas)}</div>' if p2_sagas else ''}
-        {p2_mana}<div class="land-list">{land_pills(p2_l)}</div>
-      </div>
+    {play_html}
+  </div>
+</details>
+'''
+
+
+def render_boards(boards: List[Optional[Dict[str, Any]]]) -> str:
+    """Side-by-side mini-boards for each player at start of turn."""
+    if not boards or not any(boards):
+        return ""
+    cols = []
+    for pidx, b in enumerate(boards):
+        if not b:
+            continue
+        creatures = b.get("creatures", [])
+        creature_html = "".join(
+            f'<span class="cre" data-card="{esc(c["name"])}">'
+            f'{esc(c["name"])} <em>{c["p"]}/{c["t"]}</em>'
+            + ('<span class="tap">↻</span>' if c.get("tapped") else '')
+            + ('<span class="sick">z</span>' if c.get("summoning_sick") else '')
+            + '</span>'
+            for c in creatures
+        )
+        other_html = "".join(card_pill(n) for n in b.get("other") or [])
+        lands_html = "".join(card_pill(n) for n in b.get("lands") or [])
+        cols.append(f'''
+<div class="board p{pidx+1}">
+  <div class="board-head">
+    <span class="dot p{pidx+1}"></span>
+    <strong>P{pidx+1}</strong>
+    <span class="board-stats">life {b.get("life", "?")} · hand {b.get("hand_size", "?")} · lib {b.get("library", "?")}</span>
+  </div>
+  <div class="row creatures">{creature_html or '<em class="mute">no creatures</em>'}</div>
+  {f'<div class="row other">{other_html}</div>' if other_html else ""}
+  <div class="row lands">{lands_html or '<em class="mute">no lands</em>'}</div>
+</div>
+''')
+    return f'<div class="boards">{"".join(cols)}</div>'
+
+
+def render_decision(d: Dict[str, Any], game_number: int) -> str:
+    """Render one DECISION event as the centerpiece subcard."""
+    decision_id = d.get("decision_id", f"d{d.get('seq', 0)}")
+    actor = esc(d.get("actor", "?"))
+    goal = esc(d.get("goal") or "")
+    chosen = d.get("chosen") or {}
+    alts = d.get("alternatives") or []
+    n_cand = d.get("candidates_n", "?")
+
+    chosen_card = chosen.get("card")
+    chosen_action = esc(chosen.get("action", "pass"))
+    chosen_ev = chosen.get("ev", 0.0)
+    chosen_reason = esc(chosen.get("reason", ""))
+    chosen_targets = chosen.get("targets") or []
+    target_html = (' → ' + " ".join(card_pill(t) for t in chosen_targets)
+                   if chosen_targets else "")
+    chosen_card_html = (card_pill(chosen_card) if chosen_card
+                        else f'<em>{chosen_action}</em>')
+
+    all_evs = [float(chosen_ev)] + [float(a.get("ev", 0)) for a in alts]
+    lo = min(all_evs) if all_evs else 0
+    hi = max(all_evs) if all_evs else 1
+    if hi - lo < 0.1:
+        hi = lo + 1.0
+
+    alt_rows = []
+    for a in alts:
+        a_card = a.get("card") or "Pass"
+        a_action = esc(a.get("action", "?"))
+        a_ev = float(a.get("ev", 0))
+        a_gap = float(a.get("gap", 0))
+        a_reason = esc(a.get("rejected_because") or a.get("reason", ""))
+        bar = ev_bar_pct(a_ev, lo, hi)
+        gap_class = ("gap-tight" if a_gap < 1.0 else
+                     ("gap-wide" if a_gap > 5.0 else "gap-mid"))
+        a_card_html = (card_pill(a_card) if a.get("card")
+                       else f'<em>{a_action}</em>')
+        alt_rows.append(f'''
+<div class="alt {gap_class}">
+  <div class="alt-row">
+    <span class="alt-card">{a_card_html}</span>
+    <span class="alt-ev">{a_ev:.2f}</span>
+    <span class="alt-gap">Δ {a_gap:.2f}</span>
+    <span class="alt-bar"><span style="width:{bar}%"></span></span>
+  </div>
+  <div class="alt-reason">{a_reason}</div>
+</div>
+''')
+
+    subsystems = d.get("subsystems") or {}
+    subs_html = ""
+    if subsystems:
+        chips = []
+        for k, v in subsystems.items():
+            try:
+                vf = float(v)
+                cls = "pos" if vf > 0 else ("neg" if vf < 0 else "zero")
+                chips.append(
+                    f'<span class="sub-chip {cls}">{esc(k)} {vf:+.2f}</span>'
+                )
+            except (TypeError, ValueError):
+                chips.append(
+                    f'<span class="sub-chip">{esc(k)}: {esc(v)}</span>'
+                )
+        subs_html = f'<div class="subsystems">{"".join(chips)}</div>'
+
+    goal_html = (f'<span class="dec-goal">goal: {goal}</span>'
+                 if goal else "")
+    alts_section = (f'<div class="alts-label">runner-ups</div>'
+                    f'{"".join(alt_rows)}' if alt_rows else "")
+    chosen_reason_html = (f'<div class="chosen-reason">{chosen_reason}</div>'
+                          if chosen_reason else "")
+
+    return f'''
+<div class="decision" id="{decision_id}" data-decision-id="{decision_id}">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#{decision_id}">#{decision_id}</a>
+    <span class="dec-actor">{actor}</span>
+    {goal_html}
+    <span class="dec-cands">{esc(n_cand)} candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card">{chosen_card_html}{target_html}</span>
+      <span class="chosen-ev">{float(chosen_ev):.2f}</span>
     </div>
+    {chosen_reason_html}
+    {subs_html}
   </div>
-</div>'''
-
-def legend_html():
-    cats = [
-        ('land','LAND','Land drops'),('spell','SPELL','Spells cast'),('mana','MANA','Mana rituals / cantrips'),
-        ('fetch','FETCH','Fetchlands'),('removal','REMOVE','Removal'),('counter','COUNTER','Counterspells'),
-        ('combat','COMBAT','Attacks / blocks'),('combo','COMBO','Combo finishers'),
-        ('discard','DISCARD','Discard effects'),('trigger','TRIGGER','Abilities / ETBs'),
-        ('damage','DAMAGE','Direct damage'),('draw','DRAW','Draw step'),('other','OTHER','Other'),
-    ]
-    pills = ''.join(f'<span class="leg-item">{badge(c)} <span class="leg-label">{desc}</span></span>' for c,_,desc in cats)
-    return f'''<div class="legend-box">
-  <div class="legend-title">Legend</div>
-  <div class="legend-row">
-    <span class="leg-item"><span style="display:inline-block;width:10px;height:10px;background:{P1C};border-radius:2px;margin-right:4px;vertical-align:middle"></span><span class="leg-label">P1 (blue)</span></span>
-    <span class="leg-item"><span style="display:inline-block;width:10px;height:10px;background:{P2C};border-radius:2px;margin-right:4px;vertical-align:middle"></span><span class="leg-label">P2 (red)</span></span>
-    <span class="leg-item"><span style="color:#e3b341;font-weight:700;margin-right:4px">gold text</span><span class="leg-label">Key play</span></span>
-    <span class="leg-item"><span style="color:#f778ba;font-weight:700;margin-right:4px">★</span><span class="leg-label">Key turn</span></span>
-    <span class="leg-item"><span style="color:#6e7681;font-style:italic;margin-right:4px">← goal</span><span class="leg-label">AI goal from log</span></span>
-  </div>
-  <div class="legend-row" style="margin-top:6px">{pills}</div>
-  <div class="legend-note">Hand shown = active player's cards (tracked from opening hand + draws − plays). Board shown = state <em>after</em> turn resolves.</div>
-</div>'''
-
-def game_html(g, gi, seed):
-    res=g['result']; winner=res.get('winner','?')
-    win_cls='bug-win' if winner==g['p1name'] else 'opp-win'
-    on_draw=g['p2name'] if g['on_play']==g['p1name'] else g['p1name']
-    turns=g['turns']
-
-    # Star turns: high damage or key spells
-    star_turns=[]
-    for t in turns:
-        for c in t['combat']:
-            dm=re.search(r'(\d+) damage',c)
-            if dm and int(dm.group(1))>=6 and t['num'] not in star_turns: star_turns.append(t['num'])
-        for p in t['plays']:
-            if any(k in p['text'].lower() for k in ['cranial plating',"urza's saga",'grapeshot','past in flames','equip']) and t['num'] not in star_turns:
-                star_turns.append(t['num'])
-    star_turns=sorted(star_turns)[:4]
-
-    turns_html=''.join(turn_html(t,turns[i+1] if i+1<len(turns) else None,gi,g['p1name'],g['p2name'],star_turns) for i,t in enumerate(turns))
-    last=turns[-1] if turns else {}
-
-    return f'''<div class="meta">
-  <span>{esc(on_draw)} is ON THE DRAW</span>
-  <span style="color:#484f58">Seed: {seed}</span>
+  {alts_section}
+  <form class="feedback" data-decision-id="{decision_id}" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
 </div>
-<div class="hands">
-  <div class="hand-box bug">
-    <h3><span style="color:{P1C}">{esc(g["p1name"])}</span> — Opening Hand (P1)</h3>
-    {hand_section(g["hands"].get(1,{}))}
-  </div>
-  <div class="hand-box opp">
-    <h3><span style="color:{P2C}">{esc(g["p2name"])}</span> — Opening Hand (P2)</h3>
-    {hand_section(g["hands"].get(2,{}))}
-  </div>
-</div>
-<div class="life-chart">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-    <h3>Life Totals</h3>
-    <span style="font-size:10px;color:#484f58">— dashed lines at 5, 10, 15 —</span>
-  </div>
-  {life_svg(turns,g["p1name"],g["p2name"])}
-</div>
-<div class="controls">
-  <button onclick="expandAll()">Expand All</button>
-  <button onclick="collapseAll()">Collapse All</button>
-  <span class="kbd-hint">↑↓ navigate turns &nbsp;·&nbsp; Enter: expand/collapse</span>
-</div>
-{turns_html}
-<div class="result">
-  <h2 class="{win_cls}">{esc(winner)} WINS</h2>
-  <div class="reason">Via {res.get("how","damage")} on turn {res.get("turn","?")}</div>
-  <div class="stats">
-    Final life: <span style="color:{P1C}">{esc(g["p1name"])} {last.get("life_p1",0)}</span>
-    &nbsp;|&nbsp;
-    <span style="color:{P2C}">{esc(g["p2name"])} {last.get("life_p2",0)}</span>
-    &nbsp;|&nbsp; Length: T{res.get("turn","?")}
-  </div>
-</div>'''
-
-CSS = '''
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:#ffffff;color:#1f2328;font-family:'Segoe UI',system-ui,sans-serif;padding:20px;max-width:920px;margin:0 auto;font-size:13px}
-/* HEADER */
-.header{background:linear-gradient(135deg,#f0f4f8,#e8edf2);border:1px solid #d0d7de;border-radius:12px;padding:24px;margin-bottom:16px}
-.header h1{font-size:1.5em;margin-bottom:6px;color:#1f2328}
-.header h1 .vs{color:#9198a1}
-.meta{display:flex;justify-content:space-between;color:#656d76;font-size:.85em;margin-bottom:12px;padding:6px 0;border-bottom:1px solid #d0d7de}
-.series-score{font-size:1.3em;font-weight:700;margin-top:6px}
-.bug-s{color:#0969da}.opp-s{color:#d1242f}
-/* LEGEND */
-.legend-box{background:#f6f8fa;border:1px solid #d0d7de;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:11px}
-.legend-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#9198a1;margin-bottom:8px}
-.legend-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.leg-item{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
-.leg-label{color:#656d76;font-size:10px}
-.legend-note{margin-top:8px;font-size:10px;color:#9198a1;font-style:italic;border-top:1px solid #d0d7de;padding-top:6px}
-/* TABS */
-.game-tabs{display:flex;gap:4px;margin-bottom:0}
-.game-tab{background:#eaeef2;color:#656d76;border:1px solid #d0d7de;border-radius:8px 8px 0 0;padding:10px 20px;cursor:pointer;font-weight:600;font-size:.9em;transition:background .15s}
-.game-tab:hover{background:#d0d7de}
-.game-tab.active{background:#ffffff;color:#1f2328;border-bottom-color:#ffffff}
-.winner-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-left:6px;vertical-align:middle}
-.winner-dot.bug{background:#0969da}.winner-dot.opp{background:#d1242f}
-.game-panel{display:none;background:#ffffff;border:1px solid #d0d7de;border-top:none;border-radius:0 8px 8px 8px;padding:16px;margin-bottom:16px}
-.game-panel.active{display:block}
-/* HANDS */
-.hands{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
-.hand-box{background:#f6f8fa;border:1px solid #d0d7de;border-radius:8px;padding:12px}
-.hand-box h3{font-size:.8em;color:#656d76;margin-bottom:8px;font-weight:600}
-.hand-box.bug{border-left:3px solid #0969da}.hand-box.opp{border-left:3px solid #d1242f}
-.pill{display:inline-block;background:#eaeef2;border:1px solid #d0d7de;border-radius:10px;padding:2px 8px;margin:2px;font-size:.78em;font-family:'Fira Code','Consolas',monospace;color:#9a6700}
-.hand-pills{display:flex;flex-wrap:wrap;gap:5px;margin:4px 0 6px;align-items:flex-end}
-.hand-card{display:inline-flex;flex-direction:column;align-items:center;width:60px;border-radius:5px;overflow:hidden;border:1px solid #d0d7de;background:#fff;flex-shrink:0;vertical-align:bottom}
-.hand-card-art{width:60px;height:84px;object-fit:cover;object-position:top;display:block}
-.hand-card-label{font-size:.58em;padding:2px 3px;text-align:center;color:#57606a;font-family:'Fira Code',monospace;line-height:1.25;width:100%;background:#f6f8fa;word-break:break-word}
-.atk-strip{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px;align-items:flex-end}
-.atk-card{display:inline-flex;flex-direction:column;align-items:center;width:66px;border-radius:5px;overflow:hidden;border:1px solid #e6ac00;background:#fffbf0;flex-shrink:0}
-.atk-art{width:66px;height:48px;object-fit:cover;object-position:top;display:block}
-.atk-info{width:100%;padding:2px 4px 3px;text-align:center;background:#fffbf0}
-.atk-name{display:block;font-size:.58em;color:#57606a;font-family:'Fira Code',monospace;line-height:1.2;word-break:break-word}
-.atk-pt{font-size:.58em;color:#656d76}
-.atk-dmg{font-size:.65em;font-weight:700;color:#cf222e;margin-left:3px}
-.atk-trample{font-size:.68em;color:#0969da;margin-left:2px}
-.combat-pair{display:inline-flex;flex-direction:column;align-items:center;gap:2px}
-.atk-card.blocked{border-color:#cf222e;opacity:.85}
-.atk-dmg.blocked{color:#9198a1}
-.block-arrow{font-size:.75em;color:#cf222e;line-height:1;text-align:center}
-.blk-card{display:inline-flex;flex-direction:column;align-items:center;width:58px;border-radius:4px;overflow:hidden;border:1px solid #ccc;background:#fafafa;flex-shrink:0}
-.blk-card.chump{border-color:#f1948a;background:#fff5f5}
-.blk-card.trade{border-color:#82e0aa;background:#f0fff4}
-.blk-art{width:58px;height:42px;object-fit:cover;object-position:top;display:block}
-.blk-info{width:100%;padding:1px 3px;text-align:center}
-.blk-icon{font-size:.7em}
-.blk-name{display:block;font-size:.55em;color:#57606a;font-family:"Fira Code",monospace;word-break:break-word;line-height:1.2}
-.blk-pt{display:block;font-size:.58em;color:#656d76}
-.mull-pills{opacity:.5;margin:2px 0}.mull-pills .pill{font-size:.7em;text-decoration:line-through}
-.mull-step{display:flex;align-items:center;gap:6px;margin:5px 0 2px;font-size:.8em}
-.mull-label{color:#656d76;font-weight:600}
-.keep-tag{color:#1a7f37;font-weight:700;font-size:.82em;padding:1px 6px;background:#dafbe1;border-radius:3px}
-.mull-tag{color:#d1242f;font-weight:700;font-size:.82em;padding:1px 6px;background:#ffebe9;border-radius:3px}
-.mull-reason{font-size:.75em;color:#d1242f;margin:2px 0 6px;font-style:italic;padding-left:6px;border-left:2px solid #f5b8b0}
-.keep-reason{font-size:.78em;color:#1a7f37;margin-left:8px;font-style:italic}
-.hand-analysis{font-size:.75em;color:#1a7f37;margin-top:5px;padding:3px 7px;background:#dafbe1;border-radius:3px;border-left:2px solid #4ac26b}
-/* LIFE CHART */
-.life-chart{background:#f6f8fa;border:1px solid #d0d7de;border-radius:8px;padding:14px;margin-bottom:12px}
-.life-chart h3{font-size:.82em;color:#656d76;font-weight:600}
-/* CONTROLS */
-.controls{display:flex;gap:8px;margin-bottom:12px;align-items:center}
-.controls button{background:#f6f8fa;color:#1f2328;border:1px solid #d0d7de;border-radius:5px;padding:5px 12px;cursor:pointer;font-size:.82em}
-.controls button:hover{background:#eaeef2;border-color:#0969da}
-.kbd-hint{color:#9198a1;font-size:.78em;margin-left:4px}
-/* TURNS */
-.turn{background:#f6f8fa;border:1px solid #d0d7de;border-radius:8px;margin-bottom:6px;overflow:hidden;transition:border-color .15s}
-.turn.bug{border-left:3px solid #0969da}.turn.opp{border-left:3px solid #d1242f}
-.turn.active{border-color:#bf8700!important}
-.turn-header{padding:10px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;transition:background .1s}
-.turn-header:hover{background:#eaeef2}
-.turn-header .left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.tnum{font-weight:700;font-size:1.05em;min-width:32px;font-family:'Fira Code',monospace}
-.tnum.bug{color:#0969da}.tnum.opp{color:#d1242f}
-.player{font-weight:600;font-size:.82em;padding:2px 7px;border-radius:4px}
-.player.bug{background:#ddf4ff;color:#0969da}.player.opp{background:#ffebe9;color:#d1242f}
-.life{font-size:.85em;color:#656d76}.life b{color:#1f2328}
-.hand-count{font-size:.75em;color:#9198a1;background:#eaeef2;padding:1px 5px;border-radius:3px;font-family:'Fira Code',monospace}
-.star-marker{color:#bf4b8a;font-size:.8em;font-weight:700}
-.arrow{color:#9198a1;transition:transform .2s;font-size:.75em;flex-shrink:0}
-.turn.open .arrow{transform:rotate(90deg)}
-.turn-body{display:none;padding:0 14px 14px;border-top:1px solid #d0d7de}
-.turn.open .turn-body{display:block}
-.section-label{font-size:.7em;text-transform:uppercase;letter-spacing:1px;color:#9198a1;margin:10px 0 5px;font-weight:600}
-.draw-row{margin-bottom:4px;display:flex;align-items:center;gap:4px}
-/* PLAYS */
-.play{padding:5px 0;display:flex;gap:6px;align-items:flex-start;flex-wrap:wrap;border-bottom:1px solid #eaeef2}
-.step{color:#9198a1;font-size:.82em;min-width:18px;text-align:right;padding-top:2px;flex-shrink:0}
-.action{font-family:'Fira Code','Consolas',monospace;font-size:.82em;color:#1f2328}
-.action.key{color:#9a6700;font-weight:600}
-.reasoning{font-size:.75em;color:#656d76;font-style:italic;width:100%;padding-left:24px;margin-top:1px}
-.pass-label{color:#9198a1;font-size:.82em;font-style:italic;padding-left:24px}
-/* BADGE */
-.cat-badge{font-size:.62em;text-transform:uppercase;letter-spacing:.5px;padding:1px 5px;border-radius:3px;font-weight:700;margin-right:3px;min-width:46px;text-align:center;display:inline-block;flex-shrink:0;font-family:system-ui}
-/* COMBAT */
-.combat-detail{background:#fff8f8;border:1px solid #f5b8b0;border-radius:5px;padding:6px 10px;margin:3px 0;font-family:'Fira Code',monospace;font-size:.8em;color:#1f2328}
-.combat-breakdown{padding:3px 10px 3px 22px;font-size:.78em;color:#6e7781;font-family:'Fira Code',monospace;border-left:2px solid #f5b8b0;margin:1px 0 1px 10px}
-.combat-block{padding:4px 10px 4px 16px;font-size:.8em;color:#0550ae;font-family:'Fira Code',monospace;border-left:3px solid #0969da;margin:2px 0;background:#ddf4ff;border-radius:0 4px 4px 0}
-.combat-block.emergency{color:#82071e;border-left-color:#cf222e;background:#ffebe9}
-/* BOARD */
-.board-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
-.board-side{background:#ffffff;border:1px solid #d0d7de;border-radius:6px;padding:8px 10px}
-.board-side h4{font-size:.75em;color:#656d76;margin-bottom:6px;font-weight:600}
-.board{margin-bottom:4px;min-height:22px;display:flex;flex-wrap:wrap;gap:5px;align-items:flex-start}
-.creature-badge{background:#ddf4ff;border:1px solid #a8d8f0;border-radius:6px;font-family:'Fira Code',monospace;font-size:.72em;color:#0969da;display:inline-flex;flex-direction:column;align-items:center;overflow:hidden;width:72px;vertical-align:top;text-align:center}.creature-badge.tapped{opacity:.5;filter:saturate(.3)}.tap-icon{font-size:.75em;color:#9a6700}
-.badge-art{width:72px;height:52px;object-fit:cover;object-position:top;display:block;flex-shrink:0}
-.badge-text{padding:2px 4px 3px;line-height:1.3;word-break:break-word;width:100%}
-.creature-badge .pt{color:#656d76;font-size:.88em;display:block}
-.land-list{margin-top:4px;display:flex;flex-wrap:wrap;gap:3px}.land-pill{display:inline-block;background:#f6f8fa;border:1px solid #d0d7de;border-radius:4px;padding:1px 5px;font-size:.68em;color:#57606a;font-family:"Fira Code",monospace}.tapped-land{background:#fff8e1;border-color:#e6ac00;color:#9a6700;opacity:.75}.mana-bar{display:flex;align-items:center;gap:3px;margin:4px 0 2px;flex-wrap:wrap}.mana-pip{display:inline-block;border-radius:50%;width:20px;height:20px;text-align:center;line-height:20px;font-size:.65em;font-weight:700;color:#1f2328;border:1px solid rgba(0,0,0,.15);flex-shrink:0}.mana-total{font-size:.65em;color:#57606a;margin-left:2px}.mana-zero{font-size:.65em;color:#9198a1;display:block;margin:3px 0}
-.other-list{margin-top:4px;display:flex;flex-wrap:wrap;gap:5px;align-items:flex-start}
-.equip-tag{background:#fff3cd;border:1px solid #e6ac00;border-radius:3px;color:#7a5c00;font-size:.7em;padding:1px 5px;margin-left:3px;font-style:normal}
-.saga-badge{background:#f0fff4;border-color:#2da44e;color:#1a7f37}
-.saga-label{color:#1a7f37}
-.saga-tapped{color:#9198a1;margin-right:2px}
-.saga-row{margin-top:3px}
-.other-badge{background:#f6f0ff;border-color:#b39ddb;color:#5e35b1}
-.combat-lethal{background:#fff0f0;border:1px solid #f5b8b0;border-left:4px solid #cf222e;border-radius:0 5px 5px 0;padding:7px 12px;margin:4px 0;font-weight:600;color:#cf222e;font-size:.85em}
-.has-thumb{position:relative;cursor:default}
-.has-thumb .card-thumb{display:none;position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);width:130px;border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.35);z-index:999;pointer-events:none}
-.has-thumb:hover .card-thumb{display:block}
-/* RESULT */
-.result{background:linear-gradient(135deg,#f0f4f8,#e8edf2);border:2px solid #d0d7de;border-radius:12px;padding:24px;text-align:center;margin-top:16px}
-.result h2{font-size:1.8em;margin-bottom:6px}
-.reason{color:#656d76;margin-bottom:4px;font-size:.9em}
-.stats{color:#9198a1;font-size:.85em}
-.bug-win{color:#0969da}.opp-win{color:#d1242f}
-.play-response{background:#fff8e1;border-left:3px solid #bf8700;border-radius:0 4px 4px 0;padding:5px 6px;margin:2px 0}
-.respond-badge{font-size:.75em;font-weight:700;margin-right:6px;letter-spacing:.3px}
-.reason-toggle{color:#9198a1;font-size:1.1em;cursor:pointer;padding:0 4px;border-radius:3px;user-select:none;flex-shrink:0}.reason-toggle:hover{color:#1f2328;background:#eaeef2}
-.reason-toggle.open{color:#0969da}
-.reasoning{font-size:.75em;color:#656d76;font-style:italic;width:100%;padding:2px 0 2px 24px;margin-top:1px;border-left:2px solid #d0d7de;margin-left:24px}
 '''
 
-JS = '''
-function toggle(el){el.classList.toggle('open')}
-function expandAll(){document.querySelectorAll('.game-panel.active .turn').forEach(t=>t.classList.add('open'))}
-function collapseAll(){document.querySelectorAll('.game-panel.active .turn').forEach(t=>t.classList.remove('open'))}
-function showGame(idx){
-  document.querySelectorAll('.game-tab').forEach((t,i)=>t.classList.toggle('active',i===idx));
-  document.querySelectorAll('.game-panel').forEach((p,i)=>p.classList.toggle('active',i===idx));
+
+def render_plays(events: List[Dict[str, Any]]) -> str:
+    plays = [e for e in events if e.get("kind") == "PLAY"]
+    if not plays:
+        return ""
+    rows = []
+    for p in plays:
+        kind = play_kind(p.get("action", ""), p.get("card"))
+        card_html = card_pill(p.get("card") or "") or "—"
+        targets = p.get("targets") or []
+        tgt = (' → ' + " ".join(card_pill(t) for t in targets)
+               if targets else "")
+        rows.append(
+            f'<li class="play kind-{kind}">'
+            f'<span class="play-act">{esc(p.get("action", ""))}</span>'
+            f'{card_html}{tgt}</li>'
+        )
+    return f'<ul class="plays">{"".join(rows)}</ul>'
+
+
+def render_combat(events: List[Dict[str, Any]]) -> str:
+    combat = [e for e in events if e.get("kind") == "COMBAT"]
+    if not combat:
+        return ""
+    rows = []
+    for c in combat:
+        sub = c.get("sub")
+        actor = esc(c.get("actor", "?"))
+        if sub == "declare_attackers":
+            atk = c.get("attackers") or []
+            html = " ".join(
+                f'<span class="atk">{esc(a["name"])} '
+                f'<em>{a["p"]}/{a["t"]}</em></span>' for a in atk
+            )
+            rows.append(
+                f'<div class="cmb attack">⚔ {actor} attacks: {html}</div>'
+            )
+        elif sub == "no_attack":
+            rows.append(
+                f'<div class="cmb no-atk">{actor} does not attack</div>'
+            )
+        elif sub == "declare_blockers":
+            blocks = c.get("blocks") or []
+            blk_html = " · ".join(
+                f'<span class="blk">{esc(b["attacker"])} '
+                f'blocked by {esc(", ".join(b["blockers"])) or "—"}</span>'
+                for b in blocks
+            )
+            rows.append(
+                f'<div class="cmb block">🛡 {actor} blocks: {blk_html}</div>'
+            )
+        elif sub == "no_block":
+            rows.append(
+                f'<div class="cmb no-blk">{actor} does not block</div>'
+            )
+        elif sub == "damage":
+            dmg = c.get("damage", 0)
+            defender = esc(c.get("defender", "?"))
+            life_b = c.get("defender_life_before", "?")
+            life_a = c.get("defender_life_after", "?")
+            cls = "lethal" if c.get("lethal") else ""
+            lethal_tag = ('<span class="lethal-tag">☠ LETHAL</span>'
+                          if c.get("lethal") else '')
+            rows.append(
+                f'<div class="cmb damage {cls}">'
+                f'💥 {actor} deals <strong>{dmg}</strong> to {defender}'
+                f' ({life_b} → {life_a}){lethal_tag}</div>'
+            )
+    return f'<div class="combat">{"".join(rows)}</div>'
+
+
+# ─── CSS / JS / Page template ───────────────────────────────────
+
+_CSS = r"""
+:root {
+  --bg: #ffffff; --fg: #1f2328; --mute: #656d76; --line: #d0d7de;
+  --p1: #0969da; --p2: #d1242f; --good: #1a7f37; --warn: #bf8700;
+  --bad: #cf222e; --card-bg: #f6f8fa; --hover: #ddf4ff;
+  --chosen-bg: #dafbe1; --gap-tight: #fff8c5; --gap-mid: #ffe9b3;
+  --gap-wide: #ffcecb;
 }
-document.addEventListener('keydown',e=>{
-  const active=document.querySelector('.game-panel.active');
-  if(!active)return;
-  const turns=active.querySelectorAll('.turn');
-  let cur=[...turns].findIndex(t=>t.classList.contains('active'));
-  if(e.key==='ArrowDown'){e.preventDefault();if(cur<turns.length-1){turns.forEach(t=>t.classList.remove('active'));turns[cur+1].classList.add('active');turns[cur+1].scrollIntoView({behavior:'smooth',block:'center'});}}
-  else if(e.key==='ArrowUp'){e.preventDefault();if(cur>0){turns.forEach(t=>t.classList.remove('active'));turns[cur-1].classList.add('active');turns[cur-1].scrollIntoView({behavior:'smooth',block:'center'});}}
-  else if(e.key==='Enter'&&cur>=0){e.preventDefault();toggle(turns[cur]);}
-});
-function toggleReason(id){
-  const el=document.getElementById(id);
-  const btn=el.previousElementSibling;
-  const visible=el.style.display!=='none';
-  el.style.display=visible?'none':'block';
-  if(btn&&btn.classList.contains('reason-toggle')){
-    btn.classList.toggle('open',!visible);
-    btn.title=visible?'Show reasoning':'Hide reasoning';
+* { box-sizing: border-box; }
+body { font: 14px/1.5 -apple-system, "Segoe UI", system-ui, sans-serif;
+       color: var(--fg); background: var(--bg); margin: 0; padding: 0; }
+header.top { position: sticky; top: 0; z-index: 50; background: var(--bg);
+             border-bottom: 1px solid var(--line);
+             padding: 12px 24px; display: flex; gap: 16px; align-items: center;
+             flex-wrap: wrap; }
+header.top h1 { margin: 0; font-size: 16px; font-weight: 600; }
+header.top h1 em { color: var(--mute); font-style: normal; font-weight: 400;
+                   margin: 0 6px; }
+header.top .seed { color: var(--mute);
+                   font-family: ui-monospace, "JetBrains Mono", monospace; }
+header.top .stat { color: var(--mute); font-size: 13px; }
+header.top .stat strong { color: var(--fg); }
+header.top .actions { margin-left: auto; display: flex; gap: 8px; }
+header.top .actions button { font: inherit; padding: 6px 12px; cursor: pointer;
+                            border: 1px solid var(--line);
+                            background: var(--card-bg);
+                            border-radius: 6px; }
+header.top .actions button:hover { background: var(--hover); }
+header.top .match-score { padding: 4px 10px; background: var(--chosen-bg);
+                         border-radius: 6px; font-size: 13px; }
+main { max-width: 1100px; margin: 0 auto; padding: 16px 24px 80px; }
+.game { margin-bottom: 32px; }
+.game-header { display: flex; align-items: baseline; gap: 16px;
+               flex-wrap: wrap; margin-bottom: 12px; }
+.game-header h2 { margin: 0; font-size: 22px; }
+.game-meta { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip { padding: 3px 10px; background: var(--card-bg); border-radius: 12px;
+        font-size: 12px; color: var(--mute); }
+.chip strong { color: var(--fg); }
+.chip em { font-style: italic; color: var(--mute); }
+.mulls { background: var(--card-bg); border: 1px solid var(--line);
+         border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; }
+.mulls h3 { margin: 0 0 8px 0; font-size: 13px; color: var(--mute);
+            text-transform: uppercase; letter-spacing: 0.05em; }
+.mull { padding: 6px 0; border-bottom: 1px dashed var(--line); display: flex;
+        gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.mull:last-child { border-bottom: 0; }
+.mull-decision { font-size: 11px; padding: 1px 8px; border-radius: 3px;
+                 font-weight: 600; }
+.mull-decision.keep { background: var(--chosen-bg); color: var(--good); }
+.mull-decision.mull-no { background: var(--gap-wide); color: var(--bad); }
+.mull-actor { font-weight: 600; }
+.mull-size { font-family: ui-monospace, "JetBrains Mono", monospace;
+             color: var(--mute); }
+.mull-reason { color: var(--mute); flex: 1; }
+.mull-cards { width: 100%; padding-top: 4px; }
+details.turn { border: 1px solid var(--line); border-radius: 8px;
+               margin-bottom: 12px; background: var(--bg); }
+details.turn[open] { box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+.turn-summary { display: flex; gap: 12px; align-items: baseline;
+                padding: 10px 16px; cursor: pointer; user-select: none;
+                list-style: none; }
+.turn-summary::-webkit-details-marker { display: none; }
+.turn-summary::before { content: "▸"; color: var(--mute);
+                        transition: transform 0.15s; }
+details.turn[open] .turn-summary::before { transform: rotate(90deg);
+                                          display: inline-block; }
+.turn-num { font-family: ui-monospace, "JetBrains Mono", monospace;
+            font-weight: 700; color: var(--p1); }
+.turn-actor { font-weight: 600; }
+.turn-actor .p { color: var(--mute); font-style: normal; font-size: 12px; }
+.life { font-family: ui-monospace, "JetBrains Mono", monospace;
+        margin-left: auto; font-size: 13px; }
+.p1-life { color: var(--p1); font-weight: 600; }
+.p2-life { color: var(--p2); font-weight: 600; }
+.vs-dot { color: var(--mute); }
+.turn-counts { color: var(--mute); font-size: 12px; }
+.turn-body { padding: 0 16px 16px; }
+.boards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+          margin-bottom: 12px; }
+.board { background: var(--card-bg); border: 1px solid var(--line);
+         border-radius: 6px; padding: 10px; }
+.board-head { display: flex; align-items: center; gap: 8px;
+              margin-bottom: 6px; font-size: 13px; }
+.board-head .dot { width: 8px; height: 8px; border-radius: 50%;
+                   display: inline-block; }
+.board-head .dot.p1 { background: var(--p1); }
+.board-head .dot.p2 { background: var(--p2); }
+.board-stats { color: var(--mute);
+              font-family: ui-monospace, "JetBrains Mono", monospace;
+              font-size: 11px; margin-left: auto; }
+.board .row { padding: 3px 0; display: flex; flex-wrap: wrap; gap: 4px; }
+.cre { padding: 2px 8px; background: #fff; border: 1px solid var(--line);
+       border-radius: 11px; font-size: 12px; }
+.cre em { color: var(--mute); font-style: normal;
+          font-family: ui-monospace, "JetBrains Mono", monospace; }
+.cre .tap, .cre .sick { color: var(--warn); margin-left: 2px; }
+.card-pill { padding: 1px 7px; background: #fff; border: 1px solid var(--line);
+             border-radius: 10px; font-size: 11px; cursor: pointer; }
+.card-pill:hover { background: var(--hover); }
+.mute { color: var(--mute); }
+.decision { border-left: 3px solid var(--p1); padding: 10px 12px; margin: 8px 0;
+            background: #f9fbff; border-radius: 0 6px 6px 0;
+            scroll-margin-top: 80px; }
+.decision:target { box-shadow: 0 0 0 2px var(--p1); }
+.dec-head { display: flex; gap: 12px; align-items: baseline;
+            margin-bottom: 6px; font-size: 12px; flex-wrap: wrap; }
+.dec-anchor { font-family: ui-monospace, "JetBrains Mono", monospace;
+              color: var(--mute); text-decoration: none; }
+.dec-anchor:hover { color: var(--p1); }
+.dec-actor { font-weight: 600; color: var(--fg); }
+.dec-goal { color: var(--mute); font-style: italic; }
+.dec-cands { margin-left: auto; color: var(--mute); }
+.chosen { background: var(--chosen-bg); border-radius: 5px; padding: 8px 10px; }
+.chosen-row { display: flex; align-items: baseline; gap: 8px; }
+.chosen-label { font-size: 10px; padding: 1px 6px; border-radius: 3px;
+                background: var(--good); color: #fff; font-weight: 600;
+                letter-spacing: 0.04em; }
+.chosen-card { flex: 1; }
+.chosen-ev { font-family: ui-monospace, "JetBrains Mono", monospace;
+             font-weight: 700; color: var(--good); }
+.chosen-reason { font-size: 12px; color: var(--mute); margin-top: 4px; }
+.subsystems { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+.sub-chip { font-family: ui-monospace, "JetBrains Mono", monospace;
+            font-size: 11px; padding: 1px 7px; border-radius: 3px;
+            background: #fff; border: 1px solid var(--line); }
+.sub-chip.pos { background: #dafbe1; color: var(--good); border-color: #b4d7c0; }
+.sub-chip.neg { background: #ffebe9; color: var(--bad); border-color: #f6c8c5; }
+.sub-chip.zero { color: var(--mute); }
+.alts-label { font-size: 11px; color: var(--mute); margin: 8px 0 4px;
+              text-transform: uppercase; letter-spacing: 0.05em; }
+.alt { padding: 4px 0; border-bottom: 1px dotted var(--line); }
+.alt:last-of-type { border-bottom: 0; }
+.alt-row { display: flex; align-items: baseline; gap: 10px; }
+.alt-card { flex: 1; }
+.alt-ev { font-family: ui-monospace, "JetBrains Mono", monospace;
+          color: var(--mute); width: 50px; text-align: right; }
+.alt-gap { font-family: ui-monospace, "JetBrains Mono", monospace;
+           width: 70px; text-align: right; font-size: 12px; }
+.alt-bar { width: 100px; height: 4px; background: #eee; border-radius: 2px;
+           position: relative; overflow: hidden; }
+.alt-bar > span { display: block; height: 100%; background: var(--mute); }
+.gap-tight .alt-gap { color: var(--warn); font-weight: 600; }
+.gap-tight .alt-bar > span { background: var(--warn); }
+.gap-mid .alt-gap { color: var(--mute); }
+.gap-wide .alt-gap { color: var(--mute); opacity: 0.7; }
+.alt-reason { font-size: 11px; color: var(--mute); padding-left: 8px; }
+.feedback { display: flex; align-items: center; gap: 8px; margin-top: 8px;
+            padding-top: 8px; border-top: 1px dashed var(--line); }
+.thumbs { font-size: 14px; padding: 2px 8px; border: 1px solid var(--line);
+          background: #fff; border-radius: 4px; cursor: pointer; }
+.thumbs.active.up { background: var(--chosen-bg); border-color: var(--good); }
+.thumbs.active.down { background: var(--gap-wide); border-color: var(--bad); }
+.fb-note { flex: 1; padding: 3px 6px; border: 1px solid var(--line);
+           border-radius: 4px; font: inherit; }
+.fb-status { font-size: 11px; color: var(--good); }
+.plays { list-style: none; padding: 8px 0 0; margin: 0;
+         border-top: 1px dashed var(--line); margin-top: 8px; }
+.plays .play { padding: 2px 0; font-size: 12px; }
+.play-act { display: inline-block; min-width: 80px; color: var(--mute);
+            font-family: ui-monospace, "JetBrains Mono", monospace; }
+.combat { padding: 8px 0; border-top: 1px dashed var(--line);
+          margin-top: 8px; font-size: 13px; }
+.cmb { padding: 3px 0; }
+.cmb.damage strong { color: var(--bad); }
+.cmb.lethal { background: #ffebe9; padding: 5px 8px; border-radius: 4px; }
+.lethal-tag { color: var(--bad); font-weight: 700; margin-left: 8px; }
+.atk em, .blk em { color: var(--mute);
+                  font-family: ui-monospace, "JetBrains Mono", monospace; }
+#card-tip { position: fixed; pointer-events: none; z-index: 1000;
+            border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            display: none; }
+#card-tip img { display: block; max-width: 200px; max-height: 280px;
+                border-radius: 8px; }
+"""
+
+_JS = r"""
+(function(){
+  const tip = document.createElement('div');
+  tip.id = 'card-tip';
+  document.body.appendChild(tip);
+  const cache = new Map();
+
+  function showTip(el, evt) {
+    const name = el.getAttribute('data-card');
+    if (!name) return;
+    const url = 'https://api.scryfall.com/cards/named?exact='
+              + encodeURIComponent(name) + '&format=image&version=small';
+    if (!cache.has(name)) {
+      const img = new Image();
+      img.src = url;
+      cache.set(name, img);
+    }
+    const img = cache.get(name);
+    tip.innerHTML = '';
+    tip.appendChild(img);
+    tip.style.display = 'block';
+    moveTip(evt);
   }
-}
+  function moveTip(evt) {
+    const x = Math.min(evt.clientX + 14, window.innerWidth - 220);
+    const y = Math.min(evt.clientY + 14, window.innerHeight - 290);
+    tip.style.left = x + 'px';
+    tip.style.top = y + 'px';
+  }
+  function hideTip() { tip.style.display = 'none'; }
+  document.addEventListener('mouseover', (e) => {
+    const t = e.target.closest('[data-card]');
+    if (t) showTip(t, e);
+  });
+  document.addEventListener('mousemove', (e) => {
+    if (tip.style.display === 'block') moveTip(e);
+  });
+  document.addEventListener('mouseout', (e) => {
+    const t = e.target.closest('[data-card]');
+    if (t) hideTip();
+  });
+
+  const FB_KEY = 'mtgsim:replay-feedback:' + (window.__REPLAY_ID || 'default');
+  function loadFeedback() {
+    try { return JSON.parse(localStorage.getItem(FB_KEY) || '{}'); }
+    catch (e) { return {}; }
+  }
+  function saveFeedback(fb) {
+    localStorage.setItem(FB_KEY, JSON.stringify(fb));
+  }
+  function applyFeedback() {
+    const fb = loadFeedback();
+    document.querySelectorAll('.feedback').forEach(form => {
+      const id = form.getAttribute('data-decision-id');
+      const entry = fb[id];
+      if (!entry) return;
+      if (entry.thumb === 'up') {
+        form.querySelector('.thumbs.up').classList.add('active');
+      } else if (entry.thumb === 'down') {
+        form.querySelector('.thumbs.down').classList.add('active');
+      }
+      if (entry.note) form.querySelector('.fb-note').value = entry.note;
+      const status = form.querySelector('.fb-status');
+      if (status) status.textContent = '✓ saved';
+    });
+    updateFeedbackCount();
+  }
+  function updateFeedbackCount() {
+    const fb = loadFeedback();
+    const n = Object.keys(fb).length;
+    const el = document.getElementById('fb-count');
+    if (el) el.textContent = String(n);
+  }
+  function setFeedback(decisionId, patch) {
+    const fb = loadFeedback();
+    const cur = fb[decisionId] || {};
+    Object.assign(cur, patch);
+    if (!cur.thumb && !cur.note) {
+      delete fb[decisionId];
+    } else {
+      cur.timestamp = new Date().toISOString();
+      fb[decisionId] = cur;
+    }
+    saveFeedback(fb);
+    updateFeedbackCount();
+  }
+
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.thumbs');
+    if (!btn) return;
+    const form = btn.closest('.feedback');
+    const id = form.getAttribute('data-decision-id');
+    const thumb = btn.getAttribute('data-thumb');
+    const fb = loadFeedback();
+    const cur = fb[id] || {};
+    const newThumb = (cur.thumb === thumb) ? null : thumb;
+    setFeedback(id, { thumb: newThumb });
+    form.querySelectorAll('.thumbs').forEach(b => b.classList.remove('active'));
+    if (newThumb) {
+      form.querySelector('.thumbs.' + newThumb).classList.add('active');
+    }
+    form.querySelector('.fb-status').textContent = '✓ saved';
+  });
+
+  document.addEventListener('input', (e) => {
+    const inp = e.target.closest('.fb-note');
+    if (!inp) return;
+    const form = inp.closest('.feedback');
+    const id = form.getAttribute('data-decision-id');
+    setFeedback(id, { note: inp.value });
+    form.querySelector('.fb-status').textContent = '✓ saved';
+  });
+
+  const exp = document.getElementById('btn-export-fb');
+  if (exp) exp.addEventListener('click', () => {
+    const fb = loadFeedback();
+    const lines = Object.entries(fb).map(([id, v]) =>
+      JSON.stringify(Object.assign({decision_id: id}, v)));
+    const blob = new Blob([lines.join('\n')], {type: 'application/x-ndjson'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'replay_feedback.jsonl';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
+  const clr = document.getElementById('btn-clear-fb');
+  if (clr) clr.addEventListener('click', () => {
+    if (!confirm('Clear all feedback for this replay?')) return;
+    localStorage.removeItem(FB_KEY);
+    document.querySelectorAll('.feedback').forEach(f => {
+      f.querySelectorAll('.thumbs').forEach(b => b.classList.remove('active'));
+      f.querySelector('.fb-note').value = '';
+      f.querySelector('.fb-status').textContent = '';
+    });
+    updateFeedbackCount();
+  });
+  const jmp = document.getElementById('btn-jump-flagged');
+  if (jmp) jmp.addEventListener('click', () => {
+    const fb = loadFeedback();
+    const ids = Object.keys(fb).filter(k => fb[k].thumb === 'down');
+    if (ids.length === 0) { alert('No flagged decisions yet'); return; }
+    const cur = (location.hash || '').slice(1);
+    const idx = ids.indexOf(cur);
+    const next = ids[(idx + 1) % ids.length];
+    location.hash = next;
+  });
+  const col = document.getElementById('btn-collapse-all');
+  if (col) col.addEventListener('click', () =>
+    document.querySelectorAll('details.turn').forEach(d =>
+      d.removeAttribute('open')));
+  const exp2 = document.getElementById('btn-expand-all');
+  if (exp2) exp2.addEventListener('click', () =>
+    document.querySelectorAll('details.turn').forEach(d =>
+      d.setAttribute('open', '')));
+
+  applyFeedback();
+})();
+"""
+
+_PAGE_TEMPLATE = '''<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>{title}</title>
+<style>{css}</style>
+</head>
+<body>
+<header class="top">
+  <h1>{deck1} <em>vs</em> {deck2}</h1>
+  <span class="seed">seed {seed}</span>
+  <span class="stat"><strong>{total_games}</strong> games · <strong>{total_decisions}</strong> decisions · <strong id="fb-count">0</strong> flagged</span>
+  {match_score}
+  <div class="actions">
+    <button id="btn-jump-flagged" title="Jump to next flagged decision">↓ next flagged</button>
+    <button id="btn-export-fb">Export feedback (JSONL)</button>
+    <button id="btn-clear-fb">Clear feedback</button>
+    <button id="btn-collapse-all">Collapse all</button>
+    <button id="btn-expand-all">Expand all</button>
+  </div>
+</header>
+<main>
+{games_html}
+</main>
+<script>window.__REPLAY_ID = "{seed}";</script>
+<script>{js}</script>
+</body>
+</html>
 '''
 
-def build(log_path, out_path, seed):
-    with open(log_path) as f: lines = f.read().splitlines()
-    games = parse_games(lines)
-    p1name,p2name = games[0]['p1name'],games[0]['p2name']
-    score={p1name:0,p2name:0}
-    for g in games:
-        w=g['result'].get('winner','')
-        if w in score: score[w]+=1
-    match_winner=max(score,key=score.get)
-    p1_score,p2_score=score[p1name],score[p2name]
 
-    tabs_html=''; panels_html=''
-    for gi,g in enumerate(games):
-        w=g['result'].get('winner',''); dc='bug' if w==g['p1name'] else 'opp'; active='active' if gi==0 else ''
-        tabs_html+=f'<div class="game-tab {active}" onclick="showGame({gi})">Game {gi+1} <span class="winner-dot {dc}"></span></div>\n'
-        panels_html+=f'<div class="game-panel {active}" id="game-{gi}">\n{game_html(g,gi+1,seed)}\n</div>\n'
+# ─── Entry point ────────────────────────────────────────────────
 
-    html=f'''<!DOCTYPE html>
-<html lang="en"><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Bo3 Replay: {esc(p1name)} vs {esc(p2name)}</title>
-<style>{CSS}</style></head><body>
-<div class="header">
-  <h1><span style="color:{P1C}">{esc(p1name)}</span> <span class="vs">vs</span> <span style="color:{P2C}">{esc(p2name)}</span></h1>
-  <div class="series-score"><span class="bug-s">{p1_score}</span> – <span class="opp-s">{p2_score}</span> <span style="font-size:.6em;color:#484f58;font-weight:400">({esc(match_winner)} wins)</span></div>
-  <div style="color:#484f58;font-size:.8em;margin-top:4px">Modern Bo3 · Seed {seed} · Apr 2026</div>
-</div>
-{legend_html()}
-<div class="game-tabs">{tabs_html}</div>
-{panels_html}
-<script>{JS}</script>
-</body></html>'''
+def main(argv: List[str]) -> int:
+    if len(argv) < 4:
+        print("Usage: build_replay.py <log_file> <output_html> <seed>",
+              file=sys.stderr)
+        return 1
+    log_path = argv[1]
+    out_path = argv[2]
+    seed = argv[3]
+    with open(log_path) as f:
+        text = f.read()
+    fmt = sniff_format(text)
+    if fmt == "ndjson":
+        model = parse_ndjson(text)
+        html = render_html(model, seed)
+        with open(out_path, "w") as f:
+            f.write(html)
+        n_dec = sum(1 for g in model["games"]
+                    for e in g["events"] if e.get("kind") == "DECISION")
+        print(f"build_replay: ndjson -> {out_path}  "
+              f"({len(model['games'])} games, {n_dec} decisions)")
+        return 0
 
-    with open(out_path,'w') as f: f.write(html)
-    print(f'{os.path.basename(out_path)}: {len(html):,} chars')
+    legacy = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                          "build_replay_legacy.py")
+    if os.path.exists(legacy):
+        print("build_replay: text log detected -> delegating to "
+              "build_replay_legacy.py")
+        os.execv(sys.executable,
+                 [sys.executable, legacy, log_path, out_path, seed])
+    print("build_replay: text log detected but build_replay_legacy.py "
+          "is missing.  Re-run --bo3 with --dump-replay to use the "
+          "new viewer.", file=sys.stderr)
+    return 2
 
-if __name__ == '__main__':
-    if len(sys.argv) == 4:
-        build(sys.argv[1], sys.argv[2], sys.argv[3])
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv))
