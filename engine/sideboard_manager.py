@@ -1,11 +1,14 @@
 """
 Sideboard manager — extracted from GameRunner (Phase 4C).
 
-Two backends:
+Three backends:
   - Legacy (default): archetype-keyword string matching below.
-  - Solver (opt-in via SB_SOLVER=new): oracle-driven marginal-value
-    solver from ai/sideboard_solver.py. See
-    docs/proposals/sideboard_solver.md.
+  - Oracle solver (opt-in via SB_SOLVER=new): oracle-driven
+    marginal-value solver from ai/sideboard_solver.py.
+  - SLM advisor (opt-in via SB_SOLVER=slm): learned model from
+    ai/llm/sideboard_advisor.py. Requires MTG_LLM_MODEL_PATH
+    to be set; falls back to legacy if the backend is
+    unavailable. See docs/research/2026-05_phase_4c_slm_scoping.md.
 """
 from __future__ import annotations
 
@@ -127,13 +130,24 @@ def sideboard(mainboard: Dict[str, int], sideboard_cards: Dict[str, int],
     if not sideboard_cards:
         return mainboard, sideboard_cards
 
-    if os.environ.get("SB_SOLVER", "old").lower() == "new":
+    backend_choice = os.environ.get("SB_SOLVER", "old").lower()
+
+    if backend_choice == "new":
         try:
             return _solver_sideboard(mainboard, sideboard_cards,
                                       my_deck, opponent_deck)
         except Exception as exc:  # pragma: no cover — fallback on any solver error
             import sys
             print(f"  [SB solver fell back to legacy: {exc}]", file=sys.stderr)
+            # fall through to legacy
+
+    if backend_choice == "slm":
+        try:
+            return _slm_sideboard(mainboard, sideboard_cards,
+                                   my_deck, opponent_deck)
+        except Exception as exc:  # pragma: no cover — fallback on any error
+            import sys
+            print(f"  [SB SLM fell back to legacy: {exc}]", file=sys.stderr)
             # fall through to legacy
 
     new_main = dict(mainboard)
@@ -433,3 +447,92 @@ def _solver_sideboard(mainboard: Dict[str, int],
               file=sys.stderr)
 
     return new_main, new_sb
+
+
+# ─────────────────────────────────────────────────────────────────────
+# SLM advisor backend (SB_SOLVER=slm)
+# Phase 4C Week 5 — wires ai/llm/sideboard_advisor into the engine.
+# Requires MTG_LLM_MODEL_PATH set; otherwise raises BackendUnavailable
+# which is caught by the dispatch wrapper and falls through to legacy.
+# ─────────────────────────────────────────────────────────────────────
+
+_SB_SLM_POLICY = None
+
+
+def _get_slm_policy():
+    """Lazy LLMPolicy construction. One policy per process —
+    shared across all sideboard calls so the cache is reused.
+    """
+    global _SB_SLM_POLICY
+    if _SB_SLM_POLICY is not None:
+        return _SB_SLM_POLICY
+    from pathlib import Path
+    from ai.llm.policy import LLMPolicy
+    from ai.llm.llama_cpp_backend import LlamaCppBackend
+    cache_dir = (
+        Path(__file__).resolve().parent.parent / ".cache" / "llm_responses"
+    )
+    backend = LlamaCppBackend()
+    _SB_SLM_POLICY = LLMPolicy(backend=backend, cache_dir=cache_dir)
+    return _SB_SLM_POLICY
+
+
+def _slm_sideboard(mainboard: Dict[str, int],
+                    sideboard_cards: Dict[str, int],
+                    my_deck: str,
+                    opponent_deck: str) -> Tuple[Dict[str, int], Dict[str, int]]:
+    """Apply the SLM advisor's plan to the mainboard/sideboard.
+
+    Each ``SwapDirective`` is applied as a delta to mainboard +
+    sideboard counts. We respect the available SB pool: a +N
+    directive caps at the sideboard's actual count of that card,
+    and a -N directive caps at the mainboard's count. Out-of-pool
+    directives are silently dropped (the model occasionally
+    invents card names not in the SB).
+    """
+    from ai.llm.sideboard_advisor import advise_sideboard
+
+    policy = _get_slm_policy()
+    plan = advise_sideboard(
+        my_deck=my_deck,
+        my_sideboard=sideboard_cards,
+        opponent_deck=opponent_deck,
+        policy=policy,
+    )
+
+    new_main = dict(mainboard)
+    new_side = dict(sideboard_cards)
+
+    log = []
+    for swap in plan.swaps:
+        card = swap.card
+        delta = swap.delta
+        if delta > 0:
+            # Bring in from SB.
+            available_in_sb = new_side.get(card, 0)
+            actual = min(delta, available_in_sb)
+            if actual <= 0:
+                continue
+            new_main[card] = new_main.get(card, 0) + actual
+            new_side[card] = available_in_sb - actual
+            if new_side[card] == 0:
+                del new_side[card]
+            log.append(f"+{actual} {card}")
+        elif delta < 0:
+            # Send to SB.
+            in_main = new_main.get(card, 0)
+            actual = min(-delta, in_main)
+            if actual <= 0:
+                continue
+            new_main[card] = in_main - actual
+            if new_main[card] == 0:
+                del new_main[card]
+            new_side[card] = new_side.get(card, 0) + actual
+            log.append(f"-{actual} {card}")
+
+    if log:
+        import sys
+        print(f"  SB-SLM ({my_deck} vs {opponent_deck}): {', '.join(log)}",
+              file=sys.stderr)
+
+    return new_main, new_side
