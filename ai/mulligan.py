@@ -120,7 +120,64 @@ class MulliganDecider:
         """Return True to keep, False to mulligan.
 
         Also stores self.last_reason with the rationale (for logging).
+
+        When ``MULLIGAN_ADVISOR=slm`` is set in the environment AND
+        ``MTG_LLM_MODEL_PATH`` points to a valid GGUF, the decision
+        is delegated to the Phase-4C SLM mulligan advisor; the
+        heuristic decision below runs as a fallback if the SLM
+        backend is unavailable. This lets opt-in users compare
+        SLM vs heuristic mulligan rates without changing default
+        behavior.
         """
+        import os
+        if os.environ.get("MULLIGAN_ADVISOR", "").lower() == "slm":
+            slm_choice = self._try_slm_decide(hand, cards_in_hand)
+            if slm_choice is not None:
+                return slm_choice
+            # Fall through to heuristic on backend unavailability.
+
+        return self._heuristic_decide(hand, cards_in_hand)
+
+    def _try_slm_decide(
+        self, hand: List["CardInstance"], cards_in_hand: int,
+    ) -> Optional[bool]:
+        """Route through the Phase-4C SLM mulligan advisor. Returns
+        None on backend unavailability so the heuristic can take
+        over silently. Imports are lazy so the SLM dependency is
+        optional."""
+        try:
+            from ai.llm.policy import LLMPolicy, BackendUnavailable
+            from ai.llm.llama_cpp_backend import LlamaCppBackend
+            from ai.llm.mulligan_advisor import advise_mulligan
+            from pathlib import Path
+            cache_dir = (
+                Path(__file__).resolve().parent.parent
+                / ".cache" / "llm_responses"
+            )
+            backend = LlamaCppBackend()
+            policy = LLMPolicy(backend=backend, cache_dir=cache_dir)
+            deck_name = getattr(self.archetype, "name", "Unknown")
+            hand_names = [c.name for c in hand]
+            bottom_count = max(0, MULLIGAN_STARTING_HAND_SIZE - cards_in_hand)
+            decision = advise_mulligan(
+                deck_name=deck_name,
+                hand=hand_names,
+                policy=policy,
+                bottom_count=bottom_count,
+            )
+            self.last_reason = (
+                f"[slm] {decision.reasoning or 'no reasoning'} "
+                f"(confidence={decision.confidence:.2f})"
+            )
+            return decision.keep
+        except (BackendUnavailable, ValueError, Exception) as exc:
+            import sys
+            print(f"  [mulligan SLM fell back to heuristic: {exc}]",
+                  file=sys.stderr)
+            return None
+
+    def _heuristic_decide(self, hand: List["CardInstance"], cards_in_hand: int) -> bool:
+        """The original heuristic decision path. Always available."""
         from engine.cards import CardType
         from ai.strategy_profile import ArchetypeStrategy
 
