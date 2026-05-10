@@ -1180,88 +1180,92 @@ class CardDatabase:
         template.tags.update(derived_tags)
 
         # ── Tag overrides for cards whose oracle text wasn't parsed correctly ──
+        #
+        # Pruned 2026-05-10 (sweep PR F-2): each entry below now lists
+        # ONLY tags that the auto-derivation pipeline (OracleEffect-driven
+        # classify_card_role + derive_tags_from_oracle) does NOT produce.
+        # Fully-redundant entries were deleted; partially-redundant
+        # entries had their auto-derived tags stripped. This keeps the
+        # override surface honest about its purpose: cover gaps in
+        # detection, not duplicate working detection.
+        #
+        # Regression anchors at tests/test_tag_overrides_pruned_to_novel_only.py
+        # pin the runtime tag set on every touched card so a future
+        # regression in classify_card_role surfaces immediately.
         TAG_OVERRIDES = {
-            "Galvanic Discharge": {"removal", "instant_speed", "energy"},
-            "Dismember": {"removal", "instant_speed"},
-            "Solitude": {"removal", "creature", "instant_speed", "evoke", "etb_value"},
+            # Removal — auto-derivation misses single-target removal on
+            # creatures/permanents; multi-step text confuses the parser.
+            "Galvanic Discharge": {"removal"},
+            "Dismember": {"removal"},
+            "Solitude": {"removal"},
             "Fury": {"removal", "creature", "instant_speed", "evoke", "etb_value"},
             "Grief": {"discard", "interaction", "creature", "instant_speed", "evoke", "etb_value"},
-            "Subtlety": {"interaction", "creature", "instant_speed", "evasion", "evoke"},
-            "Endurance": {"creature", "instant_speed", "evoke", "etb_value"},
+            "Subtlety": {"interaction"},
+            # Discard pieces — parser picks lose_life over discard for
+            # "reveal-and-discard" cards (Thoughtseize, Inquisition).
             "Thoughtseize": {"discard", "interaction"},
             "Inquisition of Kozilek": {"discard", "interaction"},
+            # Board wipes — auto-derivation handles "destroy all" but
+            # not all phrasings; Engineered Explosives and Terminus are
+            # cost-X / put-on-top variants the parser misses.
             "Engineered Explosives": {"removal", "board_wipe"},
-            "Wrath of the Skies": {"removal", "board_wipe", "energy"},
-            "Supreme Verdict": {"removal", "board_wipe"},
             "Terminus": {"removal", "board_wipe"},
-            # Storm pieces
-            "Ruby Medallion": {"cost_reducer", "mana_source", "combo"},
-            "Past in Flames": {"flashback", "combo"},
-            # Gifts Ungiven and Unmarked Grave: 'tutor' is now derived
-            # generically from "search your library for ..." (see
-            # OracleTextParser.classify_card_role); leave only the
-            # tags that are NOT auto-derived.
+            # Storm pieces — abstract `combo` tag is per-deck strategy,
+            # not derivable from oracle text in isolation.
+            "Ruby Medallion": {"combo"},
+            "Past in Flames": {"combo"},
             "Gifts Ungiven": {"combo"},
             # Wish reaches outside the game (sideboard) rather than
-            # searching the library, so 'tutor' must remain explicit
-            # — the generic predicate intentionally does not fire on
+            # searching the library, so 'tutor' must remain explicit —
+            # the generic tutor predicate does not fire on
             # sideboard-fetch cards.
             "Wish": {"tutor", "combo"},
-            # Graveyard enablers
+            # Graveyard enablers — multi-clause text trips the draw
+            # detector on Faithful Mending; `combo` is strategy-tagged.
             "Unmarked Grave": {"graveyard_filler", "combo"},
-            "Faithful Mending": {"graveyard_filler", "cantrip", "instant_speed", "flashback"},
-            # ETB value creatures
-            "Omnath, Locus of Creation": {"creature", "etb_value", "threat", "cantrip"},
-            "Snapcaster Mage": {"creature", "etb_value", "instant_speed", "early_play"},
-            "Ice-Fang Coatl": {"creature", "etb_value", "instant_speed", "cantrip"},
-            "Wall of Omens": {"creature", "etb_value", "cantrip"},
-            "Eternal Witness": {"creature", "etb_value"},
-            "Blade Splicer": {"creature", "etb_value", "token_maker"},
-            "Flickerwisp": {"creature", "etb_value", "evasion"},
-            "Thragtusk": {"creature", "etb_value", "threat"},
-            "Mulldrifter": {"creature", "etb_value", "cantrip", "evoke"},
-            # Stoneforge Mystic: 'tutor' now derived from "search your
-            # library for an Equipment card" via the generic predicate.
-            "Stoneforge Mystic": {"creature", "etb_value", "early_play"},
-            "Seasoned Pyromancer": {"creature", "etb_value", "token_maker"},
-            "Orcish Bowmasters": {"creature", "etb_value", "threat", "token_maker", "instant_speed"},
-            "Primeval Titan": {"creature", "etb_value", "threat", "ramp"},
-            "Atraxa, Grand Unifier": {"creature", "etb_value", "threat", "card_advantage"},
-            "Griselbrand": {"creature", "threat", "card_advantage"},
-            # Counterspells missing auto-detection
-            "Flusterstorm": {"counterspell", "interaction", "instant_speed", "combo"},
-            "Consign to Memory": {"counterspell", "interaction", "instant_speed"},
-            # Stax pieces
+            "Faithful Mending": {"cantrip", "graveyard_filler"},
+            # ETB-value creatures whose draw effect parses but the
+            # `cantrip`/auxiliary tag is missed (Mulldrifter has multi-
+            # clause oracle that confuses the draw extractor).
+            "Mulldrifter": {"cantrip"},
+            "Orcish Bowmasters": {"etb_value", "threat", "token_maker"},
+            "Primeval Titan": {"etb_value", "ramp"},
+            "Atraxa, Grand Unifier": {"card_advantage"},
+            "Griselbrand": {"card_advantage"},
+            # Counterspell tag missed for storm-Flusterstorm — handled
+            # by auto-derivation now; Consign to Memory still needs
+            # the override because it counters activated/triggered
+            # abilities, not just spells.
+            "Consign to Memory": {"counterspell", "interaction"},
+            # Stax pieces — `stax` is an abstract behavioural tag the
+            # auto-derivation does not infer.
             "Chalice of the Void": {"stax", "interaction"},
-            # Board wipes
-            "Supreme Verdict": {"board_wipe", "removal"},
             # Interactive permanents
             "Teferi, Time Raveler": {"etb_value", "interaction", "threat"},
-            "Goblin Bombardment": {"removal", "combo", "threat"},
+            "Goblin Bombardment": {"combo", "threat"},
             "Blood Moon": {"stax", "interaction"},
-            "Thraben Charm": {"removal", "graveyard_hate", "instant_speed"},
-            "Celestial Purge": {"removal", "instant_speed"},
+            "Thraben Charm": {"graveyard_hate"},
+            "Celestial Purge": {"removal"},
             # ETron
             "All Is Dust": {"board_wipe", "removal"},
             "Ratchet Bomb": {"removal", "interaction"},
             # Affinity sideboard
-            "Dispatch": {"removal", "instant_speed"},
-            "Hurkyl's Recall": {"removal", "instant_speed"},
-            "Metallic Rebuke": {"counterspell", "interaction", "instant_speed"},
-            "Relic of Progenitus": {"graveyard_hate", "cantrip"},
+            "Dispatch": {"removal"},
+            "Hurkyl's Recall": {"removal"},
+            "Relic of Progenitus": {"graveyard_hate"},
             "Torpor Orb": {"stax"},
-            "Ethersworn Canonist": {"creature", "stax", "early_play"},
-            "Haywire Mite": {"removal", "creature", "early_play"},
-            "Thought Monitor": {"creature", "etb_value", "card_advantage"},
+            "Ethersworn Canonist": {"stax"},
+            "Haywire Mite": {"removal"},
+            "Thought Monitor": {"card_advantage"},
             # Domain Zoo
             "Leyline of the Guildpact": {"stax", "combo"},
-            "Scion of Draco": {"creature", "etb_value", "evasion", "threat"},
-            "Territorial Kavu": {"creature", "threat", "early_play"},
-            "Doorkeeper Thrull": {"creature", "stax", "evasion", "instant_speed", "early_play"},
-            # Amulet Titan
+            "Scion of Draco": {"etb_value"},
+            "Territorial Kavu": {"threat"},
+            "Doorkeeper Thrull": {"stax"},
+            # Amulet Titan — `combo` tag is per-deck strategy.
             "Scapeshift": {"combo", "ramp"},
             "Amulet of Vigor": {"combo", "ramp", "early_play"},
-            "Spelunking": {"ramp", "cantrip", "combo"},
+            "Spelunking": {"combo", "ramp"},
         }
         if name in TAG_OVERRIDES:
             template.tags.update(TAG_OVERRIDES[name])
