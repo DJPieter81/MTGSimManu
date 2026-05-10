@@ -755,12 +755,33 @@ class OracleTextParser:
         if "retrace" in text:
             tags.add("flashback")  # functionally similar for AI
 
-        # Tutor / search effects (non-land)
-        if any(phrase in text for phrase in [
-            "search your library for a card", "search your library for a creature",
-            "search your library for an instant", "search your library for a sorcery",
-        ]):
-            tags.add("tutor")
+        # Tutor / search effects (non-land). Real Modern oracle text
+        # uses many target qualifiers — "a card", "a creature", "an
+        # instant", "an artifact card", "a nonlegendary card",
+        # "an Equipment card", "up to four cards", etc. The generic
+        # predicate matches "search your library for" with any
+        # non-land continuation; basic-land searches go through the
+        # OracleEffect-driven ramp path (see "Ramp" block above) and
+        # so are not double-tagged.
+        if "search your library for" in text:
+            # Exclude pure basic-land searches; everything else is
+            # treated as tutor. The qualifying tokens after "for" are
+            # diverse, so we filter only the explicit basic-land
+            # phrasings.
+            land_only_phrases = (
+                "search your library for a basic land",
+                "search your library for a basic ",
+                "search your library for up to two basic land",
+                "search your library for up to three basic land",
+                "search your library for a plains",
+                "search your library for an island",
+                "search your library for a swamp",
+                "search your library for a mountain",
+                "search your library for a forest",
+                "search your library for a land card",
+            )
+            if not any(p in text for p in land_only_phrases):
+                tags.add("tutor")
 
         # Graveyard filler (self-mill, loot, discard-to-draw)
         if any(phrase in text for phrase in [
@@ -1176,10 +1197,18 @@ class CardDatabase:
             # Storm pieces
             "Ruby Medallion": {"cost_reducer", "mana_source", "combo"},
             "Past in Flames": {"flashback", "combo"},
-            "Gifts Ungiven": {"tutor", "combo", "instant_speed"},
+            # Gifts Ungiven and Unmarked Grave: 'tutor' is now derived
+            # generically from "search your library for ..." (see
+            # OracleTextParser.classify_card_role); leave only the
+            # tags that are NOT auto-derived.
+            "Gifts Ungiven": {"combo"},
+            # Wish reaches outside the game (sideboard) rather than
+            # searching the library, so 'tutor' must remain explicit
+            # — the generic predicate intentionally does not fire on
+            # sideboard-fetch cards.
             "Wish": {"tutor", "combo"},
             # Graveyard enablers
-            "Unmarked Grave": {"tutor", "graveyard_filler", "combo"},
+            "Unmarked Grave": {"graveyard_filler", "combo"},
             "Faithful Mending": {"graveyard_filler", "cantrip", "instant_speed", "flashback"},
             # ETB value creatures
             "Omnath, Locus of Creation": {"creature", "etb_value", "threat", "cantrip"},
@@ -1191,7 +1220,9 @@ class CardDatabase:
             "Flickerwisp": {"creature", "etb_value", "evasion"},
             "Thragtusk": {"creature", "etb_value", "threat"},
             "Mulldrifter": {"creature", "etb_value", "cantrip", "evoke"},
-            "Stoneforge Mystic": {"creature", "etb_value", "tutor", "early_play"},
+            # Stoneforge Mystic: 'tutor' now derived from "search your
+            # library for an Equipment card" via the generic predicate.
+            "Stoneforge Mystic": {"creature", "etb_value", "early_play"},
             "Seasoned Pyromancer": {"creature", "etb_value", "token_maker"},
             "Orcish Bowmasters": {"creature", "etb_value", "threat", "token_maker", "instant_speed"},
             "Primeval Titan": {"creature", "etb_value", "threat", "ramp"},
