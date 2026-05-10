@@ -2067,10 +2067,13 @@ AMASS_WORD_MAP: dict = {
     'nine': 9,   # magic-allow: oracle-text cardinal
     'ten': 10,   # magic-allow: oracle-text cardinal
 }
-"""Word→integer cardinal map for parsing amass clauses ("amass three"
-→ +3 +1/+1 counters). These literals encode CR 107 cardinals — they
-are not tuning weights. Each value is tagged with `# magic-allow:
-oracle-text cardinal` because they encode rules text.
+"""Rules-constant: word→integer cardinal map for parsing amass clauses
+("amass three" → +3 +1/+1 counters). These literals encode CR 107
+(Numbers and Symbols) English cardinals one through ten — the closed
+set of words that appear after the keyword "amass" on printed cards.
+They are not tuning weights; each value is tagged with `# magic-allow:
+oracle-text cardinal` because they encode the comprehensive rules text
+itself rather than any AI heuristic.
 
 Used by `_clause_token_power` in `ai/ev_evaluator.py`.
 """
@@ -3665,15 +3668,16 @@ Used by `_recalculate_priors` in `ai/bhi.py`.
 
 
 BHI_DISCARD_FLAT_PRIOR: float = 0.5
-"""Bayesian flat prior used when the opponent's published gameplan
-declares a hand-attack spell (mulligan_keys / critical_pieces /
-always_early). With no observational evidence yet, we estimate a 50%
-chance they will deploy it before our combo turn — the standard
-non-informative "present-or-absent" 0.5 prior.
+"""Derivation: Bayesian flat (non-informative) prior used when the
+opponent's published gameplan declares a hand-attack spell
+(mulligan_keys / critical_pieces / always_early) but no observational
+evidence has accrued yet. 0.5 is the maximum-entropy "present or
+absent — equally likely" prior on a binary event before any signal
+arrives, the standard derivation from Laplace's principle of
+indifference. Posterior probabilities update toward 0 or 1 as
+priority-passes are observed via `_recalculate_priors`.
 
 Used by `BayesianHandTracker._compute_discard_prior` in `ai/bhi.py`.
-Posterior probabilities are updated as priority-passes are observed
-via `_recalculate_priors`.
 """
 
 
@@ -3904,12 +3908,22 @@ COMBO_ROLE_PRIORITY_LADDER: dict = {
     'interaction': 5,
     'fillers': 6,
 }
-"""Ladder: card-role priority used by `_build_role_cache` to pick
-the most specific role for a card listed under multiple roles. Lower
-= higher priority (chosen first). Structure matters more than the
-absolute numbers — the ordering rituals < payoffs < engines <
-enablers < protection < interaction < fillers reflects "most-specific
-combo role" first.
+"""Derived ladder: card-role priority used by `_build_role_cache` to
+pick the most specific role for a card listed under multiple roles.
+Lower number = higher priority (chosen first). The absolute integers
+are arbitrary — only the ordering matters. The ordering is derived
+from role specificity:
+
+    rituals/fuel (0)   — most concrete: a specific resource step
+    payoffs/finishers (1) — concrete win condition
+    engines (2)        — repeatable resource generators
+    enablers (3)       — set up payoffs but don't win directly
+    protection (4)     — situational backup
+    interaction (5)    — generic and replaceable
+    fillers (6)        — least specific, last-resort tag
+
+Picking the lowest-numbered role gives "most-specific combo role"
+when a card is multiply-tagged in `decks/gameplans/*.json`.
 
 Used by `_build_role_cache` in `ai/combo_calc.py`.
 """
@@ -4215,11 +4229,14 @@ Used by `_project_cycling` in `ai/finisher_simulator.py`.
 
 
 CHAIN_ARCHETYPE_MATCH_PRIORITY: int = 4
-"""Tiebreaker: priority assigned to a candidate pattern whose name
-matches the deck's archetype hint (storm/cascade/reanimation/cycling).
-4 sits above the default ordering (storm=3, reanimation=2, cascade=1,
-cycling=0) so an archetype-hinted match always wins ties — used only
-when EV proxies are equal between candidates.
+"""Derived tiebreaker: priority assigned to a candidate pattern whose
+name matches the deck's archetype hint (storm/cascade/reanimation/
+cycling). Value is derived as `max(CHAIN_DEFAULT_PRIORITY_ORDER) + 1`
+= 3 + 1 = 4 — the smallest integer that strictly dominates every
+default ordering entry, so an archetype-hinted match always wins ties
+without affecting non-tied comparisons. Per-archetype guidance from
+the deck's gameplan therefore overrides the generic default ordering
+exactly when EV proxies are equal between candidates.
 
 Used by `_priority` in `simulate_finisher_chain`.
 """
@@ -4227,10 +4244,21 @@ Used by `_priority` in `simulate_finisher_chain`.
 
 CHAIN_DEFAULT_PRIORITY_ORDER: dict = {"storm": 3, "reanimation": 2,
                                        "cascade": 1, "cycling": 0}
-"""Tiebreaker: default candidate-pattern ordering when no archetype
-hint binds. Reflects how directly each pattern translates to damage:
-storm and reanimation deal damage outright; cascade and cycling set
-up boards that need an extra turn to convert. Highest = preferred.
+"""Derived tiebreaker: default candidate-pattern ordering applied
+when no archetype hint binds. Highest integer = most preferred.
+Ordering is derived from how directly each pattern converts to
+damage on the turn it fires:
+
+    storm (3)        — Grapeshot/Galvanic Blast points damage outright
+    reanimation (2)  — puts a finisher into play that swings same turn
+    cascade (1)      — resolves a free spell, but usually a creature
+                       that needs a turn to attack
+    cycling (0)      — replaces itself; the eventual payoff (Living
+                       End / Architects) is one more step removed
+
+Storm and reanimation deal damage on the resolving turn, so they
+outrank cascade/cycling which need an extra combat step. Used only
+when EV proxies are equal between candidates.
 
 Used by `_priority` in `simulate_finisher_chain`.
 """
