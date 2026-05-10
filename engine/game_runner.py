@@ -89,6 +89,18 @@ class AICallbacks(GameCallbacks):
         arch_enum = DECK_ARCHETYPES.get(deck_name)
         return arch_enum.value if arch_enum else "midrange"
 
+    def _get_gameplan_for(self, game, player_idx: int):
+        """Return the loaded gameplan for the player's deck (or None
+        if the deck has no gameplan registered). Used by the
+        multicolor-urgency shock-payment override and any other
+        runner-side logic that needs to consult `strategy_tags`."""
+        from ai.gameplan import create_goal_engine
+        deck_name = game.players[player_idx].deck_name
+        if not deck_name:
+            return None
+        engine = create_goal_engine(deck_name)
+        return engine.gameplan if engine is not None else None
+
     def decide_optional_cost(self, game, player_idx, opt) -> bool:
         """Single AI seam for every optional payment.
 
@@ -126,6 +138,26 @@ class AICallbacks(GameCallbacks):
                     if should_stagger_shock(game, player_idx, c, archetype):
                         return False
                     break
+
+            # Multicolor-urgency override: 3+ color decks (4c Omnath,
+            # 4/5c Control) need T1-T3 untapped color access enough
+            # that paying 2 life is strictly correct even when
+            # `evaluate_board` doesn't yet credit the colour-fix
+            # value. Without this, midrange-archetype evaluator at
+            # full life with no clock scores skip == pay (or skip
+            # higher), and the AI defers life payment indefinitely
+            # → multi-color spells get stranded uncast.
+            #
+            # Detection: gameplan declares `strategy_tags` containing
+            # `multicolor_urgency`. Generic; no deck names. Any deck
+            # that runs cards with 3+ unique mana symbols can opt in
+            # by adding the tag.
+            if game.turn_number <= 3:
+                gameplan = self._get_gameplan_for(game, player_idx)
+                tags = (getattr(gameplan, 'strategy_tags', set())
+                        if gameplan is not None else set())
+                if 'multicolor_urgency' in tags:
+                    return True
 
         pay = Choice(
             name=opt.name, apply=opt.apply_to_snap,
