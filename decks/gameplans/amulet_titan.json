@@ -1,6 +1,7 @@
 {
   "deck_name": "Amulet Titan",
   "archetype": "combo",
+  "strategy_tags": ["ramp_into_payoff"],
   "goals": [
     {
       "goal_type": "DEPLOY_ENGINE",

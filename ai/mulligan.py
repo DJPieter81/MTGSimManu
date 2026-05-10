@@ -219,12 +219,16 @@ class MulliganDecider:
             # else: hand has non-land mana sources — allow through
 
         # ── Soft ceiling: 5+ lands with < 2 spells = mulligan ─────────
-        # Exception: Amulet Titan actively wants land-heavy hands.
+        # Exception: decks tagged "ramp_into_payoff" in their
+        # gameplan JSON (Amulet Titan today; future Tron variants)
+        # actively want land-heavy hands. The tag is generic — no
+        # deck-name string match — so adding a new ramp deck is a
+        # one-line gameplan JSON edit, not a code change.
         if land_count >= MULLIGAN_FLOOD_LAND_COUNT and len(spells) < MULLIGAN_MIN_SPELLS_BASIC:
-            deck_name = ""
+            tags: set = set()
             if self.goal_engine and self.goal_engine.gameplan:
-                deck_name = self.goal_engine.gameplan.deck_name
-            if "amulet" not in deck_name.lower():
+                tags = self.goal_engine.gameplan.strategy_tags or set()
+            if "ramp_into_payoff" not in tags:
                 self.last_reason = (
                     f"{land_count} lands with only {len(spells)} spell(s) — soft ceiling"
                 )

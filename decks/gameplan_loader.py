@@ -270,6 +270,7 @@ def _parse_gameplan(
         mulligan_keys=mulligan_keys,
         mulligan_min_lands=data.get("mulligan_min_lands", 2),
         mulligan_max_lands=data.get("mulligan_max_lands", 4),
+        strategy_tags=set(data.get("strategy_tags", [])),
         mulligan_cmc_profile=mulligan_cmc_profile,
         mulligan_effective_cmc=data.get("mulligan_effective_cmc", {}),
         mulligan_require_creature_cmc=data.get("mulligan_require_creature_cmc", 0),
