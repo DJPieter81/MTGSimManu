@@ -1944,6 +1944,28 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
                 r'cards?', oracle)
             if m:
                 draws_n = max(draws_n, _parse_oracle_count(m.group(1)))
+        elif ('search your library' in oracle
+              and 'put them into your hand' in oracle):
+            # Library-search tutors where ALL N searched cards go to
+            # hand: Squadron Hawk ("put them into your hand"),
+            # Increasing Ambition flashback mode, Plea for Guidance
+            # (creature/enchantment all-to-hand), and similar all-N
+            # patterns.
+            #
+            # Tightened from "search your library + into your hand"
+            # to require the exact "put them into your hand" wording
+            # — this excludes split-fate phrasings ("put one onto the
+            # battlefield and the other into your hand", Cultivate /
+            # Kodama's Reach pattern) where only 1 card actually
+            # reaches hand. Singular "search for a card" phrasings
+            # fall through to baseline +1 (already correct via
+            # is_draw_engine).
+            m = _re.search(
+                r'search your library for (?:up to )?'
+                r'(one|two|three|four|five|six|seven|\d+) cards?',
+                oracle)
+            if m:
+                draws_n = max(draws_n, _parse_oracle_count(m.group(1)))
         extra = draws_n - 1  # baseline already added above
         projected.my_hand_size += extra
         projected.cards_drawn_this_turn += extra
