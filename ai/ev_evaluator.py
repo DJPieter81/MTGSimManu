@@ -1871,12 +1871,40 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         projected.my_evasion_power = 0
         projected.my_lifelink_power = 0
 
-    # Burn damage to face
+    # Burn damage to face — parsed from oracle text first (generic
+    # across all printed burn spells), falling back to the
+    # `card_knowledge.json` per-card table only when oracle parsing
+    # cannot extract the amount (variable-X cases like Tribal Flames
+    # where damage = number of basic land types). Matches `deals N
+    # damage` in the canonical Modern wording.
     if 'burn' in tags or ('damage' in (t.oracle_text or '').lower()):
         oracle = (t.oracle_text or '').lower()
-        # Try to detect damage amount from oracle text
-        from decks.card_knowledge_loader import get_burn_damage
-        dmg = get_burn_damage(t.name)
+        import re as _re
+        # Generic extractor: literal "deals N damage" (Lightning
+        # Bolt 3, Lava Spike 3, Boros Charm 4, Unholy Heat 6 in
+        # delirium-default, Galvanic Blast 4, Searing Blaze 3).
+        # English-numeral form for older printings.
+        _NUMS = ('zero', 'one', 'two', 'three', 'four', 'five', 'six',
+                 'seven', 'eight', 'nine', 'ten')
+        m = _re.search(
+            r'deals (\d+) damage', oracle)
+        if not m:
+            m = _re.search(
+                r'deals (one|two|three|four|five|six|seven|eight|nine|ten) '
+                r'damage', oracle)
+        dmg = 0
+        if m:
+            tok = m.group(1)
+            dmg = int(tok) if tok.isdigit() else (
+                _NUMS.index(tok) if tok in _NUMS else 0)
+        if dmg == 0:
+            # Fallback: per-card knowledge table for variable-X cards
+            # where oracle says "deals X damage where X is …" — these
+            # cannot be reduced to a literal numeral. The fallback
+            # table is shrinking as oracle parsing improves; the
+            # abstraction contract treats it as a TODO surface.
+            from decks.card_knowledge_loader import get_burn_damage
+            dmg = get_burn_damage(t.name)
         if dmg > 0:
             # Value of face damage depends on proximity to lethal: a point of
             # burn against a 20-life opp with no clock is a hope; the same
