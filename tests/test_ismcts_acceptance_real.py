@@ -11,18 +11,29 @@ Acceptance criteria (per docs/research/2026-05_phase_4a_ismcts_scoping.md):
   - ≥ 4 of 12 strict ISMCTS wins (MCTS strictly dominates the
     heuristic with p_value_proxy < 0.10)
 
-The "heuristic baseline" picker for these synthetic fixtures is
-the greedy-1-ply scorer from ``ai/search/snapshot_adapter.py``
-(``heuristic_rollout`` applied to the root state). This isn't
-the production EVPlayer scorer — it's a placeholder for a
-realistic 1-ply baseline. A follow-up PR can wire the real
-production scorer.
+Two heuristic-baseline variants are wired:
 
-Skipped without ``ISMCTS_ACCEPTANCE=1`` so CI doesn't block on
-the heavier run (~60s total at 12 fixtures × 50 forward sims).
+  1. ``test_ismcts_meets_acceptance_gate`` — uses the synthetic
+     1-ply scorer (``snapshot_adapter.heuristic_rollout``) which
+     scores by ``position_value(after-state)`` directly. Kept for
+     historical comparability with the Phase-4A scoping target.
+
+  2. ``test_ismcts_meets_acceptance_gate_production_baseline`` —
+     uses the production-style scorer adapter
+     (``ai/search/evplayer_scorer_adapter.py``) which mirrors the
+     value-delta formulation (``after − before``) used by
+     ``ai.ev_evaluator.compute_play_ev``. This is the
+     apples-to-apples baseline the acceptance gate is meant to
+     compare ISMCTS against (Phase 5 step 1).
+
+Both gate tests are skipped without ``ISMCTS_ACCEPTANCE=1`` so CI
+doesn't block on the heavier run (~60s total at 12 fixtures × 50
+forward sims).
 
 Reference:
 - docs/research/2026-05_phase_4a_ismcts_scoping.md
+- docs/handoff/2026-05_session_summary.md § "Phase 5 — production
+  scorer wiring"
 - tests/fixtures/ismcts_acceptance_fixtures.jsonl (12 decisions)
 """
 from __future__ import annotations
@@ -36,6 +47,10 @@ import pytest
 
 from ai.ev_evaluator import EVSnapshot
 from ai.search.ab_compare import acceptance_gate
+from ai.search.evplayer_scorer_adapter import (
+    make_production_picker,
+    production_scorer_picker,
+)
 from ai.search.ismcts import SearchConfig
 from ai.search.snapshot_adapter import (
     ActionToken,
@@ -170,3 +185,125 @@ def test_heuristic_picker_returns_action_token():
     state = _state_factory_for(fixture)()
     pick = picker(state)
     assert isinstance(pick, ActionToken)
+
+
+# ─── Phase 5 — production scorer baseline ────────────────────────────
+
+
+def _production_picker_factory(fixture):
+    """Returns the production-scorer picker for the fixture.
+
+    Mirrors ``ai.ev_evaluator.compute_play_ev``'s value-delta
+    formulation (``evaluate_board(after) − evaluate_board(before)``)
+    plus urgency-factor discount and archetype propagation. This is
+    the heuristic baseline the Phase 4A acceptance gate is supposed
+    to compare ISMCTS against — the synthetic
+    ``snapshot_adapter.heuristic_rollout`` is a less-faithful
+    placeholder.
+
+    See ``ai/search/evplayer_scorer_adapter.py`` for the contract.
+    """
+    archetype = fixture.get("archetype")  # may be None on most fixtures
+    return make_production_picker(archetype=archetype)
+
+
+def test_production_picker_returns_action_token_on_every_fixture():
+    """Smoke test for the production scorer adapter against all 12
+    corpus fixtures. Type-compatibility with ISMCTS's output is the
+    hard requirement; this test fails red if the adapter ever stops
+    returning ``ActionToken``."""
+    fixtures = _load_fixtures()
+    for fixture in fixtures:
+        picker = _production_picker_factory(fixture)
+        state = _state_factory_for(fixture)()
+        pick = picker(state)
+        assert isinstance(pick, ActionToken), (
+            f"Fixture {fixture['id']} ({fixture['label']}): "
+            f"production picker returned {type(pick).__name__}, "
+            f"expected ActionToken."
+        )
+
+
+def test_production_picker_picks_legal_action_on_every_fixture():
+    """The production picker must pick from the enumerated legal
+    set on every fixture — otherwise ``apply_action`` downstream in
+    the A/B harness would mis-step.
+
+    Note: ``enumerate_actions`` always appends a 'pass turn' token,
+    so legal_labels includes that synthetic option."""
+    fixtures = _load_fixtures()
+    for fixture in fixtures:
+        picker = _production_picker_factory(fixture)
+        state = _state_factory_for(fixture)()
+        legal_labels = {a.label for a in enumerate_actions(state)}
+        pick = picker(state)
+        assert pick.label in legal_labels, (
+            f"Fixture {fixture['id']} ({fixture['label']}): "
+            f"production picker chose {pick.label!r}, not in legal "
+            f"set {legal_labels}."
+        )
+
+
+@pytest.mark.skipif(
+    not os.environ.get("ISMCTS_ACCEPTANCE"),
+    reason="Set ISMCTS_ACCEPTANCE=1 to run the heavy gate "
+           "(~60s for 12 fixtures × 50 forward sims).",
+)
+def test_ismcts_meets_acceptance_gate_production_baseline():
+    """Phase 5 step 1 — the apples-to-apples acceptance gate.
+
+    Same shape as ``test_ismcts_meets_acceptance_gate`` but with the
+    heuristic baseline routed through the production scorer adapter
+    (``ai/search/evplayer_scorer_adapter.py``) instead of the
+    synthetic ``snapshot_adapter.heuristic_rollout``. Closes the
+    handoff item in ``docs/handoff/2026-05_session_summary.md``
+    § "Phase 5 — production scorer wiring".
+
+    Acceptance criteria are unchanged from the synthetic gate:
+      - 0 strict heuristic wins
+      - ≥ 4 of 12 strict ISMCTS wins
+    """
+    fixtures = _load_fixtures()
+    assert len(fixtures) == 12
+
+    config = SearchConfig(n_rollouts=500, rollout_depth=2, seed=42)
+    report = acceptance_gate(
+        fixtures=fixtures,
+        ismcts_config=config,
+        heuristic_picker_factory=_production_picker_factory,
+        enumerate_actions=enumerate_actions,
+        rollout_policy=heuristic_rollout,
+        evaluate_terminal=evaluate_terminal,
+        transition=apply_action,
+        state_factory_for=_state_factory_for,
+        n_rollouts=20,
+        sim_depth=2,
+    )
+
+    print(f"\nProduction-baseline acceptance gate report:")
+    print(f"  ISMCTS strict wins   : {report['ismcts_strict_wins']}")
+    print(f"  Heuristic strict wins: {report['heuristic_strict_wins']}")
+    print(f"  Ties                 : {report['ties']}")
+    print(f"  Passed               : {report['passed']}")
+    for fix, result in zip(fixtures, report['results']):
+        marker = "✓" if result.ismcts_strict_win else (
+            "✗" if result.heuristic_strict_win else "="
+        )
+        print(f"    {marker} {fix['id']:2d} {fix['label']}: "
+              f"H={result.heuristic_action.label!r}, "
+              f"M={result.ismcts_action.label!r}, "
+              f"Δ={result.mean_diff:+.2f}, p={result.p_value_proxy:.3f}")
+
+    assert report['heuristic_strict_wins'] == 0, (
+        f"Found {report['heuristic_strict_wins']} strict heuristic "
+        f"win(s) under the production baseline — ISMCTS is "
+        f"regressing on these fixtures. The production baseline is "
+        f"a stronger heuristic than the synthetic 1-ply scorer; if "
+        f"the apples-to-apples gate flips heuristic-favourable, "
+        f"that's signal worth investigating."
+    )
+    assert report['ismcts_strict_wins'] >= 4, (
+        f"Only {report['ismcts_strict_wins']} of 12 strict ISMCTS "
+        f"wins under the production baseline — below the 4-win "
+        f"acceptance threshold."
+    )
