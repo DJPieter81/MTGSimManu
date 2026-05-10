@@ -188,6 +188,137 @@ The simulator scaffolding from PR #204 is preserved on `main` and
 its tests still pass.  Migration infrastructure (`combo_evaluator.py`)
 preserved in-tree as a starting sketch.
 
+## Concrete trace examples
+
+Two reproducible Bo3 traces showing the same failure mode at
+different storm counts. Both confirm the projection-layer issue
+described above: `compute_play_ev` returns deep-negative EV
+(~-10) for chain-prerequisite spells (rituals, mana-fix,
+flashback-enablers like Past in Flames) regardless of whether
+the chain payoff is reachable in the same turn or the next.
+
+### Trace 1: storm = 0, no finisher in hand
+
+Verbose seed 50000 T4 (Storm vs Boros Energy). Storm cast Past in
+Flames 3x without ever drawing/casting Grapeshot. Mana-burn from
+speculative chain. Hard-clamped today by the
+`RITUAL CHAIN GATE storm=0` branch in `combo_calc.py:898-908`
+(`STORM_HARD_HOLD` sentinel).
+
+### Trace 2: storm >= 1, mid-chain freeze visible in EV table
+
+Reproducer (deterministic from seed):
+
+```
+python run_meta.py --bo3 affinity storm -s 60600 \
+  --dump-replay replays/affinity_vs_storm_60600.ndjson
+```
+
+Game flow at G3 T4 (Ruby Storm on the play, life 11; Affinity
+life 20). Storm chains 7 spells in one turn:
+
+| # | Decision | Spell                     | Storm count after | Mana state |
+|---|----------|---------------------------|-------------------|------------|
+| 1 | g3t4d70  | Ral, Monsoon Mage         | 1                 | -1R cost reducer online |
+| 2 | g3t4d71  | Wrenn's Resolve (cantrip) | 2                 | draws 2 |
+| 3 | g3t4d72  | Glimpse the Impossible    | 3                 | draws 3 (incl. Grapeshot) |
+| 4 | g3t4d73  | Desperate Ritual + splice | 4                 | +6R from doubled ritual |
+| 5 | g3t4d74  | Glimpse the Impossible    | 5                 | draws 3 (incl. Ruby Medallion) |
+| 6 | g3t4d75  | Ruby Medallion            | 6                 | -1R reducer stacked |
+| - | g3t4d76  | **PASS (end of main 1)**  | 6                 | mana exhausted; combat skipped |
+| 7 | g3t4d77  | Manamorphose (main 2)     | 7                 | draws 1 + adds 2 any |
+| - | g3t4d78  | **PASS (end of main 2)**  | 7                 | 2 floating |
+
+EV table at `g3t4d76` from the NDJSON `alternatives` field
+(end of main 1, storm=6, Affinity at 20 life):
+
+| Action                 | EV     | Source                                      |
+|------------------------|--------|---------------------------------------------|
+| pass (chosen)          |  0.00  | tiebreaker default                          |
+| Grapeshot              | -5.63  | combo modifier - fuel-in-hand hold          |
+| Manamorphose           | -10.00 | **base projection - no chain credit**       |
+| Desperate Ritual       | -10.07 | **base projection - no chain credit**       |
+| Reckless Impulse       | -10.31 | **base projection - no chain credit**       |
+
+EV table at `g3t4d78` (end of main 2, storm=7, Affinity at 20):
+
+| Action                 | EV     | Source                                      |
+|------------------------|--------|---------------------------------------------|
+| pass (chosen)          |  0.00  | tiebreaker default                          |
+| Desperate Ritual       | -9.95  | **base projection - no chain credit**       |
+| Reckless Impulse (x2)  | -10.25 | **base projection - no chain credit**       |
+| Past in Flames         | -10.28 | **base projection - no chain credit**       |
+
+Trace through `compute_play_ev(Past in Flames)` at d78:
+
+1. `_enumerate_this_turn_signals` returns
+   `['combo_continuation', 'flashback_enabler']` because:
+   - archetype = "storm"
+   - storm_count = 7 > 0
+   - 'flashback' in tags
+   - graveyard contains castable instants/sorceries
+     (Wrenn's Resolve, Glimpse, Desperate Ritual...)
+2. Signals non-empty -> enters full projection path
+   (NOT `-_compute_exposure_cost` shortcut).
+3. `evaluate_board(after_pif_resolves) - evaluate_board(now)`
+   ~= -10. Projection sees:
+   - -1 card from hand (~= -2.5 via `CARD_IN_HAND_VALUE`)
+   - -4 mana spent (Past in Flames costs 3R)
+   - opponent-response discount (BHI counter/removal density)
+   - **no credit for "this card grants flashback to N graveyard
+     spells, enabling a much bigger T5 chain"** - the simulator
+     projects ONE spell per call; multi-turn chain enablement
+     is invisible.
+4. `card_combo_modifier(Past in Flames)` returns 0: the storm>=1
+   gate at `combo_calc.py:983-1000` checks `_has_storm_finisher`
+   first; Grapeshot is in hand, so the penalty branch is skipped
+   -> 0.
+5. Final EV = -10.28 + 0 = -10.28.
+
+### Why the chosen pass is "right answer, wrong reason"
+
+In this specific seed, pass is also game-theoretically correct
+at d76 and d78 - Affinity is at 20 life, Storm has no realistic
+path to lethal on T4 (storm=6 + Grapeshot deals 7; storm=7 +
+ritual + Grapeshot deals 9). The mid-chain freeze surfaces in
+the EV table, but the AI happens to pick the right action via
+the `pass = 0.00 > -10` tiebreaker, not because the projection
+correctly rated the chain.
+
+The structural issue is that **the same -10 score appears
+regardless of whether the chain would close lethal**. In states
+where the chain WOULD close (e.g. opp at 15 life with the same
+storm count), the AI would still pass at 0.00 over Grapeshot at
+-5.63 and rituals at -10. The trace makes the structural
+blindness visible; this seed just doesn't punish it.
+
+Storm goes on to win G3 on T5 in this run via a continued chain
+off the next draw step - the freeze costs nothing in this
+specific game, but the EV pattern is the same one that punts
+chains in other seeds and other matchups.
+
+### Sweep context
+
+Five Bo3 matches at seeds 60100 / 60600 / 61100 / 61600 / 62100
+(`run_meta.py --bo3 affinity storm -s <SEED>`):
+
+| Seed  | Result                | Notes                       |
+|-------|-----------------------|-----------------------------|
+| 60100 | Affinity 2-0          | G1 T4, G2 T4 - fastest stomp |
+| 60600 | **Ruby Storm 2-1**    | Storm G1 T4, Aff G2 T4, Storm G3 T5 - the diagnostic match |
+| 61100 | Affinity 2-0          | G1 T6, G2 T5                 |
+| 61600 | Affinity 2-0          | G1 T6, G2 T7                 |
+| 62100 | Affinity 2-0          | G1 T5, G2 T5                 |
+
+Aggregate: Affinity 4-1 in matches, 8-2 in games (80% game WR).
+Consistent with the ~87% Affinity outlier flagged in
+`PROJECT_STATUS.md` - Phase D's structural fix is one
+contributing factor among several. Even with chain-vision,
+Affinity's T4 Cranial Plating + Signal Pest line frequently
+outraces Storm's T4 ceiling; the chain-blindness leaves Storm
+below its true ceiling in matches where it would otherwise
+close.
+
 ## Cross-references
 
 - Original Phase D plan: PR #202 description (deferred section)
@@ -196,3 +327,5 @@ preserved in-tree as a starting sketch.
   (`card_combo_modifier`)
 - Migration sketch: `ai/combo_evaluator.py` (in-tree, not wired)
 - Storm gameplan: `decks/gameplans/ruby_storm.json`
+- Trace 2 NDJSON: `replays/affinity_vs_storm_60600.ndjson`
+  (decisions `g3t4d76`, `g3t4d78`)
