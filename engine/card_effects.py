@@ -552,6 +552,13 @@ def past_in_flames_resolve(game, card, controller, targets=None, item=None):
     for c in game.players[controller].graveyard:
         if c.template.is_instant or c.template.is_sorcery:
             c.has_flashback = True
+    # Record the turn-scoped fact: a graveyard-wide static
+    # flashback grant has resolved this turn. The grant is
+    # until-end-of-turn and applies to all eligible graveyard
+    # cards, so a second copy contributes zero incremental value
+    # — the AI consults this flag in signal #17 to suppress the
+    # same-turn signal on redundant casts.
+    game.players[controller].flashback_granted_this_turn = True
     game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Past in Flames grants flashback")
 
