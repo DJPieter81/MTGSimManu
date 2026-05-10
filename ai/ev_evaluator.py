@@ -1880,18 +1880,34 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
     if 'burn' in tags or ('damage' in (t.oracle_text or '').lower()):
         oracle = (t.oracle_text or '').lower()
         import re as _re
+        # Skip the literal-N projection when the spell's damage
+        # actually scales with game state — these need a state-aware
+        # projection (combo_calc for storm-keyword chains, X-cost
+        # math for {x} payments). The literal "deals 1 damage" in
+        # Grapeshot's oracle is the per-copy amount, NOT the total
+        # (storm count adds copies). Falling back to the per-card
+        # table for these cards keeps the prior behaviour for state-
+        # scaled effects intact.
+        from engine.cards import Keyword as _Kw
+        is_state_scaled = (
+            _Kw.STORM in getattr(t, 'keywords', set())
+            or '{x}' in oracle
+            or 'where x is' in oracle
+        )
         # Generic extractor: literal "deals N damage" (Lightning
         # Bolt 3, Lava Spike 3, Boros Charm 4, Unholy Heat 6 in
         # delirium-default, Galvanic Blast 4, Searing Blaze 3).
         # English-numeral form for older printings.
         _NUMS = ('zero', 'one', 'two', 'three', 'four', 'five', 'six',
                  'seven', 'eight', 'nine', 'ten')
-        m = _re.search(
-            r'deals (\d+) damage', oracle)
-        if not m:
+        m = None
+        if not is_state_scaled:
             m = _re.search(
-                r'deals (one|two|three|four|five|six|seven|eight|nine|ten) '
-                r'damage', oracle)
+                r'deals (\d+) damage', oracle)
+            if not m:
+                m = _re.search(
+                    r'deals (one|two|three|four|five|six|seven|eight|nine|ten) '
+                    r'damage', oracle)
         dmg = 0
         if m:
             tok = m.group(1)
