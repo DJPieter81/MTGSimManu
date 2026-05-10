@@ -117,3 +117,73 @@ def test_bug_detector_no_longer_flags_wurm_or_drone(card_db):
     flagged_names = {s.card_name for s in suspicions}
     assert "Wurmcoil Engine" not in flagged_names
     assert "Pinnacle Emissary" not in flagged_names
+
+
+# ─── TOKEN_DEFS fallback path (no source_oracle) ─────────────────────
+#
+# Rule under test: any caller that creates a "wurm" or "drone" token
+# without passing source_oracle must still get the correct
+# [Artifact, Creature] type line. parse_token_spec is the primary path
+# but only fires when source_oracle is supplied; TOKEN_DEFS is the
+# fallback for callers (or future call-sites) that haven't been
+# wired through. Per-card oracle text is the *source of truth*; the
+# fallback table must agree.
+#
+# This belt-and-suspenders coverage mirrors the Phase 1C fix shape
+# for Construct + Germ in test_artifact_creature_tokens.py — those
+# tokens have BOTH a parse_token_spec match AND a TOKEN_DEFS entry
+# with [ARTIFACT, CREATURE]; Wurm + Drone should follow suit.
+
+
+def test_wurm_token_typed_as_artifact_creature_when_created_from_artifact_source(card_db):
+    """Wurm tokens (printed by Wurmcoil Engine et al. — every
+    "create a P/T <colour> Phyrexian Wurm artifact creature token"
+    oracle) must be Artifact + Creature even when callers fall
+    through the TOKEN_DEFS path without source_oracle.
+
+    This is the same rule fixed for Construct in Phase 1C: Wurm
+    tokens count toward metalcraft, Affinity discount, Cranial
+    Plating's per-artifact scaling, and are valid targets for
+    artifact destruction. A Creature-only fallback misses all four.
+    """
+    import random
+    game = GameState(rng=random.Random(0))
+    tokens = game.create_token(0, "wurm", count=1)  # no source_oracle
+    assert len(tokens) == 1
+    wurm = tokens[0]
+    assert CardType.CREATURE in wurm.template.card_types, (
+        "Wurm token must be a Creature."
+    )
+    assert CardType.ARTIFACT in wurm.template.card_types, (
+        f"Wurm token must be an Artifact (oracle: 'Phyrexian Wurm "
+        f"artifact creature token') even when source_oracle is not "
+        f"passed — TOKEN_DEFS fallback must agree with parse_token_spec. "
+        f"Got card_types={wurm.template.card_types}."
+    )
+
+
+def test_drone_token_typed_as_artifact_creature_when_created_from_artifact_source(card_db):
+    """Drone tokens (printed by Pinnacle Emissary et al. — every
+    "create a 1/1 colorless Drone artifact creature token" oracle)
+    must be Artifact + Creature even when callers fall through the
+    TOKEN_DEFS path without source_oracle.
+
+    Same rule as Wurm: Affinity / Pinnacle Affinity rely on every
+    artifact-creature token being correctly typed for metalcraft
+    + cost reduction + Plating scaling. The TOKEN_DEFS fallback
+    must encode the artifact-creature type line.
+    """
+    import random
+    game = GameState(rng=random.Random(0))
+    tokens = game.create_token(0, "drone", count=1)  # no source_oracle
+    assert len(tokens) == 1
+    drone = tokens[0]
+    assert CardType.CREATURE in drone.template.card_types, (
+        "Drone token must be a Creature."
+    )
+    assert CardType.ARTIFACT in drone.template.card_types, (
+        f"Drone token must be an Artifact (oracle: 'Drone artifact "
+        f"creature token') even when source_oracle is not passed — "
+        f"TOKEN_DEFS fallback must agree with parse_token_spec. "
+        f"Got card_types={drone.template.card_types}."
+    )

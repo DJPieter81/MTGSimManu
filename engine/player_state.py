@@ -275,6 +275,16 @@ TOKEN_DEFS = {
     # the token's own "+1/+1 for each artifact you control" self-reference.
     "construct": ("Construct", [CardType.ARTIFACT, CardType.CREATURE], 0, 0, set()),
     "germ": ("Germ", [CardType.ARTIFACT, CardType.CREATURE], 0, 0, set()),
+    # Wurm (Wurmcoil Engine et al.) and Drone (Pinnacle Emissary et al.)
+    # are *artifact creature* tokens per oracle text. Same rule shape as
+    # Construct/Germ above: Artifact + Creature so they count toward
+    # metalcraft, Affinity discount on artifact spells, Cranial Plating's
+    # per-artifact scaling, and are valid artifact-removal targets.
+    # parse_token_spec is the primary path when source_oracle is supplied;
+    # this entry is the TOKEN_DEFS fallback for callers that omit it.
+    # Surfaced by tools/oracle_bug_detector.py --target token_artifact_typing.
+    "wurm": ("Wurm", [CardType.ARTIFACT, CardType.CREATURE], 3, 3, set()),
+    "drone": ("Drone", [CardType.ARTIFACT, CardType.CREATURE], 1, 1, set()),
     "cat": ("Cat", [CardType.CREATURE], 1, 1, set()),
     "elemental": ("Elemental", [CardType.CREATURE], 1, 1, set()),
     "treasure": ("Treasure", [CardType.ARTIFACT], 0, 0, set()),
