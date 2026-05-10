@@ -120,11 +120,7 @@ def _check_ritual(name: str, oracle: str) -> Optional[Suspicion]:
     if result is None:
         return None
     lower = oracle.lower()
-    # Find any standalone "add" — and verify it isn't inside
-    # "additional".
     for m in re.finditer(r'\badd\b', lower):
-        # Look at the 12 chars BEFORE this occurrence — are we
-        # inside "additional"?
         start = max(0, m.start() - 12)
         prefix = lower[start:m.start()]
         if "addition" in prefix:
@@ -141,6 +137,105 @@ def _check_ritual(name: str, oracle: str) -> Optional[Suspicion]:
                 ),
                 oracle_excerpt=oracle[:200],
             )
+    return None
+
+
+def _check_token_artifact_typing(name: str, oracle: str) -> Optional[Suspicion]:
+    """Flag cards whose oracle creates an "artifact creature
+    token" but where the token might not be typed correctly in
+    TOKEN_DEFS. Phase 1C found Construct + Germ misclassified as
+    Creature-only; this detector catches future token additions
+    that drop the Artifact type.
+
+    Heuristic: when the oracle explicitly says "<adjective>
+    artifact creature token", check that the token type name is
+    represented in engine/player_state.py:TOKEN_DEFS with
+    [CardType.ARTIFACT, CardType.CREATURE].
+    """
+    lower = oracle.lower()
+    # Find "<word> artifact creature token" / "<word> Phyrexian
+    # ... artifact creature token" idioms.
+    m = re.search(
+        r'\b(?:colorless\s+)?(\w+(?:\s+\w+)*)\s+artifact\s+creature\s+token',
+        lower,
+    )
+    if not m:
+        return None
+    token_label = m.group(1).strip().split()[-1]
+    # Cross-reference with TOKEN_DEFS.
+    try:
+        from engine.player_state import TOKEN_DEFS
+        from engine.cards import CardType
+    except ImportError:
+        return None
+    defn = TOKEN_DEFS.get(token_label.lower())
+    if defn is None:
+        # Token not registered — flag for human review.
+        return Suspicion(
+            card_name=name,
+            parser="token_artifact_typing",
+            parsed_result={"token_label": token_label},
+            reason=(
+                f"Oracle creates '{token_label}' artifact creature "
+                f"token but '{token_label.lower()}' isn't registered "
+                f"in TOKEN_DEFS. Token will fall back to generic 1/1 "
+                f"Creature-only and miss Artifact typing."
+            ),
+            oracle_excerpt=oracle[:200],
+        )
+    types = defn[1] if len(defn) >= 2 else []
+    if CardType.ARTIFACT not in types:
+        return Suspicion(
+            card_name=name,
+            parser="token_artifact_typing",
+            parsed_result={
+                "token_label": token_label,
+                "registered_types": [str(t) for t in types],
+            },
+            reason=(
+                f"Token '{token_label}' is registered in TOKEN_DEFS "
+                f"but does NOT include CardType.ARTIFACT. Per oracle "
+                f"text it should be Artifact + Creature. This is the "
+                f"bug class fixed in PR #304 Phase 1C for "
+                f"Construct / Germ."
+            ),
+            oracle_excerpt=oracle[:200],
+        )
+    return None
+
+
+def _check_domain_reduction(name: str, oracle: str) -> Optional[Suspicion]:
+    """Flag cards whose oracle says 'cost {N} less' AND mentions
+    'basic land type' (the domain idiom — Scion of Draco, Leyline
+    Binding) where parse_cost_reduction fires but parse_domain_
+    reduction does not. Both should agree on domain cards.
+    """
+    lower = oracle.lower()
+    if "basic land type" not in lower:
+        return None
+    if "less" not in lower or "cost" not in lower:
+        return None
+    from engine.oracle_parser import (
+        parse_cost_reduction, parse_domain_reduction,
+    )
+    cr = parse_cost_reduction(oracle)
+    dr = parse_domain_reduction(oracle)
+    # Domain reducers should be picked up by parse_domain_reduction;
+    # if parse_cost_reduction also fires AND parse_domain_reduction
+    # is None, that's a parser-coverage gap.
+    if cr is not None and dr is None:
+        return Suspicion(
+            card_name=name,
+            parser="domain_reduction_coverage",
+            parsed_result={"cr": cr, "dr": dr},
+            reason=(
+                "Oracle mentions 'basic land type' AND 'cost ... "
+                "less' but parse_domain_reduction returns None while "
+                "parse_cost_reduction returns a rule. The domain "
+                "reduction may be misclassified as a generic reducer."
+            ),
+            oracle_excerpt=oracle[:200],
+        )
     return None
 
 
@@ -221,6 +316,8 @@ def scan(target: str, deck_filter: bool, use_slm: bool) -> List[Suspicion]:
     detectors = {
         "cost_reduction": _check_cost_reduction,
         "ritual": _check_ritual,
+        "token_artifact_typing": _check_token_artifact_typing,
+        "domain_reduction_coverage": _check_domain_reduction,
     }
     if target == "all":
         chosen = list(detectors.values())
@@ -245,7 +342,10 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--target",
-        choices=("cost_reduction", "ritual", "all"),
+        choices=(
+            "cost_reduction", "ritual", "token_artifact_typing",
+            "domain_reduction_coverage", "all",
+        ),
         default="all",
         help="Which detector(s) to run.",
     )

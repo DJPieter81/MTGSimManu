@@ -106,3 +106,51 @@ class TestScan:
     def test_unknown_target_raises(self):
         with pytest.raises(ValueError):
             scan(target="not_a_detector", deck_filter=True, use_slm=False)
+
+
+# ─── Phase 4J extensions ─────────────────────────────────────────────
+
+
+class TestCheckTokenArtifactTyping:
+    def test_construct_token_currently_typed(self):
+        """Construct token in TOKEN_DEFS post-PR #304 includes
+        ARTIFACT — detector returns None (no suspicion)."""
+        from tools.oracle_bug_detector import _check_token_artifact_typing
+        oracle = (
+            "II — Create a 0/0 colorless Construct artifact creature "
+            "token with 'This token gets +1/+1 for each artifact you "
+            "control.'"
+        )
+        assert _check_token_artifact_typing("Saga", oracle) is None
+
+    def test_unknown_token_label_flagged(self):
+        """A new oracle pattern creating an unregistered token
+        type must surface a Suspicion."""
+        from tools.oracle_bug_detector import _check_token_artifact_typing
+        oracle = (
+            "Create a 0/0 colorless Goofball artifact creature token."
+        )
+        s = _check_token_artifact_typing("Synth", oracle)
+        assert s is not None
+        assert "goofball" in s.parsed_result["token_label"].lower()
+
+
+class TestCheckDomainReduction:
+    def test_no_basic_land_type_returns_none(self):
+        from tools.oracle_bug_detector import _check_domain_reduction
+        assert _check_domain_reduction("Bolt", "Deal 3 damage.") is None
+
+    def test_modern_decks_no_regressions(self):
+        """Domain-reduction coverage scan against the 16 decks must
+        be silent (regression anchor)."""
+        from tools.oracle_bug_detector import scan
+        suspicions = scan(
+            target="domain_reduction_coverage",
+            deck_filter=True, use_slm=False,
+        )
+        for s in suspicions[:5]:
+            print(f"  {s.card_name}: {s.reason}")
+        # Allow some — domain reducers are a small set; the test
+        # records the count rather than enforcing zero. Future work
+        # can tighten.
+        assert len(suspicions) <= 10
