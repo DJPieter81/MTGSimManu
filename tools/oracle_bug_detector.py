@@ -170,7 +170,23 @@ def _check_token_artifact_typing(name: str, oracle: str) -> Optional[Suspicion]:
         return None
     defn = TOKEN_DEFS.get(token_label.lower())
     if defn is None:
-        # Token not registered — flag for human review.
+        # Token not in TOKEN_DEFS — check whether the generic
+        # ``parse_token_spec`` (oracle-derived path introduced in
+        # the Phase 1C followup) extracts the artifact + creature
+        # types. If so, the token is correctly typed at runtime
+        # without a TOKEN_DEFS entry; do NOT flag.
+        try:
+            from engine.oracle_parser import parse_token_spec
+        except ImportError:
+            parse_token_spec = None  # type: ignore
+        if parse_token_spec is not None:
+            spec = parse_token_spec(oracle)
+            if spec is not None:
+                spec_types = {t.lower() for t in spec.get("types", ())}
+                if "artifact" in spec_types and "creature" in spec_types:
+                    return None
+        # Token not registered AND oracle parser doesn't produce a
+        # correctly-typed artifact-creature spec — flag for review.
         return Suspicion(
             card_name=name,
             parser="token_artifact_typing",
@@ -178,8 +194,9 @@ def _check_token_artifact_typing(name: str, oracle: str) -> Optional[Suspicion]:
             reason=(
                 f"Oracle creates '{token_label}' artifact creature "
                 f"token but '{token_label.lower()}' isn't registered "
-                f"in TOKEN_DEFS. Token will fall back to generic 1/1 "
-                f"Creature-only and miss Artifact typing."
+                f"in TOKEN_DEFS and parse_token_spec doesn't extract "
+                f"the artifact-creature types. Token will fall back "
+                f"to generic 1/1 Creature-only and miss Artifact typing."
             ),
             oracle_excerpt=oracle[:200],
         )
