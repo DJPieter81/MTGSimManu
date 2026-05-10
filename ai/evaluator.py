@@ -296,9 +296,32 @@ def _ability_bonus(card, template=None) -> float:
     if 'create' in oracle and 'token' in oracle:
         bonus += ORACLE_TOKEN_CREATION_BONUS
 
-    # Search library (tutor effect)
+    # Search library (tutor effect) — credit the actual N from
+    # oracle text. The canonical Modern wording is "search your
+    # library for (up to )?N cards … (and put them) into your
+    # hand" where N is the printed count. Boolean detection
+    # treated `search for 1 card` (Mastermind's Acquisition) the
+    # same as `search for up to 3 cards` (Squadron Hawk) — same
+    # blindspot the audit doc names. Singular `search for a card`
+    # falls through to baseline +1.
     if 'search your library' in oracle:
-        bonus += ORACLE_TUTOR_BONUS
+        tutor_match = re.search(
+            r'search your library for (?:up to\s+)?(\w+)\s+cards?',
+            oracle)
+        tutor_n = 1
+        if tutor_match:
+            word = tutor_match.group(1)
+            if word.isdigit():
+                tutor_n = int(word)
+            else:
+                _NUMERALS_T = ('zero', 'one', 'two', 'three', 'four',
+                               'five', 'six', 'seven', 'eight', 'nine',
+                               'ten')
+                if word in _NUMERALS_T:
+                    tutor_n = _NUMERALS_T.index(word)
+                elif word in ('a', 'an'):
+                    tutor_n = 1
+        bonus += tutor_n * ORACLE_TUTOR_BONUS
 
     # Mana denial / lock effects
     if any(phrase in oracle for phrase in [
