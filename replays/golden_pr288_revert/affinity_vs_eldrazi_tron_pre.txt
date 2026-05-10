@@ -1,0 +1,766 @@
+Loaded 21759 cards (0 errors)
+Loaded 21759 cards (0 errors)
+  Sideboard (Eldrazi Tron vs Affinity): +2 Ratchet Bomb, -2 Kozilek's Command
+======================================================================
+  GAME 1: Affinity (P1) vs Eldrazi Tron (P2)  —  seed 50000
+  Series: Affinity 0 - 0 Eldrazi Tron
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Affinity wins → chooses to play first
+║ P1 (on play): Affinity
+║ P2 (on draw): Eldrazi Tron
+╚═══════════════════════════════════════════════════════
+
+P1 (Affinity) opening hand (2 lands, 5 spells):
+  • Cranial Plating [Spell, CMC 2]
+  • Engineered Explosives [Spell, CMC 0]
+  • Mox Opal [Spell, CMC 0]
+  • Spire of Industry [Land, CMC 0]
+  • Urza's Saga [Land, CMC 0]
+  • Mox Opal [Spell, CMC 0]
+  • Sojourner's Companion [Creature, CMC 7]
+→ P1 KEEPS 7 — has key card(s): Cranial Plating, Mox Opal, 3 cheap spells
+
+P2 (Eldrazi Tron) opening hand (4 lands, 3 spells):
+  • Thought-Knot Seer [Creature, CMC 4]
+  • Urza's Power Plant [Land, CMC 0]
+  • Wastes [Land, CMC 0]
+  • Ghost Quarter [Land, CMC 0]
+  • Reality Smasher [Creature, CMC 5]
+  • Chalice of the Void [Spell, CMC 0]
+  • Cavern of Souls [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Chalice of the Void, Thought-Knot Seer, 2 cheap spells
+
+
+╔══ TURN 1 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Eldrazi Tron 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Urza's Saga
+    → Goal: deploy_engine [engines]
+T1 P1: Cast Mox Opal (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Mox Opal
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal
+║   Lands: Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Warping Wail
+  [Main 1]
+T1 P2: Play Urza's Power Plant
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Eldrazi Tron 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal
+║   Lands: Urza's Saga
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Power Plant
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Darksteel Citadel
+  [Main 1]
+T2 P1: Play Darksteel Citadel
+T2 P1: Cycle Sojourner's Companion (pay 2 mana, tutor: Silverbluff Bridge)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Power Plant
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal
+║   Lands: Urza's Saga [T], Darksteel Citadel [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wastes
+  [Main 1]
+T2 P2: Play Wastes
+    → Goal: ramp [enablers]
+T2 P2: Cast Chalice of the Void (0)
+    [Priority] P1 passes (no response)
+T2: Resolve Chalice of the Void
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Eldrazi Tron 20
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal
+║   Lands: Urza's Saga, Darksteel Citadel
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant, Wastes
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T3 P1: Create 1x Construct token(s)
+T3 P1: Urza's Saga Ch.II: Create Construct Token
+  [Draw] P1 draws: Tanglepool Bridge
+  [Main 1]
+T3 P1: Play Silverbluff Bridge (enters tapped)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Urza's Saga→C, Darksteel Citadel→C (paying for Cranial Plating, 2 mana remaining)
+T3 P1: Cast Cranial Plating (2)
+    [Priority] P2 responds with Warping Wail
+    [Mana] Tap Urza's Power Plant→C, Wastes→C (paying for Warping Wail, 2 mana remaining)
+T3 P2: Cast Warping Wail (1)
+T3: Resolve Warping Wail
+T3: Construct Token moved battlefield -> exile (exiled)
+T3: Resolve Cranial Plating
+T3 P1: Cranial Plating enters the battlefield (unattached)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 1
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant, Wastes
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Cranial Plating
+║   Lands: Urza's Saga [T], Darksteel Citadel [T], Silverbluff Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Endbringer
+  [Main 1]
+T3 P2: Play Ghost Quarter
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T3 P2: Ghost Quarter finds Urza's Mine
+
+╔══ TURN 4 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Eldrazi Tron 20
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Cranial Plating
+║   Lands: Urza's Saga, Darksteel Citadel, Silverbluff Bridge
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant [T], Wastes [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T4 P1: Create 1x Construct token(s)
+T4 P1: Urza's Saga Ch.III: Create Construct Token
+T4 P1: Urza's Saga tutors Springleaf Drum
+T4 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Spire of Industry
+  [Main 1]
+T4 P1: Play Tanglepool Bridge (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant, Wastes
+║ Affinity board:
+║   Creatures: Construct Token (7/7)
+║   Other: Mox Opal, Cranial Plating, Springleaf Drum
+║   Lands: Darksteel Citadel, Silverbluff Bridge, Tanglepool Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Blast Zone
+  [Main 1]
+T4 P2: Play Urza's Mine
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Eldrazi Tron 20
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 2
+║ Affinity board:
+║   Creatures: Construct Token (7/7)
+║   Other: Mox Opal, Cranial Plating, Springleaf Drum
+║   Lands: Darksteel Citadel, Silverbluff Bridge, Tanglepool Bridge
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant, Wastes, Urza's Mine
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Thought Monitor
+  [Main 1]
+T5 P1: Play Spire of Industry
+T5 P1: Equip Cranial Plating to Construct Token (cost 1)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Silverbluff Bridge→U (paying for Thought Monitor, 3 mana remaining)
+T5 P1: Cast Thought Monitor (6U)
+    [Priority] P2 passes (no response)
+T5: Resolve Thought Monitor
+T5 P1: Thought Monitor ETB: draw 2 (Signal Pest, Ornithopter)
+    → Goal: curve_out
+    [Mana] Tap Tanglepool Bridge→G (paying for Signal Pest, 2 mana remaining)
+T5 P1: Cast Signal Pest (1)
+    [Priority] P2 passes (no response)
+T5: Resolve Signal Pest
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Construct Token
+T5 P1: Attack with Construct Token
+  [Declare Blockers] P2 does not block
+T5 P1:   Construct Token (18/9) → 18 dmg to player
+  [Combat Damage] 18 damage dealt → P2 life: 20 → 2
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 2  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 2
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant, Wastes, Urza's Mine
+║ Affinity board:
+║   Creatures: Construct Token (18/9) [tapped], Thought Monitor (2/2), Signal Pest (0/1)
+║   Other: Mox Opal, Cranial Plating, Springleaf Drum
+║   Lands: Darksteel Citadel [T], Silverbluff Bridge [T], Tanglepool Bridge [T], Spire of Industry
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Expedition Map
+  [Main 1]
+T5 P2: Play Cavern of Souls
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Wastes→C, Urza's Mine→C, Cavern of Souls→B (paying for Thought-Knot Seer, 4 mana remaining)
+T5 P2: Cast Thought-Knot Seer (3)
+    [Priority] P1 passes (no response)
+T5: Resolve Thought-Knot Seer
+T5 P2: Thought-Knot Seer exiles Engineered Explosives from opponent's hand
+T5 P2: Thought-Knot Seer ETB: draw 1 (Walking Ballista)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Eldrazi Tron 2
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 2
+║ Affinity board:
+║   Creatures: Construct Token (18/9), Thought Monitor (2/2), Signal Pest (0/1)
+║   Other: Mox Opal, Cranial Plating, Springleaf Drum
+║   Lands: Darksteel Citadel, Silverbluff Bridge, Tanglepool Bridge, Spire of Industry
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant [T], Wastes [T], Urza's Mine [T], Cavern of Souls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Memnite
+  [Main 1]
+T6 P1: Play Spire of Industry
+    → Goal: curve_out
+T6 P2: Chalice of the Void (X=0) counters Memnite
+    → Goal: curve_out
+T6 P2: Chalice of the Void (X=0) counters Ornithopter
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Construct Token, Thought Monitor, Signal Pest
+T6 P1: Attack with Construct Token, Thought Monitor, Signal Pest
+T6 P2:   [BLOCK-EMERGENCY] Thought-Knot Seer (4/4) blocks Construct Token (19/9) — chump block
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T6 P1:   Thought Monitor (3/2) → 3 dmg to player
+P2 loses: life total -1
+  [Combat Damage] 3 damage dealt → P2 life: 2 → -1
+
+>>> Affinity wins Game 1 on turn 6 via damage
+    Final life: Affinity=20  Eldrazi Tron=-1
+
+======================================================================
+  GAME 2: Eldrazi Tron (P1) vs Affinity (P2)  —  seed 50001
+  Series: Affinity 1 - 0 Eldrazi Tron
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Affinity wins → chooses to play first
+║ P1 (on play): Affinity
+║ P2 (on draw): Eldrazi Tron
+╚═══════════════════════════════════════════════════════
+
+P1 (Eldrazi Tron) opening hand (2 lands, 5 spells):
+  • Warping Wail [Spell, CMC 2]
+  • Chalice of the Void [Spell, CMC 0]
+  • Urza's Power Plant [Land, CMC 0]
+  • Cavern of Souls [Land, CMC 0]
+  • Eldrazi Mimic [Creature, CMC 2]
+  • Eldrazi Mimic [Creature, CMC 2]
+  • All Is Dust [Spell, CMC 7]
+→ P1 KEEPS 7 — has key card(s): Chalice of the Void, 4 cheap spells
+
+P2 (Affinity) opening hand (2 lands, 5 spells):
+  • Mistvault Bridge [Land, CMC 0]
+  • Memnite [Creature, CMC 0]
+  • Mox Opal [Spell, CMC 0]
+  • Memnite [Creature, CMC 0]
+  • Mox Opal [Spell, CMC 0]
+  • Springleaf Drum [Spell, CMC 1]
+  • Urza's Saga [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Memnite, Mox Opal, Springleaf Drum, 4 cheap spells
+
+
+╔══ TURN 1 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Eldrazi Tron 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Urza's Saga
+    → Goal: deploy_engine [enablers]
+T1 P2: Cast Memnite (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Memnite
+    → Goal: deploy_engine [enablers]
+T1 P2: Cast Memnite (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Memnite
+    → Goal: deploy_engine [engines]
+    [Mana] Tap Urza's Saga→C (paying for Springleaf Drum, 1 mana remaining)
+T1 P2: Cast Springleaf Drum (1)
+    [Priority] P1 passes (no response)
+T1: Resolve Springleaf Drum
+    → Goal: curve_out
+T1 P2: Cast Mox Opal (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Mox Opal
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 2 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: Memnite (1/1), Memnite (1/1)
+║   Other: Springleaf Drum, Mox Opal
+║   Lands: Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Reality Smasher
+  [Main 1]
+T1 P1: Play Urza's Power Plant
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Eldrazi Tron 20
+║ Hand: 2 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Memnite (1/1), Memnite (1/1)
+║   Other: Springleaf Drum, Mox Opal
+║   Lands: Urza's Saga
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Power Plant
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Frogmite
+  [Main 1]
+T2 P2: Play Mistvault Bridge (enters tapped)
+    → Goal: curve_out [enablers]
+T2 P2: Cast Frogmite (4)
+    [Priority] P1 passes (no response)
+T2: Resolve Frogmite
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Memnite, Memnite
+T2 P2: Attack with Memnite, Memnite
+  [Declare Blockers] P1 does not block
+T2 P2:   Memnite (1/1) → 1 dmg to player
+T2 P2:   Memnite (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 20 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 18  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 1 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Power Plant
+║ Affinity board:
+║   Creatures: Memnite (1/1) [tapped], Memnite (1/1) [tapped], Frogmite (2/2)
+║   Other: Springleaf Drum, Mox Opal
+║   Lands: Urza's Saga, Mistvault Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ghost Quarter
+  [Main 1]
+T2 P1: Play Cavern of Souls
+    → Goal: ramp [enablers]
+T2 P1: Cast Chalice of the Void (0)
+    [Priority] P2 passes (no response)
+T2: Resolve Chalice of the Void
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Cavern of Souls→B (paying for Warping Wail, 2 mana remaining)
+T2 P1: Cast Warping Wail (1)
+    [Priority] P2 passes (no response)
+T2: Resolve Warping Wail
+T2: Frogmite moved battlefield -> exile (exiled)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Eldrazi Tron 18
+║ Hand: 1 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Memnite (1/1), Memnite (1/1)
+║   Other: Springleaf Drum, Mox Opal
+║   Lands: Urza's Saga, Mistvault Bridge
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant [T], Cavern of Souls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T3 P2: Create 1x Construct token(s)
+T3 P2: Urza's Saga Ch.II: Create Construct Token
+  [Draw] P2 draws: Nettlecyst
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Memnite, Memnite
+T3 P2: Attack with Memnite, Memnite
+  [Declare Blockers] P1 does not block
+T3 P2:   Memnite (1/1) → 1 dmg to player
+T3 P2:   Memnite (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 18 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 16  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant, Cavern of Souls
+║ Affinity board:
+║   Creatures: Memnite (1/1) [tapped], Memnite (1/1) [tapped], Construct Token (6/6)
+║   Other: Springleaf Drum, Mox Opal
+║   Lands: Urza's Saga, Mistvault Bridge
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Reality Smasher
+  [Main 1]
+T3 P1: Play Ghost Quarter
+    → Goal: ramp [enablers]
+    [Mana] Tap Urza's Power Plant→C, Ghost Quarter→C (paying for Eldrazi Mimic, 3 mana remaining)
+T3 P1: Cast Eldrazi Mimic (2)
+    [Priority] P2 passes (no response)
+T3: Resolve Eldrazi Mimic
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Eldrazi Tron 16
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Memnite (1/1), Memnite (1/1), Construct Token (6/6)
+║   Other: Springleaf Drum, Mox Opal
+║   Lands: Urza's Saga, Mistvault Bridge
+║ Eldrazi Tron board:
+║   Creatures: Eldrazi Mimic (2/1)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant [T], Cavern of Souls, Ghost Quarter [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T4 P2: Create 1x Construct token(s)
+T4 P2: Urza's Saga Ch.III: Create Construct Token
+T4 P2: Urza's Saga tutors Darksteel Citadel
+T4 P2: Sacrifice Urza's Saga (final chapter)
+  [Draw] P2 draws: Springleaf Drum
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Darksteel Citadel→C (paying for Springleaf Drum, 2 mana remaining)
+T4 P2: Cast Springleaf Drum (1)
+    [Priority] P1 passes (no response)
+T4: Resolve Springleaf Drum
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Memnite, Memnite, Construct Token
+T4 P2: Attack with Memnite, Memnite, Construct Token
+T4 P1:   [BLOCK-EMERGENCY] Eldrazi Mimic (2/1) blocks Construct Token (9/9) — chump block
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T4 P2:   Memnite (1/1) → 1 dmg to player
+T4 P2:   Memnite (1/1) → 1 dmg to player
+T4: Eldrazi Mimic dies
+  [Combat Damage] 2 damage dealt → P1 life: 16 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 14  |  Affinity 20
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant, Cavern of Souls, Ghost Quarter
+║ Affinity board:
+║   Creatures: Memnite (1/1) [tapped], Memnite (1/1) [tapped], Construct Token (9/9) [tapped], Construct Token (9/9)
+║   Other: Springleaf Drum, Mox Opal, Springleaf Drum
+║   Lands: Mistvault Bridge, Darksteel Citadel [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Tower
+  [Main 1]
+T4 P1: Play Urza's Tower
+    → Goal: ramp [enablers]
+    [Mana] Tap Urza's Power Plant→C, Ghost Quarter→C (paying for Eldrazi Mimic, 4 mana remaining)
+T4 P1: Cast Eldrazi Mimic (2)
+    [Priority] P2 passes (no response)
+T4: Resolve Eldrazi Mimic
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Eldrazi Tron 14
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Memnite (1/1), Memnite (1/1), Construct Token (9/9), Construct Token (9/9)
+║   Other: Springleaf Drum, Mox Opal, Springleaf Drum
+║   Lands: Mistvault Bridge, Darksteel Citadel
+║ Eldrazi Tron board:
+║   Creatures: Eldrazi Mimic (2/1)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant [T], Cavern of Souls, Ghost Quarter [T], Urza's Tower
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Cranial Plating
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Darksteel Citadel→C, Mistvault Bridge→B (paying for Cranial Plating, 2 mana remaining)
+T5 P2: Cast Cranial Plating (2)
+    [Priority] P1 passes (no response)
+T5: Resolve Cranial Plating
+T5 P2: Cranial Plating enters the battlefield (unattached)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Memnite, Memnite, Construct Token, Construct Token
+T5 P2: Attack with Memnite, Memnite, Construct Token, Construct Token
+T5 P1:   [BLOCK-EMERGENCY] Eldrazi Mimic (2/1) blocks Construct Token (10/10) — chump block
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T5 P2:   Memnite (1/1) → 1 dmg to player
+T5 P2:   Memnite (1/1) → 1 dmg to player
+T5 P2:   Construct Token (10/10) → 10 dmg to player
+T5: Eldrazi Mimic dies
+  [Combat Damage] 12 damage dealt → P1 life: 14 → 2
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 2  |  Affinity 20
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 3
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant, Cavern of Souls, Ghost Quarter, Urza's Tower
+║ Affinity board:
+║   Creatures: Memnite (1/1) [tapped], Memnite (1/1) [tapped], Construct Token (10/10) [tapped], Construct Token (10/10) [tapped]
+║   Other: Springleaf Drum, Mox Opal, Springleaf Drum, Cranial Plating
+║   Lands: Mistvault Bridge [T], Darksteel Citadel [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Matter Reshaper
+  [Main 1]
+    → Goal: ramp [enablers]
+    [Mana] Tap Urza's Power Plant→C, Ghost Quarter→C, Urza's Tower→C (paying for Matter Reshaper, 4 mana remaining)
+T5 P1: Cast Matter Reshaper (2)
+    [Priority] P2 passes (no response)
+T5: Resolve Matter Reshaper
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Eldrazi Tron 2
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Memnite (1/1), Memnite (1/1), Construct Token (10/10), Construct Token (10/10)
+║   Other: Springleaf Drum, Mox Opal, Springleaf Drum, Cranial Plating
+║   Lands: Mistvault Bridge, Darksteel Citadel
+║ Eldrazi Tron board:
+║   Creatures: Matter Reshaper (3/2)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant [T], Cavern of Souls, Ghost Quarter [T], Urza's Tower [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Springleaf Drum
+  [Main 1]
+T6 P2: Equip Cranial Plating to Construct Token (cost 1)
+    → Goal: curve_out
+    [Mana] Tap Darksteel Citadel→C (paying for Springleaf Drum, 1 mana remaining)
+T6 P2: Cast Springleaf Drum (1)
+    [Priority] P1 passes (no response)
+T6: Resolve Springleaf Drum
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Memnite, Memnite, Construct Token, Construct Token
+T6 P2: Attack with Memnite, Memnite, Construct Token, Construct Token
+T6 P1:   [BLOCK-EMERGENCY] Matter Reshaper (3/2) blocks Construct Token (22/11) — chump block
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T6 P2:   Memnite (1/1) → 1 dmg to player
+T6 P2:   Memnite (1/1) → 1 dmg to player
+T6 P2:   Construct Token (11/11) → 11 dmg to player
+P1 loses: life total -11
+  [Combat Damage] 13 damage dealt → P1 life: 2 → -11
+
+>>> Affinity wins Game 2 on turn 6 via damage
+    Final life: Eldrazi Tron=-11  Affinity=20
+
+======================================================================
+  MATCH RESULT: Affinity wins 2-0
+======================================================================
