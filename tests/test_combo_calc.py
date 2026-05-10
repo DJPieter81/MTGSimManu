@@ -298,21 +298,56 @@ class TestCardComboModifier:
     # ─── STORM finisher branch (Phase 2c.2-prep) ─────────────────
 
     def test_storm_finisher_lethal_now_fires_at_combo_value(self):
-        """STORM keyword + storm+1 >= opp_life: return combo_value (commit to lethal)."""
+        """STORM keyword + storm+1 >= opp_life: damage finisher
+        returns combo_value + combo_value/opp_life (per-point-of-
+        damage premium); token finisher returns combo_value alone.
+        Premium reflects CR 302.1 — token cast this turn is summoning-
+        sick, can't deal damage same-turn."""
         from engine.cards import Keyword as Kw
         a = ComboAssessment(
             resource_zone="storm", is_ready=True,
             payoff_value=0.9, combo_value=80.0, risk_discount=0.7,
             has_payoff=True, _role_cache={"Grapeshot": "payoffs"},
         )
+        # Damage finisher (Grapeshot pattern): oracle text triggers
+        # `_payoff_deals_direct_damage` so the lethal short-circuit
+        # adds the per-point-of-damage premium.
         card = MockCard(name="Grapeshot", template=MockTemplate(
-            name="Grapeshot", keywords={Kw.STORM}))
+            name="Grapeshot", keywords={Kw.STORM},
+            oracle_text="Grapeshot deals 1 damage to any target."))
         snap = _make_snap(opp_life=4)
         me = type('', (), {'spells_cast_this_turn': 4, 'hand': [], 'library': [None]*30,
                            'graveyard': [], 'battlefield': []})()
         game = type('', (), {'players': [me, me], 'can_cast': lambda *a: True})()
         mod = card_combo_modifier(card, a, snap, me, game, 0)
-        assert mod == 80.0  # storm+1 (5) >= opp_life (4): fire at full combo_value
+        # storm+1 (5) >= opp_life (4): damage finisher fires at
+        # combo_value + combo_value/opp_life = 80 + 80/4 = 100.
+        assert mod == 100.0
+
+    def test_storm_token_finisher_lethal_no_premium(self):
+        """Companion: a TOKEN finisher (oracle "create … tokens") at
+        the same lethal range returns combo_value alone — no per-
+        point-of-damage premium, because tokens cast this turn don't
+        kill the opponent same-turn (CR 302.1 — summoning sickness)."""
+        from engine.cards import Keyword as Kw
+        a = ComboAssessment(
+            resource_zone="storm", is_ready=True,
+            payoff_value=0.9, combo_value=80.0, risk_discount=0.7,
+            has_payoff=True,
+            _role_cache={"Empty the Warrens": "payoffs"},
+        )
+        card = MockCard(name="Empty the Warrens", template=MockTemplate(
+            name="Empty the Warrens", keywords={Kw.STORM},
+            oracle_text=(
+                "Create two 1/1 red Goblin creature tokens.")))
+        snap = _make_snap(opp_life=4)
+        me = type('', (), {'spells_cast_this_turn': 4, 'hand': [], 'library': [None]*30,
+                           'graveyard': [], 'battlefield': []})()
+        game = type('', (), {'players': [me, me], 'can_cast': lambda *a: True})()
+        mod = card_combo_modifier(card, a, snap, me, game, 0)
+        # storm+1 (5) >= opp_life (4): token finisher fires at
+        # combo_value with no premium = 80.0.
+        assert mod == 80.0
 
     def test_storm_finisher_held_with_fuel_in_hand(self):
         """STORM finisher with chain-extending fuel: negative modifier (hold for more storm).
