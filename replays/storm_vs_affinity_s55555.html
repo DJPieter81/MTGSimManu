@@ -1,0 +1,3303 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ruby Storm vs Affinity — seed 55555</title>
+<style>
+:root {
+  --bg: #ffffff; --fg: #1f2328; --mute: #656d76; --line: #d0d7de;
+  --p1: #0969da; --p2: #d1242f; --good: #1a7f37; --warn: #bf8700;
+  --bad: #cf222e; --card-bg: #f6f8fa; --hover: #ddf4ff;
+  --chosen-bg: #dafbe1; --gap-tight: #fff8c5; --gap-mid: #ffe9b3;
+  --gap-wide: #ffcecb;
+}
+* { box-sizing: border-box; }
+body { font: 14px/1.5 -apple-system, "Segoe UI", system-ui, sans-serif;
+       color: var(--fg); background: var(--bg); margin: 0; padding: 0; }
+header.top { position: sticky; top: 0; z-index: 50; background: var(--bg);
+             border-bottom: 1px solid var(--line);
+             padding: 12px 24px; display: flex; gap: 16px; align-items: center;
+             flex-wrap: wrap; }
+header.top h1 { margin: 0; font-size: 16px; font-weight: 600; }
+header.top h1 em { color: var(--mute); font-style: normal; font-weight: 400;
+                   margin: 0 6px; }
+header.top .seed { color: var(--mute);
+                   font-family: ui-monospace, "JetBrains Mono", monospace; }
+header.top .stat { color: var(--mute); font-size: 13px; }
+header.top .stat strong { color: var(--fg); }
+header.top .actions { margin-left: auto; display: flex; gap: 8px; }
+header.top .actions button { font: inherit; padding: 6px 12px; cursor: pointer;
+                            border: 1px solid var(--line);
+                            background: var(--card-bg);
+                            border-radius: 6px; }
+header.top .actions button:hover { background: var(--hover); }
+header.top .match-score { padding: 4px 10px; background: var(--chosen-bg);
+                         border-radius: 6px; font-size: 13px; }
+main { max-width: 1100px; margin: 0 auto; padding: 16px 24px 80px; }
+.game { margin-bottom: 32px; }
+.game-header { display: flex; align-items: baseline; gap: 16px;
+               flex-wrap: wrap; margin-bottom: 12px; }
+.game-header h2 { margin: 0; font-size: 22px; }
+.game-meta { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip { padding: 3px 10px; background: var(--card-bg); border-radius: 12px;
+        font-size: 12px; color: var(--mute); }
+.chip strong { color: var(--fg); }
+.chip em { font-style: italic; color: var(--mute); }
+.mulls { background: var(--card-bg); border: 1px solid var(--line);
+         border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; }
+.mulls h3 { margin: 0 0 8px 0; font-size: 13px; color: var(--mute);
+            text-transform: uppercase; letter-spacing: 0.05em; }
+.mull { padding: 6px 0; border-bottom: 1px dashed var(--line); display: flex;
+        gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.mull:last-child { border-bottom: 0; }
+.mull-decision { font-size: 11px; padding: 1px 8px; border-radius: 3px;
+                 font-weight: 600; }
+.mull-decision.keep { background: var(--chosen-bg); color: var(--good); }
+.mull-decision.mull-no { background: var(--gap-wide); color: var(--bad); }
+.mull-actor { font-weight: 600; }
+.mull-size { font-family: ui-monospace, "JetBrains Mono", monospace;
+             color: var(--mute); }
+.mull-reason { color: var(--mute); flex: 1; }
+.mull-cards { width: 100%; padding-top: 4px; }
+details.turn { border: 1px solid var(--line); border-radius: 8px;
+               margin-bottom: 12px; background: var(--bg); }
+details.turn[open] { box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+.turn-summary { display: flex; gap: 12px; align-items: baseline;
+                padding: 10px 16px; cursor: pointer; user-select: none;
+                list-style: none; }
+.turn-summary::-webkit-details-marker { display: none; }
+.turn-summary::before { content: "▸"; color: var(--mute);
+                        transition: transform 0.15s; }
+details.turn[open] .turn-summary::before { transform: rotate(90deg);
+                                          display: inline-block; }
+.turn-num { font-family: ui-monospace, "JetBrains Mono", monospace;
+            font-weight: 700; color: var(--p1); }
+.turn-actor { font-weight: 600; }
+.turn-actor .p { color: var(--mute); font-style: normal; font-size: 12px; }
+.life { font-family: ui-monospace, "JetBrains Mono", monospace;
+        margin-left: auto; font-size: 13px; }
+.p1-life { color: var(--p1); font-weight: 600; }
+.p2-life { color: var(--p2); font-weight: 600; }
+.vs-dot { color: var(--mute); }
+.turn-counts { color: var(--mute); font-size: 12px; }
+.turn-body { padding: 0 16px 16px; }
+.boards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+          margin-bottom: 12px; }
+.board { background: var(--card-bg); border: 1px solid var(--line);
+         border-radius: 6px; padding: 10px; }
+.board-head { display: flex; align-items: center; gap: 8px;
+              margin-bottom: 6px; font-size: 13px; }
+.board-head .dot { width: 8px; height: 8px; border-radius: 50%;
+                   display: inline-block; }
+.board-head .dot.p1 { background: var(--p1); }
+.board-head .dot.p2 { background: var(--p2); }
+.board-stats { color: var(--mute);
+              font-family: ui-monospace, "JetBrains Mono", monospace;
+              font-size: 11px; margin-left: auto; }
+.board .row { padding: 3px 0; display: flex; flex-wrap: wrap; gap: 4px; }
+.cre { padding: 2px 8px; background: #fff; border: 1px solid var(--line);
+       border-radius: 11px; font-size: 12px; }
+.cre em { color: var(--mute); font-style: normal;
+          font-family: ui-monospace, "JetBrains Mono", monospace; }
+.cre .tap, .cre .sick { color: var(--warn); margin-left: 2px; }
+.card-pill { padding: 1px 7px; background: #fff; border: 1px solid var(--line);
+             border-radius: 10px; font-size: 11px; cursor: pointer; }
+.card-pill:hover { background: var(--hover); }
+.mute { color: var(--mute); }
+.decision { border-left: 3px solid var(--p1); padding: 10px 12px; margin: 8px 0;
+            background: #f9fbff; border-radius: 0 6px 6px 0;
+            scroll-margin-top: 80px; }
+.decision:target { box-shadow: 0 0 0 2px var(--p1); }
+.dec-head { display: flex; gap: 12px; align-items: baseline;
+            margin-bottom: 6px; font-size: 12px; flex-wrap: wrap; }
+.dec-anchor { font-family: ui-monospace, "JetBrains Mono", monospace;
+              color: var(--mute); text-decoration: none; }
+.dec-anchor:hover { color: var(--p1); }
+.dec-actor { font-weight: 600; color: var(--fg); }
+.dec-goal { color: var(--mute); font-style: italic; }
+.dec-cands { margin-left: auto; color: var(--mute); }
+.chosen { background: var(--chosen-bg); border-radius: 5px; padding: 8px 10px; }
+.chosen-row { display: flex; align-items: baseline; gap: 8px; }
+.chosen-label { font-size: 10px; padding: 1px 6px; border-radius: 3px;
+                background: var(--good); color: #fff; font-weight: 600;
+                letter-spacing: 0.04em; }
+.chosen-card { flex: 1; }
+.chosen-ev { font-family: ui-monospace, "JetBrains Mono", monospace;
+             font-weight: 700; color: var(--good); }
+.chosen-reason { font-size: 12px; color: var(--mute); margin-top: 4px; }
+.subsystems { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+.sub-chip { font-family: ui-monospace, "JetBrains Mono", monospace;
+            font-size: 11px; padding: 1px 7px; border-radius: 3px;
+            background: #fff; border: 1px solid var(--line); }
+.sub-chip.pos { background: #dafbe1; color: var(--good); border-color: #b4d7c0; }
+.sub-chip.neg { background: #ffebe9; color: var(--bad); border-color: #f6c8c5; }
+.sub-chip.zero { color: var(--mute); }
+.alts-label { font-size: 11px; color: var(--mute); margin: 8px 0 4px;
+              text-transform: uppercase; letter-spacing: 0.05em; }
+.alt { padding: 4px 0; border-bottom: 1px dotted var(--line); }
+.alt:last-of-type { border-bottom: 0; }
+.alt-row { display: flex; align-items: baseline; gap: 10px; }
+.alt-card { flex: 1; }
+.alt-ev { font-family: ui-monospace, "JetBrains Mono", monospace;
+          color: var(--mute); width: 50px; text-align: right; }
+.alt-gap { font-family: ui-monospace, "JetBrains Mono", monospace;
+           width: 70px; text-align: right; font-size: 12px; }
+.alt-bar { width: 100px; height: 4px; background: #eee; border-radius: 2px;
+           position: relative; overflow: hidden; }
+.alt-bar > span { display: block; height: 100%; background: var(--mute); }
+.gap-tight .alt-gap { color: var(--warn); font-weight: 600; }
+.gap-tight .alt-bar > span { background: var(--warn); }
+.gap-mid .alt-gap { color: var(--mute); }
+.gap-wide .alt-gap { color: var(--mute); opacity: 0.7; }
+.alt-reason { font-size: 11px; color: var(--mute); padding-left: 8px; }
+.feedback { display: flex; align-items: center; gap: 8px; margin-top: 8px;
+            padding-top: 8px; border-top: 1px dashed var(--line); }
+.thumbs { font-size: 14px; padding: 2px 8px; border: 1px solid var(--line);
+          background: #fff; border-radius: 4px; cursor: pointer; }
+.thumbs.active.up { background: var(--chosen-bg); border-color: var(--good); }
+.thumbs.active.down { background: var(--gap-wide); border-color: var(--bad); }
+.fb-note { flex: 1; padding: 3px 6px; border: 1px solid var(--line);
+           border-radius: 4px; font: inherit; }
+.fb-status { font-size: 11px; color: var(--good); }
+.plays { list-style: none; padding: 8px 0 0; margin: 0;
+         border-top: 1px dashed var(--line); margin-top: 8px; }
+.plays .play { padding: 2px 0; font-size: 12px; }
+.play-act { display: inline-block; min-width: 80px; color: var(--mute);
+            font-family: ui-monospace, "JetBrains Mono", monospace; }
+.combat { padding: 8px 0; border-top: 1px dashed var(--line);
+          margin-top: 8px; font-size: 13px; }
+.cmb { padding: 3px 0; }
+.cmb.damage strong { color: var(--bad); }
+.cmb.lethal { background: #ffebe9; padding: 5px 8px; border-radius: 4px; }
+.lethal-tag { color: var(--bad); font-weight: 700; margin-left: 8px; }
+.atk em, .blk em { color: var(--mute);
+                  font-family: ui-monospace, "JetBrains Mono", monospace; }
+#card-tip { position: fixed; pointer-events: none; z-index: 1000;
+            border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            display: none; }
+#card-tip img { display: block; max-width: 200px; max-height: 280px;
+                border-radius: 8px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>Ruby Storm <em>vs</em> Affinity</h1>
+  <span class="seed">seed 55555</span>
+  <span class="stat"><strong>2</strong> games · <strong>59</strong> decisions · <strong id="fb-count">0</strong> flagged</span>
+  <span class="match-score"><strong>Affinity</strong> wins 2–0</span>
+  <div class="actions">
+    <button id="btn-jump-flagged" title="Jump to next flagged decision">↓ next flagged</button>
+    <button id="btn-export-fb">Export feedback (JSONL)</button>
+    <button id="btn-clear-fb">Clear feedback</button>
+    <button id="btn-collapse-all">Collapse all</button>
+    <button id="btn-expand-all">Expand all</button>
+  </div>
+</header>
+<main>
+
+<section class="game" id="game-1" data-game="1">
+  <header class="game-header">
+    <h2>Game 1</h2>
+    <div class="game-meta">
+      <span class="chip on-play">on play: <strong>Affinity</strong></span>
+      <span class="chip result">winner: <strong>Affinity</strong> (damage, T5)</span>
+      <span class="chip decks">Ruby Storm <em>vs</em> Affinity</span>
+    </div>
+  </header>
+  <div class="turns">
+    <div class="mulls"><h3>Mulligans</h3><div class="mull"><span class="mull-decision keep">KEEP</span><span class="mull-actor">Ruby Storm</span><span class="mull-size">→ 7</span><span class="mull-reason">has key card(s): Manamorphose, Reckless Impulse, Ruby Medallion, 4 cheap spells</span><div class="mull-cards"><span class="card-pill" data-card="Reckless Impulse">Reckless Impulse</span> <span class="card-pill" data-card="Ruby Medallion">Ruby Medallion</span> <span class="card-pill" data-card="Manamorphose">Manamorphose</span> <span class="card-pill" data-card="Glimpse the Impossible">Glimpse the Impossible</span> <span class="card-pill" data-card="Bloodstained Mire">Bloodstained Mire</span> <span class="card-pill" data-card="Arid Mesa">Arid Mesa</span> <span class="card-pill" data-card="Gemstone Caverns">Gemstone Caverns</span></div></div><div class="mull"><span class="mull-decision keep">KEEP</span><span class="mull-actor">Affinity</span><span class="mull-size">→ 7</span><span class="mull-reason">has key card(s): Cranial Plating, Ornithopter, 3 cheap spells</span><div class="mull-cards"><span class="card-pill" data-card="Cranial Plating">Cranial Plating</span> <span class="card-pill" data-card="Mistvault Bridge">Mistvault Bridge</span> <span class="card-pill" data-card="Spire of Industry">Spire of Industry</span> <span class="card-pill" data-card="Urza's Saga">Urza's Saga</span> <span class="card-pill" data-card="Thought Monitor">Thought Monitor</span> <span class="card-pill" data-card="Ornithopter">Ornithopter</span> <span class="card-pill" data-card="Engineered Explosives">Engineered Explosives</span></div></div></div>
+
+<details class="turn" data-turn="1" open>
+  <summary class="turn-summary">
+    <span class="turn-num">T1</span>
+    <span class="turn-actor">Ruby Storm <em class="p">(P1)</em></span>
+    <span class="life"><span class="p1-life">20</span> <span class="vs-dot">·</span> <span class="p2-life">20</span></span>
+    <span class="turn-counts">3 decisions</span>
+  </summary>
+  <div class="turn-body">
+    <div class="boards">
+<div class="board p1">
+  <div class="board-head">
+    <span class="dot p1"></span>
+    <strong>P1</strong>
+    <span class="board-stats">life 20 · hand 7 · lib 53</span>
+  </div>
+  <div class="row creatures"><em class="mute">no creatures</em></div>
+  
+  <div class="row lands"><em class="mute">no lands</em></div>
+</div>
+
+<div class="board p2">
+  <div class="board-head">
+    <span class="dot p2"></span>
+    <strong>P2</strong>
+    <span class="board-stats">life 20 · hand 5 · lib 53</span>
+  </div>
+  <div class="row creatures"><span class="cre" data-card="Ornithopter">Ornithopter <em>0/2</em><span class="sick">z</span></span></div>
+  
+  <div class="row lands"><span class="card-pill" data-card="Spire of Industry">Spire of Industry</span></div>
+</div>
+</div>
+    
+<div class="decision" id="g1t1d0" data-decision-id="g1t1d0">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t1d0">#g1t1d0</a>
+    <span class="dec-actor">Affinity</span>
+    <span class="dec-goal">goal: deploy_engine</span>
+    <span class="dec-cands">4 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Spire of Industry">Spire of Industry</span></span>
+      <span class="chosen-ev">42.00</span>
+    </div>
+    <div class="chosen-reason">Land: Spire of Industry (EV=42.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-mid">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Urza's Saga">Urza's Saga</span></span>
+    <span class="alt-ev">38.40</span>
+    <span class="alt-gap">Δ 3.60</span>
+    <span class="alt-bar"><span style="width:91%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Urza's Saga (EV=38.4)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Mistvault Bridge">Mistvault Bridge</span></span>
+    <span class="alt-ev">11.00</span>
+    <span class="alt-gap">Δ 31.00</span>
+    <span class="alt-bar"><span style="width:24%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Mistvault Bridge (EV=11.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Ornithopter">Ornithopter</span></span>
+    <span class="alt-ev">0.97</span>
+    <span class="alt-gap">Δ 41.02</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Ornithopter (EV=1.0)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t1d0" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t1d1" data-decision-id="g1t1d1">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t1d1">#g1t1d1</a>
+    <span class="dec-actor">Affinity</span>
+    <span class="dec-goal">goal: deploy_engine</span>
+    <span class="dec-cands">1 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Ornithopter">Ornithopter</span></span>
+      <span class="chosen-ev">0.96</span>
+    </div>
+    <div class="chosen-reason">Ornithopter (EV=1.0)</div>
+    
+  </div>
+  
+  <form class="feedback" data-decision-id="g1t1d1" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t1d2" data-decision-id="g1t1d2">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t1d2">#g1t1d2</a>
+    <span class="dec-actor">Ruby Storm</span>
+    <span class="dec-goal">goal: deploy_engine</span>
+    <span class="dec-cands">4 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Gemstone Caverns">Gemstone Caverns</span></span>
+      <span class="chosen-ev">42.00</span>
+    </div>
+    <div class="chosen-reason">Land: Gemstone Caverns (EV=42.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Bloodstained Mire">Bloodstained Mire</span></span>
+    <span class="alt-ev">29.00</span>
+    <span class="alt-gap">Δ 13.00</span>
+    <span class="alt-bar"><span style="width:18%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Bloodstained Mire (EV=29.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Arid Mesa">Arid Mesa</span></span>
+    <span class="alt-ev">29.00</span>
+    <span class="alt-gap">Δ 13.00</span>
+    <span class="alt-bar"><span style="width:18%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Arid Mesa (EV=29.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span></span>
+    <span class="alt-ev">26.00</span>
+    <span class="alt-gap">Δ 16.00</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Sacred Foundry (EV=26.0)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t1d2" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+    <div class="combat"><div class="cmb no-atk">Affinity does not attack</div><div class="cmb no-atk">Ruby Storm does not attack</div></div>
+    <ul class="plays"><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Spire of Industry">Spire of Industry</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Ornithopter">Ornithopter</span></li><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Gemstone Caverns">Gemstone Caverns</span></li></ul>
+  </div>
+</details>
+
+
+<details class="turn" data-turn="2" open>
+  <summary class="turn-summary">
+    <span class="turn-num">T2</span>
+    <span class="turn-actor">Ruby Storm <em class="p">(P1)</em></span>
+    <span class="life"><span class="p1-life">20</span> <span class="vs-dot">·</span> <span class="p2-life">20</span></span>
+    <span class="turn-counts">4 decisions</span>
+  </summary>
+  <div class="turn-body">
+    <div class="boards">
+<div class="board p1">
+  <div class="board-head">
+    <span class="dot p1"></span>
+    <strong>P1</strong>
+    <span class="board-stats">life 20 · hand 7 · lib 52</span>
+  </div>
+  <div class="row creatures"><em class="mute">no creatures</em></div>
+  
+  <div class="row lands"><span class="card-pill" data-card="Gemstone Caverns">Gemstone Caverns</span></div>
+</div>
+
+<div class="board p2">
+  <div class="board-head">
+    <span class="dot p2"></span>
+    <strong>P2</strong>
+    <span class="board-stats">life 20 · hand 4 · lib 52</span>
+  </div>
+  <div class="row creatures"><span class="cre" data-card="Ornithopter">Ornithopter <em>0/2</em></span></div>
+  <div class="row other"><span class="card-pill" data-card="Cranial Plating">Cranial Plating</span></div>
+  <div class="row lands"><span class="card-pill" data-card="Spire of Industry">Spire of Industry</span><span class="card-pill" data-card="Urza's Saga">Urza's Saga</span></div>
+</div>
+</div>
+    
+<div class="decision" id="g1t2d3" data-decision-id="g1t2d3">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t2d3">#g1t2d3</a>
+    <span class="dec-actor">Affinity</span>
+    <span class="dec-goal">goal: deploy_engine</span>
+    <span class="dec-cands">3 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Urza's Saga">Urza's Saga</span></span>
+      <span class="chosen-ev">29.91</span>
+    </div>
+    <div class="chosen-reason">Land: Urza's Saga (EV=29.9)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Urza's Saga">Urza's Saga</span></span>
+    <span class="alt-ev">29.91</span>
+    <span class="alt-gap">Δ 0.00</span>
+    <span class="alt-bar"><span style="width:100%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Urza's Saga (EV=29.9)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Mistvault Bridge">Mistvault Bridge</span></span>
+    <span class="alt-ev">7.00</span>
+    <span class="alt-gap">Δ 22.91</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Mistvault Bridge (EV=7.0)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t2d3" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t2d4" data-decision-id="g1t2d4">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t2d4">#g1t2d4</a>
+    <span class="dec-actor">Affinity</span>
+    <span class="dec-goal">goal: deploy_engine</span>
+    <span class="dec-cands">1 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Cranial Plating">Cranial Plating</span></span>
+      <span class="chosen-ev">1.04</span>
+    </div>
+    <div class="chosen-reason">Cranial Plating (EV=1.0)</div>
+    
+  </div>
+  
+  <form class="feedback" data-decision-id="g1t2d4" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t2d5" data-decision-id="g1t2d5">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t2d5">#g1t2d5</a>
+    <span class="dec-actor">Ruby Storm</span>
+    <span class="dec-goal">goal: deploy_engine</span>
+    <span class="dec-cands">3 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Bloodstained Mire">Bloodstained Mire</span></span>
+      <span class="chosen-ev">18.00</span>
+    </div>
+    <div class="chosen-reason">Land: Bloodstained Mire (EV=18.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Arid Mesa">Arid Mesa</span></span>
+    <span class="alt-ev">18.00</span>
+    <span class="alt-gap">Δ 0.00</span>
+    <span class="alt-bar"><span style="width:100%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Arid Mesa (EV=18.0)</div>
+</div>
+
+<div class="alt gap-mid">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span></span>
+    <span class="alt-ev">15.00</span>
+    <span class="alt-gap">Δ 3.00</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Sacred Foundry (EV=15.0)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t2d5" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t2d6" data-decision-id="g1t2d6">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t2d6">#g1t2d6</a>
+    <span class="dec-actor">Ruby Storm</span>
+    <span class="dec-goal">goal: deploy_engine</span>
+    <span class="dec-cands">4 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Ruby Medallion">Ruby Medallion</span></span>
+      <span class="chosen-ev">6.37</span>
+    </div>
+    <div class="chosen-reason">Ruby Medallion (EV=6.4)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Reckless Impulse">Reckless Impulse</span></span>
+    <span class="alt-ev">-3.58</span>
+    <span class="alt-gap">Δ 9.95</span>
+    <span class="alt-bar"><span style="width:98%"></span></span>
+  </div>
+  <div class="alt-reason">Reckless Impulse (EV=-3.6)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Ral, Monsoon Mage // Ral, Leyline Prodigy">Ral, Monsoon Mage // Ral, Leyline Prodigy</span></span>
+    <span class="alt-ev">-3.63</span>
+    <span class="alt-gap">Δ 10.00</span>
+    <span class="alt-bar"><span style="width:98%"></span></span>
+  </div>
+  <div class="alt-reason">Ral, Monsoon Mage // Ral, Leyline Prodigy (EV=-3.6)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Manamorphose">Manamorphose</span></span>
+    <span class="alt-ev">-980.00</span>
+    <span class="alt-gap">Δ 986.37</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Manamorphose (EV=-980.0)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t2d6" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+    <div class="combat"><div class="cmb no-atk">Affinity does not attack</div><div class="cmb no-atk">Ruby Storm does not attack</div></div>
+    <ul class="plays"><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Urza's Saga">Urza's Saga</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Cranial Plating">Cranial Plating</span></li><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Bloodstained Mire">Bloodstained Mire</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Ruby Medallion">Ruby Medallion</span></li></ul>
+  </div>
+</details>
+
+
+<details class="turn" data-turn="3" open>
+  <summary class="turn-summary">
+    <span class="turn-num">T3</span>
+    <span class="turn-actor">Ruby Storm <em class="p">(P1)</em></span>
+    <span class="life"><span class="p1-life">15</span> <span class="vs-dot">·</span> <span class="p2-life">20</span></span>
+    <span class="turn-counts">14 decisions</span>
+  </summary>
+  <div class="turn-body">
+    <div class="boards">
+<div class="board p1">
+  <div class="board-head">
+    <span class="dot p1"></span>
+    <strong>P1</strong>
+    <span class="board-stats">life 15 · hand 6 · lib 50</span>
+  </div>
+  <div class="row creatures"><em class="mute">no creatures</em></div>
+  <div class="row other"><span class="card-pill" data-card="Ruby Medallion">Ruby Medallion</span></div>
+  <div class="row lands"><span class="card-pill" data-card="Gemstone Caverns">Gemstone Caverns</span><span class="card-pill" data-card="Mountain">Mountain</span></div>
+</div>
+
+<div class="board p2">
+  <div class="board-head">
+    <span class="dot p2"></span>
+    <strong>P2</strong>
+    <span class="board-stats">life 20 · hand 3 · lib 51</span>
+  </div>
+  <div class="row creatures"><span class="cre" data-card="Ornithopter">Ornithopter <em>4/2</em><span class="tap">↻</span></span><span class="cre" data-card="Signal Pest">Signal Pest <em>0/1</em><span class="sick">z</span></span></div>
+  <div class="row other"><span class="card-pill" data-card="Cranial Plating">Cranial Plating</span></div>
+  <div class="row lands"><span class="card-pill" data-card="Spire of Industry">Spire of Industry</span><span class="card-pill" data-card="Urza's Saga">Urza's Saga</span><span class="card-pill" data-card="Mistvault Bridge">Mistvault Bridge</span></div>
+</div>
+</div>
+    
+<div class="decision" id="g1t3d7" data-decision-id="g1t3d7">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t3d7">#g1t3d7</a>
+    <span class="dec-actor">Affinity</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">4 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Mistvault Bridge">Mistvault Bridge</span></span>
+      <span class="chosen-ev">15.00</span>
+    </div>
+    <div class="chosen-reason">Land: Mistvault Bridge (EV=15.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Urza's Saga">Urza's Saga</span></span>
+    <span class="alt-ev">15.00</span>
+    <span class="alt-gap">Δ 0.00</span>
+    <span class="alt-bar"><span style="width:100%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Urza's Saga (EV=15.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Cranial Plating">Cranial Plating</span></span>
+    <span class="alt-ev">3.00</span>
+    <span class="alt-gap">Δ 12.00</span>
+    <span class="alt-bar"><span style="width:14%"></span></span>
+  </div>
+  <div class="alt-reason">Equip Cranial Plating to Ornithopter (EV=3.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Signal Pest">Signal Pest</span></span>
+    <span class="alt-ev">1.00</span>
+    <span class="alt-gap">Δ 14.00</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Signal Pest (EV=1.0)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t3d7" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t3d8" data-decision-id="g1t3d8">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t3d8">#g1t3d8</a>
+    <span class="dec-actor">Affinity</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">2 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Cranial Plating">Cranial Plating</span> → <span class="card-pill" data-card="id:65">id:65</span></span>
+      <span class="chosen-ev">4.50</span>
+    </div>
+    <div class="chosen-reason">Equip Cranial Plating to Ornithopter (EV=4.5)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-mid">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Signal Pest">Signal Pest</span></span>
+    <span class="alt-ev">1.04</span>
+    <span class="alt-gap">Δ 3.46</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Signal Pest (EV=1.0)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t3d8" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t3d9" data-decision-id="g1t3d9">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t3d9">#g1t3d9</a>
+    <span class="dec-actor">Affinity</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">1 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Signal Pest">Signal Pest</span></span>
+      <span class="chosen-ev">1.01</span>
+    </div>
+    <div class="chosen-reason">Signal Pest (EV=1.0)</div>
+    
+  </div>
+  
+  <form class="feedback" data-decision-id="g1t3d9" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t3d10" data-decision-id="g1t3d10">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t3d10">#g1t3d10</a>
+    <span class="dec-actor">Ruby Storm</span>
+    <span class="dec-goal">goal: execute_payoff</span>
+    <span class="dec-cands">7 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Arid Mesa">Arid Mesa</span></span>
+      <span class="chosen-ev">18.00</span>
+    </div>
+    <div class="chosen-reason">Land: Arid Mesa (EV=18.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-mid">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span></span>
+    <span class="alt-ev">15.00</span>
+    <span class="alt-gap">Δ 3.00</span>
+    <span class="alt-bar"><span style="width:84%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Sacred Foundry (EV=15.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Glimpse the Impossible">Glimpse the Impossible</span></span>
+    <span class="alt-ev">-1.28</span>
+    <span class="alt-gap">Δ 19.28</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Glimpse the Impossible (EV=-1.3)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Reckless Impulse">Reckless Impulse</span></span>
+    <span class="alt-ev">-1.31</span>
+    <span class="alt-gap">Δ 19.31</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Reckless Impulse (EV=-1.3)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Ral, Monsoon Mage // Ral, Leyline Prodigy">Ral, Monsoon Mage // Ral, Leyline Prodigy</span></span>
+    <span class="alt-ev">-1.36</span>
+    <span class="alt-gap">Δ 19.36</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Ral, Monsoon Mage // Ral, Leyline Prodigy (EV=-1.4)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t3d10" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t3d11" data-decision-id="g1t3d11">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t3d11">#g1t3d11</a>
+    <span class="dec-actor">Ruby Storm</span>
+    <span class="dec-goal">goal: execute_payoff</span>
+    <span class="dec-cands">5 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Reckless Impulse">Reckless Impulse</span></span>
+      <span class="chosen-ev">-1.31</span>
+    </div>
+    <div class="chosen-reason">Reckless Impulse (EV=-1.3)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Ral, Monsoon Mage // Ral, Leyline Prodigy">Ral, Monsoon Mage // Ral, Leyline Prodigy</span></span>
+    <span class="alt-ev">-1.39</span>
+    <span class="alt-gap">Δ 0.08</span>
+    <span class="alt-bar"><span style="width:99%"></span></span>
+  </div>
+  <div class="alt-reason">Ral, Monsoon Mage // Ral, Leyline Prodigy (EV=-1.4)</div>
+</div>
+
+<div class="alt gap-mid">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Glimpse the Impossible">Glimpse the Impossible</span></span>
+    <span class="alt-ev">-2.40</span>
+    <span class="alt-gap">Δ 1.09</span>
+    <span class="alt-bar"><span style="width:99%"></span></span>
+  </div>
+  <div class="alt-reason">Glimpse the Impossible (EV=-2.4)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Manamorphose">Manamorphose</span></span>
+    <span class="alt-ev">-990.00</span>
+    <span class="alt-gap">Δ 988.69</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Manamorphose (EV=-990.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Manamorphose">Manamorphose</span></span>
+    <span class="alt-ev">-990.00</span>
+    <span class="alt-gap">Δ 988.69</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Manamorphose (EV=-990.0)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t3d11" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t3d12" data-decision-id="g1t3d12">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t3d12">#g1t3d12</a>
+    <span class="dec-actor">Ruby Storm</span>
+    <span class="dec-goal">goal: execute_payoff</span>
+    <span class="dec-cands">6 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Ruby Medallion">Ruby Medallion</span></span>
+      <span class="chosen-ev">5.31</span>
+    </div>
+    <div class="chosen-reason">Ruby Medallion (EV=5.3)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Manamorphose">Manamorphose</span></span>
+    <span class="alt-ev">-0.75</span>
+    <span class="alt-gap">Δ 6.06</span>
+    <span class="alt-bar"><span style="width:9%"></span></span>
+  </div>
+  <div class="alt-reason">Manamorphose (EV=-0.8)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Manamorphose">Manamorphose</span></span>
+    <span class="alt-ev">-0.75</span>
+    <span class="alt-gap">Δ 6.06</span>
+    <span class="alt-bar"><span style="width:9%"></span></span>
+  </div>
+  <div class="alt-reason">Manamorphose (EV=-0.8)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Glimpse the Impossible">Glimpse the Impossible</span></span>
+    <span class="alt-ev">-1.28</span>
+    <span class="alt-gap">Δ 6.59</span>
+    <span class="alt-bar"><span style="width:1%"></span></span>
+  </div>
+  <div class="alt-reason">Glimpse the Impossible (EV=-1.3)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Ral, Monsoon Mage // Ral, Leyline Prodigy">Ral, Monsoon Mage // Ral, Leyline Prodigy</span></span>
+    <span class="alt-ev">-1.36</span>
+    <span class="alt-gap">Δ 6.67</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Ral, Monsoon Mage // Ral, Leyline Prodigy (EV=-1.4)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t3d12" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t3d13" data-decision-id="g1t3d13">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t3d13">#g1t3d13</a>
+    <span class="dec-actor">Ruby Storm</span>
+    <span class="dec-goal">goal: execute_payoff</span>
+    <span class="dec-cands">2 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Manamorphose">Manamorphose</span></span>
+      <span class="chosen-ev">0.28</span>
+    </div>
+    <div class="chosen-reason">Manamorphose (EV=0.3)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Manamorphose">Manamorphose</span></span>
+    <span class="alt-ev">0.28</span>
+    <span class="alt-gap">Δ 0.00</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Manamorphose (EV=0.3)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t3d13" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t3d14" data-decision-id="g1t3d14">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t3d14">#g1t3d14</a>
+    <span class="dec-actor">Ruby Storm</span>
+    <span class="dec-goal">goal: execute_payoff</span>
+    <span class="dec-cands">3 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Grapeshot">Grapeshot</span> → <span class="card-pill" data-card="id:-1">id:-1</span></span>
+      <span class="chosen-ev">9.59</span>
+    </div>
+    <div class="chosen-reason">Grapeshot (EV=9.6)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Manamorphose">Manamorphose</span></span>
+    <span class="alt-ev">-10.00</span>
+    <span class="alt-gap">Δ 19.59</span>
+    <span class="alt-bar"><span style="width:1%"></span></span>
+  </div>
+  <div class="alt-reason">Manamorphose (EV=-10.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Glimpse the Impossible">Glimpse the Impossible</span></span>
+    <span class="alt-ev">-10.22</span>
+    <span class="alt-gap">Δ 19.81</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Glimpse the Impossible (EV=-10.2)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t3d14" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t3d15" data-decision-id="g1t3d15">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t3d15">#g1t3d15</a>
+    <span class="dec-actor">Ruby Storm</span>
+    <span class="dec-goal">goal: execute_payoff</span>
+    <span class="dec-cands">2 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Glimpse the Impossible">Glimpse the Impossible</span></span>
+      <span class="chosen-ev">-0.04</span>
+    </div>
+    <div class="chosen-reason">Glimpse the Impossible (EV=-0.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-mid">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Manamorphose">Manamorphose</span></span>
+    <span class="alt-ev">-1.91</span>
+    <span class="alt-gap">Δ 1.87</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Manamorphose (EV=-1.9)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t3d15" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t3d16" data-decision-id="g1t3d16">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t3d16">#g1t3d16</a>
+    <span class="dec-actor">Ruby Storm</span>
+    <span class="dec-goal">goal: execute_payoff</span>
+    <span class="dec-cands">2 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Manamorphose">Manamorphose</span></span>
+      <span class="chosen-ev">-1.77</span>
+    </div>
+    <div class="chosen-reason">Manamorphose (EV=-1.8)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Manamorphose">Manamorphose</span></span>
+    <span class="alt-ev">-1.77</span>
+    <span class="alt-gap">Δ 0.00</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Manamorphose (EV=-1.8)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t3d16" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t3d17" data-decision-id="g1t3d17">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t3d17">#g1t3d17</a>
+    <span class="dec-actor">Ruby Storm</span>
+    <span class="dec-goal">goal: execute_payoff</span>
+    <span class="dec-cands">2 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Valakut Awakening // Valakut Stoneforge">Valakut Awakening // Valakut Stoneforge</span></span>
+      <span class="chosen-ev">-0.42</span>
+    </div>
+    <div class="chosen-reason">Valakut Awakening // Valakut Stoneforge (EV=-0.4)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-mid">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Manamorphose">Manamorphose</span></span>
+    <span class="alt-ev">-2.77</span>
+    <span class="alt-gap">Δ 2.36</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Manamorphose (EV=-2.8)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t3d17" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t3d18" data-decision-id="g1t3d18">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t3d18">#g1t3d18</a>
+    <span class="dec-actor">Ruby Storm</span>
+    <span class="dec-goal">goal: execute_payoff</span>
+    <span class="dec-cands">2 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Desperate Ritual">Desperate Ritual</span></span>
+      <span class="chosen-ev">-2.63</span>
+    </div>
+    <div class="chosen-reason">Desperate Ritual (EV=-2.6)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Manamorphose">Manamorphose</span></span>
+    <span class="alt-ev">-989.68</span>
+    <span class="alt-gap">Δ 987.05</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Manamorphose (EV=-989.7)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t3d18" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t3d19" data-decision-id="g1t3d19">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t3d19">#g1t3d19</a>
+    <span class="dec-actor">Ruby Storm</span>
+    <span class="dec-goal">goal: execute_payoff</span>
+    <span class="dec-cands">1 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><em>pass</em></span>
+      <span class="chosen-ev">0.00</span>
+    </div>
+    <div class="chosen-reason">below pass_threshold</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Manamorphose">Manamorphose</span></span>
+    <span class="alt-ev">-990.00</span>
+    <span class="alt-gap">Δ 990.00</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Manamorphose (EV=-990.0)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t3d19" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t3d20" data-decision-id="g1t3d20">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t3d20">#g1t3d20</a>
+    <span class="dec-actor">Ruby Storm</span>
+    <span class="dec-goal">goal: execute_payoff</span>
+    <span class="dec-cands">1 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><em>pass</em></span>
+      <span class="chosen-ev">0.00</span>
+    </div>
+    <div class="chosen-reason">below pass_threshold</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Manamorphose">Manamorphose</span></span>
+    <span class="alt-ev">-989.58</span>
+    <span class="alt-gap">Δ 989.58</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Manamorphose (EV=-989.6)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t3d20" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+    <div class="combat"><div class="cmb attack">⚔ Affinity attacks: <span class="atk">Ornithopter <em>4/2</em></span></div><div class="cmb no-blk">Ruby Storm does not block</div><div class="cmb damage ">💥 Affinity deals <strong>4</strong> to Ruby Storm (19 → 15)</div><div class="cmb no-atk">Ruby Storm does not attack</div></div>
+    <ul class="plays"><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Mistvault Bridge">Mistvault Bridge</span></li><li class="play kind-equip"><span class="play-act">equip</span><span class="card-pill" data-card="Cranial Plating">Cranial Plating</span> → <span class="card-pill" data-card="id:65">id:65</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Signal Pest">Signal Pest</span></li><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Arid Mesa">Arid Mesa</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Reckless Impulse">Reckless Impulse</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Ruby Medallion">Ruby Medallion</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Manamorphose">Manamorphose</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Grapeshot">Grapeshot</span> → <span class="card-pill" data-card="id:-1">id:-1</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Glimpse the Impossible">Glimpse the Impossible</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Manamorphose">Manamorphose</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Valakut Awakening // Valakut Stoneforge">Valakut Awakening // Valakut Stoneforge</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Desperate Ritual">Desperate Ritual</span></li></ul>
+  </div>
+</details>
+
+
+<details class="turn" data-turn="4" open>
+  <summary class="turn-summary">
+    <span class="turn-num">T4</span>
+    <span class="turn-actor">Ruby Storm <em class="p">(P1)</em></span>
+    <span class="life"><span class="p1-life">4</span> <span class="vs-dot">·</span> <span class="p2-life">16</span></span>
+    <span class="turn-counts">11 decisions</span>
+  </summary>
+  <div class="turn-body">
+    <div class="boards">
+<div class="board p1">
+  <div class="board-head">
+    <span class="dot p1"></span>
+    <strong>P1</strong>
+    <span class="board-stats">life 4 · hand 7 · lib 39</span>
+  </div>
+  <div class="row creatures"><em class="mute">no creatures</em></div>
+  <div class="row other"><span class="card-pill" data-card="Ruby Medallion">Ruby Medallion</span><span class="card-pill" data-card="Ruby Medallion">Ruby Medallion</span></div>
+  <div class="row lands"><span class="card-pill" data-card="Gemstone Caverns">Gemstone Caverns</span><span class="card-pill" data-card="Mountain">Mountain</span><span class="card-pill" data-card="Mountain">Mountain</span></div>
+</div>
+
+<div class="board p2">
+  <div class="board-head">
+    <span class="dot p2"></span>
+    <strong>P2</strong>
+    <span class="board-stats">life 16 · hand 2 · lib 48</span>
+  </div>
+  <div class="row creatures"><span class="cre" data-card="Ornithopter">Ornithopter <em>9/2</em><span class="tap">↻</span></span><span class="cre" data-card="Signal Pest">Signal Pest <em>0/1</em><span class="tap">↻</span></span><span class="cre" data-card="Construct Token">Construct Token <em>9/9</em><span class="sick">z</span></span><span class="cre" data-card="Thought Monitor">Thought Monitor <em>2/2</em><span class="sick">z</span></span><span class="cre" data-card="Germ Token">Germ Token <em>10/10</em><span class="sick">z</span></span><span class="cre" data-card="Memnite">Memnite <em>1/1</em><span class="sick">z</span></span></div>
+  <div class="row other"><span class="card-pill" data-card="Cranial Plating">Cranial Plating</span><span class="card-pill" data-card="Nettlecyst">Nettlecyst</span></div>
+  <div class="row lands"><span class="card-pill" data-card="Spire of Industry">Spire of Industry</span><span class="card-pill" data-card="Urza's Saga">Urza's Saga</span><span class="card-pill" data-card="Mistvault Bridge">Mistvault Bridge</span><span class="card-pill" data-card="Darksteel Citadel">Darksteel Citadel</span></div>
+</div>
+</div>
+    
+<div class="decision" id="g1t4d21" data-decision-id="g1t4d21">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t4d21">#g1t4d21</a>
+    <span class="dec-actor">Affinity</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">3 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Darksteel Citadel">Darksteel Citadel</span></span>
+      <span class="chosen-ev">27.00</span>
+    </div>
+    <div class="chosen-reason">Land: Darksteel Citadel (EV=27.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Urza's Saga">Urza's Saga</span></span>
+    <span class="alt-ev">15.00</span>
+    <span class="alt-gap">Δ 12.00</span>
+    <span class="alt-bar"><span style="width:52%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Urza's Saga (EV=15.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Thought Monitor">Thought Monitor</span></span>
+    <span class="alt-ev">1.91</span>
+    <span class="alt-gap">Δ 25.09</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Thought Monitor (EV=1.9)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t4d21" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t4d22" data-decision-id="g1t4d22">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t4d22">#g1t4d22</a>
+    <span class="dec-actor">Affinity</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">1 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Thought Monitor">Thought Monitor</span></span>
+      <span class="chosen-ev">11.92</span>
+    </div>
+    <div class="chosen-reason">Thought Monitor (EV=11.9)</div>
+    
+  </div>
+  
+  <form class="feedback" data-decision-id="g1t4d22" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t4d23" data-decision-id="g1t4d23">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t4d23">#g1t4d23</a>
+    <span class="dec-actor">Affinity</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">2 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Nettlecyst">Nettlecyst</span></span>
+      <span class="chosen-ev">1.61</span>
+    </div>
+    <div class="chosen-reason">Nettlecyst (EV=1.6)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Memnite">Memnite</span></span>
+    <span class="alt-ev">1.30</span>
+    <span class="alt-gap">Δ 0.31</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Memnite (EV=1.3)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t4d23" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t4d24" data-decision-id="g1t4d24">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t4d24">#g1t4d24</a>
+    <span class="dec-actor">Affinity</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">1 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Memnite">Memnite</span></span>
+      <span class="chosen-ev">1.41</span>
+    </div>
+    <div class="chosen-reason">Memnite (EV=1.4)</div>
+    
+  </div>
+  
+  <form class="feedback" data-decision-id="g1t4d24" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t4d25" data-decision-id="g1t4d25">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t4d25">#g1t4d25</a>
+    <span class="dec-actor">Ruby Storm</span>
+    <span class="dec-goal">goal: execute_payoff</span>
+    <span class="dec-cands">8 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Scalding Tarn">Scalding Tarn</span></span>
+      <span class="chosen-ev">18.00</span>
+    </div>
+    <div class="chosen-reason">Land: Scalding Tarn (EV=18.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Scalding Tarn">Scalding Tarn</span></span>
+    <span class="alt-ev">18.00</span>
+    <span class="alt-gap">Δ 0.00</span>
+    <span class="alt-bar"><span style="width:100%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Scalding Tarn (EV=18.0)</div>
+</div>
+
+<div class="alt gap-mid">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span></span>
+    <span class="alt-ev">15.00</span>
+    <span class="alt-gap">Δ 3.00</span>
+    <span class="alt-bar"><span style="width:83%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Sacred Foundry (EV=15.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Thundering Falls">Thundering Falls</span></span>
+    <span class="alt-ev">7.00</span>
+    <span class="alt-gap">Δ 11.00</span>
+    <span class="alt-bar"><span style="width:38%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Thundering Falls (EV=7.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Manamorphose">Manamorphose</span></span>
+    <span class="alt-ev">0.00</span>
+    <span class="alt-gap">Δ 18.00</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Manamorphose (EV=0.0)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t4d25" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t4d26" data-decision-id="g1t4d26">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t4d26">#g1t4d26</a>
+    <span class="dec-actor">Ruby Storm</span>
+    <span class="dec-goal">goal: execute_payoff</span>
+    <span class="dec-cands">4 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Manamorphose">Manamorphose</span></span>
+      <span class="chosen-ev">0.00</span>
+    </div>
+    <div class="chosen-reason">Manamorphose (EV=0.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Pyretic Ritual">Pyretic Ritual</span></span>
+    <span class="alt-ev">-0.09</span>
+    <span class="alt-gap">Δ 0.09</span>
+    <span class="alt-bar"><span style="width:80%"></span></span>
+  </div>
+  <div class="alt-reason">Pyretic Ritual (EV=-0.1)</div>
+</div>
+
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Ral, Monsoon Mage // Ral, Leyline Prodigy">Ral, Monsoon Mage // Ral, Leyline Prodigy</span></span>
+    <span class="alt-ev">-0.49</span>
+    <span class="alt-gap">Δ 0.49</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Ral, Monsoon Mage // Ral, Leyline Prodigy (EV=-0.5)</div>
+</div>
+
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Ral, Monsoon Mage // Ral, Leyline Prodigy">Ral, Monsoon Mage // Ral, Leyline Prodigy</span></span>
+    <span class="alt-ev">-0.49</span>
+    <span class="alt-gap">Δ 0.49</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Ral, Monsoon Mage // Ral, Leyline Prodigy (EV=-0.5)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t4d26" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t4d27" data-decision-id="g1t4d27">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t4d27">#g1t4d27</a>
+    <span class="dec-actor">Ruby Storm</span>
+    <span class="dec-goal">goal: execute_payoff</span>
+    <span class="dec-cands">4 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Glimpse the Impossible">Glimpse the Impossible</span></span>
+      <span class="chosen-ev">0.12</span>
+    </div>
+    <div class="chosen-reason">Glimpse the Impossible (EV=0.1)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Pyretic Ritual">Pyretic Ritual</span></span>
+    <span class="alt-ev">-0.09</span>
+    <span class="alt-gap">Δ 0.22</span>
+    <span class="alt-bar"><span style="width:46%"></span></span>
+  </div>
+  <div class="alt-reason">Pyretic Ritual (EV=-0.1)</div>
+</div>
+
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Ral, Monsoon Mage // Ral, Leyline Prodigy">Ral, Monsoon Mage // Ral, Leyline Prodigy</span></span>
+    <span class="alt-ev">-0.28</span>
+    <span class="alt-gap">Δ 0.41</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Ral, Monsoon Mage // Ral, Leyline Prodigy (EV=-0.3)</div>
+</div>
+
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Ral, Monsoon Mage // Ral, Leyline Prodigy">Ral, Monsoon Mage // Ral, Leyline Prodigy</span></span>
+    <span class="alt-ev">-0.28</span>
+    <span class="alt-gap">Δ 0.41</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Ral, Monsoon Mage // Ral, Leyline Prodigy (EV=-0.3)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t4d27" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t4d28" data-decision-id="g1t4d28">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t4d28">#g1t4d28</a>
+    <span class="dec-actor">Ruby Storm</span>
+    <span class="dec-goal">goal: execute_payoff</span>
+    <span class="dec-cands">5 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Wrenn's Resolve">Wrenn's Resolve</span></span>
+      <span class="chosen-ev">0.03</span>
+    </div>
+    <div class="chosen-reason">Wrenn's Resolve (EV=0.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Pyretic Ritual">Pyretic Ritual</span></span>
+    <span class="alt-ev">-0.09</span>
+    <span class="alt-gap">Δ 0.12</span>
+    <span class="alt-bar"><span style="width:99%"></span></span>
+  </div>
+  <div class="alt-reason">Pyretic Ritual (EV=-0.1)</div>
+</div>
+
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Ral, Monsoon Mage // Ral, Leyline Prodigy">Ral, Monsoon Mage // Ral, Leyline Prodigy</span></span>
+    <span class="alt-ev">-0.28</span>
+    <span class="alt-gap">Δ 0.31</span>
+    <span class="alt-bar"><span style="width:97%"></span></span>
+  </div>
+  <div class="alt-reason">Ral, Monsoon Mage // Ral, Leyline Prodigy (EV=-0.3)</div>
+</div>
+
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Ral, Monsoon Mage // Ral, Leyline Prodigy">Ral, Monsoon Mage // Ral, Leyline Prodigy</span></span>
+    <span class="alt-ev">-0.28</span>
+    <span class="alt-gap">Δ 0.31</span>
+    <span class="alt-bar"><span style="width:97%"></span></span>
+  </div>
+  <div class="alt-reason">Ral, Monsoon Mage // Ral, Leyline Prodigy (EV=-0.3)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Wish">Wish</span></span>
+    <span class="alt-ev">-15.06</span>
+    <span class="alt-gap">Δ 15.09</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Wish (EV=-15.1)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t4d28" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t4d29" data-decision-id="g1t4d29">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t4d29">#g1t4d29</a>
+    <span class="dec-actor">Ruby Storm</span>
+    <span class="dec-goal">goal: execute_payoff</span>
+    <span class="dec-cands">5 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="March of Reckless Joy">March of Reckless Joy</span></span>
+      <span class="chosen-ev">-0.06</span>
+    </div>
+    <div class="chosen-reason">March of Reckless Joy (EV=-0.1)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Pyretic Ritual">Pyretic Ritual</span></span>
+    <span class="alt-ev">-0.09</span>
+    <span class="alt-gap">Δ 0.03</span>
+    <span class="alt-bar"><span style="width:99%"></span></span>
+  </div>
+  <div class="alt-reason">Pyretic Ritual (EV=-0.1)</div>
+</div>
+
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Ral, Monsoon Mage // Ral, Leyline Prodigy">Ral, Monsoon Mage // Ral, Leyline Prodigy</span></span>
+    <span class="alt-ev">-0.65</span>
+    <span class="alt-gap">Δ 0.58</span>
+    <span class="alt-bar"><span style="width:96%"></span></span>
+  </div>
+  <div class="alt-reason">Ral, Monsoon Mage // Ral, Leyline Prodigy (EV=-0.6)</div>
+</div>
+
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Ral, Monsoon Mage // Ral, Leyline Prodigy">Ral, Monsoon Mage // Ral, Leyline Prodigy</span></span>
+    <span class="alt-ev">-0.65</span>
+    <span class="alt-gap">Δ 0.58</span>
+    <span class="alt-bar"><span style="width:96%"></span></span>
+  </div>
+  <div class="alt-reason">Ral, Monsoon Mage // Ral, Leyline Prodigy (EV=-0.6)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Wish">Wish</span></span>
+    <span class="alt-ev">-15.47</span>
+    <span class="alt-gap">Δ 15.40</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Wish (EV=-15.5)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t4d29" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t4d30" data-decision-id="g1t4d30">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t4d30">#g1t4d30</a>
+    <span class="dec-actor">Ruby Storm</span>
+    <span class="dec-goal">goal: execute_payoff</span>
+    <span class="dec-cands">1 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Manamorphose">Manamorphose</span></span>
+      <span class="chosen-ev">0.78</span>
+    </div>
+    <div class="chosen-reason">Manamorphose (EV=0.8)</div>
+    
+  </div>
+  
+  <form class="feedback" data-decision-id="g1t4d30" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t4d31" data-decision-id="g1t4d31">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t4d31">#g1t4d31</a>
+    <span class="dec-actor">Ruby Storm</span>
+    <span class="dec-goal">goal: execute_payoff</span>
+    <span class="dec-cands">3 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Ruby Medallion">Ruby Medallion</span></span>
+      <span class="chosen-ev">3.35</span>
+    </div>
+    <div class="chosen-reason">Ruby Medallion (EV=3.4)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-mid">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Pyretic Ritual">Pyretic Ritual</span></span>
+    <span class="alt-ev">0.38</span>
+    <span class="alt-gap">Δ 2.98</span>
+    <span class="alt-bar"><span style="width:73%"></span></span>
+  </div>
+  <div class="alt-reason">Pyretic Ritual (EV=0.4)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Wish">Wish</span></span>
+    <span class="alt-ev">-8.04</span>
+    <span class="alt-gap">Δ 11.39</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Wish (EV=-8.0)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t4d31" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+    <div class="combat"><div class="cmb attack">⚔ Affinity attacks: <span class="atk">Ornithopter <em>9/2</em></span> <span class="atk">Signal Pest <em>0/1</em></span></div><div class="cmb no-blk">Ruby Storm does not block</div><div class="cmb damage ">💥 Affinity deals <strong>10</strong> to Ruby Storm (14 → 4)</div><div class="cmb no-atk">Ruby Storm does not attack</div></div>
+    <ul class="plays"><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Darksteel Citadel">Darksteel Citadel</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Thought Monitor">Thought Monitor</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Nettlecyst">Nettlecyst</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Memnite">Memnite</span></li><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Scalding Tarn">Scalding Tarn</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Manamorphose">Manamorphose</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Glimpse the Impossible">Glimpse the Impossible</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Wrenn's Resolve">Wrenn's Resolve</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="March of Reckless Joy">March of Reckless Joy</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Manamorphose">Manamorphose</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Ruby Medallion">Ruby Medallion</span></li></ul>
+  </div>
+</details>
+
+
+<details class="turn" data-turn="5" open>
+  <summary class="turn-summary">
+    <span class="turn-num">T5</span>
+    <span class="turn-actor">Affinity <em class="p">(P2)</em></span>
+    <span class="life"><span class="p1-life">3</span> <span class="vs-dot">·</span> <span class="p2-life">16</span></span>
+    <span class="turn-counts">2 decisions</span>
+  </summary>
+  <div class="turn-body">
+    <div class="boards">
+<div class="board p1">
+  <div class="board-head">
+    <span class="dot p1"></span>
+    <strong>P1</strong>
+    <span class="board-stats">life 3 · hand 7 · lib 28</span>
+  </div>
+  <div class="row creatures"><em class="mute">no creatures</em></div>
+  <div class="row other"><span class="card-pill" data-card="Ruby Medallion">Ruby Medallion</span><span class="card-pill" data-card="Ruby Medallion">Ruby Medallion</span><span class="card-pill" data-card="Ruby Medallion">Ruby Medallion</span></div>
+  <div class="row lands"><span class="card-pill" data-card="Gemstone Caverns">Gemstone Caverns</span><span class="card-pill" data-card="Mountain">Mountain</span><span class="card-pill" data-card="Mountain">Mountain</span><span class="card-pill" data-card="Mountain">Mountain</span></div>
+</div>
+
+<div class="board p2">
+  <div class="board-head">
+    <span class="dot p2"></span>
+    <strong>P2</strong>
+    <span class="board-stats">life 16 · hand 2 · lib 48</span>
+  </div>
+  <div class="row creatures"><span class="cre" data-card="Ornithopter">Ornithopter <em>9/2</em></span><span class="cre" data-card="Signal Pest">Signal Pest <em>0/1</em></span><span class="cre" data-card="Construct Token">Construct Token <em>9/9</em></span><span class="cre" data-card="Thought Monitor">Thought Monitor <em>2/2</em></span><span class="cre" data-card="Germ Token">Germ Token <em>10/10</em></span><span class="cre" data-card="Memnite">Memnite <em>1/1</em></span></div>
+  <div class="row other"><span class="card-pill" data-card="Cranial Plating">Cranial Plating</span><span class="card-pill" data-card="Nettlecyst">Nettlecyst</span></div>
+  <div class="row lands"><span class="card-pill" data-card="Spire of Industry">Spire of Industry</span><span class="card-pill" data-card="Urza's Saga">Urza's Saga</span><span class="card-pill" data-card="Mistvault Bridge">Mistvault Bridge</span><span class="card-pill" data-card="Darksteel Citadel">Darksteel Citadel</span></div>
+</div>
+</div>
+    
+<div class="decision" id="g1t5d32" data-decision-id="g1t5d32">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t5d32">#g1t5d32</a>
+    <span class="dec-actor">Affinity</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">3 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Urza's Saga">Urza's Saga</span></span>
+      <span class="chosen-ev">23.69</span>
+    </div>
+    <div class="chosen-reason">Land: Urza's Saga (EV=23.7)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Sojourner's Companion">Sojourner's Companion</span></span>
+    <span class="alt-ev">16.67</span>
+    <span class="alt-gap">Δ 7.02</span>
+    <span class="alt-bar"><span style="width:54%"></span></span>
+  </div>
+  <div class="alt-reason">Cycle: Sojourner's Companion</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Sojourner's Companion">Sojourner's Companion</span></span>
+    <span class="alt-ev">8.34</span>
+    <span class="alt-gap">Δ 15.35</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Sojourner's Companion (EV=8.3)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t5d32" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t5d33" data-decision-id="g1t5d33">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t5d33">#g1t5d33</a>
+    <span class="dec-actor">Affinity</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">2 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Sojourner's Companion">Sojourner's Companion</span></span>
+      <span class="chosen-ev">16.67</span>
+    </div>
+    <div class="chosen-reason">Cycle: Sojourner's Companion</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Sojourner's Companion">Sojourner's Companion</span></span>
+    <span class="alt-ev">8.67</span>
+    <span class="alt-gap">Δ 8.00</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Sojourner's Companion (EV=8.7)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t5d33" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+    <div class="combat"><div class="cmb attack">⚔ Affinity attacks: <span class="atk">Ornithopter <em>11/2</em></span> <span class="atk">Signal Pest <em>0/1</em></span> <span class="atk">Construct Token <em>11/11</em></span> <span class="atk">Thought Monitor <em>2/2</em></span> <span class="atk">Germ Token <em>12/12</em></span> <span class="atk">Memnite <em>1/1</em></span></div><div class="cmb no-blk">Ruby Storm does not block</div><div class="cmb damage lethal">💥 Affinity deals <strong>42</strong> to Ruby Storm (3 → -39)<span class="lethal-tag">☠ LETHAL</span></div></div>
+    <ul class="plays"><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Urza's Saga">Urza's Saga</span></li><li class="play kind-cycle"><span class="play-act">cycle</span><span class="card-pill" data-card="Sojourner's Companion">Sojourner's Companion</span></li></ul>
+  </div>
+</details>
+
+  </div>
+</section>
+
+
+<section class="game" id="game-2" data-game="2">
+  <header class="game-header">
+    <h2>Game 2</h2>
+    <div class="game-meta">
+      <span class="chip on-play">on play: <strong>Affinity</strong></span>
+      <span class="chip result">winner: <strong>Affinity</strong> (damage, T5)</span>
+      <span class="chip decks">Ruby Storm <em>vs</em> Affinity</span>
+    </div>
+  </header>
+  <div class="turns">
+    <div class="mulls"><h3>Mulligans</h3><div class="mull"><span class="mull-decision mull-no">MULLIGAN</span><span class="mull-actor">Ruby Storm</span><span class="mull-size">→ 7</span><span class="mull-reason">no cost reducer and no ritual+cantrip+finisher backup</span><div class="mull-cards"><span class="card-pill" data-card="Ral, Monsoon Mage // Ral, Leyline Prodigy">Ral, Monsoon Mage // Ral, Leyline Prodigy</span> <span class="card-pill" data-card="Wrenn's Resolve">Wrenn's Resolve</span> <span class="card-pill" data-card="Valakut Awakening // Valakut Stoneforge">Valakut Awakening // Valakut Stoneforge</span> <span class="card-pill" data-card="Mountain">Mountain</span> <span class="card-pill" data-card="Manamorphose">Manamorphose</span> <span class="card-pill" data-card="Ral, Monsoon Mage // Ral, Leyline Prodigy">Ral, Monsoon Mage // Ral, Leyline Prodigy</span> <span class="card-pill" data-card="Desperate Ritual">Desperate Ritual</span></div></div><div class="mull"><span class="mull-decision keep">KEEP</span><span class="mull-actor">Ruby Storm</span><span class="mull-size">→ 6</span><span class="mull-reason">has key card(s): Desperate Ritual, Manamorphose, Pyretic Ritual, Reckless Impulse, 6 cheap spells</span><div class="mull-cards"><span class="card-pill" data-card="Thundering Falls">Thundering Falls</span> <span class="card-pill" data-card="Desperate Ritual">Desperate Ritual</span> <span class="card-pill" data-card="Ral, Monsoon Mage // Ral, Leyline Prodigy">Ral, Monsoon Mage // Ral, Leyline Prodigy</span> <span class="card-pill" data-card="Reckless Impulse">Reckless Impulse</span> <span class="card-pill" data-card="Pyretic Ritual">Pyretic Ritual</span> <span class="card-pill" data-card="Manamorphose">Manamorphose</span></div></div><div class="mull"><span class="mull-decision keep">KEEP</span><span class="mull-actor">Affinity</span><span class="mull-size">→ 7</span><span class="mull-reason">has key card(s): Mox Opal, 2 cheap spells</span><div class="mull-cards"><span class="card-pill" data-card="Signal Pest">Signal Pest</span> <span class="card-pill" data-card="Frogmite">Frogmite</span> <span class="card-pill" data-card="Darksteel Citadel">Darksteel Citadel</span> <span class="card-pill" data-card="Mox Opal">Mox Opal</span> <span class="card-pill" data-card="Razortide Bridge">Razortide Bridge</span> <span class="card-pill" data-card="Razortide Bridge">Razortide Bridge</span> <span class="card-pill" data-card="Mox Opal">Mox Opal</span></div></div></div>
+
+<details class="turn" data-turn="1" open>
+  <summary class="turn-summary">
+    <span class="turn-num">T1</span>
+    <span class="turn-actor">Ruby Storm <em class="p">(P1)</em></span>
+    <span class="life"><span class="p1-life">20</span> <span class="vs-dot">·</span> <span class="p2-life">20</span></span>
+    <span class="turn-counts">4 decisions</span>
+  </summary>
+  <div class="turn-body">
+    <div class="boards">
+<div class="board p1">
+  <div class="board-head">
+    <span class="dot p1"></span>
+    <strong>P1</strong>
+    <span class="board-stats">life 20 · hand 6 · lib 54</span>
+  </div>
+  <div class="row creatures"><em class="mute">no creatures</em></div>
+  
+  <div class="row lands"><em class="mute">no lands</em></div>
+</div>
+
+<div class="board p2">
+  <div class="board-head">
+    <span class="dot p2"></span>
+    <strong>P2</strong>
+    <span class="board-stats">life 20 · hand 4 · lib 53</span>
+  </div>
+  <div class="row creatures"><span class="cre" data-card="Signal Pest">Signal Pest <em>0/1</em><span class="sick">z</span></span></div>
+  <div class="row other"><span class="card-pill" data-card="Mox Opal">Mox Opal</span></div>
+  <div class="row lands"><span class="card-pill" data-card="Darksteel Citadel">Darksteel Citadel</span></div>
+</div>
+</div>
+    
+<div class="decision" id="g2t1d34" data-decision-id="g2t1d34">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t1d34">#g2t1d34</a>
+    <span class="dec-actor">Affinity</span>
+    <span class="dec-goal">goal: deploy_engine</span>
+    <span class="dec-cands">5 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Darksteel Citadel">Darksteel Citadel</span></span>
+      <span class="chosen-ev">15.00</span>
+    </div>
+    <div class="chosen-reason">Land: Darksteel Citadel (EV=15.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Mox Opal">Mox Opal</span></span>
+    <span class="alt-ev">0.97</span>
+    <span class="alt-gap">Δ 14.03</span>
+    <span class="alt-bar"><span style="width:6%"></span></span>
+  </div>
+  <div class="alt-reason">Mox Opal (EV=1.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Mox Opal">Mox Opal</span></span>
+    <span class="alt-ev">0.97</span>
+    <span class="alt-gap">Δ 14.03</span>
+    <span class="alt-bar"><span style="width:6%"></span></span>
+  </div>
+  <div class="alt-reason">Mox Opal (EV=1.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Razortide Bridge">Razortide Bridge</span></span>
+    <span class="alt-ev">0.00</span>
+    <span class="alt-gap">Δ 15.00</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Razortide Bridge (EV=0.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Razortide Bridge">Razortide Bridge</span></span>
+    <span class="alt-ev">0.00</span>
+    <span class="alt-gap">Δ 15.00</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Razortide Bridge (EV=0.0)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t1d34" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t1d35" data-decision-id="g2t1d35">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t1d35">#g2t1d35</a>
+    <span class="dec-actor">Affinity</span>
+    <span class="dec-goal">goal: deploy_engine</span>
+    <span class="dec-cands">3 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Mox Opal">Mox Opal</span></span>
+      <span class="chosen-ev">0.96</span>
+    </div>
+    <div class="chosen-reason">Mox Opal (EV=1.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Mox Opal">Mox Opal</span></span>
+    <span class="alt-ev">0.96</span>
+    <span class="alt-gap">Δ 0.00</span>
+    <span class="alt-bar"><span style="width:3%"></span></span>
+  </div>
+  <div class="alt-reason">Mox Opal (EV=1.0)</div>
+</div>
+
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Signal Pest">Signal Pest</span></span>
+    <span class="alt-ev">0.93</span>
+    <span class="alt-gap">Δ 0.03</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Signal Pest (EV=0.9)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t1d35" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t1d36" data-decision-id="g2t1d36">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t1d36">#g2t1d36</a>
+    <span class="dec-actor">Affinity</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">1 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Signal Pest">Signal Pest</span></span>
+      <span class="chosen-ev">0.94</span>
+    </div>
+    <div class="chosen-reason">Signal Pest (EV=0.9)</div>
+    
+  </div>
+  
+  <form class="feedback" data-decision-id="g2t1d36" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t1d37" data-decision-id="g2t1d37">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t1d37">#g2t1d37</a>
+    <span class="dec-actor">Ruby Storm</span>
+    <span class="dec-goal">goal: deploy_engine</span>
+    <span class="dec-cands">1 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Thundering Falls">Thundering Falls</span></span>
+      <span class="chosen-ev">33.00</span>
+    </div>
+    <div class="chosen-reason">Land: Thundering Falls (EV=33.0)</div>
+    
+  </div>
+  
+  <form class="feedback" data-decision-id="g2t1d37" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+    <div class="combat"><div class="cmb no-atk">Affinity does not attack</div><div class="cmb no-atk">Ruby Storm does not attack</div></div>
+    <ul class="plays"><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Darksteel Citadel">Darksteel Citadel</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Mox Opal">Mox Opal</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Signal Pest">Signal Pest</span></li><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Thundering Falls">Thundering Falls</span></li></ul>
+  </div>
+</details>
+
+
+<details class="turn" data-turn="2" open>
+  <summary class="turn-summary">
+    <span class="turn-num">T2</span>
+    <span class="turn-actor">Ruby Storm <em class="p">(P1)</em></span>
+    <span class="life"><span class="p1-life">20</span> <span class="vs-dot">·</span> <span class="p2-life">20</span></span>
+    <span class="turn-counts">3 decisions</span>
+  </summary>
+  <div class="turn-body">
+    <div class="boards">
+<div class="board p1">
+  <div class="board-head">
+    <span class="dot p1"></span>
+    <strong>P1</strong>
+    <span class="board-stats">life 20 · hand 6 · lib 53</span>
+  </div>
+  <div class="row creatures"><em class="mute">no creatures</em></div>
+  
+  <div class="row lands"><span class="card-pill" data-card="Thundering Falls">Thundering Falls</span></div>
+</div>
+
+<div class="board p2">
+  <div class="board-head">
+    <span class="dot p2"></span>
+    <strong>P2</strong>
+    <span class="board-stats">life 20 · hand 3 · lib 52</span>
+  </div>
+  <div class="row creatures"><span class="cre" data-card="Signal Pest">Signal Pest <em>0/1</em><span class="tap">↻</span></span><span class="cre" data-card="Frogmite">Frogmite <em>2/2</em><span class="sick">z</span></span></div>
+  <div class="row other"><span class="card-pill" data-card="Mox Opal">Mox Opal</span></div>
+  <div class="row lands"><span class="card-pill" data-card="Darksteel Citadel">Darksteel Citadel</span><span class="card-pill" data-card="Razortide Bridge">Razortide Bridge</span></div>
+</div>
+</div>
+    
+<div class="decision" id="g2t2d38" data-decision-id="g2t2d38">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t2d38">#g2t2d38</a>
+    <span class="dec-actor">Affinity</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">3 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Razortide Bridge">Razortide Bridge</span></span>
+      <span class="chosen-ev">11.00</span>
+    </div>
+    <div class="chosen-reason">Land: Razortide Bridge (EV=11.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Razortide Bridge">Razortide Bridge</span></span>
+    <span class="alt-ev">11.00</span>
+    <span class="alt-gap">Δ 0.00</span>
+    <span class="alt-bar"><span style="width:100%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Razortide Bridge (EV=11.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Frogmite">Frogmite</span></span>
+    <span class="alt-ev">2.94</span>
+    <span class="alt-gap">Δ 8.06</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Frogmite (EV=2.9)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t2d38" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t2d39" data-decision-id="g2t2d39">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t2d39">#g2t2d39</a>
+    <span class="dec-actor">Affinity</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">1 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Frogmite">Frogmite</span></span>
+      <span class="chosen-ev">2.96</span>
+    </div>
+    <div class="chosen-reason">Frogmite (EV=3.0)</div>
+    
+  </div>
+  
+  <form class="feedback" data-decision-id="g2t2d39" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t2d40" data-decision-id="g2t2d40">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t2d40">#g2t2d40</a>
+    <span class="dec-actor">Ruby Storm</span>
+    <span class="dec-goal">goal: deploy_engine</span>
+    <span class="dec-cands">1 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Arid Mesa">Arid Mesa</span></span>
+      <span class="chosen-ev">22.00</span>
+    </div>
+    <div class="chosen-reason">Land: Arid Mesa (EV=22.0)</div>
+    
+  </div>
+  
+  <form class="feedback" data-decision-id="g2t2d40" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+    <div class="combat"><div class="cmb attack">⚔ Affinity attacks: <span class="atk">Signal Pest <em>0/1</em></span></div><div class="cmb no-blk">Ruby Storm does not block</div><div class="cmb no-atk">Ruby Storm does not attack</div></div>
+    <ul class="plays"><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Razortide Bridge">Razortide Bridge</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Frogmite">Frogmite</span></li><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Arid Mesa">Arid Mesa</span></li></ul>
+  </div>
+</details>
+
+
+<details class="turn" data-turn="3" open>
+  <summary class="turn-summary">
+    <span class="turn-num">T3</span>
+    <span class="turn-actor">Ruby Storm <em class="p">(P1)</em></span>
+    <span class="life"><span class="p1-life">16</span> <span class="vs-dot">·</span> <span class="p2-life">20</span></span>
+    <span class="turn-counts">5 decisions</span>
+  </summary>
+  <div class="turn-body">
+    <div class="boards">
+<div class="board p1">
+  <div class="board-head">
+    <span class="dot p1"></span>
+    <strong>P1</strong>
+    <span class="board-stats">life 16 · hand 6 · lib 51</span>
+  </div>
+  <div class="row creatures"><em class="mute">no creatures</em></div>
+  
+  <div class="row lands"><span class="card-pill" data-card="Thundering Falls">Thundering Falls</span><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span></div>
+</div>
+
+<div class="board p2">
+  <div class="board-head">
+    <span class="dot p2"></span>
+    <strong>P2</strong>
+    <span class="board-stats">life 20 · hand 2 · lib 49</span>
+  </div>
+  <div class="row creatures"><span class="cre" data-card="Signal Pest">Signal Pest <em>0/1</em><span class="tap">↻</span></span><span class="cre" data-card="Frogmite">Frogmite <em>2/2</em><span class="tap">↻</span></span><span class="cre" data-card="Sojourner's Companion">Sojourner's Companion <em>4/4</em><span class="sick">z</span></span><span class="cre" data-card="Thought Monitor">Thought Monitor <em>2/2</em><span class="sick">z</span></span><span class="cre" data-card="Frogmite">Frogmite <em>2/2</em><span class="sick">z</span></span></div>
+  <div class="row other"><span class="card-pill" data-card="Mox Opal">Mox Opal</span></div>
+  <div class="row lands"><span class="card-pill" data-card="Darksteel Citadel">Darksteel Citadel</span><span class="card-pill" data-card="Razortide Bridge">Razortide Bridge</span><span class="card-pill" data-card="Razortide Bridge">Razortide Bridge</span></div>
+</div>
+</div>
+    
+<div class="decision" id="g2t3d41" data-decision-id="g2t3d41">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t3d41">#g2t3d41</a>
+    <span class="dec-actor">Affinity</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">4 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Razortide Bridge">Razortide Bridge</span></span>
+      <span class="chosen-ev">15.00</span>
+    </div>
+    <div class="chosen-reason">Land: Razortide Bridge (EV=15.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-mid">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Sojourner's Companion">Sojourner's Companion</span></span>
+    <span class="alt-ev">10.46</span>
+    <span class="alt-gap">Δ 4.54</span>
+    <span class="alt-bar"><span style="width:65%"></span></span>
+  </div>
+  <div class="alt-reason">Sojourner's Companion (EV=10.5)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Thought Monitor">Thought Monitor</span></span>
+    <span class="alt-ev">7.90</span>
+    <span class="alt-gap">Δ 7.10</span>
+    <span class="alt-bar"><span style="width:46%"></span></span>
+  </div>
+  <div class="alt-reason">Thought Monitor (EV=7.9)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Sojourner's Companion">Sojourner's Companion</span></span>
+    <span class="alt-ev">1.75</span>
+    <span class="alt-gap">Δ 13.25</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Cycle: Sojourner's Companion</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t3d41" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t3d42" data-decision-id="g2t3d42">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t3d42">#g2t3d42</a>
+    <span class="dec-actor">Affinity</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">3 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Sojourner's Companion">Sojourner's Companion</span></span>
+      <span class="chosen-ev">10.52</span>
+    </div>
+    <div class="chosen-reason">Sojourner's Companion (EV=10.5)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-mid">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Thought Monitor">Thought Monitor</span></span>
+    <span class="alt-ev">7.96</span>
+    <span class="alt-gap">Δ 2.56</span>
+    <span class="alt-bar"><span style="width:70%"></span></span>
+  </div>
+  <div class="alt-reason">Thought Monitor (EV=8.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Sojourner's Companion">Sojourner's Companion</span></span>
+    <span class="alt-ev">1.75</span>
+    <span class="alt-gap">Δ 8.76</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Cycle: Sojourner's Companion</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t3d42" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t3d43" data-decision-id="g2t3d43">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t3d43">#g2t3d43</a>
+    <span class="dec-actor">Affinity</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">1 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Thought Monitor">Thought Monitor</span></span>
+      <span class="chosen-ev">3.61</span>
+    </div>
+    <div class="chosen-reason">Thought Monitor (EV=3.6)</div>
+    
+  </div>
+  
+  <form class="feedback" data-decision-id="g2t3d43" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t3d44" data-decision-id="g2t3d44">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t3d44">#g2t3d44</a>
+    <span class="dec-actor">Affinity</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">1 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Frogmite">Frogmite</span></span>
+      <span class="chosen-ev">4.83</span>
+    </div>
+    <div class="chosen-reason">Frogmite (EV=4.8)</div>
+    
+  </div>
+  
+  <form class="feedback" data-decision-id="g2t3d44" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t3d45" data-decision-id="g2t3d45">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t3d45">#g2t3d45</a>
+    <span class="dec-actor">Ruby Storm</span>
+    <span class="dec-goal">goal: execute_payoff</span>
+    <span class="dec-cands">7 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Reckless Impulse">Reckless Impulse</span></span>
+      <span class="chosen-ev">22.80</span>
+    </div>
+    <div class="chosen-reason">Reckless Impulse (EV=22.8)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Grapeshot">Grapeshot</span></span>
+    <span class="alt-ev">6.63</span>
+    <span class="alt-gap">Δ 16.17</span>
+    <span class="alt-bar"><span style="width:37%"></span></span>
+  </div>
+  <div class="alt-reason">Grapeshot (EV=6.6)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Desperate Ritual">Desperate Ritual</span></span>
+    <span class="alt-ev">-3.17</span>
+    <span class="alt-gap">Δ 25.97</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Desperate Ritual (EV=-3.2)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Pyretic Ritual">Pyretic Ritual</span></span>
+    <span class="alt-ev">-3.17</span>
+    <span class="alt-gap">Δ 25.97</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Pyretic Ritual (EV=-3.2)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Desperate Ritual">Desperate Ritual</span></span>
+    <span class="alt-ev">-3.17</span>
+    <span class="alt-gap">Δ 25.97</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Desperate Ritual (EV=-3.2)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t3d45" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+    <div class="combat"><div class="cmb attack">⚔ Affinity attacks: <span class="atk">Signal Pest <em>0/1</em></span> <span class="atk">Frogmite <em>2/2</em></span></div><div class="cmb no-blk">Ruby Storm does not block</div><div class="cmb damage ">💥 Affinity deals <strong>3</strong> to Ruby Storm (19 → 16)</div><div class="cmb no-atk">Ruby Storm does not attack</div></div>
+    <ul class="plays"><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Razortide Bridge">Razortide Bridge</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Sojourner's Companion">Sojourner's Companion</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Thought Monitor">Thought Monitor</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Frogmite">Frogmite</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Reckless Impulse">Reckless Impulse</span></li></ul>
+  </div>
+</details>
+
+
+<details class="turn" data-turn="4" open>
+  <summary class="turn-summary">
+    <span class="turn-num">T4</span>
+    <span class="turn-actor">Ruby Storm <em class="p">(P1)</em></span>
+    <span class="life"><span class="p1-life">2</span> <span class="vs-dot">·</span> <span class="p2-life">20</span></span>
+    <span class="turn-counts">10 decisions</span>
+  </summary>
+  <div class="turn-body">
+    <div class="boards">
+<div class="board p1">
+  <div class="board-head">
+    <span class="dot p1"></span>
+    <strong>P1</strong>
+    <span class="board-stats">life 2 · hand 7 · lib 48</span>
+  </div>
+  <div class="row creatures"><em class="mute">no creatures</em></div>
+  
+  <div class="row lands"><span class="card-pill" data-card="Thundering Falls">Thundering Falls</span><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span></div>
+</div>
+
+<div class="board p2">
+  <div class="board-head">
+    <span class="dot p2"></span>
+    <strong>P2</strong>
+    <span class="board-stats">life 20 · hand 2 · lib 48</span>
+  </div>
+  <div class="row creatures"><span class="cre" data-card="Signal Pest">Signal Pest <em>0/1</em><span class="tap">↻</span></span><span class="cre" data-card="Frogmite">Frogmite <em>2/2</em><span class="tap">↻</span></span><span class="cre" data-card="Sojourner's Companion">Sojourner's Companion <em>4/4</em><span class="tap">↻</span></span><span class="cre" data-card="Thought Monitor">Thought Monitor <em>2/2</em><span class="tap">↻</span></span><span class="cre" data-card="Frogmite">Frogmite <em>2/2</em><span class="tap">↻</span></span></div>
+  <div class="row other"><span class="card-pill" data-card="Mox Opal">Mox Opal</span></div>
+  <div class="row lands"><span class="card-pill" data-card="Darksteel Citadel">Darksteel Citadel</span><span class="card-pill" data-card="Razortide Bridge">Razortide Bridge</span><span class="card-pill" data-card="Razortide Bridge">Razortide Bridge</span><span class="card-pill" data-card="Mistvault Bridge">Mistvault Bridge</span></div>
+</div>
+</div>
+    
+<div class="decision" id="g2t4d46" data-decision-id="g2t4d46">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t4d46">#g2t4d46</a>
+    <span class="dec-actor">Affinity</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">2 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Mistvault Bridge">Mistvault Bridge</span></span>
+      <span class="chosen-ev">27.00</span>
+    </div>
+    <div class="chosen-reason">Land: Mistvault Bridge (EV=27.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Urza's Saga">Urza's Saga</span></span>
+    <span class="alt-ev">17.27</span>
+    <span class="alt-gap">Δ 9.72</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Urza's Saga (EV=17.3)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t4d46" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t4d47" data-decision-id="g2t4d47">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t4d47">#g2t4d47</a>
+    <span class="dec-actor">Ruby Storm</span>
+    <span class="dec-goal">goal: execute_payoff</span>
+    <span class="dec-cands">8 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Scalding Tarn">Scalding Tarn</span></span>
+      <span class="chosen-ev">18.00</span>
+    </div>
+    <div class="chosen-reason">Land: Scalding Tarn (EV=18.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Reckless Impulse">Reckless Impulse</span></span>
+    <span class="alt-ev">17.75</span>
+    <span class="alt-gap">Δ 0.25</span>
+    <span class="alt-bar"><span style="width:98%"></span></span>
+  </div>
+  <div class="alt-reason">Reckless Impulse (EV=17.8)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Grapeshot">Grapeshot</span></span>
+    <span class="alt-ev">6.44</span>
+    <span class="alt-gap">Δ 11.56</span>
+    <span class="alt-bar"><span style="width:45%"></span></span>
+  </div>
+  <div class="alt-reason">Grapeshot (EV=6.4)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Pyretic Ritual">Pyretic Ritual</span></span>
+    <span class="alt-ev">-3.06</span>
+    <span class="alt-gap">Δ 21.06</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Pyretic Ritual (EV=-3.1)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Desperate Ritual">Desperate Ritual</span></span>
+    <span class="alt-ev">-3.06</span>
+    <span class="alt-gap">Δ 21.06</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Desperate Ritual (EV=-3.1)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t4d47" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t4d48" data-decision-id="g2t4d48">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t4d48">#g2t4d48</a>
+    <span class="dec-actor">Ruby Storm</span>
+    <span class="dec-goal">goal: execute_payoff</span>
+    <span class="dec-cands">7 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Ruby Medallion">Ruby Medallion</span></span>
+      <span class="chosen-ev">28.12</span>
+    </div>
+    <div class="chosen-reason">Ruby Medallion (EV=28.1)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-mid">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Ral, Monsoon Mage // Ral, Leyline Prodigy">Ral, Monsoon Mage // Ral, Leyline Prodigy</span></span>
+    <span class="alt-ev">23.12</span>
+    <span class="alt-gap">Δ 5.00</span>
+    <span class="alt-bar"><span style="width:84%"></span></span>
+  </div>
+  <div class="alt-reason">Ral, Monsoon Mage // Ral, Leyline Prodigy (EV=23.1)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Reckless Impulse">Reckless Impulse</span></span>
+    <span class="alt-ev">17.44</span>
+    <span class="alt-gap">Δ 10.68</span>
+    <span class="alt-bar"><span style="width:66%"></span></span>
+  </div>
+  <div class="alt-reason">Reckless Impulse (EV=17.4)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Grapeshot">Grapeshot</span></span>
+    <span class="alt-ev">6.28</span>
+    <span class="alt-gap">Δ 21.84</span>
+    <span class="alt-bar"><span style="width:32%"></span></span>
+  </div>
+  <div class="alt-reason">Grapeshot (EV=6.3)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Manamorphose">Manamorphose</span></span>
+    <span class="alt-ev">-4.24</span>
+    <span class="alt-gap">Δ 32.36</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Manamorphose (EV=-4.2)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t4d48" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t4d49" data-decision-id="g2t4d49">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t4d49">#g2t4d49</a>
+    <span class="dec-actor">Ruby Storm</span>
+    <span class="dec-goal">goal: execute_payoff</span>
+    <span class="dec-cands">5 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Pyretic Ritual">Pyretic Ritual</span></span>
+      <span class="chosen-ev">30.39</span>
+    </div>
+    <div class="chosen-reason">Pyretic Ritual (EV=30.4)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Desperate Ritual">Desperate Ritual</span></span>
+    <span class="alt-ev">30.39</span>
+    <span class="alt-gap">Δ 0.00</span>
+    <span class="alt-bar"><span style="width:100%"></span></span>
+  </div>
+  <div class="alt-reason">Desperate Ritual (EV=30.4)</div>
+</div>
+
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Manamorphose">Manamorphose</span></span>
+    <span class="alt-ev">30.35</span>
+    <span class="alt-gap">Δ 0.04</span>
+    <span class="alt-bar"><span style="width:99%"></span></span>
+  </div>
+  <div class="alt-reason">Manamorphose (EV=30.4)</div>
+</div>
+
+<div class="alt gap-mid">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Reckless Impulse">Reckless Impulse</span></span>
+    <span class="alt-ev">29.14</span>
+    <span class="alt-gap">Δ 1.25</span>
+    <span class="alt-bar"><span style="width:94%"></span></span>
+  </div>
+  <div class="alt-reason">Reckless Impulse (EV=29.1)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Grapeshot">Grapeshot</span></span>
+    <span class="alt-ev">5.77</span>
+    <span class="alt-gap">Δ 24.62</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Grapeshot (EV=5.8)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t4d49" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t4d50" data-decision-id="g2t4d50">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t4d50">#g2t4d50</a>
+    <span class="dec-actor">Ruby Storm</span>
+    <span class="dec-goal">goal: execute_payoff</span>
+    <span class="dec-cands">4 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Manamorphose">Manamorphose</span></span>
+      <span class="chosen-ev">13.11</span>
+    </div>
+    <div class="chosen-reason">Manamorphose (EV=13.1)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Desperate Ritual">Desperate Ritual</span></span>
+    <span class="alt-ev">13.03</span>
+    <span class="alt-gap">Δ 0.07</span>
+    <span class="alt-bar"><span style="width:98%"></span></span>
+  </div>
+  <div class="alt-reason">Desperate Ritual (EV=13.0)</div>
+</div>
+
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Reckless Impulse">Reckless Impulse</span></span>
+    <span class="alt-ev">12.90</span>
+    <span class="alt-gap">Δ 0.21</span>
+    <span class="alt-bar"><span style="width:96%"></span></span>
+  </div>
+  <div class="alt-reason">Reckless Impulse (EV=12.9)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Grapeshot">Grapeshot</span></span>
+    <span class="alt-ev">7.46</span>
+    <span class="alt-gap">Δ 5.64</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Grapeshot (EV=7.5)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t4d50" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t4d51" data-decision-id="g2t4d51">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t4d51">#g2t4d51</a>
+    <span class="dec-actor">Ruby Storm</span>
+    <span class="dec-goal">goal: execute_payoff</span>
+    <span class="dec-cands">3 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Desperate Ritual">Desperate Ritual</span></span>
+      <span class="chosen-ev">17.25</span>
+    </div>
+    <div class="chosen-reason">Desperate Ritual (EV=17.2)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Reckless Impulse">Reckless Impulse</span></span>
+    <span class="alt-ev">17.23</span>
+    <span class="alt-gap">Δ 0.02</span>
+    <span class="alt-bar"><span style="width:99%"></span></span>
+  </div>
+  <div class="alt-reason">Reckless Impulse (EV=17.2)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Grapeshot">Grapeshot</span></span>
+    <span class="alt-ev">7.49</span>
+    <span class="alt-gap">Δ 9.76</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Grapeshot (EV=7.5)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t4d51" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t4d52" data-decision-id="g2t4d52">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t4d52">#g2t4d52</a>
+    <span class="dec-actor">Ruby Storm</span>
+    <span class="dec-goal">goal: execute_payoff</span>
+    <span class="dec-cands">2 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Reckless Impulse">Reckless Impulse</span></span>
+      <span class="chosen-ev">11.57</span>
+    </div>
+    <div class="chosen-reason">Reckless Impulse (EV=11.6)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-mid">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Grapeshot">Grapeshot</span></span>
+    <span class="alt-ev">7.53</span>
+    <span class="alt-gap">Δ 4.05</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Grapeshot (EV=7.5)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t4d52" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t4d53" data-decision-id="g2t4d53">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t4d53">#g2t4d53</a>
+    <span class="dec-actor">Ruby Storm</span>
+    <span class="dec-goal">goal: execute_payoff</span>
+    <span class="dec-cands">3 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Manamorphose">Manamorphose</span></span>
+      <span class="chosen-ev">17.31</span>
+    </div>
+    <div class="chosen-reason">Manamorphose (EV=17.3)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="March of Reckless Joy">March of Reckless Joy</span></span>
+    <span class="alt-ev">17.26</span>
+    <span class="alt-gap">Δ 0.05</span>
+    <span class="alt-bar"><span style="width:99%"></span></span>
+  </div>
+  <div class="alt-reason">March of Reckless Joy (EV=17.3)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Grapeshot">Grapeshot</span></span>
+    <span class="alt-ev">7.52</span>
+    <span class="alt-gap">Δ 9.79</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Grapeshot (EV=7.5)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t4d53" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t4d54" data-decision-id="g2t4d54">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t4d54">#g2t4d54</a>
+    <span class="dec-actor">Ruby Storm</span>
+    <span class="dec-goal">goal: execute_payoff</span>
+    <span class="dec-cands">3 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Ruby Medallion">Ruby Medallion</span></span>
+      <span class="chosen-ev">62.46</span>
+    </div>
+    <div class="chosen-reason">Ruby Medallion (EV=62.5)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="March of Reckless Joy">March of Reckless Joy</span></span>
+    <span class="alt-ev">17.26</span>
+    <span class="alt-gap">Δ 45.21</span>
+    <span class="alt-bar"><span style="width:8%"></span></span>
+  </div>
+  <div class="alt-reason">March of Reckless Joy (EV=17.3)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Grapeshot">Grapeshot</span></span>
+    <span class="alt-ev">13.29</span>
+    <span class="alt-gap">Δ 49.17</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Grapeshot (EV=13.3)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t4d54" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t4d55" data-decision-id="g2t4d55">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t4d55">#g2t4d55</a>
+    <span class="dec-actor">Ruby Storm</span>
+    <span class="dec-goal">goal: execute_payoff</span>
+    <span class="dec-cands">2 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="March of Reckless Joy">March of Reckless Joy</span></span>
+      <span class="chosen-ev">11.51</span>
+    </div>
+    <div class="chosen-reason">March of Reckless Joy (EV=11.5)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-mid">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Grapeshot">Grapeshot</span></span>
+    <span class="alt-ev">7.54</span>
+    <span class="alt-gap">Δ 3.97</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Grapeshot (EV=7.5)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t4d55" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+    <div class="combat"><div class="cmb attack">⚔ Affinity attacks: <span class="atk">Signal Pest <em>0/1</em></span> <span class="atk">Frogmite <em>2/2</em></span> <span class="atk">Sojourner's Companion <em>4/4</em></span> <span class="atk">Thought Monitor <em>2/2</em></span> <span class="atk">Frogmite <em>2/2</em></span></div><div class="cmb no-blk">Ruby Storm does not block</div><div class="cmb damage ">💥 Affinity deals <strong>14</strong> to Ruby Storm (16 → 2)</div><div class="cmb no-atk">Ruby Storm does not attack</div></div>
+    <ul class="plays"><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Mistvault Bridge">Mistvault Bridge</span></li><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Scalding Tarn">Scalding Tarn</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Ruby Medallion">Ruby Medallion</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Pyretic Ritual">Pyretic Ritual</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Manamorphose">Manamorphose</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Desperate Ritual">Desperate Ritual</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Reckless Impulse">Reckless Impulse</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Manamorphose">Manamorphose</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Ruby Medallion">Ruby Medallion</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="March of Reckless Joy">March of Reckless Joy</span></li></ul>
+  </div>
+</details>
+
+
+<details class="turn" data-turn="5" open>
+  <summary class="turn-summary">
+    <span class="turn-num">T5</span>
+    <span class="turn-actor">Affinity <em class="p">(P2)</em></span>
+    <span class="life"><span class="p1-life">1</span> <span class="vs-dot">·</span> <span class="p2-life">20</span></span>
+    <span class="turn-counts">3 decisions</span>
+  </summary>
+  <div class="turn-body">
+    <div class="boards">
+<div class="board p1">
+  <div class="board-head">
+    <span class="dot p1"></span>
+    <strong>P1</strong>
+    <span class="board-stats">life 1 · hand 5 · lib 40</span>
+  </div>
+  <div class="row creatures"><em class="mute">no creatures</em></div>
+  <div class="row other"><span class="card-pill" data-card="Ruby Medallion">Ruby Medallion</span><span class="card-pill" data-card="Ruby Medallion">Ruby Medallion</span></div>
+  <div class="row lands"><span class="card-pill" data-card="Thundering Falls">Thundering Falls</span><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span><span class="card-pill" data-card="Mountain">Mountain</span></div>
+</div>
+
+<div class="board p2">
+  <div class="board-head">
+    <span class="dot p2"></span>
+    <strong>P2</strong>
+    <span class="board-stats">life 20 · hand 2 · lib 48</span>
+  </div>
+  <div class="row creatures"><span class="cre" data-card="Signal Pest">Signal Pest <em>0/1</em></span><span class="cre" data-card="Frogmite">Frogmite <em>2/2</em></span><span class="cre" data-card="Sojourner's Companion">Sojourner's Companion <em>4/4</em></span><span class="cre" data-card="Thought Monitor">Thought Monitor <em>2/2</em></span><span class="cre" data-card="Frogmite">Frogmite <em>2/2</em></span></div>
+  <div class="row other"><span class="card-pill" data-card="Mox Opal">Mox Opal</span></div>
+  <div class="row lands"><span class="card-pill" data-card="Darksteel Citadel">Darksteel Citadel</span><span class="card-pill" data-card="Razortide Bridge">Razortide Bridge</span><span class="card-pill" data-card="Razortide Bridge">Razortide Bridge</span><span class="card-pill" data-card="Mistvault Bridge">Mistvault Bridge</span></div>
+</div>
+</div>
+    
+<div class="decision" id="g2t5d56" data-decision-id="g2t5d56">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t5d56">#g2t5d56</a>
+    <span class="dec-actor">Affinity</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">2 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Urza's Saga">Urza's Saga</span></span>
+      <span class="chosen-ev">56.10</span>
+    </div>
+    <div class="chosen-reason">Land: Urza's Saga (EV=56.1)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Thought Monitor">Thought Monitor</span></span>
+    <span class="alt-ev">20.52</span>
+    <span class="alt-gap">Δ 35.59</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Thought Monitor (EV=20.5)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t5d56" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t5d57" data-decision-id="g2t5d57">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t5d57">#g2t5d57</a>
+    <span class="dec-actor">Affinity</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">1 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Thought Monitor">Thought Monitor</span></span>
+      <span class="chosen-ev">21.52</span>
+    </div>
+    <div class="chosen-reason">Thought Monitor (EV=21.5)</div>
+    
+  </div>
+  
+  <form class="feedback" data-decision-id="g2t5d57" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t5d58" data-decision-id="g2t5d58">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t5d58">#g2t5d58</a>
+    <span class="dec-actor">Affinity</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">1 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Nettlecyst">Nettlecyst</span></span>
+      <span class="chosen-ev">19.50</span>
+    </div>
+    <div class="chosen-reason">Nettlecyst (EV=19.5)</div>
+    
+  </div>
+  
+  <form class="feedback" data-decision-id="g2t5d58" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+    <div class="combat"><div class="cmb attack">⚔ Affinity attacks: <span class="atk">Signal Pest <em>0/1</em></span> <span class="atk">Frogmite <em>2/2</em></span> <span class="atk">Sojourner's Companion <em>4/4</em></span> <span class="atk">Thought Monitor <em>2/2</em></span> <span class="atk">Frogmite <em>2/2</em></span></div><div class="cmb no-blk">Ruby Storm does not block</div><div class="cmb damage lethal">💥 Affinity deals <strong>14</strong> to Ruby Storm (1 → -13)<span class="lethal-tag">☠ LETHAL</span></div></div>
+    <ul class="plays"><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Urza's Saga">Urza's Saga</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Thought Monitor">Thought Monitor</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Nettlecyst">Nettlecyst</span></li></ul>
+  </div>
+</details>
+
+  </div>
+</section>
+
+</main>
+<script>window.__REPLAY_ID = "55555";</script>
+<script>
+(function(){
+  const tip = document.createElement('div');
+  tip.id = 'card-tip';
+  document.body.appendChild(tip);
+  const cache = new Map();
+
+  function showTip(el, evt) {
+    const name = el.getAttribute('data-card');
+    if (!name) return;
+    const url = 'https://api.scryfall.com/cards/named?exact='
+              + encodeURIComponent(name) + '&format=image&version=small';
+    if (!cache.has(name)) {
+      const img = new Image();
+      img.src = url;
+      cache.set(name, img);
+    }
+    const img = cache.get(name);
+    tip.innerHTML = '';
+    tip.appendChild(img);
+    tip.style.display = 'block';
+    moveTip(evt);
+  }
+  function moveTip(evt) {
+    const x = Math.min(evt.clientX + 14, window.innerWidth - 220);
+    const y = Math.min(evt.clientY + 14, window.innerHeight - 290);
+    tip.style.left = x + 'px';
+    tip.style.top = y + 'px';
+  }
+  function hideTip() { tip.style.display = 'none'; }
+  document.addEventListener('mouseover', (e) => {
+    const t = e.target.closest('[data-card]');
+    if (t) showTip(t, e);
+  });
+  document.addEventListener('mousemove', (e) => {
+    if (tip.style.display === 'block') moveTip(e);
+  });
+  document.addEventListener('mouseout', (e) => {
+    const t = e.target.closest('[data-card]');
+    if (t) hideTip();
+  });
+
+  const FB_KEY = 'mtgsim:replay-feedback:' + (window.__REPLAY_ID || 'default');
+  function loadFeedback() {
+    try { return JSON.parse(localStorage.getItem(FB_KEY) || '{}'); }
+    catch (e) { return {}; }
+  }
+  function saveFeedback(fb) {
+    localStorage.setItem(FB_KEY, JSON.stringify(fb));
+  }
+  function applyFeedback() {
+    const fb = loadFeedback();
+    document.querySelectorAll('.feedback').forEach(form => {
+      const id = form.getAttribute('data-decision-id');
+      const entry = fb[id];
+      if (!entry) return;
+      if (entry.thumb === 'up') {
+        form.querySelector('.thumbs.up').classList.add('active');
+      } else if (entry.thumb === 'down') {
+        form.querySelector('.thumbs.down').classList.add('active');
+      }
+      if (entry.note) form.querySelector('.fb-note').value = entry.note;
+      const status = form.querySelector('.fb-status');
+      if (status) status.textContent = '✓ saved';
+    });
+    updateFeedbackCount();
+  }
+  function updateFeedbackCount() {
+    const fb = loadFeedback();
+    const n = Object.keys(fb).length;
+    const el = document.getElementById('fb-count');
+    if (el) el.textContent = String(n);
+  }
+  function setFeedback(decisionId, patch) {
+    const fb = loadFeedback();
+    const cur = fb[decisionId] || {};
+    Object.assign(cur, patch);
+    if (!cur.thumb && !cur.note) {
+      delete fb[decisionId];
+    } else {
+      cur.timestamp = new Date().toISOString();
+      fb[decisionId] = cur;
+    }
+    saveFeedback(fb);
+    updateFeedbackCount();
+  }
+
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.thumbs');
+    if (!btn) return;
+    const form = btn.closest('.feedback');
+    const id = form.getAttribute('data-decision-id');
+    const thumb = btn.getAttribute('data-thumb');
+    const fb = loadFeedback();
+    const cur = fb[id] || {};
+    const newThumb = (cur.thumb === thumb) ? null : thumb;
+    setFeedback(id, { thumb: newThumb });
+    form.querySelectorAll('.thumbs').forEach(b => b.classList.remove('active'));
+    if (newThumb) {
+      form.querySelector('.thumbs.' + newThumb).classList.add('active');
+    }
+    form.querySelector('.fb-status').textContent = '✓ saved';
+  });
+
+  document.addEventListener('input', (e) => {
+    const inp = e.target.closest('.fb-note');
+    if (!inp) return;
+    const form = inp.closest('.feedback');
+    const id = form.getAttribute('data-decision-id');
+    setFeedback(id, { note: inp.value });
+    form.querySelector('.fb-status').textContent = '✓ saved';
+  });
+
+  const exp = document.getElementById('btn-export-fb');
+  if (exp) exp.addEventListener('click', () => {
+    const fb = loadFeedback();
+    const lines = Object.entries(fb).map(([id, v]) =>
+      JSON.stringify(Object.assign({decision_id: id}, v)));
+    const blob = new Blob([lines.join('\n')], {type: 'application/x-ndjson'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'replay_feedback.jsonl';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
+  const clr = document.getElementById('btn-clear-fb');
+  if (clr) clr.addEventListener('click', () => {
+    if (!confirm('Clear all feedback for this replay?')) return;
+    localStorage.removeItem(FB_KEY);
+    document.querySelectorAll('.feedback').forEach(f => {
+      f.querySelectorAll('.thumbs').forEach(b => b.classList.remove('active'));
+      f.querySelector('.fb-note').value = '';
+      f.querySelector('.fb-status').textContent = '';
+    });
+    updateFeedbackCount();
+  });
+  const jmp = document.getElementById('btn-jump-flagged');
+  if (jmp) jmp.addEventListener('click', () => {
+    const fb = loadFeedback();
+    const ids = Object.keys(fb).filter(k => fb[k].thumb === 'down');
+    if (ids.length === 0) { alert('No flagged decisions yet'); return; }
+    const cur = (location.hash || '').slice(1);
+    const idx = ids.indexOf(cur);
+    const next = ids[(idx + 1) % ids.length];
+    location.hash = next;
+  });
+  const col = document.getElementById('btn-collapse-all');
+  if (col) col.addEventListener('click', () =>
+    document.querySelectorAll('details.turn').forEach(d =>
+      d.removeAttribute('open')));
+  const exp2 = document.getElementById('btn-expand-all');
+  if (exp2) exp2.addEventListener('click', () =>
+    document.querySelectorAll('details.turn').forEach(d =>
+      d.setAttribute('open', '')));
+
+  applyFeedback();
+})();
+</script>
+</body>
+</html>
