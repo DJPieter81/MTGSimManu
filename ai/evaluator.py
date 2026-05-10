@@ -360,11 +360,44 @@ def _ability_bonus(card, template=None) -> float:
     ]):
         bonus += ORACLE_RECUR_BONUS
 
-    # Self-pump / grows over time
-    if any(phrase in oracle for phrase in [
-        'put a +1/+1 counter', 'gets +', 'additional +'
-    ]):
-        bonus += ORACLE_SCALE_OVER_TIME_BONUS
+    # Self-pump / grows over time — scale with parsed N from oracle.
+    # Two phrasings dominate:
+    #   (a) "put N +1/+1 counters on …" — N copies of the buff.
+    #       Walking Ballista (X), Stoneforge Mystic-class (1),
+    #       Renata, Called to the Hunt (1), Master of Etherium (variable).
+    #   (b) "gets +N/+M" — power pump magnitude. Slickshot Show-Off
+    #       (+2/+0), Lava Spike-class +X buffs.
+    # Boolean detection treated +1/+1 the same as +5/+5; same blindspot
+    # the audit doc names. Singular `a +1/+1 counter` / `+1/+0` falls
+    # through to baseline +1.
+    pump_match = re.search(
+        r'put (\w+) \+1/\+1 counters?', oracle)
+    pump_n = 0
+    if pump_match:
+        word = pump_match.group(1)
+        if word.isdigit():
+            pump_n = int(word)
+        else:
+            _NUMERALS_P = ('zero', 'one', 'two', 'three', 'four', 'five',
+                           'six', 'seven', 'eight', 'nine', 'ten')
+            if word in _NUMERALS_P:
+                pump_n = _NUMERALS_P.index(word)
+            elif word in ('a', 'an'):
+                pump_n = 1
+    # "gets +N/+M" — take the larger of N (power) or M (toughness)
+    # as the buff magnitude proxy. Same parsed-N treatment.
+    pump_match2 = re.search(r'gets \+(\d+)/\+(\d+)', oracle)
+    if pump_match2:
+        pump_n = max(pump_n, int(pump_match2.group(1)),
+                     int(pump_match2.group(2)))
+    has_pump = (
+        '+1/+1 counter' in oracle  # singular OR plural form
+        or 'gets +' in oracle
+        or 'additional +' in oracle
+    )
+    if has_pump:
+        scale = max(1, pump_n)
+        bonus += scale * ORACLE_SCALE_OVER_TIME_BONUS
 
     # CMC scaling: expensive permanents that stuck are worth more
     cmc = getattr(template, 'cmc', 0) or 0
