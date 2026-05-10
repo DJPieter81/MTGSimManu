@@ -67,33 +67,81 @@ class PermanentEffects:
     @staticmethod
     def create_token(game: "GameState", controller: int, token_type: str,
                      count: int = 1, power: int = None, toughness: int = None,
-                     extra_keywords: Set[Keyword] = None) -> List[CardInstance]:
-        """Create token creatures on the battlefield."""
-        tokens = []
-        token_def = TOKEN_DEFS.get(token_type)
-        if not token_def:
-            # Generic token
-            token_def = (token_type.title(), [CardType.CREATURE], power or 1, toughness or 1, set())
+                     extra_keywords: Set[Keyword] = None,
+                     source_oracle: str = None) -> List[CardInstance]:
+        """Create token creatures on the battlefield.
 
-        t_name, t_types, t_power, t_toughness, t_keywords = token_def
+        Generic-first design (post-Phase-1C-followup): when
+        ``source_oracle`` is provided, the spawning card's oracle
+        text is parsed via ``engine.oracle_parser.parse_token_spec``
+        to extract P/T, types, and keywords directly. This avoids
+        hardcoding card-name-specific token registrations in
+        TOKEN_DEFS.
+
+        TOKEN_DEFS is preserved as a fallback for the small set of
+        canonical resource tokens (Treasure, Food, Clue, Goblin,
+        Soldier) where oracle text is not always passed by the
+        caller. Future cleanup will migrate every caller to pass
+        source_oracle so TOKEN_DEFS can be retired.
+        """
+        tokens = []
+        # Generic path: parse from the spawning card's oracle text.
+        spec = None
+        if source_oracle:
+            from .oracle_parser import parse_token_spec
+            spec = parse_token_spec(source_oracle)
+
+        if spec is not None:
+            from .cards import Keyword as _Kw
+            kw_lookup = {k.value: k for k in _Kw}
+            type_lookup = {
+                "artifact": CardType.ARTIFACT,
+                "creature": CardType.CREATURE,
+                "enchantment": CardType.ENCHANTMENT,
+            }
+            t_name = spec["subtype"]
+            t_types = [type_lookup[t] for t in spec["types"]
+                       if t in type_lookup]
+            if CardType.CREATURE not in t_types:
+                t_types.append(CardType.CREATURE)
+            t_power = spec["power"]
+            t_toughness = spec["toughness"]
+            kw_set = {kw_lookup[w.replace(" ", "_")]
+                      for w in spec["keywords"]
+                      if w.replace(" ", "_") in kw_lookup}
+        else:
+            token_def = TOKEN_DEFS.get(token_type)
+            if not token_def:
+                token_def = (token_type.title(), [CardType.CREATURE],
+                             power or 1, toughness or 1, set())
+            t_name, t_types, t_power, t_toughness, t_keywords = token_def
+            kw_set = set(t_keywords)
+
         if power is not None:
             t_power = power
         if toughness is not None:
             t_toughness = toughness
-        kw_set = set(t_keywords)
         if extra_keywords:
             kw_set |= extra_keywords
 
-        # Oracle text on the generated template so _dynamic_base_power's
-        # regex can find the scaling pattern. Without this, Construct tokens
-        # from Urza's Saga Ch II have no oracle_text, the regex
-        # `\+\d+/\+\d+ for each artifact you control` doesn't fire, and they
-        # stay 0/0 → die immediately to state-based actions. Root-caused from
-        # verbose vs Affinity: "T4: Construct Token dies" on Ch II resolution.
-        TOKEN_ORACLES = {
-            "construct": "This creature gets +1/+1 for each artifact you control.",
-        }
-        token_oracle = TOKEN_ORACLES.get(token_type, "")
+        # Oracle text on the generated template — when source_oracle
+        # carries a "with 'gets +N/+N for each artifact ...'" clause,
+        # _dynamic_base_power picks up the scaling regex. We extract
+        # the inner-quoted text from source_oracle when present.
+        token_oracle = ""
+        if source_oracle:
+            import re as _re
+            inner = _re.search(
+                r"token\s+with\s+['\"]([^'\"]+)['\"]",
+                source_oracle, flags=_re.IGNORECASE,
+            )
+            if inner:
+                token_oracle = inner.group(1)
+        if not token_oracle and token_type == "construct":
+            # Legacy fallback for callers that don't pass oracle.
+            token_oracle = (
+                "This creature gets +1/+1 for each artifact you control."
+            )
 
         for _ in range(count):
             template = CardTemplate(
