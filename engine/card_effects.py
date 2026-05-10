@@ -342,7 +342,10 @@ def cranial_plating_etb(game, card, controller, targets=None, item=None):
 @EFFECT_REGISTRY.register("Nettlecyst", EffectTiming.ETB,
                            description="Create Germ token, equip it")
 def nettlecyst_etb(game, card, controller, targets=None, item=None):
-    game.create_token(controller, "germ", count=1)
+    game.create_token(
+        controller, "germ", count=1,
+        source_oracle=card.template.oracle_text,
+    )
     germs = [c for c in game.players[controller].creatures
              if "Germ" in c.name]
     if germs:
@@ -2275,10 +2278,10 @@ def pinnacle_emissary_etb(game, card, controller, targets=None, item=None):
     # Create drone tokens for each free artifact (they'll be played this turn)
     drone_count = min(free_artifacts, 4)
     if drone_count > 0:
-        from engine.cards import Keyword
-        game.create_token(controller, "drone", power=1, toughness=1,
-                         count=drone_count,
-                         extra_keywords={Keyword.FLYING})
+        game.create_token(
+            controller, "drone", count=drone_count,
+            source_oracle=card.template.oracle_text,
+        )
     game.log.append(
         f"T{game.display_turn} P{controller+1}: "
         f"Pinnacle Emissary enters — {drone_count} Drone tokens projected from free artifacts")

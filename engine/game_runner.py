@@ -1377,7 +1377,10 @@ class GameRunner:
             # --- Urza's Saga chapters ---
             if 'construct' in card_oracle and 'artifact' in card_oracle:
                 if lore == 2:
-                    tokens = game.create_token(active, "construct", count=1)
+                    tokens = game.create_token(
+                        active, "construct", count=1,
+                        source_oracle=card.template.oracle_text,
+                    )
                     for t in tokens:
                         if CardType.ARTIFACT not in t.template.card_types:
                             t.template.card_types.append(CardType.ARTIFACT)
@@ -1385,7 +1388,10 @@ class GameRunner:
                     game.log.append(f"T{game.display_turn} P{active+1}: "
                                     f"Urza's Saga Ch.II: Create Construct Token")
                 elif lore >= 3:
-                    tokens = game.create_token(active, "construct", count=1)
+                    tokens = game.create_token(
+                        active, "construct", count=1,
+                        source_oracle=card.template.oracle_text,
+                    )
                     for t in tokens:
                         if CardType.ARTIFACT not in t.template.card_types:
                             t.template.card_types.append(CardType.ARTIFACT)

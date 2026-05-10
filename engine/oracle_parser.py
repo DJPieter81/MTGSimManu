@@ -511,3 +511,86 @@ def derive_tags_from_oracle(oracle: str, keywords: set, card_types: set,
         tags.add("equipment")
 
     return tags
+
+
+# ─── Token-spec parser ──────────────────────────────────────────────
+
+
+_TOKEN_SPEC_RE = re.compile(
+    r"create\s+(?:a|an|\d+)?\s*"
+    r"(?P<power>\d+)\s*/\s*(?P<toughness>\d+)"
+    r"(?:\s+\w+)*?"        # color words, "phyrexian", etc.
+    r"\s+(?P<subtype>[A-Z][a-zA-Z]+)\s+"
+    r"(?P<types>(?:artifact|creature|enchantment)"
+    r"(?:\s+(?:artifact|creature|enchantment))*)\s+"
+    r"token",
+    re.IGNORECASE,
+)
+
+
+_TOKEN_KEYWORD_RE = re.compile(
+    r"with\s+([a-z, ]+?(?:\s+and\s+[a-z, ]+)?)"
+    r"(?:[\.\"]|$|\s+(?:and|but))",
+    re.IGNORECASE,
+)
+
+
+# Keyword vocabulary — only the abilities the engine recognizes.
+# Source: engine.cards.Keyword enum members. Mapping the raw oracle
+# words to the canonical Keyword names handled at lookup time.
+_KEYWORD_WORDS = {
+    "flying", "trample", "haste", "vigilance", "lifelink",
+    "deathtouch", "first strike", "double strike", "menace",
+    "reach", "hexproof", "indestructible", "ward", "flash",
+    "defender", "prowess", "unblockable", "intimidate", "fear",
+    "shadow", "horsemanship",
+}
+
+
+def parse_token_spec(oracle: str) -> Optional[Dict]:
+    """Parse a "create a P/T <subtype> [types] token" idiom.
+
+    Returns a dict::
+
+        {
+          "power": int,
+          "toughness": int,
+          "subtype": str,         # creature subtype ("Wurm", "Drone")
+          "types": List[str],     # ["artifact", "creature"]
+          "keywords": List[str],  # ["flying"], etc.
+        }
+
+    Or None if no token-creation idiom is found.
+
+    The parser is intentionally narrow: it requires the canonical
+    "P/T <subtype> <type chain> token" shape that Modern oracle
+    text uses for static token specs. Tokens whose stats depend on
+    game state (e.g. "0/0 colorless Construct artifact creature
+    token with 'gets +1/+1 for each artifact you control'") are
+    parsed on the static portion; the dynamic +N/+N is handled
+    separately via `engine/cards.py:_dynamic_base_power`.
+    """
+    if "token" not in oracle.lower() or "create" not in oracle.lower():
+        return None
+    m = _TOKEN_SPEC_RE.search(oracle)
+    if not m:
+        return None
+    types = [t.strip() for t in m.group("types").lower().split()]
+    keywords = []
+    # Look for "with <keyword>[ and <keyword>]" within ~80 chars
+    # of the token-spec match to scope to that token's keyword
+    # clause (avoids capturing keywords from a different sentence).
+    after = oracle[m.end():m.end() + 120]
+    kw_match = _TOKEN_KEYWORD_RE.search(after)
+    if kw_match:
+        kw_text = kw_match.group(1).lower()
+        for word in _KEYWORD_WORDS:
+            if word in kw_text:
+                keywords.append(word)
+    return {
+        "power": int(m.group("power")),
+        "toughness": int(m.group("toughness")),
+        "subtype": m.group("subtype"),
+        "types": types,
+        "keywords": keywords,
+    }

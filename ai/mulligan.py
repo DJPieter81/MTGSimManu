@@ -196,22 +196,27 @@ class MulliganDecider:
         self.last_reason = ""
 
         # ── Hard floor: 0 lands = always mulligan ──────────────────────
-        # Exception: Affinity can keep 0-land hands with mana artifacts
-        # (Mox Opal, Springleaf Drum) that produce mana without lands.
+        # Generic exception: any hand with non-land cards that can
+        # produce mana without lands (Mox Opal, Springleaf Drum,
+        # Lotus Petal, ...) is keepable. We detect via the oracle-
+        # driven `mana_source` tag set at template-load time
+        # (engine.card_database.CardDatabase) plus an oracle-text
+        # fallback for "{T}: Add" idioms. No card-name or deck-name
+        # gate.
         if land_count == 0:
-            deck_name = ""
-            if self.goal_engine and self.goal_engine.gameplan:
-                deck_name = self.goal_engine.gameplan.deck_name
-            if "affinity" in deck_name.lower():
-                hand_names = {c.name for c in hand}
-                mana_artifacts = hand_names & {"Mox Opal", "Springleaf Drum"}
-                if not mana_artifacts:
-                    self.last_reason = "0 lands — no mana artifacts (Affinity)"
-                    return False
-                # else: Affinity with mana artifacts — allow through to normal eval
-            else:
-                self.last_reason = "0 lands — hard floor"
+            mana_capable_count = sum(
+                1 for c in hand
+                if not c.template.is_land
+                and ("mana_source" in (c.template.tags or set())
+                     or "{T}: Add" in (c.template.oracle_text or "")
+                     or "{t}: add" in (c.template.oracle_text or "").lower())
+            )
+            if mana_capable_count == 0:
+                self.last_reason = (
+                    "0 lands — no mana-producing artifacts/spells in hand"
+                )
                 return False
+            # else: hand has non-land mana sources — allow through
 
         # ── Soft ceiling: 5+ lands with < 2 spells = mulligan ─────────
         # Exception: Amulet Titan actively wants land-heavy hands.
