@@ -152,7 +152,10 @@ class AICallbacks(GameCallbacks):
             # `multicolor_urgency`. Generic; no deck names. Any deck
             # that runs cards with 3+ unique mana symbols can opt in
             # by adding the tag.
-            if game.turn_number <= 3:
+            # ``turn_number`` may be absent on minimal test stubs;
+            # treat that as turn 0 (the urgency override applies on
+            # T1–T3, so a missing attribute defaults to "in window").
+            if getattr(game, 'turn_number', 0) <= 3:
                 gameplan = self._get_gameplan_for(game, player_idx)
                 tags = (getattr(gameplan, 'strategy_tags', set())
                         if gameplan is not None else set())
