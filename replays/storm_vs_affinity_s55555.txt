@@ -1,0 +1,28 @@
+Traceback (most recent call last):
+  File "/home/user/MTGSimManu/run_meta.py", line 1235, in <module>
+    print(run_bo3(d1, d2, seed=args.seed,
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/MTGSimManu/run_meta.py", line 789, in run_bo3
+    runner = _get_runner()
+             ^^^^^^^^^^^^^
+  File "/home/user/MTGSimManu/run_meta.py", line 73, in _get_runner
+    db = CardDatabase()
+         ^^^^^^^^^^^^^^
+  File "/home/user/MTGSimManu/engine/card_database.py", line 981, in __init__
+    self.load(candidate)
+  File "/home/user/MTGSimManu/engine/card_database.py", line 989, in load
+    raw = json.load(f)
+          ^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ^^^^^^^^^^^^^^^^^^^^^^
+json.decoder.JSONDecodeError: Expecting ':' delimiter: line 1 column 33509064 (char 33509063)

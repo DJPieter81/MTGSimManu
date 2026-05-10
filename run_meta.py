@@ -773,15 +773,28 @@ def run_verbose_game(deck1: str, deck2: str, seed: int = 42000) -> str:
     return '\n'.join(lines)
 
 
-def run_bo3(deck1: str, deck2: str, seed: int = 42000) -> str:
+def run_bo3(deck1: str, deck2: str, seed: int = 42000,
+            dump_replay: str = None) -> str:
     """Run a best-of-3 match with detailed text logs. Stops at 2 wins.
 
     Usage:
         python run_meta.py --bo3 affinity zoo -s 55555
+        python run_meta.py --bo3 affinity zoo -s 55555 --dump-replay r.ndjson
+
+    When ``dump_replay`` is set, the structured NDJSON event log is
+    written to that path covering all games in the match.  The text
+    log is still returned (and printed) so existing tooling and the
+    LLM-compression pipeline keep working.
     """
     runner = _get_runner()
     d1 = MODERN_DECKS[deck1]
     d2 = MODERN_DECKS[deck2]
+
+    # Single ReplayLog accumulates events across all games in the match.
+    replay_log = None
+    if dump_replay:
+        from engine.replay_log import ReplayLog
+        replay_log = ReplayLog(seed=seed, deck1=deck1, deck2=deck2)
 
     lines = []
     score = [0, 0]
@@ -833,6 +846,8 @@ def run_bo3(deck1: str, deck2: str, seed: int = 42000) -> str:
             deck1_sideboard=p1_data.get('sideboard', {}),
             deck2_sideboard=p2_data.get('sideboard', {}),
             verbose=True,
+            replay_log=replay_log,
+            game_number=game_num,
         )
 
         lines.extend(r.game_log)
@@ -854,6 +869,16 @@ def run_bo3(deck1: str, deck2: str, seed: int = 42000) -> str:
     winner = deck1 if score[0] > score[1] else deck2
     lines.append(f'  MATCH RESULT: {winner} wins {max(score)}-{min(score)}')
     lines.append('=' * 70)
+
+    if replay_log is not None and dump_replay:
+        from engine.replay_log import KIND_MATCH_END
+        replay_log.emit(
+            KIND_MATCH_END,
+            winner=winner, score=list(score),
+        )
+        with open(dump_replay, 'w') as f:
+            f.write(replay_log.to_ndjson())
+            f.write('\n')
 
     return '\n'.join(lines)
 
@@ -1143,6 +1168,11 @@ if __name__ == '__main__':
                              'for --matrix runs (default off; backward '
                              'compatible with the in-tree multiprocessing '
                              'path). Pair with --workers to size the pool.')
+    parser.add_argument('--dump-replay', metavar='PATH',
+                        help='Pair with --bo3 / --verbose. Writes the structured '
+                             'NDJSON replay log to PATH alongside the text log. '
+                             'build_replay.py prefers this over the text format '
+                             'when present (no regex parsing).')
     parser.add_argument('--mcts', action='store_true',
                         help='OPT-IN: route AI decisions through ISMCTS '
                              '(ai/search/ismcts.py) instead of the default '
@@ -1202,7 +1232,8 @@ if __name__ == '__main__':
                 or args.simulate)
     if bo3_args:
         d1, d2 = resolve_deck_name(bo3_args[0]), resolve_deck_name(bo3_args[1])
-        print(run_bo3(d1, d2, seed=args.seed))
+        print(run_bo3(d1, d2, seed=args.seed,
+                      dump_replay=getattr(args, 'dump_replay', None)))
     elif args.trace:
         d1, d2 = resolve_deck_name(args.trace[0]), resolve_deck_name(args.trace[1])
         print(run_trace_game(d1, d2, seed=args.seed))

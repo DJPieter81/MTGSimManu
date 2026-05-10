@@ -103,6 +103,21 @@ _EQUIP_BONUS_RE = re.compile(
     r'(equipped|enchanted) creature gets \+(\d+)/\+(\d+)'
 )
 
+# Replay-log presentation constants — used only by
+# `_emit_decision_event` to format the structured DECISION events for
+# the HTML viewer.  These are display/serialization parameters, not
+# part of any scoring formula:
+# - rules constant: 3 decimals is the precision the HTML EV bars need;
+#   beyond that the diff between two close plays is below human noise.
+# - rules constant: 4 alternatives is the renderer's display cap; the
+#   AI considers the full candidate list, only the top-4 runner-ups
+#   show in the UI to keep each decision card scannable.
+# - sentinel: 0.0 is the EV displayed for a "pass" decision, used only
+#   to compute the gap = chosen_ev - alt_ev.
+_REPLAY_EV_PRECISION = 3
+_REPLAY_TOP_N_ALTS = 4
+_REPLAY_PASS_EV_SENTINEL = 0.0
+
 # ─────────────────────────────────────────────────────────────
 # Archetype detection
 # ─────────────────────────────────────────────────────────────
@@ -161,6 +176,12 @@ class EVPlayer:
         self._pw_activated_this_turn: Set[int] = set()
         self._last_target_reason: str = ""
         self.strategic_logger = None
+        # Optional structured replay log (engine/replay_log.py).
+        # When set, decide_main_phase emits a DECISION event with the
+        # full sorted candidate list (chosen + runner-ups + EV gap) so
+        # the HTML replayer can show why other plays lost.  None ==
+        # no overhead beyond a sentinel check.
+        self.replay_log = None
 
         # Strategy profile — data-driven weights for this archetype
         from ai.strategy_profile import get_profile
@@ -550,10 +571,93 @@ class EVPlayer:
         best = non_deferred[0]
 
         if best.ev < self.profile.pass_threshold:
+            self._emit_decision_event(game, candidates, chosen=None,
+                                      pass_reason="below pass_threshold")
             return None
 
         self._last_played_target_reason = getattr(best, "target_reason", "")
+        self._emit_decision_event(game, candidates, chosen=best)
         return (best.action, best.card, best.targets)
+
+    def _emit_decision_event(self, game, candidates, chosen,
+                             pass_reason: str = "") -> None:
+        """Push a DECISION event onto the structured replay log.
+
+        This is the single connection point between EV scoring and the
+        replayer.  It runs only when ``self.replay_log`` is non-None,
+        so the production matrix path pays only the cost of a sentinel
+        check.
+
+        ``chosen`` is the Play returned to the caller (or None on
+        pass).  Up to ``_REPLAY_TOP_N_ALTS`` runner-ups are emitted
+        with their EV gap; this is the data the HTML uses to
+        highlight close decisions and surface "this was suboptimal vs
+        X" feedback.
+        """
+        log = getattr(self, "replay_log", None)
+        if log is None:
+            return
+        from engine.replay_log import snapshot_state
+
+        # Display-precision and top-N constants — presentation only,
+        # not part of any scoring formula.  Kept module-private and
+        # named so the magic-numbers ratchet stays at baseline=0.
+        _PREC = _REPLAY_EV_PRECISION
+        _TOP_N = _REPLAY_TOP_N_ALTS
+        _PASS_EV = _REPLAY_PASS_EV_SENTINEL
+
+        def _ser(p):
+            card_name = getattr(p.card, "name", None) if p.card else None
+            tgt_names = []
+            for t in (p.targets or []):
+                name = getattr(t, "name", None)
+                tgt_names.append(name if name else f"id:{t}")
+            return {
+                "action": p.action,
+                "card": card_name,
+                "ev": round(float(p.ev), _PREC),
+                "heuristic_ev": round(float(p.heuristic_ev), _PREC),
+                "reason": p.reason or "",
+                "target_reason": getattr(p, "target_reason", "") or "",
+                "targets": tgt_names,
+                "counter_pct": round(float(p.counter_pct), _PREC),
+                "removal_pct": round(float(p.removal_pct), _PREC),
+            }
+
+        chosen_dict = _ser(chosen) if chosen else {
+            "action": "pass", "card": None, "ev": _PASS_EV,
+            "reason": pass_reason or "no candidate above threshold",
+            "targets": [],
+        }
+        chosen_ev = chosen_dict.get("ev", _PASS_EV)
+        alt_dicts = []
+        for p in candidates:
+            if chosen is not None and p is chosen:
+                continue
+            d = _ser(p)
+            d["gap"] = round(chosen_ev - d["ev"], _PREC)
+            alt_dicts.append(d)
+            if len(alt_dicts) >= _TOP_N:
+                break
+
+        goal = ""
+        if self.goal_engine and self.goal_engine.gameplan and \
+                self.goal_engine.gameplan.goals:
+            ge = self.goal_engine
+            idx = ge.current_goal_idx
+            if idx < len(ge.gameplan.goals):
+                goal = ge.gameplan.goals[idx].goal_type.value
+
+        actor = game.players[self.player_idx].deck_name
+        log.emit_decision(
+            actor=actor,
+            pidx=self.player_idx,
+            chosen=chosen_dict,
+            alternatives=alt_dicts,
+            state=snapshot_state(game),
+            goal=goal,
+            candidates_n=len(candidates),
+        )
 
     # ═══════════════════════════════════════════════════════════
     # SCORING — per-archetype spell evaluation
