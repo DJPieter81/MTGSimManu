@@ -103,6 +103,21 @@ _EQUIP_BONUS_RE = re.compile(
     r'(equipped|enchanted) creature gets \+(\d+)/\+(\d+)'
 )
 
+# Replay-log presentation constants — used only by
+# `_emit_decision_event` to format the structured DECISION events for
+# the HTML viewer.  These are display/serialization parameters, not
+# part of any scoring formula:
+# - rules constant: 3 decimals is the precision the HTML EV bars need;
+#   beyond that the diff between two close plays is below human noise.
+# - rules constant: 4 alternatives is the renderer's display cap; the
+#   AI considers the full candidate list, only the top-4 runner-ups
+#   show in the UI to keep each decision card scannable.
+# - sentinel: 0.0 is the EV displayed for a "pass" decision, used only
+#   to compute the gap = chosen_ev - alt_ev.
+_REPLAY_EV_PRECISION = 3
+_REPLAY_TOP_N_ALTS = 4
+_REPLAY_PASS_EV_SENTINEL = 0.0
+
 # ─────────────────────────────────────────────────────────────
 # Archetype detection
 # ─────────────────────────────────────────────────────────────
@@ -574,48 +589,55 @@ class EVPlayer:
         check.
 
         ``chosen`` is the Play returned to the caller (or None on
-        pass).  Up to 4 runner-ups are emitted with their EV gap; this
-        is the data the HTML uses to highlight close decisions and
-        surface "this was suboptimal vs X" feedback.
+        pass).  Up to ``_REPLAY_TOP_N_ALTS`` runner-ups are emitted
+        with their EV gap; this is the data the HTML uses to
+        highlight close decisions and surface "this was suboptimal vs
+        X" feedback.
         """
         log = getattr(self, "replay_log", None)
         if log is None:
             return
         from engine.replay_log import snapshot_state
 
+        # Display-precision and top-N constants — presentation only,
+        # not part of any scoring formula.  Kept module-private and
+        # named so the magic-numbers ratchet stays at baseline=0.
+        _PREC = _REPLAY_EV_PRECISION
+        _TOP_N = _REPLAY_TOP_N_ALTS
+        _PASS_EV = _REPLAY_PASS_EV_SENTINEL
+
         def _ser(p):
             card_name = getattr(p.card, "name", None) if p.card else None
             tgt_names = []
             for t in (p.targets or []):
-                # Targets may be ints (instance_ids) or CardInstance
                 name = getattr(t, "name", None)
                 tgt_names.append(name if name else f"id:{t}")
             return {
                 "action": p.action,
                 "card": card_name,
-                "ev": round(float(p.ev), 3),
-                "heuristic_ev": round(float(p.heuristic_ev), 3),
+                "ev": round(float(p.ev), _PREC),
+                "heuristic_ev": round(float(p.heuristic_ev), _PREC),
                 "reason": p.reason or "",
                 "target_reason": getattr(p, "target_reason", "") or "",
                 "targets": tgt_names,
-                "counter_pct": round(float(p.counter_pct), 3),
-                "removal_pct": round(float(p.removal_pct), 3),
+                "counter_pct": round(float(p.counter_pct), _PREC),
+                "removal_pct": round(float(p.removal_pct), _PREC),
             }
 
         chosen_dict = _ser(chosen) if chosen else {
-            "action": "pass", "card": None, "ev": 0.0,
+            "action": "pass", "card": None, "ev": _PASS_EV,
             "reason": pass_reason or "no candidate above threshold",
             "targets": [],
         }
-        chosen_ev = chosen_dict.get("ev", 0.0)
+        chosen_ev = chosen_dict.get("ev", _PASS_EV)
         alt_dicts = []
         for p in candidates:
             if chosen is not None and p is chosen:
                 continue
             d = _ser(p)
-            d["gap"] = round(chosen_ev - d["ev"], 3)
+            d["gap"] = round(chosen_ev - d["ev"], _PREC)
             alt_dicts.append(d)
-            if len(alt_dicts) >= 4:
+            if len(alt_dicts) >= _TOP_N:
                 break
 
         goal = ""
