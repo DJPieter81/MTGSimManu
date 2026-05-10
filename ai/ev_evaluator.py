@@ -2077,9 +2077,61 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
                 life_n = _parse_life_count(m.group(1))
             projected.my_life += life_n
 
-    # Energy producers
+    # Energy producers — credit the actual N from oracle text.
+    #
+    # Two phrasings cover the printed Modern pool:
+    #   (a) repeated symbols: "you get {E}{E}{E}" → 3 energy.
+    #   (b) explicit count   : "you get N {E}" /  "you get N energy
+    #                          counters"          → N energy.
+    #
+    # English-numeral / digit forms are both accepted in (b). The
+    # _ORACLE_NUMERALS tuple is the standard MTG oracle convention;
+    # the tuple index IS the integer value (zero-indexed: "one" → 1,
+    # "two" → 2, ...). No bare numeric literals.
+    #
+    # Triggered clauses gated by "whenever ..." (combat trigger,
+    # other-creature-enters, dies, end-step, etc.) are excluded —
+    # they fire on a separate event, not at this spell's cast
+    # resolution, so the immediate projection should not credit
+    # them. "When this enters, you get N {E}" IS a cast-time ETB
+    # clause and is credited.
     if 'energy' in tags:
-        projected.my_energy += ENERGY_PRODUCED_ESTIMATE  # conservative estimate
+        oracle = (t.oracle_text or '').lower()
+        _ORACLE_NUMERALS = ('zero', 'one', 'two', 'three', 'four',
+                            'five', 'six', 'seven', 'eight', 'nine')
+
+        def _parse_oracle_count(tok: str) -> int:
+            if tok.isdigit():
+                return int(tok)
+            return (_ORACLE_NUMERALS.index(tok)
+                    if tok in _ORACLE_NUMERALS else 1)
+
+        import re as _re
+        energy_n = 0
+        # Walk clauses; skip those gated by 'whenever' (recurring /
+        # event-conditional triggers are not at-cast).
+        for _clause in _re.split(r'(?:\.|\n)+', oracle):
+            if 'whenever' in _clause:
+                continue
+            # (a) repeated {e} symbols.
+            m = _re.search(r'get\s+((?:\{e\})+)', _clause)
+            if m:
+                energy_n = max(energy_n, m.group(1).count('{e}'))
+                continue
+            # (b) explicit count + {e} OR + energy[ counters].
+            m = _re.search(
+                r'get\s+(one|two|three|four|five|six|seven|eight|nine|\d+)'
+                r'\s*(?:\{e\}|energy)', _clause)
+            if m:
+                energy_n = max(energy_n, _parse_oracle_count(m.group(1)))
+        # If no oracle-extractable count and the energy tag is set
+        # (Aether Hub-style "energy in flavor text" / dynamic counts
+        # like Peema Aether-Seer "an amount of {E} equal to ..."),
+        # fall back to the conservative flat estimate so the projection
+        # does not silently zero out non-parsable producers.
+        if energy_n == 0:
+            energy_n = ENERGY_PRODUCED_ESTIMATE
+        projected.my_energy += energy_n
 
     # Prowess bonus: noncreature spells pump prowess creatures
     # Each prowess trigger = +1 power (or more for Slickshot +2/+0)
