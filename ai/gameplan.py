@@ -321,6 +321,15 @@ class DeckGameplan:
     mulligan_min_lands: int = 2
     mulligan_max_lands: int = DEFAULT_MULLIGAN_MAX_LANDS
 
+    # Generic strategy flags — replaces deck-name string matches.
+    # Recognized values:
+    #   "ramp_into_payoff" — deck wants land-heavy opening hands
+    #     (Amulet Titan, future Tron variants). Suppresses the
+    #     5+ lands + <2 spells soft-ceiling mulligan.
+    # Future tags belong here too. Read by ai/mulligan.py and
+    # any other module that needs an archetype-feature predicate.
+    strategy_tags: Set[str] = field(default_factory=set)
+
     # Mulligan: per-bracket CMC thresholds.  Replaces the literal
     # `<= 2` / `<= 3` checks that previously hard-coded "cheap" and
     # "medium" inside `ai/mulligan.py`.  Deck authors override these
