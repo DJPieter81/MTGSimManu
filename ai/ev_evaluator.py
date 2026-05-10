@@ -65,7 +65,6 @@ from ai.scoring_constants import (
     PASS_OPP_DEVELOPMENT_PENALTY_SCALE,
     REANIMATION_LIFE_GAIN_ESTIMATE,
     REMOVAL_BHI_PROBABILITY_FLOOR,
-    RITUAL_MANA_PRODUCED,
     STORM_GOBLIN_LETHAL_TOKENS,
     THREAT_BATTLE_CRY_AMPLIFIER_VP,
     THREAT_SCALING_FUTURE_VP,
@@ -2022,15 +2021,21 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         projected.my_hand_size += extra
         projected.cards_drawn_this_turn += extra
 
-    # Rituals — add mana (net positive: Pyretic Ritual costs 2, produces 3)
+    # Rituals — add the parsed gross mana production from
+    # `template.ritual_mana`. The (color, amount) tuple is parsed
+    # from oracle text at card-load time by
+    # `engine/oracle_parser.py::parse_ritual_mana`; reading it here
+    # gives the actual production for every printed ritual:
+    # Pyretic / Desperate Ritual ('R', 3), Manamorphose ('any', 2),
+    # Geosurge ('R', 7), etc. The flat constant + cantrip-1 patch
+    # was the per-card override the abstraction contract bans —
+    # see `docs/design/2026-05-10_oracle_pattern_projection_blindspot_audit.md`.
     if is_ritual(card):
-        # Most rituals produce 3 mana for 2 cost = net +1
-        # Manamorphose produces 2 for 2 = net 0 but draws a card
-        # We already subtracted the cost above, so add the gross production
-        projected.my_mana += RITUAL_MANA_PRODUCED  # Pyretic/Desperate produce 3R
-        # Manamorphose produces 2 + draws (already handled by cantrip)
-        if 'cantrip' in tags:
-            projected.my_mana -= 1  # Manamorphose only produces 2
+        # Cost was already subtracted above (line 1649); credit the
+        # gross production so net delta equals (parsed - cmc).
+        ritual_data = getattr(t, 'ritual_mana', None)
+        if ritual_data is not None:
+            projected.my_mana += ritual_data[1]
 
     # ETB life gain — parse the printed N from oracle text instead of
     # collapsing every printed amount onto a single flat constant.
@@ -2500,7 +2505,14 @@ def _estimate_combo_chain(game, player_idx: int, first_card=None):
         cmc = max(0, (c.template.cmc or 0) - reducers)
 
         if 'ritual' in tags:
-            rituals.append((name, cmc, RITUAL_MANA_PRODUCED))  # name, cost, mana produced
+            # Read the parsed gross production from template.ritual_mana
+            # (oracle-parsed at card-load time). Falling back to 0 if
+            # absent is safer than the flat-3 constant — a card tagged
+            # 'ritual' without parsed ritual_mana data is malformed
+            # input and crediting 3 fake mana would mis-rank the chain.
+            ritual_data = getattr(c.template, 'ritual_mana', None)
+            produced = ritual_data[1] if ritual_data is not None else 0
+            rituals.append((name, cmc, produced))  # name, cost, mana produced
         elif 'storm_payoff' in tags:
             finishers.append((name, cmc))
         elif 'cantrip' in tags or 'card_advantage' in tags:
