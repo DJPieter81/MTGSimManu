@@ -1143,12 +1143,39 @@ if __name__ == '__main__':
                              'for --matrix runs (default off; backward '
                              'compatible with the in-tree multiprocessing '
                              'path). Pair with --workers to size the pool.')
+    parser.add_argument('--mcts', action='store_true',
+                        help='OPT-IN: route AI decisions through ISMCTS '
+                             '(ai/search/ismcts.py) instead of the default '
+                             'heuristic 5-ordering planner. Phase 4A — under '
+                             'pilot per docs/research/2026-05_phase_4a_'
+                             'ismcts_scoping.md. Significantly slower per '
+                             'decision (~50ms × 1000 rollouts vs ~µs '
+                             'heuristic); use for replay analysis or '
+                             'fixture validation, NOT matrix sims. '
+                             'Reads MTGSIM_MCTS_ROLLOUTS env var to override '
+                             'the default 1000-rollout budget.')
     args = parser.parse_args()
 
     # Apply --workers override before any parallel run. Rebinds the
     # module-level name because run_meta_matrix reads it at call time.
     if args.workers is not None and args.workers >= 1:
         globals()['_DEFAULT_WORKERS'] = args.workers
+
+    # --mcts opt-in: signal via env var so the AI layer picks it up
+    # without needing to thread the flag through every callsite. The
+    # AI player can read MTGSIM_USE_MCTS at decision-time. This is
+    # currently a SCAFFOLDING flag — the planner integration is
+    # Phase 5+ (forward-simulation comparison). When set, the env
+    # var is read and logged; full game-state integration is wired
+    # in a follow-up branch.
+    if args.mcts:
+        os.environ['MTGSIM_USE_MCTS'] = '1'
+        print(
+            "  [mcts] --mcts opt-in active. Forward-simulation "
+            "integration is Phase 5; env var MTGSIM_USE_MCTS=1 "
+            "set so future hooks pick it up.",
+            file=sys.stderr,
+        )
 
     if args.results:
         print_saved_results()
