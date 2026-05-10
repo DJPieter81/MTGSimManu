@@ -1899,18 +1899,54 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
                 factor = min(1.0, 1.0 / max(survival_turns, SURVIVAL_TURNS_FLOOR))
                 projected.opp_life -= dmg * factor
 
-    # Card draw
+    # Card draw — count the effective N for the projection.
+    # Three patterns produce N cards of effective hand value, all
+    # detected by oracle text (no card names):
+    #   (a) literal "draw N cards"           — Glimpse the Impossible,
+    #                                           Valakut Awakening, etc.
+    #   (b) impulse-draw "exile the top N
+    #       cards ... may play/cast"          — Reckless Impulse,
+    #                                           Wrenn's Resolve, March of
+    #                                           Reckless Joy. Cards
+    #                                           remain castable at
+    #                                           minimum until end of
+    #                                           turn — equivalent to
+    #                                           card advantage in the
+    #                                           projection's horizon.
+    #   (c) library-search "into your hand"   — already credited by
+    #                                           is_draw_engine baseline.
     if is_draw_engine(card):
-        projected.my_hand_size += 1  # net 0 since we already subtracted 1
+        projected.my_hand_size += 1  # baseline (1-card cantrip)
         projected.cards_drawn_this_turn += 1
-        # If draws more than 1 card
         oracle = (t.oracle_text or '').lower()
-        if 'draw two' in oracle or 'draws two' in oracle:
-            projected.my_hand_size += 1
-            projected.cards_drawn_this_turn += 1
-        elif 'draw three' in oracle or 'draws three' in oracle:
-            projected.my_hand_size += 2
-            projected.cards_drawn_this_turn += 2
+        # English-numeral words used in MTG oracle text. The tuple
+        # index IS the integer value (zero-indexed): "one" → 1,
+        # "two" → 2, etc. Source-of-truth is the printed oracle
+        # convention itself; no per-card constants.
+        _ORACLE_NUMERALS = ('zero', 'one', 'two', 'three', 'four',
+                            'five', 'six', 'seven')
+
+        def _parse_oracle_count(tok: str) -> int:
+            if tok.isdigit():
+                return int(tok)
+            return (_ORACLE_NUMERALS.index(tok)
+                    if tok in _ORACLE_NUMERALS else 1)
+
+        import re as _re
+        draws_n = 1
+        m = _re.search(
+            r'draws? (one|two|three|four|five|six|seven|\d+) ', oracle)
+        if m:
+            draws_n = max(draws_n, _parse_oracle_count(m.group(1)))
+        elif ('may play' in oracle or 'may cast' in oracle):
+            m = _re.search(
+                r'exile the top (one|two|three|four|five|six|seven|\d+) '
+                r'cards?', oracle)
+            if m:
+                draws_n = max(draws_n, _parse_oracle_count(m.group(1)))
+        extra = draws_n - 1  # baseline already added above
+        projected.my_hand_size += extra
+        projected.cards_drawn_this_turn += extra
 
     # Rituals — add mana (net positive: Pyretic Ritual costs 2, produces 3)
     if is_ritual(card):
