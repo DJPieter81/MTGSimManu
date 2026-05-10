@@ -695,6 +695,34 @@ class OracleTextParser:
             if e.effect_type == "draw":
                 tags.add("cantrip")
 
+        # ── Generic cantrip text-based fallback ──
+        # Multi-clause oracle text confuses the OracleEffect parser
+        # for cards like Mulldrifter ("When this creature enters,
+        # draw two cards.") and Faithful Mending ("You gain 2 life,
+        # draw two cards, then discard two cards."). The text
+        # predicate matches "draw a card" or "draw N cards" anywhere
+        # in oracle, with English-numeral and digit support. Drawing
+        # 2+ cards also adds card_advantage.
+        if "cantrip" not in tags:
+            import re as _draw_re
+            _NUMERALS = ('zero', 'one', 'two', 'three', 'four',
+                         'five', 'six', 'seven', 'eight', 'nine')
+            m = _draw_re.search(
+                r'\bdraw (a|one|two|three|four|five|six|seven|eight|nine|\d+) cards?\b',
+                text,
+            )
+            if m:
+                tags.add("cantrip")
+                tok = m.group(1)
+                if tok.isdigit():
+                    n = int(tok)
+                elif tok in _NUMERALS:
+                    n = _NUMERALS.index(tok)
+                else:
+                    n = 1
+                if n >= 2:
+                    tags.add("card_advantage")
+
         # Impulse draw: "exile the top N cards ... you may play/cast"
         # Covers Reckless Impulse, Wrenn's Resolve, Light Up the Stage, etc.
         import re as _impulse_re
@@ -1311,14 +1339,9 @@ class CardDatabase:
             # the generic tutor predicate does not fire on
             # sideboard-fetch cards.
             "Wish": {"tutor", "combo"},
-            # Graveyard enablers — multi-clause text trips the draw
-            # detector on Faithful Mending; `combo` is strategy-tagged.
+            # Graveyard enablers — `combo` is strategy-tagged.
             "Unmarked Grave": {"graveyard_filler", "combo"},
-            "Faithful Mending": {"cantrip", "graveyard_filler"},
-            # ETB-value creatures whose draw effect parses but the
-            # `cantrip`/auxiliary tag is missed (Mulldrifter has multi-
-            # clause oracle that confuses the draw extractor).
-            "Mulldrifter": {"cantrip"},
+            "Faithful Mending": {"graveyard_filler"},
             "Orcish Bowmasters": {"etb_value", "threat", "token_maker"},
             "Primeval Titan": {"etb_value", "ramp"},
             "Atraxa, Grand Unifier": {"card_advantage"},
