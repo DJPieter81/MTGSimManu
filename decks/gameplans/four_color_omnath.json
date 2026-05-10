@@ -1,6 +1,7 @@
 {
   "deck_name": "4c Omnath",
   "archetype": "midrange",
+  "strategy_tags": ["multicolor_urgency"],
   "goals": [
     {
       "goal_type": "INTERACT",
