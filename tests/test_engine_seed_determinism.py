@@ -71,8 +71,24 @@ class TestEngineSeedDeterminism:
         """Sanity: the seed actually controls outcome (this would fail
         if the fix accidentally hard-coded a constant). At least one
         of three different seeds should differ from the first.
+
+        Uses Ruby Storm vs Dimir Midrange — a variance-friendly Bo3
+        matchup whose outcome at the match-score level depends on
+        shuffle order (combo-vs-disruption is shuffle-sensitive: a
+        Storm hand with a fast-mana cluster wins; a hand bricked on
+        rituals loses to early counterspells/discard).
+
+        Domain Zoo vs Affinity (the previous fixture) is too lopsided
+        for n=1 Bo3 — Affinity wins 2-0 at all four sample seeds, so
+        the assertion fails despite the engine being properly seeded.
+        The bug we want to catch (constant outcome regardless of seed)
+        is unobservable in a pre-decided matchup, so we pick a pair
+        where Bo3 outcomes naturally vary across nearby seeds.
+
+        Empirical (2026-05-10): seeds (50000, 51000, 52000, 53000) →
+        (0,2), (2,1), (2,1), (1,2) — three distinct match scores.
         """
-        d1, d2 = "Domain Zoo", "Affinity"
+        d1, d2 = "Ruby Storm", "Dimir Midrange"
         baseline = _run_match(runner, d1, d2, 50000).match_score
 
         differing = []
