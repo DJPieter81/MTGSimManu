@@ -169,6 +169,23 @@ Week 4: Integration as opt-in CLI flag. CLI smoke +
         documentation. Open PR.
 ```
 
+### Week 4 status — opt-in flag wired (2026-05-10)
+
+The `MTGSIM_USE_MCTS` environment variable is the production
+toggle: unset (or `0`/`false`/`no`/`off`) selects the heuristic
+`TurnPlanner`; any other non-empty value selects
+`ISMCTSPlanner(fallback=TurnPlanner())`. Construction lives in
+`ai/ev_player.py::_build_turn_planner`; the planner instance is
+held by `EVPlayer.turn_planner` and routed to the
+`ResponseDecider`. With no fallback, `ISMCTSPlanner.plan_turn`
+raises — pairing with the heuristic is mandatory in the
+opt-in path. Default behavior is unchanged: matrix sims run
+exactly as before unless the flag is explicitly set. Enable
+locally via `MTGSIM_USE_MCTS=1 python run_meta.py --matchup ...`.
+The flag is expected to stay opt-in until the 12-fixture
+acceptance gate (`test_ismcts_acceptance_real.py` with
+`ISMCTS_ACCEPTANCE=1`) lands ≥ 4 strict wins / 0 regressions.
+
 ## Decision points the prototype will inform
 
 1. **MCTS vs CFR**: if MCTS clears the acceptance gate, CFR for
