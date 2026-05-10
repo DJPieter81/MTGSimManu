@@ -106,6 +106,64 @@ class ManaNeeds:
     held_instant_colors: Set[str] = field(default_factory=set)
 
 
+def _deck_basic_land_types(player) -> int:
+    """Count distinct basic land types present anywhere in the
+    player's deck (library + hand + battlefield + graveyard +
+    exile). At mulligan time this approximates the deck's eventual
+    domain reach; at game time the runtime ``ManaPayment.count_domain``
+    enforces the exact in-play count, but this helper provides the
+    upper bound used for cost projection.
+    """
+    found = set()
+    for zone in (player.library, player.hand, player.battlefield,
+                 getattr(player, 'graveyard', []),
+                 getattr(player, 'exile', [])):
+        for card in zone:
+            template = card.template
+            if not getattr(template, 'is_land', False):
+                continue
+            for st in getattr(template, 'subtypes', ()):
+                if st in BASIC_LAND_TYPES:
+                    found.add(st)
+    return len(found)
+
+
+def effective_cmc(card, player,
+                  overrides: Optional[Dict[str, int]] = None) -> int:
+    """Compute a card's effective CMC after domain cost reduction.
+
+    Replaces the per-card ``mulligan_effective_cmc`` dict with an
+    oracle-derived formula:
+
+        effective_cmc = max(0, mana_value - domain_reduction *
+                                    deck_basic_land_types(player))
+
+    ``domain_reduction`` is parsed at DB-load time from oracle text
+    ("This spell costs {N} less to cast for each basic land type
+    among lands you control") and stored on the template. The
+    distinct-basic-land-types count is the deck's potential domain
+    reach (max possible at game time).
+
+    The optional ``overrides`` dict is consulted first for
+    backward compatibility with synthesized-gameplan paths that
+    declare hand-tuned values; in normal flow it is empty.
+
+    Cards with no domain reduction return their plain
+    ``card.template.cmc`` unchanged.
+    """
+    if overrides and card.name in overrides:
+        return overrides[card.name]
+    template = card.template
+    raw_cmc = template.cmc
+    if raw_cmc is None:
+        return raw_cmc
+    reduction = getattr(template, 'domain_reduction', 0) or 0
+    if reduction <= 0:
+        return raw_cmc
+    deck_types = _deck_basic_land_types(player)
+    return max(0, raw_cmc - reduction * deck_types)
+
+
 def analyze_mana_needs(game: "GameState", player_idx: int,
                        effective_cmc_overrides: Optional[Dict[str, int]] = None) -> ManaNeeds:
     """Analyze the player's hand and battlefield to determine mana needs.
@@ -152,11 +210,11 @@ def analyze_mana_needs(game: "GameState", player_idx: int,
             count = getattr(mc, attr, 0)
             if count > 0:
                 needs.needed_colors[code] = needs.needed_colors.get(code, 0) + count
-        raw_cmc = card.template.cmc
-        # Apply effective CMC overrides for domain cards (Scion of Draco, Leyline Binding)
-        cmc = raw_cmc
-        if effective_cmc_overrides and card.name in effective_cmc_overrides:
-            cmc = effective_cmc_overrides[card.name]
+        # Effective CMC = oracle-derived domain reduction + override
+        # fallback. Replaces per-card ``effective_cmc_overrides``
+        # lookup with the formula derived from
+        # ``card.template.domain_reduction``.
+        cmc = effective_cmc(card, player, effective_cmc_overrides)
         if cmc is not None and cmc < needs.cheapest_spell_cmc and card.template.is_spell:
             needs.cheapest_spell_cmc = cmc
         # Count domain-scaling cards in hand
@@ -226,10 +284,7 @@ def analyze_mana_needs(game: "GameState", player_idx: int,
         raw_cmc = card.template.cmc
         if raw_cmc is None:
             continue
-        # Apply effective CMC overrides (e.g. domain cost reduction)
-        cmc = raw_cmc
-        if effective_cmc_overrides and card.name in effective_cmc_overrides:
-            cmc = effective_cmc_overrides[card.name]
+        cmc = effective_cmc(card, player, effective_cmc_overrides)
         # Track cheapest proactive spell (not instant)
         is_instant = card.template.is_instant if hasattr(card.template, 'is_instant') else False
         if not is_instant:
