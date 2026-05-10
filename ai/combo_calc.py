@@ -681,6 +681,45 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
             # Hold: each remaining fuel adds 1/opp_life of a kill × combo_value.
             # This is the opportunity cost of firing early instead of chaining more.
             return -total_fuel / opp_life * a.combo_value
+        # No chain-extending fuel in HAND.  But if the chain has not
+        # begun this turn (storm == 0), opp is not at 1 life, and the
+        # library can still supply chain fuel via a future draw, then
+        # firing the closer for `storm + 1 = 1` damage is dominated by
+        # holding.  At storm=0 the cast is exactly 1 damage; the
+        # closer is the deck's only path to lethal — burning it for 1
+        # damage strands future chains.  Magnitude is symmetric to
+        # the `total_fuel > 0` branch above: that branch returns
+        # `-total_fuel/opp_life × combo_value` as opportunity cost
+        # for fuel-in-hand-now; this branch returns the equivalent
+        # for fuel-that-will-exist-after-one-draw.  Conservative
+        # equivalence: `2` units of in-hand fuel (one for the
+        # fire-now baseline, one for expected next-turn draw growth).
+        # See tests/test_storm_holds_finisher_at_storm_zero_with_no_chain.py
+        # and seed 50500 T9 trace (Storm vs Eldrazi Tron).
+        if storm == 0 and opp_life > 1:
+            non_land_lib = [c for c in me.library
+                            if not c.template.is_land
+                            and Kw.STORM not in getattr(c.template, 'keywords', set())]
+            fuel_in_lib = sum(1 for c in non_land_lib if is_chain_fuel(c))
+            if fuel_in_lib > 0:
+                # Symmetric to the `total_fuel > 0` branch above, but
+                # for fuel that WILL exist in hand after future draws
+                # rather than fuel that DOES exist now.  Conservative
+                # estimate of equivalent in-hand fuel:
+                #   * 1 unit accounts for the fire-now baseline (the
+                #     `(storm+1)/opp_life × combo_value` we'd return
+                #     in the empty-library case).
+                #   * 1 unit for one expected drawn chain-fuel card
+                #     (the natural-draw step on the next turn).
+                # Total = 2 units, mirroring `total_fuel = 1` where the
+                # branch returns `-1/opp_life × combo_value` against a
+                # symmetric fire-now `+1/opp_life × combo_value` for
+                # net `-2/opp_life × combo_value` discount.  This must
+                # exceed the projection's heuristic lift for the cast
+                # (one-damage clock impact, ~`1/opp_life × win_swing`),
+                # which the `2` factor reliably does for any combo
+                # archetype where `combo_value > position_swing`.
+                return -2 / opp_life * a.combo_value  # magic-allow: 1 = fire-now baseline + 1 = expected chain-fuel from one natural draw (symmetric to total_fuel=1 branch)
         # Truly no chain-extending fuel left — fire now
         return (storm + 1) / opp_life * a.combo_value
 
