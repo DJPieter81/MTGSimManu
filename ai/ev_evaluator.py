@@ -1877,7 +1877,15 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
     # cannot extract the amount (variable-X cases like Tribal Flames
     # where damage = number of basic land types). Matches `deals N
     # damage` in the canonical Modern wording.
-    if 'burn' in tags or ('damage' in (t.oracle_text or '').lower()):
+    # Burn projection only fires for spells (instants/sorceries) —
+    # creatures with "deals damage" triggers (Bonecrusher Giant's
+    # adventure side, ETB pingers, combat-damage triggers) compute
+    # their damage in different code paths (combat, ETB-effect
+    # registry); double-crediting here as face damage on cast over-
+    # projects the creature's contribution.
+    if (t.is_instant or t.is_sorcery) and (
+            'burn' in tags
+            or ('damage' in (t.oracle_text or '').lower())):
         oracle = (t.oracle_text or '').lower()
         import re as _re
         # Skip the literal-N projection when the spell's damage
