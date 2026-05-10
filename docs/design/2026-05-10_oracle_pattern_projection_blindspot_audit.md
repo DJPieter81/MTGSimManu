@@ -18,9 +18,15 @@ summary: >
   phrase ("draw two") and assigns a flat estimate, missing
   alternative phrasings of the same mechanic ("exile the top two
   cards … may play"). The under-projected card scores below
-  pass_threshold and the AI declines to cast it. Four other sites
-  in `ai/ev_evaluator.py` follow the same pattern; each is a
-  candidate for the same kind of fix.
+  pass_threshold and the AI declines to cast it. **Status (2026-05-10):
+  7 audit rows shipped across `ai/ev_evaluator.py` (projection)
+  and `ai/evaluator.py` (threat scorer)** — see status table below.
+  Each fix replaces a flat constant with a parsed-from-oracle
+  extractor using the tuple-index trick (`('zero','one','two',…)
+  [N] == 'word'`) so no new bare numeric literals are introduced.
+  The audit pattern is now exemplified by 8 PRs (#334, #337, #338,
+  #340, #342, #343, #345, #348); future blindspots ship the same
+  shape.
 ---
 
 # Oracle-pattern projection blindspot — class-of-bug audit
@@ -64,12 +70,15 @@ keyword fragment and applies a per-mechanic constant. None of them
 extract the actual N from oracle text; each is a likely
 under-projection for cards using non-default phrasings.
 
-| Site | Line | Detection | Estimate | Risk |
+| Site | Line | Detection | Estimate | Status |
 |---|---|---|---|---|
-| ETB life gain | `ai/ev_evaluator.py:1962-1966` | `'gain' in oracle and 'life' in oracle` | `REANIMATION_LIFE_GAIN_ESTIMATE = 3` (flat) | Thragtusk (5), Omnath / Beanstalk Giant (variable), Lifecraft Cavalry (3) all project the same; non-`gain` phrasings ("you gain life equal to …") miss entirely. |
-| Ritual mana | `ai/ev_evaluator.py:1956` | `is_ritual(card)` tag | `RITUAL_MANA_PRODUCED = 3` (flat) + `-1` for cantrip-tagged | Manamorphose produces 2 (already corrected), Cabal Ritual produces 3 base / 5 with threshold, Dark Ritual produces 3, Pyretic Ritual produces 3 — but the flat constant doesn't read `template.ritual_mana[1]` which already has the parsed N. |
-| Energy ETB | `ai/ev_evaluator.py:1969-1970` | `'energy' in tags` | `ENERGY_PRODUCED_ESTIMATE = 2` (flat) | Galvanic Discharge produces N (X-cost), Guide of Souls produces 1, Voltaic Visionary produces 1+1, Phlage produces 0/incidental — all flatten to 2. |
-| Tutor "into your hand" search | `ai/ev_evaluator.py:1273-1278` (`_is_real_dig`) | `'search your library'` | boolean | **FALSIFIED 2026-05-10** — printed Modern pool has 40 multi-card "search for up to N → hand" cards, but the active 16-deck pool runs zero of them. Below the abstraction-contract class-size floor; no fix shipped. See `docs/diagnostics/2026-05-10_multi_card_tutor_projection_audit.md`. Re-open if a future deck registers ≥ 4 copies of any matching card (Cultivate, Kodama's Reach, Gifts Ungiven, Tooth and Nail, Tiamat, etc.). |
+| ETB life gain | `ai/ev_evaluator.py:2063` | `'gain' in oracle and 'life' in oracle` | `REANIMATION_LIFE_GAIN_ESTIMATE = 3` (flat) | **shipped PR #338** (parsed "gain N life", fallback for "gain life equal to" cohort) |
+| Ritual mana | `ai/ev_evaluator.py:2049` | `is_ritual(card)` tag | `RITUAL_MANA_PRODUCED = 3` (flat) + `-1` cantrip-patch | **shipped PR #343** (reads `template.ritual_mana[1]`, drops cantrip-1 patch) |
+| Energy ETB | `ai/ev_evaluator.py:2103` | `'energy' in tags` | `ENERGY_PRODUCED_ESTIMATE = 2` (flat) | **shipped PR #342** (parsed `{E}` count + English numeral; excludes `whenever`-gated triggers) |
+| Tutor "into your hand" search (projection) | `ai/ev_evaluator.py:1999` | `'search your library' in oracle and 'put them into your hand' in oracle` | flat baseline (1 card via `is_draw_engine`) | **shipped PR #337** (parsed N from "put them into your hand" all-N case; tightened from initial fix-shape to exclude split-fate phrasings like Cultivate) |
+| Burn damage from oracle | `ai/ev_evaluator.py:1879` | per-card-name lookup in `card_knowledge.json::burn_damage` | 12-card per-name table | **shipped PR #340** (parsed "deals N damage", gated to instants/sorceries to avoid creature-trigger over-credit, fallback to per-card table for variable-X) |
+| Token creation (threat scorer) | `ai/evaluator.py:296` | `'create' in oracle and 'token' in oracle` | `ORACLE_TOKEN_CREATION_BONUS = 1.5` (flat per-card) | **shipped PR #345** (parsed N × per-token bonus) |
+| Tutor (threat scorer) | `ai/evaluator.py:300-301` | `'search your library' in oracle` | `ORACLE_TUTOR_BONUS = 2.0` (flat) | **shipped PR #348** (parsed N × per-card bonus, mirrors PR #337's projection-side fix) |
 
 ## Workflow (the fix shape that landed in PR #334, repeatable)
 
