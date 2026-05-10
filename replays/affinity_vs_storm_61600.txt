@@ -1,0 +1,1029 @@
+Loaded 21759 cards (0 errors)
+Loaded 21759 cards (0 errors)
+======================================================================
+  GAME 1: Affinity (P1) vs Ruby Storm (P2)  —  seed 61600
+  Series: Affinity 0 - 0 Ruby Storm
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Affinity wins → chooses to play first
+║ P1 (on play): Affinity
+║ P2 (on draw): Ruby Storm
+╚═══════════════════════════════════════════════════════
+
+P1 (Affinity) opening hand (2 lands, 5 spells):
+  • Silverbluff Bridge [Land, CMC 0]
+  • Signal Pest [Creature, CMC 1]
+  • Thought Monitor [Creature, CMC 7]
+  • Darksteel Citadel [Land, CMC 0]
+  • Nettlecyst [Spell, CMC 3]
+  • Memnite [Creature, CMC 0]
+  • Sojourner's Companion [Creature, CMC 7]
+→ P1 KEEPS 7 — has key card(s): Memnite, 3 cheap spells
+
+P2 (Ruby Storm) opening hand (3 lands, 4 spells):
+  • Wooded Foothills [Land, CMC 0]
+  • Ruby Medallion [Spell, CMC 2]
+  • Mountain [Land, CMC 0]
+  • Desperate Ritual [Spell, CMC 2]
+  • Ral, Monsoon Mage // Ral, Leyline Prodigy [Creature, CMC 2]
+  • Elegant Parlor [Land, CMC 0]
+  • Wish [Spell, CMC 3]
+→ P2 KEEPS 7 — has key card(s): Desperate Ritual, Ruby Medallion, Wish, 4 cheap spells
+
+
+╔══ TURN 1 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Ruby Storm 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Darksteel Citadel
+    → Goal: deploy_engine [enablers]
+T1 P1: Cast Memnite (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Memnite
+    → Goal: deploy_engine
+    [Mana] Tap Darksteel Citadel→C (paying for Signal Pest, 1 mana remaining)
+T1 P1: Cast Signal Pest (1)
+    [Priority] P2 passes (no response)
+T1: Resolve Signal Pest
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: Memnite (1/1), Signal Pest (0/1)
+║   Lands: Darksteel Citadel [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Elegant Parlor
+  [Main 1]
+T1 P2: Play Wooded Foothills
+T1 P2: Crack Wooded Foothills (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Ruby Storm 19
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Memnite (1/1), Signal Pest (0/1)
+║   Lands: Darksteel Citadel
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mistvault Bridge
+  [Main 1]
+T2 P1: Play Silverbluff Bridge (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Memnite, Signal Pest
+T2 P1: Attack with Memnite, Signal Pest
+  [Declare Blockers] P2 does not block
+T2 P1:   Memnite (2/1) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 19 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 17  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Affinity board:
+║   Creatures: Memnite (1/1) [tapped], Signal Pest (0/1) [tapped]
+║   Lands: Darksteel Citadel, Silverbluff Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mountain
+  [Main 1]
+T2 P2: Play Mountain
+    → Goal: deploy_engine [engines]
+    [Mana] Tap Mountain→R, Sacred Foundry→R (paying for Ruby Medallion, 2 mana remaining)
+T2 P2: Cast Ruby Medallion (2)
+    [Priority] P1 passes (no response)
+T2: Resolve Ruby Medallion
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Ruby Storm 17
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Memnite (1/1), Signal Pest (0/1)
+║   Lands: Darksteel Citadel, Silverbluff Bridge
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Sojourner's Companion
+  [Main 1]
+T3 P1: Play Mistvault Bridge (enters tapped)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Darksteel Citadel→C, Silverbluff Bridge→R (paying for Sojourner's Companion, 2 mana remaining)
+T3 P1: Cast Sojourner's Companion (7)
+    [Priority] P2 passes (no response)
+T3: Resolve Sojourner's Companion
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Memnite, Signal Pest
+T3 P1: Attack with Memnite, Signal Pest
+  [Declare Blockers] P2 does not block
+T3 P1:   Memnite (2/1) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 17 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 15  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry, Mountain
+║ Affinity board:
+║   Creatures: Memnite (1/1) [tapped], Signal Pest (0/1) [tapped], Sojourner's Companion (4/4)
+║   Lands: Darksteel Citadel [T], Silverbluff Bridge [T], Mistvault Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Valakut Awakening // Valakut Stoneforge
+  [Main 1]
+T3 P2: Play Mountain
+    → Goal: execute_payoff
+    [Mana] Tap Mountain→R (paying for Ral, Monsoon Mage // Ral, Leyline Prodigy, 3 mana remaining)
+T3 P2: Cast Ral, Monsoon Mage // Ral, Leyline Prodigy (1R)
+    [Priority] P1 passes (no response)
+T3: Resolve Ral, Monsoon Mage // Ral, Leyline Prodigy
+T3 P2: Ral, Monsoon Mage enters — instants/sorceries cost {1} less
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Desperate Ritual, 2 mana remaining)
+T3 P2: Cast Desperate Ritual (1R)
+T3 P2: Ral, Monsoon Mage // Ral, Leyline Prodigy — won coin flip!
+T3 P2: Ral, Monsoon Mage // Ral, Leyline Prodigy transforms! (loyalty: 4) [+2 extra]
+T3 P2: Ral, Monsoon Mage enters — instants/sorceries cost {1} less
+    [Priority] P1 passes (no response)
+T3: Resolve Desperate Ritual
+T3 P2: Desperate Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T3 P2: Cast Valakut Awakening // Valakut Stoneforge (2R)
+    [Priority] P1 passes (no response)
+T3: Resolve Valakut Awakening // Valakut Stoneforge
+    → Goal: execute_payoff [enablers]
+T3 P2: Cast Glimpse the Impossible (2R)
+    [Priority] P1 passes (no response)
+T3: Resolve Glimpse the Impossible
+T3 P2: Glimpse the Impossible → draw 3 (Desperate Ritual, Pyretic Ritual, Ral, Monsoon Mage // Ral, Leyline Prodigy)
+    → Goal: execute_payoff [enablers]
+T3 P2: Cast Desperate Ritual (1R)
+    [Priority] P1 passes (no response)
+T3: Resolve Desperate Ritual
+T3 P2: Desperate Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T3 P2: Cast Pyretic Ritual (1R)
+    [Priority] P1 passes (no response)
+T3: Resolve Pyretic Ritual
+T3 P2: Pyretic Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T3 P2: Cast Valakut Awakening // Valakut Stoneforge (2R)
+    [Priority] P1 passes (no response)
+T3: Resolve Valakut Awakening // Valakut Stoneforge
+    → Goal: execute_payoff [enablers]
+T3 P2: Cast Wrenn's Resolve (1R)
+    [Priority] P1 passes (no response)
+T3: Resolve Wrenn's Resolve
+T3 P2: Wrenn's Resolve → draw 2 (March of Reckless Joy, Wish)
+    → Goal: execute_payoff [enablers]
+T3 P2: Cast March of Reckless Joy (3R) (X=3)
+    [Priority] P1 passes (no response)
+T3: Resolve March of Reckless Joy
+    → Goal: execute_payoff [enablers]
+T3 P2: Cast Manamorphose (2)
+    [Priority] P1 passes (no response)
+T3: Resolve Manamorphose
+T3 P2: Manamorphose adds 2 any mana
+    → Goal: execute_payoff [enablers]
+T3 P2: Cast Past in Flames (3R)
+    [Priority] P1 passes (no response)
+T3: Resolve Past in Flames
+T3 P2: Past in Flames grants flashback
+    → Goal: execute_payoff [enablers]
+T3 P2: Cast Manamorphose (2)
+    [Priority] P1 passes (no response)
+T3: Resolve Manamorphose
+T3 P2: Manamorphose adds 2 any mana
+    → Goal: execute_payoff [enablers]
+T3 P2: Cast Desperate Ritual (1R)
+    [Priority] P1 passes (no response)
+T3: Resolve Desperate Ritual
+T3 P2: Desperate Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T3 P2: Cast March of Reckless Joy (3R) (X=3)
+    [Priority] P1 passes (no response)
+T3: Resolve March of Reckless Joy
+T3 P2: Ral, Monsoon Mage // Ral, Leyline Prodigy [-2] -> Ral deals 2 damage divided as you choose among one or two targets. Draw a card if you control a blue permanent other than Ral
+T3 P2: Ral, Monsoon Mage // Ral, Leyline Prodigy deals 2 to Signal Pest
+T3: Signal Pest dies
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T3: Elegant Parlor moved hand -> graveyard (discard to hand size)
+T3: Elegant Parlor moved hand -> graveyard (discard to hand size)
+T3: Sunbaked Canyon moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 4 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Ruby Storm 15
+║ Hand: 3 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Memnite (1/1), Sojourner's Companion (4/4)
+║   Lands: Darksteel Citadel, Silverbluff Bridge, Mistvault Bridge
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry [T], Mountain [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Springleaf Drum
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Darksteel Citadel→C, Silverbluff Bridge→R (paying for Sojourner's Companion, 3 mana remaining)
+T4 P1: Cast Sojourner's Companion (7)
+    [Priority] P2 passes (no response)
+T4: Resolve Sojourner's Companion
+    → Goal: curve_out [enablers]
+    [Mana] Tap Mistvault Bridge→U (paying for Thought Monitor, 1 mana remaining)
+T4 P1: Cast Thought Monitor (6U)
+    [Priority] P2 passes (no response)
+T4: Resolve Thought Monitor
+T4 P1: Thought Monitor ETB: draw 2 (Razortide Bridge, Engineered Explosives)
+T4 P1: Play Razortide Bridge (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Memnite, Sojourner's Companion
+T4 P1: Attack with Memnite, Sojourner's Companion
+  [Declare Blockers] P2 does not block
+T4 P1:   Memnite (1/1) → 1 dmg to player
+T4 P1:   Sojourner's Companion (4/4) → 4 dmg to player
+  [Combat Damage] 5 damage dealt → P2 life: 15 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 10  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 34  |  Graveyard: 11
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry, Mountain, Mountain
+║ Affinity board:
+║   Creatures: Memnite (1/1) [tapped], Sojourner's Companion (4/4) [tapped], Sojourner's Companion (4/4), Thought Monitor (2/2)
+║   Lands: Darksteel Citadel [T], Silverbluff Bridge [T], Mistvault Bridge [T], Razortide Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T4 P2: Play Gemstone Caverns
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Desperate Ritual, 4 mana remaining)
+T4 P2: Cast Desperate Ritual (1R)
+    [Priority] P1 passes (no response)
+T4: Resolve Desperate Ritual
+T4 P2: Desperate Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T4 P2: Cast Glimpse the Impossible (2R)
+    [Priority] P1 passes (no response)
+T4: Resolve Glimpse the Impossible
+T4 P2: Glimpse the Impossible → draw 3 (Glimpse the Impossible, Desperate Ritual, Ruby Medallion)
+    → Goal: execute_payoff
+T4 P2: Cast Ruby Medallion (2)
+    [Priority] P1 passes (no response)
+T4: Resolve Ruby Medallion
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Desperate Ritual, 3 mana remaining)
+T4 P2: Cast Desperate Ritual (1R)
+    [Priority] P1 passes (no response)
+T4: Resolve Desperate Ritual
+T4 P2: Desperate Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T4 P2: Cast Wrenn's Resolve (1R)
+    [Priority] P1 passes (no response)
+T4: Resolve Wrenn's Resolve
+T4 P2: Wrenn's Resolve → draw 2 (Grapeshot, Ruby Medallion)
+    → Goal: execute_payoff
+T4 P2: Cast Ruby Medallion (2)
+    [Priority] P1 passes (no response)
+T4: Resolve Ruby Medallion
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Glimpse the Impossible, 2 mana remaining)
+T4 P2: Cast Glimpse the Impossible (2R)
+    [Priority] P1 passes (no response)
+T4: Resolve Glimpse the Impossible
+T4 P2: Glimpse the Impossible → draw 3 (Grapeshot, Thundering Falls, Ral, Monsoon Mage // Ral, Leyline Prodigy)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Gemstone Caverns→R (paying for Reckless Impulse, 1 mana remaining)
+T4 P2: Cast Reckless Impulse (1R)
+    [Priority] P1 passes (no response)
+T4: Resolve Reckless Impulse
+T4 P2: Reckless Impulse → draw 2 (Arid Mesa, Wrenn's Resolve)
+T4 P2: Ral, Monsoon Mage // Ral, Leyline Prodigy [-2] -> Ral deals 2 damage divided as you choose among one or two targets. Draw a card if you control a blue permanent other than Ral
+T4 P2: Ral, Monsoon Mage // Ral, Leyline Prodigy deals 2 to Thought Monitor
+T4: Thought Monitor dies
+T4: Ral, Monsoon Mage // Ral, Leyline Prodigy moved battlefield -> graveyard (SBA 704.5p: zero loyalty)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Arid Mesa moved hand -> graveyard (discard to hand size)
+T4: Thundering Falls moved hand -> graveyard (discard to hand size)
+T4: Ral, Monsoon Mage // Ral, Leyline Prodigy moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 5 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Ruby Storm 10
+║ Hand: 3 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 2
+║ Affinity board:
+║   Creatures: Memnite (1/1), Sojourner's Companion (4/4), Sojourner's Companion (4/4)
+║   Lands: Darksteel Citadel, Silverbluff Bridge, Mistvault Bridge, Razortide Bridge
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion, Ruby Medallion, Ruby Medallion
+║   Lands: Sacred Foundry [T], Mountain [T], Mountain [T], Gemstone Caverns [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Island
+  [Main 1]
+T5 P1: Play Island
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Darksteel Citadel→C, Island→U, Silverbluff Bridge→R (paying for Nettlecyst, 5 mana remaining)
+T5 P1: Cast Nettlecyst (3)
+    [Priority] P2 passes (no response)
+T5: Resolve Nettlecyst
+T5 P1: Create 1x Germ token(s)
+    → Goal: curve_out
+    [Mana] Tap Mistvault Bridge→B (paying for Springleaf Drum, 2 mana remaining)
+T5 P1: Cast Springleaf Drum (1)
+    [Priority] P2 passes (no response)
+T5: Resolve Springleaf Drum
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Memnite, Sojourner's Companion, Sojourner's Companion
+T5 P1: Attack with Memnite, Sojourner's Companion, Sojourner's Companion
+  [Declare Blockers] P2 does not block
+T5 P1:   Memnite (1/1) → 1 dmg to player
+T5 P1:   Sojourner's Companion (4/4) → 4 dmg to player
+T5 P1:   Sojourner's Companion (4/4) → 4 dmg to player
+  [Combat Damage] 9 damage dealt → P2 life: 10 → 1
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 1  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 23  |  Graveyard: 19
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion, Ruby Medallion, Ruby Medallion
+║   Lands: Sacred Foundry, Mountain, Mountain, Gemstone Caverns
+║ Affinity board:
+║   Creatures: Memnite (1/1) [tapped], Sojourner's Companion (4/4) [tapped], Sojourner's Companion (4/4) [tapped], Germ Token (9/9)
+║   Other: Nettlecyst, Springleaf Drum
+║   Lands: Darksteel Citadel [T], Silverbluff Bridge [T], Mistvault Bridge [T], Razortide Bridge, Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Scalding Tarn
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Mountain→R (paying for Ral, Monsoon Mage // Ral, Leyline Prodigy, 4 mana remaining)
+T5 P2: Cast Ral, Monsoon Mage // Ral, Leyline Prodigy (1R)
+    [Priority] P1 passes (no response)
+T5: Resolve Ral, Monsoon Mage // Ral, Leyline Prodigy
+T5 P2: Ral, Monsoon Mage enters — instants/sorceries cost {1} less
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Wrenn's Resolve, 3 mana remaining)
+T5 P2: Cast Wrenn's Resolve (1R)
+T5 P2: Ral, Monsoon Mage // Ral, Leyline Prodigy — won coin flip!
+T5 P2: Ral, Monsoon Mage // Ral, Leyline Prodigy transforms! (loyalty: 4) [+2 extra]
+T5 P2: Ral, Monsoon Mage enters — instants/sorceries cost {1} less
+    [Priority] P1 passes (no response)
+T5: Resolve Wrenn's Resolve
+T5 P2: Wrenn's Resolve → draw 2 (Reckless Impulse, Mountain)
+T5 P2: Play Mountain
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Reckless Impulse, 3 mana remaining)
+T5 P2: Cast Reckless Impulse (1R)
+    [Priority] P1 passes (no response)
+T5: Resolve Reckless Impulse
+T5 P2: Reckless Impulse → draw 2 (Arid Mesa, Pyretic Ritual)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Pyretic Ritual, 2 mana remaining)
+T5 P2: Cast Pyretic Ritual (1R)
+    [Priority] P1 passes (no response)
+T5: Resolve Pyretic Ritual
+T5 P2: Pyretic Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T5 P2: Cast Wish (2R)
+    [Priority] P1 passes (no response)
+T5: Resolve Wish
+T5 P2: Wish finds Past in Flames (from sideboard)
+    → Goal: execute_payoff [enablers]
+T5 P2: Cast Past in Flames (3R)
+    [Priority] P1 passes (no response)
+T5: Resolve Past in Flames
+T5 P2: Past in Flames grants flashback
+    → Goal: execute_payoff [enablers]
+T5 P2: Cast Wish (2R)
+    [Priority] P1 passes (no response)
+T5: Resolve Wish
+T5 P2: Wish finds Grapeshot (from sideboard)
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Gemstone Caverns→R (paying for Grapeshot, 1 mana remaining)
+T5 P2: Cast Grapeshot (1R)
+    [Priority] P1 passes (no response)
+T5: Resolve Grapeshot
+T5 P2: Grapeshot deals 1 damage (opponent life: 19)
+T5: Storm copies: 7
+T5 P2: Grapeshot deals 1 damage (opponent life: 18)
+T5 P2: Grapeshot deals 1 damage (opponent life: 17)
+T5 P2: Grapeshot deals 1 damage (opponent life: 16)
+T5 P2: Grapeshot deals 1 damage (opponent life: 15)
+T5 P2: Grapeshot deals 1 damage (opponent life: 14)
+T5 P2: Grapeshot deals 1 damage (opponent life: 13)
+T5 P2: Grapeshot deals 1 damage (opponent life: 12)
+T5 P2: Ral, Monsoon Mage // Ral, Leyline Prodigy [-2] -> Ral deals 2 damage divided as you choose among one or two targets. Draw a card if you control a blue permanent other than Ral
+T5 P2: Ral, Monsoon Mage // Ral, Leyline Prodigy deals 2 to Memnite
+T5: Memnite dies
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 12  |  Ruby Storm 1
+║ Hand: 1 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 3
+║ Affinity board:
+║   Creatures: Sojourner's Companion (4/4), Sojourner's Companion (4/4), Germ Token (8/8)
+║   Other: Nettlecyst, Springleaf Drum
+║   Lands: Darksteel Citadel, Silverbluff Bridge, Mistvault Bridge, Razortide Bridge, Island
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion, Ruby Medallion, Ruby Medallion
+║   Lands: Sacred Foundry [T], Mountain [T], Mountain [T], Gemstone Caverns [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Signal Pest
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Darksteel Citadel→C (paying for Signal Pest, 5 mana remaining)
+T6 P1: Cast Signal Pest (1)
+    [Priority] P2 passes (no response)
+T6: Resolve Signal Pest
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Sojourner's Companion, Sojourner's Companion, Germ Token
+T6 P1: Attack with Sojourner's Companion, Sojourner's Companion, Germ Token
+  [Declare Blockers] P2 does not block
+T6 P1:   Sojourner's Companion (4/4) → 4 dmg to player
+T6 P1:   Sojourner's Companion (4/4) → 4 dmg to player
+T6 P1:   Germ Token (9/9) → 9 dmg to player
+P2 loses: life total -16
+  [Combat Damage] 17 damage dealt → P2 life: 1 → -16
+
+>>> Affinity wins Game 1 on turn 6 via damage
+    Final life: Affinity=12  Ruby Storm=-16
+
+======================================================================
+  GAME 2: Ruby Storm (P1) vs Affinity (P2)  —  seed 61601
+  Series: Affinity 1 - 0 Ruby Storm
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Affinity wins → chooses to play first
+║ P1 (on play): Affinity
+║ P2 (on draw): Ruby Storm
+╚═══════════════════════════════════════════════════════
+
+P1 (Ruby Storm) opening hand (2 lands, 5 spells):
+  • Bloodstained Mire [Land, CMC 0]
+  • Grapeshot [Spell, CMC 2]
+  • Wish [Spell, CMC 3]
+  • Elegant Parlor [Land, CMC 0]
+  • Desperate Ritual [Spell, CMC 2]
+  • Desperate Ritual [Spell, CMC 2]
+  • Ruby Medallion [Spell, CMC 2]
+→ P1 KEEPS 7 — has key card(s): Desperate Ritual, Ruby Medallion, Wish, 5 cheap spells
+
+P2 (Affinity) opening hand (3 lands, 4 spells):
+  • Mox Opal [Spell, CMC 0]
+  • Razortide Bridge [Land, CMC 0]
+  • Mistvault Bridge [Land, CMC 0]
+  • Mox Opal [Spell, CMC 0]
+  • Signal Pest [Creature, CMC 1]
+  • Ornithopter [Creature, CMC 0]
+  • Silverbluff Bridge [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Mox Opal, Ornithopter, 3 cheap spells
+
+
+╔══ TURN 1 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Ruby Storm 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+    → Goal: deploy_engine [engines]
+T1 P2: Cast Mox Opal (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Mox Opal
+T1 P2: Play Razortide Bridge (enters tapped)
+    → Goal: curve_out
+T1 P2: Cast Ornithopter (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Ornithopter
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: Ornithopter (0/2)
+║   Other: Mox Opal
+║   Lands: Razortide Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ruby Medallion
+  [Main 1]
+T1 P1: Play Bloodstained Mire
+T1 P1: Crack Bloodstained Mire (pay 1 life) -> Sacred Foundry (untapped, life: 17)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Ruby Storm 17
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Ornithopter (0/2)
+║   Other: Mox Opal
+║   Lands: Razortide Bridge
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Spire of Industry
+  [Main 1]
+T2 P2: Play Spire of Industry
+    → Goal: curve_out
+    [Mana] Tap Razortide Bridge→U (paying for Signal Pest, 2 mana remaining)
+T2 P2: Cast Signal Pest (1)
+    [Priority] P1 passes (no response)
+T2: Resolve Signal Pest
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 17  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 3 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1)
+║   Other: Mox Opal
+║   Lands: Razortide Bridge [T], Spire of Industry
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wooded Foothills
+  [Main 1]
+T2 P1: Play Wooded Foothills
+T2 P1: Crack Wooded Foothills -> Mountain (untapped)
+    → Goal: deploy_engine [engines]
+    [Mana] Tap Mountain→R, Sacred Foundry→R (paying for Ruby Medallion, 2 mana remaining)
+T2 P1: Cast Ruby Medallion (2)
+    [Priority] P2 passes (no response)
+T2: Resolve Ruby Medallion
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Ruby Storm 16
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1)
+║   Other: Mox Opal
+║   Lands: Razortide Bridge, Spire of Industry
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Treasure Vault
+  [Main 1]
+T3 P2: Play Treasure Vault
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Signal Pest
+T3 P2: Attack with Signal Pest
+  [Declare Blockers] P1 does not block
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 16  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry, Mountain
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1) [tapped]
+║   Other: Mox Opal
+║   Lands: Razortide Bridge, Spire of Industry, Treasure Vault
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mountain
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Mountain→R, Sacred Foundry→R (paying for Ruby Medallion, 2 mana remaining)
+T3 P1: Cast Ruby Medallion (2)
+    [Priority] P2 passes (no response)
+T3: Resolve Ruby Medallion
+T3 P1: Play Mountain
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Desperate Ritual, 1 mana remaining)
+T3 P1:   Splice Desperate Ritual onto Desperate Ritual
+T3 P1: Cast Desperate Ritual (1R)
+    [Priority] P2 passes (no response)
+T3: Resolve Desperate Ritual
+T3 P1: Desperate Ritual adds 3 R mana
+T3 P1:   Spliced Desperate Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T3 P1: Cast Desperate Ritual (1R)
+    [Priority] P2 passes (no response)
+T3: Resolve Desperate Ritual
+T3 P1: Desperate Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T3 P1: Cast Wish (2R)
+    [Priority] P2 passes (no response)
+T3: Resolve Wish
+T3 P1: Wish finds Grapeshot (from sideboard)
+    → Goal: execute_payoff [payoffs]
+T3 P1: Cast Grapeshot (1R)
+    [Priority] P2 passes (no response)
+T3: Resolve Grapeshot
+T3 P1: Grapeshot deals 1 damage (opponent life: 19)
+T3: Storm copies: 4
+T3 P1: Grapeshot deals 1 damage (opponent life: 18)
+T3 P1: Grapeshot deals 1 damage (opponent life: 17)
+T3 P1: Grapeshot deals 1 damage (opponent life: 16)
+T3 P1: Grapeshot deals 1 damage (opponent life: 15)
+    → Goal: execute_payoff [payoffs]
+T3 P1: Cast Grapeshot (1R)
+    [Priority] P2 passes (no response)
+T3: Resolve Grapeshot
+T3 P1: Grapeshot deals 1 damage (opponent life: 14)
+T3: Storm copies: 5
+T3 P1: Grapeshot deals 1 damage (opponent life: 13)
+T3 P1: Grapeshot deals 1 damage (opponent life: 12)
+T3 P1: Grapeshot deals 1 damage (opponent life: 11)
+T3 P1: Grapeshot deals 1 damage (opponent life: 10)
+T3 P1: Grapeshot deals 1 damage (opponent life: 9)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 9  |  Ruby Storm 16
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1)
+║   Other: Mox Opal
+║   Lands: Razortide Bridge, Spire of Industry, Treasure Vault
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion, Ruby Medallion
+║   Lands: Sacred Foundry [T], Mountain [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Engineered Explosives
+  [Main 1]
+T4 P2: Play Mistvault Bridge (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Signal Pest
+T4 P2: Attack with Signal Pest
+  [Declare Blockers] P1 does not block
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 16  |  Affinity 9
+║ Hand: 1 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 7
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion, Ruby Medallion
+║   Lands: Sacred Foundry, Mountain, Mountain
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1) [tapped]
+║   Other: Mox Opal
+║   Lands: Razortide Bridge, Spire of Industry, Treasure Vault, Mistvault Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Pyretic Ritual
+  [Main 1]
+T4 P1: Play Elegant Parlor (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 9  |  Ruby Storm 16
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1)
+║   Other: Mox Opal
+║   Lands: Razortide Bridge, Spire of Industry, Treasure Vault, Mistvault Bridge
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion, Ruby Medallion
+║   Lands: Sacred Foundry, Mountain, Mountain, Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Frogmite
+  [Main 1]
+T5 P2: Play Silverbluff Bridge (enters tapped)
+    → Goal: curve_out [enablers]
+T5 P2: Cast Frogmite (4)
+    [Priority] P1 passes (no response)
+T5: Resolve Frogmite
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Signal Pest
+T5 P2: Attack with Signal Pest
+  [Declare Blockers] P1 does not block
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 16  |  Affinity 9
+║ Hand: 1 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 7
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion, Ruby Medallion
+║   Lands: Sacred Foundry, Mountain, Mountain, Elegant Parlor
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1) [tapped], Frogmite (2/2)
+║   Other: Mox Opal
+║   Lands: Razortide Bridge, Spire of Industry, Treasure Vault, Mistvault Bridge, Silverbluff Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Reckless Impulse
+  [Main 1]
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Reckless Impulse, 4 mana remaining)
+T5 P1: Cast Reckless Impulse (1R)
+    [Priority] P2 passes (no response)
+T5: Resolve Reckless Impulse
+T5 P1: Reckless Impulse → draw 2 (Desperate Ritual, Glimpse the Impossible)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Glimpse the Impossible, 3 mana remaining)
+T5 P1: Cast Glimpse the Impossible (2R)
+    [Priority] P2 passes (no response)
+T5: Resolve Glimpse the Impossible
+T5 P1: Glimpse the Impossible → draw 3 (Wrenn's Resolve, Pyretic Ritual, Scalding Tarn)
+T5 P1: Play Scalding Tarn
+T5 P1: Crack Scalding Tarn -> Mountain (untapped)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Wrenn's Resolve, 3 mana remaining)
+T5 P1: Cast Wrenn's Resolve (1R)
+    [Priority] P2 passes (no response)
+T5: Resolve Wrenn's Resolve
+T5 P1: Wrenn's Resolve → draw 2 (Ral, Monsoon Mage // Ral, Leyline Prodigy, Mountain)
+    → Goal: execute_payoff
+    [Mana] Tap Sacred Foundry→R (paying for Ral, Monsoon Mage // Ral, Leyline Prodigy, 2 mana remaining)
+T5 P1: Cast Ral, Monsoon Mage // Ral, Leyline Prodigy (1R)
+    [Priority] P2 passes (no response)
+T5: Resolve Ral, Monsoon Mage // Ral, Leyline Prodigy
+T5 P1: Ral, Monsoon Mage enters — instants/sorceries cost {1} less
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 9  |  Ruby Storm 15
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 49  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1), Frogmite (2/2)
+║   Other: Mox Opal
+║   Lands: Razortide Bridge, Spire of Industry, Treasure Vault, Mistvault Bridge, Silverbluff Bridge
+║ Ruby Storm board:
+║   Creatures: Ral, Monsoon Mage // Ral, Leyline Prodigy (1/3)
+║   Other: Ruby Medallion, Ruby Medallion
+║   Lands: Sacred Foundry [T], Mountain [T], Mountain [T], Elegant Parlor, Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Cranial Plating
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Treasure Vault→C, Razortide Bridge→U (paying for Cranial Plating, 5 mana remaining)
+T6 P2: Cast Cranial Plating (2)
+    [Priority] P1 passes (no response)
+T6: Resolve Cranial Plating
+T6 P2: Cranial Plating enters the battlefield (unattached)
+T6 P2: Equip Cranial Plating to Frogmite (cost 1)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Signal Pest, Frogmite
+T6 P2: Attack with Signal Pest, Frogmite
+T6 P1:   [BLOCK-EMERGENCY] Ral, Monsoon Mage // Ral, Leyline Prodigy (1/3) blocks Frogmite (12/2) — chump block
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T6: Ral, Monsoon Mage // Ral, Leyline Prodigy dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 15  |  Affinity 9
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 38  |  Graveyard: 12
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion, Ruby Medallion
+║   Lands: Sacred Foundry, Mountain, Mountain, Elegant Parlor, Mountain
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1) [tapped], Frogmite (11/2) [tapped]
+║   Other: Mox Opal, Cranial Plating
+║   Lands: Razortide Bridge [T], Spire of Industry [T], Treasure Vault [T], Mistvault Bridge, Silverbluff Bridge
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wooded Foothills
+  [Main 1]
+T6 P1: Play Wooded Foothills
+T6 P1: Crack Wooded Foothills -> Thundering Falls (tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 9  |  Ruby Storm 14
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 48  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1), Frogmite (11/2)
+║   Other: Mox Opal, Cranial Plating
+║   Lands: Razortide Bridge, Spire of Industry, Treasure Vault, Mistvault Bridge, Silverbluff Bridge
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion, Ruby Medallion
+║   Lands: Sacred Foundry, Mountain, Mountain, Elegant Parlor, Mountain, Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Cranial Plating
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Treasure Vault→C, Razortide Bridge→U (paying for Cranial Plating, 5 mana remaining)
+T7 P2: Cast Cranial Plating (2)
+    [Priority] P1 passes (no response)
+T7: Resolve Cranial Plating
+T7 P2: Cranial Plating enters the battlefield (unattached)
+T7 P2: Equip Cranial Plating to Frogmite (cost 1)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Signal Pest, Frogmite
+T7 P2: Attack with Signal Pest, Frogmite
+  [Declare Blockers] P1 does not block
+T7 P2:   Frogmite (23/2) → 23 dmg to player
+P1 loses: life total -9
+  [Combat Damage] 23 damage dealt → P1 life: 14 → -9
+
+>>> Affinity wins Game 2 on turn 7 via damage
+    Final life: Ruby Storm=-9  Affinity=9
+
+======================================================================
+  MATCH RESULT: Affinity wins 2-0
+======================================================================
