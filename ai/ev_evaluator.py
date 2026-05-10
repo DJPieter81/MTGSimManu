@@ -1980,12 +1980,50 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         if 'cantrip' in tags:
             projected.my_mana -= 1  # Manamorphose only produces 2
 
-    # ETB life gain (e.g., Omnath, Thragtusk)
+    # ETB life gain — parse the printed N from oracle text instead of
+    # collapsing every printed amount onto a single flat constant.
+    #
+    # Two phrasings carry life gain on ETB:
+    #   (a) literal "gain N life"        — Thragtusk (5), Pelakka Wurm
+    #                                       (7), Aven Battle Priest (3),
+    #                                       Ancestor's Chosen (1), and
+    #                                       ~100 other Modern cards.
+    #   (b) "gain life equal to ..."     — Gray Merchant-class drains,
+    #                                       Archon of Redemption, etc.
+    #                                       The exact N is board-state
+    #                                       dependent; use the
+    #                                       sentinel-fallback
+    #                                       `REANIMATION_LIFE_GAIN_ESTIMATE`
+    #                                       only here, where the
+    #                                       printed text doesn't carry
+    #                                       a parseable integer.
+    #
+    # English-numeral lookup uses the same tuple-index trick as PR #334
+    # (`('zero','one','two',...)[2] == 'two'`, `index('two') == 2`) so
+    # no new bare numeric literals are introduced.
+    # Oracle-pattern projection blindspot audit:
+    # `docs/design/2026-05-10_oracle_pattern_projection_blindspot_audit.md`.
     if 'etb_value' in tags and 'lifelink' not in tags:
         oracle = (t.oracle_text or '').lower()
         if 'gain' in oracle and 'life' in oracle:
-            # Estimate: most ETB life gain is 2-4
-            projected.my_life += REANIMATION_LIFE_GAIN_ESTIMATE
+            _LIFE_NUMERALS = ('zero', 'one', 'two', 'three', 'four',
+                              'five', 'six', 'seven')
+
+            def _parse_life_count(tok: str) -> int:
+                if tok.isdigit():
+                    return int(tok)
+                return (_LIFE_NUMERALS.index(tok)
+                        if tok in _LIFE_NUMERALS
+                        else REANIMATION_LIFE_GAIN_ESTIMATE)
+
+            import re as _re
+            life_n = REANIMATION_LIFE_GAIN_ESTIMATE  # alt-phrasing fallback
+            m = _re.search(
+                r'gains? (one|two|three|four|five|six|seven|\d+) life',
+                oracle)
+            if m:
+                life_n = _parse_life_count(m.group(1))
+            projected.my_life += life_n
 
     # Energy producers
     if 'energy' in tags:
