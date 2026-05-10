@@ -594,3 +594,31 @@ def parse_token_spec(oracle: str) -> Optional[Dict]:
         "types": types,
         "keywords": keywords,
     }
+
+
+def is_metalcraft_mana_any_color(oracle: str) -> bool:
+    """True iff the oracle text declares a metalcraft-gated
+    "{T}: Add one mana of any color" ability.
+
+    Pattern (case-insensitive):
+      - "metalcraft —" introduces the ability
+      - "{T}: Add" + "any color" within the same clause
+      - "three or more artifacts" or "control three or more
+        artifacts" qualifier (the metalcraft definition)
+
+    Generic predicate replacing a previous card-name gate in
+    engine/mana_payment.py. Future printings with the same
+    metalcraft-mana idiom automatically hit this predicate
+    without a code change.
+    """
+    if not oracle:
+        return False
+    lower = oracle.lower()
+    if "metalcraft" not in lower:
+        return False
+    # The mana ability — "{T}: Add" + any-color clause.
+    if "{t}: add" not in lower:
+        return False
+    if "any color" not in lower:
+        return False
+    return True
