@@ -794,6 +794,66 @@ class OracleTextParser:
                 tags.add("discard")
                 tags.add("interaction")
 
+        # ── Generic graveyard_hate text-based derivation ──
+        # Any card whose oracle interacts with the opponent's
+        # graveyard as a disruption play. Six branches:
+        #   1. Zone-wipe: "exile <some> graveyard(s)" — Tormod's
+        #      Crypt, Bojuka Bog, Relic of Progenitus, Soul-Guide
+        #      Lantern, Thraben Charm, Faerie Macabre.
+        #   2. Single-card exile from a graveyard — Scavenging Ooze,
+        #      Cling to Dust, Soul-Guide Lantern.
+        #   3. Choose-then-exile (Surgical Extraction).
+        #   4. Replacement effect — Leyline of the Void, Rest in
+        #      Peace.
+        #   5. Bottom-of-library — Endurance.
+        #   6. Cast-from-graveyard / ETB-from-graveyard restriction
+        #      — Grafdigger's Cage.
+        if "graveyard_hate" not in tags:
+            import re as _gy_re
+            text_l = text  # already lowercased
+            matched = False
+            # Zone-wipe: "exile <something> graveyard(s)" with target/each/all
+            if _gy_re.search(
+                r"exile\s+[\w\s']+?\s+graveyards?\b", text_l
+            ):
+                m = _gy_re.search(r"exile\s+([\w\s']+?)\s+graveyards?\b", text_l)
+                if m and any(k in m.group(0)
+                             for k in ('target', 'each', 'all', 'any number')):
+                    matched = True
+            # Single-card exile from a graveyard (or graveyards)
+            if not matched and _gy_re.search(
+                r"exile\s+(?:target|up to \w+ target)\s+cards?\s+"
+                r"(?:from|in)\s+(?:a|graveyards?|each)",
+                text_l,
+            ) and 'graveyard' in text_l:
+                matched = True
+            # Choose-then-exile (Surgical Extraction shape)
+            if not matched and (
+                'target card in a graveyard' in text_l
+                or 'target card from a graveyard' in text_l
+            ) and 'exile' in text_l:
+                matched = True
+            # Replacement effect (Leyline of the Void / Rest in Peace)
+            if not matched and 'graveyard' in text_l and 'exile it instead' in text_l:
+                matched = True
+            # Bottom-of-library (Endurance / Memory's Journey)
+            if not matched and _gy_re.search(
+                r'graveyard\s+on\s+the\s+bottom\s+of\s+their\s+library',
+                text_l,
+            ):
+                matched = True
+            # Cast/ETB-from-graveyard restriction (Grafdigger's Cage):
+            # explicitly mentions "graveyards and libraries" — narrow
+            # enough to avoid catching reanimator cards that say
+            # "from a graveyard" but ENABLE ETB.
+            if not matched and 'graveyard' in text_l and (
+                'graveyards and libraries' in text_l
+                or 'graveyards or libraries' in text_l
+            ):
+                matched = True
+            if matched:
+                tags.add("graveyard_hate")
+
         # Silence / spell-lock effects (e.g., "target player can't cast spells")
         if "can't cast spells" in text or "can't cast spell" in text:
             tags.add("silence")
@@ -1364,11 +1424,9 @@ class CardDatabase:
             "Teferi, Time Raveler": {"etb_value", "interaction", "threat"},
             "Goblin Bombardment": {"combo", "threat"},
             "Blood Moon": {"stax", "interaction"},
-            "Thraben Charm": {"graveyard_hate"},
             "Torpor Orb": {"stax"},
             "Ethersworn Canonist": {"stax"},
             "Ratchet Bomb": {"interaction"},
-            "Relic of Progenitus": {"graveyard_hate"},
             "Thought Monitor": {"card_advantage"},
             # Domain Zoo
             "Leyline of the Guildpact": {"stax", "combo"},
