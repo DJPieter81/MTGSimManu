@@ -412,11 +412,11 @@ class EVPlayer:
         # COMBO KILL OVERRIDE: if chain evaluator sees a lethal line,
         # force-advance goal to EXECUTE_PAYOFF so ritual/draw cards
         # get scored as chain starters instead of generic spells.
-        # Accept "storm" as a COMBO alias — Ruby Storm is the only deck
-        # with that archetype string and its _estimate_combo_chain math
-        # (ritual-first simulation) is exactly what Storm needs. Same
-        # alias pattern as the mulligan decider (see __init__).
-        if self.goal_engine and self.archetype in ("combo", "storm"):
+        # The profile's ``has_combo_chain`` flag captures both COMBO
+        # and STORM archetypes (see strategy_profile.py); the storm
+        # _estimate_combo_chain math (ritual-first simulation) applies
+        # uniformly to both.
+        if self.goal_engine and self.profile.has_combo_chain:
             from ai.ev_evaluator import _estimate_combo_chain
             can_kill, storm_count, damage, chain = _estimate_combo_chain(
                 game, self.player_idx)
@@ -2168,7 +2168,8 @@ class EVPlayer:
         is_desperate = me.life <= DESPERATION_LIFE_FLOOR and total_power > 0 and opp.life > 0
 
         # ── Anti-combo: vs spell-based decks, creature attacks are always right ──
-        opp_is_spell_deck = opp_archetype in ('combo', 'storm')
+        from ai.strategy_profile import get_profile as _get_opp_profile
+        opp_is_spell_deck = _get_opp_profile(opp_archetype).has_combo_chain
 
         # CombatPlanner
         try:
@@ -2176,8 +2177,11 @@ class EVPlayer:
             attack_plan, score_delta = self.combat_planner.plan_attack(vboard)
 
             threshold = self.profile.attack_threshold
-            # When opponent is low, attack more aggressively to close the game
-            if opp.life <= self.profile.burn_low_life_threshold and self.archetype in ('aggro', 'tempo'):
+            # When opponent is low, attack more aggressively to close the game.
+            # Non-aggressive profiles override aggro_closing_threshold_reduction
+            # to 0.0, so the subtraction is a no-op for them — no archetype
+            # gate needed at the call site.
+            if opp.life <= self.profile.burn_low_life_threshold:
                 threshold -= self.profile.aggro_closing_threshold_reduction
 
             # Post-payoff aggression: when the goal layer has advanced to

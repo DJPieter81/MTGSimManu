@@ -62,11 +62,14 @@ class StrategyProfile:
 
     # ── Combat ──
     attack_threshold: float = -0.5        # slightly negative: attack when trades are close
-    # Aggro closes games by lowering the EV threshold for "go for it" attacks
-    # by this much when opp is at lethal range. Per-archetype tuning: aggro
-    # lists are willing to accept marginal EV trades that midrange/control
-    # decks would refuse, because the aggro plan loses if the game grinds.
-    aggro_closing_threshold_reduction: float = 2.0
+    # Aggressive-closing flag in numeric form: how much to lower the EV
+    # threshold for "go for it" attacks when opp is at lethal range.
+    # Default 0.0 = the profile does not race; subtracting 0 is a no-op.
+    # AGGRO and TEMPO opt in by overriding to a positive value. This
+    # replaces the prior ``self.archetype in ('aggro', 'tempo')`` gate
+    # at the call site, so the predicate lives on the profile data and
+    # the ev_player code is archetype-name-agnostic.
+    aggro_closing_threshold_reduction: float = 0.0
     # Opp won't block with creatures whose power exceeds attacker.power * this ratio
     # (trading up forfeits offensive value the bigger creature would generate).
     block_threat_power_ratio: float = 2.0
@@ -135,6 +138,7 @@ AGGRO = StrategyProfile(
     burn_face_low_life_mult=2.5,
     holdback_applies=False,
     attack_threshold=-1.0,
+    aggro_closing_threshold_reduction=2.0,
 )
 
 MIDRANGE = StrategyProfile(
@@ -167,7 +171,9 @@ RAMP = StrategyProfile(
     holdback_applies=False,
 )
 
-TEMPO = StrategyProfile()
+TEMPO = StrategyProfile(
+    aggro_closing_threshold_reduction=2.0,
+)
 
 
 PROFILES = {
