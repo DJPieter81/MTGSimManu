@@ -597,6 +597,90 @@ class OracleTextParser:
         if any_removal and "blink" not in tags:
             tags.add("removal")
 
+        # ── Generic removal text-based fallback ──
+        # Covers cards whose OracleEffect parser fails to extract a
+        # discrete damage/destroy/exile effect (multi-clause ETB,
+        # conditional Metalcraft branches, activated abilities,
+        # toughness-reduction kill, multi-type board wipes, etc.).
+        # Each pattern below names a real Modern oracle phrasing.
+        if "removal" not in tags and "blink" not in tags:
+            import re as _rm_re
+            removal_matched = False
+            wipe_matched = False
+            # Single-target destroy/exile, including "up to N other"
+            # and adjective qualifiers ("noncreature artifact",
+            # "black or red permanent", "noncreature enchantment").
+            if _rm_re.search(
+                r'(?:destroy|exile)(?:\s+up to \w+(?:\s+other)?)?\s+target'
+                r'\s+(?:[\w\s]{0,30}\s+)?(?:creature|artifact|enchantment'
+                r'|permanent|nonland permanent)',
+                text,
+            ):
+                removal_matched = True
+            # Conditional clause: "exile that creature" / "exile that
+            # permanent" — Metalcraft / kicker / quality gates.
+            elif _rm_re.search(
+                r'exile that creature\b|exile that permanent\b', text
+            ):
+                removal_matched = True
+            # Board wipes: "destroy/exile each|all <permanent type>"
+            elif _rm_re.search(
+                r'(?:destroy|exile)\s+(?:each|all)\s+'
+                r'(?:creature|nonland|permanent|artifact|enchantment)',
+                text,
+            ):
+                removal_matched = True
+                wipe_matched = True
+            # Library-bottom wipe (Terminus / Settle the Wreckage).
+            elif ('put all creatures on the bottom' in text
+                  or 'put each creature on the bottom' in text):
+                removal_matched = True
+                wipe_matched = True
+            # Bounce-all (Hurkyl's Recall / Echoing Truth permanent
+            # variants). Targets all of a permanent type to hand.
+            elif _rm_re.search(
+                r'return all (?:creatures|artifacts|nonland permanents'
+                r'|enchantments)[^.]{0,40}'
+                r' (?:to .+? hand|to (?:its|their) (?:owner|controller))',
+                text,
+            ):
+                removal_matched = True
+                wipe_matched = True
+            # Sacrifice-all wipe (All Is Dust / Ugin / In Garruk's Wake).
+            elif _rm_re.search(
+                r'(?:each player|each opponent) sacrifices? all', text
+            ):
+                removal_matched = True
+                wipe_matched = True
+            # Toughness-reduction kill (Dismember at -5/-5, Murderous
+            # Cut at -X/-X, etc.). Threshold of 3 catches the
+            # printed-pool kill spells without flagging trivial debuffs.
+            else:
+                m = _rm_re.search(r'gets -(\d+)/-(\d+)', text)
+                if m and (int(m.group(1)) >= 3 or int(m.group(2)) >= 3):
+                    removal_matched = True
+            # "each creature ... dies" wipe (Wrath of the Skies's
+            # alt-form: "each creature without a +1/+1 counter dies").
+            if not removal_matched and _rm_re.search(
+                r'each creature[^.]*\bdies\b', text
+            ):
+                removal_matched = True
+                wipe_matched = True
+            # X-damage or back-reference damage to target
+            # (Galvanic Discharge "deals that much damage to that
+            # permanent"; Banefire "deals X damage to any target").
+            if not removal_matched and _rm_re.search(
+                r'deals\s+[^.]+?\s+damage\s+to\s+(?:any|target|that)\s+'
+                r'(?:creature|permanent|planeswalker)',
+                text,
+            ):
+                removal_matched = True
+
+            if removal_matched:
+                tags.add("removal")
+                if wipe_matched:
+                    tags.add("board_wipe")
+
         # Counter
         for e in effects:
             if e.effect_type == "counter":
@@ -1193,23 +1277,10 @@ class CardDatabase:
         # pin the runtime tag set on every touched card so a future
         # regression in classify_card_role surfaces immediately.
         TAG_OVERRIDES = {
-            # Removal — auto-derivation misses single-target removal on
-            # creatures/permanents; multi-step text confuses the parser.
-            "Galvanic Discharge": {"removal"},
-            "Dismember": {"removal"},
-            "Solitude": {"removal"},
-            "Fury": {"removal", "creature", "instant_speed", "evoke", "etb_value"},
-            "Grief": {"discard", "interaction", "creature", "instant_speed", "evoke", "etb_value"},
-            "Subtlety": {"interaction"},
             # Discard pieces — parser picks lose_life over discard for
             # "reveal-and-discard" cards (Thoughtseize, Inquisition).
             "Thoughtseize": {"discard", "interaction"},
             "Inquisition of Kozilek": {"discard", "interaction"},
-            # Board wipes — auto-derivation handles "destroy all" but
-            # not all phrasings; Engineered Explosives and Terminus are
-            # cost-X / put-on-top variants the parser misses.
-            "Engineered Explosives": {"removal", "board_wipe"},
-            "Terminus": {"removal", "board_wipe"},
             # Storm pieces — abstract `combo` tag is per-deck strategy,
             # not derivable from oracle text in isolation.
             "Ruby Medallion": {"combo"},
@@ -1240,22 +1311,21 @@ class CardDatabase:
             # Stax pieces — `stax` is an abstract behavioural tag the
             # auto-derivation does not infer.
             "Chalice of the Void": {"stax", "interaction"},
+            # Fury / Grief — not in the loaded card DB (special
+            # printings / special-set cards). Kept as explicit
+            # overrides for safety.
+            "Fury": {"removal", "creature", "instant_speed", "evoke", "etb_value"},
+            "Grief": {"discard", "interaction", "creature", "instant_speed", "evoke", "etb_value"},
+            "Subtlety": {"interaction"},
             # Interactive permanents
             "Teferi, Time Raveler": {"etb_value", "interaction", "threat"},
             "Goblin Bombardment": {"combo", "threat"},
             "Blood Moon": {"stax", "interaction"},
             "Thraben Charm": {"graveyard_hate"},
-            "Celestial Purge": {"removal"},
-            # ETron
-            "All Is Dust": {"board_wipe", "removal"},
-            "Ratchet Bomb": {"removal", "interaction"},
-            # Affinity sideboard
-            "Dispatch": {"removal"},
-            "Hurkyl's Recall": {"removal"},
-            "Relic of Progenitus": {"graveyard_hate"},
             "Torpor Orb": {"stax"},
             "Ethersworn Canonist": {"stax"},
-            "Haywire Mite": {"removal"},
+            "Ratchet Bomb": {"interaction"},
+            "Relic of Progenitus": {"graveyard_hate"},
             "Thought Monitor": {"card_advantage"},
             # Domain Zoo
             "Leyline of the Guildpact": {"stax", "combo"},
