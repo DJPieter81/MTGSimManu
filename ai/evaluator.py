@@ -292,9 +292,32 @@ def _ability_bonus(card, template=None) -> float:
         life = int(life_match.group(1))
         bonus += life * ORACLE_LIFE_GAIN_PER_POINT
 
-    # Token creation
+    # Token creation — credit the actual N from oracle text. The
+    # canonical Modern wording is "create N P/T creature tokens"
+    # (Empty the Warrens, Bitterblossom, Saheeli, Goblin tokens
+    # patterns) where N is the printed count. Boolean detection
+    # would treat "create one token" the same as "create twenty
+    # tokens" — the same projection-blindspot pattern named in
+    # docs/design/2026-05-10_oracle_pattern_projection_blindspot_audit.md
+    # (sixth row, scorer-side).
+    token_match = re.search(
+        r'create\s+(?:up to\s+)?(\w+)\s+', oracle)
+    token_n = 1
+    if token_match and 'token' in oracle:
+        word = token_match.group(1)
+        if word.isdigit():
+            token_n = int(word)
+        else:
+            # English-numeral lookup: tuple index IS the integer
+            # (CR 107 cardinal). 'a' / 'an' map to 1.
+            _NUMERALS = ('zero', 'one', 'two', 'three', 'four', 'five',
+                         'six', 'seven', 'eight', 'nine', 'ten')
+            if word in _NUMERALS:
+                token_n = _NUMERALS.index(word)
+            elif word in ('a', 'an'):
+                token_n = 1
     if 'create' in oracle and 'token' in oracle:
-        bonus += ORACLE_TOKEN_CREATION_BONUS
+        bonus += token_n * ORACLE_TOKEN_CREATION_BONUS
 
     # Search library (tutor effect)
     if 'search your library' in oracle:
