@@ -76,13 +76,12 @@ class ManaPayment:
         # Leyline of the Guildpact: only applies to lands.
         if card.template.is_land and ManaPayment.has_leyline_of_guildpact(game, player_idx):
             return ALL_COLORS
-        # Mox Opal: metalcraft is checked every time the ability is
-        # activated.  We gate by the exact card name because the generic
-        # "metalcraft" keyword is shared by other cards that do not
-        # produce mana (e.g. Galvanic Blast).  A future generic
-        # refactor would parse "{T}: Add one mana of any color" plus
-        # "Metalcraft —" from oracle text directly.
-        if card.template.name == "Mox Opal":
+        # Metalcraft-gated any-color mana ability (Mox Opal today;
+        # any future printing with the same oracle shape automatically).
+        # Generic predicate at engine/oracle_parser.py replaces the
+        # previous card-name check.
+        from .oracle_parser import is_metalcraft_mana_any_color
+        if is_metalcraft_mana_any_color(card.template.oracle_text or ""):
             artifact_count = sum(
                 1 for c in game.players[player_idx].battlefield
                 if CardType.ARTIFACT in c.template.card_types
