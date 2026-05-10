@@ -1,0 +1,1672 @@
+Loaded 21759 cards (0 errors)
+Loaded 21759 cards (0 errors)
+======================================================================
+  GAME 1: Living End (P1) vs Ruby Storm (P2)  —  seed 60600
+  Series: Living End 0 - 0 Ruby Storm
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Living End wins → chooses to play first
+║ P1 (on play): Living End
+║ P2 (on draw): Ruby Storm
+╚═══════════════════════════════════════════════════════
+
+P1 (Living End) opening hand (3 lands, 4 spells):
+  • Demonic Dread [Spell, CMC 3]
+  • Living End [Spell, CMC 0]
+  • Street Wraith [Creature, CMC 5]
+  • Misty Rainforest [Land, CMC 0]
+  • Overgrown Tomb [Land, CMC 0]
+  • Blooming Marsh [Land, CMC 0]
+  • Demonic Dread [Spell, CMC 3]
+→ P1 KEEPS 7 — has key card(s): Demonic Dread, Street Wraith, 3 cheap spells
+
+P2 (Ruby Storm) opening hand (3 lands, 4 spells):
+  • Wooded Foothills [Land, CMC 0]
+  • Scalding Tarn [Land, CMC 0]
+  • Mountain [Land, CMC 0]
+  • Pyretic Ritual [Spell, CMC 2]
+  • Desperate Ritual [Spell, CMC 2]
+  • Grapeshot [Spell, CMC 2]
+  • Reckless Impulse [Spell, CMC 2]
+→ P2 KEEPS 7 — has key card(s): Desperate Ritual, Pyretic Ritual, Reckless Impulse, 4 cheap spells
+
+
+╔══ TURN 1 — Living End (P1) ══════════════════════════
+║ Life: Living End 20  |  Ruby Storm 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Cycle Street Wraith (pay 2 life, draw: Misty Rainforest)
+T1 P1: Play Overgrown Tomb (tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 20  |  Living End 18
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Reckless Impulse
+  [Main 1]
+T1 P2: Play Wooded Foothills
+T1 P2: Crack Wooded Foothills (pay 1 life) -> Sacred Foundry (untapped, life: 17)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Living End (P1) ══════════════════════════
+║ Life: Living End 18  |  Ruby Storm 17
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Forest
+  [Main 1]
+T2 P1: Play Misty Rainforest
+T2 P1: Crack Misty Rainforest -> Raugrin Triome (tapped)
+T2 P1: Raugrin Triome ETB: draw 1 (Botanical Sanctum)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 17  |  Living End 17
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb, Raugrin Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ruby Medallion
+  [Main 1]
+T2 P2: Play Scalding Tarn
+T2 P2: Crack Scalding Tarn -> Mountain (untapped)
+    → Goal: execute_payoff
+    [Mana] Tap Mountain→R, Sacred Foundry→R (paying for Ruby Medallion, 2 mana remaining)
+T2 P2: Cast Ruby Medallion (2)
+    [Priority] P1 passes (no response)
+T2: Resolve Ruby Medallion
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Living End (P1) ══════════════════════════
+║ Life: Living End 17  |  Ruby Storm 16
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 2
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb, Raugrin Triome
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Living End
+  [Main 1]
+T3 P1: Play Misty Rainforest
+T3 P1: Crack Misty Rainforest (pay 1 life) -> Watery Grave (tapped, life: 16)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 16  |  Living End 16
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry, Mountain
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb, Raugrin Triome, Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Grapeshot
+  [Main 1]
+T3 P2: Play Mountain
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Living End (P1) ══════════════════════════
+║ Life: Living End 16  |  Ruby Storm 16
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 3
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb, Raugrin Triome, Watery Grave
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry, Mountain, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Shardless Agent
+  [Main 1]
+T4 P1: Play Forest
+    → Goal: fill_resource [payoffs]
+    [Mana] Tap Watery Grave→U, Forest→G, Overgrown Tomb→B (paying for Shardless Agent, 4 mana remaining)
+T4 P1: Cast Shardless Agent (1UG)
+    [Priority] P2 passes (no response)
+T4: Resolve Shardless Agent
+T4: Cascade (CMC < 3)
+T4: Cascade hits Living End
+T4: Living End resolves!
+T4: Living End returns Street Wraith for P1
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 16  |  Living End 16
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 2
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry, Mountain, Mountain
+║ Living End board:
+║   Creatures: Street Wraith (3/4)
+║   Lands: Overgrown Tomb [T], Raugrin Triome, Watery Grave [T], Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Grapeshot
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Living End (P1) ══════════════════════════
+║ Life: Living End 16  |  Ruby Storm 16
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 45  |  Graveyard: 3
+║ Living End board:
+║   Creatures: Street Wraith (3/4)
+║   Lands: Overgrown Tomb, Raugrin Triome, Watery Grave, Forest
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry, Mountain, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Subtlety
+  [Main 1]
+T5 P1: Play Blooming Marsh (tapped, 4 other lands)
+    [Mana] Tap Overgrown Tomb→B, Watery Grave→B, Forest→G, Raugrin Triome→R (paying for Living End, 4 mana remaining)
+T5 P1: Suspend Living End (3 time counters)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Street Wraith
+T5 P1: Attack with Street Wraith
+  [Declare Blockers] P2 does not block
+T5 P1:   Street Wraith (3/4) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 16 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 13  |  Living End 16
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 2
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry, Mountain, Mountain
+║ Living End board:
+║   Creatures: Street Wraith (3/4) [tapped]
+║   Lands: Overgrown Tomb [T], Raugrin Triome [T], Watery Grave [T], Forest [T], Blooming Marsh [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Reckless Impulse
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Pyretic Ritual moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 6 — Living End (P1) ══════════════════════════
+║ Life: Living End 16  |  Ruby Storm 13
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 44  |  Graveyard: 3
+║ Living End board:
+║   Creatures: Street Wraith (3/4)
+║   Lands: Overgrown Tomb, Raugrin Triome, Watery Grave, Forest, Blooming Marsh
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry, Mountain, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Street Wraith
+  [Main 1]
+T6 P1: Cycle Street Wraith (pay 2 life, draw: Striped Riverwinder)
+T6 P1: Cycle Striped Riverwinder (pay 1 mana, draw: Force of Negation)
+T6 P1: Play Botanical Sanctum (tapped, 5 other lands)
+    [Mana] Tap Overgrown Tomb→B, Watery Grave→B, Forest→G, Blooming Marsh→B (paying for Living End, 4 mana remaining)
+T6 P1: Suspend Living End (3 time counters)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Street Wraith
+T6 P1: Attack with Street Wraith
+  [Declare Blockers] P2 does not block
+T6 P1:   Street Wraith (3/4) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 13 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 10  |  Living End 14
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 6
+║ Library: 46  |  Graveyard: 3
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry, Mountain, Mountain
+║ Living End board:
+║   Creatures: Street Wraith (3/4) [tapped]
+║   Lands: Overgrown Tomb [T], Raugrin Triome [T], Watery Grave [T], Forest [T], Blooming Marsh [T], Botanical Sanctum [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: March of Reckless Joy
+  [Main 1]
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for March of Reckless Joy, 3 mana remaining)
+T6 P2: Cast March of Reckless Joy (2R) (X=2)
+    [Priority] P1 responds with Force of Negation
+T6 P1: Pay alternate cost: exile Subtlety for Force of Negation
+T6 P1: Cast Force of Negation (1UU)
+T6: Resolve Force of Negation
+T6: March of Reckless Joy is countered
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Living End (P1) ══════════════════════════
+║ Life: Living End 14  |  Ruby Storm 10
+║ Hand: 2 cards  |  Opp hand: 7 cards
+║ Lands: 6  |  Opp lands: 3
+║ Library: 41  |  Graveyard: 6
+║ Living End board:
+║   Creatures: Street Wraith (3/4)
+║   Lands: Overgrown Tomb, Raugrin Triome, Watery Grave, Forest, Blooming Marsh, Botanical Sanctum
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry [T], Mountain [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Curator of Mysteries
+  [Main 1]
+T7 P1: Cycle Curator of Mysteries (pay 1 mana, draw: Subtlety)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Street Wraith
+T7 P1: Attack with Street Wraith
+  [Declare Blockers] P2 does not block
+T7 P1:   Street Wraith (3/4) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 10 → 7
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 7  |  Living End 14
+║ Hand: 7 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 6
+║ Library: 45  |  Graveyard: 4
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry, Mountain, Mountain
+║ Living End board:
+║   Creatures: Street Wraith (3/4) [tapped]
+║   Lands: Overgrown Tomb, Raugrin Triome [T], Watery Grave, Forest, Blooming Marsh, Botanical Sanctum
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T7 P2: Play Arid Mesa
+T7 P2: Crack Arid Mesa -> Mountain (untapped)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Desperate Ritual, 4 mana remaining)
+T7 P2: Cast Desperate Ritual (1R)
+    [Priority] P1 passes (no response)
+T7: Resolve Desperate Ritual
+T7 P2: Desperate Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T7 P2: Cast Reckless Impulse (1R)
+    [Priority] P1 passes (no response)
+T7: Resolve Reckless Impulse
+T7 P2: Reckless Impulse → draw 2 (Glimpse the Impossible, Wish)
+    → Goal: execute_payoff [enablers]
+T7 P2: Cast Reckless Impulse (1R)
+    [Priority] P1 passes (no response)
+T7: Resolve Reckless Impulse
+T7 P2: Reckless Impulse → draw 2 (Desperate Ritual, Past in Flames)
+    → Goal: execute_payoff [enablers]
+T7 P2: Cast Desperate Ritual (1R)
+    [Priority] P1 passes (no response)
+T7: Resolve Desperate Ritual
+T7 P2: Desperate Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T7 P2: Cast Glimpse the Impossible (2R)
+    [Priority] P1 passes (no response)
+T7: Resolve Glimpse the Impossible
+T7 P2: Glimpse the Impossible → draw 3 (Bloodstained Mire, Ral, Monsoon Mage // Ral, Leyline Prodigy, Wish)
+    → Goal: execute_payoff [enablers]
+T7 P2: Cast Reckless Impulse (1R)
+    [Priority] P1 passes (no response)
+T7: Resolve Reckless Impulse
+T7 P2: Reckless Impulse → draw 2 (Reckless Impulse, Wrenn's Resolve)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Reckless Impulse, 3 mana remaining)
+T7 P2: Cast Reckless Impulse (1R)
+    [Priority] P1 passes (no response)
+T7: Resolve Reckless Impulse
+T7 P2: Reckless Impulse → draw 2 (Past in Flames, Ruby Medallion)
+    → Goal: execute_payoff
+    [Mana] Tap Mountain→R, Sacred Foundry→R (paying for Ruby Medallion, 2 mana remaining)
+T7 P2: Cast Ruby Medallion (2)
+    [Priority] P1 passes (no response)
+T7: Resolve Ruby Medallion
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+    [Mana] Tap Watery Grave→U, Botanical Sanctum→U, Forest→G, Overgrown Tomb→B (paying for Subtlety, 5 mana remaining)
+T7 P1: Cast Subtlety (2UU)
+T7: Resolve Subtlety
+T7 P1: Subtlety enters (no creature/PW spell on stack to target)
+T7: Past in Flames moved hand -> graveyard (discard to hand size)
+T7: Past in Flames moved hand -> graveyard (discard to hand size)
+T7: Bloodstained Mire moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 8 — Living End (P1) ══════════════════════════
+║ Life: Living End 14  |  Ruby Storm 6
+║ Hand: 2 cards  |  Opp hand: 7 cards
+║ Lands: 6  |  Opp lands: 4
+║ Library: 39  |  Graveyard: 7
+║ Living End board:
+║   Creatures: Street Wraith (3/4), Subtlety (3/3)
+║   Lands: Overgrown Tomb, Raugrin Triome, Watery Grave, Forest, Blooming Marsh, Botanical Sanctum
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion, Ruby Medallion
+║   Lands: Sacred Foundry [T], Mountain [T], Mountain [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T8 P1: Cast Living End (0)
+T8: Resolve Living End
+  [Draw] P1 draws: Striped Riverwinder
+  [Main 1]
+T8 P1: Cycle Striped Riverwinder (pay 1 mana, draw: Waker of Waves)
+T8 P1: Cycle Waker of Waves (pay 2 mana, draw: Subtlety)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Street Wraith, Subtlety
+T8 P1: Attack with Street Wraith, Subtlety
+  [Declare Blockers] P2 does not block
+T8 P1:   Street Wraith (3/4) → 3 dmg to player
+T8 P1:   Subtlety (3/3) → 3 dmg to player
+P2 loses: life total 0
+  [Combat Damage] 6 damage dealt → P2 life: 6 → 0
+
+>>> Living End wins Game 1 on turn 8 via damage
+    Final life: Living End=14  Ruby Storm=0
+
+======================================================================
+  GAME 2: Ruby Storm (P1) vs Living End (P2)  —  seed 60601
+  Series: Living End 1 - 0 Ruby Storm
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Living End wins → chooses to play first
+║ P1 (on play): Living End
+║ P2 (on draw): Ruby Storm
+╚═══════════════════════════════════════════════════════
+
+P1 (Ruby Storm) opening hand (1 lands, 6 spells):
+  • Grapeshot [Spell, CMC 2]
+  • Valakut Awakening // Valakut Stoneforge [Spell, CMC 3]
+  • Wooded Foothills [Land, CMC 0]
+  • Manamorphose [Spell, CMC 2]
+  • Desperate Ritual [Spell, CMC 2]
+  • Reckless Impulse [Spell, CMC 2]
+  • Manamorphose [Spell, CMC 2]
+→ P1 KEEPS 7 — has key card(s): Desperate Ritual, Manamorphose, Reckless Impulse, 6 cheap spells
+
+P2 (Living End) opening hand (1 lands, 6 spells):
+  • Striped Riverwinder [Creature, CMC 7]
+  • Living End [Spell, CMC 0]
+  • Demonic Dread [Spell, CMC 3]
+  • Striped Riverwinder [Creature, CMC 7]
+  • Demonic Dread [Spell, CMC 3]
+  • Shardless Agent [Creature, CMC 3]
+  • Swamp [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Demonic Dread, Shardless Agent, Striped Riverwinder, 4 cheap spells
+
+
+╔══ TURN 1 — Living End (P2) ══════════════════════════
+║ Life: Living End 20  |  Ruby Storm 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Swamp
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 20  |  Living End 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Swamp
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wooded Foothills
+  [Main 1]
+T1 P1: Play Wooded Foothills
+T1 P1: Crack Wooded Foothills (pay 1 life) -> Sacred Foundry (untapped, life: 17)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Living End (P2) ══════════════════════════
+║ Life: Living End 20  |  Ruby Storm 17
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Swamp
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Force of Negation
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 17  |  Living End 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 51  |  Graveyard: 1
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Swamp
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mountain
+  [Main 1]
+T2 P1: Play Wooded Foothills
+T2 P1: Crack Wooded Foothills -> Mountain (untapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Living End (P2) ══════════════════════════
+║ Life: Living End 20  |  Ruby Storm 16
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Swamp
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Shardless Agent
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T3: Striped Riverwinder moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 3 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 16  |  Living End 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 1
+║ Library: 49  |  Graveyard: 2
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Swamp
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Glimpse the Impossible
+  [Main 1]
+T3 P1: Play Mountain
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Living End (P2) ══════════════════════════
+║ Life: Living End 20  |  Ruby Storm 16
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 1
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Swamp
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Verdant Catacombs
+  [Main 1]
+T4 P2: Play Verdant Catacombs
+T4 P2: Crack Verdant Catacombs -> Ketria Triome (tapped)
+T4 P2: Ketria Triome ETB: draw 1 (Raugrin Triome)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Striped Riverwinder moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 4 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 16  |  Living End 19
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 2
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain, Mountain
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Swamp, Ketria Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arid Mesa
+  [Main 1]
+T4 P1: Play Arid Mesa
+T4 P1: Crack Arid Mesa -> Mountain (untapped)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R, Mountain→R (paying for Manamorphose, 4 mana remaining)
+T4 P1: Cast Manamorphose (2)
+    [Priority] P2 responds with Force of Negation
+T4 P2: Pay alternate cost: exile Raugrin Triome for Force of Negation
+T4 P2: Cast Force of Negation (1UU)
+T4: Resolve Force of Negation
+T4: Manamorphose is countered
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Living End (P2) ══════════════════════════
+║ Life: Living End 19  |  Ruby Storm 15
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 4
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Swamp, Ketria Triome
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain [T], Mountain [T], Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Architects of Will
+  [Main 1]
+T5 P2: Cycle Architects of Will (pay 0 mana, draw: Demonic Dread)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 15  |  Living End 19
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 2
+║ Library: 46  |  Graveyard: 4
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain, Mountain, Mountain
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Swamp, Ketria Triome
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Pyretic Ritual
+  [Main 1]
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R, Mountain→R (paying for Desperate Ritual, 4 mana remaining)
+T5 P1: Cast Desperate Ritual (1R)
+    [Priority] P2 passes (no response)
+T5: Resolve Desperate Ritual
+T5 P1: Desperate Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T5 P1: Cast Reckless Impulse (1R)
+    [Priority] P2 passes (no response)
+T5: Resolve Reckless Impulse
+T5 P1: Reckless Impulse → draw 2 (Pyretic Ritual, Desperate Ritual)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Living End (P2) ══════════════════════════
+║ Life: Living End 19  |  Ruby Storm 15
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 5
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Swamp, Ketria Triome
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain [T], Mountain [T], Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Breeding Pool
+  [Main 1]
+T6 P2: Play Breeding Pool (tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 15  |  Living End 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 43  |  Graveyard: 6
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain, Mountain, Mountain
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Swamp, Ketria Triome, Breeding Pool [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mountain
+  [Main 1]
+T6 P1: Play Mountain
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R, Mountain→R (paying for Pyretic Ritual, 5 mana remaining)
+T6 P1: Cast Pyretic Ritual (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Pyretic Ritual
+T6 P1: Pyretic Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T6 P1: Cast Valakut Awakening // Valakut Stoneforge (2R)
+    [Priority] P2 passes (no response)
+T6: Resolve Valakut Awakening // Valakut Stoneforge
+    → Goal: execute_payoff
+    [Mana] Tap Mountain→R, Mountain→R (paying for Ral, Monsoon Mage // Ral, Leyline Prodigy, 3 mana remaining)
+T6 P1: Cast Ral, Monsoon Mage // Ral, Leyline Prodigy (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Ral, Monsoon Mage // Ral, Leyline Prodigy
+T6 P1: Ral, Monsoon Mage enters — instants/sorceries cost {1} less
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Pyretic Ritual, 1 mana remaining)
+T6 P1: Cast Pyretic Ritual (1R)
+T6 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy — lost coin flip, takes 1 damage
+    [Priority] P2 passes (no response)
+T6: Resolve Pyretic Ritual
+T6 P1: Pyretic Ritual adds 3 R mana
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Living End (P2) ══════════════════════════
+║ Life: Living End 19  |  Ruby Storm 14
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 5
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Swamp, Ketria Triome, Breeding Pool
+║ Ruby Storm board:
+║   Creatures: Ral, Monsoon Mage // Ral, Leyline Prodigy (1/3)
+║   Lands: Sacred Foundry [T], Mountain [T], Mountain [T], Mountain [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Street Wraith
+  [Main 1]
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Breeding Pool→U, Ketria Triome→G, Swamp→B (paying for Shardless Agent, 3 mana remaining)
+T7 P2: Cast Shardless Agent (1UG)
+    [Priority] P1 passes (no response)
+T7: Resolve Shardless Agent
+T7: Cascade (CMC < 3)
+T7: Cascade hits Living End
+T7: Living End resolves!
+T7: Living End returns Striped Riverwinder for P2
+T7: Living End returns Striped Riverwinder for P2
+T7 P2: Architects of Will ETB: draw 1 (Street Wraith)
+T7: Living End returns Architects of Will for P2
+T7 P2: Cycle Street Wraith (pay 2 life, draw: Force of Negation)
+T7 P2: Cycle Street Wraith (pay 2 life, draw: Forest)
+T7 P2: Play Forest
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 14  |  Living End 15
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 40  |  Graveyard: 9
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain, Mountain, Mountain, Mountain
+║ Living End board:
+║   Creatures: Striped Riverwinder (5/5), Striped Riverwinder (5/5), Architects of Will (3/3)
+║   Lands: Swamp [T], Ketria Triome [T], Breeding Pool [T], Forest
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Sunbaked Canyon
+  [Main 1]
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R, Mountain→R, Mountain→R (paying for Glimpse the Impossible, 5 mana remaining)
+T7 P1: Cast Glimpse the Impossible (2R)
+    [Priority] P2 passes (no response)
+T7: Resolve Glimpse the Impossible
+T7 P1: Glimpse the Impossible → draw 3 (Wrenn's Resolve, Ral, Monsoon Mage // Ral, Leyline Prodigy, Grapeshot)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R, Sacred Foundry→R (paying for Desperate Ritual, 2 mana remaining)
+T7 P1: Cast Desperate Ritual (1R)
+    [Priority] P2 passes (no response)
+T7: Resolve Desperate Ritual
+T7 P1: Desperate Ritual adds 3 R mana
+    → Goal: execute_payoff
+T7 P1: Cast Ral, Monsoon Mage // Ral, Leyline Prodigy (1R)
+    [Priority] P2 passes (no response)
+T7: Resolve Ral, Monsoon Mage // Ral, Leyline Prodigy
+T7 P1: Ral, Monsoon Mage enters — instants/sorceries cost {1} less
+    → Goal: execute_payoff [enablers]
+T7 P1: Cast Manamorphose (2)
+T7 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy — won coin flip!
+T7 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy transforms! (loyalty: 6) [+4 extra]
+T7 P1: Ral, Monsoon Mage enters — instants/sorceries cost {1} less
+    [Priority] P2 responds with Force of Negation
+T7 P2: Pay alternate cost: exile Shardless Agent for Force of Negation
+T7 P2: Cast Force of Negation (1UU)
+T7: Resolve Force of Negation
+T7: Manamorphose is countered
+T7 P1: Play Sunbaked Canyon
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Sunbaked Canyon→R (paying for Manamorphose, 1 mana remaining)
+T7 P1: Cast Manamorphose (2)
+    [Priority] P2 passes (no response)
+T7: Resolve Manamorphose
+T7 P1: Manamorphose adds 2 any mana
+    → Goal: execute_payoff [enablers]
+T7 P1: Cast Wrenn's Resolve (1R)
+    [Priority] P2 passes (no response)
+T7: Resolve Wrenn's Resolve
+T7 P1: Wrenn's Resolve → draw 2 (Elegant Parlor, Reckless Impulse)
+    → Goal: execute_payoff [enablers]
+T7 P1: Cast Reckless Impulse (1R)
+    [Priority] P2 passes (no response)
+T7: Resolve Reckless Impulse
+T7 P1: Reckless Impulse → draw 2 (Ruby Medallion, Manamorphose)
+T7 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy [+1] -> Until your next turn, instant and sorcery spells you cast cost {1} less to cast
+T7 P1: Activate Sunbaked Canyon (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Living End (P2) ══════════════════════════
+║ Life: Living End 15  |  Ruby Storm 14
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 40  |  Graveyard: 6
+║ Living End board:
+║   Creatures: Striped Riverwinder (5/5), Striped Riverwinder (5/5), Architects of Will (3/3)
+║   Lands: Swamp, Ketria Triome, Breeding Pool, Forest
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Mountain [T], Mountain [T], Mountain [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Subtlety
+  [Main 1]
+    → Goal: push_damage
+    [Mana] Tap Swamp→B, Ketria Triome→R, Forest→G (paying for Demonic Dread, 4 mana remaining)
+T8 P2: Cast Demonic Dread (1BR)
+    [Priority] P1 passes (no response)
+T8: Resolve Demonic Dread
+T8: Cascade (CMC < 3)
+T8: Cascade hits Living End
+T8: Living End resolves!
+T8: Living End returns Street Wraith for P2
+T8: Living End returns Street Wraith for P2
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 14  |  Living End 15
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 30  |  Graveyard: 16
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain, Mountain, Mountain, Mountain
+║ Living End board:
+║   Creatures: Street Wraith (3/4), Street Wraith (3/4)
+║   Lands: Swamp [T], Ketria Triome [T], Breeding Pool, Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Desperate Ritual
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Mountain→R, Mountain→R (paying for Ruby Medallion, 5 mana remaining)
+T8 P1: Cast Ruby Medallion (2)
+    [Priority] P2 passes (no response)
+T8: Resolve Ruby Medallion
+    → Goal: execute_payoff
+    [Mana] Tap Mountain→R, Mountain→R (paying for Ruby Medallion, 3 mana remaining)
+T8 P1: Cast Ruby Medallion (2)
+    [Priority] P2 passes (no response)
+T8: Resolve Ruby Medallion
+T8 P1: Play Elegant Parlor (enters tapped)
+    → Goal: execute_payoff [enablers]
+T8 P1: Cast Manamorphose (2)
+    [Priority] P2 passes (no response)
+T8: Resolve Manamorphose
+T8 P1: Manamorphose adds 2 any mana
+    → Goal: execute_payoff [enablers]
+T8 P1: Cast March of Reckless Joy (2R) (X=2)
+    [Priority] P2 passes (no response)
+T8: Resolve March of Reckless Joy
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Living End (P2) ══════════════════════════
+║ Life: Living End 15  |  Ruby Storm 14
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 38  |  Graveyard: 6
+║ Living End board:
+║   Creatures: Street Wraith (3/4), Street Wraith (3/4)
+║   Lands: Swamp, Ketria Triome, Breeding Pool, Forest
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion, Ruby Medallion
+║   Lands: Sacred Foundry [T], Mountain [T], Mountain [T], Mountain [T], Mountain [T], Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Demonic Dread
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Street Wraith, Street Wraith
+T9 P2: Attack with Street Wraith, Street Wraith
+  [Declare Blockers] P1 does not block
+T9 P2:   Street Wraith (3/4) → 3 dmg to player
+T9 P2:   Street Wraith (3/4) → 3 dmg to player
+  [Combat Damage] 6 damage dealt → P1 life: 14 → 8
+  [End Combat]
+  [Main 2]
+    → Goal: push_damage
+    [Mana] Tap Breeding Pool→U, Ketria Triome→U, Swamp→B, Forest→G (paying for Subtlety, 4 mana remaining)
+T9 P2: Cast Subtlety (2UU)
+    [Priority] P1 passes (no response)
+T9: Resolve Subtlety
+T9 P2: Subtlety enters (no creature/PW spell on stack to target)
+  [End Step]
+
+╔══ TURN 9 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 8  |  Living End 15
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 6  |  Opp lands: 4
+║ Library: 26  |  Graveyard: 18
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion, Ruby Medallion
+║   Lands: Sacred Foundry, Mountain, Mountain, Mountain, Mountain, Elegant Parlor
+║ Living End board:
+║   Creatures: Street Wraith (3/4) [tapped], Street Wraith (3/4) [tapped], Subtlety (3/3)
+║   Lands: Swamp [T], Ketria Triome [T], Breeding Pool [T], Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wrenn's Resolve
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Mountain→R, Mountain→R (paying for Ruby Medallion, 6 mana remaining)
+T9 P1: Cast Ruby Medallion (2)
+    [Priority] P2 passes (no response)
+T9: Resolve Ruby Medallion
+T9 P1: Play Gemstone Caverns
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Wrenn's Resolve, 5 mana remaining)
+T9 P1: Cast Wrenn's Resolve (1R)
+    [Priority] P2 passes (no response)
+T9: Resolve Wrenn's Resolve
+T9 P1: Wrenn's Resolve → draw 2 (Wrenn's Resolve, Reckless Impulse)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Desperate Ritual, 4 mana remaining)
+T9 P1: Cast Desperate Ritual (1R)
+    [Priority] P2 passes (no response)
+T9: Resolve Desperate Ritual
+T9 P1: Desperate Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T9 P1: Cast Wrenn's Resolve (1R)
+    [Priority] P2 passes (no response)
+T9: Resolve Wrenn's Resolve
+T9 P1: Wrenn's Resolve → draw 2 (Desperate Ritual, Ral, Monsoon Mage // Ral, Leyline Prodigy)
+    → Goal: execute_payoff
+T9 P1: Cast Ral, Monsoon Mage // Ral, Leyline Prodigy (1R)
+    [Priority] P2 passes (no response)
+T9: Resolve Ral, Monsoon Mage // Ral, Leyline Prodigy
+T9 P1: Ral, Monsoon Mage enters — instants/sorceries cost {1} less
+    → Goal: execute_payoff [enablers]
+T9 P1: Cast Reckless Impulse (1R)
+T9 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy — lost coin flip, takes 1 damage
+    [Priority] P2 passes (no response)
+T9: Resolve Reckless Impulse
+T9 P1: Reckless Impulse → draw 2 (Scalding Tarn, Ral, Monsoon Mage // Ral, Leyline Prodigy)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Desperate Ritual, 3 mana remaining)
+T9 P1: Cast Desperate Ritual (1R)
+T9 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy — lost coin flip, takes 1 damage
+    [Priority] P2 passes (no response)
+T9: Resolve Desperate Ritual
+T9 P1: Desperate Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T9 P1: Cast Wish (2R)
+T9 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy — won coin flip!
+T9 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy transforms! (loyalty: 10) [+8 extra]
+T9 P1: Ral, Monsoon Mage enters — instants/sorceries cost {1} less
+    [Priority] P2 passes (no response)
+T9: Resolve Wish
+T9 P1: Wish finds Past in Flames (from sideboard)
+    → Goal: execute_payoff [payoffs]
+T9 P1: Cast Grapeshot (1R)
+    [Priority] P2 passes (no response)
+T9: Resolve Grapeshot
+T9 P1: Grapeshot deals 1 damage (opponent life: 14)
+T9: Storm copies: 8
+T9 P1: Grapeshot deals 1 damage (opponent life: 13)
+T9 P1: Grapeshot deals 1 damage (opponent life: 12)
+T9 P1: Grapeshot deals 1 damage (opponent life: 11)
+T9 P1: Grapeshot deals 1 damage (opponent life: 10)
+T9 P1: Grapeshot deals 1 damage (opponent life: 9)
+T9 P1: Grapeshot deals 1 damage (opponent life: 8)
+T9 P1: Grapeshot deals 1 damage (opponent life: 7)
+T9 P1: Grapeshot deals 1 damage (opponent life: 6)
+    → Goal: execute_payoff [payoffs]
+T9 P1: Cast Grapeshot (1R)
+    [Priority] P2 passes (no response)
+T9: Resolve Grapeshot
+T9 P1: Grapeshot deals 1 damage (opponent life: 5)
+T9: Storm copies: 9
+T9 P1: Grapeshot deals 1 damage (opponent life: 4)
+T9 P1: Grapeshot deals 1 damage (opponent life: 3)
+T9 P1: Grapeshot deals 1 damage (opponent life: 2)
+T9 P1: Grapeshot deals 1 damage (opponent life: 1)
+T9 P1: Grapeshot deals 1 damage (opponent life: 0)
+T9 P1: Grapeshot deals 1 damage (opponent life: -1)
+T9 P1: Grapeshot deals 1 damage (opponent life: -2)
+T9 P1: Grapeshot deals 1 damage (opponent life: -3)
+T9 P1: Grapeshot deals 1 damage (opponent life: -4)
+P2 loses: life total -4
+
+>>> Ruby Storm wins Game 2 on turn 9 via damage
+    Final life: Ruby Storm=6  Living End=-4
+
+======================================================================
+  GAME 3: Living End (P1) vs Ruby Storm (P2)  —  seed 60602
+  Series: Living End 1 - 1 Ruby Storm
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Living End wins → chooses to play first
+║ P1 (on play): Living End
+║ P2 (on draw): Ruby Storm
+╚═══════════════════════════════════════════════════════
+
+P1 (Living End) opening hand (3 lands, 4 spells):
+  • Architects of Will [Creature, CMC 4]
+  • Living End [Spell, CMC 0]
+  • Misty Rainforest [Land, CMC 0]
+  • Striped Riverwinder [Creature, CMC 7]
+  • Subtlety [Creature, CMC 4]
+  • Verdant Catacombs [Land, CMC 0]
+  • Ketria Triome [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Architects of Will, Striped Riverwinder, 1 cheap spells
+
+P2 (Ruby Storm) opening hand (3 lands, 4 spells):
+  • Wrenn's Resolve [Spell, CMC 2]
+  • Elegant Parlor [Land, CMC 0]
+  • Wrenn's Resolve [Spell, CMC 2]
+  • Scalding Tarn [Land, CMC 0]
+  • Desperate Ritual [Spell, CMC 2]
+  • Pyretic Ritual [Spell, CMC 2]
+  • Wooded Foothills [Land, CMC 0]
+→ P2 MULLIGANS (no cost reducer and no ritual+cantrip+finisher backup)
+  New hand (4 lands, 3 spells): ['Valakut Awakening // Valakut Stoneforge', 'Elegant Parlor', 'Gemstone Caverns', 'Arid Mesa', 'Elegant Parlor', 'Desperate Ritual', 'Pyretic Ritual']
+→ P2 MULLIGANS (too many lands (4 > 3))
+  New hand (2 lands, 5 spells): ['Pyretic Ritual', 'Grapeshot', 'Past in Flames', 'Mountain', 'Ruby Medallion', 'Scalding Tarn', 'Pyretic Ritual']
+→ P2 mulligans to 5, bottoms: ['Scalding Tarn', 'Pyretic Ritual']
+  Keeps: ['Grapeshot', 'Past in Flames', 'Mountain', 'Ruby Medallion', 'Pyretic Ritual']
+
+
+╔══ TURN 1 — Living End (P1) ══════════════════════════
+║ Life: Living End 20  |  Ruby Storm 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Misty Rainforest
+T1 P1: Crack Misty Rainforest (pay 1 life) -> Watery Grave (untapped, life: 17)
+T1 P1: Cycle Striped Riverwinder (pay 1 mana, draw: Misty Rainforest)
+T1 P1: Cycle Architects of Will (pay 0 mana, draw: Botanical Sanctum)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 20  |  Living End 17
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 55  |  Graveyard: 0
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ral, Monsoon Mage // Ral, Leyline Prodigy
+  [Main 1]
+T1 P2: Play Mountain
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Living End (P1) ══════════════════════════
+║ Life: Living End 17  |  Ruby Storm 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 50  |  Graveyard: 3
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Misty Rainforest
+  [Main 1]
+T2 P1: Play Verdant Catacombs
+T2 P1: Crack Verdant Catacombs (pay 1 life) -> Breeding Pool (tapped, life: 16)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 20  |  Living End 16
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 54  |  Graveyard: 0
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Mountain
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Breeding Pool [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Desperate Ritual
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Living End (P1) ══════════════════════════
+║ Life: Living End 16  |  Ruby Storm 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 1
+║ Library: 48  |  Graveyard: 4
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Breeding Pool
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Demonic Dread
+  [Main 1]
+T3 P1: Play Misty Rainforest
+T3 P1: Crack Misty Rainforest -> Raugrin Triome (tapped)
+T3 P1: Raugrin Triome ETB: draw 1 (Island)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 20  |  Living End 15
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 3
+║ Library: 53  |  Graveyard: 0
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Mountain
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Breeding Pool, Raugrin Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ruby Medallion
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Living End (P1) ══════════════════════════
+║ Life: Living End 15  |  Ruby Storm 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 1
+║ Library: 45  |  Graveyard: 5
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Breeding Pool, Raugrin Triome
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Architects of Will
+  [Main 1]
+T4 P1: Cycle Architects of Will (pay 0 mana, draw: Curator of Mysteries)
+T4 P1: Cycle Curator of Mysteries (pay 1 mana, draw: Force of Vigor)
+T4 P1: Play Misty Rainforest
+T4 P1: Crack Misty Rainforest (pay 1 life) -> Overgrown Tomb (tapped, life: 14)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 20  |  Living End 14
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 4
+║ Library: 52  |  Graveyard: 0
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Mountain
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Breeding Pool, Raugrin Triome, Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Pyretic Ritual
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Past in Flames moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 5 — Living End (P1) ══════════════════════════
+║ Life: Living End 14  |  Ruby Storm 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 1
+║ Library: 41  |  Graveyard: 8
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Breeding Pool, Raugrin Triome, Overgrown Tomb
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Forest
+  [Main 1]
+T5 P1: Cycle Ketria Triome (pay 3 mana, draw: Shardless Agent)
+T5 P1: Play Island
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 20  |  Living End 14
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 5
+║ Library: 51  |  Graveyard: 1
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Mountain
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Breeding Pool [T], Raugrin Triome [T], Overgrown Tomb, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Reckless Impulse
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Pyretic Ritual moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 6 — Living End (P1) ══════════════════════════
+║ Life: Living End 14  |  Ruby Storm 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 5  |  Opp lands: 1
+║ Library: 39  |  Graveyard: 9
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Breeding Pool, Raugrin Triome, Overgrown Tomb, Island
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Blooming Marsh
+  [Main 1]
+T6 P1: Play Forest
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Forest→G, Island→U, Watery Grave→B (paying for Shardless Agent, 6 mana remaining)
+T6 P1: Cast Shardless Agent (1UG)
+    [Priority] P2 passes (no response)
+T6: Resolve Shardless Agent
+T6: Cascade (CMC < 3)
+T6: Cascade hits Living End
+T6: Living End resolves!
+T6: Living End returns Striped Riverwinder for P1
+T6 P1: Architects of Will ETB: draw 1 (Demonic Dread)
+T6: Living End returns Architects of Will for P1
+T6 P1: Architects of Will ETB: draw 1 (Striped Riverwinder)
+T6: Living End returns Architects of Will for P1
+T6: Living End returns Curator of Mysteries for P1
+T6 P1: Cycle Striped Riverwinder (pay 1 mana, draw: Waker of Waves)
+T6 P1: Cycle Waker of Waves (pay 2 mana, draw: Living End)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T6: Botanical Sanctum moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 6 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 20  |  Living End 14
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 6
+║ Library: 50  |  Graveyard: 2
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Mountain
+║ Living End board:
+║   Creatures: Striped Riverwinder (5/5), Architects of Will (3/3), Architects of Will (3/3), Curator of Mysteries (4/4)
+║   Lands: Watery Grave [T], Breeding Pool [T], Raugrin Triome [T], Overgrown Tomb [T], Island [T], Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Elegant Parlor
+  [Main 1]
+T6 P2: Play Elegant Parlor (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Living End (P1) ══════════════════════════
+║ Life: Living End 14  |  Ruby Storm 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 6  |  Opp lands: 2
+║ Library: 33  |  Graveyard: 9
+║ Living End board:
+║   Creatures: Striped Riverwinder (5/5), Architects of Will (3/3), Architects of Will (3/3), Curator of Mysteries (4/4)
+║   Lands: Watery Grave, Breeding Pool, Raugrin Triome, Overgrown Tomb, Island, Forest
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Mountain, Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Force of Negation
+  [Main 1]
+T7 P1: Play Blooming Marsh (tapped, 6 other lands)
+    → Goal: push_damage
+    [Mana] Tap Raugrin Triome→R, Watery Grave→B, Island→U (paying for Demonic Dread, 6 mana remaining)
+T7 P1: Cast Demonic Dread (1BR)
+    [Priority] P2 passes (no response)
+T7: Resolve Demonic Dread
+T7: Cascade (CMC < 3)
+T7: Cascade hits Living End
+T7: Living End resolves!
+T7: Living End returns Striped Riverwinder for P1
+T7 P1: Waker of Waves ETB: draw 1 (Street Wraith)
+T7: Living End returns Waker of Waves for P1
+T7 P1: Cycle Street Wraith (pay 2 life, draw: Architects of Will)
+T7 P1: Cycle Architects of Will (pay 0 mana, draw: Verdant Catacombs)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 20  |  Living End 12
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 7
+║ Library: 49  |  Graveyard: 2
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Mountain, Elegant Parlor
+║ Living End board:
+║   Creatures: Striped Riverwinder (5/5), Waker of Waves (7/7)
+║   Lands: Watery Grave [T], Breeding Pool, Raugrin Triome [T], Overgrown Tomb, Island [T], Forest, Blooming Marsh [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Reckless Impulse
+  [Main 1]
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R, Elegant Parlor→R (paying for Reckless Impulse, 2 mana remaining)
+T7 P2: Cast Reckless Impulse (1R)
+    [Priority] P1 passes (no response)
+T7: Resolve Reckless Impulse
+T7 P2: Reckless Impulse → draw 2 (Ruby Medallion, Wish)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T7: Ral, Monsoon Mage // Ral, Leyline Prodigy moved hand -> graveyard (discard to hand size)
+T7: Desperate Ritual moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 8 — Living End (P1) ══════════════════════════
+║ Life: Living End 12  |  Ruby Storm 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 7  |  Opp lands: 2
+║ Library: 28  |  Graveyard: 11
+║ Living End board:
+║   Creatures: Striped Riverwinder (5/5), Waker of Waves (7/7)
+║   Lands: Watery Grave, Breeding Pool, Raugrin Triome, Overgrown Tomb, Island, Forest, Blooming Marsh
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Mountain [T], Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Swamp
+  [Main 1]
+T8 P1: Play Verdant Catacombs
+T8 P1: Crack Verdant Catacombs (pay 1 life) -> Blood Crypt (tapped, life: 11)
+    → Goal: push_damage
+    [Mana] Tap Island→U, Watery Grave→U, Forest→G, Breeding Pool→G (paying for Subtlety, 7 mana remaining)
+T8 P1: Cast Subtlety (2UU)
+    [Priority] P2 passes (no response)
+T8: Resolve Subtlety
+T8 P1: Subtlety enters (no creature/PW spell on stack to target)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Striped Riverwinder, Waker of Waves
+T8 P1: Attack with Striped Riverwinder, Waker of Waves
+  [Declare Blockers] P2 does not block
+T8 P1:   Striped Riverwinder (5/5) → 5 dmg to player
+T8 P1:   Waker of Waves (7/7) → 7 dmg to player
+  [Combat Damage] 12 damage dealt → P2 life: 20 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 8  |  Living End 11
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 8
+║ Library: 46  |  Graveyard: 5
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Mountain, Elegant Parlor
+║ Living End board:
+║   Creatures: Striped Riverwinder (5/5) [tapped], Waker of Waves (7/7) [tapped], Subtlety (3/3)
+║   Lands: Watery Grave [T], Breeding Pool [T], Raugrin Triome, Overgrown Tomb, Island [T], Forest [T], Blooming Marsh, Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Valakut Awakening // Valakut Stoneforge
+  [Main 1]
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R, Elegant Parlor→R (paying for Reckless Impulse, 2 mana remaining)
+T8 P2: Cast Reckless Impulse (1R)
+    [Priority] P1 passes (no response)
+T8: Resolve Reckless Impulse
+T8 P2: Reckless Impulse → draw 2 (Manamorphose, Arid Mesa)
+T8 P2: Play Arid Mesa
+T8 P2: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (untapped, life: 5)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T8: Pyretic Ritual moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 9 — Living End (P1) ══════════════════════════
+║ Life: Living End 11  |  Ruby Storm 5
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 8  |  Opp lands: 3
+║ Library: 26  |  Graveyard: 12
+║ Living End board:
+║   Creatures: Striped Riverwinder (5/5), Waker of Waves (7/7), Subtlety (3/3)
+║   Lands: Watery Grave, Breeding Pool, Raugrin Triome, Overgrown Tomb, Island, Forest, Blooming Marsh, Blood Crypt
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Mountain [T], Elegant Parlor [T], Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Waker of Waves
+  [Main 1]
+T9 P1: Cycle Waker of Waves (pay 2 mana, draw: Demonic Dread)
+T9 P1: Play Swamp
+    [Mana] Tap Swamp→B, Overgrown Tomb→B, Island→U, Forest→G (paying for Living End, 7 mana remaining)
+T9 P1: Suspend Living End (3 time counters)
+    → Goal: push_damage
+    [Mana] Tap Blooming Marsh→B, Blood Crypt→R, Raugrin Triome→R (paying for Demonic Dread, 3 mana remaining)
+T9 P1: Cast Demonic Dread (1BR)
+    [Priority] P2 passes (no response)
+T9: Resolve Demonic Dread
+T9: Cascade (CMC < 3)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Striped Riverwinder, Waker of Waves, Subtlety
+T9 P1: Attack with Striped Riverwinder, Waker of Waves, Subtlety
+  [Declare Blockers] P2 does not block
+T9 P1:   Striped Riverwinder (5/5) → 5 dmg to player
+T9 P1:   Waker of Waves (7/7) → 7 dmg to player
+T9 P1:   Subtlety (3/3) → 3 dmg to player
+P2 loses: life total -10
+  [Combat Damage] 15 damage dealt → P2 life: 5 → -10
+
+>>> Living End wins Game 3 on turn 9 via damage
+    Final life: Living End=11  Ruby Storm=-10
+
+======================================================================
+  MATCH RESULT: Living End wins 2-1
+======================================================================

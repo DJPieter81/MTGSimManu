@@ -1,0 +1,865 @@
+Loaded 21759 cards (0 errors)
+Loaded 21759 cards (0 errors)
+  Sideboard (Boros Energy vs Living End): +1 Surgical Extraction, -1 Galvanic Discharge
+======================================================================
+  GAME 1: Living End (P1) vs Boros Energy (P2)  —  seed 60600
+  Series: Living End 0 - 0 Boros Energy
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Living End wins → chooses to play first
+║ P1 (on play): Living End
+║ P2 (on draw): Boros Energy
+╚═══════════════════════════════════════════════════════
+
+P1 (Living End) opening hand (3 lands, 4 spells):
+  • Demonic Dread [Spell, CMC 3]
+  • Living End [Spell, CMC 0]
+  • Street Wraith [Creature, CMC 5]
+  • Misty Rainforest [Land, CMC 0]
+  • Overgrown Tomb [Land, CMC 0]
+  • Blooming Marsh [Land, CMC 0]
+  • Demonic Dread [Spell, CMC 3]
+→ P1 KEEPS 7 — has key card(s): Demonic Dread, Street Wraith, 3 cheap spells
+
+P2 (Boros Energy) opening hand (4 lands, 3 spells):
+  • Arena of Glory [Land, CMC 0]
+  • Windswept Heath [Land, CMC 0]
+  • Arena of Glory [Land, CMC 0]
+  • Guide of Souls [Creature, CMC 1]
+  • Ajani, Nacatl Pariah // Ajani, Nacatl Avenger [Creature, CMC 2]
+  • Arid Mesa [Land, CMC 0]
+  • Seasoned Pyromancer [Creature, CMC 3]
+→ P2 KEEPS 7 — has key card(s): Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Guide of Souls, 3 cheap spells
+
+
+╔══ TURN 1 — Living End (P1) ══════════════════════════
+║ Life: Living End 20  |  Boros Energy 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Cycle Street Wraith (pay 2 life, draw: Misty Rainforest)
+T1 P1: Play Overgrown Tomb (tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Living End 18
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Seasoned Pyromancer
+  [Main 1]
+T1 P2: Play Arid Mesa
+T1 P2: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Living End (P1) ══════════════════════════
+║ Life: Living End 18  |  Boros Energy 19
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Forest
+  [Main 1]
+T2 P1: Play Misty Rainforest
+T2 P1: Crack Misty Rainforest -> Raugrin Triome (tapped)
+T2 P1: Raugrin Triome ETB: draw 1 (Botanical Sanctum)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Living End 17
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb, Raugrin Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ocelot Pride
+  [Main 1]
+T2 P2: Play Windswept Heath
+T2 P2: Crack Windswept Heath (pay 1 life) -> Sacred Foundry (tapped, life: 18)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Guide of Souls, 1 mana remaining)
+T2 P2: Cast Guide of Souls (W)
+    [Priority] P1 passes (no response)
+T2: Resolve Guide of Souls
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Living End (P1) ══════════════════════════
+║ Life: Living End 17  |  Boros Energy 18
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 2
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb, Raugrin Triome
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Living End
+  [Main 1]
+T3 P1: Play Misty Rainforest
+T3 P1: Crack Misty Rainforest (pay 1 life) -> Watery Grave (tapped, life: 16)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 18  |  Living End 16
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb, Raugrin Triome, Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wear // Tear
+  [Main 1]
+T3 P2: Play Arena of Glory (enters tapped)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 2 mana remaining)
+T3 P2: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P1 passes (no response)
+T3: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T3 P2: Create 1x Cat token(s)
+T3 P2: Ajani creates 2/1 Cat Warrior token
+T3 P2: Gain 1 life from Guide of Souls (life: 19)
+T3 P2: +1 energy from Guide of Souls (total: 1)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Guide of Souls
+T3 P2: Attack with Guide of Souls
+  [Declare Blockers] P1 does not block
+T3 P2:   Guide of Souls (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 16 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Living End (P1) ══════════════════════════
+║ Life: Living End 15  |  Boros Energy 19
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 3
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb, Raugrin Triome, Watery Grave
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Shardless Agent
+  [Main 1]
+T4 P1: Play Forest
+    → Goal: fill_resource [payoffs]
+    [Mana] Tap Watery Grave→U, Forest→G, Overgrown Tomb→B (paying for Shardless Agent, 4 mana remaining)
+T4 P1: Cast Shardless Agent (1UG)
+    [Priority] P2 passes (no response)
+T4: Resolve Shardless Agent
+T4: Cascade (CMC < 3)
+T4: Cascade hits Living End
+T4: Living End resolves!
+T4: Living End returns Street Wraith for P1
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Living End 15
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry, Arena of Glory
+║ Living End board:
+║   Creatures: Street Wraith (3/4)
+║   Lands: Overgrown Tomb [T], Raugrin Triome, Watery Grave [T], Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Elegant Parlor
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Arena of Glory→R, Sacred Foundry→R, Sacred Foundry→R (paying for Seasoned Pyromancer, 3 mana remaining)
+T4 P2: Cast Seasoned Pyromancer (1RR)
+    [Priority] P1 passes (no response)
+T4: Resolve Seasoned Pyromancer
+T4 P2: Seasoned Pyromancer: discard 2, draw 2 (Seasoned Pyromancer, Phlage, Titan of Fire's Fury) (no nonland discards)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Living End (P1) ══════════════════════════
+║ Life: Living End 15  |  Boros Energy 19
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 45  |  Graveyard: 3
+║ Living End board:
+║   Creatures: Street Wraith (3/4)
+║   Lands: Overgrown Tomb, Raugrin Triome, Watery Grave, Forest
+║ Boros Energy board:
+║   Creatures: Seasoned Pyromancer (2/2)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Subtlety
+  [Main 1]
+T5 P1: Play Blooming Marsh (tapped, 4 other lands)
+    [Mana] Tap Overgrown Tomb→B, Watery Grave→B, Forest→G, Raugrin Triome→R (paying for Living End, 4 mana remaining)
+T5 P1: Suspend Living End (3 time counters)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Street Wraith
+T5 P1: Attack with Street Wraith
+  [Declare Blockers] P2 does not block
+T5 P1:   Street Wraith (3/4) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 19 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 16  |  Living End 15
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 4
+║ Boros Energy board:
+║   Creatures: Seasoned Pyromancer (2/2)
+║   Lands: Sacred Foundry, Sacred Foundry, Arena of Glory
+║ Living End board:
+║   Creatures: Street Wraith (3/4) [tapped]
+║   Lands: Overgrown Tomb [T], Raugrin Triome [T], Watery Grave [T], Forest [T], Blooming Marsh [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Windswept Heath
+  [Main 1]
+    → Goal: curve_out
+    [Target] → face (3 dmg, life 15 → 12): no killable target
+    [Mana] Tap Sacred Foundry→W, Arena of Glory→R, Sacred Foundry→R (paying for Phlage, Titan of Fire's Fury, 3 mana remaining)
+T5 P2: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P1 passes (no response)
+T5: Resolve Phlage, Titan of Fire's Fury
+T5 P2: Phlage: 3 damage to opponent, gain 3 life
+T5 P2: Phlage sacrificed (not escaped)
+T5 P2: Play Windswept Heath
+T5 P2: Crack Windswept Heath (pay 1 life) -> Sacred Foundry (tapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Seasoned Pyromancer
+T5 P2: Attack with Seasoned Pyromancer
+  [Declare Blockers] P1 does not block
+T5 P2:   Seasoned Pyromancer (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 12 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Living End (P1) ══════════════════════════
+║ Life: Living End 10  |  Boros Energy 18
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 44  |  Graveyard: 3
+║ Living End board:
+║   Creatures: Street Wraith (3/4)
+║   Lands: Overgrown Tomb, Raugrin Triome, Watery Grave, Forest, Blooming Marsh
+║ Boros Energy board:
+║   Creatures: Seasoned Pyromancer (2/2) [tapped]
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Arena of Glory [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Street Wraith
+  [Main 1]
+T6 P1: Cycle Street Wraith (pay 2 life, draw: Striped Riverwinder)
+T6 P1: Cycle Striped Riverwinder (pay 1 mana, draw: Force of Negation)
+T6 P1: Play Botanical Sanctum (tapped, 5 other lands)
+    [Mana] Tap Overgrown Tomb→B, Watery Grave→B, Forest→G, Blooming Marsh→B (paying for Living End, 4 mana remaining)
+T6 P1: Suspend Living End (3 time counters)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Street Wraith
+T6 P1: Attack with Street Wraith
+  [Declare Blockers] P2 does not block
+T6 P1:   Street Wraith (3/4) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 18 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 15  |  Living End 8
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 43  |  Graveyard: 6
+║ Boros Energy board:
+║   Creatures: Seasoned Pyromancer (2/2)
+║   Lands: Sacred Foundry, Sacred Foundry, Arena of Glory, Sacred Foundry
+║ Living End board:
+║   Creatures: Street Wraith (3/4) [tapped]
+║   Lands: Overgrown Tomb [T], Raugrin Triome [T], Watery Grave [T], Forest [T], Blooming Marsh [T], Botanical Sanctum [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Galvanic Discharge
+  [Main 1]
+    → Goal: curve_out
+    [Target] → face (3 dmg, life 8 → 5): opponent low life
+T6 P2: Escape Phlage, Titan of Fire's Fury (exile 5 cards)
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→W, Arena of Glory→R, Sacred Foundry→R (paying for Phlage, Titan of Fire's Fury, 4 mana remaining)
+T6 P2: Cast Phlage, Titan of Fire's Fury (1WR)
+    [Priority] P1 passes (no response)
+T6: Resolve Phlage, Titan of Fire's Fury
+T6 P2: Phlage: 3 damage to opponent, gain 3 life
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Seasoned Pyromancer
+T6 P2: Attack with Seasoned Pyromancer
+  [Declare Blockers] P1 does not block
+T6 P2:   Seasoned Pyromancer (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 5 → 3
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Living End (P1) ══════════════════════════
+║ Life: Living End 3  |  Boros Energy 18
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 6  |  Opp lands: 4
+║ Library: 41  |  Graveyard: 5
+║ Living End board:
+║   Creatures: Street Wraith (3/4)
+║   Lands: Overgrown Tomb, Raugrin Triome, Watery Grave, Forest, Blooming Marsh, Botanical Sanctum
+║ Boros Energy board:
+║   Creatures: Seasoned Pyromancer (2/2) [tapped], Phlage, Titan of Fire's Fury (6/6)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Arena of Glory [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Curator of Mysteries
+  [Main 1]
+T7 P1: Cycle Curator of Mysteries (pay 1 mana, draw: Subtlety)
+    → Goal: push_damage
+    [Mana] Tap Watery Grave→U, Botanical Sanctum→U, Forest→G, Overgrown Tomb→B (paying for Subtlety, 5 mana remaining)
+T7 P1: Cast Subtlety (2UU)
+    [Priority] P2 passes (no response)
+T7: Resolve Subtlety
+T7 P1: Subtlety enters (no creature/PW spell on stack to target)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Street Wraith
+T7 P1: Attack with Street Wraith
+  [Declare Blockers] P2 does not block
+T7 P1:   Street Wraith (3/4) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 18 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 15  |  Living End 3
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 42  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: Seasoned Pyromancer (2/2), Phlage, Titan of Fire's Fury (6/6)
+║   Lands: Sacred Foundry, Sacred Foundry, Arena of Glory, Sacred Foundry
+║ Living End board:
+║   Creatures: Street Wraith (3/4) [tapped], Subtlety (3/3)
+║   Lands: Overgrown Tomb [T], Raugrin Triome [T], Watery Grave [T], Forest [T], Blooming Marsh, Botanical Sanctum [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Goblin Bombardment
+  [Main 1]
+    → Goal: curve_out [interaction]
+    [Mana] Tap Arena of Glory→R (paying for Galvanic Discharge, 4 mana remaining)
+T7 P2: Cast Galvanic Discharge (R)
+    [Priority] P1 responds with Force of Negation
+T7 P1: Pay alternate cost: exile Subtlety for Force of Negation
+T7 P1: Cast Force of Negation (1UU)
+T7: Resolve Force of Negation
+T7: Galvanic Discharge is countered
+    → Goal: curve_out
+    [Mana] Tap Sacred Foundry→R, Sacred Foundry→R (paying for Goblin Bombardment, 3 mana remaining)
+T7 P2: Cast Goblin Bombardment (1R)
+    [Priority] P1 passes (no response)
+T7: Resolve Goblin Bombardment
+T7 P2: Goblin Bombardment enters — sacrifice creatures for 1 damage each
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Ocelot Pride, 1 mana remaining)
+T7 P2: Cast Ocelot Pride (W)
+    [Priority] P1 passes (no response)
+T7: Resolve Ocelot Pride
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Seasoned Pyromancer, Phlage, Titan of Fire's Fury
+T7 P2: Phlage, Titan of Fire's Fury attack trigger: 3 damage to Subtlety
+T7: Subtlety dies
+T7 P2: Gain 3 life from Phlage, Titan of Fire's Fury (life: 18)
+T7 P2: Attack with Seasoned Pyromancer, Phlage, Titan of Fire's Fury
+  [Declare Blockers] P1 does not block
+T7 P2:   Seasoned Pyromancer (2/2) → 2 dmg to player
+T7 P2:   Phlage, Titan of Fire's Fury (6/6) → 6 dmg to player
+P1 loses: life total -5
+  [Combat Damage] 8 damage dealt → P1 life: 3 → -5
+
+>>> Boros Energy wins Game 1 on turn 7 via damage
+    Final life: Living End=-5  Boros Energy=18
+
+======================================================================
+  GAME 2: Living End (P1) vs Boros Energy (P2)  —  seed 60601
+  Series: Living End 0 - 1 Boros Energy
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Boros Energy wins → chooses to play first
+║ P1 (on play): Boros Energy
+║ P2 (on draw): Living End
+╚═══════════════════════════════════════════════════════
+
+P1 (Living End) opening hand (2 lands, 5 spells):
+  • Misty Rainforest [Land, CMC 0]
+  • Architects of Will [Creature, CMC 4]
+  • Blood Crypt [Land, CMC 0]
+  • Subtlety [Creature, CMC 4]
+  • Force of Negation [Spell, CMC 3]
+  • Force of Vigor [Spell, CMC 4]
+  • Subtlety [Creature, CMC 4]
+→ P1 KEEPS 7 — has key card(s): Architects of Will, 1 cheap spells
+
+P2 (Boros Energy) opening hand (1 lands, 6 spells):
+  • Galvanic Discharge [Spell, CMC 1]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Guide of Souls [Creature, CMC 1]
+  • Galvanic Discharge [Spell, CMC 1]
+  • Guide of Souls [Creature, CMC 1]
+  • Ocelot Pride [Creature, CMC 1]
+  • Sacred Foundry [Land, CMC 0]
+→ P2 MULLIGANS (too few lands (1 < 2))
+  New hand (3 lands, 4 spells): ['Guide of Souls', 'Wear // Tear', 'Ragavan, Nimble Pilferer', 'Guide of Souls', 'Marsh Flats', 'Windswept Heath', 'Plains']
+→ P2 mulligans to 6, bottoms: ['Wear // Tear']
+  Keeps: ['Guide of Souls', 'Ragavan, Nimble Pilferer', 'Guide of Souls', 'Marsh Flats', 'Windswept Heath', 'Plains']
+
+
+╔══ TURN 1 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Living End 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 54  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Marsh Flats
+T1 P2: Crack Marsh Flats (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Living End (P1) ══════════════════════════
+║ Life: Living End 20  |  Boros Energy 19
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Forest
+  [Main 1]
+T1 P1: Play Misty Rainforest
+T1 P1: Crack Misty Rainforest -> Zagoth Triome (tapped)
+T1 P1: Zagoth Triome ETB: draw 1 (Demonic Dread)
+T1 P1: Cycle Architects of Will (pay 0 mana, draw: Street Wraith)
+T1 P1: Cycle Street Wraith (pay 2 life, draw: Overgrown Tomb)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T1: Blood Crypt moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 2 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Living End 17
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Zagoth Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Blood Moon
+  [Main 1]
+T2 P2: Play Windswept Heath
+T2 P2: Crack Windswept Heath (pay 1 life) -> Sacred Foundry (tapped, life: 18)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Guide of Souls, 1 mana remaining)
+T2 P2: Cast Guide of Souls (W)
+    [Priority] P1 passes (no response)
+T2: Resolve Guide of Souls
+  [Begin Combat]
+T2 P1: Pay alternate cost: exile Forest for Force of Vigor
+T2 P1: Cast Force of Vigor (2GG)
+T2: Resolve Force of Vigor
+T2 P1: Force of Vigor: no valid targets
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Living End (P1) ══════════════════════════
+║ Life: Living End 17  |  Boros Energy 18
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 5
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Zagoth Triome
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Architects of Will
+  [Main 1]
+T2 P1: Cycle Architects of Will (pay 0 mana, draw: Subtlety)
+T2 P1: Play Overgrown Tomb (tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 18  |  Living End 17
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Zagoth Triome, Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ocelot Pride
+  [Main 1]
+T3 P2: Play Plains
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 3 mana remaining)
+T3 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T3: Resolve Ragavan, Nimble Pilferer
+T3 P2: Gain 1 life from Guide of Souls (life: 19)
+T3 P2: +1 energy from Guide of Souls (total: 1)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Plains→W (paying for Guide of Souls, 2 mana remaining)
+T3 P2: Cast Guide of Souls (W)
+    [Priority] P1 passes (no response)
+T3: Resolve Guide of Souls
+T3 P2: Gain 1 life from Guide of Souls (life: 20)
+T3 P2: +1 energy from Guide of Souls (total: 2)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Ocelot Pride, 1 mana remaining)
+T3 P2: Cast Ocelot Pride (W)
+    [Priority] P1 passes (no response)
+T3: Resolve Ocelot Pride
+T3 P2: Gain 1 life from Guide of Souls (life: 21)
+T3 P2: +1 energy from Guide of Souls (total: 3)
+T3 P2: Gain 1 life from Guide of Souls (life: 22)
+T3 P2: +1 energy from Guide of Souls (total: 4)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Guide of Souls
+T3 P2: Attack with Guide of Souls
+  [Declare Blockers] P1 does not block
+T3 P2:   Guide of Souls (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 17 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Living End (P1) ══════════════════════════
+║ Life: Living End 16  |  Boros Energy 22
+║ Hand: 5 cards  |  Opp hand: 1 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 6
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Zagoth Triome, Overgrown Tomb
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2) [tapped], Ragavan, Nimble Pilferer (2/1), Guide of Souls (1/2), Ocelot Pride (1/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Demonic Dread
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 22  |  Living End 16
+║ Hand: 1 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2), Ragavan, Nimble Pilferer (2/1), Guide of Souls (1/2), Ocelot Pride (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Plains
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Zagoth Triome, Overgrown Tomb
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ocelot Pride
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Plains→W (paying for Ocelot Pride, 3 mana remaining)
+T4 P2: Cast Ocelot Pride (W)
+    [Priority] P1 passes (no response)
+T4: Resolve Ocelot Pride
+T4 P2: Gain 1 life from Guide of Souls (life: 23)
+T4 P2: +1 energy from Guide of Souls (total: 5)
+T4 P2: Gain 1 life from Guide of Souls (life: 24)
+T4 P2: +1 energy from Guide of Souls (total: 6)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Guide of Souls, Ragavan, Nimble Pilferer, Guide of Souls, Ocelot Pride
+T4 P2: Attack with Guide of Souls, Ragavan, Nimble Pilferer, Guide of Souls, Ocelot Pride
+  [Declare Blockers] P1 does not block
+T4 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T4 P2:   Guide of Souls (1/2) → 1 dmg to player
+T4 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T4 P2: Create 1x Treasure token(s)
+T4 P2: Ragavan, Nimble Pilferer exiles Living End from top of P1's library
+T4 P2: Ragavan, Nimble Pilferer — may cast Living End this turn
+T4 P2:   Guide of Souls (1/2) → 1 dmg to player
+  [Combat Damage] 5 damage dealt → P1 life: 16 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Living End returned to exile (uncast)
+
+╔══ TURN 4 — Living End (P1) ══════════════════════════
+║ Life: Living End 11  |  Boros Energy 25
+║ Hand: 6 cards  |  Opp hand: 1 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 44  |  Graveyard: 6
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Zagoth Triome, Overgrown Tomb
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2) [tapped], Ragavan, Nimble Pilferer (2/1) [tapped], Guide of Souls (1/2) [tapped], Ocelot Pride (1/1) [tapped], Ocelot Pride (1/1)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Sacred Foundry, Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Architects of Will
+  [Main 1]
+T4 P1: Cycle Architects of Will (pay 0 mana, draw: Curator of Mysteries)
+T4 P1: Cycle Curator of Mysteries (pay 1 mana, draw: Shardless Agent)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 25  |  Living End 11
+║ Hand: 1 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2), Ragavan, Nimble Pilferer (2/1), Guide of Souls (1/2), Ocelot Pride (1/1), Ocelot Pride (1/1)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Sacred Foundry, Plains
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Zagoth Triome [T], Overgrown Tomb
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Windswept Heath
+  [Main 1]
+T5 P2: Play Windswept Heath
+T5 P2: Crack Windswept Heath (pay 1 life) -> Sacred Foundry (untapped, life: 22)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Guide of Souls, Ragavan, Nimble Pilferer, Guide of Souls, Ocelot Pride, Ocelot Pride
+T5 P2: Attack with Guide of Souls, Ragavan, Nimble Pilferer, Guide of Souls, Ocelot Pride, Ocelot Pride
+  [Declare Blockers] P1 does not block
+T5 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T5 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T5 P2:   Guide of Souls (1/2) → 1 dmg to player
+T5 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T5 P2: Create 1x Treasure token(s)
+T5 P2: Ragavan, Nimble Pilferer exiles Demonic Dread from top of P1's library
+T5 P2: Ragavan, Nimble Pilferer — may cast Demonic Dread this turn
+T5 P2:   Guide of Souls (1/2) → 1 dmg to player
+  [Combat Damage] 6 damage dealt → P1 life: 11 → 5
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Demonic Dread returned to exile (uncast)
+
+╔══ TURN 5 — Living End (P1) ══════════════════════════
+║ Life: Living End 5  |  Boros Energy 24
+║ Hand: 7 cards  |  Opp hand: 1 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 40  |  Graveyard: 8
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Zagoth Triome, Overgrown Tomb
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2) [tapped], Ragavan, Nimble Pilferer (2/1) [tapped], Guide of Souls (1/2) [tapped], Ocelot Pride (1/1) [tapped], Ocelot Pride (1/1) [tapped]
+║   Other: Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Sacred Foundry, Plains, Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Misty Rainforest
+  [Main 1]
+T5 P1: Play Misty Rainforest
+T5 P1: Crack Misty Rainforest -> Ketria Triome (tapped)
+T5 P1: Ketria Triome ETB: draw 1 (Striped Riverwinder)
+T5 P1: Cycle Striped Riverwinder (pay 1 mana, draw: Living End)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Force of Negation moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 6 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 24  |  Living End 4
+║ Hand: 1 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 3
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2), Ragavan, Nimble Pilferer (2/1), Guide of Souls (1/2), Ocelot Pride (1/1), Ocelot Pride (1/1)
+║   Other: Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Sacred Foundry, Plains, Sacred Foundry
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Zagoth Triome [T], Overgrown Tomb, Ketria Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Guide of Souls
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Plains→W (paying for Guide of Souls, 4 mana remaining)
+T6 P2: Cast Guide of Souls (W)
+    [Priority] P1 passes (no response)
+T6: Resolve Guide of Souls
+T6 P2: Gain 1 life from Guide of Souls (life: 25)
+T6 P2: +1 energy from Guide of Souls (total: 7)
+T6 P2: Gain 1 life from Guide of Souls (life: 26)
+T6 P2: +1 energy from Guide of Souls (total: 8)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Guide of Souls, Ragavan, Nimble Pilferer, Guide of Souls, Ocelot Pride, Ocelot Pride
+T6 P2: Attack with Guide of Souls, Ragavan, Nimble Pilferer, Guide of Souls, Ocelot Pride, Ocelot Pride
+  [Declare Blockers] P1 does not block
+T6 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T6 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T6 P2:   Guide of Souls (1/2) → 1 dmg to player
+T6 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T6 P2: Create 1x Treasure token(s)
+T6 P2: Ragavan, Nimble Pilferer exiles Striped Riverwinder from top of P1's library
+T6 P2: Ragavan, Nimble Pilferer — may cast Striped Riverwinder this turn
+T6 P2:   Guide of Souls (1/2) → 1 dmg to player
+P1 loses: life total -2
+  [Combat Damage] 6 damage dealt → P1 life: 4 → -2
+
+>>> Boros Energy wins Game 2 on turn 6 via damage
+    Final life: Living End=-2  Boros Energy=28
+
+======================================================================
+  MATCH RESULT: Boros Energy wins 2-0
+======================================================================

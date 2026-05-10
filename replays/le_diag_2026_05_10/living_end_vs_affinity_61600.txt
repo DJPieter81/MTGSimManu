@@ -1,0 +1,1097 @@
+Loaded 21759 cards (0 errors)
+Loaded 21759 cards (0 errors)
+======================================================================
+  GAME 1: Living End (P1) vs Affinity (P2)  —  seed 61600
+  Series: Living End 0 - 0 Affinity
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Living End wins → chooses to play first
+║ P1 (on play): Living End
+║ P2 (on draw): Affinity
+╚═══════════════════════════════════════════════════════
+
+P1 (Living End) opening hand (2 lands, 5 spells):
+  • Blood Crypt [Land, CMC 0]
+  • Force of Negation [Spell, CMC 3]
+  • Street Wraith [Creature, CMC 5]
+  • Misty Rainforest [Land, CMC 0]
+  • Architects of Will [Creature, CMC 4]
+  • Subtlety [Creature, CMC 4]
+  • Striped Riverwinder [Creature, CMC 7]
+→ P1 KEEPS 7 — has key card(s): Architects of Will, Street Wraith, Striped Riverwinder, 1 cheap spells
+
+P2 (Affinity) opening hand (3 lands, 4 spells):
+  • Silverbluff Bridge [Land, CMC 0]
+  • Ornithopter [Creature, CMC 0]
+  • Razortide Bridge [Land, CMC 0]
+  • Signal Pest [Creature, CMC 1]
+  • Mox Opal [Spell, CMC 0]
+  • Spire of Industry [Land, CMC 0]
+  • Engineered Explosives [Spell, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Mox Opal, Ornithopter, 4 cheap spells
+
+
+╔══ TURN 1 — Living End (P1) ══════════════════════════
+║ Life: Living End 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Misty Rainforest
+T1 P1: Crack Misty Rainforest (pay 1 life) -> Watery Grave (untapped, life: 17)
+T1 P1: Cycle Street Wraith (pay 2 life, draw: Force of Negation)
+T1 P1: Cycle Striped Riverwinder (pay 1 mana, draw: Misty Rainforest)
+T1 P1: Cycle Architects of Will (pay 0 mana, draw: Verdant Catacombs)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Living End 15
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Frogmite
+  [Main 1]
+T1 P2: Play Spire of Industry
+    → Goal: deploy_engine [enablers]
+T1 P2: Cast Ornithopter (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Ornithopter
+    → Goal: deploy_engine [engines]
+T1 P2: Cast Mox Opal (0)
+    [Priority] P1 responds with Force of Negation
+T1 P1: Pay alternate cost: exile Force of Negation for Force of Negation
+T1 P1: Cast Force of Negation (1UU)
+T1: Resolve Force of Negation
+T1: Mox Opal is countered
+    → Goal: deploy_engine
+    [Mana] Tap Spire of Industry→B (paying for Signal Pest, 1 mana remaining)
+T1 P2: Cast Signal Pest (1)
+    [Priority] P1 passes (no response)
+T1: Resolve Signal Pest
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Living End (P1) ══════════════════════════
+║ Life: Living End 15  |  Affinity 20
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 49  |  Graveyard: 5
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1)
+║   Lands: Spire of Industry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Island
+  [Main 1]
+T2 P1: Play Misty Rainforest
+T2 P1: Crack Misty Rainforest (pay 1 life) -> Breeding Pool (tapped, life: 14)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Living End 14
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1)
+║   Lands: Spire of Industry
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Breeding Pool [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Memnite
+  [Main 1]
+T2 P2: Play Silverbluff Bridge (enters tapped)
+    → Goal: deploy_engine
+    [Mana] Tap Spire of Industry→B (paying for Frogmite, 1 mana remaining)
+T2 P2: Cast Frogmite (4)
+    [Priority] P1 passes (no response)
+T2: Resolve Frogmite
+    → Goal: deploy_engine [enablers]
+T2 P2: Cast Memnite (0)
+    [Priority] P1 passes (no response)
+T2: Resolve Memnite
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Signal Pest
+T2 P2: Attack with Signal Pest
+  [Declare Blockers] P1 does not block
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Living End (P1) ══════════════════════════
+║ Life: Living End 14  |  Affinity 20
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 47  |  Graveyard: 6
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Breeding Pool
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1) [tapped], Frogmite (2/2), Memnite (1/1)
+║   Lands: Spire of Industry [T], Silverbluff Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Botanical Sanctum
+  [Main 1]
+T3 P1: Play Blood Crypt (tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Living End 14
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1), Frogmite (2/2), Memnite (1/1)
+║   Lands: Spire of Industry, Silverbluff Bridge
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Breeding Pool, Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Cranial Plating
+  [Main 1]
+T3 P2: Play Razortide Bridge (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Signal Pest, Frogmite, Memnite
+T3 P2: Attack with Signal Pest, Frogmite, Memnite
+  [Declare Blockers] P1 does not block
+T3 P2:   Frogmite (3/2) → 3 dmg to player
+T3 P2:   Memnite (2/1) → 2 dmg to player
+  [Combat Damage] 5 damage dealt → P1 life: 14 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Living End (P1) ══════════════════════════
+║ Life: Living End 9  |  Affinity 20
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 6
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Breeding Pool, Blood Crypt
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1) [tapped], Frogmite (2/2) [tapped], Memnite (1/1) [tapped]
+║   Lands: Spire of Industry, Silverbluff Bridge, Razortide Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Architects of Will
+  [Main 1]
+T4 P1: Cycle Architects of Will (pay 0 mana, draw: Waker of Waves)
+T4 P1: Cycle Waker of Waves (pay 2 mana, draw: Misty Rainforest)
+T4 P1: Play Verdant Catacombs
+T4 P1: Crack Verdant Catacombs (pay 1 life) -> Overgrown Tomb (tapped, life: 8)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Living End 8
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1), Frogmite (2/2), Memnite (1/1)
+║   Lands: Spire of Industry, Silverbluff Bridge, Razortide Bridge
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Breeding Pool [T], Blood Crypt, Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Memnite
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Silverbluff Bridge→R, Razortide Bridge→U (paying for Cranial Plating, 3 mana remaining)
+T4 P2: Cast Cranial Plating (2)
+    [Priority] P1 passes (no response)
+T4: Resolve Cranial Plating
+T4 P2: Cranial Plating enters the battlefield (unattached)
+T4 P2: Equip Cranial Plating to Frogmite (cost 1)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Signal Pest, Frogmite, Memnite
+T4 P2: Attack with Signal Pest, Frogmite, Memnite
+  [Declare Blockers] P1 does not block
+T4 P2:   Frogmite (10/2) → 10 dmg to player
+T4 P2:   Memnite (2/1) → 2 dmg to player
+P1 loses: life total -4
+  [Combat Damage] 12 damage dealt → P1 life: 8 → -4
+
+>>> Affinity wins Game 1 on turn 4 via damage
+    Final life: Living End=-4  Affinity=20
+
+======================================================================
+  GAME 2: Living End (P1) vs Affinity (P2)  —  seed 61601
+  Series: Living End 0 - 1 Affinity
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Affinity wins → chooses to play first
+║ P1 (on play): Affinity
+║ P2 (on draw): Living End
+╚═══════════════════════════════════════════════════════
+
+P1 (Living End) opening hand (3 lands, 4 spells):
+  • Overgrown Tomb [Land, CMC 0]
+  • Misty Rainforest [Land, CMC 0]
+  • Waker of Waves [Creature, CMC 7]
+  • Blooming Marsh [Land, CMC 0]
+  • Force of Negation [Spell, CMC 3]
+  • Force of Negation [Spell, CMC 3]
+  • Shardless Agent [Creature, CMC 3]
+→ P1 KEEPS 7 — has key card(s): Shardless Agent, 3 cheap spells
+
+P2 (Affinity) opening hand (3 lands, 4 spells):
+  • Mox Opal [Spell, CMC 0]
+  • Razortide Bridge [Land, CMC 0]
+  • Mistvault Bridge [Land, CMC 0]
+  • Mox Opal [Spell, CMC 0]
+  • Signal Pest [Creature, CMC 1]
+  • Ornithopter [Creature, CMC 0]
+  • Silverbluff Bridge [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Mox Opal, Ornithopter, 3 cheap spells
+
+
+╔══ TURN 1 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Living End 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+    → Goal: deploy_engine [engines]
+T1 P2: Cast Mox Opal (0)
+    [Priority] P1 responds with Force of Negation
+T1 P1: Pay alternate cost: exile Force of Negation for Force of Negation
+T1 P1: Cast Force of Negation (1UU)
+T1: Resolve Force of Negation
+T1: Mox Opal is countered
+    → Goal: deploy_engine [engines]
+T1 P2: Cast Mox Opal (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Mox Opal
+T1 P2: Play Razortide Bridge (enters tapped)
+    → Goal: curve_out
+T1 P2: Cast Ornithopter (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Ornithopter
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Living End (P1) ══════════════════════════
+║ Life: Living End 20  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 1
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: Ornithopter (0/2)
+║   Other: Mox Opal
+║   Lands: Razortide Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Shardless Agent
+  [Main 1]
+T1 P1: Play Misty Rainforest
+T1 P1: Crack Misty Rainforest (pay 1 life) -> Breeding Pool (untapped, life: 17)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Living End 17
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Ornithopter (0/2)
+║   Other: Mox Opal
+║   Lands: Razortide Bridge
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Spire of Industry
+  [Main 1]
+T2 P2: Play Spire of Industry
+    → Goal: curve_out
+    [Mana] Tap Razortide Bridge→U (paying for Signal Pest, 2 mana remaining)
+T2 P2: Cast Signal Pest (1)
+    [Priority] P1 passes (no response)
+T2: Resolve Signal Pest
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Living End (P1) ══════════════════════════
+║ Life: Living End 17  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 2
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1)
+║   Other: Mox Opal
+║   Lands: Razortide Bridge [T], Spire of Industry
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Forest
+  [Main 1]
+T2 P1: Play Overgrown Tomb (tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Living End 17
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1)
+║   Other: Mox Opal
+║   Lands: Razortide Bridge, Spire of Industry
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool, Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Treasure Vault
+  [Main 1]
+T3 P2: Play Treasure Vault
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Signal Pest
+T3 P2: Attack with Signal Pest
+  [Declare Blockers] P1 does not block
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Living End (P1) ══════════════════════════
+║ Life: Living End 17  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 2
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool, Overgrown Tomb
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1) [tapped]
+║   Other: Mox Opal
+║   Lands: Razortide Bridge, Spire of Industry, Treasure Vault
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ketria Triome
+  [Main 1]
+T3 P1: Cycle Waker of Waves (pay 2 mana, draw: Striped Riverwinder)
+T3 P1: Play Ketria Triome (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Living End 17
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1)
+║   Other: Mox Opal
+║   Lands: Razortide Bridge, Spire of Industry, Treasure Vault
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool [T], Overgrown Tomb [T], Ketria Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Engineered Explosives
+  [Main 1]
+T4 P2: Play Mistvault Bridge (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Signal Pest
+T4 P2: Attack with Signal Pest
+  [Declare Blockers] P1 does not block
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Living End (P1) ══════════════════════════
+║ Life: Living End 17  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 3
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool, Overgrown Tomb, Ketria Triome
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1) [tapped]
+║   Other: Mox Opal
+║   Lands: Razortide Bridge, Spire of Industry, Treasure Vault, Mistvault Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Demonic Dread
+  [Main 1]
+T4 P1: Cycle Striped Riverwinder (pay 1 mana, draw: Architects of Will)
+T4 P1: Cycle Architects of Will (pay 0 mana, draw: Demonic Dread)
+T4 P1: Play Forest
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Living End 17
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1)
+║   Other: Mox Opal
+║   Lands: Razortide Bridge, Spire of Industry, Treasure Vault, Mistvault Bridge
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool [T], Overgrown Tomb, Ketria Triome, Forest
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Frogmite
+  [Main 1]
+T5 P2: Play Silverbluff Bridge (enters tapped)
+    → Goal: curve_out [enablers]
+T5 P2: Cast Frogmite (4)
+    [Priority] P1 passes (no response)
+T5: Resolve Frogmite
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Signal Pest
+T5 P2: Attack with Signal Pest
+  [Declare Blockers] P1 does not block
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Living End (P1) ══════════════════════════
+║ Life: Living End 17  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 5
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool, Overgrown Tomb, Ketria Triome, Forest
+║ Affinity board:
+║   Creatures: Ornithopter (0/2), Signal Pest (0/1) [tapped], Frogmite (2/2)
+║   Other: Mox Opal
+║   Lands: Razortide Bridge, Spire of Industry, Treasure Vault, Mistvault Bridge, Silverbluff Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Blood Crypt
+  [Main 1]
+T5 P1: Play Blood Crypt (tapped)
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Breeding Pool→U, Forest→G, Overgrown Tomb→B (paying for Shardless Agent, 4 mana remaining)
+T5 P1: Cast Shardless Agent (1UG)
+    [Priority] P2 passes (no response)
+T5: Resolve Shardless Agent
+T5: Cascade (CMC < 3)
+T5: Cascade hits Living End
+T5: Living End resolves!
+T5 P1: Waker of Waves ETB: draw 1 (Street Wraith)
+T5: Living End returns Waker of Waves for P1
+T5: Living End returns Striped Riverwinder for P1
+T5 P1: Architects of Will ETB: draw 1 (Misty Rainforest)
+T5: Living End returns Architects of Will for P1
+T5 P1: Cycle Street Wraith (pay 2 life, draw: Blooming Marsh)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Living End 15
+║ Hand: 1 cards  |  Opp hand: 6 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 49  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal
+║   Lands: Razortide Bridge, Spire of Industry, Treasure Vault, Mistvault Bridge, Silverbluff Bridge
+║ Living End board:
+║   Creatures: Waker of Waves (7/7), Striped Riverwinder (5/5), Architects of Will (3/3)
+║   Lands: Breeding Pool [T], Overgrown Tomb [T], Ketria Triome, Forest [T], Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Cranial Plating
+  [Main 1]
+    → Goal: curve_out
+T6 P2: Cast Engineered Explosives (5) (X=5)
+    [Priority] P1 passes (no response)
+T6: Resolve Engineered Explosives
+T6 P2: Engineered Explosives enters with 5 charge counters
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Living End (P1) ══════════════════════════
+║ Life: Living End 15  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 40  |  Graveyard: 4
+║ Living End board:
+║   Creatures: Waker of Waves (7/7), Striped Riverwinder (5/5), Architects of Will (3/3)
+║   Lands: Breeding Pool, Overgrown Tomb, Ketria Triome, Forest, Blood Crypt
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Engineered Explosives
+║   Lands: Razortide Bridge [T], Spire of Industry [T], Treasure Vault [T], Mistvault Bridge [T], Silverbluff Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Street Wraith
+  [Main 1]
+T6 P1: Cycle Street Wraith (pay 2 life, draw: Striped Riverwinder)
+T6 P1: Cycle Striped Riverwinder (pay 1 mana, draw: Misty Rainforest)
+T6 P1: Play Misty Rainforest
+T6 P1: Crack Misty Rainforest (pay 1 life) -> Watery Grave (tapped, life: 12)
+    → Goal: push_damage
+    [Mana] Tap Ketria Triome→U, Forest→G, Overgrown Tomb→B (paying for Shardless Agent, 4 mana remaining)
+T6 P1: Cast Shardless Agent (1UG)
+    [Priority] P2 passes (no response)
+T6: Resolve Shardless Agent
+T6: Cascade (CMC < 3)
+T6: Cascade hits Living End
+T6: Living End resolves!
+T6: Living End returns Street Wraith for P1
+T6: Living End returns Street Wraith for P1
+T6: Living End returns Striped Riverwinder for P1
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Living End 12
+║ Hand: 1 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 48  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Engineered Explosives
+║   Lands: Razortide Bridge, Spire of Industry, Treasure Vault, Mistvault Bridge, Silverbluff Bridge
+║ Living End board:
+║   Creatures: Street Wraith (3/4), Street Wraith (3/4), Striped Riverwinder (5/5)
+║   Lands: Breeding Pool [T], Overgrown Tomb [T], Ketria Triome [T], Forest [T], Blood Crypt, Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Cranial Plating
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Treasure Vault→C, Razortide Bridge→U (paying for Cranial Plating, 5 mana remaining)
+T7 P2: Cast Cranial Plating (2)
+    [Priority] P1 passes (no response)
+T7: Resolve Cranial Plating
+T7 P2: Cranial Plating enters the battlefield (unattached)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Mistvault Bridge→B, Silverbluff Bridge→R (paying for Cranial Plating, 3 mana remaining)
+T7 P2: Cast Cranial Plating (2)
+    [Priority] P1 passes (no response)
+T7: Resolve Cranial Plating
+T7 P2: Cranial Plating enters the battlefield (unattached)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Living End (P1) ══════════════════════════
+║ Life: Living End 12  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 0 cards
+║ Lands: 6  |  Opp lands: 5
+║ Library: 35  |  Graveyard: 5
+║ Living End board:
+║   Creatures: Street Wraith (3/4), Street Wraith (3/4), Striped Riverwinder (5/5)
+║   Lands: Breeding Pool, Overgrown Tomb, Ketria Triome, Forest, Blood Crypt, Watery Grave
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Engineered Explosives, Cranial Plating, Cranial Plating
+║   Lands: Razortide Bridge [T], Spire of Industry, Treasure Vault [T], Mistvault Bridge [T], Silverbluff Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Demonic Dread
+  [Main 1]
+T7 P1: Play Misty Rainforest
+T7 P1: Crack Misty Rainforest -> Island (untapped)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Street Wraith, Street Wraith, Striped Riverwinder
+T7 P1: Attack with Street Wraith, Street Wraith, Striped Riverwinder
+  [Declare Blockers] P2 does not block
+T7 P1:   Street Wraith (3/4) → 3 dmg to player
+T7 P1:   Street Wraith (3/4) → 3 dmg to player
+T7 P1:   Striped Riverwinder (5/5) → 5 dmg to player
+  [Combat Damage] 11 damage dealt → P2 life: 20 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 9  |  Living End 11
+║ Hand: 0 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 7
+║ Library: 47  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Engineered Explosives, Cranial Plating, Cranial Plating
+║   Lands: Razortide Bridge, Spire of Industry, Treasure Vault, Mistvault Bridge, Silverbluff Bridge
+║ Living End board:
+║   Creatures: Street Wraith (3/4) [tapped], Street Wraith (3/4) [tapped], Striped Riverwinder (5/5) [tapped]
+║   Lands: Breeding Pool, Overgrown Tomb, Ketria Triome, Forest, Blood Crypt, Watery Grave, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Signal Pest
+  [Main 1]
+T8 P2: Activate Engineered Explosives (sacrifice)
+T8: Striped Riverwinder dies
+T8 P2:   destroys Striped Riverwinder (MV=7)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Living End (P1) ══════════════════════════
+║ Life: Living End 11  |  Affinity 9
+║ Hand: 5 cards  |  Opp hand: 1 cards
+║ Lands: 7  |  Opp lands: 5
+║ Library: 33  |  Graveyard: 7
+║ Living End board:
+║   Creatures: Street Wraith (3/4), Street Wraith (3/4)
+║   Lands: Breeding Pool, Overgrown Tomb, Ketria Triome, Forest, Blood Crypt, Watery Grave, Island
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Cranial Plating, Cranial Plating
+║   Lands: Razortide Bridge, Spire of Industry, Treasure Vault, Mistvault Bridge, Silverbluff Bridge
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Indatha Triome
+  [Main 1]
+T8 P1: Cycle Indatha Triome (pay 3 mana, draw: Shardless Agent)
+T8 P1: Play Blooming Marsh (tapped, 7 other lands)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Street Wraith, Street Wraith
+T8 P1: Attack with Street Wraith, Street Wraith
+  [Declare Blockers] P2 does not block
+T8 P1:   Street Wraith (3/4) → 3 dmg to player
+T8 P1:   Street Wraith (3/4) → 3 dmg to player
+  [Combat Damage] 6 damage dealt → P2 life: 9 → 3
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 3  |  Living End 11
+║ Hand: 1 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 8
+║ Library: 46  |  Graveyard: 2
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Cranial Plating, Cranial Plating
+║   Lands: Razortide Bridge, Spire of Industry, Treasure Vault, Mistvault Bridge, Silverbluff Bridge
+║ Living End board:
+║   Creatures: Street Wraith (3/4) [tapped], Street Wraith (3/4) [tapped]
+║   Lands: Breeding Pool [T], Overgrown Tomb [T], Ketria Triome [T], Forest, Blood Crypt, Watery Grave, Island, Blooming Marsh [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ornithopter
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Living End (P1) ══════════════════════════
+║ Life: Living End 11  |  Affinity 3
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 8  |  Opp lands: 5
+║ Library: 31  |  Graveyard: 8
+║ Living End board:
+║   Creatures: Street Wraith (3/4), Street Wraith (3/4)
+║   Lands: Breeding Pool, Overgrown Tomb, Ketria Triome, Forest, Blood Crypt, Watery Grave, Island, Blooming Marsh
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Cranial Plating, Cranial Plating
+║   Lands: Razortide Bridge, Spire of Industry, Treasure Vault, Mistvault Bridge, Silverbluff Bridge
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Street Wraith
+  [Main 1]
+T9 P1: Cycle Street Wraith (pay 2 life, draw: Waker of Waves)
+T9 P1: Cycle Waker of Waves (pay 2 mana, draw: Verdant Catacombs)
+T9 P1: Play Verdant Catacombs
+T9 P1: Crack Verdant Catacombs -> Swamp (untapped)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Street Wraith, Street Wraith
+T9 P1: Attack with Street Wraith, Street Wraith
+  [Declare Blockers] P2 does not block
+T9 P1:   Street Wraith (3/4) → 3 dmg to player
+T9 P1:   Street Wraith (3/4) → 3 dmg to player
+P2 loses: life total -3
+  [Combat Damage] 6 damage dealt → P2 life: 3 → -3
+
+>>> Living End wins Game 2 on turn 9 via damage
+    Final life: Living End=8  Affinity=-3
+
+======================================================================
+  GAME 3: Affinity (P1) vs Living End (P2)  —  seed 61602
+  Series: Living End 1 - 1 Affinity
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Living End wins → chooses to play first
+║ P1 (on play): Living End
+║ P2 (on draw): Affinity
+╚═══════════════════════════════════════════════════════
+
+P1 (Affinity) opening hand (3 lands, 4 spells):
+  • Tanglepool Bridge [Land, CMC 0]
+  • Cranial Plating [Spell, CMC 2]
+  • Memnite [Creature, CMC 0]
+  • Cranial Plating [Spell, CMC 2]
+  • Engineered Explosives [Spell, CMC 0]
+  • Urza's Saga [Land, CMC 0]
+  • Urza's Saga [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Cranial Plating, Memnite, 4 cheap spells
+
+P2 (Living End) opening hand (2 lands, 5 spells):
+  • Blooming Marsh [Land, CMC 0]
+  • Living End [Spell, CMC 0]
+  • Force of Negation [Spell, CMC 3]
+  • Force of Negation [Spell, CMC 3]
+  • Striped Riverwinder [Creature, CMC 7]
+  • Striped Riverwinder [Creature, CMC 7]
+  • Verdant Catacombs [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Striped Riverwinder, 3 cheap spells
+
+
+╔══ TURN 1 — Living End (P2) ══════════════════════════
+║ Life: Living End 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Verdant Catacombs
+T1 P2: Crack Verdant Catacombs (pay 1 life) -> Breeding Pool (untapped, life: 17)
+T1 P2: Cycle Striped Riverwinder (pay 1 mana, draw: Misty Rainforest)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Living End 17
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Signal Pest
+  [Main 1]
+T1 P1: Play Urza's Saga
+    → Goal: deploy_engine [enablers]
+T1 P1: Cast Memnite (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Memnite
+    → Goal: deploy_engine
+    [Mana] Tap Urza's Saga→C (paying for Signal Pest, 1 mana remaining)
+T1 P1: Cast Signal Pest (1)
+    [Priority] P2 passes (no response)
+T1: Resolve Signal Pest
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Living End (P2) ══════════════════════════
+║ Life: Living End 17  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 51  |  Graveyard: 2
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool
+║ Affinity board:
+║   Creatures: Memnite (1/1), Signal Pest (0/1)
+║   Lands: Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Island
+  [Main 1]
+T2 P2: Cycle Striped Riverwinder (pay 1 mana, draw: Living End)
+T2 P2: Play Misty Rainforest
+T2 P2: Crack Misty Rainforest (pay 1 life) -> Watery Grave (tapped, life: 16)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Living End 16
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Memnite (1/1), Signal Pest (0/1)
+║   Lands: Urza's Saga
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool [T], Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Signal Pest
+  [Main 1]
+T2 P1: Play Urza's Saga
+    → Goal: deploy_engine
+    [Mana] Tap Urza's Saga→C (paying for Signal Pest, 2 mana remaining)
+T2 P1: Cast Signal Pest (1)
+    [Priority] P2 passes (no response)
+T2: Resolve Signal Pest
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Memnite, Signal Pest
+T2 P1: Attack with Memnite, Signal Pest
+  [Declare Blockers] P2 does not block
+T2 P1:   Memnite (2/1) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 16 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Living End (P2) ══════════════════════════
+║ Life: Living End 14  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 4
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool, Watery Grave
+║ Affinity board:
+║   Creatures: Memnite (1/1) [tapped], Signal Pest (0/1) [tapped], Signal Pest (0/1)
+║   Lands: Urza's Saga [T], Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Subtlety
+  [Main 1]
+T3 P2: Play Island
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Living End 14
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Memnite (1/1), Signal Pest (0/1), Signal Pest (0/1)
+║   Lands: Urza's Saga, Urza's Saga
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool, Watery Grave, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T3 P1: Create 1x Construct token(s)
+T3 P1: Urza's Saga Ch.II: Create Construct Token
+  [Draw] P1 draws: Sojourner's Companion
+  [Main 1]
+T3 P1: Play Tanglepool Bridge (enters tapped)
+T3 P1: Cycle Sojourner's Companion (pay 2 mana, tutor: Mistvault Bridge)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Memnite, Signal Pest, Signal Pest
+T3 P1: Attack with Memnite, Signal Pest, Signal Pest
+  [Declare Blockers] P2 does not block
+T3 P1:   Memnite (3/1) → 3 dmg to player
+T3 P1:   Signal Pest (1/1) → 1 dmg to player
+T3 P1:   Signal Pest (1/1) → 1 dmg to player
+  [Combat Damage] 5 damage dealt → P2 life: 14 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Living End (P2) ══════════════════════════
+║ Life: Living End 9  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 4
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool, Watery Grave, Island
+║ Affinity board:
+║   Creatures: Memnite (1/1) [tapped], Signal Pest (0/1) [tapped], Signal Pest (0/1) [tapped], Construct Token (5/5)
+║   Lands: Urza's Saga [T], Urza's Saga [T], Tanglepool Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Force of Vigor
+  [Main 1]
+T4 P2: Play Blooming Marsh (tapped, 3 other lands)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Living End 9
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Memnite (1/1), Signal Pest (0/1), Signal Pest (0/1), Construct Token (5/5)
+║   Lands: Urza's Saga, Urza's Saga, Tanglepool Bridge
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool, Watery Grave, Island, Blooming Marsh [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T4 P1: Create 1x Construct token(s)
+T4 P1: Urza's Saga Ch.III: Create Construct Token
+T4 P1: Urza's Saga tutors Springleaf Drum
+T4 P1: Create 1x Construct token(s)
+T4 P1: Urza's Saga Ch.II: Create Construct Token
+T4 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Memnite
+  [Main 1]
+T4 P1: Play Mistvault Bridge (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Memnite, Signal Pest, Signal Pest, Construct Token
+T4 P1: Attack with Memnite, Signal Pest, Signal Pest, Construct Token
+  [Declare Blockers] P2 does not block
+T4 P1:   Memnite (3/1) → 3 dmg to player
+T4 P1:   Signal Pest (1/1) → 1 dmg to player
+T4 P1:   Signal Pest (1/1) → 1 dmg to player
+T4 P1:   Construct Token (11/9) → 11 dmg to player
+P2 loses: life total -7
+  [Combat Damage] 16 damage dealt → P2 life: 9 → -7
+
+>>> Affinity wins Game 3 on turn 4 via damage
+    Final life: Affinity=20  Living End=-7
+
+======================================================================
+  MATCH RESULT: Affinity wins 2-1
+======================================================================
