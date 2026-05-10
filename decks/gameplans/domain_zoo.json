@@ -61,10 +61,6 @@
   ],
   "mulligan_min_lands": 1,
   "mulligan_max_lands": 3,
-  "mulligan_effective_cmc": {
-    "Scion of Draco": 3,
-    "Leyline Binding": 1
-  },
   "mulligan_require_creature_cmc": 2,
   "always_early": [
     "Ragavan, Nimble Pilferer"

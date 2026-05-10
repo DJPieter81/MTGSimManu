@@ -596,10 +596,12 @@ def _count_domain(game: "GameState", player_idx: int) -> int:
 
 
 def _effective_cmc(card: "CardInstance", player) -> int:
-    cmc = card.template.cmc or 0
-    if hasattr(player, 'effective_cmc_overrides') and card.name in player.effective_cmc_overrides:
-        cmc = player.effective_cmc_overrides[card.name]
-    return cmc
+    """Delegates to ai.mana_planner.effective_cmc, which is now
+    oracle-derived (domain_reduction × deck_basic_land_types) with
+    the legacy override dict as a back-compat fallback."""
+    from ai.mana_planner import effective_cmc as _mp_effective_cmc
+    overrides = getattr(player, 'effective_cmc_overrides', None)
+    return _mp_effective_cmc(card, player, overrides) or 0
 
 
 def _spell_colors(card: "CardInstance") -> Set[str]:
