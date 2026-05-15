@@ -1,18 +1,22 @@
 ---
 title: Phase D path 1 coexist — Wish-target picker uses simulator
-status: active
-priority: primary
+status: superseded
+priority: historical
 session: 2026-05-02
+completion_session: 2026-05-15
+superseded_by:
+  - docs/design/2026-05-10_simulator_v3.md
 depends_on: [docs/PHASE_D_FOURTH_ATTEMPT.md]
 tags: [phase-d, simulator, path-1, coexist]
 summary: |
-  After 9 failed migration attempts, ship the simulator as a TOOL
-  for one local decision: Wish's sideboard-target choice in
-  `engine/card_effects.py:wish_resolve`.  card_combo_modifier
-  remains the live combo scorer — untouched.  The simulator
-  replaces only the heuristic-driven finisher_priority ordering
-  inside Wish resolution, where chain-aware EV picking strictly
-  improves on the current count-fuel-and-compare arithmetic.
+  Coexist proposal — ship the simulator only at the Wish-target
+  picker decision point — was superseded by the finisher_simulator
+  v3 direction at `docs/design/2026-05-10_simulator_v3.md`. v3
+  generalises the same idea (library composition + tutor-as-access)
+  across the entire chain-fuel scoring path rather than localising
+  to Wish resolution. v3 shipped library composition + multi-turn
+  rollout in #382 and #383; this narrower path-1 proposal was not
+  taken. Archived as a historical alternative.
 ---
 
 # Chosen decision point

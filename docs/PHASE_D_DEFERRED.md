@@ -1,18 +1,23 @@
 ---
 title: Phase D (finisher migration) — deferred until simulator v2
-status: active
-priority: primary
+status: archived
+priority: historical
 session: 2026-04-26
+completion_session: 2026-05-15
 supersedes: []
-superseded_by: []
+superseded_by:
+  - docs/design/2026-05-10_simulator_v3.md
 depends_on: [PR #204]
 tags: [phase-d, finisher-simulator, combo, migration]
 summary: |
-  The simulator-based replacement for `card_combo_modifier` was
-  attempted in this session and reverted after Storm field N=20
-  regressed from 44.8% → 5.3% (-39pp).  Root cause is in the
-  simulator's API surface, not in the migration code.  Documents
-  what simulator v2 must expose before the migration can land.
+  Original Phase D doc capturing the first simulator-driven
+  `card_combo_modifier` replacement attempt that collapsed Storm
+  field N=20 from 44.8% → 5.3% and was reverted. The "simulator v2
+  must expose ..." requirements catalogued here have been folded
+  into the finisher_simulator v3 design at
+  `docs/design/2026-05-10_simulator_v3.md`, with library composition
+  + tutor access + multi-turn rollout shipping in #382 and #383.
+  Archived as historical context for the v3 design lineage.
 ---
 
 # Phase D — deferred until simulator v2
