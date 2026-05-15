@@ -12,6 +12,7 @@
   "ai/ev_player.py": 0,
   "ai/evaluator.py": 0,
   "ai/finisher_simulator.py": 0,
+  "ai/finisher_simulator_v3.py": 0,
   "ai/gameplan.py": 0,
   "ai/mana_planner.py": 0,
   "ai/mulligan.py": 0,
