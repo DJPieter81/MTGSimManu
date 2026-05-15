@@ -450,6 +450,53 @@ def p_draw_closer(
 # ─── Tutor-as-finisher-access ──────────────────────────────────────
 
 
+def _zone_has_closer_target(zone: list["CardInstance"]) -> bool:
+    """True iff ``zone`` contains at least one closer-category card.
+
+    Closer categories are detected by keyword / oracle predicate —
+    the same predicates ``build_library_composition`` uses to
+    populate ``LibraryComposition.closer_categories``.  No card
+    names enter or leave this function.
+
+    Used to decide whether the sideboard contains a real fetch
+    target for a tutor in hand.  Mirrors v2's
+    ``_scan_zone_for_storm_closer`` and
+    ``_tutor_has_payoff_access`` SB scan in
+    ``ai/combo_calc.py:564-596``: STORM keyword OR token-finisher
+    oracle.  The cycling/cascade/reanim closers are valid targets
+    in principle but are not surfaced here in the v3-first
+    implementation — the live storm test fixture only exercises
+    storm/token; broader closer-zone discovery extends naturally
+    by walking ``_closer_category_predicates`` if a deck pattern
+    needs it.  Out-of-scope for v3 first cut; see design §4.1.
+    """
+    # The current SB-fetch fixture covers the two predicates the
+    # legacy combo modifier and v2 sketch agree on.  Both are
+    # already implemented as pure helpers above.
+    for card in zone:
+        if getattr(card, "template", None) is None:
+            continue
+        if _has_storm_keyword_v3(card):
+            return True
+        if _has_token_finisher_oracle_v3(card):
+            return True
+    return False
+
+
+def _library_composition_has_closer(
+    composition: LibraryComposition,
+) -> bool:
+    """True iff the composition declares at least one closer in any
+    closer-category bucket.
+
+    Library reachability is composition-driven (tag/predicate
+    histogram), not card-list-driven — the composition is the v3
+    truth-source for what's left in the library.  Per design §3
+    and the abstraction contract: zero card names.
+    """
+    return int(composition.closer_count) > 0
+
+
 def _tutor_access_contribution(
     hand: list["CardInstance"],
     sideboard: list["CardInstance"],
@@ -485,9 +532,69 @@ def _tutor_access_contribution(
           rules-derived ``CHAIN_TUTOR_MIN_RESOLVE`` so a fully
           counter-leaden opponent doesn't zero the path.
 
+    Design §8.6 — per-cast vs per-projection counter density:
+    ``bhi_state.get_counter_probability()`` returns a single
+    posterior P; v3 applies it once per projection rather than
+    composing per-cast (tutor-cast then closer-cast).  The
+    one-P approximation is conservative for the *closer* cast
+    (it under-counts the joint hold-counter-for-closer-too risk)
+    and lenient for the *tutor* cast (it treats opp's full
+    counter inventory as available against the tutor, ignoring
+    that the tutor often resolves on a different turn than the
+    closer).  The floor at ``CHAIN_TUTOR_MIN_RESOLVE`` bounds
+    the downside.  Per-cast decomposition is deferred until v3
+    ships and live traces show the approximation hurts; the
+    one-P entry point keeps the call site cheap.
+
     See ``docs/design/2026-05-10_simulator_v3.md`` §4.
     """
-    raise NotImplementedError("v3 stub — implement in PR3c")
+    # 1. Gather every 'tutor'-tagged card in hand.  Pure tag check —
+    #    detection is identical for Wish, Burning Wish, Demonic Tutor,
+    #    Eladamri's Call, Summoner's Pact: anything the engine tags
+    #    as 'tutor' qualifies.  No card-name conditional.
+    tutors_in_hand = [
+        c for c in hand
+        if getattr(c, "template", None) is not None
+        and "tutor" in _tags_of(c)
+    ]
+    if not tutors_in_hand:
+        return (None, 0, 0.0)
+
+    # 2. Confirm a real target exists in SB OR library composition.
+    #    Symmetric to v2's `_has_storm_finisher` SB-or-library scan:
+    #    SB walk uses the oracle/keyword predicates directly;
+    #    library reachability is composition-driven (the v3
+    #    truth-source — no need to iterate the real list).
+    sb_has_target = _zone_has_closer_target(sideboard)
+    lib_has_target = _library_composition_has_closer(library_composition)
+    if not (sb_has_target or lib_has_target):
+        return (None, 0, 0.0)
+
+    # 3. Pick the cheapest tutor.  Lowest CMC minimises the chain's
+    #    extra mana cost so the projection prefers the
+    #    cost-efficient access path.  Mirrors design §4.2's
+    #    ``min(tutors_with_access, key=lambda c: c.template.cmc)``.
+    best_tutor = min(
+        tutors_in_hand,
+        key=lambda c: int(getattr(c.template, "cmc", 0) or 0),
+    )
+    extra_cost = int(getattr(best_tutor.template, "cmc", 0) or 0)
+
+    # 4. Resolve probability — query the BHI tracker once per
+    #    projection (design §8.6 one-P approximation), floor at the
+    #    rules-derived ``CHAIN_TUTOR_MIN_RESOLVE``.  Per CLAUDE.md
+    #    "No magic numbers": this is a rules constant, not a tuning
+    #    weight.
+    p_counter = float(bhi_state.get_counter_probability())
+    # Clamp the posterior into [0, 1] defensively — BHI's storage is
+    # plain float and a stale write can drift outside the range.
+    p_counter = max(0.0, min(1.0, p_counter))
+    p_resolves = max(CHAIN_TUTOR_MIN_RESOLVE, 1.0 - p_counter)
+    # Clamp again to [0, 1] for output safety (floor + max can't
+    # exceed 1.0 but downstream Pydantic validators are strict).
+    p_resolves = max(0.0, min(1.0, p_resolves))
+
+    return (best_tutor, extra_cost, p_resolves)
 
 
 # ─── Multi-turn rollout ────────────────────────────────────────────
