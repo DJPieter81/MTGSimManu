@@ -5,6 +5,7 @@ All weights in ai/strategy_profile.py. All card effects from oracle text.
 Combat, blocking, and response decisions delegate to existing modules.
 """
 from __future__ import annotations
+import os
 import random
 import re
 from typing import Dict, List, Optional, Tuple, Set, TYPE_CHECKING
@@ -133,6 +134,49 @@ def _get_archetype(deck_name: str) -> str:
 
 
 # ─────────────────────────────────────────────────────────────
+# Turn-planner factory — opt-in ISMCTS via MTGSIM_USE_MCTS
+# ─────────────────────────────────────────────────────────────
+#
+# Phase 4A (docs/research/2026-05_phase_4a_ismcts_scoping.md) ships
+# the ISMCTS planner as an OPT-IN replacement for the heuristic
+# TurnPlanner. The default matrix-sim path is unchanged: when the
+# environment variable ``MTGSIM_USE_MCTS`` is unset (or empty / "0"
+# / "false"), this factory returns a vanilla ``TurnPlanner``. When
+# the flag is truthy, it returns an ``ISMCTSPlanner`` configured
+# with the heuristic planner as fallback so any method the rest of
+# the AI stack reaches for (``evaluate_response``, etc.) keeps
+# working via delegation.
+#
+# Truthy values: any non-empty string except a small set of
+# well-known "off" tokens. Off tokens are deliberately permissive
+# so the flag composes cleanly with shells / CI runners that pass
+# ``MTGSIM_USE_MCTS=0`` or ``MTGSIM_USE_MCTS=false`` to disable.
+_MCTS_FLAG_ENV = "MTGSIM_USE_MCTS"
+_MCTS_OFF_TOKENS = {"", "0", "false", "no", "off"}
+
+
+def _mcts_flag_enabled() -> bool:
+    """Return True iff ``MTGSIM_USE_MCTS`` is set to a truthy value."""
+    raw = os.environ.get(_MCTS_FLAG_ENV, "")
+    return raw.strip().lower() not in _MCTS_OFF_TOKENS
+
+
+def _build_turn_planner():
+    """Construct the planner used by the response decider.
+
+    Default: heuristic ``TurnPlanner``. When the opt-in flag is set,
+    construct an ``ISMCTSPlanner`` with the heuristic as fallback.
+    See module-level comment for flag semantics.
+    """
+    from ai.turn_planner import TurnPlanner
+    if not _mcts_flag_enabled():
+        return TurnPlanner()
+    # Opt-in path: MCTS planner with heuristic safety net.
+    from ai.search.ismcts import ISMCTSPlanner
+    return ISMCTSPlanner(fallback=TurnPlanner())
+
+
+# ─────────────────────────────────────────────────────────────
 # Play representation
 # ─────────────────────────────────────────────────────────────
 
@@ -227,11 +271,14 @@ class EVPlayer:
             arch_enum = ArchetypeStrategy.MIDRANGE
         self._mulligan_decider = MulliganDecider(arch_enum, self.goal_engine)
 
-        # Response decider — reuse existing
+        # Response decider — reuse existing.
+        # Planner construction goes through ``_build_turn_planner``
+        # so the opt-in ``MTGSIM_USE_MCTS`` flag (Phase 4A) can swap
+        # in the ISMCTS planner without changing default behavior.
         from ai.response import ResponseDecider
-        from ai.turn_planner import TurnPlanner
+        self.turn_planner = _build_turn_planner()
         self._response_decider = ResponseDecider(
-            player_idx, TurnPlanner(), self.strategic_logger)
+            player_idx, self.turn_planner, self.strategic_logger)
 
         # Bayesian Hand Inference — track opponent hand probabilities
         from ai.bhi import BayesianHandTracker

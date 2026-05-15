@@ -25,12 +25,16 @@ Reference:
 """
 from __future__ import annotations
 
+import logging
 import math
 import random
 from dataclasses import dataclass, field
 from typing import Any, Callable, List, Optional
 
 from ai.search.uct_node import UCTNode, DEFAULT_UCT_C
+
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -107,9 +111,30 @@ class ISMCTSPlanner:
     receives the rng), and statistics aggregate across
     determinizations naturally — visits and values are shared by
     the action-edge tree, not the underlying state.
+
+    Production-integration shape (Phase 4A Week 4):
+      The planner accepts an optional ``fallback`` — typically a
+      ``TurnPlanner`` instance — which serves two purposes:
+
+      1. Methods other than ``search`` that the caller expects on
+         the planner (e.g. ``evaluate_response``, ``plan_attack``)
+         are delegated to the fallback via ``__getattr__``. The
+         heuristic planner's full API surface remains usable
+         without the search wiring needing to mirror every method.
+      2. ``plan_turn`` runs the heuristic plan via the fallback by
+         default (the snapshot-adapter Week-2 scaffolding is not
+         yet wired to GameState/VirtualBoard), so toggling the
+         flag does not regress the production decision path.
     """
 
     config: SearchConfig = field(default_factory=SearchConfig)
+    fallback: Optional[Any] = None
+    """Optional heuristic planner used as the safety net. When MCTS
+    is opt-in via the ``MTGSIM_USE_MCTS`` flag, the production code
+    constructs ``ISMCTSPlanner(fallback=TurnPlanner())`` so that
+    every API call the rest of the AI stack expects on the
+    heuristic planner (e.g. ``evaluate_response``) keeps working.
+    """
 
     def search(
         self,
@@ -187,3 +212,59 @@ class ISMCTSPlanner:
             action = rollout_policy(state, rng)
             state = transition(state, action, rng)
         return evaluate_terminal(state)
+
+    # ─────────────────────────────────────────────────────────────
+    # Production-path adapter (Phase 4A Week 4)
+    # ─────────────────────────────────────────────────────────────
+
+    def plan_turn(self, *args, **kwargs):
+        """Adapter mirroring ``TurnPlanner.plan_turn``.
+
+        The full GameState/VirtualBoard → MCTS wiring is the Week-3
+        deliverable (action set via ``legal_plays``, determinizations
+        via ``bhi``, rollout via ``score_play``). Until that wiring
+        lands, this adapter delegates to the heuristic ``fallback``
+        so the opt-in flag is safe to enable end-to-end without
+        regressing the production decision path.
+
+        If the fallback raises, callers see the same exception they
+        would have with the bare ``TurnPlanner`` — the swap is
+        transparent. If no fallback is configured, this is a
+        programming error and we raise rather than silently
+        returning a bogus plan.
+        """
+        if self.fallback is None:
+            raise RuntimeError(
+                "ISMCTSPlanner.plan_turn called without a fallback "
+                "and without GameState→MCTS wiring (Week-3). "
+                "Construct as ISMCTSPlanner(fallback=TurnPlanner())."
+            )
+        try:
+            return self.fallback.plan_turn(*args, **kwargs)
+        except Exception:
+            logger.exception(
+                "ISMCTSPlanner.plan_turn fallback raised — re-raising"
+            )
+            raise
+
+    def __getattr__(self, name: str) -> Any:
+        """Delegate unknown attribute lookups to the fallback.
+
+        ``ResponseDecider``, ``TurnPlanner``-using callers, and
+        legacy code paths reach for attributes like
+        ``evaluate_response``, ``combat_planner``, etc. Dataclass
+        fields are resolved via the standard attribute mechanism
+        and never reach ``__getattr__``; only genuinely missing
+        attributes do.
+
+        ``__getattr__`` is invoked by Python only when the normal
+        lookup fails, so recursion on ``self.fallback`` (a real
+        attribute) is safe.
+        """
+        fallback = self.__dict__.get("fallback", None)
+        if fallback is None:
+            raise AttributeError(
+                f"{type(self).__name__!r} has no attribute "
+                f"{name!r} and no fallback is configured"
+            )
+        return getattr(fallback, name)
