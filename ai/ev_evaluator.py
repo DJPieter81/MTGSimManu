@@ -1749,7 +1749,42 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         and 'creature' in oracle_lower
     )
 
+    # Symmetric mass-reanimation spells in this family (Living End,
+    # Decree-of-Pain-style wipes-and-reanimate) often combine a
+    # sacrifice clause with the graveyard return.  Detect the
+    # sacrifice clause from oracle text — any phrasing that says
+    # creatures (both players' or all on the battlefield) are
+    # sacrificed.  When present, BOTH sides' on-board creatures are
+    # zeroed BEFORE the reanimation step adds graveyard creatures
+    # back.  This is the diagnostic Component-B fix: cascading into a
+    # board-clearing Living End must credit the opp_power swing from
+    # the sac, not just the reanimation gain.  See
+    # docs/diagnostics/2026-05-10_affinity_85pct_opponent_side_root_cause.md
+    # §B.  No card names; oracle-driven, class size ≥ 10 (every future
+    # symmetric-sac-and-return effect, plus Vengeful Dead, Decree of
+    # Pain, etc.).
+    sacrifices_all_on_board = (
+        'sacrifices all creatures they control' in oracle_lower
+        or 'all players sacrifice all creatures' in oracle_lower
+        or 'each player sacrifices all creatures' in oracle_lower
+    )
+
     if is_symmetric_reanimation and game:
+        # Sacrifice clause fires first (per the spell's effect order):
+        # zero both sides' on-board creature aggregates.  Toughness and
+        # evasion/lifelink power follow.  Only the count-and-aggregate
+        # fields are affected — graveyard counts are restored implicitly
+        # by the reanimation step that follows.
+        if sacrifices_all_on_board:
+            projected.my_power = 0
+            projected.my_toughness = 0
+            projected.my_creature_count = 0
+            projected.my_evasion_power = 0
+            projected.my_lifelink_power = 0
+            projected.opp_power = 0
+            projected.opp_toughness = 0
+            projected.opp_creature_count = 0
+            projected.opp_evasion_power = 0
         # Credit my side using actual GY contents, same as the one-sided
         # path — but ALSO credit opp's side using their GY contents.
         # Both sides return ALL their creatures (not just the biggest).

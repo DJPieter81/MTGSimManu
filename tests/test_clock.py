@@ -12,12 +12,31 @@ from ai.clock import (
 
 class TestCombatClock:
     def test_basic_clock(self):
-        """3 power vs 20 life = ceil(20/3) = 7 turns."""
-        assert combat_clock(3, 20) == 7.0
+        """3 power vs 20 life = 20/3 ≈ 6.67 turns (continuous).
+
+        Updated from the prior ceil-rounded ``7.0`` to the continuous
+        rules-correct form — see ``combat_clock`` docstring + diagnostic
+        2026-05-10_affinity_85pct_opponent_side_root_cause.md §A.
+        """
+        assert combat_clock(3, 20) == pytest.approx(20.0 / 3.0)
 
     def test_lethal_clock(self):
-        """20 power vs 5 life = ceil(5/20) = 1 turn."""
-        assert combat_clock(20, 5) == 1.0
+        """20 power vs 5 life = 5/20 = 0.25 turn (sub-1 overkill).
+
+        Lethal-NOW-with-overkill is now distinguishable from lethal-
+        exactly-next-turn: 20 power vs 5 life dies in a fraction of a
+        turn (any attacker is lethal), whereas 2 power vs 2 life dies
+        in exactly 1 turn.  The prior ``max(1.0, ceil(...))`` floor
+        collapsed all overkill states to the same value.
+        """
+        assert combat_clock(20, 5) == pytest.approx(0.25)
+
+    def test_lethal_overkill_below_lethal_exact(self):
+        """Sub-turn granularity rule (diagnostic Component A): when
+        effective_power > opp_life the clock is sub-1, strictly faster
+        than the effective_power=opp_life baseline.
+        """
+        assert combat_clock(20, 5) < combat_clock(2, 2)
 
     def test_no_power_no_clock(self):
         """0 power = no clock."""

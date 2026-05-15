@@ -10,7 +10,6 @@ from how they change this clock, not from arbitrary weights.
 Units: turns of clock advantage. +1.0 means I'm one combat step ahead.
 """
 from __future__ import annotations
-import math
 from typing import TYPE_CHECKING, Set
 
 from ai.scoring_constants import (
@@ -50,16 +49,33 @@ NO_CLOCK = 99.0
 def combat_clock(power: int, opp_life: int,
                  evasion_power: int = 0,
                  opp_total_toughness: int = 0) -> float:
-    """Turns to kill opponent via combat damage.
+    """Turns to kill opponent via combat damage (continuous).
 
     Evasion power bypasses blockers entirely.  Non-evasive power must
     punch through blocker toughness (simplified: total toughness as a
     one-time wall, amortised per turn).
 
-    Returns NO_CLOCK when there is no attack capability.
+    Returns NO_CLOCK when there is no attack capability.  The result is
+    continuous in (0, NO_CLOCK]:
+      - Sub-1.0 values encode lethal-NOW with overkill margin
+        (effective_power > opp_life): e.g. effective_power=14 vs
+        opp_life=1 returns 0.071, distinct from effective_power=2 vs
+        opp_life=2 which returns 1.0 ("lethal in exactly one attack").
+        This sub-turn granularity is required by
+        ``position_value`` to distinguish "you die now" from "you die
+        next turn" — see
+        docs/diagnostics/2026-05-10_affinity_85pct_opponent_side_root_cause.md
+        Component A.
+      - Values ≥ 1.0 encode "turns until I deal opp_life damage" at the
+        current effective-power-per-turn pace.
+    Removing the prior ``max(1.0, ceil(...))`` floor is the
+    rules-correct continuous form; downstream callers that need a
+    discrete clock (e.g. ``opp_clock_discrete`` property checks) use
+    the EVSnapshot integer property which retains its own integer
+    floor.
     """
     if power <= 0 or opp_life <= 0:
-        return NO_CLOCK if power <= 0 else 1.0
+        return NO_CLOCK if power <= 0 else 0.0
 
     # Evasion damage lands every turn; ground damage is reduced by blockers.
     # Simplified model: blockers absorb (total_toughness / N) per turn on
@@ -73,7 +89,7 @@ def combat_clock(power: int, opp_life: int,
 
     if effective_power <= 0:
         return NO_CLOCK
-    return max(1.0, math.ceil(opp_life / effective_power))
+    return opp_life / effective_power
 
 
 def life_as_resource(life: int, incoming_power: int) -> float:
@@ -392,13 +408,39 @@ def position_value(snap: "EVSnapshot", archetype: str = "midrange") -> float:
     if my_clock >= NO_CLOCK and opp_clock >= NO_CLOCK:
         clock_diff = 0.0  # neither player has a clock — stalled
     elif my_clock >= NO_CLOCK:
-        # I have no clock, opponent does → I'm losing; worse as opp gets faster
-        clock_diff = -opp_clock
+        # I have no clock, opponent does → I'm losing; worse as opp gets
+        # faster.  Mirror the symmetric ``CLOCK_LETHAL_ADVANTAGE_CAP /
+        # my_clock`` form used by the winning branch below, with two
+        # tiers of severity:
+        #
+        #   1. Above-1 clock (opp_clock ≥ 1): use the bounded base form
+        #      ``-CAP / opp_clock`` so lethal-next-turn (opp_clock=1)
+        #      saturates at -CAP and slow attackers contribute a small
+        #      negative.
+        #   2. Sub-1 clock (opp_clock < 1, i.e. opp has overkill
+        #      power vs my life): each marginal point of overkill
+        #      adds linearly to dread.  ``(1.0 - opp_clock)`` is the
+        #      sub-turn fraction missing, scaled by CAP to stay in
+        #      position-value units.  Bounded contribution: 0 at
+        #      opp_clock=1, -CAP as opp_clock→0.
+        #
+        # This is the diagnostic Component-A fix: defensive-save spells
+        # at lethal must score higher than do-nothing alternatives
+        # because the wipe pushes opp_clock from sub-1 (overkill lethal-
+        # now) toward 1+ (lethal-buys-a-turn) or beyond.  All derived
+        # from CLOCK_LETHAL_ADVANTAGE_CAP and opp_clock — no new
+        # constants.  See docs/diagnostics/
+        # 2026-05-10_affinity_85pct_opponent_side_root_cause.md §A.
+        clock_diff = -CLOCK_LETHAL_ADVANTAGE_CAP / max(opp_clock, 1.0)
+        if opp_clock < 1.0:
+            clock_diff -= CLOCK_LETHAL_ADVANTAGE_CAP * (1.0 - opp_clock)
     elif opp_clock >= NO_CLOCK:
         # Opponent has no clock, I do → I'm winning; better as I get faster.
         # Invert: lower my_clock = bigger advantage. CLOCK_LETHAL_ADVANTAGE_CAP
         # caps the differential near Modern starting life when I have lethal.
-        clock_diff = CLOCK_LETHAL_ADVANTAGE_CAP / my_clock
+        clock_diff = CLOCK_LETHAL_ADVANTAGE_CAP / max(my_clock, 1.0)
+        if my_clock < 1.0:
+            clock_diff += CLOCK_LETHAL_ADVANTAGE_CAP * (1.0 - my_clock)
 
     # Resource advantage: cards and mana as future clock changes
     card_diff = snap.my_hand_size - snap.opp_hand_size

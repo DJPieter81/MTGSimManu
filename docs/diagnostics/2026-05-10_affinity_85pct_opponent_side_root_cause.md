@@ -1,8 +1,10 @@
 ---
 title: Affinity 85% Root Cause v2 — Opponent-side defensive-save EV collapse
-status: active
+status: superseded
 priority: primary
 session: 2026-05-10
+superseded_by:
+  - "fix branch claude/fix-affinity-opponent-side-position-value-and-sym-reanim (2026-05-15) — Components A + B implemented; X-cost picker (C) deferred"
 supersedes: []
 depends_on:
   - docs/diagnostics/2026-05-04_phase-l-affinity-ai-audit.md
