@@ -2025,6 +2025,7 @@ class EVPlayer:
 
           payoff = expected_gy_creatures_at_resolution
                    × per_creature_reanimation_ev
+                   × P(survive_to_resolution_turn)
           waste  = mana_clock_impact(snap) × suspend_mana_cost
           EV     = payoff - waste
 
@@ -2036,62 +2037,89 @@ class EVPlayer:
           - expected_gy_at_resolution = current GY creatures plus
             min(hand_cyclers, N counters) — every upkeep before
             resolution is an opportunity to cycle one more creature.
+          - P(survive_to_resolution_turn) =
+            1 - exp(-max(0, opp_clock - resolution_offset)
+                    / PERMANENT_VALUE_WINDOW).  Reuses the same
+            exponential clock-slack curve as
+            ``EVSnapshot.urgency_factor`` so suspend's clock
+            sensitivity matches the rest of the deferred-permanent
+            scoring layer.  Collapses to 0 at opp_clock<=resolution
+            (death before payoff) and asymptotes to 1 at long
+            clocks (Tron-style empty boards) — no hard cutoff, no
+            sentinel.
 
         Two gates make suspend defer to faster lines:
 
-          1. _payoff_reachable_this_turn returns True → cascade /
-             tutor / storm finisher / dig is in hand; the same
-             reanimation payoff is reachable in 1-2 turns instead of
-             N+1.  Suspend is the slow plan; faster wins.
-          2. resolution_offset > snap.opp_clock → opponent will kill
-             us before suspend resolves; deferring saves the mana.
+          1. A faster castable finisher route is in hand — cascade
+             enabler / storm finisher / tutor that is *castable in
+             current mana state*.  An uncastable cascade card (e.g.
+             {1}{B}{R} cascade with a BUG mana base, or a 3-mana
+             cascade on T2 with 1 land) does not constitute a
+             faster route — suspend is the parallel plan and scores
+             on its own merit.  The diagnostic at
+             ``docs/diagnostics/2026-05-10_living_end_5pct_root_cause.md``
+             documents how the prior unconditional check zeroed
+             suspend EV in 92.7% of enumerations.
+          2. opp_clock < resolution_offset — the opponent kills us
+             before suspend resolves.  Replaced the prior hard
+             ``return 0.0`` with the survival-probability discount
+             above; collapses to ~0 at opp_clock<=1 (lethal next
+             turn) but preserves an EV gradient between 1 and
+             resolution_offset where the suspend may still pay off
+             if the opponent stumbles or we stabilise.
 
         Class size: every Modern suspend card — Living End, Ancestral
         Vision, Crashing Footfalls, Restore Balance, Wheel of Fate,
         Lotus Bloom, Greater Gargadon, future printings.  No card
         names; reads SUSPEND keyword + parsed clause.
         """
+        import math
         from ai.clock import mana_clock_impact
         from engine.cards import Keyword as _Kw
         from engine.cast_manager import CastManager
 
-        # Gate 1: a faster route to the same finisher in hand?
+        # Gate 1: a CASTABLE faster route to the same finisher in
+        # hand?
         #
         # Suspend resolves on T+N+1.  If a cascade enabler / storm
-        # finisher / tutor is already in hand, the same payoff is
-        # reachable in 1-2 turns instead — suspend is strictly
-        # slower and should defer.
+        # finisher / tutor is in hand AND castable in current mana
+        # state, the same payoff is reachable in 1-2 turns instead
+        # — suspend is strictly slower and should defer.
+        #
+        # The castability check is critical: a cascade card stuck
+        # behind color requirements (e.g. {1}{B}{R} with no red
+        # source) or behind a CMC the mana base cannot yet pay is
+        # not a "faster route"; it is a parallel plan that competes
+        # with suspend on resource alignment, not on speed.
         #
         # Note: this gate intentionally does NOT include the
         # cantrip-dig branch from _payoff_reachable_this_turn.  A
         # cycler draws a card; it does not by itself cast the
         # finisher.  For suspend, the semantically correct gate is
-        # "fast finisher present", not "any payoff route present".
+        # "fast castable finisher present", not "any payoff route
+        # present".
         for c in me.hand:
             if c is card:
                 continue
             kws = c.template.keywords or set()
             tags_c = c.template.tags or set()
-            if _Kw.STORM in kws:
-                return 0.0
-            if 'tutor' in tags_c:
-                return 0.0
-            if getattr(c.template, 'is_cascade', False):
+            is_storm = _Kw.STORM in kws
+            is_tutor = 'tutor' in tags_c
+            is_cascade = getattr(c.template, 'is_cascade', False)
+            if not (is_storm or is_tutor or is_cascade):
+                continue
+            # Castability gate — only an *actually castable* faster
+            # route blocks suspend.  Uses engine's canonical
+            # can_cast helper so the check stays oracle-driven
+            # (color sources, generic mana, alt-cost paths) and no
+            # card-specific mana-cost logic leaks into ai/.
+            if game.can_cast(self.player_idx, c):
                 return 0.0
 
         parsed = CastManager._parse_suspend_clause(card.template)
         if parsed is None:
             return 0.0
         counters, cost = parsed
-
-        # Gate 2: time-to-resolution vs opponent clock.
-        # resolution_offset = counters + 1 (each upkeep removes one
-        # counter; the cast happens on the upkeep when the last is
-        # removed — that's N upkeeps + the cast turn).
-        resolution_offset = counters + 1
-        opp_clock = getattr(snap, 'opp_clock', None)
-        if opp_clock is not None and resolution_offset > opp_clock:
-            return 0.0
 
         # Payoff: expected GY creatures × per-creature equity.
         gy_creatures = sum(1 for c in me.graveyard
@@ -2105,6 +2133,45 @@ class EVPlayer:
                            + AVG_CREATURE_POWER
                            * CYCLING_GY_REANIMATE_PER_POWER)
         payoff_ev = expected_gy * per_creature_ev
+
+        # Gate 2 (clock-derived gradient): time-to-resolution vs
+        # opponent clock.  Resolution arrives at T+resolution_offset
+        # = counters + 1 (each upkeep removes one counter; the
+        # cast happens on the upkeep when the last is removed —
+        # that's N upkeeps + the cast turn).
+        #
+        # P(survive_to_resolution_turn) is a two-stage discount,
+        # both derived from existing clock primitives:
+        #
+        #   1. ``snap.urgency_factor`` — P(we get to act at all)
+        #      across the opp_clock - 1 horizon.  Same primitive
+        #      that discounts other deferred permanents (Goblin
+        #      Bombardment, planeswalker tick value etc.).
+        #   2. Additional exponential decay for the extra turns
+        #      needed past the urgency horizon to reach
+        #      resolution_offset.  Reuses
+        #      ``PERMANENT_VALUE_WINDOW`` (the same rules constant
+        #      that urgency_factor and ai.sideboard_solver use).
+        #
+        # At opp_clock <= 1 (lethal next turn): urgency_factor = 0,
+        # survival = 0 — the regression case from
+        # docs/diagnostics/2026-05-10_living_end_5pct_root_cause.md.
+        # At opp_clock >> resolution_offset (Tron-style stall):
+        # survival asymptotes to 1.0.  In between (e.g. opp_clock
+        # 2, resolution_offset 4) survival is small but non-zero,
+        # preserving the EV gradient the prior hard cutoff erased.
+        resolution_offset = counters + 1
+        opp_clock = getattr(snap, 'opp_clock', None)
+        PERMANENT_VALUE_WINDOW = 2.0  # magic-allow: shared rules constant
+                                      # (see ai/ev_evaluator.urgency_factor,
+                                      # ai/sideboard_solver) — deferred-value
+                                      # residency horizon.
+        if opp_clock is not None:
+            urgency = getattr(snap, 'urgency_factor', 1.0)
+            horizon_gap = max(0.0, resolution_offset - opp_clock)
+            horizon_decay = math.exp(-horizon_gap / PERMANENT_VALUE_WINDOW)
+            survival = urgency * horizon_decay
+            payoff_ev = payoff_ev * survival
 
         # Waste: mana committed produces no this-turn signal — same
         # shape as ev_evaluator._compute_exposure_cost.
