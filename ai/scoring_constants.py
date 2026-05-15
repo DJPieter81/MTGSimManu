@@ -4264,6 +4264,56 @@ Used by `_priority` in `simulate_finisher_chain`.
 """
 
 
+# ─── Multi-turn rollout constants (ai/finisher_simulator_v3.py) ────
+# Constants for the multi-turn projection (§5 of
+# `docs/design/2026-05-10_simulator_v3.md`). Every value below is a
+# rules-derived sentinel or a design horizon, never a tuning weight.
+
+CHAIN_MULTI_TURN_DEPTH: int = 3
+"""Design horizon: maximum turn-offset the multi-turn rollout
+projects. Three turns covers every realistic Modern combo turn
+arrival (Storm typically resolves T3-T5, reanimator T2-T4,
+cascade T3-T4) without exploding the projection tree.
+
+Mirrors the existing single-rollout depth at
+`ai/finisher_simulator.py:_MULTI_TURN_DEPTH = 3`; v3's name is
+public so callers can introspect the rollout length.
+
+Used by `_project_multi_turn` in `ai/finisher_simulator_v3.py`.
+"""
+
+
+CHAIN_REMOVAL_PRESSURE_FLOOR: float = 0.5
+"""Rules-derived sentinel: the maximum survival reduction a fully
+counter/removal-leaden opponent can impose on the chain. With
+`bhi_state.get_removal_probability() = 1.0`, survival is multiplied
+by `(1 - 1.0 * 0.5) = 0.5` — opponents with a full hand of removal
+halve our survival, but never zero it (we still might draw protection
+or out-tempo them).
+
+The 0.5 mirrors `CHAIN_EXTRA_RULES_STEP_SUCCESS` — same fair-coin
+floor used when one extra rules step is required for a chain to
+land. Per `docs/design/2026-05-10_simulator_v3.md` §5.2.
+
+Used by `_survival_to_offset` in `ai/finisher_simulator_v3.py`.
+"""
+
+
+CHAIN_TUTOR_MIN_RESOLVE: float = 0.5
+"""Rules-derived sentinel: minimum tutor resolution probability,
+floored so a fully counter-leaden opponent (BHI p_counter = 1.0)
+doesn't zero out the tutor-access path entirely. Same fair-coin
+floor as `CHAIN_EXTRA_RULES_STEP_SUCCESS`: even with maxed-out
+opp counter density, the tutor has a one-extra-rules-step chance
+to resolve (opp may pitch the counter for something else, may
+not have it on the right turn, etc.).
+
+Per `docs/design/2026-05-10_simulator_v3.md` §4.2.
+
+Used by `_tutor_access_contribution` in `ai/finisher_simulator_v3.py`.
+"""
+
+
 # ─── Stax / lock-piece valuation constants (ai/stax_ev.py) ──────────
 # Used by per-pattern lock evaluators (Chalice / Blood Moon / Canonist
 # / Torpor Orb). Constants are intentionally conservative — tests
