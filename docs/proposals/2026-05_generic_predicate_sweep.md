@@ -1,15 +1,20 @@
 ---
 title: "Generic-Predicate Sweep — comprehensive removal of card-name and deck-name gates"
-status: active
-priority: primary
+status: archived
+priority: historical
 session: 2026-05-10
+completion_session: 2026-05-15
 tags: [proposal, refactor, abstraction-contract, generic, sweep]
 summary: >
   Multi-PR plan to remove every hardcoded card-name and deck-name
-  gate flagged in the 2026-05-10 audit. Failing-first per change,
-  no behavioral semantic shifts. Each item ships with a regression
-  anchor that pins the old behavior in tests before the new
-  generic predicate replaces it.
+  gate flagged in the 2026-05-10 audit. All PRs A through F-6 shipped
+  by 2026-05-15 (#339 strategy_tags, #341 Mox Opal generic, #344
+  archetype enum, #346 tutor predicate, #347 prune redundant overrides,
+  #349 removal predicate, #353 discard predicate, #354 cantrip text
+  fallback, #356 graveyard_hate predicate, #358 effective_cmc oracle-
+  derived). Three follow-up audits tightened over-eager predicates
+  (#372 removal self-bounce, #373 tutor basic-land, #374 graveyard_hate
+  self-use). Sweep complete.
 ---
 
 # Generic-Predicate Sweep
