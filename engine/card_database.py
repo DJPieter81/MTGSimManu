@@ -637,10 +637,16 @@ class OracleTextParser:
                 removal_matched = True
                 wipe_matched = True
             # Bounce-all (Hurkyl's Recall / Echoing Truth permanent
-            # variants). Targets all of a permanent type to hand.
+            # variants). Targets all of a permanent type to hand —
+            # but only when the OWNER is the opponent (or
+            # "target player"), not when the spell self-bounces
+            # ("return all <X> you control" — Part the Veil, Retract).
+            # The negative lookahead excludes the "you control"
+            # phrasing on the same clause.
             elif _rm_re.search(
                 r'return all (?:creatures|artifacts|nonland permanents'
-                r'|enchantments)[^.]{0,40}'
+                r'|enchantments)\s+'
+                r'(?:target (?:player|opponent)|that player)\b[^.]{0,40}'
                 r' (?:to .+? hand|to (?:its|their) (?:owner|controller))',
                 text,
             ):
