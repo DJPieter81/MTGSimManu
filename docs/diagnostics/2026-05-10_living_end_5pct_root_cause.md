@@ -1,8 +1,9 @@
 ---
 title: Living End — suspend EV systematically pinned at 0.0; cascade-card Gate 1 short-circuit
-status: active
-priority: primary
+status: archived
+priority: historical
 session: 2026-05-10
+completion_session: 2026-05-15
 supersedes: []
 depends_on:
   - docs/diagnostics/2026-04-28_living_end_cascade_payoff.md
@@ -16,6 +17,13 @@ tags:
   - ev-player
   - ai-scoring
 summary: |
+  Root cause SHIPPED in #381 (`fix(ai/ev_player): _score_suspend
+  gates discount via mana-castability + clock-derived gradient`):
+  the Gate 1 / Gate 2 binary 0.0 sentinel diagnosed below has been
+  replaced by a mana-castability check + clock-derived gradient.
+  Archived 2026-05-15 alongside the rest of the Living End
+  diagnostic chain. Original diagnosis follows.
+
   The "Living End ~5% Bo3" claim from PROJECT_STATUS.md row 363
   is stale — current saved matrix is 53.0% flat / 47.2% weighted
   (n=20 Bo3 per pair) and a fresh field sweep (n=10) reproduces
