@@ -21,15 +21,11 @@ All evaluation is done via lightweight "virtual board states" that
 cheaply simulate outcomes without cloning the full GameState.
 """
 from __future__ import annotations
-import itertools
-import math
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple, Set, TYPE_CHECKING
-from enum import Enum
 
 if TYPE_CHECKING:
-    from engine.game_state import GameState, PlayerState
-    from engine.cards import CardInstance, CardTemplate, Keyword
+    from engine.game_state import GameState
 
 # ── Combat constants ──
 # Centralised in ai/scoring_constants.py — see that module for full
