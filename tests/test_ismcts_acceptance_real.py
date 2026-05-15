@@ -47,6 +47,9 @@ import pytest
 
 from ai.ev_evaluator import EVSnapshot
 from ai.search.ab_compare import acceptance_gate
+from ai.search.cardinstance_proxy import (
+    make_full_production_picker,
+)
 from ai.search.evplayer_scorer_adapter import (
     make_production_picker,
     production_scorer_picker,
@@ -191,19 +194,28 @@ def test_heuristic_picker_returns_action_token():
 
 
 def _production_picker_factory(fixture):
-    """Returns the production-scorer picker for the fixture.
+    """Returns the FULL-production-scorer picker for the fixture.
 
-    Mirrors ``ai.ev_evaluator.compute_play_ev``'s value-delta
-    formulation (``evaluate_board(after) − evaluate_board(before)``)
-    plus urgency-factor discount and archetype propagation. This is
-    the heuristic baseline the Phase 4A acceptance gate is supposed
-    to compare ISMCTS against — the synthetic
-    ``snapshot_adapter.heuristic_rollout`` is a less-faithful
-    placeholder.
+    Routes the snapshot through ``ai.ev_evaluator.compute_play_ev``
+    end-to-end via the CardInstance / GameState proxy in
+    ``ai/search/cardinstance_proxy.py`` (Phase 5 step 2). This
+    exercises BHI counter / removal probability, oracle-text-driven
+    deferral, goal-engine state, AND the combo-chain assessment —
+    not just the value-delta backbone the thin adapter
+    (``evplayer_scorer_adapter.py``) covers.
 
-    See ``ai/search/evplayer_scorer_adapter.py`` for the contract.
+    For the thin-adapter baseline kept for historical comparability
+    see ``_thin_production_picker_factory`` below.
     """
     archetype = fixture.get("archetype")  # may be None on most fixtures
+    return make_full_production_picker(archetype=archetype)
+
+
+def _thin_production_picker_factory(fixture):
+    """Historical baseline — the PR #367 thin adapter. Retained so the
+    production-baseline gate can be re-run against the thin scorer for
+    bisection if the full proxy result diverges sharply."""
+    archetype = fixture.get("archetype")
     return make_production_picker(archetype=archetype)
 
 
@@ -250,14 +262,20 @@ def test_production_picker_picks_legal_action_on_every_fixture():
            "(~60s for 12 fixtures × 50 forward sims).",
 )
 def test_ismcts_meets_acceptance_gate_production_baseline():
-    """Phase 5 step 1 — the apples-to-apples acceptance gate.
+    """Phase 5 step 2 — the apples-to-apples acceptance gate.
 
-    Same shape as ``test_ismcts_meets_acceptance_gate`` but with the
-    heuristic baseline routed through the production scorer adapter
-    (``ai/search/evplayer_scorer_adapter.py``) instead of the
-    synthetic ``snapshot_adapter.heuristic_rollout``. Closes the
-    handoff item in ``docs/handoff/2026-05_session_summary.md``
-    § "Phase 5 — production scorer wiring".
+    Routes the snapshot through the FULL production ``compute_play_ev``
+    via the CardInstance / GameState proxy in
+    ``ai/search/cardinstance_proxy.py``. This exercises BHI counter /
+    removal probability, oracle-text-driven deferral, goal-engine
+    state, and the combo-chain assessment — the four production
+    signals the thin adapter (``evplayer_scorer_adapter.py``, PR
+    #367) could not reach because the snapshot-only fixtures lacked
+    ``CardInstance`` + ``GameState``.
+
+    Closes the blocker note recorded in
+    ``docs/handoff/2026-05_session_summary.md`` § "Phase 5 —
+    production scorer wiring".
 
     Acceptance criteria are unchanged from the synthetic gate:
       - 0 strict heuristic wins

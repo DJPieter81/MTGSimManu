@@ -19,5 +19,21 @@ See:
 
 from ai.search.uct_node import UCTNode
 from ai.search.ismcts import ISMCTSPlanner, SearchConfig
+from ai.search.cardinstance_proxy import (
+    ProxyInsufficientMetadataError,
+    make_full_production_picker,
+    proxy_card_instance,
+    proxy_game_state,
+    score_action_via_production_scorer,
+)
 
-__all__ = ["UCTNode", "ISMCTSPlanner", "SearchConfig"]
+__all__ = [
+    "UCTNode",
+    "ISMCTSPlanner",
+    "SearchConfig",
+    "ProxyInsufficientMetadataError",
+    "make_full_production_picker",
+    "proxy_card_instance",
+    "proxy_game_state",
+    "score_action_via_production_scorer",
+]

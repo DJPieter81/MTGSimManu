@@ -144,6 +144,34 @@ makes the 12-fixture acceptance gate apples-to-apples. ~3 days
 of work; isolated to `tests/test_ismcts_acceptance_real.py` +
 a thin `EVPlayer`-adapter module.
 
+**Step 1 — shipped in PR #367** (commit `a7b7a01`):
+`ai/search/evplayer_scorer_adapter.py` runs the value-delta backbone
+(`evaluate_board(after) − evaluate_board(before)` + urgency-factor)
+through the snapshot fixtures. Reaches `compute_play_ev`'s shape but
+not its card-aware signals (BHI / oracle / combo chain).
+
+**Step 2 — this session** (`ai/search/cardinstance_proxy.py`):
+Synthesises a `CardInstance` from each `ActionToken` (preferring the
+real ModernAtomic template when the label matches) and a minimal
+`GameState` from the snapshot, then routes through the FULL
+`compute_play_ev`. The proxy fails loudly via
+`ProxyInsufficientMetadataError` when a token can't support a real
+card (empty label, `pass` kind) — silent fallback would mask the
+diagnostic.
+
+Status at commit time: `test_ismcts_meets_acceptance_gate_production_baseline`
+runs end-to-end on all 12 fixtures with the full production scorer.
+At the unchanged budget (`n_rollouts=500`, `rollout_depth=2`) the gate
+reports **2 strict ISMCTS wins / 0 regressions / 7 ties / 3 fixture
+decisions made**, below the 4-win threshold. The proxy is wiring-
+complete; reaching the threshold needs either a larger ISMCTS budget
+(stream E) or a richer rollout policy. Pass criterion (b) per the
+session brief — the gate is demonstrably below threshold with the
+production scorer driving it, and the per-fixture breakdown (printed
+on test failure) identifies which decisions tied at 0.00 EV
+(action-tokens with placeholder labels score uniformly under the full
+scorer because the synthetic templates carry no oracle text).
+
 ### Two real bugs to fix
 
 `tools/oracle_bug_detector.py --target token_artifact_typing`
