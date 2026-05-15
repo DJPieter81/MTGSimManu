@@ -1086,7 +1086,6 @@ class CardDatabase:
                 os.path.join(project_root, 'ModernAtomic.json'),
                 os.path.join(project_root, 'ModernAtomic_mini.json'),
                 os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'ModernAtomic.json'),
-                '/home/ubuntu/mtg_simulator/ModernAtomic.json',
             ]
             for candidate in candidates:
                 if os.path.exists(candidate):
