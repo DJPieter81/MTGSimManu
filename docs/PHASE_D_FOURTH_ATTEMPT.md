@@ -1,23 +1,23 @@
 ---
 title: Phase D — fourth attempt failure (Sprint 2 wire-up)
-status: active
-priority: primary
+status: archived
+priority: historical
 session: 2026-04-27
+completion_session: 2026-05-15
 supersedes: []
-superseded_by: []
+superseded_by:
+  - docs/design/2026-05-10_simulator_v3.md
 depends_on: [docs/PHASE_D_DEFERRED.md]
 tags: [phase-d, simulator, combo-evaluator, loop-break]
 summary: |
-  Fourth Phase D migration attempt collapsed Storm field N=10
-  from ~41% to 0.6%.  Same root cause as the prior three:
-  simulator-derived `expected_damage = 0` when no closer is in
-  hand, leading the chain-fuel scorer to return 0 for build-toward-
-  closer plays (rituals, cantrips, tutors).  Multi-turn helpers
-  (`best_turn_damage`, `chain_lethal_turn`) didn't fix this
-  because they walk projections that are themselves all 0 in the
-  pre-closer state.  Loop-break protocol triggered: halting code
-  on the simulator-replacement direction; documenting the exact
-  EV-divergence point.
+  Loop-break post-mortem of the fourth Phase D migration attempt
+  (Storm field collapsed to 0.6%). Both the EV-divergence diagnosis
+  and the "library composition + multi-turn intent" prescriptions
+  laid out here are the design inputs that became finisher_simulator
+  v3 — see `docs/design/2026-05-10_simulator_v3.md`, with the v3
+  library composition + multi-turn rollout shipping in #382 and #383.
+  Archived as historical context; no further action on the
+  Phase D wire-up direction described here.
 ---
 
 # Phase D fourth attempt — Sprint 2 wire-up reverted

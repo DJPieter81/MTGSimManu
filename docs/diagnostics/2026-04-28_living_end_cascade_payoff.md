@@ -1,10 +1,14 @@
 ---
 title: Living End 38% — cascade not recognized as payoff + uniform mulligan threshold
-status: active
-priority: primary
+status: archived
+priority: historical
 session: 2026-04-28
+completion_session: 2026-05-15
 supersedes:
   - docs/diagnostics/2026-04-24_living_end_consolidated_findings.md
+superseded_by:
+  - docs/diagnostics/2026-05-09_living_end_loop_break_root_cause.md
+  - docs/diagnostics/2026-05-10_living_end_5pct_root_cause.md
 depends_on:
   - docs/diagnostics/2026-04-28_storm_wasted_enablers.md
   - docs/diagnostics/2026-04-28_goryos_combo_mana_mulligan.md
@@ -16,21 +20,15 @@ tags:
   - ev-evaluator
   - mulligan
 summary: |
-  Living End at 38% baseline with two compounding bugs:
-    1. The 2026-04-28 _payoff_reachable_this_turn helper recognized
-       Keyword.STORM finishers + tutors as payoffs, but NOT cascade
-       triggers.  Cascade decks were over-tightened — cyclers got
-       deferred even with Shardless Agent / Demonic Dread in hand.
-    2. The 2026-04-28 mulligan Bug #4 fix used a uniform >=2-of-N
-       threshold for combo paths.  Living End's cascade combo set is
-       size 2 (Demonic Dread / Shardless Agent), making the threshold
-       impossibly strict (2-of-2 in opening 7).  Hands with one
-       cascade card mulled when they should have kept.
-
-  Both fixes ship in one diff because they share a class-size:
-  cascade decks (Living End, Crashing Footfalls, Violent Outburst,
-  future cascade-on-cast printings).  Validation: Living End
-  vs 4 representative opponents @ n=8 each, 30% → 44% aggregate.
+  Initial cascade-as-payoff + mulligan-threshold-scaling diagnosis
+  for Living End. Both fixes shipped (cascade-payoff branch + size-
+  scaled threshold), and the diagnostic chain continued through
+  the 2026-05-09 loop-break (engine suspend enumeration, shipped
+  in #303) and the 2026-05-10 root cause (suspend EV-gate collapse,
+  shipped in #381 — `_score_suspend` mana-castability gate +
+  clock-derived gradient). Living End aggregate WR is now in
+  band per current matrix (~53% flat). Archived as historical;
+  see the two superseding diagnostics for the path to the final fix.
 ---
 
 # Living End — cascade payoff + threshold scaling

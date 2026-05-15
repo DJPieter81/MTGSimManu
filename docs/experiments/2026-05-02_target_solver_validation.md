@@ -1,8 +1,9 @@
 ---
 title: Unified target solver — Phase 7 N=50 matrix validation
-status: active
-priority: primary
+status: archived
+priority: historical
 session: 2026-05-02
+completion_session: 2026-05-15
 depends_on:
   - docs/proposals/2026-05-02_unified_target_solver.md
   - docs/diagnostics/2026-05-02_affinity_88pct_hypothesis_list.md
@@ -13,7 +14,7 @@ tags:
   - cr-601-2c
   - affinity
   - completed
-summary: "N=50 16-deck matrix validates the Phases 1–4 unified target solver refactor. **Affinity barely moves (−0.3pp; 86.0% → 85.7%).** This *falsifies* the design doc's empirical hypothesis that the cast-time fix would correct Affinity's overall WR — confirming the design doc's alternate branch: 'the real Affinity bug is a positive-overscoring issue, separate next-session work.' Boros −3.1pp, Dimir −7.2pp, Living End +11.9pp are the largest shifts. Follow-up fixes: H_ACT_1 (creature-threat-value for removal targets) + modal-spell parser (Drown in the Loch) landed; **H_ACT_3 (SB keyword filter extension) tried and reverted — net-negative empirically (Affinity +1.2pp, Living End −2.5pp).** Phases 5-6 deferred. H_ACT_2 deferred."
+summary: "N=50 16-deck matrix validation of the Phases 1–4 unified target solver refactor (b1de63d / 52d2e4f / b0adf4a). Affinity barely moved (−0.3pp; 86.0% → 85.7%), falsifying the proposal's empirical hypothesis and confirming the alternate branch ('Affinity bug is positive-overscoring, separate work'). Validation complete; Phases 5–6 deferred and not picked up. Archived as historical alongside `docs/proposals/2026-05-02_unified_target_solver.md`."
 ---
 
 # Unified target solver — Phase 7 N=50 matrix validation

@@ -1,17 +1,22 @@
 ---
 title: Ruby Storm pro-player audit (5-agent panel)
-status: active
-priority: primary
+status: archived
+priority: historical
 session: 2026-04-26
+completion_session: 2026-05-15
 depends_on:
   - docs/history/audits/2026-04-11_LLM_judge.md
   - docs/diagnostics/2026-04-21_ruby_storm_underperformance.md
 tags: [storm, audit, pro-review, multi-agent]
 summary: >
-  Five specialist pro-player agents audited 30 Storm Bo3 traces across
-  5 matchups. Surfaced one regression (Medallion deferral filter) and
-  three structural issues (combo shock-pay bypass, tutor hold-penalty,
-  mulligan combo-set short-circuit). Auto-fixes target +5-8pp Storm WR.
+  Historical 5-agent Storm pro-player audit. Auto-fix F5.1 (Medallion
+  cost-reducer signal) shipped in this session; F4.1 (combo shock-pay
+  bypass) was reverted on a Goryo's regression and the broader chain-
+  fuel work moved to the finisher_simulator v3 design at
+  `docs/design/2026-05-10_simulator_v3.md` (#382, #383). Combo
+  hold-vs-fire / tutor-access fixes shipped via separate PRs (e.g.
+  #314, #321, #322, #323, #346, #381). Archived as a historical
+  audit under `docs/history/audits/`.
 ---
 
 # Ruby Storm pro-player audit — 2026-04-26

@@ -1,8 +1,9 @@
 ---
 title: Sideboard-aware play audit (post-Phase-L Affinity follow-up)
-status: active
-priority: primary
+status: archived
+priority: historical
 session: 2026-05-04
+completion_session: 2026-05-15
 depends_on:
   - docs/diagnostics/2026-05-04_phase-l-affinity-ai-audit.md
   - docs/experiments/2026-05-04_bo3_matrix_test.md
@@ -14,18 +15,16 @@ tags:
   - bhi
   - phase-l-followup
 summary: >
-  Three-question audit of the SB pipeline. Q1 (does opp board hate G2/G3?)
-  PARTIAL — opp does board in some hate, but the legacy keyword-matcher
-  has structural blind spots: lock/prison artifact answers (Damping Sphere,
-  Pithing Needle, Trinisphere) match no anti-Affinity SB rule; Eldrazi Tron
-  caps at 2 swaps because its mainboard has no "weak vs Affinity" cards;
-  4/5c Control caps Wear//Tear at 2x boarded despite carrying 3x in SB
-  (asymmetric `min(count,2)` on board-out matches). Q2 (does AI cast hate
-  on curve?) NULL — when Wear//Tear is drawn G2 T4 it casts T4. Q3 (does
-  BHI use post-board library?) NULL — `AIPlayer` is rebuilt per game and
-  `BHI.initialize_from_game` reads `opp.library`, which is built from the
-  post-`_sideboard` `d1_main` mutation. Estimated Affinity WR drop if Q1
-  gaps fixed: ~2-4pp.
+  Audit findings shipped: oracle-driven anti-artifact SB
+  categorization landed in `7115eb7 fix(sideboard): oracle-driven
+  anti-artifact categorization (Phase 2A)`, the SLM-based SB
+  advisor pipeline shipped in PR #312 / #325 (`SB_SOLVER=slm`),
+  and the SB acceptance + plan-overlap + determinism gates landed
+  in PR #317, #362, #363. The H_ACT_3 keyword-filter extension
+  was tried twice and reverted (3aa6e85, 83698ff) as net-negative.
+  Q2 / Q3 verdicts were NULL (already correct). Archived as
+  historical; current SB work is tracked under the SLM Phase 4C
+  thread.
 ---
 
 # Sideboard-aware play audit (post-Phase-L Affinity follow-up)
