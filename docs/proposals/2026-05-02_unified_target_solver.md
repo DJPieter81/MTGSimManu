@@ -1,8 +1,9 @@
 ---
 title: Unified Target Solver — Architectural Refactor
-status: active
-priority: primary
+status: archived
+priority: historical
 session: 2026-05-02
+completion_session: 2026-05-15
 depends_on:
   - docs/history/sessions/2026-05-02_mulligan_typed_combo_paths_and_cast_target.md
 tags:
@@ -12,7 +13,7 @@ tags:
   - target-resolution
   - oracle-driven
   - refactor
-summary: "Consolidate scattered cast/trigger/resolve target validation into a single oracle-driven solver. Closes 250+ sister-bug cards (target-permanent, target-artifact, target-enchantment removal castable on empty boards). Prerequisite for next-session work on Affinity threat-overscoring diagnosis."
+summary: "Unified `engine/target_solver.py` shipped: Phase 2 legality queries (b1de63d), Phases 3+4 cast + resolve consolidation (52d2e4f), and modal-spell `Choose one` legality fix (b0adf4a). Cast-time correctness validated by N=50 matrix in `docs/experiments/2026-05-02_target_solver_validation.md` — Affinity didn't move, falsifying this proposal's empirical hypothesis (Affinity bug was AI-scoring, not cast-time). Phases 5–6 deferred and never picked up. Archived as historical."
 ---
 
 # Unified Target Solver — Architectural Refactor
