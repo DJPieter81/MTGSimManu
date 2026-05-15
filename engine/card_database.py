@@ -960,23 +960,42 @@ class OracleTextParser:
         # OracleEffect-driven ramp path (see "Ramp" block above) and
         # so are not double-tagged.
         if "search your library for" in text:
-            # Exclude pure basic-land searches; everything else is
-            # treated as tutor. The qualifying tokens after "for" are
-            # diverse, so we filter only the explicit basic-land
-            # phrasings.
-            land_only_phrases = (
-                "search your library for a basic land",
-                "search your library for a basic ",
-                "search your library for up to two basic land",
-                "search your library for up to three basic land",
-                "search your library for a plains",
-                "search your library for an island",
-                "search your library for a swamp",
-                "search your library for a mountain",
-                "search your library for a forest",
-                "search your library for a land card",
+            # Exclude pure basic-land / snow-land searches; everything
+            # else is treated as tutor. The regex below covers any
+            # quantifier ("a", "an", "up to N", "N", "two"-"ten", "X",
+            # digit) followed by an optional adjective and a
+            # land-type token (basic, snow, plain-land, or a specific
+            # basic-land subtype). Cards that name a MIXED target
+            # set (e.g. Search for Glory: "snow permanent OR
+            # legendary OR saga") still get the tutor tag because
+            # the non-land alternatives are listed alongside.
+            import re as _tu_re
+            _BASIC_QUANT = (
+                r"(?:a|an|up to \w+|two|three|four|five|six|"
+                r"seven|eight|nine|ten|\d+|x)"
             )
-            if not any(p in text for p in land_only_phrases):
+            _BASIC_TARGET = (
+                r"(?:basic\s+lands?|basic\s+land\s+cards?"
+                r"|snow\s+lands?|snow\s+land\s+cards?"
+                r"|lands?|plains|island|swamp|mountain|forest|wastes)"
+            )
+            is_basic_land_search = bool(_tu_re.search(
+                rf"search your library for\s+{_BASIC_QUANT}\s+{_BASIC_TARGET}\b",
+                text,
+            ))
+            # Mixed-target search: if oracle ALSO names a non-land
+            # alternative on the same card, treat as tutor — the
+            # non-land branch makes it a real card-fetcher.
+            if is_basic_land_search:
+                non_land_alts = (
+                    "creature card", "instant card", "sorcery card",
+                    "planeswalker card", "enchantment card",
+                    "artifact card", "legendary card", "saga card",
+                    "permanent card",
+                )
+                if any(alt in text for alt in non_land_alts):
+                    is_basic_land_search = False
+            if not is_basic_land_search:
                 tags.add("tutor")
 
         # Graveyard filler (self-mill, loot, discard-to-draw)
