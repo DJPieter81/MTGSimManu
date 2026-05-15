@@ -487,7 +487,60 @@ def _tutor_access_contribution(
 
     See ``docs/design/2026-05-10_simulator_v3.md`` §4.
     """
-    raise NotImplementedError("v3 stub — implement in PR3c")
+    # Reuse v2's tutor-payoff predicate verbatim for sideboard
+    # access (oracle-driven; STORM keyword OR token-spawning
+    # oracle). Local import — avoids the v3 module being a hard
+    # dependency for v2 callers and matches the import-discipline
+    # pattern at line 533 / 640 of this file.
+    from ai.finisher_simulator import _tutor_has_payoff
+
+    tutors_with_access: list["CardInstance"] = []
+    for card in hand:
+        tags = getattr(card.template, "tags", set())
+        if "tutor" not in tags:
+            continue
+        # Sideboard reach uses the per-card scan (same predicate
+        # as v2). Library reach uses the LibraryComposition
+        # histogram (no per-card scan needed — the closer
+        # categories were already aggregated when composition was
+        # built).
+        if _tutor_has_payoff(card, sideboard) or _library_has_closer(
+            library_composition
+        ):
+            tutors_with_access.append(card)
+
+    if not tutors_with_access:
+        return (None, 0, 0.0)
+
+    # Lowest-CMC tutor wins — the chain pays its mana along with
+    # the closer cost, so cheaper tutors leave more mana for fuel.
+    best_tutor = min(
+        tutors_with_access,
+        key=lambda c: (c.template.cmc or 0),
+    )
+    extra_cost = best_tutor.template.cmc or 0
+
+    # Resolution probability = 1 - p_counter, floored at the rules-
+    # derived sentinel CHAIN_TUTOR_MIN_RESOLVE so a fully counter-
+    # leaden opponent doesn't zero the path. Floor is documented in
+    # ai/scoring_constants.py as the minimum survivable-against-
+    # interaction sentinel for chain-finisher access.
+    p_counter = bhi_state.get_counter_probability()
+    p_resolves = max(CHAIN_TUTOR_MIN_RESOLVE, 1.0 - p_counter)
+
+    return (best_tutor, extra_cost, p_resolves)
+
+
+def _library_has_closer(library_composition: LibraryComposition) -> bool:
+    """True iff the library composition reports at least one
+    closer-category card. Closer categories are the closer-tag
+    keys aggregated in ``build_library_composition`` (see §3.2 of
+    the design doc); ``closer_count`` is the sum across them.
+
+    Generic by tag — no card names. The composition object is
+    constructed once per projection; this predicate is O(1).
+    """
+    return library_composition.closer_count > 0
 
 
 # ─── Multi-turn rollout ────────────────────────────────────────────
