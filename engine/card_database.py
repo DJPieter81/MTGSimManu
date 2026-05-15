@@ -818,40 +818,65 @@ class OracleTextParser:
             import re as _gy_re
             text_l = text  # already lowercased
             matched = False
-            # Zone-wipe: "exile <something> graveyard(s)" with target/each/all
+            # Zone-wipe: exile a PLAYER'S graveyard — must explicitly
+            # target a player or each opponent. The earlier broad
+            # regex ("exile <anything> graveyard") also caught
+            # "exile target ... card from your graveyard" (self-
+            # graveyard utility), so each phrasing is now an
+            # explicit anchor.
             if _gy_re.search(
-                r"exile\s+[\w\s']+?\s+graveyards?\b", text_l
-            ):
-                m = _gy_re.search(r"exile\s+([\w\s']+?)\s+graveyards?\b", text_l)
-                if m and any(k in m.group(0)
-                             for k in ('target', 'each', 'all', 'any number')):
-                    matched = True
-            # Single-card exile from a graveyard (or graveyards)
-            if not matched and _gy_re.search(
-                r"exile\s+(?:target|up to \w+ target)\s+cards?\s+"
-                r"(?:from|in)\s+(?:a|graveyards?|each)",
+                r"exile\s+(?:"
+                r"all\s+graveyards|"
+                r"each opponent'?s? graveyards?|"
+                r"target opponent'?s? graveyards?|"
+                r"target player'?s? graveyards?|"
+                r"any number of target players'? graveyards?"
+                r")",
                 text_l,
-            ) and 'graveyard' in text_l:
+            ):
                 matched = True
-            # Choose-then-exile (Surgical Extraction shape)
+            # Single-card exile from a GENERIC graveyard
+            # ("from a graveyard" or plural "from graveyards" /
+            # "in a graveyard"). Excludes "from your graveyard"
+            # which is self-graveyard utility (escape, delve,
+            # token-from-graveyard makers).
+            if not matched and _gy_re.search(
+                r"exile\s+(?:target|up to \w+ target)\s+"
+                r"(?:[\w\s]{0,30}?\s+)?cards?\s+"
+                r"(?:from\s+(?:a\s+graveyard|graveyards)|in\s+a\s+graveyard)",
+                text_l,
+            ):
+                matched = True
+            # Choose-then-exile (Surgical Extraction shape).
             if not matched and (
                 'target card in a graveyard' in text_l
                 or 'target card from a graveyard' in text_l
             ) and 'exile' in text_l:
                 matched = True
-            # Replacement effect (Leyline of the Void / Rest in Peace)
-            if not matched and 'graveyard' in text_l and 'exile it instead' in text_l:
+            # Replacement effect — must SPECIFICALLY intercept the
+            # transition INTO a graveyard, not other zone changes.
+            # Pattern: "(would|if a card) ... put ... graveyard ...
+            # exile it instead" (Leyline of the Void, Rest in Peace,
+            # Necromentia). Excludes Geth-style "if this creature
+            # would leave the battlefield, exile it instead" or
+            # Draconic Intervention's "if a creature would die,
+            # exile it instead" — those replace battlefield/death
+            # transitions, not graveyard arrival.
+            if not matched and _gy_re.search(
+                r"(?:would|if\s+a\s+card)[^.]{0,80}put[^.]{0,40}"
+                r"graveyard[^.]{0,40}exile\s+it\s+instead",
+                text_l,
+            ):
                 matched = True
-            # Bottom-of-library (Endurance / Memory's Journey)
+            # Bottom-of-library (Endurance / Memory's Journey).
             if not matched and _gy_re.search(
                 r'graveyard\s+on\s+the\s+bottom\s+of\s+their\s+library',
                 text_l,
             ):
                 matched = True
             # Cast/ETB-from-graveyard restriction (Grafdigger's Cage):
-            # explicitly mentions "graveyards and libraries" — narrow
-            # enough to avoid catching reanimator cards that say
-            # "from a graveyard" but ENABLE ETB.
+            # explicitly mentions "graveyards and/or libraries" —
+            # narrow enough to avoid catching reanimator cards.
             if not matched and 'graveyard' in text_l and (
                 'graveyards and libraries' in text_l
                 or 'graveyards or libraries' in text_l
