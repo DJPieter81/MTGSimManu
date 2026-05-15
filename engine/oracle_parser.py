@@ -13,7 +13,7 @@ This replaces the hardcoded data tables in game_state.py
 """
 from __future__ import annotations
 import re
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Dict, Optional, Tuple
 
 
 def parse_ritual_mana(oracle: str) -> Optional[Tuple[str, int]]:

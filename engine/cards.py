@@ -5,7 +5,7 @@ Defines card types, subtypes, abilities, and the core Card class.
 from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Set, Callable, Any, TYPE_CHECKING
-from enum import Enum, Flag, auto
+from enum import Enum
 from .mana import ManaCost, Color
 
 if TYPE_CHECKING:

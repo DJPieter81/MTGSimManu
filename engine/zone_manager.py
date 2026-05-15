@@ -20,7 +20,7 @@ from typing import List, Optional, TYPE_CHECKING
 from .event_system import EventBus, EventType, GameEvent
 
 if TYPE_CHECKING:
-    from .cards import CardInstance, Keyword
+    from .cards import CardInstance
     from .game_state import GameState
 
 

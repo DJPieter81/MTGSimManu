@@ -7,8 +7,8 @@ from __future__ import annotations
 import json
 import re
 import os
-from typing import Dict, List, Optional, Set, Tuple, Any
-from dataclasses import dataclass, field
+from typing import Dict, List, Optional, Set, Any
+from dataclasses import dataclass
 from .mana import ManaCost, Color
 from .cards import (
     CardTemplate, CardType, Supertype, Keyword, Ability, AbilityType

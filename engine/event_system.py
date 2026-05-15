@@ -10,7 +10,7 @@ instead of requiring card-specific code in the engine.
 from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import (
-    Any, Callable, Dict, List, Optional, Set, Tuple, TYPE_CHECKING,
+    Any, Callable, Dict, List, Optional, Tuple, TYPE_CHECKING,
 )
 from collections import defaultdict
 from enum import Enum
