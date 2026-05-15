@@ -11,7 +11,7 @@ Units: turns of clock advantage. +1.0 means I'm one combat step ahead.
 """
 from __future__ import annotations
 import math
-from typing import TYPE_CHECKING, Optional, Set
+from typing import TYPE_CHECKING, Set
 
 from ai.scoring_constants import (
     PURE_BLOCKER_TOUGHNESS_VALUE,

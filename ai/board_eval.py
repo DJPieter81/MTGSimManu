@@ -17,7 +17,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import TYPE_CHECKING, Set, Optional, List
+from typing import TYPE_CHECKING, Set, Optional
 
 from ai.scoring_constants import (
     BOARD_EVAL_COMBO_DEFAULT_WAIT,

@@ -15,7 +15,7 @@ Design principles:
 
 from __future__ import annotations
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Dict, List, Optional, Set, Tuple
+from typing import TYPE_CHECKING, Dict, List, Optional, Set
 
 from ai.scoring_constants import (
     HELD_COLOR_PRESERVATION_BONUS,

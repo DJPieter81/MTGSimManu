@@ -4,7 +4,7 @@ Replaces the patchwork of patience-gate clamps with probability-
 weighted outcome aggregation. All outcome values in Δ(P_win) units.
 """
 from __future__ import annotations
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Dict, Optional
 import math
