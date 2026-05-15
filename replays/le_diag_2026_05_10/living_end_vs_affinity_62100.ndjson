@@ -1,0 +1,268 @@
+{"kind":"HEADER","schema":"1.0","seed":62100,"deck1":"Living End","deck2":"Affinity","event_count":267}
+{"seq":0,"kind":"GAME_START","game":1,"turn":0,"phase":"","deck1":"Living End","deck2":"Affinity","on_play":"Affinity","on_play_idx":1}
+{"seq":1,"kind":"MULLIGAN","game":1,"turn":0,"phase":"","pidx":0,"actor":"Living End","keep":true,"hand_size":7,"kept":["Island","Verdant Catacombs","Misty Rainforest","Striped Riverwinder","Waker of Waves","Shardless Agent","Street Wraith"],"bottomed":[],"reason":"has key card(s): Shardless Agent, Street Wraith, Striped Riverwinder, 1 cheap spells"}
+{"seq":2,"kind":"MULLIGAN","game":1,"turn":0,"phase":"","pidx":1,"actor":"Affinity","keep":true,"hand_size":7,"kept":["Tanglepool Bridge","Cranial Plating","Mox Opal","Spire of Industry","Tanglepool Bridge","Urza's Saga","Ornithopter"],"bottomed":[],"reason":"has key card(s): Cranial Plating, Mox Opal, Ornithopter, 3 cheap spells"}
+{"seq":3,"kind":"TURN_START","game":1,"turn":1,"phase":"","actor":"Affinity","pidx":1,"board":[{"creatures":[],"lands":[],"other":[],"hand_size":7,"library":53,"graveyard":0,"life":20},{"creatures":[],"lands":[],"other":[],"hand_size":7,"library":53,"graveyard":0,"life":20}],"state":{"life":[20,20],"hand":[7,7],"lands":[0,0]}}
+{"seq":4,"kind":"PHASE","game":1,"turn":1,"phase":"Untap","pidx":1}
+{"seq":5,"kind":"PHASE","game":1,"turn":1,"phase":"Upkeep","pidx":1}
+{"seq":6,"kind":"PHASE","game":1,"turn":1,"phase":"Draw","pidx":1}
+{"seq":7,"kind":"PHASE","game":1,"turn":1,"phase":"Main1","pidx":1}
+{"seq":8,"kind":"DECISION","game":1,"turn":1,"phase":"Main1","actor":"Affinity","pidx":1,"decision_id":"g1t1d0","goal":"deploy_engine","chosen":{"action":"play_land","card":"Urza's Saga","ev":34.403,"heuristic_ev":34.403,"reason":"Land: Urza's Saga (EV=34.4)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0},"alternatives":[{"action":"play_land","card":"Spire of Industry","ev":15.0,"heuristic_ev":15.0,"reason":"Land: Spire of Industry (EV=15.0)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0,"gap":19.403},{"action":"cast_spell","card":"Mox Opal","ev":0.975,"heuristic_ev":0.975,"reason":"Mox Opal (EV=1.0)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0,"gap":33.428},{"action":"cast_spell","card":"Ornithopter","ev":0.975,"heuristic_ev":0.975,"reason":"Ornithopter (EV=1.0)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0,"gap":33.428},{"action":"play_land","card":"Tanglepool Bridge","ev":0.0,"heuristic_ev":0.0,"reason":"Land: Tanglepool Bridge (EV=0.0)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0,"gap":34.403}],"subsystems":{},"candidates_n":6,"state":{"life":[20,20],"hand":[7,7],"lands":[0,0]}}
+{"seq":9,"kind":"PLAY","game":1,"turn":1,"phase":"Main1","pidx":1,"actor":"Affinity","action":"play_land","card":"Urza's Saga","targets":[]}
+{"seq":10,"kind":"DECISION","game":1,"turn":1,"phase":"Main1","actor":"Affinity","pidx":1,"decision_id":"g1t1d1","goal":"deploy_engine","chosen":{"action":"cast_spell","card":"Mox Opal","ev":0.958,"heuristic_ev":0.958,"reason":"Mox Opal (EV=1.0)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0},"alternatives":[{"action":"cast_spell","card":"Ornithopter","ev":0.958,"heuristic_ev":0.958,"reason":"Ornithopter (EV=1.0)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0,"gap":0.0}],"subsystems":{},"candidates_n":2,"state":{"life":[20,20],"hand":[7,6],"lands":[0,1]}}
+{"seq":11,"kind":"PLAY","game":1,"turn":1,"phase":"Main1","pidx":1,"actor":"Affinity","action":"cast_spell","card":"Mox Opal","targets":[]}
+{"seq":12,"kind":"DECISION","game":1,"turn":1,"phase":"Main1","actor":"Affinity","pidx":1,"decision_id":"g1t1d2","goal":"curve_out","chosen":{"action":"cast_spell","card":"Ornithopter","ev":0.958,"heuristic_ev":0.958,"reason":"Ornithopter (EV=1.0)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0},"alternatives":[],"subsystems":{},"candidates_n":1,"state":{"life":[20,20],"hand":[7,5],"lands":[0,1]}}
+{"seq":13,"kind":"PLAY","game":1,"turn":1,"phase":"Main1","pidx":1,"actor":"Affinity","action":"cast_spell","card":"Ornithopter","targets":[]}
+{"seq":14,"kind":"PHASE","game":1,"turn":1,"phase":"BeginCombat","pidx":1}
+{"seq":15,"kind":"COMBAT","game":1,"turn":1,"phase":"BeginCombat","sub":"no_attack","pidx":1,"actor":"Affinity"}
+{"seq":16,"kind":"PHASE","game":1,"turn":1,"phase":"Main2","pidx":1}
+{"seq":17,"kind":"PHASE","game":1,"turn":1,"phase":"EndStep","pidx":1}
+{"seq":18,"kind":"TURN_START","game":1,"turn":1,"phase":"EndStep","actor":"Living End","pidx":0,"board":[{"creatures":[],"lands":[],"other":[],"hand_size":7,"library":53,"graveyard":0,"life":20},{"creatures":[{"name":"Ornithopter","p":0,"t":2,"tapped":false,"summoning_sick":true}],"lands":["Urza's Saga"],"other":["Mox Opal"],"hand_size":4,"library":53,"graveyard":0,"life":20}],"state":{"life":[20,20],"hand":[7,4],"lands":[0,1]}}
+{"seq":19,"kind":"PHASE","game":1,"turn":1,"phase":"Untap","pidx":0}
+{"seq":20,"kind":"PHASE","game":1,"turn":1,"phase":"Upkeep","pidx":0}
+{"seq":21,"kind":"PHASE","game":1,"turn":1,"phase":"Draw","pidx":0}
+{"seq":22,"kind":"DRAW","game":1,"turn":1,"phase":"Draw","pidx":0,"actor":"Living End","card":"Subtlety"}
+{"seq":23,"kind":"PHASE","game":1,"turn":1,"phase":"Main1","pidx":0}
+{"seq":24,"kind":"DECISION","game":1,"turn":1,"phase":"Main1","actor":"Living End","pidx":0,"decision_id":"g1t1d3","goal":"fill_resource","chosen":{"action":"play_land","card":"Misty Rainforest","ev":35.0,"heuristic_ev":35.0,"reason":"Land: Misty Rainforest (EV=35.0)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0},"alternatives":[{"action":"cycle","card":"Street Wraith","ev":32.0,"heuristic_ev":32.0,"reason":"Cycle: Street Wraith","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0,"gap":3.0},{"action":"play_land","card":"Verdant Catacombs","ev":29.0,"heuristic_ev":29.0,"reason":"Land: Verdant Catacombs (EV=29.0)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0,"gap":6.0},{"action":"play_land","card":"Island","ev":28.0,"heuristic_ev":28.0,"reason":"Land: Island (EV=28.0)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0,"gap":7.0}],"subsystems":{},"candidates_n":4,"state":{"life":[20,20],"hand":[8,4],"lands":[0,1]}}
+{"seq":25,"kind":"PLAY","game":1,"turn":1,"phase":"Main1","pidx":0,"actor":"Living End","action":"play_land","card":"Misty Rainforest","targets":[]}
+{"seq":26,"kind":"DECISION","game":1,"turn":1,"phase":"Main1","actor":"Living End","pidx":0,"decision_id":"g1t1d4","goal":"fill_resource","chosen":{"action":"cycle","card":"Street Wraith","ev":32.0,"heuristic_ev":32.0,"reason":"Cycle: Street Wraith","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0},"alternatives":[],"subsystems":{},"candidates_n":1,"state":{"life":[19,20],"hand":[8,4],"lands":[1,1]}}
+{"seq":27,"kind":"PLAY","game":1,"turn":1,"phase":"Main1","pidx":0,"actor":"Living End","action":"cycle","card":"Street Wraith","targets":[]}
+{"seq":28,"kind":"PHASE","game":1,"turn":1,"phase":"BeginCombat","pidx":0}
+{"seq":29,"kind":"COMBAT","game":1,"turn":1,"phase":"BeginCombat","sub":"no_attack","pidx":0,"actor":"Living End"}
+{"seq":30,"kind":"PHASE","game":1,"turn":1,"phase":"Main2","pidx":0}
+{"seq":31,"kind":"PHASE","game":1,"turn":1,"phase":"EndStep","pidx":0}
+{"seq":32,"kind":"TURN_START","game":1,"turn":2,"phase":"EndStep","actor":"Affinity","pidx":1,"board":[{"creatures":[],"lands":["Zagoth Triome"],"other":[],"hand_size":7,"library":49,"graveyard":3,"life":17},{"creatures":[{"name":"Ornithopter","p":0,"t":2,"tapped":false,"summoning_sick":false}],"lands":["Urza's Saga"],"other":["Mox Opal"],"hand_size":4,"library":53,"graveyard":0,"life":20}],"state":{"life":[17,20],"hand":[7,4],"lands":[1,1]}}
+{"seq":33,"kind":"PHASE","game":1,"turn":2,"phase":"Untap","pidx":1}
+{"seq":34,"kind":"PHASE","game":1,"turn":2,"phase":"Upkeep","pidx":1}
+{"seq":35,"kind":"PHASE","game":1,"turn":2,"phase":"Draw","pidx":1}
+{"seq":36,"kind":"DRAW","game":1,"turn":2,"phase":"Draw","pidx":1,"actor":"Affinity","card":"Memnite"}
+{"seq":37,"kind":"PHASE","game":1,"turn":2,"phase":"Main1","pidx":1}
+{"seq":38,"kind":"DECISION","game":1,"turn":2,"phase":"Main1","actor":"Affinity","pidx":1,"decision_id":"g1t2d5","goal":"curve_out","chosen":{"action":"play_land","card":"Tanglepool Bridge","ev":15.0,"heuristic_ev":15.0,"reason":"Land: Tanglepool Bridge (EV=15.0)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0},"alternatives":[{"action":"play_land","card":"Spire of Industry","ev":15.0,"heuristic_ev":15.0,"reason":"Land: Spire of Industry (EV=15.0)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0,"gap":0.0},{"action":"play_land","card":"Tanglepool Bridge","ev":15.0,"heuristic_ev":15.0,"reason":"Land: Tanglepool Bridge (EV=15.0)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0,"gap":0.0},{"action":"cast_spell","card":"Memnite","ev":2.304,"heuristic_ev":2.304,"reason":"Memnite (EV=2.3)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0,"gap":12.696}],"subsystems":{},"candidates_n":4,"state":{"life":[17,20],"hand":[7,5],"lands":[1,1]}}
+{"seq":39,"kind":"PLAY","game":1,"turn":2,"phase":"Main1","pidx":1,"actor":"Affinity","action":"play_land","card":"Tanglepool Bridge","targets":[]}
+{"seq":40,"kind":"DECISION","game":1,"turn":2,"phase":"Main1","actor":"Affinity","pidx":1,"decision_id":"g1t2d6","goal":"curve_out","chosen":{"action":"cast_spell","card":"Memnite","ev":2.304,"heuristic_ev":2.304,"reason":"Memnite (EV=2.3)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0},"alternatives":[],"subsystems":{},"candidates_n":1,"state":{"life":[17,20],"hand":[7,4],"lands":[1,2]}}
+{"seq":41,"kind":"PLAY","game":1,"turn":2,"phase":"Main1","pidx":1,"actor":"Affinity","action":"cast_spell","card":"Memnite","targets":[]}
+{"seq":42,"kind":"PHASE","game":1,"turn":2,"phase":"BeginCombat","pidx":1}
+{"seq":43,"kind":"COMBAT","game":1,"turn":2,"phase":"BeginCombat","sub":"no_attack","pidx":1,"actor":"Affinity"}
+{"seq":44,"kind":"PHASE","game":1,"turn":2,"phase":"Main2","pidx":1}
+{"seq":45,"kind":"PHASE","game":1,"turn":2,"phase":"EndStep","pidx":1}
+{"seq":46,"kind":"TURN_START","game":1,"turn":2,"phase":"EndStep","actor":"Living End","pidx":0,"board":[{"creatures":[],"lands":["Zagoth Triome"],"other":[],"hand_size":5,"library":49,"graveyard":4,"life":17},{"creatures":[{"name":"Memnite","p":1,"t":1,"tapped":false,"summoning_sick":true}],"lands":["Urza's Saga","Tanglepool Bridge"],"other":[],"hand_size":3,"library":52,"graveyard":2,"life":20}],"state":{"life":[17,20],"hand":[5,3],"lands":[1,2]}}
+{"seq":47,"kind":"PHASE","game":1,"turn":2,"phase":"Untap","pidx":0}
+{"seq":48,"kind":"PHASE","game":1,"turn":2,"phase":"Upkeep","pidx":0}
+{"seq":49,"kind":"PHASE","game":1,"turn":2,"phase":"Draw","pidx":0}
+{"seq":50,"kind":"DRAW","game":1,"turn":2,"phase":"Draw","pidx":0,"actor":"Living End","card":"Demonic Dread"}
+{"seq":51,"kind":"PHASE","game":1,"turn":2,"phase":"Main1","pidx":0}
+{"seq":52,"kind":"DECISION","game":1,"turn":2,"phase":"Main1","actor":"Living End","pidx":0,"decision_id":"g1t2d7","goal":"execute_payoff","chosen":{"action":"play_land","card":"Verdant Catacombs","ev":15.0,"heuristic_ev":15.0,"reason":"Land: Verdant Catacombs (EV=15.0)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0},"alternatives":[{"action":"play_land","card":"Island","ev":12.0,"heuristic_ev":12.0,"reason":"Land: Island (EV=12.0)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0,"gap":3.0}],"subsystems":{},"candidates_n":2,"state":{"life":[17,20],"hand":[6,3],"lands":[1,2]}}
+{"seq":53,"kind":"PLAY","game":1,"turn":2,"phase":"Main1","pidx":0,"actor":"Living End","action":"play_land","card":"Verdant Catacombs","targets":[]}
+{"seq":54,"kind":"PHASE","game":1,"turn":2,"phase":"BeginCombat","pidx":0}
+{"seq":55,"kind":"COMBAT","game":1,"turn":2,"phase":"BeginCombat","sub":"no_attack","pidx":0,"actor":"Living End"}
+{"seq":56,"kind":"PHASE","game":1,"turn":2,"phase":"Main2","pidx":0}
+{"seq":57,"kind":"PHASE","game":1,"turn":2,"phase":"EndStep","pidx":0}
+{"seq":58,"kind":"TURN_START","game":1,"turn":3,"phase":"EndStep","actor":"Affinity","pidx":1,"board":[{"creatures":[],"lands":["Zagoth Triome","Blood Crypt"],"other":[],"hand_size":5,"library":47,"graveyard":5,"life":16},{"creatures":[{"name":"Memnite","p":1,"t":1,"tapped":false,"summoning_sick":false}],"lands":["Urza's Saga","Tanglepool Bridge"],"other":[],"hand_size":3,"library":52,"graveyard":2,"life":20}],"state":{"life":[16,20],"hand":[5,3],"lands":[2,2]}}
+{"seq":59,"kind":"PHASE","game":1,"turn":3,"phase":"Untap","pidx":1}
+{"seq":60,"kind":"PHASE","game":1,"turn":3,"phase":"Upkeep","pidx":1}
+{"seq":61,"kind":"PHASE","game":1,"turn":3,"phase":"Draw","pidx":1}
+{"seq":62,"kind":"DRAW","game":1,"turn":3,"phase":"Draw","pidx":1,"actor":"Affinity","card":"Silverbluff Bridge"}
+{"seq":63,"kind":"PHASE","game":1,"turn":3,"phase":"Main1","pidx":1}
+{"seq":64,"kind":"DECISION","game":1,"turn":3,"phase":"Main1","actor":"Affinity","pidx":1,"decision_id":"g1t3d8","goal":"curve_out","chosen":{"action":"play_land","card":"Spire of Industry","ev":15.0,"heuristic_ev":15.0,"reason":"Land: Spire of Industry (EV=15.0)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0},"alternatives":[{"action":"play_land","card":"Tanglepool Bridge","ev":15.0,"heuristic_ev":15.0,"reason":"Land: Tanglepool Bridge (EV=15.0)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0,"gap":0.0},{"action":"play_land","card":"Silverbluff Bridge","ev":15.0,"heuristic_ev":15.0,"reason":"Land: Silverbluff Bridge (EV=15.0)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0,"gap":0.0},{"action":"cast_spell","card":"Cranial Plating","ev":1.229,"heuristic_ev":1.229,"reason":"Cranial Plating (EV=1.2)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0,"gap":13.771}],"subsystems":{},"candidates_n":4,"state":{"life":[16,20],"hand":[5,4],"lands":[2,2]}}
+{"seq":65,"kind":"PLAY","game":1,"turn":3,"phase":"Main1","pidx":1,"actor":"Affinity","action":"play_land","card":"Spire of Industry","targets":[]}
+{"seq":66,"kind":"DECISION","game":1,"turn":3,"phase":"Main1","actor":"Affinity","pidx":1,"decision_id":"g1t3d9","goal":"curve_out","chosen":{"action":"cast_spell","card":"Cranial Plating","ev":1.281,"heuristic_ev":1.281,"reason":"Cranial Plating (EV=1.3)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0},"alternatives":[],"subsystems":{},"candidates_n":1,"state":{"life":[16,20],"hand":[5,3],"lands":[2,3]}}
+{"seq":67,"kind":"PLAY","game":1,"turn":3,"phase":"Main1","pidx":1,"actor":"Affinity","action":"cast_spell","card":"Cranial Plating","targets":[]}
+{"seq":68,"kind":"PHASE","game":1,"turn":3,"phase":"BeginCombat","pidx":1}
+{"seq":69,"kind":"COMBAT","game":1,"turn":3,"phase":"BeginCombat","sub":"declare_attackers","pidx":1,"actor":"Affinity","attackers":[{"name":"Memnite","p":1,"t":1}]}
+{"seq":70,"kind":"COMBAT","game":1,"turn":3,"phase":"BeginCombat","sub":"no_block","pidx":0,"actor":"Living End"}
+{"seq":71,"kind":"COMBAT","game":1,"turn":3,"phase":"BeginCombat","sub":"damage","pidx":1,"actor":"Affinity","damage":1,"defender":"Living End","defender_life_before":16,"defender_life_after":15,"lethal":false}
+{"seq":72,"kind":"PHASE","game":1,"turn":3,"phase":"Main2","pidx":1}
+{"seq":73,"kind":"PHASE","game":1,"turn":3,"phase":"EndStep","pidx":1}
+{"seq":74,"kind":"TURN_START","game":1,"turn":3,"phase":"EndStep","actor":"Living End","pidx":0,"board":[{"creatures":[],"lands":["Zagoth Triome","Blood Crypt"],"other":[],"hand_size":3,"library":47,"graveyard":6,"life":15},{"creatures":[{"name":"Memnite","p":1,"t":1,"tapped":true,"summoning_sick":false},{"name":"Construct Token","p":3,"t":3,"tapped":false,"summoning_sick":true}],"lands":["Urza's Saga","Tanglepool Bridge","Spire of Industry"],"other":[],"hand_size":2,"library":51,"graveyard":3,"life":20}],"state":{"life":[15,20],"hand":[3,2],"lands":[2,3]}}
+{"seq":75,"kind":"PHASE","game":1,"turn":3,"phase":"Untap","pidx":0}
+{"seq":76,"kind":"PHASE","game":1,"turn":3,"phase":"Upkeep","pidx":0}
+{"seq":77,"kind":"PHASE","game":1,"turn":3,"phase":"Draw","pidx":0}
+{"seq":78,"kind":"DRAW","game":1,"turn":3,"phase":"Draw","pidx":0,"actor":"Living End","card":"Demonic Dread"}
+{"seq":79,"kind":"PHASE","game":1,"turn":3,"phase":"Main1","pidx":0}
+{"seq":80,"kind":"DECISION","game":1,"turn":3,"phase":"Main1","actor":"Living End","pidx":0,"decision_id":"g1t3d10","goal":"execute_payoff","chosen":{"action":"cycle","card":"Waker of Waves","ev":33.167,"heuristic_ev":33.167,"reason":"Cycle: Waker of Waves","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0},"alternatives":[],"subsystems":{},"candidates_n":1,"state":{"life":[15,20],"hand":[4,2],"lands":[2,3]}}
+{"seq":81,"kind":"PLAY","game":1,"turn":3,"phase":"Main1","pidx":0,"actor":"Living End","action":"cycle","card":"Waker of Waves","targets":[]}
+{"seq":82,"kind":"PHASE","game":1,"turn":3,"phase":"BeginCombat","pidx":0}
+{"seq":83,"kind":"COMBAT","game":1,"turn":3,"phase":"BeginCombat","sub":"no_attack","pidx":0,"actor":"Living End"}
+{"seq":84,"kind":"PHASE","game":1,"turn":3,"phase":"Main2","pidx":0}
+{"seq":85,"kind":"PHASE","game":1,"turn":3,"phase":"EndStep","pidx":0}
+{"seq":86,"kind":"TURN_START","game":1,"turn":4,"phase":"EndStep","actor":"Affinity","pidx":1,"board":[{"creatures":[],"lands":["Zagoth Triome","Blood Crypt"],"other":[],"hand_size":4,"library":45,"graveyard":7,"life":15},{"creatures":[{"name":"Memnite","p":1,"t":1,"tapped":false,"summoning_sick":false},{"name":"Construct Token","p":3,"t":3,"tapped":false,"summoning_sick":false}],"lands":["Urza's Saga","Tanglepool Bridge","Spire of Industry"],"other":[],"hand_size":2,"library":51,"graveyard":3,"life":20}],"state":{"life":[15,20],"hand":[4,2],"lands":[2,3]}}
+{"seq":87,"kind":"PHASE","game":1,"turn":4,"phase":"Untap","pidx":1}
+{"seq":88,"kind":"PHASE","game":1,"turn":4,"phase":"Upkeep","pidx":1}
+{"seq":89,"kind":"PHASE","game":1,"turn":4,"phase":"Draw","pidx":1}
+{"seq":90,"kind":"DRAW","game":1,"turn":4,"phase":"Draw","pidx":1,"actor":"Affinity","card":"Engineered Explosives"}
+{"seq":91,"kind":"PHASE","game":1,"turn":4,"phase":"Main1","pidx":1}
+{"seq":92,"kind":"DECISION","game":1,"turn":4,"phase":"Main1","actor":"Affinity","pidx":1,"decision_id":"g1t4d11","goal":"curve_out","chosen":{"action":"play_land","card":"Tanglepool Bridge","ev":15.0,"heuristic_ev":15.0,"reason":"Land: Tanglepool Bridge (EV=15.0)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0},"alternatives":[{"action":"play_land","card":"Silverbluff Bridge","ev":15.0,"heuristic_ev":15.0,"reason":"Land: Silverbluff Bridge (EV=15.0)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0,"gap":0.0}],"subsystems":{},"candidates_n":2,"state":{"life":[15,20],"hand":[4,3],"lands":[2,2]}}
+{"seq":93,"kind":"PLAY","game":1,"turn":4,"phase":"Main1","pidx":1,"actor":"Affinity","action":"play_land","card":"Tanglepool Bridge","targets":[]}
+{"seq":94,"kind":"PHASE","game":1,"turn":4,"phase":"BeginCombat","pidx":1}
+{"seq":95,"kind":"COMBAT","game":1,"turn":4,"phase":"BeginCombat","sub":"declare_attackers","pidx":1,"actor":"Affinity","attackers":[{"name":"Memnite","p":1,"t":1},{"name":"Construct Token","p":6,"t":6}]}
+{"seq":96,"kind":"COMBAT","game":1,"turn":4,"phase":"BeginCombat","sub":"no_block","pidx":0,"actor":"Living End"}
+{"seq":97,"kind":"COMBAT","game":1,"turn":4,"phase":"BeginCombat","sub":"damage","pidx":1,"actor":"Affinity","damage":7,"defender":"Living End","defender_life_before":15,"defender_life_after":8,"lethal":false}
+{"seq":98,"kind":"PHASE","game":1,"turn":4,"phase":"Main2","pidx":1}
+{"seq":99,"kind":"PHASE","game":1,"turn":4,"phase":"EndStep","pidx":1}
+{"seq":100,"kind":"TURN_START","game":1,"turn":4,"phase":"EndStep","actor":"Living End","pidx":0,"board":[{"creatures":[],"lands":["Zagoth Triome","Blood Crypt"],"other":[],"hand_size":4,"library":45,"graveyard":7,"life":8},{"creatures":[{"name":"Memnite","p":1,"t":1,"tapped":true,"summoning_sick":false},{"name":"Construct Token","p":6,"t":6,"tapped":true,"summoning_sick":false},{"name":"Construct Token","p":6,"t":6,"tapped":false,"summoning_sick":true}],"lands":["Tanglepool Bridge","Spire of Industry","Tanglepool Bridge"],"other":["Springleaf Drum"],"hand_size":2,"library":49,"graveyard":4,"life":20}],"state":{"life":[8,20],"hand":[4,2],"lands":[2,3]}}
+{"seq":101,"kind":"PHASE","game":1,"turn":4,"phase":"Untap","pidx":0}
+{"seq":102,"kind":"PHASE","game":1,"turn":4,"phase":"Upkeep","pidx":0}
+{"seq":103,"kind":"PHASE","game":1,"turn":4,"phase":"Draw","pidx":0}
+{"seq":104,"kind":"DRAW","game":1,"turn":4,"phase":"Draw","pidx":0,"actor":"Living End","card":"Verdant Catacombs"}
+{"seq":105,"kind":"PHASE","game":1,"turn":4,"phase":"Main1","pidx":0}
+{"seq":106,"kind":"DECISION","game":1,"turn":4,"phase":"Main1","actor":"Living End","pidx":0,"decision_id":"g1t4d12","goal":"execute_payoff","chosen":{"action":"cycle","card":"Striped Riverwinder","ev":27.167,"heuristic_ev":27.167,"reason":"Cycle: Striped Riverwinder","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0},"alternatives":[{"action":"play_land","card":"Verdant Catacombs","ev":18.0,"heuristic_ev":18.0,"reason":"Land: Verdant Catacombs (EV=18.0)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0,"gap":9.167}],"subsystems":{},"candidates_n":2,"state":{"life":[8,20],"hand":[5,2],"lands":[2,3]}}
+{"seq":107,"kind":"PLAY","game":1,"turn":4,"phase":"Main1","pidx":0,"actor":"Living End","action":"cycle","card":"Striped Riverwinder","targets":[]}
+{"seq":108,"kind":"DECISION","game":1,"turn":4,"phase":"Main1","actor":"Living End","pidx":0,"decision_id":"g1t4d13","goal":"execute_payoff","chosen":{"action":"play_land","card":"Verdant Catacombs","ev":15.0,"heuristic_ev":15.0,"reason":"Land: Verdant Catacombs (EV=15.0)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0},"alternatives":[{"action":"play_land","card":"Misty Rainforest","ev":15.0,"heuristic_ev":15.0,"reason":"Land: Misty Rainforest (EV=15.0)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0,"gap":0.0}],"subsystems":{},"candidates_n":2,"state":{"life":[8,20],"hand":[5,2],"lands":[2,3]}}
+{"seq":109,"kind":"PLAY","game":1,"turn":4,"phase":"Main1","pidx":0,"actor":"Living End","action":"play_land","card":"Verdant Catacombs","targets":[]}
+{"seq":110,"kind":"PHASE","game":1,"turn":4,"phase":"BeginCombat","pidx":0}
+{"seq":111,"kind":"COMBAT","game":1,"turn":4,"phase":"BeginCombat","sub":"no_attack","pidx":0,"actor":"Living End"}
+{"seq":112,"kind":"PHASE","game":1,"turn":4,"phase":"Main2","pidx":0}
+{"seq":113,"kind":"PHASE","game":1,"turn":4,"phase":"EndStep","pidx":0}
+{"seq":114,"kind":"TURN_START","game":1,"turn":5,"phase":"EndStep","actor":"Affinity","pidx":1,"board":[{"creatures":[],"lands":["Zagoth Triome","Blood Crypt","Watery Grave"],"other":[],"hand_size":4,"library":42,"graveyard":9,"life":7},{"creatures":[{"name":"Memnite","p":1,"t":1,"tapped":false,"summoning_sick":false},{"name":"Construct Token","p":6,"t":6,"tapped":false,"summoning_sick":false},{"name":"Construct Token","p":6,"t":6,"tapped":false,"summoning_sick":false}],"lands":["Tanglepool Bridge","Spire of Industry","Tanglepool Bridge"],"other":["Springleaf Drum"],"hand_size":2,"library":49,"graveyard":4,"life":20}],"state":{"life":[7,20],"hand":[4,2],"lands":[3,3]}}
+{"seq":115,"kind":"PHASE","game":1,"turn":5,"phase":"Untap","pidx":1}
+{"seq":116,"kind":"PHASE","game":1,"turn":5,"phase":"Upkeep","pidx":1}
+{"seq":117,"kind":"PHASE","game":1,"turn":5,"phase":"Draw","pidx":1}
+{"seq":118,"kind":"DRAW","game":1,"turn":5,"phase":"Draw","pidx":1,"actor":"Affinity","card":"Memnite"}
+{"seq":119,"kind":"PHASE","game":1,"turn":5,"phase":"Main1","pidx":1}
+{"seq":120,"kind":"DECISION","game":1,"turn":5,"phase":"Main1","actor":"Affinity","pidx":1,"decision_id":"g1t5d14","goal":"curve_out","chosen":{"action":"play_land","card":"Silverbluff Bridge","ev":15.0,"heuristic_ev":15.0,"reason":"Land: Silverbluff Bridge (EV=15.0)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0},"alternatives":[{"action":"cast_spell","card":"Memnite","ev":2.538,"heuristic_ev":2.538,"reason":"Memnite (EV=2.5)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.01,"gap":12.462}],"subsystems":{},"candidates_n":2,"state":{"life":[7,20],"hand":[4,3],"lands":[3,3]}}
+{"seq":121,"kind":"PLAY","game":1,"turn":5,"phase":"Main1","pidx":1,"actor":"Affinity","action":"play_land","card":"Silverbluff Bridge","targets":[]}
+{"seq":122,"kind":"DECISION","game":1,"turn":5,"phase":"Main1","actor":"Affinity","pidx":1,"decision_id":"g1t5d15","goal":"curve_out","chosen":{"action":"cast_spell","card":"Memnite","ev":2.529,"heuristic_ev":2.529,"reason":"Memnite (EV=2.5)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.01},"alternatives":[],"subsystems":{},"candidates_n":1,"state":{"life":[7,20],"hand":[4,2],"lands":[3,4]}}
+{"seq":123,"kind":"PLAY","game":1,"turn":5,"phase":"Main1","pidx":1,"actor":"Affinity","action":"cast_spell","card":"Memnite","targets":[]}
+{"seq":124,"kind":"PHASE","game":1,"turn":5,"phase":"BeginCombat","pidx":1}
+{"seq":125,"kind":"COMBAT","game":1,"turn":5,"phase":"BeginCombat","sub":"declare_attackers","pidx":1,"actor":"Affinity","attackers":[{"name":"Memnite","p":1,"t":1},{"name":"Construct Token","p":8,"t":8},{"name":"Construct Token","p":8,"t":8}]}
+{"seq":126,"kind":"COMBAT","game":1,"turn":5,"phase":"BeginCombat","sub":"no_block","pidx":0,"actor":"Living End"}
+{"seq":127,"kind":"COMBAT","game":1,"turn":5,"phase":"BeginCombat","sub":"damage","pidx":1,"actor":"Affinity","damage":17,"defender":"Living End","defender_life_before":7,"defender_life_after":-10,"lethal":true}
+{"seq":128,"kind":"GAME_END","game":1,"turn":5,"phase":"BeginCombat","winner":"Affinity","winner_idx":1,"turns":5,"win_condition":"damage","life":[-10,20]}
+{"seq":129,"kind":"GAME_START","game":2,"turn":5,"phase":"BeginCombat","deck1":"Living End","deck2":"Affinity","on_play":"Living End","on_play_idx":0}
+{"seq":130,"kind":"MULLIGAN","game":2,"turn":0,"phase":"","pidx":0,"actor":"Living End","keep":true,"hand_size":7,"kept":["Swamp","Subtlety","Street Wraith","Striped Riverwinder","Demonic Dread","Living End","Subtlety"],"bottomed":[],"reason":"has key card(s): Demonic Dread, Street Wraith, Striped Riverwinder, 2 cheap spells"}
+{"seq":131,"kind":"MULLIGAN","game":2,"turn":0,"phase":"","pidx":1,"actor":"Affinity","keep":true,"hand_size":7,"kept":["Springleaf Drum","Spire of Industry","Mox Opal","Signal Pest","Razortide Bridge","Tanglepool Bridge","Sojourner's Companion"],"bottomed":[],"reason":"has key card(s): Mox Opal, Springleaf Drum, 3 cheap spells"}
+{"seq":132,"kind":"TURN_START","game":2,"turn":1,"phase":"","actor":"Living End","pidx":0,"board":[{"creatures":[],"lands":[],"other":[],"hand_size":7,"library":53,"graveyard":0,"life":20},{"creatures":[],"lands":[],"other":[],"hand_size":7,"library":53,"graveyard":0,"life":20}],"state":{"life":[20,20],"hand":[7,7],"lands":[0,0]}}
+{"seq":133,"kind":"PHASE","game":2,"turn":1,"phase":"Untap","pidx":0}
+{"seq":134,"kind":"PHASE","game":2,"turn":1,"phase":"Upkeep","pidx":0}
+{"seq":135,"kind":"PHASE","game":2,"turn":1,"phase":"Draw","pidx":0}
+{"seq":136,"kind":"PHASE","game":2,"turn":1,"phase":"Main1","pidx":0}
+{"seq":137,"kind":"DECISION","game":2,"turn":1,"phase":"Main1","actor":"Living End","pidx":0,"decision_id":"g2t1d16","goal":"fill_resource","chosen":{"action":"cycle","card":"Street Wraith","ev":32.0,"heuristic_ev":32.0,"reason":"Cycle: Street Wraith","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0},"alternatives":[{"action":"play_land","card":"Swamp","ev":25.0,"heuristic_ev":25.0,"reason":"Land: Swamp (EV=25.0)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0,"gap":7.0}],"subsystems":{},"candidates_n":2,"state":{"life":[20,20],"hand":[7,7],"lands":[0,0]}}
+{"seq":138,"kind":"PLAY","game":2,"turn":1,"phase":"Main1","pidx":0,"actor":"Living End","action":"cycle","card":"Street Wraith","targets":[]}
+{"seq":139,"kind":"DECISION","game":2,"turn":1,"phase":"Main1","actor":"Living End","pidx":0,"decision_id":"g2t1d17","goal":"fill_resource","chosen":{"action":"play_land","card":"Swamp","ev":22.0,"heuristic_ev":22.0,"reason":"Land: Swamp (EV=22.0)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0},"alternatives":[],"subsystems":{},"candidates_n":1,"state":{"life":[18,20],"hand":[7,7],"lands":[0,0]}}
+{"seq":140,"kind":"PLAY","game":2,"turn":1,"phase":"Main1","pidx":0,"actor":"Living End","action":"play_land","card":"Swamp","targets":[]}
+{"seq":141,"kind":"PHASE","game":2,"turn":1,"phase":"BeginCombat","pidx":0}
+{"seq":142,"kind":"COMBAT","game":2,"turn":1,"phase":"BeginCombat","sub":"no_attack","pidx":0,"actor":"Living End"}
+{"seq":143,"kind":"PHASE","game":2,"turn":1,"phase":"Main2","pidx":0}
+{"seq":144,"kind":"PHASE","game":2,"turn":1,"phase":"EndStep","pidx":0}
+{"seq":145,"kind":"TURN_START","game":2,"turn":1,"phase":"EndStep","actor":"Affinity","pidx":1,"board":[{"creatures":[],"lands":["Swamp"],"other":[],"hand_size":6,"library":52,"graveyard":1,"life":18},{"creatures":[],"lands":[],"other":[],"hand_size":7,"library":53,"graveyard":0,"life":20}],"state":{"life":[18,20],"hand":[6,7],"lands":[1,0]}}
+{"seq":146,"kind":"PHASE","game":2,"turn":1,"phase":"Untap","pidx":1}
+{"seq":147,"kind":"PHASE","game":2,"turn":1,"phase":"Upkeep","pidx":1}
+{"seq":148,"kind":"PHASE","game":2,"turn":1,"phase":"Draw","pidx":1}
+{"seq":149,"kind":"DRAW","game":2,"turn":1,"phase":"Draw","pidx":1,"actor":"Affinity","card":"Mox Opal"}
+{"seq":150,"kind":"PHASE","game":2,"turn":1,"phase":"Main1","pidx":1}
+{"seq":151,"kind":"DECISION","game":2,"turn":1,"phase":"Main1","actor":"Affinity","pidx":1,"decision_id":"g2t1d18","goal":"deploy_engine","chosen":{"action":"play_land","card":"Spire of Industry","ev":15.0,"heuristic_ev":15.0,"reason":"Land: Spire of Industry (EV=15.0)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0},"alternatives":[{"action":"cast_spell","card":"Mox Opal","ev":1.083,"heuristic_ev":1.083,"reason":"Mox Opal (EV=1.1)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0,"gap":13.917},{"action":"cast_spell","card":"Mox Opal","ev":1.083,"heuristic_ev":1.083,"reason":"Mox Opal (EV=1.1)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0,"gap":13.917},{"action":"play_land","card":"Razortide Bridge","ev":0.0,"heuristic_ev":0.0,"reason":"Land: Razortide Bridge (EV=0.0)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0,"gap":15.0},{"action":"play_land","card":"Tanglepool Bridge","ev":0.0,"heuristic_ev":0.0,"reason":"Land: Tanglepool Bridge (EV=0.0)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0,"gap":15.0}],"subsystems":{},"candidates_n":5,"state":{"life":[18,20],"hand":[6,8],"lands":[1,0]}}
+{"seq":152,"kind":"PLAY","game":2,"turn":1,"phase":"Main1","pidx":1,"actor":"Affinity","action":"play_land","card":"Spire of Industry","targets":[]}
+{"seq":153,"kind":"DECISION","game":2,"turn":1,"phase":"Main1","actor":"Affinity","pidx":1,"decision_id":"g2t1d19","goal":"deploy_engine","chosen":{"action":"cast_spell","card":"Springleaf Drum","ev":1.065,"heuristic_ev":1.065,"reason":"Springleaf Drum (EV=1.1)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0},"alternatives":[{"action":"cast_spell","card":"Mox Opal","ev":1.065,"heuristic_ev":1.065,"reason":"Mox Opal (EV=1.1)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0,"gap":0.0},{"action":"cast_spell","card":"Mox Opal","ev":1.065,"heuristic_ev":1.065,"reason":"Mox Opal (EV=1.1)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0,"gap":0.0},{"action":"cast_spell","card":"Signal Pest","ev":-0.019,"heuristic_ev":-0.019,"reason":"Signal Pest (EV=-0.0)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.024,"gap":1.084}],"subsystems":{},"candidates_n":4,"state":{"life":[18,20],"hand":[6,7],"lands":[1,1]}}
+{"seq":154,"kind":"PLAY","game":2,"turn":1,"phase":"Main1","pidx":1,"actor":"Affinity","action":"cast_spell","card":"Springleaf Drum","targets":[]}
+{"seq":155,"kind":"DECISION","game":2,"turn":1,"phase":"Main1","actor":"Affinity","pidx":1,"decision_id":"g2t1d20","goal":"curve_out","chosen":{"action":"cast_spell","card":"Mox Opal","ev":1.083,"heuristic_ev":1.083,"reason":"Mox Opal (EV=1.1)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0},"alternatives":[{"action":"cast_spell","card":"Mox Opal","ev":1.083,"heuristic_ev":1.083,"reason":"Mox Opal (EV=1.1)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0,"gap":0.0}],"subsystems":{},"candidates_n":2,"state":{"life":[18,20],"hand":[6,6],"lands":[1,1]}}
+{"seq":156,"kind":"PLAY","game":2,"turn":1,"phase":"Main1","pidx":1,"actor":"Affinity","action":"cast_spell","card":"Mox Opal","targets":[]}
+{"seq":157,"kind":"PHASE","game":2,"turn":1,"phase":"BeginCombat","pidx":1}
+{"seq":158,"kind":"COMBAT","game":2,"turn":1,"phase":"BeginCombat","sub":"no_attack","pidx":1,"actor":"Affinity"}
+{"seq":159,"kind":"PHASE","game":2,"turn":1,"phase":"Main2","pidx":1}
+{"seq":160,"kind":"PHASE","game":2,"turn":1,"phase":"EndStep","pidx":1}
+{"seq":161,"kind":"TURN_START","game":2,"turn":2,"phase":"EndStep","actor":"Living End","pidx":0,"board":[{"creatures":[],"lands":["Swamp"],"other":[],"hand_size":6,"library":52,"graveyard":1,"life":18},{"creatures":[],"lands":["Spire of Industry"],"other":["Springleaf Drum","Mox Opal"],"hand_size":5,"library":52,"graveyard":0,"life":20}],"state":{"life":[18,20],"hand":[6,5],"lands":[1,1]}}
+{"seq":162,"kind":"PHASE","game":2,"turn":2,"phase":"Untap","pidx":0}
+{"seq":163,"kind":"PHASE","game":2,"turn":2,"phase":"Upkeep","pidx":0}
+{"seq":164,"kind":"PHASE","game":2,"turn":2,"phase":"Draw","pidx":0}
+{"seq":165,"kind":"DRAW","game":2,"turn":2,"phase":"Draw","pidx":0,"actor":"Living End","card":"Living End"}
+{"seq":166,"kind":"PHASE","game":2,"turn":2,"phase":"Main1","pidx":0}
+{"seq":167,"kind":"PHASE","game":2,"turn":2,"phase":"BeginCombat","pidx":0}
+{"seq":168,"kind":"COMBAT","game":2,"turn":2,"phase":"BeginCombat","sub":"no_attack","pidx":0,"actor":"Living End"}
+{"seq":169,"kind":"PHASE","game":2,"turn":2,"phase":"Main2","pidx":0}
+{"seq":170,"kind":"PHASE","game":2,"turn":2,"phase":"EndStep","pidx":0}
+{"seq":171,"kind":"TURN_START","game":2,"turn":2,"phase":"EndStep","actor":"Affinity","pidx":1,"board":[{"creatures":[],"lands":["Swamp"],"other":[],"hand_size":7,"library":51,"graveyard":1,"life":18},{"creatures":[],"lands":["Spire of Industry"],"other":["Springleaf Drum","Mox Opal"],"hand_size":5,"library":52,"graveyard":0,"life":20}],"state":{"life":[18,20],"hand":[7,5],"lands":[1,1]}}
+{"seq":172,"kind":"PHASE","game":2,"turn":2,"phase":"Untap","pidx":1}
+{"seq":173,"kind":"PHASE","game":2,"turn":2,"phase":"Upkeep","pidx":1}
+{"seq":174,"kind":"PHASE","game":2,"turn":2,"phase":"Draw","pidx":1}
+{"seq":175,"kind":"DRAW","game":2,"turn":2,"phase":"Draw","pidx":1,"actor":"Affinity","card":"Cranial Plating"}
+{"seq":176,"kind":"PHASE","game":2,"turn":2,"phase":"Main1","pidx":1}
+{"seq":177,"kind":"DECISION","game":2,"turn":2,"phase":"Main1","actor":"Affinity","pidx":1,"decision_id":"g2t2d21","goal":"curve_out","chosen":{"action":"play_land","card":"Razortide Bridge","ev":11.0,"heuristic_ev":11.0,"reason":"Land: Razortide Bridge (EV=11.0)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0},"alternatives":[{"action":"play_land","card":"Tanglepool Bridge","ev":11.0,"heuristic_ev":11.0,"reason":"Land: Tanglepool Bridge (EV=11.0)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0,"gap":0.0},{"action":"cast_spell","card":"Signal Pest","ev":-2.204,"heuristic_ev":-2.204,"reason":"Signal Pest (EV=-2.2)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.028,"gap":13.204}],"subsystems":{},"candidates_n":3,"state":{"life":[18,20],"hand":[7,6],"lands":[1,1]}}
+{"seq":178,"kind":"PLAY","game":2,"turn":2,"phase":"Main1","pidx":1,"actor":"Affinity","action":"play_land","card":"Razortide Bridge","targets":[]}
+{"seq":179,"kind":"DECISION","game":2,"turn":2,"phase":"Main1","actor":"Affinity","pidx":1,"decision_id":"g2t2d22","goal":"curve_out","chosen":{"action":"cast_spell","card":"Signal Pest","ev":-2.185,"heuristic_ev":-2.185,"reason":"Signal Pest (EV=-2.2)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.028},"alternatives":[],"subsystems":{},"candidates_n":1,"state":{"life":[18,20],"hand":[7,5],"lands":[1,2]}}
+{"seq":180,"kind":"PLAY","game":2,"turn":2,"phase":"Main1","pidx":1,"actor":"Affinity","action":"cast_spell","card":"Signal Pest","targets":[]}
+{"seq":181,"kind":"PHASE","game":2,"turn":2,"phase":"BeginCombat","pidx":1}
+{"seq":182,"kind":"COMBAT","game":2,"turn":2,"phase":"BeginCombat","sub":"no_attack","pidx":1,"actor":"Affinity"}
+{"seq":183,"kind":"PHASE","game":2,"turn":2,"phase":"Main2","pidx":1}
+{"seq":184,"kind":"PHASE","game":2,"turn":2,"phase":"EndStep","pidx":1}
+{"seq":185,"kind":"TURN_START","game":2,"turn":3,"phase":"EndStep","actor":"Living End","pidx":0,"board":[{"creatures":[],"lands":["Swamp"],"other":[],"hand_size":7,"library":51,"graveyard":1,"life":18},{"creatures":[{"name":"Signal Pest","p":0,"t":1,"tapped":false,"summoning_sick":true}],"lands":["Spire of Industry","Razortide Bridge"],"other":["Springleaf Drum","Mox Opal"],"hand_size":4,"library":51,"graveyard":0,"life":20}],"state":{"life":[18,20],"hand":[7,4],"lands":[1,2]}}
+{"seq":186,"kind":"PHASE","game":2,"turn":3,"phase":"Untap","pidx":0}
+{"seq":187,"kind":"PHASE","game":2,"turn":3,"phase":"Upkeep","pidx":0}
+{"seq":188,"kind":"PHASE","game":2,"turn":3,"phase":"Draw","pidx":0}
+{"seq":189,"kind":"DRAW","game":2,"turn":3,"phase":"Draw","pidx":0,"actor":"Living End","card":"Living End"}
+{"seq":190,"kind":"PHASE","game":2,"turn":3,"phase":"Main1","pidx":0}
+{"seq":191,"kind":"PHASE","game":2,"turn":3,"phase":"BeginCombat","pidx":0}
+{"seq":192,"kind":"COMBAT","game":2,"turn":3,"phase":"BeginCombat","sub":"no_attack","pidx":0,"actor":"Living End"}
+{"seq":193,"kind":"PHASE","game":2,"turn":3,"phase":"Main2","pidx":0}
+{"seq":194,"kind":"PHASE","game":2,"turn":3,"phase":"EndStep","pidx":0}
+{"seq":195,"kind":"TURN_START","game":2,"turn":3,"phase":"EndStep","actor":"Affinity","pidx":1,"board":[{"creatures":[],"lands":["Swamp"],"other":[],"hand_size":7,"library":50,"graveyard":2,"life":18},{"creatures":[{"name":"Signal Pest","p":0,"t":1,"tapped":false,"summoning_sick":false}],"lands":["Spire of Industry","Razortide Bridge"],"other":["Springleaf Drum","Mox Opal"],"hand_size":4,"library":51,"graveyard":0,"life":20}],"state":{"life":[18,20],"hand":[7,4],"lands":[1,2]}}
+{"seq":196,"kind":"PHASE","game":2,"turn":3,"phase":"Untap","pidx":1}
+{"seq":197,"kind":"PHASE","game":2,"turn":3,"phase":"Upkeep","pidx":1}
+{"seq":198,"kind":"PHASE","game":2,"turn":3,"phase":"Draw","pidx":1}
+{"seq":199,"kind":"DRAW","game":2,"turn":3,"phase":"Draw","pidx":1,"actor":"Affinity","card":"Frogmite"}
+{"seq":200,"kind":"PHASE","game":2,"turn":3,"phase":"Main1","pidx":1}
+{"seq":201,"kind":"DECISION","game":2,"turn":3,"phase":"Main1","actor":"Affinity","pidx":1,"decision_id":"g2t3d23","goal":"curve_out","chosen":{"action":"play_land","card":"Tanglepool Bridge","ev":11.0,"heuristic_ev":11.0,"reason":"Land: Tanglepool Bridge (EV=11.0)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0},"alternatives":[{"action":"cycle","card":"Sojourner's Companion","ev":1.852,"heuristic_ev":1.852,"reason":"Cycle: Sojourner's Companion","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0,"gap":9.148},{"action":"cast_spell","card":"Cranial Plating","ev":1.157,"heuristic_ev":1.157,"reason":"Cranial Plating (EV=1.2)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0,"gap":9.843},{"action":"cast_spell","card":"Frogmite","ev":-2.148,"heuristic_ev":-2.148,"reason":"Frogmite (EV=-2.1)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.111,"gap":13.148}],"subsystems":{},"candidates_n":4,"state":{"life":[18,20],"hand":[7,5],"lands":[1,2]}}
+{"seq":202,"kind":"PLAY","game":2,"turn":3,"phase":"Main1","pidx":1,"actor":"Affinity","action":"play_land","card":"Tanglepool Bridge","targets":[]}
+{"seq":203,"kind":"DECISION","game":2,"turn":3,"phase":"Main1","actor":"Affinity","pidx":1,"decision_id":"g2t3d24","goal":"curve_out","chosen":{"action":"cast_spell","card":"Sojourner's Companion","ev":3.167,"heuristic_ev":3.167,"reason":"Sojourner's Companion (EV=3.2)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.111},"alternatives":[{"action":"cycle","card":"Sojourner's Companion","ev":1.852,"heuristic_ev":1.852,"reason":"Cycle: Sojourner's Companion","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0,"gap":1.315},{"action":"cast_spell","card":"Cranial Plating","ev":1.222,"heuristic_ev":1.222,"reason":"Cranial Plating (EV=1.2)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0,"gap":1.945},{"action":"cast_spell","card":"Frogmite","ev":-2.083,"heuristic_ev":-2.083,"reason":"Frogmite (EV=-2.1)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.111,"gap":5.25}],"subsystems":{},"candidates_n":4,"state":{"life":[18,20],"hand":[7,4],"lands":[1,3]}}
+{"seq":204,"kind":"PLAY","game":2,"turn":3,"phase":"Main1","pidx":1,"actor":"Affinity","action":"cast_spell","card":"Sojourner's Companion","targets":[]}
+{"seq":205,"kind":"DECISION","game":2,"turn":3,"phase":"Main1","actor":"Affinity","pidx":1,"decision_id":"g2t3d25","goal":"curve_out","chosen":{"action":"cast_spell","card":"Frogmite","ev":-2.544,"heuristic_ev":-2.544,"reason":"Frogmite (EV=-2.5)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.111},"alternatives":[],"subsystems":{},"candidates_n":1,"state":{"life":[18,20],"hand":[7,3],"lands":[1,3]}}
+{"seq":206,"kind":"PLAY","game":2,"turn":3,"phase":"Main1","pidx":1,"actor":"Affinity","action":"cast_spell","card":"Frogmite","targets":[]}
+{"seq":207,"kind":"PHASE","game":2,"turn":3,"phase":"BeginCombat","pidx":1}
+{"seq":208,"kind":"COMBAT","game":2,"turn":3,"phase":"BeginCombat","sub":"declare_attackers","pidx":1,"actor":"Affinity","attackers":[{"name":"Signal Pest","p":0,"t":1}]}
+{"seq":209,"kind":"COMBAT","game":2,"turn":3,"phase":"BeginCombat","sub":"no_block","pidx":0,"actor":"Living End"}
+{"seq":210,"kind":"PHASE","game":2,"turn":3,"phase":"Main2","pidx":1}
+{"seq":211,"kind":"PHASE","game":2,"turn":3,"phase":"EndStep","pidx":1}
+{"seq":212,"kind":"TURN_START","game":2,"turn":4,"phase":"EndStep","actor":"Living End","pidx":0,"board":[{"creatures":[],"lands":["Swamp"],"other":[],"hand_size":7,"library":50,"graveyard":2,"life":18},{"creatures":[{"name":"Signal Pest","p":0,"t":1,"tapped":true,"summoning_sick":false},{"name":"Sojourner's Companion","p":4,"t":4,"tapped":false,"summoning_sick":true},{"name":"Frogmite","p":2,"t":2,"tapped":false,"summoning_sick":true}],"lands":["Spire of Industry","Razortide Bridge","Tanglepool Bridge"],"other":["Springleaf Drum","Mox Opal"],"hand_size":2,"library":50,"graveyard":0,"life":20}],"state":{"life":[18,20],"hand":[7,2],"lands":[1,3]}}
+{"seq":213,"kind":"PHASE","game":2,"turn":4,"phase":"Untap","pidx":0}
+{"seq":214,"kind":"PHASE","game":2,"turn":4,"phase":"Upkeep","pidx":0}
+{"seq":215,"kind":"PHASE","game":2,"turn":4,"phase":"Draw","pidx":0}
+{"seq":216,"kind":"DRAW","game":2,"turn":4,"phase":"Draw","pidx":0,"actor":"Living End","card":"Subtlety"}
+{"seq":217,"kind":"PHASE","game":2,"turn":4,"phase":"Main1","pidx":0}
+{"seq":218,"kind":"PHASE","game":2,"turn":4,"phase":"BeginCombat","pidx":0}
+{"seq":219,"kind":"COMBAT","game":2,"turn":4,"phase":"BeginCombat","sub":"no_attack","pidx":0,"actor":"Living End"}
+{"seq":220,"kind":"PHASE","game":2,"turn":4,"phase":"Main2","pidx":0}
+{"seq":221,"kind":"PHASE","game":2,"turn":4,"phase":"EndStep","pidx":0}
+{"seq":222,"kind":"TURN_START","game":2,"turn":4,"phase":"EndStep","actor":"Affinity","pidx":1,"board":[{"creatures":[],"lands":["Swamp"],"other":[],"hand_size":7,"library":49,"graveyard":3,"life":18},{"creatures":[{"name":"Signal Pest","p":0,"t":1,"tapped":false,"summoning_sick":false},{"name":"Sojourner's Companion","p":4,"t":4,"tapped":false,"summoning_sick":false},{"name":"Frogmite","p":2,"t":2,"tapped":false,"summoning_sick":false}],"lands":["Spire of Industry","Razortide Bridge","Tanglepool Bridge"],"other":["Springleaf Drum","Mox Opal"],"hand_size":2,"library":50,"graveyard":0,"life":20}],"state":{"life":[18,20],"hand":[7,2],"lands":[1,3]}}
+{"seq":223,"kind":"PHASE","game":2,"turn":4,"phase":"Untap","pidx":1}
+{"seq":224,"kind":"PHASE","game":2,"turn":4,"phase":"Upkeep","pidx":1}
+{"seq":225,"kind":"PHASE","game":2,"turn":4,"phase":"Draw","pidx":1}
+{"seq":226,"kind":"DRAW","game":2,"turn":4,"phase":"Draw","pidx":1,"actor":"Affinity","card":"Island"}
+{"seq":227,"kind":"PHASE","game":2,"turn":4,"phase":"Main1","pidx":1}
+{"seq":228,"kind":"DECISION","game":2,"turn":4,"phase":"Main1","actor":"Affinity","pidx":1,"decision_id":"g2t4d26","goal":"curve_out","chosen":{"action":"play_land","card":"Island","ev":15.0,"heuristic_ev":15.0,"reason":"Land: Island (EV=15.0)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0},"alternatives":[{"action":"cast_spell","card":"Cranial Plating","ev":1.324,"heuristic_ev":1.324,"reason":"Cranial Plating (EV=1.3)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0,"gap":13.676}],"subsystems":{},"candidates_n":2,"state":{"life":[18,20],"hand":[7,3],"lands":[1,3]}}
+{"seq":229,"kind":"PLAY","game":2,"turn":4,"phase":"Main1","pidx":1,"actor":"Affinity","action":"play_land","card":"Island","targets":[]}
+{"seq":230,"kind":"DECISION","game":2,"turn":4,"phase":"Main1","actor":"Affinity","pidx":1,"decision_id":"g2t4d27","goal":"curve_out","chosen":{"action":"cast_spell","card":"Cranial Plating","ev":1.139,"heuristic_ev":1.139,"reason":"Cranial Plating (EV=1.1)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0},"alternatives":[],"subsystems":{},"candidates_n":1,"state":{"life":[18,20],"hand":[7,2],"lands":[1,4]}}
+{"seq":231,"kind":"PLAY","game":2,"turn":4,"phase":"Main1","pidx":1,"actor":"Affinity","action":"cast_spell","card":"Cranial Plating","targets":[]}
+{"seq":232,"kind":"DECISION","game":2,"turn":4,"phase":"Main1","actor":"Affinity","pidx":1,"decision_id":"g2t4d28","goal":"curve_out","chosen":{"action":"equip","card":"Cranial Plating","ev":12.0,"heuristic_ev":12.0,"reason":"Equip Cranial Plating to Sojourner's Companion (EV=12.0)","target_reason":"","targets":["id:90"],"counter_pct":0.0,"removal_pct":0.0},"alternatives":[],"subsystems":{},"candidates_n":1,"state":{"life":[18,20],"hand":[7,1],"lands":[1,4]}}
+{"seq":233,"kind":"PLAY","game":2,"turn":4,"phase":"Main1","pidx":1,"actor":"Affinity","action":"equip","card":"Cranial Plating","targets":["id:90"]}
+{"seq":234,"kind":"PHASE","game":2,"turn":4,"phase":"BeginCombat","pidx":1}
+{"seq":235,"kind":"COMBAT","game":2,"turn":4,"phase":"BeginCombat","sub":"declare_attackers","pidx":1,"actor":"Affinity","attackers":[{"name":"Signal Pest","p":0,"t":1},{"name":"Sojourner's Companion","p":12,"t":4},{"name":"Frogmite","p":2,"t":2}]}
+{"seq":236,"kind":"COMBAT","game":2,"turn":4,"phase":"BeginCombat","sub":"no_block","pidx":0,"actor":"Living End"}
+{"seq":237,"kind":"COMBAT","game":2,"turn":4,"phase":"BeginCombat","sub":"damage","pidx":1,"actor":"Affinity","damage":16,"defender":"Living End","defender_life_before":18,"defender_life_after":2,"lethal":false}
+{"seq":238,"kind":"PHASE","game":2,"turn":4,"phase":"Main2","pidx":1}
+{"seq":239,"kind":"PHASE","game":2,"turn":4,"phase":"EndStep","pidx":1}
+{"seq":240,"kind":"TURN_START","game":2,"turn":5,"phase":"EndStep","actor":"Living End","pidx":0,"board":[{"creatures":[],"lands":["Swamp"],"other":[],"hand_size":7,"library":49,"graveyard":3,"life":2},{"creatures":[{"name":"Signal Pest","p":0,"t":1,"tapped":true,"summoning_sick":false},{"name":"Sojourner's Companion","p":12,"t":4,"tapped":true,"summoning_sick":false},{"name":"Frogmite","p":2,"t":2,"tapped":true,"summoning_sick":false}],"lands":["Spire of Industry","Razortide Bridge","Tanglepool Bridge","Island"],"other":["Springleaf Drum","Mox Opal","Cranial Plating"],"hand_size":1,"library":49,"graveyard":0,"life":20}],"state":{"life":[2,20],"hand":[7,1],"lands":[1,4]}}
+{"seq":241,"kind":"PHASE","game":2,"turn":5,"phase":"Untap","pidx":0}
+{"seq":242,"kind":"PHASE","game":2,"turn":5,"phase":"Upkeep","pidx":0}
+{"seq":243,"kind":"PHASE","game":2,"turn":5,"phase":"Draw","pidx":0}
+{"seq":244,"kind":"DRAW","game":2,"turn":5,"phase":"Draw","pidx":0,"actor":"Living End","card":"Architects of Will"}
+{"seq":245,"kind":"PHASE","game":2,"turn":5,"phase":"Main1","pidx":0}
+{"seq":246,"kind":"DECISION","game":2,"turn":5,"phase":"Main1","actor":"Living End","pidx":0,"decision_id":"g2t5d29","goal":"execute_payoff","chosen":{"action":"cycle","card":"Architects of Will","ev":25.333,"heuristic_ev":25.333,"reason":"Cycle: Architects of Will","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0},"alternatives":[],"subsystems":{},"candidates_n":1,"state":{"life":[2,20],"hand":[8,1],"lands":[1,4]}}
+{"seq":247,"kind":"PLAY","game":2,"turn":5,"phase":"Main1","pidx":0,"actor":"Living End","action":"cycle","card":"Architects of Will","targets":[]}
+{"seq":248,"kind":"DECISION","game":2,"turn":5,"phase":"Main1","actor":"Living End","pidx":0,"decision_id":"g2t5d30","goal":"execute_payoff","chosen":{"action":"play_land","card":"Raugrin Triome","ev":31.0,"heuristic_ev":31.0,"reason":"Land: Raugrin Triome (EV=31.0)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.0},"alternatives":[],"subsystems":{},"candidates_n":1,"state":{"life":[2,20],"hand":[8,1],"lands":[1,4]}}
+{"seq":249,"kind":"PLAY","game":2,"turn":5,"phase":"Main1","pidx":0,"actor":"Living End","action":"play_land","card":"Raugrin Triome","targets":[]}
+{"seq":250,"kind":"PHASE","game":2,"turn":5,"phase":"BeginCombat","pidx":0}
+{"seq":251,"kind":"COMBAT","game":2,"turn":5,"phase":"BeginCombat","sub":"no_attack","pidx":0,"actor":"Living End"}
+{"seq":252,"kind":"PHASE","game":2,"turn":5,"phase":"Main2","pidx":0}
+{"seq":253,"kind":"PHASE","game":2,"turn":5,"phase":"EndStep","pidx":0}
+{"seq":254,"kind":"TURN_START","game":2,"turn":5,"phase":"EndStep","actor":"Affinity","pidx":1,"board":[{"creatures":[],"lands":["Swamp","Raugrin Triome"],"other":[],"hand_size":7,"library":47,"graveyard":4,"life":2},{"creatures":[{"name":"Signal Pest","p":0,"t":1,"tapped":false,"summoning_sick":false},{"name":"Sojourner's Companion","p":12,"t":4,"tapped":false,"summoning_sick":false},{"name":"Frogmite","p":2,"t":2,"tapped":false,"summoning_sick":false}],"lands":["Spire of Industry","Razortide Bridge","Tanglepool Bridge","Island"],"other":["Springleaf Drum","Mox Opal","Cranial Plating"],"hand_size":1,"library":49,"graveyard":0,"life":20}],"state":{"life":[2,20],"hand":[7,1],"lands":[2,4]}}
+{"seq":255,"kind":"PHASE","game":2,"turn":5,"phase":"Untap","pidx":1}
+{"seq":256,"kind":"PHASE","game":2,"turn":5,"phase":"Upkeep","pidx":1}
+{"seq":257,"kind":"PHASE","game":2,"turn":5,"phase":"Draw","pidx":1}
+{"seq":258,"kind":"DRAW","game":2,"turn":5,"phase":"Draw","pidx":1,"actor":"Affinity","card":"Ornithopter"}
+{"seq":259,"kind":"PHASE","game":2,"turn":5,"phase":"Main1","pidx":1}
+{"seq":260,"kind":"DECISION","game":2,"turn":5,"phase":"Main1","actor":"Affinity","pidx":1,"decision_id":"g2t5d31","goal":"curve_out","chosen":{"action":"pass","card":null,"ev":0.0,"reason":"below pass_threshold","targets":[]},"alternatives":[{"action":"cast_spell","card":"Ornithopter","ev":-59.5,"heuristic_ev":-59.5,"reason":"Ornithopter (EV=-59.5)","target_reason":"","targets":[],"counter_pct":0.0,"removal_pct":0.017,"gap":59.5}],"subsystems":{},"candidates_n":1,"state":{"life":[2,20],"hand":[7,2],"lands":[2,4]}}
+{"seq":261,"kind":"PHASE","game":2,"turn":5,"phase":"BeginCombat","pidx":1}
+{"seq":262,"kind":"COMBAT","game":2,"turn":5,"phase":"BeginCombat","sub":"declare_attackers","pidx":1,"actor":"Affinity","attackers":[{"name":"Signal Pest","p":0,"t":1},{"name":"Sojourner's Companion","p":12,"t":4},{"name":"Frogmite","p":2,"t":2}]}
+{"seq":263,"kind":"COMBAT","game":2,"turn":5,"phase":"BeginCombat","sub":"no_block","pidx":0,"actor":"Living End"}
+{"seq":264,"kind":"COMBAT","game":2,"turn":5,"phase":"BeginCombat","sub":"damage","pidx":1,"actor":"Affinity","damage":16,"defender":"Living End","defender_life_before":2,"defender_life_after":-14,"lethal":true}
+{"seq":265,"kind":"GAME_END","game":2,"turn":5,"phase":"BeginCombat","winner":"Affinity","winner_idx":1,"turns":5,"win_condition":"damage","life":[-14,20]}
+{"seq":266,"kind":"MATCH_END","game":2,"turn":5,"phase":"BeginCombat","winner":"Affinity","score":[0,2]}

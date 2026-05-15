@@ -1,0 +1,1512 @@
+Loaded 21759 cards (0 errors)
+Loaded 21759 cards (0 errors)
+======================================================================
+  GAME 1: Living End (P1) vs Affinity (P2)  —  seed 60600
+  Series: Living End 0 - 0 Affinity
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Living End wins → chooses to play first
+║ P1 (on play): Living End
+║ P2 (on draw): Affinity
+╚═══════════════════════════════════════════════════════
+
+P1 (Living End) opening hand (3 lands, 4 spells):
+  • Demonic Dread [Spell, CMC 3]
+  • Living End [Spell, CMC 0]
+  • Street Wraith [Creature, CMC 5]
+  • Misty Rainforest [Land, CMC 0]
+  • Overgrown Tomb [Land, CMC 0]
+  • Blooming Marsh [Land, CMC 0]
+  • Demonic Dread [Spell, CMC 3]
+→ P1 KEEPS 7 — has key card(s): Demonic Dread, Street Wraith, 3 cheap spells
+
+P2 (Affinity) opening hand (4 lands, 3 spells):
+  • Razortide Bridge [Land, CMC 0]
+  • Treasure Vault [Land, CMC 0]
+  • Razortide Bridge [Land, CMC 0]
+  • Springleaf Drum [Spell, CMC 1]
+  • Signal Pest [Creature, CMC 1]
+  • Darksteel Citadel [Land, CMC 0]
+  • Thought Monitor [Creature, CMC 7]
+→ P2 KEEPS 7 — has key card(s): Springleaf Drum, 2 cheap spells
+
+
+╔══ TURN 1 — Living End (P1) ══════════════════════════
+║ Life: Living End 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Cycle Street Wraith (pay 2 life, draw: Misty Rainforest)
+T1 P1: Play Overgrown Tomb (tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Living End 18
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thought Monitor
+  [Main 1]
+T1 P2: Play Treasure Vault
+    → Goal: deploy_engine [engines]
+    [Mana] Tap Treasure Vault→C (paying for Springleaf Drum, 1 mana remaining)
+T1 P2: Cast Springleaf Drum (1)
+    [Priority] P1 passes (no response)
+T1: Resolve Springleaf Drum
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Living End (P1) ══════════════════════════
+║ Life: Living End 18  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Springleaf Drum
+║   Lands: Treasure Vault [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Forest
+  [Main 1]
+T2 P1: Play Misty Rainforest
+T2 P1: Crack Misty Rainforest -> Raugrin Triome (tapped)
+T2 P1: Raugrin Triome ETB: draw 1 (Botanical Sanctum)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Living End 17
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Springleaf Drum
+║   Lands: Treasure Vault
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb, Raugrin Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Sojourner's Companion
+  [Main 1]
+T2 P2: Play Razortide Bridge (enters tapped)
+    → Goal: curve_out
+    [Mana] Tap Treasure Vault→C (paying for Signal Pest, 1 mana remaining)
+T2 P2: Cast Signal Pest (1)
+    [Priority] P1 passes (no response)
+T2: Resolve Signal Pest
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Living End (P1) ══════════════════════════
+║ Life: Living End 17  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 2
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb, Raugrin Triome
+║ Affinity board:
+║   Creatures: Signal Pest (0/1)
+║   Other: Springleaf Drum
+║   Lands: Treasure Vault [T], Razortide Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Shardless Agent
+  [Main 1]
+T3 P1: Play Misty Rainforest
+T3 P1: Crack Misty Rainforest (pay 1 life) -> Watery Grave (tapped, life: 16)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Living End 16
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Signal Pest (0/1)
+║   Other: Springleaf Drum
+║   Lands: Treasure Vault, Razortide Bridge
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb, Raugrin Triome, Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Springleaf Drum
+  [Main 1]
+T3 P2: Play Darksteel Citadel
+T3 P2: Cycle Sojourner's Companion (pay 2 mana, tutor: Darksteel Citadel)
+    → Goal: curve_out
+    [Mana] Tap Darksteel Citadel→C (paying for Springleaf Drum, 1 mana remaining)
+T3 P2: Cast Springleaf Drum (1)
+    [Priority] P1 passes (no response)
+T3: Resolve Springleaf Drum
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Signal Pest
+T3 P2: Attack with Signal Pest
+  [Declare Blockers] P1 does not block
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Living End (P1) ══════════════════════════
+║ Life: Living End 16  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 3
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb, Raugrin Triome, Watery Grave
+║ Affinity board:
+║   Creatures: Signal Pest (0/1) [tapped]
+║   Other: Springleaf Drum, Springleaf Drum
+║   Lands: Treasure Vault [T], Razortide Bridge [T], Darksteel Citadel [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Architects of Will
+  [Main 1]
+T4 P1: Cycle Architects of Will (pay 0 mana, draw: Force of Negation)
+T4 P1: Play Forest
+    [Mana] Tap Overgrown Tomb→B, Watery Grave→B, Forest→G, Raugrin Triome→R (paying for Living End, 4 mana remaining)
+T4 P1: Suspend Living End (3 time counters)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Living End 16
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Signal Pest (0/1)
+║   Other: Springleaf Drum, Springleaf Drum
+║   Lands: Treasure Vault, Razortide Bridge, Darksteel Citadel
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb [T], Raugrin Triome [T], Watery Grave [T], Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Sojourner's Companion
+  [Main 1]
+T4 P2: Play Darksteel Citadel
+    → Goal: curve_out [enablers]
+T4 P2: Cast Sojourner's Companion (7)
+    [Priority] P1 passes (no response)
+T4: Resolve Sojourner's Companion
+    → Goal: curve_out [enablers]
+    [Mana] Tap Razortide Bridge→U (paying for Thought Monitor, 4 mana remaining)
+T4 P2: Cast Thought Monitor (6U)
+    [Priority] P1 passes (no response)
+T4: Resolve Thought Monitor
+T4 P2: Thought Monitor ETB: draw 2 (Tanglepool Bridge, Sojourner's Companion)
+    → Goal: curve_out [enablers]
+T4 P2: Cast Sojourner's Companion (7)
+    [Priority] P1 passes (no response)
+T4: Resolve Sojourner's Companion
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Signal Pest
+T4 P2: Attack with Signal Pest
+  [Declare Blockers] P1 does not block
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Living End (P1) ══════════════════════════
+║ Life: Living End 16  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 4
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb, Raugrin Triome, Watery Grave, Forest
+║ Affinity board:
+║   Creatures: Signal Pest (0/1) [tapped], Sojourner's Companion (4/4), Thought Monitor (2/2), Sojourner's Companion (4/4)
+║   Other: Springleaf Drum, Springleaf Drum
+║   Lands: Treasure Vault, Razortide Bridge [T], Darksteel Citadel, Darksteel Citadel
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Island
+  [Main 1]
+T5 P1: Play Island
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Forest→G, Island→U, Overgrown Tomb→B (paying for Shardless Agent, 5 mana remaining)
+T5 P1: Cast Shardless Agent (1UG)
+    [Priority] P2 passes (no response)
+T5: Resolve Shardless Agent
+T5: Cascade (CMC < 3)
+T5: Cascade hits Living End
+T5: Living End resolves!
+T5: Living End returns Street Wraith for P1
+T5 P1: Architects of Will ETB: draw 1 (Shardless Agent)
+T5: Living End returns Architects of Will for P1
+T5: Living End returns Sojourner's Companion for P2
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Living End 16
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Sojourner's Companion (4/4)
+║   Other: Springleaf Drum, Springleaf Drum
+║   Lands: Treasure Vault, Razortide Bridge, Darksteel Citadel, Darksteel Citadel
+║ Living End board:
+║   Creatures: Street Wraith (3/4), Architects of Will (3/3)
+║   Lands: Overgrown Tomb [T], Raugrin Triome, Watery Grave, Forest [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mistvault Bridge
+  [Main 1]
+T5 P2: Play Tanglepool Bridge (enters tapped)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Razortide Bridge→U (paying for Thought Monitor, 4 mana remaining)
+T5 P2: Cast Thought Monitor (6U)
+    [Priority] P1 passes (no response)
+T5: Resolve Thought Monitor
+T5 P2: Thought Monitor ETB: draw 2 (Silverbluff Bridge, Memnite)
+    → Goal: curve_out
+T5 P2: Cast Memnite (0)
+    [Priority] P1 passes (no response)
+T5: Resolve Memnite
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Sojourner's Companion
+T5 P2: Attack with Sojourner's Companion
+T5 P1:   [BLOCK] Architects of Will (3/3) blocks Sojourner's Companion (4/4) — chump block
+T5 P1:   [BLOCK] Street Wraith (3/4) blocks Sojourner's Companion (4/4) — chump block
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T5: Architects of Will dies
+T5: Sojourner's Companion dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Living End (P1) ══════════════════════════
+║ Life: Living End 16  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 42  |  Graveyard: 4
+║ Living End board:
+║   Creatures: Street Wraith (3/4)
+║   Lands: Overgrown Tomb, Raugrin Triome, Watery Grave, Forest, Island
+║ Affinity board:
+║   Creatures: Thought Monitor (2/2), Memnite (1/1)
+║   Other: Springleaf Drum, Springleaf Drum
+║   Lands: Treasure Vault, Razortide Bridge [T], Darksteel Citadel, Darksteel Citadel, Tanglepool Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Demonic Dread
+  [Main 1]
+T6 P1: Play Blooming Marsh (tapped, 5 other lands)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Street Wraith
+T6 P1: Attack with Street Wraith
+  [Declare Blockers] P2 does not block
+T6 P1:   Street Wraith (3/4) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 20 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 17  |  Living End 16
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 43  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Thought Monitor (2/2), Memnite (1/1)
+║   Other: Springleaf Drum, Springleaf Drum
+║   Lands: Treasure Vault, Razortide Bridge, Darksteel Citadel, Darksteel Citadel, Tanglepool Bridge
+║ Living End board:
+║   Creatures: Street Wraith (3/4) [tapped]
+║   Lands: Overgrown Tomb, Raugrin Triome, Watery Grave, Forest, Island, Blooming Marsh [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ornithopter
+  [Main 1]
+T6 P2: Play Razortide Bridge (enters tapped)
+    → Goal: curve_out
+T6 P2: Cast Ornithopter (0)
+    [Priority] P1 passes (no response)
+T6: Resolve Ornithopter
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Thought Monitor, Memnite
+T6 P2: Attack with Thought Monitor, Memnite
+  [Declare Blockers] P1 does not block
+T6 P2:   Thought Monitor (2/2) → 2 dmg to player
+T6 P2:   Memnite (1/1) → 1 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 16 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Living End (P1) ══════════════════════════
+║ Life: Living End 13  |  Affinity 17
+║ Hand: 6 cards  |  Opp hand: 2 cards
+║ Lands: 6  |  Opp lands: 6
+║ Library: 41  |  Graveyard: 4
+║ Living End board:
+║   Creatures: Street Wraith (3/4)
+║   Lands: Overgrown Tomb, Raugrin Triome, Watery Grave, Forest, Island, Blooming Marsh
+║ Affinity board:
+║   Creatures: Thought Monitor (2/2) [tapped], Memnite (1/1) [tapped], Ornithopter (0/2)
+║   Other: Springleaf Drum, Springleaf Drum
+║   Lands: Treasure Vault, Razortide Bridge, Darksteel Citadel, Darksteel Citadel, Tanglepool Bridge, Razortide Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T7 P1: Cast Living End (0)
+T7: Resolve Living End
+  [Draw] P1 draws: Verdant Catacombs
+  [Main 1]
+T7 P1: Play Verdant Catacombs
+T7 P1: Crack Verdant Catacombs (pay 1 life) -> Blood Crypt (tapped, life: 12)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Street Wraith
+T7 P1: Attack with Street Wraith
+  [Declare Blockers] P2 does not block
+T7 P1:   Street Wraith (3/4) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 17 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 14  |  Living End 12
+║ Hand: 2 cards  |  Opp hand: 6 cards
+║ Lands: 6  |  Opp lands: 7
+║ Library: 42  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Thought Monitor (2/2), Memnite (1/1), Ornithopter (0/2)
+║   Other: Springleaf Drum, Springleaf Drum
+║   Lands: Treasure Vault, Razortide Bridge, Darksteel Citadel, Darksteel Citadel, Tanglepool Bridge, Razortide Bridge
+║ Living End board:
+║   Creatures: Street Wraith (3/4) [tapped]
+║   Lands: Overgrown Tomb, Raugrin Triome, Watery Grave, Forest, Island, Blooming Marsh, Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Darksteel Citadel
+  [Main 1]
+T7 P2: Play Darksteel Citadel
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Thought Monitor, Memnite
+T7 P2: Attack with Thought Monitor, Memnite
+  [Declare Blockers] P1 does not block
+T7 P2:   Thought Monitor (2/2) → 2 dmg to player
+T7 P2:   Memnite (1/1) → 1 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 12 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Living End (P1) ══════════════════════════
+║ Life: Living End 9  |  Affinity 14
+║ Hand: 6 cards  |  Opp hand: 2 cards
+║ Lands: 7  |  Opp lands: 7
+║ Library: 39  |  Graveyard: 6
+║ Living End board:
+║   Creatures: Street Wraith (3/4)
+║   Lands: Overgrown Tomb, Raugrin Triome, Watery Grave, Forest, Island, Blooming Marsh, Blood Crypt
+║ Affinity board:
+║   Creatures: Thought Monitor (2/2) [tapped], Memnite (1/1) [tapped], Ornithopter (0/2)
+║   Other: Springleaf Drum, Springleaf Drum
+║   Lands: Treasure Vault, Razortide Bridge, Darksteel Citadel, Darksteel Citadel, Tanglepool Bridge, Razortide Bridge, Darksteel Citadel
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ketria Triome
+  [Main 1]
+T8 P1: Cycle Ketria Triome (pay 3 mana, draw: Force of Negation)
+T8 P1: Play Botanical Sanctum (tapped, 7 other lands)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Street Wraith
+T8 P1: Attack with Street Wraith
+  [Declare Blockers] P2 does not block
+T8 P1:   Street Wraith (3/4) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 14 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 11  |  Living End 9
+║ Hand: 2 cards  |  Opp hand: 6 cards
+║ Lands: 7  |  Opp lands: 8
+║ Library: 41  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Thought Monitor (2/2), Memnite (1/1), Ornithopter (0/2)
+║   Other: Springleaf Drum, Springleaf Drum
+║   Lands: Treasure Vault, Razortide Bridge, Darksteel Citadel, Darksteel Citadel, Tanglepool Bridge, Razortide Bridge, Darksteel Citadel
+║ Living End board:
+║   Creatures: Street Wraith (3/4) [tapped]
+║   Lands: Overgrown Tomb [T], Raugrin Triome [T], Watery Grave [T], Forest, Island, Blooming Marsh, Blood Crypt, Botanical Sanctum [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Cranial Plating
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Treasure Vault→C, Darksteel Citadel→C (paying for Cranial Plating, 7 mana remaining)
+T8 P2: Cast Cranial Plating (2)
+    [Priority] P1 responds with Force of Negation
+T8 P1: Pay alternate cost: exile Shardless Agent for Force of Negation
+T8 P1: Cast Force of Negation (1UU)
+T8: Resolve Force of Negation
+T8: Cranial Plating is countered
+T8 P2: Play Mistvault Bridge (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Thought Monitor, Memnite
+T8 P2: Attack with Thought Monitor, Memnite
+  [Declare Blockers] P1 does not block
+T8 P2:   Thought Monitor (2/2) → 2 dmg to player
+T8 P2:   Memnite (1/1) → 1 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 9 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Living End (P1) ══════════════════════════
+║ Life: Living End 6  |  Affinity 11
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 8  |  Opp lands: 8
+║ Library: 37  |  Graveyard: 8
+║ Living End board:
+║   Creatures: Street Wraith (3/4)
+║   Lands: Overgrown Tomb, Raugrin Triome, Watery Grave, Forest, Island, Blooming Marsh, Blood Crypt, Botanical Sanctum
+║ Affinity board:
+║   Creatures: Thought Monitor (2/2) [tapped], Memnite (1/1) [tapped], Ornithopter (0/2)
+║   Other: Springleaf Drum, Springleaf Drum
+║   Lands: Treasure Vault [T], Razortide Bridge, Darksteel Citadel [T], Darksteel Citadel, Tanglepool Bridge, Razortide Bridge, Darksteel Citadel, Mistvault Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Waker of Waves
+  [Main 1]
+T9 P1: Cycle Waker of Waves (pay 2 mana, draw: Blooming Marsh)
+T9 P1: Play Blooming Marsh (tapped, 8 other lands)
+    → Goal: push_damage
+    [Mana] Tap Blood Crypt→R, Watery Grave→B, Forest→G (paying for Demonic Dread, 6 mana remaining)
+T9 P1: Cast Demonic Dread (1BR)
+    [Priority] P2 passes (no response)
+T9: Resolve Demonic Dread
+T9: Cascade (CMC < 3)
+T9: Cascade hits Living End
+T9: Living End resolves!
+T9 P1: Architects of Will ETB: draw 1 (Zagoth Triome)
+T9: Living End returns Architects of Will for P1
+T9 P1: Waker of Waves ETB: draw 1 (Forest)
+T9: Living End returns Waker of Waves for P1
+T9: Living End returns Sojourner's Companion for P2
+T9 P1: Cycle Zagoth Triome (pay 3 mana, draw: Verdant Catacombs)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 11  |  Living End 6
+║ Hand: 1 cards  |  Opp hand: 5 cards
+║ Lands: 8  |  Opp lands: 9
+║ Library: 40  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Sojourner's Companion (4/4)
+║   Other: Springleaf Drum, Springleaf Drum
+║   Lands: Treasure Vault, Razortide Bridge, Darksteel Citadel, Darksteel Citadel, Tanglepool Bridge, Razortide Bridge, Darksteel Citadel, Mistvault Bridge
+║ Living End board:
+║   Creatures: Architects of Will (3/3), Waker of Waves (7/7)
+║   Lands: Overgrown Tomb [T], Raugrin Triome [T], Watery Grave [T], Forest [T], Island [T], Blooming Marsh [T], Blood Crypt [T], Botanical Sanctum [T], Blooming Marsh [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Signal Pest
+  [Main 1]
+T9 P2: Play Silverbluff Bridge (enters tapped)
+    → Goal: curve_out
+    [Mana] Tap Treasure Vault→C (paying for Signal Pest, 8 mana remaining)
+T9 P2: Cast Signal Pest (1)
+    [Priority] P1 passes (no response)
+T9: Resolve Signal Pest
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Sojourner's Companion
+T9 P2: Attack with Sojourner's Companion
+T9 P1:   [BLOCK-EMERGENCY] Architects of Will (3/3) blocks Sojourner's Companion (4/4) — chump block
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T9: Architects of Will dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Living End (P1) ══════════════════════════
+║ Life: Living End 6  |  Affinity 11
+║ Hand: 5 cards  |  Opp hand: 0 cards
+║ Lands: 9  |  Opp lands: 9
+║ Library: 31  |  Graveyard: 11
+║ Living End board:
+║   Creatures: Waker of Waves (7/7)
+║   Lands: Overgrown Tomb, Raugrin Triome, Watery Grave, Forest, Island, Blooming Marsh, Blood Crypt, Botanical Sanctum, Blooming Marsh
+║ Affinity board:
+║   Creatures: Sojourner's Companion (4/4) [tapped], Signal Pest (0/1)
+║   Other: Springleaf Drum, Springleaf Drum
+║   Lands: Treasure Vault [T], Razortide Bridge, Darksteel Citadel, Darksteel Citadel, Tanglepool Bridge, Razortide Bridge, Darksteel Citadel, Mistvault Bridge, Silverbluff Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Force of Negation
+  [Main 1]
+T10 P1: Play Verdant Catacombs
+T10 P1: Crack Verdant Catacombs (pay 1 life) -> Breeding Pool (tapped, life: 5)
+    → Goal: push_damage
+    [Mana] Tap Blood Crypt→R, Overgrown Tomb→B, Forest→G (paying for Demonic Dread, 9 mana remaining)
+T10 P1: Cast Demonic Dread (1BR)
+    [Priority] P2 passes (no response)
+T10: Resolve Demonic Dread
+T10: Cascade (CMC < 3)
+T10: Cascade hits Living End
+T10: Living End resolves!
+T10 P1: Architects of Will ETB: draw 1 (Waker of Waves)
+T10: Living End returns Architects of Will for P1
+T10 P1: Cycle Waker of Waves (pay 2 mana, draw: Subtlety)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 11  |  Living End 5
+║ Hand: 0 cards  |  Opp hand: 5 cards
+║ Lands: 9  |  Opp lands: 10
+║ Library: 39  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Springleaf Drum, Springleaf Drum
+║   Lands: Treasure Vault, Razortide Bridge, Darksteel Citadel, Darksteel Citadel, Tanglepool Bridge, Razortide Bridge, Darksteel Citadel, Mistvault Bridge, Silverbluff Bridge
+║ Living End board:
+║   Creatures: Architects of Will (3/3)
+║   Lands: Overgrown Tomb [T], Raugrin Triome [T], Watery Grave [T], Forest [T], Island, Blooming Marsh, Blood Crypt [T], Botanical Sanctum, Blooming Marsh, Breeding Pool [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mox Opal
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+    [Mana] Tap Island→U, Botanical Sanctum→U, Blooming Marsh→B, Blooming Marsh→B (paying for Subtlety, 4 mana remaining)
+T10 P1: Cast Subtlety (2UU)
+T10: Resolve Subtlety
+T10 P1: Subtlety enters (no creature/PW spell on stack to target)
+
+╔══ TURN 11 — Living End (P1) ══════════════════════════
+║ Life: Living End 5  |  Affinity 11
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 10  |  Opp lands: 9
+║ Library: 26  |  Graveyard: 14
+║ Living End board:
+║   Creatures: Architects of Will (3/3), Subtlety (3/3)
+║   Lands: Overgrown Tomb, Raugrin Triome, Watery Grave, Forest, Island, Blooming Marsh, Blood Crypt, Botanical Sanctum, Blooming Marsh, Breeding Pool
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Springleaf Drum, Springleaf Drum
+║   Lands: Treasure Vault, Razortide Bridge, Darksteel Citadel, Darksteel Citadel, Tanglepool Bridge, Razortide Bridge, Darksteel Citadel, Mistvault Bridge, Silverbluff Bridge
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Force of Negation
+  [Main 1]
+T11 P1: Play Forest
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Architects of Will, Subtlety
+T11 P1: Attack with Architects of Will, Subtlety
+  [Declare Blockers] P2 does not block
+T11 P1:   Architects of Will (3/3) → 3 dmg to player
+T11 P1:   Subtlety (3/3) → 3 dmg to player
+  [Combat Damage] 6 damage dealt → P2 life: 11 → 5
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 5  |  Living End 5
+║ Hand: 1 cards  |  Opp hand: 4 cards
+║ Lands: 9  |  Opp lands: 11
+║ Library: 38  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Springleaf Drum, Springleaf Drum
+║   Lands: Treasure Vault, Razortide Bridge, Darksteel Citadel, Darksteel Citadel, Tanglepool Bridge, Razortide Bridge, Darksteel Citadel, Mistvault Bridge, Silverbluff Bridge
+║ Living End board:
+║   Creatures: Architects of Will (3/3) [tapped], Subtlety (3/3) [tapped]
+║   Lands: Overgrown Tomb, Raugrin Triome, Watery Grave, Forest, Island, Blooming Marsh, Blood Crypt, Botanical Sanctum, Blooming Marsh, Breeding Pool, Forest
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Engineered Explosives
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Living End (P1) ══════════════════════════
+║ Life: Living End 5  |  Affinity 5
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 11  |  Opp lands: 9
+║ Library: 25  |  Graveyard: 14
+║ Living End board:
+║   Creatures: Architects of Will (3/3), Subtlety (3/3)
+║   Lands: Overgrown Tomb, Raugrin Triome, Watery Grave, Forest, Island, Blooming Marsh, Blood Crypt, Botanical Sanctum, Blooming Marsh, Breeding Pool, Forest
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Springleaf Drum, Springleaf Drum
+║   Lands: Treasure Vault, Razortide Bridge, Darksteel Citadel, Darksteel Citadel, Tanglepool Bridge, Razortide Bridge, Darksteel Citadel, Mistvault Bridge, Silverbluff Bridge
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Misty Rainforest
+  [Main 1]
+T12 P1: Play Misty Rainforest
+T12 P1: Crack Misty Rainforest -> Island (untapped)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Architects of Will, Subtlety
+T12 P1: Attack with Architects of Will, Subtlety
+  [Declare Blockers] P2 does not block
+T12 P1:   Architects of Will (3/3) → 3 dmg to player
+T12 P1:   Subtlety (3/3) → 3 dmg to player
+P2 loses: life total -1
+  [Combat Damage] 6 damage dealt → P2 life: 5 → -1
+
+>>> Living End wins Game 1 on turn 12 via damage
+    Final life: Living End=4  Affinity=-1
+
+======================================================================
+  GAME 2: Affinity (P1) vs Living End (P2)  —  seed 60601
+  Series: Living End 1 - 0 Affinity
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Living End wins → chooses to play first
+║ P1 (on play): Living End
+║ P2 (on draw): Affinity
+╚═══════════════════════════════════════════════════════
+
+P1 (Affinity) opening hand (2 lands, 5 spells):
+  • Darksteel Citadel [Land, CMC 0]
+  • Sojourner's Companion [Creature, CMC 7]
+  • Silverbluff Bridge [Land, CMC 0]
+  • Memnite [Creature, CMC 0]
+  • Signal Pest [Creature, CMC 1]
+  • Thought Monitor [Creature, CMC 7]
+  • Memnite [Creature, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Memnite, 3 cheap spells
+
+P2 (Living End) opening hand (1 lands, 6 spells):
+  • Striped Riverwinder [Creature, CMC 7]
+  • Living End [Spell, CMC 0]
+  • Demonic Dread [Spell, CMC 3]
+  • Striped Riverwinder [Creature, CMC 7]
+  • Demonic Dread [Spell, CMC 3]
+  • Shardless Agent [Creature, CMC 3]
+  • Swamp [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Demonic Dread, Shardless Agent, Striped Riverwinder, 4 cheap spells
+
+
+╔══ TURN 1 — Living End (P2) ══════════════════════════
+║ Life: Living End 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Swamp
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Living End 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Swamp
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Razortide Bridge
+  [Main 1]
+T1 P1: Play Darksteel Citadel
+    → Goal: deploy_engine [enablers]
+T1 P1: Cast Memnite (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Memnite
+    → Goal: deploy_engine [enablers]
+T1 P1: Cast Memnite (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Memnite
+    → Goal: deploy_engine
+    [Mana] Tap Darksteel Citadel→C (paying for Signal Pest, 1 mana remaining)
+T1 P1: Cast Signal Pest (1)
+    [Priority] P2 passes (no response)
+T1: Resolve Signal Pest
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Living End (P2) ══════════════════════════
+║ Life: Living End 20  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Swamp
+║ Affinity board:
+║   Creatures: Memnite (1/1), Memnite (1/1), Signal Pest (0/1)
+║   Lands: Darksteel Citadel [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Force of Negation
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Living End 20
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Memnite (1/1), Memnite (1/1), Signal Pest (0/1)
+║   Lands: Darksteel Citadel
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Swamp
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Springleaf Drum
+  [Main 1]
+T2 P1: Play Silverbluff Bridge (enters tapped)
+    → Goal: deploy_engine [engines]
+    [Mana] Tap Darksteel Citadel→C (paying for Springleaf Drum, 1 mana remaining)
+T2 P1: Cast Springleaf Drum (1)
+    [Priority] P2 responds with Force of Negation
+T2 P2: Pay alternate cost: exile Shardless Agent for Force of Negation
+T2 P2: Cast Force of Negation (1UU)
+T2: Resolve Force of Negation
+T2: Springleaf Drum is countered
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Memnite, Memnite, Signal Pest
+T2 P1: Attack with Memnite, Memnite, Signal Pest
+  [Declare Blockers] P2 does not block
+T2 P1:   Memnite (2/1) → 2 dmg to player
+T2 P1:   Memnite (2/1) → 2 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 20 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Living End (P2) ══════════════════════════
+║ Life: Living End 16  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 1
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Swamp
+║ Affinity board:
+║   Creatures: Memnite (1/1) [tapped], Memnite (1/1) [tapped], Signal Pest (0/1) [tapped]
+║   Lands: Darksteel Citadel [T], Silverbluff Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Shardless Agent
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Living End 16
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 1
+║ Library: 51  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Memnite (1/1), Memnite (1/1), Signal Pest (0/1)
+║   Lands: Darksteel Citadel, Silverbluff Bridge
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Swamp
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Thought Monitor
+  [Main 1]
+T3 P1: Play Razortide Bridge (enters tapped)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Darksteel Citadel→C (paying for Sojourner's Companion, 2 mana remaining)
+T3 P1: Cast Sojourner's Companion (7)
+    [Priority] P2 passes (no response)
+T3: Resolve Sojourner's Companion
+    → Goal: curve_out [enablers]
+    [Mana] Tap Silverbluff Bridge→U (paying for Thought Monitor, 1 mana remaining)
+T3 P1: Cast Thought Monitor (6U)
+    [Priority] P2 passes (no response)
+T3: Resolve Thought Monitor
+T3 P1: Thought Monitor ETB: draw 2 (Memnite, Sojourner's Companion)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Memnite, Memnite, Signal Pest
+T3 P1: Attack with Memnite, Memnite, Signal Pest
+  [Declare Blockers] P2 does not block
+T3 P1:   Memnite (2/1) → 2 dmg to player
+T3 P1:   Memnite (2/1) → 2 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 16 → 12
+  [End Combat]
+  [Main 2]
+    → Goal: curve_out [enablers]
+T3 P1: Cast Sojourner's Companion (7)
+    [Priority] P2 passes (no response)
+T3: Resolve Sojourner's Companion
+  [End Step]
+
+╔══ TURN 4 — Living End (P2) ══════════════════════════
+║ Life: Living End 12  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 2 cards
+║ Lands: 1  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 1
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Swamp
+║ Affinity board:
+║   Creatures: Memnite (1/1) [tapped], Memnite (1/1) [tapped], Signal Pest (0/1) [tapped], Sojourner's Companion (4/4), Thought Monitor (2/2), Sojourner's Companion (4/4)
+║   Lands: Darksteel Citadel [T], Silverbluff Bridge [T], Razortide Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Verdant Catacombs
+  [Main 1]
+T4 P2: Play Verdant Catacombs
+T4 P2: Crack Verdant Catacombs -> Ketria Triome (tapped)
+T4 P2: Ketria Triome ETB: draw 1 (Raugrin Triome)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Living End 11
+║ Hand: 2 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Memnite (1/1), Memnite (1/1), Signal Pest (0/1), Sojourner's Companion (4/4), Thought Monitor (2/2), Sojourner's Companion (4/4)
+║   Lands: Darksteel Citadel, Silverbluff Bridge, Razortide Bridge
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Swamp, Ketria Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Saga
+  [Main 1]
+T4 P1: Play Urza's Saga
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Memnite, Memnite, Signal Pest, Sojourner's Companion, Thought Monitor, Sojourner's Companion
+T4 P1: Attack with Memnite, Memnite, Signal Pest, Sojourner's Companion, Thought Monitor, Sojourner's Companion
+  [Declare Blockers] P2 does not block
+T4 P1:   Memnite (2/1) → 2 dmg to player
+T4 P1:   Memnite (2/1) → 2 dmg to player
+T4 P1:   Sojourner's Companion (5/4) → 5 dmg to player
+T4 P1:   Thought Monitor (3/2) → 3 dmg to player
+T4 P1:   Sojourner's Companion (5/4) → 5 dmg to player
+P2 loses: life total -6
+  [Combat Damage] 17 damage dealt → P2 life: 11 → -6
+
+>>> Affinity wins Game 2 on turn 4 via damage
+    Final life: Affinity=20  Living End=-6
+
+======================================================================
+  GAME 3: Living End (P1) vs Affinity (P2)  —  seed 60602
+  Series: Living End 1 - 1 Affinity
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Living End wins → chooses to play first
+║ P1 (on play): Living End
+║ P2 (on draw): Affinity
+╚═══════════════════════════════════════════════════════
+
+P1 (Living End) opening hand (3 lands, 4 spells):
+  • Architects of Will [Creature, CMC 4]
+  • Living End [Spell, CMC 0]
+  • Misty Rainforest [Land, CMC 0]
+  • Striped Riverwinder [Creature, CMC 7]
+  • Subtlety [Creature, CMC 4]
+  • Verdant Catacombs [Land, CMC 0]
+  • Ketria Triome [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Architects of Will, Striped Riverwinder, 1 cheap spells
+
+P2 (Affinity) opening hand (3 lands, 4 spells):
+  • Cranial Plating [Spell, CMC 2]
+  • Spire of Industry [Land, CMC 0]
+  • Cranial Plating [Spell, CMC 2]
+  • Treasure Vault [Land, CMC 0]
+  • Signal Pest [Creature, CMC 1]
+  • Springleaf Drum [Spell, CMC 1]
+  • Silverbluff Bridge [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Cranial Plating, Springleaf Drum, 4 cheap spells
+
+
+╔══ TURN 1 — Living End (P1) ══════════════════════════
+║ Life: Living End 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Misty Rainforest
+T1 P1: Crack Misty Rainforest (pay 1 life) -> Watery Grave (untapped, life: 17)
+T1 P1: Cycle Striped Riverwinder (pay 1 mana, draw: Subtlety)
+T1 P1: Cycle Architects of Will (pay 0 mana, draw: Demonic Dread)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Living End 17
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Sojourner's Companion
+  [Main 1]
+T1 P2: Play Spire of Industry
+    → Goal: deploy_engine
+    [Mana] Tap Spire of Industry→B (paying for Signal Pest, 1 mana remaining)
+T1 P2: Cast Signal Pest (1)
+    [Priority] P1 passes (no response)
+T1: Resolve Signal Pest
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Living End (P1) ══════════════════════════
+║ Life: Living End 17  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 50  |  Graveyard: 3
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+║ Affinity board:
+║   Creatures: Signal Pest (0/1)
+║   Lands: Spire of Industry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Demonic Dread
+  [Main 1]
+T2 P1: Play Verdant Catacombs
+T2 P1: Crack Verdant Catacombs (pay 1 life) -> Blood Crypt (tapped, life: 16)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Living End 16
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Signal Pest (0/1)
+║   Lands: Spire of Industry
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Springleaf Drum
+  [Main 1]
+T2 P2: Play Treasure Vault
+T2 P2: Cycle Sojourner's Companion (pay 2 mana, tutor: Mistvault Bridge)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Signal Pest
+T2 P2: Attack with Signal Pest
+  [Declare Blockers] P1 does not block
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Living End (P1) ══════════════════════════
+║ Life: Living End 16  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 4
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Blood Crypt
+║ Affinity board:
+║   Creatures: Signal Pest (0/1) [tapped]
+║   Lands: Spire of Industry [T], Treasure Vault [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Architects of Will
+  [Main 1]
+T3 P1: Cycle Architects of Will (pay 0 mana, draw: Raugrin Triome)
+T3 P1: Play Ketria Triome (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Living End 16
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Signal Pest (0/1)
+║   Lands: Spire of Industry, Treasure Vault
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Blood Crypt, Ketria Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Darksteel Citadel
+  [Main 1]
+T3 P2: Play Darksteel Citadel
+    → Goal: curve_out
+    [Mana] Tap Treasure Vault→C (paying for Springleaf Drum, 3 mana remaining)
+T3 P2: Cast Springleaf Drum (1)
+    [Priority] P1 passes (no response)
+T3: Resolve Springleaf Drum
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Darksteel Citadel→C, Spire of Industry→B (paying for Cranial Plating, 2 mana remaining)
+T3 P2: Cast Cranial Plating (2)
+    [Priority] P1 passes (no response)
+T3: Resolve Cranial Plating
+T3 P2: Cranial Plating enters the battlefield (unattached)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Signal Pest
+T3 P2: Attack with Signal Pest
+  [Declare Blockers] P1 does not block
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Living End (P1) ══════════════════════════
+║ Life: Living End 16  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 5
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Blood Crypt, Ketria Triome
+║ Affinity board:
+║   Creatures: Signal Pest (0/1) [tapped]
+║   Other: Springleaf Drum, Cranial Plating
+║   Lands: Spire of Industry [T], Treasure Vault [T], Darksteel Citadel [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Shardless Agent
+  [Main 1]
+T4 P1: Cycle Raugrin Triome (pay 3 mana, draw: Force of Negation)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Living End 16
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Signal Pest (0/1)
+║   Other: Springleaf Drum, Cranial Plating
+║   Lands: Spire of Industry, Treasure Vault, Darksteel Citadel
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Blood Crypt [T], Ketria Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Razortide Bridge
+  [Main 1]
+T4 P2: Play Silverbluff Bridge (enters tapped)
+T4 P2: Equip Cranial Plating to Signal Pest (cost 1)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Treasure Vault→C, Darksteel Citadel→C (paying for Cranial Plating, 2 mana remaining)
+T4 P2: Cast Cranial Plating (2)
+    [Priority] P1 responds with Force of Negation
+T4 P1: Pay alternate cost: exile Shardless Agent for Force of Negation
+T4 P1: Cast Force of Negation (1UU)
+T4: Resolve Force of Negation
+T4: Cranial Plating is countered
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Signal Pest
+T4 P2: Attack with Signal Pest
+  [Declare Blockers] P1 does not block
+T4 P2:   Signal Pest (6/1) → 6 dmg to player
+  [Combat Damage] 6 damage dealt → P1 life: 16 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Living End (P1) ══════════════════════════
+║ Life: Living End 10  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 44  |  Graveyard: 7
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Blood Crypt, Ketria Triome
+║ Affinity board:
+║   Creatures: Signal Pest (6/1) [tapped]
+║   Other: Springleaf Drum, Cranial Plating
+║   Lands: Spire of Industry [T], Treasure Vault [T], Darksteel Citadel [T], Silverbluff Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Curator of Mysteries
+  [Main 1]
+T5 P1: Cycle Curator of Mysteries (pay 1 mana, draw: Verdant Catacombs)
+T5 P1: Play Verdant Catacombs
+T5 P1: Crack Verdant Catacombs (pay 1 life) -> Breeding Pool (tapped, life: 9)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Living End 9
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 2
+║ Affinity board:
+║   Creatures: Signal Pest (6/1)
+║   Other: Springleaf Drum, Cranial Plating
+║   Lands: Spire of Industry, Treasure Vault, Darksteel Citadel, Silverbluff Bridge
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Blood Crypt, Ketria Triome, Breeding Pool [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thought Monitor
+  [Main 1]
+T5 P2: Play Mistvault Bridge (enters tapped)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Silverbluff Bridge→U (paying for Thought Monitor, 4 mana remaining)
+T5 P2: Cast Thought Monitor (6U)
+    [Priority] P1 passes (no response)
+T5: Resolve Thought Monitor
+T5 P2: Thought Monitor ETB: draw 2 (Darksteel Citadel, Spire of Industry)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Signal Pest
+T5 P2: Attack with Signal Pest
+  [Declare Blockers] P1 does not block
+T5 P2:   Signal Pest (8/1) → 8 dmg to player
+  [Combat Damage] 8 damage dealt → P1 life: 9 → 1
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Living End (P1) ══════════════════════════
+║ Life: Living End 1  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 41  |  Graveyard: 9
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Blood Crypt, Ketria Triome, Breeding Pool
+║ Affinity board:
+║   Creatures: Signal Pest (8/1) [tapped], Thought Monitor (2/2)
+║   Other: Springleaf Drum, Cranial Plating
+║   Lands: Spire of Industry, Treasure Vault, Darksteel Citadel, Silverbluff Bridge [T], Mistvault Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Street Wraith
+  [Main 1]
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Watery Grave→B, Blood Crypt→R, Breeding Pool→G (paying for Demonic Dread, 4 mana remaining)
+T6 P1: Cast Demonic Dread (1BR)
+    [Priority] P2 passes (no response)
+T6: Resolve Demonic Dread
+T6: Cascade (CMC < 3)
+T6: Cascade hits Living End
+T6: Living End resolves!
+T6: Living End returns Striped Riverwinder for P1
+T6 P1: Architects of Will ETB: draw 1 (Force of Vigor)
+T6: Living End returns Architects of Will for P1
+T6 P1: Architects of Will ETB: draw 1 (Striped Riverwinder)
+T6: Living End returns Architects of Will for P1
+T6: Living End returns Curator of Mysteries for P1
+T6: Living End returns Sojourner's Companion for P2
+T6 P1: Cycle Striped Riverwinder (pay 1 mana, draw: Shardless Agent)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Living End 1
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Sojourner's Companion (4/4)
+║   Other: Springleaf Drum, Cranial Plating
+║   Lands: Spire of Industry, Treasure Vault, Darksteel Citadel, Silverbluff Bridge, Mistvault Bridge
+║ Living End board:
+║   Creatures: Striped Riverwinder (5/5), Architects of Will (3/3), Architects of Will (3/3), Curator of Mysteries (4/4)
+║   Lands: Watery Grave [T], Blood Crypt [T], Ketria Triome [T], Breeding Pool [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Tanglepool Bridge
+  [Main 1]
+T6 P2: Play Darksteel Citadel
+    → Goal: curve_out
+    [Mana] Tap Treasure Vault→C (paying for Springleaf Drum, 6 mana remaining)
+T6 P2: Cast Springleaf Drum (1)
+    [Priority] P1 responds with Force of Vigor
+T6 P1: Pay alternate cost: exile Shardless Agent for Force of Vigor
+T6 P1: Cast Force of Vigor (2GG)
+T6: Resolve Force of Vigor
+T6: Sojourner's Companion dies
+T6 P1: Force of Vigor destroys Sojourner's Companion
+T6: Cranial Plating moved battlefield -> graveyard (destroyed)
+T6 P1: Force of Vigor destroys Cranial Plating
+T6: Resolve Springleaf Drum
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Living End (P1) ══════════════════════════
+║ Life: Living End 1  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 36  |  Graveyard: 9
+║ Living End board:
+║   Creatures: Striped Riverwinder (5/5), Architects of Will (3/3), Architects of Will (3/3), Curator of Mysteries (4/4)
+║   Lands: Watery Grave, Blood Crypt, Ketria Triome, Breeding Pool
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Springleaf Drum, Springleaf Drum
+║   Lands: Spire of Industry, Treasure Vault [T], Darksteel Citadel, Silverbluff Bridge, Mistvault Bridge, Darksteel Citadel
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Demonic Dread
+  [Main 1]
+    [Mana] Tap Watery Grave→B, Blood Crypt→B, Breeding Pool→G, Ketria Triome→G (paying for Living End, 4 mana remaining)
+T7 P1: Suspend Living End (3 time counters)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Striped Riverwinder, Architects of Will, Architects of Will, Curator of Mysteries
+T7 P1: Attack with Striped Riverwinder, Architects of Will, Architects of Will, Curator of Mysteries
+  [Declare Blockers] P2 does not block
+T7 P1:   Striped Riverwinder (5/5) → 5 dmg to player
+T7 P1:   Architects of Will (3/3) → 3 dmg to player
+T7 P1:   Architects of Will (3/3) → 3 dmg to player
+T7 P1:   Curator of Mysteries (4/4) → 4 dmg to player
+  [Combat Damage] 15 damage dealt → P2 life: 20 → 5
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 5  |  Living End 1
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 6  |  Opp lands: 4
+║ Library: 44  |  Graveyard: 3
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Springleaf Drum, Springleaf Drum
+║   Lands: Spire of Industry, Treasure Vault, Darksteel Citadel, Silverbluff Bridge, Mistvault Bridge, Darksteel Citadel
+║ Living End board:
+║   Creatures: Striped Riverwinder (5/5) [tapped], Architects of Will (3/3) [tapped], Architects of Will (3/3) [tapped], Curator of Mysteries (4/4) [tapped]
+║   Lands: Watery Grave [T], Blood Crypt [T], Ketria Triome [T], Breeding Pool [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Cranial Plating
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Treasure Vault→C, Darksteel Citadel→C (paying for Cranial Plating, 6 mana remaining)
+T7 P2: Cast Cranial Plating (2)
+    [Priority] P1 passes (no response)
+T7: Resolve Cranial Plating
+T7 P2: Cranial Plating enters the battlefield (unattached)
+T7 P2: Play Razortide Bridge (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Living End (P1) ══════════════════════════
+║ Life: Living End 1  |  Affinity 5
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 7
+║ Library: 35  |  Graveyard: 9
+║ Living End board:
+║   Creatures: Striped Riverwinder (5/5), Architects of Will (3/3), Architects of Will (3/3), Curator of Mysteries (4/4)
+║   Lands: Watery Grave, Blood Crypt, Ketria Triome, Breeding Pool
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Springleaf Drum, Springleaf Drum, Cranial Plating
+║   Lands: Spire of Industry, Treasure Vault [T], Darksteel Citadel [T], Silverbluff Bridge, Mistvault Bridge, Darksteel Citadel, Razortide Bridge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Island
+  [Main 1]
+T8 P1: Play Island
+    → Goal: push_damage
+    [Mana] Tap Island→U, Watery Grave→U, Blood Crypt→B, Breeding Pool→G (paying for Subtlety, 5 mana remaining)
+T8 P1: Cast Subtlety (2UU)
+    [Priority] P2 passes (no response)
+T8: Resolve Subtlety
+T8 P1: Subtlety enters (no creature/PW spell on stack to target)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Striped Riverwinder, Architects of Will, Architects of Will, Curator of Mysteries
+T8 P1: Attack with Striped Riverwinder, Architects of Will, Architects of Will, Curator of Mysteries
+  [Declare Blockers] P2 does not block
+T8 P1:   Striped Riverwinder (5/5) → 5 dmg to player
+T8 P1:   Architects of Will (3/3) → 3 dmg to player
+T8 P1:   Architects of Will (3/3) → 3 dmg to player
+T8 P1:   Curator of Mysteries (4/4) → 4 dmg to player
+P2 loses: life total -10
+  [Combat Damage] 15 damage dealt → P2 life: 5 → -10
+
+>>> Living End wins Game 3 on turn 8 via damage
+    Final life: Living End=1  Affinity=-10
+
+======================================================================
+  MATCH RESULT: Living End wins 2-1
+======================================================================
