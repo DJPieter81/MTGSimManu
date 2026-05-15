@@ -234,3 +234,59 @@ listed under "Recommended next steps" above.
 - ISMCTS planner: `ai/search/ismcts.py`
 - A/B harness: `ai/search/ab_compare.py`
 - Snapshot adapter: `ai/search/snapshot_adapter.py`
+
+## Follow-up — fixture #3 Grapeshot enrichment (2026-05-15)
+
+Per recommended next step #2 above, fixture #3
+(`T3_ritual_chain`) was enriched with a Grapeshot action token
+(real ModernAtomic template: `1R` Sorcery, `storm_payoff`+`combo`
+tagged, oracle "Grapeshot deals 1 damage to any target. Storm.")
+and tagged with `"archetype": "storm"` so the production picker
+routes through the combo-chain projection. The synthetic action
+`delta` encodes the no-storm-copy baseline (`opp_life: -1`,
+`storm_count: +1`); the multi-ply storm payoff is left to search.
+
+Re-running the default gate (`n_rollouts=500`, `rollout_depth=2`)
+under `ISMCTS_ACCEPTANCE=1` after the enrichment:
+
+| Baseline | Before (W/T/R) | After (W/T/R) | Fixture #3 H/M pick | Wall clock |
+|---|---|---|---|---|
+| Synthetic 1-ply | 2 / 7 / 1 | 2 / 7 / 1 | H=`Lightning Bolt opp`, M=`Manamorphose` (was `pass turn`) | ~8 s gate-only |
+| Production proxy | 2 / 7 / 0 | 2 / 8 / 0 | H=`Manamorphose`, M=`Manamorphose` (was `pass turn`) | ~17 s gate-only |
+
+Both baselines now see ISMCTS pick the chain-starting ritual on
+fixture #3 instead of the inert `pass`, so the enrichment moved
+ISMCTS off the wrong action — but it did not flip the fixture
+from regression/tie to strict ISMCTS win, and the gate still fails
+on the ≥4-wins arm.
+
+Why fixture-only enrichment is insufficient:
+
+- Under the **synthetic baseline** the rollout policy is
+  `position_value`-greedy with no storm-payoff awareness, so the
+  forward sim still credits the 3-damage Lightning Bolt over the
+  ritual chain. Result: H=Bolt, M=Manamorphose; M's reward is
+  lower in the forward sim because the 2-ply lookahead can't
+  project the Grapeshot-after-ritual payoff. The fixture #3
+  regression therefore *persists* — strict heuristic win, same as
+  the pre-enrichment failure mode.
+- Under the **production proxy** both pickers correctly pick
+  Manamorphose (combo-chain assessment is engaged), so the
+  fixture flips from `M=pass / H=Manamorphose` (tie) to
+  `M=Manamorphose / H=Manamorphose` (still a tie). No regression,
+  no strict ISMCTS win — total numbers unchanged at 2W/0R.
+
+This confirms scope #2 in isolation cannot move the gate past the
+acceptance threshold: even when the action menu is correct, the
+**rollout policy / terminal evaluator** is still the binding
+constraint. The two remaining scope expansions documented above
+(extend the snapshot adapter to surface combo-chain payoff in
+`position_value`; or replace the synthetic rollout with the
+`CardInstance` proxy used for the production picker) remain the
+binding work to clear the 4-win arm.
+
+Files changed in this follow-up:
+
+- `tests/fixtures/ismcts_acceptance_fixtures.jsonl` (fixture #3
+  enrichment only — Grapeshot token + `archetype: "storm"`).
+
