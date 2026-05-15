@@ -1491,13 +1491,18 @@ class CardDatabase:
             template.tags.update(TAG_OVERRIDES[name])
 
         # ── Ability overrides for removal spells missing targeting ──
+        # Discard-from-opponent entries (Thoughtseize, Inquisition of
+        # Kozilek) were retired in the discard-ability derivation
+        # sweep — _build_abilities now derives the CAST ability from
+        # the reveal-then-discard / direct-numeric-discard oracle
+        # predicates, so a per-card override is no longer needed (and
+        # was the abstraction-contract anti-pattern this sweep
+        # targets). See tests/test_ability_override_discard_derived_from_oracle.py.
         ABILITY_OVERRIDES = {
             "Galvanic Discharge": [("Deal damage to creature", 1)],
             "Dismember": [("Destroy creature", 1)],
             "Solitude": [("Exile creature", 1)],
             "Fury": [("Deal damage to creature", 1)],
-            "Thoughtseize": [("Discard from opponent", 0)],
-            "Inquisition of Kozilek": [("Discard from opponent", 0)],
             "Dispatch": [("Exile creature", 1)],
             "Hurkyl's Recall": [("Bounce all artifacts", 0)],
         }
@@ -1655,6 +1660,49 @@ class CardDatabase:
                 ability_type=AbilityType.DIES,
                 description="Dies trigger",
             ))
+
+        # ── Generic discard-from-opponent CAST ability derivation ──
+        # The OracleTextParser.DISCARD_PATTERNS only catches the digit
+        # form ("Target player discards 2 cards"). The canonical Modern
+        # hand-rip phrasings — reveal-then-discard (Thoughtseize,
+        # Inquisition, Distress, Duress, Coercion, Despise) and the
+        # word-form numeric ("Target player discards two cards"
+        # — Mind Rot) slip past, leaving these spells with empty
+        # `abilities` and forcing per-card entries in
+        # ABILITY_OVERRIDES. The text predicate below mirrors the
+        # discard-tag fallback at line ~788 so anything tagged
+        # `discard` for hand-disruption also gets the CAST ability.
+        # Skip cards whose discard is self-discard cost
+        # (Faithful Mending: "draw, then discard"; loot effects).
+        is_instant_or_sorcery = (
+            "Instant" in data.get("types", [])
+            or "Sorcery" in data.get("types", [])
+        )
+        already_has_discard_cast = any(
+            a.ability_type == AbilityType.CAST
+            and "discard" in a.description.lower()
+            and ("opponent" in a.description.lower()
+                 or "player" in a.description.lower())
+            for a in abilities
+        )
+        if not already_has_discard_cast:
+            direct_target_discard = re.search(
+                r"(?:that player|target (?:player|opponent)|each player|"
+                r"each opponent)\s+discards?\b",
+                text_lower,
+            )
+            reveal_then_discard = (
+                "reveals their hand" in text_lower
+                and ("discards that card" in text_lower
+                     or "exile that card" in text_lower)
+            )
+            if direct_target_discard or reveal_then_discard:
+                abilities.append(Ability(
+                    ability_type=(AbilityType.CAST if is_instant_or_sorcery
+                                  else AbilityType.ETB),
+                    description="Discard from opponent",
+                    targets_required=0,
+                ))
 
         return abilities
 
