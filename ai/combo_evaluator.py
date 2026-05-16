@@ -156,7 +156,7 @@ def _flip_transform_bonus(card, snap, me, storm_count) -> float:
         return 0.0
     marginal_p = 0.5 ** (storm_count + 1)  # magic-allow: P(heads) for fair coin (CR 705.2)
     from ai.combo_calc import _compute_combo_value
-    combo_value = _compute_combo_value(snap, "combo")
+    combo_value = _compute_combo_value(snap)
     return marginal_p * combo_value * FLIP_COIN_TRANSFORM_VALUE_FRACTION * len(flip_creatures)
 
 
@@ -171,7 +171,7 @@ def _search_tax_penalty(card, game, player_idx, snap) -> float:
     if tax_count == 0:
         return 0.0
     from ai.combo_calc import _compute_combo_value
-    combo_value = _compute_combo_value(snap, "combo")
+    combo_value = _compute_combo_value(snap)
     opp_life = max(1, snap.opp_life)
     card_value = combo_value / opp_life * TUTOR_TAX_LIFE_NORMALIZER
     return -tax_count * card_value
@@ -380,7 +380,7 @@ def card_combo_evaluation(
     # ── 2. Orthogonal terms ──
     flip_bonus = _flip_transform_bonus(card, snap, me, storm_count)
     tax_penalty = _search_tax_penalty(card, game, player_idx, snap)
-    combo_value = _compute_combo_value(snap, "combo")
+    combo_value = _compute_combo_value(snap)
     opp_life = max(1, snap.opp_life)
 
     # ── 3. Hard hold when no reachable chain AND card is chain fuel ──
