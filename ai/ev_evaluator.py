@@ -82,6 +82,9 @@ from ai.deck_knowledge import DeckKnowledge
 # compositions — no magic numbers introduced here.
 from ai.clock import life_phase
 from ai.strategy_profile import phase_weight_multiplier
+# Effective-CMC primitive (W0-F + M9 wiring).  Subsumes delve, evoke,
+# Medallion-reduced cost, affinity, improvise — see ai/effective_cmc.py.
+from ai.effective_cmc import effective_cmc
 
 
 # ─────────────────────────────────────────────────────────────
@@ -1652,7 +1655,18 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         opp_creature_count=snap.opp_creature_count,
         my_hand_size=snap.my_hand_size - 1,  # we cast it from hand
         opp_hand_size=snap.opp_hand_size,
-        my_mana=max(0, snap.my_mana - (t.cmc or 0)),
+        # M9 — charge the *effective* mana cost (delve / evoke /
+        # on-board cost reducers / affinity / improvise) instead of
+        # the printed CMC.  All cost-modifying mechanics compose
+        # inside `ai.effective_cmc.effective_cmc` (W0-F); the call
+        # site stays oblivious to which mechanic is active.  Audit
+        # finding: docs/history/audits/2026-05-16_5panel_bo3_audit.md
+        # (Midrange F5) — Murktide projecting as a 7-mana spell,
+        # Storm rituals un-discounted under Medallion, Solitude
+        # priced at 3WW.
+        my_mana=max(0, snap.my_mana - effective_cmc(
+            card, snap, game=game, player_idx=player_idx,
+        )),
         opp_mana=snap.opp_mana,
         my_total_lands=snap.my_total_lands,
         opp_total_lands=snap.opp_total_lands,
@@ -2403,7 +2417,13 @@ def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
         opp_creature_count=snap.opp_creature_count,
         my_hand_size=snap.my_hand_size - 1,  # card is gone
         opp_hand_size=snap.opp_hand_size - 1,  # they used a counter
-        my_mana=max(0, snap.my_mana - (t.cmc or 0)),  # mana spent
+        # M9 — same effective-CMC routing as `_project_spell`.  A
+        # countered spell still costs its effective mana (we paid,
+        # they fizzled); reading printed CMC here would mis-state
+        # the cost of a delve/evoke/cost-reduced spell.
+        my_mana=max(0, snap.my_mana - effective_cmc(
+            card, snap, game=game, player_idx=player_idx,
+        )),  # mana spent
         opp_mana=max(0, snap.opp_mana - COUNTER_ESTIMATED_COST),
         my_total_lands=snap.my_total_lands,
         opp_total_lands=snap.opp_total_lands,
