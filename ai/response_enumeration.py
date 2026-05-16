@@ -52,6 +52,7 @@ Caller contract:
 """
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Iterator, Optional, Tuple
 
@@ -196,6 +197,76 @@ def _has_pitch_fuel(game: "GameState", player_idx: int,
     return False
 
 
+# Channel target categories: oracle word -> predicate against a
+# battlefield permanent.  Closed structural set (artifact, creature,
+# enchantment, planeswalker, [nonbasic] land, permanent) — every
+# Channel card in Modern targets one of these.  No card names.
+def _channel_target_predicates():
+    from engine.cards import CardType, Supertype
+    return {
+        "artifact": lambda p: CardType.ARTIFACT in p.template.card_types,
+        "creature": lambda p: CardType.CREATURE in p.template.card_types,
+        "enchantment": lambda p: CardType.ENCHANTMENT in p.template.card_types,
+        "planeswalker": lambda p: CardType.PLANESWALKER in p.template.card_types,
+        "permanent": lambda p: True,
+        "land": lambda p: CardType.LAND in p.template.card_types,
+        "nonbasic land": lambda p: (
+            CardType.LAND in p.template.card_types
+            and Supertype.BASIC not in p.template.supertypes
+        ),
+    }
+
+
+def _channel_has_legal_target(
+    game: "GameState", card: "CardInstance",
+) -> bool:
+    """Does the channel ability of `card` have at least one legal
+    target somewhere in the game?  Returns True for targetless channel
+    abilities (Sokenzan creates tokens with no target) and as a
+    defensive default when the oracle text doesn't expose a parseable
+    'Channel — ... target X' clause.
+
+    Implementation: locate the channel clause (oracle text after the
+    'Channel —' / 'Channel -' marker), scan it for the canonical
+    target-category idioms, then require at least one matching
+    permanent on EITHER battlefield.  Channel target lines rarely
+    restrict to opponent-only (Otawara, Boseiju, etc. allow any
+    controller), so both battlefields qualify.
+
+    Class size: every channel card in Modern and beyond — Otawara,
+    Boseiju, Sokenzan, Takenuma, Eiganjo, etc.  The predicate is
+    text-driven, not name-driven.
+    """
+    oracle = (card.template.oracle_text or "").lower()
+    # 'Channel —' (em-dash) or 'Channel -' (ASCII hyphen); both occur.
+    idx = max(oracle.find("channel —"), oracle.find("channel -"))
+    if idx < 0:
+        return True  # no channel clause — defensive default
+    clause = oracle[idx:]
+    if "target" not in clause:
+        return True  # targetless channel (Sokenzan)
+
+    predicates = _channel_target_predicates()
+    # Longer phrases first so 'nonbasic land' doesn't lose to 'land'.
+    requested = []
+    for word in ("nonbasic land", "artifact", "creature", "enchantment",
+                 "planeswalker", "permanent", "land"):
+        # 'target <word>' anchors the first category; comma-continued
+        # multi-type lines ('target artifact, creature, ...') match
+        # via word-boundary in the residual clause.
+        if f"target {word}" in clause or re.search(
+                rf"[\s,]{re.escape(word)}\b", clause):
+            requested.append(word)
+    if not requested:
+        return True  # 'target' found but no known category — defensive
+
+    for pid in (0, 1):
+        for perm in game.players[pid].battlefield:
+            if any(predicates[w](perm) for w in requested):
+                return True
+    return False
+
+
 def _battlefield_has_activatable(card: "CardInstance") -> bool:
     """Does a battlefield permanent expose an activated ability that
     the AI could fire in an instant-speed window?
@@ -261,7 +332,12 @@ def _yield_hand_candidates(
         # ── Channel (any card type, but the host is in hand) ──
         # Class size: every card with a Channel ability (Otawara,
         # Boseiju, Sokenzan, etc.).  Detection is W0-A oracle tag.
-        if has_tag(card.name, Tag.CHANNEL_ABILITY):
+        # Target-category legality (CR 601.2c): if the channel ability
+        # has a 'target X' clause, at least one matching permanent must
+        # exist in the game.  Targetless channels (Sokenzan creates
+        # tokens) bypass the gate and always surface.
+        if (has_tag(card.name, Tag.CHANNEL_ABILITY)
+                and _channel_has_legal_target(game, card)):
             yield ResponseCandidate(
                 action="channel",
                 source=card,
