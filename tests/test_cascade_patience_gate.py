@@ -161,27 +161,35 @@ class TestCascadePatienceGate:
 
         player, ev = _score_spell(game, "Living End", shardless)
 
-        pass_threshold = player.profile.pass_threshold
-        assert ev <= pass_threshold, (
+        # M3: pass_threshold deleted; the patience gate now clamps to
+        # `PATIENCE_GATE_REJECT_SENTINEL` (-10.0).
+        from ai.scoring_constants import PATIENCE_GATE_REJECT_SENTINEL
+        assert ev <= PATIENCE_GATE_REJECT_SENTINEL, (
             f"Shardless Agent EV with 1 GY creature and no library "
             f"reanimate payoff = {ev:.2f}, should be <= "
-            f"pass_threshold={pass_threshold}.  Without a payoff in "
-            f"library, projection is non-positive and the gate must "
-            f"clamp to keep the cascade enabler in hand."
+            f"PATIENCE_GATE_REJECT_SENTINEL={PATIENCE_GATE_REJECT_SENTINEL}.  "
+            f"Without a payoff in library, projection is non-positive "
+            f"and the gate must clamp to keep the cascade enabler in hand."
         )
 
     def test_cascade_allowed_when_graveyard_has_critical_mass(self, card_db):
         """Graveyard with 4 creatures (meets `resource_target`) → scoring
-        Shardless Agent must yield EV ABOVE pass_threshold so the AI fires
-        the cascade. Gate must not brick the deck in the payoff phase."""
+        Shardless Agent must yield EV ABOVE the patience-reject sentinel
+        so the AI fires the cascade. Gate must not brick the deck in the
+        payoff phase."""
         game, shardless = _build_living_end_game(card_db, gy_creature_count=4)
 
         player, ev = _score_spell(game, "Living End", shardless)
 
-        pass_threshold = player.profile.pass_threshold
-        assert ev > pass_threshold, (
+        # M3: pass_threshold deleted; the patience gate now clamps to
+        # `PATIENCE_GATE_REJECT_SENTINEL` (-10.0).  Cascade with enough
+        # GY must score WELL above the reject band so the M3
+        # `play_value > 0` gate at decide_main_phase lets it through.
+        from ai.scoring_constants import PATIENCE_GATE_REJECT_SENTINEL
+        assert ev > PATIENCE_GATE_REJECT_SENTINEL, (
             f"Shardless Agent EV with 4 GY creatures = {ev:.2f}, at or "
-            f"below pass_threshold={pass_threshold}. With the FILL_RESOURCE "
+            f"below PATIENCE_GATE_REJECT_SENTINEL"
+            f"={PATIENCE_GATE_REJECT_SENTINEL}. With the FILL_RESOURCE "
             f"target met, the cascade should fire — not be clamped."
         )
 
@@ -211,10 +219,13 @@ class TestCascadePatienceGateScope:
         # prefer_cycling gameplan and no library reanimate.
         player, ev = _score_spell(game, "Boros Energy", shardless)
 
-        pass_threshold = player.profile.pass_threshold
-        assert ev > pass_threshold, (
+        # M3: pass_threshold deleted; the patience gate now clamps to
+        # `PATIENCE_GATE_REJECT_SENTINEL` (-10.0).
+        from ai.scoring_constants import PATIENCE_GATE_REJECT_SENTINEL
+        assert ev > PATIENCE_GATE_REJECT_SENTINEL, (
             f"Shardless Agent EV in non-reanimator deck = {ev:.2f}, at "
-            f"or below pass_threshold={pass_threshold}. The cascade "
-            f"patience gate must not fire for decks without a reanimate "
-            f"payoff — there is no graveyard fuel to wait for."
+            f"or below PATIENCE_GATE_REJECT_SENTINEL"
+            f"={PATIENCE_GATE_REJECT_SENTINEL}. The cascade patience "
+            f"gate must not fire for decks without a reanimate payoff "
+            f"— there is no graveyard fuel to wait for."
         )

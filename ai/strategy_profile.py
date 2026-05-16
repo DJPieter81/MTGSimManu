@@ -124,12 +124,15 @@ class StrategyProfile:
     pump_extra_lands_threshold: int = 5
     pump_max_discards: int = 2
 
-    # ── Pass threshold ──
-    # Plays scoring below this EV are skipped (the AI passes the turn
-    # rather than burning a card on a negative-EV play). -5.0 is the
-    # default; CONTROL profiles are stricter (more patient) and aggro
-    # profiles override looser (the aggro plan can't afford to pass).
-    pass_threshold: float = -5.0
+    # ── (Deleted in M3) Pass threshold ──
+    # The binary `pass_threshold` gate has been removed.  The AI now
+    # compares signed `play_value = ev - holdback_cost(snap)` against
+    # zero, where `holdback_cost` is positive when held interaction +
+    # active opp threats argue for keeping mana open and NEGATIVE
+    # (=> bonus) when no defensive use exists.  See
+    # `ai/ev_player.py::_holdback_penalty` for the signed model and
+    # `docs/history/audits/2026-05-16_5panel_bo3_audit.md` (control
+    # panel) for the binary-gate trap that motivated removal.
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -144,9 +147,7 @@ AGGRO = StrategyProfile(
     aggro_closing_threshold_reduction=2.0,
 )
 
-MIDRANGE = StrategyProfile(
-    pass_threshold=-3.0,
-)
+MIDRANGE = StrategyProfile()
 
 CONTROL = StrategyProfile(
     burn_face_mult=0.0,

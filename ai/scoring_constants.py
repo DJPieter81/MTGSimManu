@@ -2194,6 +2194,47 @@ treats "opp has no relevant threats" but never collapses to 0.0
 Used by `_p_opp_action_next_turn` in `ai/ev_player.py`.
 """
 
+PATIENCE_GATE_REJECT_SENTINEL: float = -10.0
+"""Sentinel: EV value used by patience gates (Scapeshift fizzle, cascade
+patience) to clamp a play's score into the "definitely don't fire"
+range.  Replaces the pre-M3 `profile.pass_threshold - 1.0` pattern,
+which depended on the now-deleted `pass_threshold` profile field.
+
+Magnitude: -10.0 is comfortably below the M3 play-value floor at
+`ai/ev_player.py::decide_main_phase` so a patience-clamped play is
+filtered out even when the only competitor is a land (LAND_BASE_EV
+= 10.0).  Same sub-zero magnitude as the post-fix penalty branch of
+`_holdback_penalty` for 1 × 2 × 1.0 × 4.0 = -8, so the clamp lives in
+the same rejection band as the natural negative-EV plays.
+
+Used by `_score_spell` in `ai/ev_player.py` (Scapeshift fizzle gate,
+cascade patience gate).  See M3 brief in
+`docs/history/audits/2026-05-16_5panel_bo3_audit.md`.
+"""
+
+PLAY_VALUE_FLOOR: float = -5.0
+"""Sentinel: minimum signed play_value required to execute the best
+candidate at `ai/ev_player.py::decide_main_phase`.  Plays whose
+signed value (projection EV + holdback bonus, or projection EV +
+holdback penalty) falls below this floor are passed rather than
+executed.
+
+M3 (audit `docs/history/audits/2026-05-16_5panel_bo3_audit.md`)
+replaces the per-archetype `profile.pass_threshold` binary gate with
+a single signed play-value comparison against this rules sentinel.
+The signed `holdback_cost` from `_holdback_penalty` does the work
+the per-archetype threshold previously did: the bonus branch
+(positive cost = negative penalty) lifts no-defensive-use plays
+above the floor; the penalty branch (negative cost) gates them
+below.  -5.0 matches the pre-M3 CONTROL pass_threshold so existing
+combo-deck patience tests (Storm cantrip bait, finisher hold)
+preserve their behaviour without the per-profile tunable.
+
+Used by `decide_main_phase` in `ai/ev_player.py`.  Sister constant:
+`PATIENCE_GATE_REJECT_SENTINEL` clamps spells from the patience
+gates into a value that is unconditionally below this floor.
+"""
+
 LAND_BASE_EV: float = 10.0
 """Derived: baseline EV for a land play. 10.0 sits in the mid-range
 of the spell EV scale (-5 = pass_threshold, +15 = high-EV cast) —

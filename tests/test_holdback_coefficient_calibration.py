@@ -252,9 +252,18 @@ class TestA4ThresholdReverted:
     def test_three_card_spelldeck_opp_no_longer_triggers(self, card_db):
         """Control with 2 Islands + Counterspell + CMC-2 play; opp is a
         spell deck (Ruby Storm) with 0 power on board and EXACTLY a
-        3-card hand. After the revert, the holdback gate no longer
-        considers this a threat-holding grip, so the penalty must be
-        0."""
+        3-card hand. After the revert, the holdback gate's PENALTY
+        branch must NOT fire — the 3-card hand is too small to count
+        as a threat-holding grip.
+
+        M3: `_holdback_penalty` is now signed; instead of returning 0.0
+        in the no-defensive-use branch it returns a POSITIVE bonus
+        derived from `_proactive_tap_out_bonus`.  The rule pinned here
+        is still "no penalty fires for a 3-card spell-deck opp" — but
+        the assertion shape is `penalty >= 0` (non-negative) rather
+        than `penalty == 0.0` exactly, to absorb the M3 signed-cost
+        model.
+        """
         game = GameState(rng=random.Random(0))
         _add(game, card_db, "Island", controller=0, zone="battlefield")
         _add(game, card_db, "Island", controller=0, zone="battlefield")
@@ -290,8 +299,12 @@ class TestA4ThresholdReverted:
             me, opp, snap, cost=augur.template.cmc or 0,
             exclude_instance_id=augur.instance_id,
         )
-        assert penalty == 0.0, (
-            f"3-card spell-deck opp with 0 power triggered holdback "
-            f"penalty {penalty:.2f}; expected 0.0 after A4 revert. "
+        # M3: A4-revert rule is preserved (no penalty fires) but the
+        # signed-cost model returns a non-negative bonus instead of
+        # exactly 0.0 in this branch.  Same intent — the play is not
+        # held back — but the assertion absorbs the sign-flip.
+        assert penalty >= 0.0, (
+            f"3-card spell-deck opp with 0 power produced negative "
+            f"holdback {penalty:.2f}; expected >= 0.0 after A4 revert. "
             f"Threshold must be restored to opp_hand_size >= 4."
         )

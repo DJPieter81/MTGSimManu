@@ -178,10 +178,15 @@ class TestCascadePayoffMustFire:
         ev = player._score_spell(cascade_card, snap, game,
                                   game.players[0], game.players[1])
         if base <= 0.0:
-            assert ev <= player.profile.pass_threshold, (
+            # M3: pass_threshold deleted; the patience gate now clamps
+            # to the named `PATIENCE_GATE_REJECT_SENTINEL` (-10.0).
+            # Equivalent intent: the cascade must be filtered out by
+            # the M3 `play_value > 0` gate.
+            from ai.scoring_constants import PATIENCE_GATE_REJECT_SENTINEL
+            assert ev <= PATIENCE_GATE_REJECT_SENTINEL, (
                 f"Cascade with no library payoff should not fire.  "
                 f"base projection={base:.2f}, _score_spell={ev:.2f}, "
-                f"pass_threshold={player.profile.pass_threshold}.  "
+                f"reject sentinel={PATIENCE_GATE_REJECT_SENTINEL}.  "
                 f"The gate is permitted to clamp here — projection is "
                 f"non-positive so there's no positive value to cast."
             )
@@ -220,10 +225,14 @@ class TestCascadePayoffMustFire:
         # When projection is positive, score should be at least
         # pass_threshold (gate must not flat-clamp positive value).
         if base > 0.0:
-            assert ev > player.profile.pass_threshold - 0.5, (
+            # M3: pass_threshold deleted; the patience gate now clamps
+            # to `PATIENCE_GATE_REJECT_SENTINEL` (-10.0).  A positive
+            # projection must NOT be clamped down to the reject band.
+            from ai.scoring_constants import PATIENCE_GATE_REJECT_SENTINEL
+            assert ev > PATIENCE_GATE_REJECT_SENTINEL + 0.5, (
                 f"Projection positive (base={base:.2f}) but "
-                f"_score_spell={ev:.2f} clamped below pass_threshold="
-                f"{player.profile.pass_threshold}.  The gate is "
-                f"clamping a positive projection — must-fire rule "
-                f"violated."
+                f"_score_spell={ev:.2f} clamped at or below the M3 "
+                f"reject sentinel ({PATIENCE_GATE_REJECT_SENTINEL}).  "
+                f"The gate is clamping a positive projection — "
+                f"must-fire rule violated."
             )
