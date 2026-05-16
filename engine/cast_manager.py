@@ -117,12 +117,21 @@ class CastManager:
         is_main_phase = game.current_phase in (Phase.MAIN1, Phase.MAIN2)
         is_active = game.active_player == player_idx
 
-        if template.is_instant or template.has_flash:
+        # R4: sorcery-speed-lockout static abilities (Teferi, Time
+        # Raveler; Grand Abolisher; Conqueror's Flail; ...) collapse
+        # the instant/flash exemption for opponents who are in the
+        # per-game lockout registry. Registry is rebuilt on demand
+        # from ``Tag.SORCERY_SPEED_LOCKOUT``-tagged permanents — no
+        # card-name branches, no oracle-text parse at runtime.
+        sorcery_locked = player_idx in game._sorcery_speed_lockout_set()
+
+        if (template.is_instant or template.has_flash) and not sorcery_locked:
             pass
         elif template.is_creature or template.is_sorcery or \
                 CardType.ENCHANTMENT in template.card_types or \
                 CardType.ARTIFACT in template.card_types or \
-                CardType.PLANESWALKER in template.card_types:
+                CardType.PLANESWALKER in template.card_types or \
+                sorcery_locked:
             if not (is_main_phase and is_active and game.stack.is_empty):
                 return False
 

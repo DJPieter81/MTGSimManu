@@ -173,6 +173,38 @@ class GameState:
                     return card
         return None
 
+    # ─── Sorcery-speed-lockout static-effect registry (R4) ──────────
+    # Per-game registry of player indices currently restricted to
+    # sorcery-speed casts by an opposing battlefield permanent. Rebuilt
+    # on demand from battlefield permanents whose classifier tag is
+    # ``Tag.SORCERY_SPEED_LOCKOUT`` (cached in
+    # ``decks/gameplans/_oracle_classifier.json``). Consulted by
+    # ``CastManager.can_cast`` — opponents in the set cannot cast
+    # outside sorcery-speed windows. Card-name branches, oracle-text
+    # parsing, and per-card flags are forbidden by the abstraction
+    # contract; the classifier tag IS the dispatch.
+    def _sorcery_speed_lockout_set(self) -> set[int]:
+        """Return player indices currently restricted to sorcery-speed
+        casts (R4).
+
+        For every battlefield permanent whose classifier tag includes
+        ``Tag.SORCERY_SPEED_LOCKOUT``, the permanent's *opponents* are
+        added to the set. No oracle-text parse, no card-name check.
+        """
+        # Late import: ai.oracle_classifier is in the ai/ layer; an
+        # engine module importing from ai/ is acceptable because the
+        # classifier is a pure-data loader (no scoring/strategy logic).
+        from ai.oracle_classifier import Tag, tags_for
+
+        restricted: set[int] = set()
+        for player in self.players:
+            for card in player.battlefield:
+                if Tag.SORCERY_SPEED_LOCKOUT in tags_for(card.template.name):
+                    for opp_idx in range(len(self.players)):
+                        if opp_idx != card.controller:
+                            restricted.add(opp_idx)
+        return restricted
+
     def setup_game(self, deck1: List[CardTemplate], deck2: List[CardTemplate],
                     forced_first_player: Optional[int] = None):
         """Initialize the game with two decks.

@@ -30,6 +30,13 @@
         "IMPULSE_DRAW"
       ]
     },
+    "Grand Abolisher": {
+      "_classification_source": "manual:llm-undercoverage-2026-05-16",
+      "oracle_text_sha256": "3d2737d202cf5921baa0ce23e531c55ff88759589da2f2b609e574e9f13b0410",
+      "tags": [
+        "SORCERY_SPEED_LOCKOUT"
+      ]
+    },
     "Meticulous Archive": {
       "oracle_text_sha256": "5016d4b3823830055397fd1232a25045e88005b981b8cdfc4bd623944b300158",
       "tags": [
