@@ -1,7 +1,6 @@
 """LLM-at-decision-time scoring weights, cached for determinism.
 
-Phase 1 of the project-direction refactor — see
-``docs/proposals/jazzy-swimming-muffin.md``.  The user directive:
+Phase 1 of the project-direction refactor (see PR #402).  Directive:
 
     "all changes must be structural - dropping constants, not
      adding. no overrides. relying on new techniques instead of

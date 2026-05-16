@@ -576,10 +576,9 @@ Modern noncreature-spell density (1 instant or sorcery per turn for
 spell-heavy decks). Adds 1.0 / opp_life of clock.
 """
 
-# DROPPED in Phase 1 refactor: `CASCADE_FREE_SPELL_VALUE` (was 2.5)
-# is now sourced from `ai.llm_decision_scorer.weight("*",
-# CTX_CASCADE_FREE_SPELL_VALUE)` — see
-# `docs/proposals/jazzy-swimming-muffin.md`.
+# DROPPED in Phase 1 refactor (PR #402): `CASCADE_FREE_SPELL_VALUE`
+# (was 2.5) is now sourced from `ai.llm_decision_scorer.weight("*",
+# CTX_CASCADE_FREE_SPELL_VALUE)`.
 
 ETB_VALUE_BONUS: float = 2.0
 """Derived: a creature with the `etb_value` tag has an enter-the-
@@ -856,10 +855,9 @@ Used by `_choose_targets` burn-vs-creature decision in
 `ai/ev_player.py`.
 """
 
-# DROPPED in Phase 1 refactor: `COMBO_FORCE_PAYOFF_STORM_THRESHOLD`
-# (was 5) is now sourced from `ai.llm_decision_scorer.weight(arch,
-# CTX_COMBO_FORCE_PAYOFF_STORM_THRESHOLD)` — see
-# `docs/proposals/jazzy-swimming-muffin.md`.
+# DROPPED in Phase 1 refactor (PR #402):
+# `COMBO_FORCE_PAYOFF_STORM_THRESHOLD` (was 5) is now sourced from
+# `ai.llm_decision_scorer.weight(arch, CTX_COMBO_FORCE_PAYOFF_STORM_THRESHOLD)`.
 
 LANDFALL_TRIGGER_VALUE: float = 3.0
 """Derived: per-landfall-trigger EV. Each landfall trigger ≈ ETB
@@ -890,7 +888,7 @@ Used by `_score_land` artifact-synergy branch in `ai/ev_player.py`.
 #   CYCLING_CASCADE_BOOST      (was 8.0)
 #   CYCLING_GY_URGENCY         (was 6.0)
 #   CYCLING_GAMEPLAN_BOOST     (was 10.0)
-# See `docs/proposals/jazzy-swimming-muffin.md` for the rationale.
+# See PR #402 for the rationale (LLM-at-decision-time scoring).
 # The historical values live in `ai.llm_decision_scorer.DEFAULT_WEIGHTS`
 # as the offline-cold-start table; once the LLM cache is warmed via
 # `tools/llm_cache_warm.py --task decision_scorer`, the per-archetype
