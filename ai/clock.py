@@ -528,3 +528,60 @@ def life_phase(snap: "EVSnapshot") -> LifePhase:
         return LifePhase.PANIC
 
     return LifePhase.GRIND
+
+
+# ─────────────────────────────────────────────────────────────
+# Block-assignment scorer — single-formula post-state evaluation
+# ─────────────────────────────────────────────────────────────
+
+
+def score_block_assignment(
+    snap: "EVSnapshot",
+    *,
+    my_life_after: int,
+    opp_power_after: int,
+    my_power_after: int,
+) -> float:
+    """Score a hypothetical post-combat state by life-as-resource
+    *buffer differential* — my survival turns minus opp's survival
+    turns.
+
+    Replaces the chump / trade / favorable-trade enum-of-reasons
+    that previously gated block selection.  The choice between
+    "chump", "even trade", and "favorable trade" is **derived**
+    from the same single formula:
+
+        score = life_as_resource(my_life_after, opp_power_after)
+              - life_as_resource(opp_life, my_power_after)
+
+    All three previously-named cases reduce to comparing scores
+    across hypothetical post-states:
+
+      - Chump (blocker dies, attacker stays):
+            my_life_after = my_life - 0
+            opp_power_after = opp_power (attacker survives)
+            my_power_after = my_power - blocker_power (blocker died)
+      - Trade (both die):
+            my_life_after = my_life - 0
+            opp_power_after = opp_power - attacker_power
+            my_power_after = my_power - blocker_power
+      - Favorable trade (only attacker dies):
+            my_life_after = my_life - 0
+            opp_power_after = opp_power - attacker_power
+            my_power_after = my_power
+      - No block:
+            my_life_after = my_life - attacker_power
+            opp_power_after = opp_power
+            my_power_after = my_power
+
+    Each option is one input to this function; the caller picks the
+    option with the maximum score.  No new numeric literals are
+    introduced — both terms compose ``life_as_resource``.  ``opp_life``
+    is the only field of ``snap`` we read directly because opp's
+    life is not affected by the block decision (they're attacking,
+    not blocking) — every other coordinate comes from the caller's
+    post-state.
+    """
+    my_buffer = life_as_resource(my_life_after, opp_power_after)
+    opp_buffer = life_as_resource(snap.opp_life, my_power_after)
+    return my_buffer - opp_buffer

@@ -2651,9 +2651,65 @@ class EVPlayer:
                 return True
         return False
 
+    def _score_block_lifespan_delta(
+        self, game, attacker, blocker, my_life: int,
+        my_power: int, opp_power: int,
+    ) -> float:
+        """Lifespan-delta score for a single (attacker, blocker) pair.
+
+        Composes ``ai.clock.score_block_assignment`` for both the
+        block and no-block post-states; returns the delta.
+
+        Single formula — no chump / trade / favorable-trade enum.
+        Caller picks the (attacker, blocker) pair with the highest
+        delta.  Positive ⇒ block helps; non-positive ⇒ block is wasted.
+        """
+        from ai.clock import score_block_assignment
+        from ai.ev_evaluator import snapshot_from_game
+        from engine.cards import Keyword
+
+        snap = snapshot_from_game(game, self.player_idx)
+
+        a_pow = attacker.power or 0
+        a_tou = attacker.toughness or 0
+        b_pow = blocker.power or 0
+        b_tou = blocker.toughness or 0
+
+        b_kills_attacker = (b_pow >= a_tou) or (
+            Keyword.DEATHTOUCH in blocker.keywords
+        )
+        a_kills_blocker = (a_pow >= b_tou) or (
+            Keyword.DEATHTOUCH in attacker.keywords
+        )
+
+        # Post-block state — trample lets excess punch through.
+        has_trample = Keyword.TRAMPLE in attacker.keywords
+        damage_through = max(0, a_pow - b_tou) if has_trample else 0
+
+        my_life_after_block = my_life - damage_through
+        opp_power_after_block = opp_power - (a_pow if b_kills_attacker else 0)
+        my_power_after_block = my_power - (b_pow if a_kills_blocker else 0)
+
+        my_life_after_no_block = my_life - a_pow
+        opp_power_after_no_block = opp_power
+        my_power_after_no_block = my_power
+
+        block = score_block_assignment(
+            snap,
+            my_life_after=my_life_after_block,
+            opp_power_after=opp_power_after_block,
+            my_power_after=my_power_after_block,
+        )
+        no_block = score_block_assignment(
+            snap,
+            my_life_after=my_life_after_no_block,
+            opp_power_after=opp_power_after_no_block,
+            my_power_after=my_power_after_no_block,
+        )
+        return block - no_block
+
     def decide_blockers(self, game, attackers) -> Dict[int, List[int]]:
         """Decide blocking assignments."""
-        from ai.board_eval import evaluate_action, Action, ActionType
         from engine.cards import Keyword
 
         valid_blockers = game.get_valid_blockers(self.player_idx)
@@ -2759,16 +2815,44 @@ class EVPlayer:
                     plating_skipped_any = True
                     continue
 
+                # M12-engine: pick the blocker that maximises the
+                # single-formula lifespan-delta score (composes
+                # ``clock.score_block_assignment``).  Replaces the
+                # ``min(creature_value)`` chump enum — the same
+                # formula now ranks chump / even-trade / favorable-
+                # trade options.
                 best_chump = None
-                best_chump_val = CHUMP_SENTINEL_VALUE
+                best_delta = 0.0  # positive ⇒ block helps; below this we
+                                  # prefer no block (no magic number — the
+                                  # zero is the score-delta neutral point).
                 cands = _blocker_candidates(attacker, e_used)
                 # Prefer non-battle-cry blockers; only use battle cry sources as last resort
                 non_bc = [b for b in cands if not _is_battle_cry(b)]
                 pool = non_bc if non_bc else cands
+                # Cumulative damage already absorbed by emergency
+                # blocks — folds into ``my_life`` for the next
+                # block-vs-no-block delta.  Post-decision life is
+                # ``me.life - (damage taken so far)``; damage taken so
+                # far is ``total_incoming - damage absorbed``.
+                already_absorbed = sum(
+                    (a.power or 0) for a in attackers
+                    if a.instance_id in emergency_blocks
+                )
+                my_life_now = me.life - max(0, total_incoming
+                                            - already_absorbed
+                                            - (attacker.power or 0))
+                # Snapshot powers used by the helper.
+                my_power_total = sum((c.power or 0) for c in me.creatures)
+                opp_power_total = sum((c.power or 0) for c in opp.creatures)
                 for blocker in pool:
-                    val = creature_value(blocker)
-                    if val < best_chump_val:
-                        best_chump_val = val
+                    delta = self._score_block_lifespan_delta(
+                        game, attacker, blocker,
+                        my_life=my_life_now,
+                        my_power=my_power_total,
+                        opp_power=opp_power_total,
+                    )
+                    if delta > best_delta:
+                        best_delta = delta
                         best_chump = blocker
                 if best_chump:
                     emergency_blocks[attacker.instance_id] = [best_chump.instance_id]
@@ -2828,9 +2912,15 @@ class EVPlayer:
 
         sorted_attackers = sorted(attackers, key=lambda a: a.power or 0, reverse=True)
 
+        # Pre-compute board totals; the lifespan-delta helper uses
+        # the same arithmetic for every (attacker, blocker) pair
+        # within a single decision.
+        my_power_total = sum((c.power or 0) for c in me.creatures)
+        opp_power_total = sum((c.power or 0) for c in opp.creatures)
+
         for attacker in sorted_attackers:
             best_blocker = None
-            best_val = 0.0
+            best_val = 0.0  # neutral threshold — positive ⇒ block helps.
 
             for blocker in valid_blockers:
                 if blocker.instance_id in used:
@@ -2863,9 +2953,17 @@ class EVPlayer:
                     if self._is_protected_piece(blocker):
                         continue
 
-                val = evaluate_action(
-                    game, self.player_idx,
-                    Action(ActionType.BLOCK, {'attacker': attacker, 'blocker': blocker}))
+                # M12-engine: single-formula lifespan-delta score
+                # (composes ``clock.score_block_assignment``).
+                # Replaces ``evaluate_action(BLOCK)``'s positive-for-
+                # any-chump heuristic with the same buffer-differential
+                # that drives the emergency path.
+                val = self._score_block_lifespan_delta(
+                    game, attacker, blocker,
+                    my_life=me.life,
+                    my_power=my_power_total,
+                    opp_power=opp_power_total,
+                )
                 if val > best_val:
                     best_val = val
                     best_blocker = blocker
