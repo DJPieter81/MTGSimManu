@@ -538,6 +538,46 @@ class CardInstance:
         self.temp_toughness_mod = 0
         self.temp_keywords.clear()
 
+    def take_damage(self, amount: int, source) -> None:
+        """Receive `amount` damage as a permanent (CR 119.3).
+
+        Implements the `DamageTarget` protocol consumed by
+        `engine/damage.py:deal_damage`. Routing is by card type,
+        not by card name:
+
+        - Creature: accrue `damage_marked`. SBA 704.5h destroys the
+          creature on the next pass if `damage_marked >= toughness`.
+        - Planeswalker: decrement `loyalty_counters`. SBA 704.5p
+          destroys it when `loyalty_counters <= 0`.
+        - Battles (future): decrement defense counters. Not yet
+          implemented; falls through to no-op until W1 adds the
+          battle target type.
+
+        A single CardInstance can be both creature and PW
+        (Tibalt, Cosmic Impostor-style cards): the engine treats
+        the *current* face / current types as authoritative; we
+        check creature first because the most common multi-type
+        case is creature-with-PW-back-face and we are damaging the
+        face that is currently on the battlefield.
+
+        `source` is accepted to satisfy the protocol; today it
+        feeds into the deathtouch marker that `deal_damage` writes
+        directly onto `_deathtouch_damage` before reaching here.
+        Triggers that care about "dealt damage by X" read it from
+        the event log, not from this parameter.
+        """
+        if CardType.CREATURE in self.template.card_types:
+            self.damage_marked += amount
+            return
+        if CardType.PLANESWALKER in self.template.card_types:
+            self.loyalty_counters -= amount
+            return
+        # Unknown permanent type (battle, etc.) — no-op until the
+        # rules layer for that type lands. Returning silently is
+        # safe; the SBA pass will not destroy anything that wasn't
+        # marked.
+        return
+
     def new_turn(self):
         """Called at the start of controller's turn."""
         self.summoning_sick = False
