@@ -75,6 +75,13 @@ if TYPE_CHECKING:
     from engine.cards import CardInstance, CardTemplate
 
 from ai.deck_knowledge import DeckKnowledge
+# Life-phase gear-shift primitive (W0-B foundation + M4 wiring).
+# `life_phase(snap)` returns a LifePhase enum from clock primitives;
+# `phase_weight_multiplier(archetype, phase, tags)` is a total-function
+# lookup over the per-archetype `phase_weights` table.  Both are pure
+# compositions — no magic numbers introduced here.
+from ai.clock import life_phase
+from ai.strategy_profile import phase_weight_multiplier
 
 
 # ─────────────────────────────────────────────────────────────
@@ -2695,6 +2702,27 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
                 # against aggro we can't survive.
                 progress = min(1.0, damage / max(1, snap.opp_life))
                 ev += p_resolves * progress * win_swing
+
+    # ── Life-phase gear-shift (M4) ──
+    # Pure lookup over `strategy_profile.phase_weights`.  At PANIC,
+    # control / midrange / aggro archetypes up-weight defensive tags
+    # (`removal`, `board_wipe`, `counterspell`, `lifegain`, ...) and
+    # down-weight purely-proactive tags (`cantrip`, `card_advantage`)
+    # so the AI gear-shifts to "stay alive" instead of executing the
+    # standard `grind_value` projection.  At DEVELOP / GRIND the
+    # lookup returns the identity multiplier, so the standard
+    # projection is unchanged.
+    #
+    # No `if life_phase == PANIC:` if-chain — the phase is passed
+    # straight to a dict lookup, and unrecognised archetypes /
+    # phases / tags all fall through to IDENTITY_PHASE_WEIGHTS = 1.0.
+    # Replaces scattered `my_life-vs-literal-N` magic-threshold
+    # conditionals (see W0-B life_phase + tests/test_life_phase.py
+    # and ev_player.py's deleted DESPERATE_LIFE_THRESHOLD gate).
+    phase = life_phase(snap)
+    mult = phase_weight_multiplier(
+        archetype, phase, getattr(card.template, 'tags', set()) or set())
+    ev *= mult
 
     if not detailed:
         return ev

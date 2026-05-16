@@ -64,7 +64,6 @@ from ai.scoring_constants import (
     LAND_SACRIFICE_MIN_LANDS,
     BIG_CREATURE_CMC_FLOOR,
     PLANESWALKER_DEFAULT_LOYALTY,
-    DESPERATE_LIFE_THRESHOLD,
     NONCREATURE_COUNTER_AGGRO_POWER,
     NONCREATURE_COUNTER_AGGRO_HAND,
     PHYREXIAN_LIFE_PENALTY_SCALE,
@@ -1174,12 +1173,17 @@ class EVPlayer:
             base_cost = t.cmc or 0
             x_budget = max(0, total_mana - base_cost)
             mult = (t.x_cost_data or {}).get('multiplier', 1) or 1
-            effective_x = x_budget // mult
             killable = [c for c in opp.creatures
-                        if (c.template.cmc or 0) <= effective_x]
+                        if (c.template.cmc or 0) <= x_budget // mult]
             kill_count = len(killable)
             killable_power = sum((c.power or 0) for c in killable)
-            desperate = snap.my_life <= DESPERATE_LIFE_THRESHOLD
+            # Replaces a `my_life-vs-DESPERATE_LIFE_THRESHOLD` magic
+            # threshold (M4 from 2026-05-16 5-panel audit).  The life-
+            # phase enum from W0-B subsumes the "we're dying, fire the
+            # X-wrath even at low value" case via the composed primitive
+            # `am_dead_next + life_as_resource` ordering.
+            from ai.clock import LifePhase, life_phase
+            desperate = life_phase(snap) in (LifePhase.PANIC, LifePhase.LETHAL)
             if not desperate:
                 if kill_count == 0:
                     return min(ev, X_BOARD_WIPE_WASTE_FLOOR)
