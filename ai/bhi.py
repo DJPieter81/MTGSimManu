@@ -557,3 +557,108 @@ def _bayesian_update(prior: float, p_evidence_if_true: float,
 
     posterior = p_evidence_if_true * prior / p_evidence
     return max(0.0, min(1.0, posterior))
+
+
+# ─────────────────────────────────────────────────────────────
+# Predicted turn-of-cast — opp mana availability + effective CMC
+# ─────────────────────────────────────────────────────────────
+
+def predicted_turn_of_cast(card, snap,
+                           victim_idx=None, victim_player=None) -> int:
+    """Earliest turn the card's controller can pay its mana cost.
+
+    Composition of two existing primitives (no new constants, no
+    card-specific knowledge):
+
+      * ``ai.mana_planner.effective_cmc(card, player)`` — the
+        rules-correct cost after every oracle-derived reduction
+        (domain, affinity, metalcraft, etc.).  This is the W0-F
+        primitive — the function MUST go through it so any reducer
+        that lands later picks up the same code path.
+      * The Magic rules constant "one land drop per turn".  We
+        derive the controller's currently-available mana from the
+        live snapshot (``snap.opp_mana`` is the opp's available mana
+        as of ``snap``'s player perspective) and compute how many
+        additional turn cycles are needed to reach the effective CMC.
+
+    Arguments:
+      * ``card`` — a ``CardInstance`` (in the controller's hand).
+      * ``snap`` — the ``EVSnapshot`` from the OBSERVER's perspective
+        (the discard-spell caster).  ``snap.opp_*`` therefore refers
+        to the hand-owning controller of ``card``.  This is the same
+        convention the rest of BHI uses (``snap`` is the perspective
+        of the player whose tracker we are).
+      * ``victim_idx`` / ``victim_player`` — optional handles to the
+        controller of the card whose hand we are evaluating.  Needed
+        only by ``effective_cmc`` to count distinct basic land types
+        in the controller's deck (domain reach).  When omitted the
+        function falls back to ``card.controller``'s player object on
+        the bound ``_game_state`` reference (the discard-advisor
+        call site has both available).
+
+    Returns: a non-negative integer.  ``0`` means "castable this
+    turn or already castable"; ``N`` means "the controller needs N
+    more land drops" (assuming one drop per turn — see ``bhi.py``'s
+    existing ``CARDS_DRAWN_PER_TURN`` constant for the same idiom).
+
+    Pure function: no side effects on the card, snapshot, or
+    controller state.
+    """
+    # Local import — avoids a circular dependency at module load
+    # (ai.mana_planner imports from elsewhere in ai/ as part of the
+    # gameplan loader).  The bhi module is imported first by the
+    # tracker initialisation; deferring effective_cmc to call time
+    # keeps the import graph one-directional.
+    from ai.mana_planner import effective_cmc
+
+    # Resolve the controller / player handle.  Prefer the explicit
+    # argument; fall back to the engine-side game-state reference
+    # already attached to the CardInstance.
+    if victim_player is None:
+        gs = getattr(card, "_game_state", None)
+        owner = getattr(card, "controller", None)
+        if owner is None:
+            owner = getattr(card, "owner", None)
+        if gs is not None and owner is not None and 0 <= owner < len(gs.players):
+            victim_player = gs.players[owner]
+
+    # effective_cmc requires a player handle to read domain reach.
+    # When unknown, fall back to the printed CMC: the function
+    # signature is "if I can't observe domain reach, assume zero
+    # reduction" — same fallback the gameplan-driven path uses.
+    if victim_player is not None:
+        eff_cmc = effective_cmc(card, victim_player)
+    else:
+        eff_cmc = getattr(card.template, "cmc", None)
+    if eff_cmc is None:
+        # Cards without a defined CMC (lands with no mana cost) are
+        # not castable as spells.  Return a large sentinel (the
+        # snapshot's NO_CLOCK-equivalent for unreachable turns).
+        return int(NO_CAST_SENTINEL)
+
+    # Current opp mana availability — what the controller can pay
+    # RIGHT NOW.  ``snap.opp_mana`` is the snapshot's cached estimate
+    # (``available_mana_estimate`` at snapshot time).  Falls back to
+    # ``opp_total_lands`` when the cached mana is zero / unavailable.
+    if snap is not None:
+        opp_now = max(int(getattr(snap, "opp_mana", 0) or 0),
+                      int(getattr(snap, "opp_total_lands", 0) or 0))
+    else:
+        opp_now = 0
+
+    deficit = int(eff_cmc) - opp_now
+    if deficit <= 0:
+        # Already affordable — castable this turn (or untap-step
+        # of the next turn, depending on whether mana is tapped).
+        return 0
+    # One land drop per turn (Magic rules constant; same
+    # CARDS_DRAWN_PER_TURN-style idiom used in
+    # ``p_higher_threat_in_n_turns``).  No cost reduction modelled
+    # beyond effective_cmc — domain / affinity already flow through
+    # the primitive above.
+    return deficit  # magic-allow: deficit IS the integer turn count
+
+
+# Sentinel for cards that cannot be cast (no defined mana cost).
+# Mirrors the ``ai.clock.NO_CLOCK`` sentinel pattern.
+NO_CAST_SENTINEL: int = 99  # magic-allow: rules-sentinel "uncastable", same shape as NO_CLOCK
