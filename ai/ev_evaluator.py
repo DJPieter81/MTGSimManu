@@ -508,6 +508,35 @@ _ARTIFACT_SCALING_PHRASES = (
 )
 
 
+def _uses_combo_chain_scoring(game, player_idx: int) -> bool:
+    """Return True iff the deck at ``player_idx`` declares
+    ``uses_combo_chain_scoring=True`` in its gameplan.
+
+    Phase 2 sweep: replaces the prior ``archetype in ('storm', 'combo')``
+    gates at the four chain-scoring sites in ``_enumerate_this_turn_signals``
+    and ``compute_play_ev``.  The flag is set by
+    ``decks/gameplan_loader.py`` from the JSON's
+    ``uses_combo_chain_scoring`` field (default: True for archetype
+    "combo", False otherwise).
+
+    Returns False if no game / player / gameplan can be resolved — the
+    chain-scoring branches were defensive against a None game already.
+    """
+    if game is None:
+        return False
+    try:
+        deck_name = game.players[player_idx].deck_name
+        if not deck_name:
+            return False
+        from ai.gameplan import get_gameplan
+        plan = get_gameplan(deck_name)
+        if plan is None:
+            return False
+        return bool(getattr(plan, "uses_combo_chain_scoring", False))
+    except Exception:
+        return False
+
+
 def _has_artifact_scaling_card(hand, battlefield) -> bool:
     """True if any card in the supplied zones has oracle text
     referencing an artifact-count threshold (metalcraft, affinity for
@@ -664,11 +693,17 @@ def evaluate_board(snap: EVSnapshot, archetype: str = "midrange",
     """Evaluate a board state using clock-based position value.
 
     All archetypes use the same unified evaluation: clock differential
-    + resource advantage. Archetype affects only combo/storm clock
-    override. No arbitrary per-archetype weights.
+    + resource advantage. No arbitrary per-archetype weights.
+
+    Phase 2 refactor: ``archetype`` is retained on the signature for
+    backward compatibility with callers (``ai.response``,
+    ``ai.decision_kernel``, ``ai.search.evplayer_scorer_adapter``)
+    but is no longer threaded into ``position_value``.  The combo-clock
+    override is removed at the ``position_value`` layer; combo decks
+    express their plan through per-deck gameplan data instead.
     """
     from ai.clock import position_value
-    return position_value(snap, archetype)
+    return position_value(snap)
 
 
 # ─────────────────────────────────────────────────────────────
@@ -1030,7 +1065,7 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
                 for p in game.players[player_idx].battlefield
                 if not p.template.is_land)
     ) if game is not None else False
-    if (archetype in ('storm', 'combo')
+    if (_uses_combo_chain_scoring(game, player_idx)
             and (snap.storm_count > 0 or has_reducer_on_board)
             and ('ritual' in tags or 'cantrip' in tags
                  or 'cost_reducer' in tags)
@@ -1085,8 +1120,14 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
     if produces or ('{t}:' in oracle and 'add' in oracle):
         signals.append('mana_source')
     elif is_ritual(card) and 'add' in oracle:
-        if archetype not in ('storm', 'combo') or game is None or (
-                _payoff_reachable_this_turn(card, game, player_idx)):
+        # Ritual mana sources gate on whether a payoff is reachable
+        # THIS turn — but only for chain-scoring decks (combo / storm
+        # archetypes that pre-declare `uses_combo_chain_scoring=True`).
+        # Non-chain decks always count rituals as mana sources because
+        # they don't have an "empty the mana pool into a kill" plan.
+        if (not _uses_combo_chain_scoring(game, player_idx)
+                or game is None
+                or _payoff_reachable_this_turn(card, game, player_idx)):
             signals.append('mana_source')
 
     # 15. X-cost hate permanent (Chalice-style "cost X, get X charge
@@ -1155,7 +1196,7 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
     #     other flashback-tagged cards (Faithful Mending in
     #     Goryo's, Unburial Rites for reanimation) live in
     #     non-storm archetypes or already emit other signals.
-    if (archetype in ('storm', 'combo')
+    if (_uses_combo_chain_scoring(game, player_idx)
             and 'flashback' in tags
             and 'combo' in tags
             and game is not None):
@@ -2642,7 +2683,7 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
     #      of the storm count needed to finish next turn via Past in Flames.
     # Both are capped at 1.0 and summed (clamped). P(chain resolves) comes
     # from BHI counter probability. Replaces the old flat +50/+15/+5 tiers.
-    if game and archetype in ("combo", "storm"):
+    if game and _uses_combo_chain_scoring(game, player_idx):
         tags = getattr(card.template, 'tags', set())
         is_chain_starter = ('ritual' in tags or 'cantrip' in tags or
                            'card_advantage' in tags or 'cost_reducer' in tags or
@@ -2654,7 +2695,7 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
             p_resolves = 1.0 - (bhi.get_counter_probability()
                                 if bhi and bhi._initialized else 0.0)
             from ai.clock import position_value
-            win_swing = max(0.0, 100.0 - position_value(snap, archetype))
+            win_swing = max(0.0, 100.0 - position_value(snap))
             if can_kill:
                 # Full lethal — entire win-swing is realized.
                 ev += p_resolves * win_swing

@@ -20,7 +20,9 @@ position" and "this card affects opp's plan to win" — is what this
 helper adds.
 
 Gating (both required, no fallthrough):
-    1. Opponent's gameplan archetype == 'combo'.
+    1. Opponent's gameplan declares `enables_disruption=True`
+       (synthesized from `archetype == "combo"` by the loader, with
+       per-deck JSON override available).
     2. `card.name` appears in any of opp's gameplan goals'
        `card_roles["engines"]` or `card_roles["payoffs"]` lists.
 
@@ -130,7 +132,7 @@ def engine_disruption_value(card: "CardInstance",
 
     Returns 0.0 unless ALL of the following hold:
       (a) opp has a registered gameplan;
-      (b) `gameplan.archetype == "combo"`;
+      (b) `gameplan.enables_disruption` is True;
       (c) `card.name` is in any goal's `card_roles["engines"]` or
           `card_roles["payoffs"]`;
       (d) opp's `combo_clock` is below `COMBO_WINDOW`.
@@ -143,7 +145,13 @@ def engine_disruption_value(card: "CardInstance",
     plan = _opp_gameplan(opp)
     if plan is None:
         return 0.0
-    if getattr(plan, "archetype", "") != "combo":
+    # Phase 2 sweep: gate on the explicit per-deck `enables_disruption`
+    # flag rather than the archetype string.  Combo decks declare this
+    # True in their gameplan (default for archetype="combo" in
+    # `decks/gameplan_loader.py`).  This keeps the "is this a combo
+    # deck whose plan we want to disrupt?" decision as a single data
+    # field on `DeckGameplan`, not a branch on the archetype label.
+    if not getattr(plan, "enables_disruption", False):
         return 0.0
 
     name = (getattr(card, "name", None)

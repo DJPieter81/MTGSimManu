@@ -260,21 +260,26 @@ class EVPlayer:
         self._assess_value = None
 
         # Mulligan decider — reuse existing.
-        # archetype is a string from DECK_ARCHETYPE_OVERRIDES; some decks
-        # (Ruby Storm) use "storm" which isn't an ArchetypeStrategy enum
-        # value. Storm shares COMBO's mulligan semantics (need ritual +
-        # cantrip + finisher), so alias it here. Previously defaulted to
-        # MIDRANGE — which silently skipped the combo-ritual backup check
-        # at mulligan.py:111, causing Storm to keep ritual-less hands.
+        #
+        # Phase 2 sweep: the prior `_COMBO_ALIASES = {"storm"}` /
+        # `archetype in [e.value for e in ArchetypeStrategy]` membership
+        # checks are gone.  Storm and any other "extension" archetype
+        # are now classified by per-deck `mulligan_policy` data carried
+        # on the gameplan (see `ai.gameplan.MulliganPolicy`).  The
+        # `MulliganDecider` reads that policy directly; the
+        # `ArchetypeStrategy` enum we still pass here is purely for
+        # legacy field initialization on the decider — it does NOT
+        # gate behaviour anymore.  The mapping is a static dict, not
+        # an `in (...)` conditional.
         from ai.mulligan import MulliganDecider
         from ai.strategy_profile import ArchetypeStrategy
-        _COMBO_ALIASES = {"storm"}  # strings treated as COMBO for mulligan
-        if self.archetype in [e.value for e in ArchetypeStrategy]:
-            arch_enum = ArchetypeStrategy(self.archetype)
-        elif self.archetype in _COMBO_ALIASES:
-            arch_enum = ArchetypeStrategy.COMBO
-        else:
-            arch_enum = ArchetypeStrategy.MIDRANGE
+        _ARCHETYPE_BY_NAME = {e.value: e for e in ArchetypeStrategy}
+        # Storm is a combo extension archetype that lacks its own
+        # enum value; map it onto COMBO for the legacy enum-typed
+        # field.  All real behaviour comes from the gameplan policy.
+        _ARCHETYPE_BY_NAME.setdefault("storm", ArchetypeStrategy.COMBO)
+        arch_enum = _ARCHETYPE_BY_NAME.get(
+            self.archetype, ArchetypeStrategy.MIDRANGE)
         self._mulligan_decider = MulliganDecider(arch_enum, self.goal_engine)
 
         # Response decider — reuse existing.
