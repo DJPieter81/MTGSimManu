@@ -191,10 +191,61 @@ A re-stated version of the AI flow with module attributions appears later in thi
 ## Testing
 
 ```bash
-python -m pytest tests/ -q          # 73 tests
+python -m pytest tests/ -q          # 1975 tests as of 2026-05-16
 ```
 
 Tests include: deck loading, gameplan loading, matchup balance, card effects, game completion.
+
+### CI guardrail — what runs and what doesn't (2026-05-16)
+
+`.github/workflows/abstraction-contract.yml` runs on every PR:
+
+1. **Ratchets** — `check_abstraction.py`, `check_magic_numbers.py`, `check_doc_hygiene.py` (each <5s)
+2. **Narrow pytest** — 5 ratchet-related test files
+3. **Curated regression-surface subset** (Track G1, PR #400) — 14 test files covering
+   combo evaluator, sim v3 unit, parity, storm tutor/holds, abstraction-contract
+   bodies, sim v3 acceptance gates. Wall budget ≈30s.
+
+**What CI does NOT run** (gaps to be aware of):
+
+- **Full 1975-test suite.** Per-test `CardDatabase()` reloads 21759 cards
+  (~1-2s setup × 1975 tests = ~80 min single-threaded). No session-scoped
+  fixture yet. xdist parallel attempt exceeded 6h GitHub Actions cap.
+- **Tests excluded from the curated subset because of slow per-test DB load
+  (>60s per file):**
+  - `tests/test_ability_override_discard_derived_from_oracle.py` (107s)
+  - `tests/test_discard_tag_generic_derivation.py` (>60s)
+  - `tests/test_tag_overrides_pruned_to_novel_only.py` (>60s)
+- **Tests excluded because of pre-existing failures on main** (will be
+  re-added once underlying regressions land fix-PRs):
+  - `tests/test_wr_baseline_anchor.py` — 4 entries drifted; fix via
+    `python tools/refresh_wr_baseline.py` then commit the snapshot.
+  - `tests/test_x_cost_board_wipe_gate.py` — 2 regressions from PR #408;
+    needs deeper fix in `ai/ev_player.py` X-cost wipe + desperation lever.
+
+### Adding a new test file to the curated CI subset
+
+If you write a test file that pins a mechanism (chain projection, combo
+evaluator, sim v3 behaviour, WR anchor outcome, abstraction contract),
+add its path to the `Run regression-surface test suite` step in
+`.github/workflows/abstraction-contract.yml`. Verify the file completes
+in <10s locally (or it'll blow up the CI wall budget).
+
+### Followup G1.1 — make full suite CI-feasible
+
+Pre-condition: add a session-scoped `CardDatabase` pytest fixture so all
+1975 tests reuse one DB load instead of 1975 reloads. Once that lands,
+full `pytest tests/` should fit in ~5 min and replace the curated subset
+in the workflow.
+
+### Sister-PR regressions surface here too
+
+The curated subset is the FIRST CI step that exercises real behaviour
+outside ratchets. PRs from parallel sessions (#408 archetype branch
+sweep, etc.) have shipped to main with unit-test failures that this
+guardrail catches but earlier CI didn't. Expect to author small fix PRs
+(like #416 for the `_compute_combo_value` stale callers) whenever the
+guardrail surfaces a new break.
 
 ## Debugging
 
