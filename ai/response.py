@@ -6,7 +6,7 @@ instant removal, and threat evaluation for stack items.
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable, List, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple
 
 from ai.scoring_constants import (
     CHEAP_COUNTER_PAID_THRESHOLD,
@@ -31,6 +31,14 @@ if TYPE_CHECKING:
     from ai.strategic_logger import StrategicLogger
 
 
+# Display-only cap on the number of alternative responses surfaced in
+# a RESPONSE_DECISION replay event.  Mirrors `_REPLAY_TOP_N_ALTS` in
+# ai/ev_player.py for the main-phase DECISION event so the HTML
+# renderer treats both kinds identically.  Pure presentation, not part
+# of any scoring formula.
+_REPLAY_RESPONSE_TOP_N_ALTS = 4
+
+
 class ResponseDecider:
     """Decides instant-speed responses to opponent's spells."""
 
@@ -38,15 +46,38 @@ class ResponseDecider:
         self.player_idx = player_idx
         self.turn_planner = turn_planner
         self.strategic_logger = strategic_logger
+        # Set on each decide_response call so the engine can read it
+        # back and emit a RESPONSE_DECISION event onto the replay log
+        # (W0-H).  Pure data, no behavior change — the production path
+        # ignores this if replay_log is None.
+        # Shape:
+        #   {
+        #     "chosen": {"action", "card", "ev", "reason", "targets"},
+        #     "alternatives": [{"action", "card", "ev", "gap", ...}, ...],
+        #     "stack_item": {"name", "controller", "cost"},
+        #     "held_counter_floor_ev": float,
+        #     "threat": float,        # evaluate_stack_threat result
+        #     "candidates_n": int,    # number of castable instants seen
+        #   }
+        self.last_decision: Optional[Dict[str, Any]] = None
 
     def decide_response(self, game: "GameState", stack_item: "StackItem",
                         pick_removal_target_fn: Optional[Callable] = None) -> Optional[Tuple["CardInstance", List[int]]]:
         """Decide whether and how to respond to a stack item.
 
         Returns (response_card, targets) or None.
+
+        Side effect: writes a structured summary onto ``self.last_decision``
+        so the engine can emit a RESPONSE_DECISION replay event (W0-H).
+        The summary is pure data — no behavior change for production code
+        paths that don't read it.
         """
         from ai.evaluator import estimate_spell_value, estimate_permanent_value
         from engine.cards import CardType, Keyword
+
+        # Reset the decision record at the start; downstream branches
+        # write a final summary via _record_decision before returning.
+        self.last_decision = None
 
         player = game.players[self.player_idx]
         instants = [c for c in player.hand
@@ -63,6 +94,15 @@ class ResponseDecider:
                 self.strategic_logger.log_no_response(
                     self.player_idx, stack_item.source.name, game,
                     "No castable instants in hand")
+            self._record_decision(
+                game, stack_item,
+                chosen_inst=None, chosen_targets=[],
+                chosen_reason="No castable instants in hand",
+                alternatives=[], instants=[],
+                threat=0.0,
+                held_counter_floor_ev=self._held_counter_floor_ev(game),
+                triage_skip=False,
+            )
             return None
 
         threat = self.evaluate_stack_threat(game, stack_item)
@@ -192,6 +232,19 @@ class ResponseDecider:
                                 self.player_idx, inst.name,
                                 stack_item.source.name, game,
                                 f"TurnPlanner: threat value {threat:.1f}, responding with {inst.name}")
+                        self._record_decision(
+                            game, stack_item,
+                            chosen_inst=inst, chosen_targets=targets,
+                            chosen_reason=(
+                                f"TurnPlanner: threat {threat:.1f} → "
+                                f"{inst.name}: {reasoning}"
+                            ),
+                            alternatives=[i for i in instants
+                                          if i.instance_id != inst.instance_id],
+                            instants=instants, threat=threat,
+                            held_counter_floor_ev=held_counter_floor_ev,
+                            triage_skip=skip_counter_for_this_creature,
+                        )
                         return (inst, targets)
 
         except Exception as e:
@@ -283,6 +336,19 @@ class ResponseDecider:
                         f"(opp paid {threat_paid_cost}). Floor EV {held_counter_floor_ev:.2f}, "
                         f"gate HIGH={COUNTER_GATE_HIGH:.2f}/LOW={COUNTER_GATE_LOW:.2f}. "
                         f"Worth countering (chose cheapest of {len(counter_candidates)} candidates).")
+                self._record_decision(
+                    game, stack_item,
+                    chosen_inst=chosen,
+                    chosen_targets=[stack_item.source.instance_id],
+                    chosen_reason=(
+                        f"counter (cost {cost}, threat {response_value:.1f}, "
+                        f"floor {held_counter_floor_ev:.2f})"
+                    ),
+                    alternatives=[i for _, i in counter_candidates[1:]],
+                    instants=instants, threat=threat,
+                    held_counter_floor_ev=held_counter_floor_ev,
+                    triage_skip=skip_counter_for_this_creature,
+                )
                 return (chosen, [stack_item.source.instance_id])
 
         for instant in instants:
@@ -295,6 +361,17 @@ class ResponseDecider:
                     my_creature_ids = {c.instance_id for c in me.creatures}
                     targeted_own = [tid for tid in stack_item.targets if tid in my_creature_ids]
                     if targeted_own:
+                        self._record_decision(
+                            game, stack_item,
+                            chosen_inst=instant,
+                            chosen_targets=targeted_own[:1],
+                            chosen_reason="blink: save own targeted creature",
+                            alternatives=[i for i in instants
+                                          if i.instance_id != instant.instance_id],
+                            instants=instants, threat=threat,
+                            held_counter_floor_ev=held_counter_floor_ev,
+                            triage_skip=skip_counter_for_this_creature,
+                        )
                         return (instant, targeted_own[:1])
                 if "removal" in stack_item.source.template.tags:
                     me = game.players[self.player_idx]
@@ -304,6 +381,17 @@ class ResponseDecider:
                         best = max(etb_creatures,
                                    key=lambda c: estimate_permanent_value(
                                        c, me, game, self.player_idx))
+                        self._record_decision(
+                            game, stack_item,
+                            chosen_inst=instant,
+                            chosen_targets=[best.instance_id],
+                            chosen_reason="blink: re-trigger ETB on best target",
+                            alternatives=[i for i in instants
+                                          if i.instance_id != instant.instance_id],
+                            instants=instants, threat=threat,
+                            held_counter_floor_ev=held_counter_floor_ev,
+                            triage_skip=skip_counter_for_this_creature,
+                        )
                         return (instant, [best.instance_id])
 
             # Instant-speed removal — only use proactively if the target is
@@ -329,13 +417,125 @@ class ResponseDecider:
                         # card" floor on estimate_removal_value below
                         # which we hold removal for a higher-EV target.
                         if val >= PROACTIVE_REMOVAL_MIN_VALUE:
+                            self._record_decision(
+                                game, stack_item,
+                                chosen_inst=instant,
+                                chosen_targets=[target.instance_id],
+                                chosen_reason=(
+                                    f"proactive removal: value {val:.1f}"
+                                ),
+                                alternatives=[i for i in instants
+                                              if i.instance_id != instant.instance_id],
+                                instants=instants, threat=threat,
+                                held_counter_floor_ev=held_counter_floor_ev,
+                                triage_skip=skip_counter_for_this_creature,
+                            )
                             return (instant, [target.instance_id])
 
         if self.strategic_logger:
             self.strategic_logger.log_no_response(
                 self.player_idx, stack_item.source.name, game,
                 f"Threat value {threat:.1f} not worth responding to, or no suitable response")
+        self._record_decision(
+            game, stack_item,
+            chosen_inst=None, chosen_targets=[],
+            chosen_reason=(
+                f"pass: threat {threat:.1f} below counter gate "
+                f"(floor {held_counter_floor_ev:.2f}) or no suitable response"
+            ),
+            alternatives=instants,
+            instants=instants, threat=threat,
+            held_counter_floor_ev=held_counter_floor_ev,
+            triage_skip=skip_counter_for_this_creature,
+        )
         return None
+
+    def _record_decision(
+        self,
+        game: "GameState",
+        stack_item: "StackItem",
+        *,
+        chosen_inst: Optional["CardInstance"],
+        chosen_targets: List[int],
+        chosen_reason: str,
+        alternatives: List["CardInstance"],
+        instants: List["CardInstance"],
+        threat: float,
+        held_counter_floor_ev: float,
+        triage_skip: bool,
+    ) -> None:
+        """Record the most-recent response decision for the replayer.
+
+        Pure-data hook (W0-H): the engine reads ``self.last_decision``
+        after this method returns and emits a RESPONSE_DECISION event.
+        Production paths that don't enable the replay log pay only the
+        cost of this dict construction — no behavior change.
+
+        ``chosen_inst is None`` represents a deliberate pass (the AI
+        weighed the threat and chose not to respond); the event still
+        fires so reviewers can scan for declined-response moments.
+        """
+        src = stack_item.source
+        controller = getattr(stack_item, 'controller', None)
+        try:
+            cost = self._effective_paid_cost(game, stack_item)
+        except Exception:
+            cost = src.template.cmc or 0
+
+        if chosen_inst is None:
+            chosen_dict = {
+                "action": "pass",
+                "card": None,
+                "ev": float(threat),  # threat we declined to address
+                "reason": chosen_reason,
+                "targets": [],
+            }
+        else:
+            target_names: List[str] = []
+            for tid in chosen_targets or []:
+                t = game.get_card_by_id(tid) if hasattr(game, "get_card_by_id") else None
+                target_names.append(t.name if t is not None else f"id:{tid}")
+            chosen_dict = {
+                "action": "cast_spell",
+                "card": chosen_inst.name,
+                "ev": float(threat),  # threat we are answering
+                "reason": chosen_reason,
+                "targets": target_names,
+            }
+
+        # Alternatives surface the instants we considered but didn't
+        # fire — using effective cost as a proxy "ev gap" so the
+        # renderer can sort/highlight without recomputing.
+        alt_dicts: List[Dict[str, Any]] = []
+        for inst in alternatives[:_REPLAY_RESPONSE_TOP_N_ALTS]:
+            try:
+                if "counterspell" in inst.template.tags:
+                    eff = self._effective_counter_cost(game, inst)
+                else:
+                    eff = inst.template.cmc or 0
+            except Exception:
+                eff = inst.template.cmc or 0
+            alt_dicts.append({
+                "action": "cast_spell",
+                "card": inst.name,
+                "ev": float(threat) - float(eff),
+                "gap": float(eff),
+                "rejected_because": "not chosen by triage/gate",
+            })
+
+        self.last_decision = {
+            "chosen": chosen_dict,
+            "alternatives": alt_dicts,
+            "stack_item": {
+                "name": src.name,
+                "controller": int(controller) if controller is not None else -1,
+                "cost": int(cost) if cost is not None else 0,
+            },
+            "held_counter_floor_ev": float(held_counter_floor_ev),
+            "threat": float(threat),
+            "candidates_n": len(instants),
+            "triage_skip": bool(triage_skip),
+        }
 
     def _choose_response_targets(self, game: "GameState", instant: "CardInstance", stack_item: "StackItem",
                                   pick_removal_target_fn: Optional[Callable] = None) -> List[int]:
