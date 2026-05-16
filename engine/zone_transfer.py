@@ -47,6 +47,7 @@ from typing import Callable, Dict, List, Optional, TYPE_CHECKING
 if TYPE_CHECKING:
     from .cards import CardInstance
     from .game_state import GameState
+    from .game_state import PlayerState
 
 
 # ─── TransferKind ──────────────────────────────────────────────────
@@ -101,60 +102,87 @@ class TransferKind(Enum):
 # ─── trigger fan-out implementations ───────────────────────────────
 
 
+def _is_free_first_draw_of_step(game: "GameState",
+                                 player: "PlayerState") -> bool:
+    """Predicate: is THIS draw the free first draw of the draw step?
+
+    Per Bowmasters' Oracle ("whenever an opponent draws a card except
+    the first one they draw in each of their draw steps"), the
+    triggered ability skips the draw step's free draw. The "first draw
+    of the draw step" is the one drawn by the turn-based action in
+    untap/upkeep/draw (CR 504); the active player's `cards_drawn_this_turn`
+    counter reads 1 right after that draw. Higher values mean the
+    player has drawn additional cards via spells/abilities; those DO
+    trigger Bowmasters.
+
+    Lives here (not as a magic literal `<= 1`) so the rule is named
+    once and reused. The existing inline check at
+    `engine/game_state.py:260-261` is the duplicate that Wave 1a-1
+    (R1+M1-engine) will collapse onto this predicate.
+    """
+    from .game_state import Phase
+    return (game.current_phase == Phase.DRAW
+            and player.cards_drawn_this_turn <= FIRST_DRAW_STEP_COUNT)
+
+
+# CR 504.3 — the turn-based draw-step action draws exactly one card.
+# `cards_drawn_this_turn` reads this value after that action; values
+# above this represent spell/ability-induced draws which DO trigger
+# "whenever you draw" abilities.  Named so the predicate above doesn't
+# carry a bare `1`.
+FIRST_DRAW_STEP_COUNT = 1
+
+
 def _fire_on_draw_triggers(game: "GameState", card: "CardInstance",
                            controller: int) -> None:
     """Fan-out for `TransferKind.DRAW`.
 
-    Re-uses the oracle-driven detection that
-    `engine/game_state.py:draw_cards` already runs: a battlefield
-    sweep for cards whose oracle text matches the
-    'whenever you draw' / 'whenever an opponent draws' shapes.
+    Structural design: each opp permanent whose oracle classifier
+    bears `Tag.ON_DRAW_DAMAGE` fires its damage trigger here. The
+    amount parse is gated by the classifier tag — we ONLY look for
+    `deals N damage` after the tag confirms the card is an
+    on-draw-damage source, so a card that incidentally has those
+    words elsewhere in its oracle can't false-positive.
 
-    No new oracle-string matches are introduced here — the existing
-    helpers are the single source of truth. Wave 2 will delete the
-    duplicate sweep inside `draw_cards` once all real-draw callers
-    route through this primitive.
+    Sheoldred-style on-draw life-gain (own) / life-loss (opp) shapes
+    need their own classifier tags (`Tag.ON_OWN_DRAW_LIFE_GAIN`,
+    `Tag.ON_OPP_DRAW_LIFE_LOSS`).  Both are declared in
+    `ai/oracle_classifier.py` but not yet populated in the smoke
+    cache. Until they are, this fan-out only handles ON_DRAW_DAMAGE.
+    Wave 1a-1 (R1+M1-engine) will extend coverage when it migrates
+    `draw_cards` callers; until then, real-draw triggers continue
+    flowing through `engine/game_state.py:draw_cards` (which still
+    contains the legacy regex; that's Wave 2's deletion target).
+
+    Assertion contract: if a card carries `Tag.ON_DRAW_DAMAGE` but
+    its oracle has no parseable "deals N damage", we raise.  Silent
+    fallthrough was a W0-C bug; loud is correct.
     """
-    # Local import to avoid a circular at module load: zone_transfer
-    # ←→ game_state.
-    from .game_state import Phase
     import re
 
-    player = game.players[controller]
+    from ai.oracle_classifier import Tag, tags_for
+
     opp = game.players[1 - controller]
+    player = game.players[controller]
+    free_first = _is_free_first_draw_of_step(game, player)
 
-    # Mirror the same conditions `draw_cards` uses so behaviour is
-    # bit-identical for the migration window.
-    is_draw_step = (game.current_phase == Phase.DRAW)
-    first_draw_step_draw = (
-        is_draw_step and player.cards_drawn_this_turn <= 1
-    )
-
-    # Own-side triggers: "whenever you draw, gain N life"
-    for c in player.battlefield:
-        oracle = (c.template.oracle_text or "").lower()
-        if ("whenever you draw" in oracle
-                and "gain" in oracle and "life" in oracle):
-            m = re.search(r"gain\s+(\d+)\s+life", oracle)
-            if m:
-                game.gain_life(player.player_idx, int(m.group(1)), c.name)
-
-    # Opponent-side triggers: "whenever you draw … lose N life" and
-    # "whenever an opponent draws … deals N damage".
     for c in opp.battlefield:
+        if Tag.ON_DRAW_DAMAGE not in tags_for(c.name):
+            continue
+        if free_first:
+            continue  # Bowmasters' "except the first one in draw step"
+
         oracle = (c.template.oracle_text or "").lower()
-        if ("whenever" in oracle and "draw" in oracle
-                and "lose" in oracle and "life" in oracle):
-            m = re.search(r"lose\s+(\d+)\s+life", oracle)
-            if m:
-                player.life -= int(m.group(1))
-                opp.damage_dealt_this_turn += int(m.group(1))
-        if ("whenever an opponent draws" in oracle
-                and not first_draw_step_draw):
-            m = re.search(r"deals?\s+(\d+)\s+damage", oracle)
-            dmg = int(m.group(1)) if m else 1
-            player.life -= dmg
-            opp.damage_dealt_this_turn += dmg
+        m = re.search(r"deals?\s+(\d+)\s+damage", oracle)
+        if m is None:
+            raise AssertionError(
+                f"{c.name!r} carries Tag.ON_DRAW_DAMAGE but its oracle "
+                f"text does not match the 'deals N damage' shape — "
+                f"classifier and oracle are out of sync."
+            )
+        dmg = int(m.group(1))
+        player.life -= dmg
+        opp.damage_dealt_this_turn += dmg
 
 
 def _fire_etb_triggers(game: "GameState", card: "CardInstance",

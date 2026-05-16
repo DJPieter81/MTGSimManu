@@ -64,11 +64,18 @@ def _make_vanilla_card(game: GameState, name: str, controller: int,
 
 
 def _make_bowmasters_proxy(game: GameState, controller: int) -> CardInstance:
-    """Build an opponent-side permanent whose oracle text matches the
-    'whenever an opponent draws a card …deals 1 damage' clause shape.
-    Identity-free; the engine's existing fan-out recognises the shape."""
+    """Build an opponent-side permanent that the trigger fan-out will
+    recognise as an on-opponent-draw damage source.
+
+    Uses the real card name `Orcish Bowmasters` so the oracle
+    classifier's `Tag.ON_DRAW_DAMAGE` lookup succeeds (the smoke cache
+    populated this entry).  The synthetic oracle text below is what the
+    fan-out parses for the damage amount AFTER the tag confirms the
+    card is a valid source — the dispatch is by tag, the amount is
+    parsed targetedly.
+    """
     tmpl = CardTemplate(
-        name="Bowmasters Proxy",
+        name="Orcish Bowmasters",
         card_types=[CardType.CREATURE],
         mana_cost=ManaCost(generic=1, black=1),
         supertypes=[], subtypes=[],

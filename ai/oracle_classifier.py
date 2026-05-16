@@ -111,6 +111,15 @@ class Tag(Enum):
     """Permanent or trigger that deals damage when an opponent draws
     a card.  Inverts the EV of cantrips for the opponent."""
 
+    ON_OPP_DRAW_LIFE_LOSS = "ON_OPP_DRAW_LIFE_LOSS"
+    """Permanent that makes opp lose life (NOT damage — distinct under
+    CR; lifelink/prevention don't apply) when opp draws a card.
+    Canonical: Sheoldred's 'they lose 2 life' clause."""
+
+    ON_OWN_DRAW_LIFE_GAIN = "ON_OWN_DRAW_LIFE_GAIN"
+    """Permanent that makes its controller gain life when controller
+    draws a card.  Canonical: Sheoldred's 'you gain 2 life' clause."""
+
     ON_CAST_DAMAGE = "ON_CAST_DAMAGE"
     """Damage trigger when an opponent casts a spell (Eidolon-style).
     Drives M1 / chain self-damage projection."""
