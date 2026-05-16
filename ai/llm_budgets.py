@@ -78,10 +78,11 @@ DEFAULT_TOKEN_CAPS: dict[LLMTask, int] = {
     "audit_doc_freshness": 4000,
     "handler_audit":       4000,
     "failing_test_spec":   4000,
-    # Phase 1 refactor: small inputs (archetype + short context label)
-    # and a tiny structured output (one float + brief rationale).
-    # 1000 tokens is generous and catches runaway prompts.
-    "decision_scorer":     1000,
+    # Phase 1 refactor: archetype + short context label as user input,
+    # but the system prompt at ai/llm_prompts/decision_scorer_v1.md is
+    # ~1700 tokens — the contract documentation is the bulk of the input.
+    # 2500 gives ~50% headroom while still failing loud on a runaway prompt.
+    "decision_scorer":     2500,
 }
 
 # Fallback budget when a caller passes an unknown task literal.
