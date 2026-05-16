@@ -42,9 +42,11 @@ from ai.scoring_constants import (
     MULLIGAN_GENERIC_MIDRANGE_LAND_LOW,
     MULLIGAN_GENERIC_MIDRANGE_MED_DEV,
     MULLIGAN_KEY_DEVELOPMENT_REQUIRED,
+    MULLIGAN_LAND_SLACK_FIRST_TURN_VALUE_FLOOR,
     MULLIGAN_MIN_SPELLS_BASIC,
     MULLIGAN_STARTING_HAND_SIZE,
 )
+from ai.predicates import hand_first_turn_value
 
 if TYPE_CHECKING:
     from engine.cards import CardInstance
@@ -250,17 +252,25 @@ class MulliganDecider:
             gp = self.goal_engine.gameplan
             hand_names = {c.name for c in hand}
 
-            has_key_card = bool(hand_names & gp.mulligan_keys) if gp.mulligan_keys else False
             has_always_early = bool(hand_names & gp.always_early) if gp.always_early else False
 
             if land_count < gp.mulligan_min_lands:
                 self.last_reason = f"too few lands ({land_count} < {gp.mulligan_min_lands})"
                 return False
             if land_count > gp.mulligan_max_lands:
-                if has_always_early and land_count <= gp.mulligan_max_lands + 2:
-                    pass  # keep — engine card is worth having extra lands
-                else:
-                    self.last_reason = f"too many lands ({land_count} > {gp.mulligan_max_lands})"
+                # Per-card first-turn-value slack (replaces flat
+                # `mulligan_max_lands + 2`). An always_early card no
+                # longer auto-licenses an extra land draw; hand must
+                # clear MULLIGAN_LAND_SLACK_FIRST_TURN_VALUE_FLOOR
+                # of summed per-card T1-T2 value. Audit F1.1 / F7 D2.
+                hand_value = hand_first_turn_value(spells)
+                if not (has_always_early
+                        and hand_value >= MULLIGAN_LAND_SLACK_FIRST_TURN_VALUE_FLOOR):
+                    self.last_reason = (
+                        f"too many lands ({land_count} > "
+                        f"{gp.mulligan_max_lands}); first-turn value "
+                        f"{hand_value} < {MULLIGAN_LAND_SLACK_FIRST_TURN_VALUE_FLOOR}"
+                    )
                     return False
 
             # Combo sets: need at least 1 card from each required set.

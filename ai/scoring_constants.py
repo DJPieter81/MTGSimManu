@@ -5169,6 +5169,18 @@ Used by `MulliganDecider.decide` critical-piece branch.
 """
 
 
+MULLIGAN_LAND_SLACK_FIRST_TURN_VALUE_FLOOR: int = 5
+"""Rules-constant: minimum hand-summed `first_turn_value` required for
+the mulligan keeper to accept a hand whose land count is one above
+`mulligan_max_lands`. Replaces the flat `mulligan_max_lands + 2` slack
+(audit 2026-04-26 F1.1; 5-panel Bo3 audit 2026-05-16 Combo F7 D2).
+A real curve hand of {1-drop, 1-drop, 2-drop, 3-drop} sums to ~6
+(two 1-drop bodies @ 2 each + two tagged plays @ 1 each); a hand
+with only one 1-drop and two fringe-early spells sums to ~4. Floor
+of 5 requires the cumulative impact of a real curve, not the spike
+of one always_early card."""
+
+
 MULLIGAN_GENERIC_AGGRO_CHEAP_FLOOR: int = 4
 """Rules-constant: cheap-spell count required for the no-gameplan
 aggro fallback to keep a 1-land hand. With 1 land and ≥4 cheap spells
