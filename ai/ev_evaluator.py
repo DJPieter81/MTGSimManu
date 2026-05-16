@@ -2522,6 +2522,29 @@ def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
 # Combo Chain Evaluator — lookahead for storm/ritual chains
 # ═══════════════════════════════════════════════════════════════════
 
+def _draw_count_for_chain_step(card_template) -> int:
+    """How many real-draw events a chain-step draw spell triggers.
+    IMPULSE_DRAW-tagged → 0 (CR 121.1c reveal, not draw). Else parse
+    "draws N cards" from oracle; default 1. Numeral tuple index IS
+    the integer value — no per-N constants. Mirrors the parser in
+    `_project_spell` so chain & per-spell projections agree."""
+    from ai.oracle_classifier import has_tag, Tag
+    if has_tag(card_template.name, Tag.IMPULSE_DRAW):
+        return 0
+    _NUMERALS = ('zero', 'one', 'two', 'three', 'four',
+                 'five', 'six', 'seven')
+    import re as _re
+    m = _re.search(
+        r'draws? (one|two|three|four|five|six|seven|\d+) ',
+        (card_template.oracle_text or "").lower())
+    if m is None:
+        return 1
+    tok = m.group(1)
+    if tok.isdigit():
+        return int(tok)
+    return _NUMERALS.index(tok) if tok in _NUMERALS else 1
+
+
 def _estimate_combo_chain(game, player_idx: int, first_card=None):
     """Simulate casting all chainable spells from hand to estimate kill potential.
 
@@ -2532,7 +2555,17 @@ def _estimate_combo_chain(game, player_idx: int, first_card=None):
     - Cost reducers on battlefield: -1 to instant/sorcery costs
     - Draw spells: draw 2 cards (may find more rituals)
     - Finishers: Grapeshot (storm copies), Empty the Warrens (tokens)
+
+    Self-damage tax (M1-AI): each chain step pays per-cast/per-draw
+    damage from opp permanents (ON_CAST_DAMAGE / ON_DRAW_DAMAGE /
+    ON_OPP_DRAW_LIFE_LOSS) plus the spell's own SELF_DAMAGE_ON_CAST.
+    If cumulative tax ≥ caster life, `can_kill` is False regardless
+    of damage-out arithmetic — the chain self-kills first.
     """
+    from ai.bhi import (opp_static_damage_per_card_event,
+                        _parse_event_amount)
+    from ai.oracle_classifier import has_tag, Tag
+
     me = game.players[player_idx]
 
     # Count cost reducers on battlefield
@@ -2541,6 +2574,11 @@ def _estimate_combo_chain(game, player_idx: int, first_card=None):
 
     # Available mana
     mana = len(me.untapped_lands) + me.mana_pool.total()
+
+    # Opp's battlefield is static across the chain; compute taxes once.
+    # Same (Tag, verb-regex) set as engine/zone_transfer trigger fan-out.
+    per_cast_tax = opp_static_damage_per_card_event(game, player_idx, "cast")
+    per_draw_tax = opp_static_damage_per_card_event(game, player_idx, "draw")
 
     # Partition hand into categories
     rituals = []
@@ -2554,6 +2592,10 @@ def _estimate_combo_chain(game, player_idx: int, first_card=None):
         tags = getattr(c.template, 'tags', set())
         name = c.name
         cmc = max(0, (c.template.cmc or 0) - reducers)
+        # Per-cast self-damage from the spell itself (Phyrexian-mana-shape).
+        self_cast_dmg = (_parse_event_amount(c.template.oracle_text,
+                                             r"lose\s+(\d+)\s+life")
+                         if has_tag(name, Tag.SELF_DAMAGE_ON_CAST) else 0)
 
         if 'ritual' in tags:
             # Read the parsed gross production from template.ritual_mana
@@ -2563,56 +2605,75 @@ def _estimate_combo_chain(game, player_idx: int, first_card=None):
             # input and crediting 3 fake mana would mis-rank the chain.
             ritual_data = getattr(c.template, 'ritual_mana', None)
             produced = ritual_data[1] if ritual_data is not None else 0
-            rituals.append((name, cmc, produced))  # name, cost, mana produced
+            rituals.append((name, cmc, produced, self_cast_dmg))
         elif 'storm_payoff' in tags:
-            finishers.append((name, cmc))
+            finishers.append((name, cmc, self_cast_dmg))
         elif 'cantrip' in tags or 'card_advantage' in tags:
-            draws.append((name, cmc))
+            draws.append((name, cmc, _draw_count_for_chain_step(c.template),
+                          self_cast_dmg))
         elif 'instant_speed' in tags or not c.template.is_creature:
-            other_spells.append((name, cmc))
+            other_spells.append((name, cmc, self_cast_dmg))
 
-    # Simulate the chain
+    # Self-damage accumulator; `starting_life` snapshot since trigger
+    # life-loss does not feed back into chain mana.
     storm = 0
     chain = []
-    if first_card and first_card.name not in [r[0] for r in rituals] + [d[0] for d in draws] + [f[0] for f in finishers]:
+    self_dmg = 0
+    starting_life = me.life
+    if first_card and first_card.name not in (
+            [r[0] for r in rituals] + [d[0] for d in draws]
+            + [f[0] for f in finishers]):
         return False, 0, 0, []
 
     # Cast rituals first (net positive mana)
-    for name, cost, produced in sorted(rituals, key=lambda r: r[1]):
+    for name, cost, produced, self_cast_dmg in sorted(
+            rituals, key=lambda r: r[1]):
         if mana >= cost:
             mana = mana - cost + produced
             storm += 1
             chain.append(name)
+            self_dmg += per_cast_tax + self_cast_dmg
 
     # Cast draw spells (may chain into more gas)
-    for name, cost in sorted(draws, key=lambda d: d[1]):
+    for name, cost, n_drawn, self_cast_dmg in sorted(
+            draws, key=lambda d: d[1]):
         if mana >= cost:
             mana -= cost
             storm += 1
             chain.append(name)
+            self_dmg += (per_cast_tax + self_cast_dmg
+                         + n_drawn * per_draw_tax)
             # Draw spells find ~1 more castable spell on average
             mana += 1  # approximate: drawn card is often a ritual or free spell
 
     # Cast other cheap spells for storm count
-    for name, cost in sorted(other_spells, key=lambda s: s[1]):
+    for name, cost, self_cast_dmg in sorted(
+            other_spells, key=lambda s: s[1]):
         if cost <= 1 and mana >= cost:
             mana -= cost
             storm += 1
             chain.append(name)
+            self_dmg += per_cast_tax + self_cast_dmg
 
     # Can we cast a finisher?
-    for name, cost in finishers:
+    for name, cost, self_cast_dmg in finishers:
         if mana >= cost:
             storm += 1
             chain.append(name)
+            self_dmg += per_cast_tax + self_cast_dmg
+            # Self-kill gate: if cumulative tax ≥ life the chain dies
+            # before the finisher resolves; lethal-out is irrelevant.
+            lethal_self = self_dmg >= starting_life
             if name == 'Grapeshot':
                 total_damage = storm  # each storm copy deals 1
-                can_kill = total_damage >= game.players[1 - player_idx].life
+                can_kill = (not lethal_self and total_damage
+                            >= game.players[1 - player_idx].life)
                 return can_kill, storm, total_damage, chain
             elif name == 'Empty the Warrens':
                 tokens = storm * 2
-                return (tokens >= STORM_GOBLIN_LETHAL_TOKENS,
-                        storm, tokens, chain)  # 6+ goblins is usually enough
+                return ((not lethal_self
+                         and tokens >= STORM_GOBLIN_LETHAL_TOKENS),
+                        storm, tokens, chain)
 
     return False, storm, 0, chain
 
