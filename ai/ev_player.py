@@ -34,7 +34,6 @@ from ai.llm_decision_scorer import (
     CTX_CYCLING_FREE_COST_BONUS,
 )
 from ai.scoring_constants import (
-    HELD_RESPONSE_VALUE_PER_CMC,
     held_response_value_per_cmc,
     STARTING_HAND_SIZE,
     opp_threat_prob_from_density,

@@ -2,9 +2,9 @@
 
 Diagnostic: `docs/diagnostics/2026-05-01_azcon_followup.md` (step 3).
 
-The flat coefficient `HELD_RESPONSE_VALUE_PER_CMC = 4.0` is calibrated
-against the average opponent. It is too soft for control decks facing
-artifact-equipment archetypes (Affinity-class), where the held
+The flat per-CMC value (4.0, returned by `held_response_value_per_cmc(0.0)`)
+is calibrated against the average opponent. It is too soft for control
+decks facing artifact-equipment archetypes (Affinity-class), where the held
 Counterspell is the *only* answer to Cranial Plating once it resolves.
 A flat 4.0 lets a CMC-3 spell tap out under holdback and forfeit the
 counter on the same turn equipment would land lethal.
@@ -43,10 +43,7 @@ import pytest
 from ai.bhi import BayesianHandTracker
 from ai.ev_evaluator import snapshot_from_game
 from ai.ev_player import EVPlayer
-from ai.scoring_constants import (
-    HELD_RESPONSE_VALUE_PER_CMC,
-    held_response_value_per_cmc,
-)
+from ai.scoring_constants import held_response_value_per_cmc
 from engine.card_database import CardDatabase
 from engine.cards import CardInstance
 from engine.game_state import GameState, Phase
@@ -105,13 +102,6 @@ class TestHeldResponseValuePerCmcFunction:
             f"matchups need the steeper holdback to keep counters "
             f"available for equipment threats."
         )
-
-    def test_module_constant_matches_base(self):
-        """The constant `HELD_RESPONSE_VALUE_PER_CMC` must remain
-        importable and equal to the function's base value — every
-        existing call site reads it directly today and we do not
-        want to change that contract in this diff."""
-        assert HELD_RESPONSE_VALUE_PER_CMC == held_response_value_per_cmc(0.0)
 
 
 class TestHoldbackPenaltyScalesAgainstArtifactOpp:
