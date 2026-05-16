@@ -346,8 +346,17 @@ def weight(
     # or if the call raises (budget, network, schema validation).
     # Setting ``MTG_LLM_DECISION_SCORER_OFFLINE=1`` disables the live
     # call entirely — useful for deterministic CI runs where we want
-    # the warmed cache to be the only source of weights.
-    if not os.environ.get("MTG_LLM_DECISION_SCORER_OFFLINE"):
+    # the warmed cache to be the only source of weights.  We also
+    # auto-skip when ``ANTHROPIC_API_KEY`` is not set: without the
+    # key, ``run_sync`` would either 401-fail-and-retry (multi-second
+    # wasted wall-time per call) or, on environments without network
+    # egress, hang on TCP connect.  The simulator hot-path may hit
+    # ``weight()`` thousands of times per game, so even a sub-second
+    # per-call cost adds up to many minutes per CI run.
+    if (
+        not os.environ.get("MTG_LLM_DECISION_SCORER_OFFLINE")
+        and os.environ.get("ANTHROPIC_API_KEY")
+    ):
         agent = _get_agent()
         if agent is not None:
             try:
