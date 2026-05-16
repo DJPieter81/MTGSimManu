@@ -944,12 +944,29 @@ def simulate_finisher_chain_v3(
         library, deck_gameplan=deck_gameplan,
     )
 
-    # Empty-library guard — can't draw, can't tutor from empty zone.
-    # Hand-only chain is still possible if a closer is already in
-    # hand, so don't short-circuit unless the hand also lacks one.
-    if (library_composition.total == 0
-            and _closer_in_hand_probability(hand) == 0.0):
-        return FinisherProjectionV3(pattern="none")
+    # Empty-library guard — only short-circuit when ALL paths are
+    # clearly cut. Hand-only, tutor+SB, and PiF-extender chains
+    # must still reach _project_multi_turn so v2's arithmetic
+    # can detect them (mirrors v2's `_is_pif_pattern` branch at
+    # ai/finisher_simulator.py:253).
+    if library_composition.total == 0:
+        has_closer_in_hand = _closer_in_hand_probability(hand) > 0.0
+        has_tutor_with_sb_access = any(
+            'tutor' in getattr(c.template, 'tags', set())
+            for c in hand
+        ) and bool(sideboard)
+        # Flashback-recursion pattern (PiF, Yawgmoth's Will, etc.):
+        # generic oracle predicate shared with v2 via
+        # ai/finisher_simulator.py:_has_flashback_recursion_pattern.
+        # No card names — `flashback + graveyard + instant/sorcery`.
+        from ai.finisher_simulator import _has_flashback_recursion_pattern
+        has_flashback_recursion = any(
+            _has_flashback_recursion_pattern(c) for c in hand
+        )
+        if (not has_closer_in_hand
+                and not has_tutor_with_sb_access
+                and not has_flashback_recursion):
+            return FinisherProjectionV3(pattern="none")
 
     # 2. Build the per-turn-offset rollout. Each TurnOffsetProjection
     #    carries (offset, expected_damage, closer_reachable_p,
