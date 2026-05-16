@@ -133,6 +133,65 @@ def _get_archetype(deck_name: str) -> str:
     return arch.value if arch else "midrange"
 
 
+# Map oracle-derived board-wipe tags (set by
+# `engine.card_database.CardDatabase._derive_tags` via OracleEffect.target_type)
+# onto the permanent classes the wipe actually destroys.  Used by the
+# X-cost board-wipe scoring gate in `_score_spell` to lift the killable
+# set from "creatures only" to "permanent classes the oracle text names".
+_WIPE_TAG_TO_CLASS = {
+    "destroy_all_creatures": "creature",
+    "destroy_all_artifacts": "artifact",
+    "destroy_all_enchantments": "enchantment",
+    "destroy_all_nonland": "nonland",
+}
+
+
+def _wipe_target_classes_from_tags(tags) -> "set[str]":
+    """Return the set of permanent classes a board-wipe destroys, derived
+    from its oracle-parsed tags. Never returns a hardcoded card list —
+    the only knowledge entering this function is the tag bag set by the
+    oracle-text parser. Wrath of the Skies → {creature, artifact,
+    enchantment} via the destroy_all_artifacts tag plus the implicit
+    creature/enchantment classes its oracle text names ("each artifact,
+    creature, and enchantment").
+
+    Tags can declare any combination of class-specific wipes
+    (destroy_all_creatures / destroy_all_artifacts /
+    destroy_all_enchantments) and / or the catch-all "destroy_all_nonland".
+    When the catch-all is present we treat the wipe as hitting all three
+    non-land classes simultaneously.
+
+    Wrath of the Skies' oracle text destroys ALL THREE
+    (artifact + creature + enchantment), but the parser currently only
+    adds `destroy_all_artifacts`. Promote any single `destroy_all_*`
+    on a `board_wipe` to the same three-class set when the oracle
+    says "each artifact, creature, AND enchantment" — detected at the
+    call site via the spell template's oracle text.
+    """
+    classes: "set[str]" = set()
+    for tag, cls in _WIPE_TAG_TO_CLASS.items():
+        if tag in tags:
+            if cls == "nonland":
+                classes.update({"creature", "artifact", "enchantment"})
+            else:
+                classes.add(cls)
+    return classes
+
+
+def _is_wipe_candidate(card, classes: "set[str]") -> bool:
+    """Return True iff `card` is destroyed by a wipe whose target classes
+    are `classes`. Uses CardType enum membership — no card-name lookup."""
+    from engine.cards import CardType
+    types = card.template.card_types
+    if "creature" in classes and CardType.CREATURE in types:
+        return True
+    if "artifact" in classes and CardType.ARTIFACT in types:
+        return True
+    if "enchantment" in classes and CardType.ENCHANTMENT in types:
+        return True
+    return False
+
+
 # ─────────────────────────────────────────────────────────────
 # Turn-planner factory — opt-in ISMCTS via MTGSIM_USE_MCTS
 # ─────────────────────────────────────────────────────────────
@@ -1161,25 +1220,81 @@ class EVPlayer:
                 ev -= waste_penalty
 
         # ── X-cost board wipe: hold when the X-budget can't meaningfully clear ──
-        # Tuned through three passes:
+        # History:
         #   v1 (≥2 kills) — too strict: Azorius never wraths vs 1 Ragavan.
         #   v2 (≥3 power on single kill) — still too strict: 2-power Ragavan
         #       fails, but killing even a single attacking Ragavan is correct
         #       when the AI is dying.
-        #   v3 (this): threshold drops to 2 power, and the whole gate is
-        #       waived when we're at low life (≤10). Consolidates the
-        #       "always fire when desperate" behaviour.
-        if ('board_wipe' in tags and t.x_cost_data and opp.creatures):
+        #   v3 (≥2 power, my_life ≤ 10 waiver) — counted only creature kills,
+        #       so Wrath of the Skies vs Affinity at X=2 saw kill_count=0
+        #       and floored at -20 EV despite clearing the artifact mana base
+        #       (Mox Opal / Springleaf Drum / Cranial Plating). Also missed
+        #       lethal-next-turn at higher life (life=15, opp_clock_discrete=2).
+        #       See docs/diagnostics/2026-05-16_wrath_enumeration_gate.md.
+        #   v4 (this): killable set lifted from opp.creatures to opp.battlefield
+        #       filtered by oracle-derived target classes (creature / artifact
+        #       / enchantment, from tags). kill_count derived via the engine's
+        #       X-picker (`engine.cast_manager.pick_wipe_x_value`) — same path
+        #       the engine uses at resolution time, no AI/engine drift.
+        #       Desperation lever replaced with clock-derived
+        #       `snap.opp_clock_discrete <= 2`.
+        wipe_target_classes = _wipe_target_classes_from_tags(tags)
+        # Oracle-derived widening: Wrath of the Skies' tag bag has only
+        # `destroy_all_artifacts` from the parser's pattern hit, but its
+        # text destroys "each artifact, creature, AND enchantment". When
+        # an X-cost wipe's oracle text spells out the multi-class list,
+        # widen the class set so the killable-set lift matches the
+        # engine's `pick_wipe_x_value` (which uses CardType.{CREATURE,
+        # ARTIFACT, ENCHANTMENT}).
+        if t.x_cost_data and 'board_wipe' in tags:
+            ot = (t.oracle_text or '').lower()
+            if 'mana value less than or equal to' in ot or 'mana value of' in ot:
+                # X-budgeted wipe oracle — read which classes it names.
+                if 'creature' in ot:
+                    wipe_target_classes.add('creature')
+                if 'artifact' in ot:
+                    wipe_target_classes.add('artifact')
+                if 'enchantment' in ot:
+                    wipe_target_classes.add('enchantment')
+        if ('board_wipe' in tags and t.x_cost_data and wipe_target_classes
+                and any(_is_wipe_candidate(c, wipe_target_classes)
+                        for c in opp.battlefield)):
             total_mana = snap.my_mana
             base_cost = t.cmc or 0
             x_budget = max(0, total_mana - base_cost)
             mult = (t.x_cost_data or {}).get('multiplier', 1) or 1
             effective_x = x_budget // mult
-            killable = [c for c in opp.creatures
-                        if (c.template.cmc or 0) <= effective_x]
-            kill_count = len(killable)
-            killable_power = sum((c.power or 0) for c in killable)
-            desperate = snap.my_life <= DESPERATE_LIFE_THRESHOLD
+            if 'destroy_all_artifacts' in tags or 'destroy_all_enchantments' in tags:
+                # Multi-class wipe (Wrath of the Skies pattern): consult the
+                # engine X-picker so kill_count / killable_value match what
+                # the engine will actually destroy at resolution time. The
+                # picker is permanent_threat-weighted, so its score reflects
+                # equipment / mana-rock / scaling-trigger value, not just
+                # the printed P/T.
+                from engine.cast_manager import pick_wipe_x_value
+                _best_x, kill_value, kill_count = pick_wipe_x_value(
+                    game, self.player_idx, int(effective_x)
+                )
+                # killable_power kept for the single-creature-trade gate.
+                # Restrict to creatures destroyed at the picker's chosen X.
+                killable_creatures = [
+                    c for c in opp.creatures
+                    if (c.template.cmc or 0) <= effective_x
+                ]
+                killable_power = sum((c.power or 0) for c in killable_creatures)
+            else:
+                # Creature-only X-wipe — keep the legacy creature-CMC count.
+                killable = [c for c in opp.creatures
+                            if (c.template.cmc or 0) <= effective_x]
+                kill_count = len(killable)
+                killable_power = sum((c.power or 0) for c in killable)
+            # Desperation derives from the snapshot's combat clock — same
+            # primitive `ai/clock.py` builds. opp_clock_discrete ≤ 2 means
+            # opp can kill us this turn or next; the wipe is worth a long
+            # shot even at suboptimal kill counts. The old `my_life ≤ 10`
+            # life-threshold lever missed lethal-next-turn at higher life
+            # (e.g. life=23 vs a Plating-equipped 15/4 attacker).
+            desperate = snap.opp_clock_discrete <= 2
             if not desperate:
                 if kill_count == 0:
                     return min(ev, X_BOARD_WIPE_WASTE_FLOOR)

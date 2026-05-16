@@ -32,6 +32,80 @@ if TYPE_CHECKING:
     from .game_state import GameState, Phase
 
 
+def pick_wipe_x_value(game: "GameState", player_idx: int,
+                      x_budget: int) -> "tuple[int, float, int]":
+    """Engine-side X picker for "destroy each artifact/creature/
+    enchantment with mana value ≤ X" spells (Wrath of the Skies pattern).
+
+    Mirrors the logic in `CastManager.cast_spell` lines 987-1035: scores
+    each candidate X in [0, x_budget] by `permanent_threat`-weighted
+    opp value minus my collateral, then returns the X that maximises
+    the net value.
+
+    This function exists as a module-level helper so the AI scoring
+    layer (`ai/ev_player.py::_score_spell` X-cost board-wipe gate) can
+    consult the SAME picker that the engine uses at resolution time —
+    eliminating the AI/engine "what X would I pick / what X did I pick"
+    inconsistency flagged in `docs/diagnostics/2026-05-16_wrath_enumeration_gate.md`.
+
+    Args:
+        game: GameState — needed to evaluate `permanent_threat`.
+        player_idx: int — the controller of the wipe.
+        x_budget: int — max X the controller can afford.
+
+    Returns:
+        (best_x, best_score, kill_count): the chosen X value, the net
+        opp-minus-my permanent_threat value at that X, and the count of
+        opponent permanents (creatures + artifacts + enchantments)
+        destroyed at that X. Returns (0, 0.0, 0) for non-positive
+        x_budget with no zero-MV opp targets.
+    """
+    # Imported lazily because permanent_threat lives in the AI layer
+    # and the engine package must not eagerly depend on it. The
+    # function call shape mirrors the inline picker in `cast_spell`.
+    from ai.permanent_threat import permanent_threat
+
+    opp = game.players[1 - player_idx]
+    me_bf = game.players[player_idx].battlefield
+
+    def _is_wipe_target(c) -> bool:
+        return (CardType.CREATURE in c.template.card_types
+                or CardType.ARTIFACT in c.template.card_types
+                or CardType.ENCHANTMENT in c.template.card_types)
+
+    opp_value_by_cmc: "dict[int, float]" = {}
+    opp_count_by_cmc: "dict[int, int]" = {}
+    my_value_by_cmc: "dict[int, float]" = {}
+    for c in opp.battlefield:
+        if _is_wipe_target(c):
+            cm = c.template.cmc or 0
+            v = permanent_threat(c, opp, game)
+            opp_value_by_cmc[cm] = opp_value_by_cmc.get(cm, 0.0) + v
+            opp_count_by_cmc[cm] = opp_count_by_cmc.get(cm, 0) + 1
+    for c in me_bf:
+        if _is_wipe_target(c):
+            cm = c.template.cmc or 0
+            v = permanent_threat(c, game.players[player_idx], game)
+            my_value_by_cmc[cm] = my_value_by_cmc.get(cm, 0.0) + v
+
+    best_score = -1.0  # sentinel: every real X has score ≥ 0 (an empty
+    # board scores 0 at X=0; -1.0 ensures the X=0 candidate beats it).
+    best_x = 0
+    best_kill_count = 0
+    for X in range(0, max(0, int(x_budget)) + 1):
+        opp_hit = sum(v for cm, v in opp_value_by_cmc.items() if cm <= X)
+        my_hit = sum(v for cm, v in my_value_by_cmc.items() if cm <= X)
+        score = opp_hit - my_hit
+        if score > best_score:
+            best_score = score
+            best_x = X
+            best_kill_count = sum(
+                n for cm, n in opp_count_by_cmc.items() if cm <= X
+            )
+
+    return best_x, max(0.0, best_score), best_kill_count
+
+
 class CastManager:
     """Cast-time legality + special-case handlers. Stateless."""
 
@@ -989,49 +1063,15 @@ class CastManager:
                 # Scaling board-wipe-by-X (Wrath of the Skies pattern):
                 # "Destroy each artifact, creature, and enchantment with
                 # mana value less than or equal to the amount of {E} paid
-                # this way." Pick X to maximize (opp_kills − my_kills)
-                # over opp permanents at CMC ≤ X. Without this, X
-                # defaulted to max available mana — firing X=0 on T2
-                # with zero available_for_x wipes only tokens and wastes
-                # the card (audit F-Wrath-X).
-                opp = game.players[1 - player_idx]
-                me_bf = game.players[player_idx].battlefield
-                def _is_wipe_target(c):
-                    return (CardType.CREATURE in c.template.card_types
-                            or CardType.ARTIFACT in c.template.card_types
-                            or CardType.ENCHANTMENT in c.template.card_types)
-                # Score by VALUE, not count.  Killing Cranial Plating
-                # (CMC 2) is worth ~10× killing Memnite (CMC 0); the
-                # permanent_threat helper composes oracle threat,
-                # equipment carrier disruption, and scaling-trigger
-                # value — same pipeline the rest of the AI uses.
-                from ai.permanent_threat import permanent_threat
-                opp_value_by_cmc = {}
-                my_value_by_cmc = {}
-                for c in opp.battlefield:
-                    if _is_wipe_target(c):
-                        cm = c.template.cmc or 0
-                        v = permanent_threat(c, opp, game)
-                        opp_value_by_cmc[cm] = opp_value_by_cmc.get(cm, 0.0) + v
-                for c in me_bf:
-                    if _is_wipe_target(c):
-                        cm = c.template.cmc or 0
-                        v = permanent_threat(c, game.players[player_idx], game)
-                        my_value_by_cmc[cm] = my_value_by_cmc.get(cm, 0.0) + v
-                # For each candidate X ≤ available, compute cumulative
-                # net VALUE.  Strict improvement: only prefer larger X
-                # if it adds net value.
-                best_score = -1.0
-                best_x = 0
-                for X in range(0, int(x_value) + 1):
-                    opp_hit = sum(v for cm, v in opp_value_by_cmc.items()
-                                   if cm <= X)
-                    my_hit = sum(v for cm, v in my_value_by_cmc.items()
-                                  if cm <= X)
-                    score = opp_hit - my_hit
-                    if score > best_score:
-                        best_score = score
-                        best_x = X
+                # this way." Delegate to the module-level
+                # `pick_wipe_x_value` helper so the AI scoring layer can
+                # consult the SAME picker via the same code path. Score
+                # by VALUE, not count — killing Cranial Plating (CMC 2)
+                # is worth ~10× killing Memnite (CMC 0); see
+                # `pick_wipe_x_value` docstring + audit F-Wrath-X.
+                best_x, _, _ = pick_wipe_x_value(
+                    game, player_idx, int(x_value)
+                )
                 x_value = best_x
             # +1/+1 counter creatures: use max mana (Ballista-style)
             # (default x_value is already max)
