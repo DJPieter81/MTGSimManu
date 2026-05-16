@@ -88,6 +88,25 @@ def _has_storm_keyword(card: "CardInstance") -> bool:
     return Kw.STORM in getattr(card.template, 'keywords', set())
 
 
+def _has_flashback_recursion_pattern(card: "CardInstance") -> bool:
+    """True when the card has the flashback-graveyard-recursion
+    oracle idiom — covers any spell that retrieves instants /
+    sorceries from the graveyard via flashback.
+
+    Generic oracle predicate. Matches Past in Flames (the
+    canonical Modern case), Yawgmoth's Will-style effects, and
+    any future card sharing the pattern. No card-name gate.
+
+    Used by both v2 (this module's `_project_storm` reachable-
+    but-unprojected branch) and v3 (the orchestrator's empty-
+    library guard).
+    """
+    oracle = (getattr(card.template, 'oracle_text', '') or '').lower()
+    return ('flashback' in oracle
+            and 'graveyard' in oracle
+            and ('instant' in oracle or 'sorcery' in oracle))
+
+
 def _has_cascade_keyword(card: "CardInstance") -> bool:
     """True when the card has the cascade keyword.
 
@@ -250,12 +269,7 @@ def _project_storm(
     # simulator returns pattern="none" for Storm hands containing
     # only PiF + cantrips, leading the combo_evaluator to
     # hard-hold every fuel card and pass turns forever.
-    def _is_pif_pattern(c):
-        oracle = (getattr(c.template, 'oracle_text', '') or '').lower()
-        return ('flashback' in oracle
-                and 'graveyard' in oracle
-                and ('instant' in oracle or 'sorcery' in oracle))
-    has_pif_pattern = any(_is_pif_pattern(c) for c in hand)
+    has_pif_pattern = any(_has_flashback_recursion_pattern(c) for c in hand)
 
     # `library_size`/SB resolution: tutor needs SB ∪ library access.
     # We don't have SB visibility here (the simulator is pure), but
@@ -293,7 +307,7 @@ def _project_storm(
                 # PiF-pattern detected; use the PiF card's cmc
                 pif_cmcs = [
                     c.template.cmc or 0
-                    for c in hand if _is_pif_pattern(c)
+                    for c in hand if _has_flashback_recursion_pattern(c)
                 ]
                 mana_floor_unprojected = min(pif_cmcs) if pif_cmcs else 0
             return FinisherProjection(
