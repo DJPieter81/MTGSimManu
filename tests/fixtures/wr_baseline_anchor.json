@@ -48,7 +48,7 @@
       "deck2": "4/5c Control",
       "seed": 50000,
       "winner": "Pinnacle Affinity",
-      "turns": 7
+      "turns": 9
     },
     {
       "deck1": "Azorius Control",
@@ -110,8 +110,8 @@
       "deck1": "4/5c Control",
       "deck2": "Pinnacle Affinity",
       "seed": 50500,
-      "winner": "Pinnacle Affinity",
-      "turns": 6
+      "winner": "4/5c Control",
+      "turns": 13
     },
     {
       "deck1": "Azorius Control (WST)",
