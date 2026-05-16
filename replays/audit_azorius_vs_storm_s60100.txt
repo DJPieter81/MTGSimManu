@@ -1,0 +1,997 @@
+Loaded 21759 cards (0 errors)
+Loaded 21759 cards (0 errors)
+  Sideboard (Azorius Control vs Ruby Storm): +1 Celestial Purge, +2 Mystical Dispute, -1 Wrath of the Skies, -2 Prismatic Ending
+======================================================================
+  GAME 1: Azorius Control (P1) vs Ruby Storm (P2)  —  seed 60100
+  Series: Azorius Control 0 - 0 Ruby Storm
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Azorius Control wins → chooses to play first
+║ P1 (on play): Azorius Control
+║ P2 (on draw): Ruby Storm
+╚═══════════════════════════════════════════════════════
+
+P1 (Azorius Control) opening hand (3 lands, 4 spells):
+  • Island [Land, CMC 0]
+  • Flooded Strand [Land, CMC 0]
+  • Orim's Chant [Spell, CMC 1]
+  • Demolition Field [Land, CMC 0]
+  • Orim's Chant [Spell, CMC 1]
+  • Teferi, Time Raveler [Spell, CMC 3]
+  • Prismatic Ending [Spell, CMC 1]
+→ P1 KEEPS 7 — has key card(s): Orim's Chant, Prismatic Ending, Teferi, Time Raveler, 4 cheap spells
+
+P2 (Ruby Storm) opening hand (2 lands, 5 spells):
+  • Arid Mesa [Land, CMC 0]
+  • Sacred Foundry [Land, CMC 0]
+  • Valakut Awakening // Valakut Stoneforge [Spell, CMC 3]
+  • Glimpse the Impossible [Spell, CMC 3]
+  • Grapeshot [Spell, CMC 2]
+  • Desperate Ritual [Spell, CMC 2]
+  • Reckless Impulse [Spell, CMC 2]
+→ P2 KEEPS 7 — has key card(s): Desperate Ritual, Reckless Impulse, 5 cheap spells
+
+
+╔══ TURN 1 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 20  |  Ruby Storm 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Demolition Field
+T1 P1: Crack Demolition Field (pay 1 life) -> Hallowed Fountain (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 20  |  Azorius Control 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wrenn's Resolve
+  [Main 1]
+T1 P2: Play Arid Mesa
+T1 P2: Crack Arid Mesa -> Mountain (untapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 19  |  Ruby Storm 19
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Thundering Falls
+  [Main 1]
+T2 P1: Play Flooded Strand
+T2 P1: Crack Flooded Strand (pay 1 life) -> Hallowed Fountain (tapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 19  |  Azorius Control 18
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Mountain
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Scalding Tarn
+  [Main 1]
+T2 P2: Play Scalding Tarn
+T2 P2: Crack Scalding Tarn -> Mountain (untapped)
+    → Goal: deploy_engine [fillers]
+    [Mana] Tap Mountain→R, Mountain→R (paying for Reckless Impulse, 2 mana remaining)
+T2 P2: Cast Reckless Impulse (1R)
+    [Priority] P1 passes (no response)
+T2: Resolve Reckless Impulse
+T2 P2: Reckless Impulse → draw 2 (Wrenn's Resolve, Ruby Medallion)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T2: Sacred Foundry moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 3 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 18  |  Ruby Storm 18
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Hallowed Fountain
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Mountain [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Hall of Storm Giants
+  [Main 1]
+T3 P1: Play Island
+    → Goal: grind_value
+    [Mana] Tap Hallowed Fountain→W, Island→U, Hallowed Fountain→U (paying for Teferi, Time Raveler, 3 mana remaining)
+T3 P1: Cast Teferi, Time Raveler (1WU)
+    [Priority] P2 passes (no response)
+T3: Resolve Teferi, Time Raveler
+T3 P1: Teferi draws Orim's Chant
+T3 P1: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 18  |  Azorius Control 18
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 4
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Mountain, Mountain
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain [T], Hallowed Fountain [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Scalding Tarn
+  [Main 1]
+T3 P2: Play Scalding Tarn
+T3 P2: Crack Scalding Tarn -> Mountain (untapped)
+    → Goal: execute_payoff
+    [Mana] Tap Mountain→R, Mountain→R (paying for Ruby Medallion, 3 mana remaining)
+T3 P2: Cast Ruby Medallion (2)
+    [Priority] P1 passes (no response)
+T3: Resolve Ruby Medallion
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Desperate Ritual, 1 mana remaining)
+T3 P2: Cast Desperate Ritual (1R)
+    [Priority] P1 passes (no response)
+T3: Resolve Desperate Ritual
+T3 P2: Desperate Ritual adds 3 R mana
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 18  |  Ruby Storm 17
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 2
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Hallowed Fountain, Island
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Mountain [T], Mountain [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Otawara, Soaring City
+  [Main 1]
+T4 P1: Play Otawara, Soaring City
+T4 P1: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 17  |  Azorius Control 18
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 6
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Mountain, Mountain, Mountain
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Hallowed Fountain, Island, Otawara, Soaring City
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Elegant Parlor
+  [Main 1]
+T4 P2: Play Elegant Parlor (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 18  |  Ruby Storm 17
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 2
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Hallowed Fountain, Island, Otawara, Soaring City
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Mountain, Mountain, Mountain, Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Flooded Strand
+  [Main 1]
+T5 P1: Play Flooded Strand
+T5 P1: Crack Flooded Strand -> Plains (untapped)
+T5 P1: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 17  |  Azorius Control 17
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 6
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Mountain, Mountain, Mountain, Elegant Parlor
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Hallowed Fountain, Island, Otawara, Soaring City, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Past in Flames
+  [Main 1]
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Wrenn's Resolve, 4 mana remaining)
+T5 P2: Cast Wrenn's Resolve (1R)
+    [Priority] P1 passes (no response)
+T5: Resolve Wrenn's Resolve
+T5 P2: Wrenn's Resolve → draw 2 (Glimpse the Impossible, Desperate Ritual)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 17  |  Ruby Storm 17
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 3
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Hallowed Fountain, Island, Otawara, Soaring City, Plains
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Mountain [T], Mountain, Mountain, Elegant Parlor
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Lórien Revealed
+  [Main 1]
+T6 P1: Play Thundering Falls (enters tapped)
+T6 P1: Cycle Lórien Revealed (pay 1 mana, tutor: Meticulous Archive)
+T6 P1: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+T6: Teferi, Time Raveler moved battlefield -> graveyard (SBA 704.5p: zero loyalty)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 17  |  Azorius Control 17
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 41  |  Graveyard: 7
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Mountain, Mountain, Mountain, Elegant Parlor
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T], Hallowed Fountain, Island, Otawara, Soaring City, Plains, Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ral, Monsoon Mage // Ral, Leyline Prodigy
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Mountain→R (paying for Ral, Monsoon Mage // Ral, Leyline Prodigy, 4 mana remaining)
+T6 P2: Cast Ral, Monsoon Mage // Ral, Leyline Prodigy (1R)
+    [Priority] P1 passes (no response)
+T6: Resolve Ral, Monsoon Mage // Ral, Leyline Prodigy
+T6 P2: Ral, Monsoon Mage enters — instants/sorceries cost {1} less
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Desperate Ritual, 3 mana remaining)
+T6 P2: Cast Desperate Ritual (1R)
+T6 P2: Ral, Monsoon Mage // Ral, Leyline Prodigy — lost coin flip, takes 1 damage
+    [Priority] P1 passes (no response)
+T6: Resolve Desperate Ritual
+T6 P2: Desperate Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T6 P2: Cast Glimpse the Impossible (2R)
+T6 P2: Ral, Monsoon Mage // Ral, Leyline Prodigy — won coin flip!
+T6 P2: Ral, Monsoon Mage // Ral, Leyline Prodigy transforms! (loyalty: 5) [+3 extra]
+T6 P2: Ral, Monsoon Mage enters — instants/sorceries cost {1} less
+    [Priority] P1 passes (no response)
+T6: Resolve Glimpse the Impossible
+T6 P2: Glimpse the Impossible → draw 3 (Ruby Medallion, Ral, Monsoon Mage // Ral, Leyline Prodigy, Wooded Foothills)
+    → Goal: execute_payoff
+T6 P2: Cast Ruby Medallion (2)
+    [Priority] P1 passes (no response)
+T6: Resolve Ruby Medallion
+T6 P2: Play Wooded Foothills
+T6 P2: Crack Wooded Foothills -> Mountain (untapped)
+T6 P2: Ral, Monsoon Mage // Ral, Leyline Prodigy [+1] -> Until your next turn, instant and sorcery spells you cast cost {1} less to cast
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 17  |  Ruby Storm 15
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 6  |  Opp lands: 5
+║ Library: 43  |  Graveyard: 5
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Hallowed Fountain, Island, Otawara, Soaring City, Plains, Thundering Falls
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion, Ruby Medallion
+║   Lands: Mountain [T], Mountain [T], Mountain, Elegant Parlor, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Supreme Verdict
+  [Main 1]
+T7 P1: Play Hall of Storm Giants (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 15  |  Azorius Control 17
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 5  |  Opp lands: 7
+║ Library: 36  |  Graveyard: 10
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion, Ruby Medallion
+║   Lands: Mountain, Mountain, Mountain, Elegant Parlor, Mountain
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Hallowed Fountain, Island, Otawara, Soaring City, Plains, Thundering Falls, Hall of Storm Giants [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Pyretic Ritual
+  [Main 1]
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Wrenn's Resolve, 5 mana remaining)
+T7 P2: Cast Wrenn's Resolve (1R)
+    [Priority] P1 passes (no response)
+T7: Resolve Wrenn's Resolve
+T7 P2: Wrenn's Resolve → draw 2 (Arid Mesa, Scalding Tarn)
+T7 P2: Play Scalding Tarn
+T7 P2: Crack Scalding Tarn -> Thundering Falls (tapped)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Pyretic Ritual, 4 mana remaining)
+T7 P2: Cast Pyretic Ritual (1R)
+    [Priority] P1 passes (no response)
+T7: Resolve Pyretic Ritual
+T7 P2: Pyretic Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T7 P2: Cast Glimpse the Impossible (2R)
+    [Priority] P1 passes (no response)
+T7: Resolve Glimpse the Impossible
+T7 P2: Glimpse the Impossible → draw 3 (Ruby Medallion, Elegant Parlor, Pyretic Ritual)
+    → Goal: execute_payoff
+T7 P2: Cast Ruby Medallion (2)
+    [Priority] P1 passes (no response)
+T7: Resolve Ruby Medallion
+T7 P2: Ral, Monsoon Mage // Ral, Leyline Prodigy [+1] -> Until your next turn, instant and sorcery spells you cast cost {1} less to cast
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 17  |  Ruby Storm 14
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 7  |  Opp lands: 6
+║ Library: 42  |  Graveyard: 5
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Hallowed Fountain, Island, Otawara, Soaring City, Plains, Thundering Falls, Hall of Storm Giants
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion, Ruby Medallion, Ruby Medallion
+║   Lands: Mountain [T], Mountain [T], Mountain, Elegant Parlor, Mountain, Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Consult the Star Charts
+  [Main 1]
+T8 P1: Play Meticulous Archive (enters tapped)
+    → Goal: close_game
+    [Mana] Tap Island→U, Otawara, Soaring City→U (paying for Consult the Star Charts, 7 mana remaining)
+T8 P1: Cast Consult the Star Charts (5U) (X=5)
+    [Priority] P2 passes (no response)
+T8: Resolve Consult the Star Charts
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 14  |  Azorius Control 17
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 6  |  Opp lands: 8
+║ Library: 29  |  Graveyard: 14
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion, Ruby Medallion, Ruby Medallion
+║   Lands: Mountain, Mountain, Mountain, Elegant Parlor, Mountain, Thundering Falls
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T], Hallowed Fountain [T], Island [T], Otawara, Soaring City [T], Plains [T], Thundering Falls [T], Hall of Storm Giants [T], Meticulous Archive [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Gemstone Caverns
+  [Main 1]
+T8 P2: Play Gemstone Caverns
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Pyretic Ritual, 7 mana remaining)
+T8 P2: Cast Pyretic Ritual (1R)
+    [Priority] P1 passes (no response)
+T8: Resolve Pyretic Ritual
+T8 P2: Pyretic Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T8 P2: Cast Valakut Awakening // Valakut Stoneforge (2R)
+    [Priority] P1 passes (no response)
+T8: Resolve Valakut Awakening // Valakut Stoneforge
+    → Goal: execute_payoff [enablers]
+T8 P2: Cast Pyretic Ritual (1R)
+    [Priority] P1 passes (no response)
+T8: Resolve Pyretic Ritual
+T8 P2: Pyretic Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T8 P2: Cast Valakut Awakening // Valakut Stoneforge (2R)
+    [Priority] P1 passes (no response)
+T8: Resolve Valakut Awakening // Valakut Stoneforge
+    → Goal: execute_payoff [enablers]
+T8 P2: Cast March of Reckless Joy (8R) (X=8)
+    [Priority] P1 passes (no response)
+T8: Resolve March of Reckless Joy
+    → Goal: execute_payoff [enablers]
+T8 P2: Cast Manamorphose (2)
+    [Priority] P1 passes (no response)
+T8: Resolve Manamorphose
+T8 P2: Manamorphose adds 2 any mana
+T8 P2: Ral, Monsoon Mage // Ral, Leyline Prodigy [+1] -> Until your next turn, instant and sorcery spells you cast cost {1} less to cast
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T8: Past in Flames moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 9 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 17  |  Ruby Storm 14
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 8  |  Opp lands: 7
+║ Library: 41  |  Graveyard: 6
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Hallowed Fountain, Island, Otawara, Soaring City, Plains, Thundering Falls, Hall of Storm Giants, Meticulous Archive
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion, Ruby Medallion, Ruby Medallion
+║   Lands: Mountain [T], Mountain [T], Mountain [T], Elegant Parlor [T], Mountain [T], Thundering Falls [T], Gemstone Caverns [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Solitude
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Hallowed Fountain→W, Island→U, Otawara, Soaring City→U, Hall of Storm Giants→U (paying for Solitude, 8 mana remaining)
+T9 P1: Cast Solitude (3WW)
+    [Priority] P2 passes (no response)
+T9: Resolve Solitude
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 14  |  Azorius Control 17
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 7  |  Opp lands: 8
+║ Library: 21  |  Graveyard: 21
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion, Ruby Medallion, Ruby Medallion
+║   Lands: Mountain, Mountain, Mountain, Elegant Parlor, Mountain, Thundering Falls, Gemstone Caverns
+║ Azorius Control board:
+║   Creatures: Solitude (3/2)
+║   Lands: Hallowed Fountain [T], Hallowed Fountain, Island [T], Otawara, Soaring City [T], Plains [T], Thundering Falls, Hall of Storm Giants [T], Meticulous Archive
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Bloodstained Mire
+  [Main 1]
+T9 P2: Play Arid Mesa
+T9 P2: Crack Arid Mesa (no valid land found)
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Mountain→R (paying for Grapeshot, 7 mana remaining)
+T9 P2: Cast Grapeshot (1R)
+    [Priority] P1 passes (no response)
+T9: Resolve Grapeshot
+T9 P2: Grapeshot deals 1 damage (opponent life: 16)
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Mountain→R (paying for Grapeshot, 6 mana remaining)
+T9 P2: Cast Grapeshot (1R)
+    [Priority] P1 passes (no response)
+T9: Resolve Grapeshot
+T9 P2: Grapeshot deals 1 damage (opponent life: 15)
+T9: Storm copies: 1
+T9 P2: Grapeshot deals 1 damage (opponent life: 14)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Past in Flames, 5 mana remaining)
+T9 P2: Cast Past in Flames (3R)
+    [Priority] P1 passes (no response)
+T9: Resolve Past in Flames
+T9 P2: Past in Flames grants flashback
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Mountain→R (paying for Grapeshot, 4 mana remaining)
+T9 P2: Cast Grapeshot (1R)
+    [Priority] P1 passes (no response)
+T9: Resolve Grapeshot
+T9 P2: Grapeshot deals 1 damage (opponent life: 13)
+T9: Storm copies: 3
+T9 P2: Grapeshot deals 1 damage (opponent life: 12)
+T9 P2: Grapeshot deals 1 damage (opponent life: 11)
+T9 P2: Grapeshot deals 1 damage (opponent life: 10)
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Elegant Parlor→R (paying for Grapeshot, 3 mana remaining)
+T9 P2: Cast Grapeshot (1R)
+    [Priority] P1 passes (no response)
+T9: Resolve Grapeshot
+T9 P2: Grapeshot deals 1 damage (opponent life: 9)
+T9: Storm copies: 4
+T9 P2: Grapeshot deals 1 damage (opponent life: 8)
+T9 P2: Grapeshot deals 1 damage (opponent life: 7)
+T9 P2: Grapeshot deals 1 damage (opponent life: 6)
+T9 P2: Grapeshot deals 1 damage (opponent life: 5)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Thundering Falls→R (paying for Glimpse the Impossible, 2 mana remaining)
+T9 P2: Cast Glimpse the Impossible (2R)
+    [Priority] P1 passes (no response)
+T9: Resolve Glimpse the Impossible
+T9 P2: Glimpse the Impossible → draw 3 (Reckless Impulse, Sunbaked Canyon, Ruby Medallion)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Gemstone Caverns→R (paying for Glimpse the Impossible, 1 mana remaining)
+T9 P2: Cast Glimpse the Impossible (2R)
+    [Priority] P1 passes (no response)
+T9: Resolve Glimpse the Impossible
+T9 P2: Glimpse the Impossible → draw 3 (Wish, Manamorphose, Wrenn's Resolve)
+    → Goal: execute_payoff [enablers]
+T9 P2: Cast Manamorphose (2)
+    [Priority] P1 passes (no response)
+T9: Resolve Manamorphose
+T9 P2: Manamorphose adds 2 any mana
+    → Goal: execute_payoff [enablers]
+T9 P2: Cast Wish (2R)
+    [Priority] P1 passes (no response)
+T9: Resolve Wish
+T9 P2: Wish finds Grapeshot (from sideboard)
+    → Goal: execute_payoff [payoffs]
+T9 P2: Cast Grapeshot (1R)
+    [Priority] P1 passes (no response)
+T9: Resolve Grapeshot
+T9 P2: Grapeshot deals 1 damage (opponent life: 4)
+T9: Storm copies: 9
+T9 P2: Grapeshot deals 1 damage (opponent life: 3)
+T9 P2: Grapeshot deals 1 damage (opponent life: 2)
+T9 P2: Grapeshot deals 1 damage (opponent life: 1)
+T9 P2: Grapeshot deals 1 damage (opponent life: 0)
+T9 P2: Grapeshot deals 1 damage (opponent life: -1)
+T9 P2: Grapeshot deals 1 damage (opponent life: -2)
+T9 P2: Grapeshot deals 1 damage (opponent life: -3)
+T9 P2: Grapeshot deals 1 damage (opponent life: -4)
+T9 P2: Grapeshot deals 1 damage (opponent life: -5)
+P1 loses: life total -5
+
+>>> Ruby Storm wins Game 1 on turn 9 via damage
+    Final life: Azorius Control=-5  Ruby Storm=13
+
+======================================================================
+  GAME 2: Azorius Control (P1) vs Ruby Storm (P2)  —  seed 60101
+  Series: Azorius Control 0 - 1 Ruby Storm
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Azorius Control wins → chooses to play first
+║ P1 (on play): Azorius Control
+║ P2 (on draw): Ruby Storm
+╚═══════════════════════════════════════════════════════
+
+P1 (Azorius Control) opening hand (2 lands, 5 spells):
+  • Solitude [Creature, CMC 5]
+  • Orim's Chant [Spell, CMC 1]
+  • Teferi, Hero of Dominaria [Spell, CMC 5]
+  • Supreme Verdict [Spell, CMC 4]
+  • Flooded Strand [Land, CMC 0]
+  • Flooded Strand [Land, CMC 0]
+  • Orim's Chant [Spell, CMC 1]
+→ P1 KEEPS 7 — has key card(s): Orim's Chant, Solitude, 2 cheap spells
+
+P2 (Ruby Storm) opening hand (1 lands, 6 spells):
+  • Arid Mesa [Land, CMC 0]
+  • Desperate Ritual [Spell, CMC 2]
+  • Wrenn's Resolve [Spell, CMC 2]
+  • Ruby Medallion [Spell, CMC 2]
+  • Ruby Medallion [Spell, CMC 2]
+  • Wish [Spell, CMC 3]
+  • Reckless Impulse [Spell, CMC 2]
+→ P2 KEEPS 7 — has key card(s): Desperate Ritual, Reckless Impulse, Ruby Medallion, Wish, Wrenn's Resolve, 6 cheap spells
+
+
+╔══ TURN 1 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 20  |  Ruby Storm 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Flooded Strand
+T1 P1: Crack Flooded Strand (pay 1 life) -> Hallowed Fountain (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 20  |  Azorius Control 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Past in Flames
+  [Main 1]
+T1 P2: Play Arid Mesa
+T1 P2: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (untapped, life: 17)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 19  |  Ruby Storm 17
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Counterspell
+  [Main 1]
+T2 P1: Play Flooded Strand
+T2 P1: Crack Flooded Strand (pay 1 life) -> Hallowed Fountain (tapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 17  |  Azorius Control 18
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T2 P2: Play Arid Mesa
+T2 P2: Crack Arid Mesa -> Mountain (untapped)
+    → Goal: deploy_engine [engines]
+    [Mana] Tap Mountain→R, Sacred Foundry→R (paying for Ruby Medallion, 2 mana remaining)
+T2 P2: Cast Ruby Medallion (2)
+    [Priority] P1 passes (no response)
+T2: Resolve Ruby Medallion
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 18  |  Ruby Storm 16
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Hallowed Fountain
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Isochron Scepter
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 16  |  Azorius Control 18
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 2
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry, Mountain
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Hallowed Fountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Valakut Awakening // Valakut Stoneforge
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Mountain→R, Sacred Foundry→R (paying for Ruby Medallion, 2 mana remaining)
+T3 P2: Cast Ruby Medallion (2)
+    [Priority] P1 passes (no response)
+T3: Resolve Ruby Medallion
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 18  |  Ruby Storm 16
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 2
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Hallowed Fountain
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion, Ruby Medallion
+║   Lands: Sacred Foundry [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mystical Dispute
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Solitude moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 4 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 16  |  Azorius Control 18
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 2
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion, Ruby Medallion
+║   Lands: Sacred Foundry, Mountain
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Hallowed Fountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Pyretic Ritual
+  [Main 1]
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Desperate Ritual, 2 mana remaining)
+T4 P2: Cast Desperate Ritual (1R)
+    [Priority] P1 passes (no response)
+T4: Resolve Desperate Ritual
+T4 P2: Desperate Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T4 P2: Cast Pyretic Ritual (1R)
+    [Priority] P1 passes (no response)
+T4: Resolve Pyretic Ritual
+T4 P2: Pyretic Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T4 P2: Cast Wrenn's Resolve (1R)
+    [Priority] P1 responds with Counterspell
+    [Mana] Tap Hallowed Fountain→U, Hallowed Fountain→U (paying for Counterspell, 2 mana remaining)
+T4 P1: Cast Counterspell (UU)
+T4: Resolve Counterspell
+T4: Wrenn's Resolve is countered
+    → Goal: execute_payoff [enablers]
+T4 P2: Cast Reckless Impulse (1R)
+    [Priority] P1 passes (no response)
+T4: Resolve Reckless Impulse
+T4 P2: Reckless Impulse → draw 2 (Manamorphose, Wrenn's Resolve)
+    → Goal: execute_payoff [enablers]
+T4 P2: Cast Wrenn's Resolve (1R)
+    [Priority] P1 passes (no response)
+T4: Resolve Wrenn's Resolve
+T4 P2: Wrenn's Resolve → draw 2 (Scalding Tarn, Pyretic Ritual)
+T4 P2: Play Scalding Tarn
+T4 P2: Crack Scalding Tarn -> Mountain (untapped)
+    → Goal: execute_payoff [enablers]
+T4 P2: Cast Manamorphose (2)
+    [Priority] P1 passes (no response)
+T4: Resolve Manamorphose
+T4 P2: Manamorphose adds 2 any mana
+    → Goal: execute_payoff [enablers]
+T4 P2: Cast Pyretic Ritual (1R)
+    [Priority] P1 passes (no response)
+T4: Resolve Pyretic Ritual
+T4 P2: Pyretic Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T4 P2: Cast Valakut Awakening // Valakut Stoneforge (2R)
+    [Priority] P1 passes (no response)
+T4: Resolve Valakut Awakening // Valakut Stoneforge
+    → Goal: execute_payoff [enablers]
+T4 P2: Cast Past in Flames (3R)
+    [Priority] P1 passes (no response)
+T4: Resolve Past in Flames
+T4 P2: Past in Flames grants flashback
+    → Goal: execute_payoff [enablers]
+T4 P2: Cast Wish (2R)
+    [Priority] P1 passes (no response)
+T4: Resolve Wish
+T4 P2: Wish finds Grapeshot (from sideboard)
+    → Goal: execute_payoff [payoffs]
+T4 P2: Cast Grapeshot (1R)
+    [Priority] P1 passes (no response)
+T4: Resolve Grapeshot
+T4 P2: Grapeshot deals 1 damage (opponent life: 17)
+T4: Storm copies: 11
+T4 P2: Grapeshot deals 1 damage (opponent life: 16)
+T4 P2: Grapeshot deals 1 damage (opponent life: 15)
+T4 P2: Grapeshot deals 1 damage (opponent life: 14)
+T4 P2: Grapeshot deals 1 damage (opponent life: 13)
+T4 P2: Grapeshot deals 1 damage (opponent life: 12)
+T4 P2: Grapeshot deals 1 damage (opponent life: 11)
+T4 P2: Grapeshot deals 1 damage (opponent life: 10)
+T4 P2: Grapeshot deals 1 damage (opponent life: 9)
+T4 P2: Grapeshot deals 1 damage (opponent life: 8)
+T4 P2: Grapeshot deals 1 damage (opponent life: 7)
+T4 P2: Grapeshot deals 1 damage (opponent life: 6)
+    → Goal: execute_payoff [payoffs]
+T4 P2: Cast Grapeshot (1R)
+    [Priority] P1 passes (no response)
+T4: Resolve Grapeshot
+T4 P2: Grapeshot deals 1 damage (opponent life: 5)
+T4: Storm copies: 12
+T4 P2: Grapeshot deals 1 damage (opponent life: 4)
+T4 P2: Grapeshot deals 1 damage (opponent life: 3)
+T4 P2: Grapeshot deals 1 damage (opponent life: 2)
+T4 P2: Grapeshot deals 1 damage (opponent life: 1)
+T4 P2: Grapeshot deals 1 damage (opponent life: 0)
+T4 P2: Grapeshot deals 1 damage (opponent life: -1)
+T4 P2: Grapeshot deals 1 damage (opponent life: -2)
+T4 P2: Grapeshot deals 1 damage (opponent life: -3)
+T4 P2: Grapeshot deals 1 damage (opponent life: -4)
+T4 P2: Grapeshot deals 1 damage (opponent life: -5)
+T4 P2: Grapeshot deals 1 damage (opponent life: -6)
+T4 P2: Grapeshot deals 1 damage (opponent life: -7)
+P1 loses: life total -7
+
+>>> Ruby Storm wins Game 2 on turn 4 via damage
+    Final life: Azorius Control=-7  Ruby Storm=15
+
+======================================================================
+  MATCH RESULT: Ruby Storm wins 2-0
+======================================================================
