@@ -1786,14 +1786,6 @@ life triggers in Modern.
 Used by ETB-life-gain projection in `ai/ev_evaluator.py`.
 """
 
-RITUAL_MANA_PRODUCED: int = 3
-"""Rules-constant: mana produced by a typical ritual (Pyretic Ritual
-/ Desperate Ritual: pay 2, produce 3). 3 reflects the standard "net
-+1 mana, +1 storm count" ritual pattern.
-
-Used by ritual projection in `ai/ev_evaluator.py`.
-"""
-
 ENERGY_PRODUCED_ESTIMATE: int = 2
 """Derived: estimated energy counters produced by a generic energy
 trigger. 2 is a conservative midpoint (Guide of Souls = 1, Voltage
