@@ -426,38 +426,46 @@ def phlage_etb(game, card, controller, targets=None, item=None):
 @EFFECT_REGISTRY.register("Lightning Bolt", EffectTiming.SPELL_RESOLVE,
                            description="Deal 3 damage to any target")
 def lightning_bolt_resolve(game, card, controller, targets=None, item=None):
+    from .damage import deal_damage
+    from .cards import CardType
     opponent = 1 - controller
     if targets:
         for tid in targets:
+            if tid == -1:
+                break  # AI chose face
             target = game.get_card_by_id(tid)
-            if target and target.zone == "battlefield" and target.template.is_creature:
-                target.damage_marked += 3
-                if target.is_dead:
-                    game._creature_dies(target)
+            if (target and target.zone == "battlefield"
+                    and (target.template.is_creature
+                         or CardType.PLANESWALKER in target.template.card_types)):
+                deal_damage(game, target, 3, source_controller=controller)
                 return
-    game.players[opponent].life -= 3
-    game.players[controller].damage_dealt_this_turn += 3
+    deal_damage(game, game.players[opponent], 3, source_controller=controller)
 
 
 @EFFECT_REGISTRY.register("Lava Dart", EffectTiming.SPELL_RESOLVE,
                            description="Deal 1 damage to any target")
 def lava_dart_resolve(game, card, controller, targets=None, item=None):
+    from .damage import deal_damage
+    from .cards import CardType
     opponent = 1 - controller
     if targets:
         for tid in targets:
+            if tid == -1:
+                break  # AI chose face
             target = game.get_card_by_id(tid)
-            if target and target.zone == "battlefield" and target.template.is_creature:
-                target.damage_marked += 1
-                if target.is_dead:
-                    game._creature_dies(target)
+            if (target and target.zone == "battlefield"
+                    and (target.template.is_creature
+                         or CardType.PLANESWALKER in target.template.card_types)):
+                deal_damage(game, target, 1, source_controller=controller)
                 return
-    game.players[opponent].life -= 1
-    game.players[controller].damage_dealt_this_turn += 1
+    deal_damage(game, game.players[opponent], 1, source_controller=controller)
 
 
 @EFFECT_REGISTRY.register("Unholy Heat", EffectTiming.SPELL_RESOLVE,
                            description="Deal 2 (or 6 with delirium) damage")
 def unholy_heat_resolve(game, card, controller, targets=None, item=None):
+    from .damage import deal_damage
+    from .cards import CardType
     opponent = 1 - controller
     gy = game.players[controller].graveyard
     types_in_gy = set()
@@ -467,14 +475,16 @@ def unholy_heat_resolve(game, card, controller, targets=None, item=None):
     damage = 6 if len(types_in_gy) >= 4 else 2
     if targets:
         for tid in targets:
+            if tid == -1:
+                break  # AI chose face
             target = game.get_card_by_id(tid)
-            if target and target.zone == "battlefield" and target.template.is_creature:
-                target.damage_marked += damage
-                if target.is_dead:
-                    game._creature_dies(target)
+            if (target and target.zone == "battlefield"
+                    and (target.template.is_creature
+                         or CardType.PLANESWALKER in target.template.card_types)):
+                deal_damage(game, target, damage, source_controller=controller)
                 return
-    game.players[opponent].life -= damage
-    game.players[controller].damage_dealt_this_turn += damage
+    deal_damage(game, game.players[opponent], damage,
+                source_controller=controller)
 
 
 @EFFECT_REGISTRY.register("Goryo's Vengeance", EffectTiming.SPELL_RESOLVE,
