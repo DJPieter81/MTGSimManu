@@ -173,6 +173,41 @@ class GameState:
                     return card
         return None
 
+    # ─── Sorcery-speed-lockout static-effect registry (R4) ──────────
+    # Per-game registry of player indices currently restricted to
+    # sorcery-speed casts by an opposing battlefield permanent. Rebuilt
+    # on demand from battlefield permanents whose classifier tag is
+    # ``Tag.SORCERY_SPEED_LOCKOUT`` (cached in
+    # ``decks/gameplans/_oracle_classifier.json``). Consulted by
+    # ``CastManager.can_cast`` — opponents in the set cannot cast
+    # outside sorcery-speed windows.
+    #
+    # Why a method, not a stored field: continuous-effect registries
+    # must reflect the current battlefield. Teferi-TR entering/leaving
+    # changes the set immediately; computing on demand is cheaper than
+    # invalidating a cache on every zone transfer.
+    def _sorcery_speed_lockout_set(self) -> Set[int]:
+        """Return player indices that are currently restricted to
+        sorcery-speed casts.
+
+        For every battlefield permanent whose classifier tag includes
+        ``Tag.SORCERY_SPEED_LOCKOUT``, the permanent's *opponents* are
+        added to the set. The classifier tag is the dispatch — no
+        oracle-text parse happens here.
+        """
+        # Late import: ai.oracle_classifier is in the ai/ layer; an
+        # engine module importing from ai/ is acceptable because the
+        # classifier is a pure-data loader (no scoring/strategy logic).
+        from ai.oracle_classifier import Tag, tags_for
+        restricted: Set[int] = set()
+        for player in self.players:
+            for card in player.battlefield:
+                if Tag.SORCERY_SPEED_LOCKOUT in tags_for(card.template.name):
+                    for opp_idx in range(len(self.players)):
+                        if opp_idx != card.controller:
+                            restricted.add(opp_idx)
+        return restricted
+
     def setup_game(self, deck1: List[CardTemplate], deck2: List[CardTemplate],
                     forced_first_player: Optional[int] = None):
         """Initialize the game with two decks.

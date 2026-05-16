@@ -1,0 +1,11 @@
+{
+  "_schema_version": 1,
+  "_comment": "Pre-populated LLM-derived oracle classifier tag cache (W0-A in /root/.claude/plans/create-some-extremely-verbose-validated-crane.md). Each entry maps a card name to a list of structural tags asserted about its oracle text. Engine/AI code reads tags from this cache via ai.oracle_classifier.load_oracle_tags() instead of regex-matching oracle text at runtime. R4 seed entry: SORCERY_SPEED_LOCKOUT for Teferi-TR + 3 functional analogues. Future waves expand this file via tools/build_oracle_classifier_cache.py; the schema is content-addressed by (card_name, oracle_text) so stale entries invalidate cleanly.",
+  "_seed_session": "2026-05-16 R4 fix (W1a-4)",
+  "tags_by_card": {
+    "Teferi, Time Raveler": ["SORCERY_SPEED_LOCKOUT"],
+    "Grand Abolisher": ["SORCERY_SPEED_LOCKOUT"],
+    "Conqueror's Flail": ["SORCERY_SPEED_LOCKOUT"],
+    "Vryn Wingmare": []
+  }
+}
