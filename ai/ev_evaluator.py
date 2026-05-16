@@ -2258,9 +2258,9 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
     # not card-named: any spell tagged Tag.FORCED_DISCARD removes a
     # known card from opp's hand; any oracle clause matching
     # "you lose N life" is the self-cost the projection must respect.
-    # Class size: ~150 Modern cards (Thoughtseize, Inquisition,
-    # Duress, Hymn-style two-card strips, Liliana of the Veil −2,
-    # plus future printings).  M6 from the 2026-05-16 5-panel Bo3
+    # Class size: ~150 Modern cards — every printed hand-attack
+    # spell + planeswalker −X edict that puts an opponent's chosen
+    # card into the graveyard.  M6 from the 2026-05-16 5-panel Bo3
     # audit; the strip advisor (`score_card_for_opponent_strip`) is
     # already correct — the bug is in the cast-time projection.
     from ai.oracle_classifier import Tag as _Tag, has_tag as _has_tag
