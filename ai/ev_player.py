@@ -30,7 +30,6 @@ from ai.scoring_constants import (
     EVOKE_CARD_LOSS_MULTIPLIER,
     EVOKE_DESPERATE_BONUS,
     EVOKE_NO_TARGET_PENALTY,
-    PLANESWALKER_SURVIVAL_FLOOR,
     MIDGAME_HORIZON_TURNS,
     GAME_HORIZON_MIN_TURNS,
     GAME_HORIZON_MAX_COST_REDUCER,
@@ -63,7 +62,6 @@ from ai.scoring_constants import (
     CONTROL_PATIENCE_OPP_CLOCK_THRESHOLD,
     LAND_SACRIFICE_MIN_LANDS,
     BIG_CREATURE_CMC_FLOOR,
-    PLANESWALKER_DEFAULT_LOYALTY,
     DESPERATE_LIFE_THRESHOLD,
     NONCREATURE_COUNTER_AGGRO_POWER,
     NONCREATURE_COUNTER_AGGRO_HAND,
@@ -1020,36 +1018,17 @@ class EVPlayer:
             ev += AMULET_TITAN_MANA_BONUS * mana_impact * CLOCK_IMPACT_LIFE_SCALING
 
         # ── Non-creature permanent overlay (Pattern B) ──
+        # Planeswalker loyalty-pool scoring moved to
+        # `ai.ev_evaluator.expected_future_value`, which is composable
+        # across permanent types and credited through
+        # `EVSnapshot.persistent_power` so the same `urgency_factor`
+        # decay applied to recurring-trigger tokens applies to PW pools
+        # as well. The previous inline `pw_bonus` here double-counted
+        # once the projection layer started crediting the pool — see
+        # M5 / 2026-05-16 audit Control Decision 1 + 7.
         from engine.cards import CardType
         if not t.is_creature and not t.is_instant and not t.is_sorcery:
-            if CardType.PLANESWALKER in t.card_types:
-                # Planeswalkers are sticky card-advantage engines. Each
-                # loyalty activation ≈ one card's clock impact (draw,
-                # removal, damage, tokens). Stickiness bonus: opp must
-                # divert removal to kill them → effectively a 1-for-1
-                # card exchange in our favor on the turn it resolves.
-                # Derives from clock.card_clock_impact — no flat tiers.
-                from ai.clock import card_clock_impact
-                loyalty = t.loyalty or PLANESWALKER_DEFAULT_LOYALTY
-                # Expected activations before death: loyalty-1 because the
-                # enters-with-loyalty first use is net-0; subsequent uses
-                # generate value. +1 accounts for the opp-removal cost.
-                expected_activations = max(1, loyalty - 1) + 1
-                card_val = card_clock_impact(snap) * CLOCK_IMPACT_LIFE_SCALING  # scale to board-eval units
-                pw_bonus = expected_activations * card_val
-                # PW survival floor: when opp_life is high or board impact small,
-                # card_clock_impact → 0 collapses the bonus and PWs lose to
-                # vanilla creatures of equal CMC. Floor represents the
-                # minimum value of one activation (one card draw, one removal,
-                # one Cat token) before the planeswalker dies. Holds even when
-                # combat-clock-derived card_val rounds to ~0 in early/mid game.
-                pw_bonus = max(PLANESWALKER_SURVIVAL_FLOOR, pw_bonus)
-                ev += pw_bonus
-                # No additional per-oracle bumps: loyalty × card_val already
-                # integrates over whatever the planeswalker actually does,
-                # including the Teferi-pattern "untap lands" mana-advantage
-                # (that's one activation per turn, already counted above).
-            elif 'cost_reducer' in tags:
+            if 'cost_reducer' in tags:
                 # Saves ~1 mana per spell over the remaining game — derive
                 # from card_clock_impact × turns_remaining rather than +4.
                 from ai.clock import card_clock_impact, combat_clock, NO_CLOCK
