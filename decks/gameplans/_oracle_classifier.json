@@ -36,6 +36,12 @@
         "TARGET_ANY_DAMAGE"
       ]
     },
+    "Otawara, Soaring City": {
+      "oracle_text_sha256": "f607b7add939569c1d04a6f463c497157d9fca13d7702d873c93029109f632cf",
+      "tags": [
+        "CHANNEL_ABILITY"
+      ]
+    },
     "Past in Flames": {
       "oracle_text_sha256": "0b1663e36830961148abf0d45378c512d6562c712dab3ca77128e9b9cf1f2621",
       "tags": [
