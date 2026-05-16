@@ -40,6 +40,7 @@ LLMTask = Literal[
     "audit_doc_freshness",
     "handler_audit",
     "failing_test_spec",
+    "classify_oracle",
 ]
 
 
@@ -54,6 +55,9 @@ DEFAULT_MODELS: dict[LLMTask, str] = {
     "handler_audit":       "anthropic:claude-haiku-4-5",
     # Haiku — pseudocode emission against a fixed schema.
     "failing_test_spec":   "anthropic:claude-haiku-4-5",
+    # Haiku — mechanical tag classification from oracle text (W0-A).
+    # One call per card, run offline; cached and committed.
+    "classify_oracle":     "anthropic:claude-haiku-4-5",
 }
 """Model defaults per task.  Operators can override via env vars
 (see module docstring) or by passing `override=` to `select_model`."""

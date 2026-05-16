@@ -62,6 +62,10 @@ DEFAULT_BUDGETS_USD: dict[LLMTask, float] = {
     "audit_doc_freshness": 1.00,
     "handler_audit":       1.00,
     "failing_test_spec":   1.00,
+    # classify_oracle runs over the full 21k-card Modern pool offline;
+    # cap covers a from-scratch full rebuild on Haiku 4.5 plus headroom
+    # for re-runs after prompt-version bumps.  Per-call cost is ~$0.005.
+    "classify_oracle":     20.00,
 }
 
 # Per-task input-token caps per call.  8000 is sufficient for the
@@ -74,6 +78,9 @@ DEFAULT_TOKEN_CAPS: dict[LLMTask, int] = {
     "audit_doc_freshness": 4000,
     "handler_audit":       4000,
     "failing_test_spec":   4000,
+    # classify_oracle feeds one card per call — a few hundred tokens of
+    # prompt-header plus a tiny per-card payload.  4000 is generous.
+    "classify_oracle":     4000,
 }
 
 # Fallback budget when a caller passes an unknown task literal.
