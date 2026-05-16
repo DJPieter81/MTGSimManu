@@ -91,11 +91,23 @@ def test_storm_target_matches_combo_force_threshold():
     """Sister-constant invariant: the storm-zone resource fallback
     should equal the same "we have enough storm fuel that even non-
     lethal payoffs close the game" threshold consumed by
-    `ai/ev_player.py::decide_main_phase`. They sit on the same
-    decision axis from two angles (readiness vs override) and must
-    not drift."""
+    `ai/ev_player.py::decide_main_phase`.
+
+    Phase 1 refactor: the override threshold was dropped from
+    `ai.scoring_constants` and now lives in
+    `ai.llm_decision_scorer.DEFAULT_WEIGHTS` keyed by
+    ("storm",  CTX_COMBO_FORCE_PAYOFF_STORM_THRESHOLD).  Verify the
+    two sit at the same numeric value (5 storm) so the readiness
+    gate and the override gate stay on the same decision axis.
+    """
+    from ai.llm_decision_scorer import (
+        DEFAULT_WEIGHTS, CTX_COMBO_FORCE_PAYOFF_STORM_THRESHOLD,
+    )
+    storm_threshold = DEFAULT_WEIGHTS.get(
+        ("storm", CTX_COMBO_FORCE_PAYOFF_STORM_THRESHOLD)
+    )
     assert (scoring_constants.DEFAULT_STORM_RESOURCE_TARGET
-            == scoring_constants.COMBO_FORCE_PAYOFF_STORM_THRESHOLD)
+            == storm_threshold)
 
 
 def test_critical_singleton_floor_above_normal_keep_cap():
