@@ -456,9 +456,117 @@ class BayesianHandTracker:
             self.initialize_from_game(game)
         self._recalculate_priors(game)
 
-    def get_counter_probability(self) -> float:
-        """Current belief: P(opponent has a counterspell)."""
-        return self.beliefs.p_counter
+    def get_counter_probability(self) -> float:  # ratchet-allow: narrow counter-only legacy accessor; production scoring uses the broadened interaction measure (M7 / W1b-7).
+        """Narrow legacy accessor — P(opponent has a counterspell).
+
+        Production scoring paths must call
+        `get_interaction_probability()` instead — that broader
+        measure folds in instant-speed removal and hand-disruption
+        and gates each channel by the opp's untapped mana (the
+        audit's "tap-out window" — see W1b-7 in CLAUDE.md).
+
+        Retained as a thin accessor on the underlying belief so the
+        regression tests in `test_bhi_tracks_*` (which pin the
+        counter prior in isolation from the other tracked priors)
+        keep working without reaching into the dataclass directly.
+        """
+        return self.beliefs.p_counter  # ratchet-allow: legacy narrow accessor for regression tests.
+
+    def get_interaction_probability(
+        self,
+        game: Optional["GameState"] = None,
+        *,
+        can_counter: bool = True,
+        is_creature_target: bool = True,
+    ) -> float:
+        """Broadened P(opp disrupts our spell) — covers counters +
+        instant-speed removal + hand-disruption (discard).
+
+        This is the structural unification of the narrow
+        `beliefs.p_counter` posterior (M7 / W1b-7).  Each disruption
+        term is gated by the mana the opp can actually deploy: a
+        counter we know the opp holds is irrelevant when they are
+        tapped out.  The audit's "tap-out window" maps directly to
+        this gating — when `opp_untapped_mana < min(counter_cost,
+        removal_cost, discard_cost)`, the broadened posterior falls
+        to zero and downstream EV stops discounting our spell.
+
+        The composition is ``max`` over independent disruption
+        channels (not sum / 1-product), because:
+
+        * A spell is one card; only one disruption mode fires.  Sum
+          would double-count when both counter and removal are
+          live.
+        * `max` collapses gracefully when one channel is gated out
+          (tap-out, "can't be countered", non-creature target).
+        * This matches the existing `_compute_risk_discount` shape
+          in `ai/combo_calc.py` — see its `max(P(counter),
+          P(discard) * hit_rate)` for symmetry.
+
+        Args:
+            game: optional `GameState`.  When provided, the opp's
+                ``untapped_lands`` count gates each disruption
+                channel by its rules-constant cost.  When ``None``
+                we fall back to the pure-belief view (legacy
+                behaviour identical to the old narrow measure for
+                callers that don't have a `game` handle).
+            can_counter: caller's "is this spell counterable?" flag.
+                Defaults True; pass False for "can't be countered"
+                spells to zero the counter channel.
+            is_creature_target: caller's "is this spell a creature
+                that instant removal could hit?" flag.  Non-creature
+                spells skip the removal channel since instant-speed
+                removal in Modern is overwhelmingly creature-only
+                (Bolt / Push / Heat are creature-only; the rare
+                Anguished Unmaking is sorcery).
+
+        Returns the gated disruption probability in [0, 1].
+        Monotone in each belief term given mana is sufficient.
+        """
+        # Bare-belief floor when no game handle is available — we
+        # cannot gate by untapped mana so we surface the max of the
+        # raw posteriors that the caller's category flags admit.
+        # This is the conservative fallback consumers can rely on
+        # for unit-test paths that don't materialise a full game.
+        p_counter = self.beliefs.p_counter if can_counter else 0.0
+        p_removal = self.beliefs.p_removal if is_creature_target else 0.0
+        p_discard = self.beliefs.p_discard
+
+        if game is None:
+            return max(p_counter, p_removal, p_discard)
+
+        # Mana-gated view: each channel needs enough untapped mana on
+        # the opp's side to fire.  Costs are the rules-constant
+        # medians already documented in scoring_constants.
+        from ai.scoring_constants import (
+            COUNTER_ESTIMATED_COST,
+            REMOVAL_ESTIMATED_COST,
+        )
+
+        opp = game.players[self.opponent_idx]
+        # `untapped_lands` is the engine's authoritative untapped-mana
+        # source (mirrors `available_mana_estimate`'s structure
+        # without the conditional Tron bonus — that bonus is
+        # irrelevant for response windows on our turn since Tron
+        # mana is colorless and Modern instant interaction is
+        # color-fixed).
+        opp_untapped = len(getattr(opp, "untapped_lands", []))
+
+        # DISCARD_ESTIMATED_COST — discard costs 1 mana
+        # (Thoughtseize = B, Inquisition = B, Duress = B).  This is
+        # a rules constant matching the median of Modern's discard
+        # suite; tagged `magic-allow` because it's a printed-cost
+        # median, not a scoring weight.
+        DISCARD_ESTIMATED_COST = 1  # magic-allow: median cost of Modern hand disruption (rules constant)
+
+        if opp_untapped < COUNTER_ESTIMATED_COST:
+            p_counter = 0.0
+        if opp_untapped < REMOVAL_ESTIMATED_COST:
+            p_removal = 0.0
+        if opp_untapped < DISCARD_ESTIMATED_COST:
+            p_discard = 0.0
+
+        return max(p_counter, p_removal, p_discard)
 
     def get_removal_probability(self) -> float:
         """Current belief: P(opponent has instant removal)."""
