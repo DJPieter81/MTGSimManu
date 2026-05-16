@@ -18,9 +18,15 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        # pydantic-ai is required by the LLM-backend synth tests.
-        # CI uses TestModel only — no real API calls happen here.
-        run: pip install pytest pydantic-ai
+        # pydantic-ai-slim is required by the LLM-backend synth tests.
+        # CI uses TestModel only — no real API calls happen here, so
+        # the cloud-provider extras (anthropic/openai/google/etc.) are
+        # unnecessary. The meta package `pydantic-ai` pulls in every
+        # provider SDK plus fastmcp/temporal/logfire, which causes
+        # multi-minute (sometimes hanging) dependency resolution on
+        # ubuntu-latest. The slim variant is tens of packages, not
+        # hundreds.
+        run: pip install pytest pydantic-ai-slim
 
       - name: Run abstraction ratchet
         run: python tools/check_abstraction.py
