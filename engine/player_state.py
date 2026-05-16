@@ -85,6 +85,27 @@ class PlayerState:
     def is_alive(self) -> bool:
         return self.life > 0
 
+    def take_damage(self, amount: int, source) -> None:
+        """Receive `amount` damage from `source` (CR 119.3).
+
+        Implements the `DamageTarget` protocol consumed by
+        `engine/damage.py:deal_damage`. Player-side handling is
+        the simple case: decrement `life` by exactly the damage
+        amount. Lifegain (lifelink), loss-of-life-replacement
+        (Platinum Emperion-style effects), and player-loss SBA
+        (704.5a) all live elsewhere: the primitive layer that
+        called us applies replacements before we are reached, and
+        the SBA loop checks `life <= 0` after the priority window.
+
+        `source` is accepted for symmetry with the protocol but
+        is unused here — lifelink redirects fire from the
+        primitive's hook, not from inside this method. Keeping
+        the parameter means future damage-source-aware reactions
+        (e.g. damage attribution tracking for stat dashboards)
+        can read it without changing the call signature.
+        """
+        self.life -= amount
+
     @property
     def creatures(self) -> List[CardInstance]:
         return [c for c in self.battlefield
