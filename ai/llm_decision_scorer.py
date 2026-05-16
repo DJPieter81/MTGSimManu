@@ -88,6 +88,16 @@ CTX_CYCLING_GAMEPLAN_BOOST = "cycling_gameplan_boost"
 CTX_CYCLING_FREE_COST_BONUS = "cycling_free_cost_bonus"
 CTX_CASCADE_FREE_SPELL_VALUE = "cascade_free_spell_value"
 
+# ─── Phase 3 contexts (PR following #410+#411) ─────────────────────
+# Each replaces a keyword-driven scaling constant that previously
+# lived in ai/scoring_constants.py.  The keyword that triggers the
+# call site is documented in the DEFAULT_WEIGHTS section below.
+CTX_LANDFALL_TRIGGER_VALUE = "landfall_trigger_value"
+CTX_ARTIFACT_LAND_SYNERGY_BONUS = "artifact_land_synergy_bonus"
+CTX_CYCLING_CHEAP_COST_BONUS = "cycling_cheap_cost_bonus"
+CTX_CYCLING_GY_REANIMATE_BASE = "cycling_gy_reanimate_base"
+CTX_CYCLING_GY_REANIMATE_PER_POWER = "cycling_gy_reanimate_per_power"
+
 # ``DEFAULT_WEIGHTS[(archetype, ctx)] = float`` — the offline-cold-start
 # weight that matches the historical constant value.  Archetype strings
 # match the literals used by ``_get_archetype()`` in ``ai/ev_player.py``
@@ -148,6 +158,44 @@ DEFAULT_WEIGHTS: dict[tuple[str, str], float] = {
     # rule, not a deck strategy).  Single key "*" matches any
     # archetype via the explicit `_lookup_default` fallback below.
     ("*",     CTX_CASCADE_FREE_SPELL_VALUE): 2.5,
+
+    # ─── Phase 3 keyword-driven contexts ────────────────────────────
+    #
+    # Landfall trigger value: one card-quality event per landfall
+    # trigger (1 life, 1 damage, 1 ramp, etc.).  Keyword-driven —
+    # fires whenever a land enters under a permanent whose oracle
+    # contains "landfall".  Historical: 3.0 (= PROACTIVE_REMOVAL_MIN_VALUE
+    # "worth a card" floor).  Wildcard archetype because the keyword
+    # rule is archetype-agnostic; per-archetype refinement happens via
+    # warmed LLM rows (e.g. ramp / midrange may diverge).
+    ("*", CTX_LANDFALL_TRIGGER_VALUE): 3.0,
+
+    # Artifact-land synergy bonus: per-synergy-card EV when an
+    # artifact land enters and active permanents reference
+    # "for each artifact" / metalcraft / "affinity for artifacts".
+    # Historical: 4.0 (≈ 1 power × residency × clock primitives).
+    # Wildcard archetype: the trigger condition is a board-state
+    # keyword count, not a deck strategy.
+    ("*", CTX_ARTIFACT_LAND_SYNERGY_BONUS): 4.0,
+
+    # Cheap-cycling tempo bonus: a cycler whose mana cost ≤ 1 leaves
+    # room for a second action this turn — worth ~1 EV unit.  Keyword-
+    # driven (cycling).  Historical: 1.0 (matches CHEAP_REMOVAL_ACTION_BONUS).
+    ("*", CTX_CYCLING_CHEAP_COST_BONUS): 1.0,
+
+    # Cycling-into-graveyard base reanimation value: when the
+    # controller has a visible reanimation path, the cycled creature
+    # converts to a future reanimation target.  Base ≈ one card's
+    # future value.  Historical: 4.0 (= ARTIFACT_LAND_SYNERGY_BONUS
+    # scale, "one card-worth of future value").  Wildcard archetype —
+    # the gate is the reanimation-path predicate, not the deck label.
+    ("*", CTX_CYCLING_GY_REANIMATE_BASE): 4.0,
+
+    # Per-power addend on cycling-into-GY reanimation EV.  A power-5
+    # creature is worth more as a reanimation target than a power-2
+    # one — 0.5 × power roughly tracks the creature_value gap.
+    # Historical: 0.5.
+    ("*", CTX_CYCLING_GY_REANIMATE_PER_POWER): 0.5,
 }
 
 
@@ -341,5 +389,11 @@ __all__ = [
     "CTX_CYCLING_GAMEPLAN_BOOST",
     "CTX_CYCLING_FREE_COST_BONUS",
     "CTX_CASCADE_FREE_SPELL_VALUE",
+    # Phase 3 contexts.
+    "CTX_LANDFALL_TRIGGER_VALUE",
+    "CTX_ARTIFACT_LAND_SYNERGY_BONUS",
+    "CTX_CYCLING_CHEAP_COST_BONUS",
+    "CTX_CYCLING_GY_REANIMATE_BASE",
+    "CTX_CYCLING_GY_REANIMATE_PER_POWER",
     "weight",
 ]

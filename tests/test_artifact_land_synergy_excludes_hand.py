@@ -49,6 +49,27 @@ from engine.cards import CardInstance
 from engine.game_state import GameState
 
 
+@pytest.fixture(autouse=True)
+def _force_offline_decision_scorer(monkeypatch):
+    """The artifact-land synergy bonus is now sourced from
+    ``ai.llm_decision_scorer.weight`` (Phase 3 refactor — formerly the
+    ``ARTIFACT_LAND_SYNERGY_BONUS`` constant).  These tests pin the
+    rule that the bonus must reflect the *battlefield* carrier count
+    only — a structural property that doesn't depend on the numeric
+    weight.  Forcing offline mode keeps the test deterministic
+    against the wildcard DEFAULT_WEIGHTS entry (4.0) regardless of
+    whether an operator has warmed the LLM cache.
+    """
+    monkeypatch.setenv("MTG_LLM_DECISION_SCORER_OFFLINE", "1")
+    # Also bypass the SQLite cache so a warmed entry from a prior
+    # ``tools/llm_cache_warm.py`` run does not leak in.
+    from ai import llm_decision_scorer
+
+    def _no_cache(*a, **kw):
+        return None
+    monkeypatch.setattr(llm_decision_scorer, "_try_cache_only", _no_cache)
+
+
 @pytest.fixture(scope="module")
 def card_db():
     return CardDatabase()
