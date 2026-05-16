@@ -268,6 +268,52 @@ class GameState:
 
         return drawn
 
+    def surveil(self, player_idx: int, n: int) -> List[CardInstance]:
+        """CR 701.42 — Surveil N.
+
+        "Look at the top N cards of your library, then put any number
+        of them into your graveyard and the rest on top of your
+        library in any order."
+
+        The deterministic AI policy bins every surveiled card to the
+        graveyard. This matches the existing convention from the
+        creature-spell-cast surveil branch (which always binned the
+        top to GY for delirium / GY-payoff density) and is the right
+        default for the simulator's current decision layer (no card
+        is "saved" because we have no surveil-evaluator yet; a future
+        AI hook can refine via `callbacks.choose_surveil_bins`).
+
+        Class size of callers: every "When ~ enters, surveil N" land
+        (the surveil-dual cycle — Meticulous Archive, Elegant Parlor,
+        Thundering Falls, Hedge Maze, Underground Mortuary, Raucous
+        Theater, Commercial District, Undercity Sewers, Shadowy
+        Backstreet, Lush Portico — and any future printing) plus
+        every "Whenever you cast a noncreature spell, surveil N"
+        creature (DRC, Lightshell Duo, Garland, Cruel Witness).
+
+        Returns the list of cards that were binned. Empty if the
+        library was empty.
+        """
+        player = self.players[player_idx]
+        binned: List[CardInstance] = []
+        # Look at up to N cards from the top. Library is a list with
+        # index 0 == top, matching the engine's convention.
+        looked = player.library[:n]
+        # Policy: bin all of them. The library indices shift as we
+        # remove, so iterate over the slice (which is a separate list).
+        for card in looked:
+            player.library.remove(card)
+            card.zone = "graveyard"
+            player.graveyard.append(card)
+            binned.append(card)
+        if binned:
+            names = ", ".join(c.name for c in binned)
+            self.log.append(
+                f"T{self.display_turn} P{player_idx+1}: "
+                f"surveil {n} → {names} to GY"
+            )
+        return binned
+
     # ─── MANA SYSTEM ─────────────────────────────────────────────
 
     def tap_lands_for_mana(self, player_idx: int, cost: ManaCost,

@@ -189,16 +189,32 @@ def _fire_etb_triggers(game: "GameState", card: "CardInstance",
                        controller: int) -> None:
     """Fan-out for `TransferKind.ETB`.
 
-    Delegates to the existing `EFFECT_REGISTRY` (timing=ETB) so the
-    decorator-registered handlers (`@EFFECT_REGISTRY.register("X",
-    EffectTiming.ETB)`) fire for every permanent type. This is the
-    uniformity the audit's R3 finding requires: a land ETB and a
-    creature ETB go through the same dispatch.
+    Delegates to the existing ETB pipeline so the dispatch is
+    identical to the spell-resolution path in `spell_resolution.py`:
+
+      1. `EFFECT_REGISTRY.execute(card.name, EffectTiming.ETB, ...)`
+         — card-specific handlers (Solitude, Subtlety, Phlage, …).
+      2. If no card-specific handler matched, fall through to the
+         generic `resolve_etb_from_oracle` pass — oracle-/tag-driven
+         ETB branches (surveil, scry, draw, life-gain, damage, etc.).
+
+    This is the uniformity the audit's R3 finding requires: a land
+    ETB and a creature ETB go through the same dispatch. The
+    `_fire_etb_triggers` fan-out is now the canonical ETB pipeline
+    for ALL permanent types; the spell-resolution caller and the
+    land-play caller both reach it via `transfer(..., ETB)`.
     """
     from .card_effects import EFFECT_REGISTRY, EffectTiming
+    from .oracle_resolver import resolve_etb_from_oracle
 
+    has_specific = card.name in EFFECT_REGISTRY._handlers and any(
+        h.timing == EffectTiming.ETB
+        for h in EFFECT_REGISTRY._handlers[card.name]
+    )
     EFFECT_REGISTRY.execute(card.name, EffectTiming.ETB,
                             game, card, controller)
+    if not has_specific:
+        resolve_etb_from_oracle(game, card, controller)
 
 
 # ─── dispatch table ────────────────────────────────────────────────
@@ -359,5 +375,37 @@ def transfer(game: "GameState", card: "CardInstance",
 
     # Fan-out. Run each registered handler; exceptions propagate so
     # bugs are not masked.
+    for fn in _TRIGGER_FANOUT[kind]:
+        fn(game, card, ctl)
+
+
+def fire_fanout(game: "GameState", card: "CardInstance",
+                kind: TransferKind, *,
+                controller: Optional[int] = None) -> None:
+    """Fire the trigger fan-out for `kind` WITHOUT moving the card.
+
+    Used by callers that own their own zone-movement bookkeeping (e.g.
+    `engine/land_manager.LandManager.play_land`, which has
+    permanent-type-specific entry logic for tapped/untapped state,
+    optional ETB costs, fast-lands, fetchlands) and only want the
+    trigger dispatch. Composing the same `_TRIGGER_FANOUT[kind]` table
+    keeps the dispatch uniform — a land's ETB and a creature's ETB
+    reach the same fan-out implementations, satisfying R3 in
+    docs/history/audits/2026-05-16_rules_audit.md.
+
+    Raises `ValueError` on unknown kind — same loud-fail semantics as
+    `transfer`.
+    """
+    if not isinstance(kind, TransferKind):
+        raise ValueError(
+            f"fire_fanout(kind=) must be a TransferKind, got "
+            f"{type(kind).__name__} value={kind!r}"
+        )
+    if kind not in _TRIGGER_FANOUT:
+        raise ValueError(
+            f"no fan-out registered for {kind!r}; "
+            f"extend _TRIGGER_FANOUT in engine/zone_transfer.py"
+        )
+    ctl = controller if controller is not None else card.controller
     for fn in _TRIGGER_FANOUT[kind]:
         fn(game, card, ctl)

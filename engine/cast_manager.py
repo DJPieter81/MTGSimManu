@@ -1195,16 +1195,13 @@ class CastManager:
                         if Keyword.FLYING not in creature.keywords:
                             creature.keywords.add(Keyword.FLYING)
 
-                # Surveil 1: always bin the top card to GY (AI choice: maximise delirium)
-                if 'surveil' in c_oracle and player.library:
-                    top = player.library.pop(0)
-                    top.zone = 'graveyard'
-                    player.graveyard.append(top)
-                    game.log.append(
-                        f"T{game.display_turn} P{player_idx+1}: "
-                        f"{creature.name} surveil 1 → {top.name} to GY")
+                # Surveil-on-noncreature-spell-cast (DRC, Lightshell Duo,
+                # Garland) moved to resolve_spell_cast_trigger so the same
+                # generic dispatch handles spell-cast surveil AND land-ETB
+                # surveil. See R3 in
+                # docs/history/audits/2026-05-16_rules_audit.md.
 
-        # Generic oracle-text-based spell-cast triggers
+        # Generic oracle-text-based spell-cast triggers (incl. surveil)
         from .oracle_resolver import resolve_spell_cast_trigger
         resolve_spell_cast_trigger(game, player_idx, card)
 
