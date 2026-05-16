@@ -576,14 +576,10 @@ Modern noncreature-spell density (1 instant or sorcery per turn for
 spell-heavy decks). Adds 1.0 / opp_life of clock.
 """
 
-CASCADE_FREE_SPELL_VALUE: float = 2.5
-"""Derived: cascade casts a free spell of CMC strictly less than the
-caster — roughly worth another small creature's clock (~2.5 power
-equivalent). Scaled by 1/opp_life for clock units.
-
-Sister constant: AVG_CREATURE_POWER (this file, defined below) — the
-2.5 here matches the same "average Modern creature" baseline.
-"""
+# DROPPED in Phase 1 refactor: `CASCADE_FREE_SPELL_VALUE` (was 2.5)
+# is now sourced from `ai.llm_decision_scorer.weight("*",
+# CTX_CASCADE_FREE_SPELL_VALUE)` — see
+# `docs/proposals/jazzy-swimming-muffin.md`.
 
 ETB_VALUE_BONUS: float = 2.0
 """Derived: a creature with the `etb_value` tag has an enter-the-
@@ -860,16 +856,10 @@ Used by `_choose_targets` burn-vs-creature decision in
 `ai/ev_player.py`.
 """
 
-COMBO_FORCE_PAYOFF_STORM_THRESHOLD: int = 5
-"""Rules-constant: storm count threshold above which the combo-kill
-goal-advance fires in `decide_main_phase`. At storm count ≥ 5 the
-deck has cast enough cheap fuel that even non-lethal storm payoffs
-(Grapeshot for 5, Tendrils for 7) close the game on the next
-finisher.
-
-Used by `decide_main_phase` combo kill override in
-`ai/ev_player.py`.
-"""
+# DROPPED in Phase 1 refactor: `COMBO_FORCE_PAYOFF_STORM_THRESHOLD`
+# (was 5) is now sourced from `ai.llm_decision_scorer.weight(arch,
+# CTX_COMBO_FORCE_PAYOFF_STORM_THRESHOLD)` — see
+# `docs/proposals/jazzy-swimming-muffin.md`.
 
 LANDFALL_TRIGGER_VALUE: float = 3.0
 """Derived: per-landfall-trigger EV. Each landfall trigger ≈ ETB
@@ -893,72 +883,21 @@ family — same "one card committed" scale.
 Used by `_score_land` artifact-synergy branch in `ai/ev_player.py`.
 """
 
-TRON_MANA_ADVANTAGE: float = 4.0
-"""Derived: completed Tron yields {C}{C}{C}{C}{C}{C}{C} = 7 colorless
-mana from 3 lands vs ~3 mana from 3 vanilla lands, so the assembly
-advantage is +4 mana / turn.
+# DROPPED in Phase 1 refactor — all sourced from
+# `ai.llm_decision_scorer.weight(arch, CTX_*)`:
+#   TRON_MANA_ADVANTAGE        (was 4.0)
+#   AMULET_TITAN_MANA_BONUS    (was 4.0)
+#   CYCLING_CASCADE_BOOST      (was 8.0)
+#   CYCLING_GY_URGENCY         (was 6.0)
+#   CYCLING_GAMEPLAN_BOOST     (was 10.0)
+# See `docs/proposals/jazzy-swimming-muffin.md` for the rationale.
+# The historical values live in `ai.llm_decision_scorer.DEFAULT_WEIGHTS`
+# as the offline-cold-start table; once the LLM cache is warmed via
+# `tools/llm_cache_warm.py --task decision_scorer`, the per-archetype
+# tuned weights override the offline floor.
 
-Used by `_score_land` Tron-assembly branch in `ai/ev_player.py`.
-"""
-
-AMULET_TITAN_MANA_BONUS: float = 4.0
-"""Rules-constant: 2 lands × 2 mana each = +4 mana when Primeval Titan
-ETBs with Amulet of Vigor on the battlefield. Both fetched lands come
-in tapped and Amulet untaps them, so all 4 mana are available the
-same turn.
-
-Bounce lands compound this further but are not modelled precisely;
-the floor is 2 lands untapped.
-
-Used by `_score_spell` Amulet+Titan synergy branch in
-`ai/ev_player.py`.
-"""
-
-CYCLING_CASCADE_BOOST: float = 8.0
-"""Derived: cycling EV bonus when a cascade spell is in hand.
-
-When cascade is the deck's primary action, filling the graveyard
-via cycling becomes the urgent setup move. 8.0 matches the
-`HELD_COLOR_PRESERVATION_BONUS` scale — same "this enables our key
-card" intent.
-
-Used by `_score_cycling` in `ai/ev_player.py`.
-"""
-
-CYCLING_GY_URGENCY: float = 6.0
-"""Derived: additional cycling EV when graveyard creature count < 3
-AND a cascade is in hand.
-
-Compounds with `CYCLING_CASCADE_BOOST` to express "we MUST cycle
-before cascading or the cascade will hit an empty graveyard". 6.0
-is sized to match the `card_clock_impact × 20` scale of a typical
-cascade hit — losing the cascade payoff entirely costs roughly this
-much EV.
-
-Used by `_score_cycling` in `ai/ev_player.py`.
-"""
-
-CYCLING_GAMEPLAN_BOOST: float = 10.0
-"""Derived: cycling EV bonus when the gameplan's current goal sets
-`prefer_cycling = True` (Living End and similar reanimator shells).
-
-10.0 is the largest cycling-overlay constant — when the gameplan
-explicitly says "cycling IS the gameplan", cycling should beat
-almost every other play. Matches the LAND_BASE_EV scale so a
-cycling activation reads as "as important as a land drop".
-
-Used by `_score_cycling` in `ai/ev_player.py`.
-"""
-
-CYCLING_FREE_COST_BONUS: float = 2.0
-"""Derived: cycling EV bonus when cycling cost involves paying life
-instead of mana ("free" cycling — Street Wraith, Decree of Pain).
-
-Matches the per-trigger bonus on `ETB_VALUE_BONUS` — same "small
-extra value at no mana cost" intent.
-
-Used by `_score_cycling` in `ai/ev_player.py`.
-"""
+# DROPPED in Phase 1 refactor: CYCLING_FREE_COST_BONUS (was 2.0)
+# → ai.llm_decision_scorer.weight(arch, CTX_CYCLING_FREE_COST_BONUS).
 
 CYCLING_CHEAP_COST_BONUS: float = 1.0
 """Derived: cycling EV bonus for cheap cycling (mana cost ≤ 1).

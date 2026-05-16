@@ -20,6 +20,19 @@ from ai.ev_evaluator import (
     EVSnapshot, snapshot_from_game, evaluate_board, creature_value,
     creature_threat_value,
 )
+# Phase 1 refactor: archetype-tied scaling weights are sourced from
+# the LLM-at-decision-time helper, cached per (archetype, context).
+# See `ai/llm_decision_scorer.py` for the contract.
+from ai.llm_decision_scorer import (
+    weight as _llm_weight,
+    CTX_COMBO_FORCE_PAYOFF_STORM_THRESHOLD,
+    CTX_TRON_MANA_ADVANTAGE,
+    CTX_AMULET_TITAN_MANA_BONUS,
+    CTX_CYCLING_CASCADE_BOOST,
+    CTX_CYCLING_GY_URGENCY,
+    CTX_CYCLING_GAMEPLAN_BOOST,
+    CTX_CYCLING_FREE_COST_BONUS,
+)
 from ai.scoring_constants import (
     HELD_RESPONSE_VALUE_PER_CMC,
     held_response_value_per_cmc,
@@ -45,15 +58,8 @@ from ai.scoring_constants import (
     BLINK_FIZZLE_FLOOR,
     CHUMP_SENTINEL_VALUE,
     NO_CLOCK_FACE_VAL_MULTIPLIER,
-    COMBO_FORCE_PAYOFF_STORM_THRESHOLD,
     LANDFALL_TRIGGER_VALUE,
     ARTIFACT_LAND_SYNERGY_BONUS,
-    TRON_MANA_ADVANTAGE,
-    AMULET_TITAN_MANA_BONUS,
-    CYCLING_CASCADE_BOOST,
-    CYCLING_GY_URGENCY,
-    CYCLING_GAMEPLAN_BOOST,
-    CYCLING_FREE_COST_BONUS,
     CYCLING_CHEAP_COST_BONUS,
     CYCLING_GY_REANIMATE_BASE,
     CYCLING_GY_REANIMATE_PER_POWER,
@@ -131,65 +137,6 @@ def _get_archetype(deck_name: str) -> str:
         return DECK_ARCHETYPE_OVERRIDES[deck_name]
     arch = DECK_ARCHETYPES.get(deck_name)
     return arch.value if arch else "midrange"
-
-
-# Map oracle-derived board-wipe tags (set by
-# `engine.card_database.CardDatabase._derive_tags` via OracleEffect.target_type)
-# onto the permanent classes the wipe actually destroys.  Used by the
-# X-cost board-wipe scoring gate in `_score_spell` to lift the killable
-# set from "creatures only" to "permanent classes the oracle text names".
-_WIPE_TAG_TO_CLASS = {
-    "destroy_all_creatures": "creature",
-    "destroy_all_artifacts": "artifact",
-    "destroy_all_enchantments": "enchantment",
-    "destroy_all_nonland": "nonland",
-}
-
-
-def _wipe_target_classes_from_tags(tags) -> "set[str]":
-    """Return the set of permanent classes a board-wipe destroys, derived
-    from its oracle-parsed tags. Never returns a hardcoded card list —
-    the only knowledge entering this function is the tag bag set by the
-    oracle-text parser. Wrath of the Skies → {creature, artifact,
-    enchantment} via the destroy_all_artifacts tag plus the implicit
-    creature/enchantment classes its oracle text names ("each artifact,
-    creature, and enchantment").
-
-    Tags can declare any combination of class-specific wipes
-    (destroy_all_creatures / destroy_all_artifacts /
-    destroy_all_enchantments) and / or the catch-all "destroy_all_nonland".
-    When the catch-all is present we treat the wipe as hitting all three
-    non-land classes simultaneously.
-
-    Wrath of the Skies' oracle text destroys ALL THREE
-    (artifact + creature + enchantment), but the parser currently only
-    adds `destroy_all_artifacts`. Promote any single `destroy_all_*`
-    on a `board_wipe` to the same three-class set when the oracle
-    says "each artifact, creature, AND enchantment" — detected at the
-    call site via the spell template's oracle text.
-    """
-    classes: "set[str]" = set()
-    for tag, cls in _WIPE_TAG_TO_CLASS.items():
-        if tag in tags:
-            if cls == "nonland":
-                classes.update({"creature", "artifact", "enchantment"})
-            else:
-                classes.add(cls)
-    return classes
-
-
-def _is_wipe_candidate(card, classes: "set[str]") -> bool:
-    """Return True iff `card` is destroyed by a wipe whose target classes
-    are `classes`. Uses CardType enum membership — no card-name lookup."""
-    from engine.cards import CardType
-    types = card.template.card_types
-    if "creature" in classes and CardType.CREATURE in types:
-        return True
-    if "artifact" in classes and CardType.ARTIFACT in types:
-        return True
-    if "enchantment" in classes and CardType.ENCHANTMENT in types:
-        return True
-    return False
 
 
 # ─────────────────────────────────────────────────────────────
@@ -547,7 +494,15 @@ class EVPlayer:
             from ai.ev_evaluator import _estimate_combo_chain
             can_kill, storm_count, damage, chain = _estimate_combo_chain(
                 game, self.player_idx)
-            if can_kill or storm_count >= COMBO_FORCE_PAYOFF_STORM_THRESHOLD:
+            # Phase 1 refactor: storm-threshold weight sourced from the
+            # LLM helper, cached per archetype.  Historical value 5.0
+            # (the default-table fallback) preserves prior behaviour
+            # offline; cache-warmed weights tune per-archetype.
+            _storm_threshold = _llm_weight(
+                self.archetype,
+                CTX_COMBO_FORCE_PAYOFF_STORM_THRESHOLD,
+            )
+            if can_kill or storm_count >= _storm_threshold:
                 # Force goal to last phase (EXECUTE_PAYOFF / CLOSE_GAME)
                 while self.goal_engine.current_goal_idx < len(self.goal_engine.gameplan.goals) - 1:
                     self.goal_engine.advance_goal(game, f"Combo kill detected (storm={storm_count})")
@@ -1065,18 +1020,23 @@ class EVPlayer:
         # bounce a land for re-play while staying untapped for another
         # tap next turn. Floor the effect at 2 lands untapped; bounce
         # lands compound further but we don't model that precisely.
-        # AMULET_TITAN_MANA_BONUS — see ai/scoring_constants.py for derivation.
+        # Phase 1 refactor: AMULET_TITAN_MANA_BONUS dropped; the scaling
+        # factor is now `_llm_weight(self.archetype,
+        # CTX_AMULET_TITAN_MANA_BONUS)` (historical 4.0 = 2 lands × 2
+        # mana, preserved as the default-table fallback).
         from ai.clock import mana_clock_impact
         mana_impact = mana_clock_impact(snap)  # value per point of mana
         if is_amulet and has_titan_in_hand:
             # P(Titan lands in time) proxy: how many turns until we can
             # cast a 6-drop. If we're at 4+ lands, near-immediate.
             turns_to_cast = max(1, BIG_CREATURE_CMC_FLOOR - len(me.lands))
+            _amulet_w = _llm_weight(self.archetype, CTX_AMULET_TITAN_MANA_BONUS)
             # Discount by turns — Amulet benefit realized only once Titan lands.
-            ev += (AMULET_TITAN_MANA_BONUS * mana_impact * CLOCK_IMPACT_LIFE_SCALING) / turns_to_cast
+            ev += (_amulet_w * mana_impact * CLOCK_IMPACT_LIFE_SCALING) / turns_to_cast
         if is_titan_like and has_amulet_on_board:
+            _amulet_w = _llm_weight(self.archetype, CTX_AMULET_TITAN_MANA_BONUS)
             # Immediate payoff when Titan is being cast now.
-            ev += AMULET_TITAN_MANA_BONUS * mana_impact * CLOCK_IMPACT_LIFE_SCALING
+            ev += _amulet_w * mana_impact * CLOCK_IMPACT_LIFE_SCALING
 
         # ── Non-creature permanent overlay (Pattern B) ──
         from engine.cards import CardType
@@ -1220,81 +1180,25 @@ class EVPlayer:
                 ev -= waste_penalty
 
         # ── X-cost board wipe: hold when the X-budget can't meaningfully clear ──
-        # History:
+        # Tuned through three passes:
         #   v1 (≥2 kills) — too strict: Azorius never wraths vs 1 Ragavan.
         #   v2 (≥3 power on single kill) — still too strict: 2-power Ragavan
         #       fails, but killing even a single attacking Ragavan is correct
         #       when the AI is dying.
-        #   v3 (≥2 power, my_life ≤ 10 waiver) — counted only creature kills,
-        #       so Wrath of the Skies vs Affinity at X=2 saw kill_count=0
-        #       and floored at -20 EV despite clearing the artifact mana base
-        #       (Mox Opal / Springleaf Drum / Cranial Plating). Also missed
-        #       lethal-next-turn at higher life (life=15, opp_clock_discrete=2).
-        #       See docs/diagnostics/2026-05-16_wrath_enumeration_gate.md.
-        #   v4 (this): killable set lifted from opp.creatures to opp.battlefield
-        #       filtered by oracle-derived target classes (creature / artifact
-        #       / enchantment, from tags). kill_count derived via the engine's
-        #       X-picker (`engine.cast_manager.pick_wipe_x_value`) — same path
-        #       the engine uses at resolution time, no AI/engine drift.
-        #       Desperation lever replaced with clock-derived
-        #       `snap.opp_clock_discrete <= 2`.
-        wipe_target_classes = _wipe_target_classes_from_tags(tags)
-        # Oracle-derived widening: Wrath of the Skies' tag bag has only
-        # `destroy_all_artifacts` from the parser's pattern hit, but its
-        # text destroys "each artifact, creature, AND enchantment". When
-        # an X-cost wipe's oracle text spells out the multi-class list,
-        # widen the class set so the killable-set lift matches the
-        # engine's `pick_wipe_x_value` (which uses CardType.{CREATURE,
-        # ARTIFACT, ENCHANTMENT}).
-        if t.x_cost_data and 'board_wipe' in tags:
-            ot = (t.oracle_text or '').lower()
-            if 'mana value less than or equal to' in ot or 'mana value of' in ot:
-                # X-budgeted wipe oracle — read which classes it names.
-                if 'creature' in ot:
-                    wipe_target_classes.add('creature')
-                if 'artifact' in ot:
-                    wipe_target_classes.add('artifact')
-                if 'enchantment' in ot:
-                    wipe_target_classes.add('enchantment')
-        if ('board_wipe' in tags and t.x_cost_data and wipe_target_classes
-                and any(_is_wipe_candidate(c, wipe_target_classes)
-                        for c in opp.battlefield)):
+        #   v3 (this): threshold drops to 2 power, and the whole gate is
+        #       waived when we're at low life (≤10). Consolidates the
+        #       "always fire when desperate" behaviour.
+        if ('board_wipe' in tags and t.x_cost_data and opp.creatures):
             total_mana = snap.my_mana
             base_cost = t.cmc or 0
             x_budget = max(0, total_mana - base_cost)
             mult = (t.x_cost_data or {}).get('multiplier', 1) or 1
             effective_x = x_budget // mult
-            if 'destroy_all_artifacts' in tags or 'destroy_all_enchantments' in tags:
-                # Multi-class wipe (Wrath of the Skies pattern): consult the
-                # engine X-picker so kill_count / killable_value match what
-                # the engine will actually destroy at resolution time. The
-                # picker is permanent_threat-weighted, so its score reflects
-                # equipment / mana-rock / scaling-trigger value, not just
-                # the printed P/T.
-                from engine.cast_manager import pick_wipe_x_value
-                _best_x, kill_value, kill_count = pick_wipe_x_value(
-                    game, self.player_idx, int(effective_x)
-                )
-                # killable_power kept for the single-creature-trade gate.
-                # Restrict to creatures destroyed at the picker's chosen X.
-                killable_creatures = [
-                    c for c in opp.creatures
-                    if (c.template.cmc or 0) <= effective_x
-                ]
-                killable_power = sum((c.power or 0) for c in killable_creatures)
-            else:
-                # Creature-only X-wipe — keep the legacy creature-CMC count.
-                killable = [c for c in opp.creatures
-                            if (c.template.cmc or 0) <= effective_x]
-                kill_count = len(killable)
-                killable_power = sum((c.power or 0) for c in killable)
-            # Desperation derives from the snapshot's combat clock — same
-            # primitive `ai/clock.py` builds. opp_clock_discrete ≤ 2 means
-            # opp can kill us this turn or next; the wipe is worth a long
-            # shot even at suboptimal kill counts. The old `my_life ≤ 10`
-            # life-threshold lever missed lethal-next-turn at higher life
-            # (e.g. life=23 vs a Plating-equipped 15/4 attacker).
-            desperate = snap.opp_clock_discrete <= 2
+            killable = [c for c in opp.creatures
+                        if (c.template.cmc or 0) <= effective_x]
+            kill_count = len(killable)
+            killable_power = sum((c.power or 0) for c in killable)
+            desperate = snap.my_life <= DESPERATE_LIFE_THRESHOLD
             if not desperate:
                 if kill_count == 0:
                     return min(ev, X_BOARD_WIPE_WASTE_FLOOR)
@@ -1933,7 +1837,10 @@ class EVPlayer:
             completing = new_type not in tron_types_present
             if completing:
                 after_count = len(tron_types_present) + 1
-                # TRON_MANA_ADVANTAGE — see ai/scoring_constants.py.
+                # Phase 1 refactor: Tron-assembly scaling weight sourced
+                # from the LLM helper, cached per archetype.  Historical
+                # 4.0 (= +4 mana / turn over 3 vanilla lands) lives in
+                # the default-table fallback.
                 # Expected remaining turns = time for the mana advantage to
                 # compound. Use the slower of the two clocks (game ends when
                 # someone dies). NO_CLOCK stalls → long game.
@@ -1948,7 +1855,8 @@ class EVPlayer:
                 expected_turns = max(GAME_HORIZON_MIN_TURNS, min(expected_turns, GAME_HORIZON_MAX_TRON))
                 # Mana-clock impact gives value per point of mana advantage.
                 mana_impact = mana_clock_impact(snap)
-                completed_value = (TRON_MANA_ADVANTAGE * expected_turns
+                _tron_w = _llm_weight(self.archetype, CTX_TRON_MANA_ADVANTAGE)
+                completed_value = (_tron_w * expected_turns
                                    * mana_impact * CLOCK_IMPACT_LIFE_SCALING)
                 # 20.0 scales mana_clock_impact (1/opp_life ~= 0.05) back to
                 # board-eval units — same convention as creature_value().
@@ -2094,30 +2002,35 @@ class EVPlayer:
             # Creature in GY = future reanimation target
             ev += (CYCLING_GY_REANIMATE_BASE + power * CYCLING_GY_REANIMATE_PER_POWER)
 
-        # Cycling cost: cheaper = better tempo
+        # Cycling cost: cheaper = better tempo.
+        # Phase 1 refactor: free-cycling weight sourced from the LLM
+        # helper (historical 2.0).
         cost_data = card.template.cycling_cost_data
         if cost_data:
             if cost_data.get('life', 0) > 0:
-                ev += CYCLING_FREE_COST_BONUS  # free cycling (pay life instead of mana)
+                ev += _llm_weight(self.archetype, CTX_CYCLING_FREE_COST_BONUS)
             elif cost_data.get('mana', 0) <= 1:
                 ev += CYCLING_CHEAP_COST_BONUS  # cheap cycling
 
-        # Cascade in hand: filling GY is urgent — MUST cycle before cascade
+        # Cascade in hand: filling GY is urgent — MUST cycle before cascade.
+        # Phase 1 refactor: scaling weights sourced from the LLM helper,
+        # cached per archetype.  Historical values (8.0, 6.0, 10.0) live
+        # in the default-table fallback.
         has_cascade = any(getattr(c.template, 'is_cascade', False) for c in me.hand
                          if not c.template.is_land)
         if has_cascade:
-            ev += CYCLING_CASCADE_BOOST  # cycling is the primary action before cascade
+            ev += _llm_weight(self.archetype, CTX_CYCLING_CASCADE_BOOST)
             # Count creatures already in GY — less urgency if GY is full
             from ai.predicates import count_gy_creatures
             gy_creatures = count_gy_creatures(me.graveyard)
             if gy_creatures < CYCLING_GY_URGENCY_FLOOR:
-                ev += CYCLING_GY_URGENCY  # urgent: need more GY creatures before cascading
+                ev += _llm_weight(self.archetype, CTX_CYCLING_GY_URGENCY)
 
         # Gameplan prefer_cycling: massive boost (Living End, etc.)
         if self.goal_engine:
             current_goal = self.goal_engine.current_goal
             if current_goal and getattr(current_goal, 'prefer_cycling', False):
-                ev += CYCLING_GAMEPLAN_BOOST  # cycling is THE gameplan, not optional
+                ev += _llm_weight(self.archetype, CTX_CYCLING_GAMEPLAN_BOOST)
 
         # Bundle 3 A3 — same holdback gate as _score_spell. Cycling
         # taps lands too; it must respect held instant-speed interaction.

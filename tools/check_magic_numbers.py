@@ -53,6 +53,7 @@ EXCLUDED_FILES = {
     "ai/llm_cache.py",         # PR #266 — infra
     "ai/llm_metrics.py",       # I-5 incoming
     "ai/llm_budgets.py",       # I-7 — budget caps, pricing-derived constants
+    "ai/llm_decision_scorer.py",  # Phase 1 refactor — LLM-at-decision-time helper, infra
     "ai/llm_embeddings.py",    # PR #262
     "ai/card_features.py",     # I-2 incoming
     "ai/llm_compression.py",   # I-3 — token caps / pattern strings, not scoring

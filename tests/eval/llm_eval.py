@@ -85,6 +85,7 @@ from ai.llm_agents import build_agent
 from ai.llm_models import LLMTask
 from ai.llm_schemas import (
     BugHypothesis,
+    DecisionScoringWeights,
     DocFreshnessReport,
     FailingTestSpec,
     HandlerGapReport,
@@ -104,6 +105,12 @@ DEFAULT_THRESHOLD: dict[str, float] = {
     "audit_doc_freshness": 0.6,
     "handler_audit":       0.6,
     "failing_test_spec":   0.6,
+    # Phase 1 refactor — decision_scorer.  The output is a single
+    # float weight + short rationale; the closed-set comparison on
+    # `(archetype, context) → weight` is the dominant signal.  Same
+    # 0.6 bar as the rest of the suite until we have golden pairs
+    # to calibrate a more specific number.
+    "decision_scorer":     0.6,
 }
 
 # Closed-set field names per task — these get exact-match scoring.
@@ -114,6 +121,11 @@ _CLOSED_FIELDS_BY_TASK: dict[str, set[str]] = {
     "audit_doc_freshness": {"current_status", "should_change_to", "doc_path"},
     "handler_audit":       {"timing", "severity", "card_name"},
     "failing_test_spec":   {"expected_status_before_fix"},
+    # Phase 1 refactor: decision_scorer emits a numeric `weight` plus
+    # a short rationale.  There is no closed-set categorical field;
+    # the eval harness compares the numeric weight via free-text
+    # similarity (good enough until we add golden pairs).
+    "decision_scorer":     set(),
 }
 
 _OUTPUT_TYPES = {
@@ -122,6 +134,7 @@ _OUTPUT_TYPES = {
     "audit_doc_freshness": DocFreshnessReport,
     "handler_audit":       HandlerGapReport,
     "failing_test_spec":   FailingTestSpec,
+    "decision_scorer":     DecisionScoringWeights,
 }
 
 

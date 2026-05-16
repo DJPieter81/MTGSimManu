@@ -51,6 +51,7 @@ from ai.llm_models import LLMTask, select_model
 from ai.llm_prompts import latest_version, load_fewshot, load_prompt
 from ai.llm_schemas import (
     BugHypothesis,
+    DecisionScoringWeights,
     DocFreshnessReport,
     FailingTestSpec,
     HandlerGapReport,
@@ -67,6 +68,8 @@ _OUTPUT_TYPES: dict[str, type] = {
     "audit_doc_freshness": DocFreshnessReport,
     "handler_audit":       HandlerGapReport,
     "failing_test_spec":   FailingTestSpec,
+    # Phase 1 refactor — at-decision-time scoring weights, cached.
+    "decision_scorer":     DecisionScoringWeights,
 }
 
 

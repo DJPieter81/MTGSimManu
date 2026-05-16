@@ -62,6 +62,11 @@ DEFAULT_BUDGETS_USD: dict[LLMTask, float] = {
     "audit_doc_freshness": 1.00,
     "handler_audit":       1.00,
     "failing_test_spec":   1.00,
+    # Phase 1 refactor: ~16 decks × ~8 contexts × ~500 tokens per call.
+    # First-time warm ≈ 64K input + ~8K output tokens ≈ $0.20-$1.00.
+    # After warm, every call is a cache hit ($0).  $2 ceiling matches
+    # the directive in `docs/proposals/jazzy-swimming-muffin.md`.
+    "decision_scorer":     2.00,
 }
 
 # Per-task input-token caps per call.  8000 is sufficient for the
@@ -74,6 +79,10 @@ DEFAULT_TOKEN_CAPS: dict[LLMTask, int] = {
     "audit_doc_freshness": 4000,
     "handler_audit":       4000,
     "failing_test_spec":   4000,
+    # Phase 1 refactor: small inputs (archetype + short context label)
+    # and a tiny structured output (one float + brief rationale).
+    # 1000 tokens is generous and catches runaway prompts.
+    "decision_scorer":     1000,
 }
 
 # Fallback budget when a caller passes an unknown task literal.

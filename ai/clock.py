@@ -25,7 +25,6 @@ from ai.scoring_constants import (
     ANNIHILATOR_CHIP_PER_OPP_CREATURE,
     ANNIHILATOR_BASE_SAC,
     PROWESS_TRIGGER_PER_TURN,
-    CASCADE_FREE_SPELL_VALUE,
     ETB_VALUE_BONUS,
     TOKEN_MAKER_BONUS,
     AVG_CREATURE_POWER,
@@ -313,8 +312,19 @@ def creature_clock_impact(power: int, toughness: int,
         base += PROWESS_TRIGGER_PER_TURN / opp_life
 
     # Cascade: free spell of CMC < caster ≈ another small creature.
+    # Phase 1 refactor: scaling factor sourced from the LLM helper,
+    # cached per (archetype, context).  The keyword-tied "*" wildcard
+    # row in DEFAULT_WEIGHTS preserves the historical 2.5 value when
+    # the cache is cold.
     if "cascade" in keywords:
-        base += CASCADE_FREE_SPELL_VALUE / opp_life
+        from ai.llm_decision_scorer import (
+            weight as _scorer_weight,
+            CTX_CASCADE_FREE_SPELL_VALUE,
+        )
+        # The clock layer is archetype-agnostic at this level; use the
+        # "*" wildcard so the LLM scoring layer can refine per-deck
+        # values via the cache without forking this code path.
+        base += _scorer_weight("*", CTX_CASCADE_FREE_SPELL_VALUE) / opp_life
 
     # Implicit toughness blocking value (no keyword required).
     if toughness > 0 and snap.opp_power > 0:
