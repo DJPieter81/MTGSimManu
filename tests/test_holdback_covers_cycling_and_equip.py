@@ -147,13 +147,18 @@ class TestHoldbackCoversEquipA3:
             "mana = 2."
         )
 
-        # Profile pass_threshold for MIDRANGE = -3.0; the equip score
-        # must drop below it once the holdback penalty is applied
-        # (the activation taps the last U source for the Counterspell).
-        PASS_THRESHOLD = player.profile.pass_threshold
-        assert equip_play.ev < PASS_THRESHOLD, (
+        # M3: pass_threshold field deleted; the M3 gate is
+        # `best.ev >= PLAY_VALUE_FLOOR` (-5.0) at `decide_main_phase`.
+        # The equip score must drop strictly below the floor once the
+        # holdback penalty is applied (the activation taps the last U
+        # source for the Counterspell).  Pre-M3 the assertion was
+        # against MIDRANGE pass_threshold=-3.0; the M3 floor is even
+        # more permissive (-5.0), so the holdback penalty must drive
+        # the score below -5.0 to gate the play.
+        from ai.scoring_constants import PLAY_VALUE_FLOOR
+        assert equip_play.ev <= PLAY_VALUE_FLOOR, (
             f"Equip Cranial Plating scored EV={equip_play.ev:.2f} "
-            f"above pass_threshold ({PASS_THRESHOLD}) even though it "
-            f"taps the last U source while Counterspell is held. "
-            f"_consider_equip needs the _holdback_penalty hook."
+            f"above the M3 play-value floor ({PLAY_VALUE_FLOOR}) even "
+            f"though it taps the last U source while Counterspell is "
+            f"held. _consider_equip needs the _holdback_penalty hook."
         )

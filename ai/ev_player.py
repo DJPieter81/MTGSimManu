@@ -70,6 +70,8 @@ from ai.scoring_constants import (
     PHYREXIAN_LIFE_PENALTY_SCALE,
     OPP_HAND_FULL_HOLDBACK_THRESHOLD,
     HOLDBACK_PROBABILITY_FLOOR,
+    PATIENCE_GATE_REJECT_SENTINEL,
+    PLAY_VALUE_FLOOR,
     LAND_BASE_EV,
     LAND_UNTAPPED_USEFUL,
     LAND_UNTAPPED_IDLE,
@@ -617,9 +619,21 @@ class EVPlayer:
             return None
         best = non_deferred[0]
 
-        if best.ev < self.profile.pass_threshold:
+        # M3: replaced the per-archetype `pass_threshold` binary gate
+        # with a comparison against the rules-level `PLAY_VALUE_FLOOR`
+        # sentinel (-5.0).  `best.ev` already incorporates the signed
+        # `holdback_cost` from `_holdback_penalty` — negative penalty
+        # when defensive use exists, positive bonus when none — so the
+        # gate is the *signed* play-value comparison the M3 brief
+        # specifies.  Plays whose signed value lands below the floor
+        # are passed; plays above the floor execute.  Same constant
+        # is used by `PATIENCE_GATE_REJECT_SENTINEL` (-10.0) which
+        # clamps fizzle/cascade-patience spells strictly below the
+        # floor.  See M3 brief in
+        # `docs/history/audits/2026-05-16_5panel_bo3_audit.md`.
+        if best.ev <= PLAY_VALUE_FLOOR:
             self._emit_decision_event(game, candidates, chosen=None,
-                                      pass_reason="below pass_threshold")
+                                      pass_reason="at or below play-value floor")
             return None
 
         self._last_played_target_reason = getattr(best, "target_reason", "")
@@ -808,10 +822,14 @@ class EVPlayer:
             # engine/card_effects.py:scapeshift_resolve. Imported from
             # scoring_constants.
             if my_land_count < LAND_SACRIFICE_MIN_LANDS:
-                # Force the score below pass_threshold so the AI holds the
-                # spell until critical mass is available. Derivation: profile-
-                # driven, no magic numbers — uses the existing gate constant.
-                ev = min(ev, p.pass_threshold - 1.0)
+                # Force the score into the patience-gate reject band so
+                # the AI holds the spell until critical mass is available.
+                # M3: the pre-existing `profile.pass_threshold - 1.0`
+                # clamp depended on the now-deleted `pass_threshold`
+                # field; replaced with the named sentinel from
+                # `scoring_constants`.  Same intent: the cast is
+                # unconditionally outside the M3 `play_value > 0` gate.
+                ev = min(ev, PATIENCE_GATE_REJECT_SENTINEL)
 
         # ── Cascade patience gate (LE-A3) ──
         # Mirror of the Storm ritual patience gate (now in card_combo_modifier):
@@ -846,10 +864,11 @@ class EVPlayer:
         #      cascade-payoff must-fire rule (PR #192 / #212 shape):
         #      the gate must defer to the projection, not override it.
         #
-        # When the gate fires, clamp EV below pass_threshold — a HARD
-        # reduction in line with the Scapeshift fizzle gate above and the
-        # Storm ritual patience gate (now in card_combo_modifier).  The
-        # AI will hold the cascade enabler until the graveyard has critical mass.
+        # When the gate fires, clamp EV into the patience-reject band —
+        # a HARD reduction in line with the Scapeshift fizzle gate above
+        # and the Storm ritual patience gate (now in card_combo_modifier).
+        # The AI will hold the cascade enabler until the graveyard has
+        # critical mass.
         if getattr(t, 'is_cascade', False):
             fill_target = self._cascade_graveyard_target()
             if (fill_target > 0
@@ -860,12 +879,14 @@ class EVPlayer:
                 # `compute_play_ev` (which recursively projected the
                 # cascade hit) found a positive swing — the cascade-
                 # payoff must-fire rule says trust that projection.
-                # Clamp matches the Scapeshift fizzle gate treatment
-                # (line 478): profile.pass_threshold - 1.0. No extra
-                # magic: the clamp is "just below pass_threshold" so
-                # the spell is rejected by decide_main_phase but any
-                # other legal play can still fire.
-                ev = min(ev, p.pass_threshold - 1.0)
+                # M3: the pre-existing `profile.pass_threshold - 1.0`
+                # clamp depended on the now-deleted `pass_threshold`
+                # field; replaced with the named sentinel from
+                # `scoring_constants`.  Same intent: the cast is
+                # unconditionally outside the M3 `play_value > 0` gate,
+                # so the spell is rejected by `decide_main_phase` but
+                # any other legal play can still fire.
+                ev = min(ev, PATIENCE_GATE_REJECT_SENTINEL)
 
         # ── Reanimation readiness gate (GV-2) ──
         # Mirror shape of the cascade patience gate above, but in the
@@ -1359,12 +1380,18 @@ class EVPlayer:
         # `stax_lock_ev` returns a positive EV for stax permanents
         # (Chalice, Blood Moon, Canonist, Torpor Orb) based on
         # opponent deck composition. The bonus is GATED on
-        # `holdback == 0`: if tapping out for this play would
+        # `holdback >= 0`: if tapping out for this play would
         # forfeit held instant-speed interaction, the overlay must
         # not crowd out the concrete answer. Without this gate the
         # AI casts T2 Chalice over a held Counterspell (the WST
         # regression that caused the previous wiring to be reverted).
-        if holdback == 0.0:
+        #
+        # M3 (signed holdback): `holdback >= 0.0` captures both the
+        # pre-M3 "no holdback" state (= 0.0) AND the new positive-
+        # bonus branch (no defensive use → proactive tap-out is
+        # actively rewarded).  Equivalent intent: the gate fires
+        # whenever the held-response penalty path is silent.
+        if holdback >= 0.0:
             from ai.stax_ev import stax_lock_ev
             ev += stax_lock_ev(t, me, opp, snap)
 
@@ -1378,42 +1405,70 @@ class EVPlayer:
 
     def _holdback_penalty(self, me, opp, snap: EVSnapshot, cost: int,
                           exclude_instance_id: Optional[int] = None) -> float:
-        """Mana-holdback penalty for a play that would tap out (Bundle 3).
+        """Signed mana-holdback cost (M3 — proactive tap-out).
 
-        A1 — penalty scales by `counter_count × counter_cmc × opp_threat_prob`
-              instead of the previous flat -2.0 so it actually gates a
-              CMC-2 main-phase play when 2× Counterspell are held.
-        A3 — extracted as a helper so `_score_cycling` and
-              `_consider_equip` apply the same gate.
-        A4 — opponent-spell-deck branch threshold kept at
-              `opp_hand_size >= 4`. Iteration-2 revert: the Bundle 3
-              lowered threshold (>=3) over-fired because 3-card post-
-              discard hands are typically mostly lands, not threats.
-              The stricter >=4 threshold matches pre-Bundle-3 behaviour
-              and restores defender deployment.
-        A5 — colored-aware: if the play taps out the LAST source of a
-              held instant's color, the penalty is amplified (the
-              interaction is uncastable, not merely tempo-delayed).
+        Returns the EV adjustment for tapping out by `cost` mana on a
+        sorcery-speed play.  Sign convention:
 
-        Returns a non-positive penalty (0.0 means "no holdback").
+        - Negative (penalty) when the open mana has a defensive use —
+          held instant-speed interaction + an opp able to deploy a
+          counterable threat.  This is the original Bundle 3 / B3-Tune
+          behaviour, unchanged.
+        - Positive (bonus) when no defensive use exists — no held
+          interaction, opp has no follow-up threat, etc.  Holding mana
+          for nothing is strictly worse than spending it on a marginal
+          play, so the bonus rewards proactive deployment.  Replaces
+          the deleted binary `pass_threshold` gate (M3, audit
+          `docs/history/audits/2026-05-16_5panel_bo3_audit.md` — control
+          panel + combo cross-pattern #2).
+
+        Pre-M3 history (penalty branch unchanged):
+        A1 — penalty scales by `counter_count × counter_cmc × opp_threat_prob`.
+        A3 — extracted as a helper for `_score_cycling` and `_consider_equip`.
+        A4 — opp-spell-deck threshold kept at `opp_hand_size >= 4`.
+        A5 — colored-aware amplifier when tap-out empties a held color.
+
+        M3 — bonus branch added (no new magic numbers): bonus scales by
+        `cost × held_response_value_per_cmc(0.0) × (1 - opp_action_prob)`.
+        Same per-CMC value primitive used by the penalty side, evaluated
+        at the no-artifact-threat baseline.  When the opponent is
+        certain to act next turn (opp_action_prob → 1.0) the bonus
+        collapses to zero — the original "no holdback at all" floor.
+
+        Profile gate (`holdback_applies`) controls only the PENALTY
+        branch — AGGRO / COMBO / STORM / RAMP declare they have no
+        defensive use for mana, so the penalty side is skipped and the
+        function returns the proactive bonus directly.  M3: those
+        archetypes also benefit from positive tap-out signal (the
+        audit's "combo cross-pattern" — Storm chains break when fuel
+        is held under a threshold gate that has no defensive
+        justification on the combo turn).
         """
         p = self.profile
+
+        # ── Profile-side penalty gate (early bonus return) ───────────
+        # Profiles with `holdback_applies=False` (AGGRO / COMBO / STORM
+        # / RAMP) declare they have no defensive use for mana — the
+        # penalty branch never fires for them.  M3: return the
+        # proactive bonus directly so these decks get a positive tap-
+        # out signal in every state, not just the opp-tapped-out case.
         if not p.holdback_applies:
-            return 0.0
+            return self._proactive_tap_out_bonus(snap, opp, cost)
 
         # ── Holdback relevance gate ──────────────────────────────────
-        # Original logic kept: opp creatures present OR opponent has a
-        # full grip. Iteration-2 B3-Tune reverts A4's >=3 lowering back
-        # to >=4: 3-card post-discard hands are typically mostly lands
-        # (no real threat density) and the broader gate caused defender
-        # decks to stall out against discard-heavy opponents.
+        # When opp has no creatures AND a small hand they cannot present
+        # a follow-up threat.  Pre-M3 the function returned 0.0 here and
+        # left the binary `pass_threshold` gate to decide whether to
+        # pass.  M3: there is no defensive use for the held mana, so
+        # return a POSITIVE bonus instead — the AI should proactively
+        # spend the mana on the best available play.
         opp_has_spells = (snap.opp_hand_size >= OPP_HAND_FULL_HOLDBACK_THRESHOLD
                           and snap.opp_power == 0)
         holdback_relevant = (snap.opp_power > 0
                              or snap.opp_hand_size >= OPP_HAND_FULL_HOLDBACK_THRESHOLD
                              or opp_has_spells)
         if not holdback_relevant:
-            return 0.0
+            return self._proactive_tap_out_bonus(snap, opp, cost)
 
         # ── Find held instant-speed interaction in hand ──────────────
         # Oracle/tag-driven (no card names). counter_cmc is the average
@@ -1440,7 +1495,13 @@ class EVPlayer:
                     held_colors.add(code)
 
         if not held_costs:
-            return 0.0
+            # M3: no held interaction → no defensive use → return bonus.
+            # Same `_proactive_tap_out_bonus` primitive used by the
+            # opp-no-threat branch above; both encode "holding mana for
+            # nothing is strictly worse than spending it on a marginal
+            # play."  The bonus collapses to zero when the opponent is
+            # certain to threaten, so this never over-fires.
+            return self._proactive_tap_out_bonus(snap, opp, cost)
 
         counter_count = len(held_costs)
         counter_cmc = sum(held_costs) / counter_count  # mean CMC
@@ -1569,6 +1630,48 @@ class EVPlayer:
                              * held_value_per_cmc)
 
         return -base_penalty
+
+    def _proactive_tap_out_bonus(self, snap: EVSnapshot, opp,
+                                 cost: int) -> float:
+        """EV bonus for tapping out when no defensive use exists (M3).
+
+        Sign convention: this is the *positive-cost* branch of
+        `_holdback_penalty` — when there is nothing to hold the mana
+        for, spending it on a marginal play is strictly better than
+        passing.  The bonus replaces the deleted binary `pass_threshold`
+        gate (audit `docs/history/audits/2026-05-16_5panel_bo3_audit.md`).
+
+        Formula (no new magic numbers — composed entirely from existing
+        primitives):
+
+            bonus = cost
+                  × held_response_value_per_cmc(0.0)
+                  × (1 - opp_action_prob)
+
+        - `cost` is the mana that would otherwise sit unused.  Bigger
+          plays unlock proportionally more bonus, mirroring how the
+          penalty side scales with `counter_cmc × counter_count`.
+        - `held_response_value_per_cmc(0.0)` is the no-artifact-ramp
+          baseline of the same per-CMC value primitive used by the
+          penalty side.  Treating the bonus and the penalty as two
+          sides of the same coefficient keeps the signed model
+          symmetric — a sole source-of-truth, the function in
+          `ai/scoring_constants.py`.
+        - `(1 - opp_action_prob)` discounts the bonus against the BHI-
+          derived probability the opponent will threaten next turn.
+          Certain opp action collapses the bonus to zero (the original
+          "no holdback at all" floor); a quiet opponent yields the
+          full bonus.  Same `_estimate_opp_threat_prob` primitive
+          drives both branches.
+        """
+        # `_estimate_opp_threat_prob` clamps at `HOLDBACK_PROBABILITY_FLOOR`
+        # on the low end — a quiet opp still has a baseline top-deck
+        # threat probability, so the bonus is never fully (1.0 ×) the
+        # per-CMC value.  We use the SAME clamp here to keep penalty
+        # and bonus symmetric.
+        opp_action_prob = self._estimate_opp_threat_prob(snap, opp)
+        per_cmc = held_response_value_per_cmc(0.0)
+        return float(cost) * per_cmc * (1.0 - opp_action_prob)
 
     def _estimate_opp_threat_prob(self, snap: EVSnapshot, opp) -> float:
         """Probability opponent will deploy a meaningful threat next turn.

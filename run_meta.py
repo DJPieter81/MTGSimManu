@@ -490,8 +490,7 @@ def inspect_deck(deck_name: str) -> str:
     arch_str = DECK_ARCHETYPE_OVERRIDES.get(deck_name) or (arch_enum.value if arch_enum else 'midrange')
     profile = get_profile(arch_str)
     lines.append(f'Archetype: {arch_str}')
-    lines.append(f'Strategy profile: pass_threshold={profile.pass_threshold}, '
-                 f'holdback={profile.holdback_applies}, '
+    lines.append(f'Strategy profile: holdback={profile.holdback_applies}, '
                  f'storm_patience={profile.storm_patience}')
     lines.append(f'  burn_face_mult={profile.burn_face_mult}, '
                  f'attack_threshold={profile.attack_threshold}')
@@ -960,7 +959,7 @@ def run_trace_game(deck1: str, deck2: str, seed: int = 42000) -> str:
         if result:
             lines.append(f'  >>> {result[0].upper()}: {result[1].name}')
         else:
-            lines.append(f'  >>> PASS (threshold={self.profile.pass_threshold})')
+            lines.append(f'  >>> PASS (play_value <= 0)')
         return result
 
     def traced_atk(self, game):
