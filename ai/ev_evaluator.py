@@ -2021,6 +2021,30 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         projected.my_hand_size += extra
         projected.cards_drawn_this_turn += extra
 
+    # Forced discard — opponent loses one card from hand, and the
+    # spell may bill its caster a self-imposed life cost ("You lose
+    # N life", Thoughtseize-style).  Both deltas are mechanic-driven,
+    # not card-named: any spell tagged Tag.FORCED_DISCARD removes a
+    # known card from opp's hand; any oracle clause matching
+    # "you lose N life" is the self-cost the projection must respect.
+    # Class size: ~150 Modern cards (Thoughtseize, Inquisition,
+    # Duress, Hymn-style two-card strips, Liliana of the Veil −2,
+    # plus future printings).  M6 from the 2026-05-16 5-panel Bo3
+    # audit; the strip advisor (`score_card_for_opponent_strip`) is
+    # already correct — the bug is in the cast-time projection.
+    from ai.oracle_classifier import Tag as _Tag, has_tag as _has_tag
+    if _has_tag(getattr(t, 'name', '') or '', _Tag.FORCED_DISCARD):
+        projected.opp_hand_size = max(0, projected.opp_hand_size - 1)
+        # Self-imposed life cost: oracle text drives the amount, no
+        # per-card table.  "you lose N life" is the canonical Modern
+        # phrasing for caster-side life loss on resolution.  The N
+        # comes from a regex group, not a bare numeric literal.
+        oracle_lower = (t.oracle_text or '').lower()
+        import re as _re
+        life_m = _re.search(r'you lose (\d+) life', oracle_lower)
+        if life_m:
+            projected.my_life -= int(life_m.group(1))
+
     # Rituals — add the parsed gross mana production from
     # `template.ritual_mana`. The (color, amount) tuple is parsed
     # from oracle text at card-load time by
