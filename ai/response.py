@@ -107,6 +107,68 @@ class ResponseDecider:
 
         threat = self.evaluate_stack_threat(game, stack_item)
 
+        # Chain-aware counter gate (M2).  Replace the legacy "score the
+        # stack item in isolation" with a single primitive that asks
+        # "is this stack item the BOTTLENECK of opp's chain?"  The
+        # primitive composes `combo_calc._opp_chain_in_flight`,
+        # `predicates.is_chain_payoff_accessor`, and
+        # `predicates.is_chain_fuel` — zero card-name gates, zero new
+        # bare numeric literals.
+        #
+        # Returned value semantics:
+        #   • 1.0 — stack is the payoff bottleneck (storm payoff,
+        #     tutor for a finisher, flashback combo enabler).  Boost
+        #     the threat to LETHAL_THREAT so the gate fires
+        #     regardless of the in-isolation evaluator's reading.
+        #   • 0.0 — stack is chain fuel (cantrip / ritual) and opp can
+        #     reach a payoff later.  Early-return None (hold the
+        #     counter for the payoff).  Audit smoking gun: Azorius
+        #     burned a Counterspell on Wrenn's Resolve while Storm
+        #     held Past in Flames + Wish + Grapeshot in hand.
+        #   • NaN — no chain state inferred; preserve legacy
+        #     behaviour exactly (no change for aggro / midrange).
+        #
+        # Pitch counters retain a free firing path (effective cost ≤
+        # PITCH_COUNTER_FREE_COST) — burning a pitch counter has near-
+        # zero opportunity cost and the chain-aware hold rule does
+        # not need to override that trade.
+        from ai.combo_calc import bottleneck_probability
+        bp = bottleneck_probability(stack_item, game, self.player_idx)
+        if bp == 0.0:
+            cheap_pitch = any(
+                "counterspell" in c.template.tags
+                and self._effective_counter_cost(game, c)
+                <= PITCH_COUNTER_FREE_COST
+                for c in instants
+            )
+            if not cheap_pitch:
+                if self.strategic_logger:
+                    self.strategic_logger.log_no_response(
+                        self.player_idx, stack_item.source.name, game,
+                        "Chain-aware hold: stack is chain fuel; "
+                        "payoff reachable in opp pool")
+                self._record_decision(
+                    game, stack_item,
+                    chosen_inst=None, chosen_targets=[],
+                    chosen_reason=(
+                        "chain-fuel hold: counter reserved for "
+                        "opp chain payoff (bottleneck_probability=0)"
+                    ),
+                    alternatives=[], instants=instants,
+                    threat=threat,
+                    held_counter_floor_ev=self._held_counter_floor_ev(game),
+                    triage_skip=False,
+                )
+                return None
+        elif bp == 1.0:
+            # Stack item IS the payoff — counter it.  Lift threat to
+            # LETHAL_THREAT so the downstream gate fires regardless of
+            # the in-isolation evaluator's reading.  LETHAL_THREAT is
+            # the rules-constant sentinel already used for face-lethal
+            # burn in `evaluate_stack_threat`; using the same constant
+            # avoids introducing a new bare numeric literal.
+            threat = max(threat, LETHAL_THREAT)
+
         # Triage rule (counter vs. flash creature-exile):
         # If the stack threat is a creature AND a flash/instant
         # creature-removal in hand can answer it post-resolution, the

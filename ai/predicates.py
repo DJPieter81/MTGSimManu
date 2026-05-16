@@ -91,6 +91,46 @@ def is_draw_engine(card: "CardInstance") -> bool:
     return bool(DRAW_ENGINE_TAGS & getattr(card.template, 'tags', set()))
 
 
+def is_storm_payoff(card: "CardInstance") -> bool:
+    """Card is a chain-payoff finisher — its effect scales with the
+    storm count or its damage/token output ends the chain.
+
+    Detection is tag-driven (`storm_payoff` is set by
+    `engine/card_database.py` for every card whose oracle has the
+    storm effect type).  This is the chain BOTTLENECK predicate:
+    countering one removes the chain's payoff path; holding a
+    counter for it is the correct play when chain fuel is on the
+    stack with a payoff coming.
+
+    Generic by construction — no card names.  Class size: every
+    `storm_payoff`-tagged card in the catalog (Grapeshot, Empty the
+    Warrens, Brain Freeze, Tendrils of Agony, and any future Modern
+    storm finisher).
+    """
+    return 'storm_payoff' in getattr(card.template, 'tags', set())
+
+
+def is_chain_payoff_accessor(card: "CardInstance") -> bool:
+    """Card grants access to a chain payoff — direct STORM_PAYOFF or
+    a tutor / flashback-combo card that surfaces a payoff from the
+    sideboard / graveyard / library.
+
+    A tutor (`Wish`, `Burning Wish`) reaches into SB / library; a
+    flashback-combo card (`Past in Flames`) reanimates the chain
+    out of the graveyard.  Both are payoff-access bottlenecks — the
+    counter that lands on one shuts the chain down regardless of
+    fuel density.
+
+    Used by the chain-aware counter triage in `ai/response.py` to
+    distinguish a payoff-access cast (counter it) from chain-fuel
+    cast (hold).
+    """
+    tags = getattr(card.template, 'tags', set())
+    return ('storm_payoff' in tags
+            or 'tutor' in tags
+            or ('flashback' in tags and 'combo' in tags))
+
+
 # ─── Collection-level counts ──────────────────────────────────────
 
 def count_lands(cards: "Iterable[CardInstance]") -> int:

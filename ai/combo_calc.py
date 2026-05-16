@@ -505,6 +505,150 @@ def _derive_storm_hard_hold() -> float:
 STORM_HARD_HOLD = _derive_storm_hard_hold()
 
 
+# ═══════════════════════════════════════════════════════════════
+# Chain-aware bottleneck primitive (M2)
+# ═══════════════════════════════════════════════════════════════
+# `bottleneck_probability(stack_item, game, defender_idx)` returns the
+# probability ∈ [0, 1] that the stack item IS the bottleneck of the
+# opponent's combo chain.  Callers (`ai/response.py`) use the value
+# to decide whether to fire or hold a counter:
+#
+#   • bp == 0.0  → stack item is chain FUEL with payoff reachable;
+#                  hold the counter for the payoff.
+#   • bp == 1.0  → stack item is the chain PAYOFF (storm payoff,
+#                  tutor for a finisher, flashback combo enabler);
+#                  fire the counter — this is the bottleneck.
+#   • bp default → no chain state inferred; defer to legacy threat
+#                  evaluation.
+#
+# Composes (no new oracle-text matching, no card-name checks):
+#   • `predicates.is_chain_fuel`, `is_chain_payoff_accessor`
+#   • `engine` chain-state: opp.spells_cast_this_turn,
+#     `cost_reducer`-tagged permanents on opp battlefield (the
+#     "chain in flight" signal — Ruby Medallion / Goblin
+#     Electromancer / Storm-Kiln Artist class).
+#   • Opp's library composition (already enumerated by BHI in its
+#     own prior; here we read the same library directly for the
+#     payoff-reachability test).
+#
+# The primitive is the single composition site for the audit's
+# G2T4 smoking gun: Azorius vs Storm, opp on Wrenn's Resolve
+# (chain fuel) with Past in Flames + Wish in hand and Grapeshot in
+# library / SB.  bp=0 → counter held; payoff arrives next turn →
+# counter fires.
+
+
+def _opp_chain_in_flight(game, opp_idx) -> bool:
+    """True iff opp's chain state signals a combo chain is in
+    progress THIS turn.
+
+    The chain-in-flight signal is satisfied by ANY of:
+
+    * `opp.spells_cast_this_turn > 0` — combo turns are mid-cast;
+      a non-trivial storm count is the strongest in-game signal.
+    * Opp controls a `cost_reducer` permanent on the battlefield
+      (Ruby Medallion / Goblin Electromancer / Birgi class) — the
+      cost-reducer is the structural prerequisite for a chain to
+      run profitably.
+    * Opp's published archetype is `combo` per gameplan — covers
+      the first-cast-of-turn case where storm_count is still 0.
+
+    Generic by construction (tag-driven + archetype lookup).  No
+    card names, no deck-name gates.
+    """
+    opp = game.players[opp_idx]
+    if getattr(opp, 'spells_cast_this_turn', 0) > 0:
+        return True
+    for perm in getattr(opp, 'battlefield', ()):  # battlefield is iterable
+        tags = getattr(perm.template, 'tags', set())
+        if 'cost_reducer' in tags:
+            return True
+    # Archetype lookup — gameplan declares the deck's strategy.
+    deck_name = getattr(opp, 'deck_name', '') or ''
+    if deck_name:
+        try:
+            from ai.gameplan import get_gameplan
+            plan = get_gameplan(deck_name)
+            if plan is not None and getattr(plan, 'archetype', '') == 'combo':
+                return True
+        except Exception:
+            pass
+    return False
+
+
+def _opp_payoff_reachable(game, opp_idx) -> bool:
+    """True iff opp can plausibly reach a chain payoff from their
+    current hand + library + sideboard.
+
+    Reachability is satisfied if any card in opp's hand, library, or
+    sideboard is `is_chain_payoff_accessor` — direct STORM_PAYOFF, a
+    tutor, or a flashback-combo card.  We read all three zones so a
+    Wish-style tutor with a sideboard target still registers as
+    reachable.
+
+    Generic — no card names.  Returns False when the opp has no
+    payoff anywhere in their pool (legitimate "fuel-only" hand and
+    deck composition, e.g. an aggro-control burn pile).
+    """
+    from ai.predicates import is_chain_payoff_accessor
+    opp = game.players[opp_idx]
+    pools = (
+        list(getattr(opp, 'hand', ())),
+        list(getattr(opp, 'library', ())),
+        list(getattr(opp, 'sideboard', None) or ()),
+    )
+    for pool in pools:
+        for c in pool:
+            if getattr(c, 'template', None) is None:
+                continue
+            if is_chain_payoff_accessor(c):
+                return True
+    return False
+
+
+def bottleneck_probability(stack_item, game, defender_idx) -> float:
+    """Probability the stack item IS the bottleneck of the opp chain.
+
+    Single formula (no branches per case):
+
+        bp = is_payoff(stack)             if chain_in_flight       (else NaN)
+             , 0.0  if is_fuel(stack) and payoff_reachable
+             , NaN  otherwise (no chain state — defer to legacy)
+
+    Implemented as a short closed-form composition of three
+    primitives:
+
+    * `_opp_chain_in_flight(game, opp_idx)` — chain state inferred
+      from `spells_cast_this_turn`, cost-reducer permanents, or
+      archetype lookup.  No card-name gates.
+    * `predicates.is_chain_payoff_accessor(stack.source)` — the
+      stack item itself is the payoff (storm payoff, tutor, or
+      flashback-combo enabler).
+    * `predicates.is_chain_fuel(stack.source)` AND
+      `_opp_payoff_reachable(...)` — the stack item is fuel and
+      opp can plausibly reach a payoff later.
+
+    Returns:
+
+    * 1.0   — fire: stack is the payoff bottleneck.
+    * 0.0   — hold: stack is fuel with a payoff coming.
+    * `float('nan')` — defer to legacy threat evaluation
+      (no chain state detected).
+    """
+    from ai.predicates import is_chain_fuel, is_chain_payoff_accessor
+    opp_idx = 1 - defender_idx
+    src = getattr(stack_item, 'source', None)
+    if src is None or getattr(src, 'template', None) is None:
+        return float('nan')
+    if not _opp_chain_in_flight(game, opp_idx):
+        return float('nan')
+    if is_chain_payoff_accessor(src):
+        return 1.0
+    if is_chain_fuel(src) and _opp_payoff_reachable(game, opp_idx):
+        return 0.0
+    return float('nan')
+
+
 def _payoff_deals_direct_damage(card) -> bool:
     """Oracle-driven detection: does this payoff deal damage to a
     target/each player same-turn (Grapeshot pattern), or does it
