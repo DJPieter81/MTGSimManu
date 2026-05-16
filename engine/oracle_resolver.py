@@ -236,15 +236,60 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
                 f"{card.name} reanimates {best.name}")
             handled = True
 
-    # ── Card draw on spell resolution ──
-    # Covers "draw a card" / "draw N cards" + the look-and-keep variant
-    # used by Sleight of Hand ("put one of them into your hand") + the
-    # "exile top N, you may play those cards" variant (Reckless Impulse /
-    # Wrenn's Resolve / Glimpse the Impossible) approximated as draw N.
-    # Scry-then-draw patterns (Preordain) match because "draw a card"
-    # is explicit in the oracle.
+    # ── Card draw / impulse-reveal on spell resolution ──
+    # Two distinct mechanics share this branch:
+    #
+    #   * Real card draw (CR 121.1) — "draw a card" / "draw N cards"
+    #     / Sleight-of-Hand-style "put one of them into your hand".
+    #     These DO fire "whenever you/opponent draws" triggers and
+    #     route through `game.draw_cards`.
+    #
+    #   * Impulse-reveal (CR 121.1c — NOT a draw) — "exile the top N,
+    #     you may play those cards". The classifier `Tag.IMPULSE_DRAW`
+    #     is the single source of truth; we route these through
+    #     `zone_transfer.transfer(..., IMPULSE_REVEAL)` so the on-draw
+    #     trigger fan-out is bypassed. This is the R1+M1-engine fix
+    #     from the 2026-05-16 audit (storm_vs_dimir G1T4 self-kill).
+    #
+    # The numerical count is parsed from oracle text in both cases.
     word_to_num = {'a': 1, 'one': 1, 'two': 2, 'three': 3,
                    'four': 4, 'five': 5}
+
+    # Impulse-reveal path — gated by classifier tag, not regex chain.
+    from ai.oracle_classifier import Tag, tags_for
+    if Tag.IMPULSE_DRAW in tags_for(card.name) and not card.template.x_cost_data:
+        from engine.zone_transfer import TransferKind, transfer
+        m_exile = re.search(r'exile the top (\w+) cards? of your library',
+                            oracle)
+        impulse_n = 0
+        if m_exile:
+            tok = m_exile.group(1)
+            try:
+                impulse_n = int(tok)
+            except ValueError:
+                impulse_n = word_to_num.get(tok, 0)
+        if impulse_n > 0:
+            revealed: list = []
+            player = game.players[controller]
+            for _ in range(min(impulse_n, len(player.library))):
+                top = player.library[0]
+                # `transfer` moves library→hand without firing draw
+                # triggers (TransferKind.IMPULSE_REVEAL has an empty
+                # fan-out). dst="hand" is an approximation of the
+                # impulse zone — the card is playable; the trigger
+                # fan-out is what mattered for the audit.
+                transfer(game, top, src_zone="library", dst_zone="hand",
+                         kind=TransferKind.IMPULSE_REVEAL,
+                         controller=controller)
+                revealed.append(top)
+            if revealed:
+                names = ", ".join(c.name for c in revealed)
+                game.log.append(
+                    f"T{game.display_turn} P{controller+1}: "
+                    f"{card.name} → impulse-reveal {impulse_n} ({names})")
+            return True  # impulse-reveal handled; skip real-draw branch
+
+    # Real-draw path — "draw N cards" and look-and-keep variants.
     draw_n = 0
     m_draw = re.search(r'draw\s+(\w+)\s+cards?', oracle)
     if m_draw:
@@ -256,22 +301,6 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
     elif 'put one of them into your hand' in oracle:
         # Look-at-top-N keep-1 → draw 1 (Sleight of Hand pattern)
         draw_n = 1
-    elif ('exile the top' in oracle
-          and ('you may play those cards' in oracle
-               or 'you may play that card' in oracle)
-          and 'storm' not in oracle):
-        # Exile-and-may-play-this-turn → approximate as draw N. Excludes
-        # storm-tagged spells (Galvanic Relay) whose storm copies need
-        # the dedicated handler. Excludes X-cost spells (March of
-        # Reckless Joy) whose count depends on mana spent on X.
-        m_exile = re.search(r'exile the top (\w+) cards? of your library',
-                            oracle)
-        if m_exile and not card.template.x_cost_data:
-            tok = m_exile.group(1)
-            try:
-                draw_n = int(tok)
-            except ValueError:
-                draw_n = word_to_num.get(tok, 0)
     if draw_n > 0:
         drawn = game.draw_cards(controller, draw_n)
         names = ", ".join(c.name for c in drawn) if drawn else ""
