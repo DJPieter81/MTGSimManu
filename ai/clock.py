@@ -379,11 +379,39 @@ def position_value(snap: "EVSnapshot", archetype: str = "midrange") -> float:
         snap.opp_evasion_power, snap.my_toughness
     )
 
-    # Combo decks: override my_clock with combo-specific clock
+    # Combo decks: override my_clock with combo-specific clock, but
+    # only when the controller is not dead-this-turn. `combo_clock` is
+    # a resource-availability heuristic (fuel + mana + GY + storm) —
+    # NOT a damage clock. At a lethal-NOW state the combo cannot
+    # resolve before opp's next combat step, so the override would
+    # mask the `my_clock >= NO_CLOCK` lethal-dread branch and route
+    # into the linear `clock_diff = opp_clock - my_clock` branch.
+    #
+    # Survival predicate:
+    #   (a) combat_clock against me is strictly above 1 turn
+    #       (opp needs ≥ 2 combat steps to deal lethal), OR
+    #   (b) I have on-board creatures AND I am not in the integer-
+    #       level `am_dead_next` state (opp_power < my_life), so
+    #       blockers meaningfully buy time.
+    #
+    # Mechanic: cascade-reanimator / storm / Amulet / Goryo's. See
+    # docs/diagnostics/2026-05-16_cascade_combo_override_at_lethal.md
+    # for class size, quantification table, and Cross-deck applicability.
     if archetype in ("combo", "storm"):
         combo_c = combo_clock(snap)
-        # Use the faster of combat clock and combo clock
-        my_clock = min(my_clock, combo_c)
+        opp_clock_for_me = combat_clock(
+            snap.opp_power, snap.my_life,
+            snap.opp_evasion_power, snap.my_toughness,
+        )
+        survives_to_combo_turn = (
+            opp_clock_for_me > 1.0
+            or (snap.my_creature_count >= 1 and not snap.am_dead_next)
+        )
+        if survives_to_combo_turn:
+            # Use the faster of combat clock and combo clock
+            my_clock = min(my_clock, combo_c)
+        # else: keep combat_clock's NO_CLOCK signal so the lethal-
+        # dread branch below fires identically to the midrange path.
 
     # Clock differential: positive = I'm winning the race
     clock_diff = opp_clock - my_clock
