@@ -180,6 +180,13 @@ def _iter_decision_scorer_contexts(deck_names: Optional[Iterable[str]] = None):
         scorer.CTX_CYCLING_GAMEPLAN_BOOST,
         scorer.CTX_CYCLING_FREE_COST_BONUS,
         scorer.CTX_CASCADE_FREE_SPELL_VALUE,
+        # Phase 3 contexts — keyword-driven scaling constants migrated
+        # from ai/scoring_constants.py.
+        scorer.CTX_LANDFALL_TRIGGER_VALUE,
+        scorer.CTX_ARTIFACT_LAND_SYNERGY_BONUS,
+        scorer.CTX_CYCLING_CHEAP_COST_BONUS,
+        scorer.CTX_CYCLING_GY_REANIMATE_BASE,
+        scorer.CTX_CYCLING_GY_REANIMATE_PER_POWER,
     )
 
     # Build the archetype set from the registered deck list when

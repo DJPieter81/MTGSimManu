@@ -41,6 +41,11 @@ from ai import ev_player, scoring_constants
 # GAMEPLAN_BOOST,FREE_COST_BONUS}, and clock's CASCADE_FREE_SPELL_VALUE)
 # were dropped in the Phase 1 LLM-decision-scorer refactor — see
 # `tests/test_llm_decision_scorer.py` for the new migration-lock.
+# The five keyword-driven scaling constants (LANDFALL_TRIGGER_VALUE,
+# ARTIFACT_LAND_SYNERGY_BONUS, CYCLING_CHEAP_COST_BONUS,
+# CYCLING_GY_REANIMATE_BASE, CYCLING_GY_REANIMATE_PER_POWER) were
+# dropped in the Phase 3 refactor — see
+# `tests/test_phase3_constants_migration.py` for the new migration-lock.
 @pytest.mark.parametrize("name, expected", [
     ("REANIMATE_OVERRIDE_BONUS", 40.0),
     ("FREE_CAST_TEMPO_BONUS", 1.5),
@@ -62,11 +67,6 @@ from ai import ev_player, scoring_constants
     ("BLINK_FIZZLE_FLOOR", -50.0),
     ("CHUMP_SENTINEL_VALUE", 999.0),
     ("NO_CLOCK_FACE_VAL_MULTIPLIER", 0.1),
-    ("LANDFALL_TRIGGER_VALUE", 3.0),
-    ("ARTIFACT_LAND_SYNERGY_BONUS", 4.0),
-    ("CYCLING_CHEAP_COST_BONUS", 1.0),
-    ("CYCLING_GY_REANIMATE_BASE", 4.0),
-    ("CYCLING_GY_REANIMATE_PER_POWER", 0.5),
 ])
 def test_scoring_constant_value(name: str, expected):
     """Each centralised constant has the value it encoded as a literal."""
@@ -102,11 +102,11 @@ REQUIRED_IMPORTS = (
     "BLINK_FIZZLE_FLOOR",
     "CHUMP_SENTINEL_VALUE",
     "NO_CLOCK_FACE_VAL_MULTIPLIER",
-    "LANDFALL_TRIGGER_VALUE",
-    "ARTIFACT_LAND_SYNERGY_BONUS",
-    "CYCLING_CHEAP_COST_BONUS",
-    "CYCLING_GY_REANIMATE_BASE",
-    "CYCLING_GY_REANIMATE_PER_POWER",
+    # Phase 3: LANDFALL_TRIGGER_VALUE, ARTIFACT_LAND_SYNERGY_BONUS,
+    # CYCLING_CHEAP_COST_BONUS, CYCLING_GY_REANIMATE_BASE,
+    # CYCLING_GY_REANIMATE_PER_POWER were migrated to
+    # ai.llm_decision_scorer.weight(arch, CTX_*) — they are no
+    # longer importable from ai.ev_player.
     "CLOCK_IMPACT_LIFE_SCALING",
 )
 

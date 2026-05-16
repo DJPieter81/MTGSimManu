@@ -32,6 +32,13 @@ from ai.llm_decision_scorer import (
     CTX_CYCLING_GY_URGENCY,
     CTX_CYCLING_GAMEPLAN_BOOST,
     CTX_CYCLING_FREE_COST_BONUS,
+    # Phase 3 contexts — keyword-driven scaling constants migrated
+    # from ai/scoring_constants.py.
+    CTX_LANDFALL_TRIGGER_VALUE,
+    CTX_ARTIFACT_LAND_SYNERGY_BONUS,
+    CTX_CYCLING_CHEAP_COST_BONUS,
+    CTX_CYCLING_GY_REANIMATE_BASE,
+    CTX_CYCLING_GY_REANIMATE_PER_POWER,
 )
 from ai.scoring_constants import (
     HELD_RESPONSE_VALUE_PER_CMC,
@@ -58,11 +65,6 @@ from ai.scoring_constants import (
     BLINK_FIZZLE_FLOOR,
     CHUMP_SENTINEL_VALUE,
     NO_CLOCK_FACE_VAL_MULTIPLIER,
-    LANDFALL_TRIGGER_VALUE,
-    ARTIFACT_LAND_SYNERGY_BONUS,
-    CYCLING_CHEAP_COST_BONUS,
-    CYCLING_GY_REANIMATE_BASE,
-    CYCLING_GY_REANIMATE_PER_POWER,
     AVG_CREATURE_POWER,
     CLOCK_IMPACT_LIFE_SCALING,
     REANIMATE_TARGET_MIN_POWER,
@@ -1812,14 +1814,24 @@ class EVPlayer:
                         or 'affinity for artifacts' in c_oracle):
                     synergy_signals += 1
             if synergy_signals > 0:
-                ev += synergy_signals * ARTIFACT_LAND_SYNERGY_BONUS
+                # Phase 3 refactor: per-synergy-card scaling sourced from
+                # the LLM helper (historical 4.0 lives in DEFAULT_WEIGHTS
+                # wildcard row for cold-cache parity).
+                ev += synergy_signals * _llm_weight(
+                    self.archetype, CTX_ARTIFACT_LAND_SYNERGY_BONUS
+                )
 
         # Landfall: each trigger ≈ ETB effect value (life, damage, ramp)
         landfall_count = sum(1 for c in me.battlefield
                              if 'landfall' in (c.template.oracle_text or '').lower())
         if landfall_count > 0:
             triggers = 2 if is_fetch else 1
-            ev += landfall_count * triggers * LANDFALL_TRIGGER_VALUE
+            # Phase 3 refactor: per-trigger EV sourced from the LLM
+            # helper (historical 3.0 lives in DEFAULT_WEIGHTS wildcard
+            # row for cold-cache parity).
+            ev += landfall_count * triggers * _llm_weight(
+                self.archetype, CTX_LANDFALL_TRIGGER_VALUE
+            )
 
         # Tron land assembly bonus: detect via "Urza's" subtype (shared by all 3 pieces).
         # Completing the set unlocks {C}{C}{C} production — a huge mana jump.
@@ -2004,18 +2016,28 @@ class EVPlayer:
         # creature in Boros Energy's graveyard is not equity.
         if card.template.is_creature and self._has_reanimation_path(game, me):
             power = card.template.power or 0
-            # Creature in GY = future reanimation target
-            ev += (CYCLING_GY_REANIMATE_BASE + power * CYCLING_GY_REANIMATE_PER_POWER)
+            # Creature in GY = future reanimation target.
+            # Phase 3 refactor: base + per-power scaling sourced from the
+            # LLM helper (historical 4.0 base + 0.5 per power live in
+            # DEFAULT_WEIGHTS wildcard rows).
+            ev += (
+                _llm_weight(self.archetype, CTX_CYCLING_GY_REANIMATE_BASE)
+                + power * _llm_weight(
+                    self.archetype, CTX_CYCLING_GY_REANIMATE_PER_POWER
+                )
+            )
 
         # Cycling cost: cheaper = better tempo.
         # Phase 1 refactor: free-cycling weight sourced from the LLM
         # helper (historical 2.0).
+        # Phase 3 refactor: cheap-cycling bonus also sourced from the
+        # LLM helper (historical 1.0).
         cost_data = card.template.cycling_cost_data
         if cost_data:
             if cost_data.get('life', 0) > 0:
                 ev += _llm_weight(self.archetype, CTX_CYCLING_FREE_COST_BONUS)
             elif cost_data.get('mana', 0) <= 1:
-                ev += CYCLING_CHEAP_COST_BONUS  # cheap cycling
+                ev += _llm_weight(self.archetype, CTX_CYCLING_CHEAP_COST_BONUS)
 
         # Cascade in hand: filling GY is urgent — MUST cycle before cascade.
         # Phase 1 refactor: scaling weights sourced from the LLM helper,
@@ -2162,9 +2184,16 @@ class EVPlayer:
                            and game.can_cycle(self.player_idx, c))
         expected_gy = gy_creatures + min(hand_cyclers, counters)
 
-        per_creature_ev = (CYCLING_GY_REANIMATE_BASE
-                           + AVG_CREATURE_POWER
-                           * CYCLING_GY_REANIMATE_PER_POWER)
+        # Phase 3 refactor: per-creature reanimation EV reuses the
+        # same LLM-helper-sourced base + per-power scaling that the
+        # cycling scorer uses (historical 4.0 + 0.5 × power).  This
+        # preserves the contract:  suspend's clock sensitivity matches
+        # the cycling scorer's per-creature equity exactly.
+        per_creature_ev = (
+            _llm_weight(self.archetype, CTX_CYCLING_GY_REANIMATE_BASE)
+            + AVG_CREATURE_POWER
+            * _llm_weight(self.archetype, CTX_CYCLING_GY_REANIMATE_PER_POWER)
+        )
         payoff_ev = expected_gy * per_creature_ev
 
         # Gate 2 (clock-derived gradient): time-to-resolution vs

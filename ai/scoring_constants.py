@@ -859,28 +859,6 @@ Used by `_choose_targets` burn-vs-creature decision in
 # `COMBO_FORCE_PAYOFF_STORM_THRESHOLD` (was 5) is now sourced from
 # `ai.llm_decision_scorer.weight(arch, CTX_COMBO_FORCE_PAYOFF_STORM_THRESHOLD)`.
 
-LANDFALL_TRIGGER_VALUE: float = 3.0
-"""Derived: per-landfall-trigger EV. Each landfall trigger ≈ ETB
-effect value (1 life, 1 damage, 1 ramp event). 3.0 matches the
-`PROACTIVE_REMOVAL_MIN_VALUE` "worth a card" floor — one landfall
-trigger is roughly one card-quality event.
-
-Used by `_score_land` landfall bonus in `ai/ev_player.py`.
-"""
-
-ARTIFACT_LAND_SYNERGY_BONUS: float = 4.0
-"""Derived: per-synergy-card bonus for an artifact-typed land when
-the player's visible cards carry artifact-scaling text.
-
-Derivation: 1 power (or 1 mana) gained per synergy card × ~4
-residency turns × ~0.05 mana_clock_impact × 20
-(CLOCK_IMPACT_LIFE_SCALING) ≈ 4.0. Matches the
-`EVOKE_BUDGET_PENALTY_PER_PRIOR` and `HELD_RESPONSE_VALUE_PER_CMC`
-family — same "one card committed" scale.
-
-Used by `_score_land` artifact-synergy branch in `ai/ev_player.py`.
-"""
-
 # DROPPED in Phase 1 refactor — all sourced from
 # `ai.llm_decision_scorer.weight(arch, CTX_*)`:
 #   TRON_MANA_ADVANTAGE        (was 4.0)
@@ -897,41 +875,18 @@ Used by `_score_land` artifact-synergy branch in `ai/ev_player.py`.
 # DROPPED in Phase 1 refactor: CYCLING_FREE_COST_BONUS (was 2.0)
 # → ai.llm_decision_scorer.weight(arch, CTX_CYCLING_FREE_COST_BONUS).
 
-CYCLING_CHEAP_COST_BONUS: float = 1.0
-"""Derived: cycling EV bonus for cheap cycling (mana cost ≤ 1).
-
-1.0 = one EV unit, matching `CHEAP_REMOVAL_ACTION_BONUS` — same
-"mana-efficient enough to leave room for a second action" intent.
-
-Used by `_score_cycling` in `ai/ev_player.py`.
-"""
-
-CYCLING_GY_REANIMATE_BASE: float = 4.0
-"""Derived: base cycling EV when cycling a creature into the graveyard
-in a deck with a visible reanimation path.
-
-The cycled creature becomes a future reanimation target, so its
-graveyard value is roughly its hardcast value minus its mana cost.
-4.0 ≈ the `ARTIFACT_LAND_SYNERGY_BONUS` scale — same "one card-
-worth of future value" intent.
-
-Sister constant: CYCLING_GY_REANIMATE_PER_POWER — power-scaling
-addend.
-
-Used by `_score_cycling` reanimation-path branch in
-`ai/ev_player.py`.
-"""
-
-CYCLING_GY_REANIMATE_PER_POWER: float = 0.5
-"""Derived: per-power cycling EV addend on top of
-`CYCLING_GY_REANIMATE_BASE`. A power-5 creature in graveyard is
-worth more as a reanimation target than a power-2 creature —
-0.5 × power roughly tracks the threat-value gap (a 5/5 vs 2/2 in
-`creature_value` units).
-
-Used by `_score_cycling` reanimation-path branch in
-`ai/ev_player.py`.
-"""
+# DROPPED in Phase 3 refactor — all sourced from
+# `ai.llm_decision_scorer.weight(arch, CTX_*)`:
+#   LANDFALL_TRIGGER_VALUE          (was 3.0)
+#   ARTIFACT_LAND_SYNERGY_BONUS     (was 4.0)
+#   CYCLING_CHEAP_COST_BONUS        (was 1.0)
+#   CYCLING_GY_REANIMATE_BASE       (was 4.0)
+#   CYCLING_GY_REANIMATE_PER_POWER  (was 0.5)
+# Each of these was keyword-driven (landfall, metalcraft/affinity-for-
+# artifacts, cycling) — the LLM helper lets per-archetype weights
+# diverge from the keyword-rule default at warm time.  Cold-cache
+# behaviour is byte-identical via the wildcard "*" archetype row in
+# DEFAULT_WEIGHTS (see ai/llm_decision_scorer.py).
 
 # ─── Combat / turn-planning constants (ai/turn_planner.py) ────────
 # Bare-literal extraction pass for ai/turn_planner.py. Several of

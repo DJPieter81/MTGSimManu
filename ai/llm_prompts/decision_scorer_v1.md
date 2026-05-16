@@ -35,5 +35,22 @@ Be specific about archetype mechanics:
 - Aggro/midrange/control: most combo-specific contexts return 0.0
   or 1.0 — these archetypes don't pay off cycling-cascade synergy.
 
+Phase 3 keyword-driven contexts (each fires only when the named
+keyword is present on the board / in hand):
+- `landfall_trigger_value`: per-landfall-trigger EV.  Aggro/landfall
+  shells (Beanstalk Wurm, Akoum Hellhound) pay off this trigger as
+  a clock event; midrange/control treat it as one card-quality
+  ETB.  Combo decks usually 0.0 (they don't run landfall payoffs).
+- `artifact_land_synergy_bonus`: per-active-synergy-card EV when an
+  artifact land ETBs.  Highest for affinity-style archetypes and
+  metalcraft shells; 0.0 for non-artifact decks.
+- `cycling_cheap_cost_bonus`: tempo bonus on a {0}/{1} cycler.
+  Cascade/combo (Living End) value highly; aggro/midrange less so.
+- `cycling_gy_reanimate_base`: base EV when cycling a creature into
+  the GY with a visible reanimation path.  Highest for cascade and
+  reanimator combo (Goryo's, Living End).
+- `cycling_gy_reanimate_per_power`: per-creature-power addend on
+  the above.  Same archetypes as `cycling_gy_reanimate_base`.
+
 When in doubt, return 1.0 with low confidence and a rationale that
 notes the uncertainty.  Never return non-finite values (NaN, Inf).
