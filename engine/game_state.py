@@ -249,9 +249,19 @@ class GameState:
         self.priority_player = self.active_player
 
     def draw_cards(self, player_idx: int, count: int) -> List[CardInstance]:
-        """Draw cards from library to hand."""
+        """Draw cards from library to hand (CR 121.1).
+
+        Per-card trigger fan-out is owned by
+        `engine.zone_transfer._fire_on_draw_triggers` (registered for
+        `TransferKind.DRAW`). The fan-out reads classifier tags
+        (`ON_DRAW_DAMAGE`, `ON_OPP_DRAW_LIFE_LOSS`,
+        `ON_OWN_DRAW_LIFE_GAIN`) — no inline regex matching on
+        oracle text lives here. The legacy regex chain was the
+        R1+M1-engine bug surface from the 2026-05-16 audit.
+        """
+        from .zone_transfer import TransferKind, transfer
         player = self.players[player_idx]
-        drawn = []
+        drawn: List[CardInstance] = []
         for _ in range(count):
             if not player.library:
                 self.game_over = True
@@ -259,45 +269,13 @@ class GameState:
                 self.log.append(f"P{player_idx+1} loses: empty library")
                 return drawn
             card = player.library.pop(0)
-            card.zone = "hand"
-            player.hand.append(card)
             player.cards_drawn_this_turn += 1
             drawn.append(card)
-
-            # Generic draw triggers from oracle text
-            # Handles: Sheoldred ("gain 2 life" on draw), Bowmasters ("whenever
-            # an opponent draws"), and any future draw-trigger cards.
-            opp = self.players[1 - player_idx]
-            for c in player.battlefield:
-                oracle = (c.template.oracle_text or '').lower()
-                if 'whenever you draw' in oracle and 'gain' in oracle and 'life' in oracle:
-                    import re
-                    m = re.search(r'gain\s+(\d+)\s+life', oracle)
-                    if m:
-                        self.gain_life(player.player_idx, int(m.group(1)), c.name)
-            for c in opp.battlefield:
-                oracle = (c.template.oracle_text or '').lower()
-                # "Whenever you draw" on opponent's side = opponent loses life
-                if 'whenever' in oracle and 'draw' in oracle and 'lose' in oracle and 'life' in oracle:
-                    import re
-                    m = re.search(r'lose\s+(\d+)\s+life', oracle)
-                    if m:
-                        player.life -= int(m.group(1))
-                        opp.damage_dealt_this_turn += int(m.group(1))
-                # "Whenever an opponent draws a card except the first one they draw
-                # in each of their draw steps" — Bowmasters-style.
-                # Trigger on all draws EXCEPT the normal draw-step draw.
-                # The draw step sets current_phase = Phase.DRAW; any draw
-                # outside that phase always triggers.
-                is_draw_step = (self.current_phase == Phase.DRAW)
-                first_draw_step_draw = is_draw_step and player.cards_drawn_this_turn <= 1
-                if 'whenever an opponent draws' in oracle and not first_draw_step_draw:
-                    import re
-                    m = re.search(r'deals?\s+(\d+)\s+damage', oracle)
-                    dmg = int(m.group(1)) if m else 1
-                    player.life -= dmg
-                    opp.damage_dealt_this_turn += dmg
-
+            # The pop above already detached the card from library;
+            # transfer's `_remove_from_zone` is tolerant of that. The
+            # call places the card in hand and runs the DRAW fan-out.
+            transfer(self, card, src_zone="library", dst_zone="hand",
+                     kind=TransferKind.DRAW, controller=player_idx)
         return drawn
 
     def surveil(self, player_idx: int, n: int) -> List[CardInstance]:

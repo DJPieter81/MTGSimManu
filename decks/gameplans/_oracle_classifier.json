@@ -81,6 +81,13 @@
         "IMPROVISE"
       ]
     },
+    "Sheoldred, the Apocalypse": {
+      "oracle_text_sha256": "9b94bf655673f4135b06827f26d106aea852cb338d0e9bdfc9ecc9bc29dee437",
+      "tags": [
+        "ON_OPP_DRAW_LIFE_LOSS",
+        "ON_OWN_DRAW_LIFE_GAIN"
+      ]
+    },
     "Solitude": {
       "oracle_text_sha256": "6cf8a37d8715836ccd015461e5bc272941902f49f051561090b96f8ce8d477a6",
       "tags": [
@@ -112,6 +119,12 @@
       "tags": [
         "FORCED_DISCARD",
         "SELF_DAMAGE_ON_CAST"
+      ]
+    },
+    "Underworld Dreams": {
+      "oracle_text_sha256": "ebf5ea12a51b3f2175b1d53b52cb7d3df270e05cdda45c167d0052aea8beebfc",
+      "tags": [
+        "ON_DRAW_DAMAGE"
       ]
     }
   },
