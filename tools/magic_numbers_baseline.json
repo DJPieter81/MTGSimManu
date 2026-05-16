@@ -8,6 +8,7 @@
   "ai/deck_knowledge.py": 0,
   "ai/discard_advisor.py": 0,
   "ai/engine_disruption.py": 0,
+  "ai/effective_cmc.py": 0,
   "ai/ev_evaluator.py": 0,
   "ai/ev_player.py": 0,
   "ai/evaluator.py": 0,
