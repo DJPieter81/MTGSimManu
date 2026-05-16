@@ -1,0 +1,915 @@
+Loaded 21759 cards (0 errors)
+Loaded 21759 cards (0 errors)
+  Sideboard (Dimir Midrange vs Boros Energy): +1 Mystical Dispute, +2 Flusterstorm, +2 Sheoldred, the Apocalypse, -1 Archmage's Charm, -2 Consider, -2 Drown in the Loch
+======================================================================
+  GAME 1: Dimir Midrange (P1) vs Boros Energy (P2)  —  seed 60102
+  Series: Dimir Midrange 0 - 0 Boros Energy
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Dimir Midrange wins → chooses to play first
+║ P1 (on play): Dimir Midrange
+║ P2 (on draw): Boros Energy
+╚═══════════════════════════════════════════════════════
+
+P1 (Dimir Midrange) opening hand (2 lands, 5 spells):
+  • Psychic Frog [Creature, CMC 2]
+  • Polluted Delta [Land, CMC 0]
+  • Drown in the Loch [Spell, CMC 2]
+  • Counterspell [Spell, CMC 2]
+  • Consider [Spell, CMC 1]
+  • Dauthi Voidwalker [Creature, CMC 2]
+  • Takenuma, Abandoned Mire [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Consider, Dauthi Voidwalker, Psychic Frog, 5 cheap spells
+
+P2 (Boros Energy) opening hand (3 lands, 4 spells):
+  • Ocelot Pride [Creature, CMC 1]
+  • Thraben Charm [Spell, CMC 2]
+  • Ajani, Nacatl Pariah // Ajani, Nacatl Avenger [Creature, CMC 2]
+  • Arid Mesa [Land, CMC 0]
+  • Ajani, Nacatl Pariah // Ajani, Nacatl Avenger [Creature, CMC 2]
+  • Sacred Foundry [Land, CMC 0]
+  • Plains [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Ocelot Pride, 3 cheap spells
+
+
+╔══ TURN 1 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Boros Energy 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Polluted Delta
+T1 P1: Crack Polluted Delta (pay 1 life) -> Watery Grave (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Dimir Midrange 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Dalkovan Encampment
+  [Main 1]
+T1 P2: Play Arid Mesa
+T1 P2: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Boros Energy 19
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Darkslick Shores
+  [Main 1]
+T2 P1: Play Takenuma, Abandoned Mire
+    → Goal: grind_value [enablers]
+    [Mana] Tap Watery Grave→U (paying for Consider, 2 mana remaining)
+T2 P1: Cast Consider (U)
+    [Priority] P2 passes (no response)
+T2: Resolve Consider
+T2 P1: Consider → draw 1 (Darkslick Shores)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Dimir Midrange 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Takenuma, Abandoned Mire
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+T2 P2: Play Sacred Foundry (tapped)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T2 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T2: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Boros Energy 19
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Takenuma, Abandoned Mire
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Polluted Delta
+  [Main 1]
+T3 P1: Play Polluted Delta
+T3 P1: Crack Polluted Delta (pay 1 life) -> Watery Grave (untapped, life: 16)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Dimir Midrange 16
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Takenuma, Abandoned Mire, Watery Grave
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mountain
+  [Main 1]
+T3 P2: Play Plains
+    → Goal: curve_out [enablers]
+    [Mana] Tap Plains→W (paying for Ocelot Pride, 3 mana remaining)
+T3 P2: Cast Ocelot Pride (W)
+    [Priority] P1 responds with Drown in the Loch
+    [Mana] Tap Watery Grave→U, Takenuma, Abandoned Mire→B (paying for Drown in the Loch, 3 mana remaining)
+T3 P1: Cast Drown in the Loch (UB)
+T3: Resolve Drown in the Loch
+T3: Ocelot Pride is countered
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 2 mana remaining)
+T3 P2: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P1 passes (no response)
+T3: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T3 P2: Create 1x Cat token(s)
+T3 P2: Ajani creates 2/1 Cat Warrior token
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T3 P2: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T3 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T3 P2: Create 1x Treasure token(s)
+T3 P2: Ragavan, Nimble Pilferer exiles Consider from top of P1's library
+T3 P2: Ragavan, Nimble Pilferer — may cast Consider this turn
+  [Combat Damage] 2 damage dealt → P1 life: 16 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+T3: Consider returned to exile (uncast)
+
+╔══ TURN 4 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 14  |  Boros Energy 19
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 4
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Takenuma, Abandoned Mire, Watery Grave
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Thoughtseize
+  [Main 1]
+T4 P1: Play Darkslick Shores (tapped, 3 other lands)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Dimir Midrange 14
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Sacred Foundry, Plains
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Takenuma, Abandoned Mire, Watery Grave, Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Goblin Bombardment
+  [Main 1]
+T4 P2: Play Mountain
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+T4 P2: Attack with Ragavan, Nimble Pilferer, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+  [Declare Blockers] P1 does not block
+T4 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T4 P2: Create 1x Treasure token(s)
+T4 P2: Ragavan, Nimble Pilferer exiles Polluted Delta from top of P1's library
+T4 P2: Ragavan, Nimble Pilferer — may cast Polluted Delta this turn
+T4 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T4 P2:   Cat Token (2/1) → 2 dmg to player
+  [Combat Damage] 5 damage dealt → P1 life: 14 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Polluted Delta returned to exile (uncast)
+
+╔══ TURN 5 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 9  |  Boros Energy 19
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 4
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Takenuma, Abandoned Mire, Watery Grave, Darkslick Shores
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Cat Token (2/1) [tapped]
+║   Other: Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Sacred Foundry, Plains, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Murktide Regent
+  [Main 1]
+T5 P1: Play Darkslick Shores (tapped, 4 other lands)
+    → Goal: close_game
+    [Mana] Tap Watery Grave→U, Takenuma, Abandoned Mire→B (paying for Psychic Frog, 4 mana remaining)
+T5 P1: Cast Psychic Frog (UB)
+    [Priority] P2 passes (no response)
+T5: Resolve Psychic Frog
+  [Begin Combat]
+    [Mana] Tap Plains→W, Mountain→R (paying for Thraben Charm, 4 mana remaining)
+T5 P2: Cast Thraben Charm (1W)
+T5: Resolve Thraben Charm
+T5: Psychic Frog dies
+T5 P2: Thraben Charm deals 6 to Psychic Frog
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Dimir Midrange 9
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 3
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Other: Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Sacred Foundry, Plains, Mountain
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Takenuma, Abandoned Mire [T], Watery Grave, Darkslick Shores, Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Marsh Flats
+  [Main 1]
+T5 P2: Play Marsh Flats
+T5 P2: Crack Marsh Flats (pay 1 life) -> Sacred Foundry (tapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+T5 P2: Attack with Ragavan, Nimble Pilferer, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+  [Declare Blockers] P1 does not block
+T5 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T5 P2: Create 1x Treasure token(s)
+T5 P2: Ragavan, Nimble Pilferer exiles Island from top of P1's library
+T5 P2: Ragavan, Nimble Pilferer — may cast Island this turn
+T5 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T5 P2:   Cat Token (2/1) → 2 dmg to player
+  [Combat Damage] 5 damage dealt → P1 life: 9 → 4
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Island returned to exile (uncast)
+
+╔══ TURN 6 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 4  |  Boros Energy 18
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 43  |  Graveyard: 5
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Takenuma, Abandoned Mire, Watery Grave, Darkslick Shores, Darkslick Shores
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Cat Token (2/1) [tapped]
+║   Other: Treasure Token, Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Sacred Foundry, Plains, Mountain, Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Murktide Regent
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Takenuma, Abandoned Mire→B (paying for Thoughtseize, 5 mana remaining)
+T6 P1: Cast Thoughtseize (B)
+    [Priority] P2 passes (no response)
+T6: Resolve Thoughtseize
+T6: Goblin Bombardment moved hand -> graveyard (forced discard)
+T6 P1: Thoughtseize → opponent discards 1
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 18  |  Dimir Midrange 2
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 5
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Other: Treasure Token, Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Sacred Foundry, Plains, Mountain, Sacred Foundry
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Takenuma, Abandoned Mire [T], Watery Grave, Darkslick Shores, Darkslick Shores
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Windswept Heath
+  [Main 1]
+T6 P2: Play Windswept Heath
+T6 P2: Crack Windswept Heath -> Plains (untapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+T6 P2: Attack with Ragavan, Nimble Pilferer, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+  [Declare Blockers] P1 does not block
+T6 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T6 P2: Create 1x Treasure token(s)
+T6 P2: Ragavan, Nimble Pilferer exiles Swamp from top of P1's library
+T6 P2: Ragavan, Nimble Pilferer — may cast Swamp this turn
+T6 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T6 P2:   Cat Token (2/1) → 2 dmg to player
+P1 loses: life total -3
+  [Combat Damage] 5 damage dealt → P1 life: 2 → -3
+
+>>> Boros Energy wins Game 1 on turn 6 via damage
+    Final life: Dimir Midrange=-3  Boros Energy=17
+
+======================================================================
+  GAME 2: Dimir Midrange (P1) vs Boros Energy (P2)  —  seed 60103
+  Series: Dimir Midrange 0 - 1 Boros Energy
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Boros Energy wins → chooses to play first
+║ P1 (on play): Boros Energy
+║ P2 (on draw): Dimir Midrange
+╚═══════════════════════════════════════════════════════
+
+P1 (Dimir Midrange) opening hand (2 lands, 5 spells):
+  • Thoughtseize [Spell, CMC 1]
+  • Counterspell [Spell, CMC 2]
+  • Consider [Spell, CMC 1]
+  • Island [Land, CMC 0]
+  • Takenuma, Abandoned Mire [Land, CMC 0]
+  • Fatal Push [Spell, CMC 1]
+  • Orcish Bowmasters [Creature, CMC 2]
+→ P1 KEEPS 7 — has key card(s): Consider, Fatal Push, Orcish Bowmasters, Thoughtseize, 5 cheap spells
+
+P2 (Boros Energy) opening hand (3 lands, 4 spells):
+  • Arena of Glory [Land, CMC 0]
+  • The Legend of Roku // Avatar Roku [Spell, CMC 4]
+  • Sacred Foundry [Land, CMC 0]
+  • Seasoned Pyromancer [Creature, CMC 3]
+  • Windswept Heath [Land, CMC 0]
+  • Ajani, Nacatl Pariah // Ajani, Nacatl Avenger [Creature, CMC 2]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+→ P2 KEEPS 7 — has key card(s): Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Ragavan, Nimble Pilferer, 3 cheap spells
+
+
+╔══ TURN 1 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Dimir Midrange 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Sacred Foundry (tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Boros Energy 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Archmage's Charm
+  [Main 1]
+T1 P1: Play Island
+    → Goal: disrupt [enablers]
+    [Mana] Tap Island→U (paying for Consider, 1 mana remaining)
+T1 P1: Cast Consider (U)
+    [Priority] P2 passes (no response)
+T1: Resolve Consider
+T1 P1: Consider → draw 1 (Underground River)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Dimir Midrange 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Voice of Victory
+  [Main 1]
+T2 P2: Play Windswept Heath
+T2 P2: Crack Windswept Heath (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T2 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T2: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Boros Energy 19
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Island
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Psychic Frog
+  [Main 1]
+T2 P1: Play Underground River
+    → Goal: grind_value
+    [Mana] Tap Underground River→B, Island→U (paying for Orcish Bowmasters, 2 mana remaining)
+T2 P1: Cast Orcish Bowmasters (1B)
+    [Priority] P2 passes (no response)
+T2: Resolve Orcish Bowmasters
+T2 P1: Bowmasters deals 1 damage to Ragavan, Nimble Pilferer
+T2 P1: Bowmasters creates 1/1 Orc Army token
+T2: Ragavan, Nimble Pilferer dies
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Dimir Midrange 19
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Island [T], Underground River [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thraben Charm
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 2 mana remaining)
+T3 P2: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P1 passes (no response)
+T3: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T3 P2: Create 1x Cat token(s)
+T3 P2: Ajani creates 2/1 Cat Warrior token
+T3 P2: Play Arena of Glory (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Boros Energy 19
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Island, Underground River
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Dauthi Voidwalker
+  [Main 1]
+T3 P1: Play Takenuma, Abandoned Mire
+    → Goal: grind_value
+    [Mana] Tap Takenuma, Abandoned Mire→B (paying for Fatal Push, 3 mana remaining)
+T3 P1: Cast Fatal Push (B)
+    [Priority] P2 passes (no response)
+T3: Resolve Fatal Push
+T3: Cat Token dies
+T3 P1: Fatal Push destroys Cat Token
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Dimir Midrange 19
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 3
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)
+║   Lands: Sacred Foundry, Sacred Foundry, Arena of Glory
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Island, Underground River, Takenuma, Abandoned Mire [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Blood Moon
+  [Main 1]
+    → Goal: curve_out [interaction]
+    [Mana] Tap Sacred Foundry→W, Arena of Glory→R (paying for Thraben Charm, 3 mana remaining)
+T4 P2: Cast Thraben Charm (1W)
+    [Priority] P1 responds with Counterspell
+    [Mana] Tap Island→U, Underground River→U (paying for Counterspell, 2 mana remaining)
+T4 P1: Cast Counterspell (UU)
+T4: Resolve Counterspell
+T4: Thraben Charm is countered
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T4 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Declare Blockers] P1 does not block
+T4 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 18 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 17  |  Boros Energy 19
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Island, Underground River, Takenuma, Abandoned Mire
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped]
+║   Lands: Sacred Foundry [T], Sacred Foundry, Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Murktide Regent
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Orcish Bowmasters, Orc Army
+T4 P1: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P2 does not block
+T4 P1:   Orcish Bowmasters (1/1) → 1 dmg to player
+T4 P1:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 19 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 17  |  Dimir Midrange 17
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 4
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)
+║   Lands: Sacred Foundry, Sacred Foundry, Arena of Glory
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped]
+║   Lands: Island, Underground River, Takenuma, Abandoned Mire
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Seasoned Pyromancer
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Arena of Glory→R, Sacred Foundry→R, Sacred Foundry→R (paying for Seasoned Pyromancer, 3 mana remaining)
+T5 P2: Cast Seasoned Pyromancer (1RR)
+    [Priority] P1 passes (no response)
+T5: Resolve Seasoned Pyromancer
+T5 P2: Create 2x Elemental token(s)
+T5 P2: Seasoned Pyromancer: discard 2, draw 2 (Elegant Parlor, Goblin Bombardment), create 2 Elemental(s)
+T5 P2: Play Elegant Parlor (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T5 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Declare Blockers] P1 does not block
+T5 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 17 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 16  |  Boros Energy 15
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Island, Underground River, Takenuma, Abandoned Mire
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Seasoned Pyromancer (2/2), Elemental Token (1/1), Elemental Token (1/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Arena of Glory [T], Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Thoughtseize
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 15  |  Dimir Midrange 16
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 6
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Seasoned Pyromancer (2/2), Elemental Token (1/1), Elemental Token (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Arena of Glory, Elegant Parlor
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Island, Underground River, Takenuma, Abandoned Mire
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Marsh Flats
+  [Main 1]
+T6 P2: Play Marsh Flats
+T6 P2: Crack Marsh Flats (pay 1 life) -> Sacred Foundry (tapped, life: 14)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Arena of Glory→R, Sacred Foundry→R, Sacred Foundry→R (paying for Seasoned Pyromancer, 4 mana remaining)
+T6 P2: Cast Seasoned Pyromancer (1RR)
+    [Priority] P1 passes (no response)
+T6: Resolve Seasoned Pyromancer
+T6 P2: Create 2x Elemental token(s)
+T6 P2: Seasoned Pyromancer: discard 2, draw 2 (Ocelot Pride, Arid Mesa), create 2 Elemental(s)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Elegant Parlor→W (paying for Ocelot Pride, 1 mana remaining)
+T6 P2: Cast Ocelot Pride (W)
+    [Priority] P1 passes (no response)
+T6: Resolve Ocelot Pride
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Seasoned Pyromancer
+T6 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Seasoned Pyromancer
+T6 P1:   [BLOCK] Orc Army (1/1) blocks Seasoned Pyromancer (2/2) — chump block
+T6 P1:   [BLOCK] Orcish Bowmasters (1/1) blocks Seasoned Pyromancer (2/2) — chump block
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T6 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T6: Orcish Bowmasters dies
+T6: Orc Army dies
+T6: Seasoned Pyromancer dies
+  [Combat Damage] 1 damage dealt → P1 life: 16 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 15  |  Boros Energy 12
+║ Hand: 6 cards  |  Opp hand: 1 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 5
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Island, Underground River, Takenuma, Abandoned Mire
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Elemental Token (1/1), Elemental Token (1/1), Seasoned Pyromancer (2/2), Elemental Token (1/1), Elemental Token (1/1), Ocelot Pride (1/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Arena of Glory [T], Elegant Parlor [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Fatal Push
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Takenuma, Abandoned Mire→B, Underground River→B (paying for Dauthi Voidwalker, 3 mana remaining)
+T6 P1: Cast Dauthi Voidwalker (BB)
+    [Priority] P2 passes (no response)
+T6: Resolve Dauthi Voidwalker
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 12  |  Dimir Midrange 14
+║ Hand: 1 cards  |  Opp hand: 6 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 42  |  Graveyard: 10
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Elemental Token (1/1), Elemental Token (1/1), Seasoned Pyromancer (2/2), Elemental Token (1/1), Elemental Token (1/1), Ocelot Pride (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Arena of Glory, Elegant Parlor, Sacred Foundry
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2)
+║   Lands: Island, Underground River [T], Takenuma, Abandoned Mire [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Main 1]
+T7 P2: Play Arid Mesa
+T7 P2: Crack Arid Mesa -> Plains (untapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Elemental Token, Elemental Token, Seasoned Pyromancer, Elemental Token, Elemental Token, Ocelot Pride
+T7 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Elemental Token, Elemental Token, Seasoned Pyromancer, Elemental Token, Elemental Token, Ocelot Pride
+T7 P1:   [BLOCK] Dauthi Voidwalker (3/2) blocks Seasoned Pyromancer (2/2) — trade (chump)
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T7 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T7 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T7 P2:   Elemental Token (1/1) → 1 dmg to player
+T7 P2:   Elemental Token (1/1) → 1 dmg to player
+T7 P2:   Elemental Token (1/1) → 1 dmg to player
+T7 P2:   Elemental Token (1/1) → 1 dmg to player
+T7: Dauthi Voidwalker dies
+T7: Seasoned Pyromancer dies
+  [Combat Damage] 6 damage dealt → P1 life: 14 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 8  |  Boros Energy 12
+║ Hand: 6 cards  |  Opp hand: 1 cards
+║ Lands: 3  |  Opp lands: 6
+║ Library: 46  |  Graveyard: 6
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Island, Underground River, Takenuma, Abandoned Mire
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Elemental Token (1/1) [tapped], Elemental Token (1/1) [tapped], Elemental Token (1/1) [tapped], Elemental Token (1/1) [tapped], Ocelot Pride (1/1) [tapped]
+║   Lands: Sacred Foundry, Sacred Foundry, Arena of Glory, Elegant Parlor, Sacred Foundry, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Polluted Delta
+  [Main 1]
+T7 P1: Play Polluted Delta
+T7 P1: Crack Polluted Delta (pay 1 life) -> Watery Grave (untapped, life: 5)
+    → Goal: close_game
+    [Mana] Tap Takenuma, Abandoned Mire→B (paying for Fatal Push, 4 mana remaining)
+T7 P1: Cast Fatal Push (B)
+    [Priority] P2 passes (no response)
+T7: Resolve Fatal Push
+T7: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger dies
+T7 P1: Fatal Push destroys Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+    → Goal: close_game
+    [Mana] Tap Island→U, Watery Grave→U, Underground River→U (paying for Archmage's Charm, 3 mana remaining)
+T7 P1: Cast Archmage's Charm (UUU)
+    [Priority] P2 passes (no response)
+T7: Resolve Archmage's Charm
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 12  |  Dimir Midrange 4
+║ Hand: 1 cards  |  Opp hand: 4 cards
+║ Lands: 6  |  Opp lands: 4
+║ Library: 40  |  Graveyard: 13
+║ Boros Energy board:
+║   Creatures: Elemental Token (1/1), Elemental Token (1/1), Elemental Token (1/1), Elemental Token (1/1), Ocelot Pride (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Arena of Glory, Elegant Parlor, Sacred Foundry, Plains
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Island [T], Underground River [T], Takenuma, Abandoned Mire [T], Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Guide of Souls
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Plains→W (paying for Guide of Souls, 6 mana remaining)
+T8 P2: Cast Guide of Souls (W)
+    [Priority] P1 passes (no response)
+T8: Resolve Guide of Souls
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→W, Arena of Glory→R (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 5 mana remaining)
+T8 P2: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P1 passes (no response)
+T8: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T8 P2: Create 1x Cat token(s)
+T8 P2: Ajani creates 2/1 Cat Warrior token
+T8 P2: Gain 1 life from Guide of Souls (life: 13)
+T8 P2: +1 energy from Guide of Souls (total: 1)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Elemental Token, Elemental Token, Elemental Token, Elemental Token, Ocelot Pride
+T8 P2: Attack with Elemental Token, Elemental Token, Elemental Token, Elemental Token, Ocelot Pride
+  [Declare Blockers] P1 does not block
+T8 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T8 P2:   Elemental Token (1/1) → 1 dmg to player
+T8 P2:   Elemental Token (1/1) → 1 dmg to player
+T8 P2:   Elemental Token (1/1) → 1 dmg to player
+T8 P2:   Elemental Token (1/1) → 1 dmg to player
+P1 loses: life total -1
+  [Combat Damage] 5 damage dealt → P1 life: 4 → -1
+
+>>> Boros Energy wins Game 2 on turn 8 via damage
+    Final life: Dimir Midrange=-1  Boros Energy=14
+
+======================================================================
+  MATCH RESULT: Boros Energy wins 2-0
+======================================================================
