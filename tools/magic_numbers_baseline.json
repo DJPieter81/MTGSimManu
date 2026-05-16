@@ -20,6 +20,7 @@
   "ai/outcome_ev.py": 1,
   "ai/permanent_threat.py": 0,
   "ai/response.py": 0,
+  "ai/response_enumeration.py": 0,
   "ai/sideboard_solver.py": 0,
   "ai/stax_ev.py": 0,
   "ai/strategic_logger.py": 2,
