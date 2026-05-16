@@ -583,52 +583,6 @@ def galvanic_relay_resolve(game, card, controller, targets=None, item=None):
     game.draw_cards(controller, draw_count)
 
 
-@EFFECT_REGISTRY.register("Galvanic Discharge", EffectTiming.SPELL_RESOLVE,
-                           description="Deal 2 + energy spent damage")
-def galvanic_discharge_resolve(game, card, controller, targets=None, item=None):
-    opponent = 1 - controller
-    player = game.players[controller]
-    # Oracle: "You get {E}{E}{E}, then you may pay any amount of {E}.
-    # Galvanic Discharge deals that much damage to that permanent."
-    # Step 1: gain 3 energy
-    player.energy_counters += 3
-    # Step 2: spend as much energy as useful
-    energy_to_spend = min(player.energy_counters, 5)
-    if energy_to_spend > 0:
-        player.spend_energy(energy_to_spend)
-    damage = energy_to_spend
-    opp = game.players[opponent]
-    # Use AI-chosen targets if available
-    target_creature = None
-    if targets:
-        for tid in targets:
-            if tid == -1:
-                break  # AI chose to go face
-            candidate = game.get_card_by_id(tid)
-            if candidate and candidate.zone == "battlefield" and candidate.template.is_creature:
-                target_creature = candidate
-                break
-    # Fallback: pick best killable creature (not just highest power)
-    if target_creature is None and (not targets or (targets and targets[0] != -1)):
-        killable = [
-            c for c in opp.creatures
-            if damage >= (c.toughness or 0) - (getattr(c, 'damage_marked', 0) or 0)
-        ]
-        if killable:
-            target_creature = max(killable, key=lambda c: c.power or 0)
-    if target_creature:
-        target_creature.damage_marked += damage
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Galvanic Discharge deals {damage} to {target_creature.name}")
-        if target_creature.is_dead:
-            game._creature_dies(target_creature)
-    else:
-        opp.life -= damage
-        game.players[controller].damage_dealt_this_turn += damage
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Galvanic Discharge deals {damage} to opponent")
-
-
 @EFFECT_REGISTRY.register("Thoughtseize", EffectTiming.SPELL_RESOLVE,
                            description="Opponent discards nonland, you lose 2 life")
 def thoughtseize_resolve(game, card, controller, targets=None, item=None):

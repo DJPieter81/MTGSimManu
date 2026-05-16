@@ -340,6 +340,85 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
     opponent = 1 - controller
     handled = False
 
+    # ── Energy-damage spells (R2): "target creature or planeswalker.
+    #     You get {E}^k, then you may pay any amount of {E}. ~ deals
+    #     that much (additional) damage to that permanent."
+    #     Class: FDN/MH3 energy-instant family (Galvanic Discharge,
+    #     Static Discharge, ...). Oracle-pattern keyed — no card name.
+    #     Composes target_solver.py:155 (cast-time legality, CR 601.2c)
+    #     and ~~deal_damage~~ direct target mutation (damage_marked /
+    #     loyalty_counters). Base damage and self-gen energy count are
+    #     both derived from oracle text. Engine commits a deterministic
+    #     min-to-kill energy spend (CR 117.2 — cost paid at cast; with
+    #     no AI hook yet, this is the engine-rational commitment).
+    if (('target creature or planeswalker' in oracle
+            or 'choose target creature or planeswalker' in oracle)
+            and 'you get {e}' in oracle
+            and 'pay any amount of {e}' in oracle
+            and 'that much' in oracle and 'damage' in oracle):
+        base_match = re.search(
+            r'deals?\s+(\d+)\s+damage\s+to\s+target\s+creature\s+or\s+planeswalker',
+            oracle)
+        base_damage = int(base_match.group(1)) if base_match else 0
+        gain_match = re.search(r'you get\s+((?:\{e\}\s*)+)', oracle)
+        self_gen_energy = (
+            gain_match.group(1).count('{e}') if gain_match else 0)
+        chosen = None
+        for tid in (targets or []):
+            if tid == -1:
+                continue  # face-marker — illegal target for this spell
+            cand = game.get_card_by_id(tid)
+            if (cand is not None and cand.zone == "battlefield"
+                    and (cand.template.is_creature
+                         or 'planeswalker' in
+                         [t.value for t in cand.template.card_types])):
+                chosen = cand
+                break
+        if chosen is None:
+            # AI did not nominate a legal creature/PW target.
+            # Engine cannot redirect to face (audit R2). Pick the
+            # highest-threat opp creature or planeswalker as the
+            # default; fizzle only when neither exists.
+            opp = game.players[1 - controller]
+            opp_pw = [c for c in opp.battlefield
+                      if 'planeswalker'
+                      in [t.value for t in c.template.card_types]]
+            candidates = list(opp.creatures) + opp_pw
+            if not candidates:
+                return True  # fizzle: no legal target
+            chosen = max(candidates,
+                         key=lambda c: (c.power or 0)
+                         + (c.toughness or 0)
+                         + getattr(c, 'loyalty_counters', 0))
+        player = game.players[controller]
+        player.add_energy(self_gen_energy)
+        if chosen.template.is_creature:
+            remaining = ((chosen.toughness or 0)
+                         - getattr(chosen, 'damage_marked', 0))
+        else:
+            remaining = chosen.loyalty_counters  # CR 119.3
+        need_to_kill = max(0, remaining - base_damage)
+        spend = (min(need_to_kill, player.energy_counters)
+                 if need_to_kill > 0 else 0)
+        if spend > 0:
+            player.spend_energy(spend)
+        total = base_damage + spend
+        if total > 0:
+            if chosen.template.is_creature:
+                chosen.damage_marked = (
+                    getattr(chosen, 'damage_marked', 0) + total)
+                if chosen.is_dead:
+                    game._creature_dies(chosen)
+            else:
+                chosen.loyalty_counters = max(
+                    0, chosen.loyalty_counters - total)
+                game.check_state_based_actions()
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: "
+            f"{card.name} deals {total} to {chosen.name} "
+            f"(base {base_damage} + {spend} energy)")
+        return True
+
     # ── "Target opponent reveals their hand. You choose a nonland card
     #     and that player discards it." (Thoughtseize, Inquisition) ──
     if 'reveals' in oracle and 'hand' in oracle and 'discard' in oracle:
