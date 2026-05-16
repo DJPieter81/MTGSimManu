@@ -30,6 +30,20 @@
         "IMPULSE_DRAW"
       ]
     },
+    "Inquisition of Kozilek": {
+      "_classification_source": "manual:M6-discard-projection-2026-05-16",
+      "oracle_text_sha256": "0d3c89317d77bd408a86bfe9ad5fde697dac9d20fa8e644cc936c57a6ba7ceb9",
+      "tags": [
+        "FORCED_DISCARD"
+      ]
+    },
+    "Duress": {
+      "_classification_source": "manual:M6-discard-projection-2026-05-16",
+      "oracle_text_sha256": "f40eaa83b50ede4ae3e3350218cf3da991975363ef1d0336e2dc11a93b1d6c05",
+      "tags": [
+        "FORCED_DISCARD"
+      ]
+    },
     "Grand Abolisher": {
       "_classification_source": "manual:llm-undercoverage-2026-05-16",
       "oracle_text_sha256": "3d2737d202cf5921baa0ce23e531c55ff88759589da2f2b609e574e9f13b0410",
