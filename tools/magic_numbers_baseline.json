@@ -16,6 +16,7 @@
   "ai/gameplan.py": 0,
   "ai/mana_planner.py": 0,
   "ai/mulligan.py": 0,
+  "ai/oracle_classifier.py": 0,
   "ai/outcome_ev.py": 1,
   "ai/permanent_threat.py": 0,
   "ai/response.py": 0,

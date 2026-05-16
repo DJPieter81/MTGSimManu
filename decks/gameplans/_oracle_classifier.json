@@ -1,0 +1,68 @@
+{
+  "cards": {
+    "Counterspell": {
+      "oracle_text_sha256": "6e7e3fa9bb231a1c1910cd956dc7e5c91bb22e9705b39ed61a2ebd23201950e4",
+      "tags": []
+    },
+    "Galvanic Discharge": {
+      "oracle_text_sha256": "f05f431f47f8bdae881695dc2fbc80c6cda854fa2193ff713a54807103485d1b",
+      "tags": [
+        "TARGET_CREATURE_OR_PW"
+      ]
+    },
+    "Glimpse the Impossible": {
+      "oracle_text_sha256": "dc04887b409962753c4ec99acfff9d67190f6c1126743c9d598a3b918a0524cd",
+      "tags": [
+        "IMPULSE_DRAW"
+      ]
+    },
+    "Meticulous Archive": {
+      "oracle_text_sha256": "5016d4b3823830055397fd1232a25045e88005b981b8cdfc4bd623944b300158",
+      "tags": [
+        "ETB_SURVEIL_N"
+      ]
+    },
+    "Murktide Regent": {
+      "oracle_text_sha256": "0e605dd15bc48d4807baadaa4b6739c92371b26fdfb4daabf000f1e288e3faa4",
+      "tags": [
+        "DELVE"
+      ]
+    },
+    "Orcish Bowmasters": {
+      "oracle_text_sha256": "c2c7596e58d8707e6ae25cd121d0011b5457d8bda3c376e9907d5a01d81e4e10",
+      "tags": [
+        "ETB_ORACLE_TRIGGER",
+        "ON_DRAW_DAMAGE",
+        "TARGET_ANY_DAMAGE"
+      ]
+    },
+    "Past in Flames": {
+      "oracle_text_sha256": "0b1663e36830961148abf0d45378c512d6562c712dab3ca77128e9b9cf1f2621",
+      "tags": [
+        "FLASHBACK"
+      ]
+    },
+    "Reckless Impulse": {
+      "oracle_text_sha256": "d0401eb08b4bb5ec4f4acb840207bf89107c642a7719c390702e961a11d5d784",
+      "tags": [
+        "IMPULSE_DRAW"
+      ]
+    },
+    "Teferi, Time Raveler": {
+      "oracle_text_sha256": "5d3ed675bb9ea31801abf487471264b983149f349b56f0401e2c4795ddcd3a4e",
+      "tags": [
+        "PLANESWALKER_LOYALTY_PLUS1_USEFUL",
+        "PLANESWALKER_LOYALTY_X_USEFUL",
+        "SORCERY_SPEED_LOCKOUT"
+      ]
+    },
+    "Thoughtseize": {
+      "oracle_text_sha256": "9db4202085457fc2e687c39a501f61fff2add6426bf7af9da13702b62ec3455b",
+      "tags": [
+        "FORCED_DISCARD",
+        "SELF_DAMAGE_ON_CAST"
+      ]
+    }
+  },
+  "schema_version": 1
+}

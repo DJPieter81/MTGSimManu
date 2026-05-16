@@ -88,6 +88,7 @@ from ai.llm_schemas import (
     DocFreshnessReport,
     FailingTestSpec,
     HandlerGapReport,
+    OracleTagClassification,
     SynthesizedGameplan,
     from_json_dict,
 )
@@ -104,6 +105,10 @@ DEFAULT_THRESHOLD: dict[str, float] = {
     "audit_doc_freshness": 0.6,
     "handler_audit":       0.6,
     "failing_test_spec":   0.6,
+    # classify_oracle outputs are closed-set tag lists; the exact-
+    # match scoring path dominates and the cosine fallback rarely
+    # fires.  Same 0.6 threshold as the other extraction tasks.
+    "classify_oracle":     0.6,
 }
 
 # Closed-set field names per task — these get exact-match scoring.
@@ -114,6 +119,10 @@ _CLOSED_FIELDS_BY_TASK: dict[str, set[str]] = {
     "audit_doc_freshness": {"current_status", "should_change_to", "doc_path"},
     "handler_audit":       {"timing", "severity", "card_name"},
     "failing_test_spec":   {"expected_status_before_fix"},
+    # The card_name is the closed-set anchor for classify_oracle; the
+    # tags list is a closed-set-of-strings that the eval harness
+    # compares structurally.
+    "classify_oracle":     {"card_name"},
 }
 
 _OUTPUT_TYPES = {
@@ -122,6 +131,7 @@ _OUTPUT_TYPES = {
     "audit_doc_freshness": DocFreshnessReport,
     "handler_audit":       HandlerGapReport,
     "failing_test_spec":   FailingTestSpec,
+    "classify_oracle":     OracleTagClassification,
 }
 
 
