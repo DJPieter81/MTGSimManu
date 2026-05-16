@@ -10,6 +10,7 @@ from how they change this clock, not from arbitrary weights.
 Units: turns of clock advantage. +1.0 means I'm one combat step ahead.
 """
 from __future__ import annotations
+import enum
 import math
 from typing import TYPE_CHECKING, Set
 
@@ -456,3 +457,84 @@ def position_value(snap: "EVSnapshot", archetype: str = "midrange") -> float:
 
     return (clock_diff + card_value + mana_value + life_advantage
             + persistent_value + artifact_value)
+
+
+# ─────────────────────────────────────────────────────────────
+# Life-phase classifier — pure composition primitive (W0-B)
+# ─────────────────────────────────────────────────────────────
+
+
+class LifePhase(enum.Enum):
+    """Coarse game-state phase, derived from clock + life primitives.
+
+    Replaces scattered magic-life-threshold conditionals (control
+    side "below 5 = panic", combo "life ≤ Bolt-zone", aggro "race
+    math") with a single composer that callers in `ev_player.py`,
+    `ev_evaluator.py`, `response.py` consult to gear-shift behaviour.
+
+    Phases in increasing order of urgency:
+
+    - DEVELOP — early/comfortable. Either we are still in the early-
+      game window (per `is_early_game`) or my life buffer is at
+      least as long as the opponent's. Safe to deploy proactive
+      resources (lands, mana rocks, value engines).
+    - GRIND  — both sides have committed clocks, neither racing
+      decisively. Trade resources, hold removal, value over tempo.
+    - PANIC  — I am losing the race in absolute terms: my
+      `life_as_resource` buffer is strictly less than the opponent's.
+      Gear-shift: tighten chump rules, deploy reactive cards now,
+      stop holding counterspells for hypothetical threats.
+    - LETHAL — opp has on-board lethal at next combat
+      (`am_dead_next`). Every Wave-1 caller that consults this
+      enum is expected to fold to this phase first.
+
+    The four phases form a total ordering on
+    `(am_dead_next, buffer_deficit, is_early_game)` — see `life_phase`.
+    """
+
+    DEVELOP = "develop"
+    GRIND = "grind"
+    PANIC = "panic"
+    LETHAL = "lethal"
+
+
+def life_phase(snap: "EVSnapshot") -> LifePhase:
+    """Classify the snapshot into one of four life phases.
+
+    Pure composition — every comparison routes through an existing
+    primitive (`EVSnapshot.am_dead_next`, `is_early_game`,
+    `life_as_resource`). No numeric thresholds are introduced here.
+
+    Ordering rule (most urgent wins):
+
+    1. LETHAL  — `snap.am_dead_next` (opp_power >= my_life > 0).
+       Single-predicate gate; nothing else can override it.
+    2. PANIC   — past the development window AND my life buffer
+       (`life_as_resource(my_life, opp_power)`) is strictly less
+       than the opponent's (`life_as_resource(opp_life, my_power)`).
+       The buffer comparison is symmetric and free of literals: both
+       sides use the same primitive applied to mirrored arguments.
+    3. GRIND   — past the development window, neither LETHAL nor
+       PANIC. Both sides have committed clocks (`is_early_game` is
+       False) and my buffer is not strictly less than the opponent's.
+    4. DEVELOP — fallback. Either `is_early_game` (both sides'
+       clocks still exceed the early-game threshold, which is itself
+       derived in `EARLY_GAME_CLOCK_THRESHOLD`) or my buffer is at
+       least as long as the opponent's.
+
+    All four arms reduce to the same shape: a comparison between two
+    already-derived values, or a call to an already-derived predicate.
+    """
+    if snap.am_dead_next:
+        return LifePhase.LETHAL
+
+    if is_early_game(snap):
+        return LifePhase.DEVELOP
+
+    my_buffer = life_as_resource(snap.my_life, snap.opp_power)
+    opp_buffer = life_as_resource(snap.opp_life, snap.my_power)
+
+    if my_buffer < opp_buffer:
+        return LifePhase.PANIC
+
+    return LifePhase.GRIND
