@@ -350,6 +350,50 @@ def creature_clock_impact_from_card(card: "CardInstance",
 
 
 # ─────────────────────────────────────────────────────────────
+# Loyalty-pool value — composable primitive for permanents that
+# accumulate "activation pools" (planeswalkers, saga chapters,
+# class-card levels, charge-counter engines).
+# ─────────────────────────────────────────────────────────────
+
+def loyalty_pool_value(activations: float, snap: "EVSnapshot") -> float:
+    """Power-equivalent value of an expected-activation pool.
+
+    A planeswalker's loyalty pool resolves into a stream of single-card
+    effects (a +1 draws a card, a -3 bounces a permanent, a -X deals X
+    damage). Each useful activation is, on average, worth one card's
+    worth of clock impact — the same primitive `card_clock_impact`
+    already exports, scaled by `opp_life` to convert "fraction of
+    kill per turn" back into "power-equivalent units" that compose
+    cleanly with `EVSnapshot.persistent_power`.
+
+    Composition (all from existing clock primitives, no new constants):
+
+        per_tick_power = card_clock_impact(snap) × opp_life
+                       = AVG_CREATURE_POWER × castable_fraction
+
+    The total pool is `activations × per_tick_power`. Read by callers
+    as `persistent_power` so the `urgency_factor` term in
+    `position_value` decays the credit as opp's clock tightens — a
+    loyalty pool we never get to activate is worth zero, the same
+    way a Bombardment we never get to sac into is worth zero.
+
+    Args:
+        activations: Expected useful activations across the pool's
+            residency (caller computes from loyalty / opp_threat).
+        snap: Current EVSnapshot for clock context.
+
+    Returns:
+        Power-equivalent contribution suitable to add to
+        `EVSnapshot.persistent_power`.
+    """
+    if activations <= 0:
+        return 0.0
+    opp_life = max(1, snap.opp_life)
+    per_tick_power = card_clock_impact(snap) * opp_life
+    return activations * per_tick_power
+
+
+# ─────────────────────────────────────────────────────────────
 # Position value — the unified board evaluation
 # ─────────────────────────────────────────────────────────────
 

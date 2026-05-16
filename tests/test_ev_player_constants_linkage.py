@@ -87,7 +87,13 @@ REQUIRED_IMPORTS = (
     "EVOKE_CARD_LOSS_MULTIPLIER",
     "EVOKE_DESPERATE_BONUS",
     "EVOKE_NO_TARGET_PENALTY",
-    "PLANESWALKER_SURVIVAL_FLOOR",
+    # PLANESWALKER_SURVIVAL_FLOOR removed from ev_player after M5 —
+    # planeswalker loyalty-pool scoring moved to
+    # ai.ev_evaluator.expected_future_value (credited via
+    # EVSnapshot.persistent_power so urgency_factor decays the pool
+    # naturally). The constant remains in scoring_constants.py for
+    # rule-value provenance and is exercised by the parametrised
+    # `test_scoring_constant_value` above.
     "MIDGAME_HORIZON_TURNS",
     "GAME_HORIZON_MIN_TURNS",
     "GAME_HORIZON_MAX_COST_REDUCER",

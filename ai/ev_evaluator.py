@@ -63,6 +63,7 @@ from ai.scoring_constants import (
     PASS_COMBO_FULL_HAND_THRESHOLD,
     PASS_MANA_WASTE_PENALTY,
     PASS_OPP_DEVELOPMENT_PENALTY_SCALE,
+    PLANESWALKER_DEFAULT_LOYALTY,
     REANIMATION_LIFE_GAIN_ESTIMATE,
     REMOVAL_BHI_PROBABILITY_FLOOR,
     STORM_GOBLIN_LETHAL_TOKENS,
@@ -1638,6 +1639,205 @@ def _project_token_bonus(oracle_l: str, snap: "EVSnapshot"
     return (immediate_power, immediate_count, persistent_power)
 
 
+# ─────────────────────────────────────────────────────────────────────
+# Permanent-pool projection — expected_future_value
+#
+# Composable primitive used by `_project_spell` to credit permanents
+# whose value materialises through an "activation pool" rather than
+# raw P/T on entry: planeswalkers (loyalty), saga chapters, class
+# levels, charge-counter engines. Returns a power-equivalent value
+# suitable to add to `EVSnapshot.persistent_power`; the snap's
+# `urgency_factor` term in `ai.clock.position_value` then decays the
+# credit as opp's clock tightens (a pool we never activate is worth
+# zero).
+#
+# Returns 0.0 for permanents that have no future-value pool —
+# vanilla creatures, lands, simple artifacts. This lets the
+# call site dispatch uniformly across permanent types without
+# per-type `if` branches at the projection layer.
+#
+# Classification of loyalty abilities uses oracle-pattern detection
+# on the printed `[+N]: ...` / `[−N]: ...` / `[+X]: ...` blocks.
+# No card-name branches. When `engine/card_database.py` ships the
+# W0-A `PLANESWALKER_LOYALTY_PLUS1_USEFUL` /
+# `PLANESWALKER_LOYALTY_X_USEFUL` tags, this helper will read them
+# in preference to oracle parsing without changing the public
+# signature.
+# ─────────────────────────────────────────────────────────────────────
+
+# Phrases that signal a loyalty ability resolves into tangible value
+# (one card's worth of clock impact on average). Each phrase is a
+# generic Magic-rules effect, not card-specific: every PW in Modern
+# whose +1 / -X matches one of these is credited identically.
+_USEFUL_LOYALTY_EFFECT_PHRASES: Tuple[str, ...] = (
+    'draw a card', 'draws a card', 'draw cards',
+    'deals',                       # "deals N damage"
+    'create',                      # "create a 1/1 ... token"
+    'target',                      # "target creature", "target permanent"
+    'return',                      # "return ... to its owner's hand"
+    'exile',                       # "exile target ..."
+    'destroy',                     # "destroy target ..."
+    'discard',                     # "each player discards", "target discards"
+    'sacrifices',                  # "target player sacrifices"
+    'gain',                        # "you gain N life"
+    'scry', 'surveil',
+    'untap',
+    'add ',                        # mana acceleration loyalty (rare but exists)
+    'put a',                       # "put a +1/+1 counter on ..." / "put a card ..."
+    'reveal',
+    'search your library',
+    'may cast', 'may play',        # flash-grant +1: "you may cast ... as though they had flash"
+    'until your next turn',        # static-style +1 that grants a same-turn power
+    'becomes',                     # "target ... becomes a creature"
+)
+
+
+def _parse_loyalty_abilities(oracle: str) -> List[Tuple[str, str]]:
+    """Split a planeswalker's oracle text into (cost, body) ability
+    blocks. Cost is e.g. '+1', '-3', '+0', '-X', '0' — printed
+    between brackets in Modern oracle format: `[+1]: body.`.
+
+    Returns an empty list when the oracle has no `[<cost>]:` headers
+    (passive abilities or non-planeswalker cards).
+    """
+    import re as _re
+    abilities: List[Tuple[str, str]] = []
+    # Match [+1], [−3], [+X], [0], [-7] — both ASCII '-' and Unicode '−'.
+    pattern = _re.compile(r'\[([+\-−]?[0-9Xx]+)\]\s*:\s*([^\[]+)')
+    for m in pattern.finditer(oracle):
+        cost = m.group(1).replace('−', '-')
+        body = m.group(2).strip().lower()
+        abilities.append((cost, body))
+    return abilities
+
+
+def _loyalty_cost_delta(cost: str) -> int:
+    """Convert a loyalty-cost token to a signed integer delta.
+
+    '+1' → +1, '-3' → -3, '0' → 0, '+X' / '-X' → 0 (treated as
+    variable, not a fixed pool change).
+    """
+    if not cost:
+        return 0
+    sign = 1
+    rest = cost
+    if rest[0] in ('+', '-'):
+        if rest[0] == '-':
+            sign = -1
+        rest = rest[1:]
+    if rest.upper() == 'X':
+        return 0
+    try:
+        return sign * int(rest)
+    except ValueError:
+        return 0
+
+
+def _has_useful_immediate_plus_ability(oracle: str) -> bool:
+    """True if ANY non-negative-cost loyalty ability (`[+N]` or `[0]`)
+    has a body whose printed effect matches a `_USEFUL_LOYALTY_EFFECT_PHRASES`
+    phrase — i.e. the planeswalker can produce same-turn value on entry.
+
+    Mirrors the W0-A `PLANESWALKER_LOYALTY_PLUS1_USEFUL` classifier
+    (which is sourced from the same oracle text); this fallback path
+    fires when the classifier tag is absent on the template.
+    """
+    for cost, body in _parse_loyalty_abilities(oracle):
+        if _loyalty_cost_delta(cost) >= 0:
+            if any(p in body for p in _USEFUL_LOYALTY_EFFECT_PHRASES):
+                return True
+    return False
+
+
+def _has_useful_minus_ability(oracle: str) -> bool:
+    """True if ANY negative-cost loyalty ability (`[-N]` / `[-X]`) has
+    a useful body. Subsequent-turn value: the pool we spend down to
+    fire the ultimate or sustained mid-game minus abilities.
+    """
+    for cost, body in _parse_loyalty_abilities(oracle):
+        if _loyalty_cost_delta(cost) < 0 or 'X' in cost.upper():
+            if any(p in body for p in _USEFUL_LOYALTY_EFFECT_PHRASES):
+                return True
+    return False
+
+
+def expected_future_value(card: "CardInstance",
+                           snap: EVSnapshot) -> float:
+    """Power-equivalent value of a permanent's future activation pool.
+
+    Composes across permanent types without per-type branching at the
+    projection layer:
+
+      * Planeswalker → expected loyalty activations × per-tick clock
+        impact. Pool decay via `urgency_factor` happens downstream in
+        `ai.clock.position_value` when the result is read as
+        `persistent_power`.
+      * Creature / artifact / enchantment / land → 0.0 (their value
+        is captured by other terms of `_project_spell`: P/T,
+        artifact_count, etb_value, etc.). Returning 0 here keeps the
+        primitive composable across all types.
+
+    Knowledge location: oracle-driven loyalty-ability classification
+    (see `_has_useful_immediate_plus_ability` /
+    `_has_useful_minus_ability`). When W0-A's
+    `PLANESWALKER_LOYALTY_PLUS1_USEFUL` /
+    `PLANESWALKER_LOYALTY_X_USEFUL` tags are present on
+    `template.tags`, they take precedence — but the oracle fallback
+    keeps every Modern planeswalker correctly scored on day one.
+    """
+    from engine.cards import CardType
+    from ai.clock import loyalty_pool_value
+    t = card.template
+
+    # Only planeswalkers carry an "activation pool" today.
+    if CardType.PLANESWALKER not in getattr(t, 'card_types', set()):
+        return 0.0
+
+    oracle = (t.oracle_text or '').lower()
+    tags = getattr(t, 'tags', set())
+
+    # Prefer the W0-A classifier tag when present; fall back to
+    # oracle-pattern detection. Both paths express the same rule:
+    # "is the printed +N / -N ability one that produces same-turn or
+    # subsequent-turn tangible value?"
+    has_useful_plus = (
+        'planeswalker_loyalty_plus1_useful' in tags
+        or _has_useful_immediate_plus_ability(oracle)
+    )
+    has_useful_minus = (
+        'planeswalker_loyalty_x_useful' in tags
+        or _has_useful_minus_ability(oracle)
+    )
+
+    if not (has_useful_plus or has_useful_minus):
+        # No useful abilities classified — the pool resolves into
+        # passive value only. Don't over-credit; let the rest of the
+        # projection take it from here.
+        return 0.0
+
+    # Expected activations across residency: enters-with-loyalty + one
+    # +1 per turn we survive. Treat opp_clock as the residency budget,
+    # capped at the printed loyalty so a wide pool isn't over-claimed
+    # on an empty board. Equal to "loyalty - 1" historical estimate
+    # (first +1 is sunk; ticks 2..loyalty count) when both terms
+    # match, but composes generically via clock primitives.
+    loyalty = t.loyalty or PLANESWALKER_DEFAULT_LOYALTY
+    # opp_clock is a continuous float; treat NO_CLOCK as the loyalty
+    # budget — no opp pressure means we drain the pool fully.
+    from ai.clock import NO_CLOCK
+    survival_turns = (loyalty if snap.opp_clock >= NO_CLOCK
+                       else max(0.0, snap.opp_clock))
+    activations = min(float(loyalty), survival_turns)
+    # Discount slightly when the immediate +1 isn't useful (we lose
+    # the on-entry tick's value but the minus abilities still pay
+    # off over residency). Use the loyalty pool as the natural
+    # denominator — one tick out of N.
+    if not has_useful_plus and has_useful_minus and loyalty > 0:
+        activations *= max(0.0, (loyalty - 1)) / loyalty
+
+    return loyalty_pool_value(activations, snap)
+
+
 def _project_spell(card: "CardInstance", snap: EVSnapshot,
                    dk: Optional[DeckKnowledge] = None,
                    game: "GameState" = None, player_idx: int = 0) -> EVSnapshot:
@@ -1750,6 +1950,16 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
             projected.my_power += p_imm
             projected.my_creature_count += count_imm
             projected.persistent_power += p_persist
+
+    # Permanent-pool projection — composable across permanent types.
+    # Today: planeswalker loyalty pools (loyalty × per-tick clock impact,
+    # gated by oracle-classified "useful" abilities). Returns 0 for
+    # creatures / artifacts / enchantments / lands so the call site
+    # stays a single unconditional dispatch (no per-type `if`).
+    # Credited as `persistent_power` so `urgency_factor` decays the
+    # pool naturally as opp's clock tightens. See
+    # `expected_future_value` for the classifier.
+    projected.persistent_power += expected_future_value(card, snap)
 
     # Reanimation — bring back creatures from graveyard.
     #
