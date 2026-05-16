@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "_comment": "Matchup-pair role table. Replaces conditional role-flip logic across the AI. Each cell declares the role the LEFT archetype should play against the TOP archetype. See ai/gameplan.py:matchup_role and docs/history/audits/2026-05-16_5panel_bo3_audit.md (Decision 4) for context.",
+  "roles": [
+    "develop",
+    "grind_value",
+    "clock_opponent",
+    "stabilise",
+    "close_game",
+    "deploy_engine",
+    "execute_payoff"
+  ],
+  "default_opp_archetype": "midrange",
+  "matchups": {
+    "midrange": {
+      "combo":    {"role": "clock_opponent", "rationale": "Combo wins faster than midrange grinds; flip to pressure (audit Decision 4: Dimir vs Storm)."},
+      "aggro":    {"role": "stabilise",      "rationale": "Aggro is on a faster clock than midrange; survive and trade resources before grinding."},
+      "control":  {"role": "grind_value"},
+      "midrange": {"role": "grind_value"},
+      "tempo":    {"role": "grind_value"},
+      "ramp":     {"role": "clock_opponent", "rationale": "Ramp decks win late; pressure them before their payoff lands."}
+    },
+    "control": {
+      "combo":    {"role": "stabilise",   "rationale": "Disrupt and survive long enough to win the long game; do not race combo."},
+      "aggro":    {"role": "stabilise"},
+      "control":  {"role": "grind_value"},
+      "midrange": {"role": "grind_value"},
+      "tempo":    {"role": "stabilise"},
+      "ramp":     {"role": "grind_value"}
+    },
+    "aggro": {
+      "combo":    {"role": "clock_opponent"},
+      "aggro":    {"role": "clock_opponent"},
+      "control":  {"role": "clock_opponent"},
+      "midrange": {"role": "clock_opponent"},
+      "tempo":    {"role": "clock_opponent"},
+      "ramp":     {"role": "clock_opponent"}
+    },
+    "combo": {
+      "combo":    {"role": "deploy_engine"},
+      "aggro":    {"role": "deploy_engine"},
+      "control":  {"role": "deploy_engine"},
+      "midrange": {"role": "deploy_engine"},
+      "tempo":    {"role": "deploy_engine"},
+      "ramp":     {"role": "deploy_engine"}
+    },
+    "tempo": {
+      "combo":    {"role": "clock_opponent", "rationale": "Tempo plus disruption pressures combo on the relevant axis (board AND stack)."},
+      "aggro":    {"role": "stabilise"},
+      "control":  {"role": "clock_opponent"},
+      "midrange": {"role": "clock_opponent"},
+      "tempo":    {"role": "grind_value"},
+      "ramp":     {"role": "clock_opponent"}
+    },
+    "ramp": {
+      "combo":    {"role": "execute_payoff", "rationale": "Ramp must reach its payoff before combo fires — race on the deploy axis."},
+      "aggro":    {"role": "stabilise"},
+      "control":  {"role": "execute_payoff"},
+      "midrange": {"role": "execute_payoff"},
+      "tempo":    {"role": "execute_payoff"},
+      "ramp":     {"role": "execute_payoff"}
+    }
+  }
+}
