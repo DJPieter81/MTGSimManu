@@ -4,6 +4,20 @@
       "oracle_text_sha256": "6e7e3fa9bb231a1c1910cd956dc7e5c91bb22e9705b39ed61a2ebd23201950e4",
       "tags": []
     },
+    "Endurance": {
+      "oracle_text_sha256": "d984d44d84f5a77044e5c399235ef3e0cb16bbb5ffa8b5d1740920089f0e696f",
+      "tags": [
+        "ETB_ORACLE_TRIGGER",
+        "EVOKE",
+        "PITCH_ALT_COST"
+      ]
+    },
+    "Force of Negation": {
+      "oracle_text_sha256": "0ba9d8a8d2bb2d46a3c43671e5beeef14a66deebd6d64b9af3bca371d79ed8b7",
+      "tags": [
+        "PITCH_ALT_COST"
+      ]
+    },
     "Galvanic Discharge": {
       "oracle_text_sha256": "f05f431f47f8bdae881695dc2fbc80c6cda854fa2193ff713a54807103485d1b",
       "tags": [
@@ -52,6 +66,30 @@
       "oracle_text_sha256": "d0401eb08b4bb5ec4f4acb840207bf89107c642a7719c390702e961a11d5d784",
       "tags": [
         "IMPULSE_DRAW"
+      ]
+    },
+    "Reverse Engineer": {
+      "oracle_text_sha256": "f2f4594d068b702cf8971163ddc5c069285cae827b36b7b56a7a157cbff8a1e9",
+      "tags": [
+        "IMPROVISE"
+      ]
+    },
+    "Solitude": {
+      "oracle_text_sha256": "6cf8a37d8715836ccd015461e5bc272941902f49f051561090b96f8ce8d477a6",
+      "tags": [
+        "ETB_ORACLE_TRIGGER",
+        "EVOKE",
+        "PITCH_ALT_COST",
+        "TARGET_CREATURE_OR_PW"
+      ]
+    },
+    "Subtlety": {
+      "oracle_text_sha256": "919a63d8382388b243e50d2418fd291e076d4613c858d0161fe29a5142b280b5",
+      "tags": [
+        "ETB_ORACLE_TRIGGER",
+        "EVOKE",
+        "PITCH_ALT_COST",
+        "TARGET_CREATURE_OR_PW"
       ]
     },
     "Teferi, Time Raveler": {

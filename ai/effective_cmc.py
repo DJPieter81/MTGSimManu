@@ -343,8 +343,12 @@ def effective_cmc(
         remaining_generic = max(0, remaining_generic - affinity_reduction)
 
     # ── Step 6: improvise ───────────────────────────────────────────
-    oracle_lower = (template.oracle_text or "").lower()
-    if "improvise" in oracle_lower and game is not None:
+    # Tag-driven dispatch via the W0-A oracle classifier — no inline
+    # oracle-text matching.  Cards whose classifier entry doesn't
+    # carry `Tag.IMPROVISE` skip this step entirely.
+    from ai.oracle_classifier import Tag, has_tag
+
+    if has_tag(card.name, Tag.IMPROVISE) and game is not None:
         untapped_artifacts = _count_untapped_artifacts(
             game, player_idx, exclude_card=card
         )

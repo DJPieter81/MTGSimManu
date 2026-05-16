@@ -137,18 +137,18 @@ def _format_mana_cost(card: "CardInstance") -> str:
 
 
 def _has_pitch_alt_cost(card: "CardInstance") -> bool:
-    """A card has a pitch alt-cost iff its oracle text contains the
-    canonical 'exile … rather than pay' idiom (Force of Negation,
-    Force of Will, Subtlety, Solitude evoke, etc.).
+    """A card has a pitch alt-cost iff the oracle classifier tags it
+    `Tag.PITCH_ALT_COST` (Force of Negation, Force of Will, Subtlety,
+    Solitude / Fury / Endurance / Grief evoke, etc.).
 
-    Class size: every Modern card with a pitch alt-cost matches this
-    oracle pattern.  This is the same predicate already used in
-    `ai/response.py:_effective_counter_cost`; it lives here so the
-    enumerator can compose it without importing back into the
-    response-decider module (would create a cycle).
+    Tag-driven dispatch; no oracle-text matching at runtime.  When
+    `tags_for(name)` returns an empty frozenset (card not in the
+    smoke cache yet), we return False — false negatives degrade EV
+    estimation but never produce illegal plays.
     """
-    oracle = (card.template.oracle_text or "").lower()
-    return "exile a" in oracle and "rather than pay" in oracle
+    from ai.oracle_classifier import Tag, has_tag
+
+    return has_tag(card.name, Tag.PITCH_ALT_COST)
 
 
 def _has_pitch_fuel(game: "GameState", player_idx: int,
@@ -156,41 +156,31 @@ def _has_pitch_fuel(game: "GameState", player_idx: int,
     """Does the player have at least one other card in hand that
     could be exiled to pay the pitch alt-cost of `pitch_card`?
 
-    Heuristic: scan the oracle text of `pitch_card` for a color
-    word ('blue', 'white', etc.); look for any other card in hand
-    sharing that color identity.  If no color word is present, fall
-    back to "any other card in hand" — the alt-cost may not be
-    color-restricted (Subtlety pattern).
+    Structural rule for current Modern: every pitch-alt-cost card
+    is monocolor and requires exiling a card of its own color.  The
+    pitch color is therefore the card's primary color from
+    `template.color_identity`, not parsed from oracle text.
 
-    Composes ColorIdentity sets that already live on every template;
-    no new colour-detection logic in this module.
+    If `pitch_card` has no color identity (uncommon corner case)
+    OR multiple colors (no current Modern pitch card is multicolor),
+    any other non-self card in hand qualifies — same conservative
+    fallback as before, but reached via the structural predicate
+    rather than an oracle-string fallback.
     """
-    from engine.mana import Color
-
     hand = game.players[player_idx].hand
     if len(hand) < 2:
         # Only the pitch card itself in hand — no fuel.
         return False
 
-    oracle = (pitch_card.template.oracle_text or "").lower()
-    color_word_to_color = {
-        "white": Color.WHITE,
-        "blue": Color.BLUE,
-        "black": Color.BLACK,
-        "red": Color.RED,
-        "green": Color.GREEN,
-    }
-    needed: Optional[Color] = None
-    for word, color in color_word_to_color.items():
-        if f"exile a {word}" in oracle or f"exile an {word}" in oracle:
-            needed = color
-            break
+    colors = pitch_card.template.color_identity
+    if len(colors) != 1:
+        # Colorless or multicolor pitch card — accept any other card.
+        return any(other is not pitch_card for other in hand)
 
+    needed = next(iter(colors))
     for other in hand:
         if other is pitch_card:
             continue
-        if needed is None:
-            return True  # any non-self card qualifies (Subtlety-style)
         if needed in other.template.color_identity:
             return True
     return False

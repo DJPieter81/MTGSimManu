@@ -139,6 +139,18 @@ class Tag(Enum):
     EVOKE = "EVOKE"
     """Card has an Evoke alternative cost."""
 
+    PITCH_ALT_COST = "PITCH_ALT_COST"
+    """Card has an alternative cost that requires exiling another card
+    from hand instead of paying its mana cost ("Force of Negation",
+    "Solitude" evoke, "Subtlety" pitch).  The required pitch-card color
+    matches the card's own `color_identity` for current Modern cards;
+    multi-color edge cases would extend via metadata."""
+
+    IMPROVISE = "IMPROVISE"
+    """Card has the Improvise keyword — generic mana cost can be paid
+    by tapping artifacts (Kaladesh mechanic; rare in Modern but the
+    rule needs structural representation)."""
+
     KICKER = "KICKER"
     """Card has Kicker, Multikicker, or a kicker-shaped optional
     additional cost."""

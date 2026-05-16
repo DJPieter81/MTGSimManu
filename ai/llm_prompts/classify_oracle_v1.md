@@ -22,6 +22,8 @@ If you would have to read the card's metagame role to decide, return
 | `CHANNEL_ABILITY` | Card has an explicit "Channel — {cost}: effect" activated ability from hand. |
 | `DELVE` | Card has the keyword Delve. |
 | `EVOKE` | Card has an Evoke alternative cost. |
+| `PITCH_ALT_COST` | Card has an alternative cost worded "exile a <color> card from your hand rather than pay this spell's mana cost" (e.g. Force of Negation, Force of Will), OR an Evoke cost that requires exiling a card of a specific color (e.g. Solitude's "Evoke — Exile a white card from your hand"). Both Force-style and Evoke-pitch shapes carry this tag. |
+| `IMPROVISE` | Card has the Improvise keyword (Kaladesh mechanic: tap artifacts to help pay the spell's generic cost). |
 | `KICKER` | Card has Kicker, Multikicker, or a clearly kicker-shaped optional additional cost (e.g. "Kicker {2}", "as you cast, you may pay an additional {1}{R}"). |
 | `FLASHBACK` | Card has the Flashback keyword (with or without a cost — embalm and aftermath do NOT count). |
 | `SORCERY_SPEED_LOCKOUT` | Static ability that restricts opponents to sorcery speed (e.g. "each opponent can cast spells only any time they could cast a sorcery"). |
