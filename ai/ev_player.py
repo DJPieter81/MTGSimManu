@@ -2967,6 +2967,118 @@ class EVPlayer:
     # TARGETING — simple heuristic
     # ═══════════════════════════════════════════════════════════
 
+    def _enumerate_burn_targets(
+        self, game, spell, damage: int,
+    ) -> List[Tuple[int, float, str]]:
+        """Enumerate every legal target a direct-damage spell can hit.
+
+        Returns ``[(target_id, value, reason), …]`` where ``target_id``
+        is ``-1`` for face, ``CardInstance.instance_id`` otherwise.
+        The single scoring formula combines:
+
+          * face value: ``damage × burn_face_mult`` (low-life
+            multiplier when opp is at burn-range life; clock-multiplier
+            penalty when we have no creatures to back up face damage).
+          * creature value: ``permanent_threat(c, opp, game) +
+            carrier_disrupt_bonus(c)`` when ``damage`` can kill the
+            creature (toughness ≤ damage); otherwise the candidate is
+            omitted.
+          * planeswalker value: ``PLANESWALKER_BASE_VALUE + remaining
+            loyalty × PLANESWALKER_LOYALTY_VALUE`` when ``damage`` kills
+            the PW (loyalty ≤ damage); otherwise the partial-chip value
+            ``min(damage, loyalty) × PLANESWALKER_LOYALTY_VALUE``
+            (each loyalty knocked off removes one future activation
+            worth that constant).
+
+        PWs are enumerated only when the spell's oracle text permits a
+        planeswalker target — "any target" (covers creature, PW, or
+        player), or an explicit "planeswalker" mention (covers
+        "creature or planeswalker" wording on Galvanic Discharge,
+        Galvanic Blast, Tribal Flames, Unholy Heat, etc.).
+        """
+        from ai.permanent_threat import permanent_threat
+        from ai.scoring_constants import (
+            PLANESWALKER_BASE_VALUE,
+            PLANESWALKER_LOYALTY_VALUE,
+        )
+        from ai.ev_evaluator import snapshot_from_game
+
+        opp = game.players[1 - self.player_idx]
+        me = game.players[self.player_idx]
+        snap = snapshot_from_game(game, self.player_idx)
+        t = spell.template
+        oracle_text = (t.oracle_text or "").lower()
+        # Oracle gate for PW targeting: "any target" or "planeswalker"
+        # wording.  Pure "target creature" spells (Cut Down, most
+        # creature-only removal) get burn_damage=0 and don't enter this
+        # path; the few burn-tagged spells that DO target creature-only
+        # (Lightning Strike-class "target creature or player" variants
+        # in older sets) gate by oracle text rather than card name.
+        can_hit_pw = ("any target" in oracle_text
+                      or "planeswalker" in oracle_text)
+
+        candidates: List[Tuple[int, float, str]] = []
+
+        # ── Face (-1) ──
+        face_val = damage * self.profile.burn_face_mult
+        if opp.life <= self.profile.burn_low_life_threshold:
+            face_val = damage * self.profile.burn_face_low_life_mult
+        if not me.creatures and opp.life > self.profile.burn_low_life_threshold:
+            # No clock → face damage is near-worthless until we deploy.
+            face_val *= NO_CLOCK_FACE_VAL_MULTIPLIER
+        candidates.append((
+            -1, face_val,
+            f"→ face ({damage} dmg, life {opp.life} → "
+            f"{opp.life - damage}): face value {face_val:.2f}",
+        ))
+
+        # ── Opp creatures (only if killable by this damage) ──
+        for c in opp.creatures:
+            remaining_toughness = (c.toughness or 0) - getattr(
+                c, "damage_marked", 0)
+            if not (damage >= remaining_toughness > 0
+                    or remaining_toughness <= 0):
+                # Not killable — exclude from candidate set (cannot
+                # reduce position value if the creature survives).
+                continue
+            val = permanent_threat(c, opp, game)
+            # Equipment carrier bonus: killing a Plating-equipped
+            # carrier strips the equipment off (CR 702.6e).
+            val += self._carrier_disrupt_bonus(
+                game, opp, c, snap,
+                removal_destroys_artifact=False)
+            candidates.append((
+                c.instance_id, val,
+                f"→ {c.name}: marginal threat {val:.2f} "
+                f"({c.power}/{c.toughness} body) — better than "
+                f"{damage} face dmg",
+            ))
+
+        # ── Opp planeswalkers (only when the spell can target PW) ──
+        if can_hit_pw:
+            for pw in opp.planeswalkers:
+                loyalty = pw.loyalty_counters
+                if loyalty <= 0:
+                    continue
+                # Single formula:
+                #   - kill: full base + remaining loyalty value
+                #   - chip: min(damage, loyalty) × loyalty value
+                # Both terms derive from the existing PW constants —
+                # no new magic numbers, no card names.
+                if damage >= loyalty:
+                    val = (PLANESWALKER_BASE_VALUE
+                           + loyalty * PLANESWALKER_LOYALTY_VALUE)
+                    reason = (f"→ {pw.name}: kill PW (loyalty "
+                              f"{loyalty} ≤ {damage} dmg) — value "
+                              f"{val:.2f}")
+                else:
+                    val = damage * PLANESWALKER_LOYALTY_VALUE
+                    reason = (f"→ {pw.name}: chip PW ({damage} of "
+                              f"{loyalty} loyalty) — value {val:.2f}")
+                candidates.append((pw.instance_id, val, reason))
+
+        return candidates
+
     def _choose_targets(self, game, spell) -> List[int]:
         """Choose targets for a spell."""
         from ai.ev_evaluator import snapshot_from_game
@@ -2988,74 +3100,22 @@ class EVPlayer:
             if dmg >= opp.life:
                 return [-1]  # face = lethal, always go face
 
-            # Pick the highest-threat killable creature via the marginal-
-            # contribution formula: threat(c) = V_opp(B) - V_opp(B \ {c}).
-            # Scaling (equipment bonuses, "for each artifact" bonuses,
-            # synergy-denial) falls out naturally — removing a key enabler
-            # strips every dependent bonus, which shows up as a larger
-            # position-value drop. No per-synergy bolt-on, no battle-cry
-            # premium, no archetype detection; the threat formula decides.
-            from ai.permanent_threat import permanent_threat
-            best_kill_val = 0.0
-            best_kill_id = None
-            best_kill_why = ""
-            if opp.creatures:
-                for c in opp.creatures:
-                    remaining_toughness = (c.toughness or 0) - getattr(c, 'damage_marked', 0)
-                    if dmg >= remaining_toughness > 0 or remaining_toughness <= 0:
-                        val = permanent_threat(c, opp, game)
-                        # Equipment carrier bonus: if `c` is wearing
-                        # equipment, killing it strips the equipment
-                        # off (CR 702.6e) and forces opp to re-equip
-                        # at sorcery speed.  Same bonus the response-
-                        # path target picker (`_pick_best_removal_target`)
-                        # applies; propagating to the burn-vs-creature
-                        # decision so a Plating-equipped Memnite at 1
-                        # toughness gets correctly prioritised over
-                        # 3 face damage.
-                        val += self._carrier_disrupt_bonus(
-                            game, opp, c, snap,
-                            removal_destroys_artifact=False)
-                        if val > best_kill_val:
-                            best_kill_val = val
-                            best_kill_id = c.instance_id
-                            best_kill_why = (f"marginal threat {val:.1f} "
-                                             f"({c.power}/{c.toughness} body)")
-
-            # Compare: is killing a creature worth more than face damage?
-            face_val = dmg * self.profile.burn_face_mult
-            if opp.life <= self.profile.burn_low_life_threshold:
-                face_val = dmg * self.profile.burn_face_low_life_mult
-            # Don't burn face with no board presence unless opponent is low
-            me = game.players[self.player_idx]
-            if not me.creatures and opp.life > self.profile.burn_low_life_threshold:
-                face_val *= NO_CLOCK_FACE_VAL_MULTIPLIER  # near-zero value without a clock
-
-            # Prefer removing big creatures unless burn is near-lethal
-            if best_kill_id and best_kill_val > face_val:
-                _c = next((c for c in opp.creatures if c.instance_id == best_kill_id), None)
-                self._last_target_reason = (f"→ {_c.name if _c else '?'}: "
-                    f"{best_kill_why or 'killable'} — better than {dmg} face dmg")
-                return [best_kill_id]  # kill the creature
-            if best_kill_id:
-                best_kill_card = next((c for c in opp.creatures
-                                       if c.instance_id == best_kill_id), None)
-                if (best_kill_card
-                        and (best_kill_card.power or 0) >= self.profile.burn_kill_min_power
-                        and opp.life > dmg * self.profile.burn_kill_life_ratio):
-                    self._last_target_reason = (f"→ {best_kill_card.name}: "
-                        f"({best_kill_why or self._target_why(best_kill_card)}) — life safe")
-            _why_face = []
-            if opp.life <= getattr(getattr(self, "profile", None), "burn_low_life_threshold", LOW_LIFE_BURN_DEFAULT):
-                _why_face.append("opponent low life")
-            elif not game.players[self.player_idx].creatures:
-                _why_face.append("no clock yet — build pressure")
-            elif not best_kill_id:
-                _why_face.append("no killable target")
-            else:
-                _why_face.append("face damage worth more")
-            self._last_target_reason = f"→ face ({dmg} dmg, life {opp.life} → {opp.life - dmg}): {_why_face[0]}"
-            return [-1]  # go face
+            # M10 (Aggro Pattern D / Fix 4): enumerate the FULL candidate
+            # set — face, opp creatures, AND opp planeswalkers (when the
+            # spell can target a PW per oracle) — and pick by a single
+            # comparator. The previous implementation iterated
+            # `opp.creatures` only, so a 3-loyalty Teferi never appeared
+            # as a candidate and Boros sent Galvanic Discharge to face
+            # instead of killing the planeswalker.
+            candidates = self._enumerate_burn_targets(game, spell, dmg)
+            if not candidates:
+                self._last_target_reason = (
+                    f"→ face ({dmg} dmg, life {opp.life} → "
+                    f"{opp.life - dmg}): no targets")
+                return [-1]
+            best_id, best_val, best_why = max(candidates, key=lambda x: x[1])
+            self._last_target_reason = best_why
+            return [best_id]
 
         # Removal (non-burn): target best opponent permanent
         # For creature-only removal: pick best creature
