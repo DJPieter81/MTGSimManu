@@ -38,71 +38,37 @@ Derivation: ½ × LETHAL_THREAT.  Re-tune in lockstep with LETHAL_THREAT.
 
 # ─── Held-interaction preservation values ────────────────────────────
 # Used by ai/ev_player.py (holdback) and ai/mana_planner.py (fetch).
-# These two constants describe the same underlying quantity from
-# different angles: the value of holding interaction in hand.
-
-HELD_RESPONSE_VALUE_PER_CMC: float = 4.0
-"""Per-CMC value of held interaction (counterspells / removal) that may
-be lost when a main-phase tap-out forfeits response capacity.
-
-Scale used by `_held_response_penalty` in `ai/ev_player.py` as
-    counter_count × counter_cmc × opp_threat_prob × HELD_RESPONSE_VALUE_PER_CMC
-
-Iteration-2 B3-Tune: coefficient lowered 7.0 → 4.0.  The Bundle-3 value
-of 7.0 was calibrated against 2× Counterspell held (2×2×1×7 = 28, gates
-a +20 EV play), but the single-counter case (1×2×1×7 = 14) floored
-ordinary main-phase plays, triggering a measurable defender-collapse
-in N=50 matrix (Jeskai -5pp, Dimir -6pp, AzCon WST -8pp after the
-surrounding Affinity session fixes shipped).  4.0 is derived from
-CONTROL's pass_threshold = -5.0: with 1 counter × 2 CMC × threat_prob
-1.0 × 4.0 = -8 the gate still blocks a +5 main-phase play, but a
-+10 draw engine (EV 10 − 8 = +2 > -5.0) remains castable.
-2× Counterspell still scales to 2×2×1×4 = -16 which keeps the
-Bundle-3 intent intact.
-
-Now exposed as the BASE / floor of `held_response_value_per_cmc(p)` —
-the function-form below scales this up against artifact-heavy
-opponents (Affinity-class) where the held counter is the only stack-
-side answer.  Existing call sites that read the flat constant still
-behave as if facing the average opponent (p_artifact_threat = 0.0).
-
-Sister constant: HELD_COLOR_PRESERVATION_BONUS — same "held interaction
-is worth keeping castable" intent, applied at fetchland decision time.
-"""
-
-
-HELD_RESPONSE_VALUE_PER_CMC_ARTIFACT_RAMP: float = 4.0
-"""Additive ramp for `held_response_value_per_cmc(p)`: the per-CMC
-value increases from a base of 2.0 toward 2.0 + RAMP = 6.0 as
-`bhi.beliefs.p_artifact_threat` saturates.  Floored at the Iter-2
-base (4.0), so the function reduces to identity for low-artifact
-opponents.
-
-Derivation: AzCon vs Affinity (`docs/diagnostics/2026-05-01_azcon_followup.md`)
-showed a single-counter holdback at 1×2×1.0×4.0 = -8 was insufficient
-to gate a +7.5 Teferi tap-out (net -0.5, above CONTROL's pass_threshold
-of -5.0).  At p_artifact_threat ≈ 1.0 the function returns 6.0,
-yielding 1×2×1.0×6.0 = -12 (net -4.5) — still inside the gate band
-but bringing the play within reach of the threshold.  Affinity-class
-matchups depend on this ramp; non-artifact matchups stay at the floor.
-"""
 
 
 def held_response_value_per_cmc(p_artifact_threat: float = 0.0) -> float:
-    """Per-CMC value of held interaction, scaled by the artifact-threat
-    density of the opponent.
+    """Per-CMC value of held interaction (counterspells / removal) that
+    may be lost when a main-phase tap-out forfeits response capacity.
 
-    Formula:
-        max(HELD_RESPONSE_VALUE_PER_CMC,
-            2.0 + p_artifact_threat * HELD_RESPONSE_VALUE_PER_CMC_ARTIFACT_RAMP)
+    Used by `_holdback_penalty` in `ai/ev_player.py` as
+        counter_count × counter_cmc × opp_threat_prob × <this value>
 
-    For non-artifact opponents (p ≈ 0) the floor binds and the
-    function returns the Iter-2 base (4.0).  For Affinity-class
-    opponents (p ≈ 1) it ramps to 6.0.  At the midpoint (p = 0.5) the
-    linear term equals the floor, so mixed opponents see no change.
+    Formula: max(BASE, LINEAR_INTERCEPT + p_artifact_threat * RAMP).
+    Floor binds at p ≤ 0.5 (no change vs. flat-coefficient era);
+    ramps to 6.0 at p = 1.0 (Affinity-class opponents).
+
+    BASE 4.0 derivation: CONTROL pass_threshold = -5.0; 1 counter × 2
+    CMC × 1.0 × 4.0 = -8 blocks a +5 main play, leaves +10 draw
+    engines castable (Iter-2 B3-Tune; was 7.0, floored Jeskai/Dimir/
+    AzCon WST in N=50 matrix).  RAMP 4.0 derivation: AzCon vs Affinity
+    (docs/diagnostics/2026-05-01_azcon_followup.md) — at p≈1 the
+    function returns 6.0, gating a +7.5 Teferi tap-out (net -4.5,
+    inside the band).  Sister: HELD_COLOR_PRESERVATION_BONUS (fetch).
+
+    W2-2 (2026-05-16 audit): the former module-level constants
+    HELD_RESPONSE_VALUE_PER_CMC and HELD_RESPONSE_VALUE_PER_CMC_ARTIFACT_RAMP
+    were inlined here — both were only consumed via this wrapper.
     """
-    return max(HELD_RESPONSE_VALUE_PER_CMC,
-               2.0 + p_artifact_threat * HELD_RESPONSE_VALUE_PER_CMC_ARTIFACT_RAMP)
+    return max(
+        4.0,  # magic-allow: Iter-2 BASE floor, see docstring
+        2.0   # magic-allow: linear intercept (½ of floor; meets floor at p=0.5)
+        + p_artifact_threat
+        * 4.0,  # magic-allow: artifact RAMP, see docstring
+    )
 
 HELD_COLOR_PRESERVATION_BONUS: float = 8.0
 """Bonus applied to a fetchland candidate that *provides* a color the
@@ -115,7 +81,7 @@ Derivation: matches the per-demand weight in block (A) of the same
 scoring function (8.0 per enabled spell) — held interaction is worth
 the same as the spell it protects being castable.
 
-Sister constant: HELD_RESPONSE_VALUE_PER_CMC — same "held interaction
+Sister function: held_response_value_per_cmc(p) — same "held interaction
 is worth keeping castable" intent, applied at tap-out decision time.
 """
 
@@ -214,7 +180,7 @@ plus the pitched support card). The default-evoke branch in
 `_eval_evoke` returns +1.0 for the ETB value alone — that score makes
 sense for the FIRST trade but ignores the second's marginal cost.
 4.0 matches the per-CMC value of held interaction
-(`HELD_RESPONSE_VALUE_PER_CMC`) — both encode "a card we expected to
+(`held_response_value_per_cmc(0.0)` floor) — both encode "a card we expected to
 keep is now committed", so the units agree. With counter = 1 the
 penalty is -4.0, which dominates the +1.0 default and gates the
 second evoke. With counter = 2 the penalty ramps to -8.0 (no chained
@@ -887,7 +853,7 @@ the player's visible cards carry artifact-scaling text.
 Derivation: 1 power (or 1 mana) gained per synergy card × ~4
 residency turns × ~0.05 mana_clock_impact × 20
 (CLOCK_IMPACT_LIFE_SCALING) ≈ 4.0. Matches the
-`EVOKE_BUDGET_PENALTY_PER_PRIOR` and `HELD_RESPONSE_VALUE_PER_CMC`
+`EVOKE_BUDGET_PENALTY_PER_PRIOR` and `held_response_value_per_cmc()`
 family — same "one card committed" scale.
 
 Used by `_score_land` artifact-synergy branch in `ai/ev_player.py`.

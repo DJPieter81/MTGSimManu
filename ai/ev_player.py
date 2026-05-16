@@ -21,7 +21,6 @@ from ai.ev_evaluator import (
     creature_threat_value,
 )
 from ai.scoring_constants import (
-    HELD_RESPONSE_VALUE_PER_CMC,
     held_response_value_per_cmc,
     STARTING_HAND_SIZE,
     opp_threat_prob_from_density,
