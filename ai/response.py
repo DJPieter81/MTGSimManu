@@ -61,6 +61,53 @@ class ResponseDecider:
         #   }
         self.last_decision: Optional[Dict[str, Any]] = None
 
+    def _enumerate_response_candidates(
+            self, game: "GameState",
+            stack_item: "StackItem") -> List["CardInstance"]:
+        """Enumerate hand-sourced response candidate cards.
+
+        Composes the W0-G primitive
+        `ai.response_enumeration.available_responses`, so channel
+        candidates (Tag.CHANNEL_ABILITY-tagged cards in hand) surface
+        alongside counterspells, removal, and pitch-cast options
+        (audit M8 / Control Fix 4).  Channel candidates arrive with
+        target-category legality already validated by the enumerator,
+        so they bypass the instant/flash gate that land hosts
+        (Otawara, Boseiju) would otherwise fail.
+
+        Extracted to a method so tests can inspect the candidate set
+        the decider sees without having to monkey-patch decide_response.
+        """
+        from ai.response_enumeration import available_responses
+
+        candidate_sources: List["CardInstance"] = []
+        seen_ids: set = set()
+        for cand in available_responses(
+                game, stack_item, controller=self.player_idx):
+            src = cand.source
+            if src is None or cand.action == "pass":
+                continue
+            if src.zone != "hand":
+                # Battlefield activations and graveyard flashbacks
+                # route through different pipelines; surface only
+                # hand-sourced candidates here.
+                continue
+            if src.instance_id in seen_ids:
+                continue
+            # `can_cast` validates mana + target legality for normal
+            # casts.  Channel candidates carry their own cost path
+            # (activated ability + discard), so we admit them on the
+            # tag rather than requiring `can_cast` to validate the
+            # land-as-spell case.
+            if cand.action == "channel":
+                candidate_sources.append(src)
+                seen_ids.add(src.instance_id)
+                continue
+            if game.can_cast(self.player_idx, src):
+                candidate_sources.append(src)
+                seen_ids.add(src.instance_id)
+        return candidate_sources
+
     def decide_response(self, game: "GameState", stack_item: "StackItem",
                         pick_removal_target_fn: Optional[Callable] = None) -> Optional[Tuple["CardInstance", List[int]]]:
         """Decide whether and how to respond to a stack item.
@@ -71,6 +118,11 @@ class ResponseDecider:
         so the engine can emit a RESPONSE_DECISION replay event (W0-H).
         The summary is pure data — no behavior change for production code
         paths that don't read it.
+
+        Candidate enumeration composes the W0-G primitive
+        `ai.response_enumeration.available_responses` via
+        `_enumerate_response_candidates`, so channel candidates surface
+        alongside counterspells (audit M8 / Control Fix 4).
         """
         from ai.evaluator import estimate_spell_value, estimate_permanent_value
         from engine.cards import CardType, Keyword
@@ -80,9 +132,8 @@ class ResponseDecider:
         self.last_decision = None
 
         player = game.players[self.player_idx]
-        instants = [c for c in player.hand
-                    if (c.template.is_instant or c.template.has_flash)
-                    and game.can_cast(self.player_idx, c)]
+
+        instants = self._enumerate_response_candidates(game, stack_item)
 
         # "Can't be countered" — don't try counterspells against these
         threat_oracle = (stack_item.source.template.oracle_text or '').lower()
