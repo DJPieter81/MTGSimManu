@@ -62,10 +62,9 @@ DEFAULT_BUDGETS_USD: dict[LLMTask, float] = {
     "audit_doc_freshness": 1.00,
     "handler_audit":       1.00,
     "failing_test_spec":   1.00,
-    # Phase 1 refactor: ~16 decks × ~8 contexts × ~500 tokens per call.
-    # First-time warm ≈ 64K input + ~8K output tokens ≈ $0.20-$1.00.
-    # After warm, every call is a cache hit ($0).  $2 ceiling matches
-    # the directive in `docs/proposals/jazzy-swimming-muffin.md`.
+    # Phase 1 refactor (PR #402): ~16 decks × ~8 contexts × ~500 tokens
+    # per call.  First-time warm ≈ 64K input + ~8K output ≈ $0.20-$1.00.
+    # After warm, every call is a cache hit ($0).  $2 ceiling.
     "decision_scorer":     2.00,
 }
 
