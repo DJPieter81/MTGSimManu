@@ -80,12 +80,59 @@ TUTOR_STORM_BONUS = 1
 STORM_CLOSER_SELF = 1
 
 
+# ─── Archetype → pattern priority table (Phase 2 sweep) ─────────────
+#
+# Replaces the prior chain of `archetype_lc.startswith("storm" /
+# "cascade" / "rean*" / "cycling")` conditionals at the tie-break site
+# in `simulate_finisher_chain`.  Same semantics, data-shaped: each row
+# states "when archetype X is in play, prefer pattern Y at boost B".
+#
+# Adding support for a new archetype/pattern preference is a new row
+# here, not a new `elif` branch.  Card / deck names never appear.
+# The archetype keys are the lower-case archetype strings the engine
+# passes through (matching `DeckGameplan.archetype` / `archetype_subtype`).
+_ARCHETYPE_PATTERN_PRIORITY: dict[tuple[str, str], int] = {
+    # Storm decks prefer the storm payoff pattern at the tie-break.
+    ("storm", "storm"): CHAIN_ARCHETYPE_MATCH_PRIORITY,
+    # Cascade archetypes (Living End, future Crashing Footfalls) prefer
+    # the cascade pattern.  `cascade_reanimator` is the subtype hint
+    # for Living End in `ai/clock.py::_COMBO_ASSEMBLY_TARGET`.
+    ("cascade", "cascade"): CHAIN_ARCHETYPE_MATCH_PRIORITY,
+    ("cascade_reanimator", "cascade"): CHAIN_ARCHETYPE_MATCH_PRIORITY,
+    # Reanimation archetypes (Goryo's Vengeance, Through the Breach).
+    ("reanimator", "reanimation"): CHAIN_ARCHETYPE_MATCH_PRIORITY,
+    ("reanimation", "reanimation"): CHAIN_ARCHETYPE_MATCH_PRIORITY,
+    # Cycling decks (Living End shells whose archetype string is set
+    # explicitly to "cycling" via gameplan).
+    ("cycling", "cycling"): CHAIN_ARCHETYPE_MATCH_PRIORITY,
+}
+
+
 # ─── Pattern detection helpers (oracle/keyword/tag-driven) ─────────
 
 def _has_storm_keyword(card: "CardInstance") -> bool:
     """True when the card has the STORM keyword (Grapeshot pattern)."""
     from engine.cards import Keyword as Kw
     return Kw.STORM in getattr(card.template, 'keywords', set())
+
+
+def _has_flashback_recursion_pattern(card: "CardInstance") -> bool:
+    """True when the card has the flashback-graveyard-recursion
+    oracle idiom — covers any spell that retrieves instants /
+    sorceries from the graveyard via flashback.
+
+    Generic oracle predicate. Matches Past in Flames (the
+    canonical Modern case), Yawgmoth's Will-style effects, and
+    any future card sharing the pattern. No card-name gate.
+
+    Used by both v2 (this module's `_project_storm` reachable-
+    but-unprojected branch) and v3 (the orchestrator's empty-
+    library guard).
+    """
+    oracle = (getattr(card.template, 'oracle_text', '') or '').lower()
+    return ('flashback' in oracle
+            and 'graveyard' in oracle
+            and ('instant' in oracle or 'sorcery' in oracle))
 
 
 def _has_cascade_keyword(card: "CardInstance") -> bool:
@@ -250,12 +297,7 @@ def _project_storm(
     # simulator returns pattern="none" for Storm hands containing
     # only PiF + cantrips, leading the combo_evaluator to
     # hard-hold every fuel card and pass turns forever.
-    def _is_pif_pattern(c):
-        oracle = (getattr(c.template, 'oracle_text', '') or '').lower()
-        return ('flashback' in oracle
-                and 'graveyard' in oracle
-                and ('instant' in oracle or 'sorcery' in oracle))
-    has_pif_pattern = any(_is_pif_pattern(c) for c in hand)
+    has_pif_pattern = any(_has_flashback_recursion_pattern(c) for c in hand)
 
     # `library_size`/SB resolution: tutor needs SB ∪ library access.
     # We don't have SB visibility here (the simulator is pure), but
@@ -293,7 +335,7 @@ def _project_storm(
                 # PiF-pattern detected; use the PiF card's cmc
                 pif_cmcs = [
                     c.template.cmc or 0
-                    for c in hand if _is_pif_pattern(c)
+                    for c in hand if _has_flashback_recursion_pattern(c)
                 ]
                 mana_floor_unprojected = min(pif_cmcs) if pif_cmcs else 0
             return FinisherProjection(
@@ -902,11 +944,10 @@ def simulate_finisher_chain(
 
     # Pick highest-EV reachable pattern.  EV proxy:
     #   expected_damage × success_probability — projected damage
-    #   actually dealt.  Tied EV is broken by archetype hint:
-    #   archetype starting with "storm" prefers storm; "cascade*"
-    #   prefers cascade; "rean*" prefers reanimation; otherwise the
-    #   first candidate wins (deterministic order matches detection
-    #   order: storm, cascade, reanimation, cycling).
+    #   actually dealt.  Tied EV is broken by a per-(archetype,pattern)
+    #   priority table.  The table replaces the prior chain of
+    #   `archetype_lc.startswith("storm" / "cascade" / "rean" / "cycling")`
+    #   conditionals (Phase 2 sweep) — same semantics, data-shaped.
     def _ev(p: FinisherProjection) -> float:
         return p.expected_damage * p.success_probability
 
@@ -915,15 +956,9 @@ def simulate_finisher_chain(
     def _priority(p: FinisherProjection) -> int:
         # Higher = preferred.  Used only as tiebreaker — primary key
         # remains the EV proxy above.
-        if archetype_lc.startswith("storm") and p.pattern == "storm":
-            return CHAIN_ARCHETYPE_MATCH_PRIORITY
-        if archetype_lc.startswith("cascade") and p.pattern == "cascade":
-            return CHAIN_ARCHETYPE_MATCH_PRIORITY
-        if (archetype_lc.startswith("rean") or "reanimat" in archetype_lc) \
-                and p.pattern == "reanimation":
-            return CHAIN_ARCHETYPE_MATCH_PRIORITY
-        if "cycling" in archetype_lc and p.pattern == "cycling":
-            return CHAIN_ARCHETYPE_MATCH_PRIORITY
+        boost = _ARCHETYPE_PATTERN_PRIORITY.get((archetype_lc, p.pattern))
+        if boost is not None:
+            return boost
         # Default ordering: storm > reanimation > cascade > cycling.
         # Reflects how directly each pattern translates to damage:
         # storm/reanimation deal damage; cascade/cycling set up boards.

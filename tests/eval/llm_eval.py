@@ -85,6 +85,7 @@ from ai.llm_agents import build_agent
 from ai.llm_models import LLMTask
 from ai.llm_schemas import (
     BugHypothesis,
+    DecisionScoringWeights,
     DocFreshnessReport,
     FailingTestSpec,
     HandlerGapReport,
@@ -109,6 +110,12 @@ DEFAULT_THRESHOLD: dict[str, float] = {
     # match scoring path dominates and the cosine fallback rarely
     # fires.  Same 0.6 threshold as the other extraction tasks.
     "classify_oracle":     0.6,
+    # Phase 1 refactor — decision_scorer.  The output is a single
+    # float weight + short rationale; the closed-set comparison on
+    # `(archetype, context) → weight` is the dominant signal.  Same
+    # 0.6 bar as the rest of the suite until we have golden pairs
+    # to calibrate a more specific number.
+    "decision_scorer":     0.6,
 }
 
 # Closed-set field names per task — these get exact-match scoring.
@@ -123,6 +130,11 @@ _CLOSED_FIELDS_BY_TASK: dict[str, set[str]] = {
     # tags list is a closed-set-of-strings that the eval harness
     # compares structurally.
     "classify_oracle":     {"card_name"},
+    # Phase 1 refactor: decision_scorer emits a numeric `weight` plus
+    # a short rationale.  There is no closed-set categorical field;
+    # the eval harness compares the numeric weight via free-text
+    # similarity (good enough until we add golden pairs).
+    "decision_scorer":     set(),
 }
 
 _OUTPUT_TYPES = {
@@ -132,6 +144,7 @@ _OUTPUT_TYPES = {
     "handler_audit":       HandlerGapReport,
     "failing_test_spec":   FailingTestSpec,
     "classify_oracle":     OracleTagClassification,
+    "decision_scorer":     DecisionScoringWeights,
 }
 
 

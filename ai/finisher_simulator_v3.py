@@ -937,4 +937,129 @@ def simulate_finisher_chain_v3(
     See ``docs/design/2026-05-10_simulator_v3.md`` for the full
     design rationale.
     """
-    raise NotImplementedError("v3 stub — implement in PR3c")
+    # Early-return guards: no actions possible. The "no closer in
+    # hand" case is NOT an early return — the offset>0 projections
+    # cover it via library draw + tutor access (the entire point
+    # of v3).
+    if not hand:
+        return FinisherProjectionV3(pattern="none")
+
+    # 1. Build the tag-indexed library histogram. Closer categories
+    #    are detected via oracle/keyword/tag predicates inside
+    #    build_library_composition (no card names).
+    library_composition = build_library_composition(
+        library, deck_gameplan=deck_gameplan,
+    )
+
+    # Empty-library guard — only short-circuit when ALL paths are
+    # clearly cut. Hand-only, tutor+SB, and PiF-extender chains
+    # must still reach _project_multi_turn so v2's arithmetic
+    # can detect them (mirrors v2's `_is_pif_pattern` branch at
+    # ai/finisher_simulator.py:253).
+    if library_composition.total == 0:
+        has_closer_in_hand = _closer_in_hand_probability(hand) > 0.0
+        has_tutor_with_sb_access = any(
+            'tutor' in getattr(c.template, 'tags', set())
+            for c in hand
+        ) and bool(sideboard)
+        # Flashback-recursion pattern (PiF, Yawgmoth's Will, etc.):
+        # generic oracle predicate shared with v2 via
+        # ai/finisher_simulator.py:_has_flashback_recursion_pattern.
+        # No card names — `flashback + graveyard + instant/sorcery`.
+        from ai.finisher_simulator import _has_flashback_recursion_pattern
+        has_flashback_recursion = any(
+            _has_flashback_recursion_pattern(c) for c in hand
+        )
+        if (not has_closer_in_hand
+                and not has_tutor_with_sb_access
+                and not has_flashback_recursion):
+            return FinisherProjectionV3(pattern="none")
+
+    # 2. Build the per-turn-offset rollout. Each TurnOffsetProjection
+    #    carries (offset, expected_damage, closer_reachable_p,
+    #    survival_p, score). The rollout already calls v2's
+    #    simulate_finisher_chain for damage at each offset, with
+    #    storm_count reset (CR 500.4).
+    turn_projections = _project_multi_turn(
+        snap=snap,
+        hand=hand,
+        battlefield=battlefield,
+        graveyard=graveyard,
+        sideboard=sideboard,
+        library_composition=library_composition,
+        storm_count=storm_count,
+        archetype=archetype,
+        bhi_state=bhi_state,
+        max_depth=CHAIN_MULTI_TURN_DEPTH,
+    )
+
+    if not turn_projections:
+        # All offsets are dead-by-pressure or unreachable — surface
+        # a no-pattern result rather than crash on the empty argmax.
+        return FinisherProjectionV3(pattern="none")
+
+    # 3. Pick the offset with the highest score. Ties broken by
+    #    earliest offset (faster fire is preferred at parity — same
+    #    tiebreak the v2 hold-vs-fire gate uses).
+    best = max(
+        turn_projections,
+        key=lambda p: (p.score, -p.offset),
+    )
+
+    # 4. Pull v2-compat fields from the BEST offset's chain. Re-run
+    #    the v2 simulator at the best offset's snapshot delta so we
+    #    can read .pattern / .closer_name / .coverage_ratio / .mana_floor
+    #    / .chain_length / .closer_in_zone — these are not on
+    #    TurnOffsetProjection. Same arithmetic the rollout used
+    #    internally; results are consistent by construction.
+    from ai.finisher_simulator import simulate_finisher_chain
+
+    best_offset = best.offset
+    opp_pressure = max(0, int(snap.opp_power)) * best_offset
+    future_life = max(0, int(snap.my_life) - opp_pressure)
+    future_snap = snap.replace(
+        my_mana=int(snap.my_mana) + best_offset,
+        my_total_lands=int(snap.my_total_lands) + best_offset,
+        my_life=future_life,
+        turn_number=int(snap.turn_number) + best_offset,
+        storm_count=0,
+    )
+    v2_at_best = simulate_finisher_chain(
+        snap=future_snap,
+        hand=hand,
+        battlefield=battlefield,
+        graveyard=graveyard,
+        library_size=max(1, library_composition.total - best_offset),
+        storm_count=0,
+        archetype=archetype,
+        sideboard=sideboard,
+        library=None,
+    )
+
+    # 5. Hold-value semantic preserved: positive only when the best
+    #    offset is in the future. v2's hold_value field carries the
+    #    same meaning ("score if we hold for next turn").
+    hold_value = best.score if best_offset > 0 else 0.0
+
+    return FinisherProjectionV3(
+        pattern=v2_at_best.pattern,
+        expected_damage=best.expected_damage,
+        success_probability=best.closer_reachable_p * best.survival_p,
+        mana_floor=v2_at_best.mana_floor,
+        chain_length=v2_at_best.chain_length,
+        closer_name=v2_at_best.closer_name,
+        hold_value=hold_value,
+        next_turn_damage=(
+            turn_projections[1].expected_damage
+            if len(turn_projections) > 1 else 0.0
+        ),
+        coverage_ratio=v2_at_best.coverage_ratio,
+        closer_in_zone=v2_at_best.closer_in_zone,
+        library_composition=library_composition,
+        turn_projections=turn_projections,
+        best_turn_offset=best_offset,
+        tutor_access_chains=(),  # populated by future PR if needed
+        p_closer_by_turn=tuple(
+            p.closer_reachable_p for p in turn_projections
+        ),
+    )

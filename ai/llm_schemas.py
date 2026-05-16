@@ -400,6 +400,56 @@ class OracleTagClassification(_LLMBase):
     )
 
 
+class DecisionScoringWeights(_LLMBase):
+    """One scaling-weight scoring decision from the `decision_scorer`
+    agent.
+
+    Phase 1 of the project-direction refactor: replaces archetype-tied
+    scaling multipliers (`TRON_MANA_ADVANTAGE`, `CYCLING_CASCADE_BOOST`,
+    etc.) that were previously hand-tuned constants in
+    `ai/scoring_constants.py`.  The agent is queried per
+    ``(archetype, decision_context)`` pair; the cache key for that pair
+    is the cache key for this schema (see
+    :func:`ai.llm_decision_scorer.weight`).
+
+    Contract:
+    - ``weight`` is a finite float that scales a base value derived
+      from a clock/mana primitive at the call site.  Typical range:
+      [0.0, 20.0]; pure neutral is 1.0 (the call site falls back to
+      this when budget is exhausted).
+    - ``confidence`` is 0..1 — purely advisory, surfaced in metrics
+      so operators can spot cache rows the model wasn't sure about.
+    - ``rationale`` is a one-sentence justification.  Stored in the
+      cache so future readers (and the LLM-judge audit) can review
+      *why* this scaling factor was chosen for the archetype.
+    """
+
+    weight: Annotated[
+        float,
+        Field(
+            description="Scaling weight for the named decision context, "
+            "typically [0.0, 20.0].  1.0 = neutral (no scaling).  "
+            "The call site multiplies this against a base value "
+            "derived from a clock/mana primitive.",
+        ),
+    ]
+    confidence: Annotated[
+        float,
+        Field(
+            ge=0.0,
+            le=1.0,
+            description="Model's confidence in the weight, 0..1.  "
+            "Advisory only; the sim does not branch on this value.",
+        ),
+    ] = 0.5
+    rationale: str = Field(
+        default="",
+        description="One-sentence justification for the weight value.  "
+        "Stored in the cache for offline audit.",
+        max_length=240,
+    )
+
+
 class FailingTestSpec(_LLMBase):
     """Reserved for G-5 (deferred). Defined now so the schema surface
     is complete for `ai/llm_agents.py`."""
@@ -522,6 +572,7 @@ __all__ = [
     "BugHypothesis",
     "HandlerGapReport",
     "DocFreshnessReport",
+    "DecisionScoringWeights",
     "FailingTestSpec",
     "OracleTagClassification",
     "to_json_dict",

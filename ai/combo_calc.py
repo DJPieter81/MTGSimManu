@@ -132,10 +132,17 @@ def _build_role_cache(goal_engine):
     return cache
 
 
-def _compute_combo_value(snap, archetype="combo"):
-    """Position swing from winning: COMBO_IDEAL_POSITION_CEIL - current position."""
+def _compute_combo_value(snap):
+    """Position swing from winning: COMBO_IDEAL_POSITION_CEIL - current position.
+
+    Phase 2 refactor: the prior ``archetype`` parameter is dropped —
+    ``position_value`` no longer takes one (the combo-clock override
+    that consumed it is removed).  The caller is always a combo-zone
+    assessor by construction (storm / graveyard / mana), so no
+    archetype routing is required at this layer either.
+    """
     from ai.clock import position_value
-    current_pos = position_value(snap, archetype)
+    current_pos = position_value(snap)
     return max(1.0, COMBO_IDEAL_POSITION_CEIL - current_pos)
 
 
@@ -263,7 +270,7 @@ def _assess_storm_zone(game, player_idx, goal_engine, snap, zone, target,
 
     payoff_value = projected_damage / opp_life
 
-    combo_value = _compute_combo_value(snap, "storm")
+    combo_value = _compute_combo_value(snap)
     risk_discount = _compute_risk_discount(bhi, opp)
 
     is_ready = (projected_damage >= opp_life
@@ -348,7 +355,7 @@ def _assess_graveyard_zone(game, player_idx, goal_engine, snap, zone, target,
         enabler_names |= goal.card_roles.get('enablers', set())
     has_enabler = any(c.name in enabler_names for c in me.hand)
 
-    combo_value = _compute_combo_value(snap, "combo")
+    combo_value = _compute_combo_value(snap)
     risk_discount = _compute_risk_discount(bhi, opp)
 
     is_ready = (resource_current >= target and has_payoff
@@ -396,7 +403,7 @@ def _assess_mana_zone(game, player_idx, goal_engine, snap, zone, target,
         engine_names |= goal.card_roles.get('engines', set())
     has_enabler = any(c.name in engine_names for c in me.battlefield)
 
-    combo_value = _compute_combo_value(snap, "combo")
+    combo_value = _compute_combo_value(snap)
     risk_discount = _compute_risk_discount(bhi, opp)
 
     is_ready = (mana_available >= target and has_payoff)

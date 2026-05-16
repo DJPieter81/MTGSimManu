@@ -34,6 +34,13 @@ from ai import ev_player, scoring_constants
 # ─── Constants advertised in scoring_constants.py ────────────────────
 
 
+# Constants that are still hand-tuned literals in
+# `ai/scoring_constants.py`.  The eight archetype-tied scaling
+# constants (COMBO_FORCE_PAYOFF_STORM_THRESHOLD, TRON_MANA_ADVANTAGE,
+# AMULET_TITAN_MANA_BONUS, CYCLING_{CASCADE_BOOST,GY_URGENCY,
+# GAMEPLAN_BOOST,FREE_COST_BONUS}, and clock's CASCADE_FREE_SPELL_VALUE)
+# were dropped in the Phase 1 LLM-decision-scorer refactor — see
+# `tests/test_llm_decision_scorer.py` for the new migration-lock.
 @pytest.mark.parametrize("name, expected", [
     ("REANIMATE_OVERRIDE_BONUS", 40.0),
     ("FREE_CAST_TEMPO_BONUS", 1.5),
@@ -55,15 +62,8 @@ from ai import ev_player, scoring_constants
     ("BLINK_FIZZLE_FLOOR", -50.0),
     ("CHUMP_SENTINEL_VALUE", 999.0),
     ("NO_CLOCK_FACE_VAL_MULTIPLIER", 0.1),
-    ("COMBO_FORCE_PAYOFF_STORM_THRESHOLD", 5),
     ("LANDFALL_TRIGGER_VALUE", 3.0),
     ("ARTIFACT_LAND_SYNERGY_BONUS", 4.0),
-    ("TRON_MANA_ADVANTAGE", 4.0),
-    ("AMULET_TITAN_MANA_BONUS", 4.0),
-    ("CYCLING_CASCADE_BOOST", 8.0),
-    ("CYCLING_GY_URGENCY", 6.0),
-    ("CYCLING_GAMEPLAN_BOOST", 10.0),
-    ("CYCLING_FREE_COST_BONUS", 2.0),
     ("CYCLING_CHEAP_COST_BONUS", 1.0),
     ("CYCLING_GY_REANIMATE_BASE", 4.0),
     ("CYCLING_GY_REANIMATE_PER_POWER", 0.5),
@@ -108,15 +108,8 @@ REQUIRED_IMPORTS = (
     "BLINK_FIZZLE_FLOOR",
     "CHUMP_SENTINEL_VALUE",
     "NO_CLOCK_FACE_VAL_MULTIPLIER",
-    "COMBO_FORCE_PAYOFF_STORM_THRESHOLD",
     "LANDFALL_TRIGGER_VALUE",
     "ARTIFACT_LAND_SYNERGY_BONUS",
-    "TRON_MANA_ADVANTAGE",
-    "AMULET_TITAN_MANA_BONUS",
-    "CYCLING_CASCADE_BOOST",
-    "CYCLING_GY_URGENCY",
-    "CYCLING_GAMEPLAN_BOOST",
-    "CYCLING_FREE_COST_BONUS",
     "CYCLING_CHEAP_COST_BONUS",
     "CYCLING_GY_REANIMATE_BASE",
     "CYCLING_GY_REANIMATE_PER_POWER",

@@ -79,6 +79,36 @@ import sys as _sys
 _TRACE = _os.environ.get("MTGSIM_COMBO_TRACE", "") == "1"
 
 
+# ─── Finisher simulator v3 opt-in flag ─────────────────────────────
+#
+# Phase D / sim_v3 (docs/design/2026-05-10_simulator_v3.md) ships
+# v3 of the finisher simulator as an OPT-IN replacement for v2.
+# When ``MTGSIM_USE_FINISHER_V3`` is unset (or "" / "0" / "false" /
+# "no" / "off"), the v2 simulator (`ai.finisher_simulator.
+# simulate_finisher_chain`) drives the projection — production
+# behaviour is byte-identical to pre-flag.
+#
+# When the flag is truthy, ``_project_baseline`` calls
+# ``ai.finisher_simulator_v3.simulate_finisher_chain_v3`` instead.
+# The v3 path returns a wire-compatible ``FinisherProjectionV3``
+# (every v2 field present, additive v3 fields after).
+#
+# Mirrors the MCTS flag pattern at ``ai/ev_player.py:137-161``.
+# Off-tokens are deliberately permissive so the flag composes
+# cleanly with shells / CI runners that pass
+# ``MTGSIM_USE_FINISHER_V3=0`` to disable.
+_FINISHER_V3_FLAG_ENV = "MTGSIM_USE_FINISHER_V3"
+_FINISHER_V3_OFF_TOKENS = {"", "0", "false", "no", "off"}
+
+
+def _use_finisher_v3() -> bool:
+    """Return True iff ``MTGSIM_USE_FINISHER_V3`` is set to a
+    truthy value. Default OFF — production matrix runs are
+    unchanged unless the user opts in."""
+    raw = _os.environ.get(_FINISHER_V3_FLAG_ENV, "")
+    return raw.strip().lower() not in _FINISHER_V3_OFF_TOKENS
+
+
 def _log_evaluation(card_name: str, branch: str, score: float,
                      **fields) -> None:
     """Emit a structured trace line when MTGSIM_COMBO_TRACE=1.
@@ -126,7 +156,7 @@ def _flip_transform_bonus(card, snap, me, storm_count) -> float:
         return 0.0
     marginal_p = 0.5 ** (storm_count + 1)  # magic-allow: P(heads) for fair coin (CR 705.2)
     from ai.combo_calc import _compute_combo_value
-    combo_value = _compute_combo_value(snap, "combo")
+    combo_value = _compute_combo_value(snap)
     return marginal_p * combo_value * FLIP_COIN_TRANSFORM_VALUE_FRACTION * len(flip_creatures)
 
 
@@ -141,7 +171,7 @@ def _search_tax_penalty(card, game, player_idx, snap) -> float:
     if tax_count == 0:
         return 0.0
     from ai.combo_calc import _compute_combo_value
-    combo_value = _compute_combo_value(snap, "combo")
+    combo_value = _compute_combo_value(snap)
     opp_life = max(1, snap.opp_life)
     card_value = combo_value / opp_life * TUTOR_TAX_LIFE_NORMALIZER
     return -tax_count * card_value
@@ -220,7 +250,8 @@ def _chain_relevance(card, chain_card_ids: set) -> float:
 
 def _project_baseline(snap, hand, battlefield, graveyard,
                        library_size, storm_count, archetype,
-                       sideboard=None, library=None):
+                       sideboard=None, library=None,
+                       bhi_state=None):
     """Run the simulator and extract the chain's card_ids.
 
     Passes `sideboard` / `library` through so the simulator can
@@ -229,19 +260,49 @@ def _project_baseline(snap, hand, battlefield, graveyard,
     projection collapses to expected_damage=0 for tutor-only
     Storm hands — the gap that broke four prior Phase D
     migration attempts.
+
+    When ``MTGSIM_USE_FINISHER_V3`` is set to a truthy value, this
+    function dispatches to ``ai.finisher_simulator_v3.
+    simulate_finisher_chain_v3`` instead of v2. The v3 result is
+    a wire-compatible ``FinisherProjectionV3`` (every v2 field
+    present); the chain_card_ids extraction below is unchanged.
     """
-    from ai.finisher_simulator import simulate_finisher_chain
-    proj = simulate_finisher_chain(
-        snap=snap,
-        hand=hand,
-        battlefield=battlefield,
-        graveyard=graveyard,
-        library_size=library_size,
-        storm_count=storm_count,
-        archetype=archetype,
-        sideboard=sideboard,
-        library=library,
-    )
+    if _use_finisher_v3():
+        # v3 path: opt-in only. Build a default BHI tracker if the
+        # caller did not pass one (PlayerState does not carry a
+        # tracker; only EVPlayer does). The default tracker returns
+        # conservative post-init values for counter / removal
+        # probability — the v3 path is robust to the absence of a
+        # real opp model.
+        from ai.finisher_simulator_v3 import simulate_finisher_chain_v3
+
+        if bhi_state is None:
+            from ai.bhi import BayesianHandTracker
+            bhi_state = BayesianHandTracker(player_idx=0)
+        proj = simulate_finisher_chain_v3(
+            snap=snap,
+            hand=hand,
+            battlefield=battlefield,
+            graveyard=graveyard,
+            library=library or [],
+            sideboard=sideboard or [],
+            storm_count=storm_count,
+            archetype=archetype,
+            bhi_state=bhi_state,
+        )
+    else:
+        from ai.finisher_simulator import simulate_finisher_chain
+        proj = simulate_finisher_chain(
+            snap=snap,
+            hand=hand,
+            battlefield=battlefield,
+            graveyard=graveyard,
+            library_size=library_size,
+            storm_count=storm_count,
+            archetype=archetype,
+            sideboard=sideboard,
+            library=library,
+        )
     chain_card_ids: set = set()
     if proj.pattern == "storm":
         # Re-run find_all_chains with the same inputs so we can
@@ -304,17 +365,22 @@ def card_combo_evaluation(
     else:
         sb = getattr(me, 'sideboard', None) or []
         lib = list(me.library)
+        # Plumb the EVPlayer's BHI tracker through to v3 if the
+        # caller wraps PlayerState (PlayerState itself has no
+        # tracker; EVPlayer.bhi is the source of truth). v2 path
+        # ignores this kwarg entirely.
+        bhi_state = getattr(me, 'bhi', None)
         baseline_proj, chain_card_ids = _project_baseline(
             snap, list(me.hand), list(me.battlefield),
             list(me.graveyard), library_size, storm_count, archetype,
-            sideboard=sb, library=lib,
+            sideboard=sb, library=lib, bhi_state=bhi_state,
         )
         _BASELINE_CACHE[cache_key] = (baseline_proj, chain_card_ids)
 
     # ── 2. Orthogonal terms ──
     flip_bonus = _flip_transform_bonus(card, snap, me, storm_count)
     tax_penalty = _search_tax_penalty(card, game, player_idx, snap)
-    combo_value = _compute_combo_value(snap, "combo")
+    combo_value = _compute_combo_value(snap)
     opp_life = max(1, snap.opp_life)
 
     # ── 3. Hard hold when no reachable chain AND card is chain fuel ──

@@ -178,7 +178,16 @@ ALL_FIXTURES = [
 # ─── Round-trip ─────────────────────────────────────────────────────
 
 
-@pytest.mark.parametrize("obj", ALL_FIXTURES, ids=lambda o: type(o).__name__ + "/" + str(id(o)))
+# Stable parametrize IDs — index into ALL_FIXTURES, not id(obj),
+# so pytest-xdist collects identical IDs across workers. Using
+# `id(obj)` here breaks parallel runs because Python object
+# addresses differ between processes.
+_FIXTURE_IDS = tuple(
+    f"{type(obj).__name__}-{idx}" for idx, obj in enumerate(ALL_FIXTURES)
+)
+
+
+@pytest.mark.parametrize("obj", ALL_FIXTURES, ids=_FIXTURE_IDS)
 def test_every_schema_round_trips_via_json_helpers(obj):
     """`from_json_dict(cls, to_json_dict(obj)) == obj` for every schema.
 

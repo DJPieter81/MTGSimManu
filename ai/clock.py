@@ -26,7 +26,6 @@ from ai.scoring_constants import (
     ANNIHILATOR_CHIP_PER_OPP_CREATURE,
     ANNIHILATOR_BASE_SAC,
     PROWESS_TRIGGER_PER_TURN,
-    CASCADE_FREE_SPELL_VALUE,
     ETB_VALUE_BONUS,
     TOKEN_MAKER_BONUS,
     AVG_CREATURE_POWER,
@@ -314,8 +313,19 @@ def creature_clock_impact(power: int, toughness: int,
         base += PROWESS_TRIGGER_PER_TURN / opp_life
 
     # Cascade: free spell of CMC < caster ≈ another small creature.
+    # Phase 1 refactor: scaling factor sourced from the LLM helper,
+    # cached per (archetype, context).  The keyword-tied "*" wildcard
+    # row in DEFAULT_WEIGHTS preserves the historical 2.5 value when
+    # the cache is cold.
     if "cascade" in keywords:
-        base += CASCADE_FREE_SPELL_VALUE / opp_life
+        from ai.llm_decision_scorer import (
+            weight as _scorer_weight,
+            CTX_CASCADE_FREE_SPELL_VALUE,
+        )
+        # The clock layer is archetype-agnostic at this level; use the
+        # "*" wildcard so the LLM scoring layer can refine per-deck
+        # values via the cache without forking this code path.
+        base += _scorer_weight("*", CTX_CASCADE_FREE_SPELL_VALUE) / opp_life
 
     # Implicit toughness blocking value (no keyword required).
     if toughness > 0 and snap.opp_power > 0:
@@ -397,11 +407,21 @@ def loyalty_pool_value(activations: float, snap: "EVSnapshot") -> float:
 # Position value — the unified board evaluation
 # ─────────────────────────────────────────────────────────────
 
-def position_value(snap: "EVSnapshot", archetype: str = "midrange") -> float:
+def position_value(snap: "EVSnapshot") -> float:
     """Unified board evaluation. Replaces 4 archetype-specific evaluators.
 
     Returns clock differential + resource advantage.
     Higher = better position for the player.
+
+    Phase 2 refactor: the prior `archetype` parameter and the
+    `min(my_clock, combo_clock(snap))` override are removed.  Combo
+    decks express their proximity to a win through per-deck gameplan
+    data and LLM-scored weights at the call-site layer (e.g.
+    ``ai.ev_evaluator.compute_play_ev``'s combo-chain branch and
+    ``ai.combo_calc.assess_combo``).  Removing the override here
+    keeps ``position_value`` mechanic-driven and archetype-agnostic —
+    every Modern card hits the same code path regardless of which
+    deck is currently controlling it.
     """
     # Dead check
     if snap.my_life <= 0:
@@ -423,12 +443,6 @@ def position_value(snap: "EVSnapshot", archetype: str = "midrange") -> float:
         snap.opp_power, snap.my_life,
         snap.opp_evasion_power, snap.my_toughness
     )
-
-    # Combo decks: override my_clock with combo-specific clock
-    if archetype in ("combo", "storm"):
-        combo_c = combo_clock(snap)
-        # Use the faster of combat clock and combo clock
-        my_clock = min(my_clock, combo_c)
 
     # Clock differential: positive = I'm winning the race
     clock_diff = opp_clock - my_clock

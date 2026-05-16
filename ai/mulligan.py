@@ -118,6 +118,24 @@ class MulliganDecider:
         self.archetype = archetype
         self.goal_engine = goal_engine
 
+    def _policy(self):
+        """Return the loaded `MulliganPolicy` for this decider.
+
+        Phase 2 sweep: every `self.archetype == X` conditional that
+        used to live in this class is replaced by a read of one of
+        this policy's boolean fields.  The policy is loaded from
+        the gameplan when present, else synthesized from the
+        archetype enum's value (so the legacy "no gameplan, just
+        an enum" code path keeps working).
+        """
+        from ai.gameplan import _default_mulligan_policy_for
+        if self.goal_engine and self.goal_engine.gameplan:
+            policy = getattr(self.goal_engine.gameplan, "mulligan_policy", None)
+            if policy is not None:
+                return policy
+        arch_str = getattr(self.archetype, "value", None) or "midrange"
+        return _default_mulligan_policy_for(arch_str)
+
     def decide(self, hand: List["CardInstance"], cards_in_hand: int) -> bool:
         """Return True to keep, False to mulligan.
 
@@ -449,14 +467,14 @@ class MulliganDecider:
                         )
                         return False
 
-            # Combo decks with always_early: prefer reducer
-            # Only apply ritual/cantrip/finisher backup check to combo archetype.
-            # Bug fix: the previous check `self.archetype in ('storm', 'combo')`
-            # compared an ArchetypeStrategy enum against string literals, which
-            # always evaluated False — making this entire guardrail dead code.
+            # Combo decks with always_early: prefer reducer.
+            # Phase 2 sweep: the prior `self.archetype == ArchetypeStrategy.COMBO`
+            # gate is now `policy.requires_combo_backup`, a per-deck
+            # data flag.  Default for archetype="combo" is True; non-combo
+            # decks default to False (the gate is skipped).
             if (gp.always_early
                     and cards_in_hand >= MULLIGAN_STARTING_HAND_SIZE
-                    and self.archetype == ArchetypeStrategy.COMBO):
+                    and self._policy().requires_combo_backup):
                 # Include only IMMEDIATE cost-reducers: the always_early
                 # list (curated per deck — e.g. Ruby Medallion) plus any
                 # non-creature cost_reducer-tagged card in hand.
@@ -557,7 +575,10 @@ class MulliganDecider:
                     #     cheap spells so the key-card hand actually develops
                     if cards_in_hand <= MULLIGAN_FIRST_MULL_HAND_SIZE:
                         min_cheap = 1
-                    elif self.archetype == ArchetypeStrategy.COMBO:
+                    elif self._policy().key_card_min_cheap_relaxed:
+                        # Combo decks may keep a key-card hand with
+                        # only one cheap spell (the combo piece often
+                        # IS the cheap spell).  Per-deck flag.
                         min_cheap = 1
                     else:
                         min_cheap = MULLIGAN_KEY_DEVELOPMENT_REQUIRED
@@ -613,8 +634,15 @@ class MulliganDecider:
         return result
 
     def _generic(self, hand: List["CardInstance"], lands: List["CardInstance"], spells: List["CardInstance"], cards_in_hand: int) -> bool:
-        """Generic mulligan heuristic when no gameplan is available."""
-        from ai.strategy_profile import ArchetypeStrategy
+        """Generic mulligan heuristic when no gameplan is available.
+
+        Phase 2 sweep: this method previously branched on
+        ``self.archetype == ArchetypeStrategy.X``.  It now reads
+        ``self._policy().generic_branch`` — a per-deck string ("combo",
+        "aggro", "control", "midrange") chosen by the gameplan and
+        defaulting to the archetype's name.  No archetype enum
+        membership checks remain.
+        """
         from ai.gameplan import DEFAULT_MULLIGAN_CMC_PROFILE
 
         # No-gameplan fallback uses the default CMC profile — same brackets
@@ -622,6 +650,7 @@ class MulliganDecider:
         cheap_cmc = DEFAULT_MULLIGAN_CMC_PROFILE["cheap"]
         medium_cmc = DEFAULT_MULLIGAN_CMC_PROFILE["medium"]
 
+        branch = self._policy().generic_branch
         land_count = len(lands)
         # P1 fix: 0 lands = always mulligan (no free-spell exception needed
         # since decks using Evoke/Living End have gameplans with min_lands)
@@ -629,24 +658,24 @@ class MulliganDecider:
             self.last_reason = "0 lands — auto-mulligan"
             return False
         if land_count == 1 and cards_in_hand == MULLIGAN_STARTING_HAND_SIZE:
-            if self.archetype == ArchetypeStrategy.AGGRO:
+            if branch == "aggro":
                 return (sum(1 for s in spells if s.template.cmc <= cheap_cmc)
                         >= MULLIGAN_GENERIC_AGGRO_CHEAP_FLOOR)
             return False
         if (land_count >= MULLIGAN_FLOOD_LAND_COUNT
                 and cards_in_hand == MULLIGAN_STARTING_HAND_SIZE):
             return False
-        if self.archetype == ArchetypeStrategy.COMBO:
+        if branch == "combo":
             has_piece = any("combo" in c.template.tags for c in spells)
             if land_count >= DEFAULT_MULLIGAN_MIN_LANDS and has_piece:
                 return True
             return (cards_in_hand <= MULLIGAN_FIRST_MULL_HAND_SIZE
                     or land_count >= DEFAULT_MULLIGAN_MIN_LANDS)
-        if self.archetype == ArchetypeStrategy.AGGRO:
+        if branch == "aggro":
             return (1 <= land_count <= MULLIGAN_GENERIC_LAND_FLOOR_AGGRO
                     and sum(1 for s in spells if s.template.cmc <= cheap_cmc)
                     >= MULLIGAN_GENERIC_AGGRO_CHEAP_DEV)
-        if self.archetype == ArchetypeStrategy.CONTROL:
+        if branch == "control":
             if land_count >= MULLIGAN_GENERIC_LAND_FLOOR_CONTROL:
                 return sum(1 for s in spells
                            if "removal" in s.template.tags or
@@ -837,8 +866,13 @@ class MulliganDecider:
         return out
 
     def _card_keep_score(self, card: "CardInstance", hand: List["CardInstance"]) -> float:
-        """Score a card for mulligan bottom. Higher = more valuable to keep."""
-        from ai.strategy_profile import ArchetypeStrategy
+        """Score a card for mulligan bottom. Higher = more valuable to keep.
+
+        Phase 2 sweep: the 3 prior archetype-enum branches that picked
+        between AT_HOME and AWAY scaling are now data-driven via
+        ``self._policy()``.  Each tag-bonus consults one boolean field
+        on the policy.
+        """
         from engine.cards import Keyword
 
         # Suspend-only cards are dead in hand — always bottom
@@ -849,6 +883,7 @@ class MulliganDecider:
         score = 0.0
         t = card.template
         lands_in_hand = count_lands(hand)
+        policy = self._policy()
 
         if t.is_land:
             score += (KEEP_SCORE_LAND_NEEDED
@@ -864,16 +899,15 @@ class MulliganDecider:
                 score += KEEP_SCORE_THREAT_TAG
             if "early_play" in t.tags:
                 score += (KEEP_SCORE_EARLY_PLAY_AT_HOME
-                          if self.archetype == ArchetypeStrategy.AGGRO
+                          if policy.keep_score_early_play_at_home
                           else KEEP_SCORE_EARLY_PLAY_AWAY)
             if "combo" in t.tags:
                 score += (KEEP_SCORE_COMBO_AT_HOME
-                          if self.archetype == ArchetypeStrategy.COMBO
+                          if policy.keep_score_combo_at_home
                           else KEEP_SCORE_COMBO_AWAY)
             if "counterspell" in t.tags:
                 score += (KEEP_SCORE_COUNTERSPELL_AT_HOME
-                          if self.archetype in (ArchetypeStrategy.CONTROL,
-                                                ArchetypeStrategy.TEMPO)
+                          if policy.keep_score_counterspell_at_home
                           else KEEP_SCORE_COUNTERSPELL_AWAY)
         return score
 

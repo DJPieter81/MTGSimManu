@@ -66,6 +66,10 @@ DEFAULT_BUDGETS_USD: dict[LLMTask, float] = {
     # cap covers a from-scratch full rebuild on Haiku 4.5 plus headroom
     # for re-runs after prompt-version bumps.  Per-call cost is ~$0.005.
     "classify_oracle":     20.00,
+    # Phase 1 refactor (PR #402): ~16 decks × ~8 contexts × ~500 tokens
+    # per call.  First-time warm ≈ 64K input + ~8K output ≈ $0.20-$1.00.
+    # After warm, every call is a cache hit ($0).  $2 ceiling.
+    "decision_scorer":     2.00,
 }
 
 # Per-task input-token caps per call.  8000 is sufficient for the
@@ -81,6 +85,11 @@ DEFAULT_TOKEN_CAPS: dict[LLMTask, int] = {
     # classify_oracle feeds one card per call — a few hundred tokens of
     # prompt-header plus a tiny per-card payload.  4000 is generous.
     "classify_oracle":     4000,
+    # Phase 1 refactor: archetype + short context label as user input,
+    # but the system prompt at ai/llm_prompts/decision_scorer_v1.md is
+    # ~1700 tokens — the contract documentation is the bulk of the input.
+    # 2500 gives ~50% headroom while still failing loud on a runaway prompt.
+    "decision_scorer":     2500,
 }
 
 # Fallback budget when a caller passes an unknown task literal.

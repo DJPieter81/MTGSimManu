@@ -407,6 +407,95 @@ class DeckGameplan:
     # Cards that are critical to the primary plan (if all exiled, switch to fallback)
     critical_pieces: Set[str] = field(default_factory=set)
 
+    # ─── Phase 2 sweep fields ───────────────────────────────────────
+    # Data fields that replace the prior `archetype ==` / `archetype in
+    # (...)` conditional gates in `ai/mulligan.py`, `ai/engine_disruption.py`,
+    # and `ai/ev_evaluator.py`.  Synthesized from the gameplan's
+    # `archetype` string when the JSON does not declare them
+    # explicitly (see `_default_mulligan_policy_for`).
+
+    # `engine_disruption_value` premium fires only when this is True.
+    # Combo decks (Ruby Storm, Living End, Amulet Titan, Goryo's
+    # Vengeance) declare this True; everything else stays False.
+    # Replaces the `archetype == "combo"` gate at engine_disruption.py:146.
+    enables_disruption: bool = False
+
+    # Storm / combo chain scoring (signals #10, #14, #17 in
+    # `ai/ev_evaluator.py`, plus the win-swing path at line 2645) used
+    # to fire only for `archetype in ("storm", "combo")`.  Phase 2
+    # replaces that with this explicit flag.  Decks whose plan involves
+    # casting a chain of rituals / cantrips / cost-reducers to reach a
+    # storm-keyword or token-spawning payoff set this True.
+    uses_combo_chain_scoring: bool = False
+
+    # Mulligan policy: see `MulliganPolicy` below.  Synthesized from
+    # the gameplan's `archetype` field when the JSON does not declare
+    # it explicitly.
+    mulligan_policy: Optional["MulliganPolicy"] = None
+
+
+@dataclass
+class MulliganPolicy:
+    """Data fields driving the 7 archetype-conditional mulligan sites.
+
+    Phase 2 collapses the prior `if self.archetype == ArchetypeStrategy.X`
+    chain in `ai/mulligan.py` into reads of this dataclass.  Each field
+    documents which call site it controls.
+
+    Defaults match the "midrange / neutral" archetype, so a deck that
+    declares neither this dataclass nor an archetype gets the safe
+    midrange behaviour.
+    """
+    # mulligan.py:447-479 — combo decks with `always_early` declared
+    # require ritual + cantrip + finisher backup when their reducer
+    # hand-set is empty.  Non-combo decks skip the backup check.
+    requires_combo_backup: bool = False
+
+    # mulligan.py:548-554 — combo decks may keep a key-card hand with
+    # only one cheap spell; non-combo archetypes need
+    # `MULLIGAN_KEY_DEVELOPMENT_REQUIRED` cheap spells.  Set to True
+    # for combo decks.
+    key_card_min_cheap_relaxed: bool = False
+
+    # mulligan.py:622-649 — generic fallback (no gameplan) branches
+    # on archetype to pick the keep heuristic.  Phase 2 makes this an
+    # explicit string field per deck.  Allowed values: "combo",
+    # "aggro", "control", "midrange".  Defaults to "midrange" — the
+    # neutral branch in `_generic`.
+    generic_branch: str = "midrange"
+
+    # mulligan.py:857 — aggro decks score `early_play` tag heavier
+    # because their plan is curve-out + face damage.
+    keep_score_early_play_at_home: bool = False
+
+    # mulligan.py:861 — combo decks score `combo` tag heavier (the
+    # piece is the entire point of the deck).
+    keep_score_combo_at_home: bool = False
+
+    # mulligan.py:865 — control / tempo decks score `counterspell`
+    # tag heavier (interaction shapes their gameplan).
+    keep_score_counterspell_at_home: bool = False
+
+
+def _default_mulligan_policy_for(archetype: str) -> MulliganPolicy:
+    """Synthesize a default `MulliganPolicy` from an archetype string.
+
+    Phase 2 migration: when a gameplan JSON does not declare its own
+    `mulligan_policy`, we reproduce the prior `if archetype == X`
+    behaviour from `ai/mulligan.py` exactly by setting the right
+    flags here.  This is a DATA TABLE — adding a new archetype is one
+    new row, not a new branch.
+    """
+    arch = (archetype or "midrange").lower()
+    return MulliganPolicy(
+        requires_combo_backup=(arch == "combo"),
+        key_card_min_cheap_relaxed=(arch == "combo"),
+        generic_branch=arch if arch in ("combo", "aggro", "control") else "midrange",
+        keep_score_early_play_at_home=(arch == "aggro"),
+        keep_score_combo_at_home=(arch == "combo"),
+        keep_score_counterspell_at_home=(arch in ("control", "tempo")),
+    )
+
 
 # ═══════════════════════════════════════════════════════════════════
 # BoardAssessor — dynamic board state analysis

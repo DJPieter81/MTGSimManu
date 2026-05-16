@@ -41,6 +41,7 @@ LLMTask = Literal[
     "handler_audit",
     "failing_test_spec",
     "classify_oracle",
+    "decision_scorer",
 ]
 
 
@@ -58,6 +59,10 @@ DEFAULT_MODELS: dict[LLMTask, str] = {
     # Haiku — mechanical tag classification from oracle text (W0-A).
     # One call per card, run offline; cached and committed.
     "classify_oracle":     "anthropic:claude-haiku-4-5",
+    # Haiku — small structured-output: one float per (archetype, context).
+    # Phase 1 of the project-direction refactor; replaces ~10 archetype-
+    # tied scaling constants in `ai/scoring_constants.py`.
+    "decision_scorer":     "anthropic:claude-haiku-4-5",
 }
 """Model defaults per task.  Operators can override via env vars
 (see module docstring) or by passing `override=` to `select_model`."""
