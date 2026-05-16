@@ -628,14 +628,34 @@ def _parse_count_threshold(oracle: str) -> Optional[int]:
 
 def _handle_coin_flip_transform(game: "GameState", controller: int,
                                  creature: "CardInstance") -> None:
-    """Ral, Monsoon Mage coin-flip transform. Win → transform with
-    loyalty = back_face_loyalty + spells_cast_this_turn. Lose → 1 damage.
-    Delegates state transition to `_transform_permanent`.
+    """Coin-flip transform handler (Ral, Monsoon Mage shape).
+
+    Win → transform with loyalty = back_face_loyalty +
+    spells_cast_this_turn. Lose → the source permanent takes 1
+    damage from itself (Oracle: "<this> deals 1 damage to it" / self-
+    damage clause). The 1 is a rule constant straight from the
+    Oracle clause, not a magic threshold.
+
+    R6 fix: route the lose branch through the W0-D `deal_damage`
+    primitive with target=source (the permanent), not raw-mutate
+    `player.life`. The primitive marks `damage_marked` on the
+    creature; SBAs (704.5h) destroy it later if marked damage >=
+    toughness. New self-damage cards composed from the same shape
+    inherit correctness.
     """
+    # Late import: avoid module-cycle risk between oracle_resolver
+    # (which game_state imports indirectly) and damage. The damage
+    # primitive depends on no engine modules; importing here is safe.
+    from .damage import deal_damage
+
     player = game.players[controller]
     result = game.rng.choice(["win", "lose"])
     if result == "lose":
-        player.life -= 1
+        # Oracle clause: "deals 1 damage to it" — the literal 1 is
+        # a rule constant from card text (CLAUDE.md §Hard prohibitions:
+        # rule constants are allowed). Damage routes through the W0-D
+        # primitive so triggers/SBA semantics fire correctly.
+        deal_damage(source=creature, target=creature, amount=1)
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"{creature.name} — lost coin flip, takes 1 damage")
         return
