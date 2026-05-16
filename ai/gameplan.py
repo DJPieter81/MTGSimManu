@@ -982,3 +982,110 @@ def create_goal_engine(deck_name: str) -> Optional[GoalEngine]:
     if plan:
         return GoalEngine(plan)
     return None
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Matchup-role lookup (W0-E)
+# ═══════════════════════════════════════════════════════════════════
+#
+# Matchup role is a property of the PAIR (self_archetype, opp_archetype),
+# declared as data in `decks/gameplans/_matchup_roles.json`. This replaces
+# the conditional role-flip logic that the 5-panel Bo3 audit (Decision 4)
+# flagged across midrange/control/aggro reviews — most notably Dimir
+# Midrange failing to flip to "clock_opponent" mode vs Storm.
+#
+# Pure addition: callers in Wave 1 migrate `current_goal` to consult this
+# table. This module only provides the lookup.
+# ═══════════════════════════════════════════════════════════════════
+
+import functools as _functools
+import json as _json
+import pathlib as _pathlib
+
+_MATCHUP_ROLES_JSON = (
+    _pathlib.Path(__file__).resolve().parent.parent
+    / "decks" / "gameplans" / "_matchup_roles.json"
+)
+
+
+@_functools.lru_cache(maxsize=1)
+def _load_matchup_roles() -> dict:
+    """Load and cache the matchup_roles JSON table.
+
+    Cached at module level via lru_cache; the table is small and pure
+    data, so a single load per process is sufficient.
+    """
+    with _MATCHUP_ROLES_JSON.open("r", encoding="utf-8") as fh:
+        return _json.load(fh)
+
+
+def matchup_role(self_archetype: str, opp_archetype: str, snap=None) -> str:
+    """Return the strategic role for (self_archetype, opp_archetype).
+
+    Reads from `decks/gameplans/_matchup_roles.json`. The returned string
+    is a member of the JSON's `roles` array (e.g., "clock_opponent",
+    "grind_value", "stabilise", "deploy_engine", ...).
+
+    Parameters
+    ----------
+    self_archetype : str
+        The archetype the AI is piloting (e.g., "midrange", "combo").
+        Must be a declared key under `matchups` in the JSON.
+    opp_archetype : str
+        The opposing deck's archetype. Must be a known archetype.
+        If the pair (self, opp) is not declared explicitly, falls back
+        to (self, default_opp_archetype) declared in the JSON.
+    snap : EVSnapshot or None
+        Reserved for future composition (e.g., role might depend on
+        life-phase or turn count). Not consumed yet — callers may pass
+        their snapshot to be forward-compatible.
+
+    Raises
+    ------
+    ValueError
+        If `self_archetype` is not declared under `matchups`, or if
+        `opp_archetype` is not a known opponent archetype anywhere in
+        the table.
+
+    Returns
+    -------
+    str
+        The declared role for the pair.
+    """
+    del snap  # reserved; not used in this layer
+    data = _load_matchup_roles()
+    matchups = data["matchups"]
+
+    if self_archetype not in matchups:
+        raise ValueError(
+            f"unknown self_archetype {self_archetype!r}; "
+            f"known: {sorted(matchups.keys())}"
+        )
+
+    # Build the set of all opponent archetypes ever declared, so an
+    # unknown opp surfaces as a structural error rather than silently
+    # falling back to the default.
+    known_opps = set()
+    for opp_table in matchups.values():
+        known_opps.update(opp_table.keys())
+    if opp_archetype not in known_opps:
+        raise ValueError(
+            f"unknown opp_archetype {opp_archetype!r}; "
+            f"known: {sorted(known_opps)}"
+        )
+
+    opp_table = matchups[self_archetype]
+    entry = opp_table.get(opp_archetype)
+    if entry is None:
+        # Declared default fallback for archetypes the self side has not
+        # specified a cell for. The default is declared in the JSON, not
+        # inferred — keep the schema explicit.
+        default_opp = data.get("default_opp_archetype")
+        if default_opp is None or default_opp not in opp_table:
+            raise ValueError(
+                f"matchups[{self_archetype!r}] has no cell for "
+                f"{opp_archetype!r} and no usable default_opp_archetype"
+            )
+        entry = opp_table[default_opp]
+
+    return entry["role"]
