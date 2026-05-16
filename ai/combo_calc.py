@@ -142,21 +142,23 @@ def _compute_combo_value(snap, archetype="combo"):
 def _compute_risk_discount(bhi, opp):
     """Discount factor from BHI disruption probabilities.
 
-    Combines the existing counter-spell prior with a discard prior
-    sourced from the opp's published gameplan (see
-    `BayesianHandTracker._compute_discard_prior`). The discard term
-    is multiplied by `_DISCARD_HIT_RATE` - the documented
-    expectation that a discard spell, when cast, removes one of our
-    critical pieces ~50% of the time (the opp picks rationally from
-    our revealed hand). Effective risk = max(P(counter), P(discard)
-    * _DISCARD_HIT_RATE), so whichever disruption vector is more
-    likely dominates.
+    Reads the counter prior directly from `bhi.beliefs.p_counter`
+    (the narrow belief that has not yet been mana-gated by
+    `get_interaction_probability` — this function does its own
+    tap-out gating below because the discard branch is sorcery-speed
+    and needs different gating than the unified instant-speed
+    interaction measure). The discard term is multiplied by
+    `_DISCARD_HIT_RATE` - the documented expectation that a discard
+    spell, when cast, removes one of our critical pieces ~50% of
+    the time (the opp picks rationally from our revealed hand).
+    Effective risk = max(P(counter), P(discard) * _DISCARD_HIT_RATE),
+    so whichever disruption vector is more likely dominates.
 
     Returns a value in [0, 1] - higher means safer.
     """
     if not bhi or not bhi._initialized:
         return 1.0
-    p_counter = bhi.get_counter_probability()
+    p_counter = bhi.beliefs.p_counter
     p_discard = (bhi.get_discard_probability()
                  if hasattr(bhi, 'get_discard_probability') else 0.0)
     effective_discard = p_discard * _DISCARD_HIT_RATE
