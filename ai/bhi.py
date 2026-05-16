@@ -662,3 +662,50 @@ def predicted_turn_of_cast(card, snap,
 # Sentinel for cards that cannot be cast (no defined mana cost).
 # Mirrors the ``ai.clock.NO_CLOCK`` sentinel pattern.
 NO_CAST_SENTINEL: int = 99  # magic-allow: rules-sentinel "uncastable", same shape as NO_CLOCK
+
+
+# ─── Opp-static per-card-event self-damage projection (M1-AI) ──────
+# Mirror of engine/zone_transfer._ON_DRAW_HANDLERS so chain projection
+# (ai.ev_evaluator._estimate_combo_chain) and runtime resolution agree
+# by sharing the same (Tag, verb-regex) table. Extend in lock-step.
+
+def _per_event_taxes_table():
+    from ai.oracle_classifier import Tag
+    return {
+        "draw": (
+            (Tag.ON_DRAW_DAMAGE,        r"deals?\s+(\d+)\s+damage"),
+            (Tag.ON_OPP_DRAW_LIFE_LOSS, r"lose\s+(\d+)\s+life"),
+        ),
+        "cast": (
+            (Tag.ON_CAST_DAMAGE,        r"deals?\s+(\d+)\s+damage"),
+        ),
+    }
+
+
+def _parse_event_amount(oracle_text: str, verb_regex: str) -> int:
+    """Extract the printed integer from the per-event verb regex; 0 on
+    no-match (the engine-side asserts loudly — the projection layer is
+    tolerant of classifier/oracle drift)."""
+    import re
+    m = re.search(verb_regex, (oracle_text or "").lower())
+    return int(m.group(1)) if m is not None else 0
+
+
+def opp_static_damage_per_card_event(game, viewer_idx: int,
+                                     event_kind: str) -> int:
+    """Project damage `viewer_idx` takes from opp permanents per one
+    card event (event_kind ∈ {"draw","cast"}). Sums across all
+    matching opp battlefield sources (multiple Bowmasters stack).
+    Returns 0 for unknown event_kind."""
+    from ai.oracle_classifier import tags_for
+    handlers = _per_event_taxes_table().get(event_kind)
+    if not handlers:
+        return 0
+    total = 0
+    for src in game.players[1 - viewer_idx].battlefield:
+        src_tags = tags_for(src.name)
+        for tag, verb_regex in handlers:
+            if tag in src_tags:
+                total += _parse_event_amount(
+                    src.template.oracle_text, verb_regex)
+    return total
