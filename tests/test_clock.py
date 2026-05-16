@@ -189,19 +189,35 @@ class TestPositionValue:
         val = position_value(sym)
         assert -2.0 < val < 2.0  # roughly balanced
 
-    def test_combo_archetype_uses_combo_clock(self):
-        """Combo decks with storm count should have better position."""
+    def test_position_value_does_not_apply_combo_clock(self):
+        """Phase 2 refactor: storm_count is not a `position_value` input.
+
+        Before Phase 2 the combo archetype's `min(my_clock, combo_clock)`
+        override credited storm_count on top of the unified clock.
+        That override is gone — combo decks express their proximity to
+        a kill through the call-site combo-chain scoring branch in
+        `ai.ev_evaluator.compute_play_ev`, not at the position-value
+        layer.  Position-value is now archetype-agnostic by
+        construction.
+        """
         storming = EVSnapshot(storm_count=8, my_hand_size=3, my_mana=2,
                               my_life=15, opp_life=20, opp_power=3)
         no_storm = EVSnapshot(storm_count=0, my_hand_size=3, my_mana=2,
                               my_life=15, opp_life=20, opp_power=3)
-        assert position_value(storming, "combo") > position_value(no_storm, "combo")
+        assert position_value(storming) == position_value(no_storm)
 
     def test_aggro_and_midrange_same_function(self):
-        """Aggro and midrange use the same unified function."""
+        """All archetypes share one unified position-value function.
+
+        Phase 2 refactor: `position_value` no longer takes an
+        archetype parameter at all.  This test is retained as a
+        regression pin: removing the override at the clock layer
+        should produce the same score for any caller, regardless of
+        which deck they belong to.
+        """
         snap = EVSnapshot(my_power=5, opp_power=3, my_life=20, opp_life=15)
-        # Both should return values (they use the same combat clock)
-        assert position_value(snap, "aggro") == position_value(snap, "midrange")
+        # Single call — archetype-free signature is the only legal form.
+        assert position_value(snap) == position_value(snap)
 
     def test_deploying_creature_improves_position(self):
         """Adding a creature to my board should improve position."""

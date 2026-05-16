@@ -362,11 +362,21 @@ def creature_clock_impact_from_card(card: "CardInstance",
 # Position value — the unified board evaluation
 # ─────────────────────────────────────────────────────────────
 
-def position_value(snap: "EVSnapshot", archetype: str = "midrange") -> float:
+def position_value(snap: "EVSnapshot") -> float:
     """Unified board evaluation. Replaces 4 archetype-specific evaluators.
 
     Returns clock differential + resource advantage.
     Higher = better position for the player.
+
+    Phase 2 refactor: the prior `archetype` parameter and the
+    `min(my_clock, combo_clock(snap))` override are removed.  Combo
+    decks express their proximity to a win through per-deck gameplan
+    data and LLM-scored weights at the call-site layer (e.g.
+    ``ai.ev_evaluator.compute_play_ev``'s combo-chain branch and
+    ``ai.combo_calc.assess_combo``).  Removing the override here
+    keeps ``position_value`` mechanic-driven and archetype-agnostic —
+    every Modern card hits the same code path regardless of which
+    deck is currently controlling it.
     """
     # Dead check
     if snap.my_life <= 0:
@@ -388,12 +398,6 @@ def position_value(snap: "EVSnapshot", archetype: str = "midrange") -> float:
         snap.opp_power, snap.my_life,
         snap.opp_evasion_power, snap.my_toughness
     )
-
-    # Combo decks: override my_clock with combo-specific clock
-    if archetype in ("combo", "storm"):
-        combo_c = combo_clock(snap)
-        # Use the faster of combat clock and combo clock
-        my_clock = min(my_clock, combo_c)
 
     # Clock differential: positive = I'm winning the race
     clock_diff = opp_clock - my_clock

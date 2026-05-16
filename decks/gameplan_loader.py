@@ -13,7 +13,14 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
 
 # Import the dataclasses we're populating
-from ai.gameplan import DEFAULT_MULLIGAN_CMC_PROFILE, DeckGameplan, Goal, GoalType
+from ai.gameplan import (
+    DEFAULT_MULLIGAN_CMC_PROFILE,
+    DeckGameplan,
+    Goal,
+    GoalType,
+    MulliganPolicy,
+    _default_mulligan_policy_for,
+)
 
 
 _GAMEPLANS_DIR = Path(__file__).parent / "gameplans"
@@ -264,6 +271,47 @@ def _parse_gameplan(
     mulligan_cmc_profile = dict(DEFAULT_MULLIGAN_CMC_PROFILE)
     mulligan_cmc_profile.update(data.get("mulligan_cmc_profile", {}))
 
+    archetype_str = data.get("archetype", "midrange")
+
+    # Phase 2 sweep: synthesize the data fields that replace the prior
+    # `archetype == X` conditional gates.  JSON may declare any of these
+    # explicitly to override the archetype-derived defaults.
+    mulligan_policy_raw = data.get("mulligan_policy")
+    if mulligan_policy_raw is None:
+        mulligan_policy = _default_mulligan_policy_for(archetype_str)
+    else:
+        # JSON-declared policy: start from archetype defaults, then
+        # overlay any explicit keys the JSON declares.
+        defaults = _default_mulligan_policy_for(archetype_str)
+        mulligan_policy = MulliganPolicy(
+            requires_combo_backup=mulligan_policy_raw.get(
+                "requires_combo_backup", defaults.requires_combo_backup),
+            key_card_min_cheap_relaxed=mulligan_policy_raw.get(
+                "key_card_min_cheap_relaxed",
+                defaults.key_card_min_cheap_relaxed),
+            generic_branch=mulligan_policy_raw.get(
+                "generic_branch", defaults.generic_branch),
+            keep_score_early_play_at_home=mulligan_policy_raw.get(
+                "keep_score_early_play_at_home",
+                defaults.keep_score_early_play_at_home),
+            keep_score_combo_at_home=mulligan_policy_raw.get(
+                "keep_score_combo_at_home",
+                defaults.keep_score_combo_at_home),
+            keep_score_counterspell_at_home=mulligan_policy_raw.get(
+                "keep_score_counterspell_at_home",
+                defaults.keep_score_counterspell_at_home),
+        )
+
+    # `enables_disruption`: combo decks default to True (their plan is
+    # the thing the disruption premium gates on).  JSON may override.
+    enables_disruption = data.get(
+        "enables_disruption", archetype_str == "combo")
+
+    # `uses_combo_chain_scoring`: same default — combo decks light up
+    # the ev_evaluator chain-scoring signals.  JSON may override.
+    uses_combo_chain_scoring = data.get(
+        "uses_combo_chain_scoring", archetype_str == "combo")
+
     return DeckGameplan(
         deck_name=data["deck_name"],
         goals=goals,
@@ -287,11 +335,14 @@ def _parse_gameplan(
         land_priorities=data.get("land_priorities", {}),
         reactive_only=reactive_only,
         always_early=always_early,
-        archetype=data.get("archetype", "midrange"),
+        archetype=archetype_str,
         archetype_subtype=data.get("archetype_subtype"),
         combo_readiness_check=combo_readiness_check,
         fallback_goals=fallback_goals,
         critical_pieces=set(data.get("critical_pieces", [])),
+        enables_disruption=enables_disruption,
+        uses_combo_chain_scoring=uses_combo_chain_scoring,
+        mulligan_policy=mulligan_policy,
     )
 
 

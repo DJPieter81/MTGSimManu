@@ -174,18 +174,29 @@ class TestPiFFlashbackSignal:
             f"signals: {sig}"
         )
 
-    def test_pif_no_signal_in_non_combo_archetype(self, card_db):
-        """Regression anchor: in a non-combo archetype, granting
+    def test_pif_no_signal_in_non_combo_deck(self, card_db):
+        """Regression anchor: in a non-combo deck (whose gameplan
+        declares ``uses_combo_chain_scoring=False``), granting
         flashback to graveyard cards is a value play but not a
-        same-turn combo signal.  The signal is gated on 'storm' /
-        'combo' archetypes only."""
+        same-turn combo signal.
+
+        Phase 2 sweep: the gate is now the per-deck gameplan flag,
+        not the archetype string at the call site.  We override the
+        active player's `deck_name` to a non-combo deck (Boros
+        Energy) so the gameplan flag resolves to False.  The
+        archetype kwarg still flows through the function signature
+        for back-compat but no longer drives the gate.
+        """
         game, pif = _build_storm_pif_game(card_db, gy_fuel_count=3)
+        # Override deck_name to a non-combo deck so the gameplan flag
+        # `uses_combo_chain_scoring` resolves to False.
+        game.players[0].deck_name = "Boros Energy"
         sig = _signals(game, pif, archetype="midrange")
         assert 'flashback_combo_with_gy_fuel' not in sig, (
-            f"PiF emitted flashback-combo signal in 'midrange' "
-            f"archetype.  Signal must only fire for 'storm' / "
-            f"'combo' archetypes (the decks committed to chaining "
-            f"around graveyard fuel)."
+            f"PiF emitted flashback-combo signal for a non-combo deck.  "
+            f"Signal must only fire when the player's gameplan declares "
+            f"`uses_combo_chain_scoring=True` (default for combo "
+            f"archetypes)."
         )
 
     def test_pif_chosen_when_only_play_with_gy_fuel(self, card_db):
