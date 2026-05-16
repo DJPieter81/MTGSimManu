@@ -641,6 +641,35 @@ class GoalEngine:
             return self.gameplan.goals[self.current_goal_idx]
         return self.gameplan.goals[-1]  # stay on last goal
 
+    def current_role(self, opp_archetype: str, snap=None) -> str:
+        """Return the strategic role this engine should play vs `opp_archetype`.
+
+        Delegates entirely to `matchup_role(self_archetype, opp_archetype, snap)`,
+        which reads from `decks/gameplans/_matchup_roles.json`. This is the
+        M13 migration: the pair-keyed role used to be encoded as inline
+        archetype conditionals inside the goal selector; it now lives as
+        data in the matchup-roles JSON. The role string (e.g.
+        ``"clock_opponent"``, ``"grind_value"``, ``"stabilise"``) is the
+        contract consumed by callers that need to bias play scoring by
+        matchup — most notably the 5-panel Bo3 audit Decision 4 case
+        (Dimir Midrange vs Ruby Storm flipping from ``grind_value`` to
+        ``clock_opponent``).
+
+        Parameters
+        ----------
+        opp_archetype : str
+            The opposing deck's archetype string (e.g., "combo", "aggro").
+        snap : EVSnapshot or None
+            Reserved for future composition; forwarded to ``matchup_role``.
+
+        Returns
+        -------
+        str
+            One of the role strings declared in ``_matchup_roles.json``'s
+            ``roles`` array.
+        """
+        return matchup_role(self.gameplan.archetype, opp_archetype, snap)
+
     def _get_me(self):
         """Return the PlayerState for this engine's player, or None.
         Requires the engine to have been linked to a game (see decide_main_phase)."""
