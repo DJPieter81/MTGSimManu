@@ -2738,6 +2738,12 @@ class EVPlayer:
         if self._racing_to_win(game, me, opp, attackers):
             return {}
 
+        # Pre-compute board totals shared by every block branch
+        # (emergency, normal, and the per-decision log lines that
+        # quote the lifespan-delta score).
+        my_power_total = sum((c.power or 0) for c in me.creatures)
+        opp_power_total = sum((c.power or 0) for c in opp.creatures)
+
         # EMERGENCY: block when incoming damage is dangerous
         # Triggers: lethal this turn, drop-below-5, or projected lethal across 2 turns
         # (the old single-attacker heuristic treated a 10/10 at life=20 as an emergency;
@@ -2845,9 +2851,9 @@ class EVPlayer:
                 my_life_now = me.life - max(0, total_incoming
                                             - already_absorbed
                                             - (attacker.power or 0))
-                # Snapshot powers used by the helper.
-                my_power_total = sum((c.power or 0) for c in me.creatures)
-                opp_power_total = sum((c.power or 0) for c in opp.creatures)
+                # ``my_power_total`` / ``opp_power_total`` hoisted
+                # above the emergency block; same primitive feeds the
+                # log line below.
                 for blocker in pool:
                     delta = self._score_block_lifespan_delta(
                         game, attacker, blocker,
@@ -2886,7 +2892,12 @@ class EVPlayer:
                 return {}
 
             if emergency_blocks:
-                # Log emergency blocking assignments with reasoning
+                # Log emergency blocking assignments.  Reason is the
+                # raw lifespan-delta score from
+                # ``score_block_assignment`` — same primitive that
+                # drove the selection.  No chump/trade/favorable-trade
+                # enum (M12-AI): the formula's sign and magnitude tell
+                # the same story without an if-chain.
                 id_to_attacker = {a.instance_id: a for a in attackers}
                 id_to_blocker  = {b.instance_id: b for b in valid_blockers}
                 for atk_id, blk_ids in emergency_blocks.items():
@@ -2898,16 +2909,14 @@ class EVPlayer:
                             b_pow = blk.power or 0
                             b_tou = blk.toughness or 0
                             a_tou = atk.toughness or 0
-                            survives = a_pow < b_tou
-                            kills    = b_pow >= a_tou
-                            if kills and survives:
-                                reason = "favorable trade"
-                            elif kills:
-                                reason = "trade (chump)"
-                            else:
-                                reason = "chump block"
+                            delta = self._score_block_lifespan_delta(
+                                game, atk, blk,
+                                my_life=me.life,
+                                my_power=my_power_total,
+                                opp_power=opp_power_total,
+                            )
                             game.log.append(
-                                f"T{game.display_turn} P{self.player_idx+1}: "                                f"  [BLOCK-EMERGENCY] {blk.name} ({b_pow}/{b_tou}) "                                f"blocks {atk.name} ({a_pow}/{a_tou}) — {reason}"
+                                f"T{game.display_turn} P{self.player_idx+1}: "                                f"  [BLOCK-EMERGENCY] {blk.name} ({b_pow}/{b_tou}) "                                f"blocks {atk.name} ({a_pow}/{a_tou}) — "                                f"lifespan_delta={delta:+.2f}"
                             )
                 return emergency_blocks
 
@@ -2916,11 +2925,9 @@ class EVPlayer:
 
         sorted_attackers = sorted(attackers, key=lambda a: a.power or 0, reverse=True)
 
-        # Pre-compute board totals; the lifespan-delta helper uses
-        # the same arithmetic for every (attacker, blocker) pair
-        # within a single decision.
-        my_power_total = sum((c.power or 0) for c in me.creatures)
-        opp_power_total = sum((c.power or 0) for c in opp.creatures)
+        # ``my_power_total`` / ``opp_power_total`` hoisted above the
+        # emergency block; same primitive feeds every (attacker,
+        # blocker) lifespan-delta call in this decision.
 
         for attacker in sorted_attackers:
             best_blocker = None
@@ -2992,7 +2999,10 @@ class EVPlayer:
                             used.add(b2.instance_id)
                             break
 
-        # Log normal blocking assignments with reasoning
+        # Log normal blocking assignments.  Reason quotes the same
+        # lifespan-delta primitive that drove the selection (M12-AI:
+        # no chump/trade/favorable-trade enum — the formula is the
+        # single source of truth).
         if blocks:
             id_to_attacker = {a.instance_id: a for a in attackers}
             id_to_blocker  = {b.instance_id: b for b in valid_blockers}
@@ -3005,16 +3015,14 @@ class EVPlayer:
                         b_pow = blk.power or 0
                         b_tou = blk.toughness or 0
                         a_tou = atk.toughness or 0
-                        survives = a_pow < b_tou
-                        kills    = b_pow >= a_tou
-                        if kills and survives:
-                            reason = "favorable trade"
-                        elif kills:
-                            reason = "trade (chump)"
-                        else:
-                            reason = "chump block"
+                        delta = self._score_block_lifespan_delta(
+                            game, atk, blk,
+                            my_life=me.life,
+                            my_power=my_power_total,
+                            opp_power=opp_power_total,
+                        )
                         game.log.append(
-                            f"T{game.display_turn} P{self.player_idx+1}: "                            f"  [BLOCK] {blk.name} ({b_pow}/{b_tou}) "                            f"blocks {atk.name} ({a_pow}/{a_tou}) — {reason}"
+                            f"T{game.display_turn} P{self.player_idx+1}: "                            f"  [BLOCK] {blk.name} ({b_pow}/{b_tou}) "                            f"blocks {atk.name} ({a_pow}/{a_tou}) — "                            f"lifespan_delta={delta:+.2f}"
                         )
         return blocks
 
