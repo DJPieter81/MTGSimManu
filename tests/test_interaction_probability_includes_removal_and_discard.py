@@ -53,11 +53,6 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 # ─── Fixtures ──────────────────────────────────────────────────────────
 
 
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
-
-
 def _make_card(game, card_db, name, controller, zone="library"):
     tmpl = card_db.cards.get(name)
     assert tmpl is not None, f"missing card: {name}"

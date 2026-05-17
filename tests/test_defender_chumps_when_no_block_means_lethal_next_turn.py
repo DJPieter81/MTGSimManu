@@ -31,12 +31,6 @@ import random
 import pytest
 
 
-@pytest.fixture(scope="module")
-def card_db():
-    from engine.card_database import CardDatabase
-    return CardDatabase()
-
-
 def _battlefield(game, card_db, name: str, controller: int):
     """Add ``name`` to ``controller``'s battlefield, return CardInstance."""
     from engine.cards import CardInstance

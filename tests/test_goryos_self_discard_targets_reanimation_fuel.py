@@ -31,11 +31,6 @@ from engine.game_state import GameState
 from engine.game_runner import AICallbacks
 
 
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
-
-
 def _make_game():
     """Build a GameState wired to AICallbacks so Faithful Mending's
     self-discard routes through ai.discard_advisor — the default

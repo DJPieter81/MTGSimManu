@@ -33,11 +33,6 @@ from engine.target_solver import (
 # ── Fixtures ────────────────────────────────────────────────────────
 
 
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
-
-
 def _battlefield(game, card_db, name: str, controller: int) -> CardInstance:
     tmpl = card_db.get_card(name)
     assert tmpl is not None, f"missing card: {name}"

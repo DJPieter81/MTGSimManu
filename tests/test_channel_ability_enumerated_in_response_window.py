@@ -31,11 +31,6 @@ from engine.game_state import GameState
 from engine.stack import StackItem, StackItemType
 
 
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
-
-
 # ─── Fixture helpers (mirror the shape used by W0-G + R2 tests) ────────
 
 

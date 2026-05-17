@@ -32,11 +32,6 @@ from engine.game_state import GameState
 from engine.stack import StackItem, StackItemType
 
 
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
-
-
 def _cast_and_resolve_orims_chant(card_db, active: int):
     """Build a game where player `active` is active, cast Orim's Chant
     resolved from their main phase, and return the game."""

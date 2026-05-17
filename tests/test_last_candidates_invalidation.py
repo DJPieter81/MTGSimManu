@@ -23,11 +23,6 @@ from engine.card_database import CardDatabase
 from engine.game_state import GameState
 
 
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
-
-
 def test_last_candidates_cleared_when_no_legal_plays(card_db):
     """When `decide_main_phase` returns early because `legal = []`,
     `_last_candidates` must reflect the current (empty) decision, not

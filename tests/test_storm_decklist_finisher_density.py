@@ -41,11 +41,6 @@ from decks.modern_meta import MODERN_DECKS
 from engine.card_database import CardDatabase
 
 
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
-
-
 class TestStormDecklistFinisherDensity:
     """Ruby Storm must run enough Grapeshot copies in the mainboard
     to reliably find one in the opening 7 / first few draws. Storm

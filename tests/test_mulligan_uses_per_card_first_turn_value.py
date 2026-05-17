@@ -49,11 +49,6 @@ from engine.cards import CardInstance
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
-
-
 def _hand_card(card_db, name: str, iid: int) -> CardInstance:
     tmpl = card_db.get_card(name)
     assert tmpl is not None, f"missing card in DB: {name}"

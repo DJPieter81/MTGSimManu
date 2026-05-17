@@ -30,11 +30,6 @@ from engine.cards import CardType
 from engine.game_state import GameState
 
 
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
-
-
 _WURMCOIL_ORACLE = (
     "Deathtouch, lifelink\n"
     "When this creature dies, create a 3/3 colorless Phyrexian "

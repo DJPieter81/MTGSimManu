@@ -30,11 +30,6 @@ from engine.stack import StackItem, StackItemType
 # ─── Fixtures ──────────────────────────────────────────────────────────
 
 
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
-
-
 def _add_to_zone(game, card_db, name, controller, zone):
     """Mirrors the helper in test_response_gate_*.py — keep the shape
     identical so cross-test fixture maintenance is mechanical."""

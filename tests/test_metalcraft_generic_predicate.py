@@ -23,11 +23,6 @@ from engine.game_state import GameState
 from engine.mana_payment import ManaPayment
 
 
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
-
-
 def _put_in_play(game, card_db, name, controller=0):
     tmpl = card_db.get_card(name)
     assert tmpl is not None, f"missing card: {name}"

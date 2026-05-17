@@ -32,11 +32,6 @@ from engine.game_state import GameState
 RAL_NAME = "Ral, Monsoon Mage // Ral, Leyline Prodigy"
 
 
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
-
-
 def _put_ral_in_play(game, card_db, controller):
     """Put a Ral, Monsoon Mage front-face creature in play under
     `controller`. The W0-D `deal_damage` primitive marks

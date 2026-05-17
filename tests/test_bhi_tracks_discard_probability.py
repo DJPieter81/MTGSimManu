@@ -39,11 +39,6 @@ from engine.cards import CardInstance
 from engine.game_state import GameState
 
 
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
-
-
 def _make_card(game, card_db, name, controller):
     tmpl = card_db.cards.get(name)
     assert tmpl is not None, f"missing card: {name}"

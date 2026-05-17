@@ -60,11 +60,6 @@ from engine.cards import CardInstance
 from engine.game_state import GameState
 
 
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
-
-
 def _mk(game, card_db, name, ctrl, zone: str = "battlefield"):
     """Spawn a permanent in `zone` for player `ctrl`.  Defaults to
     battlefield, with full ETB bookkeeping.  Hand zone skips ETB so

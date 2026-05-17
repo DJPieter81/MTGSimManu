@@ -30,11 +30,6 @@ import pytest
 from engine.card_database import CardDatabase
 
 
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
-
-
 class TestWakerOfWavesOracle:
     """Waker of Waves must have cycling parseable from oracle text,
     so Living End can use it as a self-discard enabler."""

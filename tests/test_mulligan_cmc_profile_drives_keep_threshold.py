@@ -34,11 +34,6 @@ from engine.card_database import CardDatabase
 from engine.cards import CardInstance
 
 
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
-
-
 def _card(card_db, name: str, iid: int) -> CardInstance:
     tmpl = card_db.get_card(name)
     assert tmpl is not None, f"missing card: {name}"

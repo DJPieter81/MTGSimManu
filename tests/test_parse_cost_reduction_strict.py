@@ -146,12 +146,6 @@ def test_two_mana_reduction_is_parsed():
 # ─── Boundary: cards present in our 16 modern decks ──────────────────
 
 
-@pytest.fixture(scope="module")
-def card_db():
-    from engine.card_database import CardDatabase
-    return CardDatabase()
-
-
 @pytest.mark.parametrize(
     "card_name",
     [

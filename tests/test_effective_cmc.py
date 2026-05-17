@@ -45,13 +45,6 @@ import pytest
 # ─── Fixtures ────────────────────────────────────────────────────────
 
 
-@pytest.fixture(scope="module")
-def card_db():
-    from engine.card_database import CardDatabase
-
-    return CardDatabase()
-
-
 @pytest.fixture
 def fresh_game():
     """Empty `GameState` with deterministic RNG.  Each test gets a

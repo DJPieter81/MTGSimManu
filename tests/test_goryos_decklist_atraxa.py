@@ -49,11 +49,6 @@ from engine.card_database import CardDatabase
 from engine.cards import Supertype
 
 
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
-
-
 class TestGoryosDecklistAtraxa:
     """The Goryo's Vengeance decklist must include Atraxa, Grand
     Unifier as the canonical second legendary reanimation target.

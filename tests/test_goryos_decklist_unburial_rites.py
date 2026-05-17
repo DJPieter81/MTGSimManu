@@ -52,11 +52,6 @@ from decks.modern_meta import MODERN_DECKS
 from engine.card_database import CardDatabase
 
 
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
-
-
 class TestGoryosDecklistConstruction:
     """The Goryo's Vengeance decklist must include enough Unburial
     Rites copies to act as a reliable second reanimation path,

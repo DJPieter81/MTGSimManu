@@ -36,11 +36,6 @@ from engine.game_state import GameState
 from engine.game_runner import GameRunner
 
 
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
-
-
 def _add_to_battlefield(game, card_db, name, controller, *, tapped=False,
                         summoning_sick=False, strip_keywords=None):
     tmpl = card_db.get_card(name)

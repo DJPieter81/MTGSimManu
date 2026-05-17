@@ -28,11 +28,6 @@ from engine.card_database import CardDatabase
 from engine.game_state import GameState
 
 
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
-
-
 def _put_creature_in_play(game, card_db, name, controller):
     """Helper: build a CardInstance for `name` and put it on the
     controller's battlefield. Mirrors the convention in

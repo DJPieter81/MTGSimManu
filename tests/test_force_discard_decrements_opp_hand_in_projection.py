@@ -51,11 +51,6 @@ from engine.card_database import CardDatabase
 from engine.cards import CardInstance
 
 
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
-
-
 def _mid_snap(**overrides) -> EVSnapshot:
     """Mid-game baseline. Post-projection the test reads only the fields
     its assertion names — opp_hand_size and my_life.  Defaults give

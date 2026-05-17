@@ -57,11 +57,6 @@ from engine.card_database import CardDatabase
 from engine.cards import CardInstance
 
 
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
-
-
 def _mid_snap() -> EVSnapshot:
     """Mid-game baseline for life-gain projection — no clock contributions
     from creatures, plenty of mana to cast.  The only field this test

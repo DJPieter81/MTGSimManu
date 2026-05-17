@@ -30,11 +30,6 @@ from engine.cards import CardInstance
 from engine.game_state import GameState
 
 
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
-
-
 class _EvokeYesCallbacks(DefaultCallbacks):
     """AI stub that always opts to evoke when asked.
 

@@ -52,11 +52,6 @@ from engine.game_state import GameState
 from engine.mana import ManaCost
 
 
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
-
-
 def _put_in_play(game, card_db, name, controller, tapped=False):
     tmpl = card_db.get_card(name)
     assert tmpl is not None, f"missing card: {name}"

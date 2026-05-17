@@ -30,11 +30,6 @@ from engine.game_state import GameState
 from engine.game_runner import AICallbacks
 
 
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
-
-
 def _make_game():
     """Construct a GameState wired to AICallbacks so the discard path
     routes through ai.discard_advisor (and thus the E2 threat-scoring

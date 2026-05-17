@@ -29,11 +29,6 @@ from engine.card_database import CardDatabase
 from engine.cards import CardInstance
 
 
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
-
-
 def _hand(card_db, names):
     """Build a hand of CardInstances by template name."""
     out = []

@@ -32,11 +32,6 @@ from engine.game_state import GameState
 from engine.stack import StackItem, StackItemType
 
 
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
-
-
 def _add_to_battlefield(game, card_db, name, controller):
     tmpl = card_db.get_card(name)
     assert tmpl is not None, f"missing card: {name}"
