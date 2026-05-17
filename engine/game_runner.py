@@ -973,6 +973,47 @@ class GameRunner:
 
         return result
 
+    def _emit_response_decision_event(
+        self, opponent_ai, game: GameState, top, response
+    ) -> None:
+        """Emit a RESPONSE_DECISION onto the structured replay log (W0-H).
+
+        Pure-recording hook called after every ``decide_response``.  The
+        ResponseDecider records its decision context on
+        ``last_decision``; we read it back and emit the event.  No-op
+        when the replay log is None or the decider didn't populate
+        last_decision (older/exotic code paths).
+
+        Why the engine owns the emission (not the decider):
+          • The engine already owns all other event emissions
+            (game_runner._emit closure).  Centralising keeps the
+            decision-emission contract in one file.
+          • The decider is reused by ismcts / lookahead simulations
+            that must NOT emit events into the production replay log.
+        """
+        log = getattr(opponent_ai, "replay_log", None)
+        if log is None:
+            return
+        decider = getattr(opponent_ai, "_response_decider", None)
+        ld = getattr(decider, "last_decision", None) if decider else None
+        if ld is None:
+            return
+        from engine.replay_log import snapshot_state
+        actor = game.players[opponent_ai.player_idx].deck_name
+        log.emit_response_decision(
+            actor=actor,
+            pidx=opponent_ai.player_idx,
+            chosen=ld.get("chosen") or {},
+            alternatives=ld.get("alternatives") or [],
+            stack_item=ld.get("stack_item"),
+            held_counter_floor_ev=ld.get("held_counter_floor_ev"),
+            state=snapshot_state(game),
+            candidates_n=ld.get("candidates_n"),
+        )
+        # Clear so a subsequent stack item without a fresh
+        # decide_response call doesn't re-emit a stale event.
+        decider.last_decision = None
+
     def _resolve_stack_loop(self, game: GameState):
         """Resolve all items on the stack, checking SBAs after each.
 
@@ -1252,6 +1293,13 @@ class GameRunner:
                         if top:
                             priority.give_priority(game, opponent_ai.player_idx)
                             response = opponent_ai.decide_response(game, top)
+                            # Emit RESPONSE_DECISION onto the structured
+                            # replay log (W0-H). The decider stores its
+                            # decision context on `last_decision`; we read
+                            # it here and emit so the engine remains the
+                            # single owner of replay-event emission.
+                            self._emit_response_decision_event(
+                                opponent_ai, game, top, response)
                             if response:
                                 resp_card, resp_targets = response
                                 if getattr(game, 'verbose', False):

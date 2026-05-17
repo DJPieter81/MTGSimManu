@@ -191,12 +191,21 @@ class CastManager:
         is_main_phase = game.current_phase in (Phase.MAIN1, Phase.MAIN2)
         is_active = game.active_player == player_idx
 
-        if template.is_instant or template.has_flash:
+        # R4: sorcery-speed-lockout static abilities (Teferi, Time
+        # Raveler; Grand Abolisher; Conqueror's Flail; ...) collapse
+        # the instant/flash exemption for opponents who are in the
+        # per-game lockout registry. Registry is rebuilt on demand
+        # from ``Tag.SORCERY_SPEED_LOCKOUT``-tagged permanents — no
+        # card-name branches, no oracle-text parse at runtime.
+        sorcery_locked = player_idx in game._sorcery_speed_lockout_set()
+
+        if (template.is_instant or template.has_flash) and not sorcery_locked:
             pass
         elif template.is_creature or template.is_sorcery or \
                 CardType.ENCHANTMENT in template.card_types or \
                 CardType.ARTIFACT in template.card_types or \
-                CardType.PLANESWALKER in template.card_types:
+                CardType.PLANESWALKER in template.card_types or \
+                sorcery_locked:
             if not (is_main_phase and is_active and game.stack.is_empty):
                 return False
 
@@ -1235,16 +1244,13 @@ class CastManager:
                         if Keyword.FLYING not in creature.keywords:
                             creature.keywords.add(Keyword.FLYING)
 
-                # Surveil 1: always bin the top card to GY (AI choice: maximise delirium)
-                if 'surveil' in c_oracle and player.library:
-                    top = player.library.pop(0)
-                    top.zone = 'graveyard'
-                    player.graveyard.append(top)
-                    game.log.append(
-                        f"T{game.display_turn} P{player_idx+1}: "
-                        f"{creature.name} surveil 1 → {top.name} to GY")
+                # Surveil-on-noncreature-spell-cast (DRC, Lightshell Duo,
+                # Garland) moved to resolve_spell_cast_trigger so the same
+                # generic dispatch handles spell-cast surveil AND land-ETB
+                # surveil. See R3 in
+                # docs/history/audits/2026-05-16_rules_audit.md.
 
-        # Generic oracle-text-based spell-cast triggers
+        # Generic oracle-text-based spell-cast triggers (incl. surveil)
         from .oracle_resolver import resolve_spell_cast_trigger
         resolve_spell_cast_trigger(game, player_idx, card)
 

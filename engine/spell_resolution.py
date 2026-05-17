@@ -388,6 +388,7 @@ class ResolutionManager:
             desc = ability.description.lower()
 
             if "damage" in desc:
+                from .damage import deal_damage
                 amount = 0
                 for word in desc.split():
                     try:
@@ -398,17 +399,23 @@ class ResolutionManager:
 
                 if item.targets:
                     for tid in item.targets:
+                        if tid == -1:
+                            # AI chose face — route to player damage.
+                            deal_damage(game, game.players[opponent], amount,
+                                        source_controller=controller)
+                            continue
                         target = game.get_card_by_id(tid)
-                        if target and target.zone == "battlefield" and target.template.is_creature:
-                            target.damage_marked += amount
-                            if target.is_dead:
-                                game._creature_dies(target)
+                        if (target and target.zone == "battlefield"
+                                and (target.template.is_creature
+                                     or CardType.PLANESWALKER in target.template.card_types)):
+                            deal_damage(game, target, amount,
+                                        source_controller=controller)
                 elif "each opponent" in desc or "player" in desc:
-                    game.players[opponent].life -= amount
-                    game.players[controller].damage_dealt_this_turn += amount
+                    deal_damage(game, game.players[opponent], amount,
+                                source_controller=controller)
                 elif amount > 0:
-                    game.players[opponent].life -= amount
-                    game.players[controller].damage_dealt_this_turn += amount
+                    deal_damage(game, game.players[opponent], amount,
+                                source_controller=controller)
 
             elif "destroy" in desc:
                 if "all" in desc:

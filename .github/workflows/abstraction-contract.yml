@@ -29,15 +29,19 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        # pydantic-ai-slim is required by the LLM-backend synth tests.
-        # CI uses TestModel only — no real API calls happen here, so
-        # the cloud-provider extras (anthropic/openai/google/etc.) are
-        # unnecessary. The meta package `pydantic-ai` pulls in every
-        # provider SDK plus fastmcp/temporal/logfire, which causes
-        # multi-minute (sometimes hanging) dependency resolution on
-        # ubuntu-latest. The slim variant is tens of packages, not
-        # hundreds.
-        run: pip install pytest pydantic-ai-slim
+        # pydantic-ai-slim covers everything CI needs: Agent,
+        # TestModel, UsageLimits. The meta package `pydantic-ai`
+        # pulls in every provider SDK (anthropic/openai/google/
+        # bedrock/...) plus fastmcp/temporal/logfire — hundreds of
+        # packages causing multi-minute (sometimes hanging) resolver
+        # work on ubuntu-latest. Slim resolves to ~19 packages.
+        #
+        # pytest-timeout is the defense-in-depth: any single test
+        # exceeding 60s fails by name rather than letting the job
+        # silently consume the 6h GitHub Actions wall budget. The
+        # primary defense against the decision-scorer hang is the
+        # MTG_LLM_DECISION_SCORER_OFFLINE env at the top of this job.
+        run: pip install pytest pytest-timeout pydantic-ai-slim
 
       - name: Run abstraction ratchet
         run: python tools/check_abstraction.py
@@ -49,7 +53,7 @@ jobs:
         run: python tools/check_doc_hygiene.py
 
       - name: Run abstraction-contract pytest
-        run: python -m pytest tests/test_abstraction_contract.py tests/test_check_abstraction_deck_gates.py tests/test_doc_hygiene.py tests/test_magic_numbers_ratchet.py tests/test_check_magic_numbers.py -q
+        run: python -m pytest tests/test_abstraction_contract.py tests/test_check_abstraction_deck_gates.py tests/test_doc_hygiene.py tests/test_magic_numbers_ratchet.py tests/test_check_magic_numbers.py --timeout=60 -q
 
       - name: Run regression-surface test suite
         # Track G1 guardrail (plan 2026-05-16): the narrow ratchet
@@ -113,4 +117,4 @@ jobs:
             tests/test_storm_tutor_lethal_fires.py \
             tests/test_storm_finisher_holds_for_chain.py \
             tests/test_zero_cost_creature_no_enabler_held.py \
-            -q
+            --timeout=60 -v --tb=short -rA

@@ -8,7 +8,10 @@ land scoring weights, cycling/pump config, and pass thresholds.
 from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Dict, Tuple
+from typing import TYPE_CHECKING, Dict, Iterable, Tuple
+
+if TYPE_CHECKING:
+    from ai.clock import LifePhase
 
 
 class ArchetypeStrategy(Enum):
@@ -121,12 +124,15 @@ class StrategyProfile:
     pump_extra_lands_threshold: int = 5
     pump_max_discards: int = 2
 
-    # ── Pass threshold ──
-    # Plays scoring below this EV are skipped (the AI passes the turn
-    # rather than burning a card on a negative-EV play). -5.0 is the
-    # default; CONTROL profiles are stricter (more patient) and aggro
-    # profiles override looser (the aggro plan can't afford to pass).
-    pass_threshold: float = -5.0
+    # ── (Deleted in M3) Pass threshold ──
+    # The binary `pass_threshold` gate has been removed.  The AI now
+    # compares signed `play_value = ev - holdback_cost(snap)` against
+    # zero, where `holdback_cost` is positive when held interaction +
+    # active opp threats argue for keeping mana open and NEGATIVE
+    # (=> bonus) when no defensive use exists.  See
+    # `ai/ev_player.py::_holdback_penalty` for the signed model and
+    # `docs/history/audits/2026-05-16_5panel_bo3_audit.md` (control
+    # panel) for the binary-gate trap that motivated removal.
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -141,9 +147,7 @@ AGGRO = StrategyProfile(
     aggro_closing_threshold_reduction=2.0,
 )
 
-MIDRANGE = StrategyProfile(
-    pass_threshold=-3.0,
-)
+MIDRANGE = StrategyProfile()
 
 CONTROL = StrategyProfile(
     burn_face_mult=0.0,
@@ -195,3 +199,150 @@ DECK_ARCHETYPE_OVERRIDES = {
 def get_profile(archetype: str) -> StrategyProfile:
     """Get the strategy profile for an archetype."""
     return PROFILES.get(archetype, MIDRANGE)
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Phase-weights table — life-phase-aware EV re-weighting (M4)
+# ═══════════════════════════════════════════════════════════════════
+#
+# Per `docs/history/audits/2026-05-16_5panel_bo3_audit.md` §M4
+# (3/5 panel consensus, P0):
+#
+#   `goal=close_game` was inert.  The gameplan flipped the label
+#   (`grind_value → close_game`) but `compute_play_ev` returned the
+#   same EV regardless of life phase, so Dimir at 9 life tapped out
+#   for Psychic Frog into open Thraben Charm mana → died, and
+#   Azorius at 3 life cast 5-CMC Teferi (no body) → died.
+#
+# Mechanism (purely declarative, no code branches):
+#
+#   `compute_play_ev` consults `ai.clock.life_phase(snap)` then
+#   looks up `phase_weights[archetype][phase]` — a dict of card-tag
+#   → multiplier.  For each tag on the candidate card, the
+#   corresponding multiplier is composed into the running product.
+#   Unmatched tags / phases / archetypes default to the identity
+#   weight `IDENTITY_PHASE_WEIGHTS` (1.0), so the lookup is a total
+#   function that NEVER raises and NEVER nullifies an EV signal
+#   (every leaf is strictly positive).
+#
+# Knowledge location: card-specific knowledge stays in oracle text +
+# tag classification.  This table re-weights ALREADY-EXISTING tag
+# buckets — it does not introduce new card-level data.  The tags
+# we reference here (`removal`, `board_wipe`, `counterspell`,
+# `lifegain`, `lifelink`, `cantrip`, `card_advantage`, `finisher`)
+# are all populated by `ai/predicates.py` / `engine/oracle_parser.py`
+# from oracle text.
+#
+# Direction (not magnitude) is the contract; the magnitudes here are
+# starting points the matrix can tune.  Tests in
+# tests/test_panic_gear_at_lethal_minus_one.py pin only the
+# directional rules (defensive > non-defensive at PANIC; identity at
+# DEVELOP; identity for unknown archetypes), so changing 1.5 → 1.8
+# does not require a test edit.
+
+# magic-allow: identity multiplier is a rules constant (multiplying
+# by 1.0 is a no-op).  Exposed at module scope so callers can spell
+# the no-op explicitly.
+IDENTITY_PHASE_WEIGHTS: float = 1.0
+
+
+def _build_phase_weights():
+    """Construct the phase_weights table.
+
+    Wrapped in a function so the `ai.clock.LifePhase` import is
+    lazy — `strategy_profile.py` is imported by many call sites and
+    we don't want a circular-import risk with `ai.clock`.
+    """
+    from ai.clock import LifePhase
+
+    # Defensive tag bucket — cards whose role is to slow the
+    # opponent down or refill life.  These get up-weighted at PANIC
+    # because they directly address the failing race.
+    defensive_panic = {
+        "removal": 1.5,
+        "board_wipe": 1.5,
+        "counterspell": 1.4,
+        "lifegain": 1.5,
+        "lifelink": 1.4,
+    }
+
+    # Proactive / non-defensive bucket — cards that develop our
+    # board or refill our hand.  These get down-weighted at PANIC
+    # because they don't move the failing-race needle this turn.
+    proactive_panic_down = {
+        "cantrip": 0.7,
+        "card_advantage": 0.8,
+    }
+
+    # CONTROL — most extreme gear-shift; control's gameplan is
+    # explicit "stay alive, win late".  At PANIC, lean hard into
+    # defensive cards and away from card-draw value engines.
+    control_weights = {
+        LifePhase.PANIC: {**defensive_panic, **proactive_panic_down},
+    }
+
+    # MIDRANGE — gear-shift to defense at PANIC but less extreme;
+    # midrange's plan retains some proactive value at low life.
+    midrange_weights = {
+        LifePhase.PANIC: {
+            "removal": 1.4,
+            "board_wipe": 1.4,
+            "counterspell": 1.3,
+            "lifegain": 1.4,
+            "lifelink": 1.3,
+            "cantrip": 0.8,
+        },
+    }
+
+    # AGGRO — at PANIC the aggro deck is losing the race; up-weight
+    # any reach (finisher / burn) and lifegain (sustains the clock).
+    # Down-weight cantrips that don't deal damage.
+    aggro_weights = {
+        LifePhase.PANIC: {
+            "finisher": 1.3,
+            "lifegain": 1.3,
+            "lifelink": 1.3,
+            "cantrip": 0.8,
+        },
+    }
+
+    return {
+        "control": control_weights,
+        "midrange": midrange_weights,
+        "aggro": aggro_weights,
+    }
+
+
+phase_weights: Dict[str, Dict["LifePhase", Dict[str, float]]] = \
+    _build_phase_weights()
+
+
+def phase_weight_multiplier(
+    archetype: str,
+    phase: "LifePhase",
+    tags: Iterable[str],
+) -> float:
+    """Return the EV multiplier for a card with `tags` at `phase`.
+
+    Pure lookup over the `phase_weights` table.  The result is the
+    product of every weight at `phase_weights[archetype][phase][tag]`
+    for each tag in `tags`; tags not in the table contribute the
+    identity multiplier (1.0).
+
+    Total function: misses on `archetype`, `phase`, or any individual
+    `tag` all fall through to `IDENTITY_PHASE_WEIGHTS`.  Never raises;
+    never returns 0.0 or a negative number (the table enforces
+    strictly positive weights).
+
+    Composition is multiplicative (not max/sum) because a card with
+    BOTH a defensive tag and a cantrip tag should net out — the
+    panic bonus and the cantrip penalty multiply to a near-identity.
+    """
+    per_phase = phase_weights.get(archetype, {})
+    by_tag = per_phase.get(phase, {})
+    if not by_tag:
+        return IDENTITY_PHASE_WEIGHTS
+    multiplier = IDENTITY_PHASE_WEIGHTS
+    for tag in tags:
+        multiplier *= by_tag.get(tag, IDENTITY_PHASE_WEIGHTS)
+    return multiplier

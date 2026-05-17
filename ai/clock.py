@@ -10,6 +10,7 @@ from how they change this clock, not from arbitrary weights.
 Units: turns of clock advantage. +1.0 means I'm one combat step ahead.
 """
 from __future__ import annotations
+import enum
 import math
 from typing import TYPE_CHECKING, Set
 
@@ -359,6 +360,50 @@ def creature_clock_impact_from_card(card: "CardInstance",
 
 
 # ─────────────────────────────────────────────────────────────
+# Loyalty-pool value — composable primitive for permanents that
+# accumulate "activation pools" (planeswalkers, saga chapters,
+# class-card levels, charge-counter engines).
+# ─────────────────────────────────────────────────────────────
+
+def loyalty_pool_value(activations: float, snap: "EVSnapshot") -> float:
+    """Power-equivalent value of an expected-activation pool.
+
+    A planeswalker's loyalty pool resolves into a stream of single-card
+    effects (a +1 draws a card, a -3 bounces a permanent, a -X deals X
+    damage). Each useful activation is, on average, worth one card's
+    worth of clock impact — the same primitive `card_clock_impact`
+    already exports, scaled by `opp_life` to convert "fraction of
+    kill per turn" back into "power-equivalent units" that compose
+    cleanly with `EVSnapshot.persistent_power`.
+
+    Composition (all from existing clock primitives, no new constants):
+
+        per_tick_power = card_clock_impact(snap) × opp_life
+                       = AVG_CREATURE_POWER × castable_fraction
+
+    The total pool is `activations × per_tick_power`. Read by callers
+    as `persistent_power` so the `urgency_factor` term in
+    `position_value` decays the credit as opp's clock tightens — a
+    loyalty pool we never get to activate is worth zero, the same
+    way a Bombardment we never get to sac into is worth zero.
+
+    Args:
+        activations: Expected useful activations across the pool's
+            residency (caller computes from loyalty / opp_threat).
+        snap: Current EVSnapshot for clock context.
+
+    Returns:
+        Power-equivalent contribution suitable to add to
+        `EVSnapshot.persistent_power`.
+    """
+    if activations <= 0:
+        return 0.0
+    opp_life = max(1, snap.opp_life)
+    per_tick_power = card_clock_impact(snap) * opp_life
+    return activations * per_tick_power
+
+
+# ─────────────────────────────────────────────────────────────
 # Position value — the unified board evaluation
 # ─────────────────────────────────────────────────────────────
 
@@ -460,3 +505,141 @@ def position_value(snap: "EVSnapshot") -> float:
 
     return (clock_diff + card_value + mana_value + life_advantage
             + persistent_value + artifact_value)
+
+
+# ─────────────────────────────────────────────────────────────
+# Life-phase classifier — pure composition primitive (W0-B)
+# ─────────────────────────────────────────────────────────────
+
+
+class LifePhase(enum.Enum):
+    """Coarse game-state phase, derived from clock + life primitives.
+
+    Replaces scattered magic-life-threshold conditionals (control
+    side "below 5 = panic", combo "life ≤ Bolt-zone", aggro "race
+    math") with a single composer that callers in `ev_player.py`,
+    `ev_evaluator.py`, `response.py` consult to gear-shift behaviour.
+
+    Phases in increasing order of urgency:
+
+    - DEVELOP — early/comfortable. Either we are still in the early-
+      game window (per `is_early_game`) or my life buffer is at
+      least as long as the opponent's. Safe to deploy proactive
+      resources (lands, mana rocks, value engines).
+    - GRIND  — both sides have committed clocks, neither racing
+      decisively. Trade resources, hold removal, value over tempo.
+    - PANIC  — I am losing the race in absolute terms: my
+      `life_as_resource` buffer is strictly less than the opponent's.
+      Gear-shift: tighten chump rules, deploy reactive cards now,
+      stop holding counterspells for hypothetical threats.
+    - LETHAL — opp has on-board lethal at next combat
+      (`am_dead_next`). Every Wave-1 caller that consults this
+      enum is expected to fold to this phase first.
+
+    The four phases form a total ordering on
+    `(am_dead_next, buffer_deficit, is_early_game)` — see `life_phase`.
+    """
+
+    DEVELOP = "develop"
+    GRIND = "grind"
+    PANIC = "panic"
+    LETHAL = "lethal"
+
+
+def life_phase(snap: "EVSnapshot") -> LifePhase:
+    """Classify the snapshot into one of four life phases.
+
+    Pure composition — every comparison routes through an existing
+    primitive (`EVSnapshot.am_dead_next`, `is_early_game`,
+    `life_as_resource`). No numeric thresholds are introduced here.
+
+    Ordering rule (most urgent wins):
+
+    1. LETHAL  — `snap.am_dead_next` (opp_power >= my_life > 0).
+       Single-predicate gate; nothing else can override it.
+    2. PANIC   — past the development window AND my life buffer
+       (`life_as_resource(my_life, opp_power)`) is strictly less
+       than the opponent's (`life_as_resource(opp_life, my_power)`).
+       The buffer comparison is symmetric and free of literals: both
+       sides use the same primitive applied to mirrored arguments.
+    3. GRIND   — past the development window, neither LETHAL nor
+       PANIC. Both sides have committed clocks (`is_early_game` is
+       False) and my buffer is not strictly less than the opponent's.
+    4. DEVELOP — fallback. Either `is_early_game` (both sides'
+       clocks still exceed the early-game threshold, which is itself
+       derived in `EARLY_GAME_CLOCK_THRESHOLD`) or my buffer is at
+       least as long as the opponent's.
+
+    All four arms reduce to the same shape: a comparison between two
+    already-derived values, or a call to an already-derived predicate.
+    """
+    if snap.am_dead_next:
+        return LifePhase.LETHAL
+
+    if is_early_game(snap):
+        return LifePhase.DEVELOP
+
+    my_buffer = life_as_resource(snap.my_life, snap.opp_power)
+    opp_buffer = life_as_resource(snap.opp_life, snap.my_power)
+
+    if my_buffer < opp_buffer:
+        return LifePhase.PANIC
+
+    return LifePhase.GRIND
+
+
+# ─────────────────────────────────────────────────────────────
+# Block-assignment scorer — single-formula post-state evaluation
+# ─────────────────────────────────────────────────────────────
+
+
+def score_block_assignment(
+    snap: "EVSnapshot",
+    *,
+    my_life_after: int,
+    opp_power_after: int,
+    my_power_after: int,
+) -> float:
+    """Score a hypothetical post-combat state by life-as-resource
+    *buffer differential* — my survival turns minus opp's survival
+    turns.
+
+    Replaces the chump / trade / favorable-trade enum-of-reasons
+    that previously gated block selection.  The choice between
+    "chump", "even trade", and "favorable trade" is **derived**
+    from the same single formula:
+
+        score = life_as_resource(my_life_after, opp_power_after)
+              - life_as_resource(opp_life, my_power_after)
+
+    All three previously-named cases reduce to comparing scores
+    across hypothetical post-states:
+
+      - Chump (blocker dies, attacker stays):
+            my_life_after = my_life - 0
+            opp_power_after = opp_power (attacker survives)
+            my_power_after = my_power - blocker_power (blocker died)
+      - Trade (both die):
+            my_life_after = my_life - 0
+            opp_power_after = opp_power - attacker_power
+            my_power_after = my_power - blocker_power
+      - Favorable trade (only attacker dies):
+            my_life_after = my_life - 0
+            opp_power_after = opp_power - attacker_power
+            my_power_after = my_power
+      - No block:
+            my_life_after = my_life - attacker_power
+            opp_power_after = opp_power
+            my_power_after = my_power
+
+    Each option is one input to this function; the caller picks the
+    option with the maximum score.  No new numeric literals are
+    introduced — both terms compose ``life_as_resource``.  ``opp_life``
+    is the only field of ``snap`` we read directly because opp's
+    life is not affected by the block decision (they're attacking,
+    not blocking) — every other coordinate comes from the caller's
+    post-state.
+    """
+    my_buffer = life_as_resource(my_life_after, opp_power_after)
+    opp_buffer = life_as_resource(snap.opp_life, my_power_after)
+    return my_buffer - opp_buffer

@@ -784,15 +784,23 @@ class TestRiskDiscount:
         assert _compute_risk_discount(None, None) == 1.0
 
     def test_counter_probability_reduces_discount(self):
-        """Higher P(counter) should lower risk_discount."""
+        """Higher P(counter) should lower risk_discount.
+
+        M7 / W1b-7: `_compute_risk_discount` now reads
+        `bhi.beliefs.p_counter` directly (the narrow prior) rather
+        than the legacy `get_counter_probability` accessor — the
+        unified `get_interaction_probability` measure does its own
+        instant-speed mana gating that doesn't compose with the
+        sorcery-speed discard channel handled here.  Mocks expose
+        `beliefs.p_counter` to match the new contract.
+        """
         class MockPool:
             def total(self):
                 return 0
         class MockBHI:
             _initialized = True
-            beliefs = type('', (), {'p_free_counter': 0.0})()
-            def get_counter_probability(self):
-                return 0.4
+            beliefs = type('', (), {'p_free_counter': 0.0,
+                                     'p_counter': 0.4})()
         class MockOpp:
             untapped_lands = [1, 2]
             mana_pool = MockPool()
@@ -801,15 +809,18 @@ class TestRiskDiscount:
         assert rd == pytest.approx(0.6)
 
     def test_tapped_out_uses_free_counter(self):
-        """When tapped out, only free counter probability matters."""
+        """When tapped out, only free counter probability matters.
+
+        M7 / W1b-7: same mock-shape update — `beliefs.p_counter`
+        replaces the legacy mock method.
+        """
         class MockPool:
             def total(self):
                 return 0
         class MockBHI:
             _initialized = True
-            beliefs = type('', (), {'p_free_counter': 0.2})()
-            def get_counter_probability(self):
-                return 0.5  # high regular counter
+            beliefs = type('', (), {'p_free_counter': 0.2,
+                                     'p_counter': 0.5})()
         class MockOpp:
             untapped_lands = []
             mana_pool = MockPool()

@@ -89,240 +89,51 @@ def _pick_damage_target(game: "GameState", controller: int,
 
 def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
                              controller: int):
-    """Resolve ETB effects by parsing the card's oracle text.
+    """Resolve ETB effects via classifier-tag dispatch.
 
-    Called when a permanent enters the battlefield. Handles common
-    ETB patterns generically instead of per-card.
+    Scope (R3): the surveil-N land cycle is the audit's named target.
+    Card-specific ETB handlers continue to live in `EFFECT_REGISTRY`
+    (which `zone_transfer._fire_etb_triggers` invokes BEFORE falling
+    through to this resolver). This generic resolver handles only
+    oracle patterns the W0-A classifier has been trained to recognise.
+
+    Adding a new ETB shape goes through:
+      1. Declare a `Tag.ETB_<SHAPE>` in `ai/oracle_classifier.py`.
+      2. Append the shape's description to
+         `ai/llm_prompts/classify_oracle_v1.md`.
+      3. Run `tools/build_oracle_classifier_cache.py` to populate.
+      4. Add a tag-gated branch here whose only oracle parse is
+         for the rule's numeric amount (assert-fail on mismatch).
+
+    Inline `if "phrase" in oracle and "other" in oracle: …` chains are
+    forbidden by the abstraction contract — they are the patchwork
+    pattern Wave 2 will delete elsewhere; we don't ADD them here.
     """
     oracle = (card.template.oracle_text or '').lower()
     if not oracle:
         return
 
-    opponent = 1 - controller
-
-    # ── "When this creature enters, target opponent reveals their hand.
-    #     You choose a nonland card from it and exile that card." ──
-    if ('enters' in oracle and 'reveals' in oracle and 'hand' in oracle
-            and 'exile' in oracle and 'nonland' in oracle):
-        opp = game.players[opponent]
-        if opp.hand:
-            # Choose the highest-CMC nonland card
-            nonlands = [c for c in opp.hand if not c.template.is_land]
-            if nonlands:
-                best = max(nonlands, key=lambda c: (c.template.cmc or 0))
-                opp.hand.remove(best)
-                best.zone = "exile"
-                game.players[opponent].exile.append(best)
-                game.log.append(
-                    f"T{game.display_turn} P{controller+1}: "
-                    f"{card.name} exiles {best.name} from opponent's hand")
-
-    # ── "When this creature enters, exile target creature/permanent
-    #     an opponent controls" (Solitude-style) ──
-    # This is already handled by EFFECT_REGISTRY for specific cards.
-    # Generic version for any "enters...exile target" creature:
-    elif ('enters' in oracle and 'exile target' in oracle
-          and 'opponent controls' in oracle
-          and card.template.is_creature):
-        opp = game.players[opponent]
-        if opp.creatures:
-            # Exile the highest-value creature
-            best = max(opp.creatures, key=lambda c: (c.power or 0) + (c.toughness or 0))
-            opp.battlefield.remove(best)
-            best.zone = "exile"
-            game.players[opponent].exile.append(best)
-            # Check for "its controller gains life equal to its power"
-            if 'gains life equal' in oracle and 'power' in oracle:
-                life_gain = best.power or 0
-                opp.life += life_gain
-            game.log.append(
-                f"T{game.display_turn} P{controller+1}: "
-                f"{card.name} exiles {best.name}")
-
-    # ── "When this creature enters, destroy target artifact or
-    #     enchantment an opponent controls" (Witch Enchanter etc.) ──
-    if ('enters' in oracle and 'destroy target' in oracle
-            and 'opponent controls' in oracle
-            and ('artifact' in oracle or 'enchantment' in oracle)):
-        from engine.cards import CardType, Keyword
-        opp = game.players[opponent]
-        # Match exact oracle: artifact-only, enchantment-only, or either
-        wants_artifact = 'artifact' in oracle
-        wants_enchant = 'enchantment' in oracle
-        candidates = [
-            c for c in opp.battlefield
-            if not c.template.is_land
-            and Keyword.INDESTRUCTIBLE not in c.keywords
-            and (
-                (wants_artifact and CardType.ARTIFACT in c.template.card_types)
-                or (wants_enchant and CardType.ENCHANTMENT in c.template.card_types)
+    # ── "When this ~ enters, surveil N" (CR 701.42) ──
+    # Class size: the surveil-dual cycle (Meticulous Archive, Elegant
+    # Parlor, Thundering Falls, Hedge Maze, Underground Mortuary,
+    # Raucous Theater, Commercial District, Undercity Sewers, Shadowy
+    # Backstreet, Lush Portico) plus any future printing with the
+    # same ETB shape. The dispatch is gated by the oracle classifier
+    # tag `Tag.ETB_SURVEIL_N` — same gated-amount-parse pattern as
+    # `zone_transfer._fire_on_draw_triggers` uses for ON_DRAW_DAMAGE:
+    # the tag confirms the card has the trigger, then the amount N
+    # is parsed targetedly from oracle text. Card-name special cases
+    # are explicitly forbidden by the abstraction contract.
+    from ai.oracle_classifier import Tag, has_tag
+    if has_tag(card.name, Tag.ETB_SURVEIL_N):
+        m = re.search(r'surveil\s+(\d+)', oracle)
+        if m is None:
+            raise AssertionError(
+                f"{card.name!r} carries Tag.ETB_SURVEIL_N but its "
+                f"oracle text does not match the 'surveil N' shape — "
+                f"classifier and oracle are out of sync."
             )
-        ]
-        if candidates:
-            # Prefer scaling/recurring threats; reuse permanent-threat math
-            def score(c):
-                o = (c.template.oracle_text or '').lower()
-                base = (c.template.cmc or 0)
-                if re.search(r'for each (artifact|creature|land)', o):
-                    base += 5
-                if 'whenever this creature attacks' in o:
-                    base += 4
-                return base
-            target = max(candidates, key=score)
-            game._permanent_destroyed(target)
-            game.log.append(
-                f"T{game.display_turn} P{controller+1}: "
-                f"{card.name} ETB destroys {target.name}")
-
-    # ── "When this creature enters, return target card from your
-    #     graveyard to your hand" (Eternal Witness, Archaeomancer-style).
-    #     Prefer non-lands (lands recoverable via fetches/ramp), then the
-    #     highest-CMC card (biggest recouped investment).
-    if ('enters' in oracle
-            and 'return target' in oracle
-            and 'from your graveyard' in oracle
-            and 'to your hand' in oracle):
-        player = game.players[controller]
-        if player.graveyard:
-            # Apply type filter from oracle ("instant or sorcery card",
-            # "creature card"); otherwise any non-land.
-            pool = player.graveyard
-            if 'instant or sorcery card' in oracle:
-                pool = [c for c in pool
-                        if c.template.is_instant or c.template.is_sorcery]
-            elif 'creature card' in oracle:
-                pool = [c for c in pool if c.template.is_creature]
-            else:
-                nonlands = [c for c in pool if not c.template.is_land]
-                pool = nonlands if nonlands else pool
-            if pool:
-                best = max(pool, key=lambda c: c.template.cmc or 0)
-                player.graveyard.remove(best)
-                best.zone = "hand"
-                player.hand.append(best)
-                game.log.append(
-                    f"T{game.display_turn} P{controller+1}: "
-                    f"{card.name} returns {best.name} from GY to hand")
-
-    # ── "When this creature enters, draw a card" ──
-    if 'enters' in oracle and 'draw' in oracle and 'card' in oracle:
-        amount = 1
-        m = re.search(r'draw\s+(\w+)\s+card', oracle)
-        if m:
-            word_to_num = {'a': 1, 'one': 1, 'two': 2, 'three': 3, 'four': 4}
-            amount = word_to_num.get(m.group(1), 1)
-            try:
-                amount = int(m.group(1))
-            except ValueError:
-                pass
-        # Avoid double-triggering if also handled by EFFECT_REGISTRY
-        if 'draw' not in str(getattr(card, '_etb_effects_fired', [])):
-            drawn = game.draw_cards(controller, amount)
-            names = ", ".join(c.name for c in drawn) if drawn else ""
-            if names:
-                game.log.append(f"T{game.display_turn} P{controller+1}: "
-                                f"{card.name} ETB: draw {amount} ({names})")
-
-    # ── "When this creature enters, gain N life" ──
-    # Only fire for unconditional gains — skip conditional ones like
-    # "If you put a Cave onto the battlefield this way, gain N life"
-    if ('enters' in oracle and 'gain' in oracle and 'life' in oracle
-            and 'if you' not in oracle and 'if a' not in oracle):
-        m = re.search(r'gain\s+(\d+)\s+life', oracle)
-        if m:
-            amount = int(m.group(1))
-            game.gain_life(controller, amount, card.name)
-            game.log.append(
-                f"T{game.display_turn} P{controller+1}: "
-                f"{card.name} ETB: gain {amount} life (now {game.players[controller].life})")
-
-    # ── "When this creature enters, deal N damage to any target / opponent" ──
-    if 'enters' in oracle and 'damage' in oracle:
-        m = re.search(r'deals?\s+(\d+)\s+damage', oracle)
-        if m:
-            amount = int(m.group(1))
-            # Only redirect onto a creature when oracle explicitly says
-            # "any target". Loose "target" phrasing (e.g. "target creature
-            # deals X damage") is ambiguous and regressed the baseline.
-            if 'any target' in oracle:
-                target = _pick_damage_target(game, controller, amount)
-            else:
-                target = None
-            if target is not None:
-                target.damage_marked = getattr(target, 'damage_marked', 0) + amount
-                game.log.append(
-                    f"T{game.display_turn} P{controller+1}: "
-                    f"{card.name} ETB: {amount} damage to {target.name}")
-                game.check_state_based_actions()
-            elif 'any target' in oracle or 'opponent' in oracle:
-                game.players[opponent].life -= amount
-                game.players[controller].damage_dealt_this_turn += amount
-                game.log.append(
-                    f"T{game.display_turn} P{controller+1}: "
-                    f"{card.name} ETB: {amount} damage to opponent "
-                    f"(life: {game.players[opponent].life})")
-
-    # ── Bounce land: "When this land enters, return a land you control
-    #    to its owner's hand." (Gruul Turf, Simic Growth Chamber, etc.) ──
-    if (card.template.is_land and 'when this land enters' in oracle
-            and 'return a land you control' in oracle
-            and 'hand' in oracle):
-        player = game.players[controller]
-        # Return cheapest non-bounce land (prefer basics to keep bounce land)
-        candidates = [c for c in player.battlefield
-                      if c.template.is_land and c.instance_id != card.instance_id]
-        if candidates:
-            # Prefer basics first; among bounce lands prefer not to return them
-            def bounce_priority(c):
-                is_bounce = ('return a land you control' in
-                             (c.template.oracle_text or '').lower())
-                return (1 if is_bounce else 0, c.template.cmc or 0)
-            target = min(candidates, key=bounce_priority)
-            player.battlefield.remove(target)
-            target.zone = 'hand'
-            target.tapped = False
-            player.hand.append(target)
-            game.log.append(
-                f"T{game.display_turn} P{controller+1}: "
-                f"{card.name} returns {target.name} to hand")
-
-    # ── Spelunking / "when this enters, draw a card, then you may put a
-    #    land card from your hand onto the battlefield" ──
-    if ('when this' in oracle and 'enters' in oracle
-            and 'draw a card' in oracle
-            and 'land card from your hand onto the battlefield' in oracle):
-        player = game.players[controller]
-        game.draw_cards(controller, 1)
-        game.log.append(
-            f"T{game.display_turn} P{controller+1}: "
-            f"{card.name} ETB: draw a card")
-        lands_in_hand = [c for c in player.hand if c.template.is_land]
-        if lands_in_hand:
-            # Prefer bounce lands (synergy with Amulet)
-            bounce = [c for c in lands_in_hand
-                      if 'return a land you control' in
-                      (c.template.oracle_text or '').lower()]
-            land = bounce[0] if bounce else lands_in_hand[0]
-            player.hand.remove(land)
-            land.zone = 'battlefield'
-            land.controller = controller
-            land.enter_battlefield()   # sets tapped if enters_tapped
-            player.battlefield.append(land)
-            game._apply_untap_on_enter_triggers(land, controller)
-            # Also apply "Lands you control enter untapped" static (Spelunking etc.)
-            game._apply_lands_enter_untapped(land, controller)
-            # Fire land's own ETB (e.g. bounce land returns a land to hand)
-            resolve_etb_from_oracle(game, land, controller)
-            game._trigger_landfall(controller)
-            game.log.append(
-                f"T{game.display_turn} P{controller+1}: "
-                f"{card.name} puts {land.name} onto battlefield")
-            # Cave bonus: gain 4 life only if land placed is a Cave
-            if 'Cave' in (land.template.subtypes or []) and 'gain 4 life' in oracle:
-                game.gain_life(controller, 4, card.name)
-                game.log.append(
-                    f"T{game.display_turn} P{controller+1}: "
-                    f"{card.name} Cave bonus: gain 4 life")
+        game.surveil(controller, int(m.group(1)))
 
 
 def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
@@ -339,6 +150,85 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
 
     opponent = 1 - controller
     handled = False
+
+    # ── Energy-damage spells (R2): "target creature or planeswalker.
+    #     You get {E}^k, then you may pay any amount of {E}. ~ deals
+    #     that much (additional) damage to that permanent."
+    #     Class: FDN/MH3 energy-instant family (Galvanic Discharge,
+    #     Static Discharge, ...). Oracle-pattern keyed — no card name.
+    #     Composes target_solver.py:155 (cast-time legality, CR 601.2c)
+    #     and ~~deal_damage~~ direct target mutation (damage_marked /
+    #     loyalty_counters). Base damage and self-gen energy count are
+    #     both derived from oracle text. Engine commits a deterministic
+    #     min-to-kill energy spend (CR 117.2 — cost paid at cast; with
+    #     no AI hook yet, this is the engine-rational commitment).
+    if (('target creature or planeswalker' in oracle
+            or 'choose target creature or planeswalker' in oracle)
+            and 'you get {e}' in oracle
+            and 'pay any amount of {e}' in oracle
+            and 'that much' in oracle and 'damage' in oracle):
+        base_match = re.search(
+            r'deals?\s+(\d+)\s+damage\s+to\s+target\s+creature\s+or\s+planeswalker',
+            oracle)
+        base_damage = int(base_match.group(1)) if base_match else 0
+        gain_match = re.search(r'you get\s+((?:\{e\}\s*)+)', oracle)
+        self_gen_energy = (
+            gain_match.group(1).count('{e}') if gain_match else 0)
+        chosen = None
+        for tid in (targets or []):
+            if tid == -1:
+                continue  # face-marker — illegal target for this spell
+            cand = game.get_card_by_id(tid)
+            if (cand is not None and cand.zone == "battlefield"
+                    and (cand.template.is_creature
+                         or 'planeswalker' in
+                         [t.value for t in cand.template.card_types])):
+                chosen = cand
+                break
+        if chosen is None:
+            # AI did not nominate a legal creature/PW target.
+            # Engine cannot redirect to face (audit R2). Pick the
+            # highest-threat opp creature or planeswalker as the
+            # default; fizzle only when neither exists.
+            opp = game.players[1 - controller]
+            opp_pw = [c for c in opp.battlefield
+                      if 'planeswalker'
+                      in [t.value for t in c.template.card_types]]
+            candidates = list(opp.creatures) + opp_pw
+            if not candidates:
+                return True  # fizzle: no legal target
+            chosen = max(candidates,
+                         key=lambda c: (c.power or 0)
+                         + (c.toughness or 0)
+                         + getattr(c, 'loyalty_counters', 0))
+        player = game.players[controller]
+        player.add_energy(self_gen_energy)
+        if chosen.template.is_creature:
+            remaining = ((chosen.toughness or 0)
+                         - getattr(chosen, 'damage_marked', 0))
+        else:
+            remaining = chosen.loyalty_counters  # CR 119.3
+        need_to_kill = max(0, remaining - base_damage)
+        spend = (min(need_to_kill, player.energy_counters)
+                 if need_to_kill > 0 else 0)
+        if spend > 0:
+            player.spend_energy(spend)
+        total = base_damage + spend
+        if total > 0:
+            if chosen.template.is_creature:
+                chosen.damage_marked = (
+                    getattr(chosen, 'damage_marked', 0) + total)
+                if chosen.is_dead:
+                    game._creature_dies(chosen)
+            else:
+                chosen.loyalty_counters = max(
+                    0, chosen.loyalty_counters - total)
+                game.check_state_based_actions()
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: "
+            f"{card.name} deals {total} to {chosen.name} "
+            f"(base {base_damage} + {spend} energy)")
+        return True
 
     # ── "Target opponent reveals their hand. You choose a nonland card
     #     and that player discards it." (Thoughtseize, Inquisition) ──
@@ -425,15 +315,60 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
                 f"{card.name} reanimates {best.name}")
             handled = True
 
-    # ── Card draw on spell resolution ──
-    # Covers "draw a card" / "draw N cards" + the look-and-keep variant
-    # used by Sleight of Hand ("put one of them into your hand") + the
-    # "exile top N, you may play those cards" variant (Reckless Impulse /
-    # Wrenn's Resolve / Glimpse the Impossible) approximated as draw N.
-    # Scry-then-draw patterns (Preordain) match because "draw a card"
-    # is explicit in the oracle.
+    # ── Card draw / impulse-reveal on spell resolution ──
+    # Two distinct mechanics share this branch:
+    #
+    #   * Real card draw (CR 121.1) — "draw a card" / "draw N cards"
+    #     / Sleight-of-Hand-style "put one of them into your hand".
+    #     These DO fire "whenever you/opponent draws" triggers and
+    #     route through `game.draw_cards`.
+    #
+    #   * Impulse-reveal (CR 121.1c — NOT a draw) — "exile the top N,
+    #     you may play those cards". The classifier `Tag.IMPULSE_DRAW`
+    #     is the single source of truth; we route these through
+    #     `zone_transfer.transfer(..., IMPULSE_REVEAL)` so the on-draw
+    #     trigger fan-out is bypassed. This is the R1+M1-engine fix
+    #     from the 2026-05-16 audit (storm_vs_dimir G1T4 self-kill).
+    #
+    # The numerical count is parsed from oracle text in both cases.
     word_to_num = {'a': 1, 'one': 1, 'two': 2, 'three': 3,
                    'four': 4, 'five': 5}
+
+    # Impulse-reveal path — gated by classifier tag, not regex chain.
+    from ai.oracle_classifier import Tag, tags_for
+    if Tag.IMPULSE_DRAW in tags_for(card.name) and not card.template.x_cost_data:
+        from engine.zone_transfer import TransferKind, transfer
+        m_exile = re.search(r'exile the top (\w+) cards? of your library',
+                            oracle)
+        impulse_n = 0
+        if m_exile:
+            tok = m_exile.group(1)
+            try:
+                impulse_n = int(tok)
+            except ValueError:
+                impulse_n = word_to_num.get(tok, 0)
+        if impulse_n > 0:
+            revealed: list = []
+            player = game.players[controller]
+            for _ in range(min(impulse_n, len(player.library))):
+                top = player.library[0]
+                # `transfer` moves library→hand without firing draw
+                # triggers (TransferKind.IMPULSE_REVEAL has an empty
+                # fan-out). dst="hand" is an approximation of the
+                # impulse zone — the card is playable; the trigger
+                # fan-out is what mattered for the audit.
+                transfer(game, top, src_zone="library", dst_zone="hand",
+                         kind=TransferKind.IMPULSE_REVEAL,
+                         controller=controller)
+                revealed.append(top)
+            if revealed:
+                names = ", ".join(c.name for c in revealed)
+                game.log.append(
+                    f"T{game.display_turn} P{controller+1}: "
+                    f"{card.name} → impulse-reveal {impulse_n} ({names})")
+            return True  # impulse-reveal handled; skip real-draw branch
+
+    # Real-draw path — "draw N cards" and look-and-keep variants.
     draw_n = 0
     m_draw = re.search(r'draw\s+(\w+)\s+cards?', oracle)
     if m_draw:
@@ -445,22 +380,6 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
     elif 'put one of them into your hand' in oracle:
         # Look-at-top-N keep-1 → draw 1 (Sleight of Hand pattern)
         draw_n = 1
-    elif ('exile the top' in oracle
-          and ('you may play those cards' in oracle
-               or 'you may play that card' in oracle)
-          and 'storm' not in oracle):
-        # Exile-and-may-play-this-turn → approximate as draw N. Excludes
-        # storm-tagged spells (Galvanic Relay) whose storm copies need
-        # the dedicated handler. Excludes X-cost spells (March of
-        # Reckless Joy) whose count depends on mana spent on X.
-        m_exile = re.search(r'exile the top (\w+) cards? of your library',
-                            oracle)
-        if m_exile and not card.template.x_cost_data:
-            tok = m_exile.group(1)
-            try:
-                draw_n = int(tok)
-            except ValueError:
-                draw_n = word_to_num.get(tok, 0)
     if draw_n > 0:
         drawn = game.draw_cards(controller, draw_n)
         names = ", ".join(c.name for c in drawn) if drawn else ""
@@ -628,14 +547,34 @@ def _parse_count_threshold(oracle: str) -> Optional[int]:
 
 def _handle_coin_flip_transform(game: "GameState", controller: int,
                                  creature: "CardInstance") -> None:
-    """Ral, Monsoon Mage coin-flip transform. Win → transform with
-    loyalty = back_face_loyalty + spells_cast_this_turn. Lose → 1 damage.
-    Delegates state transition to `_transform_permanent`.
+    """Coin-flip transform handler (Ral, Monsoon Mage shape).
+
+    Win → transform with loyalty = back_face_loyalty +
+    spells_cast_this_turn. Lose → the source permanent takes 1
+    damage from itself (Oracle: "<this> deals 1 damage to it" / self-
+    damage clause). The 1 is a rule constant straight from the
+    Oracle clause, not a magic threshold.
+
+    R6 fix: route the lose branch through the W0-D `deal_damage`
+    primitive with target=source (the permanent), not raw-mutate
+    `player.life`. The primitive marks `damage_marked` on the
+    creature; SBAs (704.5h) destroy it later if marked damage >=
+    toughness. New self-damage cards composed from the same shape
+    inherit correctness.
     """
+    # Late import: avoid module-cycle risk between oracle_resolver
+    # (which game_state imports indirectly) and damage. The damage
+    # primitive depends on no engine modules; importing here is safe.
+    from .damage import deal_damage
+
     player = game.players[controller]
     result = game.rng.choice(["win", "lose"])
     if result == "lose":
-        player.life -= 1
+        # Oracle clause: "deals 1 damage to it" — the literal 1 is
+        # a rule constant from card text (CLAUDE.md §Hard prohibitions:
+        # rule constants are allowed). Damage routes through the W0-D
+        # primitive so triggers/SBA semantics fire correctly.
+        deal_damage(source=creature, target=creature, amount=1)
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"{creature.name} — lost coin flip, takes 1 damage")
         return
@@ -723,6 +662,24 @@ def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
         if ('cast a spell' in oracle or 'cast an instant or sorcery' in oracle):
             if 'draw a card' in oracle and 'noncreature' not in oracle:
                 game.draw_cards(caster_idx, 1)
+
+        # ── "Whenever you cast a noncreature spell, surveil N" ──
+        # Class size: Dragon's Rage Channeler, Lightshell Duo, Garland
+        # Knight of Cornelia, Cruel Witness, and any future printing
+        # with the same trigger shape. Single dispatch via oracle-text
+        # patterns + targeted N parse — same shape as the other
+        # noncreature-spell-cast branches above (energy, token).
+        # This replaces the deleted cast_manager:1198-1205 surveil
+        # special case; per R3 in
+        # docs/history/audits/2026-05-16_rules_audit.md, the surveil
+        # mechanic now has a single dispatch path used by both
+        # spell-cast-triggered permanents AND land/permanent ETBs.
+        if ('noncreature spell' in oracle and 'surveil' in oracle
+                and not spell_cast.template.is_creature
+                and permanent.controller == caster_idx):
+            m = re.search(r'surveil\s+(\d+)', oracle)
+            n = int(m.group(1)) if m else 1
+            game.surveil(caster_idx, n)
 
         # ── Transform-on-cast trigger ──
         # Two patterns, both oracle-driven:

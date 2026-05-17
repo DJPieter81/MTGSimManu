@@ -80,7 +80,33 @@ def choose_discard(game: "GameState", player_idx: int,
                 opp_gameplan = get_gameplan(deck_name)
             except Exception:
                 opp_gameplan = None
-        return choose_card_to_strip(hand, opp_gameplan)
+        # W1b-11 attack-imminence shim:
+        #
+        # When the discard CASTER (the player who is *not* the
+        # hand owner, i.e. ``1 - player_idx``) is in panic-life
+        # territory — they die in 2 attack steps to the attacker's
+        # current average power — the right rule is "rip the
+        # imminent attacker," not the static threat top.
+        #
+        # The panic condition is a derived rules expression:
+        # ``caster_life ≤ 2 × opp_avg_attack``.  ``opp_avg_attack``
+        # is ``snap.opp_power / max(1, snap.opp_creature_count)``
+        # — the per-attacker damage the caster will eat next turn.
+        # The integer ``2`` is the rules-style "turns to lethal"
+        # multiplier (combat_clock idiom: two combat steps).
+        #
+        # The imminence ranking comes from
+        # ``ai.bhi.predicted_turn_of_cast`` (composition of
+        # ``effective_cmc`` + opp mana availability — no new
+        # constants).  In panic mode we sort the hand by
+        # ``(predicted_turn_of_cast asc, static_score desc)``: pick
+        # the most imminently-castable card; static score is the
+        # tie-break.  Outside panic we delegate to the unchanged
+        # static-score picker (``choose_card_to_strip``).
+        return _choose_for_caster(
+            game, victim_idx=player_idx, hand=hand,
+            opp_gameplan=opp_gameplan,
+        ) or choose_card_to_strip(hand, opp_gameplan)
 
     # Self-discard: score-based choice, highest score = discard first.
     from ai.predicates import count_lands
@@ -199,3 +225,73 @@ def _reanimation_fuel_min_cmc(game: "GameState",
         if min_cmc >= REANIMATION_FUEL_FLOOR:
             return min_cmc
     return None
+
+
+def _choose_for_caster(game: "GameState", victim_idx: int,
+                       hand: List["CardInstance"],
+                       opp_gameplan) -> Optional["CardInstance"]:
+    """Apply the attack-imminence shim (W1b-11).
+
+    Returns the imminent-attacker pick when the discard CASTER is in
+    panic life and the victim's hand has at least one card whose
+    ``predicted_turn_of_cast`` is finite.  Returns ``None`` when the
+    static-score ranking should win (no panic, no creatures pressuring,
+    all-lands hand).
+
+    No card-name or deck-name conditionals.  Panic is derived from
+    snapshot fields; imminence is derived from the W0-F effective_cmc
+    primitive via ``bhi.predicted_turn_of_cast``.
+    """
+    # Imports deferred to keep the discard path cheap when the
+    # caster never reaches panic life (the common case).
+    from ai.bhi import predicted_turn_of_cast
+    from ai.ev_evaluator import (
+        score_card_for_opponent_strip,
+        snapshot_from_game,
+    )
+
+    caster_idx = 1 - victim_idx
+    snap = snapshot_from_game(game, caster_idx)
+
+    # Panic condition: caster's life ≤ 2 × per-attacker damage.
+    # Both operands derive from snapshot fields:
+    #   * ``snap.my_life`` — the caster's life (snap is from the
+    #     caster's perspective).
+    #   * ``snap.opp_power / max(1, snap.opp_creature_count)`` —
+    #     the average attacker's power (rules-derived: total power
+    #     divided by attacker count).
+    # The literal ``2`` is the standard "turns-to-lethal"
+    # multiplier the combat_clock layer already uses (life_as_resource
+    # treats ``life / incoming_power`` as turns of survival; ``2``
+    # = "dies in two attack steps").  Exempt under the magic-number
+    # ratchet's EXEMPT_VALUES.
+    opp_attackers = max(1, int(snap.opp_creature_count or 0))
+    opp_avg_attack = float(snap.opp_power or 0) / opp_attackers
+    if opp_avg_attack <= 0:
+        # No attacking pressure → no panic, no override.
+        return None
+    panic = snap.my_life <= 2 * opp_avg_attack
+    if not panic:
+        return None
+
+    nonland = [c for c in hand
+               if not getattr(c.template, 'is_land', False)]
+    if not nonland:
+        return None
+
+    # Rank by (predicted_turn_of_cast asc, static_score desc, idx asc).
+    # Lowest predicted turn wins (most imminent); static score is the
+    # tie-break so a vanilla cantrip doesn't beat a 1-mana threat at
+    # the same turn-of-cast.  Stable order on idx for determinism.
+    victim_player = game.players[victim_idx]
+
+    def _key(idx_card):
+        idx, c = idx_card
+        turn = predicted_turn_of_cast(c, snap,
+                                       victim_idx=victim_idx,
+                                       victim_player=victim_player)
+        score = score_card_for_opponent_strip(c, opp_gameplan)
+        return (turn, -score, idx)
+
+    ranked = sorted(enumerate(nonland), key=_key)
+    return ranked[0][1]

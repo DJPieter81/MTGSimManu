@@ -149,21 +149,23 @@ def _compute_combo_value(snap):
 def _compute_risk_discount(bhi, opp):
     """Discount factor from BHI disruption probabilities.
 
-    Combines the existing counter-spell prior with a discard prior
-    sourced from the opp's published gameplan (see
-    `BayesianHandTracker._compute_discard_prior`). The discard term
-    is multiplied by `_DISCARD_HIT_RATE` - the documented
-    expectation that a discard spell, when cast, removes one of our
-    critical pieces ~50% of the time (the opp picks rationally from
-    our revealed hand). Effective risk = max(P(counter), P(discard)
-    * _DISCARD_HIT_RATE), so whichever disruption vector is more
-    likely dominates.
+    Reads the counter prior directly from `bhi.beliefs.p_counter`
+    (the narrow belief that has not yet been mana-gated by
+    `get_interaction_probability` — this function does its own
+    tap-out gating below because the discard branch is sorcery-speed
+    and needs different gating than the unified instant-speed
+    interaction measure). The discard term is multiplied by
+    `_DISCARD_HIT_RATE` - the documented expectation that a discard
+    spell, when cast, removes one of our critical pieces ~50% of
+    the time (the opp picks rationally from our revealed hand).
+    Effective risk = max(P(counter), P(discard) * _DISCARD_HIT_RATE),
+    so whichever disruption vector is more likely dominates.
 
     Returns a value in [0, 1] - higher means safer.
     """
     if not bhi or not bhi._initialized:
         return 1.0
-    p_counter = bhi.get_counter_probability()
+    p_counter = bhi.beliefs.p_counter
     p_discard = (bhi.get_discard_probability()
                  if hasattr(bhi, 'get_discard_probability') else 0.0)
     effective_discard = p_discard * _DISCARD_HIT_RATE
@@ -512,6 +514,150 @@ def _derive_storm_hard_hold() -> float:
 STORM_HARD_HOLD = _derive_storm_hard_hold()
 
 
+# ═══════════════════════════════════════════════════════════════
+# Chain-aware bottleneck primitive (M2)
+# ═══════════════════════════════════════════════════════════════
+# `bottleneck_probability(stack_item, game, defender_idx)` returns the
+# probability ∈ [0, 1] that the stack item IS the bottleneck of the
+# opponent's combo chain.  Callers (`ai/response.py`) use the value
+# to decide whether to fire or hold a counter:
+#
+#   • bp == 0.0  → stack item is chain FUEL with payoff reachable;
+#                  hold the counter for the payoff.
+#   • bp == 1.0  → stack item is the chain PAYOFF (storm payoff,
+#                  tutor for a finisher, flashback combo enabler);
+#                  fire the counter — this is the bottleneck.
+#   • bp default → no chain state inferred; defer to legacy threat
+#                  evaluation.
+#
+# Composes (no new oracle-text matching, no card-name checks):
+#   • `predicates.is_chain_fuel`, `is_chain_payoff_accessor`
+#   • `engine` chain-state: opp.spells_cast_this_turn,
+#     `cost_reducer`-tagged permanents on opp battlefield (the
+#     "chain in flight" signal — Ruby Medallion / Goblin
+#     Electromancer / Storm-Kiln Artist class).
+#   • Opp's library composition (already enumerated by BHI in its
+#     own prior; here we read the same library directly for the
+#     payoff-reachability test).
+#
+# The primitive is the single composition site for the audit's
+# G2T4 smoking gun: Azorius vs Storm, opp on Wrenn's Resolve
+# (chain fuel) with Past in Flames + Wish in hand and Grapeshot in
+# library / SB.  bp=0 → counter held; payoff arrives next turn →
+# counter fires.
+
+
+def _opp_chain_in_flight(game, opp_idx) -> bool:
+    """True iff opp's chain state signals a combo chain is in
+    progress THIS turn.
+
+    The chain-in-flight signal is satisfied by ANY of:
+
+    * `opp.spells_cast_this_turn > 0` — combo turns are mid-cast;
+      a non-trivial storm count is the strongest in-game signal.
+    * Opp controls a `cost_reducer` permanent on the battlefield
+      (Ruby Medallion / Goblin Electromancer / Birgi class) — the
+      cost-reducer is the structural prerequisite for a chain to
+      run profitably.
+    * Opp's published archetype is `combo` per gameplan — covers
+      the first-cast-of-turn case where storm_count is still 0.
+
+    Generic by construction (tag-driven + archetype lookup).  No
+    card names, no deck-name gates.
+    """
+    opp = game.players[opp_idx]
+    if getattr(opp, 'spells_cast_this_turn', 0) > 0:
+        return True
+    for perm in getattr(opp, 'battlefield', ()):  # battlefield is iterable
+        tags = getattr(perm.template, 'tags', set())
+        if 'cost_reducer' in tags:
+            return True
+    # Archetype lookup — gameplan declares the deck's strategy.
+    deck_name = getattr(opp, 'deck_name', '') or ''
+    if deck_name:
+        try:
+            from ai.gameplan import get_gameplan
+            plan = get_gameplan(deck_name)
+            if plan is not None and getattr(plan, 'archetype', '') == 'combo':
+                return True
+        except Exception:
+            pass
+    return False
+
+
+def _opp_payoff_reachable(game, opp_idx) -> bool:
+    """True iff opp can plausibly reach a chain payoff from their
+    current hand + library + sideboard.
+
+    Reachability is satisfied if any card in opp's hand, library, or
+    sideboard is `is_chain_payoff_accessor` — direct STORM_PAYOFF, a
+    tutor, or a flashback-combo card.  We read all three zones so a
+    Wish-style tutor with a sideboard target still registers as
+    reachable.
+
+    Generic — no card names.  Returns False when the opp has no
+    payoff anywhere in their pool (legitimate "fuel-only" hand and
+    deck composition, e.g. an aggro-control burn pile).
+    """
+    from ai.predicates import is_chain_payoff_accessor
+    opp = game.players[opp_idx]
+    pools = (
+        list(getattr(opp, 'hand', ())),
+        list(getattr(opp, 'library', ())),
+        list(getattr(opp, 'sideboard', None) or ()),
+    )
+    for pool in pools:
+        for c in pool:
+            if getattr(c, 'template', None) is None:
+                continue
+            if is_chain_payoff_accessor(c):
+                return True
+    return False
+
+
+def bottleneck_probability(stack_item, game, defender_idx) -> float:
+    """Probability the stack item IS the bottleneck of the opp chain.
+
+    Single formula (no branches per case):
+
+        bp = is_payoff(stack)             if chain_in_flight       (else NaN)
+             , 0.0  if is_fuel(stack) and payoff_reachable
+             , NaN  otherwise (no chain state — defer to legacy)
+
+    Implemented as a short closed-form composition of three
+    primitives:
+
+    * `_opp_chain_in_flight(game, opp_idx)` — chain state inferred
+      from `spells_cast_this_turn`, cost-reducer permanents, or
+      archetype lookup.  No card-name gates.
+    * `predicates.is_chain_payoff_accessor(stack.source)` — the
+      stack item itself is the payoff (storm payoff, tutor, or
+      flashback-combo enabler).
+    * `predicates.is_chain_fuel(stack.source)` AND
+      `_opp_payoff_reachable(...)` — the stack item is fuel and
+      opp can plausibly reach a payoff later.
+
+    Returns:
+
+    * 1.0   — fire: stack is the payoff bottleneck.
+    * 0.0   — hold: stack is fuel with a payoff coming.
+    * `float('nan')` — defer to legacy threat evaluation
+      (no chain state detected).
+    """
+    from ai.predicates import is_chain_fuel, is_chain_payoff_accessor
+    opp_idx = 1 - defender_idx
+    src = getattr(stack_item, 'source', None)
+    if src is None or getattr(src, 'template', None) is None:
+        return float('nan')
+    if not _opp_chain_in_flight(game, opp_idx):
+        return float('nan')
+    if is_chain_payoff_accessor(src):
+        return 1.0
+    if is_chain_fuel(src) and _opp_payoff_reachable(game, opp_idx):
+        return 0.0
+    return float('nan')
+
+
 def _payoff_deals_direct_damage(card) -> bool:
     """Oracle-driven detection: does this payoff deal damage to a
     target/each player same-turn (Grapeshot pattern), or does it
@@ -603,50 +749,90 @@ def _tutor_has_payoff_access(card, me) -> bool:
     return False
 
 
-def _has_viable_pif(card, me, snap, after_cast_card_cmc=0,
-                    after_cast_ritual_net=0) -> bool:
-    """Past-in-Flames-pattern viable as a finisher path THIS turn.
+def flashback_chain_viable(card, me, snap, after_cast_card_cmc=0,
+                           after_cast_ritual_net=0) -> float:
+    """Viability score (storm coverage) for a PiF-style flashback chain.
 
-    PiF only functions when (a) the card is in hand, (b) the graveyard
-    contains ≥1 ritual to flashback into, (c) we have enough mana to
-    cast PiF after this turn's chain, and (d) a real finisher is
-    accessible to close the chain (storm keyword in hand or tutor with
-    valid target).  Without all four, the AI burns rituals "because
-    PiF is in hand" on a chain that fizzles.
+    Replaces the boolean `_has_viable_pif` (audit M14 / F6).  Past in
+    Flames reads "Each instant and sorcery card in your graveyard
+    gains flashback until end of turn" — the relevant GY is the
+    POST-chain one, after this turn's rituals/cantrips enter it.
+    Projects post-step GY fuel = current GY + cards we'd cast
+    pre-PiF, then asks `post_step_gy_fuel + mana_to_cast_pif >=
+    chain_to_close`.  Returns `final_storm / opp_life` (float, not
+    bool — callers compare coverage across decisions).  Zero when no
+    FLASHBACK granter in hand, no closer, or post-PiF storm under
+    `COMBO_MIN_CHAIN_DEPTH`.  Detection structural via
+    `Tag.FLASHBACK` (W0-A; PiF in smoke cache), legacy
+    `flashback`+`combo` tag pair, `is_chain_fuel`, and
+    `cost_reducer`.  Same "viability via post-step GY" formula
+    lifts Living End (post-cycle GY) and Dredge (post-discard GY).
     """
-    has_pif_card = any(
-        'flashback' in getattr(c.template, 'tags', set())
-        and 'combo' in getattr(c.template, 'tags', set())
-        for c in me.hand if c.instance_id != card.instance_id
-    )
-    if not has_pif_card:
-        return False
-    gy_fuel = sum(
+    from ai.oracle_classifier import Tag, has_tag
+    from ai.predicates import is_chain_fuel
+
+    granters = [c for c in me.hand
+                if c.instance_id != card.instance_id
+                and (has_tag(c.name, Tag.FLASHBACK)
+                     or ('flashback' in getattr(c.template, 'tags', set())
+                         and 'combo' in getattr(c.template, 'tags', set())))]
+    if not granters or not _has_storm_finisher(card, me):
+        return 0.0
+
+    granter = min(granters,
+                  key=lambda c: c.template.cmc or _CMC_UNREACHABLE)
+    reducers = sum(1 for c in me.battlefield
+                   if 'cost_reducer' in getattr(c.template, 'tags', set()))
+    granter_cost = max(0, (granter.template.cmc or 0) - reducers)
+
+    # `card` resolves first.  Spend its cmc, gain its ritual net.
+    chain_mana = max(0, snap.my_mana - after_cast_card_cmc
+                     + after_cast_ritual_net)
+    chain_storm = me.spells_cast_this_turn + 1
+    chain_gy_added = (1 if (card.template.is_instant
+                            or card.template.is_sorcery) else 0)
+    chain_rituals_added = (1 if 'ritual' in getattr(card.template, 'tags', set())
+                           else 0)
+
+    # Pre-PiF chain (greedy, rituals-first for mana growth, cantrips after).
+    # Each cast → GY on resolve, storm +1, mana +ritual_net for rituals.
+    pre_pif = [c for c in me.hand
+               if c.instance_id != card.instance_id
+               and c.instance_id != granter.instance_id
+               and not c.template.is_land
+               and is_chain_fuel(c)
+               and (c.template.is_instant or c.template.is_sorcery)]
+    pre_pif.sort(key=lambda c: (
+        0 if 'ritual' in getattr(c.template, 'tags', set()) else 1,
+        c.template.cmc or 0))
+    for c in pre_pif:
+        cost = max(0, (c.template.cmc or 0) - reducers)
+        if cost > chain_mana:
+            continue
+        chain_mana -= cost
+        rdata = getattr(c.template, 'ritual_mana', None)
+        if rdata:
+            chain_mana += rdata[1]
+            chain_rituals_added += 1
+        chain_storm += 1
+        chain_gy_added += 1
+
+    if chain_mana < granter_cost:
+        return 0.0  # can't afford PiF after the chain
+
+    # Post-PiF: flashback ritual-backed GY fuel (storm +1 each).
+    # Cantrip-only flashback needs separate mana; conservative —
+    # the ritual-backed case is what gives PiF its core value.
+    gy_fuel = chain_gy_added + sum(
         1 for c in me.graveyard
-        if (c.template.is_instant or c.template.is_sorcery)
-        and 'ritual' in getattr(c.template, 'tags', set())
-    )
-    if gy_fuel < 1:
-        return False
-    pif_card = next(
-        (c for c in me.hand
-         if c.instance_id != card.instance_id
-         and 'flashback' in getattr(c.template, 'tags', set())
-         and 'combo' in getattr(c.template, 'tags', set())),
-        None,
-    )
-    if pif_card is None:
-        return False
-    reducers = sum(
-        1 for c in me.battlefield
-        if 'cost_reducer' in getattr(c.template, 'tags', set())
-    )
-    pif_cost = max(0, (pif_card.template.cmc or 0) - reducers)
-    mana_after_ritual = (snap.my_mana - after_cast_card_cmc
-                         + after_cast_ritual_net)
-    if mana_after_ritual < pif_cost:
-        return False
-    return _has_storm_finisher(card, me)
+        if (c.template.is_instant or c.template.is_sorcery))
+    gy_rituals = chain_rituals_added + sum(
+        1 for c in me.graveyard
+        if 'ritual' in getattr(c.template, 'tags', set()))
+    post_pif_storm = chain_storm + 1 + min(gy_fuel, gy_rituals)
+    if post_pif_storm < COMBO_MIN_CHAIN_DEPTH:
+        return 0.0
+    return float((post_pif_storm + 1) / max(1, snap.opp_life))
 
 
 def _has_draw_in_hand(card, me) -> bool:
@@ -896,20 +1082,23 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
     # produced by the zone assessor (see `_assess_storm_zone` →
     # `what_is_missing`).  When the assessor has already confirmed a
     # payoff is in hand, the hand-scan predicates (`_has_storm_finisher`
-    # / `_has_viable_pif`) are redundant: the chain has a real closer.
-    # Skipping them lets the reducer-first / patience heuristics below
-    # decide the timing.  When no payoff is confirmed, the hand-scan
-    # predicates remain the last defence against the speculative-chain
-    # mana-burn (CR 500.4).
+    # / `flashback_chain_viable`) are redundant: the chain has a real
+    # closer.  Skipping them lets the reducer-first / patience
+    # heuristics below decide the timing.  When no payoff is confirmed,
+    # the hand-scan predicates remain the last defence against the
+    # speculative-chain mana-burn (CR 500.4).
     if role == 'fuel' and storm == 0 and 'ritual' in tags:
         rdata = getattr(card.template, 'ritual_mana', None)
         ritual_net = max(0, (rdata[1] - (card.template.cmc or 0))) if rdata else 0
         if not a.has_payoff:
             has_finisher = _has_storm_finisher(card, me)
-            has_pif = _has_viable_pif(card, me, snap,
-                                       after_cast_card_cmc=(card.template.cmc or 0),
-                                       after_cast_ritual_net=ritual_net)
-            if not has_finisher and not has_pif and not snap.am_dead_next:
+            pif_viability = flashback_chain_viable(
+                card, me, snap,
+                after_cast_card_cmc=(card.template.cmc or 0),
+                after_cast_ritual_net=ritual_net,
+            )
+            if (not has_finisher and pif_viability == 0.0
+                    and not snap.am_dead_next):
                 # No finisher path and not under lethal pressure — this
                 # ritual's mana empties at phase end (CR 500.4).  Hard hold.
                 return STORM_HARD_HOLD
@@ -991,10 +1180,12 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
         rdata = getattr(card.template, 'ritual_mana', None)
         ritual_net = max(0, (rdata[1] - (card.template.cmc or 0))) if rdata else 0
         has_finisher = _has_storm_finisher(card, me)
-        has_pif = _has_viable_pif(card, me, snap,
-                                   after_cast_card_cmc=(card.template.cmc or 0),
-                                   after_cast_ritual_net=ritual_net)
-        if not has_finisher and not has_pif:
+        pif_viability = flashback_chain_viable(
+            card, me, snap,
+            after_cast_card_cmc=(card.template.cmc or 0),
+            after_cast_ritual_net=ritual_net,
+        )
+        if not has_finisher and pif_viability == 0.0:
             opp_clock = getattr(snap, 'opp_clock_discrete', _OPP_CLOCK_NO_CLOCK)
             if not snap.am_dead_next and opp_clock > 2:
                 if not _has_draw_in_hand(card, me):

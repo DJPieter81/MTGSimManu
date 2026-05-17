@@ -120,20 +120,22 @@ class TestReanimationReadinessGate:
 
     def test_gate_fires_when_graveyard_has_target(self, card_db):
         """Griselbrand in GY + 4 mana + Goryo's in hand → EV receives the
-        opp_life/2 boost, pushing the score well above pass_threshold."""
+        opp_life/2 boost, pushing the score well above the play-value
+        gate (M3 `play_value > 0`)."""
         game, goryos = _build_goryos_game(card_db, with_big_target=True)
 
         player, ev = _score_spell(game, "Goryo's Vengeance", goryos)
 
-        pass_threshold = player.profile.pass_threshold
-        # opp_life defaults to 20, so the gate boost is +10.0. Even
-        # accounting for the projection discount (Goryo's 0.5x EOT
-        # exile clause), EV must sit well above pass_threshold so the
-        # AI fires the reanimation.
-        assert ev > pass_threshold + 10.0, (
+        # M3: pass_threshold deleted; the M3 gate at
+        # `decide_main_phase` compares against `PLAY_VALUE_FLOOR`
+        # (-5.0).  +5 margin keeps the readiness-boost intent intact
+        # (opp_life defaults to 20 → gate boost is +10.0, well above
+        # PLAY_VALUE_FLOOR + 10 ≈ +5).
+        from ai.scoring_constants import PLAY_VALUE_FLOOR
+        assert ev > PLAY_VALUE_FLOOR + 10.0, (
             f"Goryo's Vengeance EV with Griselbrand in GY = {ev:.2f}, "
-            f"should be >> pass_threshold={pass_threshold}. The "
-            f"readiness gate must boost EV by opp_life/2 when the "
+            f"should be >> PLAY_VALUE_FLOOR + 10 ({PLAY_VALUE_FLOOR + 10}).  "
+            f"The readiness gate must boost EV by opp_life/2 when the "
             f"graveyard target is set up."
         )
 

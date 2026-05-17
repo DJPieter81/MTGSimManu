@@ -2,8 +2,8 @@
 
 Every site in `ai/` that asks "is this card a ritual?" / "is this
 card chain-extending fuel?" / "how many lands are in this collection?"
-should call into this module rather than re-implementing the check
-inline.
+/ "what is this card's first-turn value?" should call into this
+module rather than re-implementing the check inline.
 
 Why this exists
 ---------------
@@ -91,6 +91,46 @@ def is_draw_engine(card: "CardInstance") -> bool:
     return bool(DRAW_ENGINE_TAGS & getattr(card.template, 'tags', set()))
 
 
+def is_storm_payoff(card: "CardInstance") -> bool:
+    """Card is a chain-payoff finisher — its effect scales with the
+    storm count or its damage/token output ends the chain.
+
+    Detection is tag-driven (`storm_payoff` is set by
+    `engine/card_database.py` for every card whose oracle has the
+    storm effect type).  This is the chain BOTTLENECK predicate:
+    countering one removes the chain's payoff path; holding a
+    counter for it is the correct play when chain fuel is on the
+    stack with a payoff coming.
+
+    Generic by construction — no card names.  Class size: every
+    `storm_payoff`-tagged card in the catalog (Grapeshot, Empty the
+    Warrens, Brain Freeze, Tendrils of Agony, and any future Modern
+    storm finisher).
+    """
+    return 'storm_payoff' in getattr(card.template, 'tags', set())
+
+
+def is_chain_payoff_accessor(card: "CardInstance") -> bool:
+    """Card grants access to a chain payoff — direct STORM_PAYOFF or
+    a tutor / flashback-combo card that surfaces a payoff from the
+    sideboard / graveyard / library.
+
+    A tutor (`Wish`, `Burning Wish`) reaches into SB / library; a
+    flashback-combo card (`Past in Flames`) reanimates the chain
+    out of the graveyard.  Both are payoff-access bottlenecks — the
+    counter that lands on one shuts the chain down regardless of
+    fuel density.
+
+    Used by the chain-aware counter triage in `ai/response.py` to
+    distinguish a payoff-access cast (counter it) from chain-fuel
+    cast (hold).
+    """
+    tags = getattr(card.template, 'tags', set())
+    return ('storm_payoff' in tags
+            or 'tutor' in tags
+            or ('flashback' in tags and 'combo' in tags))
+
+
 # ─── Collection-level counts ──────────────────────────────────────
 
 def count_lands(cards: "Iterable[CardInstance]") -> int:
@@ -106,3 +146,61 @@ def count_gy_creatures(graveyard: "Iterable[CardInstance]") -> int:
     duplicated in 3 sites prior to centralization.
     """
     return sum(1 for c in graveyard if c.template.is_creature)
+
+
+# ─── First-turn value (mulligan land-slack replacement) ─────────────
+# Tag families consulted by ``first_turn_value``.  Each frozenset is
+# a set of real classifier tags (set in ``engine/card_database.py``
+# from oracle text) that signal a particular kind of T1-T2 impact:
+# combo payoff, forced discard, cost reduction, interaction, or
+# efficient early threats.  ``CHAIN_FUEL_TAGS`` (imported above)
+# covers ritual / cantrip / draw / card_advantage.
+_PAYOFF_TAGS: frozenset[str] = frozenset({'storm_payoff'})
+_DISRUPTION_TAGS: frozenset[str] = frozenset({'discard'})
+_REDUCER_TAGS: frozenset[str] = frozenset({'cost_reducer'})
+_INTERACTION_TAGS: frozenset[str] = frozenset({'removal', 'counterspell'})
+_EARLY_THREAT_TAGS: frozenset[str] = frozenset({'early_play', 'efficient_threat'})
+
+
+_EARLY_TAG_FAMILIES: tuple[frozenset[str], ...] = (
+    CHAIN_FUEL_TAGS, _PAYOFF_TAGS, _DISRUPTION_TAGS,
+    _REDUCER_TAGS, _INTERACTION_TAGS, _EARLY_THREAT_TAGS,
+)
+_ANY_EARLY_TAG: frozenset[str] = frozenset().union(*_EARLY_TAG_FAMILIES)
+
+
+def first_turn_value(card: "CardInstance",
+                     hand_context: dict | None = None) -> int:
+    """Per-card T1-T2 value in {0, 1, 2}, derived from template tags
+    and primitives (CMC, creature stats). Replaces the flat
+    ``mulligan_max_lands + 2`` slack in ``ai/mulligan.py``.
+
+    Banding:
+      * 0 — land, OR CMC>2 with no early-impact tag, OR cheap non-
+        creature with no early-impact tag (inert in the early game).
+      * 2 — 1-drop creature with positive power (prototypical T1
+        play that also enables T2 attacks).
+      * 1 — every other castable-on-T1-or-T2 play.
+
+    ``hand_context`` is reserved for future cross-card adjustments.
+    """
+    _ = hand_context  # reserved for hand-aware adjustments
+    tmpl = card.template
+    if tmpl.is_land:
+        return 0
+    tags = getattr(tmpl, 'tags', set()) or set()
+    cmc = tmpl.cmc or 0
+    early_tag_hit = bool(tags & _ANY_EARLY_TAG)
+    if cmc > 2 and not early_tag_hit:
+        return 0
+    if cmc <= 2 and not tmpl.is_creature and not early_tag_hit:
+        return 0
+    if cmc <= 1 and tmpl.is_creature and (tmpl.power or 0) > 0:
+        return 2
+    return 1
+
+
+def hand_first_turn_value(cards: "Iterable[CardInstance]") -> int:
+    """Sum of ``first_turn_value`` across a hand slice — used by
+    the mulligan land-slack predicate."""
+    return sum(first_turn_value(c) for c in cards)

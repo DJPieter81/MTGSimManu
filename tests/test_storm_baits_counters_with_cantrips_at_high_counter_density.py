@@ -177,11 +177,17 @@ class TestCantripsScoreAboveThresholdAtHighCounterDensity:
         opp = game.players[1]
         ev = player._score_spell(reckless, snap, game, me, opp)
 
-        threshold = player.profile.pass_threshold
+        # M3: pass_threshold field deleted; the M3 gate is
+        # `best.ev >= PLAY_VALUE_FLOOR` (-5.0) at `decide_main_phase`.
+        # Cantrips must score above the floor under counter-bait
+        # pressure — the M3 signed-cost model only deepens the bonus
+        # vs the original gate, never raises the bar.
+        from ai.scoring_constants import PLAY_VALUE_FLOOR
+        threshold = PLAY_VALUE_FLOOR
         assert ev > threshold, (
             f"Reckless Impulse scored EV={ev:.2f} at "
-            f"counter_density=0.13 (Dimir-class) — below the Storm "
-            f"pass_threshold={threshold}. A 1-mana cantrip that draws "
+            f"counter_density=0.13 (Dimir-class) — below PLAY_VALUE_FLOOR"
+            f"={threshold}. A 1-mana cantrip that draws "
             f"2 cards is the canonical counter-bait: even when "
             f"countered, it forces a 1-for-1 trade and depletes opp's "
             f"counter density for the lethal closer. Refusing to cast "
@@ -208,10 +214,13 @@ class TestCantripsScoreAboveThresholdAtHighCounterDensity:
         opp = game.players[1]
         ev = player._score_spell(reckless, snap, game, me, opp)
 
-        threshold = player.profile.pass_threshold
+        # M3: pass_threshold field deleted; the M3 gate is
+        # `best.ev >= PLAY_VALUE_FLOOR` (-5.0) at `decide_main_phase`.
+        from ai.scoring_constants import PLAY_VALUE_FLOOR
+        threshold = PLAY_VALUE_FLOOR
         assert ev > threshold, (
             f"Reckless Impulse scored EV={ev:.2f} at low "
-            f"counter_density=0.05 — below pass_threshold={threshold}. "
+            f"counter_density=0.05 — below PLAY_VALUE_FLOOR={threshold}. "
             f"This regression anchor must hold across the fix; if it "
             f"fails the test scaffold is broken (not the rule)."
         )

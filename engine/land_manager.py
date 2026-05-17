@@ -34,8 +34,20 @@ class LandManager:
     @staticmethod
     def play_land(game: "GameState", player_idx: int,
                   card: "CardInstance") -> None:
-        """Play a land from hand to battlefield."""
+        """Play a land from hand to battlefield.
+
+        Hand→battlefield is dispatched through
+        `engine.zone_transfer.transfer(..., kind=TransferKind.ETB)` so
+        ETB triggers (including the surveil-land cycle's "When this
+        land enters, surveil 1") fire through the same fan-out a
+        creature ETB uses — see R3 in
+        docs/history/audits/2026-05-16_rules_audit.md. The
+        permanent-type-specific tapped-state logic (shock-pay,
+        fast-lands, fetchlands) runs around the transfer; the trigger
+        dispatch is uniform.
+        """
         from .card_database import FETCH_LAND_COLORS
+        from .zone_transfer import TransferKind, transfer
         player = game.players[player_idx]
         max_lands = 1 + player.extra_land_drops
         if player.lands_played_this_turn >= max_lands:
@@ -47,46 +59,13 @@ class LandManager:
         player.lands_played_this_turn += 1
         card.controller = player_idx
 
-        # ── Always-tapped lands (from oracle text: "enters tapped") ──
-        if (card.template.enters_tapped
-                and card.template.untap_life_cost == 0
-                and card.template.untap_max_other_lands < 0):
-            card.enter_battlefield()
-            card.tapped = True
-            game.log.append(
-                f"T{game.display_turn} P{player_idx+1}: "
-                f"Play {card.name} (enters tapped)")
-        # ── Lands with discoverable optional ETB costs (shock-pay,
-        # painlands, future "pay X for ETB-untapped" mechanics) ──
-        elif card.template.untap_life_cost > 0:
-            from engine.optional_costs import offer_optional_costs
-            # Default: enters tapped.  The router asks the AI to decide
-            # any optional costs; an accepted "pay N life, ETB
-            # untapped" cost flips `tapped` back to False as part of
-            # apply_to_game.  No mechanic-named callback in this path.
-            card.enter_battlefield()
-            card.tapped = True
-            offer_optional_costs(game, player_idx, card, trigger="etb")
-            game.log.append(
-                f"T{game.display_turn} P{player_idx+1}: Play {card.name}"
-                f" ({'untapped, life: ' + str(player.life) if not card.tapped else 'tapped'})")
-        # ── Conditional untap: untapped if ≤ N other lands (fast lands) ──
-        elif card.template.untap_max_other_lands >= 0:
-            other_lands = len([c for c in player.battlefield
-                               if c.template.is_land])
-            card.enter_battlefield()
-            if other_lands <= card.template.untap_max_other_lands:
-                card.tapped = False
-                game.log.append(
-                    f"T{game.display_turn} P{player_idx+1}: "
-                    f"Play {card.name} (untapped, {other_lands} other lands)")
-            else:
-                card.tapped = True
-                game.log.append(
-                    f"T{game.display_turn} P{player_idx+1}: "
-                    f"Play {card.name} (tapped, {other_lands} other lands)")
         # ── Fetchland: play then immediately crack ──
-        elif card.name in FETCH_LAND_COLORS:
+        # Fetchlands sacrifice themselves on resolution; no ETB
+        # trigger pipeline runs on the fetchland itself (the fetched
+        # land's ETB runs in `crack_fetchland`). Kept on the legacy
+        # manual-append path so the sacrifice-and-replace mechanic
+        # stays atomic.
+        if card.name in FETCH_LAND_COLORS:
             card.enter_battlefield()
             player.battlefield.append(card)
             game.log.append(
@@ -95,15 +74,67 @@ class LandManager:
             LandManager.trigger_landfall(game, player_idx)
             # Immediately crack the fetchland
             LandManager.crack_fetchland(game, player_idx, card)
-            return  # Don't append again or trigger landfall again below
+            return
+
+        # ── Non-fetch lands: route through zone_transfer.transfer for
+        #    uniform ETB-trigger dispatch.  `transfer` calls
+        #    `_append_to_zone("battlefield")` which invokes
+        #    `card.enter_battlefield()` (sets `tapped = True` if the
+        #    template's `enters_tapped` flag is set), appends to the
+        #    battlefield, then fires the registered ETB fan-out
+        #    (`EFFECT_REGISTRY.execute(EffectTiming.ETB)` + generic
+        #    `resolve_etb_from_oracle`).
+        transfer(game, card,
+                 src_zone="hand", dst_zone="battlefield",
+                 kind=TransferKind.ETB, controller=player_idx)
+
+        # ── Post-entry tapped-state finalisation ──
+        # `enter_battlefield()` sets `tapped = True` only for lands
+        # whose template flag is enters_tapped=True; the conditional
+        # cases below override for shock-pay (optional cost flips
+        # back to untapped) and fast-lands (untapped if few other
+        # lands).  Logging is done here so each path's message
+        # matches the legacy format and the replay parser is
+        # unchanged.
+        if (card.template.enters_tapped
+                and card.template.untap_life_cost == 0
+                and card.template.untap_max_other_lands < 0):
+            # Always-tapped land — `enter_battlefield` already set
+            # tapped=True. No-op here, just log.
+            game.log.append(
+                f"T{game.display_turn} P{player_idx+1}: "
+                f"Play {card.name} (enters tapped)")
+        elif card.template.untap_life_cost > 0:
+            # Shock-pay / painland: offer the optional ETB-untapped
+            # cost. The router-driven cost may flip `card.tapped`
+            # back to False as part of apply_to_game.
+            from engine.optional_costs import offer_optional_costs
+            offer_optional_costs(game, player_idx, card, trigger="etb")
+            game.log.append(
+                f"T{game.display_turn} P{player_idx+1}: Play {card.name}"
+                f" ({'untapped, life: ' + str(player.life) if not card.tapped else 'tapped'})")
+        elif card.template.untap_max_other_lands >= 0:
+            # Fast-land: untapped if few enough other lands present.
+            # `enter_battlefield` set tapped=True (template flag);
+            # override to False when condition holds.  Exclude the
+            # land just entered from the count.
+            other_lands = len([c for c in player.battlefield
+                               if c.template.is_land
+                               and c.instance_id != card.instance_id])
+            if other_lands <= card.template.untap_max_other_lands:
+                card.tapped = False
+                game.log.append(
+                    f"T{game.display_turn} P{player_idx+1}: "
+                    f"Play {card.name} (untapped, {other_lands} other lands)")
+            else:
+                # Already tapped from enter_battlefield(); just log.
+                game.log.append(
+                    f"T{game.display_turn} P{player_idx+1}: "
+                    f"Play {card.name} (tapped, {other_lands} other lands)")
         else:
-            card.enter_battlefield()
+            # Regular land (untapped, no special cost).
             game.log.append(
                 f"T{game.display_turn} P{player_idx+1}: Play {card.name}")
-
-        # Add to battlefield (non-fetch path)
-        if card.name not in FETCH_LAND_COLORS:
-            player.battlefield.append(card)
 
         # ── Generic "untap enters tapped" (Amulet of Vigor pattern) ──
         LandManager.apply_untap_on_enter_triggers(game, card, player_idx)

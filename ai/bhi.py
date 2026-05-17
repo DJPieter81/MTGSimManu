@@ -456,9 +456,117 @@ class BayesianHandTracker:
             self.initialize_from_game(game)
         self._recalculate_priors(game)
 
-    def get_counter_probability(self) -> float:
-        """Current belief: P(opponent has a counterspell)."""
-        return self.beliefs.p_counter
+    def get_counter_probability(self) -> float:  # ratchet-allow: narrow counter-only legacy accessor; production scoring uses the broadened interaction measure (M7 / W1b-7).
+        """Narrow legacy accessor — P(opponent has a counterspell).
+
+        Production scoring paths must call
+        `get_interaction_probability()` instead — that broader
+        measure folds in instant-speed removal and hand-disruption
+        and gates each channel by the opp's untapped mana (the
+        audit's "tap-out window" — see W1b-7 in CLAUDE.md).
+
+        Retained as a thin accessor on the underlying belief so the
+        regression tests in `test_bhi_tracks_*` (which pin the
+        counter prior in isolation from the other tracked priors)
+        keep working without reaching into the dataclass directly.
+        """
+        return self.beliefs.p_counter  # ratchet-allow: legacy narrow accessor for regression tests.
+
+    def get_interaction_probability(
+        self,
+        game: Optional["GameState"] = None,
+        *,
+        can_counter: bool = True,
+        is_creature_target: bool = True,
+    ) -> float:
+        """Broadened P(opp disrupts our spell) — covers counters +
+        instant-speed removal + hand-disruption (discard).
+
+        This is the structural unification of the narrow
+        `beliefs.p_counter` posterior (M7 / W1b-7).  Each disruption
+        term is gated by the mana the opp can actually deploy: a
+        counter we know the opp holds is irrelevant when they are
+        tapped out.  The audit's "tap-out window" maps directly to
+        this gating — when `opp_untapped_mana < min(counter_cost,
+        removal_cost, discard_cost)`, the broadened posterior falls
+        to zero and downstream EV stops discounting our spell.
+
+        The composition is ``max`` over independent disruption
+        channels (not sum / 1-product), because:
+
+        * A spell is one card; only one disruption mode fires.  Sum
+          would double-count when both counter and removal are
+          live.
+        * `max` collapses gracefully when one channel is gated out
+          (tap-out, "can't be countered", non-creature target).
+        * This matches the existing `_compute_risk_discount` shape
+          in `ai/combo_calc.py` — see its `max(P(counter),
+          P(discard) * hit_rate)` for symmetry.
+
+        Args:
+            game: optional `GameState`.  When provided, the opp's
+                ``untapped_lands`` count gates each disruption
+                channel by its rules-constant cost.  When ``None``
+                we fall back to the pure-belief view (legacy
+                behaviour identical to the old narrow measure for
+                callers that don't have a `game` handle).
+            can_counter: caller's "is this spell counterable?" flag.
+                Defaults True; pass False for "can't be countered"
+                spells to zero the counter channel.
+            is_creature_target: caller's "is this spell a creature
+                that instant removal could hit?" flag.  Non-creature
+                spells skip the removal channel since instant-speed
+                removal in Modern is overwhelmingly creature-only
+                (Bolt / Push / Heat are creature-only; the rare
+                Anguished Unmaking is sorcery).
+
+        Returns the gated disruption probability in [0, 1].
+        Monotone in each belief term given mana is sufficient.
+        """
+        # Bare-belief floor when no game handle is available — we
+        # cannot gate by untapped mana so we surface the max of the
+        # raw posteriors that the caller's category flags admit.
+        # This is the conservative fallback consumers can rely on
+        # for unit-test paths that don't materialise a full game.
+        p_counter = self.beliefs.p_counter if can_counter else 0.0
+        p_removal = self.beliefs.p_removal if is_creature_target else 0.0
+        p_discard = self.beliefs.p_discard
+
+        if game is None:
+            return max(p_counter, p_removal, p_discard)
+
+        # Mana-gated view: each channel needs enough untapped mana on
+        # the opp's side to fire.  Costs are the rules-constant
+        # medians already documented in scoring_constants.
+        from ai.scoring_constants import (
+            COUNTER_ESTIMATED_COST,
+            REMOVAL_ESTIMATED_COST,
+        )
+
+        opp = game.players[self.opponent_idx]
+        # `untapped_lands` is the engine's authoritative untapped-mana
+        # source (mirrors `available_mana_estimate`'s structure
+        # without the conditional Tron bonus — that bonus is
+        # irrelevant for response windows on our turn since Tron
+        # mana is colorless and Modern instant interaction is
+        # color-fixed).
+        opp_untapped = len(getattr(opp, "untapped_lands", []))
+
+        # DISCARD_ESTIMATED_COST — discard costs 1 mana
+        # (Thoughtseize = B, Inquisition = B, Duress = B).  This is
+        # a rules constant matching the median of Modern's discard
+        # suite; tagged `magic-allow` because it's a printed-cost
+        # median, not a scoring weight.
+        DISCARD_ESTIMATED_COST = 1  # magic-allow: median cost of Modern hand disruption (rules constant)
+
+        if opp_untapped < COUNTER_ESTIMATED_COST:
+            p_counter = 0.0
+        if opp_untapped < REMOVAL_ESTIMATED_COST:
+            p_removal = 0.0
+        if opp_untapped < DISCARD_ESTIMATED_COST:
+            p_discard = 0.0
+
+        return max(p_counter, p_removal, p_discard)
 
     def get_removal_probability(self) -> float:
         """Current belief: P(opponent has instant removal)."""
@@ -557,3 +665,155 @@ def _bayesian_update(prior: float, p_evidence_if_true: float,
 
     posterior = p_evidence_if_true * prior / p_evidence
     return max(0.0, min(1.0, posterior))
+
+
+# ─────────────────────────────────────────────────────────────
+# Predicted turn-of-cast — opp mana availability + effective CMC
+# ─────────────────────────────────────────────────────────────
+
+def predicted_turn_of_cast(card, snap,
+                           victim_idx=None, victim_player=None) -> int:
+    """Earliest turn the card's controller can pay its mana cost.
+
+    Composition of two existing primitives (no new constants, no
+    card-specific knowledge):
+
+      * ``ai.mana_planner.effective_cmc(card, player)`` — the
+        rules-correct cost after every oracle-derived reduction
+        (domain, affinity, metalcraft, etc.).  This is the W0-F
+        primitive — the function MUST go through it so any reducer
+        that lands later picks up the same code path.
+      * The Magic rules constant "one land drop per turn".  We
+        derive the controller's currently-available mana from the
+        live snapshot (``snap.opp_mana`` is the opp's available mana
+        as of ``snap``'s player perspective) and compute how many
+        additional turn cycles are needed to reach the effective CMC.
+
+    Arguments:
+      * ``card`` — a ``CardInstance`` (in the controller's hand).
+      * ``snap`` — the ``EVSnapshot`` from the OBSERVER's perspective
+        (the discard-spell caster).  ``snap.opp_*`` therefore refers
+        to the hand-owning controller of ``card``.  This is the same
+        convention the rest of BHI uses (``snap`` is the perspective
+        of the player whose tracker we are).
+      * ``victim_idx`` / ``victim_player`` — optional handles to the
+        controller of the card whose hand we are evaluating.  Needed
+        only by ``effective_cmc`` to count distinct basic land types
+        in the controller's deck (domain reach).  When omitted the
+        function falls back to ``card.controller``'s player object on
+        the bound ``_game_state`` reference (the discard-advisor
+        call site has both available).
+
+    Returns: a non-negative integer.  ``0`` means "castable this
+    turn or already castable"; ``N`` means "the controller needs N
+    more land drops" (assuming one drop per turn — see ``bhi.py``'s
+    existing ``CARDS_DRAWN_PER_TURN`` constant for the same idiom).
+
+    Pure function: no side effects on the card, snapshot, or
+    controller state.
+    """
+    # Local import — avoids a circular dependency at module load
+    # (ai.mana_planner imports from elsewhere in ai/ as part of the
+    # gameplan loader).  The bhi module is imported first by the
+    # tracker initialisation; deferring effective_cmc to call time
+    # keeps the import graph one-directional.
+    from ai.mana_planner import effective_cmc
+
+    # Resolve the controller / player handle.  Prefer the explicit
+    # argument; fall back to the engine-side game-state reference
+    # already attached to the CardInstance.
+    if victim_player is None:
+        gs = getattr(card, "_game_state", None)
+        owner = getattr(card, "controller", None)
+        if owner is None:
+            owner = getattr(card, "owner", None)
+        if gs is not None and owner is not None and 0 <= owner < len(gs.players):
+            victim_player = gs.players[owner]
+
+    # effective_cmc requires a player handle to read domain reach.
+    # When unknown, fall back to the printed CMC: the function
+    # signature is "if I can't observe domain reach, assume zero
+    # reduction" — same fallback the gameplan-driven path uses.
+    if victim_player is not None:
+        eff_cmc = effective_cmc(card, victim_player)
+    else:
+        eff_cmc = getattr(card.template, "cmc", None)
+    if eff_cmc is None:
+        # Cards without a defined CMC (lands with no mana cost) are
+        # not castable as spells.  Return a large sentinel (the
+        # snapshot's NO_CLOCK-equivalent for unreachable turns).
+        return int(NO_CAST_SENTINEL)
+
+    # Current opp mana availability — what the controller can pay
+    # RIGHT NOW.  ``snap.opp_mana`` is the snapshot's cached estimate
+    # (``available_mana_estimate`` at snapshot time).  Falls back to
+    # ``opp_total_lands`` when the cached mana is zero / unavailable.
+    if snap is not None:
+        opp_now = max(int(getattr(snap, "opp_mana", 0) or 0),
+                      int(getattr(snap, "opp_total_lands", 0) or 0))
+    else:
+        opp_now = 0
+
+    deficit = int(eff_cmc) - opp_now
+    if deficit <= 0:
+        # Already affordable — castable this turn (or untap-step
+        # of the next turn, depending on whether mana is tapped).
+        return 0
+    # One land drop per turn (Magic rules constant; same
+    # CARDS_DRAWN_PER_TURN-style idiom used in
+    # ``p_higher_threat_in_n_turns``).  No cost reduction modelled
+    # beyond effective_cmc — domain / affinity already flow through
+    # the primitive above.
+    return deficit  # magic-allow: deficit IS the integer turn count
+
+
+# Sentinel for cards that cannot be cast (no defined mana cost).
+# Mirrors the ``ai.clock.NO_CLOCK`` sentinel pattern.
+NO_CAST_SENTINEL: int = 99  # magic-allow: rules-sentinel "uncastable", same shape as NO_CLOCK
+
+
+# ─── Opp-static per-card-event self-damage projection (M1-AI) ──────
+# Mirror of engine/zone_transfer._ON_DRAW_HANDLERS so chain projection
+# (ai.ev_evaluator._estimate_combo_chain) and runtime resolution agree
+# by sharing the same (Tag, verb-regex) table. Extend in lock-step.
+
+def _per_event_taxes_table():
+    from ai.oracle_classifier import Tag
+    return {
+        "draw": (
+            (Tag.ON_DRAW_DAMAGE,        r"deals?\s+(\d+)\s+damage"),
+            (Tag.ON_OPP_DRAW_LIFE_LOSS, r"lose\s+(\d+)\s+life"),
+        ),
+        "cast": (
+            (Tag.ON_CAST_DAMAGE,        r"deals?\s+(\d+)\s+damage"),
+        ),
+    }
+
+
+def _parse_event_amount(oracle_text: str, verb_regex: str) -> int:
+    """Extract the printed integer from the per-event verb regex; 0 on
+    no-match (the engine-side asserts loudly — the projection layer is
+    tolerant of classifier/oracle drift)."""
+    import re
+    m = re.search(verb_regex, (oracle_text or "").lower())
+    return int(m.group(1)) if m is not None else 0
+
+
+def opp_static_damage_per_card_event(game, viewer_idx: int,
+                                     event_kind: str) -> int:
+    """Project damage `viewer_idx` takes from opp permanents per one
+    card event (event_kind ∈ {"draw","cast"}). Sums across all
+    matching opp battlefield sources (multiple Bowmasters stack).
+    Returns 0 for unknown event_kind."""
+    from ai.oracle_classifier import tags_for
+    handlers = _per_event_taxes_table().get(event_kind)
+    if not handlers:
+        return 0
+    total = 0
+    for src in game.players[1 - viewer_idx].battlefield:
+        src_tags = tags_for(src.name)
+        for tag, verb_regex in handlers:
+            if tag in src_tags:
+                total += _parse_event_amount(
+                    src.template.oracle_text, verb_regex)
+    return total

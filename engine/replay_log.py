@@ -21,7 +21,15 @@ MULLIGAN     keep/mull decision with reason and resulting hand
 TURN_START   turn-N header with state snapshot
 PHASE        phase boundary (Untap / Upkeep / Main1 / ...)
 DRAW         card drawn (for hand-tracking)
-DECISION     AI choice with chosen + alternatives + subsystem deltas
+DECISION     AI choice (main-phase play) with chosen + alternatives +
+             subsystem deltas
+RESPONSE_DECISION  AI choice on opponent's stack item (counter/blink/
+                   instant removal) — shares the BaseDecision schema
+                   with DECISION but additionally carries `stack_item`
+                   (the spell being responded to) and `held_counter_
+                   floor_ev` (the threshold the threat had to clear).
+                   Additive event: legacy replays without it still
+                   parse and render unchanged.
 PLAY         executed play (cast / land / equip / activate)
 TRIGGER      ETB / saga / loot / cycling text
 COMBAT       attack declaration, blocks, breakdown, damage, lethal
@@ -66,6 +74,7 @@ KIND_TURN_START = "TURN_START"
 KIND_PHASE      = "PHASE"
 KIND_DRAW       = "DRAW"
 KIND_DECISION   = "DECISION"
+KIND_RESPONSE_DECISION = "RESPONSE_DECISION"   # AI choice on opponent's stack item — see emit_response_decision
 KIND_PLAY       = "PLAY"
 KIND_TRIGGER    = "TRIGGER"
 KIND_COMBAT     = "COMBAT"
@@ -76,8 +85,8 @@ KIND_MATCH_END  = "MATCH_END"
 
 VALID_KINDS = {
     KIND_GAME_START, KIND_MULLIGAN, KIND_TURN_START, KIND_PHASE, KIND_DRAW,
-    KIND_DECISION, KIND_PLAY, KIND_TRIGGER, KIND_COMBAT, KIND_LIFE, KIND_NOTE,
-    KIND_GAME_END, KIND_MATCH_END,
+    KIND_DECISION, KIND_RESPONSE_DECISION, KIND_PLAY, KIND_TRIGGER,
+    KIND_COMBAT, KIND_LIFE, KIND_NOTE, KIND_GAME_END, KIND_MATCH_END,
 }
 
 
@@ -139,7 +148,22 @@ class ReplayLog:
             self._current_phase = ""
         return evt
 
-    # ─── Decision helper ───────────────────────────────────────
+    # ─── Decision helpers ──────────────────────────────────────
+
+    def _next_decision_id(self) -> str:
+        """Mint the next decision_id and advance the counter.
+
+        decision_id format: "g{game}t{turn}d{seq}" — game/turn first so
+        it sorts naturally and a feedback file can be diffed across
+        seeds without alignment churn.  Shared by DECISION and
+        RESPONSE_DECISION so both kinds index into the same monotonic
+        sequence and a reviewer can anchor on either id type.
+        """
+        decision_id = (
+            f"g{self._current_game}t{self._current_turn}d{self._decision_seq}"
+        )
+        self._decision_seq += 1
+        return decision_id
 
     def emit_decision(
         self,
@@ -154,28 +178,74 @@ class ReplayLog:
     ) -> Dict[str, Any]:
         """Emit a DECISION event with a stable decision_id.
 
-        decision_id format: "g{game}t{turn}d{seq}" — game/turn first so
-        it sorts naturally and a feedback file can be diffed across
-        seeds without alignment churn.
-
         Alternatives should be the top-N (default 3) runner-ups, sorted
         by descending EV.  Each alt should include `gap` = chosen.ev -
         alt.ev so the renderer can colour the EV gap without
         recomputing.
         """
-        decision_id = f"g{self._current_game}t{self._current_turn}d{self._decision_seq}"
-        self._decision_seq += 1
         return self.emit(
             KIND_DECISION,
             actor=actor,
             pidx=pidx,
-            decision_id=decision_id,
+            decision_id=self._next_decision_id(),
             goal=goal,
             chosen=chosen,
             alternatives=alternatives or [],
             subsystems=subsystems or {},
             candidates_n=candidates_n,
             state=state or {},
+        )
+
+    def emit_response_decision(
+        self,
+        actor: str,
+        pidx: int,
+        chosen: Dict[str, Any],
+        alternatives: List[Dict[str, Any]],
+        stack_item: Optional[Dict[str, Any]] = None,
+        held_counter_floor_ev: Optional[float] = None,
+        state: Optional[Dict[str, Any]] = None,
+        subsystems: Optional[Dict[str, Any]] = None,
+        goal: str = "",
+        candidates_n: Optional[int] = None,
+    ) -> Dict[str, Any]:
+        """Emit a RESPONSE_DECISION event with a stable decision_id.
+
+        Shares the BaseDecision schema with `emit_decision` (chosen,
+        alternatives, subsystems, decision_id) and additionally carries
+        two response-only fields:
+
+          stack_item: {"name", "controller", "cost"} or None
+              The opponent's spell the AI is choosing whether to
+              answer.  None when the response decision is not
+              triggered by a stack item (e.g. discard-phase decisions
+              later).
+          held_counter_floor_ev: float or None
+              The threshold the threat had to clear before a counter
+              was justified (see `ai/response.py:_held_counter_floor_ev`).
+              Surfacing this answers "why didn't the AI counter?"
+              in the replayer — the audit (M2) cited this exact gap.
+
+        chosen.action == "pass" represents a deliberate non-response
+        (the AI considered the threat and decided to let it resolve);
+        the event still fires so reviewers can scan for these moments.
+
+        Additive event: legacy replays without RESPONSE_DECISION
+        entries still parse unchanged.
+        """
+        return self.emit(
+            KIND_RESPONSE_DECISION,
+            actor=actor,
+            pidx=pidx,
+            decision_id=self._next_decision_id(),
+            goal=goal,
+            chosen=chosen,
+            alternatives=alternatives or [],
+            subsystems=subsystems or {},
+            candidates_n=candidates_n,
+            state=state or {},
+            stack_item=stack_item,
+            held_counter_floor_ev=held_counter_floor_ev,
         )
 
     # ─── Serialization ─────────────────────────────────────────
