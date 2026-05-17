@@ -1,8 +1,29 @@
 {
   "cards": {
+    "Commercial District": {
+      "_classification_source": "manual:a2-audit-data-gap-2026-05-17",
+      "oracle_text_sha256": "dfb2f3b319a4f7ea5dfe1ec8cdf7f2d1fc95f6847d7f71ec75809b02caf74793",
+      "tags": [
+        "ETB_SURVEIL_N"
+      ]
+    },
     "Counterspell": {
       "oracle_text_sha256": "6e7e3fa9bb231a1c1910cd956dc7e5c91bb22e9705b39ed61a2ebd23201950e4",
       "tags": []
+    },
+    "Duress": {
+      "_classification_source": "manual:M6-discard-projection-2026-05-16",
+      "oracle_text_sha256": "f40eaa83b50ede4ae3e3350218cf3da991975363ef1d0336e2dc11a93b1d6c05",
+      "tags": [
+        "FORCED_DISCARD"
+      ]
+    },
+    "Elegant Parlor": {
+      "_classification_source": "manual:a2-audit-data-gap-2026-05-17",
+      "oracle_text_sha256": "246e4a784c6ff5254d3fa59b6797d8a3dbf65c9f8f0b05d792e1a4697cc3396e",
+      "tags": [
+        "ETB_SURVEIL_N"
+      ]
     },
     "Endurance": {
       "oracle_text_sha256": "d984d44d84f5a77044e5c399235ef3e0cb16bbb5ffa8b5d1740920089f0e696f",
@@ -30,6 +51,20 @@
         "IMPULSE_DRAW"
       ]
     },
+    "Grand Abolisher": {
+      "_classification_source": "manual:llm-undercoverage-2026-05-16",
+      "oracle_text_sha256": "3d2737d202cf5921baa0ce23e531c55ff88759589da2f2b609e574e9f13b0410",
+      "tags": [
+        "SORCERY_SPEED_LOCKOUT"
+      ]
+    },
+    "Hedge Maze": {
+      "_classification_source": "manual:a2-audit-data-gap-2026-05-17",
+      "oracle_text_sha256": "051c1221b7e1ce2e13cf5239269115b463967181248f23111d7a503fb6d420d0",
+      "tags": [
+        "ETB_SURVEIL_N"
+      ]
+    },
     "Inquisition of Kozilek": {
       "_classification_source": "manual:M6-discard-projection-2026-05-16",
       "oracle_text_sha256": "0d3c89317d77bd408a86bfe9ad5fde697dac9d20fa8e644cc936c57a6ba7ceb9",
@@ -37,18 +72,11 @@
         "FORCED_DISCARD"
       ]
     },
-    "Duress": {
-      "_classification_source": "manual:M6-discard-projection-2026-05-16",
-      "oracle_text_sha256": "f40eaa83b50ede4ae3e3350218cf3da991975363ef1d0336e2dc11a93b1d6c05",
+    "Lush Portico": {
+      "_classification_source": "manual:a2-audit-data-gap-2026-05-17",
+      "oracle_text_sha256": "9b5fe6f5e46931e4fc8d1a7a46940c28dd4bc31a27c79ac2c1a04c17a21b436d",
       "tags": [
-        "FORCED_DISCARD"
-      ]
-    },
-    "Grand Abolisher": {
-      "_classification_source": "manual:llm-undercoverage-2026-05-16",
-      "oracle_text_sha256": "3d2737d202cf5921baa0ce23e531c55ff88759589da2f2b609e574e9f13b0410",
-      "tags": [
-        "SORCERY_SPEED_LOCKOUT"
+        "ETB_SURVEIL_N"
       ]
     },
     "Meticulous Archive": {
@@ -83,6 +111,13 @@
         "FLASHBACK"
       ]
     },
+    "Raucous Theater": {
+      "_classification_source": "manual:a2-audit-data-gap-2026-05-17",
+      "oracle_text_sha256": "a3175836ef3ca3eca075560bd1952066c07e78c340c9775bba901345f5f79622",
+      "tags": [
+        "ETB_SURVEIL_N"
+      ]
+    },
     "Reckless Impulse": {
       "oracle_text_sha256": "d0401eb08b4bb5ec4f4acb840207bf89107c642a7719c390702e961a11d5d784",
       "tags": [
@@ -93,6 +128,13 @@
       "oracle_text_sha256": "f2f4594d068b702cf8971163ddc5c069285cae827b36b7b56a7a157cbff8a1e9",
       "tags": [
         "IMPROVISE"
+      ]
+    },
+    "Shadowy Backstreet": {
+      "_classification_source": "manual:a2-audit-data-gap-2026-05-17",
+      "oracle_text_sha256": "93810f971cae206df681d0a994eca88d5762b6a07a76e948a83a7de04e1767ac",
+      "tags": [
+        "ETB_SURVEIL_N"
       ]
     },
     "Sheoldred, the Apocalypse": {
@@ -133,6 +175,27 @@
       "tags": [
         "FORCED_DISCARD",
         "SELF_DAMAGE_ON_CAST"
+      ]
+    },
+    "Thundering Falls": {
+      "_classification_source": "manual:a2-audit-data-gap-2026-05-17",
+      "oracle_text_sha256": "fe0797862e100b53fac8db0002ca8a713a0f75de62abcbbf3e4bb00f90a12faa",
+      "tags": [
+        "ETB_SURVEIL_N"
+      ]
+    },
+    "Undercity Sewers": {
+      "_classification_source": "manual:a2-audit-data-gap-2026-05-17",
+      "oracle_text_sha256": "8164d6338037f89be2e0e3ec946a986744642095023a605193e520bf7f6fa1f1",
+      "tags": [
+        "ETB_SURVEIL_N"
+      ]
+    },
+    "Underground Mortuary": {
+      "_classification_source": "manual:a2-audit-data-gap-2026-05-17",
+      "oracle_text_sha256": "ed08193d6158d283cec8dac708a01807fe9d39cfc37d0b03bfaa1492f5c75c8b",
+      "tags": [
+        "ETB_SURVEIL_N"
       ]
     },
     "Underworld Dreams": {
