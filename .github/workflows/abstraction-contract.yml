@@ -48,6 +48,41 @@ jobs:
         # MTG_LLM_DECISION_SCORER_OFFLINE env at the top of this job.
         run: pip install pytest pytest-timeout pydantic-ai-slim
 
+      - name: Reassemble ModernAtomic.json from parts
+        # ModernAtomic.json is gitignored (~150MB) and not present
+        # after checkout. It must be merged from ModernAtomic_part*.json
+        # (which ARE tracked) before pytest runs.
+        #
+        # conftest.py has a fallback sidecar mechanism
+        # (`_ensure_fallback_db`) but it only kicks in on
+        # `JSONDecodeError` from CardDatabase.load — CardDatabase's
+        # auto-discover loop (engine/card_database.py:1138-1151)
+        # prints `WARNING: ModernAtomic.json not found` and returns
+        # an empty self.cards dict when no file exists, never raising.
+        # The conftest fallback never fires, leaving every
+        # card_db-dependent test to hit AI code paths that loop on
+        # empty card data and trip pytest-timeout.
+        #
+        # This step writes the merged file BEFORE conftest is even
+        # imported, so the canonical path through CardDatabase.load
+        # is used.
+        run: |
+          python3 << 'PY'
+          import json, glob
+          merged = {}
+          for part in sorted(glob.glob('ModernAtomic_part*.json')):
+              with open(part) as f:
+                  d = json.load(f)
+              # Part files have mixed shapes: parts 1-8 use the
+              # {"meta": ..., "data": {...}} wrapper; part 9+ are
+              # bare {card_name: [...]} dicts.
+              cards = d.get('data', d)
+              merged.update(cards)
+          with open('ModernAtomic.json', 'w') as f:
+              json.dump({'meta': {}, 'data': merged}, f)
+          print(f'ModernAtomic.json built — {len(merged)} cards')
+          PY
+
       - name: Run abstraction ratchet
         run: python tools/check_abstraction.py
 
