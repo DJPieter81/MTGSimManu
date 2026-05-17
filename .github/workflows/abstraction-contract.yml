@@ -10,6 +10,11 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
+    # Token needs pull-requests:write so the failure-summary step
+    # below can POST a comment to the PR via the REST API.
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       # ai/llm_decision_scorer.py makes live agent.run_sync() calls
       # with no timeout when this is unset. CI has pydantic-ai-slim
@@ -127,3 +132,46 @@ jobs:
           name: pytest-output
           path: pytest-output.txt
           retention-days: 7
+
+      - name: Post failure summary as PR comment
+        if: failure() && github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          # The MCP tools available to Claude in this repo's session
+          # can read PR comments but NOT workflow run logs. Posting
+          # the failure summary as a PR comment closes that loop so
+          # Claude can iterate on red CI without needing the user to
+          # paste logs every round.
+          if [ ! -f pytest-output.txt ]; then
+            BODY="CI ($RUN_URL) failed before pytest-output.txt was produced. Check the workflow log."
+          else
+            FAILED=$(grep -E '^FAILED|^ERROR' pytest-output.txt | head -50 || echo '(none in grep)')
+            TAIL=$(tail -30 pytest-output.txt)
+            BODY=$(cat <<EOF
+          **CI failure** ([$RUN_URL]($RUN_URL))
+
+          \`\`\`
+          === FAILED test summary ===
+          $FAILED
+
+          === Tail (final 30 lines) ===
+          $TAIL
+          \`\`\`
+          EOF
+          )
+          fi
+          # Use the GitHub REST API directly. `gh pr comment` would
+          # work too but the explicit curl makes the body encoding
+          # transparent.
+          jq -n --arg body "$BODY" '{body: $body}' \
+            | curl -s -X POST \
+                -H "Authorization: Bearer $GH_TOKEN" \
+                -H "Accept: application/vnd.github+json" \
+                -H "Content-Type: application/json" \
+                --data @- \
+                "https://api.github.com/repos/$REPO/issues/$PR_NUMBER/comments" \
+            > /dev/null
