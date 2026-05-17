@@ -823,9 +823,15 @@ class OracleTextParser:
             # regex ("exile <anything> graveyard") also caught
             # "exile target ... card from your graveyard" (self-
             # graveyard utility), so each phrasing is now an
-            # explicit anchor.
+            # explicit anchor. Tormod's Crypt's "exile all cards from
+            # target player's graveyard" is the canonical instance of
+            # the "all cards from" modifier between `exile` and the
+            # player'?s? clause; the `(?:all cards from\s+)?` prefix
+            # accepts that wording without re-broadening to the
+            # self-graveyard utility pattern (which uses "your", not
+            # "target player'?s?"/"opponent'?s?").
             if _gy_re.search(
-                r"exile\s+(?:"
+                r"exile\s+(?:all cards from\s+)?(?:"
                 r"all\s+graveyards|"
                 r"each opponent'?s? graveyards?|"
                 r"target opponent'?s? graveyards?|"

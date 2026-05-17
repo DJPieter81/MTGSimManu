@@ -86,10 +86,6 @@ jobs:
         #     other 2 entries here cleared with the deal_damage fix).
         #   - tests/test_cascade_patience_gate.py (1) —
         #     test_cascade_clamped_when_graveyard_too_thin_and_projection_nonpositive.
-        #   - tests/test_graveyard_hate_tag_generic_derivation.py (1)
-        #     — Tormod's Crypt tag derivation.
-        #   - tests/test_oracle_bug_detector.py (1) — unknown
-        #     token-label flag.
         #
         # When adding a new test file, NO action is needed here — the
         # full suite picks it up automatically. Only add to `--ignore`
@@ -101,8 +97,6 @@ jobs:
             --ignore=tests/test_etb_graveyard_return.py \
             --ignore=tests/test_engine_seed_determinism.py \
             --ignore=tests/test_cascade_patience_gate.py \
-            --ignore=tests/test_graveyard_hate_tag_generic_derivation.py \
-            --ignore=tests/test_oracle_bug_detector.py \
             --timeout=60 -q --tb=short 2>&1 | tee pytest-output.txt
           status=${PIPESTATUS[0]}
           echo

@@ -222,9 +222,6 @@ post-cleanup landings on PR #439):
   `test_different_seeds_produce_distinct_outcomes`. (The other 2
   entries in this file cleared with the deal_damage fix.)
 - `tests/test_cascade_patience_gate.py` (1).
-- `tests/test_graveyard_hate_tag_generic_derivation.py` (1) —
-  Tormod's Crypt tag derivation.
-- `tests/test_oracle_bug_detector.py` (1) — unknown token-label flag.
 
 **Cleared on PR #439** (no longer `--ignore`'d):
 
