@@ -52,7 +52,7 @@ def remove_card_db(src: str) -> str | None:
 def main():
     root = os.path.join(os.path.dirname(__file__), '..', 'tests')
     root = os.path.abspath(root)
-    files = sorted(glob.glob(os.path.join(root, '*.py')))
+    files = sorted(glob.glob(os.path.join(root, '**', '*.py'), recursive=True))
     changed = 0
     for f in files:
         if os.path.basename(f) == 'conftest.py':

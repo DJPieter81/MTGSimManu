@@ -31,11 +31,6 @@ from engine.game_state import GameState
 from engine.stack import StackItem, StackItemType
 
 
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
-
-
 def _mk_instance(game: GameState, template, owner: int, zone: str = "battlefield"):
     card = CardInstance(
         template=template,

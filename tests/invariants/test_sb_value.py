@@ -17,11 +17,6 @@ from ai.sideboard_solver import sb_value
 from engine.card_database import CardDatabase
 
 
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
-
-
 def _deck_templates(card_db, decklist):
     """Expand a name→count dict into a flat list of templates."""
     templates = []
