@@ -32,7 +32,6 @@ import random
 
 import pytest
 
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance, Keyword, CardType
 from engine.game_state import GameState
 from engine.mana import ManaCost

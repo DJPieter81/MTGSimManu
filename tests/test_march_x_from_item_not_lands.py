@@ -27,7 +27,6 @@ import random
 
 import pytest
 
-from engine.card_database import CardDatabase
 from engine.card_effects import march_otherworldly_light_resolve
 from engine.cards import CardInstance
 from engine.game_state import GameState, Phase

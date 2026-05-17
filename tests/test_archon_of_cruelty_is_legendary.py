@@ -22,7 +22,6 @@ from __future__ import annotations
 
 import pytest
 
-from engine.card_database import CardDatabase
 from engine.cards import Supertype
 
 

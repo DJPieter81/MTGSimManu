@@ -26,7 +26,6 @@ import random
 import pytest
 
 from ai.ev_player import EVPlayer
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance, CardTemplate, CardType
 from engine.game_state import GameState
 

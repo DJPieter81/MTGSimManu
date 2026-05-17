@@ -43,7 +43,6 @@ from ai.board_eval import (
     _eval_dash,
     _eval_evoke,
 )
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance
 from engine.game_state import GameState, Phase
 

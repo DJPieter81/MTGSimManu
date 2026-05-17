@@ -64,7 +64,6 @@ from ai.combo_calc import (
     card_combo_modifier,
 )
 from ai.ev_evaluator import EVSnapshot, snapshot_from_game
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance
 from engine.game_state import GameState, Phase
 

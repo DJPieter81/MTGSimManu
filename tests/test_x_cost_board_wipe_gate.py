@@ -40,7 +40,6 @@ import pytest
 from ai.ev_evaluator import snapshot_from_game
 from ai.ev_player import EVPlayer
 from ai.scoring_constants import X_BOARD_WIPE_WASTE_FLOOR
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance
 from engine.game_state import GameState, Phase
 

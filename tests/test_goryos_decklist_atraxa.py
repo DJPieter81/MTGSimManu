@@ -45,7 +45,6 @@ from __future__ import annotations
 import pytest
 
 from decks.modern_meta import MODERN_DECKS
-from engine.card_database import CardDatabase
 from engine.cards import Supertype
 
 

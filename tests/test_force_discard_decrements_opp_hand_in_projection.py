@@ -47,7 +47,6 @@ from __future__ import annotations
 import pytest
 
 from ai.ev_evaluator import EVSnapshot, _project_spell
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance
 
 

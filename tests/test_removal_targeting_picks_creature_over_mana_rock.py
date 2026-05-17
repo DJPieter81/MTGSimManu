@@ -32,7 +32,6 @@ import random
 
 import pytest
 
-from engine.card_database import CardDatabase
 from engine.card_effects import _threat_score
 from engine.cards import CardInstance
 from engine.game_state import GameState

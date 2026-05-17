@@ -53,7 +53,6 @@ import pytest
 
 from ai.ev_player import EVPlayer
 from ai.gameplan import GoalType
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance
 from engine.game_state import GameState, Phase
 

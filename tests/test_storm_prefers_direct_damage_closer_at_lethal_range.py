@@ -48,7 +48,6 @@ from ai.combo_calc import assess_combo, card_combo_modifier
 from ai.ev_evaluator import snapshot_from_game
 from ai.ev_player import EVPlayer
 from ai.gameplan import GoalType
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance, Keyword as Kw
 from engine.game_state import GameState, Phase
 

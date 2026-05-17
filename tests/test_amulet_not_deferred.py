@@ -39,7 +39,6 @@ import pytest
 
 from ai.ev_evaluator import _enumerate_this_turn_signals, snapshot_from_game
 from ai.ev_player import EVPlayer
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance
 from engine.game_state import GameState, Phase
 

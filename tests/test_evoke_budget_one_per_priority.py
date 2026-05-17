@@ -30,7 +30,6 @@ import random
 import pytest
 
 from ai.board_eval import Action, ActionType, evaluate_action
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance
 from engine.game_state import GameState, Phase
 

@@ -23,7 +23,6 @@ recurs across `Boros Charm`, `Izzet Charm`, etc.
 """
 from __future__ import annotations
 
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance, CardType
 from engine.game_state import GameState
 import pytest

@@ -22,7 +22,6 @@ import random
 
 import pytest
 
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance
 from engine.game_state import GameState
 

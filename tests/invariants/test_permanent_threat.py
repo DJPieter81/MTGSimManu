@@ -14,7 +14,6 @@ import pytest
 from ai.clock import position_value
 from ai.ev_evaluator import snapshot_from_game
 from ai.permanent_threat import permanent_threat
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance
 from engine.game_state import GameState
 

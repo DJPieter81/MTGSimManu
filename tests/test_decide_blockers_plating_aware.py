@@ -13,7 +13,6 @@ import random
 import pytest
 
 from ai.ev_player import EVPlayer, _EQUIP_BONUS_RE
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance
 from engine.game_state import GameState
 

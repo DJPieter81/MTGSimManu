@@ -14,7 +14,6 @@ from __future__ import annotations
 import pytest
 
 from ai.sideboard_solver import sb_value
-from engine.card_database import CardDatabase
 
 
 def _deck_templates(card_db, decklist):

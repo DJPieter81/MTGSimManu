@@ -47,7 +47,6 @@ import pytest
 from ai.bhi import BayesianHandTracker
 from ai.ev_evaluator import creature_threat_value, snapshot_from_game
 from ai.ev_player import EVPlayer
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance
 from engine.game_state import GameState
 

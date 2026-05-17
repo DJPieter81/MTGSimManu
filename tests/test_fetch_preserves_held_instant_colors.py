@@ -27,7 +27,6 @@ import pytest
 from ai.mana_planner import (
     ManaNeeds, analyze_mana_needs, choose_fetch_target,
 )
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance
 from engine.game_state import GameState
 

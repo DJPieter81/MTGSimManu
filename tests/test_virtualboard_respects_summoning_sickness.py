@@ -25,7 +25,6 @@ import random
 import pytest
 
 from ai.turn_planner import CombatPlanner, extract_virtual_board
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance
 from engine.game_state import GameState
 

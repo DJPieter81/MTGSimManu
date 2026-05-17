@@ -44,7 +44,6 @@ import random
 import pytest
 
 from ai.ev_evaluator import creature_threat_value
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance, CardType
 from engine.game_state import GameState
 

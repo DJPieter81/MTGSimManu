@@ -18,7 +18,6 @@ import pytest
 
 from ai.clock import position_value
 from ai.ev_evaluator import EVSnapshot, _project_spell
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance
 
 

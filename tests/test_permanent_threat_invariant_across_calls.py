@@ -29,7 +29,6 @@ import random
 import pytest
 
 from ai.permanent_threat import permanent_threat
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance
 from engine.game_state import GameState
 

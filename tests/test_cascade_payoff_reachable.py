@@ -42,7 +42,6 @@ import random
 import pytest
 
 from ai.ev_evaluator import _payoff_reachable_this_turn
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance
 from engine.game_state import GameState, Phase
 

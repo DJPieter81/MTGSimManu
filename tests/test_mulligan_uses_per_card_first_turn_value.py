@@ -42,7 +42,6 @@ from ai.gameplan import create_goal_engine
 from ai.mulligan import MulliganDecider
 from ai.predicates import first_turn_value
 from ai.strategy_profile import ArchetypeStrategy
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance
 
 
