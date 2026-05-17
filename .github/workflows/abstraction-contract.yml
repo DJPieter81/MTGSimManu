@@ -99,4 +99,4 @@ jobs:
             tests/test_storm_tutor_lethal_fires.py \
             tests/test_storm_finisher_holds_for_chain.py \
             tests/test_zero_cost_creature_no_enabler_held.py \
-            --timeout=60 -q
+            --timeout=60 -v --tb=short -rA
