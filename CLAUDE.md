@@ -196,47 +196,52 @@ python -m pytest tests/ -q          # 1975 tests as of 2026-05-16
 
 Tests include: deck loading, gameplan loading, matchup balance, card effects, game completion.
 
-### CI guardrail — what runs and what doesn't (2026-05-16)
+### CI guardrail — what runs and what doesn't (2026-05-17)
 
 `.github/workflows/abstraction-contract.yml` runs on every PR:
 
 1. **Ratchets** — `check_abstraction.py`, `check_magic_numbers.py`, `check_doc_hygiene.py` (each <5s)
 2. **Narrow pytest** — 5 ratchet-related test files
-3. **Curated regression-surface subset** (Track G1, PR #400) — 14 test files covering
-   combo evaluator, sim v3 unit, parity, storm tutor/holds, abstraction-contract
-   bodies, sim v3 acceptance gates. Wall budget ≈30s.
+3. **Full pytest suite** (G1.1, PR #439) — `pytest tests/` runs the full
+   2098-passing-test surface. Wall budget locally observed: ~18 min on
+   the ubuntu-latest 2-core runner. Replaces the 14-file curated
+   regression-surface subset that was in place while G1.1 was pending.
 
-**What CI does NOT run** (gaps to be aware of):
+The session-scoped `card_db` fixture (`tests/conftest.py:63`) is now
+honoured everywhere — module-scoped overrides were removed in PR #439
+(152 files). The full suite now loads the 21k-card DB once per pytest
+process, not once per module.
 
-- **Full 1975-test suite.** Per-test `CardDatabase()` reloads 21759 cards
-  (~1-2s setup × 1975 tests = ~80 min single-threaded). No session-scoped
-  fixture yet. xdist parallel attempt exceeded 6h GitHub Actions cap.
-- **Tests excluded from the curated subset because of slow per-test DB load
-  (>60s per file):**
-  - `tests/test_ability_override_discard_derived_from_oracle.py` (107s)
-  - `tests/test_discard_tag_generic_derivation.py` (>60s)
-  - `tests/test_tag_overrides_pruned_to_novel_only.py` (>60s)
-- **Tests excluded because of pre-existing failures on main** (will be
-  re-added once underlying regressions land fix-PRs):
-  - `tests/test_wr_baseline_anchor.py` — 4 entries drifted; fix via
-    `python tools/refresh_wr_baseline.py` then commit the snapshot.
-  - `tests/test_x_cost_board_wipe_gate.py` — 2 regressions from PR #408;
-    needs deeper fix in `ai/ev_player.py` X-cost wipe + desperation lever.
+**Tests `--ignore`'d from the full suite** (each has a follow-up PR):
 
-### Adding a new test file to the curated CI subset
+- `tests/test_llm_embeddings.py` — numpy dep not in CI install set.
+- `tests/test_wr_baseline_anchor.py` — 13/19 baseline entries drifted.
+  Fix: `python tools/refresh_wr_baseline.py` and commit the snapshot.
+  PR-2 of the finishing-pass plan.
+- `tests/test_x_cost_board_wipe_gate.py` — fix landed in PR #399
+  (commit 6acd714), silently regressed by PR #433 (Wave 0+1
+  refactor). The killable-set lift from `opp.creatures` to
+  `opp.battlefield` filtered by oracle-derived target classes was
+  reverted in `ai/ev_player.py:1195-1218`. PR-3.
+- `tests/test_game_integration.py` — 6 integration test failures.
+- `tests/test_extracted_modules.py` — 2 failures in
+  TestIntegrationAfterRefactor.
+- `tests/test_parallel_matrix.py` — 2 failures, possibly worker-count
+  env-dependent.
+- `tests/test_suspend_violent_outburst.py` — 2 failures; related to
+  Living End / suspend handling (PR-4 will overhaul this).
+- `tests/test_ev_system.py` — 1 matchup-balance failure.
+- `tests/test_graveyard_hate_tag_generic_derivation.py` — 1 failure
+  (Tormod's Crypt tag derivation).
+- `tests/test_oracle_bug_detector.py` — 1 failure (unknown
+  token-label flag).
 
-If you write a test file that pins a mechanism (chain projection, combo
-evaluator, sim v3 behaviour, WR anchor outcome, abstraction contract),
-add its path to the `Run regression-surface test suite` step in
-`.github/workflows/abstraction-contract.yml`. Verify the file completes
-in <10s locally (or it'll blow up the CI wall budget).
+### Adding a new test file to CI
 
-### Followup G1.1 — make full suite CI-feasible
-
-Pre-condition: add a session-scoped `CardDatabase` pytest fixture so all
-1975 tests reuse one DB load instead of 1975 reloads. Once that lands,
-full `pytest tests/` should fit in ~5 min and replace the curated subset
-in the workflow.
+No workflow change needed — the full suite picks it up automatically.
+Only modify `.github/workflows/abstraction-contract.yml` if the test
+needs to be added to `--ignore` because it fails on `main` and the fix
+is deferred to a follow-up PR.
 
 ### Sister-PR regressions surface here too
 
