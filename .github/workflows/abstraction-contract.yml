@@ -10,6 +10,17 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
+    env:
+      # ai/llm_decision_scorer.py makes live agent.run_sync() calls
+      # with no timeout when this is unset. CI has pydantic-ai-slim
+      # installed (so agent construction succeeds) but no API key
+      # (so the call hangs on DNS/socket until kernel timeout —
+      # observed as 1h30m+ wall-time stalls). Offline mode uses the
+      # DEFAULT_WEIGHTS table, which the module docstring guarantees
+      # matches the pre-refactor constants exactly. Dedicated LLM
+      # tests that exercise the live path live in test_llm_*.py and
+      # are not in the curated CI subset.
+      MTG_LLM_DECISION_SCORER_OFFLINE: "1"
     steps:
       - uses: actions/checkout@v4
 
@@ -18,12 +29,19 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        # pydantic-ai is required by the LLM-backend synth tests.
-        # CI uses TestModel only — no real API calls happen here.
-        # pytest-timeout fails any single test that exceeds 60s so a
-        # hang in the regression-surface subset surfaces as a named
-        # test rather than a 2-hour job timeout.
-        run: pip install pytest pytest-timeout pydantic-ai
+        # pydantic-ai-slim covers everything CI needs: Agent,
+        # TestModel, UsageLimits. The meta package `pydantic-ai`
+        # pulls in every provider SDK (anthropic/openai/google/
+        # bedrock/...) plus fastmcp/temporal/logfire — hundreds of
+        # packages causing multi-minute (sometimes hanging) resolver
+        # work on ubuntu-latest. Slim resolves to ~19 packages.
+        #
+        # pytest-timeout is the defense-in-depth: any single test
+        # exceeding 60s fails by name rather than letting the job
+        # silently consume the 6h GitHub Actions wall budget. The
+        # primary defense against the decision-scorer hang is the
+        # MTG_LLM_DECISION_SCORER_OFFLINE env at the top of this job.
+        run: pip install pytest pytest-timeout pydantic-ai-slim
 
       - name: Run abstraction ratchet
         run: python tools/check_abstraction.py
