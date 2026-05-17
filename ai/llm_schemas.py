@@ -372,6 +372,34 @@ class DocFreshnessReport(_LLMBase):
     )
 
 
+class OracleTagClassification(_LLMBase):
+    """One row from the oracle-classifier agent (W0-A).
+
+    The agent reads a single card's oracle text + mana cost + type
+    line and emits the list of mechanic tags that apply.  The list
+    is closed-set (see `ai.oracle_classifier.Tag`); validation is
+    done downstream by the JSON loader (the LLM's structured-output
+    layer doesn't enforce enum membership over a list of strings).
+
+    Card names are DATA here — they never become Python branches.
+    A round-trip test in `tests/test_oracle_classifier.py` pins the
+    contract on the consumer side."""
+
+    card_name: str = Field(
+        ...,
+        description="Exact printed card name as in MTGJSON.  Returned "
+        "so the caller can collate results without tracking the "
+        "input separately.",
+    )
+    tags: List[str] = Field(
+        default_factory=list,
+        description="Closed-set tag names that apply to this card.  "
+        "Members must be one of the names in `ai.oracle_classifier.Tag`. "
+        "Empty list means 'no tag applies' — the default for vanilla "
+        "creatures, basic lands, and most curve-out spells.",
+    )
+
+
 class DecisionScoringWeights(_LLMBase):
     """One scaling-weight scoring decision from the `decision_scorer`
     agent.
@@ -546,6 +574,7 @@ __all__ = [
     "DocFreshnessReport",
     "DecisionScoringWeights",
     "FailingTestSpec",
+    "OracleTagClassification",
     "to_json_dict",
     "from_json_dict",
     "to_prompt_section",

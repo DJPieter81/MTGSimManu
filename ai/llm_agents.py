@@ -55,6 +55,7 @@ from ai.llm_schemas import (
     DocFreshnessReport,
     FailingTestSpec,
     HandlerGapReport,
+    OracleTagClassification,
     SynthesizedGameplan,
 )
 
@@ -68,6 +69,7 @@ _OUTPUT_TYPES: dict[str, type] = {
     "audit_doc_freshness": DocFreshnessReport,
     "handler_audit":       HandlerGapReport,
     "failing_test_spec":   FailingTestSpec,
+    "classify_oracle":     OracleTagClassification,
     # Phase 1 refactor — at-decision-time scoring weights, cached.
     "decision_scorer":     DecisionScoringWeights,
 }

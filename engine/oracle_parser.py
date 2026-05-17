@@ -217,22 +217,31 @@ def has_cascade(oracle: str) -> bool:
 
 
 def parse_x_cost(oracle: str, name: str, mana_cost_str: str = "") -> Optional[Dict]:
-    """Parse X-cost spell properties from oracle text and mana cost."""
-    oracle_lower = oracle.lower()
+    """Parse X-cost spell properties from the printed mana cost.
+
+    Per CR 107.3, the X that the caster chooses lives in the spell's *mana
+    cost*. X tokens in oracle body (e.g. "where X is the number of lands
+    you control") are derived at resolution and are unrelated to the cost
+    paid at cast time. Conflating the two mis-tags fixed-cost cards like
+    Consult the Star Charts ({5}{U}; oracle "Look at top X cards … where
+    X is the number of lands you control") as X-cost spells, after which
+    the engine asks for an X payment and the spell resolves silently.
+
+    Therefore: parse_x_cost returns a non-None result iff `{X}` appears
+    in the printed mana cost string. The oracle text is consulted only
+    for downstream `effect` classification (charge counters vs +1/+1
+    counters), never for the cost-X predicate itself.
+    """
     mana_lower = mana_cost_str.lower() if mana_cost_str else ""
-    # Check both {X} in mana cost format and "X" in oracle text
-    if ('{x}' not in oracle_lower and ' x ' not in oracle_lower
-            and not oracle_lower.startswith('x ')
-            and '{x}' not in mana_lower):
+    if '{x}' not in mana_lower:
         return None
 
     # Detect XX costs from mana cost string (e.g. Chalice {X}{X})
     multiplier = 2 if '{x}{x}' in mana_lower else 1
-    # Fallback: also check oracle text for {X}{X}
-    if multiplier == 1 and '{x}{x}' in oracle_lower:
-        multiplier = 2
 
-    # Determine counter type from oracle text
+    # Determine counter type from oracle text (effect classification only —
+    # this does NOT affect the cost-X predicate, which is mana-cost-only).
+    oracle_lower = oracle.lower()
     effect = ""
     if 'charge counter' in oracle_lower:
         effect = "charge_counters"

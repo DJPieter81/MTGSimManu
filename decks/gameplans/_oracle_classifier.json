@@ -1,0 +1,146 @@
+{
+  "cards": {
+    "Counterspell": {
+      "oracle_text_sha256": "6e7e3fa9bb231a1c1910cd956dc7e5c91bb22e9705b39ed61a2ebd23201950e4",
+      "tags": []
+    },
+    "Endurance": {
+      "oracle_text_sha256": "d984d44d84f5a77044e5c399235ef3e0cb16bbb5ffa8b5d1740920089f0e696f",
+      "tags": [
+        "ETB_ORACLE_TRIGGER",
+        "EVOKE",
+        "PITCH_ALT_COST"
+      ]
+    },
+    "Force of Negation": {
+      "oracle_text_sha256": "0ba9d8a8d2bb2d46a3c43671e5beeef14a66deebd6d64b9af3bca371d79ed8b7",
+      "tags": [
+        "PITCH_ALT_COST"
+      ]
+    },
+    "Galvanic Discharge": {
+      "oracle_text_sha256": "f05f431f47f8bdae881695dc2fbc80c6cda854fa2193ff713a54807103485d1b",
+      "tags": [
+        "TARGET_CREATURE_OR_PW"
+      ]
+    },
+    "Glimpse the Impossible": {
+      "oracle_text_sha256": "dc04887b409962753c4ec99acfff9d67190f6c1126743c9d598a3b918a0524cd",
+      "tags": [
+        "IMPULSE_DRAW"
+      ]
+    },
+    "Inquisition of Kozilek": {
+      "_classification_source": "manual:M6-discard-projection-2026-05-16",
+      "oracle_text_sha256": "0d3c89317d77bd408a86bfe9ad5fde697dac9d20fa8e644cc936c57a6ba7ceb9",
+      "tags": [
+        "FORCED_DISCARD"
+      ]
+    },
+    "Duress": {
+      "_classification_source": "manual:M6-discard-projection-2026-05-16",
+      "oracle_text_sha256": "f40eaa83b50ede4ae3e3350218cf3da991975363ef1d0336e2dc11a93b1d6c05",
+      "tags": [
+        "FORCED_DISCARD"
+      ]
+    },
+    "Grand Abolisher": {
+      "_classification_source": "manual:llm-undercoverage-2026-05-16",
+      "oracle_text_sha256": "3d2737d202cf5921baa0ce23e531c55ff88759589da2f2b609e574e9f13b0410",
+      "tags": [
+        "SORCERY_SPEED_LOCKOUT"
+      ]
+    },
+    "Meticulous Archive": {
+      "oracle_text_sha256": "5016d4b3823830055397fd1232a25045e88005b981b8cdfc4bd623944b300158",
+      "tags": [
+        "ETB_SURVEIL_N"
+      ]
+    },
+    "Murktide Regent": {
+      "oracle_text_sha256": "0e605dd15bc48d4807baadaa4b6739c92371b26fdfb4daabf000f1e288e3faa4",
+      "tags": [
+        "DELVE"
+      ]
+    },
+    "Orcish Bowmasters": {
+      "oracle_text_sha256": "c2c7596e58d8707e6ae25cd121d0011b5457d8bda3c376e9907d5a01d81e4e10",
+      "tags": [
+        "ETB_ORACLE_TRIGGER",
+        "ON_DRAW_DAMAGE",
+        "TARGET_ANY_DAMAGE"
+      ]
+    },
+    "Otawara, Soaring City": {
+      "oracle_text_sha256": "f607b7add939569c1d04a6f463c497157d9fca13d7702d873c93029109f632cf",
+      "tags": [
+        "CHANNEL_ABILITY"
+      ]
+    },
+    "Past in Flames": {
+      "oracle_text_sha256": "0b1663e36830961148abf0d45378c512d6562c712dab3ca77128e9b9cf1f2621",
+      "tags": [
+        "FLASHBACK"
+      ]
+    },
+    "Reckless Impulse": {
+      "oracle_text_sha256": "d0401eb08b4bb5ec4f4acb840207bf89107c642a7719c390702e961a11d5d784",
+      "tags": [
+        "IMPULSE_DRAW"
+      ]
+    },
+    "Reverse Engineer": {
+      "oracle_text_sha256": "f2f4594d068b702cf8971163ddc5c069285cae827b36b7b56a7a157cbff8a1e9",
+      "tags": [
+        "IMPROVISE"
+      ]
+    },
+    "Sheoldred, the Apocalypse": {
+      "oracle_text_sha256": "9b94bf655673f4135b06827f26d106aea852cb338d0e9bdfc9ecc9bc29dee437",
+      "tags": [
+        "ON_OPP_DRAW_LIFE_LOSS",
+        "ON_OWN_DRAW_LIFE_GAIN"
+      ]
+    },
+    "Solitude": {
+      "oracle_text_sha256": "6cf8a37d8715836ccd015461e5bc272941902f49f051561090b96f8ce8d477a6",
+      "tags": [
+        "ETB_ORACLE_TRIGGER",
+        "EVOKE",
+        "PITCH_ALT_COST",
+        "TARGET_CREATURE_OR_PW"
+      ]
+    },
+    "Subtlety": {
+      "oracle_text_sha256": "919a63d8382388b243e50d2418fd291e076d4613c858d0161fe29a5142b280b5",
+      "tags": [
+        "ETB_ORACLE_TRIGGER",
+        "EVOKE",
+        "PITCH_ALT_COST",
+        "TARGET_CREATURE_OR_PW"
+      ]
+    },
+    "Teferi, Time Raveler": {
+      "oracle_text_sha256": "5d3ed675bb9ea31801abf487471264b983149f349b56f0401e2c4795ddcd3a4e",
+      "tags": [
+        "PLANESWALKER_LOYALTY_PLUS1_USEFUL",
+        "PLANESWALKER_LOYALTY_X_USEFUL",
+        "SORCERY_SPEED_LOCKOUT"
+      ]
+    },
+    "Thoughtseize": {
+      "oracle_text_sha256": "9db4202085457fc2e687c39a501f61fff2add6426bf7af9da13702b62ec3455b",
+      "tags": [
+        "FORCED_DISCARD",
+        "SELF_DAMAGE_ON_CAST"
+      ]
+    },
+    "Underworld Dreams": {
+      "oracle_text_sha256": "ebf5ea12a51b3f2175b1d53b52cb7d3df270e05cdda45c167d0052aea8beebfc",
+      "tags": [
+        "ON_DRAW_DAMAGE"
+      ]
+    }
+  },
+  "schema_version": 1
+}

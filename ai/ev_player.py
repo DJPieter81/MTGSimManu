@@ -34,7 +34,6 @@ from ai.llm_decision_scorer import (
     CTX_CYCLING_FREE_COST_BONUS,
 )
 from ai.scoring_constants import (
-    HELD_RESPONSE_VALUE_PER_CMC,
     held_response_value_per_cmc,
     STARTING_HAND_SIZE,
     opp_threat_prob_from_density,
@@ -43,7 +42,6 @@ from ai.scoring_constants import (
     EVOKE_CARD_LOSS_MULTIPLIER,
     EVOKE_DESPERATE_BONUS,
     EVOKE_NO_TARGET_PENALTY,
-    PLANESWALKER_SURVIVAL_FLOOR,
     MIDGAME_HORIZON_TURNS,
     GAME_HORIZON_MIN_TURNS,
     GAME_HORIZON_MAX_COST_REDUCER,
@@ -70,12 +68,13 @@ from ai.scoring_constants import (
     LAND_SACRIFICE_MIN_LANDS,
     BIG_CREATURE_CMC_FLOOR,
     PLANESWALKER_DEFAULT_LOYALTY,
-    DESPERATE_LIFE_THRESHOLD,
     NONCREATURE_COUNTER_AGGRO_POWER,
     NONCREATURE_COUNTER_AGGRO_HAND,
     PHYREXIAN_LIFE_PENALTY_SCALE,
     OPP_HAND_FULL_HOLDBACK_THRESHOLD,
     HOLDBACK_PROBABILITY_FLOOR,
+    PATIENCE_GATE_REJECT_SENTINEL,
+    PLAY_VALUE_FLOOR,
     LAND_BASE_EV,
     LAND_UNTAPPED_USEFUL,
     LAND_UNTAPPED_IDLE,
@@ -636,9 +635,21 @@ class EVPlayer:
             return None
         best = non_deferred[0]
 
-        if best.ev < self.profile.pass_threshold:
+        # M3: replaced the per-archetype `pass_threshold` binary gate
+        # with a comparison against the rules-level `PLAY_VALUE_FLOOR`
+        # sentinel (-5.0).  `best.ev` already incorporates the signed
+        # `holdback_cost` from `_holdback_penalty` — negative penalty
+        # when defensive use exists, positive bonus when none — so the
+        # gate is the *signed* play-value comparison the M3 brief
+        # specifies.  Plays whose signed value lands below the floor
+        # are passed; plays above the floor execute.  Same constant
+        # is used by `PATIENCE_GATE_REJECT_SENTINEL` (-10.0) which
+        # clamps fizzle/cascade-patience spells strictly below the
+        # floor.  See M3 brief in
+        # `docs/history/audits/2026-05-16_5panel_bo3_audit.md`.
+        if best.ev <= PLAY_VALUE_FLOOR:
             self._emit_decision_event(game, candidates, chosen=None,
-                                      pass_reason="below pass_threshold")
+                                      pass_reason="at or below play-value floor")
             return None
 
         self._last_played_target_reason = getattr(best, "target_reason", "")
@@ -827,10 +838,14 @@ class EVPlayer:
             # engine/card_effects.py:scapeshift_resolve. Imported from
             # scoring_constants.
             if my_land_count < LAND_SACRIFICE_MIN_LANDS:
-                # Force the score below pass_threshold so the AI holds the
-                # spell until critical mass is available. Derivation: profile-
-                # driven, no magic numbers — uses the existing gate constant.
-                ev = min(ev, p.pass_threshold - 1.0)
+                # Force the score into the patience-gate reject band so
+                # the AI holds the spell until critical mass is available.
+                # M3: the pre-existing `profile.pass_threshold - 1.0`
+                # clamp depended on the now-deleted `pass_threshold`
+                # field; replaced with the named sentinel from
+                # `scoring_constants`.  Same intent: the cast is
+                # unconditionally outside the M3 `play_value > 0` gate.
+                ev = min(ev, PATIENCE_GATE_REJECT_SENTINEL)
 
         # ── Cascade patience gate (LE-A3) ──
         # Mirror of the Storm ritual patience gate (now in card_combo_modifier):
@@ -865,10 +880,11 @@ class EVPlayer:
         #      cascade-payoff must-fire rule (PR #192 / #212 shape):
         #      the gate must defer to the projection, not override it.
         #
-        # When the gate fires, clamp EV below pass_threshold — a HARD
-        # reduction in line with the Scapeshift fizzle gate above and the
-        # Storm ritual patience gate (now in card_combo_modifier).  The
-        # AI will hold the cascade enabler until the graveyard has critical mass.
+        # When the gate fires, clamp EV into the patience-reject band —
+        # a HARD reduction in line with the Scapeshift fizzle gate above
+        # and the Storm ritual patience gate (now in card_combo_modifier).
+        # The AI will hold the cascade enabler until the graveyard has
+        # critical mass.
         if getattr(t, 'is_cascade', False):
             fill_target = self._cascade_graveyard_target()
             if (fill_target > 0
@@ -879,12 +895,14 @@ class EVPlayer:
                 # `compute_play_ev` (which recursively projected the
                 # cascade hit) found a positive swing — the cascade-
                 # payoff must-fire rule says trust that projection.
-                # Clamp matches the Scapeshift fizzle gate treatment
-                # (line 478): profile.pass_threshold - 1.0. No extra
-                # magic: the clamp is "just below pass_threshold" so
-                # the spell is rejected by decide_main_phase but any
-                # other legal play can still fire.
-                ev = min(ev, p.pass_threshold - 1.0)
+                # M3: the pre-existing `profile.pass_threshold - 1.0`
+                # clamp depended on the now-deleted `pass_threshold`
+                # field; replaced with the named sentinel from
+                # `scoring_constants`.  Same intent: the cast is
+                # unconditionally outside the M3 `play_value > 0` gate,
+                # so the spell is rejected by `decide_main_phase` but
+                # any other legal play can still fire.
+                ev = min(ev, PATIENCE_GATE_REJECT_SENTINEL)
 
         # ── Reanimation readiness gate (GV-2) ──
         # Mirror shape of the cascade patience gate above, but in the
@@ -1044,36 +1062,17 @@ class EVPlayer:
             ev += _amulet_w * mana_impact * CLOCK_IMPACT_LIFE_SCALING
 
         # ── Non-creature permanent overlay (Pattern B) ──
+        # Planeswalker loyalty-pool scoring moved to
+        # `ai.ev_evaluator.expected_future_value`, which is composable
+        # across permanent types and credited through
+        # `EVSnapshot.persistent_power` so the same `urgency_factor`
+        # decay applied to recurring-trigger tokens applies to PW pools
+        # as well. The previous inline `pw_bonus` here double-counted
+        # once the projection layer started crediting the pool — see
+        # M5 / 2026-05-16 audit Control Decision 1 + 7.
         from engine.cards import CardType
         if not t.is_creature and not t.is_instant and not t.is_sorcery:
-            if CardType.PLANESWALKER in t.card_types:
-                # Planeswalkers are sticky card-advantage engines. Each
-                # loyalty activation ≈ one card's clock impact (draw,
-                # removal, damage, tokens). Stickiness bonus: opp must
-                # divert removal to kill them → effectively a 1-for-1
-                # card exchange in our favor on the turn it resolves.
-                # Derives from clock.card_clock_impact — no flat tiers.
-                from ai.clock import card_clock_impact
-                loyalty = t.loyalty or PLANESWALKER_DEFAULT_LOYALTY
-                # Expected activations before death: loyalty-1 because the
-                # enters-with-loyalty first use is net-0; subsequent uses
-                # generate value. +1 accounts for the opp-removal cost.
-                expected_activations = max(1, loyalty - 1) + 1
-                card_val = card_clock_impact(snap) * CLOCK_IMPACT_LIFE_SCALING  # scale to board-eval units
-                pw_bonus = expected_activations * card_val
-                # PW survival floor: when opp_life is high or board impact small,
-                # card_clock_impact → 0 collapses the bonus and PWs lose to
-                # vanilla creatures of equal CMC. Floor represents the
-                # minimum value of one activation (one card draw, one removal,
-                # one Cat token) before the planeswalker dies. Holds even when
-                # combat-clock-derived card_val rounds to ~0 in early/mid game.
-                pw_bonus = max(PLANESWALKER_SURVIVAL_FLOOR, pw_bonus)
-                ev += pw_bonus
-                # No additional per-oracle bumps: loyalty × card_val already
-                # integrates over whatever the planeswalker actually does,
-                # including the Teferi-pattern "untap lands" mana-advantage
-                # (that's one activation per turn, already counted above).
-            elif 'cost_reducer' in tags:
+            if 'cost_reducer' in tags:
                 # Saves ~1 mana per spell over the remaining game — derive
                 # from card_clock_impact × turns_remaining rather than +4.
                 from ai.clock import card_clock_impact, combat_clock, NO_CLOCK
@@ -1198,12 +1197,17 @@ class EVPlayer:
             base_cost = t.cmc or 0
             x_budget = max(0, total_mana - base_cost)
             mult = (t.x_cost_data or {}).get('multiplier', 1) or 1
-            effective_x = x_budget // mult
             killable = [c for c in opp.creatures
-                        if (c.template.cmc or 0) <= effective_x]
+                        if (c.template.cmc or 0) <= x_budget // mult]
             kill_count = len(killable)
             killable_power = sum((c.power or 0) for c in killable)
-            desperate = snap.my_life <= DESPERATE_LIFE_THRESHOLD
+            # Replaces a `my_life-vs-DESPERATE_LIFE_THRESHOLD` magic
+            # threshold (M4 from 2026-05-16 5-panel audit).  The life-
+            # phase enum from W0-B subsumes the "we're dying, fire the
+            # X-wrath even at low value" case via the composed primitive
+            # `am_dead_next + life_as_resource` ordering.
+            from ai.clock import LifePhase, life_phase
+            desperate = life_phase(snap) in (LifePhase.PANIC, LifePhase.LETHAL)
             if not desperate:
                 if kill_count == 0:
                     return min(ev, X_BOARD_WIPE_WASTE_FLOOR)
@@ -1383,12 +1387,18 @@ class EVPlayer:
         # `stax_lock_ev` returns a positive EV for stax permanents
         # (Chalice, Blood Moon, Canonist, Torpor Orb) based on
         # opponent deck composition. The bonus is GATED on
-        # `holdback == 0`: if tapping out for this play would
+        # `holdback >= 0`: if tapping out for this play would
         # forfeit held instant-speed interaction, the overlay must
         # not crowd out the concrete answer. Without this gate the
         # AI casts T2 Chalice over a held Counterspell (the WST
         # regression that caused the previous wiring to be reverted).
-        if holdback == 0.0:
+        #
+        # M3 (signed holdback): `holdback >= 0.0` captures both the
+        # pre-M3 "no holdback" state (= 0.0) AND the new positive-
+        # bonus branch (no defensive use → proactive tap-out is
+        # actively rewarded).  Equivalent intent: the gate fires
+        # whenever the held-response penalty path is silent.
+        if holdback >= 0.0:
             from ai.stax_ev import stax_lock_ev
             ev += stax_lock_ev(t, me, opp, snap)
 
@@ -1402,42 +1412,70 @@ class EVPlayer:
 
     def _holdback_penalty(self, me, opp, snap: EVSnapshot, cost: int,
                           exclude_instance_id: Optional[int] = None) -> float:
-        """Mana-holdback penalty for a play that would tap out (Bundle 3).
+        """Signed mana-holdback cost (M3 — proactive tap-out).
 
-        A1 — penalty scales by `counter_count × counter_cmc × opp_threat_prob`
-              instead of the previous flat -2.0 so it actually gates a
-              CMC-2 main-phase play when 2× Counterspell are held.
-        A3 — extracted as a helper so `_score_cycling` and
-              `_consider_equip` apply the same gate.
-        A4 — opponent-spell-deck branch threshold kept at
-              `opp_hand_size >= 4`. Iteration-2 revert: the Bundle 3
-              lowered threshold (>=3) over-fired because 3-card post-
-              discard hands are typically mostly lands, not threats.
-              The stricter >=4 threshold matches pre-Bundle-3 behaviour
-              and restores defender deployment.
-        A5 — colored-aware: if the play taps out the LAST source of a
-              held instant's color, the penalty is amplified (the
-              interaction is uncastable, not merely tempo-delayed).
+        Returns the EV adjustment for tapping out by `cost` mana on a
+        sorcery-speed play.  Sign convention:
 
-        Returns a non-positive penalty (0.0 means "no holdback").
+        - Negative (penalty) when the open mana has a defensive use —
+          held instant-speed interaction + an opp able to deploy a
+          counterable threat.  This is the original Bundle 3 / B3-Tune
+          behaviour, unchanged.
+        - Positive (bonus) when no defensive use exists — no held
+          interaction, opp has no follow-up threat, etc.  Holding mana
+          for nothing is strictly worse than spending it on a marginal
+          play, so the bonus rewards proactive deployment.  Replaces
+          the deleted binary `pass_threshold` gate (M3, audit
+          `docs/history/audits/2026-05-16_5panel_bo3_audit.md` — control
+          panel + combo cross-pattern #2).
+
+        Pre-M3 history (penalty branch unchanged):
+        A1 — penalty scales by `counter_count × counter_cmc × opp_threat_prob`.
+        A3 — extracted as a helper for `_score_cycling` and `_consider_equip`.
+        A4 — opp-spell-deck threshold kept at `opp_hand_size >= 4`.
+        A5 — colored-aware amplifier when tap-out empties a held color.
+
+        M3 — bonus branch added (no new magic numbers): bonus scales by
+        `cost × held_response_value_per_cmc(0.0) × (1 - opp_action_prob)`.
+        Same per-CMC value primitive used by the penalty side, evaluated
+        at the no-artifact-threat baseline.  When the opponent is
+        certain to act next turn (opp_action_prob → 1.0) the bonus
+        collapses to zero — the original "no holdback at all" floor.
+
+        Profile gate (`holdback_applies`) controls only the PENALTY
+        branch — AGGRO / COMBO / STORM / RAMP declare they have no
+        defensive use for mana, so the penalty side is skipped and the
+        function returns the proactive bonus directly.  M3: those
+        archetypes also benefit from positive tap-out signal (the
+        audit's "combo cross-pattern" — Storm chains break when fuel
+        is held under a threshold gate that has no defensive
+        justification on the combo turn).
         """
         p = self.profile
+
+        # ── Profile-side penalty gate (early bonus return) ───────────
+        # Profiles with `holdback_applies=False` (AGGRO / COMBO / STORM
+        # / RAMP) declare they have no defensive use for mana — the
+        # penalty branch never fires for them.  M3: return the
+        # proactive bonus directly so these decks get a positive tap-
+        # out signal in every state, not just the opp-tapped-out case.
         if not p.holdback_applies:
-            return 0.0
+            return self._proactive_tap_out_bonus(snap, opp, cost)
 
         # ── Holdback relevance gate ──────────────────────────────────
-        # Original logic kept: opp creatures present OR opponent has a
-        # full grip. Iteration-2 B3-Tune reverts A4's >=3 lowering back
-        # to >=4: 3-card post-discard hands are typically mostly lands
-        # (no real threat density) and the broader gate caused defender
-        # decks to stall out against discard-heavy opponents.
+        # When opp has no creatures AND a small hand they cannot present
+        # a follow-up threat.  Pre-M3 the function returned 0.0 here and
+        # left the binary `pass_threshold` gate to decide whether to
+        # pass.  M3: there is no defensive use for the held mana, so
+        # return a POSITIVE bonus instead — the AI should proactively
+        # spend the mana on the best available play.
         opp_has_spells = (snap.opp_hand_size >= OPP_HAND_FULL_HOLDBACK_THRESHOLD
                           and snap.opp_power == 0)
         holdback_relevant = (snap.opp_power > 0
                              or snap.opp_hand_size >= OPP_HAND_FULL_HOLDBACK_THRESHOLD
                              or opp_has_spells)
         if not holdback_relevant:
-            return 0.0
+            return self._proactive_tap_out_bonus(snap, opp, cost)
 
         # ── Find held instant-speed interaction in hand ──────────────
         # Oracle/tag-driven (no card names). counter_cmc is the average
@@ -1464,7 +1502,13 @@ class EVPlayer:
                     held_colors.add(code)
 
         if not held_costs:
-            return 0.0
+            # M3: no held interaction → no defensive use → return bonus.
+            # Same `_proactive_tap_out_bonus` primitive used by the
+            # opp-no-threat branch above; both encode "holding mana for
+            # nothing is strictly worse than spending it on a marginal
+            # play."  The bonus collapses to zero when the opponent is
+            # certain to threaten, so this never over-fires.
+            return self._proactive_tap_out_bonus(snap, opp, cost)
 
         counter_count = len(held_costs)
         counter_cmc = sum(held_costs) / counter_count  # mean CMC
@@ -1593,6 +1637,48 @@ class EVPlayer:
                              * held_value_per_cmc)
 
         return -base_penalty
+
+    def _proactive_tap_out_bonus(self, snap: EVSnapshot, opp,
+                                 cost: int) -> float:
+        """EV bonus for tapping out when no defensive use exists (M3).
+
+        Sign convention: this is the *positive-cost* branch of
+        `_holdback_penalty` — when there is nothing to hold the mana
+        for, spending it on a marginal play is strictly better than
+        passing.  The bonus replaces the deleted binary `pass_threshold`
+        gate (audit `docs/history/audits/2026-05-16_5panel_bo3_audit.md`).
+
+        Formula (no new magic numbers — composed entirely from existing
+        primitives):
+
+            bonus = cost
+                  × held_response_value_per_cmc(0.0)
+                  × (1 - opp_action_prob)
+
+        - `cost` is the mana that would otherwise sit unused.  Bigger
+          plays unlock proportionally more bonus, mirroring how the
+          penalty side scales with `counter_cmc × counter_count`.
+        - `held_response_value_per_cmc(0.0)` is the no-artifact-ramp
+          baseline of the same per-CMC value primitive used by the
+          penalty side.  Treating the bonus and the penalty as two
+          sides of the same coefficient keeps the signed model
+          symmetric — a sole source-of-truth, the function in
+          `ai/scoring_constants.py`.
+        - `(1 - opp_action_prob)` discounts the bonus against the BHI-
+          derived probability the opponent will threaten next turn.
+          Certain opp action collapses the bonus to zero (the original
+          "no holdback at all" floor); a quiet opponent yields the
+          full bonus.  Same `_estimate_opp_threat_prob` primitive
+          drives both branches.
+        """
+        # `_estimate_opp_threat_prob` clamps at `HOLDBACK_PROBABILITY_FLOOR`
+        # on the low end — a quiet opp still has a baseline top-deck
+        # threat probability, so the bonus is never fully (1.0 ×) the
+        # per-CMC value.  We use the SAME clamp here to keep penalty
+        # and bonus symmetric.
+        opp_action_prob = self._estimate_opp_threat_prob(snap, opp)
+        per_cmc = held_response_value_per_cmc(0.0)
+        return float(cost) * per_cmc * (1.0 - opp_action_prob)
 
     def _estimate_opp_threat_prob(self, snap: EVSnapshot, opp) -> float:
         """Probability opponent will deploy a meaningful threat next turn.
@@ -2684,9 +2770,65 @@ class EVPlayer:
                 return True
         return False
 
+    def _score_block_lifespan_delta(
+        self, game, attacker, blocker, my_life: int,
+        my_power: int, opp_power: int,
+    ) -> float:
+        """Lifespan-delta score for a single (attacker, blocker) pair.
+
+        Composes ``ai.clock.score_block_assignment`` for both the
+        block and no-block post-states; returns the delta.
+
+        Single formula — no chump / trade / favorable-trade enum.
+        Caller picks the (attacker, blocker) pair with the highest
+        delta.  Positive ⇒ block helps; non-positive ⇒ block is wasted.
+        """
+        from ai.clock import score_block_assignment
+        from ai.ev_evaluator import snapshot_from_game
+        from engine.cards import Keyword
+
+        snap = snapshot_from_game(game, self.player_idx)
+
+        a_pow = attacker.power or 0
+        a_tou = attacker.toughness or 0
+        b_pow = blocker.power or 0
+        b_tou = blocker.toughness or 0
+
+        b_kills_attacker = (b_pow >= a_tou) or (
+            Keyword.DEATHTOUCH in blocker.keywords
+        )
+        a_kills_blocker = (a_pow >= b_tou) or (
+            Keyword.DEATHTOUCH in attacker.keywords
+        )
+
+        # Post-block state — trample lets excess punch through.
+        has_trample = Keyword.TRAMPLE in attacker.keywords
+        damage_through = max(0, a_pow - b_tou) if has_trample else 0
+
+        my_life_after_block = my_life - damage_through
+        opp_power_after_block = opp_power - (a_pow if b_kills_attacker else 0)
+        my_power_after_block = my_power - (b_pow if a_kills_blocker else 0)
+
+        my_life_after_no_block = my_life - a_pow
+        opp_power_after_no_block = opp_power
+        my_power_after_no_block = my_power
+
+        block = score_block_assignment(
+            snap,
+            my_life_after=my_life_after_block,
+            opp_power_after=opp_power_after_block,
+            my_power_after=my_power_after_block,
+        )
+        no_block = score_block_assignment(
+            snap,
+            my_life_after=my_life_after_no_block,
+            opp_power_after=opp_power_after_no_block,
+            my_power_after=my_power_after_no_block,
+        )
+        return block - no_block
+
     def decide_blockers(self, game, attackers) -> Dict[int, List[int]]:
         """Decide blocking assignments."""
-        from ai.board_eval import evaluate_action, Action, ActionType
         from engine.cards import Keyword
 
         valid_blockers = game.get_valid_blockers(self.player_idx)
@@ -2710,6 +2852,12 @@ class EVPlayer:
         # clock-to-kill is at least as fast as opp's post-combat clock.
         if self._racing_to_win(game, me, opp, attackers):
             return {}
+
+        # Pre-compute board totals shared by every block branch
+        # (emergency, normal, and the per-decision log lines that
+        # quote the lifespan-delta score).
+        my_power_total = sum((c.power or 0) for c in me.creatures)
+        opp_power_total = sum((c.power or 0) for c in opp.creatures)
 
         # EMERGENCY: block when incoming damage is dangerous
         # Triggers: lethal this turn, drop-below-5, or projected lethal across 2 turns
@@ -2792,16 +2940,44 @@ class EVPlayer:
                     plating_skipped_any = True
                     continue
 
+                # M12-engine: pick the blocker that maximises the
+                # single-formula lifespan-delta score (composes
+                # ``clock.score_block_assignment``).  Replaces the
+                # ``min(creature_value)`` chump enum — the same
+                # formula now ranks chump / even-trade / favorable-
+                # trade options.
                 best_chump = None
-                best_chump_val = CHUMP_SENTINEL_VALUE
+                best_delta = 0.0  # positive ⇒ block helps; below this we
+                                  # prefer no block (no magic number — the
+                                  # zero is the score-delta neutral point).
                 cands = _blocker_candidates(attacker, e_used)
                 # Prefer non-battle-cry blockers; only use battle cry sources as last resort
                 non_bc = [b for b in cands if not _is_battle_cry(b)]
                 pool = non_bc if non_bc else cands
+                # Cumulative damage already absorbed by emergency
+                # blocks — folds into ``my_life`` for the next
+                # block-vs-no-block delta.  Post-decision life is
+                # ``me.life - (damage taken so far)``; damage taken so
+                # far is ``total_incoming - damage absorbed``.
+                already_absorbed = sum(
+                    (a.power or 0) for a in attackers
+                    if a.instance_id in emergency_blocks
+                )
+                my_life_now = me.life - max(0, total_incoming
+                                            - already_absorbed
+                                            - (attacker.power or 0))
+                # ``my_power_total`` / ``opp_power_total`` hoisted
+                # above the emergency block; same primitive feeds the
+                # log line below.
                 for blocker in pool:
-                    val = creature_value(blocker)
-                    if val < best_chump_val:
-                        best_chump_val = val
+                    delta = self._score_block_lifespan_delta(
+                        game, attacker, blocker,
+                        my_life=my_life_now,
+                        my_power=my_power_total,
+                        opp_power=opp_power_total,
+                    )
+                    if delta > best_delta:
+                        best_delta = delta
                         best_chump = blocker
                 if best_chump:
                     emergency_blocks[attacker.instance_id] = [best_chump.instance_id]
@@ -2831,7 +3007,12 @@ class EVPlayer:
                 return {}
 
             if emergency_blocks:
-                # Log emergency blocking assignments with reasoning
+                # Log emergency blocking assignments.  Reason is the
+                # raw lifespan-delta score from
+                # ``score_block_assignment`` — same primitive that
+                # drove the selection.  No chump/trade/favorable-trade
+                # enum (M12-AI): the formula's sign and magnitude tell
+                # the same story without an if-chain.
                 id_to_attacker = {a.instance_id: a for a in attackers}
                 id_to_blocker  = {b.instance_id: b for b in valid_blockers}
                 for atk_id, blk_ids in emergency_blocks.items():
@@ -2843,16 +3024,14 @@ class EVPlayer:
                             b_pow = blk.power or 0
                             b_tou = blk.toughness or 0
                             a_tou = atk.toughness or 0
-                            survives = a_pow < b_tou
-                            kills    = b_pow >= a_tou
-                            if kills and survives:
-                                reason = "favorable trade"
-                            elif kills:
-                                reason = "trade (chump)"
-                            else:
-                                reason = "chump block"
+                            delta = self._score_block_lifespan_delta(
+                                game, atk, blk,
+                                my_life=me.life,
+                                my_power=my_power_total,
+                                opp_power=opp_power_total,
+                            )
                             game.log.append(
-                                f"T{game.display_turn} P{self.player_idx+1}: "                                f"  [BLOCK-EMERGENCY] {blk.name} ({b_pow}/{b_tou}) "                                f"blocks {atk.name} ({a_pow}/{a_tou}) — {reason}"
+                                f"T{game.display_turn} P{self.player_idx+1}: "                                f"  [BLOCK-EMERGENCY] {blk.name} ({b_pow}/{b_tou}) "                                f"blocks {atk.name} ({a_pow}/{a_tou}) — "                                f"lifespan_delta={delta:+.2f}"
                             )
                 return emergency_blocks
 
@@ -2861,9 +3040,13 @@ class EVPlayer:
 
         sorted_attackers = sorted(attackers, key=lambda a: a.power or 0, reverse=True)
 
+        # ``my_power_total`` / ``opp_power_total`` hoisted above the
+        # emergency block; same primitive feeds every (attacker,
+        # blocker) lifespan-delta call in this decision.
+
         for attacker in sorted_attackers:
             best_blocker = None
-            best_val = 0.0
+            best_val = 0.0  # neutral threshold — positive ⇒ block helps.
 
             for blocker in valid_blockers:
                 if blocker.instance_id in used:
@@ -2896,9 +3079,17 @@ class EVPlayer:
                     if self._is_protected_piece(blocker):
                         continue
 
-                val = evaluate_action(
-                    game, self.player_idx,
-                    Action(ActionType.BLOCK, {'attacker': attacker, 'blocker': blocker}))
+                # M12-engine: single-formula lifespan-delta score
+                # (composes ``clock.score_block_assignment``).
+                # Replaces ``evaluate_action(BLOCK)``'s positive-for-
+                # any-chump heuristic with the same buffer-differential
+                # that drives the emergency path.
+                val = self._score_block_lifespan_delta(
+                    game, attacker, blocker,
+                    my_life=me.life,
+                    my_power=my_power_total,
+                    opp_power=opp_power_total,
+                )
                 if val > best_val:
                     best_val = val
                     best_blocker = blocker
@@ -2923,7 +3114,10 @@ class EVPlayer:
                             used.add(b2.instance_id)
                             break
 
-        # Log normal blocking assignments with reasoning
+        # Log normal blocking assignments.  Reason quotes the same
+        # lifespan-delta primitive that drove the selection (M12-AI:
+        # no chump/trade/favorable-trade enum — the formula is the
+        # single source of truth).
         if blocks:
             id_to_attacker = {a.instance_id: a for a in attackers}
             id_to_blocker  = {b.instance_id: b for b in valid_blockers}
@@ -2936,16 +3130,14 @@ class EVPlayer:
                         b_pow = blk.power or 0
                         b_tou = blk.toughness or 0
                         a_tou = atk.toughness or 0
-                        survives = a_pow < b_tou
-                        kills    = b_pow >= a_tou
-                        if kills and survives:
-                            reason = "favorable trade"
-                        elif kills:
-                            reason = "trade (chump)"
-                        else:
-                            reason = "chump block"
+                        delta = self._score_block_lifespan_delta(
+                            game, atk, blk,
+                            my_life=me.life,
+                            my_power=my_power_total,
+                            opp_power=opp_power_total,
+                        )
                         game.log.append(
-                            f"T{game.display_turn} P{self.player_idx+1}: "                            f"  [BLOCK] {blk.name} ({b_pow}/{b_tou}) "                            f"blocks {atk.name} ({a_pow}/{a_tou}) — {reason}"
+                            f"T{game.display_turn} P{self.player_idx+1}: "                            f"  [BLOCK] {blk.name} ({b_pow}/{b_tou}) "                            f"blocks {atk.name} ({a_pow}/{a_tou}) — "                            f"lifespan_delta={delta:+.2f}"
                         )
         return blocks
 
@@ -2966,6 +3158,118 @@ class EVPlayer:
     # ═══════════════════════════════════════════════════════════
     # TARGETING — simple heuristic
     # ═══════════════════════════════════════════════════════════
+
+    def _enumerate_burn_targets(
+        self, game, spell, damage: int,
+    ) -> List[Tuple[int, float, str]]:
+        """Enumerate every legal target a direct-damage spell can hit.
+
+        Returns ``[(target_id, value, reason), …]`` where ``target_id``
+        is ``-1`` for face, ``CardInstance.instance_id`` otherwise.
+        The single scoring formula combines:
+
+          * face value: ``damage × burn_face_mult`` (low-life
+            multiplier when opp is at burn-range life; clock-multiplier
+            penalty when we have no creatures to back up face damage).
+          * creature value: ``permanent_threat(c, opp, game) +
+            carrier_disrupt_bonus(c)`` when ``damage`` can kill the
+            creature (toughness ≤ damage); otherwise the candidate is
+            omitted.
+          * planeswalker value: ``PLANESWALKER_BASE_VALUE + remaining
+            loyalty × PLANESWALKER_LOYALTY_VALUE`` when ``damage`` kills
+            the PW (loyalty ≤ damage); otherwise the partial-chip value
+            ``min(damage, loyalty) × PLANESWALKER_LOYALTY_VALUE``
+            (each loyalty knocked off removes one future activation
+            worth that constant).
+
+        PWs are enumerated only when the spell's oracle text permits a
+        planeswalker target — "any target" (covers creature, PW, or
+        player), or an explicit "planeswalker" mention (covers
+        "creature or planeswalker" wording on Galvanic Discharge,
+        Galvanic Blast, Tribal Flames, Unholy Heat, etc.).
+        """
+        from ai.permanent_threat import permanent_threat
+        from ai.scoring_constants import (
+            PLANESWALKER_BASE_VALUE,
+            PLANESWALKER_LOYALTY_VALUE,
+        )
+        from ai.ev_evaluator import snapshot_from_game
+
+        opp = game.players[1 - self.player_idx]
+        me = game.players[self.player_idx]
+        snap = snapshot_from_game(game, self.player_idx)
+        t = spell.template
+        oracle_text = (t.oracle_text or "").lower()
+        # Oracle gate for PW targeting: "any target" or "planeswalker"
+        # wording.  Pure "target creature" spells (Cut Down, most
+        # creature-only removal) get burn_damage=0 and don't enter this
+        # path; the few burn-tagged spells that DO target creature-only
+        # (Lightning Strike-class "target creature or player" variants
+        # in older sets) gate by oracle text rather than card name.
+        can_hit_pw = ("any target" in oracle_text
+                      or "planeswalker" in oracle_text)
+
+        candidates: List[Tuple[int, float, str]] = []
+
+        # ── Face (-1) ──
+        face_val = damage * self.profile.burn_face_mult
+        if opp.life <= self.profile.burn_low_life_threshold:
+            face_val = damage * self.profile.burn_face_low_life_mult
+        if not me.creatures and opp.life > self.profile.burn_low_life_threshold:
+            # No clock → face damage is near-worthless until we deploy.
+            face_val *= NO_CLOCK_FACE_VAL_MULTIPLIER
+        candidates.append((
+            -1, face_val,
+            f"→ face ({damage} dmg, life {opp.life} → "
+            f"{opp.life - damage}): face value {face_val:.2f}",
+        ))
+
+        # ── Opp creatures (only if killable by this damage) ──
+        for c in opp.creatures:
+            remaining_toughness = (c.toughness or 0) - getattr(
+                c, "damage_marked", 0)
+            if not (damage >= remaining_toughness > 0
+                    or remaining_toughness <= 0):
+                # Not killable — exclude from candidate set (cannot
+                # reduce position value if the creature survives).
+                continue
+            val = permanent_threat(c, opp, game)
+            # Equipment carrier bonus: killing a Plating-equipped
+            # carrier strips the equipment off (CR 702.6e).
+            val += self._carrier_disrupt_bonus(
+                game, opp, c, snap,
+                removal_destroys_artifact=False)
+            candidates.append((
+                c.instance_id, val,
+                f"→ {c.name}: marginal threat {val:.2f} "
+                f"({c.power}/{c.toughness} body) — better than "
+                f"{damage} face dmg",
+            ))
+
+        # ── Opp planeswalkers (only when the spell can target PW) ──
+        if can_hit_pw:
+            for pw in opp.planeswalkers:
+                loyalty = pw.loyalty_counters
+                if loyalty <= 0:
+                    continue
+                # Single formula:
+                #   - kill: full base + remaining loyalty value
+                #   - chip: min(damage, loyalty) × loyalty value
+                # Both terms derive from the existing PW constants —
+                # no new magic numbers, no card names.
+                if damage >= loyalty:
+                    val = (PLANESWALKER_BASE_VALUE
+                           + loyalty * PLANESWALKER_LOYALTY_VALUE)
+                    reason = (f"→ {pw.name}: kill PW (loyalty "
+                              f"{loyalty} ≤ {damage} dmg) — value "
+                              f"{val:.2f}")
+                else:
+                    val = damage * PLANESWALKER_LOYALTY_VALUE
+                    reason = (f"→ {pw.name}: chip PW ({damage} of "
+                              f"{loyalty} loyalty) — value {val:.2f}")
+                candidates.append((pw.instance_id, val, reason))
+
+        return candidates
 
     def _choose_targets(self, game, spell) -> List[int]:
         """Choose targets for a spell."""
@@ -2988,74 +3292,22 @@ class EVPlayer:
             if dmg >= opp.life:
                 return [-1]  # face = lethal, always go face
 
-            # Pick the highest-threat killable creature via the marginal-
-            # contribution formula: threat(c) = V_opp(B) - V_opp(B \ {c}).
-            # Scaling (equipment bonuses, "for each artifact" bonuses,
-            # synergy-denial) falls out naturally — removing a key enabler
-            # strips every dependent bonus, which shows up as a larger
-            # position-value drop. No per-synergy bolt-on, no battle-cry
-            # premium, no archetype detection; the threat formula decides.
-            from ai.permanent_threat import permanent_threat
-            best_kill_val = 0.0
-            best_kill_id = None
-            best_kill_why = ""
-            if opp.creatures:
-                for c in opp.creatures:
-                    remaining_toughness = (c.toughness or 0) - getattr(c, 'damage_marked', 0)
-                    if dmg >= remaining_toughness > 0 or remaining_toughness <= 0:
-                        val = permanent_threat(c, opp, game)
-                        # Equipment carrier bonus: if `c` is wearing
-                        # equipment, killing it strips the equipment
-                        # off (CR 702.6e) and forces opp to re-equip
-                        # at sorcery speed.  Same bonus the response-
-                        # path target picker (`_pick_best_removal_target`)
-                        # applies; propagating to the burn-vs-creature
-                        # decision so a Plating-equipped Memnite at 1
-                        # toughness gets correctly prioritised over
-                        # 3 face damage.
-                        val += self._carrier_disrupt_bonus(
-                            game, opp, c, snap,
-                            removal_destroys_artifact=False)
-                        if val > best_kill_val:
-                            best_kill_val = val
-                            best_kill_id = c.instance_id
-                            best_kill_why = (f"marginal threat {val:.1f} "
-                                             f"({c.power}/{c.toughness} body)")
-
-            # Compare: is killing a creature worth more than face damage?
-            face_val = dmg * self.profile.burn_face_mult
-            if opp.life <= self.profile.burn_low_life_threshold:
-                face_val = dmg * self.profile.burn_face_low_life_mult
-            # Don't burn face with no board presence unless opponent is low
-            me = game.players[self.player_idx]
-            if not me.creatures and opp.life > self.profile.burn_low_life_threshold:
-                face_val *= NO_CLOCK_FACE_VAL_MULTIPLIER  # near-zero value without a clock
-
-            # Prefer removing big creatures unless burn is near-lethal
-            if best_kill_id and best_kill_val > face_val:
-                _c = next((c for c in opp.creatures if c.instance_id == best_kill_id), None)
-                self._last_target_reason = (f"→ {_c.name if _c else '?'}: "
-                    f"{best_kill_why or 'killable'} — better than {dmg} face dmg")
-                return [best_kill_id]  # kill the creature
-            if best_kill_id:
-                best_kill_card = next((c for c in opp.creatures
-                                       if c.instance_id == best_kill_id), None)
-                if (best_kill_card
-                        and (best_kill_card.power or 0) >= self.profile.burn_kill_min_power
-                        and opp.life > dmg * self.profile.burn_kill_life_ratio):
-                    self._last_target_reason = (f"→ {best_kill_card.name}: "
-                        f"({best_kill_why or self._target_why(best_kill_card)}) — life safe")
-            _why_face = []
-            if opp.life <= getattr(getattr(self, "profile", None), "burn_low_life_threshold", LOW_LIFE_BURN_DEFAULT):
-                _why_face.append("opponent low life")
-            elif not game.players[self.player_idx].creatures:
-                _why_face.append("no clock yet — build pressure")
-            elif not best_kill_id:
-                _why_face.append("no killable target")
-            else:
-                _why_face.append("face damage worth more")
-            self._last_target_reason = f"→ face ({dmg} dmg, life {opp.life} → {opp.life - dmg}): {_why_face[0]}"
-            return [-1]  # go face
+            # M10 (Aggro Pattern D / Fix 4): enumerate the FULL candidate
+            # set — face, opp creatures, AND opp planeswalkers (when the
+            # spell can target a PW per oracle) — and pick by a single
+            # comparator. The previous implementation iterated
+            # `opp.creatures` only, so a 3-loyalty Teferi never appeared
+            # as a candidate and Boros sent Galvanic Discharge to face
+            # instead of killing the planeswalker.
+            candidates = self._enumerate_burn_targets(game, spell, dmg)
+            if not candidates:
+                self._last_target_reason = (
+                    f"→ face ({dmg} dmg, life {opp.life} → "
+                    f"{opp.life - dmg}): no targets")
+                return [-1]
+            best_id, best_val, best_why = max(candidates, key=lambda x: x[1])
+            self._last_target_reason = best_why
+            return [best_id]
 
         # Removal (non-burn): target best opponent permanent
         # For creature-only removal: pick best creature

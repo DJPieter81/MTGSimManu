@@ -426,38 +426,46 @@ def phlage_etb(game, card, controller, targets=None, item=None):
 @EFFECT_REGISTRY.register("Lightning Bolt", EffectTiming.SPELL_RESOLVE,
                            description="Deal 3 damage to any target")
 def lightning_bolt_resolve(game, card, controller, targets=None, item=None):
+    from .damage import deal_damage
+    from .cards import CardType
     opponent = 1 - controller
     if targets:
         for tid in targets:
+            if tid == -1:
+                break  # AI chose face
             target = game.get_card_by_id(tid)
-            if target and target.zone == "battlefield" and target.template.is_creature:
-                target.damage_marked += 3
-                if target.is_dead:
-                    game._creature_dies(target)
+            if (target and target.zone == "battlefield"
+                    and (target.template.is_creature
+                         or CardType.PLANESWALKER in target.template.card_types)):
+                deal_damage(game, target, 3, source_controller=controller)
                 return
-    game.players[opponent].life -= 3
-    game.players[controller].damage_dealt_this_turn += 3
+    deal_damage(game, game.players[opponent], 3, source_controller=controller)
 
 
 @EFFECT_REGISTRY.register("Lava Dart", EffectTiming.SPELL_RESOLVE,
                            description="Deal 1 damage to any target")
 def lava_dart_resolve(game, card, controller, targets=None, item=None):
+    from .damage import deal_damage
+    from .cards import CardType
     opponent = 1 - controller
     if targets:
         for tid in targets:
+            if tid == -1:
+                break  # AI chose face
             target = game.get_card_by_id(tid)
-            if target and target.zone == "battlefield" and target.template.is_creature:
-                target.damage_marked += 1
-                if target.is_dead:
-                    game._creature_dies(target)
+            if (target and target.zone == "battlefield"
+                    and (target.template.is_creature
+                         or CardType.PLANESWALKER in target.template.card_types)):
+                deal_damage(game, target, 1, source_controller=controller)
                 return
-    game.players[opponent].life -= 1
-    game.players[controller].damage_dealt_this_turn += 1
+    deal_damage(game, game.players[opponent], 1, source_controller=controller)
 
 
 @EFFECT_REGISTRY.register("Unholy Heat", EffectTiming.SPELL_RESOLVE,
                            description="Deal 2 (or 6 with delirium) damage")
 def unholy_heat_resolve(game, card, controller, targets=None, item=None):
+    from .damage import deal_damage
+    from .cards import CardType
     opponent = 1 - controller
     gy = game.players[controller].graveyard
     types_in_gy = set()
@@ -467,14 +475,16 @@ def unholy_heat_resolve(game, card, controller, targets=None, item=None):
     damage = 6 if len(types_in_gy) >= 4 else 2
     if targets:
         for tid in targets:
+            if tid == -1:
+                break  # AI chose face
             target = game.get_card_by_id(tid)
-            if target and target.zone == "battlefield" and target.template.is_creature:
-                target.damage_marked += damage
-                if target.is_dead:
-                    game._creature_dies(target)
+            if (target and target.zone == "battlefield"
+                    and (target.template.is_creature
+                         or CardType.PLANESWALKER in target.template.card_types)):
+                deal_damage(game, target, damage, source_controller=controller)
                 return
-    game.players[opponent].life -= damage
-    game.players[controller].damage_dealt_this_turn += damage
+    deal_damage(game, game.players[opponent], damage,
+                source_controller=controller)
 
 
 @EFFECT_REGISTRY.register("Goryo's Vengeance", EffectTiming.SPELL_RESOLVE,
@@ -581,52 +591,6 @@ def empty_the_warrens_resolve(game, card, controller, targets=None, item=None):
 def galvanic_relay_resolve(game, card, controller, targets=None, item=None):
     draw_count = min(game._global_storm_count, 5)
     game.draw_cards(controller, draw_count)
-
-
-@EFFECT_REGISTRY.register("Galvanic Discharge", EffectTiming.SPELL_RESOLVE,
-                           description="Deal 2 + energy spent damage")
-def galvanic_discharge_resolve(game, card, controller, targets=None, item=None):
-    opponent = 1 - controller
-    player = game.players[controller]
-    # Oracle: "You get {E}{E}{E}, then you may pay any amount of {E}.
-    # Galvanic Discharge deals that much damage to that permanent."
-    # Step 1: gain 3 energy
-    player.energy_counters += 3
-    # Step 2: spend as much energy as useful
-    energy_to_spend = min(player.energy_counters, 5)
-    if energy_to_spend > 0:
-        player.spend_energy(energy_to_spend)
-    damage = energy_to_spend
-    opp = game.players[opponent]
-    # Use AI-chosen targets if available
-    target_creature = None
-    if targets:
-        for tid in targets:
-            if tid == -1:
-                break  # AI chose to go face
-            candidate = game.get_card_by_id(tid)
-            if candidate and candidate.zone == "battlefield" and candidate.template.is_creature:
-                target_creature = candidate
-                break
-    # Fallback: pick best killable creature (not just highest power)
-    if target_creature is None and (not targets or (targets and targets[0] != -1)):
-        killable = [
-            c for c in opp.creatures
-            if damage >= (c.toughness or 0) - (getattr(c, 'damage_marked', 0) or 0)
-        ]
-        if killable:
-            target_creature = max(killable, key=lambda c: c.power or 0)
-    if target_creature:
-        target_creature.damage_marked += damage
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Galvanic Discharge deals {damage} to {target_creature.name}")
-        if target_creature.is_dead:
-            game._creature_dies(target_creature)
-    else:
-        opp.life -= damage
-        game.players[controller].damage_dealt_this_turn += damage
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Galvanic Discharge deals {damage} to opponent")
 
 
 @EFFECT_REGISTRY.register("Thoughtseize", EffectTiming.SPELL_RESOLVE,

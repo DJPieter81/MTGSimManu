@@ -180,7 +180,8 @@ def render_html(model: Dict[str, Any], seed: Any) -> str:
     deck1 = header.get("deck1", "Deck 1")
     deck2 = header.get("deck2", "Deck 2")
     total_decisions = sum(
-        1 for g in games for e in g["events"] if e.get("kind") == "DECISION"
+        1 for g in games for e in g["events"]
+        if e.get("kind") in ("DECISION", "RESPONSE_DECISION")
     )
 
     games_html_parts = [render_game(g, gi) for gi, g in enumerate(games)]
@@ -258,8 +259,9 @@ def render_turns(game: Dict[str, Any]) -> str:
         except (TypeError, ValueError):
             t = 0
         if t not in turns:
-            turns[t] = {"events": [], "decisions": [], "header": None,
-                        "boards": None}
+            turns[t] = {"events": [], "decisions": [],
+                        "response_decisions": [],
+                        "header": None, "boards": None}
             turn_order.append(t)
         turns[t]["events"].append(e)
         if kind == "TURN_START":
@@ -267,6 +269,13 @@ def render_turns(game: Dict[str, Any]) -> str:
             turns[t]["boards"] = e.get("board")
         elif kind == "DECISION":
             turns[t]["decisions"].append(e)
+        elif kind == "RESPONSE_DECISION":
+            # Response decisions live in their own bucket so the turn
+            # card renders them as a sibling section to main-phase
+            # decisions.  Reviewers can collapse one without losing the
+            # other and grep the HTML for `response-decision` to find
+            # counter/blink/instant-removal choices.
+            turns[t]["response_decisions"].append(e)
 
     parts = []
     if mulligans:
@@ -275,7 +284,8 @@ def render_turns(game: Dict[str, Any]) -> str:
         if t == 0:
             interesting = [
                 e for e in turns[t]["events"]
-                if e.get("kind") in ("DECISION", "PLAY", "TRIGGER")
+                if e.get("kind") in (
+                    "DECISION", "RESPONSE_DECISION", "PLAY", "TRIGGER")
             ]
             if not interesting:
                 continue
@@ -325,6 +335,10 @@ def render_turn(turn: int, bundle: Dict[str, Any], game_number: int) -> str:
     decision_html = "".join(
         render_decision(d, game_number) for d in bundle.get("decisions", [])
     )
+    response_html = "".join(
+        render_response_decision(d, game_number)
+        for d in bundle.get("response_decisions", [])
+    )
     combat_html = render_combat(bundle.get("events", []))
     play_html = render_plays(bundle.get("events", []))
 
@@ -336,17 +350,28 @@ def render_turn(turn: int, bundle: Dict[str, Any], game_number: int) -> str:
 
     actor_meta = f' <em class="p">(P{pidx+1})</em>' if pidx >= 0 else ''
 
+    n_main = len(bundle.get("decisions", []))
+    n_resp = len(bundle.get("response_decisions", []))
+    # Sum both for the turn header so reviewers see the full decision
+    # surface at a glance.
+    n_total = n_main + n_resp
+    resp_count_html = (
+        f' <span class="turn-resp-count">({n_resp} response)</span>'
+        if n_resp else ""
+    )
+
     return f'''
 <details class="turn" data-turn="{turn}" open>
   <summary class="turn-summary">
     <span class="turn-num">T{turn}</span>
     <span class="turn-actor">{actor}{actor_meta}</span>
     {life_str}
-    <span class="turn-counts">{len(bundle.get("decisions", []))} decisions</span>
+    <span class="turn-counts">{n_total} decisions{resp_count_html}</span>
   </summary>
   <div class="turn-body">
     {render_boards(boards)}
     {decision_html}
+    {response_html}
     {combat_html}
     {play_html}
   </div>
@@ -472,6 +497,164 @@ def render_decision(d: Dict[str, Any], game_number: int) -> str:
   <div class="chosen">
     <div class="chosen-row">
       <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card">{chosen_card_html}{target_html}</span>
+      <span class="chosen-ev">{float(chosen_ev):.2f}</span>
+    </div>
+    {chosen_reason_html}
+    {subs_html}
+  </div>
+  {alts_section}
+  <form class="feedback" data-decision-id="{decision_id}" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+'''
+
+
+def render_response_decision(d: Dict[str, Any], game_number: int) -> str:
+    """Render one RESPONSE_DECISION event as its own sub-card.
+
+    The structure mirrors render_decision (chosen card, EV, alternatives,
+    feedback form) so reviewers don't have to relearn the UI; the extras
+    are:
+      • Stack-item banner above the chosen action — the spell being
+        responded to, with its controller and effective cost.  This is
+        the audit-driving info: "which spell on the stack did the AI
+        decide to counter (or let resolve)?"
+      • Held-counter-floor EV chip — the threshold the threat had to
+        clear before a counter was justified.  Makes "why didn't the
+        AI counter?" reviewable.
+      • A muted/pass style when the AI chose not to respond, so
+        reviewers can scan for declined-counter moments in the HTML.
+
+    Uses the `response-decision` CSS class so the test suite (and
+    reviewers grepping the output) can find the section reliably.
+    """
+    decision_id = d.get("decision_id", f"d{d.get('seq', 0)}")
+    actor = esc(d.get("actor", "?"))
+    goal = esc(d.get("goal") or "")
+    chosen = d.get("chosen") or {}
+    alts = d.get("alternatives") or []
+    n_cand = d.get("candidates_n", "?")
+    stack_item = d.get("stack_item") or {}
+    floor_ev = d.get("held_counter_floor_ev")
+
+    chosen_action_raw = chosen.get("action", "pass")
+    chosen_card = chosen.get("card")
+    chosen_action = esc(chosen_action_raw)
+    chosen_ev = chosen.get("ev", 0.0)
+    chosen_reason = esc(chosen.get("reason", ""))
+    chosen_targets = chosen.get("targets") or []
+    target_html = (' → ' + " ".join(card_pill(t) for t in chosen_targets)
+                   if chosen_targets else "")
+    chosen_card_html = (card_pill(chosen_card) if chosen_card
+                        else f'<em>{chosen_action}</em>')
+
+    # Style hook for "AI declined to respond" — distinct from the
+    # active CHOSEN-a-card flow.
+    is_pass = (chosen_action_raw == "pass" or not chosen_card)
+    extra_cls = " response-pass" if is_pass else ""
+
+    # Stack-item banner: the reviewer's primary "what was being
+    # responded to?" surface. Falls back gracefully when absent.
+    if stack_item:
+        si_name = stack_item.get("name", "?")
+        si_controller = stack_item.get("controller", "?")
+        si_cost = stack_item.get("cost", "?")
+        stack_banner = (
+            f'<div class="stack-item">'
+            f'→ Counter target: {card_pill(si_name)} '
+            f'<span class="stack-meta">cost {esc(si_cost)} · '
+            f'controlled by P{esc(int(si_controller) + 1 if isinstance(si_controller, int) else si_controller)}</span>'
+            f'</div>'
+        )
+    else:
+        stack_banner = ""
+
+    floor_html = ""
+    if floor_ev is not None:
+        try:
+            floor_html = (
+                f'<span class="floor-ev" title="held_counter_floor_ev — '
+                f'minimum EV a held counter is worth, used to gate firing">'
+                f'floor EV {float(floor_ev):.2f}</span>'
+            )
+        except (TypeError, ValueError):
+            floor_html = ""
+
+    all_evs = [float(chosen_ev)] + [float(a.get("ev", 0)) for a in alts]
+    lo = min(all_evs) if all_evs else 0
+    hi = max(all_evs) if all_evs else 1
+    if hi - lo < 0.1:
+        hi = lo + 1.0
+
+    alt_rows = []
+    for a in alts:
+        a_card = a.get("card") or "Pass"
+        a_action = esc(a.get("action", "?"))
+        a_ev = float(a.get("ev", 0))
+        a_gap = float(a.get("gap", 0))
+        a_reason = esc(a.get("rejected_because") or a.get("reason", ""))
+        bar = ev_bar_pct(a_ev, lo, hi)
+        gap_class = ("gap-tight" if a_gap < 1.0 else
+                     ("gap-wide" if a_gap > 5.0 else "gap-mid"))
+        a_card_html = (card_pill(a_card) if a.get("card")
+                       else f'<em>{a_action}</em>')
+        alt_rows.append(f'''
+<div class="alt {gap_class}">
+  <div class="alt-row">
+    <span class="alt-card">{a_card_html}</span>
+    <span class="alt-ev">{a_ev:.2f}</span>
+    <span class="alt-gap">Δ {a_gap:.2f}</span>
+    <span class="alt-bar"><span style="width:{bar}%"></span></span>
+  </div>
+  <div class="alt-reason">{a_reason}</div>
+</div>
+''')
+
+    subsystems = d.get("subsystems") or {}
+    subs_html = ""
+    if subsystems:
+        chips = []
+        for k, v in subsystems.items():
+            try:
+                vf = float(v)
+                cls = "pos" if vf > 0 else ("neg" if vf < 0 else "zero")
+                chips.append(
+                    f'<span class="sub-chip {cls}">{esc(k)} {vf:+.2f}</span>'
+                )
+            except (TypeError, ValueError):
+                chips.append(
+                    f'<span class="sub-chip">{esc(k)}: {esc(v)}</span>'
+                )
+        subs_html = f'<div class="subsystems">{"".join(chips)}</div>'
+
+    goal_html = (f'<span class="dec-goal">goal: {goal}</span>'
+                 if goal else "")
+    alts_section = (f'<div class="alts-label">runner-ups</div>'
+                    f'{"".join(alt_rows)}' if alt_rows else "")
+    chosen_reason_html = (f'<div class="chosen-reason">{chosen_reason}</div>'
+                          if chosen_reason else "")
+
+    chosen_label = "PASSED" if is_pass else "RESPOND"
+
+    return f'''
+<div class="decision response-decision{extra_cls}" id="{decision_id}" data-decision-id="{decision_id}">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#{decision_id}">#{decision_id}</a>
+    <span class="dec-actor">{actor}</span>
+    <span class="response-tag">RESPONSE</span>
+    {goal_html}
+    {floor_html}
+    <span class="dec-cands">{esc(n_cand)} candidates</span>
+  </div>
+  {stack_banner}
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">{chosen_label}</span>
       <span class="chosen-card">{chosen_card_html}{target_html}</span>
       <span class="chosen-ev">{float(chosen_ev):.2f}</span>
     </div>
@@ -708,6 +891,27 @@ details.turn[open] .turn-summary::before { transform: rotate(90deg);
 .gap-mid .alt-gap { color: var(--mute); }
 .gap-wide .alt-gap { color: var(--mute); opacity: 0.7; }
 .alt-reason { font-size: 11px; color: var(--mute); padding-left: 8px; }
+.response-decision { border-left-color: var(--p2); background: #fff8f7; }
+.response-decision:target { box-shadow: 0 0 0 2px var(--p2); }
+.response-decision .response-tag { font-size: 10px; padding: 1px 6px;
+                                   border-radius: 3px; background: var(--p2);
+                                   color: #fff; font-weight: 600;
+                                   letter-spacing: 0.04em; }
+.response-decision .stack-item { margin: 6px 0; padding: 6px 10px;
+                                 background: #fff; border: 1px solid var(--line);
+                                 border-radius: 5px; font-size: 13px; }
+.response-decision .stack-item .stack-meta { color: var(--mute);
+                                             font-size: 11px;
+                                             margin-left: 8px; }
+.response-decision .floor-ev { font-family: ui-monospace, "JetBrains Mono", monospace;
+                               color: var(--mute); font-size: 11px;
+                               padding: 1px 6px;
+                               background: var(--card-bg);
+                               border-radius: 3px; }
+.response-decision.response-pass .chosen { background: var(--card-bg); }
+.response-decision.response-pass .chosen-label { background: var(--mute); }
+.response-decision.response-pass .chosen-ev { color: var(--mute); }
+.turn-resp-count { color: var(--p2); font-size: 11px; }
 .feedback { display: flex; align-items: center; gap: 8px; margin-top: 8px;
             padding-top: 8px; border-top: 1px dashed var(--line); }
 .thumbs { font-size: 14px; padding: 2px 8px; border: 1px solid var(--line);

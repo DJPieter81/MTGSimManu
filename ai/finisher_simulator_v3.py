@@ -517,8 +517,9 @@ def _tutor_access_contribution(
         library_composition: tag/closer histogram of the library.
         snap: EVSnapshot at the point of projection.
         bhi_state: opponent-hand belief tracker, queried for
-            ``get_counter_probability()`` to dampen the tutor's
-            resolution probability.
+            ``get_interaction_probability()`` to dampen the tutor's
+            resolution probability (broader than counter-only — folds
+            in instant removal and discard, per M7 / W1b-7).
 
     Returns:
         Tuple ``(best_tutor, extra_cost, p_resolves)``:
@@ -532,14 +533,14 @@ def _tutor_access_contribution(
           rules-derived ``CHAIN_TUTOR_MIN_RESOLVE`` so a fully
           counter-leaden opponent doesn't zero the path.
 
-    Design §8.6 — per-cast vs per-projection counter density:
-    ``bhi_state.get_counter_probability()`` returns a single
+    Design §8.6 — per-cast vs per-projection interaction density:
+    ``bhi_state.get_interaction_probability()`` returns a single
     posterior P; v3 applies it once per projection rather than
     composing per-cast (tutor-cast then closer-cast).  The
     one-P approximation is conservative for the *closer* cast
-    (it under-counts the joint hold-counter-for-closer-too risk)
+    (it under-counts the joint hold-answer-for-closer-too risk)
     and lenient for the *tutor* cast (it treats opp's full
-    counter inventory as available against the tutor, ignoring
+    disruption inventory as available against the tutor, ignoring
     that the tutor often resolves on a different turn than the
     closer).  The floor at ``CHAIN_TUTOR_MIN_RESOLVE`` bounds
     the downside.  Per-cast decomposition is deferred until v3
@@ -584,12 +585,18 @@ def _tutor_access_contribution(
     #    projection (design §8.6 one-P approximation), floor at the
     #    rules-derived ``CHAIN_TUTOR_MIN_RESOLVE``.  Per CLAUDE.md
     #    "No magic numbers": this is a rules constant, not a tuning
-    #    weight.
-    p_counter = float(bhi_state.get_counter_probability())
+    #    weight.  Migrated M7 / W1b-7 from the narrow counter-only
+    #    posterior to the broadened interaction measure so removal
+    #    and hand-disruption against the searched closer also dampen
+    #    the tutor path.  No `game` handle is available here (the
+    #    function operates on raw views), so the un-gated max over
+    #    counter/removal/discard channels is used — strictly >= the
+    #    old narrow measure.
+    p_interaction = float(bhi_state.get_interaction_probability())
     # Clamp the posterior into [0, 1] defensively — BHI's storage is
     # plain float and a stale write can drift outside the range.
-    p_counter = max(0.0, min(1.0, p_counter))
-    p_resolves = max(CHAIN_TUTOR_MIN_RESOLVE, 1.0 - p_counter)
+    p_interaction = max(0.0, min(1.0, p_interaction))
+    p_resolves = max(CHAIN_TUTOR_MIN_RESOLVE, 1.0 - p_interaction)
     # Clamp again to [0, 1] for output safety (floor + max can't
     # exceed 1.0 but downstream Pydantic validators are strict).
     p_resolves = max(0.0, min(1.0, p_resolves))
@@ -915,7 +922,7 @@ def simulate_finisher_chain_v3(
             the same hand.  Detection is oracle/keyword/tag-driven
             and is NOT gated by archetype.
         bhi_state: opponent-hand belief tracker, queried for
-            ``get_counter_probability`` and
+            ``get_interaction_probability`` and
             ``get_removal_probability`` in the survival /
             tutor-resolution arithmetic.
         deck_gameplan: optional pass-through of the gameplan JSON

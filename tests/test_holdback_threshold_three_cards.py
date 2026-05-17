@@ -98,8 +98,12 @@ class TestHoldbackThresholdThreeCardsA4:
             exclude_instance_id=augur.instance_id,
         )
 
-        assert penalty == 0.0, (
-            f"3-card spell-deck opp with 0 power triggered holdback "
-            f"penalty {penalty:.2f}; expected 0.0 after A4 revert. "
+        # M3: `_holdback_penalty` is now signed.  The A4-revert rule is
+        # preserved (no penalty fires) but the no-defensive-use branch
+        # returns a non-negative bonus instead of exactly 0.0.  The
+        # assertion absorbs the sign-flip; same intent.
+        assert penalty >= 0.0, (
+            f"3-card spell-deck opp with 0 power produced negative "
+            f"holdback {penalty:.2f}; expected >= 0.0 after A4 revert. "
             f"Threshold must be restored to opp_hand_size >= 4."
         )

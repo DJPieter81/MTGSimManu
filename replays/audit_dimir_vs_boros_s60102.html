@@ -1,0 +1,3555 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dimir Midrange vs Boros Energy — seed 60102</title>
+<style>
+:root {
+  --bg: #ffffff; --fg: #1f2328; --mute: #656d76; --line: #d0d7de;
+  --p1: #0969da; --p2: #d1242f; --good: #1a7f37; --warn: #bf8700;
+  --bad: #cf222e; --card-bg: #f6f8fa; --hover: #ddf4ff;
+  --chosen-bg: #dafbe1; --gap-tight: #fff8c5; --gap-mid: #ffe9b3;
+  --gap-wide: #ffcecb;
+}
+* { box-sizing: border-box; }
+body { font: 14px/1.5 -apple-system, "Segoe UI", system-ui, sans-serif;
+       color: var(--fg); background: var(--bg); margin: 0; padding: 0; }
+header.top { position: sticky; top: 0; z-index: 50; background: var(--bg);
+             border-bottom: 1px solid var(--line);
+             padding: 12px 24px; display: flex; gap: 16px; align-items: center;
+             flex-wrap: wrap; }
+header.top h1 { margin: 0; font-size: 16px; font-weight: 600; }
+header.top h1 em { color: var(--mute); font-style: normal; font-weight: 400;
+                   margin: 0 6px; }
+header.top .seed { color: var(--mute);
+                   font-family: ui-monospace, "JetBrains Mono", monospace; }
+header.top .stat { color: var(--mute); font-size: 13px; }
+header.top .stat strong { color: var(--fg); }
+header.top .actions { margin-left: auto; display: flex; gap: 8px; }
+header.top .actions button { font: inherit; padding: 6px 12px; cursor: pointer;
+                            border: 1px solid var(--line);
+                            background: var(--card-bg);
+                            border-radius: 6px; }
+header.top .actions button:hover { background: var(--hover); }
+header.top .match-score { padding: 4px 10px; background: var(--chosen-bg);
+                         border-radius: 6px; font-size: 13px; }
+main { max-width: 1100px; margin: 0 auto; padding: 16px 24px 80px; }
+.game { margin-bottom: 32px; }
+.game-header { display: flex; align-items: baseline; gap: 16px;
+               flex-wrap: wrap; margin-bottom: 12px; }
+.game-header h2 { margin: 0; font-size: 22px; }
+.game-meta { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip { padding: 3px 10px; background: var(--card-bg); border-radius: 12px;
+        font-size: 12px; color: var(--mute); }
+.chip strong { color: var(--fg); }
+.chip em { font-style: italic; color: var(--mute); }
+.mulls { background: var(--card-bg); border: 1px solid var(--line);
+         border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; }
+.mulls h3 { margin: 0 0 8px 0; font-size: 13px; color: var(--mute);
+            text-transform: uppercase; letter-spacing: 0.05em; }
+.mull { padding: 6px 0; border-bottom: 1px dashed var(--line); display: flex;
+        gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.mull:last-child { border-bottom: 0; }
+.mull-decision { font-size: 11px; padding: 1px 8px; border-radius: 3px;
+                 font-weight: 600; }
+.mull-decision.keep { background: var(--chosen-bg); color: var(--good); }
+.mull-decision.mull-no { background: var(--gap-wide); color: var(--bad); }
+.mull-actor { font-weight: 600; }
+.mull-size { font-family: ui-monospace, "JetBrains Mono", monospace;
+             color: var(--mute); }
+.mull-reason { color: var(--mute); flex: 1; }
+.mull-cards { width: 100%; padding-top: 4px; }
+details.turn { border: 1px solid var(--line); border-radius: 8px;
+               margin-bottom: 12px; background: var(--bg); }
+details.turn[open] { box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+.turn-summary { display: flex; gap: 12px; align-items: baseline;
+                padding: 10px 16px; cursor: pointer; user-select: none;
+                list-style: none; }
+.turn-summary::-webkit-details-marker { display: none; }
+.turn-summary::before { content: "▸"; color: var(--mute);
+                        transition: transform 0.15s; }
+details.turn[open] .turn-summary::before { transform: rotate(90deg);
+                                          display: inline-block; }
+.turn-num { font-family: ui-monospace, "JetBrains Mono", monospace;
+            font-weight: 700; color: var(--p1); }
+.turn-actor { font-weight: 600; }
+.turn-actor .p { color: var(--mute); font-style: normal; font-size: 12px; }
+.life { font-family: ui-monospace, "JetBrains Mono", monospace;
+        margin-left: auto; font-size: 13px; }
+.p1-life { color: var(--p1); font-weight: 600; }
+.p2-life { color: var(--p2); font-weight: 600; }
+.vs-dot { color: var(--mute); }
+.turn-counts { color: var(--mute); font-size: 12px; }
+.turn-body { padding: 0 16px 16px; }
+.boards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+          margin-bottom: 12px; }
+.board { background: var(--card-bg); border: 1px solid var(--line);
+         border-radius: 6px; padding: 10px; }
+.board-head { display: flex; align-items: center; gap: 8px;
+              margin-bottom: 6px; font-size: 13px; }
+.board-head .dot { width: 8px; height: 8px; border-radius: 50%;
+                   display: inline-block; }
+.board-head .dot.p1 { background: var(--p1); }
+.board-head .dot.p2 { background: var(--p2); }
+.board-stats { color: var(--mute);
+              font-family: ui-monospace, "JetBrains Mono", monospace;
+              font-size: 11px; margin-left: auto; }
+.board .row { padding: 3px 0; display: flex; flex-wrap: wrap; gap: 4px; }
+.cre { padding: 2px 8px; background: #fff; border: 1px solid var(--line);
+       border-radius: 11px; font-size: 12px; }
+.cre em { color: var(--mute); font-style: normal;
+          font-family: ui-monospace, "JetBrains Mono", monospace; }
+.cre .tap, .cre .sick { color: var(--warn); margin-left: 2px; }
+.card-pill { padding: 1px 7px; background: #fff; border: 1px solid var(--line);
+             border-radius: 10px; font-size: 11px; cursor: pointer; }
+.card-pill:hover { background: var(--hover); }
+.mute { color: var(--mute); }
+.decision { border-left: 3px solid var(--p1); padding: 10px 12px; margin: 8px 0;
+            background: #f9fbff; border-radius: 0 6px 6px 0;
+            scroll-margin-top: 80px; }
+.decision:target { box-shadow: 0 0 0 2px var(--p1); }
+.dec-head { display: flex; gap: 12px; align-items: baseline;
+            margin-bottom: 6px; font-size: 12px; flex-wrap: wrap; }
+.dec-anchor { font-family: ui-monospace, "JetBrains Mono", monospace;
+              color: var(--mute); text-decoration: none; }
+.dec-anchor:hover { color: var(--p1); }
+.dec-actor { font-weight: 600; color: var(--fg); }
+.dec-goal { color: var(--mute); font-style: italic; }
+.dec-cands { margin-left: auto; color: var(--mute); }
+.chosen { background: var(--chosen-bg); border-radius: 5px; padding: 8px 10px; }
+.chosen-row { display: flex; align-items: baseline; gap: 8px; }
+.chosen-label { font-size: 10px; padding: 1px 6px; border-radius: 3px;
+                background: var(--good); color: #fff; font-weight: 600;
+                letter-spacing: 0.04em; }
+.chosen-card { flex: 1; }
+.chosen-ev { font-family: ui-monospace, "JetBrains Mono", monospace;
+             font-weight: 700; color: var(--good); }
+.chosen-reason { font-size: 12px; color: var(--mute); margin-top: 4px; }
+.subsystems { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+.sub-chip { font-family: ui-monospace, "JetBrains Mono", monospace;
+            font-size: 11px; padding: 1px 7px; border-radius: 3px;
+            background: #fff; border: 1px solid var(--line); }
+.sub-chip.pos { background: #dafbe1; color: var(--good); border-color: #b4d7c0; }
+.sub-chip.neg { background: #ffebe9; color: var(--bad); border-color: #f6c8c5; }
+.sub-chip.zero { color: var(--mute); }
+.alts-label { font-size: 11px; color: var(--mute); margin: 8px 0 4px;
+              text-transform: uppercase; letter-spacing: 0.05em; }
+.alt { padding: 4px 0; border-bottom: 1px dotted var(--line); }
+.alt:last-of-type { border-bottom: 0; }
+.alt-row { display: flex; align-items: baseline; gap: 10px; }
+.alt-card { flex: 1; }
+.alt-ev { font-family: ui-monospace, "JetBrains Mono", monospace;
+          color: var(--mute); width: 50px; text-align: right; }
+.alt-gap { font-family: ui-monospace, "JetBrains Mono", monospace;
+           width: 70px; text-align: right; font-size: 12px; }
+.alt-bar { width: 100px; height: 4px; background: #eee; border-radius: 2px;
+           position: relative; overflow: hidden; }
+.alt-bar > span { display: block; height: 100%; background: var(--mute); }
+.gap-tight .alt-gap { color: var(--warn); font-weight: 600; }
+.gap-tight .alt-bar > span { background: var(--warn); }
+.gap-mid .alt-gap { color: var(--mute); }
+.gap-wide .alt-gap { color: var(--mute); opacity: 0.7; }
+.alt-reason { font-size: 11px; color: var(--mute); padding-left: 8px; }
+.feedback { display: flex; align-items: center; gap: 8px; margin-top: 8px;
+            padding-top: 8px; border-top: 1px dashed var(--line); }
+.thumbs { font-size: 14px; padding: 2px 8px; border: 1px solid var(--line);
+          background: #fff; border-radius: 4px; cursor: pointer; }
+.thumbs.active.up { background: var(--chosen-bg); border-color: var(--good); }
+.thumbs.active.down { background: var(--gap-wide); border-color: var(--bad); }
+.fb-note { flex: 1; padding: 3px 6px; border: 1px solid var(--line);
+           border-radius: 4px; font: inherit; }
+.fb-status { font-size: 11px; color: var(--good); }
+.plays { list-style: none; padding: 8px 0 0; margin: 0;
+         border-top: 1px dashed var(--line); margin-top: 8px; }
+.plays .play { padding: 2px 0; font-size: 12px; }
+.play-act { display: inline-block; min-width: 80px; color: var(--mute);
+            font-family: ui-monospace, "JetBrains Mono", monospace; }
+.combat { padding: 8px 0; border-top: 1px dashed var(--line);
+          margin-top: 8px; font-size: 13px; }
+.cmb { padding: 3px 0; }
+.cmb.damage strong { color: var(--bad); }
+.cmb.lethal { background: #ffebe9; padding: 5px 8px; border-radius: 4px; }
+.lethal-tag { color: var(--bad); font-weight: 700; margin-left: 8px; }
+.atk em, .blk em { color: var(--mute);
+                  font-family: ui-monospace, "JetBrains Mono", monospace; }
+#card-tip { position: fixed; pointer-events: none; z-index: 1000;
+            border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            display: none; }
+#card-tip img { display: block; max-width: 200px; max-height: 280px;
+                border-radius: 8px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>Dimir Midrange <em>vs</em> Boros Energy</h1>
+  <span class="seed">seed 60102</span>
+  <span class="stat"><strong>2</strong> games · <strong>55</strong> decisions · <strong id="fb-count">0</strong> flagged</span>
+  <span class="match-score"><strong>Boros Energy</strong> wins 2–0</span>
+  <div class="actions">
+    <button id="btn-jump-flagged" title="Jump to next flagged decision">↓ next flagged</button>
+    <button id="btn-export-fb">Export feedback (JSONL)</button>
+    <button id="btn-clear-fb">Clear feedback</button>
+    <button id="btn-collapse-all">Collapse all</button>
+    <button id="btn-expand-all">Expand all</button>
+  </div>
+</header>
+<main>
+
+<section class="game" id="game-1" data-game="1">
+  <header class="game-header">
+    <h2>Game 1</h2>
+    <div class="game-meta">
+      <span class="chip on-play">on play: <strong>Dimir Midrange</strong></span>
+      <span class="chip result">winner: <strong>Boros Energy</strong> (damage, T6)</span>
+      <span class="chip decks">Dimir Midrange <em>vs</em> Boros Energy</span>
+    </div>
+  </header>
+  <div class="turns">
+    <div class="mulls"><h3>Mulligans</h3><div class="mull"><span class="mull-decision keep">KEEP</span><span class="mull-actor">Dimir Midrange</span><span class="mull-size">→ 7</span><span class="mull-reason">has key card(s): Consider, Dauthi Voidwalker, Psychic Frog, 5 cheap spells</span><div class="mull-cards"><span class="card-pill" data-card="Psychic Frog">Psychic Frog</span> <span class="card-pill" data-card="Polluted Delta">Polluted Delta</span> <span class="card-pill" data-card="Drown in the Loch">Drown in the Loch</span> <span class="card-pill" data-card="Counterspell">Counterspell</span> <span class="card-pill" data-card="Consider">Consider</span> <span class="card-pill" data-card="Dauthi Voidwalker">Dauthi Voidwalker</span> <span class="card-pill" data-card="Takenuma, Abandoned Mire">Takenuma, Abandoned Mire</span></div></div><div class="mull"><span class="mull-decision keep">KEEP</span><span class="mull-actor">Boros Energy</span><span class="mull-size">→ 7</span><span class="mull-reason">has key card(s): Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Ocelot Pride, 3 cheap spells</span><div class="mull-cards"><span class="card-pill" data-card="Ocelot Pride">Ocelot Pride</span> <span class="card-pill" data-card="Thraben Charm">Thraben Charm</span> <span class="card-pill" data-card="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span> <span class="card-pill" data-card="Arid Mesa">Arid Mesa</span> <span class="card-pill" data-card="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span> <span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span> <span class="card-pill" data-card="Plains">Plains</span></div></div></div>
+
+<details class="turn" data-turn="1" open>
+  <summary class="turn-summary">
+    <span class="turn-num">T1</span>
+    <span class="turn-actor">Boros Energy <em class="p">(P2)</em></span>
+    <span class="life"><span class="p1-life">19</span> <span class="vs-dot">·</span> <span class="p2-life">20</span></span>
+    <span class="turn-counts">2 decisions</span>
+  </summary>
+  <div class="turn-body">
+    <div class="boards">
+<div class="board p1">
+  <div class="board-head">
+    <span class="dot p1"></span>
+    <strong>P1</strong>
+    <span class="board-stats">life 19 · hand 6 · lib 52</span>
+  </div>
+  <div class="row creatures"><em class="mute">no creatures</em></div>
+  
+  <div class="row lands"><span class="card-pill" data-card="Watery Grave">Watery Grave</span></div>
+</div>
+
+<div class="board p2">
+  <div class="board-head">
+    <span class="dot p2"></span>
+    <strong>P2</strong>
+    <span class="board-stats">life 20 · hand 7 · lib 53</span>
+  </div>
+  <div class="row creatures"><em class="mute">no creatures</em></div>
+  
+  <div class="row lands"><em class="mute">no lands</em></div>
+</div>
+</div>
+    
+<div class="decision" id="g1t1d0" data-decision-id="g1t1d0">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t1d0">#g1t1d0</a>
+    <span class="dec-actor">Dimir Midrange</span>
+    <span class="dec-goal">goal: disrupt</span>
+    <span class="dec-cands">2 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Polluted Delta">Polluted Delta</span></span>
+      <span class="chosen-ev">41.00</span>
+    </div>
+    <div class="chosen-reason">Land: Polluted Delta (EV=41.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Takenuma, Abandoned Mire">Takenuma, Abandoned Mire</span></span>
+    <span class="alt-ev">28.00</span>
+    <span class="alt-gap">Δ 13.00</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Takenuma, Abandoned Mire (EV=28.0)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t1d0" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t1d1" data-decision-id="g1t1d1">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t1d1">#g1t1d1</a>
+    <span class="dec-actor">Boros Energy</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">4 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Arid Mesa">Arid Mesa</span></span>
+      <span class="chosen-ev">38.00</span>
+    </div>
+    <div class="chosen-reason">Land: Arid Mesa (EV=38.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-mid">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span></span>
+    <span class="alt-ev">35.00</span>
+    <span class="alt-gap">Δ 3.00</span>
+    <span class="alt-bar"><span style="width:86%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Sacred Foundry (EV=35.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Plains">Plains</span></span>
+    <span class="alt-ev">31.00</span>
+    <span class="alt-gap">Δ 7.00</span>
+    <span class="alt-bar"><span style="width:68%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Plains (EV=31.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Dalkovan Encampment">Dalkovan Encampment</span></span>
+    <span class="alt-ev">16.00</span>
+    <span class="alt-gap">Δ 22.00</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Dalkovan Encampment (EV=16.0)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t1d1" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+    <div class="combat"><div class="cmb no-atk">Dimir Midrange does not attack</div><div class="cmb no-atk">Boros Energy does not attack</div></div>
+    <ul class="plays"><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Polluted Delta">Polluted Delta</span></li><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Arid Mesa">Arid Mesa</span></li></ul>
+  </div>
+</details>
+
+
+<details class="turn" data-turn="2" open>
+  <summary class="turn-summary">
+    <span class="turn-num">T2</span>
+    <span class="turn-actor">Boros Energy <em class="p">(P2)</em></span>
+    <span class="life"><span class="p1-life">19</span> <span class="vs-dot">·</span> <span class="p2-life">19</span></span>
+    <span class="turn-counts">4 decisions</span>
+  </summary>
+  <div class="turn-body">
+    <div class="boards">
+<div class="board p1">
+  <div class="board-head">
+    <span class="dot p1"></span>
+    <strong>P1</strong>
+    <span class="board-stats">life 19 · hand 6 · lib 50</span>
+  </div>
+  <div class="row creatures"><em class="mute">no creatures</em></div>
+  
+  <div class="row lands"><span class="card-pill" data-card="Watery Grave">Watery Grave</span><span class="card-pill" data-card="Takenuma, Abandoned Mire">Takenuma, Abandoned Mire</span></div>
+</div>
+
+<div class="board p2">
+  <div class="board-head">
+    <span class="dot p2"></span>
+    <strong>P2</strong>
+    <span class="board-stats">life 19 · hand 7 · lib 51</span>
+  </div>
+  <div class="row creatures"><em class="mute">no creatures</em></div>
+  
+  <div class="row lands"><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span></div>
+</div>
+</div>
+    
+<div class="decision" id="g1t2d2" data-decision-id="g1t2d2">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t2d2">#g1t2d2</a>
+    <span class="dec-actor">Dimir Midrange</span>
+    <span class="dec-goal">goal: grind_value</span>
+    <span class="dec-cands">3 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Takenuma, Abandoned Mire">Takenuma, Abandoned Mire</span></span>
+      <span class="chosen-ev">15.00</span>
+    </div>
+    <div class="chosen-reason">Land: Takenuma, Abandoned Mire (EV=15.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Darkslick Shores">Darkslick Shores</span></span>
+    <span class="alt-ev">7.00</span>
+    <span class="alt-gap">Δ 8.00</span>
+    <span class="alt-bar"><span style="width:46%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Darkslick Shores (EV=7.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Consider">Consider</span></span>
+    <span class="alt-ev">-0.05</span>
+    <span class="alt-gap">Δ 15.05</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Consider (EV=-0.1)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t2d2" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t2d3" data-decision-id="g1t2d3">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t2d3">#g1t2d3</a>
+    <span class="dec-actor">Dimir Midrange</span>
+    <span class="dec-goal">goal: grind_value</span>
+    <span class="dec-cands">3 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Consider">Consider</span></span>
+      <span class="chosen-ev">-0.01</span>
+    </div>
+    <div class="chosen-reason">Consider (EV=-0.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Dauthi Voidwalker">Dauthi Voidwalker</span></span>
+    <span class="alt-ev">-26.05</span>
+    <span class="alt-gap">Δ 26.04</span>
+    <span class="alt-bar"><span style="width:15%"></span></span>
+  </div>
+  <div class="alt-reason">Dauthi Voidwalker (EV=-26.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Psychic Frog">Psychic Frog</span></span>
+    <span class="alt-ev">-30.99</span>
+    <span class="alt-gap">Δ 30.98</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Psychic Frog (EV=-31.0)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t2d3" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t2d4" data-decision-id="g1t2d4">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t2d4">#g1t2d4</a>
+    <span class="dec-actor">Boros Energy</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">5 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span></span>
+      <span class="chosen-ev">15.00</span>
+    </div>
+    <div class="chosen-reason">Land: Sacred Foundry (EV=15.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Plains">Plains</span></span>
+    <span class="alt-ev">15.00</span>
+    <span class="alt-gap">Δ 0.00</span>
+    <span class="alt-bar"><span style="width:100%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Plains (EV=15.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Dalkovan Encampment">Dalkovan Encampment</span></span>
+    <span class="alt-ev">7.00</span>
+    <span class="alt-gap">Δ 8.00</span>
+    <span class="alt-bar"><span style="width:46%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Dalkovan Encampment (EV=7.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Ragavan, Nimble Pilferer">Ragavan, Nimble Pilferer</span></span>
+    <span class="alt-ev">-0.01</span>
+    <span class="alt-gap">Δ 15.01</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Ragavan, Nimble Pilferer (EV=-0.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Ocelot Pride">Ocelot Pride</span></span>
+    <span class="alt-ev">-0.04</span>
+    <span class="alt-gap">Δ 15.04</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Ocelot Pride (EV=-0.0)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t2d4" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t2d5" data-decision-id="g1t2d5">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t2d5">#g1t2d5</a>
+    <span class="dec-actor">Boros Energy</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">2 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Ragavan, Nimble Pilferer">Ragavan, Nimble Pilferer</span></span>
+      <span class="chosen-ev">0.01</span>
+    </div>
+    <div class="chosen-reason">Ragavan, Nimble Pilferer (EV=0.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Ocelot Pride">Ocelot Pride</span></span>
+    <span class="alt-ev">-0.02</span>
+    <span class="alt-gap">Δ 0.03</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Ocelot Pride (EV=-0.0)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t2d5" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+    <div class="combat"><div class="cmb no-atk">Dimir Midrange does not attack</div><div class="cmb no-atk">Boros Energy does not attack</div></div>
+    <ul class="plays"><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Takenuma, Abandoned Mire">Takenuma, Abandoned Mire</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Consider">Consider</span></li><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Ragavan, Nimble Pilferer">Ragavan, Nimble Pilferer</span></li></ul>
+  </div>
+</details>
+
+
+<details class="turn" data-turn="3" open>
+  <summary class="turn-summary">
+    <span class="turn-num">T3</span>
+    <span class="turn-actor">Boros Energy <em class="p">(P2)</em></span>
+    <span class="life"><span class="p1-life">16</span> <span class="vs-dot">·</span> <span class="p2-life">19</span></span>
+    <span class="turn-counts">6 decisions</span>
+  </summary>
+  <div class="turn-body">
+    <div class="boards">
+<div class="board p1">
+  <div class="board-head">
+    <span class="dot p1"></span>
+    <strong>P1</strong>
+    <span class="board-stats">life 16 · hand 6 · lib 48</span>
+  </div>
+  <div class="row creatures"><em class="mute">no creatures</em></div>
+  
+  <div class="row lands"><span class="card-pill" data-card="Watery Grave">Watery Grave</span><span class="card-pill" data-card="Takenuma, Abandoned Mire">Takenuma, Abandoned Mire</span><span class="card-pill" data-card="Watery Grave">Watery Grave</span></div>
+</div>
+
+<div class="board p2">
+  <div class="board-head">
+    <span class="dot p2"></span>
+    <strong>P2</strong>
+    <span class="board-stats">life 19 · hand 6 · lib 50</span>
+  </div>
+  <div class="row creatures"><span class="cre" data-card="Ragavan, Nimble Pilferer">Ragavan, Nimble Pilferer <em>2/1</em></span></div>
+  
+  <div class="row lands"><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span></div>
+</div>
+</div>
+    
+<div class="decision" id="g1t3d6" data-decision-id="g1t3d6">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t3d6">#g1t3d6</a>
+    <span class="dec-actor">Dimir Midrange</span>
+    <span class="dec-goal">goal: grind_value</span>
+    <span class="dec-cands">5 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Polluted Delta">Polluted Delta</span></span>
+      <span class="chosen-ev">18.00</span>
+    </div>
+    <div class="chosen-reason">Land: Polluted Delta (EV=18.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Darkslick Shores">Darkslick Shores</span></span>
+    <span class="alt-ev">7.00</span>
+    <span class="alt-gap">Δ 11.00</span>
+    <span class="alt-bar"><span style="width:78%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Darkslick Shores (EV=7.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Darkslick Shores">Darkslick Shores</span></span>
+    <span class="alt-ev">7.00</span>
+    <span class="alt-gap">Δ 11.00</span>
+    <span class="alt-bar"><span style="width:78%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Darkslick Shores (EV=7.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Dauthi Voidwalker">Dauthi Voidwalker</span></span>
+    <span class="alt-ev">-12.00</span>
+    <span class="alt-gap">Δ 30.00</span>
+    <span class="alt-bar"><span style="width:42%"></span></span>
+  </div>
+  <div class="alt-reason">Dauthi Voidwalker (EV=-12.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Psychic Frog">Psychic Frog</span></span>
+    <span class="alt-ev">-33.98</span>
+    <span class="alt-gap">Δ 51.98</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Psychic Frog (EV=-34.0)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t3d6" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t3d7" data-decision-id="g1t3d7">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t3d7">#g1t3d7</a>
+    <span class="dec-actor">Dimir Midrange</span>
+    <span class="dec-goal">goal: grind_value</span>
+    <span class="dec-cands">2 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><em>pass</em></span>
+      <span class="chosen-ev">0.00</span>
+    </div>
+    <div class="chosen-reason">below pass_threshold</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Dauthi Voidwalker">Dauthi Voidwalker</span></span>
+    <span class="alt-ev">-8.97</span>
+    <span class="alt-gap">Δ 8.97</span>
+    <span class="alt-bar"><span style="width:65%"></span></span>
+  </div>
+  <div class="alt-reason">Dauthi Voidwalker (EV=-9.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Psychic Frog">Psychic Frog</span></span>
+    <span class="alt-ev">-25.98</span>
+    <span class="alt-gap">Δ 25.98</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Psychic Frog (EV=-26.0)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t3d7" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t3d8" data-decision-id="g1t3d8">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t3d8">#g1t3d8</a>
+    <span class="dec-actor">Dimir Midrange</span>
+    <span class="dec-goal">goal: grind_value</span>
+    <span class="dec-cands">2 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><em>pass</em></span>
+      <span class="chosen-ev">0.00</span>
+    </div>
+    <div class="chosen-reason">below pass_threshold</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Dauthi Voidwalker">Dauthi Voidwalker</span></span>
+    <span class="alt-ev">-8.97</span>
+    <span class="alt-gap">Δ 8.97</span>
+    <span class="alt-bar"><span style="width:65%"></span></span>
+  </div>
+  <div class="alt-reason">Dauthi Voidwalker (EV=-9.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Psychic Frog">Psychic Frog</span></span>
+    <span class="alt-ev">-25.98</span>
+    <span class="alt-gap">Δ 25.98</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Psychic Frog (EV=-26.0)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t3d8" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t3d9" data-decision-id="g1t3d9">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t3d9">#g1t3d9</a>
+    <span class="dec-actor">Boros Energy</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">6 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Plains">Plains</span></span>
+      <span class="chosen-ev">15.00</span>
+    </div>
+    <div class="chosen-reason">Land: Plains (EV=15.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Mountain">Mountain</span></span>
+    <span class="alt-ev">15.00</span>
+    <span class="alt-gap">Δ 0.00</span>
+    <span class="alt-bar"><span style="width:100%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Mountain (EV=15.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Dalkovan Encampment">Dalkovan Encampment</span></span>
+    <span class="alt-ev">7.00</span>
+    <span class="alt-gap">Δ 8.00</span>
+    <span class="alt-bar"><span style="width:46%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Dalkovan Encampment (EV=7.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Ocelot Pride">Ocelot Pride</span></span>
+    <span class="alt-ev">-0.05</span>
+    <span class="alt-gap">Δ 15.05</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Ocelot Pride (EV=-0.1)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span></span>
+    <span class="alt-ev">-0.07</span>
+    <span class="alt-gap">Δ 15.07</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (EV=-0.1)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t3d9" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t3d10" data-decision-id="g1t3d10">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t3d10">#g1t3d10</a>
+    <span class="dec-actor">Boros Energy</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">3 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Ocelot Pride">Ocelot Pride</span></span>
+      <span class="chosen-ev">0.06</span>
+    </div>
+    <div class="chosen-reason">Ocelot Pride (EV=0.1)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span></span>
+    <span class="alt-ev">0.00</span>
+    <span class="alt-gap">Δ 0.06</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (EV=0.0)</div>
+</div>
+
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span></span>
+    <span class="alt-ev">0.00</span>
+    <span class="alt-gap">Δ 0.06</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (EV=0.0)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t3d10" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t3d11" data-decision-id="g1t3d11">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t3d11">#g1t3d11</a>
+    <span class="dec-actor">Boros Energy</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">2 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span></span>
+      <span class="chosen-ev">6.44</span>
+    </div>
+    <div class="chosen-reason">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (EV=6.4)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span></span>
+    <span class="alt-ev">6.44</span>
+    <span class="alt-gap">Δ 0.00</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (EV=6.4)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t3d11" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+    <div class="combat"><div class="cmb no-atk">Dimir Midrange does not attack</div><div class="cmb attack">⚔ Boros Energy attacks: <span class="atk">Ragavan, Nimble Pilferer <em>2/1</em></span></div><div class="cmb no-blk">Dimir Midrange does not block</div><div class="cmb damage ">💥 Boros Energy deals <strong>2</strong> to Dimir Midrange (16 → 14)</div></div>
+    <ul class="plays"><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Polluted Delta">Polluted Delta</span></li><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Plains">Plains</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Ocelot Pride">Ocelot Pride</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span></li></ul>
+  </div>
+</details>
+
+
+<details class="turn" data-turn="4" open>
+  <summary class="turn-summary">
+    <span class="turn-num">T4</span>
+    <span class="turn-actor">Boros Energy <em class="p">(P2)</em></span>
+    <span class="life"><span class="p1-life">14</span> <span class="vs-dot">·</span> <span class="p2-life">19</span></span>
+    <span class="turn-counts">4 decisions</span>
+  </summary>
+  <div class="turn-body">
+    <div class="boards">
+<div class="board p1">
+  <div class="board-head">
+    <span class="dot p1"></span>
+    <strong>P1</strong>
+    <span class="board-stats">life 14 · hand 5 · lib 46</span>
+  </div>
+  <div class="row creatures"><em class="mute">no creatures</em></div>
+  
+  <div class="row lands"><span class="card-pill" data-card="Watery Grave">Watery Grave</span><span class="card-pill" data-card="Takenuma, Abandoned Mire">Takenuma, Abandoned Mire</span><span class="card-pill" data-card="Watery Grave">Watery Grave</span><span class="card-pill" data-card="Darkslick Shores">Darkslick Shores</span></div>
+</div>
+
+<div class="board p2">
+  <div class="board-head">
+    <span class="dot p2"></span>
+    <strong>P2</strong>
+    <span class="board-stats">life 19 · hand 4 · lib 49</span>
+  </div>
+  <div class="row creatures"><span class="cre" data-card="Ragavan, Nimble Pilferer">Ragavan, Nimble Pilferer <em>2/1</em></span><span class="cre" data-card="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <em>1/2</em></span><span class="cre" data-card="Cat Token">Cat Token <em>2/1</em></span></div>
+  <div class="row other"><span class="card-pill" data-card="Treasure Token">Treasure Token</span></div>
+  <div class="row lands"><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span><span class="card-pill" data-card="Plains">Plains</span></div>
+</div>
+</div>
+    
+<div class="decision" id="g1t4d12" data-decision-id="g1t4d12">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t4d12">#g1t4d12</a>
+    <span class="dec-actor">Dimir Midrange</span>
+    <span class="dec-goal">goal: close_game</span>
+    <span class="dec-cands">5 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Darkslick Shores">Darkslick Shores</span></span>
+      <span class="chosen-ev">7.00</span>
+    </div>
+    <div class="chosen-reason">Land: Darkslick Shores (EV=7.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Darkslick Shores">Darkslick Shores</span></span>
+    <span class="alt-ev">7.00</span>
+    <span class="alt-gap">Δ 0.00</span>
+    <span class="alt-bar"><span style="width:100%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Darkslick Shores (EV=7.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Thoughtseize">Thoughtseize</span></span>
+    <span class="alt-ev">-0.05</span>
+    <span class="alt-gap">Δ 7.05</span>
+    <span class="alt-bar"><span style="width:71%"></span></span>
+  </div>
+  <div class="alt-reason">Thoughtseize (EV=-0.1)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Psychic Frog">Psychic Frog</span></span>
+    <span class="alt-ev">-17.16</span>
+    <span class="alt-gap">Δ 24.16</span>
+    <span class="alt-bar"><span style="width:3%"></span></span>
+  </div>
+  <div class="alt-reason">Psychic Frog (EV=-17.2)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Dauthi Voidwalker">Dauthi Voidwalker</span></span>
+    <span class="alt-ev">-18.03</span>
+    <span class="alt-gap">Δ 25.03</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Dauthi Voidwalker (EV=-18.0)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t4d12" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t4d13" data-decision-id="g1t4d13">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t4d13">#g1t4d13</a>
+    <span class="dec-actor">Dimir Midrange</span>
+    <span class="dec-goal">goal: close_game</span>
+    <span class="dec-cands">3 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><em>pass</em></span>
+      <span class="chosen-ev">0.00</span>
+    </div>
+    <div class="chosen-reason">below pass_threshold</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Thoughtseize">Thoughtseize</span></span>
+    <span class="alt-ev">-0.05</span>
+    <span class="alt-gap">Δ 0.05</span>
+    <span class="alt-bar"><span style="width:99%"></span></span>
+  </div>
+  <div class="alt-reason">Thoughtseize (EV=-0.1)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Psychic Frog">Psychic Frog</span></span>
+    <span class="alt-ev">-17.07</span>
+    <span class="alt-gap">Δ 17.07</span>
+    <span class="alt-bar"><span style="width:4%"></span></span>
+  </div>
+  <div class="alt-reason">Psychic Frog (EV=-17.1)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Dauthi Voidwalker">Dauthi Voidwalker</span></span>
+    <span class="alt-ev">-17.95</span>
+    <span class="alt-gap">Δ 17.95</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Dauthi Voidwalker (EV=-17.9)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t4d13" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t4d14" data-decision-id="g1t4d14">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t4d14">#g1t4d14</a>
+    <span class="dec-actor">Dimir Midrange</span>
+    <span class="dec-goal">goal: close_game</span>
+    <span class="dec-cands">3 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><em>pass</em></span>
+      <span class="chosen-ev">0.00</span>
+    </div>
+    <div class="chosen-reason">below pass_threshold</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Thoughtseize">Thoughtseize</span></span>
+    <span class="alt-ev">-0.05</span>
+    <span class="alt-gap">Δ 0.05</span>
+    <span class="alt-bar"><span style="width:99%"></span></span>
+  </div>
+  <div class="alt-reason">Thoughtseize (EV=-0.1)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Psychic Frog">Psychic Frog</span></span>
+    <span class="alt-ev">-17.07</span>
+    <span class="alt-gap">Δ 17.07</span>
+    <span class="alt-bar"><span style="width:4%"></span></span>
+  </div>
+  <div class="alt-reason">Psychic Frog (EV=-17.1)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Dauthi Voidwalker">Dauthi Voidwalker</span></span>
+    <span class="alt-ev">-17.95</span>
+    <span class="alt-gap">Δ 17.95</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Dauthi Voidwalker (EV=-17.9)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t4d14" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t4d15" data-decision-id="g1t4d15">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t4d15">#g1t4d15</a>
+    <span class="dec-actor">Boros Energy</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">2 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Mountain">Mountain</span></span>
+      <span class="chosen-ev">15.00</span>
+    </div>
+    <div class="chosen-reason">Land: Mountain (EV=15.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Dalkovan Encampment">Dalkovan Encampment</span></span>
+    <span class="alt-ev">7.00</span>
+    <span class="alt-gap">Δ 8.00</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Dalkovan Encampment (EV=7.0)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t4d15" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+    <div class="combat"><div class="cmb no-atk">Dimir Midrange does not attack</div><div class="cmb attack">⚔ Boros Energy attacks: <span class="atk">Ragavan, Nimble Pilferer <em>2/1</em></span> <span class="atk">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <em>1/2</em></span> <span class="atk">Cat Token <em>2/1</em></span></div><div class="cmb no-blk">Dimir Midrange does not block</div><div class="cmb damage ">💥 Boros Energy deals <strong>5</strong> to Dimir Midrange (14 → 9)</div></div>
+    <ul class="plays"><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Darkslick Shores">Darkslick Shores</span></li><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Mountain">Mountain</span></li></ul>
+  </div>
+</details>
+
+
+<details class="turn" data-turn="5" open>
+  <summary class="turn-summary">
+    <span class="turn-num">T5</span>
+    <span class="turn-actor">Boros Energy <em class="p">(P2)</em></span>
+    <span class="life"><span class="p1-life">9</span> <span class="vs-dot">·</span> <span class="p2-life">19</span></span>
+    <span class="turn-counts">5 decisions</span>
+  </summary>
+  <div class="turn-body">
+    <div class="boards">
+<div class="board p1">
+  <div class="board-head">
+    <span class="dot p1"></span>
+    <strong>P1</strong>
+    <span class="board-stats">life 9 · hand 4 · lib 44</span>
+  </div>
+  <div class="row creatures"><em class="mute">no creatures</em></div>
+  
+  <div class="row lands"><span class="card-pill" data-card="Watery Grave">Watery Grave</span><span class="card-pill" data-card="Takenuma, Abandoned Mire">Takenuma, Abandoned Mire</span><span class="card-pill" data-card="Watery Grave">Watery Grave</span><span class="card-pill" data-card="Darkslick Shores">Darkslick Shores</span><span class="card-pill" data-card="Darkslick Shores">Darkslick Shores</span></div>
+</div>
+
+<div class="board p2">
+  <div class="board-head">
+    <span class="dot p2"></span>
+    <strong>P2</strong>
+    <span class="board-stats">life 19 · hand 3 · lib 48</span>
+  </div>
+  <div class="row creatures"><span class="cre" data-card="Ragavan, Nimble Pilferer">Ragavan, Nimble Pilferer <em>2/1</em></span><span class="cre" data-card="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <em>1/2</em></span><span class="cre" data-card="Cat Token">Cat Token <em>2/1</em></span></div>
+  <div class="row other"><span class="card-pill" data-card="Treasure Token">Treasure Token</span><span class="card-pill" data-card="Treasure Token">Treasure Token</span></div>
+  <div class="row lands"><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span><span class="card-pill" data-card="Plains">Plains</span><span class="card-pill" data-card="Mountain">Mountain</span></div>
+</div>
+</div>
+    
+<div class="decision" id="g1t5d16" data-decision-id="g1t5d16">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t5d16">#g1t5d16</a>
+    <span class="dec-actor">Dimir Midrange</span>
+    <span class="dec-goal">goal: close_game</span>
+    <span class="dec-cands">5 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Darkslick Shores">Darkslick Shores</span></span>
+      <span class="chosen-ev">7.00</span>
+    </div>
+    <div class="chosen-reason">Land: Darkslick Shores (EV=7.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Psychic Frog">Psychic Frog</span></span>
+    <span class="alt-ev">0.00</span>
+    <span class="alt-gap">Δ 7.00</span>
+    <span class="alt-bar"><span style="width:81%"></span></span>
+  </div>
+  <div class="alt-reason">Psychic Frog (EV=0.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Thoughtseize">Thoughtseize</span></span>
+    <span class="alt-ev">-0.05</span>
+    <span class="alt-gap">Δ 7.05</span>
+    <span class="alt-bar"><span style="width:81%"></span></span>
+  </div>
+  <div class="alt-reason">Thoughtseize (EV=-0.1)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Dauthi Voidwalker">Dauthi Voidwalker</span></span>
+    <span class="alt-ev">-0.09</span>
+    <span class="alt-gap">Δ 7.09</span>
+    <span class="alt-bar"><span style="width:81%"></span></span>
+  </div>
+  <div class="alt-reason">Dauthi Voidwalker (EV=-0.1)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Murktide Regent">Murktide Regent</span></span>
+    <span class="alt-ev">-31.09</span>
+    <span class="alt-gap">Δ 38.09</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Murktide Regent (EV=-31.1)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t5d16" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t5d17" data-decision-id="g1t5d17">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t5d17">#g1t5d17</a>
+    <span class="dec-actor">Dimir Midrange</span>
+    <span class="dec-goal">goal: close_game</span>
+    <span class="dec-cands">4 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Psychic Frog">Psychic Frog</span></span>
+      <span class="chosen-ev">0.04</span>
+    </div>
+    <div class="chosen-reason">Psychic Frog (EV=0.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Dauthi Voidwalker">Dauthi Voidwalker</span></span>
+    <span class="alt-ev">-0.04</span>
+    <span class="alt-gap">Δ 0.09</span>
+    <span class="alt-bar"><span style="width:99%"></span></span>
+  </div>
+  <div class="alt-reason">Dauthi Voidwalker (EV=-0.0)</div>
+</div>
+
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Thoughtseize">Thoughtseize</span></span>
+    <span class="alt-ev">-0.05</span>
+    <span class="alt-gap">Δ 0.10</span>
+    <span class="alt-bar"><span style="width:99%"></span></span>
+  </div>
+  <div class="alt-reason">Thoughtseize (EV=-0.1)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Murktide Regent">Murktide Regent</span></span>
+    <span class="alt-ev">-30.98</span>
+    <span class="alt-gap">Δ 31.02</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Murktide Regent (EV=-31.0)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t5d17" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t5d18" data-decision-id="g1t5d18">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t5d18">#g1t5d18</a>
+    <span class="dec-actor">Dimir Midrange</span>
+    <span class="dec-goal">goal: close_game</span>
+    <span class="dec-cands">2 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><em>pass</em></span>
+      <span class="chosen-ev">0.00</span>
+    </div>
+    <div class="chosen-reason">below pass_threshold</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Thoughtseize">Thoughtseize</span></span>
+    <span class="alt-ev">-7.99</span>
+    <span class="alt-gap">Δ 7.99</span>
+    <span class="alt-bar"><span style="width:57%"></span></span>
+  </div>
+  <div class="alt-reason">Thoughtseize (EV=-8.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Dauthi Voidwalker">Dauthi Voidwalker</span></span>
+    <span class="alt-ev">-18.71</span>
+    <span class="alt-gap">Δ 18.71</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Dauthi Voidwalker (EV=-18.7)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t5d18" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t5d19" data-decision-id="g1t5d19">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t5d19">#g1t5d19</a>
+    <span class="dec-actor">Dimir Midrange</span>
+    <span class="dec-goal">goal: close_game</span>
+    <span class="dec-cands">3 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><em>pass</em></span>
+      <span class="chosen-ev">0.00</span>
+    </div>
+    <div class="chosen-reason">below pass_threshold</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Thoughtseize">Thoughtseize</span></span>
+    <span class="alt-ev">-7.84</span>
+    <span class="alt-gap">Δ 7.84</span>
+    <span class="alt-bar"><span style="width:80%"></span></span>
+  </div>
+  <div class="alt-reason">Thoughtseize (EV=-7.8)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Murktide Regent">Murktide Regent</span></span>
+    <span class="alt-ev">-20.64</span>
+    <span class="alt-gap">Δ 20.64</span>
+    <span class="alt-bar"><span style="width:49%"></span></span>
+  </div>
+  <div class="alt-reason">Murktide Regent (EV=-20.6)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Dauthi Voidwalker">Dauthi Voidwalker</span></span>
+    <span class="alt-ev">-40.64</span>
+    <span class="alt-gap">Δ 40.64</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Dauthi Voidwalker (EV=-40.6)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t5d19" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t5d20" data-decision-id="g1t5d20">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t5d20">#g1t5d20</a>
+    <span class="dec-actor">Boros Energy</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">2 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Marsh Flats">Marsh Flats</span></span>
+      <span class="chosen-ev">22.00</span>
+    </div>
+    <div class="chosen-reason">Land: Marsh Flats (EV=22.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Dalkovan Encampment">Dalkovan Encampment</span></span>
+    <span class="alt-ev">7.00</span>
+    <span class="alt-gap">Δ 15.00</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Dalkovan Encampment (EV=7.0)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t5d20" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+    <div class="combat"><div class="cmb no-atk">Dimir Midrange does not attack</div><div class="cmb attack">⚔ Boros Energy attacks: <span class="atk">Ragavan, Nimble Pilferer <em>2/1</em></span> <span class="atk">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <em>1/2</em></span> <span class="atk">Cat Token <em>2/1</em></span></div><div class="cmb no-blk">Dimir Midrange does not block</div><div class="cmb damage ">💥 Boros Energy deals <strong>5</strong> to Dimir Midrange (9 → 4)</div></div>
+    <ul class="plays"><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Darkslick Shores">Darkslick Shores</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Psychic Frog">Psychic Frog</span></li><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Marsh Flats">Marsh Flats</span></li></ul>
+  </div>
+</details>
+
+
+<details class="turn" data-turn="6" open>
+  <summary class="turn-summary">
+    <span class="turn-num">T6</span>
+    <span class="turn-actor">Boros Energy <em class="p">(P2)</em></span>
+    <span class="life"><span class="p1-life">2</span> <span class="vs-dot">·</span> <span class="p2-life">18</span></span>
+    <span class="turn-counts">4 decisions</span>
+  </summary>
+  <div class="turn-body">
+    <div class="boards">
+<div class="board p1">
+  <div class="board-head">
+    <span class="dot p1"></span>
+    <strong>P1</strong>
+    <span class="board-stats">life 2 · hand 4 · lib 42</span>
+  </div>
+  <div class="row creatures"><em class="mute">no creatures</em></div>
+  
+  <div class="row lands"><span class="card-pill" data-card="Watery Grave">Watery Grave</span><span class="card-pill" data-card="Takenuma, Abandoned Mire">Takenuma, Abandoned Mire</span><span class="card-pill" data-card="Watery Grave">Watery Grave</span><span class="card-pill" data-card="Darkslick Shores">Darkslick Shores</span><span class="card-pill" data-card="Darkslick Shores">Darkslick Shores</span></div>
+</div>
+
+<div class="board p2">
+  <div class="board-head">
+    <span class="dot p2"></span>
+    <strong>P2</strong>
+    <span class="board-stats">life 18 · hand 2 · lib 46</span>
+  </div>
+  <div class="row creatures"><span class="cre" data-card="Ragavan, Nimble Pilferer">Ragavan, Nimble Pilferer <em>2/1</em></span><span class="cre" data-card="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <em>1/2</em></span><span class="cre" data-card="Cat Token">Cat Token <em>2/1</em></span></div>
+  <div class="row other"><span class="card-pill" data-card="Treasure Token">Treasure Token</span><span class="card-pill" data-card="Treasure Token">Treasure Token</span><span class="card-pill" data-card="Treasure Token">Treasure Token</span></div>
+  <div class="row lands"><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span><span class="card-pill" data-card="Plains">Plains</span><span class="card-pill" data-card="Mountain">Mountain</span><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span></div>
+</div>
+</div>
+    
+<div class="decision" id="g1t6d21" data-decision-id="g1t6d21">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t6d21">#g1t6d21</a>
+    <span class="dec-actor">Dimir Midrange</span>
+    <span class="dec-goal">goal: close_game</span>
+    <span class="dec-cands">4 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Thoughtseize">Thoughtseize</span></span>
+      <span class="chosen-ev">-0.19</span>
+    </div>
+    <div class="chosen-reason">Thoughtseize (EV=-0.2)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Murktide Regent">Murktide Regent</span></span>
+    <span class="alt-ev">-22.86</span>
+    <span class="alt-gap">Δ 22.66</span>
+    <span class="alt-bar"><span style="width:8%"></span></span>
+  </div>
+  <div class="alt-reason">Murktide Regent (EV=-22.9)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Murktide Regent">Murktide Regent</span></span>
+    <span class="alt-ev">-22.86</span>
+    <span class="alt-gap">Δ 22.66</span>
+    <span class="alt-bar"><span style="width:8%"></span></span>
+  </div>
+  <div class="alt-reason">Murktide Regent (EV=-22.9)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Dauthi Voidwalker">Dauthi Voidwalker</span></span>
+    <span class="alt-ev">-25.06</span>
+    <span class="alt-gap">Δ 24.86</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Dauthi Voidwalker (EV=-25.1)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t6d21" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t6d22" data-decision-id="g1t6d22">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t6d22">#g1t6d22</a>
+    <span class="dec-actor">Dimir Midrange</span>
+    <span class="dec-goal">goal: close_game</span>
+    <span class="dec-cands">3 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><em>pass</em></span>
+      <span class="chosen-ev">0.00</span>
+    </div>
+    <div class="chosen-reason">below pass_threshold</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Murktide Regent">Murktide Regent</span></span>
+    <span class="alt-ev">-21.81</span>
+    <span class="alt-gap">Δ 21.81</span>
+    <span class="alt-bar"><span style="width:13%"></span></span>
+  </div>
+  <div class="alt-reason">Murktide Regent (EV=-21.8)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Murktide Regent">Murktide Regent</span></span>
+    <span class="alt-ev">-21.81</span>
+    <span class="alt-gap">Δ 21.81</span>
+    <span class="alt-bar"><span style="width:13%"></span></span>
+  </div>
+  <div class="alt-reason">Murktide Regent (EV=-21.8)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Dauthi Voidwalker">Dauthi Voidwalker</span></span>
+    <span class="alt-ev">-25.09</span>
+    <span class="alt-gap">Δ 25.09</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Dauthi Voidwalker (EV=-25.1)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t6d22" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t6d23" data-decision-id="g1t6d23">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t6d23">#g1t6d23</a>
+    <span class="dec-actor">Dimir Midrange</span>
+    <span class="dec-goal">goal: close_game</span>
+    <span class="dec-cands">3 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><em>pass</em></span>
+      <span class="chosen-ev">0.00</span>
+    </div>
+    <div class="chosen-reason">below pass_threshold</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Murktide Regent">Murktide Regent</span></span>
+    <span class="alt-ev">-21.81</span>
+    <span class="alt-gap">Δ 21.81</span>
+    <span class="alt-bar"><span style="width:13%"></span></span>
+  </div>
+  <div class="alt-reason">Murktide Regent (EV=-21.8)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Murktide Regent">Murktide Regent</span></span>
+    <span class="alt-ev">-21.81</span>
+    <span class="alt-gap">Δ 21.81</span>
+    <span class="alt-bar"><span style="width:13%"></span></span>
+  </div>
+  <div class="alt-reason">Murktide Regent (EV=-21.8)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Dauthi Voidwalker">Dauthi Voidwalker</span></span>
+    <span class="alt-ev">-25.09</span>
+    <span class="alt-gap">Δ 25.09</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Dauthi Voidwalker (EV=-25.1)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t6d23" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g1t6d24" data-decision-id="g1t6d24">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g1t6d24">#g1t6d24</a>
+    <span class="dec-actor">Boros Energy</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">2 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Windswept Heath">Windswept Heath</span></span>
+      <span class="chosen-ev">22.00</span>
+    </div>
+    <div class="chosen-reason">Land: Windswept Heath (EV=22.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Dalkovan Encampment">Dalkovan Encampment</span></span>
+    <span class="alt-ev">7.00</span>
+    <span class="alt-gap">Δ 15.00</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Dalkovan Encampment (EV=7.0)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g1t6d24" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+    <div class="combat"><div class="cmb no-atk">Dimir Midrange does not attack</div><div class="cmb attack">⚔ Boros Energy attacks: <span class="atk">Ragavan, Nimble Pilferer <em>2/1</em></span> <span class="atk">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <em>1/2</em></span> <span class="atk">Cat Token <em>2/1</em></span></div><div class="cmb no-blk">Dimir Midrange does not block</div><div class="cmb damage lethal">💥 Boros Energy deals <strong>5</strong> to Dimir Midrange (2 → -3)<span class="lethal-tag">☠ LETHAL</span></div></div>
+    <ul class="plays"><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Thoughtseize">Thoughtseize</span></li><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Windswept Heath">Windswept Heath</span></li></ul>
+  </div>
+</details>
+
+  </div>
+</section>
+
+
+<section class="game" id="game-2" data-game="2">
+  <header class="game-header">
+    <h2>Game 2</h2>
+    <div class="game-meta">
+      <span class="chip on-play">on play: <strong>Boros Energy</strong></span>
+      <span class="chip result">winner: <strong>Boros Energy</strong> (damage, T8)</span>
+      <span class="chip decks">Dimir Midrange <em>vs</em> Boros Energy</span>
+    </div>
+  </header>
+  <div class="turns">
+    <div class="mulls"><h3>Mulligans</h3><div class="mull"><span class="mull-decision keep">KEEP</span><span class="mull-actor">Dimir Midrange</span><span class="mull-size">→ 7</span><span class="mull-reason">has key card(s): Consider, Fatal Push, Orcish Bowmasters, Thoughtseize, 5 cheap spells</span><div class="mull-cards"><span class="card-pill" data-card="Thoughtseize">Thoughtseize</span> <span class="card-pill" data-card="Counterspell">Counterspell</span> <span class="card-pill" data-card="Consider">Consider</span> <span class="card-pill" data-card="Island">Island</span> <span class="card-pill" data-card="Takenuma, Abandoned Mire">Takenuma, Abandoned Mire</span> <span class="card-pill" data-card="Fatal Push">Fatal Push</span> <span class="card-pill" data-card="Orcish Bowmasters">Orcish Bowmasters</span></div></div><div class="mull"><span class="mull-decision keep">KEEP</span><span class="mull-actor">Boros Energy</span><span class="mull-size">→ 7</span><span class="mull-reason">has key card(s): Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Ragavan, Nimble Pilferer, 3 cheap spells</span><div class="mull-cards"><span class="card-pill" data-card="Arena of Glory">Arena of Glory</span> <span class="card-pill" data-card="The Legend of Roku // Avatar Roku">The Legend of Roku // Avatar Roku</span> <span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span> <span class="card-pill" data-card="Seasoned Pyromancer">Seasoned Pyromancer</span> <span class="card-pill" data-card="Windswept Heath">Windswept Heath</span> <span class="card-pill" data-card="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span> <span class="card-pill" data-card="Ragavan, Nimble Pilferer">Ragavan, Nimble Pilferer</span></div></div></div>
+
+<details class="turn" data-turn="1" open>
+  <summary class="turn-summary">
+    <span class="turn-num">T1</span>
+    <span class="turn-actor">Dimir Midrange <em class="p">(P1)</em></span>
+    <span class="life"><span class="p1-life">20</span> <span class="vs-dot">·</span> <span class="p2-life">20</span></span>
+    <span class="turn-counts">3 decisions</span>
+  </summary>
+  <div class="turn-body">
+    <div class="boards">
+<div class="board p1">
+  <div class="board-head">
+    <span class="dot p1"></span>
+    <strong>P1</strong>
+    <span class="board-stats">life 20 · hand 7 · lib 53</span>
+  </div>
+  <div class="row creatures"><em class="mute">no creatures</em></div>
+  
+  <div class="row lands"><em class="mute">no lands</em></div>
+</div>
+
+<div class="board p2">
+  <div class="board-head">
+    <span class="dot p2"></span>
+    <strong>P2</strong>
+    <span class="board-stats">life 20 · hand 6 · lib 53</span>
+  </div>
+  <div class="row creatures"><em class="mute">no creatures</em></div>
+  
+  <div class="row lands"><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span></div>
+</div>
+</div>
+    
+<div class="decision" id="g2t1d25" data-decision-id="g2t1d25">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t1d25">#g2t1d25</a>
+    <span class="dec-actor">Boros Energy</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">3 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span></span>
+      <span class="chosen-ev">35.00</span>
+    </div>
+    <div class="chosen-reason">Land: Sacred Foundry (EV=35.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Windswept Heath">Windswept Heath</span></span>
+    <span class="alt-ev">29.00</span>
+    <span class="alt-gap">Δ 6.00</span>
+    <span class="alt-bar"><span style="width:72%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Windswept Heath (EV=29.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Arena of Glory">Arena of Glory</span></span>
+    <span class="alt-ev">13.00</span>
+    <span class="alt-gap">Δ 22.00</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Arena of Glory (EV=13.0)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t1d25" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t1d26" data-decision-id="g2t1d26">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t1d26">#g2t1d26</a>
+    <span class="dec-actor">Dimir Midrange</span>
+    <span class="dec-goal">goal: disrupt</span>
+    <span class="dec-cands">2 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Island">Island</span></span>
+      <span class="chosen-ev">28.00</span>
+    </div>
+    <div class="chosen-reason">Land: Island (EV=28.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Takenuma, Abandoned Mire">Takenuma, Abandoned Mire</span></span>
+    <span class="alt-ev">28.00</span>
+    <span class="alt-gap">Δ 0.00</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Takenuma, Abandoned Mire (EV=28.0)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t1d26" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t1d27" data-decision-id="g2t1d27">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t1d27">#g2t1d27</a>
+    <span class="dec-actor">Dimir Midrange</span>
+    <span class="dec-goal">goal: disrupt</span>
+    <span class="dec-cands">1 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Consider">Consider</span></span>
+      <span class="chosen-ev">-0.07</span>
+    </div>
+    <div class="chosen-reason">Consider (EV=-0.1)</div>
+    
+  </div>
+  
+  <form class="feedback" data-decision-id="g2t1d27" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+    <div class="combat"><div class="cmb no-atk">Boros Energy does not attack</div><div class="cmb no-atk">Dimir Midrange does not attack</div></div>
+    <ul class="plays"><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span></li><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Island">Island</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Consider">Consider</span></li></ul>
+  </div>
+</details>
+
+
+<details class="turn" data-turn="2" open>
+  <summary class="turn-summary">
+    <span class="turn-num">T2</span>
+    <span class="turn-actor">Dimir Midrange <em class="p">(P1)</em></span>
+    <span class="life"><span class="p1-life">20</span> <span class="vs-dot">·</span> <span class="p2-life">19</span></span>
+    <span class="turn-counts">4 decisions</span>
+  </summary>
+  <div class="turn-body">
+    <div class="boards">
+<div class="board p1">
+  <div class="board-head">
+    <span class="dot p1"></span>
+    <strong>P1</strong>
+    <span class="board-stats">life 20 · hand 7 · lib 51</span>
+  </div>
+  <div class="row creatures"><em class="mute">no creatures</em></div>
+  
+  <div class="row lands"><span class="card-pill" data-card="Island">Island</span></div>
+</div>
+
+<div class="board p2">
+  <div class="board-head">
+    <span class="dot p2"></span>
+    <strong>P2</strong>
+    <span class="board-stats">life 19 · hand 5 · lib 51</span>
+  </div>
+  <div class="row creatures"><span class="cre" data-card="Ragavan, Nimble Pilferer">Ragavan, Nimble Pilferer <em>2/1</em><span class="sick">z</span></span></div>
+  
+  <div class="row lands"><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span></div>
+</div>
+</div>
+    
+<div class="decision" id="g2t2d28" data-decision-id="g2t2d28">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t2d28">#g2t2d28</a>
+    <span class="dec-actor">Boros Energy</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">3 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Windswept Heath">Windswept Heath</span></span>
+      <span class="chosen-ev">22.00</span>
+    </div>
+    <div class="chosen-reason">Land: Windswept Heath (EV=22.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Arena of Glory">Arena of Glory</span></span>
+    <span class="alt-ev">7.00</span>
+    <span class="alt-gap">Δ 15.00</span>
+    <span class="alt-bar"><span style="width:25%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Arena of Glory (EV=7.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Ragavan, Nimble Pilferer">Ragavan, Nimble Pilferer</span></span>
+    <span class="alt-ev">1.95</span>
+    <span class="alt-gap">Δ 20.05</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Ragavan, Nimble Pilferer (EV=1.9)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t2d28" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t2d29" data-decision-id="g2t2d29">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t2d29">#g2t2d29</a>
+    <span class="dec-actor">Boros Energy</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">1 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Ragavan, Nimble Pilferer">Ragavan, Nimble Pilferer</span></span>
+      <span class="chosen-ev">1.97</span>
+    </div>
+    <div class="chosen-reason">Ragavan, Nimble Pilferer (EV=2.0)</div>
+    
+  </div>
+  
+  <form class="feedback" data-decision-id="g2t2d29" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t2d30" data-decision-id="g2t2d30">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t2d30">#g2t2d30</a>
+    <span class="dec-actor">Dimir Midrange</span>
+    <span class="dec-goal">goal: grind_value</span>
+    <span class="dec-cands">2 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Underground River">Underground River</span></span>
+      <span class="chosen-ev">35.00</span>
+    </div>
+    <div class="chosen-reason">Land: Underground River (EV=35.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-mid">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Takenuma, Abandoned Mire">Takenuma, Abandoned Mire</span></span>
+    <span class="alt-ev">31.00</span>
+    <span class="alt-gap">Δ 4.00</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Takenuma, Abandoned Mire (EV=31.0)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t2d30" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t2d31" data-decision-id="g2t2d31">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t2d31">#g2t2d31</a>
+    <span class="dec-actor">Dimir Midrange</span>
+    <span class="dec-goal">goal: grind_value</span>
+    <span class="dec-cands">4 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Orcish Bowmasters">Orcish Bowmasters</span> → <span class="card-pill" data-card="id:64">id:64</span></span>
+      <span class="chosen-ev">13.52</span>
+    </div>
+    <div class="chosen-reason">Orcish Bowmasters (EV=13.5)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Fatal Push">Fatal Push</span></span>
+    <span class="alt-ev">5.92</span>
+    <span class="alt-gap">Δ 7.60</span>
+    <span class="alt-bar"><span style="width:86%"></span></span>
+  </div>
+  <div class="alt-reason">Fatal Push (EV=5.9)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Thoughtseize">Thoughtseize</span></span>
+    <span class="alt-ev">-0.05</span>
+    <span class="alt-gap">Δ 13.57</span>
+    <span class="alt-bar"><span style="width:75%"></span></span>
+  </div>
+  <div class="alt-reason">Thoughtseize (EV=-0.1)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Psychic Frog">Psychic Frog</span></span>
+    <span class="alt-ev">-41.91</span>
+    <span class="alt-gap">Δ 55.42</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Psychic Frog (EV=-41.9)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t2d31" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+    <div class="combat"><div class="cmb no-atk">Boros Energy does not attack</div><div class="cmb no-atk">Dimir Midrange does not attack</div></div>
+    <ul class="plays"><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Windswept Heath">Windswept Heath</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Ragavan, Nimble Pilferer">Ragavan, Nimble Pilferer</span></li><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Underground River">Underground River</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Orcish Bowmasters">Orcish Bowmasters</span> → <span class="card-pill" data-card="id:64">id:64</span></li></ul>
+  </div>
+</details>
+
+
+<details class="turn" data-turn="3" open>
+  <summary class="turn-summary">
+    <span class="turn-num">T3</span>
+    <span class="turn-actor">Dimir Midrange <em class="p">(P1)</em></span>
+    <span class="life"><span class="p1-life">19</span> <span class="vs-dot">·</span> <span class="p2-life">19</span></span>
+    <span class="turn-counts">6 decisions</span>
+  </summary>
+  <div class="turn-body">
+    <div class="boards">
+<div class="board p1">
+  <div class="board-head">
+    <span class="dot p1"></span>
+    <strong>P1</strong>
+    <span class="board-stats">life 19 · hand 6 · lib 50</span>
+  </div>
+  <div class="row creatures"><span class="cre" data-card="Orcish Bowmasters">Orcish Bowmasters <em>1/1</em></span><span class="cre" data-card="Orc Army">Orc Army <em>1/1</em></span></div>
+  
+  <div class="row lands"><span class="card-pill" data-card="Island">Island</span><span class="card-pill" data-card="Underground River">Underground River</span></div>
+</div>
+
+<div class="board p2">
+  <div class="board-head">
+    <span class="dot p2"></span>
+    <strong>P2</strong>
+    <span class="board-stats">life 19 · hand 4 · lib 50</span>
+  </div>
+  <div class="row creatures"><span class="cre" data-card="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <em>1/2</em><span class="sick">z</span></span><span class="cre" data-card="Cat Token">Cat Token <em>2/1</em><span class="sick">z</span></span></div>
+  
+  <div class="row lands"><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span><span class="card-pill" data-card="Arena of Glory">Arena of Glory</span></div>
+</div>
+</div>
+    
+<div class="decision" id="g2t3d32" data-decision-id="g2t3d32">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t3d32">#g2t3d32</a>
+    <span class="dec-actor">Boros Energy</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">4 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span></span>
+      <span class="chosen-ev">19.04</span>
+    </div>
+    <div class="chosen-reason">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (EV=19.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Arena of Glory">Arena of Glory</span></span>
+    <span class="alt-ev">7.00</span>
+    <span class="alt-gap">Δ 12.04</span>
+    <span class="alt-bar"><span style="width:74%"></span></span>
+  </div>
+  <div class="alt-reason">Land: Arena of Glory (EV=7.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Thraben Charm">Thraben Charm</span></span>
+    <span class="alt-ev">-8.18</span>
+    <span class="alt-gap">Δ 27.22</span>
+    <span class="alt-bar"><span style="width:42%"></span></span>
+  </div>
+  <div class="alt-reason">Thraben Charm (EV=-8.2)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Voice of Victory">Voice of Victory</span></span>
+    <span class="alt-ev">-28.13</span>
+    <span class="alt-gap">Δ 47.17</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Voice of Victory (EV=-28.1)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t3d32" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t3d33" data-decision-id="g2t3d33">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t3d33">#g2t3d33</a>
+    <span class="dec-actor">Boros Energy</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">1 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Arena of Glory">Arena of Glory</span></span>
+      <span class="chosen-ev">10.00</span>
+    </div>
+    <div class="chosen-reason">Land: Arena of Glory (EV=10.0)</div>
+    
+  </div>
+  
+  <form class="feedback" data-decision-id="g2t3d33" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t3d34" data-decision-id="g2t3d34">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t3d34">#g2t3d34</a>
+    <span class="dec-actor">Dimir Midrange</span>
+    <span class="dec-goal">goal: grind_value</span>
+    <span class="dec-cands">4 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Takenuma, Abandoned Mire">Takenuma, Abandoned Mire</span></span>
+      <span class="chosen-ev">15.00</span>
+    </div>
+    <div class="chosen-reason">Land: Takenuma, Abandoned Mire (EV=15.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Fatal Push">Fatal Push</span></span>
+    <span class="alt-ev">5.35</span>
+    <span class="alt-gap">Δ 9.65</span>
+    <span class="alt-bar"><span style="width:75%"></span></span>
+  </div>
+  <div class="alt-reason">Fatal Push (EV=5.4)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Thoughtseize">Thoughtseize</span></span>
+    <span class="alt-ev">-0.05</span>
+    <span class="alt-gap">Δ 15.05</span>
+    <span class="alt-bar"><span style="width:62%"></span></span>
+  </div>
+  <div class="alt-reason">Thoughtseize (EV=-0.1)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Psychic Frog">Psychic Frog</span></span>
+    <span class="alt-ev">-24.81</span>
+    <span class="alt-gap">Δ 39.81</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Psychic Frog (EV=-24.8)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t3d34" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t3d35" data-decision-id="g2t3d35">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t3d35">#g2t3d35</a>
+    <span class="dec-actor">Dimir Midrange</span>
+    <span class="dec-goal">goal: grind_value</span>
+    <span class="dec-cands">4 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Fatal Push">Fatal Push</span> → <span class="card-pill" data-card="id:152">id:152</span></span>
+      <span class="chosen-ev">5.35</span>
+    </div>
+    <div class="chosen-reason">Fatal Push (EV=5.4)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Dauthi Voidwalker">Dauthi Voidwalker</span></span>
+    <span class="alt-ev">-17.31</span>
+    <span class="alt-gap">Δ 22.67</span>
+    <span class="alt-bar"><span style="width:24%"></span></span>
+  </div>
+  <div class="alt-reason">Dauthi Voidwalker (EV=-17.3)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Thoughtseize">Thoughtseize</span></span>
+    <span class="alt-ev">-23.86</span>
+    <span class="alt-gap">Δ 29.22</span>
+    <span class="alt-bar"><span style="width:3%"></span></span>
+  </div>
+  <div class="alt-reason">Thoughtseize (EV=-23.9)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Psychic Frog">Psychic Frog</span></span>
+    <span class="alt-ev">-24.80</span>
+    <span class="alt-gap">Δ 30.16</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Psychic Frog (EV=-24.8)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t3d35" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t3d36" data-decision-id="g2t3d36">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t3d36">#g2t3d36</a>
+    <span class="dec-actor">Dimir Midrange</span>
+    <span class="dec-goal">goal: grind_value</span>
+    <span class="dec-cands">2 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><em>pass</em></span>
+      <span class="chosen-ev">0.00</span>
+    </div>
+    <div class="chosen-reason">below pass_threshold</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Thoughtseize">Thoughtseize</span></span>
+    <span class="alt-ev">-19.90</span>
+    <span class="alt-gap">Δ 19.90</span>
+    <span class="alt-bar"><span style="width:37%"></span></span>
+  </div>
+  <div class="alt-reason">Thoughtseize (EV=-19.9)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Psychic Frog">Psychic Frog</span></span>
+    <span class="alt-ev">-31.77</span>
+    <span class="alt-gap">Δ 31.77</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Psychic Frog (EV=-31.8)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t3d36" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t3d37" data-decision-id="g2t3d37">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t3d37">#g2t3d37</a>
+    <span class="dec-actor">Dimir Midrange</span>
+    <span class="dec-goal">goal: grind_value</span>
+    <span class="dec-cands">2 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><em>pass</em></span>
+      <span class="chosen-ev">0.00</span>
+    </div>
+    <div class="chosen-reason">below pass_threshold</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Thoughtseize">Thoughtseize</span></span>
+    <span class="alt-ev">-19.90</span>
+    <span class="alt-gap">Δ 19.90</span>
+    <span class="alt-bar"><span style="width:37%"></span></span>
+  </div>
+  <div class="alt-reason">Thoughtseize (EV=-19.9)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Psychic Frog">Psychic Frog</span></span>
+    <span class="alt-ev">-31.77</span>
+    <span class="alt-gap">Δ 31.77</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Psychic Frog (EV=-31.8)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t3d37" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+    <div class="combat"><div class="cmb no-atk">Boros Energy does not attack</div><div class="cmb no-atk">Dimir Midrange does not attack</div></div>
+    <ul class="plays"><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span></li><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Arena of Glory">Arena of Glory</span></li><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Takenuma, Abandoned Mire">Takenuma, Abandoned Mire</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Fatal Push">Fatal Push</span> → <span class="card-pill" data-card="id:152">id:152</span></li></ul>
+  </div>
+</details>
+
+
+<details class="turn" data-turn="4" open>
+  <summary class="turn-summary">
+    <span class="turn-num">T4</span>
+    <span class="turn-actor">Dimir Midrange <em class="p">(P1)</em></span>
+    <span class="life"><span class="p1-life">17</span> <span class="vs-dot">·</span> <span class="p2-life">19</span></span>
+    <span class="turn-counts">3 decisions</span>
+  </summary>
+  <div class="turn-body">
+    <div class="boards">
+<div class="board p1">
+  <div class="board-head">
+    <span class="dot p1"></span>
+    <strong>P1</strong>
+    <span class="board-stats">life 17 · hand 4 · lib 49</span>
+  </div>
+  <div class="row creatures"><span class="cre" data-card="Orcish Bowmasters">Orcish Bowmasters <em>1/1</em></span><span class="cre" data-card="Orc Army">Orc Army <em>1/1</em></span></div>
+  
+  <div class="row lands"><span class="card-pill" data-card="Island">Island</span><span class="card-pill" data-card="Underground River">Underground River</span><span class="card-pill" data-card="Takenuma, Abandoned Mire">Takenuma, Abandoned Mire</span></div>
+</div>
+
+<div class="board p2">
+  <div class="board-head">
+    <span class="dot p2"></span>
+    <strong>P2</strong>
+    <span class="board-stats">life 19 · hand 4 · lib 49</span>
+  </div>
+  <div class="row creatures"><span class="cre" data-card="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <em>1/2</em><span class="tap">↻</span></span></div>
+  
+  <div class="row lands"><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span><span class="card-pill" data-card="Arena of Glory">Arena of Glory</span></div>
+</div>
+</div>
+    
+<div class="decision" id="g2t4d38" data-decision-id="g2t4d38">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t4d38">#g2t4d38</a>
+    <span class="dec-actor">Boros Energy</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">4 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Thraben Charm">Thraben Charm</span> → <span class="card-pill" data-card="id:3">id:3</span></span>
+      <span class="chosen-ev">112.00</span>
+    </div>
+    <div class="chosen-reason">Thraben Charm (EV=112.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Voice of Victory">Voice of Victory</span></span>
+    <span class="alt-ev">0.00</span>
+    <span class="alt-gap">Δ 112.00</span>
+    <span class="alt-bar"><span style="width:4%"></span></span>
+  </div>
+  <div class="alt-reason">Voice of Victory (EV=0.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Blood Moon">Blood Moon</span></span>
+    <span class="alt-ev">-0.16</span>
+    <span class="alt-gap">Δ 112.16</span>
+    <span class="alt-bar"><span style="width:4%"></span></span>
+  </div>
+  <div class="alt-reason">Blood Moon (EV=-0.2)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Seasoned Pyromancer">Seasoned Pyromancer</span></span>
+    <span class="alt-ev">-5.03</span>
+    <span class="alt-gap">Δ 117.03</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Seasoned Pyromancer (EV=-5.0)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t4d38" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t4d39" data-decision-id="g2t4d39">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t4d39">#g2t4d39</a>
+    <span class="dec-actor">Dimir Midrange</span>
+    <span class="dec-goal">goal: close_game</span>
+    <span class="dec-cands">3 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><em>pass</em></span>
+      <span class="chosen-ev">0.00</span>
+    </div>
+    <div class="chosen-reason">below pass_threshold</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Thoughtseize">Thoughtseize</span></span>
+    <span class="alt-ev">-11.96</span>
+    <span class="alt-gap">Δ 11.96</span>
+    <span class="alt-bar"><span style="width:78%"></span></span>
+  </div>
+  <div class="alt-reason">Thoughtseize (EV=-12.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Psychic Frog">Psychic Frog</span></span>
+    <span class="alt-ev">-25.81</span>
+    <span class="alt-gap">Δ 25.81</span>
+    <span class="alt-bar"><span style="width:52%"></span></span>
+  </div>
+  <div class="alt-reason">Psychic Frog (EV=-25.8)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Dauthi Voidwalker">Dauthi Voidwalker</span></span>
+    <span class="alt-ev">-54.56</span>
+    <span class="alt-gap">Δ 54.56</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Dauthi Voidwalker (EV=-54.6)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t4d39" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t4d40" data-decision-id="g2t4d40">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t4d40">#g2t4d40</a>
+    <span class="dec-actor">Dimir Midrange</span>
+    <span class="dec-goal">goal: close_game</span>
+    <span class="dec-cands">3 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><em>pass</em></span>
+      <span class="chosen-ev">0.00</span>
+    </div>
+    <div class="chosen-reason">below pass_threshold</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Thoughtseize">Thoughtseize</span></span>
+    <span class="alt-ev">-11.96</span>
+    <span class="alt-gap">Δ 11.96</span>
+    <span class="alt-bar"><span style="width:78%"></span></span>
+  </div>
+  <div class="alt-reason">Thoughtseize (EV=-12.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Psychic Frog">Psychic Frog</span></span>
+    <span class="alt-ev">-25.81</span>
+    <span class="alt-gap">Δ 25.81</span>
+    <span class="alt-bar"><span style="width:54%"></span></span>
+  </div>
+  <div class="alt-reason">Psychic Frog (EV=-25.8)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Dauthi Voidwalker">Dauthi Voidwalker</span></span>
+    <span class="alt-ev">-56.64</span>
+    <span class="alt-gap">Δ 56.64</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Dauthi Voidwalker (EV=-56.6)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t4d40" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+    <div class="combat"><div class="cmb attack">⚔ Boros Energy attacks: <span class="atk">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <em>1/2</em></span></div><div class="cmb no-blk">Dimir Midrange does not block</div><div class="cmb damage ">💥 Boros Energy deals <strong>1</strong> to Dimir Midrange (18 → 17)</div><div class="cmb attack">⚔ Dimir Midrange attacks: <span class="atk">Orcish Bowmasters <em>1/1</em></span> <span class="atk">Orc Army <em>1/1</em></span></div><div class="cmb no-blk">Boros Energy does not block</div><div class="cmb damage ">💥 Dimir Midrange deals <strong>2</strong> to Boros Energy (19 → 17)</div></div>
+    <ul class="plays"><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Thraben Charm">Thraben Charm</span> → <span class="card-pill" data-card="id:3">id:3</span></li></ul>
+  </div>
+</details>
+
+
+<details class="turn" data-turn="5" open>
+  <summary class="turn-summary">
+    <span class="turn-num">T5</span>
+    <span class="turn-actor">Dimir Midrange <em class="p">(P1)</em></span>
+    <span class="life"><span class="p1-life">16</span> <span class="vs-dot">·</span> <span class="p2-life">15</span></span>
+    <span class="turn-counts">4 decisions</span>
+  </summary>
+  <div class="turn-body">
+    <div class="boards">
+<div class="board p1">
+  <div class="board-head">
+    <span class="dot p1"></span>
+    <strong>P1</strong>
+    <span class="board-stats">life 16 · hand 5 · lib 48</span>
+  </div>
+  <div class="row creatures"><span class="cre" data-card="Orcish Bowmasters">Orcish Bowmasters <em>1/1</em></span><span class="cre" data-card="Orc Army">Orc Army <em>1/1</em></span></div>
+  
+  <div class="row lands"><span class="card-pill" data-card="Island">Island</span><span class="card-pill" data-card="Underground River">Underground River</span><span class="card-pill" data-card="Takenuma, Abandoned Mire">Takenuma, Abandoned Mire</span></div>
+</div>
+
+<div class="board p2">
+  <div class="board-head">
+    <span class="dot p2"></span>
+    <strong>P2</strong>
+    <span class="board-stats">life 15 · hand 3 · lib 46</span>
+  </div>
+  <div class="row creatures"><span class="cre" data-card="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <em>1/2</em><span class="tap">↻</span></span><span class="cre" data-card="Seasoned Pyromancer">Seasoned Pyromancer <em>2/2</em><span class="sick">z</span></span><span class="cre" data-card="Elemental Token">Elemental Token <em>1/1</em><span class="sick">z</span></span><span class="cre" data-card="Elemental Token">Elemental Token <em>1/1</em><span class="sick">z</span></span></div>
+  
+  <div class="row lands"><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span><span class="card-pill" data-card="Arena of Glory">Arena of Glory</span><span class="card-pill" data-card="Elegant Parlor">Elegant Parlor</span></div>
+</div>
+</div>
+    
+<div class="decision" id="g2t5d41" data-decision-id="g2t5d41">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t5d41">#g2t5d41</a>
+    <span class="dec-actor">Boros Energy</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">4 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Seasoned Pyromancer">Seasoned Pyromancer</span></span>
+      <span class="chosen-ev">38.00</span>
+    </div>
+    <div class="chosen-reason">Seasoned Pyromancer (EV=38.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Seasoned Pyromancer">Seasoned Pyromancer</span></span>
+    <span class="alt-ev">38.00</span>
+    <span class="alt-gap">Δ 0.00</span>
+    <span class="alt-bar"><span style="width:100%"></span></span>
+  </div>
+  <div class="alt-reason">Seasoned Pyromancer (EV=38.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Voice of Victory">Voice of Victory</span></span>
+    <span class="alt-ev">4.00</span>
+    <span class="alt-gap">Δ 34.00</span>
+    <span class="alt-bar"><span style="width:10%"></span></span>
+  </div>
+  <div class="alt-reason">Voice of Victory (EV=4.0)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Blood Moon">Blood Moon</span></span>
+    <span class="alt-ev">-0.18</span>
+    <span class="alt-gap">Δ 38.18</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Blood Moon (EV=-0.2)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t5d41" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t5d42" data-decision-id="g2t5d42">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t5d42">#g2t5d42</a>
+    <span class="dec-actor">Boros Energy</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">1 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Elegant Parlor">Elegant Parlor</span></span>
+      <span class="chosen-ev">10.00</span>
+    </div>
+    <div class="chosen-reason">Land: Elegant Parlor (EV=10.0)</div>
+    
+  </div>
+  
+  <form class="feedback" data-decision-id="g2t5d42" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t5d43" data-decision-id="g2t5d43">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t5d43">#g2t5d43</a>
+    <span class="dec-actor">Dimir Midrange</span>
+    <span class="dec-goal">goal: close_game</span>
+    <span class="dec-cands">4 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><em>pass</em></span>
+      <span class="chosen-ev">0.00</span>
+    </div>
+    <div class="chosen-reason">below pass_threshold</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Thoughtseize">Thoughtseize</span></span>
+    <span class="alt-ev">-11.75</span>
+    <span class="alt-gap">Δ 11.75</span>
+    <span class="alt-bar"><span style="width:53%"></span></span>
+  </div>
+  <div class="alt-reason">Thoughtseize (EV=-11.8)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Thoughtseize">Thoughtseize</span></span>
+    <span class="alt-ev">-11.75</span>
+    <span class="alt-gap">Δ 11.75</span>
+    <span class="alt-bar"><span style="width:53%"></span></span>
+  </div>
+  <div class="alt-reason">Thoughtseize (EV=-11.8)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Dauthi Voidwalker">Dauthi Voidwalker</span></span>
+    <span class="alt-ev">-15.39</span>
+    <span class="alt-gap">Δ 15.39</span>
+    <span class="alt-bar"><span style="width:39%"></span></span>
+  </div>
+  <div class="alt-reason">Dauthi Voidwalker (EV=-15.4)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Psychic Frog">Psychic Frog</span></span>
+    <span class="alt-ev">-25.37</span>
+    <span class="alt-gap">Δ 25.37</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Psychic Frog (EV=-25.4)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t5d43" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t5d44" data-decision-id="g2t5d44">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t5d44">#g2t5d44</a>
+    <span class="dec-actor">Dimir Midrange</span>
+    <span class="dec-goal">goal: close_game</span>
+    <span class="dec-cands">4 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><em>pass</em></span>
+      <span class="chosen-ev">0.00</span>
+    </div>
+    <div class="chosen-reason">below pass_threshold</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Thoughtseize">Thoughtseize</span></span>
+    <span class="alt-ev">-11.75</span>
+    <span class="alt-gap">Δ 11.75</span>
+    <span class="alt-bar"><span style="width:53%"></span></span>
+  </div>
+  <div class="alt-reason">Thoughtseize (EV=-11.8)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Thoughtseize">Thoughtseize</span></span>
+    <span class="alt-ev">-11.75</span>
+    <span class="alt-gap">Δ 11.75</span>
+    <span class="alt-bar"><span style="width:53%"></span></span>
+  </div>
+  <div class="alt-reason">Thoughtseize (EV=-11.8)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Dauthi Voidwalker">Dauthi Voidwalker</span></span>
+    <span class="alt-ev">-15.39</span>
+    <span class="alt-gap">Δ 15.39</span>
+    <span class="alt-bar"><span style="width:39%"></span></span>
+  </div>
+  <div class="alt-reason">Dauthi Voidwalker (EV=-15.4)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Psychic Frog">Psychic Frog</span></span>
+    <span class="alt-ev">-25.37</span>
+    <span class="alt-gap">Δ 25.37</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Psychic Frog (EV=-25.4)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t5d44" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+    <div class="combat"><div class="cmb attack">⚔ Boros Energy attacks: <span class="atk">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <em>1/2</em></span></div><div class="cmb no-blk">Dimir Midrange does not block</div><div class="cmb damage ">💥 Boros Energy deals <strong>1</strong> to Dimir Midrange (17 → 16)</div><div class="cmb no-atk">Dimir Midrange does not attack</div></div>
+    <ul class="plays"><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Seasoned Pyromancer">Seasoned Pyromancer</span></li><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Elegant Parlor">Elegant Parlor</span></li></ul>
+  </div>
+</details>
+
+
+<details class="turn" data-turn="6" open>
+  <summary class="turn-summary">
+    <span class="turn-num">T6</span>
+    <span class="turn-actor">Dimir Midrange <em class="p">(P1)</em></span>
+    <span class="life"><span class="p1-life">15</span> <span class="vs-dot">·</span> <span class="p2-life">12</span></span>
+    <span class="turn-counts">4 decisions</span>
+  </summary>
+  <div class="turn-body">
+    <div class="boards">
+<div class="board p1">
+  <div class="board-head">
+    <span class="dot p1"></span>
+    <strong>P1</strong>
+    <span class="board-stats">life 15 · hand 6 · lib 47</span>
+  </div>
+  <div class="row creatures"><em class="mute">no creatures</em></div>
+  
+  <div class="row lands"><span class="card-pill" data-card="Island">Island</span><span class="card-pill" data-card="Underground River">Underground River</span><span class="card-pill" data-card="Takenuma, Abandoned Mire">Takenuma, Abandoned Mire</span></div>
+</div>
+
+<div class="board p2">
+  <div class="board-head">
+    <span class="dot p2"></span>
+    <strong>P2</strong>
+    <span class="board-stats">life 12 · hand 1 · lib 42</span>
+  </div>
+  <div class="row creatures"><span class="cre" data-card="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <em>1/2</em><span class="tap">↻</span></span><span class="cre" data-card="Elemental Token">Elemental Token <em>1/1</em></span><span class="cre" data-card="Elemental Token">Elemental Token <em>1/1</em></span><span class="cre" data-card="Seasoned Pyromancer">Seasoned Pyromancer <em>2/2</em><span class="sick">z</span></span><span class="cre" data-card="Elemental Token">Elemental Token <em>1/1</em><span class="sick">z</span></span><span class="cre" data-card="Elemental Token">Elemental Token <em>1/1</em><span class="sick">z</span></span><span class="cre" data-card="Ocelot Pride">Ocelot Pride <em>1/1</em><span class="sick">z</span></span></div>
+  
+  <div class="row lands"><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span><span class="card-pill" data-card="Arena of Glory">Arena of Glory</span><span class="card-pill" data-card="Elegant Parlor">Elegant Parlor</span><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span></div>
+</div>
+</div>
+    
+<div class="decision" id="g2t6d45" data-decision-id="g2t6d45">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t6d45">#g2t6d45</a>
+    <span class="dec-actor">Boros Energy</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">4 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Marsh Flats">Marsh Flats</span></span>
+      <span class="chosen-ev">22.00</span>
+    </div>
+    <div class="chosen-reason">Land: Marsh Flats (EV=22.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Seasoned Pyromancer">Seasoned Pyromancer</span></span>
+    <span class="alt-ev">2.28</span>
+    <span class="alt-gap">Δ 19.72</span>
+    <span class="alt-bar"><span style="width:10%"></span></span>
+  </div>
+  <div class="alt-reason">Seasoned Pyromancer (EV=2.3)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="The Legend of Roku // Avatar Roku">The Legend of Roku // Avatar Roku</span></span>
+    <span class="alt-ev">0.25</span>
+    <span class="alt-gap">Δ 21.75</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">The Legend of Roku // Avatar Roku (EV=0.2)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Goblin Bombardment">Goblin Bombardment</span></span>
+    <span class="alt-ev">0.04</span>
+    <span class="alt-gap">Δ 21.96</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Goblin Bombardment (EV=0.0)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t6d45" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t6d46" data-decision-id="g2t6d46">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t6d46">#g2t6d46</a>
+    <span class="dec-actor">Boros Energy</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">3 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Seasoned Pyromancer">Seasoned Pyromancer</span></span>
+      <span class="chosen-ev">2.88</span>
+    </div>
+    <div class="chosen-reason">Seasoned Pyromancer (EV=2.9)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-mid">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="The Legend of Roku // Avatar Roku">The Legend of Roku // Avatar Roku</span></span>
+    <span class="alt-ev">0.38</span>
+    <span class="alt-gap">Δ 2.51</span>
+    <span class="alt-bar"><span style="width:10%"></span></span>
+  </div>
+  <div class="alt-reason">The Legend of Roku // Avatar Roku (EV=0.4)</div>
+</div>
+
+<div class="alt gap-mid">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Goblin Bombardment">Goblin Bombardment</span></span>
+    <span class="alt-ev">0.09</span>
+    <span class="alt-gap">Δ 2.79</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Goblin Bombardment (EV=0.1)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t6d46" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t6d47" data-decision-id="g2t6d47">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t6d47">#g2t6d47</a>
+    <span class="dec-actor">Boros Energy</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">1 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Ocelot Pride">Ocelot Pride</span></span>
+      <span class="chosen-ev">0.08</span>
+    </div>
+    <div class="chosen-reason">Ocelot Pride (EV=0.1)</div>
+    
+  </div>
+  
+  <form class="feedback" data-decision-id="g2t6d47" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t6d48" data-decision-id="g2t6d48">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t6d48">#g2t6d48</a>
+    <span class="dec-actor">Dimir Midrange</span>
+    <span class="dec-goal">goal: close_game</span>
+    <span class="dec-cands">6 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Dauthi Voidwalker">Dauthi Voidwalker</span></span>
+      <span class="chosen-ev">-0.07</span>
+    </div>
+    <div class="chosen-reason">Dauthi Voidwalker (EV=-0.1)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Thoughtseize">Thoughtseize</span></span>
+    <span class="alt-ev">-0.08</span>
+    <span class="alt-gap">Δ 0.01</span>
+    <span class="alt-bar"><span style="width:99%"></span></span>
+  </div>
+  <div class="alt-reason">Thoughtseize (EV=-0.1)</div>
+</div>
+
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Thoughtseize">Thoughtseize</span></span>
+    <span class="alt-ev">-0.08</span>
+    <span class="alt-gap">Δ 0.01</span>
+    <span class="alt-bar"><span style="width:99%"></span></span>
+  </div>
+  <div class="alt-reason">Thoughtseize (EV=-0.1)</div>
+</div>
+
+<div class="alt gap-mid">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Fatal Push">Fatal Push</span></span>
+    <span class="alt-ev">-1.37</span>
+    <span class="alt-gap">Δ 1.30</span>
+    <span class="alt-bar"><span style="width:32%"></span></span>
+  </div>
+  <div class="alt-reason">Fatal Push (EV=-1.4)</div>
+</div>
+
+<div class="alt gap-mid">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Psychic Frog">Psychic Frog</span></span>
+    <span class="alt-ev">-2.00</span>
+    <span class="alt-gap">Δ 1.93</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Psychic Frog (EV=-2.0)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t6d48" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+    <div class="combat"><div class="cmb attack">⚔ Boros Energy attacks: <span class="atk">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <em>1/2</em></span> <span class="atk">Seasoned Pyromancer <em>2/2</em></span></div><div class="cmb block">🛡 Dimir Midrange blocks: <span class="blk">81 blocked by 151, 3</span></div><div class="cmb damage ">💥 Boros Energy deals <strong>1</strong> to Dimir Midrange (16 → 15)</div><div class="cmb no-atk">Dimir Midrange does not attack</div></div>
+    <ul class="plays"><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Marsh Flats">Marsh Flats</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Seasoned Pyromancer">Seasoned Pyromancer</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Ocelot Pride">Ocelot Pride</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Dauthi Voidwalker">Dauthi Voidwalker</span></li></ul>
+  </div>
+</details>
+
+
+<details class="turn" data-turn="7" open>
+  <summary class="turn-summary">
+    <span class="turn-num">T7</span>
+    <span class="turn-actor">Dimir Midrange <em class="p">(P1)</em></span>
+    <span class="life"><span class="p1-life">8</span> <span class="vs-dot">·</span> <span class="p2-life">12</span></span>
+    <span class="turn-counts">4 decisions</span>
+  </summary>
+  <div class="turn-body">
+    <div class="boards">
+<div class="board p1">
+  <div class="board-head">
+    <span class="dot p1"></span>
+    <strong>P1</strong>
+    <span class="board-stats">life 8 · hand 6 · lib 46</span>
+  </div>
+  <div class="row creatures"><em class="mute">no creatures</em></div>
+  
+  <div class="row lands"><span class="card-pill" data-card="Island">Island</span><span class="card-pill" data-card="Underground River">Underground River</span><span class="card-pill" data-card="Takenuma, Abandoned Mire">Takenuma, Abandoned Mire</span></div>
+</div>
+
+<div class="board p2">
+  <div class="board-head">
+    <span class="dot p2"></span>
+    <strong>P2</strong>
+    <span class="board-stats">life 12 · hand 1 · lib 40</span>
+  </div>
+  <div class="row creatures"><span class="cre" data-card="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <em>1/2</em><span class="tap">↻</span></span><span class="cre" data-card="Elemental Token">Elemental Token <em>1/1</em><span class="tap">↻</span></span><span class="cre" data-card="Elemental Token">Elemental Token <em>1/1</em><span class="tap">↻</span></span><span class="cre" data-card="Elemental Token">Elemental Token <em>1/1</em><span class="tap">↻</span></span><span class="cre" data-card="Elemental Token">Elemental Token <em>1/1</em><span class="tap">↻</span></span><span class="cre" data-card="Ocelot Pride">Ocelot Pride <em>1/1</em><span class="tap">↻</span></span></div>
+  
+  <div class="row lands"><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span><span class="card-pill" data-card="Arena of Glory">Arena of Glory</span><span class="card-pill" data-card="Elegant Parlor">Elegant Parlor</span><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span><span class="card-pill" data-card="Plains">Plains</span></div>
+</div>
+</div>
+    
+<div class="decision" id="g2t7d49" data-decision-id="g2t7d49">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t7d49">#g2t7d49</a>
+    <span class="dec-actor">Boros Energy</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">1 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Arid Mesa">Arid Mesa</span></span>
+      <span class="chosen-ev">18.00</span>
+    </div>
+    <div class="chosen-reason">Land: Arid Mesa (EV=18.0)</div>
+    
+  </div>
+  
+  <form class="feedback" data-decision-id="g2t7d49" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t7d50" data-decision-id="g2t7d50">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t7d50">#g2t7d50</a>
+    <span class="dec-actor">Dimir Midrange</span>
+    <span class="dec-goal">goal: close_game</span>
+    <span class="dec-cands">6 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Polluted Delta">Polluted Delta</span></span>
+      <span class="chosen-ev">18.00</span>
+    </div>
+    <div class="chosen-reason">Land: Polluted Delta (EV=18.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Thoughtseize">Thoughtseize</span></span>
+    <span class="alt-ev">-0.08</span>
+    <span class="alt-gap">Δ 18.08</span>
+    <span class="alt-bar"><span style="width:8%"></span></span>
+  </div>
+  <div class="alt-reason">Thoughtseize (EV=-0.1)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Thoughtseize">Thoughtseize</span></span>
+    <span class="alt-ev">-0.08</span>
+    <span class="alt-gap">Δ 18.08</span>
+    <span class="alt-bar"><span style="width:8%"></span></span>
+  </div>
+  <div class="alt-reason">Thoughtseize (EV=-0.1)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Psychic Frog">Psychic Frog</span></span>
+    <span class="alt-ev">-0.76</span>
+    <span class="alt-gap">Δ 18.76</span>
+    <span class="alt-bar"><span style="width:5%"></span></span>
+  </div>
+  <div class="alt-reason">Psychic Frog (EV=-0.8)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Fatal Push">Fatal Push</span></span>
+    <span class="alt-ev">-1.82</span>
+    <span class="alt-gap">Δ 19.82</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Fatal Push (EV=-1.8)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t7d50" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t7d51" data-decision-id="g2t7d51">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t7d51">#g2t7d51</a>
+    <span class="dec-actor">Dimir Midrange</span>
+    <span class="dec-goal">goal: close_game</span>
+    <span class="dec-cands">6 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Fatal Push">Fatal Push</span> → <span class="card-pill" data-card="id:75">id:75</span></span>
+      <span class="chosen-ev">-0.04</span>
+    </div>
+    <div class="chosen-reason">Fatal Push (EV=-0.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Thoughtseize">Thoughtseize</span></span>
+    <span class="alt-ev">-0.21</span>
+    <span class="alt-gap">Δ 0.17</span>
+    <span class="alt-bar"><span style="width:98%"></span></span>
+  </div>
+  <div class="alt-reason">Thoughtseize (EV=-0.2)</div>
+</div>
+
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Thoughtseize">Thoughtseize</span></span>
+    <span class="alt-ev">-0.21</span>
+    <span class="alt-gap">Δ 0.17</span>
+    <span class="alt-bar"><span style="width:98%"></span></span>
+  </div>
+  <div class="alt-reason">Thoughtseize (EV=-0.2)</div>
+</div>
+
+<div class="alt gap-tight">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Archmage's Charm">Archmage's Charm</span></span>
+    <span class="alt-ev">-0.62</span>
+    <span class="alt-gap">Δ 0.58</span>
+    <span class="alt-bar"><span style="width:94%"></span></span>
+  </div>
+  <div class="alt-reason">Archmage's Charm (EV=-0.6)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Psychic Frog">Psychic Frog</span></span>
+    <span class="alt-ev">-11.45</span>
+    <span class="alt-gap">Δ 11.41</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Psychic Frog (EV=-11.5)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t7d51" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t7d52" data-decision-id="g2t7d52">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t7d52">#g2t7d52</a>
+    <span class="dec-actor">Dimir Midrange</span>
+    <span class="dec-goal">goal: close_game</span>
+    <span class="dec-cands">5 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Archmage's Charm">Archmage's Charm</span></span>
+      <span class="chosen-ev">-0.62</span>
+    </div>
+    <div class="chosen-reason">Archmage's Charm (EV=-0.6)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Thoughtseize">Thoughtseize</span></span>
+    <span class="alt-ev">-8.85</span>
+    <span class="alt-gap">Δ 8.22</span>
+    <span class="alt-bar"><span style="width:68%"></span></span>
+  </div>
+  <div class="alt-reason">Thoughtseize (EV=-8.8)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Thoughtseize">Thoughtseize</span></span>
+    <span class="alt-ev">-8.85</span>
+    <span class="alt-gap">Δ 8.22</span>
+    <span class="alt-bar"><span style="width:68%"></span></span>
+  </div>
+  <div class="alt-reason">Thoughtseize (EV=-8.8)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Psychic Frog">Psychic Frog</span></span>
+    <span class="alt-ev">-9.92</span>
+    <span class="alt-gap">Δ 9.29</span>
+    <span class="alt-bar"><span style="width:64%"></span></span>
+  </div>
+  <div class="alt-reason">Psychic Frog (EV=-9.9)</div>
+</div>
+
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Murktide Regent">Murktide Regent</span></span>
+    <span class="alt-ev">-26.53</span>
+    <span class="alt-gap">Δ 25.91</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Murktide Regent (EV=-26.5)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t7d52" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+    <div class="combat"><div class="cmb attack">⚔ Boros Energy attacks: <span class="atk">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger <em>1/2</em></span> <span class="atk">Elemental Token <em>1/1</em></span> <span class="atk">Elemental Token <em>1/1</em></span> <span class="atk">Seasoned Pyromancer <em>2/2</em></span> <span class="atk">Elemental Token <em>1/1</em></span> <span class="atk">Elemental Token <em>1/1</em></span> <span class="atk">Ocelot Pride <em>1/1</em></span></div><div class="cmb block">🛡 Dimir Midrange blocks: <span class="blk">82 blocked by 55</span></div><div class="cmb damage ">💥 Boros Energy deals <strong>6</strong> to Dimir Midrange (14 → 8)</div><div class="cmb no-atk">Dimir Midrange does not attack</div></div>
+    <ul class="plays"><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Arid Mesa">Arid Mesa</span></li><li class="play kind-land"><span class="play-act">play_land</span><span class="card-pill" data-card="Polluted Delta">Polluted Delta</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Fatal Push">Fatal Push</span> → <span class="card-pill" data-card="id:75">id:75</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Archmage's Charm">Archmage's Charm</span></li></ul>
+  </div>
+</details>
+
+
+<details class="turn" data-turn="8" open>
+  <summary class="turn-summary">
+    <span class="turn-num">T8</span>
+    <span class="turn-actor">Boros Energy <em class="p">(P2)</em></span>
+    <span class="life"><span class="p1-life">4</span> <span class="vs-dot">·</span> <span class="p2-life">12</span></span>
+    <span class="turn-counts">2 decisions</span>
+  </summary>
+  <div class="turn-body">
+    <div class="boards">
+<div class="board p1">
+  <div class="board-head">
+    <span class="dot p1"></span>
+    <strong>P1</strong>
+    <span class="board-stats">life 4 · hand 4 · lib 44</span>
+  </div>
+  <div class="row creatures"><em class="mute">no creatures</em></div>
+  
+  <div class="row lands"><span class="card-pill" data-card="Island">Island</span><span class="card-pill" data-card="Underground River">Underground River</span><span class="card-pill" data-card="Takenuma, Abandoned Mire">Takenuma, Abandoned Mire</span><span class="card-pill" data-card="Watery Grave">Watery Grave</span></div>
+</div>
+
+<div class="board p2">
+  <div class="board-head">
+    <span class="dot p2"></span>
+    <strong>P2</strong>
+    <span class="board-stats">life 12 · hand 1 · lib 40</span>
+  </div>
+  <div class="row creatures"><span class="cre" data-card="Elemental Token">Elemental Token <em>1/1</em></span><span class="cre" data-card="Elemental Token">Elemental Token <em>1/1</em></span><span class="cre" data-card="Elemental Token">Elemental Token <em>1/1</em></span><span class="cre" data-card="Elemental Token">Elemental Token <em>1/1</em></span><span class="cre" data-card="Ocelot Pride">Ocelot Pride <em>1/1</em></span></div>
+  
+  <div class="row lands"><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span><span class="card-pill" data-card="Arena of Glory">Arena of Glory</span><span class="card-pill" data-card="Elegant Parlor">Elegant Parlor</span><span class="card-pill" data-card="Sacred Foundry">Sacred Foundry</span><span class="card-pill" data-card="Plains">Plains</span></div>
+</div>
+</div>
+    
+<div class="decision" id="g2t8d53" data-decision-id="g2t8d53">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t8d53">#g2t8d53</a>
+    <span class="dec-actor">Boros Energy</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">2 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Guide of Souls">Guide of Souls</span></span>
+      <span class="chosen-ev">5.01</span>
+    </div>
+    <div class="chosen-reason">Guide of Souls (EV=5.0)</div>
+    
+  </div>
+  <div class="alts-label">runner-ups</div>
+<div class="alt gap-wide">
+  <div class="alt-row">
+    <span class="alt-card"><span class="card-pill" data-card="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span></span>
+    <span class="alt-ev">-0.82</span>
+    <span class="alt-gap">Δ 5.83</span>
+    <span class="alt-bar"><span style="width:0%"></span></span>
+  </div>
+  <div class="alt-reason">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (EV=-0.8)</div>
+</div>
+
+  <form class="feedback" data-decision-id="g2t8d53" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+<div class="decision" id="g2t8d54" data-decision-id="g2t8d54">
+  <div class="dec-head">
+    <a class="dec-anchor" href="#g2t8d54">#g2t8d54</a>
+    <span class="dec-actor">Boros Energy</span>
+    <span class="dec-goal">goal: curve_out</span>
+    <span class="dec-cands">1 candidates</span>
+  </div>
+  <div class="chosen">
+    <div class="chosen-row">
+      <span class="chosen-label">CHOSEN</span>
+      <span class="chosen-card"><span class="card-pill" data-card="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span></span>
+      <span class="chosen-ev">-0.90</span>
+    </div>
+    <div class="chosen-reason">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (EV=-0.9)</div>
+    
+  </div>
+  
+  <form class="feedback" data-decision-id="g2t8d54" onsubmit="return false;">
+    <button type="button" class="thumbs up" data-thumb="up" title="good play">👍</button>
+    <button type="button" class="thumbs down" data-thumb="down" title="bad play">👎</button>
+    <input type="text" class="fb-note" placeholder="why? (saved locally)" />
+    <span class="fb-status"></span>
+  </form>
+</div>
+
+    <div class="combat"><div class="cmb attack">⚔ Boros Energy attacks: <span class="atk">Elemental Token <em>1/1</em></span> <span class="atk">Elemental Token <em>1/1</em></span> <span class="atk">Elemental Token <em>1/1</em></span> <span class="atk">Elemental Token <em>1/1</em></span> <span class="atk">Ocelot Pride <em>1/1</em></span></div><div class="cmb no-blk">Dimir Midrange does not block</div><div class="cmb damage lethal">💥 Boros Energy deals <strong>5</strong> to Dimir Midrange (4 → -1)<span class="lethal-tag">☠ LETHAL</span></div></div>
+    <ul class="plays"><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Guide of Souls">Guide of Souls</span></li><li class="play kind-spell"><span class="play-act">cast_spell</span><span class="card-pill" data-card="Ajani, Nacatl Pariah // Ajani, Nacatl Avenger">Ajani, Nacatl Pariah // Ajani, Nacatl Avenger</span></li></ul>
+  </div>
+</details>
+
+  </div>
+</section>
+
+</main>
+<script>window.__REPLAY_ID = "60102";</script>
+<script>
+(function(){
+  const tip = document.createElement('div');
+  tip.id = 'card-tip';
+  document.body.appendChild(tip);
+  const cache = new Map();
+
+  function showTip(el, evt) {
+    const name = el.getAttribute('data-card');
+    if (!name) return;
+    const url = 'https://api.scryfall.com/cards/named?exact='
+              + encodeURIComponent(name) + '&format=image&version=small';
+    if (!cache.has(name)) {
+      const img = new Image();
+      img.src = url;
+      cache.set(name, img);
+    }
+    const img = cache.get(name);
+    tip.innerHTML = '';
+    tip.appendChild(img);
+    tip.style.display = 'block';
+    moveTip(evt);
+  }
+  function moveTip(evt) {
+    const x = Math.min(evt.clientX + 14, window.innerWidth - 220);
+    const y = Math.min(evt.clientY + 14, window.innerHeight - 290);
+    tip.style.left = x + 'px';
+    tip.style.top = y + 'px';
+  }
+  function hideTip() { tip.style.display = 'none'; }
+  document.addEventListener('mouseover', (e) => {
+    const t = e.target.closest('[data-card]');
+    if (t) showTip(t, e);
+  });
+  document.addEventListener('mousemove', (e) => {
+    if (tip.style.display === 'block') moveTip(e);
+  });
+  document.addEventListener('mouseout', (e) => {
+    const t = e.target.closest('[data-card]');
+    if (t) hideTip();
+  });
+
+  const FB_KEY = 'mtgsim:replay-feedback:' + (window.__REPLAY_ID || 'default');
+  function loadFeedback() {
+    try { return JSON.parse(localStorage.getItem(FB_KEY) || '{}'); }
+    catch (e) { return {}; }
+  }
+  function saveFeedback(fb) {
+    localStorage.setItem(FB_KEY, JSON.stringify(fb));
+  }
+  function applyFeedback() {
+    const fb = loadFeedback();
+    document.querySelectorAll('.feedback').forEach(form => {
+      const id = form.getAttribute('data-decision-id');
+      const entry = fb[id];
+      if (!entry) return;
+      if (entry.thumb === 'up') {
+        form.querySelector('.thumbs.up').classList.add('active');
+      } else if (entry.thumb === 'down') {
+        form.querySelector('.thumbs.down').classList.add('active');
+      }
+      if (entry.note) form.querySelector('.fb-note').value = entry.note;
+      const status = form.querySelector('.fb-status');
+      if (status) status.textContent = '✓ saved';
+    });
+    updateFeedbackCount();
+  }
+  function updateFeedbackCount() {
+    const fb = loadFeedback();
+    const n = Object.keys(fb).length;
+    const el = document.getElementById('fb-count');
+    if (el) el.textContent = String(n);
+  }
+  function setFeedback(decisionId, patch) {
+    const fb = loadFeedback();
+    const cur = fb[decisionId] || {};
+    Object.assign(cur, patch);
+    if (!cur.thumb && !cur.note) {
+      delete fb[decisionId];
+    } else {
+      cur.timestamp = new Date().toISOString();
+      fb[decisionId] = cur;
+    }
+    saveFeedback(fb);
+    updateFeedbackCount();
+  }
+
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.thumbs');
+    if (!btn) return;
+    const form = btn.closest('.feedback');
+    const id = form.getAttribute('data-decision-id');
+    const thumb = btn.getAttribute('data-thumb');
+    const fb = loadFeedback();
+    const cur = fb[id] || {};
+    const newThumb = (cur.thumb === thumb) ? null : thumb;
+    setFeedback(id, { thumb: newThumb });
+    form.querySelectorAll('.thumbs').forEach(b => b.classList.remove('active'));
+    if (newThumb) {
+      form.querySelector('.thumbs.' + newThumb).classList.add('active');
+    }
+    form.querySelector('.fb-status').textContent = '✓ saved';
+  });
+
+  document.addEventListener('input', (e) => {
+    const inp = e.target.closest('.fb-note');
+    if (!inp) return;
+    const form = inp.closest('.feedback');
+    const id = form.getAttribute('data-decision-id');
+    setFeedback(id, { note: inp.value });
+    form.querySelector('.fb-status').textContent = '✓ saved';
+  });
+
+  const exp = document.getElementById('btn-export-fb');
+  if (exp) exp.addEventListener('click', () => {
+    const fb = loadFeedback();
+    const lines = Object.entries(fb).map(([id, v]) =>
+      JSON.stringify(Object.assign({decision_id: id}, v)));
+    const blob = new Blob([lines.join('\n')], {type: 'application/x-ndjson'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'replay_feedback.jsonl';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
+  const clr = document.getElementById('btn-clear-fb');
+  if (clr) clr.addEventListener('click', () => {
+    if (!confirm('Clear all feedback for this replay?')) return;
+    localStorage.removeItem(FB_KEY);
+    document.querySelectorAll('.feedback').forEach(f => {
+      f.querySelectorAll('.thumbs').forEach(b => b.classList.remove('active'));
+      f.querySelector('.fb-note').value = '';
+      f.querySelector('.fb-status').textContent = '';
+    });
+    updateFeedbackCount();
+  });
+  const jmp = document.getElementById('btn-jump-flagged');
+  if (jmp) jmp.addEventListener('click', () => {
+    const fb = loadFeedback();
+    const ids = Object.keys(fb).filter(k => fb[k].thumb === 'down');
+    if (ids.length === 0) { alert('No flagged decisions yet'); return; }
+    const cur = (location.hash || '').slice(1);
+    const idx = ids.indexOf(cur);
+    const next = ids[(idx + 1) % ids.length];
+    location.hash = next;
+  });
+  const col = document.getElementById('btn-collapse-all');
+  if (col) col.addEventListener('click', () =>
+    document.querySelectorAll('details.turn').forEach(d =>
+      d.removeAttribute('open')));
+  const exp2 = document.getElementById('btn-expand-all');
+  if (exp2) exp2.addEventListener('click', () =>
+    document.querySelectorAll('details.turn').forEach(d =>
+      d.setAttribute('open', '')));
+
+  applyFeedback();
+})();
+</script>
+</body>
+</html>

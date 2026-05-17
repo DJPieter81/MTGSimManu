@@ -173,6 +173,38 @@ class GameState:
                     return card
         return None
 
+    # ─── Sorcery-speed-lockout static-effect registry (R4) ──────────
+    # Per-game registry of player indices currently restricted to
+    # sorcery-speed casts by an opposing battlefield permanent. Rebuilt
+    # on demand from battlefield permanents whose classifier tag is
+    # ``Tag.SORCERY_SPEED_LOCKOUT`` (cached in
+    # ``decks/gameplans/_oracle_classifier.json``). Consulted by
+    # ``CastManager.can_cast`` — opponents in the set cannot cast
+    # outside sorcery-speed windows. Card-name branches, oracle-text
+    # parsing, and per-card flags are forbidden by the abstraction
+    # contract; the classifier tag IS the dispatch.
+    def _sorcery_speed_lockout_set(self) -> set[int]:
+        """Return player indices currently restricted to sorcery-speed
+        casts (R4).
+
+        For every battlefield permanent whose classifier tag includes
+        ``Tag.SORCERY_SPEED_LOCKOUT``, the permanent's *opponents* are
+        added to the set. No oracle-text parse, no card-name check.
+        """
+        # Late import: ai.oracle_classifier is in the ai/ layer; an
+        # engine module importing from ai/ is acceptable because the
+        # classifier is a pure-data loader (no scoring/strategy logic).
+        from ai.oracle_classifier import Tag, tags_for
+
+        restricted: set[int] = set()
+        for player in self.players:
+            for card in player.battlefield:
+                if Tag.SORCERY_SPEED_LOCKOUT in tags_for(card.template.name):
+                    for opp_idx in range(len(self.players)):
+                        if opp_idx != card.controller:
+                            restricted.add(opp_idx)
+        return restricted
+
     def setup_game(self, deck1: List[CardTemplate], deck2: List[CardTemplate],
                     forced_first_player: Optional[int] = None):
         """Initialize the game with two decks.
@@ -217,9 +249,19 @@ class GameState:
         self.priority_player = self.active_player
 
     def draw_cards(self, player_idx: int, count: int) -> List[CardInstance]:
-        """Draw cards from library to hand."""
+        """Draw cards from library to hand (CR 121.1).
+
+        Per-card trigger fan-out is owned by
+        `engine.zone_transfer._fire_on_draw_triggers` (registered for
+        `TransferKind.DRAW`). The fan-out reads classifier tags
+        (`ON_DRAW_DAMAGE`, `ON_OPP_DRAW_LIFE_LOSS`,
+        `ON_OWN_DRAW_LIFE_GAIN`) — no inline regex matching on
+        oracle text lives here. The legacy regex chain was the
+        R1+M1-engine bug surface from the 2026-05-16 audit.
+        """
+        from .zone_transfer import TransferKind, transfer
         player = self.players[player_idx]
-        drawn = []
+        drawn: List[CardInstance] = []
         for _ in range(count):
             if not player.library:
                 self.game_over = True
@@ -227,46 +269,60 @@ class GameState:
                 self.log.append(f"P{player_idx+1} loses: empty library")
                 return drawn
             card = player.library.pop(0)
-            card.zone = "hand"
-            player.hand.append(card)
             player.cards_drawn_this_turn += 1
             drawn.append(card)
-
-            # Generic draw triggers from oracle text
-            # Handles: Sheoldred ("gain 2 life" on draw), Bowmasters ("whenever
-            # an opponent draws"), and any future draw-trigger cards.
-            opp = self.players[1 - player_idx]
-            for c in player.battlefield:
-                oracle = (c.template.oracle_text or '').lower()
-                if 'whenever you draw' in oracle and 'gain' in oracle and 'life' in oracle:
-                    import re
-                    m = re.search(r'gain\s+(\d+)\s+life', oracle)
-                    if m:
-                        self.gain_life(player.player_idx, int(m.group(1)), c.name)
-            for c in opp.battlefield:
-                oracle = (c.template.oracle_text or '').lower()
-                # "Whenever you draw" on opponent's side = opponent loses life
-                if 'whenever' in oracle and 'draw' in oracle and 'lose' in oracle and 'life' in oracle:
-                    import re
-                    m = re.search(r'lose\s+(\d+)\s+life', oracle)
-                    if m:
-                        player.life -= int(m.group(1))
-                        opp.damage_dealt_this_turn += int(m.group(1))
-                # "Whenever an opponent draws a card except the first one they draw
-                # in each of their draw steps" — Bowmasters-style.
-                # Trigger on all draws EXCEPT the normal draw-step draw.
-                # The draw step sets current_phase = Phase.DRAW; any draw
-                # outside that phase always triggers.
-                is_draw_step = (self.current_phase == Phase.DRAW)
-                first_draw_step_draw = is_draw_step and player.cards_drawn_this_turn <= 1
-                if 'whenever an opponent draws' in oracle and not first_draw_step_draw:
-                    import re
-                    m = re.search(r'deals?\s+(\d+)\s+damage', oracle)
-                    dmg = int(m.group(1)) if m else 1
-                    player.life -= dmg
-                    opp.damage_dealt_this_turn += dmg
-
+            # The pop above already detached the card from library;
+            # transfer's `_remove_from_zone` is tolerant of that. The
+            # call places the card in hand and runs the DRAW fan-out.
+            transfer(self, card, src_zone="library", dst_zone="hand",
+                     kind=TransferKind.DRAW, controller=player_idx)
         return drawn
+
+    def surveil(self, player_idx: int, n: int) -> List[CardInstance]:
+        """CR 701.42 — Surveil N.
+
+        "Look at the top N cards of your library, then put any number
+        of them into your graveyard and the rest on top of your
+        library in any order."
+
+        The deterministic AI policy bins every surveiled card to the
+        graveyard. This matches the existing convention from the
+        creature-spell-cast surveil branch (which always binned the
+        top to GY for delirium / GY-payoff density) and is the right
+        default for the simulator's current decision layer (no card
+        is "saved" because we have no surveil-evaluator yet; a future
+        AI hook can refine via `callbacks.choose_surveil_bins`).
+
+        Class size of callers: every "When ~ enters, surveil N" land
+        (the surveil-dual cycle — Meticulous Archive, Elegant Parlor,
+        Thundering Falls, Hedge Maze, Underground Mortuary, Raucous
+        Theater, Commercial District, Undercity Sewers, Shadowy
+        Backstreet, Lush Portico — and any future printing) plus
+        every "Whenever you cast a noncreature spell, surveil N"
+        creature (DRC, Lightshell Duo, Garland, Cruel Witness).
+
+        Returns the list of cards that were binned. Empty if the
+        library was empty.
+        """
+        player = self.players[player_idx]
+        binned: List[CardInstance] = []
+        # Look at up to N cards from the top. Library is a list with
+        # index 0 == top, matching the engine's convention.
+        looked = player.library[:n]
+        # Policy: bin all of them. The library indices shift as we
+        # remove, so iterate over the slice (which is a separate list).
+        for card in looked:
+            player.library.remove(card)
+            card.zone = "graveyard"
+            player.graveyard.append(card)
+            binned.append(card)
+        if binned:
+            names = ", ".join(c.name for c in binned)
+            self.log.append(
+                f"T{self.display_turn} P{player_idx+1}: "
+                f"surveil {n} → {names} to GY"
+            )
+        return binned
 
     # ─── MANA SYSTEM ─────────────────────────────────────────────
 

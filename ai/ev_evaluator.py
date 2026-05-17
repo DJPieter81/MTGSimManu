@@ -63,6 +63,7 @@ from ai.scoring_constants import (
     PASS_COMBO_FULL_HAND_THRESHOLD,
     PASS_MANA_WASTE_PENALTY,
     PASS_OPP_DEVELOPMENT_PENALTY_SCALE,
+    PLANESWALKER_DEFAULT_LOYALTY,
     REANIMATION_LIFE_GAIN_ESTIMATE,
     REMOVAL_BHI_PROBABILITY_FLOOR,
     STORM_GOBLIN_LETHAL_TOKENS,
@@ -75,6 +76,16 @@ if TYPE_CHECKING:
     from engine.cards import CardInstance, CardTemplate
 
 from ai.deck_knowledge import DeckKnowledge
+# Life-phase gear-shift primitive (W0-B foundation + M4 wiring).
+# `life_phase(snap)` returns a LifePhase enum from clock primitives;
+# `phase_weight_multiplier(archetype, phase, tags)` is a total-function
+# lookup over the per-archetype `phase_weights` table.  Both are pure
+# compositions — no magic numbers introduced here.
+from ai.clock import life_phase
+from ai.strategy_profile import phase_weight_multiplier
+# Effective-CMC primitive (W0-F + M9 wiring).  Subsumes delve, evoke,
+# Medallion-reduced cost, affinity, improvise — see ai/effective_cmc.py.
+from ai.effective_cmc import effective_cmc
 
 
 # ─────────────────────────────────────────────────────────────
@@ -1669,6 +1680,205 @@ def _project_token_bonus(oracle_l: str, snap: "EVSnapshot"
     return (immediate_power, immediate_count, persistent_power)
 
 
+# ─────────────────────────────────────────────────────────────────────
+# Permanent-pool projection — expected_future_value
+#
+# Composable primitive used by `_project_spell` to credit permanents
+# whose value materialises through an "activation pool" rather than
+# raw P/T on entry: planeswalkers (loyalty), saga chapters, class
+# levels, charge-counter engines. Returns a power-equivalent value
+# suitable to add to `EVSnapshot.persistent_power`; the snap's
+# `urgency_factor` term in `ai.clock.position_value` then decays the
+# credit as opp's clock tightens (a pool we never activate is worth
+# zero).
+#
+# Returns 0.0 for permanents that have no future-value pool —
+# vanilla creatures, lands, simple artifacts. This lets the
+# call site dispatch uniformly across permanent types without
+# per-type `if` branches at the projection layer.
+#
+# Classification of loyalty abilities uses oracle-pattern detection
+# on the printed `[+N]: ...` / `[−N]: ...` / `[+X]: ...` blocks.
+# No card-name branches. When `engine/card_database.py` ships the
+# W0-A `PLANESWALKER_LOYALTY_PLUS1_USEFUL` /
+# `PLANESWALKER_LOYALTY_X_USEFUL` tags, this helper will read them
+# in preference to oracle parsing without changing the public
+# signature.
+# ─────────────────────────────────────────────────────────────────────
+
+# Phrases that signal a loyalty ability resolves into tangible value
+# (one card's worth of clock impact on average). Each phrase is a
+# generic Magic-rules effect, not card-specific: every PW in Modern
+# whose +1 / -X matches one of these is credited identically.
+_USEFUL_LOYALTY_EFFECT_PHRASES: Tuple[str, ...] = (
+    'draw a card', 'draws a card', 'draw cards',
+    'deals',                       # "deals N damage"
+    'create',                      # "create a 1/1 ... token"
+    'target',                      # "target creature", "target permanent"
+    'return',                      # "return ... to its owner's hand"
+    'exile',                       # "exile target ..."
+    'destroy',                     # "destroy target ..."
+    'discard',                     # "each player discards", "target discards"
+    'sacrifices',                  # "target player sacrifices"
+    'gain',                        # "you gain N life"
+    'scry', 'surveil',
+    'untap',
+    'add ',                        # mana acceleration loyalty (rare but exists)
+    'put a',                       # "put a +1/+1 counter on ..." / "put a card ..."
+    'reveal',
+    'search your library',
+    'may cast', 'may play',        # flash-grant +1: "you may cast ... as though they had flash"
+    'until your next turn',        # static-style +1 that grants a same-turn power
+    'becomes',                     # "target ... becomes a creature"
+)
+
+
+def _parse_loyalty_abilities(oracle: str) -> List[Tuple[str, str]]:
+    """Split a planeswalker's oracle text into (cost, body) ability
+    blocks. Cost is e.g. '+1', '-3', '+0', '-X', '0' — printed
+    between brackets in Modern oracle format: `[+1]: body.`.
+
+    Returns an empty list when the oracle has no `[<cost>]:` headers
+    (passive abilities or non-planeswalker cards).
+    """
+    import re as _re
+    abilities: List[Tuple[str, str]] = []
+    # Match [+1], [−3], [+X], [0], [-7] — both ASCII '-' and Unicode '−'.
+    pattern = _re.compile(r'\[([+\-−]?[0-9Xx]+)\]\s*:\s*([^\[]+)')
+    for m in pattern.finditer(oracle):
+        cost = m.group(1).replace('−', '-')
+        body = m.group(2).strip().lower()
+        abilities.append((cost, body))
+    return abilities
+
+
+def _loyalty_cost_delta(cost: str) -> int:
+    """Convert a loyalty-cost token to a signed integer delta.
+
+    '+1' → +1, '-3' → -3, '0' → 0, '+X' / '-X' → 0 (treated as
+    variable, not a fixed pool change).
+    """
+    if not cost:
+        return 0
+    sign = 1
+    rest = cost
+    if rest[0] in ('+', '-'):
+        if rest[0] == '-':
+            sign = -1
+        rest = rest[1:]
+    if rest.upper() == 'X':
+        return 0
+    try:
+        return sign * int(rest)
+    except ValueError:
+        return 0
+
+
+def _has_useful_immediate_plus_ability(oracle: str) -> bool:
+    """True if ANY non-negative-cost loyalty ability (`[+N]` or `[0]`)
+    has a body whose printed effect matches a `_USEFUL_LOYALTY_EFFECT_PHRASES`
+    phrase — i.e. the planeswalker can produce same-turn value on entry.
+
+    Mirrors the W0-A `PLANESWALKER_LOYALTY_PLUS1_USEFUL` classifier
+    (which is sourced from the same oracle text); this fallback path
+    fires when the classifier tag is absent on the template.
+    """
+    for cost, body in _parse_loyalty_abilities(oracle):
+        if _loyalty_cost_delta(cost) >= 0:
+            if any(p in body for p in _USEFUL_LOYALTY_EFFECT_PHRASES):
+                return True
+    return False
+
+
+def _has_useful_minus_ability(oracle: str) -> bool:
+    """True if ANY negative-cost loyalty ability (`[-N]` / `[-X]`) has
+    a useful body. Subsequent-turn value: the pool we spend down to
+    fire the ultimate or sustained mid-game minus abilities.
+    """
+    for cost, body in _parse_loyalty_abilities(oracle):
+        if _loyalty_cost_delta(cost) < 0 or 'X' in cost.upper():
+            if any(p in body for p in _USEFUL_LOYALTY_EFFECT_PHRASES):
+                return True
+    return False
+
+
+def expected_future_value(card: "CardInstance",
+                           snap: EVSnapshot) -> float:
+    """Power-equivalent value of a permanent's future activation pool.
+
+    Composes across permanent types without per-type branching at the
+    projection layer:
+
+      * Planeswalker → expected loyalty activations × per-tick clock
+        impact. Pool decay via `urgency_factor` happens downstream in
+        `ai.clock.position_value` when the result is read as
+        `persistent_power`.
+      * Creature / artifact / enchantment / land → 0.0 (their value
+        is captured by other terms of `_project_spell`: P/T,
+        artifact_count, etb_value, etc.). Returning 0 here keeps the
+        primitive composable across all types.
+
+    Knowledge location: oracle-driven loyalty-ability classification
+    (see `_has_useful_immediate_plus_ability` /
+    `_has_useful_minus_ability`). When W0-A's
+    `PLANESWALKER_LOYALTY_PLUS1_USEFUL` /
+    `PLANESWALKER_LOYALTY_X_USEFUL` tags are present on
+    `template.tags`, they take precedence — but the oracle fallback
+    keeps every Modern planeswalker correctly scored on day one.
+    """
+    from engine.cards import CardType
+    from ai.clock import loyalty_pool_value
+    t = card.template
+
+    # Only planeswalkers carry an "activation pool" today.
+    if CardType.PLANESWALKER not in getattr(t, 'card_types', set()):
+        return 0.0
+
+    oracle = (t.oracle_text or '').lower()
+    tags = getattr(t, 'tags', set())
+
+    # Prefer the W0-A classifier tag when present; fall back to
+    # oracle-pattern detection. Both paths express the same rule:
+    # "is the printed +N / -N ability one that produces same-turn or
+    # subsequent-turn tangible value?"
+    has_useful_plus = (
+        'planeswalker_loyalty_plus1_useful' in tags
+        or _has_useful_immediate_plus_ability(oracle)
+    )
+    has_useful_minus = (
+        'planeswalker_loyalty_x_useful' in tags
+        or _has_useful_minus_ability(oracle)
+    )
+
+    if not (has_useful_plus or has_useful_minus):
+        # No useful abilities classified — the pool resolves into
+        # passive value only. Don't over-credit; let the rest of the
+        # projection take it from here.
+        return 0.0
+
+    # Expected activations across residency: enters-with-loyalty + one
+    # +1 per turn we survive. Treat opp_clock as the residency budget,
+    # capped at the printed loyalty so a wide pool isn't over-claimed
+    # on an empty board. Equal to "loyalty - 1" historical estimate
+    # (first +1 is sunk; ticks 2..loyalty count) when both terms
+    # match, but composes generically via clock primitives.
+    loyalty = t.loyalty or PLANESWALKER_DEFAULT_LOYALTY
+    # opp_clock is a continuous float; treat NO_CLOCK as the loyalty
+    # budget — no opp pressure means we drain the pool fully.
+    from ai.clock import NO_CLOCK
+    survival_turns = (loyalty if snap.opp_clock >= NO_CLOCK
+                       else max(0.0, snap.opp_clock))
+    activations = min(float(loyalty), survival_turns)
+    # Discount slightly when the immediate +1 isn't useful (we lose
+    # the on-entry tick's value but the minus abilities still pay
+    # off over residency). Use the loyalty pool as the natural
+    # denominator — one tick out of N.
+    if not has_useful_plus and has_useful_minus and loyalty > 0:
+        activations *= max(0.0, (loyalty - 1)) / loyalty
+
+    return loyalty_pool_value(activations, snap)
+
+
 def _project_spell(card: "CardInstance", snap: EVSnapshot,
                    dk: Optional[DeckKnowledge] = None,
                    game: "GameState" = None, player_idx: int = 0) -> EVSnapshot:
@@ -1686,7 +1896,18 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         opp_creature_count=snap.opp_creature_count,
         my_hand_size=snap.my_hand_size - 1,  # we cast it from hand
         opp_hand_size=snap.opp_hand_size,
-        my_mana=max(0, snap.my_mana - (t.cmc or 0)),
+        # M9 — charge the *effective* mana cost (delve / evoke /
+        # on-board cost reducers / affinity / improvise) instead of
+        # the printed CMC.  All cost-modifying mechanics compose
+        # inside `ai.effective_cmc.effective_cmc` (W0-F); the call
+        # site stays oblivious to which mechanic is active.  Audit
+        # finding: docs/history/audits/2026-05-16_5panel_bo3_audit.md
+        # (Midrange F5) — Murktide projecting as a 7-mana spell,
+        # Storm rituals un-discounted under Medallion, Solitude
+        # priced at 3WW.
+        my_mana=max(0, snap.my_mana - effective_cmc(
+            card, snap, game=game, player_idx=player_idx,
+        )),
         opp_mana=snap.opp_mana,
         my_total_lands=snap.my_total_lands,
         opp_total_lands=snap.opp_total_lands,
@@ -1770,6 +1991,16 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
             projected.my_power += p_imm
             projected.my_creature_count += count_imm
             projected.persistent_power += p_persist
+
+    # Permanent-pool projection — composable across permanent types.
+    # Today: planeswalker loyalty pools (loyalty × per-tick clock impact,
+    # gated by oracle-classified "useful" abilities). Returns 0 for
+    # creatures / artifacts / enchantments / lands so the call site
+    # stays a single unconditional dispatch (no per-type `if`).
+    # Credited as `persistent_power` so `urgency_factor` decays the
+    # pool naturally as opp's clock tightens. See
+    # `expected_future_value` for the classifier.
+    projected.persistent_power += expected_future_value(card, snap)
 
     # Reanimation — bring back creatures from graveyard.
     #
@@ -2062,6 +2293,30 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         projected.my_hand_size += extra
         projected.cards_drawn_this_turn += extra
 
+    # Forced discard — opponent loses one card from hand, and the
+    # spell may bill its caster a self-imposed life cost ("You lose
+    # N life", Thoughtseize-style).  Both deltas are mechanic-driven,
+    # not card-named: any spell tagged Tag.FORCED_DISCARD removes a
+    # known card from opp's hand; any oracle clause matching
+    # "you lose N life" is the self-cost the projection must respect.
+    # Class size: ~150 Modern cards — every printed hand-attack
+    # spell + planeswalker −X edict that puts an opponent's chosen
+    # card into the graveyard.  M6 from the 2026-05-16 5-panel Bo3
+    # audit; the strip advisor (`score_card_for_opponent_strip`) is
+    # already correct — the bug is in the cast-time projection.
+    from ai.oracle_classifier import Tag as _Tag, has_tag as _has_tag
+    if _has_tag(getattr(t, 'name', '') or '', _Tag.FORCED_DISCARD):
+        projected.opp_hand_size = max(0, projected.opp_hand_size - 1)
+        # Self-imposed life cost: oracle text drives the amount, no
+        # per-card table.  "you lose N life" is the canonical Modern
+        # phrasing for caster-side life loss on resolution.  The N
+        # comes from a regex group, not a bare numeric literal.
+        oracle_lower = (t.oracle_text or '').lower()
+        import re as _re
+        life_m = _re.search(r'you lose (\d+) life', oracle_lower)
+        if life_m:
+            projected.my_life -= int(life_m.group(1))
+
     # Rituals — add the parsed gross mana production from
     # `template.ritual_mana`. The (color, amount) tuple is parsed
     # from oracle text at card-load time by
@@ -2263,223 +2518,161 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
 def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
                                snap: EVSnapshot, game: "GameState" = None,
                                player_idx: int = 0,
-                               bhi: "BayesianHandTracker" = None) -> EVSnapshot:
+                               bhi: "BayesianHandTracker" = None,
+                               p_interaction: Optional[float] = None) -> EVSnapshot:
     """Estimate the board state after the opponent responds to our spell.
 
-    Models the opponent's most likely response:
-    1. Counter the spell (if they have mana for it) → revert to pre-cast state
-    2. Remove the creature we just deployed → lose the creature
-    3. Pass (no response) → projected state stands
+    M7 / W1b-7 consolidation: the disruption probability is a single
+    number (`p_interaction`) supplied by the caller — produced by
+    ``BayesianHandTracker.get_interaction_probability`` (the
+    broadened counter+removal+discard measure gated by the opp's
+    untapped mana — the audit's "tap-out window").
 
-    Uses opponent's open mana and deck archetype to estimate response
-    probability. Does NOT require knowing the opponent's hand.
+    Two disrupted-outcome snapshots model the asymmetric effects: a
+    counter fizzles the spell (lose mana + card), instant removal
+    lets the creature ETB then kills it (tokens persist).  For
+    creature spells the "removed" snapshot is used; for non-creatures
+    the "countered" snapshot.  Both are blended with the projected
+    (pass) state by ``p_interaction`` — the single structural
+    multiplier replacing the prior scattered counter/removal scaling.
 
-    Returns the projected snapshot after opponent's best response.
+    Args:
+        card: spell being scored.
+        projected: snapshot after the spell resolves.
+        snap: snapshot before casting.
+        game, player_idx: passed for the no-BHI fallback path.
+        bhi: opponent-hand tracker.  When provided AND the caller
+            did NOT pre-compute ``p_interaction``, we query the
+            broadened method here.  When the caller DID pre-compute
+            it (the standard path from ``compute_play_ev``), the
+            query is skipped so the per-spell call count stays at
+            exactly ONE.
+        p_interaction: pre-computed broadened disruption posterior.
+            When ``None``, we compute it from BHI / static density.
     """
     from ai.constants import (
         COUNTER_ESTIMATED_COST, REMOVAL_ESTIMATED_COST,
-        DAMAGE_REMOVAL_EFF_HIGH_TOUGH, DAMAGE_REMOVAL_EFF_MID_TOUGH,
     )
 
     t = card.template
-    tags = getattr(t, 'tags', set())
 
     # If opponent has no mana open, they can't respond
     if projected.opp_mana < 1:
         return projected
 
-    # Estimate: can opponent counter this spell?
-    can_counter = projected.opp_mana >= COUNTER_ESTIMATED_COST
-
-    # "Can't be countered" — opponent can't counter these
+    # Resolve the broadened disruption posterior.  Hot path: caller
+    # has already queried `get_interaction_probability` and passes
+    # the value in; we never re-query.  Slow path: caller didn't
+    # supply one — fall back to BHI / static density approximation
+    # for callers that don't pre-compute it.
     oracle = (t.oracle_text or '').lower()
-    if "can't be countered" in oracle or "can\u2019t be countered" in oracle:
-        can_counter = False
-
-    # Response probabilities: use BHI posteriors if available, else static density.
-    # BHI updates based on observed priority passes — if opponent has been passing
-    # with mana up, P(counter) decreases.
-    #
-    # Threat-proportional scaling: opponents save counters for high-impact spells.
-    # P(counter THIS) = P(has counter) × worthiness
-    # worthiness = raw_delta / (raw_delta + avg_card_value)
-    # This is derived from game theory: counter the spell that changes the
-    # game state the most. Both terms from existing clock math.
-    from ai.clock import card_clock_impact
-    raw_delta = abs(evaluate_board(projected, "midrange") - evaluate_board(snap, "midrange"))
-    avg_card_value = card_clock_impact(snap)
-    if avg_card_value > 0 and raw_delta > 0:
-        counter_worthiness = raw_delta / (raw_delta + avg_card_value)
-    else:
-        counter_worthiness = 1.0
-
-    opp_hand_size = snap.opp_hand_size if snap.opp_hand_size > 0 else FALLBACK_OPP_HAND_SIZE
-    counter_probability = 0.0
-    removal_probability = 0.0
-
-    if bhi and bhi._initialized:
-        # Use Bayesian-updated beliefs, scaled by spell worthiness
-        if can_counter:
-            counter_probability = bhi.get_counter_probability() * counter_worthiness
-        if t.is_creature and projected.opp_mana >= REMOVAL_ESTIMATED_COST:
-            removal_probability = bhi.get_removal_probability()
-            # Toughness adjustments: high toughness reduces damage-based removal
-            creature_toughness = t.toughness or 0
-            if hasattr(card, 'toughness') and card.toughness is not None:
-                creature_toughness = card.toughness
-            exile_fraction = (bhi.get_exile_removal_probability()
-                              / max(REMOVAL_BHI_PROBABILITY_FLOOR, bhi.get_removal_probability()))
-            damage_fraction = 1.0 - exile_fraction
-            if creature_toughness >= CREATURE_HIGH_TOUGHNESS:
-                removal_probability *= (exile_fraction + damage_fraction * DAMAGE_REMOVAL_EFF_HIGH_TOUGH)
-            elif creature_toughness >= CREATURE_MID_TOUGHNESS:
-                removal_probability *= (exile_fraction + damage_fraction * DAMAGE_REMOVAL_EFF_MID_TOUGH)
-    elif game:
-        # Fallback: static deck density (no BHI tracker available)
-        opp = game.players[1 - player_idx]
-        if can_counter and opp.counter_density > 0:
-            counter_probability = (1.0 - (1.0 - opp.counter_density) ** opp_hand_size) * counter_worthiness
-        if t.is_creature and projected.opp_mana >= REMOVAL_ESTIMATED_COST and opp.removal_density > 0:
-            creature_toughness = t.toughness or 0
-            if hasattr(card, 'toughness') and card.toughness is not None:
-                creature_toughness = card.toughness
-            exile_prob = 1.0 - (1.0 - opp.exile_density) ** opp_hand_size if opp.exile_density > 0 else 0.0
-            damage_density = opp.removal_density - opp.exile_density
-            damage_prob = 1.0 - (1.0 - max(0, damage_density)) ** opp_hand_size if damage_density > 0 else 0.0
-            if creature_toughness >= CREATURE_HIGH_TOUGHNESS:
-                damage_prob *= DAMAGE_REMOVAL_EFF_HIGH_TOUGH
-            elif creature_toughness >= CREATURE_MID_TOUGHNESS:
-                damage_prob *= DAMAGE_REMOVAL_EFF_MID_TOUGH
-            removal_probability = min(1.0, exile_prob + damage_prob * (1.0 - exile_prob))
-
-    # Tempo-adjusted removal priority — derived, not hardcoded per-cmc.
-    # Opponents only spend their ~2-mana removal on a creature if the
-    # creature's threat is worth more than the removal cost. Otherwise
-    # the tempo trade favors us (they spent more mana than we did) and
-    # they save removal for a bigger target.
-    #
-    # Formula: target_priority = threat_value / removal_cost, clamped.
-    # Both inputs are principled:
-    #   - creature_threat_value: oracle-driven threat scoring (same file)
-    #   - REMOVAL_ESTIMATED_COST: rules constant (typical Modern removal cmc)
-    # This replaces the old cmc-bucketed multipliers (0.15/0.25/0.4), which
-    # were magic numbers that over-penalised cheap aggro creatures (audit
-    # P0: Guide of Souls / Memnite going -7 EV).
-    threat_value = creature_threat_value(card) if t.is_creature else 0.0
-    target_priority = min(1.0, threat_value / max(1.0, REMOVAL_ESTIMATED_COST))
-    removal_probability *= target_priority
-
-    # Evasion discount: creatures that can become unblockable/flying are harder
-    # to remove via damage (opponent needs instant-speed removal not just blocks).
-    # Check both innate evasion and oracle-derived evasion (e.g. Psychic Frog).
-    card_oracle = (t.oracle_text or '').lower()
-    has_innate_evasion = bool(
-        getattr(t, 'keywords', set()) & {'flying', 'menace', 'trample', 'shadow'}
-    )
-    has_conditional_evasion = (
-        'flying' in card_oracle and
-        ('counter' in card_oracle or 'discard' in card_oracle or 'whenever' in card_oracle)
-    )
-    if has_innate_evasion or has_conditional_evasion:
-        # Evasion means damage-based removal is less effective at stopping attacks.
-        # Reduce only the damage-removal portion (exile still applies fully).
-        if bhi and bhi._initialized:
-            exile_frac = (bhi.get_exile_removal_probability()
-                          / max(REMOVAL_BHI_PROBABILITY_FLOOR,
-                                bhi.get_removal_probability())
-                          if bhi.get_removal_probability() > 0
-                          else EXILE_FRAC_DEFAULT)
+    can_counter = (projected.opp_mana >= COUNTER_ESTIMATED_COST
+                   and "can't be countered" not in oracle
+                   and "can’t be countered" not in oracle)
+    if p_interaction is None:
+        if bhi is not None and bhi._initialized:
+            p_interaction = bhi.get_interaction_probability(
+                game,
+                can_counter=can_counter,
+                is_creature_target=bool(t.is_creature),
+            )
+        elif game is not None:
+            opp = game.players[1 - player_idx]
+            opp_hand_size = (snap.opp_hand_size
+                             if snap.opp_hand_size > 0
+                             else FALLBACK_OPP_HAND_SIZE)
+            p_c = 0.0
+            p_r = 0.0
+            if can_counter and getattr(opp, 'counter_density', 0) > 0:
+                p_c = 1.0 - (1.0 - opp.counter_density) ** opp_hand_size
+            if (t.is_creature
+                    and projected.opp_mana >= REMOVAL_ESTIMATED_COST
+                    and getattr(opp, 'removal_density', 0) > 0):
+                p_r = 1.0 - (1.0 - opp.removal_density) ** opp_hand_size
+            p_interaction = max(p_c, p_r)
         else:
-            exile_frac = EXILE_FRAC_DEFAULT
-        damage_frac = 1.0 - exile_frac
-        removal_probability *= (exile_frac
-                                + damage_frac * EVASION_DAMAGE_REMOVAL_RELIEF)
+            p_interaction = 0.0
 
-    # Compute expected value as weighted average of outcomes:
-    # P(counter) * V(countered) + P(removal) * V(removed) + P(pass) * V(projected)
+    # Clamp defensively into [0, 1].
+    p_interaction = max(0.0, min(1.0, float(p_interaction)))
 
-    if counter_probability <= 0 and removal_probability <= 0:
+    if p_interaction <= 0:
         return projected  # no response possible
 
-    # Build the "countered" state: spell fizzles, we lose the mana and card
-    countered = EVSnapshot(
-        my_life=snap.my_life,
-        opp_life=snap.opp_life,
-        my_power=snap.my_power,
-        opp_power=snap.opp_power,
-        my_toughness=snap.my_toughness,
-        opp_toughness=snap.opp_toughness,
-        my_creature_count=snap.my_creature_count,
-        opp_creature_count=snap.opp_creature_count,
-        my_hand_size=snap.my_hand_size - 1,  # card is gone
-        opp_hand_size=snap.opp_hand_size - 1,  # they used a counter
-        my_mana=max(0, snap.my_mana - (t.cmc or 0)),  # mana spent
-        opp_mana=max(0, snap.opp_mana - COUNTER_ESTIMATED_COST),
-        my_total_lands=snap.my_total_lands,
-        opp_total_lands=snap.opp_total_lands,
-        turn_number=snap.turn_number,
-        storm_count=snap.storm_count + 1,
-        my_gy_creatures=snap.my_gy_creatures,
-        opp_gy_creatures=snap.opp_gy_creatures,
-        my_energy=snap.my_energy,
-        my_evasion_power=snap.my_evasion_power,
-        my_lifelink_power=snap.my_lifelink_power,
-        opp_evasion_power=snap.opp_evasion_power,
-        cards_drawn_this_turn=snap.cards_drawn_this_turn,
-    )
-
-    # Build the "removed" state: creature resolves (ETB fires, tokens created),
-    # then dies to instant-speed removal. Tokens from ETB PERSIST — they're
-    # already on the battlefield before removal resolves. Only the creature itself
-    # is subtracted, not any tokens it already created.
+    # Build the disrupted snapshot.  For creature spells the
+    # disruption is instant-speed removal (creature ETBs then dies);
+    # for non-creatures it's a counter (spell fizzles outright,
+    # mana + card lost).  ETB tokens persist on the "removed" branch
+    # because tokens enter the battlefield before removal resolves.
     if t.is_creature:
         kws = {kw.value if hasattr(kw, 'value') else str(kw).lower()
                for kw in getattr(t, 'keywords', set())}
         evasion_sub = max(0, t.power or 0) if (kws & {'flying', 'menace', 'trample'}) else 0
         lifelink_sub = max(0, t.power or 0) if 'lifelink' in kws else 0
-        # Token power stays on the board — only the creature itself is removed
-        token_power = 0
-        token_count = 0
+        disrupted = EVSnapshot(
+            my_life=projected.my_life,
+            opp_life=projected.opp_life,
+            my_power=projected.my_power - max(0, t.power or 0),
+            opp_power=projected.opp_power,
+            my_toughness=projected.my_toughness - max(0, t.toughness or 0),
+            opp_toughness=projected.opp_toughness,
+            my_creature_count=projected.my_creature_count - 1,
+            opp_creature_count=projected.opp_creature_count,
+            my_hand_size=projected.my_hand_size,
+            opp_hand_size=projected.opp_hand_size - 1,
+            my_mana=projected.my_mana,
+            opp_mana=max(0, projected.opp_mana - REMOVAL_ESTIMATED_COST),
+            my_total_lands=projected.my_total_lands,
+            opp_total_lands=projected.opp_total_lands,
+            turn_number=projected.turn_number,
+            storm_count=projected.storm_count,
+            my_gy_creatures=projected.my_gy_creatures + 1,
+            my_energy=projected.my_energy,
+            my_evasion_power=projected.my_evasion_power - evasion_sub,
+            my_lifelink_power=projected.my_lifelink_power - lifelink_sub,
+            opp_evasion_power=projected.opp_evasion_power,
+            cards_drawn_this_turn=projected.cards_drawn_this_turn,
+        )
     else:
-        evasion_sub = lifelink_sub = token_power = token_count = 0
+        disrupted = EVSnapshot(
+            my_life=snap.my_life,
+            opp_life=snap.opp_life,
+            my_power=snap.my_power,
+            opp_power=snap.opp_power,
+            my_toughness=snap.my_toughness,
+            opp_toughness=snap.opp_toughness,
+            my_creature_count=snap.my_creature_count,
+            opp_creature_count=snap.opp_creature_count,
+            my_hand_size=snap.my_hand_size - 1,  # card is gone
+            opp_hand_size=snap.opp_hand_size - 1,  # they used the answer
+            # M9 — same effective-CMC routing as the un-disrupted branch.
+            # A countered non-creature still costs its effective mana
+            # (we paid, they fizzled); printed CMC would mis-state the
+            # cost of a delve / evoke / cost-reduced spell.
+            my_mana=max(0, snap.my_mana - effective_cmc(
+                card, snap, game=game, player_idx=player_idx,
+            )),
+            opp_mana=max(0, snap.opp_mana - COUNTER_ESTIMATED_COST),
+            my_total_lands=snap.my_total_lands,
+            opp_total_lands=snap.opp_total_lands,
+            turn_number=snap.turn_number,
+            storm_count=snap.storm_count + 1,
+            my_gy_creatures=snap.my_gy_creatures,
+            opp_gy_creatures=snap.opp_gy_creatures,
+            my_energy=snap.my_energy,
+            my_evasion_power=snap.my_evasion_power,
+            my_lifelink_power=snap.my_lifelink_power,
+            opp_evasion_power=snap.opp_evasion_power,
+            cards_drawn_this_turn=snap.cards_drawn_this_turn,
+        )
 
-    removed = EVSnapshot(
-        my_life=projected.my_life,
-        opp_life=projected.opp_life,
-        my_power=projected.my_power - max(0, t.power or 0) - token_power if t.is_creature else projected.my_power,
-        opp_power=projected.opp_power,
-        my_toughness=projected.my_toughness - max(0, t.toughness or 0) if t.is_creature else projected.my_toughness,
-        opp_toughness=projected.opp_toughness,
-        my_creature_count=projected.my_creature_count - 1 - token_count if t.is_creature else projected.my_creature_count,
-        opp_creature_count=projected.opp_creature_count,
-        my_hand_size=projected.my_hand_size,
-        opp_hand_size=projected.opp_hand_size - 1,  # opponent used removal card
-        my_mana=projected.my_mana,
-        opp_mana=max(0, projected.opp_mana - REMOVAL_ESTIMATED_COST),
-        my_total_lands=projected.my_total_lands,
-        opp_total_lands=projected.opp_total_lands,
-        turn_number=projected.turn_number,
-        storm_count=projected.storm_count,
-        my_gy_creatures=projected.my_gy_creatures + (1 if t.is_creature else 0),
-        my_energy=projected.my_energy,
-        my_evasion_power=projected.my_evasion_power - evasion_sub,
-        my_lifelink_power=projected.my_lifelink_power - lifelink_sub,
-        opp_evasion_power=projected.opp_evasion_power,
-        cards_drawn_this_turn=projected.cards_drawn_this_turn,
-    )
+    pass_probability = 1.0 - p_interaction
 
-    # Weighted expected snapshot
-    pass_probability = 1.0 - counter_probability - removal_probability
-    pass_probability = max(0, pass_probability)
-
-    # Blend the snapshots by probability
+    # Blend the two snapshots by the single disruption probability.
     def blend(field: str) -> float:
         v_pass = getattr(projected, field)
-        v_counter = getattr(countered, field) if counter_probability > 0 else v_pass
-        v_remove = getattr(removed, field) if removal_probability > 0 else v_pass
-        return (pass_probability * v_pass
-                + counter_probability * v_counter
-                + removal_probability * v_remove)
+        v_disrupted = getattr(disrupted, field)
+        return pass_probability * v_pass + p_interaction * v_disrupted
 
     return EVSnapshot(
         my_life=int(blend('my_life')),
@@ -2512,6 +2705,29 @@ def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
 # Combo Chain Evaluator — lookahead for storm/ritual chains
 # ═══════════════════════════════════════════════════════════════════
 
+def _draw_count_for_chain_step(card_template) -> int:
+    """How many real-draw events a chain-step draw spell triggers.
+    IMPULSE_DRAW-tagged → 0 (CR 121.1c reveal, not draw). Else parse
+    "draws N cards" from oracle; default 1. Numeral tuple index IS
+    the integer value — no per-N constants. Mirrors the parser in
+    `_project_spell` so chain & per-spell projections agree."""
+    from ai.oracle_classifier import has_tag, Tag
+    if has_tag(card_template.name, Tag.IMPULSE_DRAW):
+        return 0
+    _NUMERALS = ('zero', 'one', 'two', 'three', 'four',
+                 'five', 'six', 'seven')
+    import re as _re
+    m = _re.search(
+        r'draws? (one|two|three|four|five|six|seven|\d+) ',
+        (card_template.oracle_text or "").lower())
+    if m is None:
+        return 1
+    tok = m.group(1)
+    if tok.isdigit():
+        return int(tok)
+    return _NUMERALS.index(tok) if tok in _NUMERALS else 1
+
+
 def _estimate_combo_chain(game, player_idx: int, first_card=None):
     """Simulate casting all chainable spells from hand to estimate kill potential.
 
@@ -2522,7 +2738,17 @@ def _estimate_combo_chain(game, player_idx: int, first_card=None):
     - Cost reducers on battlefield: -1 to instant/sorcery costs
     - Draw spells: draw 2 cards (may find more rituals)
     - Finishers: Grapeshot (storm copies), Empty the Warrens (tokens)
+
+    Self-damage tax (M1-AI): each chain step pays per-cast/per-draw
+    damage from opp permanents (ON_CAST_DAMAGE / ON_DRAW_DAMAGE /
+    ON_OPP_DRAW_LIFE_LOSS) plus the spell's own SELF_DAMAGE_ON_CAST.
+    If cumulative tax ≥ caster life, `can_kill` is False regardless
+    of damage-out arithmetic — the chain self-kills first.
     """
+    from ai.bhi import (opp_static_damage_per_card_event,
+                        _parse_event_amount)
+    from ai.oracle_classifier import has_tag, Tag
+
     me = game.players[player_idx]
 
     # Count cost reducers on battlefield
@@ -2531,6 +2757,11 @@ def _estimate_combo_chain(game, player_idx: int, first_card=None):
 
     # Available mana
     mana = len(me.untapped_lands) + me.mana_pool.total()
+
+    # Opp's battlefield is static across the chain; compute taxes once.
+    # Same (Tag, verb-regex) set as engine/zone_transfer trigger fan-out.
+    per_cast_tax = opp_static_damage_per_card_event(game, player_idx, "cast")
+    per_draw_tax = opp_static_damage_per_card_event(game, player_idx, "draw")
 
     # Partition hand into categories
     rituals = []
@@ -2544,6 +2775,10 @@ def _estimate_combo_chain(game, player_idx: int, first_card=None):
         tags = getattr(c.template, 'tags', set())
         name = c.name
         cmc = max(0, (c.template.cmc or 0) - reducers)
+        # Per-cast self-damage from the spell itself (Phyrexian-mana-shape).
+        self_cast_dmg = (_parse_event_amount(c.template.oracle_text,
+                                             r"lose\s+(\d+)\s+life")
+                         if has_tag(name, Tag.SELF_DAMAGE_ON_CAST) else 0)
 
         if 'ritual' in tags:
             # Read the parsed gross production from template.ritual_mana
@@ -2553,56 +2788,75 @@ def _estimate_combo_chain(game, player_idx: int, first_card=None):
             # input and crediting 3 fake mana would mis-rank the chain.
             ritual_data = getattr(c.template, 'ritual_mana', None)
             produced = ritual_data[1] if ritual_data is not None else 0
-            rituals.append((name, cmc, produced))  # name, cost, mana produced
+            rituals.append((name, cmc, produced, self_cast_dmg))
         elif 'storm_payoff' in tags:
-            finishers.append((name, cmc))
+            finishers.append((name, cmc, self_cast_dmg))
         elif 'cantrip' in tags or 'card_advantage' in tags:
-            draws.append((name, cmc))
+            draws.append((name, cmc, _draw_count_for_chain_step(c.template),
+                          self_cast_dmg))
         elif 'instant_speed' in tags or not c.template.is_creature:
-            other_spells.append((name, cmc))
+            other_spells.append((name, cmc, self_cast_dmg))
 
-    # Simulate the chain
+    # Self-damage accumulator; `starting_life` snapshot since trigger
+    # life-loss does not feed back into chain mana.
     storm = 0
     chain = []
-    if first_card and first_card.name not in [r[0] for r in rituals] + [d[0] for d in draws] + [f[0] for f in finishers]:
+    self_dmg = 0
+    starting_life = me.life
+    if first_card and first_card.name not in (
+            [r[0] for r in rituals] + [d[0] for d in draws]
+            + [f[0] for f in finishers]):
         return False, 0, 0, []
 
     # Cast rituals first (net positive mana)
-    for name, cost, produced in sorted(rituals, key=lambda r: r[1]):
+    for name, cost, produced, self_cast_dmg in sorted(
+            rituals, key=lambda r: r[1]):
         if mana >= cost:
             mana = mana - cost + produced
             storm += 1
             chain.append(name)
+            self_dmg += per_cast_tax + self_cast_dmg
 
     # Cast draw spells (may chain into more gas)
-    for name, cost in sorted(draws, key=lambda d: d[1]):
+    for name, cost, n_drawn, self_cast_dmg in sorted(
+            draws, key=lambda d: d[1]):
         if mana >= cost:
             mana -= cost
             storm += 1
             chain.append(name)
+            self_dmg += (per_cast_tax + self_cast_dmg
+                         + n_drawn * per_draw_tax)
             # Draw spells find ~1 more castable spell on average
             mana += 1  # approximate: drawn card is often a ritual or free spell
 
     # Cast other cheap spells for storm count
-    for name, cost in sorted(other_spells, key=lambda s: s[1]):
+    for name, cost, self_cast_dmg in sorted(
+            other_spells, key=lambda s: s[1]):
         if cost <= 1 and mana >= cost:
             mana -= cost
             storm += 1
             chain.append(name)
+            self_dmg += per_cast_tax + self_cast_dmg
 
     # Can we cast a finisher?
-    for name, cost in finishers:
+    for name, cost, self_cast_dmg in finishers:
         if mana >= cost:
             storm += 1
             chain.append(name)
+            self_dmg += per_cast_tax + self_cast_dmg
+            # Self-kill gate: if cumulative tax ≥ life the chain dies
+            # before the finisher resolves; lethal-out is irrelevant.
+            lethal_self = self_dmg >= starting_life
             if name == 'Grapeshot':
                 total_damage = storm  # each storm copy deals 1
-                can_kill = total_damage >= game.players[1 - player_idx].life
+                can_kill = (not lethal_self and total_damage
+                            >= game.players[1 - player_idx].life)
                 return can_kill, storm, total_damage, chain
             elif name == 'Empty the Warrens':
                 tokens = storm * 2
-                return (tokens >= STORM_GOBLIN_LETHAL_TOKENS,
-                        storm, tokens, chain)  # 6+ goblins is usually enough
+                return ((not lethal_self
+                         and tokens >= STORM_GOBLIN_LETHAL_TOKENS),
+                        storm, tokens, chain)
 
     return False, storm, 0, chain
 
@@ -2651,8 +2905,62 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
     projected = _project_spell(card, snap, dk, game, player_idx)
     projected_value = evaluate_board(projected, archetype, dk)
 
-    # Model opponent response (counter, removal, or pass)
-    post_response = estimate_opponent_response(card, projected, snap, game, player_idx, bhi=bhi)
+    # ── SINGLE interaction-probability call site (M7 / W1b-7) ──
+    # The structural unification per the abstraction contract:
+    # one query, one discount.  ``get_interaction_probability``
+    # folds counter + instant-speed removal + hand-disruption into
+    # a single posterior, each channel gated by the opp's untapped
+    # mana (the audit's "tap-out window").  The downstream
+    # ``estimate_opponent_response`` consumes this value rather than
+    # re-querying BHI; the combo-chain ``p_resolves`` term below
+    # subtracts from 1 instead of re-querying.  Per the abstraction
+    # contract: ONE call site in `_score_spell`, no scattered
+    # category-specific queries.
+    _t_oracle = (card.template.oracle_text or '').lower()
+    _can_counter = ("can't be countered" not in _t_oracle
+                    and "can’t be countered" not in _t_oracle)
+    _is_creature_target = bool(card.template.is_creature)
+    if bhi is not None and bhi._initialized:
+        p_interaction = bhi.get_interaction_probability(
+            game,
+            can_counter=_can_counter,
+            is_creature_target=_is_creature_target,
+        )
+    else:
+        p_interaction = 0.0
+
+    # Threat-worthiness scaling — opponents save their answers for
+    # high-impact spells.  The broadened P(has-interaction) is the
+    # upper bound; the realised P(spends it on THIS spell) is the
+    # prior × worthiness fraction.  worthiness = raw_delta /
+    # (raw_delta + avg_card_value) — both terms come from the
+    # existing clock subsystem, no magic numbers.  A counter held
+    # against a cantrip is unlikely; a counter held against a
+    # finisher is near-certain.
+    #
+    # The worthiness ratio uses the MIDRANGE board evaluation as a
+    # neutral baseline (NOT `archetype`), matching the pre-M7
+    # behaviour preserved at this single call site.  Combo / aggro
+    # archetypes apply position multipliers that would over-state
+    # the impact of routine plays (e.g. a Storm cantrip looks
+    # "huge" under combo scoring but is "low" under midrange);
+    # using midrange keeps the worthiness measure on a stable
+    # neutral scale across archetypes — opponents make the
+    # hold/spend call based on the spell's intrinsic impact, not
+    # the casting archetype's bias.
+    from ai.clock import card_clock_impact
+    _raw_delta = abs(evaluate_board(projected, 'midrange')
+                     - evaluate_board(snap, 'midrange'))
+    _avg_card_value = card_clock_impact(snap)
+    if _avg_card_value > 0 and _raw_delta > 0:
+        _worthiness = _raw_delta / (_raw_delta + _avg_card_value)
+        p_interaction *= _worthiness
+
+    # Model opponent response — now parameterised on the single
+    # p_interaction we just computed.
+    post_response = estimate_opponent_response(
+        card, projected, snap, game, player_idx,
+        bhi=bhi, p_interaction=p_interaction)
     after_value = evaluate_board(post_response, archetype, dk)
 
     ev = after_value - current_value
@@ -2681,8 +2989,12 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
     #   1. Direct progress: damage / opp_life = fraction of lethal achieved
     #   2. Storm continuation: storm_count / lethal_storm_threshold = fraction
     #      of the storm count needed to finish next turn via Past in Flames.
-    # Both are capped at 1.0 and summed (clamped). P(chain resolves) comes
-    # from BHI counter probability. Replaces the old flat +50/+15/+5 tiers.
+    # Both are capped at 1.0 and summed (clamped).  P(chain resolves) is
+    # 1 - p_interaction — the SAME broadened posterior already queried
+    # upstream, so we don't re-query BHI (M7 / W1b-7 single-call-site
+    # invariant).  Replaces the old flat +50/+15/+5 tiers.  Archetype
+    # eligibility comes from _uses_combo_chain_scoring (drops the
+    # inline archetype-conditional — Phase 2 / PR #408 sweep).
     if game and _uses_combo_chain_scoring(game, player_idx):
         tags = getattr(card.template, 'tags', set())
         is_chain_starter = ('ritual' in tags or 'cantrip' in tags or
@@ -2692,8 +3004,7 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
         if is_chain_starter:
             can_kill, storm_count, damage, chain = _estimate_combo_chain(
                 game, player_idx, first_card=card)
-            p_resolves = 1.0 - (bhi.get_counter_probability()
-                                if bhi and bhi._initialized else 0.0)
+            p_resolves = 1.0 - p_interaction
             from ai.clock import position_value
             win_swing = max(0.0, 100.0 - position_value(snap))
             if can_kill:
@@ -2713,58 +3024,44 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
                 progress = min(1.0, damage / max(1, snap.opp_life))
                 ev += p_resolves * progress * win_swing
 
+    # ── Life-phase gear-shift (M4) ──
+    # Pure lookup over `strategy_profile.phase_weights`.  At PANIC,
+    # control / midrange / aggro archetypes up-weight defensive tags
+    # (`removal`, `board_wipe`, `counterspell`, `lifegain`, ...) and
+    # down-weight purely-proactive tags (`cantrip`, `card_advantage`)
+    # so the AI gear-shifts to "stay alive" instead of executing the
+    # standard `grind_value` projection.  At DEVELOP / GRIND the
+    # lookup returns the identity multiplier, so the standard
+    # projection is unchanged.
+    #
+    # No `if life_phase == PANIC:` if-chain — the phase is passed
+    # straight to a dict lookup, and unrecognised archetypes /
+    # phases / tags all fall through to IDENTITY_PHASE_WEIGHTS = 1.0.
+    # Replaces scattered `my_life-vs-literal-N` magic-threshold
+    # conditionals (see W0-B life_phase + tests/test_life_phase.py
+    # and ev_player.py's deleted DESPERATE_LIFE_THRESHOLD gate).
+    phase = life_phase(snap)
+    mult = phase_weight_multiplier(
+        archetype, phase, getattr(card.template, 'tags', set()) or set())
+    ev *= mult
+
     if not detailed:
         return ev
 
-    # Recover response probabilities — mirrors estimate_opponent_response scaling
-    from ai.constants import (
-        COUNTER_ESTIMATED_COST, REMOVAL_ESTIMATED_COST,
-        DAMAGE_REMOVAL_EFF_HIGH_TOUGH, DAMAGE_REMOVAL_EFF_MID_TOUGH,
-    )
-    counter_pct = 0.0
-    removal_pct = 0.0
+    # M7 / W1b-7 — detailed info reuses the single p_interaction
+    # already computed upstream (no second BHI query, no recomputed
+    # density).  Field names `counter_pct` / `removal_pct` are
+    # preserved for backward-compat with the NDJSON replay format;
+    # `interaction_pct` is the new structural source of truth.
+    # Creature spells surface the interaction as `removal_pct`;
+    # non-creatures as `counter_pct` — single value, two views.
     t = card.template
-    oracle = (t.oracle_text or '').lower()
-    can_counter = (projected.opp_mana >= COUNTER_ESTIMATED_COST
-                   and "can't be countered" not in oracle
-                   and "can\u2019t be countered" not in oracle)
-    opp_hand = snap.opp_hand_size if snap.opp_hand_size > 0 else FALLBACK_OPP_HAND_SIZE
-    if game:
-        opp = game.players[1 - player_idx]
-        if can_counter and opp.counter_density > 0:
-            counter_pct = 1.0 - (1.0 - opp.counter_density) ** opp_hand
-        if t.is_creature and projected.opp_mana >= REMOVAL_ESTIMATED_COST and opp.removal_density > 0:
-            creature_toughness = t.toughness or 0
-            if hasattr(card, 'toughness') and card.toughness is not None:
-                creature_toughness = card.toughness
-            exile_prob = 1.0 - (1.0 - opp.exile_density) ** opp_hand if opp.exile_density > 0 else 0.0
-            damage_density = opp.removal_density - opp.exile_density
-            damage_prob = 1.0 - (1.0 - max(0, damage_density)) ** opp_hand if damage_density > 0 else 0.0
-            if creature_toughness >= CREATURE_HIGH_TOUGHNESS:
-                damage_prob *= DAMAGE_REMOVAL_EFF_HIGH_TOUGH
-            elif creature_toughness >= CREATURE_MID_TOUGHNESS:
-                damage_prob *= DAMAGE_REMOVAL_EFF_MID_TOUGH
-            removal_pct = min(1.0, exile_prob + damage_prob * (1.0 - exile_prob))
-            # Apply same CMC scaling as estimate_opponent_response
-            cmc = t.cmc or 0
-            if cmc == 0:
-                removal_pct *= CMC_REMOVAL_EFFICIENCY_CMC0
-            elif cmc == 1:
-                removal_pct *= CMC_REMOVAL_EFFICIENCY_CMC1
-            elif cmc == 2:
-                removal_pct *= CMC_REMOVAL_EFFICIENCY_CMC2
-            # Evasion discount: conditional or innate flying/evasion
-            has_innate_evasion = bool(
-                getattr(t, 'keywords', set()) & {'flying', 'menace', 'trample', 'shadow'}
-            )
-            has_conditional_evasion = (
-                'flying' in oracle and
-                ('counter' in oracle or 'discard' in oracle or 'whenever' in oracle)
-            )
-            if has_innate_evasion or has_conditional_evasion:
-                exile_frac = opp.exile_density / max(REMOVAL_BHI_PROBABILITY_FLOOR, opp.removal_density)
-                damage_frac = 1.0 - exile_frac
-                removal_pct *= (exile_frac + damage_frac * EVASION_DAMAGE_REMOVAL_RELIEF)
+    if t.is_creature:
+        counter_pct = 0.0
+        removal_pct = p_interaction
+    else:
+        counter_pct = p_interaction
+        removal_pct = 0.0
 
     return ev, {
         'current_value': current_value,
@@ -2774,6 +3071,7 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
         'response_discount': (projected_value - current_value) - ev,
         'counter_pct': counter_pct,
         'removal_pct': removal_pct,
+        'interaction_pct': p_interaction,
         'this_turn_signals': signals,
         'deferral': False,
     }

@@ -25,6 +25,7 @@ from ai.llm_schemas import (
     DocFreshnessReport,
     FailingTestSpec,
     HandlerGapReport,
+    OracleTagClassification,
     SynthesizedGameplan,
 )
 
@@ -69,6 +70,10 @@ _MOCK_OUTPUTS: dict[str, Any] = {
         "assertion": "...",
         "expected_status_before_fix": "fail",
     },
+    "classify_oracle": {
+        "card_name": "Mock Card",
+        "tags": ["IMPULSE_DRAW"],
+    },
 }
 
 
@@ -79,6 +84,7 @@ _EXPECTED_TYPES: dict[str, type] = {
     "audit_doc_freshness": DocFreshnessReport,
     "handler_audit":       HandlerGapReport,
     "failing_test_spec":   FailingTestSpec,
+    "classify_oracle":     OracleTagClassification,
 }
 
 
