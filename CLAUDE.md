@@ -212,33 +212,27 @@ honoured everywhere — module-scoped overrides were removed in PR #439
 (152 files). The full suite now loads the 21k-card DB once per pytest
 process, not once per module.
 
-**Tests `--ignore`'d from the full suite** (failure counts from a
-full-suite local run at PR #439 head; each is a tracked follow-up):
+**Tests `--ignore`'d from the full suite** (failure counts measured
+post-cleanup landings on PR #439):
 
 - `tests/test_llm_embeddings.py` — numpy dep not in CI install set.
-- `tests/test_wr_baseline_anchor.py` (13) — baseline entries drifted.
-  Fix: `python tools/refresh_wr_baseline.py` and commit the snapshot.
-  PR-2 of the finishing-pass plan.
-- `tests/test_x_cost_board_wipe_gate.py` (1) — fix landed in PR #399
-  (commit 6acd714), silently regressed by PR #433 (Wave 0+1
-  refactor). The killable-set lift from `opp.creatures` to
-  `opp.battlefield` filtered by oracle-derived target classes was
-  reverted in `ai/ev_player.py:1195-1218`. PR-3.
-- `tests/test_game_integration.py` (6) — TestSingleGame,
-  TestMatchupBalance, TestCallbacksBoundary.
-- `tests/test_ev_system.py` (3) — TestEVIntegration.
-- `tests/test_etb_graveyard_return.py` (3) — ETB→graveyard return.
-- `tests/test_engine_seed_determinism.py` (3) — seed determinism.
-- `tests/test_suspend_violent_outburst.py` (2) — suspend mechanic;
-  related to PR-4 Living End suspend overhaul.
-- `tests/test_parallel_matrix.py` (2) — possibly worker-count env-
-  dependent.
-- `tests/test_extracted_modules.py` (2) —
-  TestIntegrationAfterRefactor.
+- `tests/test_etb_graveyard_return.py` (3) — TestEternalWitnessEtb,
+  ETB-to-hand return target picker.
+- `tests/test_engine_seed_determinism.py` (1) —
+  `test_different_seeds_produce_distinct_outcomes`. (The other 2
+  entries in this file cleared with the deal_damage fix.)
 - `tests/test_cascade_patience_gate.py` (1).
 - `tests/test_graveyard_hate_tag_generic_derivation.py` (1) —
   Tormod's Crypt tag derivation.
 - `tests/test_oracle_bug_detector.py` (1) — unknown token-label flag.
+
+**Cleared on PR #439** (no longer `--ignore`'d):
+
+- `test_wr_baseline_anchor.py` — refreshed via `tools/refresh_wr_baseline.py`
+- `test_x_cost_board_wipe_gate.py` — PR #399 killable-set lift re-applied
+- `test_game_integration.py`, `test_ev_system.py`, `test_extracted_modules.py`,
+  `test_parallel_matrix.py`, `test_suspend_violent_outburst.py` —
+  all upstream of the deal_damage signature mismatch (commit 6dee2ba).
 
 ### Adding a new test file to CI
 
