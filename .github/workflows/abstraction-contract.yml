@@ -10,6 +10,17 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
+    env:
+      # ai/llm_decision_scorer.py makes live agent.run_sync() calls
+      # with no timeout when this is unset. CI has pydantic-ai-slim
+      # installed (so agent construction succeeds) but no API key
+      # (so the call hangs on DNS/socket until kernel timeout —
+      # observed as 1h30m+ wall-time stalls). Offline mode uses the
+      # DEFAULT_WEIGHTS table, which the module docstring guarantees
+      # matches the pre-refactor constants exactly. Dedicated LLM
+      # tests that exercise the live path live in test_llm_*.py and
+      # are not in the curated CI subset.
+      MTG_LLM_DECISION_SCORER_OFFLINE: "1"
     steps:
       - uses: actions/checkout@v4
 
