@@ -222,6 +222,14 @@ post-cleanup landings on PR #439):
   `test_different_seeds_produce_distinct_outcomes`. (The other 2
   entries in this file cleared with the deal_damage fix.)
 - `tests/test_cascade_patience_gate.py` (1).
+- `tests/test_parallel_matrix.py` — passes in isolation but its
+  multiprocessing Pool forks pollute downstream tests (suspected
+  source of `test_engine_seed_determinism` + `test_wr_baseline_anchor`
+  partial drifts in full-suite runs).
+- `tests/test_wr_baseline_anchor.py` — passes 19/19 in isolation on
+  the freshly-refreshed snapshot (commit `6f51067`); 2 entries drift
+  when run after the rest of the suite. Same pollution class as
+  `test_engine_seed_determinism`.
 
 **Cleared on PR #439** (no longer `--ignore`'d):
 
