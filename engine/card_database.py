@@ -425,6 +425,22 @@ class OracleTextParser:
         if re.search(r"return.*from.*graveyard.*to.*battlefield", text_lower):
             effects.append(OracleEffect("reanimate", 0, "self", raw_text=oracle_text))
 
+        # Mass-reanimate / cascade-reanimator payoff (Living End, Patriarch's
+        # Bidding, Twilight's Call, etc.). Distinct from `reanimate` because:
+        #   - it operates on ALL creature cards (not a target)
+        #   - it routes via exile-then-battlefield, not graveyard-to-
+        #     battlefield direct
+        # Used by the cascade patience gate in ai/ev_player.py to detect
+        # whether a deck's cascade has a payoff still in library.
+        if re.search(
+            r"(?:each player\s+)?exile[s]?\s+(?:all\s+)?(?:creature\s+)?cards?\s+from\s+(?:their|all)\s+graveyard",
+            text_lower,
+        ) and re.search(
+            r"put.*(?:exiled.*this way|those cards).*onto.*the\s+battlefield",
+            text_lower,
+        ):
+            effects.append(OracleEffect("mass_reanimate", 0, "self", raw_text=oracle_text))
+
         # Mill
         mill_match = re.search(r"mills?\s+(\d+)\s+cards?", text_lower)
         if mill_match:
@@ -932,6 +948,9 @@ class OracleTextParser:
         for e in effects:
             if e.effect_type == "reanimate":
                 tags.add("reanimate")
+                tags.add("combo")
+            elif e.effect_type == "mass_reanimate":
+                tags.add("mass_reanimate")
                 tags.add("combo")
 
         # Detect targeting restrictions from oracle text

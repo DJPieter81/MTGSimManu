@@ -933,22 +933,38 @@ class EVPlayer:
         # critical mass.
         if getattr(t, 'is_cascade', False):
             fill_target = self._cascade_graveyard_target()
-            if (fill_target > 0
-                    and snap.my_gy_creatures < fill_target
-                    and ev <= 0.0):
-                # Defer-to-projection: only clamp when projection is
-                # NOT already positive.  A positive `ev` here means
-                # `compute_play_ev` (which recursively projected the
-                # cascade hit) found a positive swing — the cascade-
-                # payoff must-fire rule says trust that projection.
-                # M3: the pre-existing `profile.pass_threshold - 1.0`
-                # clamp depended on the now-deleted `pass_threshold`
-                # field; replaced with the named sentinel from
-                # `scoring_constants`.  Same intent: the cast is
-                # unconditionally outside the M3 `play_value > 0` gate,
-                # so the spell is rejected by `decide_main_phase` but
-                # any other legal play can still fire.
-                ev = min(ev, PATIENCE_GATE_REJECT_SENTINEL)
+            if fill_target > 0 and snap.my_gy_creatures < fill_target:
+                # Compute whether the cascade has a payoff to hit in
+                # library. Cascade-reanimator decks need a card with
+                # the `mass_reanimate` tag (oracle-derived in
+                # engine/card_database.py — Living End, Patriarch's
+                # Bidding, Twilight's Call, future printings sharing
+                # the same "exile creatures from graveyard, put them
+                # onto battlefield" oracle shape). Without that card
+                # in the library, the cascade resolves into the
+                # vanilla creature-body baseline (`compute_play_ev`
+                # returns ~2 for a 2/2 Shardless Agent) — a positive
+                # but misleading EV that the projection collapse
+                # cannot distinguish from a real swing.
+                library_has_mass_reanimate_payoff = any(
+                    'mass_reanimate' in getattr(c.template, 'tags', set())
+                    for c in me.library
+                )
+                # Defer-to-projection when both:
+                #   (a) projection EV is already positive AND
+                #   (b) library has a payoff for cascade to hit
+                # When either condition fails — projection negative OR
+                # library lacks a payoff — clamp into the patience-
+                # reject band so the AI holds the cascade enabler.
+                if not library_has_mass_reanimate_payoff or ev <= 0.0:
+                    # M3: the pre-existing `profile.pass_threshold - 1.0`
+                    # clamp depended on the now-deleted `pass_threshold`
+                    # field; replaced with the named sentinel from
+                    # `scoring_constants`.  Same intent: the cast is
+                    # unconditionally outside the M3 `play_value > 0` gate,
+                    # so the spell is rejected by `decide_main_phase` but
+                    # any other legal play can still fire.
+                    ev = min(ev, PATIENCE_GATE_REJECT_SENTINEL)
 
         # ── Reanimation readiness gate (GV-2) ──
         # Mirror shape of the cascade patience gate above, but in the
