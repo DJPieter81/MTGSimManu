@@ -161,6 +161,16 @@ class AICallbacks(GameCallbacks):
                         if gameplan is not None else set())
                 if 'multicolor_urgency' in tags:
                     return True
+                # Combo-speed urgency: same shape as multicolor
+                # urgency but for combo decks whose engine deployment
+                # is 1 turn ahead of where `evaluate_board` would pay
+                # life for it. Storm vs Boros N=20 measurement showed
+                # the chain reaching lethal T6-T7 while Boros wins
+                # T5-T6 — the 1-turn deficit is the unpaid T1 shock.
+                # Same T1-T3 window as multicolor (paying after T3
+                # is rare since most combo engines are out by then).
+                if 'combo_speed_urgency' in tags:
+                    return True
 
         pay = Choice(
             name=opt.name, apply=opt.apply_to_snap,

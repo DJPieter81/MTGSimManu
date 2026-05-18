@@ -1,6 +1,7 @@
 {
   "deck_name": "Ruby Storm",
   "archetype": "combo",
+  "strategy_tags": ["combo_speed_urgency"],
   "goals": [
     {
       "goal_type": "DEPLOY_ENGINE",
