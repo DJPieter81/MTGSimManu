@@ -413,15 +413,30 @@ def position_value(snap: "EVSnapshot") -> float:
     Returns clock differential + resource advantage.
     Higher = better position for the player.
 
-    Phase 2 refactor: the prior `archetype` parameter and the
-    `min(my_clock, combo_clock(snap))` override are removed.  Combo
-    decks express their proximity to a win through per-deck gameplan
-    data and LLM-scored weights at the call-site layer (e.g.
-    ``ai.ev_evaluator.compute_play_ev``'s combo-chain branch and
-    ``ai.combo_calc.assess_combo``).  Removing the override here
-    keeps ``position_value`` mechanic-driven and archetype-agnostic —
-    every Modern card hits the same code path regardless of which
-    deck is currently controlling it.
+    Combo-clock gate: when ``snap.archetype_subtype`` is set (gameplan
+    declares a combo proximity model — "storm" / "cascade_reanimator" /
+    future subtypes) AND ``snap.am_dead_next`` is False, ``my_clock``
+    clamps to ``min(combat_clock, combo_clock(snap))``.  The
+    archetype_subtype gate keeps non-combo decks unaffected; the
+    am_dead_next guard prevents combo_clock's resource-availability
+    heuristic from masking lethal-NOW states.
+
+    History:
+        Phase 2 (PR #408, 2026-05-16) removed the unconditional
+        ``if archetype in ("combo", "storm")`` override because it
+        masked lethal-NOW positions for cascade-reanimator decks
+        (`docs/diagnostics/2026-05-16_cascade_combo_override_at_lethal.md`).
+        Removing it entirely cost Storm 56% → 10-15% and Living End
+        53% → 37% WR because combo decks lost their positional
+        awareness whenever the board was empty
+        (`my_clock == NO_CLOCK`).  This implementation re-instates the
+        clamp under two conditions that together address both
+        symptoms:
+
+        1. ``archetype_subtype`` gate — gameplan-declared, no code-level
+           archetype branch reintroduced.
+        2. ``am_dead_next`` guard — the specific bug from the
+           cascade-override diagnostic stays fixed.
     """
     # Dead check
     if snap.my_life <= 0:
@@ -443,6 +458,19 @@ def position_value(snap: "EVSnapshot") -> float:
         snap.opp_power, snap.my_life,
         snap.opp_evasion_power, snap.my_toughness
     )
+
+    # Combo-proximity clamp: when the gameplan declared a combo
+    # proximity model (archetype_subtype set: "storm" /
+    # "cascade_reanimator" / future) AND the snapshot is NOT in a
+    # lethal-NOW state, clamp my_clock down to the combo_clock.  The
+    # combat_clock alone reads `NO_CLOCK` for combo decks with no
+    # board, which makes ``position_value`` score every position as
+    # losing — even when the combo is one turn from firing.  See the
+    # method docstring for why both the subtype gate and the
+    # am_dead_next guard are necessary.
+    subtype = getattr(snap, "archetype_subtype", None)
+    if subtype is not None and not snap.am_dead_next:
+        my_clock = min(my_clock, combo_clock(snap))
 
     # Clock differential: positive = I'm winning the race
     clock_diff = opp_clock - my_clock
