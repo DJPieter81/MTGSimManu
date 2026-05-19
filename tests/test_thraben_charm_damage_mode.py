@@ -23,16 +23,10 @@ recurs across `Boros Charm`, `Izzet Charm`, etc.
 """
 from __future__ import annotations
 
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance, CardType
 from engine.game_state import GameState
 import pytest
 import random
-
-
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
 
 
 def _add_to_battlefield(game, card_db, name, controller):

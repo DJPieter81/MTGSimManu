@@ -128,6 +128,52 @@ _REPLAY_PASS_EV_SENTINEL = 0.0
 # Archetype detection
 # ─────────────────────────────────────────────────────────────
 
+# Map oracle-derived board-wipe tags (set by
+# `engine.card_database.CardDatabase._derive_tags` via OracleEffect.target_type)
+# onto the permanent classes the wipe actually destroys.  Used by the
+# X-cost board-wipe scoring gate in `_score_spell` to lift the killable
+# set from "creatures only" to "permanent classes the oracle text names".
+_WIPE_TAG_TO_CLASS = {
+    "destroy_all_creatures": "creature",
+    "destroy_all_artifacts": "artifact",
+    "destroy_all_enchantments": "enchantment",
+    "destroy_all_nonland": "nonland",
+}
+
+
+def _wipe_target_classes_from_tags(tags) -> "set[str]":
+    """Return the set of permanent classes a board-wipe destroys, derived
+    from its oracle-parsed tags. Never returns a hardcoded card list —
+    the only knowledge entering this function is the tag bag set by the
+    oracle-text parser. Wrath of the Skies → {creature, artifact,
+    enchantment} via the destroy_all_artifacts tag plus the implicit
+    creature/enchantment classes its oracle text names ("each artifact,
+    creature, and enchantment").
+    """
+    classes: "set[str]" = set()
+    for tag, cls in _WIPE_TAG_TO_CLASS.items():
+        if tag in tags:
+            if cls == "nonland":
+                classes.update({"creature", "artifact", "enchantment"})
+            else:
+                classes.add(cls)
+    return classes
+
+
+def _is_wipe_candidate(card, classes: "set[str]") -> bool:
+    """Return True iff `card` is destroyed by a wipe whose target classes
+    are `classes`. Uses CardType enum membership — no card-name lookup."""
+    from engine.cards import CardType
+    types = card.template.card_types
+    if "creature" in classes and CardType.CREATURE in types:
+        return True
+    if "artifact" in classes and CardType.ARTIFACT in types:
+        return True
+    if "enchantment" in classes and CardType.ENCHANTMENT in types:
+        return True
+    return False
+
+
 # Archetype detection — single source of truth in strategy_profile.py
 def _get_archetype(deck_name: str) -> str:
     from ai.strategy_profile import DECK_ARCHETYPES, ArchetypeStrategy, DECK_ARCHETYPE_OVERRIDES
@@ -887,22 +933,38 @@ class EVPlayer:
         # critical mass.
         if getattr(t, 'is_cascade', False):
             fill_target = self._cascade_graveyard_target()
-            if (fill_target > 0
-                    and snap.my_gy_creatures < fill_target
-                    and ev <= 0.0):
-                # Defer-to-projection: only clamp when projection is
-                # NOT already positive.  A positive `ev` here means
-                # `compute_play_ev` (which recursively projected the
-                # cascade hit) found a positive swing — the cascade-
-                # payoff must-fire rule says trust that projection.
-                # M3: the pre-existing `profile.pass_threshold - 1.0`
-                # clamp depended on the now-deleted `pass_threshold`
-                # field; replaced with the named sentinel from
-                # `scoring_constants`.  Same intent: the cast is
-                # unconditionally outside the M3 `play_value > 0` gate,
-                # so the spell is rejected by `decide_main_phase` but
-                # any other legal play can still fire.
-                ev = min(ev, PATIENCE_GATE_REJECT_SENTINEL)
+            if fill_target > 0 and snap.my_gy_creatures < fill_target:
+                # Compute whether the cascade has a payoff to hit in
+                # library. Cascade-reanimator decks need a card with
+                # the `mass_reanimate` tag (oracle-derived in
+                # engine/card_database.py — Living End, Patriarch's
+                # Bidding, Twilight's Call, future printings sharing
+                # the same "exile creatures from graveyard, put them
+                # onto battlefield" oracle shape). Without that card
+                # in the library, the cascade resolves into the
+                # vanilla creature-body baseline (`compute_play_ev`
+                # returns ~2 for a 2/2 Shardless Agent) — a positive
+                # but misleading EV that the projection collapse
+                # cannot distinguish from a real swing.
+                library_has_mass_reanimate_payoff = any(
+                    'mass_reanimate' in getattr(c.template, 'tags', set())
+                    for c in me.library
+                )
+                # Defer-to-projection when both:
+                #   (a) projection EV is already positive AND
+                #   (b) library has a payoff for cascade to hit
+                # When either condition fails — projection negative OR
+                # library lacks a payoff — clamp into the patience-
+                # reject band so the AI holds the cascade enabler.
+                if not library_has_mass_reanimate_payoff or ev <= 0.0:
+                    # M3: the pre-existing `profile.pass_threshold - 1.0`
+                    # clamp depended on the now-deleted `pass_threshold`
+                    # field; replaced with the named sentinel from
+                    # `scoring_constants`.  Same intent: the cast is
+                    # unconditionally outside the M3 `play_value > 0` gate,
+                    # so the spell is rejected by `decide_main_phase` but
+                    # any other legal play can still fire.
+                    ev = min(ev, PATIENCE_GATE_REJECT_SENTINEL)
 
         # ── Reanimation readiness gate (GV-2) ──
         # Mirror shape of the cascade patience gate above, but in the
@@ -1184,28 +1246,72 @@ class EVPlayer:
                 ev -= waste_penalty
 
         # ── X-cost board wipe: hold when the X-budget can't meaningfully clear ──
-        # Tuned through three passes:
+        # History:
         #   v1 (≥2 kills) — too strict: Azorius never wraths vs 1 Ragavan.
         #   v2 (≥3 power on single kill) — still too strict: 2-power Ragavan
         #       fails, but killing even a single attacking Ragavan is correct
         #       when the AI is dying.
-        #   v3 (this): threshold drops to 2 power, and the whole gate is
-        #       waived when we're at low life (≤10). Consolidates the
-        #       "always fire when desperate" behaviour.
-        if ('board_wipe' in tags and t.x_cost_data and opp.creatures):
+        #   v3 (≥2 power, my_life ≤ 10 waiver) — counted only creature kills,
+        #       so Wrath of the Skies vs Affinity at X=2 saw kill_count=0
+        #       and floored at -20 EV despite clearing the artifact mana base.
+        #   v4 (PR #399, 6acd714): killable set lifted from opp.creatures to
+        #       opp.battlefield filtered by oracle-derived target classes
+        #       (creature / artifact / enchantment, from tags). kill_count
+        #       derived via the engine's X-picker (`engine.cast_manager.
+        #       pick_wipe_x_value`) for multi-class wipes.
+        #   v5 (PR #433 silently regressed v4 back to opp.creatures-only).
+        #   v6 (this): re-apply v4's killable-set lift; keep PR #433's
+        #       LifePhase desperation primitive (replaces v4's
+        #       opp_clock_discrete check).
+        wipe_target_classes = _wipe_target_classes_from_tags(tags)
+        # Oracle-derived widening: Wrath of the Skies' tag bag has only
+        # `destroy_all_artifacts` from the parser's pattern hit, but its
+        # text destroys "each artifact, creature, AND enchantment". When
+        # an X-cost wipe's oracle text spells out the multi-class list,
+        # widen the class set so the killable-set lift matches the
+        # engine's `pick_wipe_x_value` (which uses CardType.{CREATURE,
+        # ARTIFACT, ENCHANTMENT}).
+        if t.x_cost_data and 'board_wipe' in tags:
+            ot = (t.oracle_text or '').lower()
+            if 'mana value less than or equal to' in ot or 'mana value of' in ot:
+                if 'creature' in ot:
+                    wipe_target_classes.add('creature')
+                if 'artifact' in ot:
+                    wipe_target_classes.add('artifact')
+                if 'enchantment' in ot:
+                    wipe_target_classes.add('enchantment')
+        if ('board_wipe' in tags and t.x_cost_data and wipe_target_classes
+                and any(_is_wipe_candidate(c, wipe_target_classes)
+                        for c in opp.battlefield)):
             total_mana = snap.my_mana
             base_cost = t.cmc or 0
             x_budget = max(0, total_mana - base_cost)
             mult = (t.x_cost_data or {}).get('multiplier', 1) or 1
-            killable = [c for c in opp.creatures
-                        if (c.template.cmc or 0) <= x_budget // mult]
-            kill_count = len(killable)
-            killable_power = sum((c.power or 0) for c in killable)
-            # Replaces a `my_life-vs-DESPERATE_LIFE_THRESHOLD` magic
-            # threshold (M4 from 2026-05-16 5-panel audit).  The life-
-            # phase enum from W0-B subsumes the "we're dying, fire the
-            # X-wrath even at low value" case via the composed primitive
-            # `am_dead_next + life_as_resource` ordering.
+            effective_x = x_budget // mult
+            if 'destroy_all_artifacts' in tags or 'destroy_all_enchantments' in tags:
+                # Multi-class wipe (Wrath of the Skies pattern): consult the
+                # engine X-picker so kill_count / killable_value match what
+                # the engine will actually destroy at resolution time.
+                from engine.cast_manager import pick_wipe_x_value
+                _best_x, _kill_value, kill_count = pick_wipe_x_value(
+                    game, self.player_idx, int(effective_x)
+                )
+                # killable_power kept for the single-creature-trade gate.
+                killable_creatures = [
+                    c for c in opp.creatures
+                    if (c.template.cmc or 0) <= effective_x
+                ]
+                killable_power = sum((c.power or 0) for c in killable_creatures)
+            else:
+                # Creature-only X-wipe — keep the legacy creature-CMC count.
+                killable = [c for c in opp.creatures
+                            if (c.template.cmc or 0) <= effective_x]
+                kill_count = len(killable)
+                killable_power = sum((c.power or 0) for c in killable)
+            # Desperation derives from the LifePhase enum (M4 from the
+            # 2026-05-16 5-panel audit) — composes `am_dead_next` +
+            # `life_as_resource` so we fire the X-wrath at low EV when
+            # opp lethal is imminent regardless of raw life.
             from ai.clock import LifePhase, life_phase
             desperate = life_phase(snap) in (LifePhase.PANIC, LifePhase.LETHAL)
             if not desperate:

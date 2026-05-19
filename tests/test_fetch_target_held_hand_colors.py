@@ -37,14 +37,8 @@ import pytest
 from ai.mana_planner import (
     ManaNeeds, analyze_mana_needs, choose_fetch_target,
 )
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance
 from engine.game_state import GameState
-
-
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
 
 
 def _add(game, card_db, name, controller, zone):

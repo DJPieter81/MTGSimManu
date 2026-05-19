@@ -425,6 +425,22 @@ class OracleTextParser:
         if re.search(r"return.*from.*graveyard.*to.*battlefield", text_lower):
             effects.append(OracleEffect("reanimate", 0, "self", raw_text=oracle_text))
 
+        # Mass-reanimate / cascade-reanimator payoff (Living End, Patriarch's
+        # Bidding, Twilight's Call, etc.). Distinct from `reanimate` because:
+        #   - it operates on ALL creature cards (not a target)
+        #   - it routes via exile-then-battlefield, not graveyard-to-
+        #     battlefield direct
+        # Used by the cascade patience gate in ai/ev_player.py to detect
+        # whether a deck's cascade has a payoff still in library.
+        if re.search(
+            r"(?:each player\s+)?exile[s]?\s+(?:all\s+)?(?:creature\s+)?cards?\s+from\s+(?:their|all)\s+graveyard",
+            text_lower,
+        ) and re.search(
+            r"put.*(?:exiled.*this way|those cards).*onto.*the\s+battlefield",
+            text_lower,
+        ):
+            effects.append(OracleEffect("mass_reanimate", 0, "self", raw_text=oracle_text))
+
         # Mill
         mill_match = re.search(r"mills?\s+(\d+)\s+cards?", text_lower)
         if mill_match:
@@ -823,9 +839,15 @@ class OracleTextParser:
             # regex ("exile <anything> graveyard") also caught
             # "exile target ... card from your graveyard" (self-
             # graveyard utility), so each phrasing is now an
-            # explicit anchor.
+            # explicit anchor. Tormod's Crypt's "exile all cards from
+            # target player's graveyard" is the canonical instance of
+            # the "all cards from" modifier between `exile` and the
+            # player'?s? clause; the `(?:all cards from\s+)?` prefix
+            # accepts that wording without re-broadening to the
+            # self-graveyard utility pattern (which uses "your", not
+            # "target player'?s?"/"opponent'?s?").
             if _gy_re.search(
-                r"exile\s+(?:"
+                r"exile\s+(?:all cards from\s+)?(?:"
                 r"all\s+graveyards|"
                 r"each opponent'?s? graveyards?|"
                 r"target opponent'?s? graveyards?|"
@@ -926,6 +948,9 @@ class OracleTextParser:
         for e in effects:
             if e.effect_type == "reanimate":
                 tags.add("reanimate")
+                tags.add("combo")
+            elif e.effect_type == "mass_reanimate":
+                tags.add("mass_reanimate")
                 tags.add("combo")
 
         # Detect targeting restrictions from oracle text

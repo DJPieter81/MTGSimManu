@@ -34,14 +34,8 @@ import pytest
 
 from ai.bhi import BayesianHandTracker
 from ai.combo_calc import _compute_risk_discount
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance
 from engine.game_state import GameState
-
-
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
 
 
 def _make_card(game, card_db, name, controller):

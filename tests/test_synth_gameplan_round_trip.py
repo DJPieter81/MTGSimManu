@@ -53,12 +53,6 @@ _TINY_AGGRO_DECK = {
 }
 
 
-@pytest.fixture(scope="module")
-def card_db():
-    from engine.card_database import CardDatabase
-    return CardDatabase()
-
-
 def test_synthesized_gameplan_validates_with_minimal_input():
     """Pure schema test — no decklist, no card DB.  A
     SynthesizedGameplan with one goal is a valid pydantic instance."""

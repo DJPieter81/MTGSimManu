@@ -18,13 +18,7 @@ import pytest
 
 from ai.clock import position_value
 from ai.ev_evaluator import EVSnapshot, _project_spell
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance
-
-
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
 
 
 def _instance(card_db, name):

@@ -27,12 +27,6 @@ from __future__ import annotations
 
 import pytest
 
-from engine.card_database import CardDatabase
-
-
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
 
 
 class TestWakerOfWavesOracle:

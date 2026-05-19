@@ -19,13 +19,7 @@ import random
 import pytest
 
 from ai.ev_player import EVPlayer
-from engine.card_database import CardDatabase
 from engine.game_state import GameState
-
-
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
 
 
 def test_last_candidates_cleared_when_no_legal_plays(card_db):

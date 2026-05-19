@@ -42,7 +42,6 @@ from unittest import mock
 import pytest
 
 from ai.bhi import BayesianHandTracker
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance
 from engine.game_state import GameState
 
@@ -51,11 +50,6 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
 # ─── Fixtures ──────────────────────────────────────────────────────────
-
-
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
 
 
 def _make_card(game, card_db, name, controller, zone="library"):

@@ -54,14 +54,8 @@ import pytest
 from ai.ev_player import EVPlayer
 from ai.ev_evaluator import snapshot_from_game
 from ai.strategy_profile import StrategyProfile
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance
 from engine.game_state import GameState, Phase
-
-
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
 
 
 def _add(game, card_db, name, controller, zone, summoning_sick=False):

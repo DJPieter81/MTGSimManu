@@ -34,11 +34,6 @@ from engine.card_database import CardDatabase
 from engine.cards import CardInstance
 
 
-@pytest.fixture(scope="module")
-def card_db() -> CardDatabase:
-    return CardDatabase()
-
-
 def _instance(card_db: CardDatabase, name: str, instance_id: int = 0,
               zone: str = "hand") -> CardInstance:
     template = card_db.cards.get(name)

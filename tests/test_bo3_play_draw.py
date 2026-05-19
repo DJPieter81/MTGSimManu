@@ -98,7 +98,6 @@ def test_setup_game_honours_forced_first_player(card_db):
     """Direct engine-layer contract: GameState.setup_game accepts
     forced_first_player and respects it in preference to the RNG roll."""
     from engine.game_state import GameState
-    from engine.card_database import CardDatabase
 
     # Build trivial 10-card decks (any legal CardTemplates will do)
     db = card_db

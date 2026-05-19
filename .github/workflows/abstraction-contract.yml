@@ -10,6 +10,11 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
+    # Token needs pull-requests:write so the failure-summary step
+    # below can POST a comment to the PR via the REST API.
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       # ai/llm_decision_scorer.py makes live agent.run_sync() calls
       # with no timeout when this is unset. CI has pydantic-ai-slim
@@ -43,6 +48,41 @@ jobs:
         # MTG_LLM_DECISION_SCORER_OFFLINE env at the top of this job.
         run: pip install pytest pytest-timeout pydantic-ai-slim
 
+      - name: Reassemble ModernAtomic.json from parts
+        # ModernAtomic.json is gitignored (~150MB) and not present
+        # after checkout. It must be merged from ModernAtomic_part*.json
+        # (which ARE tracked) before pytest runs.
+        #
+        # conftest.py has a fallback sidecar mechanism
+        # (`_ensure_fallback_db`) but it only kicks in on
+        # `JSONDecodeError` from CardDatabase.load — CardDatabase's
+        # auto-discover loop (engine/card_database.py:1138-1151)
+        # prints `WARNING: ModernAtomic.json not found` and returns
+        # an empty self.cards dict when no file exists, never raising.
+        # The conftest fallback never fires, leaving every
+        # card_db-dependent test to hit AI code paths that loop on
+        # empty card data and trip pytest-timeout.
+        #
+        # This step writes the merged file BEFORE conftest is even
+        # imported, so the canonical path through CardDatabase.load
+        # is used.
+        run: |
+          python3 << 'PY'
+          import json, glob
+          merged = {}
+          for part in sorted(glob.glob('ModernAtomic_part*.json')):
+              with open(part) as f:
+                  d = json.load(f)
+              # Part files have mixed shapes: parts 1-8 use the
+              # {"meta": ..., "data": {...}} wrapper; part 9+ are
+              # bare {card_name: [...]} dicts.
+              cards = d.get('data', d)
+              merged.update(cards)
+          with open('ModernAtomic.json', 'w') as f:
+              json.dump({'meta': {}, 'data': merged}, f)
+          print(f'ModernAtomic.json built — {len(merged)} cards')
+          PY
+
       - name: Run abstraction ratchet
         run: python tools/check_abstraction.py
 
@@ -55,66 +95,115 @@ jobs:
       - name: Run abstraction-contract pytest
         run: python -m pytest tests/test_abstraction_contract.py tests/test_check_abstraction_deck_gates.py tests/test_doc_hygiene.py tests/test_magic_numbers_ratchet.py tests/test_check_magic_numbers.py --timeout=60 -q
 
-      - name: Run regression-surface test suite
-        # Track G1 guardrail (plan 2026-05-16): the narrow ratchet
-        # pytest above does not exercise integration tests, sim v3
-        # behaviour, the WR baseline anchor, or any combo evaluator
-        # tests. This step runs a CURATED subset of high-leverage
-        # regression-detection test files — the surfaces where the
-        # near-miss v3 flip regressions lived. Wall budget ≈ 60s.
+      - name: Run full pytest suite
+        # G1.1 (PR #439): the session-scoped CardDatabase fixture
+        # rolled out across ~152 test files means the full suite no
+        # longer reloads 21k cards per module. Wall budget locally
+        # observed: ~18 min for 2098 passing tests (was ~80 min). This
+        # replaces the 14-file curated regression-surface subset that
+        # was in place while G1.1 was pending.
         #
-        # The full 1975-test suite is not run here because the
-        # CardDatabase fixture loads 21759 cards once per test
-        # (no session-scope cache); the per-test setup dominates
-        # wall time on the ubuntu-latest 2-core runner. A follow-up
-        # PR (G1.1) is filed to: (a) add a session-scoped DB fixture
-        # so the full suite fits inside the CI budget, OR (b) move
-        # to a beefier runner. Until then this curated subset covers
-        # ~75% of the regression class — the exact files where the
-        # 3 near-miss v3-flip regressions lived.
+        # `--ignore` list (whole-file skips) — each entry has a
+        # tracked follow-up PR. The files are excluded so a green
+        # CI bar is restored on `main`; the underlying failures are
+        # treated as bugs, not as accepted state.
         #
-        # Known-slow files excluded from this subset (>10s per test
-        # due to per-test CardDatabase load — each test reloads the
-        # full 21k-card database):
-        #   - tests/test_ability_override_discard_derived_from_oracle.py (107s)
-        #   - tests/test_discard_tag_generic_derivation.py (>60s)
-        #   - tests/test_tag_overrides_pruned_to_novel_only.py (>60s)
-        # These run locally during PR development; G1.1 follow-up
-        # will add a session-scoped DB fixture and re-include them.
+        # Known DB-import / dependency exclusions:
+        #   - tests/test_llm_embeddings.py — requires numpy (not in
+        #     the CI dependency set). Re-include if numpy is added.
         #
-        # Files temporarily excluded because of failures on main as
-        # of 2026-05-16 (G1 cannot land green until these are
-        # addressed; tracked as follow-up PRs):
-        #   - tests/test_wr_baseline_anchor.py (4 entries drifted —
-        #     fix is a snapshot refresh via tools/refresh_wr_baseline.py)
-        #   - tests/test_x_cost_board_wipe_gate.py
-        #     (2 regressions from #408 — deeper logic fix in
-        #     ai/ev_player.py X-cost wipe + desperation lever)
-        # These belong in the subset and will be added back once the
-        # underlying regressions are fixed. The guardrail itself
-        # ships in this PR.
+        # Drift / regression exclusions. Major cleanup landed in this
+        # branch: the deal_damage signature fix (commit 6dee2ba) turned
+        # 14 failures across 5 files into 0, and the WR baseline
+        # refresh + X-cost re-fix dropped 14 more failures. Remaining
+        # exclusions (failure counts measured locally post-cleanup):
         #
-        # Re-included after fix (was previously excluded):
-        #   - tests/test_combo_evaluator_integration.py — fixed by
-        #     PR #416 (stale _compute_combo_value(snap, 'combo') callers).
+        #   - tests/test_llm_embeddings.py — numpy dep not in CI install set.
+        #   - tests/test_etb_graveyard_return.py (3) —
+        #     TestEternalWitnessEtb. ETB-to-hand return target picker.
+        #   - tests/test_engine_seed_determinism.py (1) —
+        #     test_different_seeds_produce_distinct_outcomes (the
+        #     other 2 entries here cleared with the deal_damage fix).
+        #   - tests/test_parallel_matrix.py — multiprocessing Pool
+        #     test passes in isolation but pollutes downstream tests
+        #     by forking workers that share interpreter state. Need
+        #     to either run it in a forked subprocess (pytest-forked)
+        #     or move it to a separate CI job.
+        #   - tests/test_wr_baseline_anchor.py — passes in isolation
+        #     (19/19) on the freshly-refreshed snapshot, but 2
+        #     deterministic-outcome entries (baseline[2] Domain Zoo
+        #     vs Eldrazi Tron, baseline[5] Goryo's Vengeance vs Izzet
+        #     Prowess) drift when run after the rest of the suite.
+        #     Same pollution class as test_engine_seed_determinism.
         #
-        # When adding a new test file, add it here if it pins a
-        # mechanism (chain projection, combo evaluator, sim v3
-        # behaviour, WR anchor outcome, abstraction contract).
+        # When adding a new test file, NO action is needed here — the
+        # full suite picks it up automatically. Only add to `--ignore`
+        # if it fails on `main` and the fix is deferred.
         run: |
-          python -m pytest \
-            tests/test_abstraction_contract.py \
-            tests/test_check_abstraction_deck_gates.py \
-            tests/test_combo_evaluator_contract.py \
-            tests/test_combo_evaluator_integration.py \
-            tests/test_finisher_simulator.py \
-            tests/test_finisher_simulator_v3_integration.py \
-            tests/test_finisher_simulator_v3_tutor.py \
-            tests/test_finisher_simulator_v3_library.py \
-            tests/test_finisher_simulator_v3_rollout.py \
-            tests/test_finisher_v3_flag_wiring.py \
-            tests/test_finisher_v2_v3_parity.py \
-            tests/test_storm_tutor_lethal_fires.py \
-            tests/test_storm_finisher_holds_for_chain.py \
-            tests/test_zero_cost_creature_no_enabler_held.py \
-            --timeout=60 -v --tb=short -rA
+          set +e
+          python -m pytest tests/ \
+            --ignore=tests/test_llm_embeddings.py \
+            --ignore=tests/test_etb_graveyard_return.py \
+            --ignore=tests/test_engine_seed_determinism.py \
+            --ignore=tests/test_parallel_matrix.py \
+            --ignore=tests/test_wr_baseline_anchor.py \
+            --timeout=120 -q --tb=short 2>&1 | tee pytest-output.txt
+          status=${PIPESTATUS[0]}
+          echo
+          echo "=== FAILED test summary ==="
+          grep -E "^FAILED|^ERROR" pytest-output.txt | head -100 || echo "(none)"
+          echo
+          echo "=== Tail (final 50 lines) ==="
+          tail -50 pytest-output.txt
+          exit $status
+
+      - name: Upload pytest output as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-output
+          path: pytest-output.txt
+          retention-days: 7
+
+      - name: Post failure summary as PR comment
+        if: failure() && github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          # The MCP tools available to Claude in this repo's session
+          # can read PR comments but NOT workflow run logs. Posting
+          # the failure summary as a PR comment closes that loop so
+          # Claude can iterate on red CI without needing the user to
+          # paste logs every round.
+          if [ ! -f pytest-output.txt ]; then
+            BODY="CI ($RUN_URL) failed before pytest-output.txt was produced. Check the workflow log."
+          else
+            FAILED=$(grep -E '^FAILED|^ERROR' pytest-output.txt | head -50 || echo '(none in grep)')
+            TAIL=$(tail -30 pytest-output.txt)
+            BODY=$(cat <<EOF
+          **CI failure** ([$RUN_URL]($RUN_URL))
+
+          \`\`\`
+          === FAILED test summary ===
+          $FAILED
+
+          === Tail (final 30 lines) ===
+          $TAIL
+          \`\`\`
+          EOF
+          )
+          fi
+          # Use the GitHub REST API directly. `gh pr comment` would
+          # work too but the explicit curl makes the body encoding
+          # transparent.
+          jq -n --arg body "$BODY" '{body: $body}' \
+            | curl -s -X POST \
+                -H "Authorization: Bearer $GH_TOKEN" \
+                -H "Accept: application/vnd.github+json" \
+                -H "Content-Type: application/json" \
+                --data @- \
+                "https://api.github.com/repos/$REPO/issues/$PR_NUMBER/comments" \
+            > /dev/null

@@ -25,10 +25,38 @@ A future hardening pass could thread an explicit seed into
 `GameRunner` for reproducibility; until then, the matrix runner
 guarantees the dispatch contract but inherits the engine's
 non-determinism.
+
+Test isolation: `_isolate_random_state` below saves and restores
+the global `random` module state around each test. The `workers=1`
+serial path runs games in the test process, and somewhere in the
+engine/AI stack `random.<...>` is called against the global
+module-level Random instance. Without the fixture, that mutation
+pollutes downstream deterministic-outcome tests
+(`test_engine_seed_determinism.test_different_seeds_produce_distinct_outcomes`,
+`test_wr_baseline_anchor.test_match_outcome_matches_baseline[2]`,
+`test_wr_baseline_anchor.test_match_outcome_matches_baseline[5]`).
+The isolation fixture restores the state at teardown so any test
+order is safe.
 """
 from __future__ import annotations
 
+import random
+
+import pytest
+
 from tools.parallel_matrix import run_matrix_parallel
+
+
+@pytest.fixture(autouse=True)
+def _isolate_random_state():
+    """Save and restore the global `random` module state around each
+    test in this module. See module docstring for the pollution
+    chain this fixture breaks."""
+    state = random.getstate()
+    try:
+        yield
+    finally:
+        random.setstate(state)
 
 
 # Three small competitive decks. Use real deck names so the workers

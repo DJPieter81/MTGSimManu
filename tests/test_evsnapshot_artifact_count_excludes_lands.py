@@ -37,14 +37,8 @@ import random
 import pytest
 
 from ai.ev_evaluator import snapshot_from_game
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance
 from engine.game_state import GameState
-
-
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
 
 
 def _put_in_play(game, card_db, name, controller):

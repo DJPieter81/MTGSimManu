@@ -25,14 +25,8 @@ import random
 
 import pytest
 
-from engine.card_database import CardDatabase
 from engine.cards import CardType
 from engine.game_state import GameState
-
-
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
 
 
 _WURMCOIL_ORACLE = (

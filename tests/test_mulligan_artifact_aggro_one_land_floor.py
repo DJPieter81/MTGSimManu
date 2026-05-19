@@ -26,13 +26,7 @@ import pytest
 from ai.gameplan import create_goal_engine
 from ai.mulligan import MulliganDecider
 from ai.strategy_profile import ArchetypeStrategy
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance
-
-
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
 
 
 def _hand_card(card_db, name: str, iid: int) -> CardInstance:

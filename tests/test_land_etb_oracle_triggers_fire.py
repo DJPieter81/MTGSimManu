@@ -27,11 +27,6 @@ from engine.cards import CardInstance
 from engine.game_state import GameState
 
 
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
-
-
 def _seed_library(game: GameState, card_db: CardDatabase, player_idx: int,
                    names: list[str]) -> list[CardInstance]:
     """Place named cards on top of `player_idx`'s library in given order

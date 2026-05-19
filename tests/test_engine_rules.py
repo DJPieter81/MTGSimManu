@@ -4,7 +4,6 @@ Engine layer tests — verify game rules work correctly.
 import random
 import pytest
 from engine.game_state import GameState, PlayerState
-from engine.card_database import CardDatabase
 from engine.constants import STARTING_LIFE, MAX_HAND_SIZE
 from engine.callbacks import DefaultCallbacks
 

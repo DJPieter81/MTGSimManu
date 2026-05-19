@@ -27,14 +27,8 @@ import random
 
 import pytest
 
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance, Keyword
 from engine.game_state import GameState, Phase
-
-
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
 
 
 def _add(game, card_db, name, controller, zone):

@@ -401,21 +401,17 @@ class ResolutionManager:
                     for tid in item.targets:
                         if tid == -1:
                             # AI chose face — route to player damage.
-                            deal_damage(game, game.players[opponent], amount,
-                                        source_controller=controller)
+                            deal_damage(card, game.players[opponent], amount)
                             continue
                         target = game.get_card_by_id(tid)
                         if (target and target.zone == "battlefield"
                                 and (target.template.is_creature
                                      or CardType.PLANESWALKER in target.template.card_types)):
-                            deal_damage(game, target, amount,
-                                        source_controller=controller)
+                            deal_damage(card, target, amount)
                 elif "each opponent" in desc or "player" in desc:
-                    deal_damage(game, game.players[opponent], amount,
-                                source_controller=controller)
+                    deal_damage(card, game.players[opponent], amount)
                 elif amount > 0:
-                    deal_damage(game, game.players[opponent], amount,
-                                source_controller=controller)
+                    deal_damage(card, game.players[opponent], amount)
 
             elif "destroy" in desc:
                 if "all" in desc:

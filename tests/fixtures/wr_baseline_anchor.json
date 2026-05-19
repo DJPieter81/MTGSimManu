@@ -6,49 +6,49 @@
       "deck2": "Affinity",
       "seed": 50000,
       "winner": "Affinity",
-      "turns": 8
+      "turns": 6
     },
     {
       "deck1": "Ruby Storm",
       "deck2": "Dimir Midrange",
       "seed": 50000,
       "winner": "Dimir Midrange",
-      "turns": 5
+      "turns": 6
     },
     {
       "deck1": "Domain Zoo",
       "deck2": "Eldrazi Tron",
       "seed": 50000,
-      "winner": "Eldrazi Tron",
-      "turns": 12
+      "winner": "Domain Zoo",
+      "turns": 8
     },
     {
       "deck1": "Amulet Titan",
       "deck2": "Living End",
       "seed": 50000,
-      "winner": "Amulet Titan",
+      "winner": "Living End",
       "turns": 6
     },
     {
       "deck1": "Jeskai Blink",
       "deck2": "4c Omnath",
       "seed": 50000,
-      "winner": "Jeskai Blink",
-      "turns": 6
+      "winner": "4c Omnath",
+      "turns": 13
     },
     {
       "deck1": "Goryo's Vengeance",
       "deck2": "Izzet Prowess",
       "seed": 50000,
       "winner": "Izzet Prowess",
-      "turns": 8
+      "turns": 9
     },
     {
       "deck1": "Pinnacle Affinity",
       "deck2": "4/5c Control",
       "seed": 50000,
       "winner": "Pinnacle Affinity",
-      "turns": 7
+      "turns": 8
     },
     {
       "deck1": "Azorius Control",
@@ -61,8 +61,8 @@
       "deck1": "Azorius Control (WST v2)",
       "deck2": "Boros Energy",
       "seed": 50000,
-      "winner": "Azorius Control (WST v2)",
-      "turns": 10
+      "winner": "Boros Energy",
+      "turns": 12
     },
     {
       "deck1": "Boros Energy",
@@ -82,8 +82,8 @@
       "deck1": "Eldrazi Tron",
       "deck2": "Amulet Titan",
       "seed": 50500,
-      "winner": "Amulet Titan",
-      "turns": 8
+      "winner": "Eldrazi Tron",
+      "turns": 6
     },
     {
       "deck1": "Living End",
@@ -104,20 +104,20 @@
       "deck2": "Dimir Midrange",
       "seed": 50500,
       "winner": "Izzet Prowess",
-      "turns": 9
+      "turns": 7
     },
     {
       "deck1": "4/5c Control",
       "deck2": "Pinnacle Affinity",
       "seed": 50500,
-      "winner": "Pinnacle Affinity",
-      "turns": 6
+      "winner": "4/5c Control",
+      "turns": 12
     },
     {
       "deck1": "Azorius Control (WST)",
       "deck2": "Azorius Control (WST v2)",
       "seed": 50500,
-      "winner": "Azorius Control (WST)",
+      "winner": "Azorius Control (WST v2)",
       "turns": 13
     }
   ]

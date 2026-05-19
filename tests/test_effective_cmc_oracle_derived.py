@@ -38,11 +38,6 @@ from engine.cards import CardInstance
 from engine.player_state import PlayerState
 
 
-@pytest.fixture(scope="module")
-def card_db() -> CardDatabase:
-    return CardDatabase()
-
-
 def _make_instance(card_db: CardDatabase, name: str) -> CardInstance:
     template = card_db.cards.get(name)
     if template is None:

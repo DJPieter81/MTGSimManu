@@ -50,15 +50,6 @@ _TINY_AGGRO_DECK = {
 }
 
 
-@pytest.fixture(scope="module")
-def card_db():
-    """Real card DB — used so the user-prompt builder can pull oracle
-    text.  Tests do not rely on any specific oracle string; they only
-    rely on the prompt being constructable without errors."""
-    from engine.card_database import CardDatabase
-    return CardDatabase()
-
-
 def _mock_plan_payload(deck_name: str = "Mock LLM Deck") -> dict:
     """A deterministic SynthesizedGameplan payload that exercises a
     realistic fraction of the schema (goals, card_roles, mulligan

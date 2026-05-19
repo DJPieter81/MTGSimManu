@@ -25,14 +25,8 @@ import random
 import pytest
 
 from ai.turn_planner import CombatPlanner, extract_virtual_board
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance
 from engine.game_state import GameState
-
-
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
 
 
 def _put_creature_on_battlefield(game, card_db, name, controller, *,

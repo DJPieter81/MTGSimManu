@@ -25,16 +25,10 @@ import random
 import pytest
 
 from engine.cards import CardInstance, CardType
-from engine.card_database import CardDatabase
 from engine.game_state import GameState
 
 
 RAL_NAME = "Ral, Monsoon Mage // Ral, Leyline Prodigy"
-
-
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
 
 
 def _put_ral_in_play(game, card_db, controller):
