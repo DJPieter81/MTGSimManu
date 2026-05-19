@@ -135,6 +135,54 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
             )
         game.surveil(controller, int(m.group(1)))
 
+    # ── "When this ~ enters, return target [filter] card from your
+    #     graveyard to your hand" — Eternal Witness, Archaeomancer,
+    #     Ardent Elementalist, Auramancer, Cadaver Imp, Elvish
+    #     Regrower, Daring Archaeologist, Anarchist, and 90+ siblings
+    #     in the Modern pool. Class size justifies a mechanic, not a
+    #     patch.
+    #
+    #     Dispatch is gated by Tag.ETB_RETURN_FROM_GRAVEYARD_TO_HAND
+    #     so the resolver fires only on cards the classifier has
+    #     verified as having an UNCONDITIONAL ETB-trigger of this
+    #     shape (kicker-/descend-/attack-/leaves-gated variants are
+    #     intentionally out of scope — they are different mechanisms
+    #     and need their own tags).
+    #
+    #     Target enumeration delegates to `engine.target_solver` so
+    #     the type filter ("target instant or sorcery card" vs
+    #     "target permanent card" vs "target card") is parsed once
+    #     against the same oracle phrases the cast-time legality
+    #     check uses. Picker preference: non-land first (lands are
+    #     recoverable via fetches/ramp; spells are not), then
+    #     highest mana value (recoup the largest stranded
+    #     investment).
+    if has_tag(card.name, Tag.ETB_RETURN_FROM_GRAVEYARD_TO_HAND):
+        from engine.target_solver import (
+            enumerate_legal_targets,
+            parse as _parse_targets,
+        )
+        requirements = _parse_targets(card.template.oracle_text or "")
+        gy_reqs = [r for r in requirements if r.zone == "graveyard"]
+        candidates: list = []
+        for req in gy_reqs:
+            candidates.extend(
+                enumerate_legal_targets(game, controller, req, exclude=card)
+            )
+        if candidates:
+            nonland = [c for c in candidates if not c.template.is_land]
+            pool = nonland if nonland else candidates
+            best = max(pool, key=lambda c: (c.template.cmc or 0))
+            player = game.players[controller]
+            if best in player.graveyard:
+                player.graveyard.remove(best)
+            best.zone = "hand"
+            player.hand.append(best)
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: "
+                f"{card.name} returns {best.name} from graveyard to hand"
+            )
+
 
 def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
                                controller: int, targets: list = None) -> bool:

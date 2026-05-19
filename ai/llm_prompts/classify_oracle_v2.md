@@ -32,6 +32,7 @@ If you would have to read the card's metagame role to decide, return
 | `ETB_SURVEIL_N` | When the permanent enters the battlefield, it surveils a fixed or variable N. |
 | `ETB_SCRY_N` | When the permanent enters the battlefield, it scries N. |
 | `ETB_ORACLE_TRIGGER` | Permanent has a meaningful ETB-triggered ability not already covered above. Catch-all for "ETB matters for EV". Do NOT apply to mana-rocks whose only ETB clause is "enters tapped". |
+| `ETB_RETURN_FROM_GRAVEYARD_TO_HAND` | Permanent's ETB returns a target card from your graveyard to your hand. Target may be filtered ("target instant or sorcery card", "target creature card", "target enchantment card", "target permanent card", etc.) or unrestricted ("target card"). Optional ("you may return") still counts. Do NOT apply to triggers gated on kicker / descend / attack / leaves-the-battlefield / activated abilities — those are different mechanisms. |
 | `STORM_PAYOFF` | Spell whose effect scales with the storm count (literal Storm keyword, or "for each spell cast this turn"). |
 | `CHAIN_FUEL` | Low-cost cantrip ritual or spell that generates floating mana or draws and meaningfully increases the storm count, while NOT paying off itself. |
 | `TARGET_CREATURE_OR_PW` | Spell or activated ability whose target line is "target creature or planeswalker". |

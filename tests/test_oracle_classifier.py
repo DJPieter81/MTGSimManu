@@ -132,6 +132,7 @@ def test_tag_enum_members_are_stable():
         "ETB_SURVEIL_N",
         "ETB_SCRY_N",
         "ETB_ORACLE_TRIGGER",
+        "ETB_RETURN_FROM_GRAVEYARD_TO_HAND",
         "STORM_PAYOFF",
         "CHAIN_FUEL",
         "TARGET_CREATURE_OR_PW",

@@ -115,3 +115,61 @@ class TestEternalWitnessEtb:
         assert game.players[0].graveyard == []
         assert not any(c.name == "Lightning Bolt"
                        for c in game.players[0].hand)
+
+
+class TestEtbReturnFromGraveyardIsGeneric:
+    """Mechanism-driven coverage: every card carrying
+    `Tag.ETB_RETURN_FROM_GRAVEYARD_TO_HAND` resolves through the same
+    branch. Naming a second card here proves the resolver does not key
+    off Eternal Witness — it keys off the oracle pattern via the
+    classifier tag."""
+
+    @pytest.mark.parametrize(
+        "card_name, gy_card, expect_returned",
+        [
+            # "target instant or sorcery card" — filter must restrict
+            # to instants/sorceries; a creature in GY is NOT a legal
+            # target, but the trigger fizzles cleanly (no crash).
+            ("Archaeomancer", "Lightning Bolt", True),
+            # "target enchantment card" — Auramancer is the canonical
+            # filtered case.
+            ("Auramancer", "Leyline Binding", True),
+            # "target permanent card" — broad filter excluding only
+            # instants and sorceries.
+            ("Elvish Regrower", "Mountain", True),
+        ],
+    )
+    def test_class_members_resolve_via_same_branch(
+        self, card_db, card_name, gy_card, expect_returned
+    ):
+        game = GameState(rng=random.Random(0))
+        buried = _put_in_graveyard(game, card_db, gy_card, 0)
+
+        _etb(game, card_db, card_name, 0)
+
+        if expect_returned:
+            assert buried in game.players[0].hand, (
+                f"{card_name} did not return {gy_card} from GY to hand "
+                f"(class-member ETB return failed). "
+                f"Hand: {[c.name for c in game.players[0].hand]} "
+                f"GY: {[c.name for c in game.players[0].graveyard]}"
+            )
+            assert buried not in game.players[0].graveyard
+
+    def test_filtered_target_does_not_pick_illegal_card(self, card_db):
+        """Archaeomancer's filter is "instant or sorcery card". A
+        creature in GY must NOT be returned — the filter is enforced
+        by `target_solver`. With only a creature in GY, the trigger
+        finds no legal target and fizzles silently (no crash, no
+        wrongly-returned card)."""
+        game = GameState(rng=random.Random(0))
+        # Grizzly Bears is a vanilla creature card — not instant/sorcery
+        creature = _put_in_graveyard(game, card_db, "Grizzly Bears", 0)
+
+        _etb(game, card_db, "Archaeomancer", 0)
+
+        assert creature in game.players[0].graveyard, (
+            "Archaeomancer should NOT return a creature card "
+            "('target instant or sorcery card' filter)."
+        )
+        assert creature not in game.players[0].hand

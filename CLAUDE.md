@@ -219,8 +219,6 @@ process, not once per module.
 post-cleanup landings on PR #439):
 
 - `tests/test_llm_embeddings.py` — numpy dep not in CI install set.
-- `tests/test_etb_graveyard_return.py` (3) — TestEternalWitnessEtb,
-  ETB-to-hand return target picker.
 - `tests/test_engine_seed_determinism.py` (1) —
   `test_different_seeds_produce_distinct_outcomes`. (The other 2
   entries in this file cleared with the deal_damage fix.)
@@ -240,6 +238,9 @@ post-cleanup landings on PR #439):
 - `test_game_integration.py`, `test_ev_system.py`, `test_extracted_modules.py`,
   `test_parallel_matrix.py`, `test_suspend_violent_outburst.py` —
   all upstream of the deal_damage signature mismatch (commit 6dee2ba).
+- `test_etb_graveyard_return.py` — generic ETB-return-from-graveyard-to-hand
+  resolver landed (Tag.ETB_RETURN_FROM_GRAVEYARD_TO_HAND, 8-card cache
+  bootstrap, target_solver dispatch).
 
 ### Adding a new test file to CI
 

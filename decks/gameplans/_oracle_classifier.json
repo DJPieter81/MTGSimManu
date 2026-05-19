@@ -1,5 +1,40 @@
 {
   "cards": {
+    "Anarchist": {
+      "_classification_source": "manual:etb-return-from-graveyard-to-hand-2026-05-19",
+      "oracle_text_sha256": "121824f5af5f11a6c6bf5ddea3d8335028bd9be15b4f5314bb50f309ad0faaa8",
+      "tags": [
+        "ETB_RETURN_FROM_GRAVEYARD_TO_HAND"
+      ]
+    },
+    "Archaeomancer": {
+      "_classification_source": "manual:etb-return-from-graveyard-to-hand-2026-05-19",
+      "oracle_text_sha256": "dd69884188549590f42a8e283c822fa065a2c8df40848e35e703431728206116",
+      "tags": [
+        "ETB_RETURN_FROM_GRAVEYARD_TO_HAND"
+      ]
+    },
+    "Ardent Elementalist": {
+      "_classification_source": "manual:etb-return-from-graveyard-to-hand-2026-05-19",
+      "oracle_text_sha256": "dd69884188549590f42a8e283c822fa065a2c8df40848e35e703431728206116",
+      "tags": [
+        "ETB_RETURN_FROM_GRAVEYARD_TO_HAND"
+      ]
+    },
+    "Auramancer": {
+      "_classification_source": "manual:etb-return-from-graveyard-to-hand-2026-05-19",
+      "oracle_text_sha256": "b6e5c88ac5cb5d2376721a9edee730d104bee222b861e26c7257516c14c32feb",
+      "tags": [
+        "ETB_RETURN_FROM_GRAVEYARD_TO_HAND"
+      ]
+    },
+    "Cadaver Imp": {
+      "_classification_source": "manual:etb-return-from-graveyard-to-hand-2026-05-19",
+      "oracle_text_sha256": "026f544a5dc4475a530ea5592da279b2b0e906cf60a6ad645983c9c99a3aec33",
+      "tags": [
+        "ETB_RETURN_FROM_GRAVEYARD_TO_HAND"
+      ]
+    },
     "Commercial District": {
       "_classification_source": "manual:a2-audit-data-gap-2026-05-17",
       "oracle_text_sha256": "dfb2f3b319a4f7ea5dfe1ec8cdf7f2d1fc95f6847d7f71ec75809b02caf74793",
@@ -10,6 +45,13 @@
     "Counterspell": {
       "oracle_text_sha256": "6e7e3fa9bb231a1c1910cd956dc7e5c91bb22e9705b39ed61a2ebd23201950e4",
       "tags": []
+    },
+    "Daring Archaeologist": {
+      "_classification_source": "manual:etb-return-from-graveyard-to-hand-2026-05-19",
+      "oracle_text_sha256": "2779a8bfcf5d31bdb9bffc579a65a7c0ca2f2e31e3d5cb3a1e462dc77d2988e9",
+      "tags": [
+        "ETB_RETURN_FROM_GRAVEYARD_TO_HAND"
+      ]
     },
     "Duress": {
       "_classification_source": "manual:M6-discard-projection-2026-05-16",
@@ -25,12 +67,26 @@
         "ETB_SURVEIL_N"
       ]
     },
+    "Elvish Regrower": {
+      "_classification_source": "manual:etb-return-from-graveyard-to-hand-2026-05-19",
+      "oracle_text_sha256": "db773a30cae08ee199c0c438a729d51beebbe713e18d00a74f25cd4a551bf311",
+      "tags": [
+        "ETB_RETURN_FROM_GRAVEYARD_TO_HAND"
+      ]
+    },
     "Endurance": {
       "oracle_text_sha256": "d984d44d84f5a77044e5c399235ef3e0cb16bbb5ffa8b5d1740920089f0e696f",
       "tags": [
         "ETB_ORACLE_TRIGGER",
         "EVOKE",
         "PITCH_ALT_COST"
+      ]
+    },
+    "Eternal Witness": {
+      "_classification_source": "manual:etb-return-from-graveyard-to-hand-2026-05-19",
+      "oracle_text_sha256": "e53f79c5553b801dfe23c2fdc4496175d5a87f0b2cf0fcca7ec992cf915979bb",
+      "tags": [
+        "ETB_RETURN_FROM_GRAVEYARD_TO_HAND"
       ]
     },
     "Force of Negation": {

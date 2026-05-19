@@ -176,6 +176,18 @@ class Tag(Enum):
     captured by a more specific tag above.  Generic catch-all for
     the planeswalker / creature ETB-EV pass."""
 
+    ETB_RETURN_FROM_GRAVEYARD_TO_HAND = "ETB_RETURN_FROM_GRAVEYARD_TO_HAND"
+    """Permanent's ETB returns a target card from its controller's
+    graveyard to hand.  The target may be filtered by type
+    ("instant or sorcery card", "creature card", "enchantment card",
+    "permanent card", "artifact card"), or unrestricted ("target
+    card").  Class size: 100+ Modern-legal cards (Eternal Witness,
+    Archaeomancer, Ardent Elementalist, Auramancer, Cadaver Imp,
+    Elvish Regrower, ...).  Conditional ETBs (kicker-gated,
+    descend-gated, attack-triggered, leaves-the-battlefield) are
+    OUT of scope for this tag — the resolver branch only handles
+    unconditional "when ~ enters" triggers."""
+
     # Combo / chain mechanics ────────────────────────────────────────
     STORM_PAYOFF = "STORM_PAYOFF"
     """Card whose effect scales with the storm count (M2 — chain-
