@@ -143,6 +143,9 @@ git push origin main
 
 **New Modern-legal sets to watch (2026):** Lorwyn Eclipsed (Jan 2026), TMNT (Feb 2026), Secrets of Strixhaven (Apr 24 2026). Run `update_modern_atomic.py` if any of these postdate your last DB refresh.
 
+**Pending Modern bans/unbans (2026):**
+- **Umezawa's Jitte — unbanned** (2026-05-19). NOT in the current DB (last refresh 2026-05-16) since MTGJSON had not yet propagated the unban at that snapshot. Re-run `update_modern_atomic.py` once MTGJSON updates, then add to relevant decklists (Boros Energy is the natural fit — 2-mana equipment that snowballs combat damage, mirrors Goblin Bombardment / Cranial Plating as a sacrifice outlet for cat tokens). Charge-counter mechanic + equip cost are already engine-supported (Cranial Plating uses the same primitives).
+
 **Import a new deck:**
 ```bash
 python import_deck.py "Deck Name" decklist.txt
