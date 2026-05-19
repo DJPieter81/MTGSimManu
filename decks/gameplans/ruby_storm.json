@@ -1,7 +1,6 @@
 {
   "deck_name": "Ruby Storm",
   "archetype": "combo",
-  "archetype_subtype": "storm",
   "goals": [
     {
       "goal_type": "DEPLOY_ENGINE",
