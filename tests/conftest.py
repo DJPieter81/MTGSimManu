@@ -41,10 +41,26 @@ def _ensure_fallback_db():
     sidecar = os.path.join(project_root, ".pytest_atomic_fallback.json")
     with open(sidecar, "w") as f:
         json.dump({"meta": {}, "data": merged}, f)
+
+    # Canonical files CardDatabase auto-discovers when json_path is None.
+    # If none exist (e.g. CI checkout, where ModernAtomic.json is
+    # gitignored and never committed), CardDatabase would silently load
+    # placeholder cards. Route those calls straight to the reassembled
+    # sidecar so the full suite has real card data everywhere.
+    _canonical_candidates = (
+        os.path.join(project_root, "ModernAtomic.json"),
+        os.path.join(project_root, "ModernAtomic_mini.json"),
+    )
+
+    def _canonical_available():
+        return any(os.path.exists(p) for p in _canonical_candidates)
+
     _orig_init = CardDatabase.__init__
 
     def _patched_init(self, json_path=None):
         if json_path is None:
+            if not _canonical_available():
+                return _orig_init(self, sidecar)
             try:
                 return _orig_init(self, None)
             except (json.JSONDecodeError, ValueError):
