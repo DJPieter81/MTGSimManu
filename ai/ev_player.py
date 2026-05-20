@@ -889,12 +889,18 @@ class EVPlayer:
             fill_target = self._cascade_graveyard_target()
             if (fill_target > 0
                     and snap.my_gy_creatures < fill_target
-                    and ev <= 0.0):
-                # Defer-to-projection: only clamp when projection is
-                # NOT already positive.  A positive `ev` here means
-                # `compute_play_ev` (which recursively projected the
-                # cascade hit) found a positive swing — the cascade-
-                # payoff must-fire rule says trust that projection.
+                    and not self._library_has_reanimate_payoff(me)):
+                # Clamp when the graveyard is too thin AND there is no
+                # reanimate payoff left in the library for the cascade to
+                # recover into — the cascade would resolve into a vanilla
+                # body and a dead reanimation.  Gating on payoff-
+                # reachability (not the raw `ev`) is required because a
+                # cascade *enabler that is itself a creature* (Shardless
+                # Agent 2/1) scores a positive body EV that masks the dead
+                # cascade; the old `ev <= 0.0` proxy never fired for it.
+                # When a payoff IS reachable, defer to the projection —
+                # the cascade-payoff must-fire rule (see
+                # test_cascade_payoff_must_fire.py).
                 # M3: the pre-existing `profile.pass_threshold - 1.0`
                 # clamp depended on the now-deleted `pass_threshold`
                 # field; replaced with the named sentinel from
@@ -2059,20 +2065,6 @@ class EVPlayer:
         # graveyard ... to the battlefield" patterns.  Cards like
         # Living End, Unburial Rites, Persist, Goryo's Vengeance, and
         # creatures like Ephemerate-via-Persist all match.
-        def _is_reanimate(oracle: str) -> bool:
-            o = (oracle or '').lower()
-            if 'from' not in o or 'graveyard' not in o:
-                return False
-            if ('return' in o and 'battlefield' in o) or (
-                    'put' in o and 'battlefield' in o):
-                # Exclude "from your hand ... to the battlefield"
-                # (e.g., Reanimate vs Knight Errant): require
-                # 'graveyard' to precede 'battlefield'.
-                gy_idx = o.find('graveyard')
-                bf_idx = o.find('battlefield', gy_idx)
-                return gy_idx >= 0 and bf_idx >= 0
-            return False
-
         zones = [me.hand, me.battlefield]
         # Library visibility is a simplification — in real play we
         # know our deck.  DeckKnowledge provides it when initialised.
@@ -2080,7 +2072,7 @@ class EVPlayer:
             zones.append(me.library)
         for zone in zones:
             for c in zone:
-                if _is_reanimate(c.template.oracle_text):
+                if self._oracle_is_reanimate(c.template.oracle_text):
                     self._reanimation_cache_turn = (
                         game.turn_number if game else -1)
                     self._reanimation_cache_val = True
@@ -2089,6 +2081,34 @@ class EVPlayer:
         self._reanimation_cache_turn = game.turn_number if game else -1
         self._reanimation_cache_val = False
         return False
+
+    @staticmethod
+    def _oracle_is_reanimate(oracle: str) -> bool:
+        """True if oracle returns a creature from a graveyard to the
+        battlefield (Living End, Unburial Rites, Persist, Goryo's, ...).
+        Excludes "from your hand ... to the battlefield" by requiring
+        'graveyard' to precede 'battlefield'. No card names."""
+        o = (oracle or '').lower()
+        if 'from' not in o or 'graveyard' not in o:
+            return False
+        if ('return' in o and 'battlefield' in o) or (
+                'put' in o and 'battlefield' in o):
+            gy_idx = o.find('graveyard')
+            bf_idx = o.find('battlefield', gy_idx)
+            return gy_idx >= 0 and bf_idx >= 0
+        return False
+
+    def _library_has_reanimate_payoff(self, me) -> bool:
+        """True if the library still contains a reanimate payoff for a
+        cascade to recover into. Distinct from `_has_reanimation_path`,
+        which short-circuits True on the gameplan `prefer_cycling` flag
+        regardless of library contents — the cascade patience gate must
+        know whether the payoff is actually reachable in the deck, not
+        merely that the deck is a reanimator archetype."""
+        return any(
+            self._oracle_is_reanimate(c.template.oracle_text)
+            for c in me.library
+        )
 
     def _score_cycling(self, card, snap, game, me, opp) -> float:
         """Score cycling using clock-derived values.
