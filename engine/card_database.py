@@ -835,6 +835,19 @@ class OracleTextParser:
                 text_l,
             ):
                 matched = True
+            # Zone-wipe phrased as "exile all cards from <player's>
+            # graveyard" (Tormod's Crypt, Nihil Spellbomb variants).
+            # The anchor requires a player/opponent/each qualifier so
+            # self-graveyard utility ("from your graveyard") is excluded.
+            if not matched and _gy_re.search(
+                r"exile\s+all\s+cards\s+from\s+(?:"
+                r"target\s+(?:player|opponent)'?s?|"
+                r"each\s+(?:player|opponent)'?s?|"
+                r"a"
+                r")\s+graveyards?",
+                text_l,
+            ):
+                matched = True
             # Single-card exile from a GENERIC graveyard
             # ("from a graveyard" or plural "from graveyards" /
             # "in a graveyard"). Excludes "from your graveyard"
