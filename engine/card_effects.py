@@ -437,9 +437,9 @@ def lightning_bolt_resolve(game, card, controller, targets=None, item=None):
             if (target and target.zone == "battlefield"
                     and (target.template.is_creature
                          or CardType.PLANESWALKER in target.template.card_types)):
-                deal_damage(game, target, 3, source_controller=controller)
+                deal_damage(card, target, 3)
                 return
-    deal_damage(game, game.players[opponent], 3, source_controller=controller)
+    deal_damage(card, game.players[opponent], 3)
 
 
 @EFFECT_REGISTRY.register("Lava Dart", EffectTiming.SPELL_RESOLVE,
@@ -456,9 +456,9 @@ def lava_dart_resolve(game, card, controller, targets=None, item=None):
             if (target and target.zone == "battlefield"
                     and (target.template.is_creature
                          or CardType.PLANESWALKER in target.template.card_types)):
-                deal_damage(game, target, 1, source_controller=controller)
+                deal_damage(card, target, 1)
                 return
-    deal_damage(game, game.players[opponent], 1, source_controller=controller)
+    deal_damage(card, game.players[opponent], 1)
 
 
 @EFFECT_REGISTRY.register("Unholy Heat", EffectTiming.SPELL_RESOLVE,
@@ -481,10 +481,9 @@ def unholy_heat_resolve(game, card, controller, targets=None, item=None):
             if (target and target.zone == "battlefield"
                     and (target.template.is_creature
                          or CardType.PLANESWALKER in target.template.card_types)):
-                deal_damage(game, target, damage, source_controller=controller)
+                deal_damage(card, target, damage)
                 return
-    deal_damage(game, game.players[opponent], damage,
-                source_controller=controller)
+    deal_damage(card, game.players[opponent], damage)
 
 
 @EFFECT_REGISTRY.register("Goryo's Vengeance", EffectTiming.SPELL_RESOLVE,
