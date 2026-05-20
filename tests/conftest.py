@@ -30,7 +30,14 @@ def _ensure_fallback_db():
             continue
         try:
             with open(part) as f:
-                merged.update(json.load(f).get("data", {}))
+                data = json.load(f)
+            # Parts come in two shapes: a {"meta", "data"} wrapper and a
+            # bare card-name->card dict. Later parts may carry updated
+            # versions of cards from earlier parts, so both shapes must
+            # merge (a wrapper-only read would drop the bare parts and
+            # leave stale card data, diverging from the canonical file).
+            cards = data["data"] if isinstance(data, dict) and "data" in data and "meta" in data else data
+            merged.update(cards)
         except (json.JSONDecodeError, ValueError):
             # Part files are immutable per commit — a parse failure
             # here is unrecoverable; skip to give the shared file

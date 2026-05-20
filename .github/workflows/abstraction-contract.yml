@@ -21,6 +21,15 @@ jobs:
       # tests that exercise the live path live in test_llm_*.py and
       # are not in the curated CI subset.
       MTG_LLM_DECISION_SCORER_OFFLINE: "1"
+      # Pin the hash seed so the suite is reproducible. The engine has
+      # set-iteration in its decision path whose order depends on
+      # PYTHONHASHSEED; on knife's-edge matchups that flips a
+      # deterministic outcome (e.g. the WR-anchor Zoo-vs-Tron game by
+      # one turn), making test_wr_baseline_anchor.py flaky across
+      # processes. Pinning to 0 — the seed the committed baseline was
+      # generated under — removes the flake. (Making the sim fully
+      # hash-independent is a deeper, separate engine task.)
+      PYTHONHASHSEED: "0"
     steps:
       - uses: actions/checkout@v4
 
