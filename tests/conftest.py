@@ -42,18 +42,18 @@ def _ensure_fallback_db():
     with open(sidecar, "w") as f:
         json.dump({"meta": {}, "data": merged}, f)
 
-    # Canonical files CardDatabase auto-discovers when json_path is None.
-    # If none exist (e.g. CI checkout, where ModernAtomic.json is
-    # gitignored and never committed), CardDatabase would silently load
-    # placeholder cards. Route those calls straight to the reassembled
-    # sidecar so the full suite has real card data everywhere.
-    _canonical_candidates = (
-        os.path.join(project_root, "ModernAtomic.json"),
-        os.path.join(project_root, "ModernAtomic_mini.json"),
-    )
+    # When json_path is None, CardDatabase auto-discovers a data file.
+    # The full ModernAtomic.json is gitignored, so in a CI checkout the
+    # only committed data file is the 48-card ModernAtomic_mini.json —
+    # which CardDatabase would happily load, starving the full suite of
+    # real card data. Treat only the full ModernAtomic.json as
+    # canonical; when it is absent, route to the reassembled 21k-card
+    # sidecar (strictly better than the mini) so the suite has complete
+    # data in every environment.
+    _full_db_path = os.path.join(project_root, "ModernAtomic.json")
 
     def _canonical_available():
-        return any(os.path.exists(p) for p in _canonical_candidates)
+        return os.path.exists(_full_db_path)
 
     _orig_init = CardDatabase.__init__
 
