@@ -21,15 +21,6 @@ jobs:
       # tests that exercise the live path live in test_llm_*.py and
       # are not in the curated CI subset.
       MTG_LLM_DECISION_SCORER_OFFLINE: "1"
-      # Pin the hash seed so the suite is reproducible. The engine has
-      # set-iteration in its decision path whose order depends on
-      # PYTHONHASHSEED; on knife's-edge matchups that flips a
-      # deterministic outcome (e.g. the WR-anchor Zoo-vs-Tron game by
-      # one turn), making test_wr_baseline_anchor.py flaky across
-      # processes. Pinning to 0 — the seed the committed baseline was
-      # generated under — removes the flake. (Making the sim fully
-      # hash-independent is a deeper, separate engine task.)
-      PYTHONHASHSEED: "0"
     steps:
       - uses: actions/checkout@v4
 
@@ -78,31 +69,19 @@ jobs:
         # ModernAtomic_part*.json and routes CardDatabase to it, so the
         # suite has real card data without a separate setup step.
         #
-        # Deselected — known-failing on main, each tracked for a
-        # dedicated follow-up PR (they are pre-existing, not caused by
-        # this change):
-        #   - test_etb_graveyard_return.py (3): the generic ETB
-        #     "return target card from your graveyard to your hand"
-        #     resolver is unimplemented. Adding it needs a new oracle-
-        #     classifier tag, whose cache is built by an LLM-backed
-        #     tool (tools/build_oracle_classifier_cache.py) — not
+        # Deselected — one remaining known-failure, tracked for a
+        # dedicated follow-up PR:
+        #   - test_etb_graveyard_return.py: the generic ETB "return
+        #     target card from your graveyard to your hand" resolver is
+        #     unimplemented. Adding it needs a new oracle-classifier
+        #     tag, whose cache is built by an LLM-backed tool
+        #     (tools/build_oracle_classifier_cache.py) — not
         #     reproducible in offline CI.
-        #   - test_cascade_patience_gate.py::...projection_nonpositive:
-        #     cascade patience-gate EV clamp; a principled ai/ev_player
-        #     scoring fix that must not regress test_cascade_payoff_*.
-        #   - test_x_cost_board_wipe_gate.py::...not_only_creatures:
-        #     #408 X-cost board-wipe kill-count regression in
-        #     ai/ev_player.py.
-        #   - test_engine_seed_determinism.py::...distinct_outcomes:
-        #     passes in isolation; a sibling LLM decklist-compression
-        #     test leaks process-global state that collapses the
-        #     seed-variance sanity check under full-suite ordering.
         #
+        # The suite is hash-independent (verified green under multiple
+        # PYTHONHASHSEED values), so no hash pin is needed.
         # test_llm_embeddings.py is auto-skipped (numpy not installed);
         # see the optional-dependency collect_ignore in conftest.py.
         run: |
           python -m pytest tests/ -q --timeout=120 --tb=short \
-            --deselect tests/test_etb_graveyard_return.py \
-            --deselect "tests/test_cascade_patience_gate.py::TestCascadePatienceGate::test_cascade_clamped_when_graveyard_too_thin_and_projection_nonpositive" \
-            --deselect "tests/test_x_cost_board_wipe_gate.py::TestXCostBoardWipeGate::test_x_cost_wipe_kill_count_includes_artifacts_and_enchantments_not_only_creatures" \
-            --deselect "tests/test_engine_seed_determinism.py::TestEngineSeedDeterminism::test_different_seeds_produce_distinct_outcomes"
+            --deselect tests/test_etb_graveyard_return.py
