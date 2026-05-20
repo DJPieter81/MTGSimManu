@@ -1192,13 +1192,34 @@ class EVPlayer:
         #   v3 (this): threshold drops to 2 power, and the whole gate is
         #       waived when we're at low life (≤10). Consolidates the
         #       "always fire when desperate" behaviour.
-        if ('board_wipe' in tags and t.x_cost_data and opp.creatures):
+        opp_nonland = [c for c in opp.battlefield if not c.template.is_land]
+        if ('board_wipe' in tags and t.x_cost_data and opp_nonland):
+            from engine.cards import CardType
             total_mana = snap.my_mana
             base_cost = t.cmc or 0
             x_budget = max(0, total_mana - base_cost)
             mult = (t.x_cost_data or {}).get('multiplier', 1) or 1
-            killable = [c for c in opp.creatures
-                        if (c.template.cmc or 0) <= x_budget // mult]
+            cap = x_budget // mult
+            # Which permanent types does this wipe destroy? Derive from
+            # the destroy/exile clause so an "artifact, creature, and
+            # enchantment" wipe counts artifact + enchantment kills, not
+            # only creatures (oracle-driven, no card names). Default to
+            # creatures when no clause is found — the common wipe shape.
+            o_wipe = (t.oracle_text or '').lower()
+            clause_m = re.search(r'\b(?:destroy|exile)\b(.*?)(?:\.|$)', o_wipe, re.S)
+            clause = clause_m.group(1) if clause_m else ''
+            type_words = {
+                'creature': CardType.CREATURE,
+                'artifact': CardType.ARTIFACT,
+                'enchantment': CardType.ENCHANTMENT,
+                'planeswalker': CardType.PLANESWALKER,
+            }
+            destroyed_types = {ct for word, ct in type_words.items() if word in clause}
+            if not destroyed_types:
+                destroyed_types = {CardType.CREATURE}
+            killable = [c for c in opp_nonland
+                        if (set(c.template.card_types) & destroyed_types)
+                        and (c.template.cmc or 0) <= cap]
             kill_count = len(killable)
             killable_power = sum((c.power or 0) for c in killable)
             # Replaces a `my_life-vs-DESPERATE_LIFE_THRESHOLD` magic
