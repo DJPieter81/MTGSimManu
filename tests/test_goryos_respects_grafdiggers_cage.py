@@ -21,15 +21,9 @@ import random
 
 import pytest
 
-from engine.card_database import CardDatabase
 from engine.card_effects import EFFECT_REGISTRY, EffectTiming
 from engine.cards import CardInstance
 from engine.game_state import GameState
-
-
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
 
 
 def _put_in_graveyard(game, card_db, name, controller):

@@ -48,14 +48,8 @@ import random
 
 import pytest
 
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance, CardType
 from engine.game_state import GameState, Phase
-
-
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
 
 
 def _land(game, card_db, name: str, controller: int) -> CardInstance:

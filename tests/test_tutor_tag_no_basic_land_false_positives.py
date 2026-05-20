@@ -17,11 +17,11 @@ Negative anchor — Search for Glory MIXES "snow permanent",
 "legendary", and "saga" targets. Since it can tutor non-land cards,
 it must KEEP the tutor tag.
 """
-from engine.card_database import CardDatabase
+from tests._card_db_cache import shared_card_database
 
 
 def _tags(name: str) -> set:
-    db = CardDatabase()
+    db = shared_card_database()
     t = db.cards.get(name)
     if t is None:
         return None
@@ -39,7 +39,7 @@ def _has_tutor(name: str) -> bool:
 
 def test_boundless_realms_basic_ramp_not_tutor():
     """search your library for up to X basic land cards — ramp."""
-    db = CardDatabase()
+    db = shared_card_database()
     if "Boundless Realms" in db.cards:
         assert not _has_tutor("Boundless Realms"), (
             "Boundless Realms is basic-land ramp, must not be tutor"
@@ -47,26 +47,26 @@ def test_boundless_realms_basic_ramp_not_tutor():
 
 
 def test_harvest_season_basic_ramp_not_tutor():
-    db = CardDatabase()
+    db = shared_card_database()
     if "Harvest Season" in db.cards:
         assert not _has_tutor("Harvest Season")
 
 
 def test_verdant_mastery_basic_ramp_not_tutor():
-    db = CardDatabase()
+    db = shared_card_database()
     if "Verdant Mastery" in db.cards:
         assert not _has_tutor("Verdant Mastery")
 
 
 def test_into_the_north_snow_land_is_not_tutor():
     """search your library for a snow land card — fixing, not tutor."""
-    db = CardDatabase()
+    db = shared_card_database()
     if "Into the North" in db.cards:
         assert not _has_tutor("Into the North")
 
 
 def test_spirit_of_the_aldergard_snow_land_is_not_tutor():
-    db = CardDatabase()
+    db = shared_card_database()
     if "Spirit of the Aldergard" in db.cards:
         assert not _has_tutor("Spirit of the Aldergard")
 
@@ -78,7 +78,7 @@ def test_spirit_of_the_aldergard_snow_land_is_not_tutor():
 def test_search_for_glory_mixed_target_is_still_tutor():
     """Search for Glory can fetch snow permanent OR legendary OR
     saga — the non-land targets make it a real tutor."""
-    db = CardDatabase()
+    db = shared_card_database()
     if "Search for Glory" in db.cards:
         assert _has_tutor("Search for Glory")
 

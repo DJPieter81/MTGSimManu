@@ -24,11 +24,11 @@ Negative anchors: cards without any "draw" effect must remain
 untagged — Lightning Bolt, Counterspell, Cultivate (ramp),
 Mulldrifter and Faithful Mending are the canonical positives.
 """
-from engine.card_database import CardDatabase
+from tests._card_db_cache import shared_card_database
 
 
 def _tags(name: str) -> set:
-    db = CardDatabase()
+    db = shared_card_database()
     template = db.cards.get(name)
     assert template is not None, f"Card not in DB: {name}"
     return set(template.tags)

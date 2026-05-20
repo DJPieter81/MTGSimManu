@@ -60,10 +60,41 @@ def _ensure_fallback_db():
 _ensure_fallback_db()
 
 
+# ─── Optional-dependency collection guard ────────────────────────────
+#
+# A few test modules exercise the optional LLM/embedding feature set
+# and hard-import heavy third-party packages (numpy, pydantic_ai) at
+# module scope. The offline simulator does not require those packages,
+# and CI installs only pydantic-ai-slim (numpy is intentionally absent
+# to keep the runner from pulling torch). Skip these modules at
+# collection time when their dependency is missing so the full suite
+# can run with `pytest tests/` regardless of which optional deps are
+# present, instead of aborting the whole run on a collection ImportError.
+_OPTIONAL_DEP_MODULES = {
+    "numpy": ["test_llm_embeddings.py"],
+    "pydantic_ai": [
+        "test_cached_agent.py",
+        "test_synth_gameplan_llm_backend.py",
+        "test_audit_doc_freshness.py",
+        "test_llm_agents.py",
+        "test_llm_agents_with_budget.py",
+        "test_metered_agent.py",
+    ],
+}
+collect_ignore = []
+for _dep, _modules in _OPTIONAL_DEP_MODULES.items():
+    try:
+        __import__(_dep)
+    except ImportError:
+        collect_ignore.extend(_modules)
+
+
 @pytest.fixture(scope="session")
 def card_db():
     """Load the card database once for all tests."""
-    return CardDatabase()
+    from tests._card_db_cache import shared_card_database
+
+    return shared_card_database()
 
 
 @pytest.fixture

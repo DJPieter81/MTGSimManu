@@ -24,15 +24,9 @@ import random
 
 import pytest
 
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance
 from engine.game_state import GameState
 from engine.game_runner import AICallbacks
-
-
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
 
 
 def _make_game():

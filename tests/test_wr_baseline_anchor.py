@@ -58,11 +58,10 @@ def runner():
     # Silence engine logging for the duration of the test — we only
     # care about the deterministic match outcome, not the play log.
     logging.disable(logging.CRITICAL)
-    from engine.card_database import CardDatabase
     from engine.game_runner import GameRunner
+    from tests._card_db_cache import shared_card_database
 
-    db = CardDatabase()
-    return GameRunner(db)
+    return GameRunner(shared_card_database())
 
 
 def _replay(runner, deck1: str, deck2: str, seed: int) -> dict:

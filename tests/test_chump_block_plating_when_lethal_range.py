@@ -30,14 +30,9 @@ import random
 
 import pytest
 
-from engine.card_database import CardDatabase
+from tests._card_db_cache import shared_card_database
 from engine.cards import CardInstance
 from engine.game_state import GameState
-
-
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
 
 
 def _battlefield(game, card_db, name: str, controller: int) -> CardInstance:
@@ -81,7 +76,7 @@ def test_chumps_when_skipping_attacker_makes_rebound_swing_lethal():
     rebinding-equipment threat (Embercleave, Sword cycle, Hammer of
     Bogardan, etc.).
     """
-    db = CardDatabase()
+    db = shared_card_database()
     game = GameState(rng=random.Random(0))
 
     # Boros side: 2 untapped 1/x creatures + 4 lands (so we have
@@ -144,7 +139,7 @@ def test_plating_futile_gate_still_skips_when_survival_comfortable():
     trigger the emergency outer gate (drop_to ≤ 5 → emergency)
     but the equip_bonus is large, so the plating-futile inner
     gate fires. The fix must NOT relax this case."""
-    db = CardDatabase()
+    db = shared_card_database()
     game = GameState(rng=random.Random(0))
 
     _battlefield(game, db, "Guide of Souls", 0)

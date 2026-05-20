@@ -17,15 +17,9 @@ import random
 
 import pytest
 
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance, CardType
 from engine.game_state import GameState
 from engine.mana_payment import ManaPayment
-
-
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
 
 
 def _put_in_play(game, card_db, name, controller=0):

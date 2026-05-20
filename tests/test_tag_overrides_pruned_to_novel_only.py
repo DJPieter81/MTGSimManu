@@ -12,11 +12,11 @@ If a future change to `OracleTextParser.classify_card_role` regresses
 the auto-detection of any tag pruned here, the corresponding
 assertion will fire.
 """
-from engine.card_database import CardDatabase
+from tests._card_db_cache import shared_card_database
 
 
 def _tags(name: str) -> set:
-    db = CardDatabase()
+    db = shared_card_database()
     template = db.cards.get(name)
     assert template is not None, f"Card not in DB: {name}"
     return set(template.tags)

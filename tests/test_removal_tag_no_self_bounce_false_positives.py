@@ -10,11 +10,11 @@ This test pins the corrected behavior: self-bounce cards must NOT
 acquire the ``removal`` tag. Opponent-targeting bounce (Hurkyl's
 Recall) must still be tagged removal.
 """
-from engine.card_database import CardDatabase
+from tests._card_db_cache import shared_card_database
 
 
 def _tags(name: str) -> set:
-    db = CardDatabase()
+    db = shared_card_database()
     t = db.cards.get(name)
     assert t is not None, f"Card not in DB: {name}"
     return set(t.tags)
