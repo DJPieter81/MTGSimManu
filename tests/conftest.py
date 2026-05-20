@@ -89,6 +89,25 @@ for _dep, _modules in _OPTIONAL_DEP_MODULES.items():
         collect_ignore.extend(_modules)
 
 
+@pytest.fixture(autouse=True)
+def _restore_effect_registry():
+    """Snapshot and restore the global EFFECT_REGISTRY around every test.
+
+    EFFECT_REGISTRY is a process-wide singleton. Some tests register
+    handlers at execution time (e.g. mock card handlers); without this
+    guard those registrations leak into later tests, overriding real
+    card behaviour and flipping deterministic game outcomes depending
+    on collection order. Restoring the registry per test isolates that
+    state so the full suite is order-independent.
+    """
+    from engine.card_effects import EFFECT_REGISTRY
+
+    snapshot = {name: list(handlers) for name, handlers in EFFECT_REGISTRY._handlers.items()}
+    yield
+    EFFECT_REGISTRY._handlers.clear()
+    EFFECT_REGISTRY._handlers.update(snapshot)
+
+
 @pytest.fixture(scope="session")
 def card_db():
     """Load the card database once for all tests."""
