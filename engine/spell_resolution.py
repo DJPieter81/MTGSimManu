@@ -384,8 +384,24 @@ class ResolutionManager:
             if ability.description:
                 effects.append(ability)
 
+        # Silent-miss detection: reaching here means neither the
+        # EFFECT_REGISTRY handler nor resolve_spell_from_oracle claimed
+        # this instant/sorcery. Track whether the legacy parser below
+        # recognises a verb; if nothing does, the spell resolved to a
+        # no-op and is recorded for the unhandled-effect diagnostic.
+        matched_any = False
+
         for ability in effects:
             desc = ability.description.lower()
+
+            if ("damage" in desc or "destroy" in desc or "exile" in desc
+                    or "counter" in desc or "draw" in desc
+                    or ("gain" in desc and "life" in desc)
+                    or ("return" in desc and "hand" in desc)
+                    or ("search" in desc and "library" in desc and "land" in desc)
+                    or "discard" in desc
+                    or ("create" in desc and "token" in desc)):
+                matched_any = True
 
             if "damage" in desc:
                 from .damage import deal_damage
@@ -537,6 +553,14 @@ class ResolutionManager:
                     p = int(token_match.group(2))
                     t = int(token_match.group(3))
                     game.create_token(controller, "creature", count, p, t)
+
+        # An instant/sorcery that reached the legacy parser and matched
+        # no verb resolved to a no-op — record it so the silent miss is
+        # observable. Rituals (handled above) and registry/oracle hits
+        # never reach here.
+        if not matched_any and (card.template.oracle_text or '').strip():
+            from .effect_diagnostics import record_unhandled_effect
+            record_unhandled_effect(card.name, "spell")
 
     # ─── BLINK ───────────────────────────────────────────────────
 
