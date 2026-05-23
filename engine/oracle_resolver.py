@@ -88,8 +88,12 @@ def _pick_damage_target(game: "GameState", controller: int,
 
 
 def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
-                             controller: int):
+                             controller: int) -> bool:
     """Resolve ETB effects via classifier-tag dispatch.
+
+    Returns True when a tag-gated branch fired; False otherwise. The return
+    value lets the caller distinguish "no oracle-driven ETB effect" from
+    "ETB effect handled here" (used by the silent-miss diagnostic).
 
     Scope (R3): the surveil-N land cycle is the audit's named target.
     Card-specific ETB handlers continue to live in `EFFECT_REGISTRY`
@@ -111,7 +115,7 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
     """
     oracle = (card.template.oracle_text or '').lower()
     if not oracle:
-        return
+        return False
 
     # ── "When this ~ enters, surveil N" (CR 701.42) ──
     # Class size: the surveil-dual cycle (Meticulous Archive, Elegant
@@ -134,6 +138,9 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
                 f"classifier and oracle are out of sync."
             )
         game.surveil(controller, int(m.group(1)))
+        return True
+
+    return False
 
 
 def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",

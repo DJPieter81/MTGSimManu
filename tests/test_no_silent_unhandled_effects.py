@@ -1,11 +1,20 @@
-"""Every registered-deck spell must resolve through *some* handler.
+"""Every registered-deck card effect must resolve through *some* handler.
 
-Card effects resolve through a three-layer chain: EFFECT_REGISTRY ->
-``resolve_spell_from_oracle`` -> the legacy ability parser
-(engine/spell_resolution.py). When all three miss, an instant/sorcery resolves
-to a SILENT no-op — the simulator quietly mis-plays the card with no error.
+Card effects resolve through parallel three-layer fallback chains in
+``engine/spell_resolution.py``:
+
+  * Spells: EFFECT_REGISTRY -> ``resolve_spell_from_oracle`` -> legacy
+    ability parser.
+  * ETBs:   EFFECT_REGISTRY -> ``resolve_etb_from_oracle`` -> generic
+    ``trigger_etb`` over parsed ETB abilities. The ETB silent-miss
+    predicate is keyed on a self-ETB phrase ("when/whenever/as <name>
+    enters") so static-watcher triggers ("whenever ANOTHER X enters",
+    Amulet of Vigor / Eldrazi Mimic / Risen Reef shape) don't false-positive.
+
+When all three layers in either chain miss, the effect resolves to a SILENT
+no-op — the simulator quietly mis-plays the card with no error.
 ``engine/effect_diagnostics`` records those misses; this test drives every
-registered deck through real games and asserts no instant/sorcery silently
+registered deck through real games and asserts no spell or ETB silently
 no-ops, except a small, explicitly-justified allowlist of known gaps.
 
 A new or edited card that slips through every handler turns this test red.
@@ -34,8 +43,9 @@ ALLOWED_UNHANDLED: set[tuple[str, str]] = {
 
 
 def test_no_new_silent_unhandled_spell_effects():
-    """Drive every deck (as the active caster) through a deterministic game and
-    assert no instant/sorcery resolves to a silent no-op outside the allowlist."""
+    """Drive every deck (as the active caster) through deterministic games and
+    assert no instant/sorcery resolves to a silent no-op, and no permanent's
+    self-ETB silently no-ops, outside the allowlist."""
     effect_diagnostics.reset()
 
     decks = list(MODERN_DECKS.keys())
@@ -53,8 +63,8 @@ def test_no_new_silent_unhandled_spell_effects():
     unexpected = observed - ALLOWED_UNHANDLED
 
     assert not unexpected, (
-        "Instant/sorcery effects resolved to a SILENT no-op (no EFFECT_REGISTRY "
-        "handler, no resolve_spell_from_oracle branch, no ability-parser verb):\n"
+        "Card effects resolved to a SILENT no-op (no EFFECT_REGISTRY handler, "
+        "no resolve_*_from_oracle branch, no parser/trigger fallback):\n"
         + "\n".join(f"  {timing}: {name}" for name, timing in sorted(unexpected))
         + "\nAdd a handler/oracle branch, or — if intentionally out of scope — "
         "add it to ALLOWED_UNHANDLED with a justification."

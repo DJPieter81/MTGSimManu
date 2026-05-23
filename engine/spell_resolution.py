@@ -194,12 +194,37 @@ class ResolutionManager:
             )
 
             # Generic oracle-text-based ETB resolution for cards WITHOUT specific handlers
+            oracle_resolver_fired = False
             if not has_specific_handler:
                 from .oracle_resolver import resolve_etb_from_oracle
-                resolve_etb_from_oracle(game, card, controller)
+                oracle_resolver_fired = resolve_etb_from_oracle(game, card, controller)
 
             # Generic ETB triggers
             game.trigger_etb(card, controller)
+
+            # Silent-miss detection (parallel to the spell path): when no
+            # layer claims the ETB AND the card has no parsed ETB ability
+            # AND the oracle declares a SELF ETB trigger
+            # ("when/whenever/as <card-name> enters"), the ETB resolved to
+            # a no-op. The predicate intentionally requires the card's own
+            # name right before "enters" so "whenever ANOTHER X enters"
+            # static-watcher triggers (Amulet of Vigor, Eldrazi Mimic,
+            # Risen Reef shape) don't false-positive.
+            if not has_specific_handler and not oracle_resolver_fired:
+                from .cards import AbilityType
+                has_etb_ability = any(
+                    a.ability_type == AbilityType.ETB
+                    for a in template.abilities
+                )
+                if not has_etb_ability:
+                    oracle_lc = (template.oracle_text or '').lower()
+                    name_lc = template.name.lower()
+                    if re.search(
+                        rf'\b(?:when|whenever|as)\s+{re.escape(name_lc)}\s+enters\b',
+                        oracle_lc,
+                    ):
+                        from .effect_diagnostics import record_unhandled_effect
+                        record_unhandled_effect(template.name, "etb")
 
     # ─── STORM ───────────────────────────────────────────────────
 
