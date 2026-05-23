@@ -151,6 +151,18 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
     opponent = 1 - controller
     handled = False
 
+    # ── Mass-reanimate (Living End shape) ──
+    # "Exile all creature cards from graveyards ... return them to the
+    # battlefield." cast_manager._handle_cascade detects this and calls
+    # _resolve_living_end; spells reaching the normal resolution path
+    # (suspend-cast, hard-cast) must trigger the same effect or they
+    # silently no-op. Oracle-pattern keyed — same predicate as cascade.
+    if ('all creature cards' in oracle
+            and 'graveyard' in oracle
+            and 'battlefield' in oracle):
+        game._resolve_living_end(controller)
+        return True
+
     # ── Energy-damage spells (R2): "target creature or planeswalker.
     #     You get {E}^k, then you may pay any amount of {E}. ~ deals
     #     that much (additional) damage to that permanent."

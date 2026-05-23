@@ -21,11 +21,6 @@ from run_meta import _get_runner, _run_game
 # out-of-scope gap — NOT a license to add more. Shrinking this set is the goal;
 # growing it requires a justification here.
 ALLOWED_UNHANDLED: set[tuple[str, str]] = {
-    # Mass-reanimate is resolved via _resolve_living_end on the CASCADE path
-    # (cast_manager._handle_cascade). When Living End is instead suspend-cast it
-    # transits _execute_spell_effects, where that special path isn't invoked —
-    # a real gap in the suspend route, tracked separately.
-    ("Living End", "spell"),
     # Cascade itself (the payoff) is handled by the engine cascade mechanic;
     # only Demonic Dread's minor "target creature gets -3/-0" rider is unmodeled.
     ("Demonic Dread", "spell"),
