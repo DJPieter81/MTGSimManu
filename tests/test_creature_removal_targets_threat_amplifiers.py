@@ -31,14 +31,9 @@ import random
 
 import pytest
 
-from engine.card_database import CardDatabase
+from tests._card_db_cache import shared_card_database
 from engine.cards import CardInstance
 from engine.game_state import GameState
-
-
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
 
 
 def _battlefield(game, card_db, name: str, controller: int) -> CardInstance:
@@ -72,7 +67,7 @@ def test_creature_removal_picks_battle_cry_amplifier_over_vanilla_body():
     every other attacker. Threat-aware target selection must pick
     Signal Pest; raw-clock-impact selection picks Memnite — that
     is the bug this test pins."""
-    db = CardDatabase()
+    db = shared_card_database()
     game = GameState(rng=random.Random(0))
     memnite = _battlefield(game, db, "Memnite", 1)
     signal_pest = _battlefield(game, db, "Signal Pest", 1)

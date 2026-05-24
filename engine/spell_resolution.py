@@ -194,12 +194,37 @@ class ResolutionManager:
             )
 
             # Generic oracle-text-based ETB resolution for cards WITHOUT specific handlers
+            oracle_resolver_fired = False
             if not has_specific_handler:
                 from .oracle_resolver import resolve_etb_from_oracle
-                resolve_etb_from_oracle(game, card, controller)
+                oracle_resolver_fired = resolve_etb_from_oracle(game, card, controller)
 
             # Generic ETB triggers
             game.trigger_etb(card, controller)
+
+            # Silent-miss detection (parallel to the spell path): when no
+            # layer claims the ETB AND the card has no parsed ETB ability
+            # AND the oracle declares a SELF ETB trigger
+            # ("when/whenever/as <card-name> enters"), the ETB resolved to
+            # a no-op. The predicate intentionally requires the card's own
+            # name right before "enters" so "whenever ANOTHER X enters"
+            # static-watcher triggers (Amulet of Vigor, Eldrazi Mimic,
+            # Risen Reef shape) don't false-positive.
+            if not has_specific_handler and not oracle_resolver_fired:
+                from .cards import AbilityType
+                has_etb_ability = any(
+                    a.ability_type == AbilityType.ETB
+                    for a in template.abilities
+                )
+                if not has_etb_ability:
+                    oracle_lc = (template.oracle_text or '').lower()
+                    name_lc = template.name.lower()
+                    if re.search(
+                        rf'\b(?:when|whenever|as)\s+{re.escape(name_lc)}\s+enters\b',
+                        oracle_lc,
+                    ):
+                        from .effect_diagnostics import record_unhandled_effect
+                        record_unhandled_effect(template.name, "etb")
 
     # ─── STORM ───────────────────────────────────────────────────
 
@@ -384,8 +409,24 @@ class ResolutionManager:
             if ability.description:
                 effects.append(ability)
 
+        # Silent-miss detection: reaching here means neither the
+        # EFFECT_REGISTRY handler nor resolve_spell_from_oracle claimed
+        # this instant/sorcery. Track whether the legacy parser below
+        # recognises a verb; if nothing does, the spell resolved to a
+        # no-op and is recorded for the unhandled-effect diagnostic.
+        matched_any = False
+
         for ability in effects:
             desc = ability.description.lower()
+
+            if ("damage" in desc or "destroy" in desc or "exile" in desc
+                    or "counter" in desc or "draw" in desc
+                    or ("gain" in desc and "life" in desc)
+                    or ("return" in desc and "hand" in desc)
+                    or ("search" in desc and "library" in desc and "land" in desc)
+                    or "discard" in desc
+                    or ("create" in desc and "token" in desc)):
+                matched_any = True
 
             if "damage" in desc:
                 from .damage import deal_damage
@@ -401,21 +442,17 @@ class ResolutionManager:
                     for tid in item.targets:
                         if tid == -1:
                             # AI chose face — route to player damage.
-                            deal_damage(game, game.players[opponent], amount,
-                                        source_controller=controller)
+                            deal_damage(item.source, game.players[opponent], amount)
                             continue
                         target = game.get_card_by_id(tid)
                         if (target and target.zone == "battlefield"
                                 and (target.template.is_creature
                                      or CardType.PLANESWALKER in target.template.card_types)):
-                            deal_damage(game, target, amount,
-                                        source_controller=controller)
+                            deal_damage(item.source, target, amount)
                 elif "each opponent" in desc or "player" in desc:
-                    deal_damage(game, game.players[opponent], amount,
-                                source_controller=controller)
+                    deal_damage(item.source, game.players[opponent], amount)
                 elif amount > 0:
-                    deal_damage(game, game.players[opponent], amount,
-                                source_controller=controller)
+                    deal_damage(item.source, game.players[opponent], amount)
 
             elif "destroy" in desc:
                 if "all" in desc:
@@ -541,6 +578,14 @@ class ResolutionManager:
                     p = int(token_match.group(2))
                     t = int(token_match.group(3))
                     game.create_token(controller, "creature", count, p, t)
+
+        # An instant/sorcery that reached the legacy parser and matched
+        # no verb resolved to a no-op — record it so the silent miss is
+        # observable. Rituals (handled above) and registry/oracle hits
+        # never reach here.
+        if not matched_any and (card.template.oracle_text or '').strip():
+            from .effect_diagnostics import record_unhandled_effect
+            record_unhandled_effect(card.name, "spell")
 
     # ─── BLINK ───────────────────────────────────────────────────
 

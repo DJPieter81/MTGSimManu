@@ -27,11 +27,11 @@ basic-land path is structurally distinct (driven by
 ``OracleEffect.target_type == 'search_land'``) so the text-match
 predicate is safe even without an explicit basic-land filter.
 """
-from engine.card_database import CardDatabase
+from tests._card_db_cache import shared_card_database
 
 
 def _tags(name: str) -> set:
-    db = CardDatabase()
+    db = shared_card_database()
     template = db.cards.get(name)
     assert template is not None, f"Card not in DB: {name}"
     return set(template.tags)
@@ -68,7 +68,7 @@ def test_canonical_search_for_a_card_is_tutor():
     """The four canonical phrasings already detected — pin them.
     Demonic Tutor is the platonic example; the project DB may not
     include it, so try a few cards likely to be present."""
-    db = CardDatabase()
+    db = shared_card_database()
     found = False
     for canonical in ("Demonic Tutor", "Diabolic Tutor", "Worldly Tutor"):
         if canonical in db.cards and "tutor" in db.cards[canonical].tags:
@@ -100,7 +100,7 @@ def test_basic_land_search_is_not_tutor():
     OracleEffect targeting and is structurally distinct from the
     tutor predicate.
     """
-    db = CardDatabase()
+    db = shared_card_database()
     for ramp_card in ("Rampant Growth", "Cultivate", "Kodama's Reach"):
         if ramp_card in db.cards:
             tags = db.cards[ramp_card].tags
@@ -123,7 +123,7 @@ def test_class_size_above_floor():
     floor. Pre-fix the canonical phrases match a tight set; post-fix
     the relaxed predicate extends substantially.
     """
-    db = CardDatabase()
+    db = shared_card_database()
     tutor_count = sum(1 for t in db.cards.values() if "tutor" in t.tags)
     assert tutor_count >= 10, (
         f"Tutor class size below abstraction-contract floor: {tutor_count}"

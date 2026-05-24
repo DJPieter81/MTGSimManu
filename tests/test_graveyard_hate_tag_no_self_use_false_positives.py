@@ -22,11 +22,11 @@ This test pins the corrected behavior:
     Leyline of the Void, Rest in Peace, Faerie Macabre) must
     keep the tag.
 """
-from engine.card_database import CardDatabase
+from tests._card_db_cache import shared_card_database
 
 
 def _has_gy_hate(name: str) -> bool:
-    db = CardDatabase()
+    db = shared_card_database()
     t = db.cards.get(name)
     if t is None:
         return None
@@ -40,7 +40,7 @@ def _has_gy_hate(name: str) -> bool:
 def test_ritual_of_the_returned_self_graveyard_not_hate():
     """Exile target creature card from your graveyard — token-maker
     that USES your own graveyard, not opponent disruption."""
-    db = CardDatabase()
+    db = shared_card_database()
     if "Ritual of the Returned" in db.cards:
         assert _has_gy_hate("Ritual of the Returned") is False
 
@@ -48,25 +48,25 @@ def test_ritual_of_the_returned_self_graveyard_not_hate():
 def test_hour_of_eternity_self_graveyard_not_hate():
     """Exile X target creature cards from your graveyard — zombie
     army from own graveyard, not hate."""
-    db = CardDatabase()
+    db = shared_card_database()
     if "Hour of Eternity" in db.cards:
         assert _has_gy_hate("Hour of Eternity") is False
 
 
 def test_midnight_ritual_self_graveyard_not_hate():
-    db = CardDatabase()
+    db = shared_card_database()
     if "Midnight Ritual" in db.cards:
         assert _has_gy_hate("Midnight Ritual") is False
 
 
 def test_patchwork_crawler_self_graveyard_not_hate():
-    db = CardDatabase()
+    db = shared_card_database()
     if "Patchwork Crawler" in db.cards:
         assert _has_gy_hate("Patchwork Crawler") is False
 
 
 def test_soul_separator_self_graveyard_not_hate():
-    db = CardDatabase()
+    db = shared_card_database()
     if "Soul Separator" in db.cards:
         assert _has_gy_hate("Soul Separator") is False
 
@@ -80,7 +80,7 @@ def test_geth_replacement_clause_not_graveyard_hate():
     battlefield exile replacement. The 'exile it instead' clause
     intercepts battlefield → exile, not graveyard arrival —
     NOT hate."""
-    db = CardDatabase()
+    db = shared_card_database()
     if "Geth, Thane of Contracts" in db.cards:
         assert _has_gy_hate("Geth, Thane of Contracts") is False
 
@@ -89,7 +89,7 @@ def test_draconic_intervention_creature_death_replacement_not_hate():
     """Damage spell with finality-style 'exile if would die' clause
     — the 'exile it instead' intercepts creature death, not
     graveyard arrival. Not graveyard hate."""
-    db = CardDatabase()
+    db = shared_card_database()
     if "Draconic Intervention" in db.cards:
         assert _has_gy_hate("Draconic Intervention") is False
 
@@ -103,13 +103,13 @@ def test_relic_of_progenitus_still_hate():
 
 
 def test_leyline_of_the_void_still_hate():
-    db = CardDatabase()
+    db = shared_card_database()
     if "Leyline of the Void" in db.cards:
         assert _has_gy_hate("Leyline of the Void") is True
 
 
 def test_rest_in_peace_still_hate():
-    db = CardDatabase()
+    db = shared_card_database()
     if "Rest in Peace" in db.cards:
         assert _has_gy_hate("Rest in Peace") is True
 
@@ -117,18 +117,18 @@ def test_rest_in_peace_still_hate():
 def test_faerie_macabre_plural_graveyards_still_hate():
     """`Exile up to two target cards from graveyards.` Plural,
     no article — must still match (single-card-generic branch)."""
-    db = CardDatabase()
+    db = shared_card_database()
     if "Faerie Macabre" in db.cards:
         assert _has_gy_hate("Faerie Macabre") is True
 
 
 def test_bojuka_bog_still_hate():
-    db = CardDatabase()
+    db = shared_card_database()
     if "Bojuka Bog" in db.cards:
         assert _has_gy_hate("Bojuka Bog") is True
 
 
 def test_scavenging_ooze_still_hate():
-    db = CardDatabase()
+    db = shared_card_database()
     if "Scavenging Ooze" in db.cards:
         assert _has_gy_hate("Scavenging Ooze") is True

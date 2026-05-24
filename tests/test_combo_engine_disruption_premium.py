@@ -40,14 +40,9 @@ import random
 
 import pytest
 
-from engine.card_database import CardDatabase
+from tests._card_db_cache import shared_card_database
 from engine.cards import CardInstance
 from engine.game_state import GameState
-
-
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
 
 
 def _battlefield(game, card_db, name: str, controller: int) -> CardInstance:
@@ -140,7 +135,7 @@ def test_engine_disruption_value_returns_zero_when_opp_is_not_combo():
     list. This proves the helper consults opp's gameplan, not a
     global card-role lookup.
     """
-    db = CardDatabase()
+    db = shared_card_database()
     game = GameState(rng=random.Random(0))
     opp = game.players[1]
     opp.deck_name = "Boros Energy"      # aggro, not combo
@@ -163,7 +158,7 @@ def test_engine_disruption_value_returns_zero_for_non_engine_card():
     declared roles instead of pattern-matching oracle text or
     inferring 'is this a cost reducer'.
     """
-    db = CardDatabase()
+    db = shared_card_database()
     game = GameState(rng=random.Random(0))
     opp = game.players[1]
     opp.deck_name = "Ruby Storm"        # combo

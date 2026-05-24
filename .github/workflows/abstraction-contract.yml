@@ -55,66 +55,33 @@ jobs:
       - name: Run abstraction-contract pytest
         run: python -m pytest tests/test_abstraction_contract.py tests/test_check_abstraction_deck_gates.py tests/test_doc_hygiene.py tests/test_magic_numbers_ratchet.py tests/test_check_magic_numbers.py --timeout=60 -q
 
-      - name: Run regression-surface test suite
-        # Track G1 guardrail (plan 2026-05-16): the narrow ratchet
-        # pytest above does not exercise integration tests, sim v3
-        # behaviour, the WR baseline anchor, or any combo evaluator
-        # tests. This step runs a CURATED subset of high-leverage
-        # regression-detection test files — the surfaces where the
-        # near-miss v3 flip regressions lived. Wall budget ≈ 60s.
+      - name: Run full test suite
+        # The full suite now runs in CI. It became feasible once the
+        # CardDatabase load was consolidated onto a single process-wide
+        # shared instance (tests/_card_db_cache.py + the session-scoped
+        # conftest fixture); previously each of ~280 test modules
+        # reloaded the 21k-card DB (~7s each → ~80 min), which is why a
+        # curated 14-file subset ran here instead. Wall time is now a
+        # couple of minutes.
         #
-        # The full 1975-test suite is not run here because the
-        # CardDatabase fixture loads 21759 cards once per test
-        # (no session-scope cache); the per-test setup dominates
-        # wall time on the ubuntu-latest 2-core runner. A follow-up
-        # PR (G1.1) is filed to: (a) add a session-scoped DB fixture
-        # so the full suite fits inside the CI budget, OR (b) move
-        # to a beefier runner. Until then this curated subset covers
-        # ~75% of the regression class — the exact files where the
-        # 3 near-miss v3-flip regressions lived.
+        # ModernAtomic.json is gitignored, so it is absent in a fresh
+        # checkout; conftest reassembles a sidecar from the committed
+        # ModernAtomic_part*.json and routes CardDatabase to it, so the
+        # suite has real card data without a separate setup step.
         #
-        # Known-slow files excluded from this subset (>10s per test
-        # due to per-test CardDatabase load — each test reloads the
-        # full 21k-card database):
-        #   - tests/test_ability_override_discard_derived_from_oracle.py (107s)
-        #   - tests/test_discard_tag_generic_derivation.py (>60s)
-        #   - tests/test_tag_overrides_pruned_to_novel_only.py (>60s)
-        # These run locally during PR development; G1.1 follow-up
-        # will add a session-scoped DB fixture and re-include them.
+        # Deselected — one remaining known-failure, tracked for a
+        # dedicated follow-up PR:
+        #   - test_etb_graveyard_return.py: the generic ETB "return
+        #     target card from your graveyard to your hand" resolver is
+        #     unimplemented. Adding it needs a new oracle-classifier
+        #     tag, whose cache is built by an LLM-backed tool
+        #     (tools/build_oracle_classifier_cache.py) — not
+        #     reproducible in offline CI.
         #
-        # Files temporarily excluded because of failures on main as
-        # of 2026-05-16 (G1 cannot land green until these are
-        # addressed; tracked as follow-up PRs):
-        #   - tests/test_wr_baseline_anchor.py (4 entries drifted —
-        #     fix is a snapshot refresh via tools/refresh_wr_baseline.py)
-        #   - tests/test_x_cost_board_wipe_gate.py
-        #     (2 regressions from #408 — deeper logic fix in
-        #     ai/ev_player.py X-cost wipe + desperation lever)
-        # These belong in the subset and will be added back once the
-        # underlying regressions are fixed. The guardrail itself
-        # ships in this PR.
-        #
-        # Re-included after fix (was previously excluded):
-        #   - tests/test_combo_evaluator_integration.py — fixed by
-        #     PR #416 (stale _compute_combo_value(snap, 'combo') callers).
-        #
-        # When adding a new test file, add it here if it pins a
-        # mechanism (chain projection, combo evaluator, sim v3
-        # behaviour, WR anchor outcome, abstraction contract).
+        # The suite is hash-independent (verified green under multiple
+        # PYTHONHASHSEED values), so no hash pin is needed.
+        # test_llm_embeddings.py is auto-skipped (numpy not installed);
+        # see the optional-dependency collect_ignore in conftest.py.
         run: |
-          python -m pytest \
-            tests/test_abstraction_contract.py \
-            tests/test_check_abstraction_deck_gates.py \
-            tests/test_combo_evaluator_contract.py \
-            tests/test_combo_evaluator_integration.py \
-            tests/test_finisher_simulator.py \
-            tests/test_finisher_simulator_v3_integration.py \
-            tests/test_finisher_simulator_v3_tutor.py \
-            tests/test_finisher_simulator_v3_library.py \
-            tests/test_finisher_simulator_v3_rollout.py \
-            tests/test_finisher_v3_flag_wiring.py \
-            tests/test_finisher_v2_v3_parity.py \
-            tests/test_storm_tutor_lethal_fires.py \
-            tests/test_storm_finisher_holds_for_chain.py \
-            tests/test_zero_cost_creature_no_enabler_held.py \
-            --timeout=60 -v --tb=short -rA
+          python -m pytest tests/ -q --timeout=120 --tb=short \
+            --deselect tests/test_etb_graveyard_return.py

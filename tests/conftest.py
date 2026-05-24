@@ -30,7 +30,14 @@ def _ensure_fallback_db():
             continue
         try:
             with open(part) as f:
-                merged.update(json.load(f).get("data", {}))
+                data = json.load(f)
+            # Parts come in two shapes: a {"meta", "data"} wrapper and a
+            # bare card-name->card dict. Later parts may carry updated
+            # versions of cards from earlier parts, so both shapes must
+            # merge (a wrapper-only read would drop the bare parts and
+            # leave stale card data, diverging from the canonical file).
+            cards = data["data"] if isinstance(data, dict) and "data" in data and "meta" in data else data
+            merged.update(cards)
         except (json.JSONDecodeError, ValueError):
             # Part files are immutable per commit — a parse failure
             # here is unrecoverable; skip to give the shared file
@@ -41,10 +48,26 @@ def _ensure_fallback_db():
     sidecar = os.path.join(project_root, ".pytest_atomic_fallback.json")
     with open(sidecar, "w") as f:
         json.dump({"meta": {}, "data": merged}, f)
+
+    # When json_path is None, CardDatabase auto-discovers a data file.
+    # The full ModernAtomic.json is gitignored, so in a CI checkout the
+    # only committed data file is the 48-card ModernAtomic_mini.json —
+    # which CardDatabase would happily load, starving the full suite of
+    # real card data. Treat only the full ModernAtomic.json as
+    # canonical; when it is absent, route to the reassembled 21k-card
+    # sidecar (strictly better than the mini) so the suite has complete
+    # data in every environment.
+    _full_db_path = os.path.join(project_root, "ModernAtomic.json")
+
+    def _canonical_available():
+        return os.path.exists(_full_db_path)
+
     _orig_init = CardDatabase.__init__
 
     def _patched_init(self, json_path=None):
         if json_path is None:
+            if not _canonical_available():
+                return _orig_init(self, sidecar)
             try:
                 return _orig_init(self, None)
             except (json.JSONDecodeError, ValueError):
@@ -60,10 +83,60 @@ def _ensure_fallback_db():
 _ensure_fallback_db()
 
 
+# ─── Optional-dependency collection guard ────────────────────────────
+#
+# A few test modules exercise the optional LLM/embedding feature set
+# and hard-import heavy third-party packages (numpy, pydantic_ai) at
+# module scope. The offline simulator does not require those packages,
+# and CI installs only pydantic-ai-slim (numpy is intentionally absent
+# to keep the runner from pulling torch). Skip these modules at
+# collection time when their dependency is missing so the full suite
+# can run with `pytest tests/` regardless of which optional deps are
+# present, instead of aborting the whole run on a collection ImportError.
+_OPTIONAL_DEP_MODULES = {
+    "numpy": ["test_llm_embeddings.py"],
+    "pydantic_ai": [
+        "test_cached_agent.py",
+        "test_synth_gameplan_llm_backend.py",
+        "test_audit_doc_freshness.py",
+        "test_llm_agents.py",
+        "test_llm_agents_with_budget.py",
+        "test_metered_agent.py",
+    ],
+}
+collect_ignore = []
+for _dep, _modules in _OPTIONAL_DEP_MODULES.items():
+    try:
+        __import__(_dep)
+    except ImportError:
+        collect_ignore.extend(_modules)
+
+
+@pytest.fixture(autouse=True)
+def _restore_effect_registry():
+    """Snapshot and restore the global EFFECT_REGISTRY around every test.
+
+    EFFECT_REGISTRY is a process-wide singleton. Some tests register
+    handlers at execution time (e.g. mock card handlers); without this
+    guard those registrations leak into later tests, overriding real
+    card behaviour and flipping deterministic game outcomes depending
+    on collection order. Restoring the registry per test isolates that
+    state so the full suite is order-independent.
+    """
+    from engine.card_effects import EFFECT_REGISTRY
+
+    snapshot = {name: list(handlers) for name, handlers in EFFECT_REGISTRY._handlers.items()}
+    yield
+    EFFECT_REGISTRY._handlers.clear()
+    EFFECT_REGISTRY._handlers.update(snapshot)
+
+
 @pytest.fixture(scope="session")
 def card_db():
     """Load the card database once for all tests."""
-    return CardDatabase()
+    from tests._card_db_cache import shared_card_database
+
+    return shared_card_database()
 
 
 @pytest.fixture

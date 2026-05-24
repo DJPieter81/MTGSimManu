@@ -1887,7 +1887,15 @@ class GameRunner:
                     # Search priority: missing Tron piece > any non-basic not on board
                     target_name = None
                     if missing:
-                        target_name = next(iter(missing))
+                        # Deterministic pick: `next(iter(set))` depends on
+                        # PYTHONHASHSEED, which flips downstream game state
+                        # (which piece is fetched changes the post-fetch
+                        # library/draw). Use a stable order. When >1 piece
+                        # is missing the choice doesn't change this turn's
+                        # mana (Urza lands tap for 1 until all three are
+                        # assembled), so a fixed order is strategically
+                        # neutral and removes the nondeterminism.
+                        target_name = min(missing)
                     else:
                         # Find a useful land in library not already on board
                         for c in player.library:

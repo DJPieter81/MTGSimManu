@@ -25,11 +25,11 @@ ways (reanimation, flashback-grant, self-mill) do NOT acquire the
 tag — Past in Flames, Goryo's Vengeance, Eternal Witness,
 Snapcaster Mage, Faithful Mending.
 """
-from engine.card_database import CardDatabase
+from tests._card_db_cache import shared_card_database
 
 
 def _tags(name: str) -> set:
-    db = CardDatabase()
+    db = shared_card_database()
     template = db.cards.get(name)
     if template is None:
         return None  # noqa: skipped tests handle missing
@@ -48,7 +48,7 @@ def test_relic_of_progenitus_is_graveyard_hate():
 
 def test_tormods_crypt_is_graveyard_hate():
     """{T}, sacrifice this artifact: exile target player's graveyard."""
-    db = CardDatabase()
+    db = shared_card_database()
     if "Tormod's Crypt" in db.cards:
         assert "graveyard_hate" in _tags("Tormod's Crypt")
 
@@ -56,7 +56,7 @@ def test_tormods_crypt_is_graveyard_hate():
 def test_leyline_of_the_void_replacement_is_graveyard_hate():
     """If a card would be put into an opponent's graveyard from
     anywhere, exile it instead."""
-    db = CardDatabase()
+    db = shared_card_database()
     if "Leyline of the Void" in db.cards:
         assert "graveyard_hate" in _tags("Leyline of the Void")
 
@@ -65,27 +65,27 @@ def test_rest_in_peace_zone_wipe_is_graveyard_hate():
     """When this enchantment enters, exile all graveyards. If a card
     or token would be put into a graveyard from anywhere, exile it
     instead."""
-    db = CardDatabase()
+    db = shared_card_database()
     if "Rest in Peace" in db.cards:
         assert "graveyard_hate" in _tags("Rest in Peace")
 
 
 def test_bojuka_bog_zone_wipe_is_graveyard_hate():
     """When this land enters, exile target player's graveyard."""
-    db = CardDatabase()
+    db = shared_card_database()
     if "Bojuka Bog" in db.cards:
         assert "graveyard_hate" in _tags("Bojuka Bog")
 
 
 def test_nihil_spellbomb_zone_wipe_is_graveyard_hate():
-    db = CardDatabase()
+    db = shared_card_database()
     if "Nihil Spellbomb" in db.cards:
         assert "graveyard_hate" in _tags("Nihil Spellbomb")
 
 
 def test_scavenging_ooze_single_card_exile_is_graveyard_hate():
     """{G}: exile target card from a graveyard."""
-    db = CardDatabase()
+    db = shared_card_database()
     if "Scavenging Ooze" in db.cards:
         assert "graveyard_hate" in _tags("Scavenging Ooze")
 
@@ -100,7 +100,7 @@ def test_endurance_bottom_of_library_is_graveyard_hate():
 def test_surgical_extraction_choose_then_exile_is_graveyard_hate():
     """Choose target card in a graveyard ... search graveyard, hand,
     library ... and exile them."""
-    db = CardDatabase()
+    db = shared_card_database()
     if "Surgical Extraction" in db.cards:
         assert "graveyard_hate" in _tags("Surgical Extraction")
 
@@ -109,7 +109,7 @@ def test_grafdiggers_cage_restriction_is_graveyard_hate():
     """Creature cards in graveyards and libraries can't enter the
     battlefield. Players can't cast spells from graveyards or
     libraries."""
-    db = CardDatabase()
+    db = shared_card_database()
     if "Grafdigger's Cage" in db.cards:
         assert "graveyard_hate" in _tags("Grafdigger's Cage")
 
@@ -135,7 +135,7 @@ def test_past_in_flames_grants_flashback_not_hate():
 def test_goryos_vengeance_reanimator_not_hate():
     """Return target legendary creature card from a graveyard to
     the battlefield — uses graveyard, not hate."""
-    db = CardDatabase()
+    db = shared_card_database()
     if "Goryo's Vengeance" in db.cards:
         tags = _tags("Goryo's Vengeance")
         assert "graveyard_hate" not in tags

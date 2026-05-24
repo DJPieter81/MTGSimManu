@@ -67,36 +67,32 @@ class TestEngineSeedDeterminism:
             f"Bo3 score non-deterministic: "
             f"m1={m1.match_score} vs m2={m2.match_score}")
 
-    def test_different_seeds_produce_distinct_outcomes(self, runner):
+    def test_different_seeds_produce_distinct_outcomes(self):
         """Sanity: the seed actually controls outcome (this would fail
-        if the fix accidentally hard-coded a constant). At least one
-        of three different seeds should differ from the first.
+        if the fix accidentally hard-coded a constant). At least one of
+        four different seeds must produce a distinct single-game result.
 
-        Uses Ruby Storm vs Dimir Midrange — a variance-friendly Bo3
-        matchup whose outcome at the match-score level depends on
-        shuffle order (combo-vs-disruption is shuffle-sensitive: a
-        Storm hand with a fast-mana cluster wins; a hand bricked on
-        rituals loses to early counterspells/discard).
+        Measured at the SINGLE-GAME level (turn count + winner), not the
+        Bo3 match score. A Bo3 match score is a coarse 3-bucket signal
+        and for a lopsided matchup collapses to one value at every nearby
+        seed (Ruby Storm vs Dimir is currently 0-2 at seeds 50000-53000),
+        which made the old match-level assertion both stale and fragile.
+        `_run_game` fully reseeds `random` and `runner.rng` per call, so
+        a fresh runner per seed makes this independent of any prior test's
+        global state (the old shared-runner Bo3 form derived its "variance"
+        from runner-state accumulation and broke when a sibling test
+        perturbed process globals).
 
-        Domain Zoo vs Affinity (the previous fixture) is too lopsided
-        for n=1 Bo3 — Affinity wins 2-0 at all four sample seeds, so
-        the assertion fails despite the engine being properly seeded.
-        The bug we want to catch (constant outcome regardless of seed)
-        is unobservable in a pre-decided matchup, so we pick a pair
-        where Bo3 outcomes naturally vary across nearby seeds.
-
-        Empirical (2026-05-10): seeds (50000, 51000, 52000, 53000) →
-        (0,2), (2,1), (2,1), (1,2) — three distinct match scores.
+        Empirical (2026-05-20): Ruby Storm vs Dimir at seeds
+        (50000, 51000, 52000, 53000) → games of (T6, T8, T7, T6):
+        three distinct game lengths, so the seed demonstrably matters.
         """
         d1, d2 = "Ruby Storm", "Dimir Midrange"
-        baseline = _run_match(runner, d1, d2, 50000).match_score
+        outcomes = []
+        for s in (50000, 51000, 52000, 53000):
+            r = _run_game(_get_runner(), d1, d2, s)
+            outcomes.append((r.winner_deck, r.turns))
 
-        differing = []
-        for s in (51000, 52000, 53000):
-            r = _run_match(runner, d1, d2, s).match_score
-            if r != baseline:
-                differing.append((s, r))
-
-        assert differing, (
-            f"All four seeds produced same score ({baseline}); "
-            f"seed is being ignored entirely.")
+        assert len(set(outcomes)) > 1, (
+            f"All four seeds produced the same single-game outcome "
+            f"({outcomes[0]}); seed is being ignored entirely.")

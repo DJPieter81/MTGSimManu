@@ -28,11 +28,11 @@ Lightning Bolt (damage), Counterspell, Cultivate (ramp), Snapcaster
 Mage (etb_value), Faithful Mending (self-discard as cost, not
 effect on opponent), Mulldrifter.
 """
-from engine.card_database import CardDatabase
+from tests._card_db_cache import shared_card_database
 
 
 def _tags(name: str) -> set:
-    db = CardDatabase()
+    db = shared_card_database()
     template = db.cards.get(name)
     assert template is not None, f"Card not in DB: {name}"
     return set(template.tags)
@@ -65,14 +65,14 @@ def test_duress_reveal_pattern_is_discard():
 
 def test_mind_rot_direct_target_discard():
     """Target player discards two cards — direct phrasing."""
-    db = CardDatabase()
+    db = shared_card_database()
     if "Mind Rot" in db.cards:
         assert "discard" in _tags("Mind Rot")
 
 
 def test_liliana_of_the_veil_each_player_discard():
     """[+1]: Each player discards a card."""
-    db = CardDatabase()
+    db = shared_card_database()
     if "Liliana of the Veil" in db.cards:
         assert "discard" in _tags("Liliana of the Veil")
 
@@ -82,13 +82,13 @@ def test_brain_maggot_reveal_then_exile_is_discard():
     and you choose a nonland card from it. Exile that card. — the
     exile-from-hand variant of the discard pattern; AI scores it
     under the same heading."""
-    db = CardDatabase()
+    db = shared_card_database()
     if "Brain Maggot" in db.cards:
         assert "discard" in _tags("Brain Maggot")
 
 
 def test_tidehollow_sculler_reveal_then_exile_is_discard():
-    db = CardDatabase()
+    db = shared_card_database()
     if "Tidehollow Sculler" in db.cards:
         assert "discard" in _tags("Tidehollow Sculler")
 
@@ -121,7 +121,7 @@ def test_snapcaster_mage_is_not_discard():
 
 
 def test_cultivate_is_not_discard():
-    db = CardDatabase()
+    db = shared_card_database()
     if "Cultivate" in db.cards:
         tags = _tags("Cultivate")
         assert "discard" not in tags

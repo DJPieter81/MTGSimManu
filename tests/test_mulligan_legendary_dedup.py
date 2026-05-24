@@ -29,13 +29,7 @@ import pytest
 from ai.gameplan import create_goal_engine
 from ai.mulligan import MulliganDecider
 from ai.strategy_profile import ArchetypeStrategy
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance, Supertype
-
-
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
 
 
 def _make_card_in_hand(card_db, name, iid):

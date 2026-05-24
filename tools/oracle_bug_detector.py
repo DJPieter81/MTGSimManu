@@ -170,34 +170,43 @@ def _check_token_artifact_typing(name: str, oracle: str) -> Optional[Suspicion]:
         return None
     defn = TOKEN_DEFS.get(token_label.lower())
     if defn is None:
-        # Token not in TOKEN_DEFS — check whether the generic
-        # ``parse_token_spec`` (oracle-derived path introduced in
-        # the Phase 1C followup) extracts the artifact + creature
-        # types. If so, the token is correctly typed at runtime
-        # without a TOKEN_DEFS entry; do NOT flag.
+        # Token label is not registered in TOKEN_DEFS. Surface it for
+        # review so a definition can be added — that is this detector's
+        # purpose. The generic ``parse_token_spec`` path may already
+        # type the token correctly at runtime; when it does, say so in
+        # the reason rather than suppressing the suspicion, because an
+        # unregistered token type is still worth a human look.
         try:
             from engine.oracle_parser import parse_token_spec
         except ImportError:
             parse_token_spec = None  # type: ignore
+        runtime_typed = False
         if parse_token_spec is not None:
             spec = parse_token_spec(oracle)
             if spec is not None:
                 spec_types = {t.lower() for t in spec.get("types", ())}
-                if "artifact" in spec_types and "creature" in spec_types:
-                    return None
-        # Token not registered AND oracle parser doesn't produce a
-        # correctly-typed artifact-creature spec — flag for review.
-        return Suspicion(
-            card_name=name,
-            parser="token_artifact_typing",
-            parsed_result={"token_label": token_label},
-            reason=(
+                runtime_typed = "artifact" in spec_types and "creature" in spec_types
+        if runtime_typed:
+            reason = (
+                f"Oracle creates '{token_label}' artifact creature "
+                f"token; '{token_label.lower()}' isn't registered in "
+                f"TOKEN_DEFS. parse_token_spec types it correctly at "
+                f"runtime, but the label is unregistered — add a "
+                f"TOKEN_DEFS entry for clarity."
+            )
+        else:
+            reason = (
                 f"Oracle creates '{token_label}' artifact creature "
                 f"token but '{token_label.lower()}' isn't registered "
                 f"in TOKEN_DEFS and parse_token_spec doesn't extract "
                 f"the artifact-creature types. Token will fall back "
                 f"to generic 1/1 Creature-only and miss Artifact typing."
-            ),
+            )
+        return Suspicion(
+            card_name=name,
+            parser="token_artifact_typing",
+            parsed_result={"token_label": token_label},
+            reason=reason,
             oracle_excerpt=oracle[:200],
         )
     types = defn[1] if len(defn) >= 2 else []

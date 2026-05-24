@@ -15,16 +15,15 @@ import pytest
 
 from ai.stax_ev import classify_stax, stax_lock_ev
 from ai.ev_evaluator import EVSnapshot
-from engine.card_database import CardDatabase
 
 
 # ──────────────────────────────────────────────────────────────────────
 # Fixtures
 # ──────────────────────────────────────────────────────────────────────
 
-@pytest.fixture(scope="module")
-def db():
-    return CardDatabase()
+@pytest.fixture
+def db(card_db):
+    return card_db
 
 
 @dataclass

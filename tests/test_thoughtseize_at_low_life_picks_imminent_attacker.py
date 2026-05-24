@@ -64,11 +64,6 @@ from engine.game_state import GameState
 from engine.game_runner import AICallbacks
 
 
-@pytest.fixture(scope="module")
-def card_db() -> CardDatabase:
-    return CardDatabase()
-
-
 def _make_game() -> GameState:
     """Wire the game state to AICallbacks so the discard path routes
     through ``ai.discard_advisor`` rather than the default raw-CMC

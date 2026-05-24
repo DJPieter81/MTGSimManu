@@ -740,6 +740,76 @@ class EVPlayer:
     # SCORING — per-archetype spell evaluation
     # ═══════════════════════════════════════════════════════════
 
+    def _overlay_land_sacrifice_fizzle(self, ev: float, t_oracle: str, me) -> float:
+        """Clamp land-sacrifice tutors (Scapeshift shape) into the patience-
+        reject band when the controller lacks the minimum lands to sacrifice —
+        the engine fizzles the cast otherwise (engine/card_effects.py
+        scapeshift_resolve). Oracle-driven detection, no card names."""
+        if 'sacrifice any number of lands' in t_oracle and 'search your library' in t_oracle:
+            my_land_count = sum(1 for c in me.battlefield if c.template.is_land)
+            if my_land_count < LAND_SACRIFICE_MIN_LANDS:
+                return min(ev, PATIENCE_GATE_REJECT_SENTINEL)
+        return ev
+
+    def _overlay_cascade_patience(self, ev: float, t, snap: EVSnapshot, me) -> float:
+        """Clamp a cascade enabler when the graveyard is too thin AND no
+        reanimate payoff remains reachable in the library — the cascade would
+        resolve into a vanilla body and a dead reanimation. Gating on payoff-
+        reachability (not the raw ev) is required because a cascade enabler
+        that is itself a creature (Shardless Agent 2/1) scores a positive body
+        EV that masks the dead cascade. When a payoff IS reachable, defer to
+        the projection (cascade-payoff must-fire; test_cascade_payoff_must_fire)."""
+        if getattr(t, 'is_cascade', False):
+            fill_target = self._cascade_graveyard_target()
+            if (fill_target > 0
+                    and snap.my_gy_creatures < fill_target
+                    and not self._library_has_reanimate_payoff(me)):
+                return min(ev, PATIENCE_GATE_REJECT_SENTINEL)
+        return ev
+
+    def _gate_x_cost_board_wipe(self, ev: float, t, tags, snap: EVSnapshot, opp):
+        """Hard gate: hold an X-cost board wipe when its X-budget can't
+        meaningfully clear the board. Returns a clamped float to short-circuit
+        scoring, or None to continue. Kill count is derived from the oracle's
+        destroy/exile clause over all matching nonland permanents (creatures +
+        artifacts + enchantments), not creatures alone."""
+        opp_nonland = [c for c in opp.battlefield if not c.template.is_land]
+        if not ('board_wipe' in tags and t.x_cost_data and opp_nonland):
+            return None
+        from engine.cards import CardType
+        total_mana = snap.my_mana
+        base_cost = t.cmc or 0
+        x_budget = max(0, total_mana - base_cost)
+        mult = (t.x_cost_data or {}).get('multiplier', 1) or 1
+        cap = x_budget // mult
+        o_wipe = (t.oracle_text or '').lower()
+        clause_m = re.search(r'\b(?:destroy|exile)\b(.*?)(?:\.|$)', o_wipe, re.S)
+        clause = clause_m.group(1) if clause_m else ''
+        type_words = {
+            'creature': CardType.CREATURE,
+            'artifact': CardType.ARTIFACT,
+            'enchantment': CardType.ENCHANTMENT,
+            'planeswalker': CardType.PLANESWALKER,
+        }
+        destroyed_types = {ct for word, ct in type_words.items() if word in clause}
+        if not destroyed_types:
+            destroyed_types = {CardType.CREATURE}
+        killable = [c for c in opp_nonland
+                    if (set(c.template.card_types) & destroyed_types)
+                    and (c.template.cmc or 0) <= cap]
+        kill_count = len(killable)
+        killable_power = sum((c.power or 0) for c in killable)
+        from ai.clock import LifePhase, life_phase
+        desperate = life_phase(snap) in (LifePhase.PANIC, LifePhase.LETHAL)
+        if not desperate:
+            if kill_count == 0:
+                return min(ev, X_BOARD_WIPE_WASTE_FLOOR)
+            if kill_count == 1 and killable_power < 2:
+                return min(ev, X_BOARD_WIPE_WASTE_FLOOR)
+        elif kill_count == 0:
+            return min(ev, X_BOARD_WIPE_WASTE_FLOOR)
+        return None
+
     def _score_spell(self, card: "CardInstance", snap: EVSnapshot,
                      game: "GameState", me, opp) -> float:
         """Score a spell using clock-based projection.
@@ -824,85 +894,11 @@ class EVPlayer:
             ev += card_combo_modifier(card, self._assess_value, snap, me, game,
                                        self.player_idx)
 
-        # ── Fizzle detection: land-sacrifice spells without critical mass ──
-        # Spells like Scapeshift ("Sacrifice any number of lands. Search
-        # your library for up to that many land cards...") do nothing if
-        # the controller has too few lands to sacrifice — the engine fizzles
-        # the cast (engine/card_effects.py:scapeshift_resolve requires 4+
-        # lands). Without this guard the AI burns 4 mana on a wasted cast
-        # on T3, as seen in Amulet Titan vs Dimir traces.
-        # Oracle-driven detection — no hardcoded card names.
-        if 'sacrifice any number of lands' in t_oracle and 'search your library' in t_oracle:
-            my_land_count = sum(1 for c in me.battlefield if c.template.is_land)
-            # Rules constant matching engine threshold at
-            # engine/card_effects.py:scapeshift_resolve. Imported from
-            # scoring_constants.
-            if my_land_count < LAND_SACRIFICE_MIN_LANDS:
-                # Force the score into the patience-gate reject band so
-                # the AI holds the spell until critical mass is available.
-                # M3: the pre-existing `profile.pass_threshold - 1.0`
-                # clamp depended on the now-deleted `pass_threshold`
-                # field; replaced with the named sentinel from
-                # `scoring_constants`.  Same intent: the cast is
-                # unconditionally outside the M3 `play_value > 0` gate.
-                ev = min(ev, PATIENCE_GATE_REJECT_SENTINEL)
+        # Land-sacrifice tutor (Scapeshift shape) fizzle gate.
+        ev = self._overlay_land_sacrifice_fizzle(ev, t_oracle, me)
 
-        # ── Cascade patience gate (LE-A3) ──
-        # Mirror of the Storm ritual patience gate (now in card_combo_modifier):
-        # cascade spells in a reanimator shell get an unconditional +1.5
-        # free-cast bonus (lines 440-442), but if the graveyard is too
-        # thin the cascaded reanimate spell (Living End / Cascade Zenith
-        # pattern) returns an empty or insufficient board. The cascade
-        # enabler is then burned for no payoff.
-        #
-        # Gate fires when ALL of:
-        #   1. Spell has the cascade keyword (oracle-parsed `is_cascade`).
-        #   2. The deck is a graveyard-reanimator shell — i.e. its
-        #      gameplan declares a FILL_RESOURCE goal with
-        #      `resource_zone == "graveyard"`. Gameplan-declared signal,
-        #      gathered by `_cascade_graveyard_target()`. Non-reanimator
-        #      cascade decks (e.g. a hypothetical Cascade Zenith burn
-        #      list with no FILL_RESOURCE/graveyard goal) return 0 and
-        #      the gate does NOT fire — their cascade hit isn't gated
-        #      on graveyard contents.
-        #   3. Graveyard creature count < the gameplan's declared
-        #      `resource_target`. No magic numbers — the number is the
-        #      same threshold the gameplan uses to transition out of
-        #      FILL_RESOURCE.
-        #   4. The projection itself is NOT already positive.  Cascade
-        #      projection (ev_evaluator.py:1622) recursively projects
-        #      the cascade hit and the symmetric reanimation
-        #      (ev_evaluator.py:1398-1434) — when those return a
-        #      positive EV, the cascade is already worth firing even
-        #      with a thin graveyard.  Patience is opportunity-cost
-        #      gating; once projection has verified positive value,
-        #      there is no opportunity to wait for.  This is the
-        #      cascade-payoff must-fire rule (PR #192 / #212 shape):
-        #      the gate must defer to the projection, not override it.
-        #
-        # When the gate fires, clamp EV into the patience-reject band —
-        # a HARD reduction in line with the Scapeshift fizzle gate above
-        # and the Storm ritual patience gate (now in card_combo_modifier).
-        # The AI will hold the cascade enabler until the graveyard has
-        # critical mass.
-        if getattr(t, 'is_cascade', False):
-            fill_target = self._cascade_graveyard_target()
-            if (fill_target > 0
-                    and snap.my_gy_creatures < fill_target
-                    and ev <= 0.0):
-                # Defer-to-projection: only clamp when projection is
-                # NOT already positive.  A positive `ev` here means
-                # `compute_play_ev` (which recursively projected the
-                # cascade hit) found a positive swing — the cascade-
-                # payoff must-fire rule says trust that projection.
-                # M3: the pre-existing `profile.pass_threshold - 1.0`
-                # clamp depended on the now-deleted `pass_threshold`
-                # field; replaced with the named sentinel from
-                # `scoring_constants`.  Same intent: the cast is
-                # unconditionally outside the M3 `play_value > 0` gate,
-                # so the spell is rejected by `decide_main_phase` but
-                # any other legal play can still fire.
-                ev = min(ev, PATIENCE_GATE_REJECT_SENTINEL)
+        # Cascade patience gate (LE-A3).
+        ev = self._overlay_cascade_patience(ev, t, snap, me)
 
         # ── Reanimation readiness gate (GV-2) ──
         # Mirror shape of the cascade patience gate above, but in the
@@ -1183,39 +1179,10 @@ class EVPlayer:
                                  + 1.0 + me_lost)
                 ev -= waste_penalty
 
-        # ── X-cost board wipe: hold when the X-budget can't meaningfully clear ──
-        # Tuned through three passes:
-        #   v1 (≥2 kills) — too strict: Azorius never wraths vs 1 Ragavan.
-        #   v2 (≥3 power on single kill) — still too strict: 2-power Ragavan
-        #       fails, but killing even a single attacking Ragavan is correct
-        #       when the AI is dying.
-        #   v3 (this): threshold drops to 2 power, and the whole gate is
-        #       waived when we're at low life (≤10). Consolidates the
-        #       "always fire when desperate" behaviour.
-        if ('board_wipe' in tags and t.x_cost_data and opp.creatures):
-            total_mana = snap.my_mana
-            base_cost = t.cmc or 0
-            x_budget = max(0, total_mana - base_cost)
-            mult = (t.x_cost_data or {}).get('multiplier', 1) or 1
-            killable = [c for c in opp.creatures
-                        if (c.template.cmc or 0) <= x_budget // mult]
-            kill_count = len(killable)
-            killable_power = sum((c.power or 0) for c in killable)
-            # Replaces a `my_life-vs-DESPERATE_LIFE_THRESHOLD` magic
-            # threshold (M4 from 2026-05-16 5-panel audit).  The life-
-            # phase enum from W0-B subsumes the "we're dying, fire the
-            # X-wrath even at low value" case via the composed primitive
-            # `am_dead_next + life_as_resource` ordering.
-            from ai.clock import LifePhase, life_phase
-            desperate = life_phase(snap) in (LifePhase.PANIC, LifePhase.LETHAL)
-            if not desperate:
-                if kill_count == 0:
-                    return min(ev, X_BOARD_WIPE_WASTE_FLOOR)
-                if kill_count == 1 and killable_power < 2:
-                    return min(ev, X_BOARD_WIPE_WASTE_FLOOR)
-            elif kill_count == 0:
-                # Even desperate, zero kills is pure waste
-                return min(ev, X_BOARD_WIPE_WASTE_FLOOR)
+        # X-cost board-wipe waste gate (hold when X can't meaningfully clear).
+        x_gate = self._gate_x_cost_board_wipe(ev, t, tags, snap, opp)
+        if x_gate is not None:
+            return x_gate
 
         # ── Blink/flicker hard gate: no legal target means the spell fizzles ──
         # Engine safely bails (Ephemerate returns early), but AI should never
@@ -2038,20 +2005,6 @@ class EVPlayer:
         # graveyard ... to the battlefield" patterns.  Cards like
         # Living End, Unburial Rites, Persist, Goryo's Vengeance, and
         # creatures like Ephemerate-via-Persist all match.
-        def _is_reanimate(oracle: str) -> bool:
-            o = (oracle or '').lower()
-            if 'from' not in o or 'graveyard' not in o:
-                return False
-            if ('return' in o and 'battlefield' in o) or (
-                    'put' in o and 'battlefield' in o):
-                # Exclude "from your hand ... to the battlefield"
-                # (e.g., Reanimate vs Knight Errant): require
-                # 'graveyard' to precede 'battlefield'.
-                gy_idx = o.find('graveyard')
-                bf_idx = o.find('battlefield', gy_idx)
-                return gy_idx >= 0 and bf_idx >= 0
-            return False
-
         zones = [me.hand, me.battlefield]
         # Library visibility is a simplification — in real play we
         # know our deck.  DeckKnowledge provides it when initialised.
@@ -2059,7 +2012,7 @@ class EVPlayer:
             zones.append(me.library)
         for zone in zones:
             for c in zone:
-                if _is_reanimate(c.template.oracle_text):
+                if self._oracle_is_reanimate(c.template.oracle_text):
                     self._reanimation_cache_turn = (
                         game.turn_number if game else -1)
                     self._reanimation_cache_val = True
@@ -2068,6 +2021,34 @@ class EVPlayer:
         self._reanimation_cache_turn = game.turn_number if game else -1
         self._reanimation_cache_val = False
         return False
+
+    @staticmethod
+    def _oracle_is_reanimate(oracle: str) -> bool:
+        """True if oracle returns a creature from a graveyard to the
+        battlefield (Living End, Unburial Rites, Persist, Goryo's, ...).
+        Excludes "from your hand ... to the battlefield" by requiring
+        'graveyard' to precede 'battlefield'. No card names."""
+        o = (oracle or '').lower()
+        if 'from' not in o or 'graveyard' not in o:
+            return False
+        if ('return' in o and 'battlefield' in o) or (
+                'put' in o and 'battlefield' in o):
+            gy_idx = o.find('graveyard')
+            bf_idx = o.find('battlefield', gy_idx)
+            return gy_idx >= 0 and bf_idx >= 0
+        return False
+
+    def _library_has_reanimate_payoff(self, me) -> bool:
+        """True if the library still contains a reanimate payoff for a
+        cascade to recover into. Distinct from `_has_reanimation_path`,
+        which short-circuits True on the gameplan `prefer_cycling` flag
+        regardless of library contents — the cascade patience gate must
+        know whether the payoff is actually reachable in the deck, not
+        merely that the deck is a reanimator archetype."""
+        return any(
+            self._oracle_is_reanimate(c.template.oracle_text)
+            for c in me.library
+        )
 
     def _score_cycling(self, card, snap, game, me, opp) -> float:
         """Score cycling using clock-derived values.

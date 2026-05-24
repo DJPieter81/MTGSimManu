@@ -22,13 +22,7 @@ from __future__ import annotations
 
 import pytest
 
-from engine.card_database import CardDatabase
 from engine.cards import Supertype
-
-
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
 
 
 def test_archon_of_cruelty_is_legendary(card_db):

@@ -40,15 +40,9 @@ import random
 
 import pytest
 
-from engine.card_database import CardDatabase
 from engine.cards import CardInstance, CardType
 from engine.game_state import GameState, Phase
 from engine.stack import StackItem, StackItemType
-
-
-@pytest.fixture(scope="module")
-def card_db():
-    return CardDatabase()
 
 
 def _add(game, card_db, name, controller, zone):

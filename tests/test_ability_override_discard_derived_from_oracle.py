@@ -31,12 +31,12 @@ self-discard cost (Faithful Mending), draw-then-discard loot
 (Cathartic Reunion's "draw two cards, then discard two"), and
 unrelated spells (Lightning Bolt, Counterspell).
 """
-from engine.card_database import CardDatabase
+from tests._card_db_cache import shared_card_database
 from engine.cards import AbilityType
 
 
 def _abilities(name: str):
-    db = CardDatabase()
+    db = shared_card_database()
     template = db.cards.get(name)
     assert template is not None, f"Card not in DB: {name}"
     return list(template.abilities)
@@ -79,7 +79,7 @@ def test_inquisition_of_kozilek_reveal_pattern_yields_cast_discard_ability():
 def test_distress_reveal_pattern_yields_cast_discard_ability():
     """Same shape as Thoughtseize but never had an override entry.
     Pre-fix: 0 abilities. Post-fix: 1 CAST 'Discard from opponent'."""
-    db = CardDatabase()
+    db = shared_card_database()
     if "Distress" not in db.cards:
         return  # not in current DB; skip silently
     assert _has_discard_cast_ability("Distress")
@@ -87,21 +87,21 @@ def test_distress_reveal_pattern_yields_cast_discard_ability():
 
 def test_duress_reveal_pattern_yields_cast_discard_ability():
     """Filtered hand-rip ('noncreature, nonland') — same predicate."""
-    db = CardDatabase()
+    db = shared_card_database()
     if "Duress" not in db.cards:
         return
     assert _has_discard_cast_ability("Duress")
 
 
 def test_coercion_reveal_pattern_yields_cast_discard_ability():
-    db = CardDatabase()
+    db = shared_card_database()
     if "Coercion" not in db.cards:
         return
     assert _has_discard_cast_ability("Coercion")
 
 
 def test_despise_reveal_pattern_yields_cast_discard_ability():
-    db = CardDatabase()
+    db = shared_card_database()
     if "Despise" not in db.cards:
         return
     assert _has_discard_cast_ability("Despise")
@@ -112,7 +112,7 @@ def test_mind_rot_direct_numeric_discard_yields_cast_ability():
     word, not digit. Pre-fix: OracleTextParser.DISCARD_PATTERNS only
     matches the digit form, so Mind Rot has 0 abilities. Post-fix:
     text predicate covers the word form too."""
-    db = CardDatabase()
+    db = shared_card_database()
     if "Mind Rot" not in db.cards:
         return
     assert _has_discard_cast_ability("Mind Rot")
@@ -127,7 +127,7 @@ def test_faithful_mending_self_discard_cost_does_not_yield_discard_ability():
     """Faithful Mending makes YOU discard as part of its own resolution.
     It is not an opponent-targeting hand-disruption spell, so it must
     not pick up a CAST 'Discard from opponent' ability."""
-    db = CardDatabase()
+    db = shared_card_database()
     if "Faithful Mending" not in db.cards:
         return
     assert not _has_discard_cast_ability("Faithful Mending")
@@ -138,7 +138,7 @@ def test_lightning_bolt_does_not_yield_discard_ability():
 
 
 def test_counterspell_does_not_yield_discard_ability():
-    db = CardDatabase()
+    db = shared_card_database()
     if "Counterspell" not in db.cards:
         return
     assert not _has_discard_cast_ability("Counterspell")

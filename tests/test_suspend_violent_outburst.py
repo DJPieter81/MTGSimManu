@@ -23,14 +23,13 @@ import random
 import pytest
 
 from engine.cards import CardInstance, Keyword
-from engine.card_database import CardDatabase
 from engine.game_state import GameState, Phase
 from engine.callbacks import DefaultCallbacks
 
 
-@pytest.fixture(scope="module")
-def db():
-    return CardDatabase()
+@pytest.fixture
+def db(card_db):
+    return card_db
 
 
 def _fresh_game(db):

@@ -38,11 +38,11 @@ Lightning Bolt (already removal via OracleEffect), Counterspell
 (counterspell, not removal), Snapcaster Mage / Eternal Witness
 (creature ETB-value, not removal), Cultivate (ramp).
 """
-from engine.card_database import CardDatabase
+from tests._card_db_cache import shared_card_database
 
 
 def _tags(name: str) -> set:
-    db = CardDatabase()
+    db = shared_card_database()
     template = db.cards.get(name)
     assert template is not None, f"Card not in DB: {name}"
     return set(template.tags)
@@ -135,7 +135,7 @@ def test_counterspell_is_not_removal():
 
 def test_cultivate_is_ramp_not_removal():
     """Search your library for two basic land cards — ramp."""
-    db = CardDatabase()
+    db = shared_card_database()
     if "Cultivate" in db.cards:
         tags = _tags("Cultivate")
         assert "ramp" in tags
