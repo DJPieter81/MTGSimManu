@@ -1189,6 +1189,12 @@ class GameRunner:
         # After each spell, opponent gets a response window (CR 117.3d).
         # Both must pass for the stack to resolve (CR 117.4).
         priority = game.priority
+        # Auto-fire imprint-copy artifacts at sorcery speed (moved out
+        # of the pre-draw upkeep — see
+        # _process_imprint_copy_activations for the CR rationale).
+        self._process_imprint_copy_activations(game, ai.player_idx)
+        if game.game_over:
+            return
         # Combo decks (Storm, Living End) need to chain many spells in one turn.
         # Storm: 10+ rituals + cantrips + finisher = 15-25 actions
         # Living End: cycling + cascade = 5-10 actions
@@ -1369,134 +1375,18 @@ class GameRunner:
     def _choose_pw_ability(self, pw, pw_name, pw_data, player, opp, game):
         """Choose the best planeswalker ability to activate.
 
-        Uses ability descriptions to make generic decisions rather than
-        hardcoding per-card logic. Any planeswalker with standard loyalty
-        ability oracle text will automatically get reasonable behavior.
+        E3 layering fix (2026-07-05 probe): the ranking is a strategic
+        decision and lives in the AI layer — `ai/pw_ability.py::
+        choose_pw_ability`.  The engine only delegates here and then
+        enforces loyalty legality in `game.activate_planeswalker`.
+        `pw_name` is retained in the signature for call-site
+        compatibility; the chooser is description-driven and does not
+        consume it.
         """
-        def can_afford(ability_key):
-            if ability_key not in pw_data:
-                return False
-            cost, _ = pw_data[ability_key]
-            return pw.loyalty_counters + cost >= 0
-
-        def desc(ability_key):
-            if ability_key not in pw_data:
-                return ""
-            return pw_data[ability_key][1].lower()
-
-        def loyalty_after(ability_key):
-            if ability_key not in pw_data:
-                return pw.loyalty_counters
-            cost, _ = pw_data[ability_key]
-            return pw.loyalty_counters + cost
-
-        # Always ult if we can (game-winning)
-        if can_afford("ult"):
-            return "ult"
-
-        # Collect all non-ult abilities we can afford
-        abilities = []  # (key, cost, desc)
-        for key in ["plus", "zero", "minus"]:
-            if can_afford(key):
-                abilities.append((key, pw_data[key][0], desc(key)))
-
-        if not abilities:
-            return "plus"  # shouldn't happen, but safe fallback
-
-        # ── Evaluate each ability by description patterns ──
-        best_key = "plus"
-        best_score = -100
-
-        for key, cost, ability_desc in abilities:
-            score = 0
-            remaining_loyalty = loyalty_after(key)
-
-            # DAMAGE abilities: "deal X damage" or "deals X damage"
-            if "damage" in ability_desc or "deals" in ability_desc:
-                # Can we kill an opponent creature?
-                if opp.creatures:
-                    # Parse damage amount from description
-                    dmg = 1
-                    for word in ability_desc.split():
-                        if word.isdigit():
-                            dmg = int(word)
-                            break
-                    killable = [c for c in opp.creatures
-                                if (c.toughness or 0) - c.damage_marked <= dmg]
-                    if killable:
-                        best_kill = max(killable, key=lambda c: c.template.cmc)
-                        score = 20 + best_kill.template.cmc  # high priority: kill creatures
-                    else:
-                        # No killable creatures, but can still go face
-                        if remaining_loyalty >= 2:  # don't suicide the PW
-                            score = 3 + dmg  # low-priority chip damage
-                        else:
-                            score = -5  # too risky
-                elif remaining_loyalty >= 2:
-                    score = 3  # ping face when no creatures
-
-            # BOUNCE abilities: "return" + "to" + "hand" or "bounce"
-            elif "bounce" in ability_desc or ("return" in ability_desc and "hand" in ability_desc and "owner" in ability_desc):
-                nonlands = [c for c in opp.battlefield if not c.template.is_land]
-                if nonlands:
-                    best_cmc = max(c.template.cmc for c in nonlands)
-                    if best_cmc >= 2:
-                        score = 15 + best_cmc  # bounce high-value targets
-                    else:
-                        score = 2  # not worth bouncing 1-drops usually
-                # Bonus if it also draws a card
-                if "draw" in ability_desc:
-                    score += 5
-
-            # LAND RECURSION: "return" + "land" + "graveyard" / "hand"
-            elif "land" in ability_desc and ("graveyard" in ability_desc or "return" in ability_desc):
-                lands_in_gy = [c for c in player.graveyard if c.template.is_land]
-                if lands_in_gy:
-                    score = 12  # good value: recur fetchlands
-                else:
-                    score = -2  # no lands to return
-
-            # DRAW / CARD SELECTION: "draw" or "brainstorm" or "look at"
-            elif "draw" in ability_desc or "brainstorm" in ability_desc or "look at" in ability_desc:
-                score = 14  # card advantage is almost always good
-
-            # COST REDUCTION / RAMP: "cost" + "less" or "add" + mana
-            elif "cost" in ability_desc and "less" in ability_desc:
-                score = 8  # ramp for future turns
-            elif "add" in ability_desc and any(c in ability_desc for c in "wubrgc"):
-                score = 7  # mana production
-
-            # BOARD WIPE: "exile" + "each" or "all" or "destroy all"
-            elif ("exile" in ability_desc or "destroy" in ability_desc) and ("each" in ability_desc or "all" in ability_desc):
-                opp_permanents = [c for c in opp.battlefield if not c.template.is_land]
-                if len(opp_permanents) >= 3:
-                    score = 25  # wipe when behind on board
-                elif len(opp_permanents) >= 1:
-                    score = 10
-                else:
-                    score = -5  # don't wipe an empty board
-
-            # FLASH / TIMING: "flash" or "as though" + "flash"
-            elif "flash" in ability_desc or "any time" in ability_desc:
-                score = 5  # minor utility, builds loyalty
-
-            # FATESEAL / LIBRARY MANIPULATION: "look at the top"
-            elif "look at the top" in ability_desc or "fateseal" in ability_desc:
-                score = 4  # minor disruption
-
-            # Unknown ability: default to loyalty-positive
-            else:
-                score = 1 if cost >= 0 else -1
-
-            # Tiebreaker: prefer loyalty-positive abilities when scores are close
-            if cost > 0:
-                score += 0.5  # slight bonus for building loyalty
-
-            if score > best_score:
-                best_score = score
-                best_key = key
-
-        return best_key
+        from ai.pw_ability import choose_pw_ability
+        player_idx = game.players.index(player)
+        return choose_pw_ability(pw, pw_data, player, opp, game,
+                                 player_idx=player_idx)
 
     def _activate_pay_life_draw(self, game: GameState, active: int):
         """Activate pay-life-draw abilities on creatures (e.g., Griselbrand).
@@ -1581,10 +1471,18 @@ class GameRunner:
     def _process_saga_chapters(self, game: GameState, active: int):
         """Process saga chapter triggers during upkeep.
 
-        Each saga gains a lore counter per turn (starting the turn after ETB).
-        Supported sagas: Urza's Saga, The Legend of Roku.
+        Each saga gains a lore counter per turn (starting the turn after
+        ETB). Chapter shapes (see engine/oracle_parser.py):
+
+        * Ability grants ('This Saga gains "<cost>: <effect>"') attach
+          the quoted activated ability to the permanent — the effect is
+          NOT auto-executed; `_activate_tap_abilities` fires it when the
+          controller pays the printed cost.
+        * Plain one-shot chapter effects auto-execute as before
+          (final-chapter artifact tutor, loot, transform patterns).
         """
-        from engine.cards import CardType, Supertype
+        from engine.oracle_parser import (
+            parse_saga_chapters, extract_granted_ability)
         player = game.players[active]
         sagas_to_sacrifice = []
         sagas_to_transform = []
@@ -1595,40 +1493,44 @@ class GameRunner:
             # Initialize lore counter on first upkeep
             if not hasattr(card, 'other_counters') or card.other_counters is None:
                 card.other_counters = {}
+            chapters = parse_saga_chapters(card.template.oracle_text or '')
+            final_chapter = max(chapters) if chapters else 3
             lore = card.other_counters.get('lore', 0)
             # Saga entered this turn — skip first upkeep (it gets chapter I on ETB)
             if lore == 0:
                 card.other_counters['lore'] = 1
+                # Chapter I fires as the saga enters; an ability-grant
+                # chapter I attaches its ability now. (Mana abilities
+                # granted this way are already reflected in the land's
+                # produces_mana parse; the stored text is inert for them.)
+                granted = extract_granted_ability(chapters.get(1))
+                if granted is not None:
+                    card.granted_abilities.append(granted)
+                    game.log.append(f"T{game.display_turn} P{active+1}: "
+                                    f"{card.name} Ch.I: gains \"{granted}\"")
                 continue
             lore += 1
             card.other_counters['lore'] = lore
 
             card_oracle = (card.template.oracle_text or '').lower()
 
-            # --- Urza's Saga chapters ---
-            if 'construct' in card_oracle and 'artifact' in card_oracle:
-                if lore == 2:
-                    tokens = game.create_token(
-                        active, "construct", count=1,
-                        source_oracle=card.template.oracle_text,
-                    )
-                    for t in tokens:
-                        if CardType.ARTIFACT not in t.template.card_types:
-                            t.template.card_types.append(CardType.ARTIFACT)
-                        t.template.tags.add("artifact")
-                    game.log.append(f"T{game.display_turn} P{active+1}: "
-                                    f"Urza's Saga Ch.II: Create Construct Token")
-                elif lore >= 3:
-                    tokens = game.create_token(
-                        active, "construct", count=1,
-                        source_oracle=card.template.oracle_text,
-                    )
-                    for t in tokens:
-                        if CardType.ARTIFACT not in t.template.card_types:
-                            t.template.card_types.append(CardType.ARTIFACT)
-                        t.template.tags.add("artifact")
-                    game.log.append(f"T{game.display_turn} P{active+1}: "
-                                    f"Urza's Saga Ch.III: Create Construct Token")
+            # --- Ability-grant chapters (generic, any saga) ---
+            # The chapter grants a quoted activated ability instead of
+            # doing something now. Attach it; do NOT execute the effect.
+            chapter_text = chapters.get(lore) if lore <= final_chapter else None
+            granted = extract_granted_ability(chapter_text)
+            if granted is not None:
+                card.granted_abilities.append(granted)
+                game.log.append(f"T{game.display_turn} P{active+1}: "
+                                f"{card.name} Ch.{lore}: gains \"{granted}\"")
+                if lore >= final_chapter:
+                    # CR 714.4: sacrifice after the final chapter resolves.
+                    sagas_to_sacrifice.append(card)
+                continue
+
+            # --- Final-chapter artifact tutor (Urza's Saga Ch.III shape) ---
+            if 'search your library for an artifact card' in card_oracle:
+                if lore >= final_chapter:
                     # Engine narrows the library to rule-legal targets;
                     # callback picks the best one for the current state.
                     eligible = _saga_iii_eligible_targets(game, active)
@@ -1642,7 +1544,7 @@ class GameRunner:
                         player.battlefield.append(best)
                         best._game_state = game
                         game.log.append(f"T{game.display_turn} P{active+1}: "
-                                        f"Urza's Saga tutors {best.name}")
+                                        f"{card.name} tutors {best.name}")
                         game.trigger_etb(best, active)
                     sagas_to_sacrifice.append(card)
 
@@ -1689,6 +1591,7 @@ class GameRunner:
                 if saga in player.lands:
                     player.lands.remove(saga)
                 saga.zone = "graveyard"
+                saga.granted_abilities.clear()  # grants end with the permanent
                 player.graveyard.append(saga)
                 game.log.append(f"T{game.display_turn} P{active+1}: "
                                 f"Sacrifice {saga.name} (final chapter)")
@@ -1708,6 +1611,7 @@ class GameRunner:
                     t.template.name = "Avatar Roku"
                     t.template.tags.add("legendary")
                 saga.zone = "exile"
+                saga.granted_abilities.clear()  # grants end with the permanent
                 player.exile.append(saga)
                 game.log.append(f"T{game.display_turn} P{active+1}: "
                                 f"{saga.name} Ch.III: transforms into Avatar Roku (4/4)")
@@ -1717,78 +1621,91 @@ class GameRunner:
         return self._activate_pay_life_draw(game, active)
 
     def _process_upkeep_activations(self, game: GameState, active: int):
-        """Fire generic activated abilities that auto-trigger each upkeep.
+        """Pre-draw upkeep pass for generic auto-fired activated
+        abilities.
 
-        Currently supports Isochron Scepter: if the Scepter is untapped and has
-        an imprinted card, pay {2}, tap, and cast a free copy of the imprinted
-        spell. Keeps the lock/value engine functional for Azorius Control.
+        Imprint-copy artifacts (Isochron Scepter pattern) moved to
+        `_process_imprint_copy_activations`, fired from the main
+        phase: a pre-draw upkeep cast was both bad timing and, for
+        target-requiring imprints, an illegal cast into an empty
+        stack (CR 601.2c). Nothing else currently fires here; the
+        hook stays so future genuinely-upkeep abilities have a home.
         """
+        return
+
+    def _process_imprint_copy_activations(self, game: GameState,
+                                          active: int):
+        """Fire 'imprint + you may copy' artifacts at a main phase.
+
+        Generic mechanic (oracle-driven, no card names):
+        - The activation casts a COPY of the imprinted card; the
+          imprinted card stays in exile with its link intact, so the
+          lock is reusable (CR 707.10a).
+        - The copy is never cast without a legal target for every
+          non-optional requirement (CR 601.2c) — a counter-pattern
+          imprint simply does not auto-fire into an empty stack.
+        - The {2} cost goes through the real payment solver.
+        - The resolved copy ceases to exist (handled in
+          spell_resolution via `_is_spell_copy`), it never enters
+          the graveyard.
+        """
+        from .mana import ManaCost
+        from .target_solver import parse as _parse_targets
+        from .target_solver import has_legal_target_for_spell
+
         player = game.players[active]
         for card in list(player.battlefield):
-            # Oracle-driven detection of "imprint + you may copy" artifacts
-            # (Isochron Scepter pattern). Replaces the hardcoded name check
-            # so any future imprint-copy artifact works through the same
-            # code path.
             oracle = (card.template.oracle_text or '').lower()
             if 'imprint' not in oracle or 'you may copy' not in oracle:
                 continue
             if getattr(card, 'tapped', False):
                 continue
-            if card.summoning_sick and "haste" not in {
-                getattr(kw, 'value', str(kw).lower()) for kw in card.template.keywords
-            }:
-                # Artifact activations don't need summoning-sickness gating in
-                # MTG, but this is a defensive guard in case the engine ever
-                # treats Scepter as "sick". Skip only if truly unusable.
-                continue
-            imprinted_name = getattr(card, 'instance_tags', set())
-            imp = None
-            if isinstance(imprinted_name, set):
-                imp = next((t.replace("imprint:", "") for t in imprinted_name
-                            if isinstance(t, str) and t.startswith("imprint:")), None)
+            imp = next((t.replace("imprint:", "")
+                        for t in getattr(card, 'instance_tags', set())
+                        if isinstance(t, str) and t.startswith("imprint:")),
+                       None)
             if not imp:
                 continue
-            # Check mana: need {2} plus the imprint spell is a FREE copy.
-            if player.available_mana_estimate < 2:
-                continue
-            # Find the imprinted spell's template somewhere — prefer exile
-            # (that's where Scepter stashes it), fall back to card DB lookup.
             imp_inst = next(
                 (c for c in player.exile
-                 if c.template.name == imp and "on_scepter" in getattr(c, 'instance_tags', set())),
-                None
-            )
+                 if c.template.name == imp
+                 and "on_scepter" in getattr(c, 'instance_tags', set())),
+                None)
             if imp_inst is None:
                 continue
-            # Pay {2} from the pool (best-effort; full color-aware payment lives
-            # in game_state.cast_spell, but Scepter's cost is strictly generic).
-            paid = player.mana_pool.spend_generic(2) if hasattr(player.mana_pool, 'spend_generic') else False
-            if not paid:
-                # Try to auto-tap lands for 2 generic.
-                tapped = 0
-                for land in player.untapped_lands:
-                    if tapped >= 2:
-                        break
-                    land.tapped = True
-                    tapped += 1
-                if tapped < 2:
-                    continue
+
+            template = imp_inst.template
+            # CR 601.2c — every non-optional target requirement of the
+            # copy must have a legal candidate NOW, or the ability is
+            # not activated at all (no fizzle-casting).
+            requirements = _parse_targets(template.oracle_text or "")
+            if requirements and not has_legal_target_for_spell(
+                    game, active, requirements):
+                continue
+
+            # Pay {2} through the real solver — no blind land taps.
+            if not game.tap_lands_for_mana(
+                    active, ManaCost(generic=2),
+                    card_name=card.template.name):
+                continue
             card.tapped = True
-            # Cast a free copy of the imprinted spell.
-            try:
-                game.cast_spell(active, imp_inst, free_cast=True, is_copy=True)
-                game.log.append(f"T{game.display_turn} P{active+1}: "
-                                f"Isochron Scepter copies {imp}")
-            except TypeError:
-                # cast_spell may not accept is_copy in some builds; fall back.
-                try:
-                    game.cast_spell(active, imp_inst, free_cast=True)
-                    game.log.append(f"T{game.display_turn} P{active+1}: "
-                                    f"Isochron Scepter copies {imp}")
-                except Exception:
-                    pass
-            except Exception:
-                pass
+
+            # Cast a true COPY; the imprinted card never leaves exile.
+            copy = CardInstance(
+                template=template,
+                owner=active,
+                controller=active,
+                instance_id=game.next_instance_id(),
+                zone="stack",
+            )
+            copy._game_state = game
+            copy._is_spell_copy = True
+            game.cast_spell(active, copy, free_cast=True)
+            game.log.append(f"T{game.display_turn} P{active+1}: "
+                            f"{card.template.name} copies {imp}")
+            game.resolve_stack()
+            if game.game_over:
+                return
 
     def _activate_goblin_bombardment(self, game: GameState, active: int):
         """Activate Goblin Bombardment: sacrifice tokens/small creatures to deal 1 damage each."""
@@ -1982,6 +1899,45 @@ class GameRunner:
             # Creatures need haste or to have entered before this turn
             if perm.template.is_creature and getattr(perm, 'summoning_sick', False):
                 continue
+
+            # ── Granted activated abilities (saga chapters etc.):
+            #    "[{N},] {T}: Create ... token" — pay the printed generic
+            #    cost by tapping N other untapped lands, tap the source,
+            #    create the token from the granted text's own token spec.
+            #    Instance-level: lives on perm.granted_abilities, not the
+            #    template, because the grant belongs to this permanent. ──
+            fired_granted = False
+            for granted in list(getattr(perm, 'granted_abilities', None) or ()):
+                g = granted.lower()
+                m_grant = re.match(
+                    r'(?:\{(\d+)\}\s*,\s*)?\{t\}\s*:\s*create\b', g)
+                if not m_grant or 'token' not in g:
+                    continue
+                cost_n = int(m_grant.group(1) or 0)
+                payers = [l for l in player.untapped_lands if l is not perm]
+                if len(payers) < cost_n:
+                    continue
+                for land in payers[:cost_n]:
+                    land.tapped = True
+                perm.tapped = True
+                tokens = game.create_token(
+                    active, "construct" if "construct" in g else "creature",
+                    count=1, source_oracle=granted,
+                )
+                for t in tokens:
+                    if 'artifact' in g and CardType.ARTIFACT not in t.template.card_types:
+                        t.template.card_types.append(CardType.ARTIFACT)
+                    if 'artifact' in g:
+                        t.template.tags.add("artifact")
+                game.log.append(
+                    f"T{game.display_turn} P{active+1}: "
+                    f"{perm.name} activates \"{granted[:40]}...\" "
+                    f"(pays {{{cost_n}}}, {{T}})")
+                fired_granted = True
+                break  # one activation per permanent per turn (tap-enforced)
+            if fired_granted:
+                continue
+
             oracle = (perm.template.oracle_text or '').lower()
             if '{t}' not in oracle:
                 continue

@@ -39,7 +39,7 @@ audit mechanics:
 | A1 | Impulse-draw vs real-draw fan-out (CR 121.1c) | ✅ GO across 5 matches |
 | A2 | Land-ETB surveil triggers (R3) | ⚠️ NO-GO data gap → fixed in-commit |
 | A3 | Damage routing (R2 + R6 + M10) | ✅ GO across 4 Galvanic Discharge casts, 4 Ral coin-flip losses, 1 burn-to-PW selection |
-| A4 | Chain-aware counter triage (M2) | ⚠️ MIXED — see investigation note |
+| A4 | Chain-aware counter triage (M2) | ⚠️ MIXED — resolved 2026-07-05: real bug (see investigation note) |
 | A5 | Defender chump rule (M12) | ✅ GO across 9 lethal combat phases |
 | A6 | Chain self-damage projection (M1-AI) | ✅ GO — 7 deaths, 0 self-kills (zero Bowmaster/Ral self-induced deaths) |
 | A7 | Sorcery-speed lockout (R4) | ✅ GO — 2 Teferi-TR lifetimes, 0 violations |
@@ -86,6 +86,21 @@ possible interpretations:
 unit test naming the scenario (Storm hand visible to Dimir, mid-chain
 mana floated, Counterspell still in Dimir hand). Wave-2 follow-up.
 
+**Resolution (2026-07-05, Wave-2):** interpretation 1 (real bug)
+confirmed. The chain-fuel hold in `ai/response.py::decide_response`
+carries an exemption for pitch counters, but the exemption was
+classified by COST (`_effective_counter_cost ≤
+PITCH_COUNTER_FREE_COST`) rather than by MECHANIC — and
+`_effective_counter_cost` returns printed CMC for hard-paid
+counters, so any 1-CMC hard counter (Spell Pierce / Flusterstorm
+class) matched the pitch threshold and bypassed the hold entirely.
+That is exactly why the G1 T6 NDJSON showed no 'chain-fuel hold'
+reasoning: the gate was short-circuited before it could record one.
+Fix: extracted `_is_pitch_counter` (mana-free alternative-cost
+oracle clause, opp's turn) as the single classification site; both
+the cost ranking and the hold exemption now consult it.  Pinned by
+`tests/test_cheap_counter_holds_through_chain_fuel_when_payoff_unresolved.py`.
+
 ## Detail — A8 (M11 discard imminence finding context)
 
 The auditor rated 3/3 discard picks as "FLEX not imminent" but the
@@ -115,7 +130,7 @@ Verified end-to-end in this micro-audit (post-#433):
 | M5 planeswalker EV | ✅ confirmed | A8 (4/4 on-curve casts) |
 | M10 burn-target PW | ✅ confirmed | A3 (Teferi-TR killed over face at loyalty 3) |
 | M12 defender chump | ✅ confirmed | A5 (9 lethal phases, all compliant) |
-| M2 chain-aware counter | ⚠️ partial | A4 (1/2 correct; investigation pending) |
+| M2 chain-aware counter | ⚠️ partial | A4 (1/2 correct; Wave-2 fix landed 2026-07-05 — see below) |
 | M11 discard imminence | ⏸ unverified | corpus didn't hit panic-life threshold |
 
 Other cures (M3, M4, M6, M7, M8, M9, M13, M14, M15, R5) not directly

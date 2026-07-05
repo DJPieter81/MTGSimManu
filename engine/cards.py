@@ -251,6 +251,12 @@ class CardInstance:
     blocked_by: List[int] = field(default_factory=list)
     # Damage
     damage_marked: int = 0
+    # Deathtouch marker (CR 702.2 / SBA 704.5i): total damage dealt to
+    # this creature by deathtouch sources since the last damage
+    # cleanup. Written by engine/damage.py:deal_damage; consumed by
+    # SBAManager.perform_deathtouch_check (destroy on any amount > 0).
+    # Wears off with marked damage in cleanup_damage().
+    _deathtouch_damage: int = 0
     # Temporary effects
     temp_power_mod: int = 0
     temp_toughness_mod: int = 0
@@ -267,6 +273,17 @@ class CardInstance:
     targets: List[int] = field(default_factory=list)  # instance_ids
     # Instance-level tags (for equipment effects etc.)
     instance_tags: Set[str] = field(default_factory=set)
+    # CR 111: token-ness is a property of the OBJECT, not the template.
+    # Set by the token-creation funnel (PermanentEffects.create_token);
+    # read by SBA 704.5f (tokens off the battlefield cease to exist)
+    # and the cast gate (CR 111.2 — tokens aren't cards, can't be cast).
+    is_token: bool = False
+
+    # Activated abilities granted to THIS instance by resolved effects
+    # (saga "gains '<cost>: <effect>'" chapters, etc.). Oracle-text
+    # fragments of the form "<cost>: <effect>"; cleared when the
+    # permanent leaves the battlefield.
+    granted_abilities: List[str] = field(default_factory=list)
     # Back-reference to game state (set when entering battlefield)
     _game_state: Any = field(default=None, repr=False)
     # Evoke tracking
@@ -503,6 +520,13 @@ class CardInstance:
         return self.template.keywords | self.temp_keywords
 
     @property
+    def has_deathtouch(self) -> bool:
+        """DamageSource protocol hook (engine/damage.py:deal_damage
+        reads `source.has_deathtouch` to write the CR 704.5i marker).
+        Keyword-derived — includes temp-granted deathtouch."""
+        return Keyword.DEATHTOUCH in self.keywords
+
+    @property
     def has_summoning_sickness(self) -> bool:
         """A creature has summoning sickness if it entered this turn and doesn't have haste."""
         if not self.template.is_creature:
@@ -537,7 +561,15 @@ class CardInstance:
     def is_dead(self) -> bool:
         if not self.template.is_creature:
             return False
-        return self.damage_marked >= self.toughness or self.toughness <= 0
+        if self.toughness <= 0:
+            # CR 704.5g: toughness 0 or less puts the creature into the
+            # graveyard — not a destroy effect, indestructible can't save it.
+            return True
+        if Keyword.INDESTRUCTIBLE in self.keywords:
+            # CR 704.5h exemption: lethal marked damage destroys, and
+            # indestructible permanents can't be destroyed.
+            return False
+        return self.damage_marked >= self.toughness
 
     def tap(self):
         self.tapped = True
@@ -552,6 +584,8 @@ class CardInstance:
 
     def cleanup_damage(self):
         self.damage_marked = 0
+        # CR 704.5i marker wears off with the marked damage it rode on.
+        self._deathtouch_damage = 0
         self.temp_power_mod = 0
         self.temp_toughness_mod = 0
         self.temp_keywords.clear()

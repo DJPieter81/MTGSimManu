@@ -116,3 +116,39 @@ def test_deprecation_warning_emitted_only_once_per_process(monkeypatch):
     assert not any(issubclass(w.category, DeprecationWarning) for w in second), (
         "deprecation warning should be one-shot"
     )
+
+
+# ─── Tier assignment (2026-07 registry refresh) ─────────────────────────
+
+def test_generative_tasks_default_to_current_sonnet_tier():
+    """Open-ended generative tasks (gameplan synthesis, replay
+    diagnosis) ride the current Sonnet-tier model; a stale pin to a
+    previous generation silently forfeits capability at the same list
+    price.  2026-07: claude-sonnet-5 ($3/$15 list, same as 4.6)."""
+    assert DEFAULT_MODELS["synth_gameplan"] == "anthropic:claude-sonnet-5"
+    assert DEFAULT_MODELS["diagnose_replay"] == "anthropic:claude-sonnet-5"
+
+
+def test_classification_and_scoring_tasks_stay_on_haiku():
+    """Mechanical extraction / classification / scoring tasks stay on
+    Haiku: their warmed cache entries are keyed by model string
+    (ai.llm_cache.cache_key), so an accidental default bump would
+    orphan the committed/warmed caches (decision_scorer,
+    classify_oracle) and re-bill every entry."""
+    for task in (
+        "audit_doc_freshness",
+        "handler_audit",
+        "failing_test_spec",
+        "classify_oracle",
+        "decision_scorer",
+    ):
+        assert DEFAULT_MODELS[task] == "anthropic:claude-haiku-4-5", task
+
+
+def test_every_default_model_has_a_pricing_entry():
+    """Registry/pricing coherence: every model in DEFAULT_MODELS must
+    price in MODEL_PRICING_USD_PER_MTOKEN — an unknown model estimates
+    as free and disables the budget gate for that task."""
+    from ai.llm_metrics import MODEL_PRICING_USD_PER_MTOKEN
+    for task, model in DEFAULT_MODELS.items():
+        assert model in MODEL_PRICING_USD_PER_MTOKEN, (task, model)

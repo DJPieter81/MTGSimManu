@@ -20,7 +20,17 @@ Resolution order (`select_model(task, override=...)`):
 The `DEFAULT_MODELS` table picks Sonnet for the open-ended generative
 tasks (gameplan synth, replay diagnosis) and Haiku for the more
 mechanical extraction tasks (doc freshness, handler audit, failing-
-test spec).
+test spec).  Tier rationale (2026-07 refresh): generative tasks ride
+the *current* Sonnet-tier model — `claude-sonnet-5` prices at the same
+$3/$15 list as Sonnet 4.6 (see `ai.llm_metrics`), so staying pinned to
+the previous generation forfeits capability for zero savings.  It also
+rejects non-default sampling params (`temperature`/`top_p`/`top_k`
+return a 400) and runs adaptive thinking when `thinking` is omitted;
+this layer sets neither (see `ai.llm_agents._build_raw_agent` — only
+model, output_type, and system_prompt are passed), so the flip is
+compatible.  Classification/scoring tasks stay on Haiku: their cache
+entries are keyed by model string (`ai.llm_cache.cache_key`), so a
+default bump would orphan warmed caches and re-bill every entry.
 
 Backward compatibility: PR #258 used `MTG_SYNTH_MODEL` as the
 single env var.  This module accepts that name for the synth_gameplan
@@ -47,9 +57,9 @@ LLMTask = Literal[
 
 DEFAULT_MODELS: dict[LLMTask, str] = {
     # Sonnet — open-ended synthesis from oracle text.
-    "synth_gameplan":      "anthropic:claude-sonnet-4-6",
+    "synth_gameplan":      "anthropic:claude-sonnet-5",
     # Sonnet — multi-step reasoning over replay logs.
-    "diagnose_replay":     "anthropic:claude-sonnet-4-6",
+    "diagnose_replay":     "anthropic:claude-sonnet-5",
     # Haiku — schema-shaped extraction from a markdown doc.
     "audit_doc_freshness": "anthropic:claude-haiku-4-5",
     # Haiku — schema-shaped extraction from oracle text + handler.
