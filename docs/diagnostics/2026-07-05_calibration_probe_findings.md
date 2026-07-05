@@ -144,17 +144,22 @@ Matches the 5-panel audit's M4/M3 verbatim.
 
 ---
 
-## E5 — On-draw-damage clause misfires on its own ETB  ❌ OPEN (P1, new)
+## E5 — On-draw-damage clause misfires on its own ETB  ❌ RETRACTED
 
-**Evidence (s60101 re-run post-M1, G1 opp T5).** "Resolve Orcish
-Bowmasters" → "Bowmasters deals 1 damage to opponent (life: 0)" with
-ZERO draw events that turn segment — the draw-triggered damage clause
-fired on the source's own resolution.  Whole-text scoping ('enters' +
-'deals N damage' co-occurrence) instead of clause-level parsing.
-Family: any permanent whose oracle contains both an ETB clause and a
-separate triggered-damage clause.  Killed Storm at 1 life in the
-validation run.  Subsystem: ETB clause parser (same clause-scoping
-family as the oracle attack-trigger tightening already landed).
+**Correction (oracle verified).** The current printing reads "When
+this creature enters AND whenever an opponent draws …, this creature
+deals 1 damage to any target."  The ETB ping is PRINTED — the
+per-card handler is rules-correct here and Storm's death at 1 life
+was legal.  Residual note: `orcish_bowmasters_etb` remains one of
+105 card-named EFFECT_REGISTRY handlers (sanctioned but debt); its
+amass is simplified to a flat 1/1.  No action.
+
+**Method note:** two findings this session (A1, E5) were retracted
+on verification, one (E3) falsified by tracer.  Lint rules and
+diagnoses must check the CURRENT oracle text and full turn context
+before claiming a violation — encode as: every new finding needs a
+minimal reproducer or oracle citation before entering the doc as
+OPEN.
 
 ## M1/R1 — status update (2026-07-05, branch claude/m1-impulse-draw)
 
