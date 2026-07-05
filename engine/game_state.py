@@ -391,7 +391,7 @@ class GameState:
             return False
 
         # Check mana
-        available = len(player.untapped_lands) + player.mana_pool.total() + player._tron_mana_bonus()
+        available = player.untapped_mana_capacity() + player.mana_pool.total() + player._tron_mana_bonus()
         if available < template.equip_cost:
             return False
 
@@ -470,9 +470,15 @@ class GameState:
     def activate_planeswalker(self, *args, **kwargs):
         return PlaneswalkerManager.activate_planeswalker(self, *args, **kwargs)
 
+    def _apply_land_etb_static(self, permanent: "CardInstance",
+                               controller: int):
+        LandManager.apply_land_etb_static(self, permanent, controller)
+
+    # Backward-compatible alias — the untap watcher now runs inside the
+    # uniform land-entry hook (with the karoo return clause after it).
     def _apply_untap_on_enter_triggers(self, permanent: "CardInstance",
                                         controller: int):
-        LandManager.apply_untap_on_enter_triggers(self, permanent, controller)
+        LandManager.apply_land_etb_static(self, permanent, controller)
 
     def _apply_lands_enter_untapped(self, land: "CardInstance",
                                      controller: int):

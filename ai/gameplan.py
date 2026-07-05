@@ -936,7 +936,7 @@ def generic_combo_readiness(game, player_idx: int, engine: "GoalEngine"):
         return False, gy_creatures / max(target, 1), f"{gy_creatures} creatures in graveyard, need {target} (min_cmc {min_cmc})"
 
     elif goal.resource_zone == "mana":
-        mana = len(me.untapped_lands)
+        mana = me.untapped_mana_capacity()
         target = goal.resource_target or DEFAULT_MANA_RESOURCE_TARGET
         if mana >= target and available_payoffs:
             return True, COMBO_MANA_FIRE_CONFIDENCE, f"{mana} mana available (target {target}), payoff ready"

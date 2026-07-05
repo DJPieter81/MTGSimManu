@@ -633,6 +633,16 @@ Same file exists in both repos — keep them in sync.
 
 ## Session Priorities (discovery protocol)
 
+**Session recovery (crashed / interrupted sessions):** work may exist
+on a LOCAL `claude/*` branch that was never pushed.  Before starting
+new work: check `docs/handoff/` for the newest
+`YYYY-MM-DD_*_session_handoff.md` (frontmatter `status: active`) —
+it lists the exact commits, files, validation state, and next steps.
+If the handoff mentions an `apply_session_*.sh` artifact, the user
+holds it as a download; applying it from a clean `main` clone
+recreates the branch (`bash apply_session_*.sh`).  Mark the handoff
+`status: archived` once its branch is merged.
+
 Every doc under `docs/` has YAML frontmatter declaring: `title`, `status`, `priority`, `session`, `supersedes`/`superseded_by`, `depends_on`, `tags`, `summary`. The frontmatter IS the registry — no separate index file to drift.
 
 **At session start, discover current work:**

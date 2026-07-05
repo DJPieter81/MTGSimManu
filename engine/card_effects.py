@@ -1351,7 +1351,7 @@ def meltdown_resolve(game, card, controller, targets=None, item=None):
     player = game.players[controller]
     x_val = max(0, card.template.cmc - 1)
     # Also consider extra mana spent
-    available = len(player.untapped_lands)
+    available = player.untapped_mana_capacity()
     x_val = max(x_val, available)  # Simplified: spend all available mana
 
     for p in game.players:
@@ -1604,7 +1604,7 @@ def arboreal_grazer_etb(game, card, controller, targets=None, item=None):
         # enter untapped" static abilities — both needed for Amulet Titan's
         # mana chain. Previously only Amulet triggers applied, which left
         # Spelunking's replacement-effect untap unapplied on Grazer lands.
-        game._apply_untap_on_enter_triggers(land, controller)
+        game._apply_land_etb_static(land, controller)
         game._apply_lands_enter_untapped(land, controller)
         game._trigger_landfall(controller)
         game.log.append(f"T{game.display_turn} P{controller+1}: "
@@ -1670,7 +1670,7 @@ def _primeval_titan_search(game, controller):
         # Apply Amulet-style untap AND Spelunking-style untapped-static to
         # keep all land-entry paths consistent. Without Spelunking here,
         # Amulet Titan's combo loop breaks on Titan-fetched bounce lands.
-        game._apply_untap_on_enter_triggers(land, controller)
+        game._apply_land_etb_static(land, controller)
         game._apply_lands_enter_untapped(land, controller)
         game._trigger_landfall(controller)
         game.log.append(f"T{game.display_turn} P{controller+1}: "
@@ -2987,7 +2987,7 @@ def scapeshift_resolve(game, card, controller, targets=None, item=None):
         land.tapped = True  # enters tapped
         player.battlefield.append(land)
         # Amulet of Vigor / Spelunking untap trigger
-        game._apply_untap_on_enter_triggers(land, controller)
+        game._apply_land_etb_static(land, controller)
         game._apply_lands_enter_untapped(land, controller)
         # Bounce land ETB
         from .oracle_resolver import resolve_etb_from_oracle
