@@ -47,6 +47,8 @@ DECK_ALIASES = {
     "izzet": "Izzet Prowess",
     "affinity": "Affinity",
     "robots": "Affinity",
+    "ponza": "Boros Ponza",
+    "instant": "Instant Reanimator",
     "azorius": "Azorius Control",
     "uw": "Azorius Control",
     "wst": "Azorius Control",

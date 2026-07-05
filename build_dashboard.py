@@ -26,6 +26,10 @@ ARCH = {
     'Ruby Storm': 'Combo', 'Azorius Control': 'Control',
     'Pinnacle Affinity': 'Aggro',
     'Kappa Cannoneer': 'Aggro',
+    'Azorius Control (WST)': 'Control',
+    'Azorius Control (WST v2)': 'Control',
+    'Instant Reanimator': 'Combo',
+    'Boros Ponza': 'Midrange',
     # Add new decks here
 }
 
