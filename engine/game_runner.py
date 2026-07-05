@@ -1458,7 +1458,16 @@ class GameRunner:
             min_life = safe_life
             max_activations = 3  # Griselbrand typically activates 1-2 times
             activations = 0
-            while player.life >= min_life and len(player.hand) < 14 and activations < max_activations:
+            # CR 514.1 hand-cap gate: activating while the hand is
+            # already at MAX_HAND_SIZE pays life for cards that are
+            # discarded at cleanup — pure life loss.  The prior bound
+            # (14) allowed a second draw-7 into a full hand; see RC-4
+            # in docs/diagnostics/2026-07-05_goryos_field_13pct_root_cause.md
+            # and tests/test_pay_life_draw_respects_hand_cap.py.
+            from engine.constants import MAX_HAND_SIZE
+            while (player.life >= min_life
+                   and len(player.hand) < MAX_HAND_SIZE
+                   and activations < max_activations):
                 player.life -= life_cost
                 game.draw_cards(active, draw_count)
                 game.log.append(f"T{game.display_turn} P{active+1}: "
