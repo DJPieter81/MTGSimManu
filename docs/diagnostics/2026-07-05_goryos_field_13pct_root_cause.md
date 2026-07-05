@@ -16,19 +16,24 @@ tags:
   - forced-discard
 summary: |
   Bo3 replay root cause for Goryo's chronic 13.1% field WR [band 30-70]
-  and 0% vs Dimir [prior 35-50]. Three findings, two fixable this PR:
+  and 0% vs Dimir [prior 35-50]. Four findings:
   RC-1 (engine, rules bug): a blinked permanent is NOT released from
   `game._end_of_turn_exiles` — Ephemerate cannot save a Goryo's-
   reanimated creature, so the deck's primary win line (reanimate +
   blink -> permanent fatty) does not exist in the sim (CR 400.7
-  new-object rule). RC-2 (ai, oracle predicate): `_is_immediate_
-  interaction` matches only 'target opponent' discard templating;
-  Thoughtseize / Inquisition of Kozilek say 'target player', so the
-  deferral gate scores all 7 of the deck's disruption slots at
-  -exposure forever and they are never cast. RC-3 (gameplan data,
+  new-object rule). Fix ships in sibling PR #462; the remaining
+  decision-layer gap (AI never attempts the blink line) is named
+  here as the top follow-up. RC-2 (ai, oracle predicate — FIXED
+  here): `_is_immediate_interaction` matches only 'target opponent'
+  discard templating; Thoughtseize / Inquisition of Kozilek say
+  'target player', so the deferral gate scored all 7 of the deck's
+  disruption slots at -exposure forever. RC-3 (gameplan data,
   FALSIFIED as standalone lever): relaxing the typed mulligan combo
-  paths to flat 2-of-3 sets moved WR 0/20 -> 0/20 vs Dimir and made
-  the combined result WORSE vs Boros — do not re-run.
+  paths to flat 2-of-3 sets moved WR 0/20 -> 0/20 vs Dimir and Boros,
+  pre- AND post-blink-fix — do not re-run. RC-4 (engine policy —
+  FIXED here): pay-life-draw re-activated into a full hand, paying
+  14 life for cleanup discards. Outcome: field 9.7% -> 17.9%,
+  Dimir 0% -> 5%, AzCon 27% -> 60%.
 ---
 
 # Goryo's Vengeance 13.1% — root cause chain
@@ -97,14 +102,36 @@ interaction — its decklist comment reads "cheat Atraxa/Griselbrand
 into play with Goryo's Vengeance, keep it with Ephemerate". The fix
 lifts both decks through one mechanism.
 
-**Fix shape (this PR):** invalidate a permanent's pending
-`_end_of_turn_exiles` entry whenever it leaves the battlefield
-(zone manager) and on the manual remove/re-add path inside
-`_blink_permanent`. Failing test first:
-`tests/test_blink_escapes_delayed_end_of_turn_exile.py` — rule-
-phrased: "a permanent that changes zones becomes a new object; a
-delayed exile-at-end-step trigger does not fire on it" (red on
-current main: the blinked creature is exiled).
+**Fix ownership (coordination update, same session):** sibling
+Track D ships this exact fix in **PR #462** (branch
+`claude/eot-exile-object-identity`, stacked on the same base):
+delayed EOT-exile riders drop when the tracked object changes zones
+(`engine/cards.py` battlefield_entry_seq +
+`game_state.register_end_of_turn_exile` + turn_manager staleness
+check). A locally-validated duplicate implementation (zone-manager
+purge + blink purge, red->green under a mechanic-named test) was
+REMOVED from this track's branch to avoid a two-PR collision on the
+same mechanism — this PR depends on #462 for RC-1.
+
+**Follow-on finding (verified on this branch with #462
+cherry-picked):** the engine fix alone produces NO WR delta —
+`--bo3 goryos boros -s 50500` contains ZERO `Blink` lines with the
+fix applied, and the field sweep is flat (17.1% with vs 17.9%
+without, same seeds, n=15 noise). Track D independently measured
+the same (seeds 50000/50500/51000, no blink lines, 0%->0% vs
+Boros). This track's PRE-fix replay shows the line CAN fire
+(`goryos_vs_boros_s50500.txt` G1 T5: Cast Ephemerate -> Blink
+Griselbrand) — but only when Ephemerate survives to hand with W
+open, which the frequent mull-to-5 rarely allows. So RC-1 has two
+layers: the RULES layer (#462) and a DECISION layer — Ephemerate is
+`reactive_only` + `protection`-role, and no scoring term values
+"blink my own reanimated body to shed the pending exile rider"
+(`ai/ev_player.py` enumerates it reactively only). The
+decision-layer gap is documented here, not fixed: it needs a
+generic "blink-removes-pending-detriment" EV term in the
+reanimation/blink scoring subsystem; no open PR owns it yet. This
+is the highest-leverage remaining Goryo's work item once #462
+merges.
 
 ## RC-2 — AI deferral gate: 'target player' forced discard never fires
 
@@ -183,16 +210,45 @@ a threat). **Falsified as a standalone lever — do not re-run** the
 "loosen Goryo's mulligan" experiment until after RC-1 is merged;
 re-evaluate then.
 
-## RC-4 — Noted, not fixed here (layering violation, engine-owned policy)
+## RC-4 — Pay-life-draw suicide loop (fixed here: hand-cap gate)
 
-`engine/game_runner.py::_activate_pay_life_draw` (line 1501) is
-strategic policy living in the engine layer (contra "engine never
-scores"). In `goryos_vs_boros_s50500` G1 T5 it paid 14 life (24->10
-pre-lifelink) drawing 14 cards into a discard-to-7 cleanup, dying
-next turn to a 10-power board. Not the dominant loss cause (RC-1
-wasted the turn regardless); flagged for a future lift-to-AI
-refactor. No open PR owns this region; deferred for scope, not
-ownership.
+`engine/game_runner.py::_activate_pay_life_draw` (line 1501)
+allowed pay-life-draw re-activation up to a 14-card hand: in
+`goryos_vs_boros_s50500` G1 T5 it paid 14 life (double draw-7)
+into a discard-10-at-cleanup, dying next turn to a 10-power board.
+The second activation is a pure life loss by rule (CR 514.1 — the
+excess cards are discarded at cleanup). **Fixed in this PR** with a
+narrow rules-derived gate: the activation loop's hand bound is
+`MAX_HAND_SIZE` (first dig from a small hand still fires; re-
+activation on a full hand does not). Failing test first:
+`tests/test_pay_life_draw_respects_hand_cap.py` (2 red -> green).
+Class: every repeatable pay-life-draw ability via the
+`pay_life_draw` tag. The broader layering violation (strategic
+policy in the engine layer) remains flagged for a future
+lift-to-AI refactor; no open PR owns this region.
+
+## Outcome (2026-07-05, this branch at ship state)
+
+Same seeds as the reproduction (field n=15 from 50000; dimir n=20):
+
+| Measurement | Before | After (this PR) | After + #462 cherry-picked |
+|---|---|---|---|
+| Field avg (n=15) | 9.7% | **17.9%** | 17.1% (flat — see RC-1 decision layer) |
+| vs Dimir (n=20) | 0% | **5%** (1W 1D) | 5% |
+| vs Azorius Control | 27% | **60%** | 60% |
+| vs 4/5c Control | 7% | **47%** | 47% |
+| vs Jeskai Blink | 13% | **33%** | 33% |
+| vs Boros / Affinity / Prowess / Pinnacle | 0% | 0% | 0% |
+
+The gain concentrates where it should: slower matchups where casting
+7 mainboard discard spells and not halving your own life matter.
+The fast-aggro cells stay pinned at 0% because the deck still cannot
+keep a reanimated body (RC-1 decision layer) and still mulls to 5 in
+most games (typed-path strictness is data-honest given only 4
+self-discard outlets — a decklist-construction question, audit item
+B-2, out of scope here). Target was >=25% field; 17.9% is honest —
+the remaining lever is named above, not re-run into the ground
+(loop-break respected: RC-3 falsified twice, halted).
 
 ## Prior-doc status check (step-1 protocol)
 
