@@ -989,19 +989,44 @@ class EVPlayer:
                     Kw.STORM in getattr(t, 'keywords', set())
                 )
                 if finishers_in_hand and not is_self_finisher:
-                    cheapest_finisher_cmc = min(
-                        (f.template.cmc or 0)
+                    # Effective costs, not printed CMC (5-panel audit
+                    # Unresolved #4 — partial-chain decision math).
+                    # With cost reducers on board (Ruby Medallion,
+                    # Electromancer shells) the finisher's REAL cost
+                    # shrinks — comparing printed cmc made the gate
+                    # fire when the finisher could not actually be
+                    # locked out, suppressing all chain fuel below
+                    # the payoff so the payoff fired FIRST at a
+                    # sub-lethal storm count (trace: Azorius vs Ruby
+                    # Storm s60100, Grapeshot fired at storm=2 for 4
+                    # damage into 17 with Glimpse still castable).
+                    # Route through the W0-F cost primitive — the
+                    # single owner of cost-modification math.
+                    from ai.effective_cmc import effective_cmc
+                    cheapest_finisher_cost = min(
+                        effective_cmc(f, snap, game=game,
+                                      player_idx=self.player_idx)
                         for f in finishers_in_hand
                     )
-                    candidate_cmc = t.cmc or 0
-                    post_cast_mana = snap.my_mana - candidate_cmc
-                    if post_cast_mana < cheapest_finisher_cmc:
+                    candidate_cost = effective_cmc(
+                        card, snap, game=game,
+                        player_idx=self.player_idx)
+                    # A ritual candidate REBUILDS mana — credit its
+                    # oracle-derived production (same template
+                    # property `combo_chain.classify_card` reads), so
+                    # a mana-positive ritual is never treated as
+                    # locking the finisher out.
+                    ritual_data = getattr(t, 'ritual_mana', None)
+                    mana_produced = ritual_data[1] if ritual_data else 0
+                    post_cast_mana = (snap.my_mana - candidate_cost
+                                      + mana_produced)
+                    if post_cast_mana < cheapest_finisher_cost:
                         # Finisher_unlock_chance: 1.0 when the
                         # finisher IS castable right now (mana >=
-                        # cmc); else 0.0. Oracle-derived from
-                        # current snapshot, no magic numbers.
+                        # effective cost); else 0.0. Oracle-derived
+                        # from current snapshot, no magic numbers.
                         finisher_unlock_chance = (
-                            1.0 if snap.my_mana >= cheapest_finisher_cmc
+                            1.0 if snap.my_mana >= cheapest_finisher_cost
                             else 0.0
                         )
                         ev -= finisher_unlock_chance * snap.opp_life / 2.0
