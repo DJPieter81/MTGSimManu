@@ -54,17 +54,18 @@ dependencies are stdlib.  Sims remain deterministic and offline.
 **`ModernAtomic.json`** must be in the project root. If missing, reassemble from parts:
 
 ```bash
-python3 -c "
-import json
-merged = {}
-for i in range(1, 9):
-    with open(f'ModernAtomic_part{i}.json') as f:
-        merged.update(json.load(f)['data'])
-with open('ModernAtomic.json', 'w') as f:
-    json.dump({'meta': {}, 'data': merged}, f)
-print(f'Loaded {len(merged)} cards')
-"
+python3 merge_db.py
 ```
+
+**Never hand-roll the merge.** `merge_db.py` is the single source of truth: it
+globs *all* `ModernAtomic_part*.json` files (the part count grows over time —
+part9 landed 2026-05-10 with ~30 updated cards), merges them in numeric order,
+and handles both part shapes (`{"meta","data"}` wrapper and bare card dict).
+A previous inline recipe here hardcoded parts 1-8 and the wrapper shape; every
+session that used it ran on a silently stale DB and produced WR-anchor
+snapshots that diverged from CI (which reassembles via `tests/conftest.py`
+from all parts). That was the root cause of the 2026-07-05 CI failures on
+PRs #451/#454.
 
 ## Quick Reference — run_meta.py
 
