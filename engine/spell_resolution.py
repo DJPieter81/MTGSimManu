@@ -73,6 +73,11 @@ class ResolutionManager:
                     if not hasattr(game, '_rebound_cards'):
                         game._rebound_cards = []
                     game._rebound_cards.append(card)
+                elif getattr(card, '_is_spell_copy', False):
+                    # CR 707.10a — a resolved spell COPY ceases to
+                    # exist; it never enters the graveyard (imprint-
+                    # copy artifacts, storm copies routed here, …).
+                    card.zone = "expired_copy"
                 else:
                     card.zone = "graveyard"
                     game.players[card.owner].graveyard.append(card)
