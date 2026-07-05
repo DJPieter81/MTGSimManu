@@ -226,6 +226,23 @@ def evoke_budget_penalty(prior_evokes: int, target_threat: float) -> float:
 
 # ─── Pitch / opportunity-cost constants ──────────────────────────────
 
+CHAIN_MIDCAST_MIN_STORM_COUNT: int = 2
+"""Rules-constant: minimum `spells_cast_this_turn` for a chain to be
+MID-CAST while a spell sits on the stack.
+
+`spells_cast_this_turn` includes the spell currently on the stack —
+`engine/cast_manager.py` increments the counter at push time (a cast
+completes on push, CR 601.2i).  Mid-cast therefore means the stack
+spell PLUS at least one prior cast this turn, i.e. a count of 2.
+
+Used by `bottleneck_probability` in `ai/combo_calc.py` to scope the
+chain-fuel hold (bp == 0.0) to turns where the opponent's chain is
+actually running.  Below this count the spell is the opponent's first
+cast of the turn — ordinary development — and the hold must not
+apply (2026-07-05 storm-overshoot root cause: an archetype-keyed hold
+locked reactive decks out of countering ANY fuel spell all game).
+"""
+
 PITCH_COUNTER_FREE_COST: int = 1
 """Rules-constant: effective cost of a "free" pitch counter on the
 opponent's turn — 1 exiled card, no mana.
