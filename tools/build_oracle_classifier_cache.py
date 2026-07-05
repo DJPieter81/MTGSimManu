@@ -8,11 +8,23 @@ This script is the ONLY component allowed to call the LLM for tag
 classification.  Engine and AI consumers read the committed JSON via
 `ai/oracle_classifier.py` — zero runtime LLM calls.
 
-Cost profile (Haiku 4.5, May 2026 rates):
-  * Per card: ~$0.005 (200-300 input tokens, 50-100 output tokens).
-  * Smoke (10 cards): ~$0.05.
-  * Full (~21k cards): ~$10-20.  Hard-capped at $20 via
+Cost profile (Haiku 4.5, published 2026-07 rates — see
+`ai.llm_metrics.MODEL_PRICING_USD_PER_MTOKEN`):
+  * Per card: ~$0.001 (200-300 input tokens, 50-100 output tokens).
+  * Smoke (10 cards): ~$0.01.
+  * Full (~21k cards): ~$2-8.  Hard-capped at $20 via
     `ai.llm_budgets`; can be raised via `--budget-cap-usd`.
+
+Model policy:
+  * Routine incremental classification stays on the Haiku default.
+  * One-time COMMITTED-cache rebuilds (prompt-version bumps, full-DB
+    re-classification) should run on the strongest affordable model —
+    `MTG_LLM_MODEL_CLASSIFY_ORACLE=anthropic:claude-sonnet-5` or
+    better.  A single misclassification silently disables an engine
+    rule for every sim until the next audit (the 2026-07-05
+    Wrenn's Resolve / Tag.IMPULSE_DRAW incident class), so on a
+    build that is committed and then trusted for weeks, model quality
+    dominates the few-dollar cost delta.
 
 Cache semantics:
   * Per-call responses go through `ai.llm_cache` (SHA-256 keyed by

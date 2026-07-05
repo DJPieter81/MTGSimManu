@@ -52,13 +52,23 @@ METRICS_FILE = METRICS_DIR / "calls.jsonl"
 # 0.0 if the model name isn't in this table — log warns but doesn't
 # crash, so a new model id never breaks the metrics pipeline.
 #
-# anthropic public pricing — update when changes.
+# Provenance: published Anthropic pricing, 2026-07 refresh.  This
+# table feeds the pre-call budget gate (`ai.llm_budgets.check_budget`),
+# so an under-priced entry makes the gate porous — the 2026-07 audit
+# found Haiku 4.5 still carrying Haiku-3.5 rates (0.25/1.25), which
+# under-counted Haiku spend 4x.  When rates change, update the table
+# and `tests/test_llm_metrics_pricing.py` in the same commit.
 MODEL_PRICING_USD_PER_MTOKEN: dict[str, dict[str, float]] = {
-    "anthropic:claude-haiku-4-5":            {"in": 0.25,  "out": 1.25},
-    "anthropic:claude-haiku-4-5-20251001":   {"in": 0.25,  "out": 1.25},
+    "anthropic:claude-haiku-4-5":            {"in": 1.00,  "out": 5.00},
+    "anthropic:claude-haiku-4-5-20251001":   {"in": 1.00,  "out": 5.00},
     "anthropic:claude-sonnet-4-6":           {"in": 3.0,   "out": 15.0},
-    "anthropic:claude-opus-4-7":             {"in": 15.0,  "out": 75.0},
-    "anthropic:claude-opus-4-7-1m":          {"in": 15.0,  "out": 75.0},
+    # Sonnet 5 at LIST price for conservative budgeting — an
+    # introductory 2.00/10.00 promo runs through 2026-08-31; the gate
+    # should not loosen because of a promo that lapses.
+    "anthropic:claude-sonnet-5":             {"in": 3.0,   "out": 15.0},
+    "anthropic:claude-opus-4-7":             {"in": 5.0,   "out": 25.0},
+    "anthropic:claude-opus-4-7-1m":          {"in": 5.0,   "out": 25.0},
+    "anthropic:claude-opus-4-8":             {"in": 5.0,   "out": 25.0},
     # Free local / test models — kept at 0.0 so TestModel-driven
     # smoke runs don't pollute the cost totals.
     "test":                                  {"in": 0.0,   "out": 0.0},
