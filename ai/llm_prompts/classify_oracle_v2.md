@@ -31,6 +31,7 @@ If you would have to read the card's metagame role to decide, return
 | `SORCERY_SPEED_LOCKOUT` | Static ability that restricts opponents to sorcery speed. |
 | `ETB_SURVEIL_N` | When the permanent enters the battlefield, it surveils a fixed or variable N. |
 | `ETB_SCRY_N` | When the permanent enters the battlefield, it scries N. |
+| `ETB_RETURN_FROM_GY_TO_HAND` | When the permanent enters the battlefield, it returns a target card (optionally type-restricted, e.g. "target instant or sorcery card") from its controller's graveyard to their hand (Eternal Witness / Archaeomancer shape). |
 | `ETB_ORACLE_TRIGGER` | Permanent has a meaningful ETB-triggered ability not already covered above. Catch-all for "ETB matters for EV". Do NOT apply to mana-rocks whose only ETB clause is "enters tapped". |
 | `STORM_PAYOFF` | Spell whose effect scales with the storm count (literal Storm keyword, or "for each spell cast this turn"). |
 | `CHAIN_FUEL` | Low-cost cantrip ritual or spell that generates floating mana or draws and meaningfully increases the storm count, while NOT paying off itself. |

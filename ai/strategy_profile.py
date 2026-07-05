@@ -348,3 +348,169 @@ def phase_weight_multiplier(
     for tag in tags:
         multiplier *= by_tag.get(tag, IDENTITY_PHASE_WEIGHTS)
     return multiplier
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Sign-aware preference application (A2 fix, 2026-07-05 probe)
+# ═══════════════════════════════════════════════════════════════════
+#
+# The M4 gear-shift originally applied its weights as `ev *= w`.
+# That is correct only on the positive half-line: for a play whose
+# projection EV is NEGATIVE (the typical spot-removal "trade a card
+# for a small creature" shape), an up-weight w > 1 makes the EV MORE
+# negative — the defensive play the PANIC row exists to promote gets
+# DEMOTED, falls below `PLAY_VALUE_FLOOR`, and the AI passes the turn.
+# That is the exact s60104 "pass Main 1 at 2 life / landcycle-only
+# turns" pattern from finding A2 (re-confirming audit M4/M3).
+#
+# `apply_preference_weight` restores the intended semantics: a weight
+# is a PREFERENCE re-ranking, monotone-increasing in w for every
+# fixed EV — gains are amplified (ev × w), costs are discounted
+# (ev ÷ w).  Identity at w = 1; never flips the sign of the EV.
+# Pinned by tests/test_panic_gearshift_reaches_play_selection.py.
+
+
+def apply_preference_weight(ev: float, weight: float) -> float:
+    """Apply a preference weight to a signed EV.
+
+    Monotone-increasing in `weight` for every fixed `ev`:
+
+      - ev >= 0 → ev × weight  (a bonus amplifies the gain,
+                                a penalty shrinks it)
+      - ev <  0 → ev ÷ weight  (a bonus discounts the cost,
+                                a penalty inflates it)
+
+    d/dw (ev·w) = ev ≥ 0 and d/dw (ev/w) = −ev/w² > 0 for ev < 0,
+    so "up-weight" always means "strictly more attractive" and
+    "down-weight" always means "strictly less attractive", on both
+    sides of zero.  The sign of the EV is never flipped — a weight
+    re-ranks plays, it does not turn a cost into a gain.
+
+    `weight` must be strictly positive (the weight tables enforce
+    positive finite leaves; see the table shape tests).
+    """
+    if ev >= 0.0:
+        return ev * weight
+    return ev / weight
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Goal-weights table — goal-aware EV re-weighting (M4 part 3 / A2)
+# ═══════════════════════════════════════════════════════════════════
+#
+# Per `docs/history/audits/2026-05-16_5panel_bo3_audit.md` §M4, third
+# mechanism: per-(archetype, goal) signal weights so that the
+# GoalEngine's `close_game` gear literally re-weights finisher-role
+# plays up and cantrip/value plays down.  Without this table the goal
+# flip (`grind_value → close_game`) changed a label and nothing else —
+# finding A2 in the 2026-07-05 calibration probe.
+#
+# Mechanism (purely declarative, mirrors `phase_weights`):
+#
+#   `compute_play_ev` receives the current goal's `GoalType.value`
+#   from `ev_player._score_spell` and looks up
+#   `goal_weights[archetype][goal_value]` — a dict of card-tag →
+#   weight, composed into the same sign-aware preference application
+#   as the life-phase weights.  Misses on archetype / goal / tag (and
+#   a `None` goal for players without a goal engine) all fall through
+#   to the identity weight, so the lookup is a total function.
+#
+# Knowledge location: the FINISHER signal comes from gameplan card
+# roles (`decks/gameplans/*.json` `card_roles.finishers`/`payoffs`),
+# surfaced by `ev_player` as the synthetic tag `ROLE_FINISHER_TAG` —
+# card-specific knowledge stays in gameplan data, never in code.
+# The remaining tags (`cantrip`, `card_advantage`) are the same
+# oracle-derived buckets `phase_weights` uses.
+#
+# Direction (not magnitude) is the contract; tests in
+# tests/test_close_game_upweights_finisher_over_cantrip.py pin only
+# the directional rules (finisher > 1 > cantrip at close_game for
+# proactive-closing archetypes; identity everywhere else; identity
+# for storm/combo whose cantrips ARE the finisher-access path).
+
+# Synthetic role tag injected by ev_player for cards declared in the
+# gameplan's `finishers` / `payoffs` role buckets.  Namespaced with
+# `role:` so it can never collide with an oracle-derived tag.
+ROLE_FINISHER_TAG: str = "role:finisher"
+
+
+def _build_goal_weights():
+    """Construct the goal_weights table (pure data).
+
+    Only `close_game` rows are declared: the other goals keep identity
+    weights — their behaviour is already goal-appropriate via the
+    projection (INTERACT holds mana, GRIND_VALUE values card
+    advantage) and adding rows without audit evidence would be
+    speculative tuning.
+
+    Magnitudes mirror the PANIC row of `phase_weights` (1.5 bonus /
+    0.7 penalty families) — same re-ranking scale, same direction-only
+    test contract.
+    """
+    # CONTROL — the A2 exemplar (s60104): once the plan says "convert
+    # advantage into a win", deploying the declared win condition must
+    # outrank another cycle of card selection.
+    close_game_control = {
+        ROLE_FINISHER_TAG: 1.5,
+        "cantrip": 0.7,
+        "card_advantage": 0.85,
+    }
+
+    # MIDRANGE — the audit's other exemplar (Dimir grinding past its
+    # window): same direction, milder — midrange finishers double as
+    # value pieces so the gear-shift needs less correction.
+    close_game_midrange = {
+        ROLE_FINISHER_TAG: 1.4,
+        "cantrip": 0.8,
+    }
+
+    # AGGRO — close_game means push the finisher/reach play; cantrips
+    # that don't affect the board are a tempo loss in the closing turn.
+    close_game_aggro = {
+        ROLE_FINISHER_TAG: 1.4,
+        "cantrip": 0.8,
+    }
+
+    # NOTE: no rows for "storm" / "combo" — their cantrips and rituals
+    # are chain fuel (finisher ACCESS), and down-weighting them at
+    # close_game would re-create the "rituals penalised mid-chain" P1.
+    # Pinned by test_storm_chain_fuel_unaffected_by_close_game.
+    from ai.gameplan import GoalType
+
+    close = GoalType.CLOSE_GAME.value
+    return {
+        "control": {close: close_game_control},
+        "midrange": {close: close_game_midrange},
+        "aggro": {close: close_game_aggro},
+    }
+
+
+goal_weights: Dict[str, Dict[str, Dict[str, float]]] = _build_goal_weights()
+
+
+def goal_weight_multiplier(
+    archetype: str,
+    goal_type: "str | None",
+    tags: Iterable[str],
+) -> float:
+    """Return the EV multiplier for a card with `tags` under `goal_type`.
+
+    Pure lookup over the `goal_weights` table — the goal-axis twin of
+    `phase_weight_multiplier`.  `goal_type` is the `GoalType.value`
+    string of the caller's current goal (or None when the player has
+    no goal engine).
+
+    Total function: misses on `archetype`, `goal_type` (including
+    None), or any individual tag fall through to the identity weight.
+    Composition is multiplicative across tags, same rationale as the
+    phase lookup.
+    """
+    if goal_type is None:
+        return IDENTITY_PHASE_WEIGHTS
+    by_tag = goal_weights.get(archetype, {}).get(goal_type, {})
+    if not by_tag:
+        return IDENTITY_PHASE_WEIGHTS
+    multiplier = IDENTITY_PHASE_WEIGHTS
+    for tag in tags:
+        multiplier *= by_tag.get(tag, IDENTITY_PHASE_WEIGHTS)
+    return multiplier

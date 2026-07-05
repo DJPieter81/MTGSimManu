@@ -20,7 +20,7 @@ Key SBAs implemented:
 from __future__ import annotations
 from typing import List, Optional, TYPE_CHECKING
 
-from .constants import SBA_MAX_ITERATIONS
+from .constants import POISON_COUNTER_LETHAL, SBA_MAX_ITERATIONS
 
 if TYPE_CHECKING:
     from .cards import CardInstance, CardType, Keyword, Supertype
@@ -33,6 +33,29 @@ class SBAManager:
 
     def __init__(self, zone_manager: "ZoneManager"):
         self.zone_manager = zone_manager
+
+    @staticmethod
+    def perform_token_cleanup(game: "GameState") -> bool:
+        """SBA 704.5f — a token anywhere other than the battlefield
+        ceases to exist.
+
+        Single implementation with two callers: this manager's
+        check_and_perform_loop and the live SBA path in
+        `game_state.check_state_based_actions` (which, despite its
+        docstring, never delegated here — the rule was dead code
+        until E4).  The instance flag `is_token` is set by the token
+        creation funnel; see `engine/cards.py`.
+        """
+        performed = False
+        for p in game.players:
+            for zone_name in ("hand", "graveyard", "exile", "library"):
+                zone_list = getattr(p, zone_name)
+                for t in [c for c in zone_list
+                          if getattr(c, 'is_token', False)]:
+                    zone_list.remove(t)
+                    t.zone = "ceased"
+                    performed = True
+        return performed
 
     def check_and_perform_loop(self, game: "GameState") -> bool:
         """Run the full SBA loop: check and perform until stable (CR 704.3).
@@ -88,28 +111,18 @@ class SBAManager:
         if game.game_over:
             return performed
 
-        # 704.5c: Player with 10+ poison counters loses
-        for p in game.players:
-            if p.poison_counters >= 10 and not game.game_over:
-                game.game_over = True
-                game.winner = 1 - p.player_idx
-                game.log.append(
-                    f"T{game.display_turn}: P{p.player_idx+1} loses "
-                    f"(poison={p.poison_counters}, SBA 704.5c)"
-                )
-                performed = True
+        # 704.5c: Player with lethal poison loses — single
+        # implementation lives in perform_poison_check (also called by
+        # the live SBA path).
+        if SBAManager.perform_poison_check(game):
+            performed = True
 
         if game.game_over:
             return performed
 
         # 704.5f: Tokens not on the battlefield cease to exist
-        for p in game.players:
-            for zone_name in ["hand", "graveyard", "exile", "library"]:
-                zone_list = getattr(p, zone_name)
-                tokens = [c for c in zone_list if getattr(c, 'is_token', False)]
-                for t in tokens:
-                    zone_list.remove(t)
-                    performed = True
+        if SBAManager.perform_token_cleanup(game):
+            performed = True
 
         # 704.5g: Creature with toughness 0 or less is put into graveyard
         for p in game.players:
@@ -137,20 +150,11 @@ class SBAManager:
                         p.creatures_died_this_turn += 1
                         performed = True
 
-        # 704.5i: Creature dealt damage by a deathtouch source is destroyed
-        for p in game.players:
-            for c in list(p.battlefield):
-                if (c.template.is_creature
-                        and getattr(c, '_deathtouch_damage', 0) > 0
-                        and c.zone == "battlefield"):
-                    if Keyword.INDESTRUCTIBLE not in c.keywords:
-                        self.zone_manager.move_card(
-                            game, c, "battlefield", "graveyard",
-                            cause="SBA 704.5i: deathtouch"
-                        )
-                        p.creatures_died_this_turn += 1
-                        performed = True
-                    c._deathtouch_damage = 0
+        # 704.5i: Creature dealt damage by a deathtouch source is
+        # destroyed — single implementation lives in
+        # perform_deathtouch_check (also called by the live SBA path).
+        if SBAManager.perform_deathtouch_check(game):
+            performed = True
 
         # 704.5j: Legend rule — if a player controls two or more legendary
         #         permanents with the same name, they choose one to keep
@@ -188,4 +192,65 @@ class SBAManager:
                         )
                         performed = True
 
+        return performed
+
+    # ── Shared single-implementation SBAs ────────────────────────────
+    # Statics called from BOTH this manager's _check_and_perform_once
+    # and the live SBA path in game_state.check_state_based_actions.
+    # Pattern established by perform_token_cleanup (PR #443); see
+    # docs/proposals/resolver_sba_unification.md §6 for the end-state
+    # (every 704.5x rule becomes one of these).
+
+    @staticmethod
+    def perform_deathtouch_check(game: "GameState") -> bool:
+        """SBA 704.5i — a creature that's been dealt damage by a source
+        with deathtouch since the last damage cleanup is destroyed,
+        however small the damage.
+
+        The marker `_deathtouch_damage` is written by
+        engine/damage.py:deal_damage (deathtouch is a property of the
+        SOURCE; the marker travels with the damage). Destruction routes
+        through game._creature_dies so Undying/Persist replacement is
+        preserved — never through a raw zone move. Indestructible
+        creatures are exempt (704.5i is a destroy effect); their marker
+        is still cleared so the check reaches a fixpoint.
+
+        Returns True if any creature was destroyed.
+        """
+        from .cards import Keyword
+
+        performed = False
+        for p in game.players:
+            for c in list(p.battlefield):
+                if (c.template.is_creature
+                        and getattr(c, '_deathtouch_damage', 0) > 0
+                        and c.damage_marked > 0
+                        and c.zone == "battlefield"):
+                    if Keyword.INDESTRUCTIBLE not in c.keywords:
+                        game.log.append(
+                            f"T{game.display_turn}: {c.name} destroyed "
+                            f"(deathtouch, SBA 704.5i)")
+                        game._creature_dies(c)
+                        performed = True
+                    c._deathtouch_damage = 0
+        return performed
+
+    @staticmethod
+    def perform_poison_check(game: "GameState") -> bool:
+        """SBA 704.5c — a player with lethal poison counters loses.
+
+        Threshold is the POISON_COUNTER_LETHAL rules constant
+        (engine/constants.py). Returns True if a player lost.
+        """
+        performed = False
+        for p in game.players:
+            if (p.poison_counters >= POISON_COUNTER_LETHAL
+                    and not game.game_over):
+                game.game_over = True
+                game.winner = 1 - p.player_idx
+                game.log.append(
+                    f"T{game.display_turn}: P{p.player_idx+1} loses "
+                    f"(poison={p.poison_counters}, SBA 704.5c)"
+                )
+                performed = True
         return performed

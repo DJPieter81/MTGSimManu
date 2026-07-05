@@ -391,7 +391,7 @@ class GameState:
             return False
 
         # Check mana
-        available = len(player.untapped_lands) + player.mana_pool.total() + player._tron_mana_bonus()
+        available = player.untapped_mana_capacity() + player.mana_pool.total() + player._tron_mana_bonus()
         if available < template.equip_cost:
             return False
 
@@ -470,9 +470,15 @@ class GameState:
     def activate_planeswalker(self, *args, **kwargs):
         return PlaneswalkerManager.activate_planeswalker(self, *args, **kwargs)
 
+    def _apply_land_etb_static(self, permanent: "CardInstance",
+                               controller: int):
+        LandManager.apply_land_etb_static(self, permanent, controller)
+
+    # Backward-compatible alias — the untap watcher now runs inside the
+    # uniform land-entry hook (with the karoo return clause after it).
     def _apply_untap_on_enter_triggers(self, permanent: "CardInstance",
                                         controller: int):
-        LandManager.apply_untap_on_enter_triggers(self, permanent, controller)
+        LandManager.apply_land_etb_static(self, permanent, controller)
 
     def _apply_lands_enter_untapped(self, land: "CardInstance",
                                      controller: int):
@@ -553,17 +559,18 @@ class GameState:
         TriggerManager.queue_trigger(self, trigger_reg)
 
     def check_state_based_actions(self) -> bool:
-        """Check and perform state-based actions.
+        """Live SBA path — check and perform state-based actions once.
 
-        Delegates to SBAManager for the proper SBA loop (CR 704.3):
-        check all SBAs, if any performed check again, repeat until stable.
-
-        Also preserves the legacy _creature_dies path for Undying/Persist
-        handling until those are migrated to the event system.
+        This inline sequence IS the live implementation (it does not
+        delegate to SBAManager's check_and_perform_loop, which has no
+        live callers). Rules with a single shared implementation are
+        SBAManager statics called from here AND from that loop:
+        perform_poison_check (704.5c), perform_deathtouch_check
+        (704.5i). Creature death routes through _creature_dies so
+        Undying/Persist replacement is preserved. End-state (single
+        CR 704.3 fixpoint over shared statics):
+        docs/proposals/resolver_sba_unification.md §6.
         """
-        # Use the new SBA manager for the core checks
-        # But first, handle creatures with lethal damage through the legacy
-        # path so Undying/Persist still work correctly.
         actions_taken = False
 
         # Player life totals (SBA 704.5a)
@@ -573,6 +580,13 @@ class GameState:
                 self.winner = 1 - i
                 self.log.append(f"P{i+1} loses: life total {player.life}")
                 actions_taken = True
+
+        if self.game_over:
+            return actions_taken
+
+        # Lethal poison (SBA 704.5c) — single implementation in SBAManager
+        if SBAManager.perform_poison_check(self):
+            actions_taken = True
 
         if self.game_over:
             return actions_taken
@@ -592,6 +606,12 @@ class GameState:
                 self._creature_dies(creature)
                 actions_taken = True
 
+        # Creatures dealt damage by a deathtouch source (SBA 704.5i) —
+        # single implementation in SBAManager; routes death through
+        # _creature_dies so Undying/Persist are preserved.
+        if SBAManager.perform_deathtouch_check(self):
+            actions_taken = True
+
         # Planeswalkers with 0 or less loyalty (SBA 704.5p)
         for player in self.players:
             dead_pws = [c for c in player.planeswalkers
@@ -602,6 +622,11 @@ class GameState:
                     cause="SBA 704.5p: zero loyalty"
                 )
                 actions_taken = True
+
+        # Tokens off the battlefield cease to exist (SBA 704.5f) —
+        # single implementation lives in SBAManager.
+        if SBAManager.perform_token_cleanup(self):
+            actions_taken = True
 
         # Legend rule (SBA 704.5j)
         for player in self.players:

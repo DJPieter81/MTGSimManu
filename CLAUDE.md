@@ -54,17 +54,22 @@ dependencies are stdlib.  Sims remain deterministic and offline.
 **`ModernAtomic.json`** must be in the project root. If missing, reassemble from parts:
 
 ```bash
-python3 -c "
-import json
-merged = {}
-for i in range(1, 9):
-    with open(f'ModernAtomic_part{i}.json') as f:
-        merged.update(json.load(f)['data'])
-with open('ModernAtomic.json', 'w') as f:
-    json.dump({'meta': {}, 'data': merged}, f)
-print(f'Loaded {len(merged)} cards')
-"
+python3 merge_db.py
 ```
+
+**Never hand-roll the merge.** `merge_db.py` is the single source of truth:
+it globs *all* `ModernAtomic_part*.json` files, merges them in numeric order
+(part10 after part9 — lexicographic order would let stale parts win), and
+handles both part shapes (`{"meta","data"}` wrapper and bare card dict).
+Every part file must carry MTGJSON provenance (`meta.version`) — enforced by
+`tests/test_db_part_provenance.py`. Two incidents inform these rules: a
+hand-rolled parts-1-8 recipe ran sessions on silently stale DBs (2026-07-05
+CI failures on PRs #451/#454), and an unprovenanced ninth part shipped 30
+fabricated card texts on 2026-05-10, removed 2026-07-05 (root cause of the
+Storm-vs-Dimir canonical-DB outlier — see
+`docs/diagnostics/2026-07-05_storm_dimir_canonical_gap.md`). New card data
+enters via `update_modern_atomic.py` from a real MTGJSON export, never by
+hand-authoring a part file.
 
 ## Quick Reference — run_meta.py
 
@@ -627,6 +632,16 @@ Read `CROSS_PROJECT_SYNC.md` before any cross-project work. It tracks:
 Same file exists in both repos — keep them in sync.
 
 ## Session Priorities (discovery protocol)
+
+**Session recovery (crashed / interrupted sessions):** work may exist
+on a LOCAL `claude/*` branch that was never pushed.  Before starting
+new work: check `docs/handoff/` for the newest
+`YYYY-MM-DD_*_session_handoff.md` (frontmatter `status: active`) —
+it lists the exact commits, files, validation state, and next steps.
+If the handoff mentions an `apply_session_*.sh` artifact, the user
+holds it as a download; applying it from a clean `main` clone
+recreates the branch (`bash apply_session_*.sh`).  Mark the handoff
+`status: archived` once its branch is merged.
 
 Every doc under `docs/` has YAML frontmatter declaring: `title`, `status`, `priority`, `session`, `supersedes`/`superseded_by`, `depends_on`, `tags`, `summary`. The frontmatter IS the registry — no separate index file to drift.
 

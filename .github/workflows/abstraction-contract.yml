@@ -52,6 +52,9 @@ jobs:
       - name: Run doc hygiene check
         run: python tools/check_doc_hygiene.py
 
+      - name: Classifier coverage gate (tag-gated engine behavior)
+        run: python tools/check_classifier_coverage.py
+
       - name: Run abstraction-contract pytest
         run: python -m pytest tests/test_abstraction_contract.py tests/test_check_abstraction_deck_gates.py tests/test_doc_hygiene.py tests/test_magic_numbers_ratchet.py tests/test_check_magic_numbers.py --timeout=60 -q
 
