@@ -2189,6 +2189,21 @@ deployment that wins the game.
 Used by `_score_land` Titan-ramp branch in `ai/ev_player.py`.
 """
 
+LAND_GAMEPLAN_PRIORITY_SCALE: float = 0.25
+"""Derived: converts a gameplan-declared `land_priorities` value
+(per-deck JSON data, historical range 2.0-10.0) into `_score_land`
+EV units.  At 0.25 the strongest declared priority (10.0) adds +2.5
+— a quarter of LAND_BASE_EV (10.0), enough to re-order land-vs-land
+choices but never enough to outrank a castable spell or flip a
+land-vs-pass decision.  Half the mulligan-side conversion
+(MULL_KEEP_LAND_PRIORITY_SCALE 0.5) because in-game sequencing
+corrects itself next turn while a mulligan bottoming is permanent.
+
+Used by the gameplan land-priority hook in `_score_land`
+(`ai/ev_player.py`); pinned by
+tests/test_gameplan_land_priorities_order_in_game_land_drops.py.
+"""
+
 RAMP_TO_BIG_SOON: float = 4.0
 """Derived: bonus when a land brings us to a 6+ CMC payoff next turn.
 One-third of RAMP_TO_BIG_NOW because the payoff is delayed by one

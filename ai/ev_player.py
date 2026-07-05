@@ -52,6 +52,7 @@ from ai.scoring_constants import (
     REMOVAL_THREAT_PREMIUM_SCALE,
     CHEAP_REMOVAL_ACTION_BONUS,
     LANDFALL_DEFERRAL_PENALTY,
+    LAND_GAMEPLAN_PRIORITY_SCALE,
     X_BOARD_WIPE_WASTE_FLOOR,
     BLINK_FIZZLE_FLOOR,
     CHUMP_SENTINEL_VALUE,
@@ -2024,6 +2025,17 @@ class EVPlayer:
             if game.can_cast(self.player_idx, spell):
                 ev -= LANDFALL_DEFERRAL_PENALTY  # defer land so creature resolves first
                 break
+
+        # ── Gameplan land-priority hook (Track H handoff, G finding 2) ──
+        # ``land_priorities`` is per-deck DATA (decks/gameplans/*.json)
+        # that previously reached only mulligan bottoming.  Consuming
+        # it here lets a gameplan order engine-land sequencing in game
+        # without any card names in code.  The scale keeps the term a
+        # land-vs-land tiebreaker, not a land-vs-spell override.
+        if self.goal_engine:
+            declared = self.goal_engine.gameplan.land_priorities.get(
+                land.name, 0.0)
+            ev += declared * LAND_GAMEPLAN_PRIORITY_SCALE
 
         return ev
 
