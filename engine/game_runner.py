@@ -1465,10 +1465,18 @@ class GameRunner:
     def _process_saga_chapters(self, game: GameState, active: int):
         """Process saga chapter triggers during upkeep.
 
-        Each saga gains a lore counter per turn (starting the turn after ETB).
-        Supported sagas: Urza's Saga, The Legend of Roku.
+        Each saga gains a lore counter per turn (starting the turn after
+        ETB). Chapter shapes (see engine/oracle_parser.py):
+
+        * Ability grants ('This Saga gains "<cost>: <effect>"') attach
+          the quoted activated ability to the permanent — the effect is
+          NOT auto-executed; `_activate_tap_abilities` fires it when the
+          controller pays the printed cost.
+        * Plain one-shot chapter effects auto-execute as before
+          (final-chapter artifact tutor, loot, transform patterns).
         """
-        from engine.cards import CardType, Supertype
+        from engine.oracle_parser import (
+            parse_saga_chapters, extract_granted_ability)
         player = game.players[active]
         sagas_to_sacrifice = []
         sagas_to_transform = []
@@ -1479,40 +1487,44 @@ class GameRunner:
             # Initialize lore counter on first upkeep
             if not hasattr(card, 'other_counters') or card.other_counters is None:
                 card.other_counters = {}
+            chapters = parse_saga_chapters(card.template.oracle_text or '')
+            final_chapter = max(chapters) if chapters else 3
             lore = card.other_counters.get('lore', 0)
             # Saga entered this turn — skip first upkeep (it gets chapter I on ETB)
             if lore == 0:
                 card.other_counters['lore'] = 1
+                # Chapter I fires as the saga enters; an ability-grant
+                # chapter I attaches its ability now. (Mana abilities
+                # granted this way are already reflected in the land's
+                # produces_mana parse; the stored text is inert for them.)
+                granted = extract_granted_ability(chapters.get(1))
+                if granted is not None:
+                    card.granted_abilities.append(granted)
+                    game.log.append(f"T{game.display_turn} P{active+1}: "
+                                    f"{card.name} Ch.I: gains \"{granted}\"")
                 continue
             lore += 1
             card.other_counters['lore'] = lore
 
             card_oracle = (card.template.oracle_text or '').lower()
 
-            # --- Urza's Saga chapters ---
-            if 'construct' in card_oracle and 'artifact' in card_oracle:
-                if lore == 2:
-                    tokens = game.create_token(
-                        active, "construct", count=1,
-                        source_oracle=card.template.oracle_text,
-                    )
-                    for t in tokens:
-                        if CardType.ARTIFACT not in t.template.card_types:
-                            t.template.card_types.append(CardType.ARTIFACT)
-                        t.template.tags.add("artifact")
-                    game.log.append(f"T{game.display_turn} P{active+1}: "
-                                    f"Urza's Saga Ch.II: Create Construct Token")
-                elif lore >= 3:
-                    tokens = game.create_token(
-                        active, "construct", count=1,
-                        source_oracle=card.template.oracle_text,
-                    )
-                    for t in tokens:
-                        if CardType.ARTIFACT not in t.template.card_types:
-                            t.template.card_types.append(CardType.ARTIFACT)
-                        t.template.tags.add("artifact")
-                    game.log.append(f"T{game.display_turn} P{active+1}: "
-                                    f"Urza's Saga Ch.III: Create Construct Token")
+            # --- Ability-grant chapters (generic, any saga) ---
+            # The chapter grants a quoted activated ability instead of
+            # doing something now. Attach it; do NOT execute the effect.
+            chapter_text = chapters.get(lore) if lore <= final_chapter else None
+            granted = extract_granted_ability(chapter_text)
+            if granted is not None:
+                card.granted_abilities.append(granted)
+                game.log.append(f"T{game.display_turn} P{active+1}: "
+                                f"{card.name} Ch.{lore}: gains \"{granted}\"")
+                if lore >= final_chapter:
+                    # CR 714.4: sacrifice after the final chapter resolves.
+                    sagas_to_sacrifice.append(card)
+                continue
+
+            # --- Final-chapter artifact tutor (Urza's Saga Ch.III shape) ---
+            if 'search your library for an artifact card' in card_oracle:
+                if lore >= final_chapter:
                     # Engine narrows the library to rule-legal targets;
                     # callback picks the best one for the current state.
                     eligible = _saga_iii_eligible_targets(game, active)
@@ -1526,7 +1538,7 @@ class GameRunner:
                         player.battlefield.append(best)
                         best._game_state = game
                         game.log.append(f"T{game.display_turn} P{active+1}: "
-                                        f"Urza's Saga tutors {best.name}")
+                                        f"{card.name} tutors {best.name}")
                         game.trigger_etb(best, active)
                     sagas_to_sacrifice.append(card)
 
@@ -1573,6 +1585,7 @@ class GameRunner:
                 if saga in player.lands:
                     player.lands.remove(saga)
                 saga.zone = "graveyard"
+                saga.granted_abilities.clear()  # grants end with the permanent
                 player.graveyard.append(saga)
                 game.log.append(f"T{game.display_turn} P{active+1}: "
                                 f"Sacrifice {saga.name} (final chapter)")
@@ -1592,6 +1605,7 @@ class GameRunner:
                     t.template.name = "Avatar Roku"
                     t.template.tags.add("legendary")
                 saga.zone = "exile"
+                saga.granted_abilities.clear()  # grants end with the permanent
                 player.exile.append(saga)
                 game.log.append(f"T{game.display_turn} P{active+1}: "
                                 f"{saga.name} Ch.III: transforms into Avatar Roku (4/4)")
@@ -1866,6 +1880,45 @@ class GameRunner:
             # Creatures need haste or to have entered before this turn
             if perm.template.is_creature and getattr(perm, 'summoning_sick', False):
                 continue
+
+            # ── Granted activated abilities (saga chapters etc.):
+            #    "[{N},] {T}: Create ... token" — pay the printed generic
+            #    cost by tapping N other untapped lands, tap the source,
+            #    create the token from the granted text's own token spec.
+            #    Instance-level: lives on perm.granted_abilities, not the
+            #    template, because the grant belongs to this permanent. ──
+            fired_granted = False
+            for granted in list(getattr(perm, 'granted_abilities', None) or ()):
+                g = granted.lower()
+                m_grant = re.match(
+                    r'(?:\{(\d+)\}\s*,\s*)?\{t\}\s*:\s*create\b', g)
+                if not m_grant or 'token' not in g:
+                    continue
+                cost_n = int(m_grant.group(1) or 0)
+                payers = [l for l in player.untapped_lands if l is not perm]
+                if len(payers) < cost_n:
+                    continue
+                for land in payers[:cost_n]:
+                    land.tapped = True
+                perm.tapped = True
+                tokens = game.create_token(
+                    active, "construct" if "construct" in g else "creature",
+                    count=1, source_oracle=granted,
+                )
+                for t in tokens:
+                    if 'artifact' in g and CardType.ARTIFACT not in t.template.card_types:
+                        t.template.card_types.append(CardType.ARTIFACT)
+                    if 'artifact' in g:
+                        t.template.tags.add("artifact")
+                game.log.append(
+                    f"T{game.display_turn} P{active+1}: "
+                    f"{perm.name} activates \"{granted[:40]}...\" "
+                    f"(pays {{{cost_n}}}, {{T}})")
+                fired_granted = True
+                break  # one activation per permanent per turn (tap-enforced)
+            if fired_granted:
+                continue
+
             oracle = (perm.template.oracle_text or '').lower()
             if '{t}' not in oracle:
                 continue
