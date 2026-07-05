@@ -5,8 +5,8 @@
       "deck1": "Boros Energy",
       "deck2": "Affinity",
       "seed": 50000,
-      "winner": "Affinity",
-      "turns": 6
+      "winner": "Boros Energy",
+      "turns": 7
     },
     {
       "deck1": "Ruby Storm",
@@ -47,8 +47,8 @@
       "deck1": "Pinnacle Affinity",
       "deck2": "4/5c Control",
       "seed": 50000,
-      "winner": "Pinnacle Affinity",
-      "turns": 8
+      "winner": "4/5c Control",
+      "turns": 11
     },
     {
       "deck1": "Azorius Control",
@@ -76,7 +76,7 @@
       "deck2": "Domain Zoo",
       "seed": 50500,
       "winner": "Affinity",
-      "turns": 4
+      "turns": 5
     },
     {
       "deck1": "Eldrazi Tron",
@@ -111,7 +111,7 @@
       "deck2": "Pinnacle Affinity",
       "seed": 50500,
       "winner": "4/5c Control",
-      "turns": 12
+      "turns": 11
     },
     {
       "deck1": "Azorius Control (WST)",

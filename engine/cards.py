@@ -249,6 +249,11 @@ class CardInstance:
     targets: List[int] = field(default_factory=list)  # instance_ids
     # Instance-level tags (for equipment effects etc.)
     instance_tags: Set[str] = field(default_factory=set)
+    # Activated abilities granted to THIS instance by resolved effects
+    # (saga "gains '<cost>: <effect>'" chapters, etc.). Oracle-text
+    # fragments of the form "<cost>: <effect>"; cleared when the
+    # permanent leaves the battlefield.
+    granted_abilities: List[str] = field(default_factory=list)
     # Back-reference to game state (set when entering battlefield)
     _game_state: Any = field(default=None, repr=False)
     # Evoke tracking
