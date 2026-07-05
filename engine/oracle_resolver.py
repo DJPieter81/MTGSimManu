@@ -140,6 +140,60 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
         game.surveil(controller, int(m.group(1)))
         return True
 
+    # ── "When this ~ enters, (you may) return target card from your
+    #     graveyard to your hand" (Eternal Witness class) ──
+    # Class size: every regrowth-on-a-body printing — Eternal Witness,
+    # Archaeomancer, Greenwarden of Murasa, Timeless Witness, Scholar
+    # of the Ages, ... — plus type-restricted variants ("return target
+    # instant or sorcery card ..."), whose restriction is parsed from
+    # the same clause. Dispatch is gated by the classifier tag
+    # `Tag.ETB_RETURN_FROM_GY_TO_HAND`; the only oracle parse is the
+    # targeted clause parse for the optional type restriction
+    # (assert-fail on tag/oracle desync, same as the surveil branch).
+    if has_tag(card.name, Tag.ETB_RETURN_FROM_GY_TO_HAND):
+        m = re.search(
+            r'return target ([a-z ]*?)cards? from your graveyard to your hand',
+            oracle)
+        if m is None:
+            raise AssertionError(
+                f"{card.name!r} carries Tag.ETB_RETURN_FROM_GY_TO_HAND "
+                f"but its oracle text does not match the 'return target "
+                f"... card from your graveyard to your hand' shape — "
+                f"classifier and oracle are out of sync."
+            )
+        # Optional type restriction, e.g. "instant or sorcery " → the
+        # returned card must have at least one of the listed types.
+        # Empty for the unrestricted "target card" shape.
+        restriction = {w for w in re.split(r'\s+or\s+|\s+', m.group(1)) if w}
+        player = game.players[controller]
+        candidates = [
+            c for c in player.graveyard
+            if not restriction
+            or restriction & {t.value for t in c.template.card_types}
+        ]
+        if not candidates:
+            # "You may" / no legal target — the trigger fizzles to a
+            # no-op, but the branch owns this card's ETB: report handled
+            # so the silent-miss diagnostic doesn't flag it.
+            return True
+        # Deterministic engine commitment (no AI hook yet — same
+        # convention as `game.surveil`'s bin-to-GY policy and the
+        # energy-spell min-to-kill spend above): prefer nonland cards
+        # (lands are recoverable via fetches/land drops, spells are
+        # not), then highest mana value as the largest recurred
+        # resource; ties resolve to graveyard order for determinism.
+        best = max(
+            candidates,
+            key=lambda c: (not c.template.is_land, c.template.cmc or 0),
+        )
+        player.graveyard.remove(best)
+        best.zone = "hand"
+        player.hand.append(best)
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: {card.name} returns "
+            f"{best.name} from graveyard to hand")
+        return True
+
     return False
 
 

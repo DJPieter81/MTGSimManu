@@ -33,6 +33,13 @@
         "PITCH_ALT_COST"
       ]
     },
+    "Eternal Witness": {
+      "_classification_source": "manual:track6-suite-green-2026-07-05",
+      "oracle_text_sha256": "e53f79c5553b801dfe23c2fdc4496175d5a87f0b2cf0fcca7ec992cf915979bb",
+      "tags": [
+        "ETB_RETURN_FROM_GY_TO_HAND"
+      ]
+    },
     "Force of Negation": {
       "oracle_text_sha256": "0ba9d8a8d2bb2d46a3c43671e5beeef14a66deebd6d64b9af3bca371d79ed8b7",
       "tags": [
