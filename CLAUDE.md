@@ -54,17 +54,19 @@ dependencies are stdlib.  Sims remain deterministic and offline.
 **`ModernAtomic.json`** must be in the project root. If missing, reassemble from parts:
 
 ```bash
-python3 -c "
-import json
-merged = {}
-for i in range(1, 9):
-    with open(f'ModernAtomic_part{i}.json') as f:
-        merged.update(json.load(f)['data'])
-with open('ModernAtomic.json', 'w') as f:
-    json.dump({'meta': {}, 'data': merged}, f)
-print(f'Loaded {len(merged)} cards')
-"
+python3 merge_db.py
 ```
+
+**Never hand-roll the merge.** `merge_db.py` is the single source of truth:
+it globs *all* `ModernAtomic_part*.json` files and handles both part shapes.
+Every part file must carry MTGJSON provenance (`meta.version`) — enforced by
+`tests/test_db_part_provenance.py`. A ninth part without provenance shipped
+30 fabricated card texts on 2026-05-10 and was removed on 2026-07-05 (root
+cause of the Storm-vs-Dimir 14% canonical-DB outlier and the PR #451/#454
+CI-vs-local WR-anchor divergence — see
+`docs/diagnostics/2026-07-05_storm_dimir_canonical_gap.md`). New card data
+enters via `update_modern_atomic.py` from a real MTGJSON export, never by
+hand-authoring a part file.
 
 ## Quick Reference — run_meta.py
 
