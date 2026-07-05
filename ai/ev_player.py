@@ -842,9 +842,23 @@ class EVPlayer:
 
         # ── Base: projection-based EV ──
         # Projects board after cast + opponent response, returns clock delta
-        # Pass BHI for Bayesian-updated opponent response probabilities
+        # Pass BHI for Bayesian-updated opponent response probabilities.
+        # Goal + gameplan-role context feed the M4 gear-shift: the
+        # current goal (GoalType.value) selects the goal_weights row
+        # (close_game re-weights finishers up / cantrips down), and
+        # cards declared in the gameplan's finishers/payoffs role
+        # buckets carry the synthetic ROLE_FINISHER_TAG.  Knowledge
+        # location: roles come from decks/gameplans/*.json via
+        # self._payoff_names — no card names in code.
+        from ai.strategy_profile import ROLE_FINISHER_TAG
+        goal_value = None
+        if self.goal_engine is not None:
+            goal_value = self.goal_engine.current_goal.goal_type.value
+        role_tags = (frozenset({ROLE_FINISHER_TAG})
+                     if card.name in self._payoff_names else frozenset())
         ev = compute_play_ev(card, snap, self.archetype, game, self.player_idx,
-                             bhi=self.bhi)
+                             bhi=self.bhi, goal=goal_value,
+                             role_tags=role_tags)
 
         # ── Free cast bonus (generic) ──
         # Any spell offered for 0 effective mana (Ragavan exile, cascade,
