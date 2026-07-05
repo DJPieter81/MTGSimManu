@@ -104,10 +104,26 @@ is a parallel legacy resolver that skips `_handle_permanent_etb`
 or tool driving `stack.resolve_top` directly gets wrong state —
 candidate for deletion in the resolver-unification work.
 
-## E4 — Token cast as a spell  ❌ OPEN (P1)
+## E4 — Token cast as a spell  ✅ FIXED (branch claude/e4-tokens-cease)
 
-**Evidence (s60104 G2 T7).** "Cast Construct Token (0)" from hand.
-Ties to the unregistered-token detector work (commit 13b6d66).
+**Root chain (verified).** T5 "Teferi bounces Construct Token" →
+token to HAND → T7 cast.  SBA 704.5f existed in `sba_manager.py` but
+filtered on an `is_token` flag nothing ever set — AND the live SBA
+path (`game_state.check_state_based_actions`) never delegates to
+SBAManager (docstring lies; `check_and_perform_loop` has zero
+callers).  Fixed: `CardInstance.is_token` set by the creation funnel;
+704.5f extracted to `SBAManager.perform_token_cleanup` (one
+implementation, both callers); CR 111.2 cast gates in
+`can_cast`/`cast_spell`.
+
+**Second duplicate-subsystem finding:** SBAManager mirrors the
+`stack.py` legacy-resolver situation — full parallel implementation,
+zero live callers, rules that only exist in the dead copy.  Two data
+points now; resolver/SBA unification should be a named proposal.
+
+**Fidelity gap noted (separate, open):** Urza's-Saga-pattern Ch.II
+auto-creates the token instead of granting the '{2},{T}: create'
+activated ability (s60104 G1 T3).  Class: ability-granting sagas.
 
 ## A1 — Lethal on board, no attack  ❌ RETRACTED (s60104 evidence)
 
