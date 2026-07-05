@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING, List, Optional
 
 from ai.scoring_constants import (
     LEGENDARY_DUPLICATE_PENALTY,
+    MULL_BOTTOM_DECLARED_PIECE_PROTECTION,
     DEFAULT_MULLIGAN_MIN_LANDS,
     SUSPEND_ONLY_DEAD_PENALTY,
     KEEP_SCORE_LAND_NEEDED,
@@ -687,6 +688,67 @@ class MulliganDecider:
                     >= MULLIGAN_GENERIC_MIDRANGE_MED_DEV)
         return cards_in_hand <= MULLIGAN_FIRST_MULL_HAND_SIZE
 
+    def _declared_piece_names(self) -> set:
+        """Union of every card name the gameplan declares as part of
+        the deck's plan.
+
+        Sources — all pure gameplan data, no card names in code:
+        ``mulligan_keys``, ``mulligan_combo_sets``,
+        ``mulligan_combo_paths`` role buckets, ``critical_pieces``,
+        ``always_early``.  These are the exact fields the keep/mull
+        ``decide()`` path already consults; bottoming must read the
+        same declarations or it discards the pieces ``decide()`` just
+        kept the hand for (seed-50001 Storm bug: mull-to-5 bottomed
+        the engine + a ritual while duplicates sat in hand).
+        """
+        if not (self.goal_engine and self.goal_engine.gameplan):
+            return set()
+        gp = self.goal_engine.gameplan
+        declared = (set(gp.mulligan_keys)
+                    | set(gp.critical_pieces)
+                    | set(gp.always_early))
+        for combo_set in gp.mulligan_combo_sets:
+            declared |= set(combo_set)
+        for path in gp.mulligan_combo_paths:
+            for bucket in path.values():
+                declared |= set(bucket)
+        return declared
+
+    def _apply_declared_piece_protection(
+            self, scored: List[tuple]) -> List[tuple]:
+        """Add a bottoming-protection bonus to the FIRST copy of each
+        declared piece in ``scored`` (a ``(card, keep_score)`` list,
+        hand order).
+
+        Mechanic: the gameplan's declared data is the single source
+        of truth for "the deck cannot execute its plan without this".
+        The bonus lifts declared pieces above lands and unaffiliated
+        filler so those are bottomed first, while:
+
+        - it is additive, so the role/key/cmc keep weights still
+          order declared pieces relative to each other (an all-pieces
+          hand bottoms the least-critical pieces, no crash);
+        - only the first copy per name is protected, so duplicate
+          copies of interchangeable pieces are the preferred bottoms
+          among pieces (rituals, cantrips at 4-of);
+        - lands are excluded — land keep value is owned by the land
+          floor/priority subsystem below, and protecting a declared
+          land would double-count it against the min-lands swap.
+        """
+        declared = self._declared_piece_names()
+        if not declared:
+            return scored
+        seen: set = set()
+        out: List[tuple] = []
+        for c, s in scored:
+            if (c.name in declared and not c.template.is_land
+                    and c.name not in seen):
+                seen.add(c.name)
+                out.append((c, s + MULL_BOTTOM_DECLARED_PIECE_PROTECTION))
+            else:
+                out.append((c, s))
+        return out
+
     def choose_cards_to_bottom(self, hand: List["CardInstance"],
                                 count: int) -> List["CardInstance"]:
         """Choose which cards to put on the bottom after mulligan."""
@@ -696,6 +758,12 @@ class MulliganDecider:
             scored = [(c, self.goal_engine.card_keep_score(c, hand)) for c in hand]
         else:
             scored = [(c, self._card_keep_score(c, hand)) for c in hand]
+        # Gameplan-declared combo pieces (mulligan_keys, combo sets/
+        # paths, critical_pieces, always_early) are protected from
+        # bottoming while lands/filler alternatives exist; duplicates
+        # beyond the first copy stay unprotected so they remain the
+        # preferred bottoms among pieces.
+        scored = self._apply_declared_piece_protection(scored)
         # Legend-rule dedup: when the hand contains N copies of a
         # legendary permanent, only one resolves (CR 704.5j).  Mark the
         # duplicate copies as preferred-bottom by subtracting a penalty
@@ -734,13 +802,15 @@ class MulliganDecider:
         if kept_lands < land_floor and bottomed_lands:
             # Find non-lands in the kept hand, bottom the lowest-scored
             # of them instead to preserve a land in the kept hand.
-            kept = [c for c, _ in scored[count:]]  # higher-scored, the keep pile
-            kept_nonland_scored = sorted(
-                [(c, self.goal_engine.card_keep_score(c, hand)
-                  if self.goal_engine else self._card_keep_score(c, hand))
-                 for c in kept if not c.template.is_land],
-                key=lambda x: x[1]
-            )
+            # Reuse the already-adjusted scores (declared-piece
+            # protection + legendary dedup) so the swap ranks kept
+            # non-lands by the same order the sort just used —
+            # recomputing raw keep scores here would strip the
+            # protection and swap a declared piece into the bottom.
+            kept_nonland_scored = [
+                (c, s) for c, s in scored[count:]
+                if not c.template.is_land
+            ]  # scored is sorted ascending, so this is too
             needed = land_floor - kept_lands
             # Swap bottom lands for kept non-lands (lowest-scored first)
             for i in range(min(needed, len(kept_nonland_scored),

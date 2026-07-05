@@ -5337,6 +5337,29 @@ Used by `GoalEngine.card_keep_score` critical-singleton branch in
 """
 
 
+MULL_BOTTOM_DECLARED_PIECE_PROTECTION: float = MULL_KEEP_CRITICAL_SINGLETON_FLOOR
+"""Derived: additive bottoming protection for the first copy of any
+non-land card the gameplan declares as part of its plan
+(`mulligan_keys` ∪ `mulligan_combo_sets` ∪ `mulligan_combo_paths`
+buckets ∪ `critical_pieces` ∪ `always_early`).
+
+Equal by construction to `MULL_KEEP_CRITICAL_SINGLETON_FLOOR` —
+the same tier of "this is the deck's plan, don't discard it".  The
+bonus must exceed the realistic land keep ceiling
+(`MULL_KEEP_LAND_NEEDED` 10 + land_priorities×`MULL_KEEP_LAND_PRIORITY_SCALE`
++ colors×`MULL_KEEP_LAND_COLOR_PRODUCTION_SCALE` ≈ 16) so a declared
+piece never sorts below a land while surplus lands exist to bottom
+instead.  It is *additive* (not a floor) so the role/key/cmc weights
+keep ordering declared pieces relative to each other, and it applies
+only to the FIRST copy per name so duplicate copies of
+interchangeable pieces remain the preferred bottoms.
+
+Used by `MulliganDecider.choose_cards_to_bottom` in `ai/mulligan.py`
+(bug: seed-50001 Storm mull-to-5 bottomed Ral + Pyretic Ritual, see
+tests/test_mulligan_bottoming_protects_declared_combo_pieces.py).
+"""
+
+
 # ---- DecisionThresholds dataclass defaults ----
 # These are the midrange/default values for the per-deck
 # `DecisionThresholds` config. Each archetype's gameplan can override
