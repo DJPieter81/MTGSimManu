@@ -436,10 +436,16 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
 
     # Impulse-reveal path — gated by classifier tag, not regex chain.
     from ai.oracle_classifier import Tag, tags_for
-    if Tag.IMPULSE_DRAW in tags_for(card.name) and not card.template.x_cost_data:
+    if Tag.IMPULSE_DRAW in tags_for(card.name):
         from engine.zone_transfer import TransferKind, transfer
         m_exile = re.search(r'exile the top (\w+) cards? of your library',
                             oracle)
+        # Play-cap sub-shape: "exile the top X … you may play up to
+        # TWO of those cards" — the cap is the card-advantage value;
+        # X itself is an exile count (often an additional-cost count),
+        # not castable value. This is the only X-form the impulse
+        # branch handles; other X-impulses stay excluded.
+        m_cap = re.search(r'you may play up to (\w+)', oracle)
         impulse_n = 0
         if m_exile:
             tok = m_exile.group(1)
@@ -447,6 +453,14 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
                 impulse_n = int(tok)
             except ValueError:
                 impulse_n = word_to_num.get(tok, 0)
+        if impulse_n == 0 and m_cap:
+            tok = m_cap.group(1)
+            try:
+                impulse_n = int(tok)
+            except ValueError:
+                impulse_n = word_to_num.get(tok, 0)
+        if card.template.x_cost_data and not m_cap:
+            impulse_n = 0
         if impulse_n > 0:
             revealed: list = []
             player = game.players[controller]
