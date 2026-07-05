@@ -209,6 +209,18 @@ class PlayerState:
                 result[id(land)] = cm.get("bonus", 0)
         return result
 
+    def untapped_mana_capacity(self) -> int:
+        """Units of mana the player's untapped lands can produce (E1).
+
+        Replaces `len(untapped_lands)` in total-mana estimates: a
+        multi-unit land ('Add {G}{U}') counts for each unit it
+        produces, a colorless utility land with no plain tap ability
+        still counts 0.  The Tron-style conditional bonus stays a
+        separate additive term (`_conditional_mana_bonus`) at the
+        call sites that already carry it.
+        """
+        return sum(land.template.mana_count for land in self.untapped_lands)
+
     def available_mana_colors(self) -> Dict[str, int]:
         """Get available mana by color from untapped lands."""
         colors: Dict[str, int] = {"W": 0, "U": 0, "B": 0, "R": 0, "G": 0, "C": 0}

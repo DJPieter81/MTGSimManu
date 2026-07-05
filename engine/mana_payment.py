@@ -111,6 +111,21 @@ class ManaPayment:
         return len(found)
 
     @staticmethod
+    def land_mana_units(game: "GameState", player_idx: int,
+                        land) -> list:
+        """Mana units for one land: the template's parsed multi-mana
+        units (E1) when present, else a single unit whose color
+        options are the dynamic `effective_produces_mana` result (so
+        Leyline-of-the-Guildpact-style modifiers keep working on
+        legacy single-unit lands)."""
+        units = getattr(land.template, "mana_units", None)
+        if units:
+            return [list(u) for u in units]
+        produced = ManaPayment.effective_produces_mana(
+            game, player_idx, land)
+        return [list(produced)] if produced else []
+
+    @staticmethod
     def tap_lands_for_mana(game: "GameState", player_idx: int,
                            cost: ManaCost,
                            card_name: str = None,
@@ -206,7 +221,6 @@ class ManaPayment:
         untapped.sort(key=_sort_key)
 
         needed = cost.to_dict()
-        lands_to_tap = []
 
         # Pay colored costs using MRV (Most Constrained Variable) heuristic:
         # Process colors with the FEWEST available land sources first.
@@ -235,41 +249,50 @@ class ManaPayment:
             for _ in range(needed.get(color, 0)):
                 colors_needed_list.append(color)
 
-        # Assign with re-sorting: most constrained color first each step
-        used_lands = set()
+        # E1 (multi-mana lands): the assignable resource is a mana
+        # UNIT, not a land — a karoo's single tap yields a {G} unit
+        # AND a {U} unit.  Build (land, unit_idx, color_options)
+        # triples; assignment consumes units, tapping consumes lands.
+        unit_pool = []  # list of [land, unit_idx, options, assigned]
+        for land in untapped:
+            for ui, options in enumerate(
+                    ManaPayment.land_mana_units(game, player_idx, land)):
+                unit_pool.append([land, ui, list(options), None])
 
+        # Assign with re-sorting: most constrained color first each step
         while colors_needed_list:
             # Re-sort by scarcity each step (fixes 4-color dual land issues)
             colors_needed_list.sort(
-                key=lambda c: sum(1 for l in untapped
-                                  if l not in used_lands and c in _produces(l))
+                key=lambda c: sum(1 for u in unit_pool
+                                  if u[3] is None and c in u[2])
             )
             color = colors_needed_list.pop(0)
-            # Find least-flexible unused land for this color. Ties broken
-            # by preserving held_instant_colors when supplied — a land
-            # that produces a held color is less preferred (we want to
-            # leave it untapped for the opponent's turn).
-            best_land = None
+            # Find least-flexible unassigned unit for this color. Ties
+            # broken by preserving held_instant_colors when supplied —
+            # a unit on a land that produces a held color is less
+            # preferred (we want to leave that land untapped for the
+            # opponent's turn).
+            best_unit = None
             best_key = (999, 999)
-            for land in untapped:
-                if land in used_lands:
+            for unit in unit_pool:
+                land, _ui, options, assigned = unit
+                if assigned is not None:
                     continue
-                lp = _produces(land)
-                if color in lp:
-                    flex = len(lp)
+                if color in options:
+                    flex = len(options)
                     # Skip the held-preserve penalty if this land is the
                     # only source of the required color — correctness
                     # (must pay the cost) wins over preservation.
                     produces_held = 1 if any(
-                        c in _held and c != color for c in lp) else 0
+                        c in _held and c != color
+                        for c in _produces(land)) else 0
                     key = (flex, produces_held)
                     if key < best_key:
                         best_key = key
-                        best_land = land
-            if best_land is None:
+                        best_unit = unit
+            if best_unit is None:
                 return False
-            lands_to_tap.append((best_land, color))
-            used_lands.add(best_land)
+            best_unit[3] = color
 
         # Pay generic
         generic_remaining = needed.get("generic", 0)
@@ -288,37 +311,73 @@ class ManaPayment:
         # (uses the data-driven conditional_mana field parsed from oracle text)
         cond_bonus_cache = player._compute_conditional_bonus_per_land()
 
-        for land in untapped:
+        # Generic payment consumes remaining UNASSIGNED units.  Units
+        # on a land already committed for a colored pip come first —
+        # tapping that land is already paid for, its spare units are
+        # free mana (this is exactly the karoo case: {G} pays the pip,
+        # the {U} unit covers a generic).  The per-land conditional
+        # bonus (Tron rail) applies once, on the land's FIRST used
+        # unit.
+        committed_lands = {id(u[0]) for u in unit_pool if u[3] is not None}
+        bonus_counted = set(committed_lands)
+
+        def _generic_order(unit):
+            on_committed = 0 if id(unit[0]) in committed_lands else 1
+            return (on_committed, len(unit[2]))
+
+        for unit in sorted((u for u in unit_pool if u[3] is None),
+                           key=_generic_order):
             if generic_remaining <= 0:
                 break
-            if land not in used_lands:
-                lp = _produces(land)
-                if lp:
-                    lands_to_tap.append((land, lp[0]))
-                    used_lands.add(land)
-                    # Base 1 + any conditional bonus from oracle text
-                    mana_from_land = 1 + cond_bonus_cache.get(id(land), 0)
-                    generic_remaining -= mana_from_land
+            land, _ui, options, _a = unit
+            if not options:
+                continue
+            unit[3] = options[0]
+            generic_remaining -= 1
+            if id(land) not in bonus_counted:
+                bonus_counted.add(id(land))
+                generic_remaining -= cond_bonus_cache.get(id(land), 0)
 
         if generic_remaining > 0:
             return False
 
-        # Tap lands and add mana
+        # Tap lands and add mana.  A land taps ONCE; every assigned
+        # unit on it yields its color.  Unassigned units on a tapped
+        # land still produce — that mana floats into the pool (CR
+        # 106.4: you can't decline part of a single ability's
+        # production), matching the karoo tapped only for its {G}.
+        lands_to_tap = []
+        seen = set()
+        for unit in unit_pool:
+            land = unit[0]
+            if unit[3] is not None and id(land) not in seen:
+                seen.add(id(land))
+                lands_to_tap.append(land)
+
         tapped_names = []
-        for land, color in lands_to_tap:
+        for land in lands_to_tap:
             land.tap()
-            player.mana_pool.add(color)
-            tapped_names.append(f'{land.name}→{color}')
+            land_units = [u for u in unit_pool if u[0] is land]
+            yielded = []
+            for _l, _ui, options, assigned in land_units:
+                color = assigned if assigned is not None else (
+                    options[0] if options else None)
+                if color is None:
+                    continue
+                player.mana_pool.add(color)
+                yielded.append(color)
+            tapped_names.append(f'{land.name}→{"".join(yielded)}')
             bonus = cond_bonus_cache.get(id(land), 0)
             if bonus > 0:
                 player.mana_pool.add("C", bonus)
             # Pain land: self-damage when tapping for colored mana
-            if land.template.tap_damage > 0 and color != "C":
+            if land.template.tap_damage > 0 and any(
+                    c != "C" for c in yielded):
                 player.life -= land.template.tap_damage
 
         # Verbose: log which lands were tapped for mana
         if getattr(game, 'verbose', False) and tapped_names and card_name:
-            remaining_mana = len(player.untapped_lands) + player.mana_pool.total()
+            remaining_mana = player.untapped_mana_capacity() + player.mana_pool.total()
             game.log.append(f'    [Mana] Tap {", ".join(tapped_names)} '
                             f'(paying for {card_name}, {remaining_mana} mana remaining)')
 
@@ -331,7 +390,9 @@ class ManaPayment:
             # Note: _pre_pool doesn't account for any mana the lands_to_tap
             # loop ADDED to the pool before .pay() drained it — that's OK
             # because those colors are captured in the lands_to_tap side.
-            game._last_colors_spent = {color for land, color in lands_to_tap}
+            game._last_colors_spent = {
+                u[3] for u in unit_pool
+                if u[3] is not None and id(u[0]) in seen}
             for c in ["W", "U", "B", "R", "G"]:
                 if _pre_pool[c] > 0 and player.mana_pool.get(c) < _pre_pool[c]:
                     game._last_colors_spent.add(c)

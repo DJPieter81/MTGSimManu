@@ -140,7 +140,7 @@ class CastManager:
                     return False  # Not enough cards to exile
                 # Check mana for escape cost
                 untapped_lands = player.untapped_lands
-                total_mana = (len(untapped_lands) + player.mana_pool.total()
+                total_mana = (player.untapped_mana_capacity() + player.mana_pool.total()
                               + player._tron_mana_bonus())
                 if total_mana < template.escape_cost:
                     return False
@@ -231,7 +231,7 @@ class CastManager:
 
         # Check mana (pool + untapped lands + Tron bonus)
         untapped_lands = player.untapped_lands
-        total_mana = (len(untapped_lands) + player.mana_pool.total()
+        total_mana = (player.untapped_mana_capacity() + player.mana_pool.total()
                       + player._tron_mana_bonus())
 
         # X-cost spells: require minimum mana to cast meaningfully
@@ -405,9 +405,13 @@ class CastManager:
         # Guildpact and dynamic mana abilities (E1: Mox Opal metalcraft,
         # CR 702.98) contribute the right colour set for the feasibility
         # solver.
+        # E1: one source per mana UNIT — a multi-mana land contributes
+        # one entry per unit (fixed karoo units stay single-color).
+        from .mana_payment import ManaPayment as _MP
         sources = []
         for land in untapped_lands:
-            sources.append(set(game._effective_produces_mana(player_idx, land)))
+            for options in _MP.land_mana_units(game, player_idx, land):
+                sources.append(set(options))
         # Mana pool as fixed-color sources
         for color in ["W", "U", "B", "R", "G", "C"]:
             pool_amount = player.mana_pool.get(color)
@@ -504,7 +508,7 @@ class CastManager:
 
         player = game.players[player_idx]
         untapped_lands = player.untapped_lands
-        total_mana = (len(untapped_lands) + player.mana_pool.total()
+        total_mana = (player.untapped_mana_capacity() + player.mana_pool.total()
                       + player._tron_mana_bonus())
         if total_mana < cost.cmc:
             return False
@@ -519,9 +523,13 @@ class CastManager:
             for _ in range(needed):
                 color_needs.append(color)
 
+        # E1: one source per mana UNIT — a multi-mana land contributes
+        # one entry per unit (fixed karoo units stay single-color).
+        from .mana_payment import ManaPayment as _MP
         sources = []
         for land in untapped_lands:
-            sources.append(set(game._effective_produces_mana(player_idx, land)))
+            for options in _MP.land_mana_units(game, player_idx, land):
+                sources.append(set(options))
         for color in ["W", "U", "B", "R", "G", "C"]:
             pool_amount = player.mana_pool.get(color)
             for _ in range(pool_amount):
@@ -726,7 +734,7 @@ class CastManager:
         evoked = False
         dashed = False
         if not free_cast:
-            untapped = len(player.untapped_lands) + player.mana_pool.total() + player._tron_mana_bonus()
+            untapped = player.untapped_mana_capacity() + player.mana_pool.total() + player._tron_mana_bonus()
 
             # Decide whether to use Dash (e.g., Ragavan)
             # Dash strategy: use Dash when...
@@ -1021,7 +1029,7 @@ class CastManager:
             x_info = template.x_cost_data
             # X = (total mana available) / multiplier
             # For XX spells, X = mana / 2; for X spells, X = mana
-            available_for_x = len(player.untapped_lands) + player.mana_pool.total() + player._tron_mana_bonus()
+            available_for_x = player.untapped_mana_capacity() + player.mana_pool.total() + player._tron_mana_bonus()
             x_value = available_for_x // x_info["multiplier"]
             # AI chooses optimal X based on oracle text:
             oracle = (template.oracle_text or '').lower()
@@ -1122,16 +1130,21 @@ class CastManager:
                     )
                 land = lands_pool.pop(0)
                 land.tapped = True
-                remaining -= 1
-                produced = list(game._effective_produces_mana(player_idx, land) or [])
-                if is_converge:
-                    # Pick a new color if possible, else any produced color
-                    new_cols = [c for c in produced if c not in xpay_colors]
-                    pick = new_cols[0] if new_cols else (produced[0] if produced else 'C')
-                else:
-                    pick = produced[0] if produced else 'C'
-                if pick and pick != 'C':
-                    xpay_colors.add(pick)
+                # E1: one tap yields every unit the land produces.
+                from .mana_payment import ManaPayment as _MP
+                for options in _MP.land_mana_units(game, player_idx, land):
+                    if remaining <= 0:
+                        break
+                    remaining -= 1
+                    if is_converge:
+                        new_cols = [c for c in options
+                                    if c not in xpay_colors]
+                        pick = new_cols[0] if new_cols else (
+                            options[0] if options else 'C')
+                    else:
+                        pick = options[0] if options else 'C'
+                    if pick and pick != 'C':
+                        xpay_colors.add(pick)
             # Surface the updated color set for the stack item / Converge resolvers
             game._last_colors_spent = xpay_colors
 
@@ -1162,7 +1175,7 @@ class CastManager:
                 reduction = count_cost_reducers(game, player_idx, sc.template)
                 reduction += player.temp_cost_reduction
                 effective_splice = max(0, splice - reduction)
-                available_mana = player.mana_pool.total() + len(player.untapped_lands)
+                available_mana = player.mana_pool.total() + player.untapped_mana_capacity()
                 if available_mana >= effective_splice:
                     # Pay splice cost from mana pool/lands
                     from .mana import ManaCost as MC

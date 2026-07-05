@@ -114,6 +114,16 @@ class CardTemplate:
     color_identity: Set[Color] = field(default_factory=set)
     # For lands
     produces_mana: List[str] = field(default_factory=list)  # e.g., ["W", "R"]
+    # Mana UNITS from the land's plain {T} ability: one inner list of
+    # color options per unit of mana produced (E1 — multi-mana lands).
+    # 'Add {G}{U}' → [["G"], ["U"]] (two fixed units);
+    # 'Add {G} or {U}' → [["G", "U"]] (one unit, color choice).
+    # Empty ⇒ legacy single unit whose options are `produces_mana`.
+    mana_units: List[List[str]] = field(default_factory=list)
+    # 'When this land enters, return a land you control to its owner's
+    # hand' — structural ETB clause of the karoo family (E1b), a
+    # sibling of `enters_tapped`.
+    etb_return_land: bool = False
     enters_tapped: bool = False
     # Life payment to enter untapped (shock lands = 2, derived from oracle text)
     untap_life_cost: int = 0
@@ -168,6 +178,14 @@ class CardTemplate:
     @property
     def is_creature(self) -> bool:
         return CardType.CREATURE in self.card_types
+
+    @property
+    def mana_count(self) -> int:
+        """Units of mana one tap of this land produces (≥1 for any
+        mana-producing land; E1 multi-mana schema)."""
+        if self.mana_units:
+            return len(self.mana_units)
+        return 1 if self.produces_mana else 0
 
     @property
     def is_land(self) -> bool:

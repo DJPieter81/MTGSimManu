@@ -521,6 +521,73 @@ class OracleTextParser:
         return sorted(mana_colors)
 
     @classmethod
+    def detect_land_mana_units(cls, oracle_text: str) -> List[List[str]]:
+        """Parse a land's plain '{T}: Add …' ability into mana UNITS.
+
+        One inner list of color options per unit of mana produced
+        (E1 — multi-mana lands):
+
+            '{T}: Add {G}{U}.'              → [["G"], ["U"]]
+            '{T}: Add {C}{C}.'              → [["C"], ["C"]]
+            '{T}: Add {G} or {U}.'          → [["G", "U"]]
+            '{T}: Add {W}, {U}, or {B}.'    → [["W", "U", "B"]]
+            '{T}: Add two mana of any one color.'
+                                            → [[W..G], [W..G]]
+
+        Only cost-free tap lines count ('{T}:' with nothing between the
+        tap symbol and the colon) — abilities with additional costs
+        ('{T}, Sacrifice …:') are not always-available production and
+        must not inflate the unit count.  When several plain tap lines
+        exist, the largest is the land's production (a land is tapped
+        once for its best line).  Returns [] when no plain tap line is
+        found; callers fall back to a single unit of `produces_mana`.
+        """
+        if not oracle_text:
+            return []
+        all_colors = ["W", "U", "B", "R", "G"]
+        word_to_num = {"one": 1, "two": 2, "three": 3}
+        best: List[List[str]] = []
+        for line in oracle_text.splitlines():
+            m = re.match(r"\s*\{T\}\s*:\s*Add\s+([^.]+)",
+                         line, re.IGNORECASE)
+            if not m:
+                continue
+            payload = m.group(1)
+            # Spend-restricted production ('Spend this mana only to
+            # cast …') is not always-available mana — the restricted
+            # line must not raise the land's unit count.
+            if re.search(r"spend this mana only", line[m.end():],
+                         re.IGNORECASE):
+                continue
+            units: List[List[str]] = []
+            wm = re.search(
+                r"(one|two|three)\s+mana\s+of\s+any(?:\s+one)?\s+color",
+                payload, re.IGNORECASE)
+            if wm:
+                n = word_to_num[wm.group(1).lower()]
+                units = [list(all_colors) for _ in range(n)]
+            else:
+                # Alternatives are a color CHOICE for one unit;
+                # consecutive symbols inside one alternative are FIXED
+                # units produced together.
+                alts = re.split(r"\s*,\s*or\s+|\s*,\s*|\s+or\s+", payload)
+                alt_syms = [re.findall(r"\{([WUBRGC])\}", a) for a in alts]
+                alt_syms = [s for s in alt_syms if s]
+                if not alt_syms:
+                    continue
+                if len(alt_syms) == 1:
+                    units = [[sym] for sym in alt_syms[0]]
+                elif all(len(s) == 1 for s in alt_syms):
+                    units = [[s[0] for s in alt_syms]]
+                else:
+                    # Mixed multi-symbol alternatives: take the first
+                    # alternative's fixed units (conservative floor).
+                    units = [[sym] for sym in alt_syms[0]]
+            if len(units) > len(best):
+                best = units
+        return best
+
+    @classmethod
     def classify_card_role(cls, card_data: dict, effects: List[OracleEffect]) -> Set[str]:
         """Classify a card's strategic role based on its effects and stats."""
         tags = set()
@@ -1319,9 +1386,20 @@ class CardDatabase:
         untap_life_cost = 0
         untap_max_other_lands = -1
         tap_damage = 0
+        mana_units: List[List[str]] = []
+        etb_return_land = False
         if CardType.LAND in card_types:
             produces_mana = OracleTextParser.detect_land_mana(oracle_text, subtypes, card_name=name)
+            mana_units = OracleTextParser.detect_land_mana_units(oracle_text)
             enters_tapped = OracleTextParser.detect_enters_tapped(oracle_text, card_name=name)
+            # Karoo-family structural ETB clause (E1b): mandatory
+            # "return a land you control to its owner's hand" on entry.
+            if oracle_text and re.search(
+                    r"when(?:ever)? (?:this land|[^.,\n]{1,40}) enters"
+                    r"(?: the battlefield)?,\s*return a land you control"
+                    r" to its owner'?s hand",
+                    oracle_text, re.IGNORECASE):
+                etb_return_land = True
             # Detect land entry conditions from oracle text
             if oracle_text:
                 import re as _re
@@ -1372,6 +1450,8 @@ class CardDatabase:
             abilities=abilities,
             color_identity=color_identity,
             produces_mana=produces_mana,
+            mana_units=mana_units,
+            etb_return_land=etb_return_land,
             enters_tapped=enters_tapped,
             untap_life_cost=untap_life_cost,
             untap_max_other_lands=untap_max_other_lands,

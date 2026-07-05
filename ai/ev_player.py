@@ -1737,7 +1737,7 @@ class EVPlayer:
 
         ev = LAND_BASE_EV
 
-        current_untapped = len(me.untapped_lands)
+        current_untapped = me.untapped_mana_capacity()
         hand_spells = [s for s in me.hand if not s.template.is_land]
         has_castable_spells = any(
             (s.template.cmc or 0) <= current_untapped + 1
@@ -1940,7 +1940,7 @@ class EVPlayer:
                     ev += p_assemble * completed_value
 
         # Landfall deferral: cast landfall creature FIRST, then play land
-        current_mana = len(me.untapped_lands) + me.mana_pool.total() + me._tron_mana_bonus()
+        current_mana = me.untapped_mana_capacity() + me.mana_pool.total() + me._tron_mana_bonus()
         for spell in me.hand:
             if spell.template.is_land:
                 continue
@@ -3672,7 +3672,7 @@ class EVPlayer:
             return None
 
         # Available mana
-        available_mana = (len(player.untapped_lands)
+        available_mana = (player.untapped_mana_capacity()
                           + player.mana_pool.total()
                           + player._tron_mana_bonus())
 

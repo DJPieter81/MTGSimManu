@@ -1878,7 +1878,7 @@ class GameRunner:
                     and not getattr(perm, 'tapped', False)
                     and not perm.template.is_creature):
                 # Need 2 mana to activate
-                untapped_count = len(player.untapped_lands)
+                untapped_count = player.untapped_mana_capacity()
                 if untapped_count >= 2:
                     # Find missing Tron piece
                     tron_pieces = URZA_TRON_LANDS
@@ -2052,7 +2052,7 @@ class GameRunner:
                     c for c in player.graveyard
                     if CardType.ARTIFACT in c.template.card_types
                     and not c.template.is_land  # artifact lands aren't "cast"
-                    and (c.template.cmc or 0) <= len(player.untapped_lands)
+                    and (c.template.cmc or 0) <= player.untapped_mana_capacity()
                 ]
                 if not artifacts:
                     continue
