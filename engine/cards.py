@@ -249,6 +249,11 @@ class CardInstance:
     targets: List[int] = field(default_factory=list)  # instance_ids
     # Instance-level tags (for equipment effects etc.)
     instance_tags: Set[str] = field(default_factory=set)
+    # CR 111: token-ness is a property of the OBJECT, not the template.
+    # Set by the token-creation funnel (PermanentEffects.create_token);
+    # read by SBA 704.5f (tokens off the battlefield cease to exist)
+    # and the cast gate (CR 111.2 — tokens aren't cards, can't be cast).
+    is_token: bool = False
     # Back-reference to game state (set when entering battlefield)
     _game_state: Any = field(default=None, repr=False)
     # Evoke tracking

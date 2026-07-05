@@ -603,6 +603,11 @@ class GameState:
                 )
                 actions_taken = True
 
+        # Tokens off the battlefield cease to exist (SBA 704.5f) —
+        # single implementation lives in SBAManager.
+        if SBAManager.perform_token_cleanup(self):
+            actions_taken = True
+
         # Legend rule (SBA 704.5j)
         for player in self.players:
             legendaries_by_name = {}

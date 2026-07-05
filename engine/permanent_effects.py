@@ -161,6 +161,7 @@ class PermanentEffects:
                 instance_id=game.next_instance_id(),
                 zone="battlefield",
             )
+            instance.is_token = True  # CR 111 — see cards.py field doc
             instance._game_state = game
             instance.enter_battlefield()
             game.players[controller].battlefield.append(instance)
