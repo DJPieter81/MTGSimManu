@@ -241,6 +241,12 @@ class CardInstance:
     turned_face_up: bool = True
     entered_battlefield_this_turn: bool = False
     attacked_this_turn: bool = False
+    # CR 400.7 object identity: a card that changes zones becomes a new
+    # object. The engine reuses one CardInstance across zones, so each
+    # battlefield entry bumps this sequence; delayed one-shot riders
+    # (e.g. "exile it at the beginning of the next end step") capture it
+    # at registration and go stale if the object re-enters.
+    battlefield_entry_seq: int = 0
     # Energy counters (for energy decks)
     energy_produced: int = 0
     # Flashback (granted by Past in Flames)
@@ -588,6 +594,9 @@ class CardInstance:
         self.zone = "battlefield"
         self.summoning_sick = True
         self.entered_battlefield_this_turn = True
+        # CR 400.7: each battlefield entry is a new object; delayed
+        # one-shot riders bound to a previous entry must lose track of it.
+        self.battlefield_entry_seq += 1
         if self.template.is_land and self.template.enters_tapped:
             self.tapped = True
 
