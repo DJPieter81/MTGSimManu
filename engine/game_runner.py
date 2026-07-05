@@ -1189,6 +1189,12 @@ class GameRunner:
         # After each spell, opponent gets a response window (CR 117.3d).
         # Both must pass for the stack to resolve (CR 117.4).
         priority = game.priority
+        # Auto-fire imprint-copy artifacts at sorcery speed (moved out
+        # of the pre-draw upkeep — see
+        # _process_imprint_copy_activations for the CR rationale).
+        self._process_imprint_copy_activations(game, ai.player_idx)
+        if game.game_over:
+            return
         # Combo decks (Storm, Living End) need to chain many spells in one turn.
         # Storm: 10+ rituals + cantrips + finisher = 15-25 actions
         # Living End: cycling + cascade = 5-10 actions
@@ -1717,78 +1723,91 @@ class GameRunner:
         return self._activate_pay_life_draw(game, active)
 
     def _process_upkeep_activations(self, game: GameState, active: int):
-        """Fire generic activated abilities that auto-trigger each upkeep.
+        """Pre-draw upkeep pass for generic auto-fired activated
+        abilities.
 
-        Currently supports Isochron Scepter: if the Scepter is untapped and has
-        an imprinted card, pay {2}, tap, and cast a free copy of the imprinted
-        spell. Keeps the lock/value engine functional for Azorius Control.
+        Imprint-copy artifacts (Isochron Scepter pattern) moved to
+        `_process_imprint_copy_activations`, fired from the main
+        phase: a pre-draw upkeep cast was both bad timing and, for
+        target-requiring imprints, an illegal cast into an empty
+        stack (CR 601.2c). Nothing else currently fires here; the
+        hook stays so future genuinely-upkeep abilities have a home.
         """
+        return
+
+    def _process_imprint_copy_activations(self, game: GameState,
+                                          active: int):
+        """Fire 'imprint + you may copy' artifacts at a main phase.
+
+        Generic mechanic (oracle-driven, no card names):
+        - The activation casts a COPY of the imprinted card; the
+          imprinted card stays in exile with its link intact, so the
+          lock is reusable (CR 707.10a).
+        - The copy is never cast without a legal target for every
+          non-optional requirement (CR 601.2c) — a counter-pattern
+          imprint simply does not auto-fire into an empty stack.
+        - The {2} cost goes through the real payment solver.
+        - The resolved copy ceases to exist (handled in
+          spell_resolution via `_is_spell_copy`), it never enters
+          the graveyard.
+        """
+        from .mana import ManaCost
+        from .target_solver import parse as _parse_targets
+        from .target_solver import has_legal_target_for_spell
+
         player = game.players[active]
         for card in list(player.battlefield):
-            # Oracle-driven detection of "imprint + you may copy" artifacts
-            # (Isochron Scepter pattern). Replaces the hardcoded name check
-            # so any future imprint-copy artifact works through the same
-            # code path.
             oracle = (card.template.oracle_text or '').lower()
             if 'imprint' not in oracle or 'you may copy' not in oracle:
                 continue
             if getattr(card, 'tapped', False):
                 continue
-            if card.summoning_sick and "haste" not in {
-                getattr(kw, 'value', str(kw).lower()) for kw in card.template.keywords
-            }:
-                # Artifact activations don't need summoning-sickness gating in
-                # MTG, but this is a defensive guard in case the engine ever
-                # treats Scepter as "sick". Skip only if truly unusable.
-                continue
-            imprinted_name = getattr(card, 'instance_tags', set())
-            imp = None
-            if isinstance(imprinted_name, set):
-                imp = next((t.replace("imprint:", "") for t in imprinted_name
-                            if isinstance(t, str) and t.startswith("imprint:")), None)
+            imp = next((t.replace("imprint:", "")
+                        for t in getattr(card, 'instance_tags', set())
+                        if isinstance(t, str) and t.startswith("imprint:")),
+                       None)
             if not imp:
                 continue
-            # Check mana: need {2} plus the imprint spell is a FREE copy.
-            if player.available_mana_estimate < 2:
-                continue
-            # Find the imprinted spell's template somewhere — prefer exile
-            # (that's where Scepter stashes it), fall back to card DB lookup.
             imp_inst = next(
                 (c for c in player.exile
-                 if c.template.name == imp and "on_scepter" in getattr(c, 'instance_tags', set())),
-                None
-            )
+                 if c.template.name == imp
+                 and "on_scepter" in getattr(c, 'instance_tags', set())),
+                None)
             if imp_inst is None:
                 continue
-            # Pay {2} from the pool (best-effort; full color-aware payment lives
-            # in game_state.cast_spell, but Scepter's cost is strictly generic).
-            paid = player.mana_pool.spend_generic(2) if hasattr(player.mana_pool, 'spend_generic') else False
-            if not paid:
-                # Try to auto-tap lands for 2 generic.
-                tapped = 0
-                for land in player.untapped_lands:
-                    if tapped >= 2:
-                        break
-                    land.tapped = True
-                    tapped += 1
-                if tapped < 2:
-                    continue
+
+            template = imp_inst.template
+            # CR 601.2c — every non-optional target requirement of the
+            # copy must have a legal candidate NOW, or the ability is
+            # not activated at all (no fizzle-casting).
+            requirements = _parse_targets(template.oracle_text or "")
+            if requirements and not has_legal_target_for_spell(
+                    game, active, requirements):
+                continue
+
+            # Pay {2} through the real solver — no blind land taps.
+            if not game.tap_lands_for_mana(
+                    active, ManaCost(generic=2),
+                    card_name=card.template.name):
+                continue
             card.tapped = True
-            # Cast a free copy of the imprinted spell.
-            try:
-                game.cast_spell(active, imp_inst, free_cast=True, is_copy=True)
-                game.log.append(f"T{game.display_turn} P{active+1}: "
-                                f"Isochron Scepter copies {imp}")
-            except TypeError:
-                # cast_spell may not accept is_copy in some builds; fall back.
-                try:
-                    game.cast_spell(active, imp_inst, free_cast=True)
-                    game.log.append(f"T{game.display_turn} P{active+1}: "
-                                    f"Isochron Scepter copies {imp}")
-                except Exception:
-                    pass
-            except Exception:
-                pass
+
+            # Cast a true COPY; the imprinted card never leaves exile.
+            copy = CardInstance(
+                template=template,
+                owner=active,
+                controller=active,
+                instance_id=game.next_instance_id(),
+                zone="stack",
+            )
+            copy._game_state = game
+            copy._is_spell_copy = True
+            game.cast_spell(active, copy, free_cast=True)
+            game.log.append(f"T{game.display_turn} P{active+1}: "
+                            f"{card.template.name} copies {imp}")
+            game.resolve_stack()
+            if game.game_over:
+                return
 
     def _activate_goblin_bombardment(self, game: GameState, active: int):
         """Activate Goblin Bombardment: sacrifice tokens/small creatures to deal 1 damage each."""
