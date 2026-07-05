@@ -4,10 +4,21 @@
 Run this after git pull, before any sim or dashboard work.
 Usage: python3 merge_db.py
 """
-import json, glob, os, sys
+import json, glob, os, re, sys
 
 base = "ModernAtomic.json"
-parts = sorted(glob.glob("ModernAtomic_part*.json"))
+
+
+def _part_number(path):
+    # Later parts carry UPDATED versions of cards from earlier parts, so
+    # merge order is load-bearing: numeric suffix order, never
+    # lexicographic ("part10" < "part2" would let stale part2 entries
+    # overwrite part10's updated cards). Mirrors tests/conftest.py.
+    m = re.search(r"part(\d+)", path)
+    return int(m.group(1)) if m else 0
+
+
+parts = sorted(glob.glob("ModernAtomic_part*.json"), key=_part_number)
 
 if not parts:
     print("No part files found — nothing to merge.")

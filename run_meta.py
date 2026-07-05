@@ -878,6 +878,20 @@ def run_bo3(deck1: str, deck2: str, seed: int = 42000,
         with open(dump_replay, 'w') as f:
             f.write(replay_log.to_ndjson())
             f.write('\n')
+        # Auto-audit: every dump gets the rules-legality lint pass
+        # (tools/replay_lint.py). Non-fatal — findings go to stdout so
+        # the operator sees violations immediately.
+        try:
+            from tools.replay_lint import lint_file as _lint_file
+            _findings = _lint_file(dump_replay, db=CardDatabase())
+            if _findings:
+                lines.append(f"replay_lint: {len(_findings)} finding(s) "
+                             f"in {dump_replay}")
+                lines.extend("  " + _f.line() for _f in _findings)
+            else:
+                lines.append(f"replay_lint: clean ({dump_replay})")
+        except Exception as _exc:
+            lines.append(f"replay_lint: skipped ({_exc})")
 
     return '\n'.join(lines)
 
@@ -1016,6 +1030,27 @@ def save_results(result: Dict, path: str = RESULTS_FILE):
     with open(path, 'w') as f:
         json.dump(data, f, indent=2)
     print(f'Results saved to {path}', file=sys.stderr)
+
+
+def _run_calibration_check(results_path: str = RESULTS_FILE) -> None:
+    """Post-save calibration audit (tools/check_calibration.py).
+
+    Mirrors the replay-lint hook (PR #444): every ``--matrix --save``
+    becomes a ground-truth audit of the freshly saved matrix against
+    the real-world Modern priors in tools/calibration_bands.json.
+    Non-fatal — out-of-band findings are printed as diagnostics and
+    never fail the run; a missing bands file degrades to a one-line
+    notice.
+    """
+    try:
+        from tools.check_calibration import DEFAULT_BANDS_PATH, run_check
+        if not os.path.exists(DEFAULT_BANDS_PATH):
+            print(f'check_calibration: skipped (no bands file at '
+                  f'{DEFAULT_BANDS_PATH})', file=sys.stderr)
+            return
+        run_check(results_path, DEFAULT_BANDS_PATH, strict=False)
+    except Exception as e:
+        print(f'check_calibration: skipped ({e})', file=sys.stderr)
 
 
 def load_results(path: str = RESULTS_FILE) -> Optional[Dict]:
@@ -1324,6 +1359,10 @@ if __name__ == '__main__':
 
         if args.save:
             save_results(result)
+            # Calibration audit vs ground-truth Modern priors
+            # (tools/check_calibration.py). Non-fatal — mirrors the
+            # replay-lint hook (PR #444).
+            _run_calibration_check()
             # Auto-rebuild dashboard from saved results
             try:
                 from build_dashboard import merge

@@ -48,6 +48,27 @@ class ResolutionManager:
         card = item.source
         template = card.template
 
+        # CR 608.2b: re-check target legality on resolution. A spell
+        # whose targets are ALL illegal doesn't resolve — it fizzles
+        # to the graveyard with no effect. Ported from the dead legacy
+        # resolver (engine/stack.py, pre-unification); see
+        # docs/proposals/resolver_sba_unification.md §5.1.
+        if (item.item_type == StackItemType.SPELL and item.targets
+                and ResolutionManager._spell_fizzles(game, item)):
+            game.log.append(
+                f"T{game.display_turn}: {card.name} fizzles "
+                f"(all targets illegal, CR 608.2b)")
+            if getattr(card, '_cast_with_flashback', False):
+                # CR 702.33a: flashback replaces graveyard with exile
+                # even when the spell doesn't resolve.
+                card.zone = "exile"
+                game.players[card.owner].exile.append(card)
+                card.has_flashback = False
+            else:
+                card.zone = "graveyard"
+                game.players[card.owner].graveyard.append(card)
+            return
+
         # Only log "Resolve" for spells — not for triggered/activated abilities
         if item.item_type == StackItemType.SPELL:
             game.log.append(f"T{game.display_turn}: Resolve {card.name}")
@@ -73,6 +94,11 @@ class ResolutionManager:
                     if not hasattr(game, '_rebound_cards'):
                         game._rebound_cards = []
                     game._rebound_cards.append(card)
+                elif getattr(card, '_is_spell_copy', False):
+                    # CR 707.10a — a resolved spell COPY ceases to
+                    # exist; it never enters the graveyard (imprint-
+                    # copy artifacts, storm copies routed here, …).
+                    card.zone = "expired_copy"
                 else:
                     card.zone = "graveyard"
                     game.players[card.owner].graveyard.append(card)
@@ -128,6 +154,41 @@ class ResolutionManager:
             elif item.effect:
                 item.effect(game, item.source, item.controller, item.targets)
 
+
+    @staticmethod
+    def _spell_fizzles(game: "GameState", item: StackItem) -> bool:
+        """CR 608.2b — true when EVERY target chosen at cast time is
+        now illegal, in which case the spell doesn't resolve.
+
+        Target-entry shapes handled (see ai/ev_player._choose_targets
+        and ai/response.py for the producers):
+
+        * negative int (``-1`` face marker): a player target. Players
+          remain legal targets while the game is live — the game-over
+          path never reaches resolution — so these always count as
+          valid.
+        * positive int: instance_id of a card. Legal iff the card
+          still exists AND still occupies the zone it was in when
+          targeted (cast-time snapshot in ``StackItem.target_zones``
+          — battlefield for removal, stack for counterspells,
+          graveyard for reanimation). Changing zone makes the target
+          illegal (CR 608.2b).
+        * anything else (direct object ref, player index without a
+          snapshot, items built outside CastManager e.g. in tests):
+          cannot be proven illegal — counts as valid, so the spell
+          resolves. Fizzling is only ever asserted on positive
+          evidence that a target left its zone.
+        """
+        for tid in item.targets:
+            if not isinstance(tid, int) or tid < 0:
+                return False  # player target / object ref — valid
+            cast_zone = item.target_zones.get(tid)
+            if cast_zone is None:
+                return False  # no snapshot — can't prove illegal
+            target = game.get_card_by_id(tid)
+            if target is not None and target.zone == cast_zone:
+                return False  # still where it was targeted — valid
+        return True  # every target verifiably left its cast-time zone
 
     @staticmethod
     def _handle_permanent_etb(game: "GameState", card: CardInstance, controller: int,

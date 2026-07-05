@@ -26,6 +26,29 @@ from tests.eval.llm_eval import (
     run_eval,
 )
 
+# `run_eval(..., test_model_payload=...)` builds a real
+# `pydantic_ai.Agent` (overridden with `TestModel`), so the two
+# harness-wiring smoke tests need the optional pydantic_ai dep.
+# The golden-pair discovery tests above them do not — they must keep
+# running in dep-free environments, so we mark only the TestModel
+# tests instead of collect_ignore-ing the whole module (the pattern
+# `tests/conftest.py` uses for modules that import pydantic_ai at
+# module scope). Because `tests/eval/test_smoke.py` re-exports these
+# functions, the marker travels with them and gates both collection
+# points.
+try:
+    import pydantic_ai  # noqa: F401  (presence probe only)
+
+    _HAS_PYDANTIC_AI = True
+except ImportError:
+    _HAS_PYDANTIC_AI = False
+
+requires_pydantic_ai = pytest.mark.skipif(
+    not _HAS_PYDANTIC_AI,
+    reason="optional dep pydantic_ai absent — TestModel wiring smoke "
+           "runs only when the LLM feature set is installed",
+)
+
 
 # ─── Golden-pair discovery ──────────────────────────────────────────
 
@@ -56,6 +79,7 @@ def test_handler_audit_goldens_load():
 # ─── Harness wires up via TestModel ──────────────────────────────────
 
 
+@requires_pydantic_ai
 def test_run_eval_passes_when_test_model_echoes_expected():
     """When TestModel emits exactly what's expected, every pair scores 1.0."""
     pairs = load_golden_pairs("handler_audit")
@@ -79,6 +103,7 @@ def test_run_eval_passes_when_test_model_echoes_expected():
     assert matching[0].passed is True
 
 
+@requires_pydantic_ai
 def test_run_eval_threshold_gates_pass_fail():
     """A non-matching payload should score below 1.0; threshold gates pass."""
     pairs = load_golden_pairs("handler_audit")

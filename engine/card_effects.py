@@ -1931,11 +1931,12 @@ def valakut_awakening_resolve(game, card, controller, targets=None, item=None):
     game.draw_cards(controller, 2)
 
 
-@EFFECT_REGISTRY.register("March of Reckless Joy", EffectTiming.SPELL_RESOLVE,
-                           description="Exile top cards equal to cards exiled + 2")
-def march_of_reckless_joy_resolve(game, card, controller, targets=None, item=None):
-    # Simplified: draw 2 (exile-play)
-    game.draw_cards(controller, 2)
+# March of Reckless Joy handler removed — its "exile the top X …
+# you may play up to two" shape routes through the tagged
+# impulse-reveal branch in oracle_resolver (play-cap sub-shape), so
+# the impulse family stays draw-trigger-free (CR 121.1c). The old
+# handler drew 2 through draw_cards and fired Bowmasters — the exact
+# M1/R1 bug reintroduced for one card.
 
 
 # ═══════════════════════════════════════════════════════════════════

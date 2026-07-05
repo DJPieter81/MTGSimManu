@@ -15,6 +15,8 @@ from __future__ import annotations
 import re
 from typing import Dict, Optional, Tuple
 
+from engine.oracle_clauses import split_abilities
+
 
 def parse_ritual_mana(oracle: str) -> Optional[Tuple[str, int]]:
     """Parse mana production from oracle text.
@@ -493,13 +495,18 @@ def derive_tags_from_oracle(oracle: str, keywords: set, card_types: set,
     if 'amass' in lower:
         tags.add("token_maker")
 
-    # ETB value: "when * enters" with a beneficial effect
-    etb_triggers = ('when ' in lower and 'enters' in lower)
-    if etb_triggers:
-        has_value = any(kw in lower for kw in ('draw', 'damage', 'destroy', 'exile',
-                                                 'search', 'create', 'return', 'gain'))
-        if has_value:
+    # ETB value: "when * enters" with a beneficial effect.
+    # Clause-scoped (E5): a triggered ability's condition and effect
+    # share one ability paragraph (CR 603.1), so the value keyword must
+    # appear in the SAME paragraph as the "when … enters" trigger — a
+    # damage verb in a separate ability (or reminder text on another
+    # line) must not tag.
+    for ability in split_abilities(lower):
+        if 'when ' in ability and 'enters' in ability and any(
+                kw in ability for kw in ('draw', 'damage', 'destroy', 'exile',
+                                         'search', 'create', 'return', 'gain')):
             tags.add("etb_value")
+            break
 
     # Flash detection from oracle (backup if keyword not parsed)
     if 'flash' in lower.split('\n')[0] if lower else False:
@@ -631,3 +638,72 @@ def is_metalcraft_mana_any_color(oracle: str) -> bool:
     if "any color" not in lower:
         return False
     return True
+
+
+# ─── Saga chapter structure ────────────────────────────────────────────
+#
+# CR 714: saga oracle text is a sequence of chapter abilities, each
+# introduced by one or more roman numerals ("I —", "I, II —"). Two
+# mechanically distinct chapter shapes exist:
+#
+#   1. Plain one-shot effects ("Search your library ...") — the effect
+#      happens when the chapter's lore counter lands.
+#   2. Ability grants ('This Saga gains "<cost>: <effect>"') — the
+#      permanent GAINS the quoted activated ability; the quoted effect
+#      only happens when its controller activates it and pays the cost.
+#
+# `parse_saga_chapters` extracts the chapter map; `extract_granted_ability`
+# classifies shape 2 and returns the quoted ability text.
+
+# Roman numerals I..V — CR 714.2 sagas cap at chapter V in practice.
+_SAGA_ROMAN = {"I": 1, "II": 2, "III": 3, "IV": 4, "V": 5}
+
+_SAGA_CHAPTER_RE = re.compile(
+    r"^\s*(?P<nums>[IVX]+(?:\s*,\s*[IVX]+)*)\s*[—–-]\s*(?P<text>.+)$",
+    re.MULTILINE,
+)
+
+# 'gains "<ability>"' with either quote style. The quoted ability must
+# contain a ':' cost separator to count as an activated ability (grants
+# of keywords/static text are not activation candidates).
+_SAGA_GAINS_RE = re.compile(
+    r"gains\s+\"(?P<dq>[^\"]+)\"|gains\s+'(?P<sq>[^']+)'",
+    re.IGNORECASE,
+)
+
+
+def parse_saga_chapters(oracle: str) -> Dict[int, str]:
+    """Map chapter number → chapter effect text for a saga's oracle.
+
+    Lines with multiple numerals ("I, II — <text>") assign the same
+    text to each listed chapter. Returns {} when the oracle has no
+    chapter markers (non-saga or unparsable text).
+    """
+    chapters: Dict[int, str] = {}
+    if not oracle:
+        return chapters
+    for m in _SAGA_CHAPTER_RE.finditer(oracle):
+        text = m.group("text").strip()
+        for numeral in m.group("nums").split(","):
+            n = _SAGA_ROMAN.get(numeral.strip())
+            if n is not None:
+                chapters[n] = text
+    return chapters
+
+
+def extract_granted_ability(chapter_text: Optional[str]) -> Optional[str]:
+    """If a chapter's effect grants a quoted ACTIVATED ability, return
+    the quoted ability text ("<cost>: <effect>"); otherwise None.
+
+    Shape: '... gains "<cost>: <effect>"'. The ':' requirement filters
+    out keyword/static grants, which have no activation semantics.
+    """
+    if not chapter_text:
+        return None
+    m = _SAGA_GAINS_RE.search(chapter_text)
+    if not m:
+        return None
+    ability = (m.group("dq") or m.group("sq") or "").strip()
+    if ":" not in ability:
+        return None
+    return ability

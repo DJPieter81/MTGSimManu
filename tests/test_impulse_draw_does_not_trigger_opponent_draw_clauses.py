@@ -198,6 +198,105 @@ def test_impulse_reveal_with_two_bowmasters_deals_zero_self_damage():
     )
 
 
+def test_play_cap_x_impulse_reveals_cap_and_fires_zero_draw_triggers():
+    """Rule: the play-cap X sub-shape ('exile the top X … you may
+    play up to TWO of those cards') is impulse-reveal for the CAP —
+    never a draw. The old per-card handler drew 2 through
+    `draw_cards` and re-fired Bowmasters for exactly this shape."""
+    game = _fresh_game()
+    revealer, opp = 0, 1
+    _put_bowmasters(game, controller=opp)
+    _put_bowmasters(game, controller=opp)
+    _stack_dummies(game, controller=revealer, n=3)
+
+    march = _make_classified_card(
+        game, name="March of Reckless Joy", controller=revealer,
+        oracle_text=(
+            "As an additional cost to cast this spell, you may exile "
+            "any number of red cards from your hand. This spell costs "
+            "{2} less to cast for each card exiled this way.\n"
+            "Exile the top X cards of your library. You may play up to "
+            "two of those cards until the end of your next turn."),
+        zone="hand", card_types=[CardType.SORCERY],
+    )
+    game.players[revealer].hand.append(march)
+    game.current_phase = Phase.MAIN1
+    game.active_player = revealer
+    game.players[revealer].cards_drawn_this_turn = 5
+
+    hand_before = len(game.players[revealer].hand)
+    life_before = game.players[revealer].life
+
+    from engine.oracle_resolver import resolve_spell_from_oracle
+    resolve_spell_from_oracle(game, march, revealer)
+
+    assert game.players[revealer].life == life_before, (
+        "play-cap impulse must NOT fire on-draw damage triggers")
+    # cap of two revealed as playable (dst approximation: hand)
+    assert len(game.players[revealer].hand) == hand_before + 2
+
+
+def _deck_pool_tagged_impulse_spells():
+    """Every registered-deck instant/sorcery carrying the
+    IMPULSE_DRAW verdict — the durable per-card regression surface.
+    The coverage gate (tools/check_classifier_coverage.py) guarantees
+    this list can never silently shrink relative to the deck pool."""
+    import json
+    from pathlib import Path
+    from tools.check_classifier_coverage import collect_deck_pool_oracles
+    cache = json.loads(
+        (Path(__file__).resolve().parent.parent / "decks" / "gameplans" /
+         "_oracle_classifier.json").read_text())["cards"]
+    from tests._card_db_cache import shared_card_database
+    db = shared_card_database()
+    out = []
+    for name in collect_deck_pool_oracles():
+        entry = cache.get(name)
+        if not entry or "IMPULSE_DRAW" not in entry.get("tags", []):
+            continue
+        tmpl = db.get_card(name)
+        if tmpl and (tmpl.is_instant or tmpl.is_sorcery):
+            out.append((name, tmpl.oracle_text))
+    return out
+
+
+import pytest
+
+
+@pytest.mark.parametrize("name,oracle", _deck_pool_tagged_impulse_spells())
+def test_every_registered_impulse_spell_fires_zero_draw_triggers(
+        name, oracle):
+    """Data-driven: each REAL impulse spell in the registered deck
+    pool, resolved with two on-draw-damage permanents opposing, may
+    change the caster's life by exactly its own printed 'lose N life'
+    clause and nothing else."""
+    import re as _re
+    game = _fresh_game()
+    revealer, opp = 0, 1
+    _put_bowmasters(game, controller=opp)
+    _put_bowmasters(game, controller=opp)
+    _stack_dummies(game, controller=revealer, n=5)
+
+    spell = _make_classified_card(
+        game, name=name, controller=revealer, oracle_text=oracle,
+        zone="hand", card_types=[CardType.SORCERY])
+    game.players[revealer].hand.append(spell)
+    game.current_phase = Phase.MAIN1
+    game.active_player = revealer
+    game.players[revealer].cards_drawn_this_turn = 5
+
+    life_before = game.players[revealer].life
+    m = _re.search(r"lose (\d+) life", oracle or "")
+    printed_self_loss = int(m.group(1)) if m else 0
+
+    from engine.oracle_resolver import resolve_spell_from_oracle
+    resolve_spell_from_oracle(game, spell, revealer)
+
+    assert game.players[revealer].life == life_before - printed_self_loss, (
+        f"{name}: caster life moved beyond its printed clause — "
+        f"on-draw triggers fired on impulse-reveal")
+
+
 def test_impulse_reveal_does_not_fire_opp_draw_life_loss():
     """Rule: impulse-reveal is NOT a draw, so Sheoldred-style
     'whenever an opponent draws, they lose N life' does NOT fire.

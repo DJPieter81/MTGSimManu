@@ -1144,11 +1144,24 @@ class CastManager:
             # Surface the updated color set for the stack item / Converge resolvers
             game._last_colors_spent = xpay_colors
 
+        # CR 608.2b support: snapshot each card-target's zone at cast
+        # time. ResolutionManager re-checks target legality on
+        # resolution against this snapshot — battlefield for removal,
+        # stack for counterspells, graveyard for reanimation. Player-
+        # target markers (negative ids) have no zone to snapshot.
+        target_zones = {}
+        for _tid in (targets or []):
+            if isinstance(_tid, int) and _tid > 0:
+                _tc = game.get_card_by_id(_tid)
+                if _tc is not None:
+                    target_zones[_tid] = _tc.zone
+
         stack_item = StackItem(
             item_type=StackItemType.SPELL,
             source=card,
             controller=player_idx,
             targets=targets or [],
+            target_zones=target_zones,
             x_value=x_value,
             # Snapshot the colors actually spent for Converge ("number of
             # colors of mana spent to cast this spell"). Populated by the

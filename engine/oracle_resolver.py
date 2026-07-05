@@ -17,6 +17,12 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Tuple
 
+from engine.oracle_clauses import (
+    any_ability_with,
+    split_abilities,
+    split_clauses,
+)
+
 if TYPE_CHECKING:
     from engine.game_state import GameState
     from engine.cards import CardInstance, CardTemplate
@@ -140,6 +146,60 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
         game.surveil(controller, int(m.group(1)))
         return True
 
+    # ── "When this ~ enters, (you may) return target card from your
+    #     graveyard to your hand" (Eternal Witness class) ──
+    # Class size: every regrowth-on-a-body printing — Eternal Witness,
+    # Archaeomancer, Greenwarden of Murasa, Timeless Witness, Scholar
+    # of the Ages, ... — plus type-restricted variants ("return target
+    # instant or sorcery card ..."), whose restriction is parsed from
+    # the same clause. Dispatch is gated by the classifier tag
+    # `Tag.ETB_RETURN_FROM_GY_TO_HAND`; the only oracle parse is the
+    # targeted clause parse for the optional type restriction
+    # (assert-fail on tag/oracle desync, same as the surveil branch).
+    if has_tag(card.name, Tag.ETB_RETURN_FROM_GY_TO_HAND):
+        m = re.search(
+            r'return target ([a-z ]*?)cards? from your graveyard to your hand',
+            oracle)
+        if m is None:
+            raise AssertionError(
+                f"{card.name!r} carries Tag.ETB_RETURN_FROM_GY_TO_HAND "
+                f"but its oracle text does not match the 'return target "
+                f"... card from your graveyard to your hand' shape — "
+                f"classifier and oracle are out of sync."
+            )
+        # Optional type restriction, e.g. "instant or sorcery " → the
+        # returned card must have at least one of the listed types.
+        # Empty for the unrestricted "target card" shape.
+        restriction = {w for w in re.split(r'\s+or\s+|\s+', m.group(1)) if w}
+        player = game.players[controller]
+        candidates = [
+            c for c in player.graveyard
+            if not restriction
+            or restriction & {t.value for t in c.template.card_types}
+        ]
+        if not candidates:
+            # "You may" / no legal target — the trigger fizzles to a
+            # no-op, but the branch owns this card's ETB: report handled
+            # so the silent-miss diagnostic doesn't flag it.
+            return True
+        # Deterministic engine commitment (no AI hook yet — same
+        # convention as `game.surveil`'s bin-to-GY policy and the
+        # energy-spell min-to-kill spend above): prefer nonland cards
+        # (lands are recoverable via fetches/land drops, spells are
+        # not), then highest mana value as the largest recurred
+        # resource; ties resolve to graveyard order for determinism.
+        best = max(
+            candidates,
+            key=lambda c: (not c.template.is_land, c.template.cmc or 0),
+        )
+        player.graveyard.remove(best)
+        best.zone = "hand"
+        player.hand.append(best)
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: {card.name} returns "
+            f"{best.name} from graveyard to hand")
+        return True
+
     return False
 
 
@@ -158,15 +218,24 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
     opponent = 1 - controller
     handled = False
 
+    # Clause-scoped predicates (E5): a spell effect's verbs live in one
+    # ability paragraph (a spell's resolution text; an added ability
+    # like flashback or suspend sits on its own line). Whole-text
+    # conjunctions false-positive on multi-ability cards, so each
+    # branch below tests its substrings against individual paragraphs.
+    abilities = split_abilities(oracle)
+
     # ── Mass-reanimate (Living End shape) ──
     # "Exile all creature cards from graveyards ... return them to the
     # battlefield." cast_manager._handle_cascade detects this and calls
     # _resolve_living_end; spells reaching the normal resolution path
     # (suspend-cast, hard-cast) must trigger the same effect or they
-    # silently no-op. Oracle-pattern keyed — same predicate as cascade.
-    if ('all creature cards' in oracle
-            and 'graveyard' in oracle
-            and 'battlefield' in oracle):
+    # silently no-op. Oracle-pattern keyed — the exile/return effect is
+    # one paragraph, so all three phrases must share it.
+    if any('all creature cards' in a
+           and 'graveyard' in a
+           and 'battlefield' in a
+           for a in abilities):
         game._resolve_living_end(controller)
         return True
 
@@ -251,7 +320,11 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
 
     # ── "Target opponent reveals their hand. You choose a nonland card
     #     and that player discards it." (Thoughtseize, Inquisition) ──
-    if 'reveals' in oracle and 'hand' in oracle and 'discard' in oracle:
+    # The template spans several sentences of ONE paragraph (reveal /
+    # choose / discard), so the co-occurrence scope is the ability
+    # paragraph — local enough to reject a 'discard' verb from a
+    # separate ability while keeping the multi-sentence template intact.
+    if any_ability_with(oracle, 'reveals', 'hand', 'discard'):
         opp = game.players[opponent]
         if opp.hand:
             nonlands = [c for c in opp.hand if not c.template.is_land]
@@ -265,9 +338,13 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
                     f"T{game.display_turn} P{controller+1}: "
                     f"{card.name} discards {best.name}")
                 handled = True
-        # Life loss for Thoughtseize
-        if 'you lose' in oracle and 'life' in oracle:
-            m = re.search(r'lose\s+(\d+)\s+life', oracle)
+        # Life loss for Thoughtseize — the "You lose N life" rider is
+        # its own sentence; parse the amount from that clause.
+        loss_clause = next(
+            (c for c in split_clauses(oracle)
+             if 'you lose' in c and 'life' in c), None)
+        if loss_clause is not None:
+            m = re.search(r'lose\s+(\d+)\s+life', loss_clause)
             if m:
                 game.players[controller].life -= int(m.group(1))
                 handled = True
@@ -276,9 +353,10 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
     #     into Stupor-class bounce. Picks the highest-threat nonland
     #     permanent opponent controls; lands are never valid targets
     #     (prior handler did not enforce the filter).
-    if ('return target' in oracle
-            and 'nonland permanent' in oracle
-            and "owner's hand" in oracle):
+    if any('return target' in a
+           and 'nonland permanent' in a
+           and "owner's hand" in a
+           for a in abilities):
         opp = game.players[opponent]
         from engine.card_effects import _nonland_permanent_threat
         candidates = [c for c in opp.battlefield if not c.template.is_land]
@@ -304,10 +382,13 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
     #     ``engine.target_solver`` rather than re-implementing the
     #     parsing here. See
     #     ``docs/proposals/2026-05-02_unified_target_solver.md``.
-    if (re.search(r'return target\s+(\w+\s+)?creature card', oracle)
-            and 'graveyard' in oracle
-            and 'battlefield' in oracle
-            and not re.search(r'return target legendary creature', oracle)):
+    _reanimate_ability = next(
+        (a for a in abilities
+         if re.search(r'return target\s+(\w+\s+)?creature card', a)
+         and 'graveyard' in a and 'battlefield' in a
+         and not re.search(r'return target legendary creature', a)),
+        None)
+    if _reanimate_ability is not None:
         from engine.target_solver import (
             enumerate_legal_targets,
             parse as _parse_targets,
@@ -355,10 +436,16 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
 
     # Impulse-reveal path — gated by classifier tag, not regex chain.
     from ai.oracle_classifier import Tag, tags_for
-    if Tag.IMPULSE_DRAW in tags_for(card.name) and not card.template.x_cost_data:
+    if Tag.IMPULSE_DRAW in tags_for(card.name):
         from engine.zone_transfer import TransferKind, transfer
         m_exile = re.search(r'exile the top (\w+) cards? of your library',
                             oracle)
+        # Play-cap sub-shape: "exile the top X … you may play up to
+        # TWO of those cards" — the cap is the card-advantage value;
+        # X itself is an exile count (often an additional-cost count),
+        # not castable value. This is the only X-form the impulse
+        # branch handles; other X-impulses stay excluded.
+        m_cap = re.search(r'you may play up to (\w+)', oracle)
         impulse_n = 0
         if m_exile:
             tok = m_exile.group(1)
@@ -366,6 +453,14 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
                 impulse_n = int(tok)
             except ValueError:
                 impulse_n = word_to_num.get(tok, 0)
+        if impulse_n == 0 and m_cap:
+            tok = m_cap.group(1)
+            try:
+                impulse_n = int(tok)
+            except ValueError:
+                impulse_n = word_to_num.get(tok, 0)
+        if card.template.x_cost_data and not m_cap:
+            impulse_n = 0
         if impulse_n > 0:
             revealed: list = []
             player = game.players[controller]
@@ -423,18 +518,27 @@ def resolve_attack_trigger(game: "GameState", attacker: "CardInstance",
 
     opponent = 1 - controller
 
+    # Clause-scoped (E5): an attack trigger's effect lives in the same
+    # ability paragraph as its "attacks" condition (CR 603.1). Each
+    # branch below locates its own paragraph and runs the detail
+    # regexes against it, so a separate ability's damage verb can't
+    # feed the attack branch.
+    abilities = split_abilities(oracle)
+
     # Battle cry is handled by CombatManager._apply_battle_cry after all
     # attackers are declared — skipped here to avoid double-application.
     # (oracle_resolver fires per-attacker mid-loop; combat_manager fires once
     # over the complete attacker list, which is the correct timing.)
 
     # ── "Whenever this creature attacks, deal N damage" ──
-    if 'attacks' in oracle and 'damage' in oracle:
-        m = re.search(r'deals?\s+(\d+)\s+damage', oracle)
+    _dmg_ability = next(
+        (a for a in abilities if 'attacks' in a and 'damage' in a), None)
+    if _dmg_ability is not None:
+        m = re.search(r'deals?\s+(\d+)\s+damage', _dmg_ability)
         if m:
             amount = int(m.group(1))
             target = _pick_damage_target(game, controller, amount) \
-                if 'any target' in oracle else None
+                if 'any target' in _dmg_ability else None
             if target is not None:
                 target.damage_marked = getattr(target, 'damage_marked', 0) + amount
                 game.log.append(
@@ -446,8 +550,11 @@ def resolve_attack_trigger(game: "GameState", attacker: "CardInstance",
                 game.players[controller].damage_dealt_this_turn += amount
 
     # ── "Whenever this creature attacks, gain N life" ──
-    if 'attacks' in oracle and 'gain' in oracle and 'life' in oracle:
-        m = re.search(r'gain\s+(\d+)\s+life', oracle)
+    _life_ability = next(
+        (a for a in abilities
+         if 'attacks' in a and 'gain' in a and 'life' in a), None)
+    if _life_ability is not None:
+        m = re.search(r'gain\s+(\d+)\s+life', _life_ability)
         if m:
             game.gain_life(controller, int(m.group(1)), attacker.name)
 
@@ -463,9 +570,14 @@ def resolve_attack_trigger(game: "GameState", attacker: "CardInstance",
                 f"{attacker.name} mobilize {count} — create {count} 1/1 tokens")
 
     # ── "Whenever this creature attacks, create a token" ──
-    if ('attacks' in oracle and 'create' in oracle and 'token' in oracle
-            and 'mobilize' not in oracle):
-        m = re.search(r'create\s+(?:a|(\d+))\s+(\d+)/(\d+)', oracle)
+    # The mobilize exclusion stays whole-text: mobilize's reminder text
+    # ("Create N tapped and attacking 1/1 …") shares a paragraph with
+    # the attack wording and is already handled by the branch above.
+    _token_ability = next(
+        (a for a in abilities
+         if 'attacks' in a and 'create' in a and 'token' in a), None)
+    if _token_ability is not None and 'mobilize' not in oracle:
+        m = re.search(r'create\s+(?:a|(\d+))\s+(\d+)/(\d+)', _token_ability)
         if m:
             count = int(m.group(1) or 1)
             p, t = int(m.group(2)), int(m.group(3))
@@ -483,13 +595,21 @@ def resolve_dies_trigger(game: "GameState", card: "CardInstance",
     if not oracle:
         return
 
+    # Clause-scoped (E5): a dies/LTB trigger's effect shares an ability
+    # paragraph with its condition (CR 603.1); detail regexes run on
+    # that paragraph.
+    abilities = split_abilities(oracle)
+
     # ── "When this creature dies, draw a card" ──
-    if 'dies' in oracle and 'draw' in oracle:
+    if any('dies' in a and 'draw' in a for a in abilities):
         game.draw_cards(controller, 1)
 
     # ── "When this creature dies, create a token" ──
-    if 'dies' in oracle and 'create' in oracle and 'token' in oracle:
-        m = re.search(r'create\s+(?:a|(\d+))\s+(\d+)/(\d+)', oracle)
+    _token_ability = next(
+        (a for a in abilities
+         if 'dies' in a and 'create' in a and 'token' in a), None)
+    if _token_ability is not None:
+        m = re.search(r'create\s+(?:a|(\d+))\s+(\d+)/(\d+)', _token_ability)
         if m:
             count = int(m.group(1) or 1)
             p, t = int(m.group(2)), int(m.group(3))
@@ -498,15 +618,19 @@ def resolve_dies_trigger(game: "GameState", card: "CardInstance",
 
     # ── "When this creature leaves the battlefield, target opponent draws a card"
     #     (Thought-Knot Seer LTB) ──
-    if 'leaves the battlefield' in oracle and 'draw' in oracle:
+    _ltb_ability = next(
+        (a for a in abilities
+         if 'leaves the battlefield' in a and 'draw' in a), None)
+    if _ltb_ability is not None:
         opponent = 1 - controller
-        if 'opponent' in oracle or 'that player' in oracle:
+        if 'opponent' in _ltb_ability or 'that player' in _ltb_ability:
             game.draw_cards(opponent, 1)
         else:
             game.draw_cards(controller, 1)
 
     # ── "When this creature dies, return target card from graveyard to hand" ──
-    if 'dies' in oracle and 'return' in oracle and 'graveyard' in oracle and 'hand' in oracle:
+    if any('dies' in a and 'return' in a and 'graveyard' in a
+           and 'hand' in a for a in abilities):
         player = game.players[controller]
         if player.graveyard:
             # Return the best non-land card
