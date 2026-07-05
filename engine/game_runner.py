@@ -1369,134 +1369,18 @@ class GameRunner:
     def _choose_pw_ability(self, pw, pw_name, pw_data, player, opp, game):
         """Choose the best planeswalker ability to activate.
 
-        Uses ability descriptions to make generic decisions rather than
-        hardcoding per-card logic. Any planeswalker with standard loyalty
-        ability oracle text will automatically get reasonable behavior.
+        E3 layering fix (2026-07-05 probe): the ranking is a strategic
+        decision and lives in the AI layer — `ai/pw_ability.py::
+        choose_pw_ability`.  The engine only delegates here and then
+        enforces loyalty legality in `game.activate_planeswalker`.
+        `pw_name` is retained in the signature for call-site
+        compatibility; the chooser is description-driven and does not
+        consume it.
         """
-        def can_afford(ability_key):
-            if ability_key not in pw_data:
-                return False
-            cost, _ = pw_data[ability_key]
-            return pw.loyalty_counters + cost >= 0
-
-        def desc(ability_key):
-            if ability_key not in pw_data:
-                return ""
-            return pw_data[ability_key][1].lower()
-
-        def loyalty_after(ability_key):
-            if ability_key not in pw_data:
-                return pw.loyalty_counters
-            cost, _ = pw_data[ability_key]
-            return pw.loyalty_counters + cost
-
-        # Always ult if we can (game-winning)
-        if can_afford("ult"):
-            return "ult"
-
-        # Collect all non-ult abilities we can afford
-        abilities = []  # (key, cost, desc)
-        for key in ["plus", "zero", "minus"]:
-            if can_afford(key):
-                abilities.append((key, pw_data[key][0], desc(key)))
-
-        if not abilities:
-            return "plus"  # shouldn't happen, but safe fallback
-
-        # ── Evaluate each ability by description patterns ──
-        best_key = "plus"
-        best_score = -100
-
-        for key, cost, ability_desc in abilities:
-            score = 0
-            remaining_loyalty = loyalty_after(key)
-
-            # DAMAGE abilities: "deal X damage" or "deals X damage"
-            if "damage" in ability_desc or "deals" in ability_desc:
-                # Can we kill an opponent creature?
-                if opp.creatures:
-                    # Parse damage amount from description
-                    dmg = 1
-                    for word in ability_desc.split():
-                        if word.isdigit():
-                            dmg = int(word)
-                            break
-                    killable = [c for c in opp.creatures
-                                if (c.toughness or 0) - c.damage_marked <= dmg]
-                    if killable:
-                        best_kill = max(killable, key=lambda c: c.template.cmc)
-                        score = 20 + best_kill.template.cmc  # high priority: kill creatures
-                    else:
-                        # No killable creatures, but can still go face
-                        if remaining_loyalty >= 2:  # don't suicide the PW
-                            score = 3 + dmg  # low-priority chip damage
-                        else:
-                            score = -5  # too risky
-                elif remaining_loyalty >= 2:
-                    score = 3  # ping face when no creatures
-
-            # BOUNCE abilities: "return" + "to" + "hand" or "bounce"
-            elif "bounce" in ability_desc or ("return" in ability_desc and "hand" in ability_desc and "owner" in ability_desc):
-                nonlands = [c for c in opp.battlefield if not c.template.is_land]
-                if nonlands:
-                    best_cmc = max(c.template.cmc for c in nonlands)
-                    if best_cmc >= 2:
-                        score = 15 + best_cmc  # bounce high-value targets
-                    else:
-                        score = 2  # not worth bouncing 1-drops usually
-                # Bonus if it also draws a card
-                if "draw" in ability_desc:
-                    score += 5
-
-            # LAND RECURSION: "return" + "land" + "graveyard" / "hand"
-            elif "land" in ability_desc and ("graveyard" in ability_desc or "return" in ability_desc):
-                lands_in_gy = [c for c in player.graveyard if c.template.is_land]
-                if lands_in_gy:
-                    score = 12  # good value: recur fetchlands
-                else:
-                    score = -2  # no lands to return
-
-            # DRAW / CARD SELECTION: "draw" or "brainstorm" or "look at"
-            elif "draw" in ability_desc or "brainstorm" in ability_desc or "look at" in ability_desc:
-                score = 14  # card advantage is almost always good
-
-            # COST REDUCTION / RAMP: "cost" + "less" or "add" + mana
-            elif "cost" in ability_desc and "less" in ability_desc:
-                score = 8  # ramp for future turns
-            elif "add" in ability_desc and any(c in ability_desc for c in "wubrgc"):
-                score = 7  # mana production
-
-            # BOARD WIPE: "exile" + "each" or "all" or "destroy all"
-            elif ("exile" in ability_desc or "destroy" in ability_desc) and ("each" in ability_desc or "all" in ability_desc):
-                opp_permanents = [c for c in opp.battlefield if not c.template.is_land]
-                if len(opp_permanents) >= 3:
-                    score = 25  # wipe when behind on board
-                elif len(opp_permanents) >= 1:
-                    score = 10
-                else:
-                    score = -5  # don't wipe an empty board
-
-            # FLASH / TIMING: "flash" or "as though" + "flash"
-            elif "flash" in ability_desc or "any time" in ability_desc:
-                score = 5  # minor utility, builds loyalty
-
-            # FATESEAL / LIBRARY MANIPULATION: "look at the top"
-            elif "look at the top" in ability_desc or "fateseal" in ability_desc:
-                score = 4  # minor disruption
-
-            # Unknown ability: default to loyalty-positive
-            else:
-                score = 1 if cost >= 0 else -1
-
-            # Tiebreaker: prefer loyalty-positive abilities when scores are close
-            if cost > 0:
-                score += 0.5  # slight bonus for building loyalty
-
-            if score > best_score:
-                best_score = score
-                best_key = key
-
-        return best_key
+        from ai.pw_ability import choose_pw_ability
+        player_idx = game.players.index(player)
+        return choose_pw_ability(pw, pw_data, player, opp, game,
+                                 player_idx=player_idx)
 
     def _activate_pay_life_draw(self, game: GameState, active: int):
         """Activate pay-life-draw abilities on creatures (e.g., Griselbrand).

@@ -82,7 +82,16 @@ from ai.deck_knowledge import DeckKnowledge
 # lookup over the per-archetype `phase_weights` table.  Both are pure
 # compositions — no magic numbers introduced here.
 from ai.clock import life_phase
-from ai.strategy_profile import phase_weight_multiplier
+# `apply_preference_weight` is the sign-aware application (A2 fix):
+# a bonus weight makes a play strictly MORE attractive on both sides
+# of zero (gains × w, costs ÷ w).  `goal_weight_multiplier` is the
+# goal-axis twin of the phase lookup (M4 part 3): `goal=close_game`
+# re-weights gameplan-declared finisher roles up, cantrips down.
+from ai.strategy_profile import (
+    apply_preference_weight,
+    goal_weight_multiplier,
+    phase_weight_multiplier,
+)
 # Effective-CMC primitive (W0-F + M9 wiring).  Subsumes delve, evoke,
 # Medallion-reduced cost, affinity, improvise — see ai/effective_cmc.py.
 from ai.effective_cmc import effective_cmc
@@ -2865,13 +2874,22 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
                     game: "GameState" = None, player_idx: int = 0,
                     dk: Optional[DeckKnowledge] = None,
                     detailed: bool = False,
-                    bhi: "BayesianHandTracker" = None):
+                    bhi: "BayesianHandTracker" = None,
+                    goal: Optional[str] = None,
+                    role_tags: frozenset = frozenset()):
     """Compute the expected value of casting a spell using 1-ply lookahead.
 
     EV = E[V(state_after_play_and_response)] - V(current_state)
 
     If detailed=True, returns (ev, info_dict) with projection breakdown.
     Otherwise returns ev as a float.
+
+    `goal` is the caller's current GoalEngine goal (`GoalType.value`
+    string, or None when the player has no goal engine) — consumed by
+    the goal-weights gear-shift (M4 part 3).  `role_tags` are synthetic
+    gameplan-role tags (e.g. `ROLE_FINISHER_TAG` for cards declared in
+    the gameplan's finishers/payoffs role buckets) unioned with the
+    card's oracle tags for both weight lookups.
     """
     # Deferral check (design: docs/design/ev_correctness_overhaul.md §3).
     # Before running the projection, ask: does casting this turn deliver
@@ -3024,26 +3042,35 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
                 progress = min(1.0, damage / max(1, snap.opp_life))
                 ev += p_resolves * progress * win_swing
 
-    # ── Life-phase gear-shift (M4) ──
-    # Pure lookup over `strategy_profile.phase_weights`.  At PANIC,
-    # control / midrange / aggro archetypes up-weight defensive tags
-    # (`removal`, `board_wipe`, `counterspell`, `lifegain`, ...) and
-    # down-weight purely-proactive tags (`cantrip`, `card_advantage`)
-    # so the AI gear-shifts to "stay alive" instead of executing the
-    # standard `grind_value` projection.  At DEVELOP / GRIND the
-    # lookup returns the identity multiplier, so the standard
-    # projection is unchanged.
+    # ── Life-phase + goal gear-shift (M4, A2) ──
+    # Pure lookups over `strategy_profile.phase_weights` and
+    # `strategy_profile.goal_weights`.  At PANIC, control / midrange /
+    # aggro archetypes up-weight defensive tags (`removal`,
+    # `board_wipe`, `counterspell`, `lifegain`, ...) and down-weight
+    # purely-proactive tags (`cantrip`, `card_advantage`) so the AI
+    # gear-shifts to "stay alive".  At goal=close_game (M4 part 3),
+    # gameplan-declared finisher roles are up-weighted and cantrips
+    # down-weighted so the closing gear is a real re-ranking, not a
+    # label.  At DEVELOP / GRIND / other goals the lookups return the
+    # identity multiplier, so the standard projection is unchanged.
     #
-    # No `if life_phase == PANIC:` if-chain — the phase is passed
-    # straight to a dict lookup, and unrecognised archetypes /
-    # phases / tags all fall through to IDENTITY_PHASE_WEIGHTS = 1.0.
-    # Replaces scattered `my_life-vs-literal-N` magic-threshold
-    # conditionals (see W0-B life_phase + tests/test_life_phase.py
-    # and ev_player.py's deleted DESPERATE_LIFE_THRESHOLD gate).
+    # No `if life_phase == PANIC:` if-chain — phase and goal are
+    # passed straight to dict lookups, and unrecognised archetypes /
+    # phases / goals / tags all fall through to the identity weight.
+    #
+    # Application is SIGN-AWARE (`apply_preference_weight`, A2 fix):
+    # plain `ev *= mult` inverted the gear-shift for negative-EV
+    # defensive plays (1.5 × −5 = −7.5 — the "up-weighted" removal
+    # sank below PLAY_VALUE_FLOOR and the AI passed the turn at panic
+    # life; s60104).  A preference weight must be monotone in the
+    # weight on BOTH sides of zero: gains × w, costs ÷ w.  Pinned by
+    # tests/test_panic_gearshift_reaches_play_selection.py.
     phase = life_phase(snap)
-    mult = phase_weight_multiplier(
-        archetype, phase, getattr(card.template, 'tags', set()) or set())
-    ev *= mult
+    _weight_tags = ((getattr(card.template, 'tags', set()) or set())
+                    | set(role_tags or ()))
+    mult = phase_weight_multiplier(archetype, phase, _weight_tags)
+    mult *= goal_weight_multiplier(archetype, goal, _weight_tags)
+    ev = apply_preference_weight(ev, mult)
 
     if not detailed:
         return ev
