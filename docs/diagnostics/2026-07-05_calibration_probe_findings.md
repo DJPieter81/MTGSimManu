@@ -67,7 +67,7 @@ countered — a decision-layer matter, see A-family).  n=30 matchup WR
 WR-anchor drift: 3/17 entries shifted turn counts only, no winner
 flips (baseline refreshed per protocol).
 
-## E2 — Imprint/copy-cast broken  ❌ OPEN (P0)
+## E2 — Imprint/copy-cast broken  ✅ FIXED (branch claude/e2-imprint-copy)
 
 **Evidence (s60104 G2 T8, upkeep).** "Cast Counterspell (UU)" with an
 empty stack, no target, no mana tapped, no Scepter activation cost;
@@ -75,33 +75,49 @@ empty stack, no target, no mana tapped, no Scepter activation cost;
 The exiled imprinted card was cast directly, for free, at an illegal
 time, without a legal target (CR 601.2c).
 
-**Subsystem.** `engine/cast_manager.py` cast-legality (target
-requirement for counter-type spells; timing) + the imprint/copy
-activation path.  Class: every "exile … you may cast a copy" clause.
+**Root (verified in code).** `game_runner._process_upkeep_activations`
+auto-fired every upkeep with no target check, cast the imprinted card
+ITSELF from exile (exile→graveyard after one use — lock destroyed),
+and blind-tapped two lands.  Fixed: main-phase
+`_process_imprint_copy_activations` with a CR 601.2c target gate,
+true copy (CR 707.10a — copies cease to exist on resolution, new
+generic rule in spell_resolution), payment via tap_lands_for_mana.
+Follow-up open: reactive counter-copy via `ai/response.py`.
 
-## E3 — Planeswalker loyalty counters not accrued  ❌ OPEN (P0)
+## E3 — Planeswalker loyalty counters not accrued  ❌ FALSIFIED
 
-**Evidence (s60104 G2).** Teferi TTR cast T5 (base 4), `+1` logged T6
-and T7 → should sit at 6; a single `-3` on T8 → "SBA 704.5p: zero
-loyalty", dies.  The +1 activations never changed the counter.
+**Tracer result (live s60104 re-run, descriptor on every
+loyalty_counters write).** Counters track perfectly: enters 4 → −3
+(ETB turn) → +1 → +1 → −3 → 0 → SBA death.  Every step CR-legal
+(one activation per turn, cost ≤ loyalty, dying at exactly 0 is
+legal).  The original log read missed the ETB-turn −3.
 
-**Subsystem.** `engine/planeswalker_manager.py` / loyalty_counters
-persistence.  Class: all planeswalkers.
+**Reclassified (decision layer, M4-family):** the CHOICE quality is
+the issue — `game_runner._choose_pw_ability` minused a fresh walker
+to 1, then later suicided it at 3 loyalty for a single bounce.
+Belongs to the planeswalker-EV / close_game work, not the engine.
+
+**Side finding (dormant):** `engine/stack.py::Stack._resolve_spell`
+is a parallel legacy resolver that skips `_handle_permanent_etb`
+(walkers would enter at 0 loyalty).  The live runner never calls it
+(canonical path is `ResolutionManager.resolve_stack`), but any test
+or tool driving `stack.resolve_top` directly gets wrong state —
+candidate for deletion in the resolver-unification work.
 
 ## E4 — Token cast as a spell  ❌ OPEN (P1)
 
 **Evidence (s60104 G2 T7).** "Cast Construct Token (0)" from hand.
 Ties to the unregistered-token detector work (commit 13b6d66).
 
-## A1 — Lethal on board, no attack  ❌ OPEN (P0, decision)
+## A1 — Lethal on board, no attack  ❌ RETRACTED (s60104 evidence)
 
-**Evidence (s60104 G2 T7).** Affinity: 20 power on board vs Azorius
-at 2 life with zero blockers — "P2 does not attack".  The matrix's
-top deck under-attacks; its 79% is *despite* this.  Sibling evidence
-s60105 post-fix: Amulet walks Titan into held UU three times with no
-bait line (M2-family, combo side).
-
-**Subsystem.** `ai/turn_planner.py` attack enumeration/gating.
+**Correction.** Supreme Verdict wiped Affinity's board on Azorius's
+T7; all three attackers entered on Affinity's T7 → summoning sick →
+"does not attack" is CORRECT.  No confirmed reproducer for A1
+remains; the 5-panel M12 (chump-block) is a separate, still-open
+mechanism.  What stands from s60105 post-E1: Amulet jams Titan into
+held UU three times with no bait line — M2-family (combo side),
+tracked there.
 
 ## A2 — `close_game` inert (M4 confirmation on fresh seed)  ❌ OPEN (P0)
 
