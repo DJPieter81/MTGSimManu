@@ -1032,6 +1032,27 @@ def save_results(result: Dict, path: str = RESULTS_FILE):
     print(f'Results saved to {path}', file=sys.stderr)
 
 
+def _run_calibration_check(results_path: str = RESULTS_FILE) -> None:
+    """Post-save calibration audit (tools/check_calibration.py).
+
+    Mirrors the replay-lint hook (PR #444): every ``--matrix --save``
+    becomes a ground-truth audit of the freshly saved matrix against
+    the real-world Modern priors in tools/calibration_bands.json.
+    Non-fatal — out-of-band findings are printed as diagnostics and
+    never fail the run; a missing bands file degrades to a one-line
+    notice.
+    """
+    try:
+        from tools.check_calibration import DEFAULT_BANDS_PATH, run_check
+        if not os.path.exists(DEFAULT_BANDS_PATH):
+            print(f'check_calibration: skipped (no bands file at '
+                  f'{DEFAULT_BANDS_PATH})', file=sys.stderr)
+            return
+        run_check(results_path, DEFAULT_BANDS_PATH, strict=False)
+    except Exception as e:
+        print(f'check_calibration: skipped ({e})', file=sys.stderr)
+
+
 def load_results(path: str = RESULTS_FILE) -> Optional[Dict]:
     """Load saved results from JSON."""
     if not os.path.exists(path):
@@ -1338,6 +1359,10 @@ if __name__ == '__main__':
 
         if args.save:
             save_results(result)
+            # Calibration audit vs ground-truth Modern priors
+            # (tools/check_calibration.py). Non-fatal — mirrors the
+            # replay-lint hook (PR #444).
+            _run_calibration_check()
             # Auto-rebuild dashboard from saved results
             try:
                 from build_dashboard import merge
