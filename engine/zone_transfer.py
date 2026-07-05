@@ -228,26 +228,46 @@ _ON_DRAW_HANDLERS = _build_on_draw_handlers()
 
 
 def _parse_amount_or_assert(card: "CardInstance", verb_regex: str,
-                            tag_name: str) -> int:
+                            tag_name: str, trigger_phrase: str) -> int:
     """Parse the integer amount from `card.template.oracle_text` using
     `verb_regex` (which must contain a single `(\\d+)` group).
 
-    Assert-fails if the regex doesn't match — the dispatch is by tag,
-    and a tagged card whose oracle doesn't parse means the classifier
-    and the oracle are out of sync. Loud is correct; silent fallthrough
-    was the W0-C bug shape.
+    Assert-fails if the regex doesn't match anywhere — the dispatch is
+    by tag, and a tagged card whose oracle doesn't parse means the
+    classifier and the oracle are out of sync. Loud is correct; silent
+    fallthrough was the W0-C bug shape.
+
+    Clause-scoped (E5): when the oracle has MULTIPLE `verb_regex`
+    matches (e.g. an ETB-damage clause and an on-draw-damage clause,
+    each with a different amount), the amount is taken from the clause
+    containing `trigger_phrase` — the trigger word of the mechanic this
+    handler dispatches on. With exactly one match the legacy whole-text
+    parse is kept, so currently-tagged cards stay byte-identical.
     """
     import re
 
+    from engine.oracle_clauses import split_clauses
+
     oracle = (card.template.oracle_text or "").lower()
-    m = re.search(verb_regex, oracle)
-    if m is None:
+    matches = list(re.finditer(verb_regex, oracle))
+    if not matches:
         raise AssertionError(
             f"{card.name!r} carries {tag_name} but its oracle text does "
             f"not match {verb_regex!r} — classifier and oracle are out "
             f"of sync."
         )
-    return int(m.group(1))
+    if len(matches) == 1:
+        return int(matches[0].group(1))
+    # Multiple amount clauses: prefer the one carrying the dispatching
+    # trigger phrase (CR 603.1 — trigger and effect share a sentence).
+    for clause in split_clauses(oracle):
+        if trigger_phrase in clause:
+            m = re.search(verb_regex, clause)
+            if m:
+                return int(m.group(1))
+    # No clause pairs the trigger phrase with the verb — legacy
+    # whole-text first match.
+    return int(matches[0].group(1))
 
 
 def _fire_on_draw_triggers(game: "GameState", card: "CardInstance",
@@ -300,7 +320,10 @@ def _fire_on_draw_triggers(game: "GameState", card: "CardInstance",
                 if handler.skip_free_first and free_first:
                     continue
                 amount = _parse_amount_or_assert(
-                    src_card, handler.verb_regex, tag.name)
+                    src_card, handler.verb_regex, tag.name,
+                    # This fan-out dispatches on-draw mechanics; every
+                    # on-draw trigger clause contains "draw".
+                    trigger_phrase="draw")
                 handler.apply(game, controller, src_card, amount)
 
 
