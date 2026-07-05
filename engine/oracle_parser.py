@@ -15,6 +15,8 @@ from __future__ import annotations
 import re
 from typing import Dict, Optional, Tuple
 
+from engine.oracle_clauses import split_abilities
+
 
 def parse_ritual_mana(oracle: str) -> Optional[Tuple[str, int]]:
     """Parse mana production from oracle text.
@@ -493,13 +495,18 @@ def derive_tags_from_oracle(oracle: str, keywords: set, card_types: set,
     if 'amass' in lower:
         tags.add("token_maker")
 
-    # ETB value: "when * enters" with a beneficial effect
-    etb_triggers = ('when ' in lower and 'enters' in lower)
-    if etb_triggers:
-        has_value = any(kw in lower for kw in ('draw', 'damage', 'destroy', 'exile',
-                                                 'search', 'create', 'return', 'gain'))
-        if has_value:
+    # ETB value: "when * enters" with a beneficial effect.
+    # Clause-scoped (E5): a triggered ability's condition and effect
+    # share one ability paragraph (CR 603.1), so the value keyword must
+    # appear in the SAME paragraph as the "when … enters" trigger — a
+    # damage verb in a separate ability (or reminder text on another
+    # line) must not tag.
+    for ability in split_abilities(lower):
+        if 'when ' in ability and 'enters' in ability and any(
+                kw in ability for kw in ('draw', 'damage', 'destroy', 'exile',
+                                         'search', 'create', 'return', 'gain')):
             tags.add("etb_value")
+            break
 
     # Flash detection from oracle (backup if keyword not parsed)
     if 'flash' in lower.split('\n')[0] if lower else False:
