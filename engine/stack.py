@@ -4,7 +4,7 @@ Implements the stack for spell and ability resolution with proper priority passi
 """
 from __future__ import annotations
 from dataclasses import dataclass, field
-from typing import List, Optional, Set, TYPE_CHECKING, Callable
+from typing import Dict, List, Optional, Set, TYPE_CHECKING, Callable
 from enum import Enum
 
 if TYPE_CHECKING:
@@ -43,6 +43,14 @@ class StackItem:
     # by cast_spell() from lands_to_tap + drained mana-pool colors.
     # Empty set for free casts or when payment tracking isn't available.
     colors_spent: Set[str] = field(default_factory=set)
+    # CR 608.2b support: zone each card-target occupied when it was
+    # chosen at cast time (instance_id → zone name). Populated by
+    # CastManager.cast_spell; consumed by ResolutionManager's
+    # target-legality re-check on resolution — a target that has left
+    # its cast-time zone is illegal, and a spell whose targets are ALL
+    # illegal fizzles. Player-target markers (negative ids) have no
+    # zone and are never snapshotted.
+    target_zones: Dict[int, str] = field(default_factory=dict)
 
     @property
     def name(self) -> str:
