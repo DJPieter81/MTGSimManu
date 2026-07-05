@@ -1534,13 +1534,16 @@ class GameRunner:
             # Smart draw: consider opponent's board when deciding how aggressively to draw.
             # Griselbrand is often temporary (Goryo's exiles at EOT), so we want to draw
             # enough cards to find protection/combo pieces, but not suicide.
-            opp = game.players[1 - active]
-            opp_power = sum(c.power or 0 for c in opp.creatures)
-            # Keep enough life to survive opponent's next attack + some buffer
-            safe_life = max(opp_power + 3, life_cost + 1)  # at least survive one attack
-            # But if we have very few cards, be more aggressive (need to find answers)
-            if len(player.hand) <= 2:
-                safe_life = max(life_cost + 1, opp_power)  # more aggressive when desperate
+            # Survival threshold: what the opponent deals NEXT turn
+            # (their board untaps + one average deployment) — the
+            # M4-spec clock primitive.  Probe s60110: the old
+            # current-power+buffer guard allowed 20→6 into a
+            # developing aggro board that hit for 8; the guard also
+            # checked life BEFORE paying, so it could end far below
+            # its own threshold.  The loop below tests POST-payment
+            # life instead.
+            from ai.clock import opp_one_turn_damage
+            opp_threat = opp_one_turn_damage(game, active)
             # GV2-6: Lifelink on the source creature offsets the pay-life cost
             # when the creature will attack this turn. Detect lifelink from the
             # canonical keyword set (template|temp — respects Humility etc).
@@ -1556,19 +1559,22 @@ class GameRunner:
                 (not creature.tapped)
                 and (not creature.has_summoning_sickness)
             )
+            lifelink_offset = 0
             if (has_lifelink and will_attack
                     and creature_power > 0
                     and player.life > life_cost):
-                # Lifelink restores `creature_power` life post-combat. The
-                # projected post-combat life is `life - life_cost + power`.
-                # Equivalently, lower the threshold by `creature_power` so
-                # the `player.life >= safe_life` guard clears when that
-                # projection is safe.
-                safe_life = max(1, safe_life - creature_power)
-            min_life = safe_life
+                # Lifelink restores `creature_power` life post-combat:
+                # the survival test uses the PROJECTED post-combat
+                # life (life - cost + power) rather than lowering the
+                # threshold — same GV2-6 semantics, unified into one
+                # formula.
+                lifelink_offset = creature_power
             max_activations = 3  # Griselbrand typically activates 1-2 times
             activations = 0
-            while player.life >= min_life and len(player.hand) < 14 and activations < max_activations:
+            while ((player.life - life_cost + lifelink_offset) > opp_threat
+                   and player.life > life_cost
+                   and len(player.hand) < 14
+                   and activations < max_activations):
                 player.life -= life_cost
                 game.draw_cards(active, draw_count)
                 game.log.append(f"T{game.display_turn} P{active+1}: "
