@@ -1,6 +1,9 @@
 """
-MTG Stack System
-Implements the stack for spell and ability resolution with proper priority passing.
+MTG Stack System — the stack as a pure data container.
+
+`StackItem` / `StackItemType` describe what sits on the stack; `Stack`
+is a plain LIFO. Resolution lives in ResolutionManager
+(engine/spell_resolution.py), priority in engine/priority_system.py.
 """
 from __future__ import annotations
 from dataclasses import dataclass, field
@@ -60,12 +63,25 @@ class StackItem:
 
 
 class Stack:
-    """The game stack - LIFO structure for spell/ability resolution."""
+    """Pure LIFO container for spells and abilities on the stack.
+
+    This class holds state only. Resolution does NOT live here:
+    `ResolutionManager.resolve_stack` (engine/spell_resolution.py) owns
+    popping and resolving items, including the CR 608.2b target-legality
+    re-check (a spell whose targets are ALL illegal at resolution
+    fizzles). Priority passing lives in engine/priority_system.py.
+
+    The legacy resolver/priority machinery that used to sit on this
+    class (resolve_top / _resolve_spell / _resolve_ability, peek, size,
+    pass_priority, both_passed, reset_priority, priority_player,
+    switch_priority, __len__, __str__) was a dead parallel
+    implementation with zero callers; it was deleted after the one rule
+    trapped inside it (CR 608.2b) was ported to the live resolver. See
+    docs/proposals/resolver_sba_unification.md.
+    """
 
     def __init__(self):
         self.items: List[StackItem] = []
-        self._priority_player: int = 0  # who has priority
-        self._passed_priority: List[bool] = [False, False]
 
     @property
     def is_empty(self) -> bool:
@@ -78,144 +94,9 @@ class Stack:
     def push(self, item: StackItem):
         """Add an item to the top of the stack."""
         self.items.append(item)
-        # When something is put on the stack, priority resets
-        self._passed_priority = [False, False]
-        # Active player gets priority (or the controller of the item)
-        self._priority_player = item.controller
 
     def pop(self) -> Optional[StackItem]:
         """Remove and return the top item from the stack."""
         if self.items:
             return self.items.pop()
         return None
-
-    def peek(self, index: int = -1) -> Optional[StackItem]:
-        """Look at a stack item without removing it."""
-        try:
-            return self.items[index]
-        except IndexError:
-            return None
-
-    def size(self) -> int:
-        return len(self.items)
-
-    def pass_priority(self, player_idx: int):
-        """A player passes priority."""
-        self._passed_priority[player_idx] = True
-
-    def both_passed(self) -> bool:
-        """Check if both players have passed priority in succession."""
-        return all(self._passed_priority)
-
-    def reset_priority(self):
-        """Reset priority passing (called when something is added to stack)."""
-        self._passed_priority = [False, False]
-
-    @property
-    def priority_player(self) -> int:
-        return self._priority_player
-
-    @priority_player.setter
-    def priority_player(self, value: int):
-        self._priority_player = value
-
-    def switch_priority(self):
-        """Switch priority to the other player."""
-        self._priority_player = 1 - self._priority_player
-
-    def resolve_top(self, game_state: "GameState") -> Optional[StackItem]:
-        """
-        Resolve the top item on the stack.
-        Both players must have passed priority for this to happen.
-        Returns the resolved item.
-        """
-        if self.is_empty:
-            return None
-
-        item = self.pop()
-
-        if item.item_type == StackItemType.SPELL:
-            self._resolve_spell(game_state, item)
-        elif item.item_type in (StackItemType.ACTIVATED_ABILITY,
-                                 StackItemType.TRIGGERED_ABILITY):
-            self._resolve_ability(game_state, item)
-
-        # Reset priority after resolution
-        self.reset_priority()
-        return item
-
-    def _resolve_spell(self, game_state: "GameState", item: StackItem):
-        """Resolve a spell from the stack."""
-        card = item.source
-        template = card.template
-
-        # Check if targets are still valid
-        if item.targets:
-            valid_targets = []
-            for tid in item.targets:
-                target = game_state.get_card_by_id(tid)
-                if target and target.zone == "battlefield":
-                    valid_targets.append(tid)
-            if not valid_targets and item.targets:
-                # Spell fizzles - all targets invalid
-                card.zone = "graveyard"
-                game_state.players[card.owner].graveyard.append(card)
-                return
-
-        # Execute spell effect
-        if card.template.abilities:
-            for ability in card.template.abilities:
-                if ability.effect:
-                    ability.effect(game_state, card, item.controller, item.targets)
-
-        # Determine where the card goes after resolution
-        from .cards import CardType
-        if CardType.INSTANT in template.card_types or CardType.SORCERY in template.card_types:
-            card.zone = "graveyard"
-            game_state.players[card.owner].graveyard.append(card)
-        elif CardType.CREATURE in template.card_types or \
-             CardType.ENCHANTMENT in template.card_types or \
-             CardType.ARTIFACT in template.card_types or \
-             CardType.PLANESWALKER in template.card_types:
-            # Permanent - enters the battlefield
-            card.controller = item.controller
-            # Apply X-cost counters before entering (uses oracle-derived x_cost_data)
-            if item.x_value > 0 and template.x_cost_data:
-                effect = template.x_cost_data.get("effect", "")
-                if effect == "plus1_counters":
-                    card.plus_counters += item.x_value
-                    game_state.log.append(
-                        f"T{game_state.display_turn} P{item.controller+1}: "
-                        f"{card.name} enters with {item.x_value} +1/+1 counters "
-                        f"({card.power}/{card.toughness})")
-                elif effect == "charge_counters":
-                    card.other_counters["charge"] = item.x_value
-                    # Skip log if card has a specific ETB handler (it logs correctly)
-                    from engine.card_effects import EFFECT_REGISTRY, EffectTiming
-                    has_etb = EFFECT_REGISTRY.has_handler(card.name, EffectTiming.ETB)
-                    if not has_etb:
-                        game_state.log.append(
-                            f"T{game_state.display_turn} P{item.controller+1}: "
-                            f"{card.name} enters with {item.x_value} charge counters")
-            card.enter_battlefield()
-            game_state.players[item.controller].battlefield.append(card)
-            # Trigger ETB abilities
-            game_state.trigger_etb(card, item.controller)
-
-    def _resolve_ability(self, game_state: "GameState", item: StackItem):
-        """Resolve an activated or triggered ability."""
-        if item.effect:
-            item.effect(game_state, item.source, item.controller, item.targets)
-        elif item.ability and item.ability.effect:
-            item.ability.effect(game_state, item.source, item.controller, item.targets)
-
-    def __len__(self):
-        return len(self.items)
-
-    def __str__(self):
-        if not self.items:
-            return "Stack: [empty]"
-        lines = ["Stack (top to bottom):"]
-        for i, item in enumerate(reversed(self.items)):
-            lines.append(f"  {i+1}. {item.name} ({item.item_type.value}) - controller: P{item.controller+1}")
-        return "\n".join(lines)
