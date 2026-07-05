@@ -423,6 +423,55 @@ def parse_extra_land_drops(oracle: str) -> int:
     return 0
 
 
+# ─────────────────────────────────────────────────────────────
+# Creature-land animation — "{cost}: … this land becomes an N/M …
+# creature … until end of turn. It's still a land."  (Track H)
+#
+# One regex covers the whole modern creature-land class: the cost is
+# the run of mana symbols immediately before the colon; "until end of
+# turn" may lead or trail the clause; the keyword list (if any)
+# follows "creature with".  No card names — the oracle template is
+# shared by every land in the class.
+# ─────────────────────────────────────────────────────────────
+
+_LAND_ANIMATION_RE = re.compile(
+    r'((?:\{[^}]+\})+)\s*:\s*'                 # activation cost
+    r'(?:until end of turn, )?'                # leading duration
+    r'this land becomes an? (\d+)/(\d+)\s+'    # printed P/T
+    r'([^.\n]*?)creature([^.\n]*)',            # colors/types … keywords
+    re.IGNORECASE)
+
+
+def parse_land_animation(oracle: str) -> Optional[Dict]:
+    """Parse an activated land-animation line from oracle text.
+
+    Returns ``{'cost': total mana symbols, 'power': N, 'toughness': M,
+    'keywords': set of lowercase keyword words}`` or None when the
+    text carries no animate line.  ``cost`` counts a digit symbol at
+    face value and any non-digit symbol as one mana — the same
+    generic-count payment model the granted-ability dispatch uses.
+    """
+    m = _LAND_ANIMATION_RE.search(oracle)
+    if m is None:
+        return None
+    clause_tail = m.group(5).lower()
+    clause_head = m.group(0).lower()
+    if 'until end of turn' not in clause_head and \
+            'until end of turn' not in clause_tail:
+        return None  # permanent animation is a different mechanic
+    cost_symbols = re.findall(r'\{([^}]+)\}', m.group(1))
+    if any(s.lower() == 't' for s in cost_symbols):
+        return None  # tap-cost animation cannot attack the same turn
+    cost = sum(int(s) if s.isdigit() else 1 for s in cost_symbols)
+    keywords = {kw for kw in _KEYWORD_WORDS if kw in clause_tail}
+    return {
+        'cost': cost,
+        'power': int(m.group(2)),
+        'toughness': int(m.group(3)),
+        'keywords': keywords,
+    }
+
+
 def parse_escape_cost(oracle: str) -> Optional[Dict]:
     """Parse Escape cost from oracle text.
 

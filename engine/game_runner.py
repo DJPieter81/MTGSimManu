@@ -1255,6 +1255,14 @@ class GameRunner:
                     creature = game.get_card_by_id(targets[0])
                     if creature:
                         game.equip_creature(ai.player_idx, card, creature)
+            elif action == "activate_ability":
+                # Activated win-condition line (land animation) — the
+                # AI chose it in the ACTIVATION region; the engine only
+                # validates and executes (Track H). A rejected
+                # activation ends the phase rather than re-looping on
+                # the same play.
+                if not game.animate_land(ai.player_idx, card):
+                    break
             elif action == "cast_spell":
                 # Tag with current goal and card role for detailed logging
                 if getattr(game, 'verbose', False) and hasattr(ai, 'goal_engine') and ai.goal_engine:
