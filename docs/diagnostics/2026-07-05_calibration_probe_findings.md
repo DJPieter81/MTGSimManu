@@ -144,6 +144,37 @@ Matches the 5-panel audit's M4/M3 verbatim.
 
 ---
 
+## E5 — On-draw-damage clause misfires on its own ETB  ❌ OPEN (P1, new)
+
+**Evidence (s60101 re-run post-M1, G1 opp T5).** "Resolve Orcish
+Bowmasters" → "Bowmasters deals 1 damage to opponent (life: 0)" with
+ZERO draw events that turn segment — the draw-triggered damage clause
+fired on the source's own resolution.  Whole-text scoping ('enters' +
+'deals N damage' co-occurrence) instead of clause-level parsing.
+Family: any permanent whose oracle contains both an ETB clause and a
+separate triggered-damage clause.  Killed Storm at 1 life in the
+validation run.  Subsystem: ETB clause parser (same clause-scoping
+family as the oracle attack-trigger tightening already landed).
+
+## M1/R1 — status update (2026-07-05, branch claude/m1-impulse-draw)
+
+Engine split was landed pre-session but SILENTLY INCOMPLETE: the
+Tag.IMPULSE_DRAW cache was missing Wrenn's Resolve (4× registered),
+March of Reckless Joy (per-card draw_cards handler — the bug
+reintroduced), and Ragavan.  Fixed via coverage gate
+(`tools/check_classifier_coverage.py`, CI-wired), play-cap X
+sub-shape, per-card handler deletion, 4 manual cache entries, and a
+data-driven zero-draw-trigger parametrization over the whole tagged
+deck pool.  M1-AI: `_project_spell` prices per-cast/per-real-draw
+opponent-static taxes; `compute_play_ev` floors lethal-to-self at
+-LETHAL_THREAT.  s60101: Storm no longer suicides; storm–dimir n=20
+= 35% (real-world prior ~35-45%).
+
+**Architecture lesson (third data point for the duplicates/coverage
+theme):** tag-gated behavior + uncovered cache = silently disabled
+rules.  Any future engine branch gated on a classifier tag MUST add
+its family to CANDIDATE_FAMILIES in the coverage gate.
+
 ## Institutionalization (next)
 
 1. **Calibration matchup table** — matchup-level EXPECTED bands
