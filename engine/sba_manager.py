@@ -20,7 +20,7 @@ Key SBAs implemented:
 from __future__ import annotations
 from typing import List, Optional, TYPE_CHECKING
 
-from .constants import SBA_MAX_ITERATIONS
+from .constants import POISON_COUNTER_LETHAL, SBA_MAX_ITERATIONS
 
 if TYPE_CHECKING:
     from .cards import CardInstance, CardType, Keyword, Supertype
@@ -88,16 +88,11 @@ class SBAManager:
         if game.game_over:
             return performed
 
-        # 704.5c: Player with 10+ poison counters loses
-        for p in game.players:
-            if p.poison_counters >= 10 and not game.game_over:
-                game.game_over = True
-                game.winner = 1 - p.player_idx
-                game.log.append(
-                    f"T{game.display_turn}: P{p.player_idx+1} loses "
-                    f"(poison={p.poison_counters}, SBA 704.5c)"
-                )
-                performed = True
+        # 704.5c: Player with lethal poison loses — single
+        # implementation lives in perform_poison_check (also called by
+        # the live SBA path).
+        if SBAManager.perform_poison_check(game):
+            performed = True
 
         if game.game_over:
             return performed
@@ -220,4 +215,24 @@ class SBAManager:
                         game._creature_dies(c)
                         performed = True
                     c._deathtouch_damage = 0
+        return performed
+
+    @staticmethod
+    def perform_poison_check(game: "GameState") -> bool:
+        """SBA 704.5c — a player with lethal poison counters loses.
+
+        Threshold is the POISON_COUNTER_LETHAL rules constant
+        (engine/constants.py). Returns True if a player lost.
+        """
+        performed = False
+        for p in game.players:
+            if (p.poison_counters >= POISON_COUNTER_LETHAL
+                    and not game.game_over):
+                game.game_over = True
+                game.winner = 1 - p.player_idx
+                game.log.append(
+                    f"T{game.display_turn}: P{p.player_idx+1} loses "
+                    f"(poison={p.poison_counters}, SBA 704.5c)"
+                )
+                performed = True
         return performed

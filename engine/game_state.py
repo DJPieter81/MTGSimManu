@@ -577,6 +577,13 @@ class GameState:
         if self.game_over:
             return actions_taken
 
+        # Lethal poison (SBA 704.5c) — single implementation in SBAManager
+        if SBAManager.perform_poison_check(self):
+            actions_taken = True
+
+        if self.game_over:
+            return actions_taken
+
         # Creatures with lethal damage (use legacy path for Undying/Persist)
         for player in self.players:
             dead_creatures = [c for c in player.creatures if c.is_dead]
