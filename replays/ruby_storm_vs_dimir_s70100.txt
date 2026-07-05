@@ -1,0 +1,1388 @@
+Loaded 21759 cards (0 errors)
+Loaded 21759 cards (0 errors)
+  Sideboard (Dimir Midrange vs Ruby Storm): +2 Flusterstorm, +2 Mystical Dispute, -2 Drown in the Loch, -2 Fatal Push
+  Sideboard (Dimir Midrange vs Ruby Storm): +2 Flusterstorm, +2 Mystical Dispute, -2 Drown in the Loch, -2 Fatal Push
+======================================================================
+  GAME 1: Ruby Storm (P1) vs Dimir Midrange (P2)  —  seed 70100
+  Series: Ruby Storm 0 - 0 Dimir Midrange
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Ruby Storm wins → chooses to play first
+║ P1 (on play): Ruby Storm
+║ P2 (on draw): Dimir Midrange
+╚═══════════════════════════════════════════════════════
+
+P1 (Ruby Storm) opening hand (1 lands, 6 spells):
+  • Desperate Ritual [Spell, CMC 2]
+  • Grapeshot [Spell, CMC 2]
+  • Ral, Monsoon Mage // Ral, Leyline Prodigy [Creature, CMC 2]
+  • Grapeshot [Spell, CMC 2]
+  • Wrenn's Resolve [Spell, CMC 2]
+  • Elegant Parlor [Land, CMC 0]
+  • Ral, Monsoon Mage // Ral, Leyline Prodigy [Creature, CMC 2]
+→ P1 KEEPS 7 — has key card(s): Desperate Ritual, Wrenn's Resolve, 5 cheap spells
+
+P2 (Dimir Midrange) opening hand (1 lands, 6 spells):
+  • Drown in the Loch [Spell, CMC 2]
+  • Orcish Bowmasters [Creature, CMC 2]
+  • Dauthi Voidwalker [Creature, CMC 2]
+  • Island [Land, CMC 0]
+  • Consider [Spell, CMC 1]
+  • Subtlety [Creature, CMC 4]
+  • Consider [Spell, CMC 1]
+→ P2 MULLIGANS (too few lands (1 < 2))
+  New hand (2 lands, 5 spells): ['Spell Pierce', 'Scalding Tarn', 'Polluted Delta', 'Murktide Regent', 'Fatal Push', 'Orcish Bowmasters', 'Thoughtseize']
+→ P2 mulligans to 6, bottoms: ['Spell Pierce']
+  Keeps: ['Scalding Tarn', 'Polluted Delta', 'Murktide Regent', 'Fatal Push', 'Orcish Bowmasters', 'Thoughtseize']
+
+
+╔══ TURN 1 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 20  |  Dimir Midrange 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: surveil 1 → Thundering Falls to GY
+T1 P1: Play Elegant Parlor (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Ruby Storm 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Island
+  [Main 1]
+T1 P2: Play Polluted Delta
+T1 P2: Crack Polluted Delta (pay 1 life) -> Watery Grave (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 20  |  Dimir Midrange 19
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Elegant Parlor
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arid Mesa
+  [Main 1]
+T2 P1: Play Arid Mesa
+T2 P1: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Ruby Storm 19
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Elegant Parlor, Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Fatal Push
+  [Main 1]
+T2 P2: Play Scalding Tarn
+T2 P2: Crack Scalding Tarn (pay 1 life) -> Watery Grave (tapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 19  |  Dimir Midrange 18
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Elegant Parlor, Sacred Foundry
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Reckless Impulse
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 18  |  Ruby Storm 19
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Watery Grave
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Elegant Parlor, Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Consider
+  [Main 1]
+T3 P2: Play Island
+    → Goal: grind_value
+    [Mana] Tap Watery Grave→B, Island→U (paying for Orcish Bowmasters, 3 mana remaining)
+T3 P2: Cast Orcish Bowmasters (1B)
+    [Priority] P1 passes (no response)
+T3: Resolve Orcish Bowmasters
+T3 P2: Bowmasters deals 1 damage to opponent (life: 18)
+T3 P2: Bowmasters creates 1/1 Orc Army token
+    → Goal: grind_value [enablers]
+    [Mana] Tap Watery Grave→U (paying for Consider, 1 mana remaining)
+T3 P2: Cast Consider (U)
+    [Priority] P1 passes (no response)
+T3: Resolve Consider
+T3 P2: Consider → draw 1 (Otawara, Soaring City)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 18  |  Dimir Midrange 18
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Elegant Parlor, Sacred Foundry
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave [T], Watery Grave [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ruby Medallion
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Elegant Parlor→R, Sacred Foundry→R (paying for Ruby Medallion, 2 mana remaining)
+T4 P1: Cast Ruby Medallion (2)
+    [Priority] P2 passes (no response)
+T4: Resolve Ruby Medallion
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 18  |  Ruby Storm 18
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave, Watery Grave, Island
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Elegant Parlor [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Underground River
+  [Main 1]
+T4 P2: Play Underground River
+    → Goal: close_game
+T4 P2: Delve 3 cards for Murktide Regent
+    [Mana] Tap Island→U, Watery Grave→U, Watery Grave→B, Underground River→B (paying for Murktide Regent, 4 mana remaining)
+T4 P2: Cast Murktide Regent (5UU)
+    [Priority] P1 passes (no response)
+T4: Resolve Murktide Regent
+T4 P2: Murktide Regent enters as 4/4 (1 +1/+1 counters from delved instants/sorceries)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army
+T4 P2: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+T4 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T4 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 18 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 16  |  Dimir Midrange 17
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 2
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Elegant Parlor, Sacred Foundry
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped], Murktide Regent (4/4)
+║   Lands: Watery Grave [T], Watery Grave [T], Island [T], Underground River [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Manamorphose
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Desperate Ritual moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 5 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 17  |  Ruby Storm 16
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 2
+║ Library: 47  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Murktide Regent (4/4)
+║   Lands: Watery Grave, Watery Grave, Island, Underground River
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Elegant Parlor, Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Counterspell
+  [Main 1]
+T5 P2: Play Otawara, Soaring City
+    → Goal: close_game
+    [Mana] Tap Watery Grave→B (paying for Fatal Push, 5 mana remaining)
+T5 P2: Cast Fatal Push (B)
+    [Priority] P1 passes (no response)
+T5: Resolve Fatal Push
+    → Goal: close_game
+    [Mana] Tap Watery Grave→B (paying for Fatal Push, 4 mana remaining)
+T5 P2: Cast Fatal Push (B)
+    [Priority] P1 passes (no response)
+T5: Resolve Fatal Push
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army, Murktide Regent
+T5 P2: Attack with Orcish Bowmasters, Orc Army, Murktide Regent
+  [Declare Blockers] P1 does not block
+T5 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T5 P2:   Orc Army (1/1) → 1 dmg to player
+T5 P2:   Murktide Regent (6/6) → 6 dmg to player
+  [Combat Damage] 8 damage dealt → P1 life: 16 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 8  |  Dimir Midrange 17
+║ Hand: 7 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 3
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Elegant Parlor, Sacred Foundry
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped], Murktide Regent (6/6) [tapped]
+║   Lands: Watery Grave [T], Watery Grave [T], Island, Underground River, Otawara, Soaring City
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wooded Foothills
+  [Main 1]
+T6 P1: Play Wooded Foothills
+T6 P1: Crack Wooded Foothills -> Mountain (untapped)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Wrenn's Resolve, 3 mana remaining)
+T6 P1: Cast Wrenn's Resolve (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Wrenn's Resolve
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Elegant Parlor→R (paying for Reckless Impulse, 2 mana remaining)
+T6 P1: Cast Reckless Impulse (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Reckless Impulse
+T6 P1: Reckless Impulse → impulse-reveal 2 (Valakut Awakening // Valakut Stoneforge, Mountain)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Manamorphose, 1 mana remaining)
+T6 P1: Cast Manamorphose (2)
+    [Priority] P2 passes (no response)
+T6: Resolve Manamorphose
+T6 P1: Manamorphose adds 2 any mana
+    → Goal: execute_payoff [enablers]
+T6 P1: Cast Glimpse the Impossible (2R)
+    [Priority] P2 passes (no response)
+T6: Resolve Glimpse the Impossible
+T6 P1: Glimpse the Impossible → impulse-reveal 3 (Pyretic Ritual, Wish, Sunbaked Canyon)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T6: Mountain moved hand -> graveyard (discard to hand size)
+T6: Ral, Monsoon Mage // Ral, Leyline Prodigy moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 6 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 17  |  Ruby Storm 6
+║ Hand: 2 cards  |  Opp hand: 7 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 2
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Murktide Regent (6/6)
+║   Lands: Watery Grave, Watery Grave, Island, Underground River, Otawara, Soaring City
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Elegant Parlor [T], Sacred Foundry [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thoughtseize
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army, Murktide Regent
+T6 P2: Attack with Orcish Bowmasters, Orc Army, Murktide Regent
+  [Declare Blockers] P1 does not block
+T6 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T6 P2:   Orc Army (1/1) → 1 dmg to player
+T6 P2:   Murktide Regent (6/6) → 6 dmg to player
+P1 loses: life total -2
+  [Combat Damage] 8 damage dealt → P1 life: 6 → -2
+
+>>> Dimir Midrange wins Game 1 on turn 6 via damage
+    Final life: Ruby Storm=-2  Dimir Midrange=17
+
+======================================================================
+  GAME 2: Ruby Storm (P1) vs Dimir Midrange (P2)  —  seed 70101
+  Series: Ruby Storm 0 - 1 Dimir Midrange
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Dimir Midrange wins → chooses to play first
+║ P1 (on play): Dimir Midrange
+║ P2 (on draw): Ruby Storm
+╚═══════════════════════════════════════════════════════
+
+P1 (Ruby Storm) opening hand (1 lands, 6 spells):
+  • Ral, Monsoon Mage // Ral, Leyline Prodigy [Creature, CMC 2]
+  • March of Reckless Joy [Spell, CMC 1]
+  • Ral, Monsoon Mage // Ral, Leyline Prodigy [Creature, CMC 2]
+  • Ruby Medallion [Spell, CMC 2]
+  • Reckless Impulse [Spell, CMC 2]
+  • Pyretic Ritual [Spell, CMC 2]
+  • Arid Mesa [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Pyretic Ritual, Reckless Impulse, Ruby Medallion, 5 cheap spells
+
+P2 (Dimir Midrange) opening hand (4 lands, 3 spells):
+  • Consider [Spell, CMC 1]
+  • Scalding Tarn [Land, CMC 0]
+  • Polluted Delta [Land, CMC 0]
+  • Psychic Frog [Creature, CMC 2]
+  • Scalding Tarn [Land, CMC 0]
+  • Counterspell [Spell, CMC 2]
+  • Darkslick Shores [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Consider, Psychic Frog, 3 cheap spells
+
+
+╔══ TURN 1 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Ruby Storm 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Scalding Tarn
+T1 P2: Crack Scalding Tarn (pay 1 life) -> Watery Grave (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 20  |  Dimir Midrange 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Glimpse the Impossible
+  [Main 1]
+T1 P1: Play Arid Mesa
+T1 P1: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Ruby Storm 19
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Murktide Regent
+  [Main 1]
+T2 P2: Play Scalding Tarn
+T2 P2: Crack Scalding Tarn (pay 1 life) -> Watery Grave (tapped, life: 18)
+    → Goal: grind_value [enablers]
+    [Mana] Tap Watery Grave→U (paying for Consider, 1 mana remaining)
+T2 P2: Cast Consider (U)
+    [Priority] P1 passes (no response)
+T2: Resolve Consider
+T2 P2: Consider → draw 1 (Thoughtseize)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 19  |  Dimir Midrange 18
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wrenn's Resolve
+  [Main 1]
+    → Goal: deploy_engine
+    [Mana] Tap Sacred Foundry→R (paying for March of Reckless Joy, 1 mana remaining)
+T2 P1: Cast March of Reckless Joy (R)
+    [Priority] P2 passes (no response)
+T2: Resolve March of Reckless Joy
+T2 P1: Play Bloodstained Mire
+T2 P1: Crack Bloodstained Mire -> Thundering Falls (tapped)
+T2 P1: surveil 1 → Grapeshot to GY
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T2: Ral, Monsoon Mage // Ral, Leyline Prodigy moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 3 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 18  |  Ruby Storm 18
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Watery Grave
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Orcish Bowmasters
+  [Main 1]
+T3 P2: Play Polluted Delta
+T3 P2: Crack Polluted Delta -> Island (untapped)
+    → Goal: grind_value
+    [Mana] Tap Watery Grave→B, Island→U (paying for Orcish Bowmasters, 3 mana remaining)
+T3 P2: Cast Orcish Bowmasters (1B)
+    [Priority] P1 passes (no response)
+T3: Resolve Orcish Bowmasters
+T3 P2: Bowmasters deals 1 damage to opponent (life: 17)
+T3 P2: Bowmasters creates 1/1 Orc Army token
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 17  |  Dimir Midrange 17
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 5
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Thundering Falls
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave [T], Watery Grave, Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ral, Monsoon Mage // Ral, Leyline Prodigy
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Sacred Foundry→R, Thundering Falls→R (paying for Ruby Medallion, 2 mana remaining)
+T3 P1: Cast Ruby Medallion (2)
+    [Priority] P2 passes (no response)
+T3: Resolve Ruby Medallion
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 17  |  Ruby Storm 17
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 47  |  Graveyard: 4
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave, Watery Grave, Island
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry [T], Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Island
+  [Main 1]
+T4 P2: Play Island
+    → Goal: close_game
+    [Mana] Tap Watery Grave→B, Island→U (paying for Psychic Frog, 4 mana remaining)
+T4 P2: Cast Psychic Frog (UB)
+    [Priority] P1 passes (no response)
+T4: Resolve Psychic Frog
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army
+T4 P2: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+T4 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T4 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 17 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 15  |  Dimir Midrange 17
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 5
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry, Thundering Falls
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped], Psychic Frog (1/2)
+║   Lands: Watery Grave [T], Watery Grave, Island [T], Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Desperate Ritual
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Sacred Foundry→R, Thundering Falls→R (paying for Ruby Medallion, 2 mana remaining)
+T4 P1: Cast Ruby Medallion (2)
+    [Priority] P2 passes (no response)
+T4: Resolve Ruby Medallion
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 17  |  Ruby Storm 15
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 2
+║ Library: 46  |  Graveyard: 4
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Psychic Frog (1/2)
+║   Lands: Watery Grave, Watery Grave, Island, Island
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion, Ruby Medallion
+║   Lands: Sacred Foundry [T], Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Creeping Tar Pit
+  [Main 1]
+T5 P2: Play Darkslick Shores (tapped, 4 other lands)
+    → Goal: close_game
+T5 P2: Delve 4 cards for Murktide Regent
+    [Mana] Tap Island→U, Island→U, Watery Grave→B (paying for Murktide Regent, 4 mana remaining)
+T5 P2: Cast Murktide Regent (5UU)
+    [Priority] P1 passes (no response)
+T5: Resolve Murktide Regent
+T5 P2: Murktide Regent enters as 4/4 (1 +1/+1 counters from delved instants/sorceries)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army, Psychic Frog
+T5 P2: Attack with Orcish Bowmasters, Orc Army, Psychic Frog
+  [Declare Blockers] P1 does not block
+T5 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T5 P2:   Orc Army (1/1) → 1 dmg to player
+T5 P2:   Psychic Frog (2/3) → 2 dmg to player
+T5 P2: Psychic Frog deals combat damage — draw a card
+  [Combat Damage] 4 damage dealt → P1 life: 15 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 11  |  Dimir Midrange 17
+║ Hand: 7 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 5
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion, Ruby Medallion
+║   Lands: Sacred Foundry, Thundering Falls
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped], Psychic Frog (2/3) [tapped], Murktide Regent (4/4)
+║   Lands: Watery Grave [T], Watery Grave, Island [T], Island [T], Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Desperate Ritual
+  [Main 1]
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Reckless Impulse, 2 mana remaining)
+T5 P1: Cast Reckless Impulse (1R)
+    [Priority] P2 passes (no response)
+T5: Resolve Reckless Impulse
+T5 P1: Reckless Impulse → impulse-reveal 2 (Manamorphose, Ral, Monsoon Mage // Ral, Leyline Prodigy)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Thundering Falls→R (paying for Pyretic Ritual, 1 mana remaining)
+T5 P1: Cast Pyretic Ritual (1R)
+    [Priority] P2 passes (no response)
+T5: Resolve Pyretic Ritual
+T5 P1: Pyretic Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T5 P1: Cast Wrenn's Resolve (1R)
+    [Priority] P2 passes (no response)
+T5: Resolve Wrenn's Resolve
+    → Goal: execute_payoff [enablers]
+T5 P1:   Splice Desperate Ritual onto Desperate Ritual
+T5 P1: Cast Desperate Ritual (1R)
+    [Priority] P2 passes (no response)
+T5: Resolve Desperate Ritual
+T5 P1: Desperate Ritual adds 3 R mana
+T5 P1:   Spliced Desperate Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T5 P1: Cast Glimpse the Impossible (2R)
+    [Priority] P2 passes (no response)
+T5: Resolve Glimpse the Impossible
+T5 P1: Glimpse the Impossible → impulse-reveal 3 (Mountain, Wish, Pyretic Ritual)
+T5 P1: Play Mountain
+    → Goal: execute_payoff [enablers]
+T5 P1: Cast Desperate Ritual (1R)
+    [Priority] P2 passes (no response)
+T5: Resolve Desperate Ritual
+T5 P1: Desperate Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T5 P1: Cast Pyretic Ritual (1R)
+    [Priority] P2 passes (no response)
+T5: Resolve Pyretic Ritual
+T5 P1: Pyretic Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T5 P1: Cast Manamorphose (2)
+    [Priority] P2 passes (no response)
+T5: Resolve Manamorphose
+T5 P1: Manamorphose adds 2 any mana
+    → Goal: execute_payoff [enablers]
+T5 P1: Cast Past in Flames (3R)
+    [Priority] P2 passes (no response)
+T5: Resolve Past in Flames
+T5 P1: Past in Flames grants flashback
+    → Goal: execute_payoff [enablers]
+T5 P1: Cast Wish (2R)
+    [Priority] P2 passes (no response)
+T5: Resolve Wish
+T5 P1: Wish finds Grapeshot (from sideboard)
+    → Goal: execute_payoff [payoffs]
+T5 P1: Cast Grapeshot (1R)
+    [Priority] P2 passes (no response)
+T5: Resolve Grapeshot
+T5 P1: Grapeshot deals 1 damage (opponent life: 16)
+T5: Storm copies: 10
+T5 P1: Grapeshot deals 1 damage (opponent life: 15)
+T5 P1: Grapeshot deals 1 damage (opponent life: 14)
+T5 P1: Grapeshot deals 1 damage (opponent life: 13)
+T5 P1: Grapeshot deals 1 damage (opponent life: 12)
+T5 P1: Grapeshot deals 1 damage (opponent life: 11)
+T5 P1: Grapeshot deals 1 damage (opponent life: 10)
+T5 P1: Grapeshot deals 1 damage (opponent life: 9)
+T5 P1: Grapeshot deals 1 damage (opponent life: 8)
+T5 P1: Grapeshot deals 1 damage (opponent life: 7)
+T5 P1: Grapeshot deals 1 damage (opponent life: 6)
+    → Goal: execute_payoff [payoffs]
+T5 P1: Cast Grapeshot (1R)
+    [Priority] P2 passes (no response)
+T5: Resolve Grapeshot
+T5 P1: Grapeshot deals 1 damage (opponent life: 5)
+T5: Storm copies: 11
+T5 P1: Grapeshot deals 1 damage (opponent life: 4)
+T5 P1: Grapeshot deals 1 damage (opponent life: 3)
+T5 P1: Grapeshot deals 1 damage (opponent life: 2)
+T5 P1: Grapeshot deals 1 damage (opponent life: 1)
+T5 P1: Grapeshot deals 1 damage (opponent life: 0)
+T5 P1: Grapeshot deals 1 damage (opponent life: -1)
+T5 P1: Grapeshot deals 1 damage (opponent life: -2)
+T5 P1: Grapeshot deals 1 damage (opponent life: -3)
+T5 P1: Grapeshot deals 1 damage (opponent life: -4)
+T5 P1: Grapeshot deals 1 damage (opponent life: -5)
+T5 P1: Grapeshot deals 1 damage (opponent life: -6)
+P2 loses: life total -6
+
+>>> Ruby Storm wins Game 2 on turn 5 via damage
+    Final life: Ruby Storm=10  Dimir Midrange=-6
+
+======================================================================
+  GAME 3: Dimir Midrange (P1) vs Ruby Storm (P2)  —  seed 70102
+  Series: Ruby Storm 1 - 1 Dimir Midrange
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Dimir Midrange wins → chooses to play first
+║ P1 (on play): Dimir Midrange
+║ P2 (on draw): Ruby Storm
+╚═══════════════════════════════════════════════════════
+
+P1 (Dimir Midrange) opening hand (3 lands, 4 spells):
+  • Psychic Frog [Creature, CMC 2]
+  • Mystical Dispute [Spell, CMC 3]
+  • Orcish Bowmasters [Creature, CMC 2]
+  • Darkslick Shores [Land, CMC 0]
+  • Polluted Delta [Land, CMC 0]
+  • Counterspell [Spell, CMC 2]
+  • Otawara, Soaring City [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Orcish Bowmasters, Psychic Frog, 4 cheap spells
+
+P2 (Ruby Storm) opening hand (2 lands, 5 spells):
+  • Grapeshot [Spell, CMC 2]
+  • Manamorphose [Spell, CMC 2]
+  • Ral, Monsoon Mage // Ral, Leyline Prodigy [Creature, CMC 2]
+  • Pyretic Ritual [Spell, CMC 2]
+  • Arid Mesa [Land, CMC 0]
+  • Mountain [Land, CMC 0]
+  • Wrenn's Resolve [Spell, CMC 2]
+→ P2 KEEPS 7 — has key card(s): Manamorphose, Pyretic Ritual, Wrenn's Resolve, 5 cheap spells
+
+
+╔══ TURN 1 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Ruby Storm 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Polluted Delta
+T1 P1: Crack Polluted Delta (pay 1 life) -> Watery Grave (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 20  |  Dimir Midrange 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Reckless Impulse
+  [Main 1]
+T1 P2: Play Arid Mesa
+T1 P2: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Ruby Storm 19
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Darkslick Shores
+  [Main 1]
+T2 P1: Play Otawara, Soaring City
+    → Goal: grind_value
+    [Mana] Tap Watery Grave→B, Otawara, Soaring City→U (paying for Orcish Bowmasters, 2 mana remaining)
+T2 P1: Cast Orcish Bowmasters (1B)
+    [Priority] P2 passes (no response)
+T2: Resolve Orcish Bowmasters
+T2 P1: Bowmasters deals 1 damage to opponent (life: 18)
+T2 P1: Bowmasters creates 1/1 Orc Army token
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 18  |  Dimir Midrange 19
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave [T], Otawara, Soaring City [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ral, Monsoon Mage // Ral, Leyline Prodigy
+  [Main 1]
+T2 P2: Play Mountain
+    → Goal: deploy_engine [fillers]
+    [Mana] Tap Mountain→R, Sacred Foundry→R (paying for Wrenn's Resolve, 2 mana remaining)
+T2 P2: Cast Wrenn's Resolve (1R)
+    [Priority] P1 passes (no response)
+T2: Resolve Wrenn's Resolve
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Ruby Storm 18
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave, Otawara, Soaring City
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Underground River
+  [Main 1]
+T3 P1: Play Underground River
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Orcish Bowmasters, Orc Army
+T3 P1: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P2 does not block
+T3 P1:   Orcish Bowmasters (1/1) → 1 dmg to player
+T3 P1:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 18 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 16  |  Dimir Midrange 19
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 2
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped]
+║   Lands: Watery Grave, Otawara, Soaring City, Underground River
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Gemstone Caverns
+  [Main 1]
+T3 P2: Play Gemstone Caverns
+    → Goal: execute_payoff
+    [Mana] Tap Gemstone Caverns→U, Mountain→R (paying for Ral, Monsoon Mage // Ral, Leyline Prodigy, 3 mana remaining)
+T3 P2: Cast Ral, Monsoon Mage // Ral, Leyline Prodigy (UR)
+    [Priority] P1 responds with Counterspell
+    [Mana] Tap Otawara, Soaring City→U, Watery Grave→U (paying for Counterspell, 3 mana remaining)
+T3 P1: Cast Counterspell (UU)
+T3: Resolve Counterspell
+T3: Ral, Monsoon Mage // Ral, Leyline Prodigy is countered
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Ruby Storm 16
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 2
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave, Otawara, Soaring City, Underground River
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain [T], Gemstone Caverns [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Murktide Regent
+  [Main 1]
+T4 P1: Play Darkslick Shores (tapped, 3 other lands)
+    → Goal: close_game
+    [Mana] Tap Watery Grave→B, Otawara, Soaring City→U (paying for Psychic Frog, 3 mana remaining)
+T4 P1: Cast Psychic Frog (UB)
+    [Priority] P2 passes (no response)
+T4: Resolve Psychic Frog
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Orcish Bowmasters, Orc Army
+T4 P1: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P2 does not block
+T4 P1:   Orcish Bowmasters (1/1) → 1 dmg to player
+T4 P1:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 16 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 14  |  Dimir Midrange 19
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 3
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain, Gemstone Caverns
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped], Psychic Frog (1/2)
+║   Lands: Watery Grave [T], Otawara, Soaring City [T], Underground River, Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Desperate Ritual
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Gemstone Caverns→U, Mountain→R (paying for Ral, Monsoon Mage // Ral, Leyline Prodigy, 3 mana remaining)
+T4 P2: Cast Ral, Monsoon Mage // Ral, Leyline Prodigy (UR)
+    [Priority] P1 passes (no response)
+T4: Resolve Ral, Monsoon Mage // Ral, Leyline Prodigy
+T4 P2: Ral, Monsoon Mage enters — instants/sorceries cost {1} less
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Manamorphose, 1 mana remaining)
+T4 P2: Cast Manamorphose (2)
+    [Priority] P1 passes (no response)
+T4: Resolve Manamorphose
+T4 P2: Manamorphose adds 2 any mana
+    → Goal: execute_payoff
+T4 P2: Cast Ruby Medallion (2)
+    [Priority] P1 passes (no response)
+T4: Resolve Ruby Medallion
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Ruby Storm 13
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Psychic Frog (1/2)
+║   Lands: Watery Grave, Otawara, Soaring City, Underground River, Darkslick Shores
+║ Ruby Storm board:
+║   Creatures: Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry [T], Mountain [T], Gemstone Caverns [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Psychic Frog
+  [Main 1]
+T5 P1: Play Darkslick Shores (tapped, 4 other lands)
+    → Goal: close_game
+    [Mana] Tap Watery Grave→B, Otawara, Soaring City→U (paying for Psychic Frog, 4 mana remaining)
+T5 P1: Cast Psychic Frog (UB)
+    [Priority] P2 passes (no response)
+T5: Resolve Psychic Frog
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Orcish Bowmasters, Orc Army, Psychic Frog
+T5 P1: Attack with Orcish Bowmasters, Orc Army, Psychic Frog
+T5 P2:   [BLOCK] Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2) blocks Orcish Bowmasters (1/1) — lifespan_delta=+1.33
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T5 P1:   Orc Army (1/1) → 1 dmg to player
+T5 P1:   Psychic Frog (1/2) → 1 dmg to player
+T5 P1: Psychic Frog deals combat damage — draw a card
+T5: Orcish Bowmasters dies
+  [Combat Damage] 2 damage dealt → P2 life: 13 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 11  |  Dimir Midrange 19
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 4
+║ Ruby Storm board:
+║   Creatures: Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry, Mountain, Gemstone Caverns
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1) [tapped], Psychic Frog (1/2) [tapped], Psychic Frog (1/2)
+║   Lands: Watery Grave [T], Otawara, Soaring City [T], Underground River, Darkslick Shores, Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Manamorphose
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ral, Monsoon Mage // Ral, Leyline Prodigy
+T5 P2: Attack with Ral, Monsoon Mage // Ral, Leyline Prodigy
+  [Declare Blockers] P1 does not block
+T5 P2:   Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 19 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 18  |  Ruby Storm 11
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1), Psychic Frog (1/2), Psychic Frog (1/2)
+║   Lands: Watery Grave, Otawara, Soaring City, Underground River, Darkslick Shores, Darkslick Shores
+║ Ruby Storm board:
+║   Creatures: Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2) [tapped]
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry, Mountain, Gemstone Caverns
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Thoughtseize
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Otawara, Soaring City→U, Watery Grave→U, Darkslick Shores→B, Darkslick Shores→B (paying for Subtlety, 5 mana remaining)
+T6 P1: Cast Subtlety (2UU)
+    [Priority] P2 passes (no response)
+T6: Resolve Subtlety
+T6 P1: Subtlety enters (no creature/PW spell on stack to target)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Orc Army, Psychic Frog, Psychic Frog
+T6 P1: Attack with Orc Army, Psychic Frog, Psychic Frog
+  [Declare Blockers] P2 does not block
+T6 P1:   Orc Army (1/1) → 1 dmg to player
+T6 P1:   Psychic Frog (1/2) → 1 dmg to player
+T6 P1: Psychic Frog deals combat damage — draw a card
+T6 P1:   Psychic Frog (1/2) → 1 dmg to player
+T6 P1: Psychic Frog deals combat damage — draw a card
+  [Combat Damage] 3 damage dealt → P2 life: 11 → 8
+  [End Combat]
+  [Main 2]
+T6 P1: Play Scalding Tarn
+T6 P1: Crack Scalding Tarn (pay 1 life) -> Watery Grave (tapped, life: 17)
+  [End Step]
+
+╔══ TURN 6 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 8  |  Dimir Midrange 17
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 6
+║ Library: 46  |  Graveyard: 4
+║ Ruby Storm board:
+║   Creatures: Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry, Mountain, Gemstone Caverns
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1) [tapped], Psychic Frog (1/2) [tapped], Psychic Frog (1/2) [tapped], Subtlety (3/3)
+║   Lands: Watery Grave [T], Otawara, Soaring City [T], Underground River, Darkslick Shores [T], Darkslick Shores [T], Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wooded Foothills
+  [Main 1]
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Pyretic Ritual, 3 mana remaining)
+T6 P2: Cast Pyretic Ritual (1R)
+    [Priority] P1 passes (no response)
+T6: Resolve Pyretic Ritual
+T6 P2: Pyretic Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T6 P2: Cast Desperate Ritual (1R)
+    [Priority] P1 passes (no response)
+T6: Resolve Desperate Ritual
+T6 P2: Desperate Ritual adds 3 R mana
+T6 P2: Play Wooded Foothills
+T6 P2: Crack Wooded Foothills -> Mountain (untapped)
+    → Goal: execute_payoff [enablers]
+T6 P2: Cast Manamorphose (2)
+    [Priority] P1 passes (no response)
+T6: Resolve Manamorphose
+T6 P2: Manamorphose adds 2 any mana
+    → Goal: execute_payoff [enablers]
+T6 P2: Cast Reckless Impulse (1R)
+    [Priority] P1 passes (no response)
+T6: Resolve Reckless Impulse
+T6 P2: Reckless Impulse → impulse-reveal 2 (Mountain, Wish)
+    → Goal: execute_payoff [enablers]
+T6 P2: Cast March of Reckless Joy (8R) (X=8)
+    [Priority] P1 passes (no response)
+T6: Resolve March of Reckless Joy
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 17  |  Ruby Storm 7
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 6  |  Opp lands: 4
+║ Library: 43  |  Graveyard: 4
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1), Psychic Frog (1/2), Psychic Frog (1/2), Subtlety (3/3)
+║   Lands: Watery Grave, Otawara, Soaring City, Underground River, Darkslick Shores, Darkslick Shores, Watery Grave
+║ Ruby Storm board:
+║   Creatures: Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry [T], Mountain [T], Gemstone Caverns [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Consider
+  [Main 1]
+T7 P1: Play Shelldock Isle (enters tapped)
+    → Goal: close_game
+    [Mana] Tap Otawara, Soaring City→U (paying for Consider, 6 mana remaining)
+T7 P1: Cast Consider (U)
+    [Priority] P2 passes (no response)
+T7: Resolve Consider
+T7 P1: Consider → draw 1 (Swamp)
+    → Goal: close_game
+T7 P1: Delve 5 cards for Murktide Regent
+    [Mana] Tap Watery Grave→U, Darkslick Shores→U (paying for Murktide Regent, 5 mana remaining)
+T7 P1: Cast Murktide Regent (5UU)
+    [Priority] P2 passes (no response)
+T7: Resolve Murktide Regent
+T7 P1: Murktide Regent enters as 5/5 (2 +1/+1 counters from delved instants/sorceries)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Orc Army, Psychic Frog, Psychic Frog, Subtlety
+T7 P1: Attack with Orc Army, Psychic Frog, Psychic Frog, Subtlety
+T7 P2:   [BLOCK-EMERGENCY] Ral, Monsoon Mage // Ral, Leyline Prodigy (1/2) blocks Psychic Frog (2/3) — lifespan_delta=+0.17
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T7 P1:   Orc Army (1/1) → 1 dmg to player
+T7 P1:   Psychic Frog (1/2) → 1 dmg to player
+T7 P1: Psychic Frog deals combat damage — draw a card
+T7 P1:   Subtlety (3/3) → 3 dmg to player
+T7: Ral, Monsoon Mage // Ral, Leyline Prodigy dies
+  [Combat Damage] 5 damage dealt → P2 life: 7 → 2
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 2  |  Dimir Midrange 17
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 7
+║ Library: 39  |  Graveyard: 11
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry, Mountain, Gemstone Caverns, Mountain
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1) [tapped], Psychic Frog (2/3) [tapped], Psychic Frog (1/2) [tapped], Subtlety (3/3) [tapped], Murktide Regent (5/5)
+║   Lands: Watery Grave [T], Otawara, Soaring City [T], Underground River, Darkslick Shores [T], Darkslick Shores, Watery Grave, Shelldock Isle [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Glimpse the Impossible
+  [Main 1]
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Pyretic Ritual, 4 mana remaining)
+T7 P2: Cast Pyretic Ritual (1R)
+    [Priority] P1 passes (no response)
+T7: Resolve Pyretic Ritual
+T7 P2: Pyretic Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T7 P2: Cast Pyretic Ritual (1R)
+    [Priority] P1 passes (no response)
+T7: Resolve Pyretic Ritual
+T7 P2: Pyretic Ritual adds 3 R mana
+T7 P2: Play Mountain
+    → Goal: execute_payoff [enablers]
+T7 P2: Cast Glimpse the Impossible (2R)
+    [Priority] P1 passes (no response)
+T7: Resolve Glimpse the Impossible
+T7 P2: Glimpse the Impossible → impulse-reveal 3 (Thundering Falls, Arid Mesa, Desperate Ritual)
+    → Goal: execute_payoff [enablers]
+T7 P2: Cast Desperate Ritual (1R)
+    [Priority] P1 passes (no response)
+T7: Resolve Desperate Ritual
+T7 P2: Desperate Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T7 P2: Cast Wish (2R)
+    [Priority] P1 responds with Mystical Dispute
+    [Mana] Tap Darkslick Shores→U, Watery Grave→B, Underground River→B (paying for Mystical Dispute, 3 mana remaining)
+T7 P1: Cast Mystical Dispute (2U)
+T7: Resolve Mystical Dispute
+T7: Wish is countered
+    → Goal: execute_payoff [payoffs]
+T7 P2: Cast Grapeshot (1R)
+    [Priority] P1 passes (no response)
+T7: Resolve Grapeshot
+T7 P2: Grapeshot deals 1 damage (opponent life: 15)
+T7: Storm copies: 6
+T7 P2: Grapeshot deals 1 damage (opponent life: 14)
+T7 P2: Grapeshot deals 1 damage (opponent life: 13)
+T7 P2: Grapeshot deals 1 damage (opponent life: 12)
+T7 P2: Grapeshot deals 1 damage (opponent life: 11)
+T7 P2: Grapeshot deals 1 damage (opponent life: 10)
+T7 P2: Grapeshot deals 1 damage (opponent life: 9)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 9  |  Ruby Storm 2
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 7  |  Opp lands: 5
+║ Library: 40  |  Graveyard: 2
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1), Psychic Frog (2/3), Psychic Frog (1/2), Subtlety (3/3), Murktide Regent (6/6)
+║   Lands: Watery Grave, Otawara, Soaring City, Underground River, Darkslick Shores, Darkslick Shores, Watery Grave, Shelldock Isle
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry, Mountain [T], Gemstone Caverns, Mountain, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Consider
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Otawara, Soaring City→U (paying for Consider, 7 mana remaining)
+T8 P1: Cast Consider (U)
+    [Priority] P2 passes (no response)
+T8: Resolve Consider
+T8 P1: Consider → draw 1 (Murktide Regent)
+    → Goal: close_game
+T8 P1: Delve 3 cards for Murktide Regent
+    [Mana] Tap Shelldock Isle→U, Watery Grave→U, Darkslick Shores→B, Darkslick Shores→B (paying for Murktide Regent, 6 mana remaining)
+T8 P1: Cast Murktide Regent (5UU)
+    [Priority] P2 passes (no response)
+T8: Resolve Murktide Regent
+T8 P1: Murktide Regent enters as 5/5 (2 +1/+1 counters from delved instants/sorceries)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Orc Army, Psychic Frog, Psychic Frog, Subtlety, Murktide Regent
+T8 P1: Attack with Orc Army, Psychic Frog, Psychic Frog, Subtlety, Murktide Regent
+  [Declare Blockers] P2 does not block
+T8 P1:   Orc Army (1/1) → 1 dmg to player
+T8 P1:   Psychic Frog (2/3) → 2 dmg to player
+T8 P1: Psychic Frog deals combat damage — draw a card
+T8 P1:   Psychic Frog (1/2) → 1 dmg to player
+T8 P1: Psychic Frog deals combat damage — draw a card
+T8 P1:   Subtlety (3/3) → 3 dmg to player
+T8 P1:   Murktide Regent (5/5) → 5 dmg to player
+P2 loses: life total -10
+  [Combat Damage] 12 damage dealt → P2 life: 2 → -10
+
+>>> Dimir Midrange wins Game 3 on turn 8 via damage
+    Final life: Dimir Midrange=9  Ruby Storm=-10
+
+======================================================================
+  MATCH RESULT: Dimir Midrange wins 2-1
+======================================================================

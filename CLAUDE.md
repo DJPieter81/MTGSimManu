@@ -57,15 +57,19 @@ dependencies are stdlib.  Sims remain deterministic and offline.
 python3 merge_db.py
 ```
 
-**Never hand-roll the merge.** `merge_db.py` is the single source of truth: it
-globs *all* `ModernAtomic_part*.json` files (the part count grows over time —
-part9 landed 2026-05-10 with ~30 updated cards), merges them in numeric order,
-and handles both part shapes (`{"meta","data"}` wrapper and bare card dict).
-A previous inline recipe here hardcoded parts 1-8 and the wrapper shape; every
-session that used it ran on a silently stale DB and produced WR-anchor
-snapshots that diverged from CI (which reassembles via `tests/conftest.py`
-from all parts). That was the root cause of the 2026-07-05 CI failures on
-PRs #451/#454.
+**Never hand-roll the merge.** `merge_db.py` is the single source of truth:
+it globs *all* `ModernAtomic_part*.json` files, merges them in numeric order
+(part10 after part9 — lexicographic order would let stale parts win), and
+handles both part shapes (`{"meta","data"}` wrapper and bare card dict).
+Every part file must carry MTGJSON provenance (`meta.version`) — enforced by
+`tests/test_db_part_provenance.py`. Two incidents inform these rules: a
+hand-rolled parts-1-8 recipe ran sessions on silently stale DBs (2026-07-05
+CI failures on PRs #451/#454), and an unprovenanced ninth part shipped 30
+fabricated card texts on 2026-05-10, removed 2026-07-05 (root cause of the
+Storm-vs-Dimir canonical-DB outlier — see
+`docs/diagnostics/2026-07-05_storm_dimir_canonical_gap.md`). New card data
+enters via `update_modern_atomic.py` from a real MTGJSON export, never by
+hand-authoring a part file.
 
 ## Quick Reference — run_meta.py
 
