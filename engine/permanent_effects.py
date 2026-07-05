@@ -56,7 +56,7 @@ class PermanentEffects:
                         f"Reanimate {target_card.name}")
 
         if exile_at_eot:
-            game._end_of_turn_exiles.append((target_card, controller))
+            game.register_end_of_turn_exile(target_card, controller)
 
         # Trigger ETB
         game._handle_permanent_etb(target_card, controller)

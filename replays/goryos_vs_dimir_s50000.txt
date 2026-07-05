@@ -1,0 +1,780 @@
+Loaded 21759 cards (0 errors)
+Loaded 21759 cards (0 errors)
+  Sideboard (Dimir Midrange vs Goryo's Vengeance): +1 Cling to Dust, +2 Nihil Spellbomb, +2 Tormod's Crypt, -1 Archmage's Charm, -2 Consider, -2 Drown in the Loch
+======================================================================
+  GAME 1: Goryo's Vengeance (P1) vs Dimir Midrange (P2)  —  seed 50000
+  Series: Goryo's Vengeance 0 - 0 Dimir Midrange
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Goryo's Vengeance wins → chooses to play first
+║ P1 (on play): Goryo's Vengeance
+║ P2 (on draw): Dimir Midrange
+╚═══════════════════════════════════════════════════════
+
+P1 (Goryo's Vengeance) opening hand (2 lands, 5 spells):
+  • Thoughtseize [Spell, CMC 1]
+  • Marsh Flats [Land, CMC 0]
+  • Goryo's Vengeance [Spell, CMC 2]
+  • Unburial Rites [Spell, CMC 5]
+  • Flooded Strand [Land, CMC 0]
+  • Goryo's Vengeance [Spell, CMC 2]
+  • Inquisition of Kozilek [Spell, CMC 1]
+→ P1 MULLIGANS (combo path under-covered in 7-card hand (best path: 1/2 role buckets; need enabler+payoff))
+  New hand (6 lands, 1 spells): ['Concealed Courtyard', 'Marsh Flats', 'Marsh Flats', 'Island', 'Faithful Mending', 'Flooded Strand', 'Marsh Flats']
+→ P1 MULLIGANS (6 lands (≥ 6))
+  New hand (2 lands, 5 spells): ['Griselbrand', 'Leyline of Sanctity', 'Thoughtseize', 'Inquisition of Kozilek', 'Flooded Strand', 'Marsh Flats', 'Unburial Rites']
+→ P1 mulligans to 5, bottoms: ['Leyline of Sanctity', 'Inquisition of Kozilek']
+  Keeps: ['Griselbrand', 'Thoughtseize', 'Flooded Strand', 'Marsh Flats', 'Unburial Rites']
+
+P2 (Dimir Midrange) opening hand (4 lands, 3 spells):
+  • Orcish Bowmasters [Creature, CMC 2]
+  • Darkslick Shores [Land, CMC 0]
+  • Shelldock Isle [Land, CMC 0]
+  • Creeping Tar Pit [Land, CMC 0]
+  • Psychic Frog [Creature, CMC 2]
+  • Counterspell [Spell, CMC 2]
+  • Takenuma, Abandoned Mire [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Orcish Bowmasters, Psychic Frog, 3 cheap spells
+
+
+╔══ TURN 1 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 20  |  Dimir Midrange 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 55  |  Graveyard: 0
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Marsh Flats
+T1 P1: Crack Marsh Flats (pay 1 life) -> Godless Shrine (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Goryo's Vengeance 19
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Consider
+  [Main 1]
+T1 P2: Play Takenuma, Abandoned Mire
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 19  |  Dimir Midrange 20
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 1
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Takenuma, Abandoned Mire
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ephemerate
+  [Main 1]
+T2 P1: Play Flooded Strand
+T2 P1: Crack Flooded Strand (pay 1 life) -> Watery Grave (tapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Goryo's Vengeance 18
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Takenuma, Abandoned Mire
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Creeping Tar Pit
+  [Main 1]
+T2 P2: Play Darkslick Shores (untapped, 1 other lands)
+    → Goal: grind_value
+    [Mana] Tap Takenuma, Abandoned Mire→B, Darkslick Shores→B (paying for Orcish Bowmasters, 2 mana remaining)
+T2 P2: Cast Orcish Bowmasters (1B)
+    [Priority] P1 passes (no response)
+T2: Resolve Orcish Bowmasters
+T2 P2: Bowmasters deals 1 damage to opponent (life: 17)
+T2 P2: Bowmasters creates 1/1 Orc Army token
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 17  |  Dimir Midrange 20
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 2
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Watery Grave
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Takenuma, Abandoned Mire [T], Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Thoughtseize
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Goryo's Vengeance 17
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Takenuma, Abandoned Mire, Darkslick Shores
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Watery Grave
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Subtlety
+  [Main 1]
+T3 P2: Play Shelldock Isle (enters tapped)
+    → Goal: grind_value [enablers]
+    [Mana] Tap Darkslick Shores→U (paying for Consider, 2 mana remaining)
+T3 P2: Cast Consider (U)
+    [Priority] P1 passes (no response)
+T3: Resolve Consider
+T3 P2: Consider → draw 1 (Underground River)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army
+T3 P2: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+T3 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T3 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 17 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 15  |  Dimir Midrange 20
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 2
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Watery Grave
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped]
+║   Lands: Takenuma, Abandoned Mire, Darkslick Shores [T], Shelldock Isle [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Atraxa, Grand Unifier
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Goryo's Vengeance 15
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Takenuma, Abandoned Mire, Darkslick Shores, Shelldock Isle
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Watery Grave
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Drown in the Loch
+  [Main 1]
+T4 P2: Play Underground River
+    → Goal: close_game
+    [Mana] Tap Shelldock Isle→U, Darkslick Shores→U, Takenuma, Abandoned Mire→B, Underground River→B (paying for Subtlety, 4 mana remaining)
+T4 P2: Cast Subtlety (2UU)
+    [Priority] P1 passes (no response)
+T4: Resolve Subtlety
+T4 P2: Subtlety enters (no creature/PW spell on stack to target)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army
+T4 P2: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+T4 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T4 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 15 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 13  |  Dimir Midrange 19
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 2
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Watery Grave
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped], Subtlety (3/3)
+║   Lands: Takenuma, Abandoned Mire [T], Darkslick Shores [T], Shelldock Isle [T], Underground River [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Atraxa, Grand Unifier
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Goryo's Vengeance 13
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Subtlety (3/3)
+║   Lands: Takenuma, Abandoned Mire, Darkslick Shores, Shelldock Isle, Underground River
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Watery Grave
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Watery Grave
+  [Main 1]
+T5 P2: Play Watery Grave (untapped, life: 19)
+    → Goal: close_game
+    [Mana] Tap Shelldock Isle→U, Takenuma, Abandoned Mire→B (paying for Psychic Frog, 5 mana remaining)
+T5 P2: Cast Psychic Frog (UB)
+    [Priority] P1 passes (no response)
+T5: Resolve Psychic Frog
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army, Subtlety
+T5 P2: Attack with Orcish Bowmasters, Orc Army, Subtlety
+  [Declare Blockers] P1 does not block
+T5 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T5 P2:   Orc Army (1/1) → 1 dmg to player
+T5 P2:   Subtlety (3/3) → 3 dmg to player
+  [Combat Damage] 5 damage dealt → P1 life: 13 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 8  |  Dimir Midrange 19
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 5
+║ Library: 49  |  Graveyard: 2
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Watery Grave
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped], Subtlety (3/3) [tapped], Psychic Frog (1/2)
+║   Lands: Takenuma, Abandoned Mire [T], Darkslick Shores, Shelldock Isle [T], Underground River, Watery Grave
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Leyline of Sanctity
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T6: Griselbrand moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 6 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Goryo's Vengeance 8
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 5  |  Opp lands: 2
+║ Library: 47  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Subtlety (3/3), Psychic Frog (1/2)
+║   Lands: Takenuma, Abandoned Mire, Darkslick Shores, Shelldock Isle, Underground River, Watery Grave
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Watery Grave
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Murktide Regent
+  [Main 1]
+T6 P2: Play Creeping Tar Pit (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army, Subtlety, Psychic Frog
+T6 P2: Attack with Orcish Bowmasters, Orc Army, Subtlety, Psychic Frog
+  [Declare Blockers] P1 does not block
+T6 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T6 P2:   Orc Army (1/1) → 1 dmg to player
+T6 P2:   Subtlety (3/3) → 3 dmg to player
+T6 P2:   Psychic Frog (2/3) → 2 dmg to player
+T6 P2: Psychic Frog deals combat damage — draw a card
+  [Combat Damage] 7 damage dealt → P1 life: 8 → 1
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 1  |  Dimir Midrange 19
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 6
+║ Library: 48  |  Graveyard: 3
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Watery Grave
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped], Subtlety (3/3) [tapped], Psychic Frog (2/3) [tapped]
+║   Lands: Takenuma, Abandoned Mire, Darkslick Shores, Shelldock Isle, Underground River, Watery Grave, Creeping Tar Pit [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ephemerate
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T7: Atraxa, Grand Unifier moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 7 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Goryo's Vengeance 1
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 6  |  Opp lands: 2
+║ Library: 45  |  Graveyard: 2
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Subtlety (3/3), Psychic Frog (2/3)
+║   Lands: Takenuma, Abandoned Mire, Darkslick Shores, Shelldock Isle, Underground River, Watery Grave, Creeping Tar Pit
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Watery Grave
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Archmage's Charm
+  [Main 1]
+T7 P2: Play Island
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army, Subtlety, Psychic Frog
+T7 P2: Attack with Orcish Bowmasters, Orc Army, Subtlety, Psychic Frog
+  [Declare Blockers] P1 does not block
+T7 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T7 P2:   Orc Army (1/1) → 1 dmg to player
+T7 P2:   Subtlety (3/3) → 3 dmg to player
+T7 P2:   Psychic Frog (2/3) → 2 dmg to player
+T7 P2: Psychic Frog deals combat damage — draw a card
+P1 loses: life total -6
+  [Combat Damage] 7 damage dealt → P1 life: 1 → -6
+
+>>> Dimir Midrange wins Game 1 on turn 7 via damage
+    Final life: Goryo's Vengeance=-6  Dimir Midrange=19
+
+======================================================================
+  GAME 2: Goryo's Vengeance (P1) vs Dimir Midrange (P2)  —  seed 50001
+  Series: Goryo's Vengeance 0 - 1 Dimir Midrange
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Dimir Midrange wins → chooses to play first
+║ P1 (on play): Dimir Midrange
+║ P2 (on draw): Goryo's Vengeance
+╚═══════════════════════════════════════════════════════
+
+P1 (Goryo's Vengeance) opening hand (2 lands, 5 spells):
+  • Undying Evil [Spell, CMC 1]
+  • Faithful Mending [Spell, CMC 2]
+  • Flooded Strand [Land, CMC 0]
+  • Concealed Courtyard [Land, CMC 0]
+  • Ephemerate [Spell, CMC 1]
+  • Ephemerate [Spell, CMC 1]
+  • Inquisition of Kozilek [Spell, CMC 1]
+→ P1 MULLIGANS (combo path under-covered in 7-card hand (best path: 1/2 role buckets; need enabler+payoff))
+  New hand (3 lands, 4 spells): ['Unburial Rites', 'Plains', "Goryo's Vengeance", 'Unburial Rites', 'Silent Clearing', 'Inquisition of Kozilek', 'Marsh Flats']
+→ P1 MULLIGANS (combo path under-covered in 6-card hand (best path: 1/2 role buckets; need enabler))
+  New hand (1 lands, 6 spells): ['Atraxa, Grand Unifier', 'Faithful Mending', 'Island', 'Ephemerate', "Goryo's Vengeance", 'Faithful Mending', 'Atraxa, Grand Unifier']
+→ P1 mulligans to 5, bottoms: ['Atraxa, Grand Unifier', 'Atraxa, Grand Unifier']
+  Keeps: ['Faithful Mending', 'Island', 'Ephemerate', "Goryo's Vengeance", 'Faithful Mending']
+
+P2 (Dimir Midrange) opening hand (2 lands, 5 spells):
+  • Creeping Tar Pit [Land, CMC 0]
+  • Thoughtseize [Spell, CMC 1]
+  • Orcish Bowmasters [Creature, CMC 2]
+  • Fatal Push [Spell, CMC 1]
+  • Orcish Bowmasters [Creature, CMC 2]
+  • Murktide Regent [Creature, CMC 7]
+  • Island [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Fatal Push, Orcish Bowmasters, Thoughtseize, 4 cheap spells
+
+
+╔══ TURN 1 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Goryo's Vengeance 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Creeping Tar Pit (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 20  |  Dimir Midrange 20
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 55  |  Graveyard: 0
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Creeping Tar Pit [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Griselbrand
+  [Main 1]
+T1 P1: Play Island
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Goryo's Vengeance 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Creeping Tar Pit
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Tormod's Crypt
+  [Main 1]
+T2 P2: Play Island
+    → Goal: grind_value
+    [Mana] Tap Creeping Tar Pit→B, Island→U (paying for Orcish Bowmasters, 2 mana remaining)
+T2 P2: Cast Orcish Bowmasters (1B)
+    [Priority] P1 passes (no response)
+T2: Resolve Orcish Bowmasters
+T2 P2: Bowmasters deals 1 damage to opponent (life: 19)
+T2 P2: Bowmasters creates 1/1 Orc Army token
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 19  |  Dimir Midrange 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 54  |  Graveyard: 0
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Island
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Creeping Tar Pit [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ephemerate
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Goryo's Vengeance 19
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Creeping Tar Pit, Island
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Polluted Delta
+  [Main 1]
+T3 P2: Play Polluted Delta
+T3 P2: Crack Polluted Delta (pay 1 life) -> Watery Grave (tapped, life: 19)
+    → Goal: grind_value
+    [Mana] Tap Creeping Tar Pit→B, Island→U (paying for Orcish Bowmasters, 2 mana remaining)
+T3 P2: Cast Orcish Bowmasters (1B)
+    [Priority] P1 passes (no response)
+T3: Resolve Orcish Bowmasters
+T3 P2: Bowmasters deals 1 damage to opponent (life: 18)
+T3 P2: Bowmasters creates 1/1 Orc Army token
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army
+T3 P2: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+T3 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T3 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 18 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 16  |  Dimir Midrange 19
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 3
+║ Library: 53  |  Graveyard: 0
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Island
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped], Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Creeping Tar Pit [T], Island [T], Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Silent Clearing
+  [Main 1]
+T3 P1: Play Silent Clearing
+    → Goal: fill_resource [enablers]
+    [Mana] Tap Silent Clearing→W, Island→U (paying for Faithful Mending, 2 mana remaining)
+T3 P1: Cast Faithful Mending (WU)
+    [Priority] P2 passes (no response)
+T3: Resolve Faithful Mending
+T3: Griselbrand moved hand -> graveyard (discard)
+T3: Faithful Mending moved hand -> graveyard (discard)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Goryo's Vengeance 14
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Creeping Tar Pit, Island, Watery Grave
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Island [T], Silent Clearing [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Counterspell
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army, Orcish Bowmasters, Orc Army
+T4 P2: Attack with Orcish Bowmasters, Orc Army, Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+T4 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T4 P2:   Orc Army (1/1) → 1 dmg to player
+T4 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T4 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 14 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 10  |  Dimir Midrange 19
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 3
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Island, Silent Clearing
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped], Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped]
+║   Lands: Creeping Tar Pit, Island, Watery Grave
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Thoughtseize
+  [Main 1]
+T4 P1: Play Concealed Courtyard (untapped, 2 other lands)
+    → Goal: execute_payoff
+    [Mana] Tap Island→U, Silent Clearing→W (paying for Faithful Mending, 3 mana remaining)
+T4 P1: Cast Faithful Mending (WU)
+    [Priority] P2 passes (no response)
+T4: Resolve Faithful Mending
+T4: Concealed Courtyard moved hand -> graveyard (discard)
+T4: Swamp moved hand -> graveyard (discard)
+T4 P1: Activate Silent Clearing (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Goryo's Vengeance 6
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Creeping Tar Pit, Island, Watery Grave
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Island [T], Concealed Courtyard
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Underground River
+  [Main 1]
+T5 P2: Play Underground River
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army, Orcish Bowmasters, Orc Army
+T5 P2: Attack with Orcish Bowmasters, Orc Army, Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+T5 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T5 P2:   Orc Army (1/1) → 1 dmg to player
+T5 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T5 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 6 → 2
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 2  |  Dimir Midrange 19
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 5
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Island, Concealed Courtyard
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped], Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped]
+║   Lands: Creeping Tar Pit, Island, Watery Grave, Underground River
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Thoughtseize
+  [Main 1]
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Concealed Courtyard→B, Island→U (paying for Goryo's Vengeance, 2 mana remaining)
+T5 P1: Cast Goryo's Vengeance (1B)
+    [Priority] P2 responds with Counterspell
+    [Mana] Tap Island→U, Creeping Tar Pit→U (paying for Counterspell, 4 mana remaining)
+T5 P2: Cast Counterspell (UU)
+T5: Resolve Counterspell
+T5: Goryo's Vengeance is countered
+T5 P1: Play Godless Shrine (untapped, life: 2)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Goryo's Vengeance 2
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 2
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Creeping Tar Pit, Island, Watery Grave, Underground River
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Island [T], Concealed Courtyard [T], Godless Shrine
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Consider
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Island→U (paying for Consider, 4 mana remaining)
+T6 P2: Cast Consider (U)
+    [Priority] P1 passes (no response)
+T6: Resolve Consider
+T6 P2: Consider → draw 1 (Darkslick Shores)
+T6 P2: Play Darkslick Shores (tapped, 4 other lands)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army, Orcish Bowmasters, Orc Army
+T6 P2: Attack with Orcish Bowmasters, Orc Army, Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+T6 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T6 P2:   Orc Army (1/1) → 1 dmg to player
+T6 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T6 P2:   Orc Army (1/1) → 1 dmg to player
+P1 loses: life total -2
+  [Combat Damage] 4 damage dealt → P1 life: 2 → -2
+
+>>> Dimir Midrange wins Game 2 on turn 6 via damage
+    Final life: Goryo's Vengeance=-2  Dimir Midrange=19
+
+======================================================================
+  MATCH RESULT: Dimir Midrange wins 2-0
+======================================================================

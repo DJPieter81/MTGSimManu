@@ -885,7 +885,15 @@ def _is_immediate_interaction(oracle: str, tags) -> bool:
         return True
     if 'counter target' in oracle:
         return True
-    if 'target opponent' in oracle and 'discard' in oracle:
+    # Targeted forced discard — Modern templating uses BOTH
+    # "target opponent" (Duress form) and "target player"
+    # (Thoughtseize / Inquisition form) for the same mechanic.
+    # Matching only the former deferred the entire target-player
+    # class forever (RC-2, docs/diagnostics/
+    # 2026-07-05_goryos_field_13pct_root_cause.md).  Own-hand
+    # looting has neither phrase, so it does not ride this branch.
+    if (('target player' in oracle or 'target opponent' in oracle)
+            and 'discard' in oracle):
         return True
     return False
 
