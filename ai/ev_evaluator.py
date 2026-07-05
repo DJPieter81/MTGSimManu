@@ -2512,7 +2512,56 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
             projected.opp_power += expected_opp_power
             projected.opp_creature_count += expected_opp_count
 
+    # ── M1-AI: opponent-static self card-event taxes ──────────────
+    # The engine trigger fan-out charges the caster per CAST and per
+    # REAL draw (impulse-reveal excluded, CR 121.1c).  The projection
+    # must price the same events or every cast decision walks into
+    # damage the chain estimator already knows about (seed 60101 T5:
+    # Manamorphose at 2 life into two Bowmasters).  Single source of
+    # truth mirrored from the engine: `Tag.IMPULSE_DRAW` zeroes the
+    # draw count; `opp_static_damage_per_card_event` prices the board.
+    if game is not None:
+        from ai.bhi import opp_static_damage_per_card_event
+        _cast_tax = opp_static_damage_per_card_event(game, player_idx,
+                                                     "cast")
+        _n_draws = _projected_real_draws(card)
+        _draw_tax = (opp_static_damage_per_card_event(game, player_idx,
+                                                      "draw")
+                     if _n_draws else 0)
+        _tax = _cast_tax + _n_draws * _draw_tax
+        if _tax:
+            projected.my_life -= _tax
+
     return projected
+
+
+def _projected_real_draws(card: "CardInstance") -> int:
+    """Projected REAL draw events from resolving `card` — the mirror
+    of the engine's impulse split in `oracle_resolver`.
+
+    Impulse-tagged cards (Tag.IMPULSE_DRAW, the same classifier
+    verdict the engine branch gates on) are NOT draws (CR 121.1c) →
+    0.  Otherwise: 'draw N cards' parses N; the look-and-keep shape
+    ('put one of them into your hand') counts as one draw, matching
+    the engine's real-draw branch.
+    """
+    from ai.oracle_classifier import Tag, tags_for
+    if Tag.IMPULSE_DRAW in tags_for(card.template.name):
+        return 0
+    oracle = (card.template.oracle_text or '').lower()
+    import re as _re
+    m = _re.search(r'draw\s+(\w+)\s+cards?', oracle)
+    word_to_num = {'a': 1, 'one': 1, 'two': 2, 'three': 3,  # magic-allow: numeral parse table (word→int), mirrors engine oracle parser
+                   'four': 4, 'five': 5}  # magic-allow: numeral parse table continuation
+    if m:
+        tok = m.group(1)
+        try:
+            return int(tok)
+        except ValueError:
+            return word_to_num.get(tok, 0)
+    if 'put one of them into your hand' in oracle:
+        return 1  # magic-allow: look-and-keep shape is one draw (CR 121.1), mirrors engine real-draw branch
+    return 0
 
 
 def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
@@ -2903,6 +2952,29 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
 
     # Project state after casting
     projected = _project_spell(card, snap, dk, game, player_idx)
+
+    # ── M1-AI: lethal-to-self floor ────────────────────────────────
+    # A cast whose own projection kills the caster is a game-ending
+    # event against us; it sits at the established game-ending
+    # sentinel (-LETHAL_THREAT) regardless of any value the spell
+    # would otherwise generate (seed 60101: suicide-by-cantrip).
+    if projected.my_life <= 0 < snap.my_life:
+        from ai.scoring_constants import LETHAL_THREAT
+        _cur = evaluate_board(snap, archetype, dk)
+        if not detailed:
+            return -LETHAL_THREAT
+        return -LETHAL_THREAT, {
+            'current_value': _cur,
+            'projected_value': evaluate_board(projected, archetype, dk),
+            'raw_delta': -LETHAL_THREAT,
+            'after_response_value': _cur,
+            'response_discount': 0.0,
+            'counter_pct': 0.0,
+            'removal_pct': 0.0,
+            'this_turn_signals': [],
+            'lethal_to_self': True,
+        }
+
     projected_value = evaluate_board(projected, archetype, dk)
 
     # ── SINGLE interaction-probability call site (M7 / W1b-7) ──
