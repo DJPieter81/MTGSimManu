@@ -878,6 +878,20 @@ def run_bo3(deck1: str, deck2: str, seed: int = 42000,
         with open(dump_replay, 'w') as f:
             f.write(replay_log.to_ndjson())
             f.write('\n')
+        # Auto-audit: every dump gets the rules-legality lint pass
+        # (tools/replay_lint.py). Non-fatal — findings go to stdout so
+        # the operator sees violations immediately.
+        try:
+            from tools.replay_lint import lint_file as _lint_file
+            _findings = _lint_file(dump_replay, db=CardDatabase())
+            if _findings:
+                lines.append(f"replay_lint: {len(_findings)} finding(s) "
+                             f"in {dump_replay}")
+                lines.extend("  " + _f.line() for _f in _findings)
+            else:
+                lines.append(f"replay_lint: clean ({dump_replay})")
+        except Exception as _exc:
+            lines.append(f"replay_lint: skipped ({_exc})")
 
     return '\n'.join(lines)
 
