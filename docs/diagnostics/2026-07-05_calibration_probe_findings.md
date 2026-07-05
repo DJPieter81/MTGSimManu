@@ -180,6 +180,20 @@ theme):** tag-gated behavior + uncovered cache = silently disabled
 rules.  Any future engine branch gated on a classifier tag MUST add
 its family to CANDIDATE_FAMILIES in the coverage gate.
 
+## G1 — Goryo's floor: decisions fixed, PACING open (probe s60110)
+
+Branch claude/reanimator-decisions fixed: critical-floor copy bug
+(general — affected every deck with duplicate critical pieces),
+graveyard-resource dedup exemption, clock-derived pay-life guard
+(`ai.clock.opp_one_turn_damage`, the M4-spec primitive).  Lifelink
+healing verified working via live trace (suspicion retracted).
+
+Pair still 0% at n=20 (6 game wins, 0 matches; Boros kills T5-6).
+Remaining hypothesis: combo PACING — payoff lands T4+ vs the deck's
+real-world T2-3 (FILL_RESOURCE goal transition / discard-outlet
+sequencing / Goryo's-holding EV).  Next probe: `--verbose goryos
+boros -s 60110` reading GoalEngine transitions T1-T3.
+
 ## Institutionalization (next)
 
 1. **Calibration matchup table** — matchup-level EXPECTED bands
