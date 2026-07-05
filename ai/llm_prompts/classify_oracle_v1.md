@@ -29,6 +29,7 @@ If you would have to read the card's metagame role to decide, return
 | `SORCERY_SPEED_LOCKOUT` | Static ability that restricts opponents to sorcery speed (e.g. "each opponent can cast spells only any time they could cast a sorcery"). |
 | `ETB_SURVEIL_N` | When the permanent enters the battlefield, it surveils a fixed or variable N. |
 | `ETB_SCRY_N` | When the permanent enters the battlefield, it scries N. |
+| `ETB_RETURN_FROM_GY_TO_HAND` | When the permanent enters the battlefield, it returns a target card (optionally type-restricted, e.g. "target instant or sorcery card") from its controller's graveyard to their hand (Eternal Witness / Archaeomancer shape). |
 | `ETB_ORACLE_TRIGGER` | The card has a meaningful ETB-triggered ability that is NOT already covered by a more specific tag above. Use as a catch-all to mark "this permanent's ETB matters for EV". Do NOT apply to mana-rocks whose only ETB clause is "enters tapped". |
 | `STORM_PAYOFF` | Spell whose effect scales with the storm count (literal Storm keyword, or "for each spell cast this turn", or "for each instant/sorcery in your graveyard" if cast as the chain payoff). |
 | `CHAIN_FUEL` | Low-cost cantrip ritual or spell that generates floating mana or draws and meaningfully increases the storm count, while NOT paying off itself. Examples of the SHAPE: "Add {RR}. Draw a card.", "Pay 1 life and {U}: scry 1, draw a card." |

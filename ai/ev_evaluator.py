@@ -86,6 +86,7 @@ from ai.strategy_profile import phase_weight_multiplier
 # Effective-CMC primitive (W0-F + M9 wiring).  Subsumes delve, evoke,
 # Medallion-reduced cost, affinity, improvise — see ai/effective_cmc.py.
 from ai.effective_cmc import effective_cmc
+from engine.oracle_clauses import split_abilities
 
 
 # ─────────────────────────────────────────────────────────────
@@ -770,9 +771,14 @@ def _has_immediate_effect(card: "CardInstance") -> bool:
     # ETB value (Omnath, Thragtusk, PW ETB effects) — resolves immediately
     if 'etb_value' in tags:
         return True
-    if 'enters' in oracle and (
-            'deal' in oracle or 'gain' in oracle or 'exile' in oracle
-            or 'draw' in oracle or 'search your library' in oracle):
+    # Clause-scoped (E5): the ETB trigger and its effect verb share one
+    # ability paragraph (CR 603.1) — a damage/draw verb in a separate
+    # activated ability (or reminder text on another line) must not
+    # count as immediate ETB value.
+    if any('enters' in a and (
+            'deal' in a or 'gain' in a or 'exile' in a
+            or 'draw' in a or 'search your library' in a)
+           for a in split_abilities(oracle)):
         return True
     # Planeswalkers provide loyalty activations this turn
     from engine.cards import CardType
@@ -813,6 +819,14 @@ def _has_self_etb_effect(oracle: str) -> bool:
     Self-ETB matches "when ~ enters", "when this creature enters",
     "when CARDNAME enters" — not "whenever a creature enters", which is
     a board trigger that requires another entry to fire.
+
+    Clause-scoped (E5): the material-effect verb must appear in the
+    SAME ability paragraph as the self-ETB trigger (CR 603.1 — a
+    triggered ability's condition and effect share one ability; the
+    effect may span several sentences of that paragraph). The previous
+    whole-text keyword scan was a self-admitted over-approximation:
+    an effect verb belonging to a separate ability made a vanilla-ETB
+    card look like it had ETB value.
     """
     if 'enters' not in oracle:
         return False
@@ -825,30 +839,27 @@ def _has_self_etb_effect(oracle: str) -> bool:
         'when this land enters', 'when this permanent enters',
         'when ~ enters', 'when this token enters',
     )
-    has_self_trigger = any(p in oracle for p in self_patterns)
-    # Fallback: "When <name> enters" — the name is the card's own, so
-    # match "^when " followed by "enters" with nothing in between
-    # identifying another creature/permanent qualifier.  Cheap check:
-    # "when" appears and "enters" follows, without "another" / "a
-    # creature" / "a permanent" between them.
-    if not has_self_trigger:
-        import re as _re
-        # Look for the first "when ... enters" within a sentence
-        m = _re.search(r'when\s+([^.]{0,50}?)\s+enters', oracle)
-        if m:
-            preamble = m.group(1)
-            generic_phrases = ('another', 'a creature', 'a permanent',
-                               'an artifact', 'an enchantment', 'a land',
-                               'a nontoken', 'one or more', 'any creature',
-                               'any opponent', 'you cast', 'you attack')
-            if not any(gp in preamble for gp in generic_phrases):
+    generic_phrases = ('another', 'a creature', 'a permanent',
+                       'an artifact', 'an enchantment', 'a land',
+                       'a nontoken', 'one or more', 'any creature',
+                       'any opponent', 'you cast', 'you attack')
+    import re as _re
+    for ability in split_abilities(oracle):
+        if 'enters' not in ability:
+            continue
+        has_self_trigger = any(p in ability for p in self_patterns)
+        # Fallback: "When <name> enters" — the name is the card's own,
+        # so match "when " followed by "enters" with nothing in between
+        # identifying another creature/permanent qualifier.
+        if not has_self_trigger:
+            m = _re.search(r'when\s+([^.]{0,50}?)\s+enters', ability)
+            if m and not any(gp in m.group(1) for gp in generic_phrases):
                 has_self_trigger = True
-    if not has_self_trigger:
-        return False
-    # Must have a material effect verb in the oracle (trigger text is
-    # in the same sentence usually; this is an over-approximation but
-    # keeps false-negatives low).
-    return any(kw in oracle for kw in _ETB_EFFECT_KEYWORDS)
+        # Material effect verb must live in the trigger's own ability.
+        if has_self_trigger and any(kw in ability
+                                    for kw in _ETB_EFFECT_KEYWORDS):
+            return True
+    return False
 
 
 def _is_immediate_interaction(oracle: str, tags) -> bool:

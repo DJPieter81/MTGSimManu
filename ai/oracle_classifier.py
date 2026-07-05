@@ -171,6 +171,13 @@ class Tag(Enum):
     ETB_SCRY_N = "ETB_SCRY_N"
     """Permanent scries N on ETB."""
 
+    ETB_RETURN_FROM_GY_TO_HAND = "ETB_RETURN_FROM_GY_TO_HAND"
+    """Permanent returns a target card (optionally type-restricted)
+    from its controller's graveyard to their hand on ETB.  Canonical
+    oracle shape: "When this creature enters, (you may) return target
+    [type] card from your graveyard to your hand" — the Eternal
+    Witness / Archaeomancer / Greenwarden class."""
+
     ETB_ORACLE_TRIGGER = "ETB_ORACLE_TRIGGER"
     """Permanent has a meaningful ETB-triggered ability that ISN'T
     captured by a more specific tag above.  Generic catch-all for
