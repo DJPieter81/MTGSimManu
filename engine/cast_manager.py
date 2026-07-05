@@ -343,27 +343,36 @@ class CastManager:
                 and total_mana >= template.dash_cost):
             return True
 
-        # Warp alternative cost (Pinnacle Emissary)
+        # Warp alternative cost (early cast for artifact-synergy decks).
+        # Track H handoff fix: the previous check tested
+        # `'Artifact' in str(card_types)`, which never matches the
+        # CardType enum's string form — the branch was dead code.
         oracle = (template.oracle_text or "").lower()
         if "warp" in oracle:
             has_artifact = any(
-                'Artifact' in str(getattr(c.template, 'card_types', []))
+                CardType.ARTIFACT in c.template.card_types
                 for c in player.battlefield
             )
             if has_artifact and total_mana >= 1:
                 return True
 
-        # Improvise: tap artifacts to pay generic (Kappa Cannoneer, etc.)
+        # Improvise: tap artifacts to pay generic. Same Track H fix as
+        # the warp branch (dead enum-string check → real membership
+        # test). Improvise pays GENERIC only, so the colored portion
+        # of the cost is a floor the artifact taps cannot reduce.
         if "improvise" in oracle:
             untapped_artifacts = sum(
                 1 for c in player.battlefield
-                if hasattr(c, 'template')
-                and 'Artifact' in str(getattr(c.template, 'card_types', []))
+                if CardType.ARTIFACT in c.template.card_types
                 and not c.template.is_land
                 and not getattr(c, 'tapped', False)
-                and c != card
+                and c is not card
             )
-            improvise_cmc = max(0, effective_cmc - untapped_artifacts)
+            colored_floor = (template.mana_cost.white + template.mana_cost.blue
+                             + template.mana_cost.black + template.mana_cost.red
+                             + template.mana_cost.green)
+            improvise_cmc = max(colored_floor,
+                                effective_cmc - untapped_artifacts)
             if total_mana >= improvise_cmc:
                 return True
 

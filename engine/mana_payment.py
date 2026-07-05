@@ -166,6 +166,7 @@ class ManaPayment:
                     break
         # Ruby Medallion and Affinity cost reductions
         player = game.players[player_idx]
+        has_improvise = False
         if card_name:
             # Check hand, graveyard, and stack for the card (flashback casts are from GY)
             all_cards = list(player.hand) + list(player.graveyard)
@@ -184,6 +185,12 @@ class ManaPayment:
                             if CardType.ARTIFACT in b.template.card_types
                         )
                         reduction += artifact_count
+                    # Improvise (Track H handoff): unlike affinity this
+                    # is NOT a static discount — artifacts must be
+                    # TAPPED to pay. Handled below after the static
+                    # reductions are applied.
+                    has_improvise = (
+                        'improvise' in (c.template.oracle_text or '').lower())
                     break
         if reduction > 0:
             from .mana import ManaCost as MC
@@ -193,6 +200,39 @@ class ManaPayment:
                 red=cost.red, green=cost.green, colorless=cost.colorless,
                 generic=new_generic
             )
+
+        # Improvise payment (Track H handoff): tap untapped non-land
+        # artifacts to pay {1} of generic each — but only for the
+        # shortfall that lands + pool cannot cover, so artifact
+        # creatures / mana rocks stay untapped whenever lands suffice.
+        if has_improvise and cost.generic > 0:
+            capacity = (player.untapped_mana_capacity()
+                        + player.mana_pool.total()
+                        + player._tron_mana_bonus())
+            shortfall = max(0, cost.cmc - capacity)
+            if shortfall > 0:
+                improvise_payers = [
+                    a for a in player.battlefield
+                    if CardType.ARTIFACT in a.template.card_types
+                    and not a.template.is_land
+                    and not a.tapped
+                ]
+                n_tap = min(len(improvise_payers), shortfall, cost.generic)
+                if n_tap > 0:
+                    from .mana import ManaCost as MC
+                    for a in improvise_payers[:n_tap]:
+                        a.tapped = True
+                    cost = MC(
+                        white=cost.white, blue=cost.blue, black=cost.black,
+                        red=cost.red, green=cost.green,
+                        colorless=cost.colorless,
+                        generic=cost.generic - n_tap,
+                    )
+                    game.log.append(
+                        f"T{game.display_turn} P{player_idx+1}: "
+                        f"Improvise — tap {n_tap} artifact(s) for "
+                        f"{card_name}")
+
         untapped = [l for l in player.lands if not l.tapped]
 
         if not untapped and player.mana_pool.total() == 0:
