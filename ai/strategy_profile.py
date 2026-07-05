@@ -41,6 +41,8 @@ DECK_ARCHETYPES = {
     "Azorius Control (WST)": ArchetypeStrategy.CONTROL,
     "Azorius Control (WST v2)": ArchetypeStrategy.CONTROL,
     "Pinnacle Affinity":  ArchetypeStrategy.AGGRO,
+    "Instant Reanimator": ArchetypeStrategy.COMBO,
+    "Boros Ponza":        ArchetypeStrategy.MIDRANGE,
 }
 
 

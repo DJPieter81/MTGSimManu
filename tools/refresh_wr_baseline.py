@@ -59,6 +59,10 @@ MATCHUPS: list[tuple[str, str, int]] = [
     ("Izzet Prowess",         "Dimir Midrange",          50500),
     ("4/5c Control",          "Pinnacle Affinity",       50500),
     ("Azorius Control (WST)", "Azorius Control (WST v2)", 50500),
+    # July 2026 meta refresh — new registrations, each appears twice.
+    ("Instant Reanimator",    "Dimir Midrange",          51000),
+    ("Boros Ponza",           "Boros Energy",            51000),
+    ("Instant Reanimator",    "Boros Ponza",             51500),
 ]
 
 
