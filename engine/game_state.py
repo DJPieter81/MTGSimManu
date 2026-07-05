@@ -592,6 +592,12 @@ class GameState:
                 self._creature_dies(creature)
                 actions_taken = True
 
+        # Creatures dealt damage by a deathtouch source (SBA 704.5i) —
+        # single implementation in SBAManager; routes death through
+        # _creature_dies so Undying/Persist are preserved.
+        if SBAManager.perform_deathtouch_check(self):
+            actions_taken = True
+
         # Planeswalkers with 0 or less loyalty (SBA 704.5p)
         for player in self.players:
             dead_pws = [c for c in player.planeswalkers

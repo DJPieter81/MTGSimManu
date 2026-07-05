@@ -137,20 +137,11 @@ class SBAManager:
                         p.creatures_died_this_turn += 1
                         performed = True
 
-        # 704.5i: Creature dealt damage by a deathtouch source is destroyed
-        for p in game.players:
-            for c in list(p.battlefield):
-                if (c.template.is_creature
-                        and getattr(c, '_deathtouch_damage', 0) > 0
-                        and c.zone == "battlefield"):
-                    if Keyword.INDESTRUCTIBLE not in c.keywords:
-                        self.zone_manager.move_card(
-                            game, c, "battlefield", "graveyard",
-                            cause="SBA 704.5i: deathtouch"
-                        )
-                        p.creatures_died_this_turn += 1
-                        performed = True
-                    c._deathtouch_damage = 0
+        # 704.5i: Creature dealt damage by a deathtouch source is
+        # destroyed — single implementation lives in
+        # perform_deathtouch_check (also called by the live SBA path).
+        if SBAManager.perform_deathtouch_check(game):
+            performed = True
 
         # 704.5j: Legend rule — if a player controls two or more legendary
         #         permanents with the same name, they choose one to keep
@@ -188,4 +179,45 @@ class SBAManager:
                         )
                         performed = True
 
+        return performed
+
+    # ── Shared single-implementation SBAs ────────────────────────────
+    # Statics called from BOTH this manager's _check_and_perform_once
+    # and the live SBA path in game_state.check_state_based_actions.
+    # Pattern established by perform_token_cleanup (PR #443); see
+    # docs/proposals/resolver_sba_unification.md §6 for the end-state
+    # (every 704.5x rule becomes one of these).
+
+    @staticmethod
+    def perform_deathtouch_check(game: "GameState") -> bool:
+        """SBA 704.5i — a creature that's been dealt damage by a source
+        with deathtouch since the last damage cleanup is destroyed,
+        however small the damage.
+
+        The marker `_deathtouch_damage` is written by
+        engine/damage.py:deal_damage (deathtouch is a property of the
+        SOURCE; the marker travels with the damage). Destruction routes
+        through game._creature_dies so Undying/Persist replacement is
+        preserved — never through a raw zone move. Indestructible
+        creatures are exempt (704.5i is a destroy effect); their marker
+        is still cleared so the check reaches a fixpoint.
+
+        Returns True if any creature was destroyed.
+        """
+        from .cards import Keyword
+
+        performed = False
+        for p in game.players:
+            for c in list(p.battlefield):
+                if (c.template.is_creature
+                        and getattr(c, '_deathtouch_damage', 0) > 0
+                        and c.damage_marked > 0
+                        and c.zone == "battlefield"):
+                    if Keyword.INDESTRUCTIBLE not in c.keywords:
+                        game.log.append(
+                            f"T{game.display_turn}: {c.name} destroyed "
+                            f"(deathtouch, SBA 704.5i)")
+                        game._creature_dies(c)
+                        performed = True
+                    c._deathtouch_damage = 0
         return performed
