@@ -532,7 +532,15 @@ class CardInstance:
     def is_dead(self) -> bool:
         if not self.template.is_creature:
             return False
-        return self.damage_marked >= self.toughness or self.toughness <= 0
+        if self.toughness <= 0:
+            # CR 704.5g: toughness 0 or less puts the creature into the
+            # graveyard — not a destroy effect, indestructible can't save it.
+            return True
+        if Keyword.INDESTRUCTIBLE in self.keywords:
+            # CR 704.5h exemption: lethal marked damage destroys, and
+            # indestructible permanents can't be destroyed.
+            return False
+        return self.damage_marked >= self.toughness
 
     def tap(self):
         self.tapped = True
