@@ -360,6 +360,25 @@ def _yield_hand_candidates(
                     requires_tap_out=False,
                 )
 
+        # ── Turn-scoped cast-lock (silence class) ──
+        # Class size: every instant-speed card with the "can't cast
+        # spells" oracle clause (the 'silence' tag is set by
+        # engine/card_database.py from oracle text).  This is the
+        # anti-chain response class: resolving it denies every
+        # remaining cast of the opponent's turn, so it surfaces as a
+        # response candidate whether or not a stack item is present.
+        # Pre-2026-07-05 the enumerator dropped these entirely and a
+        # control deck's dedicated anti-combo interaction was a dead
+        # card (storm-overshoot diagnostic, Candidate 2b).
+        if "silence" in tags:
+            yield ResponseCandidate(
+                action="silence",
+                source=card,
+                cost=_format_mana_cost(card),
+                targets=(),
+                requires_tap_out=False,
+            )
+
         # ── Pitch-cast (alternative cost) ──
         # A card with a pitch alt-cost can be cast for "0 mana" by
         # exiling a same-color card from hand.  Class size: Force

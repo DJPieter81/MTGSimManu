@@ -124,6 +124,14 @@ class CastManager:
         if getattr(card, 'is_token', False):
             return False
 
+        # Turn-scoped cast-lock ("[target player] can't cast spells
+        # this turn" — the silence class).  The effect layer sets
+        # `silenced_this_turn` from the oracle clause on resolution;
+        # the cast gate enforces it here for the rest of the turn.
+        # Applies to every cast route (hand, flashback, escape).
+        if getattr(player, 'silenced_this_turn', False):
+            return False
+
         if card.zone != "hand" and card.zone != "graveyard":
             return False
 
