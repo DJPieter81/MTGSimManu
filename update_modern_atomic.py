@@ -148,15 +148,9 @@ def main():
     # Step 6: Clean up full file (it's .gitignored; rebuilt from parts at runtime)
     os.remove(json_path)
     print(f"\nDone! Removed {os.path.basename(json_path)} (rebuild with:")
-    print('  python3 -c "')
-    print("  import json")
-    print("  merged = {}")
-    print("  for i in range(1, 9):")
-    print("      with open(f'ModernAtomic_part{i}.json') as f:")
-    print("          merged.update(json.load(f)['data'])")
-    print("  with open('ModernAtomic.json', 'w') as f:")
-    print("      json.dump({'meta': {}, 'data': merged}, f)")
-    print('  "')
+    print("  python3 merge_db.py")
+    print("  # merge_db.py globs ALL parts in numeric order and handles")
+    print("  # both part shapes — never hand-roll a partial merge.")
     print(f"\nCommit the updated ModernAtomic_part*.json files to git.")
 
 
