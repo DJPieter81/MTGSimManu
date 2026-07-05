@@ -34,6 +34,29 @@ class SBAManager:
     def __init__(self, zone_manager: "ZoneManager"):
         self.zone_manager = zone_manager
 
+    @staticmethod
+    def perform_token_cleanup(game: "GameState") -> bool:
+        """SBA 704.5f — a token anywhere other than the battlefield
+        ceases to exist.
+
+        Single implementation with two callers: this manager's
+        check_and_perform_loop and the live SBA path in
+        `game_state.check_state_based_actions` (which, despite its
+        docstring, never delegated here — the rule was dead code
+        until E4).  The instance flag `is_token` is set by the token
+        creation funnel; see `engine/cards.py`.
+        """
+        performed = False
+        for p in game.players:
+            for zone_name in ("hand", "graveyard", "exile", "library"):
+                zone_list = getattr(p, zone_name)
+                for t in [c for c in zone_list
+                          if getattr(c, 'is_token', False)]:
+                    zone_list.remove(t)
+                    t.zone = "ceased"
+                    performed = True
+        return performed
+
     def check_and_perform_loop(self, game: "GameState") -> bool:
         """Run the full SBA loop: check and perform until stable (CR 704.3).
 
@@ -98,13 +121,8 @@ class SBAManager:
             return performed
 
         # 704.5f: Tokens not on the battlefield cease to exist
-        for p in game.players:
-            for zone_name in ["hand", "graveyard", "exile", "library"]:
-                zone_list = getattr(p, zone_name)
-                tokens = [c for c in zone_list if getattr(c, 'is_token', False)]
-                for t in tokens:
-                    zone_list.remove(t)
-                    performed = True
+        if SBAManager.perform_token_cleanup(game):
+            performed = True
 
         # 704.5g: Creature with toughness 0 or less is put into graveyard
         for p in game.players:

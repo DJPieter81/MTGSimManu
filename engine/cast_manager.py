@@ -119,6 +119,11 @@ class CastManager:
         player = game.players[player_idx]
         template = card.template
 
+        # CR 111.2 — a token isn't a card and can never be cast,
+        # regardless of what zone a stale instance sits in.
+        if getattr(card, 'is_token', False):
+            return False
+
         if card.zone != "hand" and card.zone != "graveyard":
             return False
 
@@ -718,6 +723,10 @@ class CastManager:
         """Cast a spell: pay costs and put on stack. free_cast skips mana payment."""
         player = game.players[player_idx]
         template = card.template
+
+        # CR 111.2 — tokens are never castable, free_cast included.
+        if getattr(card, 'is_token', False):
+            return False
 
         if not free_cast and not game.can_cast(player_idx, card):
             return False
