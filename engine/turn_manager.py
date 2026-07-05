@@ -208,12 +208,19 @@ class TurnManager:
                 game.log.append(
                     f"T{game.display_turn}: {card.name} returned to hand (Dash)")
 
-        # Goryo's exile
-        for card, controller in game._end_of_turn_exiles:
-            if card.zone == "battlefield":
+        # Delayed "exile it at the beginning of the next end step" riders
+        # (temporary reanimation / put-onto-battlefield effects).
+        # CR 400.7: the rider tracks an OBJECT. If the tracked permanent
+        # changed zones since registration (blink, bounce + return, died
+        # and re-entered), it is a new object and the rider has lost it —
+        # skip. battlefield_entry_seq models object identity across the
+        # engine's reused CardInstance.
+        for card, controller, entry_seq in game._end_of_turn_exiles:
+            if (card.zone == "battlefield"
+                    and card.battlefield_entry_seq == entry_seq):
                 game.zone_mgr.move_card(
                     game, card, "battlefield", "exile",
-                    cause="Goryo's end-of-turn exile"
+                    cause="delayed end-of-turn exile"
                 )
                 game.log.append(
                     f"T{game.display_turn}: {card.name} exiled (end of turn)")

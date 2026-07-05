@@ -100,8 +100,12 @@ class GameState:
         self._triggers_queue: List[Tuple[Ability, CardInstance, int]] = []
         # Global storm count (all spells cast this turn by both players)
         self._global_storm_count: int = 0
-        # Delayed triggers (e.g., exile at end of turn for Goryo's)
-        self._end_of_turn_exiles: List[Tuple[CardInstance, int]] = []
+        # Delayed one-shot triggers: "exile it at the beginning of the
+        # next end step" (temporary-reanimation / put-onto-battlefield
+        # riders). Entries are (card, controller, battlefield_entry_seq):
+        # the seq captures which OBJECT the rider tracks (CR 400.7) — if
+        # the card re-enters the battlefield the rider goes stale.
+        self._end_of_turn_exiles: List[Tuple[CardInstance, int, int]] = []
         # Game log
         self.log: List[str] = []
         self.max_turns: int = MAX_TURNS
@@ -117,6 +121,21 @@ class GameState:
         iid = self._next_instance_id
         self._next_instance_id += 1
         return iid
+
+    def register_end_of_turn_exile(self, card: CardInstance,
+                                   controller: int) -> None:
+        """Register a delayed 'exile it at the beginning of the next end
+        step' rider against the card's CURRENT battlefield object.
+
+        CR 400.7: the rider tracks an object, not a card. Capturing
+        `battlefield_entry_seq` at registration lets the end step detect
+        that the object it was tracking left the battlefield (blink,
+        bounce, death) and drop the rider even if the same CardInstance
+        is back on the battlefield as a new object.
+        """
+        self._end_of_turn_exiles.append(
+            (card, controller, card.battlefield_entry_seq)
+        )
 
     def get_card_by_id(self, instance_id: int) -> Optional[CardInstance]:
         """Find a card instance by its unique ID across all zones."""
