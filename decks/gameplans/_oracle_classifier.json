@@ -72,11 +72,25 @@
         "FORCED_DISCARD"
       ]
     },
+    "Light Up the Stage": {
+      "_classification_source": "manual:m1-cache-gap-2026-07-05",
+      "oracle_text_sha256": "17229187214be1ceb81cfe7d91f013a1e6534410c9f5ccfafc26c7f645211906",
+      "tags": [
+        "IMPULSE_DRAW"
+      ]
+    },
     "Lush Portico": {
       "_classification_source": "manual:a2-audit-data-gap-2026-05-17",
       "oracle_text_sha256": "9b5fe6f5e46931e4fc8d1a7a46940c28dd4bc31a27c79ac2c1a04c17a21b436d",
       "tags": [
         "ETB_SURVEIL_N"
+      ]
+    },
+    "March of Reckless Joy": {
+      "_classification_source": "manual:m1-cache-gap-2026-07-05",
+      "oracle_text_sha256": "9df4e60f362a92ca1d7971067a7c87582b1915c92c6f87c28e04119ecbc74990",
+      "tags": [
+        "IMPULSE_DRAW"
       ]
     },
     "Meticulous Archive": {
@@ -109,6 +123,13 @@
       "oracle_text_sha256": "0b1663e36830961148abf0d45378c512d6562c712dab3ca77128e9b9cf1f2621",
       "tags": [
         "FLASHBACK"
+      ]
+    },
+    "Ragavan, Nimble Pilferer": {
+      "_classification_source": "manual:m1-cache-gap-2026-07-05",
+      "oracle_text_sha256": "6b43e1f333de39f51426622ba7532b1d385abfb647065181ddee2e9a2b48b229",
+      "tags": [
+        "IMPULSE_DRAW"
       ]
     },
     "Raucous Theater": {
@@ -202,6 +223,13 @@
       "oracle_text_sha256": "ebf5ea12a51b3f2175b1d53b52cb7d3df270e05cdda45c167d0052aea8beebfc",
       "tags": [
         "ON_DRAW_DAMAGE"
+      ]
+    },
+    "Wrenn's Resolve": {
+      "_classification_source": "manual:m1-cache-gap-2026-07-05",
+      "oracle_text_sha256": "d0401eb08b4bb5ec4f4acb840207bf89107c642a7719c390702e961a11d5d784",
+      "tags": [
+        "IMPULSE_DRAW"
       ]
     }
   },
