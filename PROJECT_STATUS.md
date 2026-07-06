@@ -1,6 +1,6 @@
 # MTGSimManu — Project Status & Planning Reference
 
-> **Last updated:** 2026-04-26 (Storm + Goryo's deferral-gate iteration: Storm 29.2→39.8% +10.6pp, Goryo's 8.1→13.4% +5.3pp, three sister-fix PRs open #194 #195 #196)
+> **Last updated:** 2026-07-05 (single-session engine+AI overhaul: 25 PRs merged (#441–#445, #447–#458, #460–#467), test suite 2253 passed / 0 failed, four CR rules restored from dead code, CR 400.7 object identity, CR 714 saga chapter abilities, fabricated ModernAtomic_part9 removed + provenance test, July 2026 19-deck meta refresh, LLM per-task model registry)
 > **Purpose:** Single-source-of-truth for Claude Code planning mode. Read this before any session.
 > **Sister project:** MTGSimClaude (Legacy format, 38 decks). See `CROSS_PROJECT_SYNC.md`.
 
@@ -10,6 +10,7 @@
 
 The dated "Recent work" entries that previously occupied the top of this file have moved to `docs/history/sessions/` with frontmatter (`status: archived`, `priority: historical`). Most recent first:
 
+- **2026-07-05** — Engine + AI overhaul, 25 PRs merged in one parallel-wave session (#441–#445, #447–#458, #460–#467). Four CR rules restored from dead code (608.2b spell fizzle, 704.5i deathtouch, 704.5h lethal damage/indestructible, 704.5c poison), CR 400.7 object identity via `battlefield_entry_seq`, CR 714 saga chapters grant abilities, fabricated `ModernAtomic_part9` removed + MTGJSON provenance test, July 2026 19-deck meta refresh, calibration bands tooling, LLM per-task model registry. Suite: 2253 passed / 0 failed. See `docs/history/sessions/2026-07-05_engine_ai_overhaul.md`.
 - **2026-04-26** — Storm + Goryo's deferral-gate iteration (Storm 29.2→39.8% +10.6pp, Goryo's 8.1→13.4% +5.3pp). See `docs/history/sessions/2026-04-26_storm_goryos_deferral_gate.md`.
 - **2026-04-25** — Phase 2c combo refactor complete. See `docs/history/sessions/2026-04-25_phase2c_combo_refactor.md`.
 - **2026-04-20** — EV Correctness Overhaul complete. See `docs/history/sessions/2026-04-20_ev_correctness_overhaul.md`.
@@ -36,7 +37,7 @@ Historical session content (architecture, API signatures, past bug queues, WR hi
 
 ## 1. What this project is
 
-A **Modern-format Magic: The Gathering game simulator** with EV-based AI decision-making. Pure Python 3.11, zero external dependencies. Simulates full Bo3 matches between 16 competitive Modern decks, produces interactive dashboards, deck guides, and replay viewers.
+A **Modern-format Magic: The Gathering game simulator** with EV-based AI decision-making. Python 3.11; the only runtime dependency is `pydantic>=2.0` (typed decision-kernel schemas, `ai/schemas.py`). Simulates full Bo3 matches between 19 competitive Modern decks, produces interactive dashboards, deck guides, and replay viewers. Sims are deterministic and offline.
 
 **Repository:** `github.com/DJPieter81/MTGSimManu` (branch: `main`)
 
@@ -62,34 +63,42 @@ A **Modern-format Magic: The Gathering game simulator** with EV-based AI decisio
 │  --matrix --matchup --bo3 --field --audit --verbose --trace │
 │  import_deck.py  match_trace.py  build_replay.py            │
 ├─────────────────────────────────────────────────────────────┤
-│  AI LAYER — EV-based decision engine (14 modules, 7757 ln)  │
-│  ev_player.py (1224 ln) — score plays, pick best            │
-│  gameplan.py (545 ln) — GoalEngine, goal sequences          │
-│  turn_planner.py (1113 ln) — combat sim, 5 turn orderings   │
-│  ev_evaluator.py (712 ln) — EVSnapshot, board projection    │
-│  combo_calc.py (652 ln) — storm/graveyard/mana zones        │
-│  clock.py (328 ln) — turns-to-kill position evaluation      │
-│  bhi.py (275 ln) — Bayesian hand inference                  │
-│  response.py (267 ln) — counterspell decisions              │
-│  mulligan.py (210 ln) — keep/mull per archetype             │
-│  board_eval.py (468 ln) — assess + evoke/dash/combo eval    │
-│  mana_planner.py (373 ln) — fetch/land selection            │
-│  combo_chain.py (359 ln) — storm chain simulation           │
-│  strategic_logger.py (279 ln) — reasoning traces            │
-│  strategy_profile.py — per-archetype weights                │
+│  AI LAYER — EV-based decision engine (47 modules, 34372 ln) │
+│  ev_player.py (3796 ln) — score plays, pick best            │
+│  ev_evaluator.py (3443 ln) — EVSnapshot, board projection   │
+│  scoring_constants.py (5477 ln) — named scoring constants   │
+│  combo_calc.py (1313 ln) — storm/graveyard/mana zones       │
+│  turn_planner.py (1170 ln) — combat sim, 5 turn orderings   │
+│  gameplan.py (1120 ln) — GoalEngine, goal sequences         │
+│  response.py (1119 ln) — counterspell decisions             │
+│  finisher_simulator.py / _v3.py (2133 ln) — kill-turn sim   │
+│  mulligan.py (1007 ln) — keep/mull/bottoming per archetype  │
+│  bhi.py (819 ln) — Bayesian hand inference                  │
+│  clock.py (645 ln) — turns-to-kill position evaluation      │
+│  board_eval.py (628 ln) — assess + evoke/dash/combo eval    │
+│  mana_planner.py (579 ln) — fetch/land selection            │
+│  combo_chain.py (368 ln) — storm chain simulation           │
+│  pw_ability.py (276 ln) — planeswalker loyalty choice       │
+│  strategic_logger.py (284 ln) — reasoning traces            │
+│  strategy_profile.py (516 ln) — per-archetype weights       │
+│  llm_models/budgets/metrics/cache/agents (~2000 ln) —       │
+│    offline-optional LLM tooling layer (see ARCHITECTURE.md) │
 ├─────────────────────────────────────────────────────────────┤
-│  ENGINE LAYER — rules & state machine                       │
-│  game_state.py (3160 ln)  game_runner.py  card_effects.py   │
-│  card_database.py  combat_manager.py  event_system.py       │
-│  continuous_effects.py  sideboard_manager.py                │
-│  zone_manager.py  stack.py  sba_manager.py  oracle_parser.py│
+│  ENGINE LAYER — rules & state machine (19562 ln)            │
+│  card_effects.py (3001)  game_runner.py (2215)              │
+│  card_database.py (1848)  cast_manager.py (1294)            │
+│  oracle_resolver.py (921)  game_state.py (762)              │
+│  target_solver.py (727)  oracle_parser.py (709)             │
+│  spell_resolution.py (669)  oracle_clauses.py               │
+│  sba_manager.py (704.5c/h/i)  sideboard_manager.py          │
+│  combat_manager.py  continuous_effects.py  event_system.py  │
 ├─────────────────────────────────────────────────────────────┤
 │  DATA LAYER                                                 │
-│  ModernAtomic.json (21,795 cards, 8 parts merged)           │
-│  decks/modern_meta.py (16 decks + METAGAME_SHARES)          │
-│  decks/gameplans/*.json (15 goal sequences)                 │
+│  ModernAtomic.json (21,795 cards, 8 provenanced parts)      │
+│  decks/modern_meta.py (19 decks + METAGAME_SHARES)          │
+│  decks/gameplans/*.json (21 goal sequences)                 │
 │  ai/strategy_profile.py (archetype AI weights)              │
-│  decks/card_knowledge.json (card role tags)                 │
+│  tools/calibration_bands.json (ground-truth WR bands)       │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -165,9 +174,33 @@ from engine.card_database import CardDatabase  # singleton pattern
 
 ---
 
-## 6. AI strategy accuracy
+## 6. AI strategy accuracy — calibration status (2026-07-05)
 
-**Current grade:** C- (improving). Active P0 outliers are tracked in `userMemories` and the diagnostic docs under `docs/diagnostics/`. The most recent grade movement (B → C-) reflects fresh-eye scoring of the four open WR-band outliers (Affinity 87%, Azorius 15%, Living End 27%, Ruby Storm 25%) discovered after the 2026-04-13 to 2026-04-17 iteration run.
+Letter-grade vibes were replaced by **ground-truth calibration bands** (`tools/calibration_bands.json`, PR #449). After every `--matrix --save`, run:
+
+```bash
+python3 merge_db.py                                    # canonical DB first — always
+python tools/check_calibration.py metagame_results.json
+```
+
+**Current status (definitive 19-deck Bo3 n=20 matrix, PR #466, 2026-07-05): 12 in band / 17 out of band.** Out-of-band entries are divergence probes — each points at a generic subsystem bug, not deck tuning.
+
+Field-level outliers (sim field WR vs expected band):
+
+| Deck | Sim field WR | Band | Direction |
+|------|-------------|------|-----------|
+| Eldrazi Tron | 76.9% | [50-65] | above |
+| Ruby Storm | 70.8% | [40-55] | above |
+| Domain Zoo | 70.0% | [50-65] | above |
+| Dimir Midrange | 67.2% | [45-60] | above |
+| Affinity | 62.8% | [45-60] | above |
+| Izzet Prowess | 60.6% | [45-60] | above |
+| Pinnacle Affinity | 27.5% | [30-70] | below |
+| Azorius Control | 23.3% | [30-70] | below |
+| Goryo's Vengeance | 20.6% | [30-70] | below |
+| Amulet Titan | 13.1% | [30-70] | below |
+
+Matchup-level outliers: Azorius Control vs Affinity 10% [45-55], Amulet Titan vs Dimir 0% [55-70], Azorius Control vs Ruby Storm 5% [45-60], Boros vs Azorius Control 90% [45-60], Eldrazi Tron vs Affinity 35% [50-65], Living End vs Boros 35% [45-60], Goryo's vs Dimir 0% [35-50]. Common thread: draw-go control and land-based/graveyard combo underperform vs the sim's proactive decks — control and multi-turn-lookahead subsystems, not decklists.
 
 **Detailed iteration log (April 13-17, 2026):** unified refactor Phases A-I, Affinity matchup iter2 + re-verify, Iteration 5/6 fixes, Session 4/5 fixes, WR shifts from session 3 full re-run — see `docs/history/sessions/2026-04-13_to_17_iteration_changelogs.md`.
 
@@ -341,26 +374,31 @@ priority 24 → 14, `always_early` cleared). v2 field WR improved from ~42% →
 
 ---
 
-## 8. Deck status
+## 8. Deck status (2026-07-05, definitive 19-deck Bo3 n=20 matrix — PR #466)
 
-| Deck | Flat WR | Wtd WR | Sim grade | Notes |
-|------|---------|--------|-----------|-------|
-| Affinity | 93% | 91% | ⚠️ Inflated | P0: dominates all matchups. Blocking fix insufficient. |
-| Eldrazi Tron | 72% | 57% | ✅ Working | Stable; Tron assembly bonus working |
-| Boros Energy | 67% | 61% | ✅ Working | Down from 88%, now realistic T1 |
-| Pinnacle Affinity | 66% | 61% | ✅ Working | Reasonable T2 performance |
-| Domain Zoo | 65% | 59% | ✅ Working | Slightly above expected ceiling |
-| Dimir Midrange | 65% | 55% | ✅ Working | Midrange performing well |
-| Jeskai Blink | 58% | 47% | ✅ Working | Up from 53%; solid midrange |
-| 4c Omnath | 58% | 44% | ✅ Working | Massive improvement from 17%; Risen Reef/landfall chain working |
-| Izzet Prowess | 55% | 48% | ✅ Working | Down from 75%; realistic T2 |
-| Amulet Titan | 49% | 39% | ⚠️ Underperforms | Expected ~45% weighted; mana loop value still not modelled |
-| Azorius Control (WST) | 37% | 31% | ⚠️ Underperforms | Up from 19%; still weak vs aggro |
-| 4/5c Control | 34% | 23% | ⚠️ Underperforms | Up from 22%; still below expected |
-| Ruby Storm | 30% | 22% | ⚠️ Regressed | Down from 51%; needs investigation |
-| Goryo's Vengeance | 30% | 22% | ✅ Working | Up from 2%; combo fires now |
-| Azorius Control | 18% | 12% | ⚠️ Deflated | Isochron Scepter not implemented |
-| Living End | 5% | 3% | ❌ Broken | P0: down from 45%, cascade fires but post-combo AI non-functional |
+Field WR = canonical Bo3-with-sideboarding field win rate from `metagame_results.json`; band verdict from `tools/check_calibration.py`.
+
+| Deck | Field WR | Band | Verdict | Notes |
+|------|----------|------|---------|-------|
+| Eldrazi Tron | 76.9% | [50-65] | ⚠️ Above band | Prison/big-mana over-rewarded vs the field |
+| Ruby Storm | 70.8% | [40-55] | ⚠️ Above band | Sim under-models SB interaction vs combo |
+| Domain Zoo | 70.0% | [50-65] | ⚠️ Above band | Slightly hot aggro |
+| Boros Energy | 69.4% | [50-70] | ✅ In band | Modern's #1 meta share, positive expectation |
+| Dimir Midrange | 67.2% | [45-60] | ⚠️ Above band | Interactive midrange over-rewarded |
+| Affinity | 62.8% | [45-60] | ⚠️ Above band | Was 93% under Bo1; Bo3 SB hate closed most of the gap |
+| 4c Omnath | 62.8% | [30-70] | ✅ In band | Landfall chain working |
+| Izzet Prowess | 60.6% | [45-60] | ⚠️ Above band | Marginally hot |
+| 4/5c Control | 53.9% | [30-70] | ✅ In band | |
+| Living End | 50.8% | [30-70] | ✅ In band | Recovered from the 5% Bo1-artifact era |
+| Jeskai Blink | 49.2% | [45-60] | ✅ In band | |
+| Azorius Control (WST v2) | 49.2% | [30-70] | ✅ In band | |
+| Boros Ponza | 46.4% | [30-70] | ✅ In band | New (July 2026 meta refresh) |
+| Azorius Control (WST) | 43.3% | [30-70] | ✅ In band | |
+| Instant Reanimator | 32.2% | [30-70] | ✅ In band | New (July 2026 meta refresh), tuned in PR #460 |
+| Pinnacle Affinity | 27.5% | [30-70] | ❌ Below band | Structural outlier |
+| Azorius Control | 23.3% | [30-70] | ❌ Below band | Draw-go control underperforms vs proactive AI |
+| Goryo's Vengeance | 20.6% | [30-70] | ❌ Below band | Reanimator combo pacing; tuned in PR #463, still low |
+| Amulet Titan | 13.1% | [30-70] | ❌ Below band | Multi-turn lookahead / bounce-land loops not modelled |
 
 ---
 
@@ -470,9 +508,9 @@ Items already landed (per session-3 changelog): meta audit (#7), symmetry (#8), 
 **Known still-open from session 3 (re-verify before touching):**
 - Wish tutor Grapeshot-vs-Warrens balance (audit P2). Attempted shift toward Warrens regressed Storm at session-3 sample sizes; original 0.6 threshold restored. Needs an EV-weighted decision, not a threshold tweak.
 
-## 13. Codebase stats
+## 13. Codebase stats (2026-07-05)
 
-~28,500 Python LOC · 66 files · 14 AI modules · 21,795 cards · 16 decks · 16 gameplans · 149 passing tests · 4 Claude skills · 0 external deps
+~136,700 Python LOC · 472 files · 47 AI modules (34,372 ln) · engine 19,562 ln · tools 6,419 ln · 21,795 cards (8 provenanced parts) · 19 decks · 21 gameplans · 313 test files, 2253 passed / 0 failed · 4 Claude skills · 1 external dep (`pydantic>=2.0`)
 
 ---
 

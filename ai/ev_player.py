@@ -52,6 +52,7 @@ from ai.scoring_constants import (
     REMOVAL_THREAT_PREMIUM_SCALE,
     CHEAP_REMOVAL_ACTION_BONUS,
     LANDFALL_DEFERRAL_PENALTY,
+    LAND_GAMEPLAN_PRIORITY_SCALE,
     X_BOARD_WIPE_WASTE_FLOOR,
     BLINK_FIZZLE_FLOOR,
     CHUMP_SENTINEL_VALUE,
@@ -424,12 +425,30 @@ class EVPlayer:
 
         snap = snapshot_from_game(game, self.player_idx)
 
+        # ── ACTIVATION region — activated win-condition lines ──
+        # Battlefield permanents' activated abilities that represent
+        # win conditions (creature-land animation) are Play candidates
+        # like any cast: enumerated here so they compete on EV, and
+        # scored entirely from clock primitives in ai/activation_ev.py.
+        # Enumerated BEFORE the legal-plays early return: an empty hand
+        # must not silence an activatable win condition (the Azorius P0
+        # — the AI sat on animate lands while decking).  Pre-combat
+        # only: the animation exists to attack this turn.
+        activation_plays: List[Play] = []
+        from engine.game_state import Phase as _Phase
+        if game.current_phase == _Phase.MAIN1:
+            from ai.activation_ev import land_animation_candidates
+            for perm, act_ev, act_reason in land_animation_candidates(
+                    game, self.player_idx, snap):
+                activation_plays.append(
+                    Play("activate_ability", perm, [], act_ev, act_reason))
+
         legal = game.get_legal_plays(self.player_idx)
-        if not legal:
+        if not legal and not activation_plays:
             return None
         if excluded_cards:
             legal = [c for c in legal if c.instance_id not in excluded_cards]
-            if not legal:
+            if not legal and not activation_plays:
                 return None
 
         lands = [c for c in legal if c.template.is_land]
@@ -607,6 +626,10 @@ class EVPlayer:
         equip_play = self._consider_equip(game, me)
         if equip_play:
             candidates.append(equip_play)
+
+        # Activated win-condition lines compete with casts/lands on EV
+        # (enumerated above, before the legal-plays early return).
+        candidates.extend(activation_plays)
 
         if not candidates:
             self._last_candidates = []
@@ -1131,6 +1154,19 @@ class EVPlayer:
                     turns = MIDGAME_HORIZON_TURNS  # rules constant: Modern midgame horizon
                 turns = max(GAME_HORIZON_MIN_TURNS, min(turns, GAME_HORIZON_MAX_COST_REDUCER))
                 ev += turns * card_clock_impact(snap) * CLOCK_IMPACT_LIFE_SCALING
+
+        # ── Activated win-condition line: planeswalker ultimate ──
+        # A walker whose ultimate wins/locks the game is a win
+        # condition when its loyalty trajectory reaches the line
+        # inside the opponent-clock horizon (Track H — the loyalty-
+        # pool projection above credits generic activations but not
+        # the win line itself).  Value derived in ai/pw_ability.py
+        # from clock primitives; pinned by
+        # tests/test_pw_ultimate_line_valued_when_reachable.py.
+        if CardType.PLANESWALKER in t.card_types:
+            from ai.pw_ability import ultimate_win_line_value
+            ev += ultimate_win_line_value(
+                t.oracle_text or '', t.loyalty or 0, snap)
 
         # ── Duplicate Chalice-of-the-Void / hate permanent penalty ──
         # Casting a second Chalice with the same X is useless (same CMC
@@ -2026,6 +2062,17 @@ class EVPlayer:
             if game.can_cast(self.player_idx, spell):
                 ev -= LANDFALL_DEFERRAL_PENALTY  # defer land so creature resolves first
                 break
+
+        # ── Gameplan land-priority hook (Track H handoff, G finding 2) ──
+        # ``land_priorities`` is per-deck DATA (decks/gameplans/*.json)
+        # that previously reached only mulligan bottoming.  Consuming
+        # it here lets a gameplan order engine-land sequencing in game
+        # without any card names in code.  The scale keeps the term a
+        # land-vs-land tiebreaker, not a land-vs-spell override.
+        if self.goal_engine:
+            declared = self.goal_engine.gameplan.land_priorities.get(
+                land.name, 0.0)
+            ev += declared * LAND_GAMEPLAN_PRIORITY_SCALE
 
         return ev
 

@@ -61,6 +61,48 @@ class PermanentEffects:
         # Trigger ETB
         game._handle_permanent_etb(target_card, controller)
 
+    # ─── LAND ANIMATION (Track H) ────────────────────────────────
+
+    @staticmethod
+    def animate_land(game: "GameState", controller: int,
+                     land: CardInstance) -> bool:
+        """Execute an activated land-animation line ("{cost}: … this
+        land becomes an N/M … creature … until end of turn").
+
+        Rules enforcement only — no scoring.  The cost is paid by
+        tapping OTHER untapped lands (generic-count payment, the same
+        model the granted-ability dispatch uses); the source stays
+        untapped so it can attack.  Returns True when the activation
+        was legal and executed.
+        """
+        from .oracle_parser import parse_land_animation
+        player = game.players[controller]
+        if land not in player.battlefield or not land.template.is_land:
+            return False
+        if land.is_animated:
+            return False  # animating twice this turn adds nothing here
+        spec = parse_land_animation(land.template.oracle_text or '')
+        if spec is None:
+            return False
+        payers = [l for l in player.untapped_lands if l is not land]
+        if len(payers) < spec['cost']:
+            return False
+        for payer in payers[:spec['cost']]:
+            payer.tapped = True
+        land.is_animated = True
+        land.temp_power_mod += spec['power']
+        land.temp_toughness_mod += spec['toughness']
+        kw_by_value = {k.value: k for k in Keyword}
+        for kw in spec['keywords']:
+            kw_enum = kw_by_value.get(kw.replace(' ', '_'))
+            if kw_enum is not None:
+                land.temp_keywords.add(kw_enum)
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: {land.name} becomes "
+            f"a {spec['power']}/{spec['toughness']} creature until end "
+            f"of turn (pays {spec['cost']} mana)")
+        return True
+
     # ─── TOKEN GENERATION ────────────────────────────────────────
 
 

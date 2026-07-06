@@ -261,6 +261,12 @@ class CardInstance:
     temp_power_mod: int = 0
     temp_toughness_mod: int = 0
     temp_keywords: Set[Keyword] = field(default_factory=set)
+    # Land animation ("this land becomes an N/M creature until end of
+    # turn") — Track H. While True the instance belongs to the combat
+    # class (creatures property, can_attack/can_block, SBA death
+    # check); the printed P/T ride on temp_power_mod/temp_toughness_mod
+    # and every part wears off together in cleanup_damage().
+    is_animated: bool = False
     # Tracking
     turned_face_up: bool = True
     entered_battlefield_this_turn: bool = False
@@ -535,7 +541,7 @@ class CardInstance:
     @property
     def has_summoning_sickness(self) -> bool:
         """A creature has summoning sickness if it entered this turn and doesn't have haste."""
-        if not self.template.is_creature:
+        if not (self.template.is_creature or self.is_animated):
             return False
         if Keyword.HASTE in self.keywords:
             return False
@@ -545,7 +551,7 @@ class CardInstance:
 
     @property
     def can_attack(self) -> bool:
-        if not self.template.is_creature:
+        if not (self.template.is_creature or self.is_animated):
             return False
         if self.tapped:
             return False
@@ -557,7 +563,7 @@ class CardInstance:
 
     @property
     def can_block(self) -> bool:
-        if not self.template.is_creature:
+        if not (self.template.is_creature or self.is_animated):
             return False
         if self.tapped:
             return False
@@ -565,7 +571,7 @@ class CardInstance:
 
     @property
     def is_dead(self) -> bool:
-        if not self.template.is_creature:
+        if not (self.template.is_creature or self.is_animated):
             return False
         if self.toughness <= 0:
             # CR 704.5g: toughness 0 or less puts the creature into the
@@ -595,6 +601,11 @@ class CardInstance:
         self.temp_power_mod = 0
         self.temp_toughness_mod = 0
         self.temp_keywords.clear()
+        # "Until end of turn" animation wears off with the temp mods it
+        # rides on — and ends immediately when the permanent leaves the
+        # battlefield (every cleanup_damage call site is one of those
+        # two events).
+        self.is_animated = False
 
     def take_damage(self, amount: int, source) -> None:
         """Receive `amount` damage as a permanent (CR 119.3).

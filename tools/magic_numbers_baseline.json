@@ -1,5 +1,6 @@
 {
   "_comment": "Magic-number ratchet baseline. Counts bare numeric literals in ai/*.py outside excluded infrastructure modules. May only decrease (or reduce as cleanup PRs land). See CLAUDE.md ABSTRACTION CONTRACT.",
+  "ai/activation_ev.py": 0,
   "ai/bhi.py": 0,
   "ai/board_eval.py": 0,
   "ai/combo_calc.py": 0,

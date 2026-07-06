@@ -483,6 +483,9 @@ class GameState:
     def reanimate(self, *args, **kwargs):
         return PermanentEffects.reanimate(self, *args, **kwargs)
 
+    def animate_land(self, *args, **kwargs):
+        return PermanentEffects.animate_land(self, *args, **kwargs)
+
     def create_token(self, *args, **kwargs):
         return PermanentEffects.create_token(self, *args, **kwargs)
 
