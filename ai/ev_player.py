@@ -1321,6 +1321,15 @@ class EVPlayer:
                 else:
                     ev += creature_threat_value(best_rider, snap)
 
+        # ── Reserve mana for a blink that clears a live rider ──
+        # The credit above prices the blink; this prices everything
+        # ELSE: a competing cast that would strand the held blink
+        # forfeits the clearance value (same primitive, opposite sign).
+        if 'blink' not in tags and game is not None:
+            ev += self._blink_reservation_penalty(
+                me, snap, cost=t.cmc or 0,
+                exclude_instance_id=card.instance_id, game=game)
+
         # ── Noncreature-only counter dead vs creature-heavy opponents ──
         # Dovin's Veto / Negate can't target creature spells.
         # Gate positive EV when opponent's board is all creatures and hand
@@ -3707,6 +3716,71 @@ class EVPlayer:
                     == entry_seq):
                 riders.append(card)
         return riders
+
+    def _blink_reservation_penalty(self, me, snap, cost: int,
+                                   exclude_instance_id, game) -> float:
+        """Reservation charge for a cast that would strand a held blink
+        while a live pending EOT-exile rider exists (RC-1 follow-up,
+        docs/diagnostics/2026-07-05_goryos_field_13pct_root_cause.md).
+
+        The blink-clears-detriment credit prices the blink itself, but
+        the line dies upstream if a competing cast in the same main
+        phase spends the blink's last color source (replay evidence:
+        the last white-capable source spent on a discard spell right
+        after reanimating). Charge the forfeited clearance credit —
+        the saved permanent's `creature_threat_value`, the SAME
+        primitive the credit side uses — when this cast flips the held
+        blink from castable to uncastable this turn. Zero when no
+        rider is live, no blink is held, or capacity survives the
+        cast. Mirrors `_holdback_penalty`'s off-color-first payment
+        accounting; mechanic-driven, no card names.
+        """
+        if game is None or cost <= 0:
+            return 0.0
+        riders = self._pending_eot_exile_riders(game)
+        if not riders:
+            return 0.0
+        blinks = [c for c in me.hand
+                  if c.instance_id != exclude_instance_id
+                  and 'blink' in getattr(c.template, 'tags', set())
+                  and (c.template.is_instant or c.template.is_sorcery)]
+        if not blinks:
+            return 0.0
+        bl = min(blinks, key=lambda c: c.template.cmc or 0).template
+        bl_cmc = bl.cmc or 0
+
+        def _castable(total_mana: int, by_color: dict) -> bool:
+            if total_mana < bl_cmc:
+                return False
+            mc = bl.mana_cost
+            for code, attr in (
+                ('W', 'white'), ('U', 'blue'), ('B', 'black'),
+                ('R', 'red'), ('G', 'green'),
+            ):
+                pips = getattr(mc, attr, 0) if mc is not None else 0
+                if pips and by_color.get(code, 0) < pips:
+                    return False
+            return True
+
+        by_color_now = dict(getattr(snap, 'my_mana_by_color', {}) or {})
+        if not _castable(snap.my_mana, by_color_now):
+            return 0.0  # blink already uncastable — nothing to strand
+
+        # Post-cast capacity: pay the candidate from off-color mana
+        # first (rational optimum), dipping into each blink color only
+        # when off-color runs out — the same accounting
+        # `_holdback_penalty` uses for held counters.
+        by_color_after = {}
+        for code, avail in by_color_now.items():
+            off_color = max(0, snap.my_mana - avail)
+            must_tap_from_color = max(0, cost - off_color)
+            by_color_after[code] = max(0, avail - must_tap_from_color)
+        if _castable(snap.my_mana - cost, by_color_after):
+            return 0.0
+
+        best_rider = max(riders,
+                         key=lambda c: creature_threat_value(c, snap))
+        return -creature_threat_value(best_rider, snap)
 
     def _has_high_threat_target(self, game, spell, snap=None) -> bool:
         """True if a removal spell has a target worth proactively casting for.
