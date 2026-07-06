@@ -108,8 +108,13 @@ class PlayerState:
 
     @property
     def creatures(self) -> List[CardInstance]:
+        # Animated lands ("this land becomes an N/M creature until end
+        # of turn") belong to the combat class while the animation
+        # lasts — Track H.
         return [c for c in self.battlefield
-                if c.template.is_creature and not getattr(c, 'is_transformed', False)]
+                if (c.template.is_creature
+                    and not getattr(c, 'is_transformed', False))
+                or getattr(c, 'is_animated', False)]
 
     @property
     def lands(self) -> List[CardInstance]:

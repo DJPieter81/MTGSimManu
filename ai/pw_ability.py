@@ -25,10 +25,13 @@ tests/test_pw_ability_choice_defensive_minus.py):
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+import math
+import re
+from typing import TYPE_CHECKING, List, Optional, Tuple
 
 if TYPE_CHECKING:  # pragma: no cover
     from engine.game_state import GameState
+    from ai.ev_evaluator import EVSnapshot
 
 
 # ─────────────────────────────────────────────────────────────
@@ -86,6 +89,114 @@ PW_PANIC_DEFENSE_BONUS = PW_SCORE_DRAW - PW_SCORE_BOUNCE_LOW + 1
 # activation without creature impact loses to every surviving line.
 PW_SUICIDE_GUARD_PENALTY = (PW_SCORE_WIPE_BIG + PW_SCORE_BOUNCE_BASE
                             + PW_SCORE_BOUNCE_DRAW_BONUS + PW_SCORE_DRAW)
+
+
+# ─────────────────────────────────────────────────────────────
+# Ultimate-line win-condition value — Track H (2026-07-05
+# calibration wave).  A loyalty ability that WINS or LOCKS the game
+# is an activated win condition; its value must enter play scoring
+# when the loyalty trajectory (starting loyalty + repeated plus
+# ticks) reaches it inside the opponent-clock horizon.  Consumed by
+# ai/ev_player.py::_score_spell for planeswalker casts.  Pinned by
+# tests/test_pw_ultimate_line_valued_when_reachable.py.
+# ─────────────────────────────────────────────────────────────
+
+# Full-text loyalty-line parser.  engine.oracle_parser's
+# parse_planeswalker_abilities truncates descriptions to 60 chars —
+# too short for win/lock phrase detection on emblem lines — so this
+# module parses the untruncated text with the same bracket grammar.
+_LOYALTY_LINE_RE = re.compile(
+    r'\[([+−\-]?)(\d+)\]\s*:\s*(.+?)(?=\n\[|\Z)',
+    re.IGNORECASE | re.DOTALL)
+
+
+def _loyalty_lines(oracle: str) -> List[Tuple[int, str]]:
+    """Parse ``[±N]: effect`` lines → [(signed cost, full desc), …]."""
+    lines = []
+    for sign, amount, desc in _LOYALTY_LINE_RE.findall(oracle or ''):
+        cost = int(amount)
+        if sign in ('−', '-'):
+            cost = -cost
+        lines.append((cost, desc.strip()))
+    return lines
+
+
+def is_win_lock_line(desc: str) -> bool:
+    """True when a loyalty-ability description wins or locks the game.
+
+    Oracle-driven patterns shared by the whole class — an explicit
+    win/loss clause, or a repeating-emblem lock ("you get an emblem
+    with 'whenever …'": a permanent trigger that compounds every turn
+    is inevitability, not one-shot value).
+    """
+    d = (desc or '').lower()
+    if 'win the game' in d or 'wins the game' in d:
+        return True
+    if 'lose the game' in d or 'loses the game' in d:
+        return True
+    if 'emblem' in d and 'whenever' in d:
+        return True
+    return False
+
+
+def ultimate_turns_to_reach(oracle: str,
+                            starting_loyalty: int) -> Optional[float]:
+    """Turns of plus-ticks until the most expensive minus (the
+    ultimate) is affordable, from the loyalty trajectory.  None when
+    there is no ultimate or no loyalty-positive line to build with
+    (and the ultimate is not already affordable)."""
+    lines = _loyalty_lines(oracle)
+    minus_costs = [cost for cost, _ in lines if cost < 0]
+    if not minus_costs:
+        return None
+    ult_cost = -min(minus_costs)
+    deficit = ult_cost - starting_loyalty
+    if deficit <= 0:
+        return 0.0
+    plus_gains = [cost for cost, _ in lines if cost > 0]
+    if not plus_gains:
+        return None  # trajectory never reaches the ultimate
+    return float(math.ceil(deficit / max(plus_gains)))
+
+
+def ultimate_win_line_value(oracle: str, starting_loyalty: int,
+                            snap: "EVSnapshot") -> float:
+    """Win-condition value of a planeswalker's ultimate line.
+
+    Zero unless the ultimate wins/locks the game AND the loyalty
+    trajectory reaches it before the opponent's clock ends the game.
+    When reachable, arriving at a game-winning activation in K turns
+    is a K-turn clock: the same convention ``creature_clock_impact``
+    uses (a K-turn clock has power ≈ opp_life/K, so its impact is
+    1/K fraction-of-kill per turn), scaled by
+    ``CLOCK_IMPACT_LIFE_SCALING`` like every other play-scoring term.
+    """
+    from ai.clock import combat_clock
+    from ai.scoring_constants import CLOCK_IMPACT_LIFE_SCALING
+
+    lines = _loyalty_lines(oracle)
+    minus_costs = [cost for cost, _ in lines if cost < 0]
+    if not minus_costs:
+        return 0.0
+    ult_cost = min(minus_costs)
+    ult_desc = next(desc for cost, desc in lines if cost == ult_cost)
+    if not is_win_lock_line(ult_desc):
+        return 0.0
+
+    turns = ultimate_turns_to_reach(oracle, starting_loyalty)
+    if turns is None:
+        return 0.0
+    # +1: the ultimate itself fires on the activation after the last
+    # build tick (rules constant — one activation per turn).
+    horizon = turns + 1
+
+    opp_clock = combat_clock(
+        snap.opp_power, snap.my_life,
+        snap.opp_evasion_power, snap.my_toughness)
+    if horizon > opp_clock:
+        return 0.0  # the controller does not live to reach the line
+
+    return CLOCK_IMPACT_LIFE_SCALING / max(1.0, horizon)
 
 
 def _race_is_failing(game: "GameState", player_idx: int) -> bool:

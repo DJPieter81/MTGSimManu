@@ -53,6 +53,7 @@ Forbidden in this module:
 """
 from __future__ import annotations
 
+import re
 from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:  # avoid circular imports at runtime
@@ -343,12 +344,20 @@ def effective_cmc(
         remaining_generic = max(0, remaining_generic - affinity_reduction)
 
     # ── Step 6: improvise ───────────────────────────────────────────
-    # Tag-driven dispatch via the W0-A oracle classifier — no inline
-    # oracle-text matching.  Cards whose classifier entry doesn't
-    # carry `Tag.IMPROVISE` skip this step entirely.
+    # Tag-driven dispatch via the W0-A oracle classifier, with a
+    # STRUCTURAL fallback (Track H handoff): Improvise is a printed
+    # rules keyword — a card missing from the LLM tag cache (e.g. an
+    # empty cache entry) still has it. The keyword line starts the
+    # oracle text or its own line, which keeps ability-granting cards
+    # ("spells you cast have improvise" mid-sentence) out of the match.
     from ai.oracle_classifier import Tag, has_tag
 
-    if has_tag(card.name, Tag.IMPROVISE) and game is not None:
+    _has_improvise = (
+        has_tag(card.name, Tag.IMPROVISE)
+        or re.search(r'(?:^|\n)improvise\b',
+                     (template.oracle_text or ''), re.IGNORECASE) is not None
+    )
+    if _has_improvise and game is not None:
         untapped_artifacts = _count_untapped_artifacts(
             game, player_idx, exclude_card=card
         )
