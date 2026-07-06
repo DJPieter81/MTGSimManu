@@ -580,13 +580,24 @@ class EVPlayer:
                     is_dying = snap.am_dead_next or (snap.opp_power >= prof.dying_opp_power
                                                      and snap.opp_clock_discrete <= prof.dying_opp_clock)
                     has_big_target = self._has_high_threat_target(game, spell, snap)
+                    # A blink held "for protection" must be castable
+                    # PROACTIVELY when it would clear a live pending
+                    # end-of-turn-exile rider on an own permanent
+                    # (Goryo's-style detriment): the rider fires at OUR
+                    # end step, so cast-later loses the body outright
+                    # (CR 400.7 new-object rule; engine side in PR #462).
+                    # RC-1 decision layer, docs/diagnostics/
+                    # 2026-07-05_goryos_field_13pct_root_cause.md.
+                    clears_detriment = (
+                        'blink' in tags
+                        and bool(self._pending_eot_exile_riders(game)))
                     # has_big_target overrides control_patience: if a real
                     # threat is on board (oracle-driven threat floor), the
                     # reactive-only spell should fire proactively even for
                     # control decks that otherwise hold until late. Audit
                     # finding: Azorius Prismatic Ending sat in hand until
                     # Cranial Plating had already locked the game.
-                    if is_dying or has_big_target:
+                    if is_dying or has_big_target or clears_detriment:
                         pass  # allow through reactive-only gate
                     elif (prof.control_patience
                           and snap.opp_clock_discrete >= CONTROL_PATIENCE_OPP_CLOCK_THRESHOLD):
@@ -1283,6 +1294,32 @@ class EVPlayer:
                                 for c in me.creatures)
             if etb_creatures and has_attackers:
                 ev -= BLINK_M1_HOLD_PENALTY  # wait for M2 so we keep combat damage
+
+        # ── Blink clears a live pending EOT-exile detriment (CR 400.7) ──
+        # A delayed "exile it at the beginning of the next end step"
+        # rider (Goryo's Vengeance / Sneak Attack shape) tracks a
+        # specific object; blinking makes the permanent a new object and
+        # sheds the rider (engine side: PR #462 object identity).
+        # Keeping the body past end of turn is worth its full threat
+        # value — derived from `creature_threat_value`, the same
+        # principled subsystem removal targeting uses.  Sequencing: the
+        # rider only fires at OUR end step, so in MAIN1 an attack-
+        # capable rider should swing first (the temporary body still
+        # deals combat damage) and be blinked post-combat — pre-combat
+        # the credit is withheld and the existing M1-hold penalty
+        # applies, steering the cast to MAIN2.  RC-1 decision layer,
+        # docs/diagnostics/2026-07-05_goryos_field_13pct_root_cause.md.
+        if ('blink' in tags and (t.is_instant or t.is_sorcery)
+                and game is not None):
+            riders = self._pending_eot_exile_riders(game)
+            if riders:
+                best_rider = max(
+                    riders, key=lambda c: creature_threat_value(c, snap))
+                in_main1 = 'MAIN1' in str(getattr(game, 'current_phase', ''))
+                if in_main1 and best_rider.can_attack:
+                    ev -= BLINK_M1_HOLD_PENALTY  # swing first, blink in M2
+                else:
+                    ev += creature_threat_value(best_rider, snap)
 
         # ── Noncreature-only counter dead vs creature-heavy opponents ──
         # Dovin's Veto / Negate can't target creature spells.
@@ -3436,9 +3473,13 @@ class EVPlayer:
                     return [best.instance_id]
                 return []
 
-        # Exile effects (March of Otherworldly Light, etc.): target best nonland permanent
+        # Exile effects (March of Otherworldly Light, etc.): target best
+        # nonland permanent.  Blink spells are NOT opp-exile: their
+        # "exile target creature you control ... return" is a self-blink
+        # (same exclusion the card DB applies to the 'removal' tag) —
+        # they fall through to the blink branch below.
         oracle = (spell.template.oracle_text or '').lower()
-        if 'exile target' in oracle:
+        if 'exile target' in oracle and 'blink' not in tags:
             from engine.cards import CardType
             nonland = [c for c in opp.battlefield if not c.template.is_land]
             if nonland:
@@ -3446,9 +3487,19 @@ class EVPlayer:
                 return [best.instance_id]
             return []
 
-        # Blink effects: target our best ETB creature, fall back to any creature
+        # Blink effects: a creature carrying a live pending EOT-exile
+        # rider outranks any ETB retrigger — the blink permanently keeps
+        # a body that is otherwise lost at end of turn (CR 400.7; see
+        # the detriment-clearance EV term in _score_spell). Then best
+        # ETB creature, then any creature.
         if 'blink' in tags:
             me = game.players[self.player_idx]
+            rider_creatures = [c for c in self._pending_eot_exile_riders(game)
+                               if c.template.is_creature]
+            if rider_creatures:
+                best = max(rider_creatures,
+                           key=lambda c: creature_threat_value(c, snap))
+                return [best.instance_id]
             etb_creatures = [c for c in me.creatures
                              if 'etb_value' in getattr(c.template, 'tags', set())]
             if etb_creatures:
@@ -3633,6 +3684,29 @@ class EVPlayer:
         mana_tempo = equip_cost_total * mana_clock_impact(snap) * CLOCK_IMPACT_LIFE_SCALING
 
         return pump_impact + mana_tempo
+
+    def _pending_eot_exile_riders(self, game) -> List["CardInstance"]:
+        """Own battlefield permanents tracked by a LIVE delayed
+        end-of-turn-exile rider (the Goryo's Vengeance / Sneak Attack /
+        Through the Breach detriment shape).
+
+        Live = the tracked object is still on the battlefield under the
+        SAME battlefield entry — the CR 400.7 object-identity staleness
+        check, mirroring what the engine applies at end-of-turn cleanup
+        (engine/turn_manager.py).  Data source is the engine's rider
+        registry (`game_state.register_end_of_turn_exile`), so the
+        check is mechanic-driven: any delayed-EOT-exile effect × any
+        permanent, no card names.
+        """
+        riders = []
+        for card, controller, entry_seq in getattr(
+                game, '_end_of_turn_exiles', ()):
+            if (controller == self.player_idx
+                    and getattr(card, 'zone', None) == 'battlefield'
+                    and getattr(card, 'battlefield_entry_seq', 0)
+                    == entry_seq):
+                riders.append(card)
+        return riders
 
     def _has_high_threat_target(self, game, spell, snap=None) -> bool:
         """True if a removal spell has a target worth proactively casting for.

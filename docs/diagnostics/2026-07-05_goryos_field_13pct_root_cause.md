@@ -129,9 +129,18 @@ layers: the RULES layer (#462) and a DECISION layer — Ephemerate is
 (`ai/ev_player.py` enumerates it reactively only). The
 decision-layer gap is documented here, not fixed: it needs a
 generic "blink-removes-pending-detriment" EV term in the
-reanimation/blink scoring subsystem; no open PR owns it yet. This
-is the highest-leverage remaining Goryo's work item once #462
-merges.
+reanimation/blink scoring subsystem. **Follow-up shipped** (branch
+`claude/blink-clears-detriment`,
+`tests/test_blink_clears_pending_eot_detriment.py`): the
+reactive_only enumeration gate opens when a blink would clear a
+live rider, blink EV credits the saved permanent's
+`creature_threat_value`, and the `_choose_targets` 'exile target'
+opp-removal branch no longer swallows self-blink spells (the third
+suppressor, found during the fix). The blink line now fires and
+keeps reanimated bodies past end of turn; field WR is flat at n=15
+(21.2% → 21.3%) because the line still requires reanimate +
+blink-in-hand + W open on the same turn — mana holdback for a
+pending blink is the next lever.
 
 ## RC-2 — AI deferral gate: 'target player' forced discard never fires
 
