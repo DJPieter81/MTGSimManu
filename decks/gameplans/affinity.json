@@ -64,6 +64,10 @@
   ],
   "mulligan_min_lands": 2,
   "mulligan_max_lands": 3,
+  "land_priorities": {
+    "Urza's Saga": 3.0,
+    "Darksteel Citadel": 1.5
+  },
   "always_early": [
     "Memnite",
     "Mox Opal",

@@ -615,16 +615,44 @@ def _opp_payoff_reachable(game, opp_idx) -> bool:
     return False
 
 
+def _opp_chain_mid_cast(game, opp_idx) -> bool:
+    """True iff the opponent's chain is MID-CAST this turn — the
+    spell on the stack plus at least one prior cast.
+
+    `spells_cast_this_turn` counts the spell currently on the stack
+    (cast completes on push — `engine/cast_manager.py` increments
+    before the response window opens), so the mid-cast threshold is
+    `CHAIN_MIDCAST_MIN_STORM_COUNT` = stack spell + 1 prior.
+
+    This is the scope guard for the chain-fuel hold: reserving a
+    counter for the payoff is EV-sound only while the opponent has
+    already committed mana to the chain this turn and the payoff is
+    imminent.  Archetype membership or a cost-reducer merely being
+    on the battlefield does NOT make every turn a combo turn — an
+    archetype-keyed hold converts mid-chain triage into a full-game
+    interaction lockout (2026-07-05 storm-overshoot root cause: on
+    the definitive matrix reactive decks cast 0-4 pieces of
+    interaction per MATCH while every fuel spell of every turn
+    resolved unopposed; see
+    docs/diagnostics/2026-07-05_storm_overshoot_root_cause.md).
+    """
+    from ai.scoring_constants import CHAIN_MIDCAST_MIN_STORM_COUNT
+    opp = game.players[opp_idx]
+    return (getattr(opp, 'spells_cast_this_turn', 0)
+            >= CHAIN_MIDCAST_MIN_STORM_COUNT)
+
+
 def bottleneck_probability(stack_item, game, defender_idx) -> float:
     """Probability the stack item IS the bottleneck of the opp chain.
 
     Single formula (no branches per case):
 
         bp = is_payoff(stack)             if chain_in_flight       (else NaN)
-             , 0.0  if is_fuel(stack) and payoff_reachable
+             , 0.0  if is_fuel(stack) and chain_mid_cast
+                                          and payoff_reachable
              , NaN  otherwise (no chain state — defer to legacy)
 
-    Implemented as a short closed-form composition of three
+    Implemented as a short closed-form composition of four
     primitives:
 
     * `_opp_chain_in_flight(game, opp_idx)` — chain state inferred
@@ -634,15 +662,20 @@ def bottleneck_probability(stack_item, game, defender_idx) -> float:
       stack item itself is the payoff (storm payoff, tutor, or
       flashback-combo enabler).
     * `predicates.is_chain_fuel(stack.source)` AND
-      `_opp_payoff_reachable(...)` — the stack item is fuel and
-      opp can plausibly reach a payoff later.
+      `_opp_chain_mid_cast(...)` AND `_opp_payoff_reachable(...)` —
+      the stack item is fuel of a chain that is actually RUNNING
+      this turn (≥1 prior cast) and opp can plausibly reach a
+      payoff later.  Fuel cast as the opponent's first spell of the
+      turn is ordinary development — the hold does not apply, and
+      legacy threat evaluation prices the response (defenders may
+      counter engine pieces / draw engines on development turns).
 
     Returns:
 
     * 1.0   — fire: stack is the payoff bottleneck.
-    * 0.0   — hold: stack is fuel with a payoff coming.
+    * 0.0   — hold: stack is mid-chain fuel with a payoff coming.
     * `float('nan')` — defer to legacy threat evaluation
-      (no chain state detected).
+      (no chain state detected, or chain not mid-cast).
     """
     from ai.predicates import is_chain_fuel, is_chain_payoff_accessor
     opp_idx = 1 - defender_idx
@@ -653,7 +686,9 @@ def bottleneck_probability(stack_item, game, defender_idx) -> float:
         return float('nan')
     if is_chain_payoff_accessor(src):
         return 1.0
-    if is_chain_fuel(src) and _opp_payoff_reachable(game, opp_idx):
+    if (is_chain_fuel(src)
+            and _opp_chain_mid_cast(game, opp_idx)
+            and _opp_payoff_reachable(game, opp_idx)):
         return 0.0
     return float('nan')
 

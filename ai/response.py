@@ -196,6 +196,46 @@ class ResponseDecider:
         from ai.combo_calc import bottleneck_probability
         bp = bottleneck_probability(stack_item, game, self.player_idx)
         if bp == 0.0:
+            # Turn-scoped cast-lock (silence class) fires INTO the
+            # hold state instead of being reserved by it.  The hold's
+            # rationale — "a counter is at its best against the
+            # payoff" — inverts for a cast-lock: it never trades with
+            # the payoff at all, and every remaining cast it denies is
+            # chain EV removed, so it is at its best the EARLIER it
+            # lands in a running chain.  bp == 0.0 is exactly that
+            # state: the opponent is mid-cast (>=1 prior spell this
+            # turn) with a payoff still reachable, so resolving the
+            # cast-lock now shuts down the rest of the combo turn
+            # while the held counters stay reserved for the payoff's
+            # next attempt.  Cheapest first: effect is binary, extra
+            # mana on a bigger lock buys nothing this turn.
+            cast_locks = sorted(
+                (c for c in instants if "silence" in c.template.tags),
+                key=lambda c: c.template.cmc or 0,
+            )
+            if cast_locks:
+                lock = cast_locks[0]
+                if self.strategic_logger:
+                    self.strategic_logger.log_response(
+                        self.player_idx, lock.name,
+                        stack_item.source.name, game,
+                        "Cast-lock on mid-cast chain: deny every "
+                        "remaining cast this turn; counters stay "
+                        "reserved for the payoff")
+                self._record_decision(
+                    game, stack_item,
+                    chosen_inst=lock, chosen_targets=[],
+                    chosen_reason=(
+                        "cast-lock fired on mid-cast chain fuel "
+                        "(bottleneck_probability=0): denies the rest "
+                        "of the combo turn"
+                    ),
+                    alternatives=[], instants=instants,
+                    threat=threat,
+                    held_counter_floor_ev=self._held_counter_floor_ev(game),
+                    triage_skip=False,
+                )
+                return lock, []
             cheap_pitch = any(
                 "counterspell" in c.template.tags
                 and self._is_pitch_counter(game, c)
