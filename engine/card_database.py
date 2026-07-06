@@ -1202,10 +1202,16 @@ ManaCost.add_color = _add_color
 class CardDatabase:
     """Loads and manages the complete Modern card pool."""
 
+    # Full ModernAtomic carries ~21k cards; anything smaller is a fixture
+    # or partial file, so a load below this triggers the one-shot
+    # merge_db.py recovery in load().
+    _MIN_REAL_DB_CARDS = 1000
+
     def __init__(self, json_path: str = None):
         self.cards: Dict[str, CardTemplate] = {}
         self._raw_data: Dict[str, Any] = {}
         self._effects_cache: Dict[str, List[OracleEffect]] = {}
+        self._automerge_attempted = False
         if json_path:
             self.load(json_path)
         else:
@@ -1268,15 +1274,34 @@ class CardDatabase:
 
         print(f"Loaded {count} cards ({errors} errors)")
 
-        if count < 1000:
-            import subprocess, pathlib
+        if count < self._MIN_REAL_DB_CARDS and not self._automerge_attempted:
+            # One-shot recovery: a too-small load usually means a fresh
+            # checkout where the gitignored ModernAtomic.json is absent and
+            # auto-discovery fell through to a small fixture. Run merge_db.py
+            # once, then reload the CANONICAL file it writes — reloading the
+            # same too-small candidate path recursed unboundedly until
+            # RecursionError (2026-07-06 CI outage, run 28756950990).
+            self._automerge_attempted = True
+            import os, subprocess, pathlib
             merge = pathlib.Path(__file__).parent.parent / 'merge_db.py'
             if merge.exists():
                 print("DB too small — auto-running merge_db.py and reloading...")
                 subprocess.run(['python', str(merge)], cwd=str(merge.parent))
                 self.cards.clear()
                 self._raw_data.clear()
-                self.load(json_path)
+                canonical = self._canonical_db_path()
+                reload_path = canonical if os.path.exists(canonical) else json_path
+                self.load(reload_path)
+                if len(self.cards) < self._MIN_REAL_DB_CARDS:
+                    print("WARNING: card DB still too small after merge_db.py "
+                          f"({len(self.cards)} cards) — check "
+                          "ModernAtomic_part*.json integrity.")
+
+    def _canonical_db_path(self) -> str:
+        """Project-root ModernAtomic.json — the file merge_db.py writes."""
+        import os
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        return os.path.join(project_root, 'ModernAtomic.json')
 
     def _build_template(self, name: str, data: dict) -> Optional[CardTemplate]:
         """Build a CardTemplate from MTGJSON card data."""
