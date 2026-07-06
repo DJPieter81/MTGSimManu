@@ -1569,7 +1569,14 @@ class EVPlayer:
             if not tmpl.is_instant:
                 continue
             tags = getattr(tmpl, 'tags', set())
-            if not ('removal' in tags or 'counterspell' in tags):
+            # Held interaction = anything worth keeping mana open for:
+            # removal, counterspells, and the turn-scoped cast-lock
+            # class ('silence' tag) that response enumeration can fire
+            # into a mid-cast chain. Excluding cast-locks made control
+            # read "no defensive use" vs creatureless combo and take
+            # the proactive tap-out bonus (storm-overshoot follow-up).
+            if not ('removal' in tags or 'counterspell' in tags
+                    or 'silence' in tags):
                 continue
             held_costs.append(tmpl.cmc or 0)
             mc = tmpl.mana_cost

@@ -3842,6 +3842,20 @@ reanimator scale.
 Used by `_clause_gy_hate` in `ai/sideboard_solver.py`.
 """
 
+SB_EXPECTED_CHAIN_SPELLS_DENIED: float = 7.0
+"""Rules-constant: expected spells denied per resolved cast-rate
+denial effect (one-spell-per-turn locks, per-spell surcharges,
+storm-trigger counters) against a fully-chain-reliant opponent.
+7 = the canonical lethal storm-turn chain length (storm count needed
+for a lethal Grapeshot-class payoff at 20 life is ~9 copies from ~7-8
+prior casts); stopping one combo turn denies that whole chain.
+
+Sister shape: SB_EXPECTED_GY_CREATURES_DENIED (same clause-family
+scaling pattern, graveyard axis).
+
+Used by `_clause_spell_chain_hate` in `ai/sideboard_solver.py`.
+"""
+
 SB_DEFAULT_AVG_CMC: float = 2.5
 """Rules-constant: fallback average CMC for our nonland cards when
 the deck has zero non-land templates (degenerate case). 2.5 matches

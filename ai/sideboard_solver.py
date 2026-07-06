@@ -16,6 +16,7 @@ from ai.scoring_constants import (
     CLOCK_IMPACT_LIFE_SCALING,
     SB_GY_FULL_RELIANCE_TARGET,
     SB_EXPECTED_GY_CREATURES_DENIED,
+    SB_EXPECTED_CHAIN_SPELLS_DENIED,
     SB_DEFAULT_AVG_CMC,
     SB_SWAP_EPSILON_MANA_FRACTION,
 )
@@ -142,6 +143,28 @@ def _gy_reliance(opp_templates: List["CardTemplate"],
     return _density(pred, opp_templates)
 
 
+def _chain_reliance(opp_templates: List["CardTemplate"]) -> float:
+    """How much opp depends on casting many spells in one turn.
+    0 = none, ~0.5 = dedicated storm/chain combo.
+
+    Oracle-driven density of chain components among nonland cards:
+    storm-keyword spells, rituals (instants/sorceries that add mana),
+    and cost reducers. Mirrors `_gy_reliance`'s secondary signal —
+    composition, not deck names.
+    """
+    def pred(t):
+        oracle = (t.oracle_text or '').lower()
+        if 'storm' in oracle and 'copy' in oracle:
+            return True  # storm keyword reminder text / payoffs
+        if (t.is_instant or t.is_sorcery) and re.search(r'add \{', oracle):
+            return True  # ritual class
+        if re.search(r'cost \{\d\} less', oracle):
+            return True  # cost-reducer class
+        return False
+
+    return _density(pred, opp_templates)
+
+
 # ─────────────────────────────────────────────────────────────
 # Clause evaluators — one per card-class pattern
 # ─────────────────────────────────────────────────────────────
@@ -240,6 +263,33 @@ def _clause_gy_hate(oracle: str,
     # Creatures denied = SB_EXPECTED_GY_CREATURES_DENIED (rules constant
     # in scoring_constants — full Living End return).
     return reliance * SB_EXPECTED_GY_CREATURES_DENIED * PERMANENT_VALUE_WINDOW
+
+
+def _clause_spell_chain_hate(oracle: str,
+                             opp_templates: List["CardTemplate"]) -> float:
+    """Value of cast-rate denial vs spell-chain (storm-class) decks.
+
+    Patterns: one-spell-per-turn locks ("can't cast more than one
+    spell"), per-spell surcharges ("costs {1} more to cast for each
+    other spell"), and storm-trigger answers ("counter target
+    triggered/activated ability"). Scales with the opponent's measured
+    chain reliance — the same clause-family shape as `_clause_gy_hate`
+    (hate value = reliance x expected-denied x residency). Zero against
+    a deck with no chain components.
+    """
+    hates_chain = False
+    if re.search(r"can'?t cast more than one spell", oracle):
+        hates_chain = True
+    if re.search(r"costs? \{1\} more to cast for each other spell", oracle):
+        hates_chain = True
+    if re.search(r"counter target (?:triggered|activated)", oracle):
+        hates_chain = True
+    if not hates_chain:
+        return 0.0
+    reliance = _chain_reliance(opp_templates)
+    if reliance <= 0:
+        return 0.0
+    return reliance * SB_EXPECTED_CHAIN_SPELLS_DENIED * PERMANENT_VALUE_WINDOW
 
 
 def _clause_body_value(template: "CardTemplate") -> float:
@@ -351,6 +401,7 @@ def sb_value(template: "CardTemplate",
     value += _clause_protection_color(oracle, opp_templates, body_power)
     value += _clause_gy_hate(oracle, opp_templates, opp_gameplan)
     value += _clause_artifact_removal(template, opp_templates)
+    value += _clause_spell_chain_hate(oracle, opp_templates)
 
     return value
 
