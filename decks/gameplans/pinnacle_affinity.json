@@ -4,10 +4,11 @@
   "goals": [
     {
       "goal_type": "DEPLOY_ENGINE",
-      "description": "Deploy Pinnacle Emissary ASAP, dump free artifacts to generate Drone tokens",
+      "description": "Deploy Pinnacle Emissary ASAP, dump cheap artifacts for Drone tokens, land Urza's Saga early so chapter II's granted {2},{T} Construct activation comes online by turn 4",
       "card_priorities": {
         "Pinnacle Emissary": 25.0,
         "Mox Opal": 24.0,
+        "Urza's Saga": 22.0,
         "Springleaf Drum": 20.0,
         "Ornithopter": 18.0,
         "Memnite": 18.0,
@@ -17,7 +18,8 @@
       "card_roles": {
         "engines": [
           "Pinnacle Emissary",
-          "Mox Opal"
+          "Mox Opal",
+          "Urza's Saga"
         ],
         "enablers": [
           "Ornithopter",
@@ -79,7 +81,11 @@
     "Urza's Saga"
   ],
   "mulligan_min_lands": 2,
-  "mulligan_max_lands": 3,
+  "mulligan_max_lands": 4,
+  "land_priorities": {
+    "Urza's Saga": 3.0,
+    "Darksteel Citadel": 1.5
+  },
   "mulligan_combo_sets": [
     ["Pinnacle Emissary", "Mox Opal", "Ornithopter", "Memnite", "Springleaf Drum", "Mishra's Bauble", "Tormod's Crypt"]
   ],
