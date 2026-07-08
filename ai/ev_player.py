@@ -840,6 +840,16 @@ class EVPlayer:
                 return min(ev, X_BOARD_WIPE_WASTE_FLOOR)
             if kill_count == 1 and killable_power < 2:
                 return min(ev, X_BOARD_WIPE_WASTE_FLOOR)
+            if (kill_count == 1
+                    and snap.opp_hand_size
+                    >= OPP_HAND_FULL_HOLDBACK_THRESHOLD):
+                # A one-kill sweep is spot removal. A wipe's value curve
+                # rises with the opponent's board; while they still hold
+                # a development-threshold grip (same signal the mana-
+                # holdback gate uses), the bigger sweep is still coming
+                # — spending the sweeper now forfeits it (2026-07-06
+                # azorius aggro-defense diagnostic).
+                return min(ev, X_BOARD_WIPE_WASTE_FLOOR)
         elif kill_count == 0:
             return min(ev, X_BOARD_WIPE_WASTE_FLOOR)
         return None
