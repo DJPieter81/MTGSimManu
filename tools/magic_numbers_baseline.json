@@ -3,6 +3,7 @@
   "ai/activation_ev.py": 0,
   "ai/bhi.py": 0,
   "ai/board_eval.py": 0,
+  "ai/card_classes.py": 0,
   "ai/combo_calc.py": 0,
   "ai/combo_chain.py": 0,
   "ai/combo_evaluator.py": 0,

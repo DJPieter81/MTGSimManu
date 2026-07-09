@@ -1580,22 +1580,17 @@ class EVPlayer:
         # cost of held interaction — used to size the penalty.
         held_costs: list = []
         held_colors: set = set()
+        from ai.card_classes import is_held_interaction
         for c in me.hand:
             if exclude_instance_id is not None \
                     and c.instance_id == exclude_instance_id:
                 continue
             tmpl = c.template
-            if not tmpl.is_instant:
-                continue
-            tags = getattr(tmpl, 'tags', set())
-            # Held interaction = anything worth keeping mana open for:
-            # removal, counterspells, and the turn-scoped cast-lock
-            # class ('silence' tag) that response enumeration can fire
-            # into a mid-cast chain. Excluding cast-locks made control
-            # read "no defensive use" vs creatureless combo and take
-            # the proactive tap-out bonus (storm-overshoot follow-up).
-            if not ('removal' in tags or 'counterspell' in tags
-                    or 'silence' in tags):
+            # Membership comes from the central class registry — the
+            # cast-lock omission that made control tap out vs
+            # creatureless combo was the founding incident
+            # (docs/proposals/2026-07-09_structural_findings.md #2).
+            if not is_held_interaction(tmpl):
                 continue
             held_costs.append(tmpl.cmc or 0)
             mc = tmpl.mana_cost
