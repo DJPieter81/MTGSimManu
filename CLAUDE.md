@@ -548,9 +548,10 @@ with open('metagame_data.jsx') as f: jsx = f.read()
 D = json.loads(jsx[jsx.index('const D = ')+10 : jsx.index(';\nconst N')])
 
 EXPECTED = {  # (low, high) — update when meta shifts
-    'Boros Energy': (50,70), 'Affinity': (45,60), 'Eldrazi Tron': (50,65),
+    'Boros Energy': (50,70), 'Affinity': (50,65), 'Eldrazi Tron': (50,65),
     'Jeskai Blink': (45,60), 'Ruby Storm': (40,55), 'Domain Zoo': (50,65),
-    'Izzet Prowess': (45,60), 'Dimir Midrange': (45,60),
+    'Izzet Prowess': (50,65), 'Dimir Midrange': (45,60),
+    'Amulet Titan': (45,60), 'Instant Reanimator': (45,60),
 }
 
 targets = set()
