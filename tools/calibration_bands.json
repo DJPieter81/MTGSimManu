@@ -145,10 +145,10 @@
     {
       "deck": "Izzet Prowess",
       "expected_wr": [
-        45,
-        60
+        50,
+        65
       ],
-      "provenance": "CLAUDE.md post-sim pipeline EXPECTED dict \u2014 tempo aggro, near-even-to-positive field."
+      "provenance": "User meta review 2026-07-09 (Tier-1 sweep): 4.0% July meta share = Tier 1; band raised from [45-60] to the Tier-1 shape, same class as Eldrazi Tron/Affinity."
     },
     {
       "deck": "Dimir Midrange",
@@ -157,6 +157,22 @@
         60
       ],
       "provenance": "CLAUDE.md post-sim pipeline EXPECTED dict \u2014 interactive midrange, near-even-to-positive field."
+    },
+    {
+      "deck": "Amulet Titan",
+      "expected_wr": [
+        45,
+        60
+      ],
+      "provenance": "User meta review 2026-07-09 (Tier-1 sweep): 4.8% July meta share = Tier 1 in real Modern; replaces the default [30-70]. Sim currently far below (16.1) \u2014 the P0 gap is larger than the default band admitted; see docs/diagnostics/2026-07-06_amulet_titan_root_cause.md."
+    },
+    {
+      "deck": "Instant Reanimator",
+      "expected_wr": [
+        45,
+        60
+      ],
+      "provenance": "User meta review 2026-07-09 (Tier-1 sweep): 4.9% July meta share = Tier 1 by representation; replaces the default [30-70]. Sim 33.1 is now honestly below band \u2014 an admitted under-performer, not 'in band by default'."
     }
   ],
   "default_field_band": {
