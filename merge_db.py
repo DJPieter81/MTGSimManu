@@ -56,6 +56,16 @@ for part in parts:
     print(f"  {part}: +{len(chunk)} cards")
 
 if "data" in raw:
+    # Provenance stamp: record what this merge actually saw, so the
+    # loader can detect a truncated/hand-edited/out-of-band merged file
+    # (engine/card_database.py cross-checks card_count on load).
+    if not isinstance(raw.get("meta"), dict):
+        raw["meta"] = {}
+    raw["meta"]["merged_from"] = {
+        "part_count": len(parts),
+        "card_count": len(cards),
+        "part_names": [os.path.basename(p) for p in parts],
+    }
     raw["data"] = cards
     with open(base, "w") as f:
         json.dump(raw, f)
