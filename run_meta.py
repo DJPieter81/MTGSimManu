@@ -306,6 +306,8 @@ def run_matchup(deck1: str, deck2: str, n_games: int = 50,
         'avg_turn1': round(avg_turn1, 1), 'avg_turn2': round(avg_turn2, 1),
         'turn_dist1': sorted(turn_wins[deck1]), 'turn_dist2': sorted(turn_wins[deck2]),
         'format': 'bo1' if bo1 else 'bo3',
+        'seed_geometry': {'grid': 'matchup', 'seed_start': seed_start,
+                          'step': SEED_STEP, 'n_games': n_games},
     }
     if not bo1:
         # B1: expose match-level detail — 2-0 sweeps vs 2-1 grinds
@@ -346,7 +348,10 @@ def run_field(deck: str, n_games: int = 30, opponents: List[str] = None,
 
     avg = sum(results.values()) / len(results) if results else 0
     return {'deck': deck, 'matchups': results, 'average': round(avg, 1),
-            'format': 'bo1' if bo1 else 'bo3'}
+            'format': 'bo1' if bo1 else 'bo3',
+            'seed_geometry': {'grid': 'field',
+                              'seed_start': MATCHUP_SEED_START,
+                              'step': SEED_STEP, 'n_games': n_games}}
 
 
 def run_probe(deck: str, opponent: Optional[str] = None, n_games: int = 20,
@@ -553,7 +558,9 @@ def run_meta_matrix(top_tier: int = None, n_games: int = 20,
     return {'matrix': matrix, 'rankings': rankings, 'names': names,
             'tier1': sorted(tier1), 'tier2': sorted(tier2),
             'n_games': n_games, 'format': 'bo1' if bo1 else 'bo3',
-            'symmetry_issues': symmetry_issues}
+            'symmetry_issues': symmetry_issues,
+            'seed_geometry': {'grid': 'matrix', 'seed_start': seed_start,
+                              'step': SEED_STEP, 'n_games': n_games}}
 
 
 def inspect_deck(deck_name: str) -> str:
@@ -1116,6 +1123,16 @@ def save_results(result: Dict, path: str = RESULTS_FILE):
         if key not in ('matrix', 'rankings', 'names'):
             data[key] = result[key]
 
+    # Command stamp (structural finding #5: "numbers always stamped
+    # with their generating command"). seed_geometry comes from the
+    # producing function's self-description; a result that declared
+    # none is stamped None rather than guessed at.
+    data['generated_by'] = {
+        'command': ' '.join(sys.argv),
+        'seed_geometry': result.get('seed_geometry'),
+        'timestamp': data['timestamp'],
+    }
+
     with open(path, 'w') as f:
         json.dump(data, f, indent=2)
     print(f'Results saved to {path}', file=sys.stderr)
@@ -1455,7 +1472,14 @@ if __name__ == '__main__':
             rankings.sort(key=lambda x: x[0], reverse=True)
             result = {'matrix': matrix, 'rankings': rankings,
                       'names': names, 'n_games': args.games,
-                      'format': 'bo1' if args.bo1 else 'bo3'}
+                      'format': 'bo1' if args.bo1 else 'bo3',
+                      # tools.parallel_matrix dispatches run_matchup
+                      # per pair, so this path runs on the MATCHUP
+                      # grid — stamped honestly (finding #5).
+                      'seed_geometry': {'grid': 'parallel-matrix',
+                                        'seed_start': MATCHUP_SEED_START,
+                                        'step': SEED_STEP,
+                                        'n_games': args.games}}
         else:
             result = run_meta_matrix(top_tier=args.decks, n_games=args.games, bo3=not args.bo1)
         print_matrix(result)
