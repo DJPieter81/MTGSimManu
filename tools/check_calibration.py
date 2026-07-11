@@ -23,9 +23,23 @@ Out-of-band findings are diagnostics, not failures — the report exits
 0 in hook mode so a sim run never fails on miscalibration.  Use
 ``--strict`` (CI / manual audits) to exit 1 when any band is missed.
 
+Trend mode (structural finding #6, docs/proposals/
+2026-07-09_structural_findings.md): ``--trend PREV.json CURR.json``
+compares two saved results snapshots — per-deck field-WR deltas over
+the shared deck pool plus band-composition transitions (which anchors
+moved IN/OUT, not just the flat count).  Optional
+``--exclude-out-of-band-opponents`` recomputes the field averages
+without opponents whose own field WR is out of band in either
+snapshot, so a deck's number is not propped up by farming known-broken
+rows.  Pure reporting: trend mode never writes and always exits 0
+(2 on usage errors); band VALUES are read from the bands file, never
+altered.
+
 Usage:
     python tools/check_calibration.py [results.json] [--bands path]
     python tools/check_calibration.py --strict          # exit 1 on OUT
+    python tools/check_calibration.py --trend PREV.json CURR.json \
+        [--bands path] [--exclude-out-of-band-opponents]
 """
 from __future__ import annotations
 
@@ -127,6 +141,18 @@ def _decks_in_results(results: dict, matrix: Dict[str, float]) -> List[str]:
     return seen
 
 
+def _field_wr(matrix: dict, decks: List[str], deck: str,
+              exclude: frozenset = frozenset()) -> Optional[float]:
+    """Field average for ``deck``: mean matchup WR over every other
+    deck in ``decks`` (minus ``exclude``), orientation-safe."""
+    rates = [matchup_wr(matrix, deck, opp)
+             for opp in decks if opp != deck and opp not in exclude]
+    rates = [r for r in rates if r is not None]
+    if not rates:
+        return None
+    return sum(rates) / len(rates)
+
+
 def _band_status(wr: float, lo: float, hi: float) -> Tuple[str, str]:
     if wr < lo:
         return "OUT", "below"
@@ -174,15 +200,12 @@ def check_results(results: dict, bands: dict) -> List[Finding]:
                  "provenance": default.get("provenance", "")}
         lo, hi = b["expected_wr"]
         anchor = f"{d} (field)"
-        rates = [matchup_wr(matrix, d, opp)
-                 for opp in decks if opp != d]
-        rates = [r for r in rates if r is not None]
-        if not rates:
+        wr = _field_wr(matrix, decks, d)
+        if wr is None:
             findings.append(Finding(
                 "FIELD", "SKIP", anchor, None, (lo, hi),
                 detail="no matchup cells for this deck"))
             continue
-        wr = sum(rates) / len(rates)
         status, direction = _band_status(wr, lo, hi)
         findings.append(Finding("FIELD", status, anchor, wr, (lo, hi),
                                 direction=direction,
@@ -217,6 +240,124 @@ def print_report(findings: List[Finding], results_path: str,
     return n_in, n_out, n_skip
 
 
+# ─── Trend mode (structural finding #6) ─────────────────────────────
+
+
+def _status_map(results: dict, bands: dict) -> Dict[Tuple[str, str], str]:
+    """{(kind, anchor): status} for every band finding on a snapshot."""
+    return {(f.kind, f.anchor): f.status
+            for f in check_results(results, bands)}
+
+
+def _out_of_band_field_decks(results: dict, bands: dict) -> set:
+    """Decks whose FIELD average is out of its band on this snapshot."""
+    suffix = " (field)"
+    return {f.anchor[: -len(suffix)]
+            for f in check_results(results, bands)
+            if f.kind == "FIELD" and f.status == "OUT"}
+
+
+def compute_trend(prev: dict, curr: dict, bands: dict,
+                  exclude_out_of_band_opponents: bool = False) -> dict:
+    """Pure trend computation between two parsed results dicts.
+
+    Per-deck field-WR deltas are taken over the SHARED deck pool (and,
+    with ``exclude_out_of_band_opponents``, minus the union of decks
+    that are out of their field band in either snapshot) so both
+    averages use the same opponent set and deltas stay
+    apples-to-apples.  Band-composition transitions list every anchor
+    whose IN/OUT/SKIP status changed between snapshots.
+    """
+    pm = _normalize_matrix(prev.get("matrix") or {})
+    cm = _normalize_matrix(curr.get("matrix") or {})
+    pdecks = _decks_in_results(prev, pm)
+    cdecks = _decks_in_results(curr, cm)
+    shared = [d for d in pdecks if d in cdecks]
+
+    excluded: set = set()
+    if exclude_out_of_band_opponents:
+        excluded = (_out_of_band_field_decks(prev, bands)
+                    | _out_of_band_field_decks(curr, bands))
+    ex = frozenset(excluded)
+
+    deck_deltas = []
+    for d in shared:
+        pwr = _field_wr(pm, shared, d, exclude=ex)
+        cwr = _field_wr(cm, shared, d, exclude=ex)
+        delta = None if (pwr is None or cwr is None) else cwr - pwr
+        deck_deltas.append({"deck": d, "prev_wr": pwr, "curr_wr": cwr,
+                            "delta": delta})
+    deck_deltas.sort(key=lambda r: (r["delta"] is None,
+                                    -(r["delta"] or 0.0)))
+
+    ps, cs = _status_map(prev, bands), _status_map(curr, bands)
+    transitions = [{"kind": kind, "anchor": anchor,
+                    "prev": ps.get((kind, anchor)),
+                    "curr": cs.get((kind, anchor))}
+                   for kind, anchor in sorted(set(ps) | set(cs))
+                   if ps.get((kind, anchor)) != cs.get((kind, anchor))]
+
+    def _composition(smap: Dict[Tuple[str, str], str]) -> Dict[str, int]:
+        comp = {"IN": 0, "OUT": 0, "SKIP": 0}
+        for status in smap.values():
+            comp[status] = comp.get(status, 0) + 1
+        return comp
+
+    return {
+        "deck_deltas": deck_deltas,
+        "transitions": transitions,
+        "composition": {"prev": _composition(ps), "curr": _composition(cs)},
+        "excluded_opponents": sorted(excluded),
+        "decks_only_in_prev": sorted(set(pdecks) - set(cdecks)),
+        "decks_only_in_curr": sorted(set(cdecks) - set(pdecks)),
+    }
+
+
+def print_trend(trend: dict, prev_path: str, curr_path: str) -> None:
+    print(f"== calibration trend {prev_path} -> {curr_path} ==")
+    for side in ("prev", "curr"):
+        gone = trend[f"decks_only_in_{side}"]
+        if gone:
+            print(f"  decks only in {side}: {', '.join(gone)} "
+                  f"(excluded from deltas)")
+    if trend["excluded_opponents"]:
+        print("  field averages exclude out-of-band opponents: "
+              + ", ".join(trend["excluded_opponents"]))
+    print("-- per-deck field WR --")
+    for r in trend["deck_deltas"]:
+        if r["delta"] is None:
+            print(f"  {r['deck']:25s} (no comparable cells)")
+        else:
+            print(f"  {r['deck']:25s} {r['prev_wr']:5.1f}% -> "
+                  f"{r['curr_wr']:5.1f}%  ({r['delta']:+.1f}pp)")
+    print("-- band-composition transitions --")
+    if not trend["transitions"]:
+        print("  (none — every anchor kept its status)")
+    for t in trend["transitions"]:
+        print(f"  {t['kind']:7} {t['anchor']}: "
+              f"{t['prev'] or '—'} -> {t['curr'] or '—'}")
+    comp_p, comp_c = trend["composition"]["prev"], trend["composition"]["curr"]
+    print(f"-- composition: prev {comp_p['IN']} in / {comp_p['OUT']} out / "
+          f"{comp_p['SKIP']} skipped;  curr {comp_c['IN']} in / "
+          f"{comp_c['OUT']} out / {comp_c['SKIP']} skipped --")
+
+
+def run_trend(prev_path: str, curr_path: str,
+              bands_path: str = DEFAULT_BANDS_PATH,
+              exclude_out_of_band_opponents: bool = False) -> int:
+    """Load, compute, print.  Pure reporting — always returns 0."""
+    with open(prev_path) as f:
+        prev = json.load(f)
+    with open(curr_path) as f:
+        curr = json.load(f)
+    bands = load_bands(bands_path)
+    trend = compute_trend(
+        prev, curr, bands,
+        exclude_out_of_band_opponents=exclude_out_of_band_opponents)
+    print_trend(trend, prev_path, curr_path)
+    return 0
+
+
 def run_check(results_path: str = DEFAULT_RESULTS_PATH,
               bands_path: str = DEFAULT_BANDS_PATH,
               strict: bool = False) -> int:
@@ -232,6 +373,22 @@ def run_check(results_path: str = DEFAULT_RESULTS_PATH,
 def main(argv: List[str]) -> int:
     strict = "--strict" in argv
     argv = [a for a in argv if a != "--strict"]
+    exclude_oob = "--exclude-out-of-band-opponents" in argv
+    argv = [a for a in argv if a != "--exclude-out-of-band-opponents"]
+    trend_paths: Optional[Tuple[str, str]] = None
+    if "--trend" in argv:
+        i = argv.index("--trend")
+        try:
+            trend_paths = (argv[i + 1], argv[i + 2])
+        except IndexError:
+            print("check_calibration: --trend requires PREV.json CURR.json",
+                  file=sys.stderr)
+            return 2
+        del argv[i:i + 3]
+    elif exclude_oob:
+        print("check_calibration: --exclude-out-of-band-opponents "
+              "requires --trend", file=sys.stderr)
+        return 2
     bands_path = DEFAULT_BANDS_PATH
     if "--bands" in argv:
         i = argv.index("--bands")
@@ -242,6 +399,18 @@ def main(argv: List[str]) -> int:
                   file=sys.stderr)
             return 2
         del argv[i:i + 2]
+    if trend_paths is not None:
+        prev_path, curr_path = trend_paths
+        for path, label in ((prev_path, "prev results"),
+                            (curr_path, "curr results"),
+                            (bands_path, "bands")):
+            if not Path(path).exists():
+                print(f"check_calibration: {label} file not found: {path}",
+                      file=sys.stderr)
+                return 2
+        return run_trend(prev_path, curr_path, bands_path,
+                         exclude_out_of_band_opponents=exclude_oob)
+
     positional = [a for a in argv if not a.startswith("--")]
     results_path = positional[0] if positional else DEFAULT_RESULTS_PATH
 
